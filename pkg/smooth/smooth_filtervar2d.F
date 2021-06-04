@@ -1,6 +1,10 @@
 #include "SMOOTH_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
-      subroutine smooth_filtervar2D (smoothOpNb,mythid)
+
+      SUBROUTINE SMOOTH_FILTERVAR2D ( smoothOpNb, mythid )
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_filtervar2D
@@ -11,36 +15,71 @@ C     |   See Weaver and Courtier 01 for details.
 C     *==========================================================*
 
       IMPLICIT NONE
+
+c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SMOOTH.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
-      integer smoothOpNb, myThid
+c     == routine arguments ==
+      INTEGER smoothOpNb, myThid
 
-      Real*8   port_rand, port_rand_norm
+c     == external functions ==
+      REAL*8   port_rand, port_rand_norm
       EXTERNAL PORT_RAND, PORT_RAND_NORM
 
-      integer i,j,k, bi, bj, ii, jj, kk
-      integer itlo,ithi,jtlo,jthi
-      integer diLoc,djLoc,dkLoc
-      integer nbRand, nbt_in
-      character*( 80) fnamegeneric
+c     == local variables ==
+      INTEGER i,j,k, bi, bj, ii, jj, kk
+      INTEGER itlo,ithi,jtlo,jthi
+      INTEGER diLoc,djLoc,dkLoc
+      INTEGER nbRand, nbt_in
+      CHARACTER*( 80) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS smooth2Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     == end of interface ==
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
+c --- allow a different mask other than maskC
+c     Note: this is essentially a copy of ctrl_get_mask
+c     but is repeated here for package independence
+c     since this subroutine is typically used simply to get
+c     filter variance without actually running the model
+      DO bj = jtlo,jthi
+       DO bi = itlo,ithi
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          IF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskC') THEN
+           smooth2Dmask(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+          ELSEIF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskW') THEN
+           smooth2Dmask(i,j,bi,bj) = maskW(i,j,1,bi,bj)
+          ELSEIF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskS') THEN
+           smooth2Dmask(i,j,bi,bj) = maskS(i,j,1,bi,bj)
+#ifdef ALLOW_SHELFICE
+          ELSEIF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI') THEN
+           smooth2Dmask(i,j,bi,bj) = maskSHI(i,j,1,bi,bj)
+#endif
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
 c if smooth2Dfilter(smoothOpNb)=0: the filter variance field
 c has been computed earlier and is already in the run directory
 c so this routine does not do anything
 
-      IF (smooth2Dfilter(smoothOpNb).NE.0) then
+      IF (smooth2Dfilter(smoothOpNb).NE.0) THEN
 
       nbt_in=smooth2Dnbt(smoothOpNb)/2
 
@@ -65,7 +104,7 @@ c initialize filter variance field:
        ENDDO
       ENDDO
 
-      IF (smooth2Dfilter(smoothOpNb).EQ.2) then
+      IF (smooth2Dfilter(smoothOpNb).EQ.2) THEN
 c compute the normalization matrix using the approximate method
 c
 c This method can be quite expensive -- so that the approximate
@@ -106,7 +145,7 @@ c adjoint:
      & "uncomment the line below and comment the stop"
       CALL ALL_PROC_DIE( myThid )
       STOP 'ABNORMAL END: S/R smooth_filtervar2D'
-c      call adsmooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
+c      call adsmooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
 
 c division by sqrt(area)*sqrt(area) [1 to end adj, 1 to begin fwd]
       DO bj = jtlo,jthi
@@ -126,14 +165,14 @@ c going in fwd part: we need to fill them up
       CALL EXCH_XY_RL ( smoothTmpFld,myThid )
 
 c fwd:
-      CALL smooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
+      CALL smooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
 
 c convert variance to normalization factor:
       DO bj=jtlo,jthi
        DO bi=itlo,ithi
          DO j=jj,sNy,djLoc
           DO i=ii,sNx,diLoc
-           if (maskc(i,j,1,bi,bj).NE.0) then
+           if (smooth2dmask(i,j,bi,bj).NE.0) then
               smooth2Dnorm(i,j,bi,bj)=
      &        1/sqrt(smoothTmpFld(i,j,bi,bj))
            endif
@@ -173,7 +212,7 @@ c fill smoothTmpFld with random numbers:
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smoothTmpFld(i,j,bi,bj)   = 0. _d 0
-           if (maskC(i,j,1,bi,bj).NE.0) then
+           if (smooth2dmask(i,j,bi,bj).NE.0) then
            smoothTmpFld(i,j,bi,bj)=port_rand_norm()
            endif
 c division by sqrt(area):
@@ -187,7 +226,7 @@ c division by sqrt(area):
       CALL EXCH_XY_RL ( smoothTmpFld, myThid )
 
 c smooth random number field
-      call smooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
+      call smooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
 
 c accumulate statistics (to compute the variance later)
       DO bj=jtlo,jthi
@@ -210,7 +249,7 @@ c compute variance and convert it to normalization factor:
        DO bi=itlo,ithi
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           if (maskC(i,j,1,bi,bj).NE.0) then
+           if (smooth2dmask(i,j,bi,bj).NE.0) then
            smooth2Dnorm(i,j,bi,bj)=
      & 1/sqrt ( nbRand/(nbRand-1)* ( smoothTmpVar(i,j,bi,bj) -
      & smoothTmpMean(i,j,bi,bj)*smoothTmpMean(i,j,bi,bj)
@@ -233,4 +272,3 @@ c write smooth2Dnorm to file:
       ENDIF
 
       END
-

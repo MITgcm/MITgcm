@@ -13,8 +13,8 @@ c     Apply horizontal smoothing to global _RL 2-D array
 
 c     input/output
 c     fld    : 2-D array to be smoothed
-      _RL fld ( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy )
-      _RS mask( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy )
+      _RL fld ( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy )
+      _RS mask( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy )
       INTEGER myThid
 
 c     local
@@ -42,26 +42,26 @@ c     k      : vertical index used for masking
            im1 = i-1
            ip1 = i+1
            tempVar =
-     &           p25   *   mask(i  ,j  ,k,bi,bj)   +
-     &           p125  * ( mask(im1,j  ,k,bi,bj)   +
-     &                     mask(ip1,j  ,k,bi,bj)   +
-     &                     mask(i  ,jm1,k,bi,bj)   +
-     &                     mask(i  ,jp1,k,bi,bj) ) +
-     &           p0625 * ( mask(im1,jm1,k,bi,bj)   +
-     &                     mask(im1,jp1,k,bi,bj)   +
-     &                     mask(ip1,jm1,k,bi,bj)   +
-     &                     mask(ip1,jp1,k,bi,bj) )
+     &           p25   *   mask(i  ,j  ,bi,bj)   +
+     &           p125  * ( mask(im1,j  ,bi,bj)   +
+     &                     mask(ip1,j  ,bi,bj)   +
+     &                     mask(i  ,jm1,bi,bj)   +
+     &                     mask(i  ,jp1,bi,bj) ) +
+     &           p0625 * ( mask(im1,jm1,bi,bj)   +
+     &                     mask(im1,jp1,bi,bj)   +
+     &                     mask(ip1,jm1,bi,bj)   +
+     &                     mask(ip1,jp1,bi,bj) )
            IF ( tempVar .GE. p25 ) THEN
              fld_tmp(i,j) = (
-     &              p25  * fld(i  ,j,bi,bj  )*mask(i  ,j  ,k,bi,bj) +
-     &              p125 *(fld(im1,j ,bi,bj )*mask(im1,j  ,k,bi,bj) +
-     &                     fld(ip1,j ,bi,bj )*mask(ip1,j  ,k,bi,bj) +
-     &                     fld(i  ,jm1,bi,bj)*mask(i  ,jm1,k,bi,bj) +
-     &                     fld(i  ,jp1,bi,bj)*mask(i  ,jp1,k,bi,bj))+
-     &              p0625*(fld(im1,jm1,bi,bj)*mask(im1,jm1,k,bi,bj) +
-     &                     fld(im1,jp1,bi,bj)*mask(im1,jp1,k,bi,bj) +
-     &                     fld(ip1,jm1,bi,bj)*mask(ip1,jm1,k,bi,bj) +
-     &                     fld(ip1,jp1,bi,bj)*mask(ip1,jp1,k,bi,bj)))
+     &              p25  * fld(i  ,j,bi,bj  )*mask(i  ,j  ,bi,bj) +
+     &              p125 *(fld(im1,j ,bi,bj )*mask(im1,j  ,bi,bj) +
+     &                     fld(ip1,j ,bi,bj )*mask(ip1,j  ,bi,bj) +
+     &                     fld(i  ,jm1,bi,bj)*mask(i  ,jm1,bi,bj) +
+     &                     fld(i  ,jp1,bi,bj)*mask(i  ,jp1,bi,bj))+
+     &              p0625*(fld(im1,jm1,bi,bj)*mask(im1,jm1,bi,bj) +
+     &                     fld(im1,jp1,bi,bj)*mask(im1,jp1,bi,bj) +
+     &                     fld(ip1,jm1,bi,bj)*mask(ip1,jm1,bi,bj) +
+     &                     fld(ip1,jp1,bi,bj)*mask(ip1,jp1,bi,bj)))
      &              / tempVar
            ELSE
              fld_tmp(i,j) = fld(i,j,bi,bj)

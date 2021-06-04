@@ -1,6 +1,55 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl & pkg/shelfice:
+  - generalize masking procedure for control parameters, fixes procedure for
+    ice-shelf controls ;
+  - add ability to control base 10 logarithm in generic control arrays ;
+  - add shiTransCoeffT, shiTransCoeffS, and shiCDrag as control variables ;
+  - add ability to compute shelfice freshwater and heat fluxes through ecco
+    package.
+o store directives (model/src, pkg/exf, ...):
+  - By adding many store directives for variables after they have been computed
+    the corresponding s/r load_fields_driver, oceanic_phys, solve_for_pressure
+    no longer need to be called in the AD-routine forward_step_ad.
+    A as a consequence the forward part of forward_step is not recomputed,
+    and there are far fewer store statements in the AD-code.
+  - Most of the new store directives and many of the old ones are collected in
+    two new files "check_lev1_dir_forcing.h" and "check_lev1_dir_ocephys.h" to
+    avoid clutter in forward_step.F
+  - More store directives in pkg/exf allow it to store the forcing fields
+    instead of the level0/1 (e.g. aqh instead of aqh0 and aqh1), thereby
+    reducing the number of stored exf-forcing variables by about two. This is
+    also necessary to avoid calling load_fields_driver from forward_step_ad.
+  - Additional small tweaks of store directives in forward_step.F have the
+    effect that the recomputations are kept to a minimum in all of the AD
+    verification experiments (and in verification_other/global_oce_[llc/cs32])
+    and calling potentially expensive forward routines are not called (e.g.
+    do_stagger_fields_exchange, which involves unnecessary exchanges).
+  - Remove storage of gchemTendency in all checkpoint levels.
+  - Results unaffected except if using real*4 storage (isbyte=4, e.g., in
+    offline_exf_seaice, small changes in AD-monitor).
+
+checkpoint67y (2021/05/05)
+o pkg/shelfice:
+  - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely
+    from one column or advance to cover new grid-cell ; add 4 levels TAF storage
+    of kTopC (to prevent major recomputations).
+  - Also prevent ice-shelf mass to become negative.
+o pkg/mom_common & gmredi:
+  - Adjust Smag and Leith code for use in Adjoint:
+    a) protect against derivative of SQRT(0) in mom_calc_visc.F and
+       gmredi_calc_qgleith.F ;
+    b) add GM-Redi QG Leith routines to ad_diff lists.
+o pkg/gmredi:
+  - fix/remove 2 TAF recomputations in GMREDI_WITH_STABLE_ADJOINT code.
+o pkg/generic_advdiff:
+  - improve "slope" calculation in DST2 Flux-Limiter advection scheme to avoid
+    potential over-flow arithmetic in division by small slope (issue #459),
+    similar to what has been done in gad_dst3fl_*.F routines.
+o pkg/diagnostics:
+  - use Integer*8 conversion in diagnostics_out.F to get time-record to write
+    in meta file (avoid integer overflow with large time & small diag-freq).
 o pkg/mom_common:
   - initialise again hdiv in mom_calc_hdiv.F (in case it got dropped by TAF in
     calling S/R).

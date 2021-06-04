@@ -45,10 +45,8 @@ C     === Global variables ===
 # endif
 #endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SHI_ALLOW_GAMMAFRICT
-#  include "tamc.h"
-#  include "tamc_keys.h"
-# endif /* SHI_ALLOW_GAMMAFRICT */
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -92,6 +90,7 @@ C     drKp1, recip_drLoc
       _RL uLoc(1:sNx+1,1:sNy+1)
       _RL vLoc(1:sNx+1,1:sNy+1)
       _RL velSq(1:sNx,1:sNy)
+      _RL tTMP, sTMP, uTMP, vTMP, vSqTmp
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux
 #ifdef ALLOW_ISOMIP_TD
@@ -126,6 +125,9 @@ C     drKp1, recip_drLoc
 #endif
 #if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
       _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -251,9 +253,10 @@ C     where this value is part of the protocol
 C     unfortunately, we need this CPP flag here, because otherwise
 C     none of these fields are defined
       ELSEIF ( useCTRL ) THEN
+        CALL CTRL_GET_MASK2D( xx_shifwflx_file, mask2D, myThid )
         CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
-     &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
+     &     mask2D, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &     wshifwflx,
@@ -261,6 +264,33 @@ C     none of these fields are defined
 #endif /* ECCO_CTRL_DEPRECATED and ALLOW_SHIFWFLX_CONTROL */
       ENDIF
 #endif /* ALLOW_CTRL */
+
+C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
+C     mass to change. Since current ice-shelf representation is missing
+C     a fractional ice-shelf cover representation, this turns into making
+C     or removing a "thin ice-shelf" grid-cell. Here we update "kTopC"
+C     as ice-shelf mass appears or vanishes in any surface grid-cell.
+      IF ( SHELFICEMassStepping ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+             IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &            shelficeMass(i,j,bi,bj).GT.zeroRL ) THEN
+               kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+             ELSE
+               kTopC(i,j,bi,bj) = 0
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kTopC        = comlev1, key=ikey_dynamics
+CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -278,6 +308,7 @@ C     none of these fields are defined
      &                    + act4*max1*max2*max3
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C--   make local copies of temperature, salinity and depth (pressure in deci-bar)
 C--   underneath the ice
         DO J = 1, sNy
@@ -346,6 +377,14 @@ C--   average over boundary layer width
           DO I = 1, sNx
            K   = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. K .LT. Nr ) THEN
+C           This local variable assignment/reassignment is simply to
+C           avoid TAF recomputations... Oh the games we play...
+            tTMP   = tLoc (I,J)
+            sTMP   = sLoc (I,J)
+            uTMP   = uLoc (I,J)
+            vTMP   = vLoc (I,J)
+            vSqTMP = velSq(I,J)
+
             Kp1 = MIN(Nr,K+1)
 C--   overlap into lower cell
             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
@@ -354,23 +393,29 @@ C--   lower cell may not be as thick as required
             drKp1 = MAX( drKp1, 0. _d 0 )
             recip_drLoc = 1. _d 0 /
      &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
-            tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            tTMP = ( tTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + theta(I,J,Kp1,bi,bj) *drKp1 )
      &           * recip_drLoc
-            sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            sTMP = ( sTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
-            uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            uTMP = ( uTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
      &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
      &           ) * recip_drLoc
-            vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            vTMP = ( vTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
      &           ) * recip_drLoc
-            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+            vSqTMP = uTMP*uTMP + vTMP*vTMP
+
+            tLoc (I,J) = tTMP
+            sLoc (I,J) = sTMP
+            uLoc (I,J) = uTMP
+            vLoc (I,J) = vTMP
+            velSq(I,J) = vSqTMP
            ENDIF
           ENDDO
          ENDDO
@@ -455,7 +500,7 @@ C--   to the surface
           DO I = 1, sNx
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1.D-6, velSq(I,J) )
+            ustarSq = shiCdragfld(I,J,bi,bj) * MAX( 1.D-6, velSq(I,J) )
             ustar   = SQRT(ustarSq)
 #ifdef ALLOW_DIAGNOSTICS
             uStarDiag(I,J,bi,bj) = ustar
@@ -711,10 +756,14 @@ C     Transfer coefficients
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
      &      0,1,0,1,1,myThid)
+
 C     Friction velocity
 #ifdef SHI_ALLOW_GAMMAFRICT
-       IF ( SHELFICEuseGammaFrict )
-     &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
+       IF ( SHELFICEuseGammaFrict ) THEN
+        CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(shiCDragFld,'SHICDrag',
+     &      0,1,0,1,1,myThid)
+       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 #ifdef ALLOW_SHELFICE_REMESHING
        CALL DIAGNOSTICS_FILL_RS( R_shelfIce, 'SHIRshel',
