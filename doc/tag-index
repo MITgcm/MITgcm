@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - adjust store directives in seaice_growth_adx.F:
+    *) add store directives to avoid calling seaice_solve4temp in AD-mode
+    *) adjust/remove/reorganise for good balance between storing and recomputing
+    *) fix a small bug (full 4D arrays were stored instead of 2D for each bi,bj)
+    *) local option "SEAICE_GROWTH_ADX_STORE_MORE" (not recommended)
+       reduces the recomputations but increases the memory requirements.
+  - update ref. AD output of experiment offline_exf_seaice (the only one using
+    SEAICE_GROWTH_ADX): no Grad-Check changes but differences in AD-Monitor.
 o pkg/ctrl & pkg/shelfice:
   - generalize masking procedure for control parameters, fixes procedure for
     ice-shelf controls ;
