@@ -1,6 +1,12 @@
 #include "THSICE_OPTIONS.h"
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
 
-      subroutine thsice_cost_test( mytime, myiter, mythid )
+      SUBROUTINE THSICE_COST_TEST( myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE thsice_cost_test
@@ -11,23 +17,23 @@ c       selected with data.thsice (THSICE_PARM02) variable thsice_cost_ice_flag
 c
 c     thsice_cost_ice_flag = 1
 c     - compute mean sea-ice volume
-c       costIceStart < mytime < costIceEnd
+c       costIceStart < myTime < costIceEnd
 c
 c     thsice_cost_ice_flag = 2
 c     - compute mean sea-ice area
-c       costIceStart < mytime < costIceEnd
+c       costIceStart < myTime < costIceEnd
 c
 c     thsice_cost_ice_flag = 3
 c     - heat content of top level plus latent heat of sea-ice
-c       costIceStart < mytime < costIceEnd
+c       costIceStart < myTime < costIceEnd
 c
 c     thsice_cost_ice_flag = 4
 c     - heat content of top level
-c       costIceStart < mytime < costIceEnd
+c       costIceStart < myTime < costIceEnd
 c
 c     thsice_cost_ice_flag = 5
 c     - heat content of top level plus sea-ice plus latent heat of snow
-c       costIceStart < mytime < costIceEnd
+c       costIceStart < myTime < costIceEnd
 c
 c     thsice_cost_ice_flag = 6
 c     - quadratic cost function measuring difference between pkg/thsice
@@ -38,7 +44,7 @@ c     ==================================================================
 c     SUBROUTINE thsice_cost_test
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 #ifdef ALLOW_THSICE_COST_TEST
@@ -49,75 +55,68 @@ c     == global variables ==
 #include "THSICE_SIZE.h"
 #include "THSICE_COST.h"
 #include "THSICE_VARS.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "cost.h"
 #endif /* ALLOW_THSICE_COST_TEST */
 
 c     == routine arguments ==
-
-      _RL     mytime
-      integer myiter
-      integer mythid
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_THSICE_COST_TEST
+c     == external functions ==
+c     INTEGER  ILNBLNK
+c     EXTERNAL ILNBLNK
 
 c     == local variables ==
-
-c     msgBuf      - Informational/error message buffer
+c     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      integer bi,bj,i,j,kSrf
+      INTEGER bi, bj, i, j
       _RL tempVar
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
-      if ( myTime .GT. (endTime - lastinterval) ) then
+      IF ( myTime .GT. (endTime - lastinterval) ) THEN
          tempVar = 1. _d 0/
-     &             ( ( 1. _d 0 + min(endTime-startTime,lastinterval) )
+     &             ( ( 1. _d 0 + MIN(endTime-startTime,lastinterval) )
      &             / deltaTClock )
 
-         kSrf = 1
-
-         if ( thsice_cost_ice_flag .eq. 1 ) then
+         IF ( thsice_cost_ice_flag .EQ. 1 ) THEN
 c     sea-ice volume
-            do bj=myByLo(myThid),myByHi(myThid)
-               do bi=myBxLo(myThid),myBxHi(myThid)
-                  do j = 1,sny
-                     do i =  1,snx
+            DO bj=myByLo(myThid),myByHi(myThid)
+               DO bi=myBxLo(myThid),myBxHi(myThid)
+                  DO j = 1,sNy
+                     DO i =  1,sNx
                         objf_thsice(bi,bj) = objf_thsice(bi,bj) +
      &                       tempVar*rA(i,j,bi,bj)*iceHeight(i,j,bi,bj)
-                     enddo
-                  enddo
-               enddo
-            enddo
+                     ENDDO
+                  ENDDO
+               ENDDO
+            ENDDO
 
-         elseif ( thsice_cost_ice_flag .eq. 2 ) then
+         ELSEIF ( thsice_cost_ice_flag .EQ. 2 ) THEN
 c     sea-ice area
-            do bj=myByLo(myThid),myByHi(myThid)
-               do bi=myBxLo(myThid),myBxHi(myThid)
-                  do j = 1,sny
-                     do i =  1,snx
+            DO bj=myByLo(myThid),myByHi(myThid)
+               DO bi=myBxLo(myThid),myBxHi(myThid)
+                  DO j = 1,sNy
+                     DO i =  1,sNx
                         objf_thsice(bi,bj) = objf_thsice(bi,bj) +
      &                       tempVar*rA(i,j,bi,bj)*iceMask(i,j,bi,bj)
-                     enddo
-                  enddo
-               enddo
-            enddo
+                     ENDDO
+                  ENDDO
+               ENDDO
+            ENDDO
 
-         else
+         ELSE
             WRITE(msgBuf,'(A)')
      &           'THSICE_COST_TEST: invalid thsice_cost_ice_flag'
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R THSICE_COST_TEST'
-         endif
-      endif
+         ENDIF
+      ENDIF
 
 #endif /* ALLOW_THSICE_COST_TEST */
 
-      return
-      end
+      RETURN
+      END

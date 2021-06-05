@@ -251,7 +251,7 @@ c              - thermal expansion coefficient without 1/rho factor
 c                d(rho{k,k})/d(T(k))                           (kg/m^3/C)
 c      ssbeta (stored in vddiff(:,:,:,2) to conserve stack memory)
 c              - salt expansion coefficient without 1/rho factor
-c                d(rho{k,k})/d(S(k))                         (kg/m^3/PSU)
+c                d(rho{k,k})/d(S(k))                    ((kg/m^3)/(g/kg))
 c------------------------------------------------------------------------
 
       CALL STATEKPP(

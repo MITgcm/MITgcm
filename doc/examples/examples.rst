@@ -410,8 +410,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - using the simple “free-drift” assumption for sea ice (:filelink:`input.fd <verification/lab_sea/input.fd>`)
 
-   - using :ref:`EVP dynamics <para_phys_pkg_seaice_EVPdynamics>` (instead of :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`)
-     and Hibler and Bryan (1987) :cite:`hibler87` sea ice ocean stress (:filelink:`input.hb87 <verification/lab_sea/input.hb87>`)
+   - using :ref:`aEVP dynamics <para_phys_pkg_seaice_EVPstar>` (instead of :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`)
+     and Hibler and Bryan (1987) :cite:`hibler:87` sea ice ocean stress (:filelink:`input.hb87 <verification/lab_sea/input.hb87>`)
 
    - using package :filelink:`salt_plume <pkg/salt_plume>` (:filelink:`input.salt_plume <verification/lab_sea/input.salt_plume>`).
 

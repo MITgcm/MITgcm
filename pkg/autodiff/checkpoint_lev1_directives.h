@@ -135,10 +135,6 @@ CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
 # include "offline_ad_check_lev1_dir.h"
 #endif /* ALLOW_OFFLINE */
 
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev1_dir.h"
-#endif
-
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev1_dir.h"
 #endif

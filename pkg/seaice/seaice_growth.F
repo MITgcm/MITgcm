@@ -2708,7 +2708,7 @@ C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
       STOP 'SEAICE_GROWTH not compiled without EXF and ALLOW_ATM_TEMP'
 #endif /* ALLOW_EXF and ALLOW_ATM_TEMP */
-#endif /* SEAICE_USE_GROWTH_ADX */
+#endif /* ndef SEAICE_USE_GROWTH_ADX */
 
       RETURN
       END

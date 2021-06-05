@@ -1403,21 +1403,41 @@ The backslash removes the space between the unit and the exponent. Similarly, fo
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
 
-- Todo: determine how to break up sections into smaller files
+Line length: as recommended in the
+`sphinx style guide <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#line-length>`_,
+lines of raw rst text should be kept to fewer than 80 characters (this
+restriction does not apply to tables, URLs, etc. where a line break might
+cause difficulty).
 
-- discuss | lines
+- Todo: determine how to break up sections into smaller files
 
 Building the manual
 -------------------
 
 Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
-To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
+To do this you will need a working python installation with the following packages installed:
 
  - sphinx
  - sphinxcontrib-bibtex
  - sphinxcontrib-programoutput
  - sphinx_rtd_theme
  - numpy
+
+There are many tools available to create a python environment with these packages on your local machine (e.g., using ``pip install``)
+and if you are comfortable doing so on your own, go ahead. Note that as of this writing (December 2020), sphinxcontrib-bibtex versions
+2.0.0 and higher are not supported (we suggest using version 1.0.0).
+
+However, if you are new to python, or less experienced, we suggest the following steps:
+
+#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
+   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
+   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
+#. Install MITgcm doc requirements:
+
+::
+
+   cd MITgcm
+   conda install --file doc/requirements.txt
 
 Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
 

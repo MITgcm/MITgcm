@@ -1,4 +1,7 @@
 #include "GGL90_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GGL90_CALC
@@ -35,7 +38,9 @@ C !USES: ============================================================
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "GGL90.h"
-
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
 C     bi, bj :: Current tile indices
@@ -124,6 +129,11 @@ C     gTKE     :: right hand side of diffusion equation
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     INTEGER act1, act2, act3, act4
+C     INTEGER max1, max2, max3
+      INTEGER ikeyLoc
+#endif
 CEOP
 
       PARAMETER( iMin = 2-OLx, iMax = sNx+OLx-1 )
@@ -133,6 +143,19 @@ CEOP
       p8  = 0.125  _d 0
       p16 = 0.0625 _d 0
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ikeyLoc = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     set separate time step (should be deltaTtracer)
       deltaTggl90 = dTtracerLev(1)
@@ -183,6 +206,9 @@ C     Initialize local fields
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+#endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         KappaM(i,j)        = 0. _d 0
@@ -190,7 +216,15 @@ C     Initialize local fields
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
         rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(i,j,1) = GGL90mixingLengthMin
-        SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+        IF (maskC(i,j,1,bi,bj).GT.0) THEN
+#endif
+         SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+        ELSE
+         SQRTTKE(i,j,1) = 0. _d 0
+        ENDIF
+#endif
 #ifdef ALLOW_GGL90_HORIZDIFF
         xA(i,j)  = 0. _d 0
         yA(i,j)  = 0. _d 0
@@ -209,7 +243,15 @@ C     Initialize local fields
       DO k = 2, Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+         IF (maskC(i,j,k,bi,bj).GT.0) THEN
+#endif
+          SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+         ELSE
+          SQRTTKE(i,j,k)=0. _d 0
+         ENDIF
+#endif
 
 C     buoyancy frequency
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
@@ -236,6 +278,14 @@ C--   Impose upper and lower bound for mixing length
 C--   Impose minimum mixing length to avoid division by zero
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
+#ifdef ALLOW_AUTODIFF
+       k=1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
+        ENDDO
+       ENDDO
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -251,6 +301,14 @@ C--   Impose minimum mixing length to avoid division by zero
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
@@ -258,6 +316,14 @@ C--   Impose minimum mixing length to avoid division by zero
 
       ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
 
+#ifdef ALLOW_AUTODIFF
+       k=1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
+        ENDDO
+       ENDDO
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -274,6 +340,14 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
@@ -281,6 +355,14 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
+#ifdef ALLOW_AUTODIFF
+       k=1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
+        ENDDO
+       ENDDO
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -309,6 +391,14 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
@@ -316,6 +406,15 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
 
+#ifdef ALLOW_AUTODIFF
+       k=1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
+         mxLength_Dn(i,j,k)       = GGL90mixingLengthMin
+        ENDDO
+       ENDDO
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -344,6 +443,14 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                  mxLength_Dn(i,j,k))
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           tmpmlx = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k) )
           tmpmlx = MAX( tmpmlx, GGL90mixingLengthMin)
           rMixingLength(i,j,k) = 1. _d 0 / tmpmlx
@@ -654,6 +761,9 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
        ENDDO
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+#endif
 C     solve tri-diagonal system
       errCode = -1
       CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
@@ -662,6 +772,9 @@ C     solve tri-diagonal system
      O                        errCode,
      I                        bi, bj, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+#endif
       DO k=1,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
