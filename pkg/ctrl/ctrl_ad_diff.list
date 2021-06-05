@@ -3,6 +3,7 @@ ctrl_cost_gen.f
 ctrl_depth_ini.f
 ctrl_get_gen.f
 ctrl_get_gen_rec.f
+ctrl_get_mask.f
 ctrl_init_rec.f
 ctrl_init_variables.f
 ctrl_map_ini.f
@@ -20,3 +21,4 @@ ctrl_getobcsw.f
 ctrl_init_obcs_variables.f
 ctrl_getrec.f
 ctrl_swapffields.f
+ctrl_toolbox.f

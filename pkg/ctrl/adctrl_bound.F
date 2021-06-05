@@ -101,7 +101,7 @@ C     !ROUTINE: ADCTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_2D(
      U                fieldCur, adjFieldCur,
-     I                maskFld3d, boundsVec, myThid )
+     I                mask2D, boundsVec, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -118,9 +118,9 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
-      _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
-      _RS maskFld3d  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fieldCur   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS mask2D     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
@@ -152,7 +152,7 @@ C  otherwise    => error
 
            DO j = 1,sNy
             DO i = 1,sNx
-              IF (maskFld3d(i,j,1,bi,bj).NE.0.) THEN
+              IF (mask2D(i,j,bi,bj).NE.0.) THEN
                 xCur=fieldCur(i,j,bi,bj)
                 adxCur=adjFieldCur(i,j,bi,bj)
                 IF ( (xCur.GT.x2).AND.(adxCur.LT.0.) ) THEN

@@ -152,7 +152,6 @@ cHFLUXM_CONTROL
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_genarr2d_bounds, xx_genarr3d_bounds, xx_gentim2d_bounds,
-     &  xx_genarr2d_grid, xx_genarr3d_grid, xx_gentim2d_grid,
      &  genarr2dPrecond, genarr3dPrecond, gentim2dPrecond,
      &  mult_gentim2d,mult_genarr2d,mult_genarr3d,
      &  xx_genarr2d_preproc, xx_genarr2d_preproc_i,
@@ -240,7 +239,6 @@ c
          write(xx_genarr2d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr2dPrecond(iarr)  = 1. _d 0
          mult_genarr2d(iarr)    = 1. _d 0
-         xx_genarr2d_grid(iarr) = 'c'
          do jarr = 1, 5
            xx_genarr2d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -262,7 +260,6 @@ c
          write(xx_genarr3d_weight(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
          genarr3dPrecond(iarr)  = 1. _d 0
          mult_genarr3d(iarr)    = 1. _d 0
-         xx_genarr3d_grid(iarr) = 'c'
          do jarr = 1, 5
            xx_genarr3d_bounds(jarr,iarr) = 0. _d 0
          enddo
@@ -285,7 +282,6 @@ c
          xx_gentim2d_startdate1(iarr) = 0
          xx_gentim2d_startdate2(iarr) = 0
          xx_gentim2d_period(iarr)     = 0. _d 0
-         xx_gentim2d_grid(iarr)       = 'c'
          xx_gentim2d_cumsum(iarr)     = .FALSE.
          xx_gentim2d_glosum(iarr)     = .FALSE.
          do jarr=1,maxCtrlProc
