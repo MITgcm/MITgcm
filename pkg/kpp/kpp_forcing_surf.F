@@ -173,15 +173,15 @@ C initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         ustar(i,j) = p0
-        bo   (I,J) = p0
-        bosol(I,J) = p0
+        bo   (i,j) = p0
+        bosol(i,j) = p0
        ENDDO
       ENDDO
 #ifdef ALLOW_SALT_PLUME
       DO k = 1, Nrp1
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
-         boplume(I,J,k) = p0
+         boplume(i,j,k) = p0
         ENDDO
        ENDDO
       ENDDO
@@ -222,22 +222,22 @@ C     seaice_obcs, so maybe later
 CML      DO j = jmin, jmax
 CML       DO i = imin, imax
 CMLC     rhoSurf = dRho + rhoConst > 0 always, so we are safe here
-CML        work3(i,j) = 1. _d 0 / rhoSurf(I,J)
+CML        work3(i,j) = 1. _d 0 / rhoSurf(i,j)
 CML       ENDDO
 CML      ENDDO
 
       DO j = jmin, jmax
        DO i = imin, imax
-        bo(I,J) = - gravity *
-     &       ( TTALPHA(I,J,1) * (surfForcT(i,j,bi,bj)+
+        bo(i,j) = - gravity *
+     &       ( TTALPHA(i,j,1) * (surfForcT(i,j,bi,bj)+
      &       surfForcTice(i,j,bi,bj)) +
-     &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
-     &       / rhoSurf(I,J)
-CML  &       * work3(I,J)
-        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
+     &       SSBETA(i,j,1) * surfForcS(i,j,bi,bj) )
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
+        bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
-     &       / rhoSurf(I,J)
-CML  &       * work3(I,J)
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
        ENDDO
       ENDDO
 
@@ -250,12 +250,12 @@ Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
         kp1 = k+1
         DO j = jmin, jmax
          DO i = imin, imax
-          temparray(I,J) = - gravity *
-     &            ( SSBETA(I,J,k) * SPforcS(i,j,k) +
-     &              TTALPHA(I,J,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
-     &              * recip_rhoConst / rhoSurf(I,J)
-CML  &              * recip_rhoConst * work3(I,J)
-          boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
+          temparray(i,j) = - gravity *
+     &            ( SSBETA(i,j,k) * SPforcS(i,j,k) +
+     &              TTALPHA(i,j,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
+     &              * recip_rhoConst / rhoSurf(i,j)
+CML  &              * recip_rhoConst * work3(i,j)
+          boplume(i,j,kp1) = boplume(i,j,k)+temparray(i,j)
          ENDDO
         ENDDO
        ENDDO
@@ -265,12 +265,12 @@ CML  &              * recip_rhoConst * work3(I,J)
 C     initialization has been done already and does not have to be
 C     repeated here (and definitely not inside the i/j loops)
 CML         DO k = 2, Nrp1
-CML          boplume(I,J,k) = 0. _d 0
+CML          boplume(i,j,k) = 0. _d 0
 CML         ENDDO
-         boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+         boplume(i,j,1) = - gravity * SSBETA(i,j,1)
      &              * SPforcS(i,j,1)
-     &              * recip_rhoConst / rhoSurf(I,J)
-CML  &              * recip_rhoConst * work3(I,J)
+     &              * recip_rhoConst / rhoSurf(i,j)
+CML  &              * recip_rhoConst * work3(i,j)
         ENDDO
        ENDDO
 #endif /* SALT_PLUME_VOLUME */
@@ -332,7 +332,7 @@ C     dB/dz exceeds 5.2e-5 s^-2.
         kTmp = nzmax(i,j,bi,bj)
         DO k = Nr, 1, -1
          IF ( k .LT. nzmax(i,j,bi,bj) .AND.
-     &        maskC(I,J,k,bi,bj) .GT. 0. .AND.
+     &        maskC(i,j,k,bi,bj) .GT. 0. .AND.
      &        dbloc(i,j,k) * recip_drC(k+1) .GT. dB_dz )
      &        kTmp = k
         ENDDO
