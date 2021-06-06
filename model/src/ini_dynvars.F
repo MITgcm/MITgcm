@@ -100,8 +100,8 @@ C-      3D arrays
         ENDDO
 
 C-      2D arrays
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           etaN(i,j,bi,bj) = 0. _d 0
           etaH(i,j,bi,bj) = 0. _d 0
           phiHydLow(i,j,bi,bj) = 0. _d 0
