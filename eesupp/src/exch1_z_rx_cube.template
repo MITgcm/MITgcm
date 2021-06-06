@@ -13,33 +13,22 @@ C     !INTERFACE:
      I                 cornerMode, myThid )
 
 C     !DESCRIPTION:
-C     *==========================================================*
+C     *==============================================================*
 C     | SUBROUTINE EXCH1_Z_RX_CUBE
 C     | o Forward-mode edge exchanges for RX array on CS config:
 C     |   Fill overlap region through tile exchanges,
 C     |   according to CS topology,
 C     |   for a Zeta-located, scalar field RX arrays.
-C     *==========================================================*
+C     *==============================================================*
 C     | Controlling routine for exchange of XY edges of an array
-C     | distributed in X and Y. The routine interfaces to
-C     | communication routines that can use messages passing
-C     | exchanges, put type exchanges or get type exchanges.
-C     |  This allows anything from MPI to raw memory channel to
-C     | memmap segments to be used as a inter-process and/or
-C     | inter-thread communiation and synchronisation
-C     | mechanism.
-C     | Notes --
-C     | 1. Some low-level mechanisms such as raw memory-channel
-C     | or SGI/CRAY shmem put do not have direct Fortran bindings
-C     | and are invoked through C stub routines.
-C     | 2. Although this routine is fairly general but it does
-C     | require nSx and nSy are the same for all innvocations.
-C     | There are many common data structures ( myByLo,
-C     | westCommunicationMode, mpiIdW etc... ) tied in with
-C     | (nSx,nSy). To support arbitray nSx and nSy would require
-C     | general forms of these.
-C     | 3. zeta coord exchange operation for cube sphere grid
-C     *==========================================================*
+C     | distributed in X and Y.
+C     | This is a preliminary (exch1), simpler version with few
+C     | limitations (no MPI, 1 tile per face, regular 6 squared faces,
+C     | multi-threads only on shared arrays, i.e., in commom block)
+C     | that are fixed in generalised pkg/exch2 implementation.
+C     | Notes:
+C     |  zeta coord exchange operation for cube sphere grid
+C     *==============================================================*
 
 C     !USES:
       IMPLICIT NONE
