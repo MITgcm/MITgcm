@@ -200,7 +200,7 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
-      INTEGER i, j, k, kp1, km1, im1, ip1, jm1, jp1
+      INTEGER i, j, k, kSurf, kp1, km1, im1, ip1, jm1, jp1
       INTEGER ikppkey
 CEOP
 
@@ -219,6 +219,8 @@ CEOP
           ikppkey = 0
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+c     surface index
+      kSurf = 1
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,deltaTClock)
      1     .OR. myTime .EQ. startTime ) THEN
@@ -327,7 +329,7 @@ c     of the cell; therefore the proper masking is maskC(k)*maskC(k+1)
          ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kp1,bi,bj)
          Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
-     &        * maskC(i,j,km1,bi,bj)
+     &        * maskC(i,j,kSurf,bi,bj)
          IF(k.EQ.nzmax(i,j,bi,bj)) THEN
           dbloc(i,j,k) = p0
           ghat(i,j,k)  = p0
@@ -579,13 +581,12 @@ c-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
-      k = 1
       DO j = jmin, jmax
        DO i = imin, imax
 #ifdef ALLOW_SHELFICE
         IF ( useShelfIce ) k = kTopC(i,j,bi,bj)
 #endif /* ALLOW_SHELFICE */
-        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
+        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,kSurf,bi,bj)
        ENDDO
       ENDDO
 
