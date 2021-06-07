@@ -32,8 +32,10 @@ C     Local variables
 C     i,j,k,bi,bj  :: loop counter
       INTEGER bi,bj
 #ifdef NONLIN_FRSURF
-      INTEGER i, j
-      INTEGER k, ks
+      INTEGER i, j, ks
+# ifdef ALLOW_AUTODIFF
+      INTEGER k
+# endif
       _RL hFacInfMOM, Rmin_tmp
 #else /* NONLIN_FRSURF */
 # ifdef EXACT_CONSERV

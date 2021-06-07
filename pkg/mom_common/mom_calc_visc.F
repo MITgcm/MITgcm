@@ -142,16 +142,14 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_LEITH_QG
       _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sqargQG
 #endif
       _RL viscAh_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL calcLeith, calcSmag, calcLeithQG
       _RL sqargAh, sqargA4, sqargAhD, sqargA4D, sqargSmag
-#ifdef ALLOW_LEITH_QG
-      _RL sqargQG
-#endif
+      LOGICAL calcLeith, calcSmag, calcLeithQG
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
