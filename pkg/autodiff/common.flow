@@ -102,3 +102,6 @@ c$taf COMMON grid_r_s FTLNAME = g_grid_r_s
 
 c$taf COMMON grid_r_w  ADNAME = adgrid_r_w
 c$taf COMMON grid_r_w FTLNAME = g_grid_r_w
+
+c$taf COMMON shelfice_fields_rl  ADNAME = adshelfice_fields_rl
+c$taf COMMON shelfice_fields_rl FTLNAME = g_shelfice_fields_rl

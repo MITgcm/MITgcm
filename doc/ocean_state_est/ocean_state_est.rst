@@ -282,8 +282,8 @@ YC.
            (:numref:`costgen`). An extension starting with ‘\_’ can be
            appended at the end of the variable name to distinguish between separate
            cost function terms. Note: the ‘m_eta’ formula depends on the
-           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile time options
-           and ‘useRealFreshWaterFlux’ run time parameter.
+           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile-time options
+           and ‘useRealFreshWaterFlux’ run-time parameter.
   :name: gencost_ecco_barfile
 
   +-----------------------+-----------------------+-----------------------+
@@ -434,7 +434,7 @@ masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
 .. table:: Implemented ``gencost_barfile`` options (as of checkpoint
-           65z) that can be used via ``cost_gencost_boxmean.F``
+           67x) that can be used via ``cost_gencost_boxmean.F``
            (:numref:`intgen`).
   :name: genint_ecco_barfile
 
@@ -446,6 +446,11 @@ horizontal transport (or overturn) will be computed accordingly.
   | ``m_boxmean_salt``  | mean of salt over box            | specify box      |
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_eta``   | mean of SSH over box             | specify box      |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shifwf``| total shelfice freshwater flux   | specify box      |
+  |                     | over box                         |                  |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
   +---------------------+----------------------------------+------------------+
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
@@ -722,7 +727,8 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       |                       | )                              |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_c`` | character(*)          | Preprocessor                   |
-  |                       |                       | character arguments            |
+  |                       |                       | character arguments (see       |
+  |                       |                       | :numref:`genarr_preproc_c`)    |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_i`` | integer(*)            | Preprocessor integer           |
   |                       |                       | arguments                      |
@@ -758,7 +764,7 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       |                       | still 2D)                      |
   +-----------------------+-----------------------+--------------------------------+
 
-.. table:: Generic control prefixes implemented as of checkpoint 65z.
+.. table:: Generic control prefixes implemented as of checkpoint 67x.
   :name: gencost_ctrl_files
 
   +-----------------------+-----------------------+-----------------------+
@@ -773,6 +779,20 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       | ``xx_bottomdrag``     | bottom drag           |
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_geothermal``     | geothermal heat flux  |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoefft``      | shelfice thermal      |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoeffs``      | shelfice salinity     |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicdrag``       | shelfice drag         |
+  |                       |                       | coefficient (see      |
+  |                       |                       | :numref:`shi_ctrl`)   |
   +-----------------------+-----------------------+-----------------------+
   | 3D, time-invariant    | ``genarr3d``          |                       |
   | controls              |                       |                       |
@@ -827,9 +847,11 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_sflux``          | net salt (EmPmR) flux |
   +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shifwflx``       | shelfice melt rate    |
+  +-----------------------+-----------------------+-----------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
-           65z. Notes: :math:`^a`: If ``noscaling`` is false, the control
+           67x. Notes: :math:`^a`: If ``noscaling`` is false, the control
            adjustment is scaled by one on the square root of the weight before
            being added to the base control variable; if ``noscaling`` is true, the
            control is multiplied by the weight in the cost function itself.
@@ -856,8 +878,8 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   | ``variaweight``       | Use time-varying      | —                     |
   |                       | weight                |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``noscaling``\ :math: | Do not scale with     | —                     |
-  | `^{a}`                | ``xx_gen*_weight``    |                       |
+  | ``noscaling``         | Do not scale with     | —                     |
+  | :math:`^{a}`          | ``xx_gen*_weight``    |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``documul``           | Sets                  | —                     |
   |                       | ``xx_gentim2d_cumsum``|                       |
@@ -866,6 +888,21 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   | ``doglomean``         | Sets                  | —                     |
   |                       | ``xx_gentim2d_glosum``|                       |
   |                       |                       |                       |
+  +-----------------------+-----------------------+-----------------------+
+
+
+.. table:: ``xx_gen????d_preproc_c`` options implemented as of checkpoint
+           67x.
+  :name: genarr_preproc_c
+
+  +-----------------------+-----------------------+-----------------------+
+  | name                  | description           | arguments             |
+  +=======================+=======================+=======================+
+  |``log10ctrl``          | Control adjustments to| See                   |
+  |                       | base 10 logarithm of  | :numref:`log_ctrl`    |
+  |                       | 2D or 3D array        |                       |
+  |                       | (not available for    |                       |
+  |                       | ``xx_gentim2d``).     |                       |
   +-----------------------+-----------------------+-----------------------+
 
 The control problem is non-dimensional by default, as reflected in the
@@ -910,6 +947,71 @@ variable, as well as the net heat and salt (EmPmR) fluxes.
 The user must be mindful of control parameter combinations that make sense
 according to their specific setup, e.g., with the :ref:`EXF
 package <ssub_phys_pkg_exf_config>`.
+
+.. _shi_ctrl:
+
+Shelfice Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The available iceshelf control parameters depend on the form of transfer
+coefficient used in the simulation.
+
+The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available when the
+velocity **independent** form of transfer coefficients is used, by setting
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT`
+in :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>` at
+compile time (see :numref:`tab_phys_pkg_shelfice_compileparms`) and
+:varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`).  These parameters provide
+adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.  If only one
+of either is used, the value of the other is set based on the control
+adjustments used together with :varlink:`SHELFICEsaltToHeatRatio`, which can be
+set in ``data.shelfice``.  See :ref:`tab_phys_pkg_shelfice_runtimeparms` for
+the default.
+
+The adjustment ``xx_shicdrag`` is available in the velocity **dependent** form
+of the ice-ocean transfer coefficients, which is specified by ``#define``
+:varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict`
+``=.TRUE.`` at compile time and run time respectively.  This parameter provides
+adjustments to the drag coefficient at the ice ocean boundary, but by default
+only adjusts the drag coefficient used to compute the thermal and freshwater
+fluxes, neglecting the momentum contributions.  To allow the contribution
+directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
+in ``data.ctrl``.
+
+.. _log_ctrl:
+
+Logarithmic Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As indicated in :numref:`genarr_preproc_c`, the base-10 logarithm of a
+control field can be adjusted by specifying the character option
+``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2`` and ``iarr``
+as appropriate, and ``*d`` denoting that ``2d`` or ``3d`` are available.
+As a concrete example, if the control parameter is updating ``fld2d``,
+then the field will be set as follows:
+
+.. code-block:: fortran
+
+	fld2d(i,j,bi,bj) = 10**( log10InitVal + xx_genarr2d(i,j,bi,bj,iarr) )
+
+where ``log10InitVal`` is a scalar with a default value of 0, but can be changed
+by setting ``gencost_preproc_r(k2,iarr)``. This is useful in the case where
+``doInitXX=.TRUE.``.
+Concretely, if we had an initial guess for ``fld2d = 10^-4`` then one could set
+the following in ``data.ctrl``:
+
+::
+
+	xx_genarr2d_file(1) = 'xx_fld2d'
+	xx_genarr2d_weight(1) = 'nonzero_weights.data'
+	xx_genarr2d_preproc_c(1,1) = 'log10ctrl'
+	xx_genarr2d_preproc_r(1,1) = -4. ,
+
+Note that the ``log10ctrl`` option can only be used when a weight file
+is provided, and finally that this log-option cannot be used with
+``xx_gen*_preproc(k2,iarr) = 'noscaling',``.
+
 
 .. _sec:pkg:smooth:
 

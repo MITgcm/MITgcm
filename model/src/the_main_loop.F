@@ -282,11 +282,17 @@ CADJ  INIT tapelev3 = USER
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
-CADJ STORE hFacC = tapelev_init, key = 1
+CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+# endif
+# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
+CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
+CADJ STORE shiTransCoeffT         = tapelev_init, key=1
+CADJ STORE shiTransCoeffS         = tapelev_init, key=1
 # endif
 #endif
 
@@ -480,7 +486,7 @@ CADJ &       (sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy*Nr*nthreads_chkpt
 #   endif /* AUTODIFF_DISABLE_LEITH */
 #   endif /* ALLOW_MOM_COMMON */
 c--
-#   if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
+#   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
@@ -526,8 +532,10 @@ CADJ INIT comlev1_thsice_3 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
+#   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_thsice_5 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+#   endif
 CADJ INIT comlev1_thsice_s4t = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxtsf*nthreads_chkpt
 #   endif /* ALLOW_THSICE */

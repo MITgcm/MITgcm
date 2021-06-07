@@ -67,6 +67,15 @@
   frequency(5) = 1555200000.,
  averagingFreq(5) = 2592000.,
    repeatCycle(5) = 12,
+
+#-- just to test small frequency in long simulations:
+  fields(1:1,6) =  'ETANSQ  ',
+#  fileName(6) = 'check_Diag_aver',
+  frequency(6) = 1.,
+
+  fields(1:1,7) =  'RSURF   ',
+#  fileName(7) = 'check_Diag_snap',
+  frequency(7) = -1.,
  &
 
 #--------------------
@@ -107,5 +116,13 @@
  stat_region(1:3,5)  = 1, 3, 0,
   stat_fName(5) = 'thSIceStDiag',
    stat_freq(5) = 864000.,
+
+#-- just to test small frequency in long simulations:
+ stat_fields(1:1,3)  = 'ETANSQ  ',
+# stat_fName(3) = 'check_StD_aver',
+   stat_freq(3) = 1.,
+ stat_fields(1:1,4)  = 'RSURF   ',
+# stat_fName(4) = 'check_StD_snap',
+   stat_freq(4) = -1.,
  &
 

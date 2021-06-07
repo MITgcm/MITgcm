@@ -87,7 +87,7 @@ C---  using CubedSphereExchange:
      &       exch2_isSedge(myTile) .EQ. 1 ) THEN
          DO k=1,myNz
 C         Uphi(sNx+1,    0,k,bi,bj)= vPhi(sNx+1,    1,k,bi,bj)
-          DO j=1-olx,0
+          DO j=1-OLx,0
            Uphi(sNx+1,    j,k,bi,bj)= vPhi(sNx+(1-j),    1,k,bi,bj)
           ENDDO
          ENDDO
@@ -97,7 +97,7 @@ C         Uphi(sNx+1,    0,k,bi,bj)= vPhi(sNx+1,    1,k,bi,bj)
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO k=1,myNz
 C          Uphi(sNx+1,sNy+1,k,bi,bj)=-vPhi(sNx+1,sNy+1,k,bi,bj)
-           DO j=1,olx
+           DO j=1,OLx
             Uphi(sNx+1,sNy+j,k,bi,bj)=-vPhi(sNx+j,sNy+1,k,bi,bj)
            ENDDO
           ENDDO
@@ -107,7 +107,7 @@ C          Uphi(sNx+1,sNy+1,k,bi,bj)=-vPhi(sNx+1,sNy+1,k,bi,bj)
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
           DO k=1,myNz
 C          Uphi(sNx+1,sNy+1,k,bi,bj)= vPhi(sNx+1,sNy+1,k,bi,bj)
-           DO j=1,olx
+           DO j=1,OLx
             Uphi(sNx+1,sNy+j,k,bi,bj)= vPhi(sNx+j,sNy+1,k,bi,bj)
            ENDDO
           ENDDO
@@ -135,8 +135,10 @@ C        Zero SW corner points
            ENDDO
           ENDDO
 #endif
+          IF ( OLx.GE.2 .AND. OLy.GE.2 ) THEN
             uPhi(0,0,k,bi,bj)=vPhi(1,0,k,bi,bj)
             vPhi(0,0,k,bi,bj)=uPhi(0,1,k,bi,bj)
+          ENDIF
          ENDDO
         ENDIF
 
@@ -156,12 +158,14 @@ C        Zero NW corner points
            ENDDO
           ENDDO
 #endif
-          IF ( withSigns ) THEN
+          IF ( OLx.GE.2 .AND. OLy.GE.2 ) THEN
+           IF ( withSigns ) THEN
             uPhi(0,sNy+1,k,bi,bj)=-vPhi(1,sNy+2,k,bi,bj)
             vPhi(0,sNy+2,k,bi,bj)=-uPhi(0,sNy,k,bi,bj)
-          ELSE
+           ELSE
             uPhi(0,sNy+1,k,bi,bj)= vPhi(1,sNy+2,k,bi,bj)
             vPhi(0,sNy+2,k,bi,bj)= uPhi(0,sNy,k,bi,bj)
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -182,12 +186,14 @@ C        Zero SE corner points
            ENDDO
           ENDDO
 #endif
-          IF ( withSigns ) THEN
+          IF ( OLx.GE.2 .AND. OLy.GE.2 ) THEN
+           IF ( withSigns ) THEN
             uPhi(sNx+2,0,k,bi,bj)=-vPhi(sNx,0,k,bi,bj)
             vPhi(sNx+1,0,k,bi,bj)=-uPhi(sNx+2,1,k,bi,bj)
-          ELSE
+           ELSE
             uPhi(sNx+2,0,k,bi,bj)= vPhi(sNx,0,k,bi,bj)
             vPhi(sNx+1,0,k,bi,bj)= uPhi(sNx+2,1,k,bi,bj)
+           ENDIF
           ENDIF
          ENDDO
         ENDIF
@@ -208,8 +214,10 @@ C        Zero NE corner points
            ENDDO
           ENDDO
 #endif
+          IF ( OLx.GE.2 .AND. OLy.GE.2 ) THEN
             uPhi(sNx+2,sNy+1,k,bi,bj)=vPhi(sNx,sNy+2,k,bi,bj)
             vPhi(sNx+1,sNy+2,k,bi,bj)=uPhi(sNx+2,sNy,k,bi,bj)
+          ENDIF
          ENDDO
         ENDIF
 

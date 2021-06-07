@@ -301,20 +301,6 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
       ENDDO
 #endif /* ALLOW_AUTODIFF */
 
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG*/
-
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL ) THEN
 C--   Freeze water in the ocean interior and let it rise to the surface
@@ -328,7 +314,9 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_SEAICE
 CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowHeight, Tsrf  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE Qice1, Qice2      = comlev1, key=ikey_dynamics, kind=isbyte
@@ -597,6 +585,9 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
+#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
+#endif
           ENDDO
          ENDDO
         ENDDO
