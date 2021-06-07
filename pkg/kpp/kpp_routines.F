@@ -1845,11 +1845,11 @@ CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
 
          CALL FIND_ALPHA(
-     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k, k,
      O        WORK1, myThid )
 
          CALL FIND_BETA(
-     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k, k,
      O        WORK2, myThid )
 
          DO j = 1-OLy, sNy+OLy
@@ -1944,7 +1944,7 @@ C     local variables
 C     i,j,k :: loop indices
 C     kkppkey :: key for TAMC/TAF automatic differentiation
 C
-      INTEGER I, J, K
+      INTEGER i, j, k
       INTEGER kkppkey
 C     alphaDT   :: d\rho/d\theta * d\theta
 C     betaDS    :: d\rho/dsalt * dsalt
