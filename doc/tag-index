@@ -1,7 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ggl90: 
+o model/src:
+  - in the main code, add option and code for sound speed calculation with
+    corresponding diagnostics ; turned on in exp. global_oce_biogeo_bling.
+o model/src:
+  - fix few loop range to allow to run with OLx,y=1 when momStepping=F ;
+  - add check and stop if momStepping=T and overlap-size is smaller than 2.
+o pkg/ggl90:
   - add 3 store directives for gg90tke in ggl90_calc.F and break some loops
     in two to help TAF without extra storage requirements.
 o pkg/seaice:
