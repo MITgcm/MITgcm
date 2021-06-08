@@ -606,9 +606,8 @@ makemodel()
 	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
 	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
 	    if (( $nlfdmd == 0 )) ; then
-		# if there is no load_fields_driver, we can substract
-		# one assuming that load_fields_driver is called once
-		# from forward_stepmd
+		# if there is no load_fields_driver, we can substract one assuming
+		# that load_fields_driver is called once from forward_stepmd
 		nlfd=$((nlfd-1))
 	    fi
 	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
@@ -1009,7 +1008,7 @@ formatresults()
     fi
     printf '  %s' $nm
     if test $KIND = 2 ; then
-	#-- apppend taf report summary:
+	#-- append taf report summary:
 	tafrep=`grep -c '^ TAF reports ' $CDIR/summary.txt`
 	if test $tafrep = 1 ; then
 	    grep '^ TAF reports ' $CDIR/summary.txt | awk '{printf "  (e=%i, w=%i,",$3,$6}'
