@@ -1,6 +1,53 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - in the main code, add option and code for sound speed calculation with
+    corresponding diagnostics ; turned on in exp. global_oce_biogeo_bling.
+o model/src:
+  - fix few loop range to allow to run with OLx,y=1 when momStepping=F ;
+  - add check and stop if momStepping=T and overlap-size is smaller than 2.
+o pkg/ggl90:
+  - add 3 store directives for gg90tke in ggl90_calc.F and break some loops
+    in two to help TAF without extra storage requirements.
+o pkg/seaice:
+  - adjust store directives in seaice_growth_adx.F:
+    *) add store directives to avoid calling seaice_solve4temp in AD-mode
+    *) adjust/remove/reorganise for good balance between storing and recomputing
+    *) fix a small bug (full 4D arrays were stored instead of 2D for each bi,bj)
+    *) local option "SEAICE_GROWTH_ADX_STORE_MORE" (not recommended)
+       reduces the recomputations but increases the memory requirements.
+  - update ref. AD output of experiment offline_exf_seaice (the only one using
+    SEAICE_GROWTH_ADX): no Grad-Check changes but differences in AD-Monitor.
+o pkg/ctrl & pkg/shelfice:
+  - generalize masking procedure for control parameters, fixes procedure for
+    ice-shelf controls ;
+  - add ability to control base 10 logarithm in generic control arrays ;
+  - add shiTransCoeffT, shiTransCoeffS, and shiCDrag as control variables ;
+  - add ability to compute shelfice freshwater and heat fluxes through ecco
+    package.
+o store directives (model/src, pkg/exf, ...):
+  - By adding many store directives for variables after they have been computed
+    the corresponding s/r load_fields_driver, oceanic_phys, solve_for_pressure
+    no longer need to be called in the AD-routine forward_step_ad.
+    A as a consequence the forward part of forward_step is not recomputed,
+    and there are far fewer store statements in the AD-code.
+  - Most of the new store directives and many of the old ones are collected in
+    two new files "check_lev1_dir_forcing.h" and "check_lev1_dir_ocephys.h" to
+    avoid clutter in forward_step.F
+  - More store directives in pkg/exf allow it to store the forcing fields
+    instead of the level0/1 (e.g. aqh instead of aqh0 and aqh1), thereby
+    reducing the number of stored exf-forcing variables by about two. This is
+    also necessary to avoid calling load_fields_driver from forward_step_ad.
+  - Additional small tweaks of store directives in forward_step.F have the
+    effect that the recomputations are kept to a minimum in all of the AD
+    verification experiments (and in verification_other/global_oce_[llc/cs32])
+    and calling potentially expensive forward routines are not called (e.g.
+    do_stagger_fields_exchange, which involves unnecessary exchanges).
+  - Remove storage of gchemTendency in all checkpoint levels.
+  - Results unaffected except if using real*4 storage (isbyte=4, e.g., in
+    offline_exf_seaice, small changes in AD-monitor).
+
 checkpoint67y (2021/05/05)
 o pkg/shelfice:
   - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely

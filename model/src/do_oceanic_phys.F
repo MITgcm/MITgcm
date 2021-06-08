@@ -314,7 +314,9 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_SEAICE
 CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowHeight, Tsrf  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE Qice1, Qice2      = comlev1, key=ikey_dynamics, kind=isbyte
