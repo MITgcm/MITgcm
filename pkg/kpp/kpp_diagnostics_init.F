@@ -53,7 +53,6 @@ c     INTEGER       diagMate
       EXTERNAL    GAD_DIAG_SUFX
 #endif
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         diagName  = 'KPPviscA'
@@ -137,6 +136,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'KPPdbloc'
         diagTitle = 'Local delta buoyancy across interfaces'
         diagUnits = 'm/s^2           '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'KPPshsq '
+        diagTitle = 'Local shear (V(k-1)-V(k))^2'
+        diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'KPPdVsq '
+        diagTitle = 'Shear relative to surface (V(ksrf)-V(k))**2'
+        diagUnits = 'm^2/s^2         '
         diagCode  = 'SM P    UR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
