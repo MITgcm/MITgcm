@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+  - add CPP-flags to turn off diffusivity matching at bottom of boundary layer ;
+  - add CPP-flag to turn on taper shear mixing in the case of very small shear ;
+  - add FLAG to turn on smooth regularisation of divisions by small numbers:
+      1/(var+eps) instead of 1/MAX(var,eps) ;
+  - fix a small masking error ;
+  - fix some unfortunate loop ordering and spurious recomputations ;
+  - add new diagnostics KPPshsq, KPPdVsq ;
+  - update exp. vermix (which has KPP_ESTIMATE_UREF defined) reference output.
 o model/src:
   - in the main code, add option and code for sound speed calculation with
     corresponding diagnostics ; turned on in exp. global_oce_biogeo_bling.
