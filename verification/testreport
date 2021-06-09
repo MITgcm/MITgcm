@@ -597,13 +597,11 @@ makemodel()
 	elif test -f ad_taf_output.for ; then
 	    adfile=ad_taf_output.for
 	else
-	    echo " WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
+	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
 				>> $CDIR"/summary.txt"
+	    adfile=missing ; nlfd=0 ; ndop=0
 	fi
-	if [ -z ${adfile+x} ] ; then
-	    nlfd=0
-	    ndop=0
-	else
+	if test $adfile != missing ; then
 	    # count number of times load_fields_driver and do_oceanic_phys are called
 	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
 	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
