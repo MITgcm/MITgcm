@@ -60,9 +60,11 @@ FFLAGS="$FFLAGS -fconvert=big-endian"
 #- might want to use '-fdefault-real-8' for fizhi pkg:
 #FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
 
-# to avoid error message introduced in gfortran 10
-# (which can prevent compiling with mpich)
-FFLAGS="$FFLAGS -fallow-argument-mismatch"
+# to avoid error message introduced in gfortran 10 (which can e.g. prevent compiling with mpich)
+gfortranVers=`gfortran -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if [ $gfortranVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
