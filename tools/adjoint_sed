@@ -6,4 +6,11 @@ s/call adread(/call adread ( mythid,\
      \&           /g
 s/call adwrite(/call adwrite( mythid,\
      \&           /g
-
+s/call adiopen(/call adopen ( mythid,\
+     \&           /g
+s/call adiclose(/call adclose( mythid,\
+     \&           /g
+s/call adiread(/call adread ( mythid,\
+     \&           /g
+s/call adiwrite(/call adwrite( mythid,\
+     \&           /g

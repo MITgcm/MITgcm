@@ -445,3 +445,205 @@ c     _BARRIER
 
       RETURN
       END
+
+CBOP
+C     !ROUTINE: adiread
+C     !INTERFACE:
+      SUBROUTINE ADIREAD(
+     I                   myThid,
+     I                   name,
+     I                   len,
+     I                   tid,
+     I                   vid,
+     O                   ivar,
+     I                   size,
+     I                   length,
+     I                   irec
+     &                 )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adiread
+C     ==================================================================
+C     o Read direct access file.
+C     A call to this routine implies an open-read-close sequence
+C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     the master thread reads the data. Otherwise each thread would
+C     read from file.
+C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+C     ==================================================================
+C     SUBROUTINE adiread
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
+#include "optim.h"
+#include "AUTODIFF.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == routine arguments ==
+C     name   :: extended tape name.
+C     len    :: number of characters in name.
+C     tid    :: tape identifier.
+C     vid    :: identifies the variable to be stored on tape.
+C     var    :: values to be stored.
+C     size   :: size in bytes of the type of variable var.
+C     length :: dimension of the variable stored on the tape.
+C     myThid :: number of the thread or instance of the program.
+C     irec   :: record number to be written.
+
+      INTEGER myThid
+      CHARACTER*(*) name
+      INTEGER len
+      INTEGER tid
+      INTEGER vid
+      INTEGER size
+      INTEGER length
+      INTEGER irec
+      INTEGER ivar(*)
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+C     == local variables ==
+      INTEGER k
+      real*8  var(length)
+CEOP
+
+#ifdef ALLOW_DEBUG
+      IF ( debugMode ) CALL DEBUG_ENTER('ADIREAD',myThid)
+#endif
+
+      CALL ADREAD(
+     I            myThid,
+     I            name,
+     I            len,
+     I            tid,
+     I            vid,
+     O            var,
+     I            size,
+     I            length,
+     I            irec
+     &            )
+
+      DO k = 1,length
+       ivar(k) = INT(var(k))
+      ENDDO
+
+#ifdef ALLOW_DEBUG
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADIREAD',myThid)
+#endif
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: adiwrite
+C     !INTERFACE:
+      SUBROUTINE ADIWRITE(
+     I                    myThid,
+     I                    name,
+     I                    len,
+     I                    tid,
+     I                    vid,
+     I                    ivar,
+     I                    size,
+     I                    length,
+     I                    irec
+     &                  )
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE adwrite
+C     ==================================================================
+C     o Write to direct access file.
+C     A call to this routine implies an open-read-close sequence
+C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     the master thread writes the data. Otherwise each thread would
+C     write to file. This would result in an excessive waste of
+C     disk space.
+C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+C     ==================================================================
+C     SUBROUTINE adwrite
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
+#include "optim.h"
+#include "AUTODIFF.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == routine arguments ==
+C     name   :: extended tape name.
+C     len    :: number of characters in name.
+C     tid    :: tape identifier.
+C     vid    :: identifies the variable to be stored on tape.
+C     var    :: values to be stored.
+C     size   :: size in bytes of the type of variable var.
+C     length :: dimension of the variable stored on the tape.
+C     myThid :: number of the thread or instance of the program.
+C     irec   :: record number to be written.
+
+      INTEGER myThid
+      CHARACTER*(*) name
+      INTEGER len
+      INTEGER tid
+      INTEGER vid
+      INTEGER size
+      INTEGER length
+      INTEGER irec
+      INTEGER ivar(*)
+
+C     !FUNCTIONS:
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+C     == local variables ==
+      INTEGER k
+      real*8  var(length)
+CEOP
+
+#ifdef ALLOW_DEBUG
+      IF ( debugMode ) CALL DEBUG_ENTER('ADIWRITE',myThid)
+#endif
+
+      DO k = 1,length
+       var(k) = FLOAT(ivar(k))
+      ENDDO
+
+      CALL ADWRITE(
+     I             myThid,
+     I             name,
+     I             len,
+     I             tid,
+     I             vid,
+     I             var,
+     I             size,
+     I             length,
+     I             irec
+     &             )
+
+#ifdef ALLOW_DEBUG
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE',myThid)
+#endif
+
+      RETURN
+      END
