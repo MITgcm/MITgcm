@@ -11,6 +11,9 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -183,6 +186,14 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+        CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
+        CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
+#  else
+        CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
+#  endif
+# endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
 #endif /* ALLOW_OPENAD */
@@ -276,8 +287,22 @@ C-----------------------------------------------------------------------
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+      CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffT,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffS,
+     &                 'ADJshics','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  else
+      CALL DUMP_ADJ_XY(dumRS, adshiCDragFld,
+     &                 'ADJshicd','ADJshicd.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  endif
+# endif
 
-#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_DEPTH_CONTROL
 CML(  Does not make sense at this point
 CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
 CML     &       adxx_r_low, myIter, myThid)
@@ -296,7 +321,7 @@ CML)
      &     adrecip_hfacw,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
      &     adrecip_hfacs,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
-#endif /* ALLOW_DEPTH_CONTROL */
+# endif /* ALLOW_DEPTH_CONTROL */
 
 #else /* ALLOW_OPENAD */
 C========================
@@ -378,7 +403,22 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffS%d,
+     &                 'ADJshics','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  else
+      CALL DUMP_ADJ_XY(dumRS, shiCDragFld%d,
+     &                 'ADJshicd','ADJshicd.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  endif
+# endif
+
+# ifdef ALLOW_DEPTH_CONTROL
 CML(  Does not make sense at this point
 CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
 CML     &       adxx_r_low, myIter, myThid)
@@ -397,7 +437,8 @@ CML)
      &     recip_hFacW%d,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
      &     recip_hFacS%d,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
-#endif /* ALLOW_DEPTH_CONTROL */
+# endif /* ALLOW_DEPTH_CONTROL */
+
 #endif /* ALLOW_OPENAD */
 
 C=======================================================================
@@ -498,6 +539,17 @@ C     dumpAdVarExch.NE.2
 #ifdef ALLOW_KAPREDI_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adkapredi, myThid)
+#endif
+#ifdef ALLOW_SHELFICE
+# ifndef SHI_ALLOW_GAMMAFRICT
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshict', adshiTransCoeffT, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshics', adshiTransCoeffS, myThid)
+# else
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshicd', adshiCDragFld, myThid)
+# endif
 #endif
          ENDIF
 C     endif mnc

@@ -293,13 +293,13 @@ c ----------------------------------------
 #endif
 
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(anom_sst,maskc,
+     &     call smooth_hetero2d(anom_sst,maskInC,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(obs_sst,maskc,
+     &     call smooth_hetero2d(obs_sst,maskInC,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 

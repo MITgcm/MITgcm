@@ -39,7 +39,7 @@ c     == local variables ==
       integer ntmp2(4)
       integer nwetc3d
       integer nwettmp
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       integer ntmpshi
 #endif
 #ifdef ALLOW_OBCS_CONTROL
@@ -75,7 +75,7 @@ c--   Initialise the counters.
             nwetstile(bi,bj,k) = 0
             nwetwtile(bi,bj,k) = 0
             nwetvtile(bi,bj,k) = 0
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
             nwetitile(bi,bj,k) = 0
 #endif
           enddo
@@ -525,7 +525,7 @@ c
       call print_message( msgbuf, standardmessageunit,
      &    SQUEEZE_RIGHT , mythid)
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 17a:surface wet I = ', nwetitile(1,1,1)
       call print_message( msgbuf, standardmessageunit,
@@ -555,7 +555,7 @@ c
        ntmpshi=ntmpshi+nWetiGlobal(k)
       enddo
       write(msgbuf,'(a,2x,I10)')
-     &    'ctrl-wet 17c: global SUM(K) shifwflx ', ntmpshi
+     &    'ctrl-wet 17c: global SUM(K) shelfice ', ntmpshi
       call print_message( msgbuf, standardmessageunit,
      &    SQUEEZE_RIGHT , mythid)
 
@@ -595,7 +595,7 @@ c#endif
 #ifdef ALLOW_EFLUXP0_CONTROL
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
 c#else
@@ -603,6 +603,7 @@ c#else
      I                          1, .FALSE., 0, mythid, dummyRS )
 c#endif
 #endif
+
 #endif /* ALLOW_AUTODIFF */
 
       RETURN

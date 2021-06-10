@@ -55,7 +55,7 @@ C o Include/exclude phi_hyd calculation code
 
 C o Include/exclude sound speed calculation code
 C o (Note that this is a diagnostic from Del Grasso algorithm, not derived from EOS)
-#undef INCLUDE_SOUNDSPEED_CALC_CODE
+#define INCLUDE_SOUNDSPEED_CALC_CODE
 
 C-- Vertical mixing code options:
 
