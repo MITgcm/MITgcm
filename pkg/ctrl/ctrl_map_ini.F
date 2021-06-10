@@ -51,7 +51,6 @@ c#include "PTRACERS_PARAMS.h"
 #endif
 # if (defined ALLOW_AUTODIFF_TAMC && !defined DISABLE_CTRL_THETA_LIMIT)
 #  include "tamc.h"
-#  include "tamc_keys.h"
 # endif
 #endif /* ECCO_CTRL_DEPRECATED */
 
