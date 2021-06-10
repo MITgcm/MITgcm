@@ -1560,16 +1560,28 @@ for more general environments. Below we describe the subset of user-editable CPP
 
 The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
 :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to
-achieve numerically reproducible global sums.  As implemented however, this
-approach will increase network traffic and computations in a way that scales
-quadratically with
-`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  process
-count.  Profiling has shown that letting the code fall through to a baseline
+achieve numerically reproducible global sums for a given tile domain
+decomposition.
+As implemented however, this
+approach will increase the volume of network traffic in a way that scales
+with the total number of tiles.
+Profiling has shown that letting the code fall through to a baseline
 approach that simply uses
 `MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
 can provide significantly improved performance for certain simulations [#]_.
 The fall-though approach is activated by ``#undef``
 :varlink:`GLOBAL_SUM_ORDER_TILES`.
+
+In order to get bit-wise reproducible results between different tile domain
+decomposition (e.g., single tile on single processor versus multiple tiles
+either on single or multiple processors), one can choose to ``#define``
+option :varlink:`CG2D_SINGLECPU_SUM` to use the far much slower
+:filelink:`global_sum_singlecpu.F <eesupp/src/global_sum_singlecpu.F>`
+for the key part of MITgcm algorithm :varlink:`CG2D` that relies on global sum.
+This option is not only much slower but also requires large volume of
+communications so that it is practically unusable for large set-up ;
+furthermore, it does not address reproducibility when global sum is used
+outside :varlink:`CG2D`, as, e.g., in non-hydrostatic simulations.
 
 In a default multi-processor configuration, each process opens and reads its
 own set of namelist files and open and writes its own standard output. This can
@@ -1603,6 +1615,26 @@ simulation) is configured to communicate with a coupler.
 This coupler can be a specially configured build of MITgcm itself;
 see, for example, verification experiment `cpl_aim+ocn
 <https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
+
+Similarly, the CPP-flag :varlink:`DISCONNECTED_TILES` should not be ``#define``
+unless one wants to run simultaneously several small, single-tile ensemble
+members from a single process, as each tile will be disconnected from the others
+and considered locally as a doubly periodic patch.
+
+..
+    should reference the to-be-written section about _RS, _RL withing chapter 6
+
+Finally one could force MITgcm ``_RS`` variables to be declared as
+``real*4`` by setting CPP-flag :varlink:`REAL4_IS_SLOW` to ``#undef``
+in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`.
+However, using this feature is not recommended for any MITgcm user
+apart for computation benchmark or testing trade-off between memory
+footprint and model precision. And even in this case, there is no needs
+to edit :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
+since this feature can be activated at :filelink:`genmake2 <tools/genmake2>`
+level with option ``-use_r4``, as done in some regression tests
+(see in testing `results <https://mitgcm.org/testing-summary>`_
+page tests with optfile suffix ``.use_r4``).
 
 .. [#] One example is the llc_540 case located at
    https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case
