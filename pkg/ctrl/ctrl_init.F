@@ -60,6 +60,7 @@ c     == local variables ==
       integer endrec
       integer diffrec
       integer iarr
+      character*(1) ncvargrdtmp
 
       _RL dummy
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -819,15 +820,24 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
-#ifndef ALLOW_OPENAD
+        ncvargrdtmp='c'
+# ifdef ALLOW_SHELFICE
+C       Under iceshelf, use maskSHI for these
+        if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &      (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
+            ncvargrdtmp='i'
+        endif
+# endif
+
+# ifndef ALLOW_OPENAD
         if (xx_genarr2d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
-#else
+# else
         call ctrl_init_ctrlvar (
-#endif
+# endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
-     &       snx, sny, 1, xx_genarr2d_grid(iarr), 'xy', myThid )
+     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -836,6 +846,7 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
+        ncvargrdtmp='c'
 #ifndef ALLOW_OPENAD
         if (xx_genarr3d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
@@ -844,7 +855,7 @@ c--
 #endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
-     &       snx, sny, nr, xx_genarr3d_grid(iarr), '3d', myThid )
+     &       snx, sny, nr, ncvargrdtmp, '3d', myThid )
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -859,6 +870,16 @@ c--
           xx_gentim2d_startdate2(iarr)=startdate_2
         endif
 #endif
+        ncvargrdtmp='c'
+# ifdef ALLOW_SHELFICE
+C       Under iceshelf, use maskSHI for these
+        if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
+     &       ncvargrdtmp='i'
+# endif
+        if (xx_gentim2d_file(iarr)(1:5).eq.'xx_fu')
+     &       ncvargrdtmp='w'
+        if (xx_gentim2d_file(iarr)(1:5).eq.'xx_fv')
+     &       ncvargrdtmp='s'
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      I       xx_gentim2d_startdate1(iarr),
@@ -900,7 +921,7 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
+     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
@@ -909,13 +930,13 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
+     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 C
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrec, startrec, endrec,
-     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
+     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 C
 #ifndef ALLOW_OPENAD
        endif

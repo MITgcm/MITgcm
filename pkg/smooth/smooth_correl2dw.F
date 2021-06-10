@@ -11,8 +11,8 @@
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_correl2Dw
-C     | o Routine that maps a 2D control field to physical units 
-C     |   by mutliplying it with 1/sqrt(weight) 
+C     | o Routine that maps a 2D control field to physical units
+C     |   by mutliplying it with 1/sqrt(weight)
 C     |   after smooth_correl2D has been applied
 C     *==========================================================*
 
@@ -31,8 +31,8 @@ C     *==========================================================*
 # include "ecco_cost.h"
 #endif
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fld_in (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       character*(MAX_LEN_FNAM) xx_gen_file
       integer myThid
 
@@ -58,7 +58,7 @@ C     *==========================================================*
       DO bj = jtlo,jthi
        DO bi = itlo,ithi
         DO j = 1,sNy
-         DO i = 1,sNx 
+         DO i = 1,sNx
 
         weightWasFound=.TRUE.
 
@@ -114,7 +114,7 @@ C     *==========================================================*
 #endif
 #endif
 
-      if ((mask_in(i,j,1,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
+      if ((mask_in(i,j,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
       else
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)*0.
@@ -122,7 +122,7 @@ C     *==========================================================*
 
          ENDDO
         ENDDO
-       ENDDO 
+       ENDDO
       ENDDO
 
       CALL EXCH_XY_RL ( fld_in , myThid )
@@ -133,5 +133,5 @@ C     *==========================================================*
 #endif /* ALLOW_ECCO or ALLOW_CTRL */
 
 #endif /* ECCO_CTRL_DEPRECATED */
-       
+
       end
