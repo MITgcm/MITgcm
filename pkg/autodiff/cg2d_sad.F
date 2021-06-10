@@ -3,16 +3,11 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-C--   File cg2d_sad.F: Code for hand written adjoint of cg2d
-C--    Contents
-C--   CG2D_SAD        - computes the adjoint of cg2d
-C--   CG2D_STORE      - saves input field to or restores from a common block
-C--   CG2D_STORE_AD   - empty AD-version of CG2D_STORE
-
 CBOP
 C     !ROUTINE: CG2D_SAD
 C     !INTERFACE:
       SUBROUTINE CG2D_SAD(
+     I                    cg2d_b,
      U                    cg2d_b_ad,
      I                    cg2d_x,
      U                    cg2d_x_ad,
@@ -56,6 +51,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     cg2d_b_ad :: Adjoint of source term (on input = 0)
 C     cg2d_x_ad :: Adjoint of the solution
+C     cg2d_b    :: rhs of fwd matrix equation (needed for recomputation)
 C     cg2d_x    :: First guess of cg2d ( gravity * etaN, only input )
 C     firstResidual :: the initial residual before any iterations
 C     minResidualSq :: the lowest residual reached (squared)
@@ -67,7 +63,8 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg2d_x    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_b   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_x   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
@@ -94,6 +91,7 @@ C     i,j    :: Loop counters
       INTEGER i,j,bi,bj
       _RL  firstResidual, minResidualSq, lastResidual
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
+      INTEGER numItersFwd, nIterMinFwd
       _RL  recip_cg2dNorm
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -106,6 +104,12 @@ C--   mark output of cg2d as being called from here
      &      ' Calling cg2d from S/R CG2D_SAD'
        _END_MASTER( myThid )
       ENDIF
+
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
+C     make local copies because we need them later
+      numItersFwd = numIters
+      nIterMinFwd = nIterMin
+#endif
 
 #ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
@@ -173,6 +177,34 @@ C     we just call it every timestep but only for a higher debugLevel
       ENDIF
 
       IF ( cg2dFullAdjoint ) THEN
+C     recompute cg2d_x
+       IF ( debugLevel .GE. debLevZero ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(standardmessageunit,'(A)')
+     &        ' Recompute cg2d_x in S/R CG2D_SAD'
+        _END_MASTER( myThid )
+       ENDIF
+#ifdef ALLOW_SRCG
+       IF ( useSRCGSolver ) THEN
+C--   Call the single reduce CG solver
+        CALL CG2D_SR(
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numItersFwd, nIterMinFwd,
+     I           myThid )
+       ELSE
+#else
+       IF (.TRUE.) THEN
+#endif /* ALLOW_SRCG */
+C--   Call the default CG solver
+        CALL CG2D(
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numItersFwd, nIterMinFwd,
+     I           myThid )
+       ENDIF
+       _EXCH_XY_RL( cg2d_x, myThid )
+
 C     Compute derivative of coefficient matrix.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -181,10 +213,10 @@ C     Compute derivative of coefficient matrix.
            aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
      &          * recip_cg2dNorm
-           aW2d_ad(i,  j,bi,bj) =  aW2d_ad(i,j,bi,bj)
+           aW2d_ad(i,  j,bi,bj) = aW2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i-1,j,bi,bj)
      &          * recip_cg2dNorm
-           aW2d_ad(i+1,j,bi,bj) =  aW2d_ad(i+1,j,bi,bj)
+           aW2d_ad(i+1,j,bi,bj) = aW2d_ad(i+1,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i+1,j,bi,bj)
      &          * recip_cg2dNorm
            aS2d_ad(i,j,  bi,bj) = aS2d_ad(i,j,bi,bj)
