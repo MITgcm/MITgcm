@@ -653,6 +653,10 @@ The most important command-line options are:
     compiler options to check array bounds and add other additional warning
     and debugging flags.
 
+``-use_r4``
+    force model variables ``_RS`` to be declared ``real*4``
+    (see :numref:`cpp_eeoptions_doc`)
+
 ``–make «/PATH/TO/GMAKE»``
     due to the poor handling of soft-links and other bugs common with
     the ``make`` versions provided by commercial unix vendors, GNU
@@ -1527,6 +1531,8 @@ Additional CPP options that affect the model core code are set in files
 optional (non-default) packages also include package-specific CPP options that
 must be set in files ``${PKG}_OPTIONS.h``.
 
+.. _cpp_eeoptions_doc:
+
 Preprocessor Execution Environment Options
 ------------------------------------------
 
@@ -1549,13 +1555,17 @@ for more general environments. Below we describe the subset of user-editable CPP
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`GLOBAL_SUM_SEND_RECV`               | #undef  | alternative way of doing global sum without MPI allreduce call                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`CG2D_SINGLECPU_SUM`                 | #undef  | alternative way of doing global sum on a single CPU  to eliminate tiling-dependent roundoff errors                   |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`SINGLE_DISK_IO`                     | #undef  | to write STDOUT, STDERR and scratch files from process 0 only                                                        |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`USE_FORTRAN_SCRATCH_FILES`          | #undef  | flag to turn on old default of opening scratch files with the STATUS='SCRATCH' option                                |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`COMPONENT_MODULE`                   | #undef  | control use of communication with other components, i.e., sets component to work with a coupler interface            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`FAST_BYTESWAP`                      | #undef  | alternative formulation of BYTESWAP, faster than compiler flag -byteswapio on the Altix platform                     |
+   | :varlink:`DISCONNECTED_TILES`                 | #undef  | use disconnected tiles (no exchange between tiles, just fill-in edges assuming locally periodic subdomain)           |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`REAL4_IS_SLOW`                      | #define | if undefined, force ``_RS`` variables to be declared as real*4                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
@@ -1573,15 +1583,16 @@ The fall-though approach is activated by ``#undef``
 :varlink:`GLOBAL_SUM_ORDER_TILES`.
 
 In order to get bit-wise reproducible results between different tile domain
-decomposition (e.g., single tile on single processor versus multiple tiles
+decompositions (e.g., single tile on single processor versus multiple tiles
 either on single or multiple processors), one can choose to ``#define``
-option :varlink:`CG2D_SINGLECPU_SUM` to use the far much slower
+option :varlink:`CG2D_SINGLECPU_SUM` to use the **MUCH** slower
 :filelink:`global_sum_singlecpu.F <eesupp/src/global_sum_singlecpu.F>`
-for the key part of MITgcm algorithm :varlink:`CG2D` that relies on global sum.
-This option is not only much slower but also requires large volume of
-communications so that it is practically unusable for large set-up ;
+for the key part of MITgcm algorithm :filelink:`CG2D <model/src/cg2d.F>`
+that relies on global sum.
+This option is not only much slower but also requires a large volume of
+communications so it is practically unusable for a large set-up;
 furthermore, it does not address reproducibility when global sum is used
-outside :varlink:`CG2D`, as, e.g., in non-hydrostatic simulations.
+outside :filelink:`CG2D <model/src/cg2d.F>`, e.g., in non-hydrostatic simulations.
 
 In a default multi-processor configuration, each process opens and reads its
 own set of namelist files and open and writes its own standard output. This can
@@ -1594,20 +1605,14 @@ confident that the setup is working since any message (error/warning/print)
 from any processor :math:`\ne 0` will be lost.
 
 The way the namelist files are read requires temporary (scratch) files in the
-initialisation phase. By default, the MITgcm does not use intrinsic Fortran
-scratch files (STATUS='scratch') because they can lead to conflicts in
+initialization phase. By default, the MITgcm does not use intrinsic Fortran
+scratch files (``STATUS='scratch'``) because they can lead to conflicts in
 multi-processor simulations on some HPC-platforms, when the processors do not
 open scratch files with reserved names. However, the implemented default scheme
 for the scratch files can be slow for large processor counts. If this is a
 problem in a given configuration, defining the CPP-flag
 :varlink:`USE_FORTRAN_SCRATCH_FILES` may help by making the code use the
 intrinsic Fortran scratch files.
-
-The CPP-flag :varlink:`FAST_BYTESWAP` is an example of a very platform specific
-flag that should not be defined under normal circumstances. On some platforms
-defining this flag may speed up I/O compared to the automatic conversion from
-little endian to big endian output, but that needs to be tested for each
-platform individually. Under normal circumstances this flag should be undefined.
 
 The CPP-flag :varlink:`COMPONENT_MODULE` needs to be set to ``#define`` only for
 builds in which the MITgcm executable (for either an oceanic or atmospheric
@@ -1616,24 +1621,27 @@ This coupler can be a specially configured build of MITgcm itself;
 see, for example, verification experiment `cpl_aim+ocn
 <https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
 
-Similarly, the CPP-flag :varlink:`DISCONNECTED_TILES` should not be ``#define``
+The CPP-flag :varlink:`DISCONNECTED_TILES` should not be ``#define``
 unless one wants to run simultaneously several small, single-tile ensemble
 members from a single process, as each tile will be disconnected from the others
 and considered locally as a doubly periodic patch.
 
 ..
-    should reference the to-be-written section about _RS, _RL withing chapter 6
+    should reference the to-be-written section about _RS, _RL within chapter 6
 
-Finally one could force MITgcm ``_RS`` variables to be declared as
-``real*4`` by setting CPP-flag :varlink:`REAL4_IS_SLOW` to ``#undef``
+MITgcm ``_RS`` variables are forced to be declared as
+``real*4`` if CPP-flag :varlink:`REAL4_IS_SLOW` to is set to ``#undef``
 in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`.
-However, using this feature is not recommended for any MITgcm user
-apart for computation benchmark or testing trade-off between memory
-footprint and model precision. And even in this case, there is no needs
-to edit :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
-since this feature can be activated at :filelink:`genmake2 <tools/genmake2>`
-level with option ``-use_r4``, as done in some regression tests
-(see in testing `results <https://mitgcm.org/testing-summary>`_
+(``_RS`` is a macro used in declaring real variables that, in principle,
+do not require double precision, and thus if declared as single precion
+use less memory.)
+However, this option is not recommended
+except for computational benchmarking or for testing the trade-off between memory
+footprint and model precision. To activate this option,
+*do not* make a change in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`;
+instead it can be switched on using the :filelink:`genmake2 <tools/genmake2>`
+command line option ``-use_r4``,  as done in some regression tests
+(see testing `results <https://mitgcm.org/testing-summary>`_
 page tests with optfile suffix ``.use_r4``).
 
 .. [#] One example is the llc_540 case located at
