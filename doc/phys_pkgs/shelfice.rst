@@ -286,45 +286,66 @@ treated in the same way. The momentum equations are not modified.
 Three-equations thermodynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Freezing and melting form a boundary layer between ice shelf and ocean.
-Phase transitions at the boundary between saline water and ice imply the
-following fluxes across the boundary: the freshwater mass flux :math:`q`
-(:math:`<0` for melting); the heat flux that consists of the diffusive
-flux through the ice, the latent heat flux due to melting and freezing
-and the heat that is carried by the mass flux; and the salinity that is
-carried by the mass flux, if the ice has a non-zero salinity
+Freezing and melting form a boundary layer between the ice shelf and the
+ocean that is represented in the model by an infinitesimal layer used to
+calculate the exchanges between the ocean and the ice. Melting and
+freezing at the boundary between saline water and ice imply a freshwater
+mass flux :math:`q` (:math:`<0` for melting); the relevant heat fluxes
+into and out of the boundary layer therefore include a diffusive flux
+through the ice, the latent heat flux due to melting and freezing, and
+the advective heat that is carried by the freshwater mass flux. There is
+a salt flux carried by the mass flux if the ice has a non-zero salinity
 :math:`S_I`. Further, the position of the interface between ice and
 ocean changes because of :math:`q`, so that, say, in the case of melting
-the volume of sea water increases. As a consequence salinity and
-temperature are modified.
+the volume of sea water increases. As a consequence of these fluxes,
+salinity and temperature are affected.
 
-The turbulent exchange terms for tracers at the ice-ocean interface are
-generally expressed as diffusive fluxes. Following Jenkins et al. (2001)
-:cite:`jenkins:01`, the boundary conditions for a tracer
-take into account that this boundary is not a material surface. The
-implied upward freshwater flux :math:`q` (in mass units, negative for
-melting) is included in the boundary conditions for the temperature and
-salinity equation as an advective flux:
+The turbulent tracer exchanges between the infinitesimal boundary layer
+and the ocean are expressed as diffusive fluxes. Following Jenkins et
+al. (2001) :cite:`jenkins:01`, the boundary conditions for a tracer take
+into account that this boundary is not a material surface. The implied
+upward freshwater flux :math:`q` (in mass units, negative for melting)
+is therefore included in the boundary conditions for the temperature and
+salinity equation as an advective flux. The tracer (e.g., temperature or
+salinity) budget for the infinitesimal boundary layer takes the general
+form:
 
 .. math::
-   {\rho}K\frac{\partial{X}}{\partial{z}}\biggl|_{b}
+   {\rho_I}K_I\frac{\partial{X_I}}{\partial{z}}\biggl|_{b}
    = (\rho\gamma_{X}-q) ( X_{b} - X )
    :label: jenkinsbc
 
-where tracer :math:`X` stands for either temperature :math:`T` or
-salinity :math:`S`. :math:`X_b` is the tracer at the interface (taken to
-be at freezing), :math:`X` is the tracer at the first interior grid
-point, :math:`\rho` is the density of seawater, and :math:`\gamma_X` is
-the turbulent exchange coefficient (in units of an exchange velocity).
-The left hand side of :eq:`jenkinsbc` is shorthand for the
-(downward) flux of tracer :math:`X` across the boundary. :math:`T_b`,
-:math:`S_b` and the freshwater flux :math:`q` are obtained from solving
-a system of three equations that is derived from the heat and freshwater
-balance at the ice ocean interface.
+where the LHS represents diffusive flux from the ice evaluated at the
+interface between the infinitesimal boundary layer and the ice, and the
+RHS represents the turbulent/advective exchanges between the
+infinitesimal layer and the ocean. The tracer :math:`X` stands for
+either temperature :math:`T` or salinity :math:`S`. :math:`X_b` is the
+tracer in the infinitesimal layer between the ice and the ocean (the
+temperature there is taken to be at the freezing point, which is a
+function of pressure and salinity), :math:`X` is the tracer at the first
+interior ocean grid point, :math:`\rho_I` is ice density and
+:math:`\rho` the density of seawater, :math:`K_I` the appropriate
+ice diffusivity, and :math:`\gamma_X` is the turbulent exchange
+coefficient (in units of an exchange velocity). :math:`T_b`, :math:`S_b`
+and the freshwater flux :math:`q` are obtained from solving a system of
+three equations that is derived from the heat and freshwater balance at
+the ice-ocean interface.
+
+For salinity, the LHS in the above equation vanishes (no salt diffusion
+into the ice), while for temperature, the equation needs to include the
+latent heat of freezing,
+
+.. math::
+   {\rho_I}c_{p,I} \kappa\frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
+   = c_{p}(\rho\gamma_{T}-q) ( T_{b} - T )+ L_i q
+   :label: jenkinsbcT
 
 In this so-called three-equation-model (e.g., Hellmer and Olbers (1989)
-:cite:`hellmer:89`, Jenkins et al. (2001) :cite:`jenkins:01`)
-the heat balance at the ice-ocean interface is expressed as
+:cite:`hellmer:89`, Jenkins et al. (2001) :cite:`jenkins:01`), assuming
+a linear temperature profile in the ice and approximating the vertical
+derivative of temperature in the ice as the difference between the ice
+surface and ice bottom temperatures divided by the ice thickness, the
+heat budget of the infinitesimal layer at the ice-ocean interface is,
 
 .. math::
    c_{p} \rho \gamma_T (T - T_{b})
