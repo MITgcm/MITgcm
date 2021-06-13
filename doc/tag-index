@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67z (2021/06/12)
 o veritication:
   - make testreport count and report the number calls of S/R load_fields_driver
     and do_oceanic_phys in AD-code (similar to TAF error & warning count).
