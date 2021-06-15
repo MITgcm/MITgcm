@@ -60,7 +60,9 @@ C     == Global variables ==
 # include "MOM_VISC.h"
 #endif
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "MOM_FLUXFORM.h"
 #endif
 

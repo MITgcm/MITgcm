@@ -147,7 +147,9 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "FFIELDS.h"
 # include "SURFACE.h"
 # include "EOS.h"

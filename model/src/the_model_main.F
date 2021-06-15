@@ -580,7 +580,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL

@@ -22,7 +22,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_DEPTH_CONTROL
-# ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif
 #else /* ALLOW_DEPTH_CONTROL */

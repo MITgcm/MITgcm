@@ -43,7 +43,9 @@ C !USES: ===============================================================
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_PARAMS.h"
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif

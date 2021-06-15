@@ -49,7 +49,9 @@ C     == Global variables ===
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
