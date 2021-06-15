@@ -349,8 +349,8 @@ units of an exchange velocity). :math:`T_b`, :math:`S_b` and the freshwater
 flux :math:`q` are obtained from solving a system of three equations that
 is derived from the heat and freshwater balance at the ice-ocean interface.
 
-For any material tracer such as salinity, the LHS in the above equation
-vanishes (no salt diffusion into the ice), while for temperature, the term
+For any material tracer such as salinity, the LHS in :eq:`jenkinsgenbudget`
+vanishes (no material diffusion into the ice), while for temperature, the term
 :math:`q\,( T_{b}-T_{I} )` vanishes, because both the boundary layer and the
 ice are at the freezing point. Instead, the latent heat of freezing
 :math:`L` is included as an additional term to take into account the
@@ -358,12 +358,23 @@ conversion of ice to water:
 
 .. math::
    {\rho_I}c_{p,I} \kappa_{I}\frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
-   = c_{p} \rho\gamma_{T} ( T_{b} - T )+ L q
-   :label: jenkinsbudget
+   = c_{p} \rho\,\gamma_{T} ( T_{b} - T )+ L q.
+   :label: jenkinsheatbudget
 
-The temperature at the interface :math:`T_{b}` is assumed to be the in-situ
-freezing point temperature of sea-water :math:`T_{f}` which is computed
-from a linear equation of state
+:math:`\rho` is the density of sea-water, :math:`c_{p} = 3974 \,
+\text{J kg}^{-1} \text{K}^{-1}` is the specific heat capacity of water
+and :math:`\gamma_T` the turbulent exchange coefficient of
+temperature. The value of :math:`\gamma_T` is discussed in Holland and
+Jenkins (1999) :cite:`holland:99`. :math:`L = 334000 \, \text{J
+kg}^{-1}` is the latent heat of fusion.  :math:`\rho_{I} = 920 \,
+\text{kg m}^{-3}`, :math:`c_{p,I} = 2000 \, \text{J kg}^{-1}
+\text{K}^{-1}`, and :math:`T_{S}=-20^{\circ}\text{C}` are the density,
+heat capacity and the (surface) temperature of the ice shelf;
+:math:`\kappa_{I}=1.54\times10^{-6} \, \text{m}^2 \text{s}^{-1}` is
+the heat diffusivity through the ice-shelf and :math:`h` is the
+ice-shelf draft.  The temperature at the interface :math:`T_{b}` is
+assumed to be the in-situ freezing point temperature of sea-water
+:math:`T_{f}`, which is computed from a linear equation of state
 
 .. math::
    T_{f} = (0.0901 - 0.0575\ S_{b})^{\circ}
@@ -376,35 +387,24 @@ three-equation-model (e.g., Hellmer and Olbers (1989) :cite:`hellmer:89`,
 Jenkins et al. (2001) :cite:`jenkins:01`). These equations are solved to
 obtain :math:`S_b, T_b, q` to be used in :eq:`jenkinsbc`.
 
-The diffusive heat flux at the ice-ocean interface can be appproximated by
-assuming a linear temperature profile in the ice and approximating the
-vertical derivative of temperature in the ice as the difference between the
-ice surface and ice bottom temperatures divided by the ice thickness, so
-that the heat budget of the infinitesimal layer at the ice-ocean interface
-becomes,
+In eq:`jenkinsheatbudget`, the diffusive heat flux at the ice-ocean
+interface can be appproximated by assuming a linear temperature
+profile in the ice and approximating the vertical derivative of
+temperature in the ice as the difference between the ice surface and
+ice bottom temperatures divided by the ice thickness, so that the heat
+budget of the infinitesimal layer at the ice-ocean interface becomes,
 
 .. math::
-   c_{p} \rho \gamma_T (T - T_{b})
-   +\rho_{I} c_{p,I} \kappa_{I} \frac{(T_{S} - T_{b})}{h} = -Lq
-   :label: hellmerheatbalance
+   {\rho_I}c_{p,I} \kappa_{I}\frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
+   \approx \rho_{I} c_{p,I} \kappa_{I} \frac{(T_{S} - T_{b})}{h}
+   :label: dTdzdiffus
 
-where :math:`\rho` is the density of sea-water, :math:`c_{p} = 3974 \,
-\text{J kg}^{-1} \text{K}^{-1}` is the specific heat capacity of water and
-:math:`\gamma_T` the turbulent exchange coefficient of temperature. The
-value of :math:`\gamma_T` is discussed in Holland and Jenkins (1999)
-:cite:`holland:99`. :math:`L = 334000 \, \text{J kg}^{-1}` is the latent
-heat of fusion.  :math:`\rho_{I} = 920 \, \text{kg m}^{-3}`, :math:`c_{p,I}
-= 2000 \, \text{J kg}^{-1} \text{K}^{-1}`, and :math:`T_{S}` are the
-density, heat capacity and the surface temperature of the ice shelf;
-:math:`\kappa_{I}=1.54\times10^{-6} \, \text{m}^2 \text{s}^{-1}` is the
-heat diffusivity through the ice-shelf and :math:`h` is the ice-shelf
-draft.  The second term on the right hand side describes the heat flux
-through the ice shelf. A constant surface temperature
-:math:`T_S=-20^{\circ}\text{C}` is imposed. Alternatively, assuming that
-the ice is "advected" as implied by the meltflux :math:`q`, the diffusive
-flux can be approximated as :math:`\min(q,0)\,c_{p,I} (T_{S} - T_{b})`
-(runtime flag :varlink:`SHELFICEadvDiffHeatFlux`, see Holland and Jenkins,
-1999 :cite:`holland:99` for details).
+Alternatively, assuming
+that the ice is "advected" vertically as implied by the meltflux
+:math:`q`, the diffusive flux can be approximated as
+:math:`\min(q,0)\,c_{p,I} (T_{S} - T_{b})` (runtime flag
+:varlink:`SHELFICEadvDiffHeatFlux`, see Holland and Jenkins, 1999
+:cite:`holland:99` for details).
 
 From the salt budget, the salt flux across the shelf ice-ocean interface is
 equal to the salt flux due to melting and freezing:
@@ -451,9 +451,9 @@ Solving the three-equations system
 
 There has been some confusion about the three-equations system, so we
 document the solution in the code here: We use :eq:`hellmerfreeze`
-:math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}` from
-:eq:`hellmerheatbalance` and find an expression for the freshwater flux
-:math:`q`:
+:math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}`
+from :eq:`jenkinsheatbudget` with :eq:`dTdzdiffus` and find an
+expression for the freshwater flux :math:`q`:
 
 .. math::
    \begin{aligned}
@@ -506,7 +506,7 @@ ISOMIP thermodynamics
 A simpler formulation follows the ISOMIP protocol. The
 freezing and melting in the boundary layer between ice shelf and ocean
 is parameterized following Grosfeld et al. (1997) :cite:`grosfeld:97`. In this
-formulation :eq:`hellmerheatbalance` reduces to
+formulation :eq:`jenkinsheatbudget` reduces to
 
 .. math::
    c_{p} \rho \gamma_T (T - T_{b})  = -Lq
