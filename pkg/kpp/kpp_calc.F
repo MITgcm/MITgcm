@@ -332,7 +332,7 @@ c     of the cell; therefore the proper masking is maskC(k)*maskC(k+1)
          ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kp1,bi,bj)
 #ifdef ALLOW_SHELFICE
-         IF ( useShelfIce ) kSurf = kTopC(i,j,bi,bj)
+         IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
 #endif /* ALLOW_SHELFICE */
          Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kSurf,bi,bj)
@@ -591,7 +591,7 @@ c-----------------------------------------------------------------------
       DO j = jMin, jMax
        DO i = iMin, iMax
 #ifdef ALLOW_SHELFICE
-        IF ( useShelfIce ) kSurf = kTopC(i,j,bi,bj)
+        IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,kSurf,bi,bj)
        ENDDO
