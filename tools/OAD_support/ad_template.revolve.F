@@ -59,7 +59,6 @@ c we may need these for the checkpointing
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
-      use tamc_mod
       use cost_mod
       use g_cost_mod
       use ctrl_mod
