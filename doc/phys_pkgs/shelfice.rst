@@ -306,120 +306,154 @@ al. (2001) :cite:`jenkins:01`, the boundary conditions for a tracer take
 into account that this boundary is not a material surface. The implied
 upward freshwater flux :math:`q` (in mass units, negative for melting)
 is therefore included in the boundary conditions for the temperature and
-salinity equation as an advective flux. The tracer (e.g., temperature or
-salinity) budget for the infinitesimal boundary layer takes the general
+salinity equation as an advective flux.
+
+The boundary conditions for tracer :math:`X=S,T` (salinity and temperature)
+in the ocean are expressed as the sum of advective and diffusive
+fluxes
+
+.. math::
+   F_X = (\rho\gamma_{X}-q) ( X_{b} - X )
+   :label: jenkinsbc
+
+where the diffusive flux has been parameterized as a turbulent exchange
+:math:`\rho\gamma_{X}( X_{b} - X )` following Holland and
+Jenkins (1999) :cite:`holland:99` or Jenkins et al. (2001)
+:cite:`jenkins:01`. The subscript :math:`b` indicates the tracer in the
+boundary layer and :math:`\gamma_X` is the turbulent exchange (or transfer)
+coefficient (or velocity) (:varlink:`SHELFICEheatTransCoeff` and
+:varlink:`SHELFICEsaltTransCoeff`).
+
+The tracer budget for the infinitesimal boundary layer takes the general
 form:
 
 .. math::
    {\rho_I}K_I\frac{\partial{X_I}}{\partial{z}}\biggl|_{b}
-   = (\rho\gamma_{X}-q) ( X_{b} - X )
-   :label: jenkinsbc
+   = \rho\gamma_{X} ( X_{b} - X ) -  q ( X_{b} - X_{I} )
+   :label: jenkinsgenbudget
 
 where the LHS represents diffusive flux from the ice evaluated at the
-interface between the infinitesimal boundary layer and the ice, and the
-RHS represents the turbulent/advective exchanges between the
-infinitesimal layer and the ocean. The tracer :math:`X` stands for
-either temperature :math:`T` or salinity :math:`S`. :math:`X_b` is the
+interface between the infinitesimal boundary layer and the ice, and the RHS
+represents the turbulent and advective exchanges between the infinitesimal
+layer and the ocean and the advective exchange at the between the boundary
+layer and the ice (:math:`qX_{I}`, this flux will be zero if the ice
+contains no tracer: :math:`X_I=0`). The tracer :math:`X` stands for either
+in-situ temperature :math:`T` or salinity :math:`S`. :math:`X_b` is the
 tracer in the infinitesimal layer between the ice and the ocean (the
-temperature there is taken to be at the freezing point, which is a
-function of pressure and salinity), :math:`X` is the tracer at the first
-interior ocean grid point, :math:`\rho_I` is ice density and
-:math:`\rho` the density of seawater, :math:`K_I` the appropriate
-ice diffusivity, and :math:`\gamma_X` is the turbulent exchange
-coefficient (in units of an exchange velocity). :math:`T_b`, :math:`S_b`
-and the freshwater flux :math:`q` are obtained from solving a system of
-three equations that is derived from the heat and freshwater balance at
-the ice-ocean interface.
+temperature in the boundary layer is taken to be at the freezing point,
+which is a function of pressure and salinity), :math:`X` is the tracer at
+the first interior ocean grid point, :math:`\rho_I` is ice density and
+:math:`\rho` the density of seawater, :math:`K_I` the appropriate ice
+diffusivity, and :math:`\gamma_X` is the turbulent exchange coefficient (in
+units of an exchange velocity). :math:`T_b`, :math:`S_b` and the freshwater
+flux :math:`q` are obtained from solving a system of three equations that
+is derived from the heat and freshwater balance at the ice-ocean interface.
 
-For salinity, the LHS in the above equation vanishes (no salt diffusion
-into the ice), while for temperature, the equation needs to include the
-latent heat of freezing,
-
-.. math::
-   {\rho_I}c_{p,I} \kappa\frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
-   = c_{p}(\rho\gamma_{T}-q) ( T_{b} - T )+ L_i q
-   :label: jenkinsbcT
-
-In this so-called three-equation-model (e.g., Hellmer and Olbers (1989)
-:cite:`hellmer:89`, Jenkins et al. (2001) :cite:`jenkins:01`), assuming
-a linear temperature profile in the ice and approximating the vertical
-derivative of temperature in the ice as the difference between the ice
-surface and ice bottom temperatures divided by the ice thickness, the
-heat budget of the infinitesimal layer at the ice-ocean interface is,
+For any material tracer such as salinity, the LHS in the above equation
+vanishes (no salt diffusion into the ice), while for temperature, the term
+:math:`q\,( T_{b}-T_{I} )` vanishes, because both the boundary layer and the
+ice are at the freezing point. Instead, the latent heat of freezing
+:math:`L` is included as an additional term to take into account the
+conversion of ice to water:
 
 .. math::
-   c_{p} \rho \gamma_T (T - T_{b})
-   +\rho_{I} c_{p,I} \kappa \frac{(T_{S} - T_{b})}{h} = -Lq
-   :label: hellmerheatbalance
+   {\rho_I}c_{p,I} \kappa_{I}\frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
+   = c_{p} \rho\gamma_{T} ( T_{b} - T )+ L q
+   :label: jenkinsbudget
 
-where :math:`\rho` is the density of sea-water,
-:math:`c_{p} = 3974 \, \text{J kg}^{-1} \text{K}^{-1}` is the specific heat
-capacity of water and :math:`\gamma_T` the turbulent exchange
-coefficient of temperature. The value of :math:`\gamma_T` is discussed
-in Holland and Jenkins (1999) :cite:`holland:99`. :math:`L =
-334000 \, \text{J kg}^{-1}` is the latent heat of fusion.
-:math:`\rho_{I} = 920 \, \text{kg m}^{-3}`, :math:`c_{p,I} =
-2000 \, \text{J kg}^{-1} \text{K}^{-1}`, and :math:`T_{S}` are the density,
-heat capacity and the surface temperature of the ice shelf;
-:math:`\kappa=1.54\times10^{-6} \, \text{m}^2 \text{s}^{-1}` is the heat
-diffusivity through the ice-shelf and :math:`h` is the ice-shelf draft.
-The second term on the right hand side describes the heat flux through
-the ice shelf. A constant surface temperature :math:`T_S=-20^{\circ}\text{C}` is
-imposed. :math:`T` is the temperature of the model cell adjacent to the
-ice-water interface. The temperature at the interface :math:`T_{b}` is
-assumed to be the in-situ freezing point temperature of sea-water
-:math:`T_{f}` which is computed from a linear equation of state
+The temperature at the interface :math:`T_{b}` is assumed to be the in-situ
+freezing point temperature of sea-water :math:`T_{f}` which is computed
+from a linear equation of state
 
 .. math::
    T_{f} = (0.0901 - 0.0575\ S_{b})^{\circ}
-   - 7.61 \times 10^{-4}\frac{\text{K}}{\text{dBar}}\ p_{b}
+   - 7.61 \times 10^{-4}\frac{\text{K}}{\text{dBar}}\ p_{b}.
    :label: hellmerfreeze
 
-with the salinity :math:`S_{b}` and the pressure :math:`p_{b}` (in dBar)
-in the cell at the ice-water interface. From the salt budget, the salt
-flux across the shelf ice-ocean interface is equal to the salt flux due
-to melting and freezing:
+The budget equations for temperature and salinity, together with the
+freezing point temperature of sea-water :math:`T_{f}`, form the so-called
+three-equation-model (e.g., Hellmer and Olbers (1989) :cite:`hellmer:89`,
+Jenkins et al. (2001) :cite:`jenkins:01`). These equations are solved to
+obtain :math:`S_b, T_b, q` to be used in :eq:`jenkinsbc`.
+
+The diffusive heat flux at the ice-ocean interface can be appproximated by
+assuming a linear temperature profile in the ice and approximating the
+vertical derivative of temperature in the ice as the difference between the
+ice surface and ice bottom temperatures divided by the ice thickness, so
+that the heat budget of the infinitesimal layer at the ice-ocean interface
+becomes,
+
+.. math::
+   c_{p} \rho \gamma_T (T - T_{b})
+   +\rho_{I} c_{p,I} \kappa_{I} \frac{(T_{S} - T_{b})}{h} = -Lq
+   :label: hellmerheatbalance
+
+where :math:`\rho` is the density of sea-water, :math:`c_{p} = 3974 \,
+\text{J kg}^{-1} \text{K}^{-1}` is the specific heat capacity of water and
+:math:`\gamma_T` the turbulent exchange coefficient of temperature. The
+value of :math:`\gamma_T` is discussed in Holland and Jenkins (1999)
+:cite:`holland:99`. :math:`L = 334000 \, \text{J kg}^{-1}` is the latent
+heat of fusion.  :math:`\rho_{I} = 920 \, \text{kg m}^{-3}`, :math:`c_{p,I}
+= 2000 \, \text{J kg}^{-1} \text{K}^{-1}`, and :math:`T_{S}` are the
+density, heat capacity and the surface temperature of the ice shelf;
+:math:`\kappa_{I}=1.54\times10^{-6} \, \text{m}^2 \text{s}^{-1}` is the
+heat diffusivity through the ice-shelf and :math:`h` is the ice-shelf
+draft.  The second term on the right hand side describes the heat flux
+through the ice shelf. A constant surface temperature
+:math:`T_S=-20^{\circ}\text{C}` is imposed. Alternatively, assuming that
+the ice is "advected" as implied by the meltflux :math:`q`, the diffusive
+flux can be approximated as :math:`\min(q,0)\,c_{p,I} (T_{S} - T_{b})`
+(runtime flag :varlink:`SHELFICEadvDiffHeatFlux`, see Holland and Jenkins,
+1999 :cite:`holland:99` for details).
+
+From the salt budget, the salt flux across the shelf ice-ocean interface is
+equal to the salt flux due to melting and freezing:
 
 .. math::
     \rho \gamma_{S} (S - S_{b}) = - q\,(S_{b}-S_{I})
    :label: hellmersaltbalance
 
 where :math:`\gamma_S = 5.05\times10^{-3}\gamma_T` is the turbulent
-salinity exchange coefficient, and :math:`S` and :math:`S_{b}` are
-defined in analogy to temperature as the salinity of the model cell
-adjacent to the ice-water interface and at the interface, respectively.
-Note, that the salinity of the ice shelf is generally neglected
-(:math:`S_{I}=0`). :eq:`hellmerheatbalance` to
-:eq:`hellmersaltbalance` can be solved for :math:`S_{b}`,
-:math:`T_{b}`, and the freshwater flux :math:`q` due to melting. These
-values are substituted into expression :eq:`jenkinsbc` to obtain the
-boundary conditions for the temperature and salinity equations of the
-ocean model. This formulation tends to yield smaller melt rates than the
-simpler formulation of the ISOMIP protocol because the freshwater flux
-due to melting decreases the salinity which raises the freezing point
-temperature and thus leads to less melting at the interface. For a
-simpler thermodynamics model where :math:`S_b` is not computed
-explicitly, for example as in the ISOMIP protocol,
-:eq:`jenkinsbc` cannot be applied directly. In this case
-:eq:`hellmersaltbalance` can be used with :eq:`jenkinsbc` to obtain:
+salinity exchange coefficient, and :math:`S` and :math:`S_{b}` are defined
+in analogy to temperature as the salinity of the model cell adjacent to the
+ice-water interface and at the interface, respectively.  Note, that the
+salinity of the ice shelf is generally neglected
+(:math:`S_{I}=0`). :eq:`hellmerfreeze` to :eq:`hellmersaltbalance` can be
+solved for :math:`S_{b}`, :math:`T_{b}`, and the freshwater flux :math:`q`
+due to melting. These values are substituted into
+expression :eq:`jenkinsbc` to obtain the boundary conditions for the
+temperature and salinity equations of the ocean model. Note that with
+:math:`S_{I}=0` and :eq:`hellmersaltbalance`, the boundary flux for
+salinity becomes :math:`F_S = q\,S`, which is the flux that is necessary to
+account for the dilution of salinity in the case of melting.
 
-.. math:: \rho{K}\frac{\partial{S}}{\partial{z}}\biggl|_{b}  = q\,(S-S_I)
+The three-equation-model tends to yield smaller melt rates than the simpler
+formulation of the ISOMIP protocol because the freshwater flux due to
+melting decreases the salinity which raises the freezing point temperature
+and thus leads to less melting at the interface. For a simpler
+thermodynamics model where :math:`S_b` is not computed explicitly, for
+example as in the ISOMIP protocol, :eq:`jenkinsbc` cannot be applied
+directly. In this case :eq:`hellmersaltbalance` can be used with
+:eq:`jenkinsbc` to obtain:
+
+.. math:: F_X = q\,(S-S_I)
 
 This formulation can be used for all cases for which
-:eq:`hellmersaltbalance` is valid. Further, in this
-formulation it is obvious that melting (:math:`q<0`) leads to a
-reduction of salinity.
+:eq:`hellmersaltbalance` is valid. Further, in this formulation it is
+obvious that melting (:math:`q<0`) leads to a reduction of salinity.
 
-The default value of :varlink:`SHELFICEconserve` ``=.FALSE.`` removes the contribution :math:`q\, ( X_{b}-X )` from
-:eq:`jenkinsbc`, making the boundary conditions for temperature
-non-conservative.
+The default value of :varlink:`SHELFICEconserve` ``=.FALSE.`` removes the
+contribution :math:`q\, ( X_{b}-X )` from :eq:`jenkinsbc`, making the
+boundary conditions non-conservative.
 
 Solving the three-equations system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There has been some confusion about the three-equations system, so we document the solution in the code here:
-We use :eq:`hellmerfreeze` :math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}`
-from :eq:`hellmerheatbalance` and find an expression for the freshwater flux :math:`q`:
+There has been some confusion about the three-equations system, so we
+document the solution in the code here: We use :eq:`hellmerfreeze`
+:math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}` from
+:eq:`hellmerheatbalance` and find an expression for the freshwater flux
+:math:`q`:
 
 .. math::
    \begin{aligned}
@@ -484,8 +518,8 @@ and the fresh water flux :math:`q` is computed from
    q = - \frac{c_{p} \rho \gamma_T (T - T_{b})}{L}
    :label: isomipfwflx
 
-In order to use this formulation, set run-time parameter :varlink:`useISOMIPTD` ``=.TRUE.`` in
-``data.shelfice``.
+In order to use this formulation, set run-time parameter
+:varlink:`useISOMIPTD` ``=.TRUE.`` in ``data.shelfice``.
 
 Exchange coefficients
 ^^^^^^^^^^^^^^^^^^^^^
@@ -505,9 +539,9 @@ Remark
 ^^^^^^
 
 The shelfice package and experiments demonstrating its strengths and
-weaknesses are also described in Losch (2008) :cite:`losch:08`. Unfortunately however,
-the description of the thermodynamics in the
-appendix of Losch (2008) is wrong.
+weaknesses are also described in Losch (2008)
+:cite:`losch:08`. Unfortunately, the description of the
+thermodynamics in the appendix of Losch (2008) is wrong.
 
 .. _shelfice_subroutines:
 
