@@ -102,11 +102,8 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-#ifdef ALLOW_TAMC_SINGLEPREC_COMLEV
-      PARAMETER( isbyte      = 4 )
-#else
+C     For smaller tapes replace 8 by 4.
       PARAMETER( isbyte      = 8 )
-#endif
 
       INTEGER    maximpl
       PARAMETER( maximpl   = 6 )
@@ -121,13 +118,6 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       INTEGER    maxcube
       PARAMETER( maxcube   = 1 )
 
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey
-
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
-
-

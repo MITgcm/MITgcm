@@ -47,7 +47,6 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # include "FFIELDS.h"
 # include "EOS.h"
 # ifdef ALLOW_GMREDI

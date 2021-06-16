@@ -31,6 +31,7 @@ c     == routine arguments ==
 
       integer mythid
 
+#ifdef ALLOW_OBCS
 c     == local variables ==
 
       integer bi,bj
@@ -113,6 +114,7 @@ c     == end of interface ==
         enddo
       enddo
 #endif
+#endif /* ALLOW_OBCS */
 
       return
       end

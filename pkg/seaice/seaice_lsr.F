@@ -133,6 +133,8 @@ C     tendency due to advection of momentum
       _RL gVmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /*  SEAICE_ALLOW_MOM_ADVECTION */
 #ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
       INTEGER itmpkey, itmpkey2, itmpkey3
 #endif
       _RL COSWAT

@@ -96,7 +96,9 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
+C     For smaller tapes replace 8 by 4.
       PARAMETER( isbyte      = 8 )
+
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
 #ifndef ALLOW_PTRACERS
@@ -105,11 +107,6 @@ c     and writing data.
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
-
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey, ikppkey, iptrkey
 
 #ifdef ALLOW_CG2D_NSA
 C     Parameter that is needed for the tape complev_cg2d_iter

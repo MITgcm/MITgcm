@@ -421,7 +421,6 @@ C     == Global data ==
 #include "OBCS_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==
@@ -653,7 +652,6 @@ C     == Global data ==
 #include "OBCS_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==

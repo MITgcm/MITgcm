@@ -27,7 +27,6 @@ c #include "DYNVARS.h"
 #include "SURFACE.h"
 c#ifdef ALLOW_AUTODIFF_TAMC
 c# include "tamc.h"
-c# include "tamc_keys.h"
 c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
