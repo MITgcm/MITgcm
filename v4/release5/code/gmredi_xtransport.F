@@ -1,0 +1,248 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.21 2014/09/09 22:34:06 jmc Exp $
+C $Name:  $
+
+#include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+
+CBOP
+C     !ROUTINE: GMREDI_XTRANSPORT
+C     !INTERFACE:
+      SUBROUTINE GMREDI_XTRANSPORT(
+     I     trIdentity, bi, bj, k,
+     I     iMin, iMax, jMin, jMax,
+     I     xA, Tracer,
+     U     df,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE GMREDI_XTRANSPORT
+C     |   Add horizontal x transport terms from GM/Redi
+C     |   parameterization.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == GLobal variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "GMREDI.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_FIELDS.h"
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */
+
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     trIdentity   :: tracer Id number
+C     bi, bj       :: current tile indices
+C     k            :: current level index
+C     iMin,iMax    :: Range of 1rst index where results will be set
+C     jMin,jMax    :: Range of 2nd  index where results will be set
+C     xA           :: Area of X face
+C     Tracer       :: 3D Tracer field
+C     df           :: Diffusive flux component work array.
+C     myThid       :: my Thread Id number
+      INTEGER trIdentity
+      INTEGER bi, bj, k
+      INTEGER iMin, iMax, jMin, jMax
+      _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_GMREDI
+C     !LOCAL VARIABLES:
+C     i, j    ::  Loop counters
+      INTEGER i, j
+#if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
+      INTEGER kp1
+#endif
+#ifdef GM_EXTRA_DIAGONAL
+      INTEGER km1
+      _RL dTdz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#ifdef GM_BOLUS_ADVEC
+      _RL maskp1
+      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#endif /* GM_BOLUS_ADVEC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = trIdentity - 1
+          max0 = maxpass
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          igadkey = (act0 + 1)
+     &                      + act1*max0
+     &                      + act2*max0*max1
+     &                      + act3*max0*max1*max2
+     &                      + act4*max0*max1*max2*max3
+          kkey = (igadkey-1)*Nr + k
+          if (trIdentity.GT.maxpass) then
+             print *, 'ph-pass gmredi_xtrans ', maxpass, trIdentity
+             STOP 'maxpass seems smaller than trIdentity'
+          endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      IF (useGMRedi) THEN
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef GM_NON_UNITY_DIAGONAL
+CADJ STORE Kux(:,:,k,bi,bj) =
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+# endif
+# ifdef GM_EXTRA_DIAGONAL
+CADJ STORE Kuz(:,:,k,bi,bj) =
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   Area integrated zonal flux
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        df(i,j) = df(i,j)
+     &   -xA(i,j)
+#ifdef GM_NON_UNITY_DIAGONAL
+     &    *Kux(i,j,k,bi,bj)
+#else
+#ifdef ALLOW_KAPREDI_CONTROL
+     &    *(kapRedi(i,j,k,bi,bj)
+#else
+     &    *(GM_isopycK
+#endif
+#ifdef GM_VISBECK_VARIABLE_K
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
+#endif
+     &     )
+#endif /* GM_NON_UNITY_DIAGONAL */
+     &    *_recip_dxC(i,j,bi,bj)
+     &    *(Tracer(i,j,k)-Tracer(i-1,j,k))
+       ENDDO
+      ENDDO
+
+#ifdef GM_EXTRA_DIAGONAL
+      IF (GM_ExtraDiag) THEN
+       km1 = MAX(k-1,1)
+       kp1 = MIN(k+1,Nr)
+
+C-    Vertical gradients interpolated to U points
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+           if (k-1 .ge. kTopC(i,j,bi,bj)) then
+#endif /* ALLOW_SHELFICE */
+        dTdz(i,j) =  op5*(
+     &   +op5*recip_drC(k)*
+     &       ( maskC(i-1,j,k,bi,bj)*
+     &           (Tracer(i-1,j,km1)-Tracer(i-1,j,k))
+     &        +maskC( i ,j,k,bi,bj)*
+     &           (Tracer( i ,j,km1)-Tracer( i ,j,k))
+     &       )
+     &   +op5*recip_drC(kp1)*
+     &       ( maskC(i-1,j,kp1,bi,bj)*
+     &           (Tracer(i-1,j,k)-Tracer(i-1,j,kp1))
+     &        +maskC( i ,j,kp1,bi,bj)*
+     &           (Tracer( i ,j,k)-Tracer( i ,j,kp1))
+     &       )      )
+#ifdef ALLOW_SHELFICE
+           else
+       dTdz(i,j) =0.
+           endif
+#endif /* ALLOW_SHELFICE */
+
+        ENDDO
+       ENDDO
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE dtdz(:,:) =
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
+C-    Off-diagonal components of horizontal flux
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+        df(i,j) = df(i,j) - xA(i,j)*Kuz(i,j,k,bi,bj)*dTdz(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* GM_EXTRA_DIAGONAL */
+
+#ifdef GM_BOLUS_ADVEC
+      IF (GM_AdvForm .AND. GM_AdvSeparate
+     & .AND. .NOT.GM_InMomAsStress) THEN
+       kp1 = MIN(k+1,Nr)
+       maskp1 = 1.
+       IF (k.GE.Nr) maskp1 = 0.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         uTrans(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
+     &                                 -GM_PsiX(i,j,k,bi,bj) )
+     &                               *maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE utrans(:,:) =
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j)
+     &    +uTrans(i,j)*op5*(Tracer(i,j,k)+Tracer(i-1,j,k))
+        ENDDO
+       ENDDO
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics
+     &     .AND. DIAGNOSTICS_IS_ON('GM_ubT  ', myThid )
+     &     .AND. trIdentity.EQ.1 ) THEN
+       kp1 = MIN(k+1,Nr)
+       maskp1 = 1.
+       IF (k.GE.Nr) maskp1 = 0.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         tmp1k(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
+     &                                -GM_PsiX(i,j,k,bi,bj) )
+     &                               *maskW(i,j,k,bi,bj)
+     &               *op5*(Tracer(i,j,k)+Tracer(i-1,j,k))
+        ENDDO
+       ENDDO
+       CALL DIAGNOSTICS_FILL(tmp1k,'GM_ubT  ', k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* GM_BOLUS_ADVEC */
+
+      ENDIF
+#endif /* ALLOW_GMREDI */
+
+      RETURN
+      END
