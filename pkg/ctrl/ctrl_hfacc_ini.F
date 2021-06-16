@@ -50,6 +50,8 @@ c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
       _RL     fac
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 c     == external ==
       integer  ilnblnk
@@ -77,6 +79,16 @@ CEOP
       else
         fac = 0. _d 0
       endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
 
 Cml      write(msgbuf,'(a)')
 Cml     &     'ctrl_hfacc_ini: Re-initialising hFacC,'

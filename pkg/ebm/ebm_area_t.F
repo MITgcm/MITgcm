@@ -25,7 +25,6 @@ C     === Global variables ===
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT PARAMETERS:

@@ -69,7 +69,6 @@ C     == Global variables ===
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -215,6 +214,11 @@ C     q2tmp      :: Temporary value of qice for layer 2
       _RL xxFrz, tmpFrz
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey, ikey_1
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 

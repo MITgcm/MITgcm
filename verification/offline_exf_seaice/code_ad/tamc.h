@@ -99,6 +99,7 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
+C     For more accurate but larger tapes replace 4 by 8.
       PARAMETER( isbyte      = 4 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
@@ -109,13 +110,6 @@ c     and writing data.
       INTEGER    maxcube
       PARAMETER( maxcube     = 3 )
 
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey, iptrkey
-
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
-
-

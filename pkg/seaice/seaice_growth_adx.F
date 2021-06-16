@@ -112,6 +112,12 @@ C     facilitate multi-category snow implementation
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER iicekey
+#endif
+
 C==   local arrays ==
 C--   TmixLoc        :: ocean surface/mixed-layer temperature (in K)
       _RL TmixLoc       (1:sNx,1:sNy)

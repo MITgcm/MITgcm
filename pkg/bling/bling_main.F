@@ -116,6 +116,9 @@ C     runoff_PO4           :: tendency due to river runoff
       _RL  G_SI (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itdkey
+#endif
 CEOP
 
 c-----------------------------------------------------------
@@ -208,7 +211,7 @@ C-----------------------------------------------------------
 C  Calculate river runoff source
 C  Tracers are already diluted by freswater input, P-E+R
 C  This accounts for tracer concentration in river runoff
-C  no input south of 60S (it's ice melt)
+C  no input south of 60S (it is ice melt)
 
 #ifdef ALLOW_EXF
        DO j=jmin,jmax

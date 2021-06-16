@@ -82,9 +82,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dumRL(1)
       INTEGER dumpAdRecEx
       LOGICAL doDump
-#ifdef ALLOW_DIAGNOSTICS
-      LOGICAL modelEnd
-#endif
 CEOP
 
 C-----------------------------------------------------------------------

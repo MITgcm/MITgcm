@@ -50,8 +50,6 @@ c we may need these for the checkpointing
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
-      use tamc_mod
-      use tamc_keys_mod
       use cost_mod
       use g_cost_mod
       use ctrl_mod
@@ -59,7 +57,7 @@ c we may need these for the checkpointing
       use ctrl_weights_mod
       use optim_mod
       use grdchk_mod
-      
+
 !$TEMPLATE_PRAGMA_DECLARATIONS
       integer, save :: currcp, curradjointcp
       integer :: cp_loop_variable_1,cp_loop_variable_2,
@@ -74,11 +72,11 @@ c we may need these for the checkpointing
 
       integer iaddr
       external iaddr
-      if (our_rev_mode%arg_store) then 
+      if (our_rev_mode%arg_store) then
         call cp_write_open()
 !$PLACEHOLDER_PRAGMA$ id=8
         call cp_close()
-      end if 
+      end if
       if (our_rev_mode%arg_restore) then
         call cp_read_open()
 !$PLACEHOLDER_PRAGMA$ id=9

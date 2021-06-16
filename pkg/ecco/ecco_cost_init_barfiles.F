@@ -67,10 +67,8 @@ c     == local variables ==
       character*(128) adfname_gencostbar
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-#ifndef ALLOW_CTRL
-      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-#endif
 
 #ifdef ECCO_CTRL_DEPRECATED
       character*(128) fnamepsbar
@@ -486,4 +484,3 @@ c--   Save gencost_barfile on file.
 
       return
       end
-
