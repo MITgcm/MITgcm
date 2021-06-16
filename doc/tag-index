@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl & other:
+  - cleanup: move declarations of local variables in header files ctrl.h and
+    AUTODIFF.h to the local variables section in the respective routines ;
+  - remove tamc_keys.h + remove tamc (+tamc_keys) from all "cb2mFiles" lists ;
+  - disentangle ALLOW_AUTODIFF/ALLOW_AUTODIFF_TAMC/ALLOW_OPENAD a bit more ;
+  - remove unused variables where this is straightforward ;
+  - remove a few i/jmin/max variables.
+
 checkpoint67z (2021/06/12)
 o veritication:
   - make testreport count and report the number calls of S/R load_fields_driver
