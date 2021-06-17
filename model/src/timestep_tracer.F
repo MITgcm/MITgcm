@@ -54,12 +54,7 @@ C-    Step tracer forward in time and store provisional value in gTracer array
           gTracer(i,j,k) = tracer(i,j,k)
      &                   + deltaTLev(k)*gTracer(i,j,k)
 #ifdef ALLOW_OBCS
-CML   For the Stevens open boundary conditions, we need to step forward
-CML   the tracer even on the boundary in order to include surface
-CML   forcing and (vertical) diffusion contributions. For other cases
-CML   this mask was meant to avoid unrealistic values on the open boundaries.
-CML   Lets hope that we can live without this safety net.
-C    &                      *maskInC(i,j,bi,bj)
+     &                                 *maskInC(i,j,bi,bj)
 #endif
         ENDDO
        ENDDO

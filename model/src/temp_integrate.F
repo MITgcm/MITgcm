@@ -472,7 +472,15 @@ C-    end of vertical index (k) loop (Nr:1)
       ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
-C-    Integrate forward in time, storing in gT_loc:  gT <= T + dt*gT
+#ifdef ALLOW_OBCS
+C     Update temperature values along open boundaries so that they include
+C     the contribution from vertical diffusion and forcing.
+      IF ( useOBCS) CALL OBCS_STEVENS_UPDATE_THETA(
+     I     bi, bj, 0, gT_loc,
+     I     myTime, myIter, myThid )
+#endif /* ALLOW_OBCS */
+
+C     -    Integrate forward in time, storing in gT_loc:  gT <= T + dt*gT
       CALL TIMESTEP_TRACER(
      I                  bi, bj, dTtracerLev,
      I                  theta(1-OLx,1-OLy,1,bi,bj),

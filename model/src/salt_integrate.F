@@ -464,6 +464,14 @@ C-    end of vertical index (k) loop (Nr:1)
       ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
+#ifdef ALLOW_OBCS
+C     Update salinity values along open boundaries so that they include
+C     the contribution from vertical diffusion and forcing.
+      IF ( useOBCS ) CALL OBCS_STEVENS_UPDATE_SALT(
+     I     bi, bj, 0, gS_loc,
+     I     myTime, myIter, myThid )
+#endif /* ALLOW_OBCS */
+
 C-    Integrate forward in time, storing in gS_loc:  gS <= S + dt*gS
       CALL TIMESTEP_TRACER(
      I                  bi, bj, dTtracerLev,
