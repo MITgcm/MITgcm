@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - update gfortran optfile for MacBook Pro "darwin_amd64_gfortran" to work with
+    gfortran version 10 (or higher), similar to linux version update.
 o pkg/ctrl & other:
   - cleanup: move declarations of local variables in header files ctrl.h and
     AUTODIFF.h to the local variables section in the respective routines ;
