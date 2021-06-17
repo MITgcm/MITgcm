@@ -1094,6 +1094,7 @@ requiring an html format build, or downloaded as a pdf file.
 When you have completed your documentation edits, you should double
 check both versions are to your satisfaction, particularly noting that
 figure sizing and placement may be rendered differently in the pdf build.
+See :ref:`building_the_manual` for detail.
 
 Section headings
 ----------------
@@ -1410,6 +1411,8 @@ restriction does not apply to tables, URLs, etc. where a line break might
 cause difficulty).
 
 - Todo: determine how to break up sections into smaller files
+
+.. _building_the_manual:
 
 Building the manual
 -------------------
