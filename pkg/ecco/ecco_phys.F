@@ -48,6 +48,7 @@ c     == local variables ==
       integer kgen, kgen3d, itr
       _RL areavolTile(nSx,nSy), areavolGlob
       _RL tmpfld, tmpvol, tmpmsk, tmpmsk2, tmpmskW, tmpmskS
+      _RL tmp_sigmsk, tmpsig, tmpsig_lower, tmpsig_upper
 #endif
 
 c- note defined with overlap here, not needed, but more efficient
@@ -217,6 +218,32 @@ c
               tmpmsk=gencost_mskC(i,j,k,bi,bj,kgen3d)
 #endif
             endif
+
+c
+c ---- If density mask is enabled, use it here ----
+            if (salt(i,j,k,bi,bj).GT.0.0) then
+             if (gencost_useDensityMask(kgen)) then
+c            - first, calculate the scalar density
+               call FIND_RHO_SCALAR(
+     I              theta(i,j,k,bi,bj),
+     I              salt(i,j,k,bi,bj),
+     I              gencost_refPressure(kgen),
+     O              tmpsig,
+     I              mythid)
+c            - subtract 1000 to get sigma
+               tmpsig = tmpsig - 1000
+c            - now, tmpmsk is sigmoid times this value
+               tmpsig_lower = (1.0 + tanh(gencost_tanhScale(kgen)
+     &           *(tmpsig-gencost_sigmaLow(kgen))))/2.0
+               tmpsig_upper = 1.0 - ((1.0 + tanh(gencost_tanhScale(kgen)
+     &           *(tmpsig-gencost_sigmaHigh(kgen))))/2.0)
+c             - update mask value based on the sigmoid function
+               tmp_sigmsk = tmpsig_lower*tmpsig_upper
+               tmpmsk = tmpmsk*tmp_sigmsk
+             endif
+            endif
+c ---- end of density mask (but tmpmsk is used below)
+
 c
 cts ---
 c Now: at each (i,j,k,bi,bj) fill the SCALAR variables
