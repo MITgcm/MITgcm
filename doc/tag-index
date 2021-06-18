@@ -1,12 +1,20 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - fix missing loacal keys declaration in shelfice_thermodynamics.F for TAF
+    storge dir. with SHI_ALLOW_GAMMAFRICT defined.
+  - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h"
 o tools/build_options:
   - update gfortran optfile for MacBook Pro "darwin_amd64_gfortran" to work with
     gfortran version 10 (or higher), similar to linux version update.
 o pkg/ctrl & other:
-  - cleanup: move declarations of local variables in header files ctrl.h and
+  - cleanup: move declarations of local variables from header files ctrl.h and
     AUTODIFF.h to the local variables section in the respective routines ;
+  - move declaration of local keys and variables from header file tamc.h to
+    subroutines where they are used.
+  ==> IMPORTANT: This requires updating all customised versions of "tamc.h",
+    from each and every TAF-AD setup.
   - remove tamc_keys.h + remove tamc (+tamc_keys) from all "cb2mFiles" lists ;
   - disentangle ALLOW_AUTODIFF/ALLOW_AUTODIFF_TAMC/ALLOW_OPENAD a bit more ;
   - remove unused variables where this is straightforward ;
