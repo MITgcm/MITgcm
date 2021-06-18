@@ -175,7 +175,7 @@ CEOP
       _RL iceFrontFreshWaterFlux
      &  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr, nSx,nSy)
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
