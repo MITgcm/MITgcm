@@ -90,9 +90,9 @@ C     i, j    ::  Loop counters
 #endif
 #endif /* GM_BOLUS_ADVEC */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ikey
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER igadkey, kkey
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC

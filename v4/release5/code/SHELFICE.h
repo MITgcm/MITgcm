@@ -55,6 +55,12 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
+C     SHELFICEremeshFrequency  :: Frequency (in seconds) of call to
+C                                 SHELFICE_REMESHING (def: 0. --> no remeshing)
+C     SHELFICEsplitThreshold   :: Thickness fraction remeshing threshold above
+C                                  which top-cell splits (no unit)
+C     SHELFICEmergeThreshold   :: Thickness fraction remeshing threshold below
+C                                  which top-cell merges with below (no unit)
 C     -----------------------------------------------------------------------
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (default
@@ -89,6 +95,19 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+#ifdef ALLOW_DIAGNOSTICS
+C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
+C                               Units are N/m^2 ;   > 0 increase top uVel
+C     shelficeDragV          :: Ice-Shelf stress (for diagnostics), Merid. comp.
+C                               Units are N/m^2 ;   > 0 increase top vVel
+#endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_CTRL
+C   maskSHI           ::  Mask=1 where ice shelf is present on surface
+C                           layer, showing full 2D ice shelf extent.
+C                           =maskC for rest of k values
+C                           Used with ice shelf fwflx
+C                           or shiTransCoeffT/S ctrl.
+#endif
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -111,6 +130,8 @@ CEOP
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold,
      &     iceFrontThetaHorizDiffusionLength,
      &     iceFrontThetaInterior
 
@@ -127,6 +148,9 @@ CEOP
       _RL SHELFICEsalinity
       _RL shiCdrag, shiZetaN, shiRc
       _RL shiPrandtl, shiSchmidt, shiKinVisc
+      _RL SHELFICEremeshFrequency
+      _RL SHELFICEsplitThreshold
+      _RL SHELFICEmergeThreshold
       _RL iceFrontThetaHorizDiffusionLength
       _RL iceFrontThetaInterior
       
@@ -135,6 +159,7 @@ CEOP
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
      &     shiTransCoeffT, shiTransCoeffS, 
+     &     shiCDragFld, shiDragQuadFld,
      &     iceFrontForcingT, iceFrontForcingS
 
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -149,6 +174,8 @@ CEOP
       _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+      _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL iceFrontForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL iceFrontForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -179,6 +206,12 @@ CEOP
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
+
+#ifdef ALLOW_DIAGNOSTICS
+      COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
+      _RS shelficeDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_DIAGNOSTICS */
 
 C ow - 06/29/2018
 C ow - maskSHI above is not consistent with the spirit of gencost. 
@@ -215,6 +248,8 @@ C      icefrontwidth_arr: ice-front width in meters
       LOGICAL useISOMIPTD
       LOGICAL SHELFICEconserve
       LOGICAL SHELFICEboundaryLayer
+      LOGICAL SHI_withBL_realFWflux
+      LOGICAL SHI_withBL_uStarTopDz
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
@@ -231,6 +266,8 @@ C      icefrontwidth_arr: ice-front width in meters
      &     useISOMIPTD,
      &     SHELFICEconserve,
      &     SHELFICEboundaryLayer,
+     &     SHI_withBL_realFWflux,
+     &     SHI_withBL_uStarTopDz,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,
