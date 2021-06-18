@@ -155,7 +155,6 @@ C     but what matter here is just to have the right order of magnitude.
       ENDIF
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
-#ifndef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(iceMask,'SI_AdvFr',0,1,1,bi,bj,myThid)
@@ -186,7 +185,6 @@ C-     Ice-Volume weighted quantities:
         ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 C--   Initialisation (+ build oceanic mask)
       DO j=1-OLy,sNy+OLy
@@ -543,39 +541,6 @@ C---  if not multiDimAdvection
 
 C---  end if multiDimAdvection
       ENDIF
-
-#ifdef OLD_THSICE_CALL_SEQUENCE
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(iceMask,'SI_AdvFr',0,1,1,bi,bj,myThid)
-C-     Ice-fraction weighted quantities:
-        tmpFac = 1. _d 0
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I                   iceHeight, iceMask,tmpFac,1,'SI_AdvHi',
-     I                   0,1,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I                   snowHeight,iceMask,tmpFac,1,'SI_AdvHs',
-     I                   0,1,1,bi,bj,myThid)
-C-     Ice-Volume weighted quantities:
-        IF ( DIAGNOSTICS_IS_ON('SI_AdvQ1',myThid) .OR.
-     &       DIAGNOSTICS_IS_ON('SI_AdvQ2',myThid) ) THEN
-         DO j=1,sNy
-          DO i=1,sNx
-           iceVol(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
-          ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Qice1(1-OLx,1-OLy,bi,bj),
-     I                   iceVol,tmpFac,1,'SI_AdvQ1',
-     I                   0,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FRACT_FILL(
-     I                   Qice2(1-OLx,1-OLy,bi,bj),
-     I                   iceVol,tmpFac,1,'SI_AdvQ2',
-     I                   0,1,2,bi,bj,myThid)
-        ENDIF
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #endif /* ALLOW_THSICE */
 

@@ -121,16 +121,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-        diagName  = 'SI_FrcFx'
-        diagTitle = 'Sea-Ice fraction [0-1], synchro. with fluxes'
-        diagUnits = '0-1             '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-        numFrcFx  = diagNum
-#endif /* OLD_THSICE_CALL_SEQUENCE */
-
         diagName  = 'SIalbedo'
         diagTitle = 'Sea-Ice Albedo [0-1] (area weighted average)'
         diagUnits = '0-1             '
@@ -233,13 +223,8 @@ C-     Advective flux:
         ENDIF
       ENDDO
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-C--   Intermediate State, just after advection:
-        locName   = ' after advection'
-#else /* OLD_THSICE_CALL_SEQUENCE */
 C--   Intermediate State, just before advection:
         locName   = 'before advection'
-#endif /* OLD_THSICE_CALL_SEQUENCE */
         diagName  = 'SI_AdvFr'
         diagTitle = 'Sea-Ice fraction  [0-1] ('//locName//')'
         diagUnits = '0-1             '
