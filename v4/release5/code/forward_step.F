@@ -582,7 +582,7 @@ C--     Step forward fields and calculate time tendency terms.
       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics,
+CADJ STORE adjustColdSST_diag = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # ifdef ALLOW_KPP
 CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics,
@@ -676,7 +676,7 @@ CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics,
+CADJ STORE adjustColdSST_diag = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
