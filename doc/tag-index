@@ -3,8 +3,8 @@
 
 o pkg/shelfice:
   - fix missing loacal keys declaration in shelfice_thermodynamics.F for TAF
-    storge dir. with SHI_ALLOW_GAMMAFRICT defined.
-  - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h"
+    storge dir. with SHI_ALLOW_GAMMAFRICT defined ;
+  - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h".
 o tools/build_options:
   - update gfortran optfile for MacBook Pro "darwin_amd64_gfortran" to work with
     gfortran version 10 (or higher), similar to linux version update.
