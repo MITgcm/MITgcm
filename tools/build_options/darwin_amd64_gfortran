@@ -60,6 +60,16 @@ FFLAGS="$FFLAGS -fconvert=big-endian"
 #- might want to use '-fdefault-real-8' for fizhi pkg:
 #FFLAGS="$FFLAGS -fdefault-real-8 -fdefault-double-8"
 
+#- for setting specific options, check compiler version:
+fcVers=`$FC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-version: '$fcVers'" ; fi
+
+if [ $fcVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
+
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
     FFLAGS="$FFLAGS -Wunused -Wuninitialized"
