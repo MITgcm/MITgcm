@@ -70,6 +70,7 @@ c     == local variables ==
       _RL offset_sum
 
       integer k, kgen
+      logical dosumsq
 
 c     == external functions ==
 
@@ -92,10 +93,11 @@ c     == end of interface ==
 
       if (kgen.GT.0) then
 
+       dosumsq=.TRUE.
        call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
        if ( gencost_errfile(kgen) .NE. ' ' )
      &   call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,myThid)
+     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
 
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
@@ -282,13 +284,13 @@ c--    Smooth field of anomalies
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskc,300000. _d 0,5000,myThid)
+     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,5000,myThid)
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
          if ( useSMOOTH )
-     &    call smooth_basic2D(bpdatanom,maskc,300000. _d 0,5000,myThid)
+     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,5000,myThid)
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'

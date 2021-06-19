@@ -217,24 +217,24 @@ c====================================================
 #ifdef SEAICECOST_JPL
        fname0w=gencost_errfile(igen_conc)
        call ecco_readwei(fname0w,localweight,localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
        call ecco_readwei(gencost_errfile(igen_deconc),
      &      gencost_weight(1,1,1,1,igen_deconc),localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
        call ecco_readwei(gencost_errfile(igen_exconc),
      &      gencost_weight(1,1,1,1,igen_exconc),localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
 #else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
           call ecco_readwei(fname0w,localweight,localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
 #ifdef READIN_EXCONC_DECONC_SIGMA
        call ecco_readwei(gencost_errfile(igen_deconc),
      &      localweight_deconc,localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
        call ecco_readwei(gencost_errfile(igen_exconc),
      &      localweight_exconc,localrec,
-     &      nnzsiv4,myThid)
+     &      nnzsiv4,dosumsq,myThid)
 #endif
         else
           WRITE(standardMessageUnit,'(A)')
