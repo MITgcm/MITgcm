@@ -48,10 +48,8 @@ C     === Local variables ===
 C     bi, bj    :: Tile indices
 C     uIce/vIce :: ice velocity on C-grid [m/s]
       INTEGER bi, bj
-#ifndef OLD_THSICE_CALL_SEQUENCE
       INTEGER i, j
       INTEGER iMin, iMax, jMin, jMax
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
@@ -61,7 +59,6 @@ C     uIce/vIce :: ice velocity on C-grid [m/s]
       _RL  vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( thSIceAdvScheme.GT.0 .AND. biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
-#ifndef OLD_THSICE_CALL_SEQUENCE
 c      iMin = 1
 c      iMax = sNx
 c      jMin = 1
@@ -134,21 +131,9 @@ C--     cumulate time-averaged fields and also fill-up flux diagnostics
      &   _EXCH_XY_RL( iceMask, myThid )
        IF ( useRealFreshWaterFlux )
      &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      ELSEIF ( thSIceAdvScheme.GT.0 ) THEN
-         bi = biArg
-         bj = bjArg
-         CALL THSICE_GET_VELOCITY(
-     O                        uIce, vIce,
-     I                        bi,bj, myTime, myIter, myThid )
-         CALL THSICE_ADVDIFF(
-     U                        uIce, vIce,
-     I                        bi,bj, myTime, myIter, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
       ENDIF
 
       RETURN
