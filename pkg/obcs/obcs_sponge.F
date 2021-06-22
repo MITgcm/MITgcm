@@ -1,4 +1,7 @@
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C--   File obcs_sponge.F:
 C--    Contents:
@@ -442,6 +445,10 @@ C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
       _RL trelax, lambda_obcs_t
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3, ikey, kkey
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
@@ -673,6 +680,10 @@ C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
       _RL srelax, lambda_obcs_s
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3, ikey, kkey
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
 
