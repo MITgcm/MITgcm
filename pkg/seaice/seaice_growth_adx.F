@@ -381,8 +381,9 @@ C NEW VARIABLE NAMES
           PrecipRateOverIceSurfaceToSea(I,J) = 0.0 _d 0
 
           DO IT=1,SEAICE_multDim
-            ticeInMult(I,J,IT)            = 0.0 _d 0
-            ticeOutMult(I,J,IT)           = 0.0 _d 0
+cigf initial guess of ice surface temperatures is celsius2k
+            ticeInMult(I,J,IT)            = celsius2k
+            ticeOutMult(I,J,IT)           = celsius2k
 
             F_io_net_mult(I,J,IT)  = 0.0 _d 0
             F_ia_net_mult(I,J,IT)  = 0.0 _d 0
@@ -658,15 +659,6 @@ C =============================================================================
 
 C--   Start loop over multi-categories
         DO IT=1,SEAICE_multDim
-
-         DO J=1,sNy
-          DO I=1,sNx
-c record prior ice surface temperatures
-           ticeInMult(I,J,IT)  = TICES(I,J,IT,bi,bj)
-           ticeOutMult(I,J,IT) = TICES(I,J,IT,bi,bj)
-           TICES(I,J,IT,bi,bj) = ZERO
-          ENDDO
-         ENDDO
 
 c set relative thickness of ice categories
          pFac = (2.0 _d 0*IT - 1.0 _d 0)*recip_multDim
