@@ -291,7 +291,7 @@ C     ice is absent in a grid cell  (dimensionless)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C ===================================================================
-C =================PART 0: constants and initializations=============
+C ================= constants and initializations====================
 C ===================================================================
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
@@ -353,12 +353,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE area (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE heff (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qnet (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qsw  (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE tices(:,:,:,bi,bj)=comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE area (:,:,bi,bj) = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE heff (:,:,bi,bj) = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE qnet (:,:,bi,bj) = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE qsw  (:,:,bi,bj) = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
@@ -447,8 +446,8 @@ cigf initial guess of ice surface temperatures is celsius2k
 #endif
 
 C =====================================================================
-C  PART 1: Store ice and snow state on onset + regularize actual
-C               snow and ice thickness
+C     Store ice and snow state on onset + regularize actual
+C     snow and ice thickness
 C =====================================================================
 CAB
         DO J=1,sNy
@@ -496,9 +495,9 @@ CAB
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HEFFpreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE HEFFpreTH = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -538,49 +537,7 @@ c         Do not regularize when HEFFpreTH = 0
         ENDDO
 
 C =============================================================================
-C Part 2: Precipitation as snow or rain over ice
-C =============================================================================
-
-        DO J=1,sNy
-         DO I=1,sNx
-c        if we have ice and the temperature of the ice is below the freezing point
-c        then the precip falls and accumulates as snow
-          IF (( AREApreTH(I,J)     .GT. ZERO) .AND.
-     &        ( TICES(I,J,1,bi,bj) .LT. celsius2k) ) THEN
-
-c use either prescribed snowfall or PRECIP rate
-           IF ( snowPrecipFile .NE. ' ' ) THEN
-c    rate of snow accumulation in m/s over ice
-c                      y [m/s] \approx 1.0 [kg/m^3] / 0.9 [m^3/kg] * x [m/s]
-             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
-     &               snowPrecip(i,j,bi,bj)
-
-           ELSE
-             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
-     &           PRECIP(i,j,bi,bj)
-
-           ENDIF
-
-           PrecipRateOverIceSurfaceToSea(I,J) = ZERO
-
-          ELSE
-c            The snow/ice surface is not frozen (wet) so the precipitation
-c            remains wet and runs into the ocean
-             SnowAccRateOverIce(I,J) = ZERO
-             PrecipRateOverIceSurfaceToSea(I,J) = PRECIP(i,j,bi,bj)
-          ENDIF
-
-c  actual change in snow thickness due to precipitation in units of
-c  mean snow thickness
-          SnowAccOverIce(I,J) =
-     &     SnowAccRateOverIce(I,J) * SEAICE_deltaTtherm * AREApreTH(I,J)
-
-c I,J
-         ENDDO
-        ENDDO
-
-C =============================================================================
-C FIND WIND SPEED
+C     FIND WIND SPEED
 C =============================================================================
 
         DO j=1,sNy
@@ -593,15 +550,15 @@ C wind speed from exf
         ENDDO
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE UG                 = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE SnowAccRateOverIce = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE UG                 = comlev1_bibj,key=iicekey,kind=isbyte
+CADJ STORE SnowAccRateOverIce = comlev1_bibj,key=iicekey,kind=isbyte
 CADJ STORE PrecipRateOverIceSurfaceToSea
-CADJ &                        = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ &                        = comlev1_bibj,key=iicekey,kind=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C =============================================================================
-c           Retrieve the air-sea heat and shortwave radiative fluxes
+C           Retrieve the air-sea heat and shortwave radiative fluxes
 C =============================================================================
 
         CALL SEAICE_BUDGET_OCEAN(
@@ -614,8 +571,8 @@ C =============================================================================
 C     In this case it might be better save the output of
 C     seaice_budget_ocean rather than recompute the bulkformulae.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE f_ao = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qswo = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE f_ao = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE qswo = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 C =============================================================================
@@ -648,13 +605,13 @@ c not included without #define SHORTWAVE_HEATING
 #ifdef ALLOW_AUTODIFF_TAMC
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CADJ STORE salt(:,:,kSurface,bi,bj)
-CADJ &                 = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ &                 = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C =============================================================================
-c  calculate heat fluxes within ice (conduction), F_io, and across the
-c  ice/atmosphere interface, F_ia
+C     calculate heat fluxes within ice (conduction), F_io, and across the
+C     ice/atmosphere interface, F_ia
 C =============================================================================
 
 C--   Start loop over multi-categories
@@ -678,8 +635,8 @@ C     multDim-loop
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE hiceActualMult = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE hiceActualMult = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -734,11 +691,62 @@ C     update TICES
           ENDDO
          ENDDO
         ENDDO
+
+C =============================================================================
+C     Precipitation as snow or rain over ice
+C =============================================================================
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C     This store is needed to avoid recomputing seaice_solve4temp in AD-mode,
-C     because F_ia_net is modified in the block below.
+C     also because F_ia_net is modified in the block below.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE F_ia_net  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE F_ia_net    = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE ticeOutMult = comlev1_bibj, key = iicekey, kind = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
+c        if we have ice and the temperature of the ice is below the freezing point
+c        then the precip falls and accumulates as snow
+          IF (( AREApreTH(I,J)     .GT. ZERO) .AND.
+     &        ( ticeOutMult(I,J,1) .LT. celsius2k) ) THEN
+
+c use either prescribed snowfall or PRECIP rate
+           IF ( snowPrecipFile .NE. ' ' ) THEN
+c    rate of snow accumulation in m/s over ice
+c                      y [m/s] \approx 1.0 [kg/m^3] / 0.9 [m^3/kg] * x [m/s]
+             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
+     &               snowPrecip(i,j,bi,bj)
+
+           ELSE
+             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
+     &           PRECIP(i,j,bi,bj)
+
+           ENDIF
+
+           PrecipRateOverIceSurfaceToSea(I,J) = ZERO
+
+          ELSE
+c            The snow/ice surface is not frozen (wet) so the precipitation
+c            remains wet and runs into the ocean
+             SnowAccRateOverIce(I,J) = ZERO
+             PrecipRateOverIceSurfaceToSea(I,J) = PRECIP(i,j,bi,bj)
+          ENDIF
+
+c  actual change in snow thickness due to precipitation in units of
+c  mean snow thickness
+          SnowAccOverIce(I,J) =
+     &     SnowAccRateOverIce(I,J) * SEAICE_deltaTtherm * AREApreTH(I,J)
+
+c I,J
+         ENDDO
+        ENDDO
+
+#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE SnowAccRateOverIce = comlev1_bibj,key=iicekey,kind=isbyte
+CADJ STORE PrecipRateOverIceSurfaceToSea
+CADJ &                        = comlev1_bibj,key=iicekey,kind=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -824,13 +832,13 @@ c          new ice accretion at the base less the rate due to surface melt
 #ifdef ALLOW_AUTODIFF_TAMC
 C     Store F_io/ia_net and QSWI to avoid calling seaice_solve4temp in AD-mode
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE F_io_net      = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_net      = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE QSWI          = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE F_io_net      = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE F_ia_net      = comlev1_bibj, key = iicekey, kind = isbyte
+CADJ STORE QSWI          = comlev1_bibj, key = iicekey, kind = isbyte
 CADJ STORE theta(:,:,kSurface,bi,bj)
-CADJ &                   = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ &                   = comlev1_bibj, key = iicekey, kind = isbyte
 CADJ STORE salt(:,:,kSurface,bi,bj)
-CADJ &                   = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ &                   = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 c     inflection point
@@ -871,16 +879,16 @@ C     The first two store directives are also needed to avoid calling
 C     seaice_solve4temp in AD-mode.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CADJ STORE NetExistingIceGrowthRate      = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+CADJ &     key = iicekey, kind = isbyte
 CADJ STORE IceGrowthRateMixedLayer       = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+CADJ &     key = iicekey, kind = isbyte
 # ifdef SEAICE_GROWTH_ADX_STORE_MORE
 CADJ STORE SnowMeltRateFromSurface       = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+CADJ &     key = iicekey, kind = isbyte
 CADJ STORE IceGrowthRateUnderExistingIce = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+CADJ &     key = iicekey, kind = isbyte
 CADJ STORE IceGrowthRateFromSurface      = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+CADJ &     key = iicekey, kind = isbyte
 # endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -905,7 +913,7 @@ c         with area converts to mean snow thickness.
 #ifdef ALLOW_AUTODIFF_TAMC
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     storing S_h would save one line of recomputation so do not do it
-cnostore CADJ STORE S_h = comlev1_bibj, key = iicekey, byte = isbyte
+cnostore CADJ STORE S_h = comlev1_bibj, key = iicekey, kind = isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -1061,9 +1069,9 @@ C     Update the area, heff, and hsnow
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE AREA (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE AREA (:,:,bi,bj) = comlev1_bibj,key=iicekey,kind=isbyte
+CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,kind=isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,kind=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
@@ -1108,8 +1116,8 @@ c         THE EFFECTIVE SHORTWAVE HEATING RATE
         IF(SEAICEuseFlooding) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,kind=isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,kind=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     convert snow to ice if submerged.
@@ -1337,7 +1345,7 @@ C     =================================
 
            print  '(A,2i4,2(1x,1P3E15.4))',
      &          'ifice i j TI ATP LWD      ',i,j,
-     &          TICES(i,j,1, bi,bj) - celsius2k,
+     &          ticeOutMult(i,j,1) - celsius2k,
      &          ATEMP(i,j,bi,bj) - celsius2k,
      &          LWDOWN(i,j,bi,bj)
 
