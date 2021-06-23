@@ -333,7 +333,7 @@ The tracer budget for the infinitesimal boundary layer takes the general
 form:
 
 .. math::
-   {\rho_I}K_I\frac{\partial{X_I}}{\partial{z}}\biggl|_{b}
+   {\rho_I} K_{I,X} \frac{\partial{X_I}}{\partial{z}}\biggl|_{b}
    = \rho_c \, \gamma_{X} ( X_{b} - X ) -  q ( X_{b} - X_{I} )
    :label: jenkinsgenbudget
 
@@ -349,8 +349,8 @@ temperature in the boundary layer (:math:`T_b`) is taken to be
 at the freezing point,
 which is a function of pressure and salinity, :math:`\rho_I`
 is ice density (:varlink:`rhoShelfIce`),
-and :math:`K_I` the appropriate ice
-diffusivity (:varlink:`SHELFICEkappa`).
+and :math:`K_{I,X}` the appropriate ice
+diffusivity.
 
 For any material tracer such as salinity, 
 the LHS in :eq:`jenkinsgenbudget`
@@ -363,13 +363,14 @@ is included as an additional term to take into account the
 conversion of ice to water:
 
 .. math::
-   {\rho_I} \, c_{p,I} \, \kappa_{I}
+   {\rho_I} \, c_{p,I} \, \kappa_{I,T}
    \frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
    = c_{p} \, \rho_c \, \gamma_{T} ( T_{b} - T )+ L q.
    :label: jenkinsheatbudget
 
-where  :math:`L` is the latent heat of fusion
-(:varlink:`SHELFICElatentHeat`),
+where :math:`\kappa_{I,T}` is the thermal ice
+diffusivity (:varlink:`SHELFICEkappa`),
+:math:`L` is the latent heat of fusion (:varlink:`SHELFICElatentHeat`),
 :math:`c_{p}` is the specific heat capacity of water
 (:varlink:`HeatCapacity_Cp`), :math:`c_{p,I}` the heat capacity of
 the ice shelf (:varlink:`SHELFICEHeatCapacity_Cp`),
@@ -389,7 +390,7 @@ assumed to be the in-situ freezing point temperature of sea-water
    - 7.61 \times 10^{-4} p_{b}.
    :label: hellmerfreeze
 
-where :math:`T_f` is given :sup:`o`\ C and :math:`p_{b}` is in dBar.
+where :math:`T_f` is given in :sup:`o`\ C and :math:`p_{b}` is in dBar.
 In :eq:`jenkinsheatbudget`, the diffusive heat flux at the ice-ocean
 interface can be appproximated by assuming a linear temperature
 profile in the ice and approximating the vertical derivative of
@@ -398,9 +399,9 @@ ice bottom temperatures divided by the ice thickness, so that the heat
 budget of the infinitesimal layer at the ice-ocean interface becomes
 
 .. math::
-   {\rho_I} \, c_{p,I} \, \kappa_{I}
+   {\rho_I} \, c_{p,I} \, \kappa_{I,T}
    \frac{\partial{T_I}}{\partial{z}}\biggl|_{b}
-   \approx \rho_{I} \, c_{p,I} \, \kappa_{I} \frac{(T_{S} - T_{b})}{h}
+   \approx \rho_{I} \, c_{p,I} \, \kappa_{I,T} \frac{(T_{S} - T_{b})}{h}
    :label: dTdzdiffus
 
 where :math:`h` is the ice-shelf draft. Alternatively, assuming
@@ -420,7 +421,8 @@ equal to the salt flux due to melting and freezing:
 
 where :math:`\gamma_S =` :varlink:`SHELFICEsaltToHeatRatio`
 :math:`* \gamma_T` is the turbulent
-salinity exchange coefficient.  Note, that the
+salinity exchange coefficient.  Note, it is assumed that
+:math:`\kappa_{I,S} =0`; moreover, the
 salinity of the ice shelf is generally neglected
 (:math:`S_{I}=0`). 
 
