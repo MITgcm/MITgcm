@@ -385,10 +385,11 @@ assumed to be the in-situ freezing point temperature of sea-water
 :math:`T_{f}`, which is computed from a linear equation of state:
 
 .. math::
-   T_{f} = (0.0901 - 0.0575\ S_{b})^{\circ}
-   - 7.61 \times 10^{-4}\frac{\text{K}}{\text{dBar}}\ p_{b}.
+   T_{f} = (0.0901 - 0.0575\ S_{b})
+   - 7.61 \times 10^{-4} p_{b}.
    :label: hellmerfreeze
 
+where :math:`T_f` is given in Kelvin and :math:`p_{b}` is in dBar.
 In :eq:`jenkinsheatbudget`, the diffusive heat flux at the ice-ocean
 interface can be appproximated by assuming a linear temperature
 profile in the ice and approximating the vertical derivative of
