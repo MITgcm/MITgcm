@@ -182,4 +182,24 @@ C Special Care: more forward vars in FWD common block ; check TAF TL-code !
      &     g_r_low, g_recip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
 
+#ifdef ALLOW_SHELFICE
+      _RS g_shelficeHeatFlux
+     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS g_shelficeFreshwaterFlux
+     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /g_shelfice_fields_rs/
+     &  g_shelficeheatflux, g_shelficefreshwaterflux
+
+      _RL g_shelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shelficemass    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shicdragfld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shidragquadfld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /g_shelfice_fields_rl/ g_shelficemass,
+     &  g_shelficeforcingt, g_shelficeforcings, g_shitranscoefft,
+     &  g_shitranscoeffs, g_shicdragfld, g_shidragquadfld
+#endif
+
 #endif /* ALLOW_AUTODIFF_MONITOR */

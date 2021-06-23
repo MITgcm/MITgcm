@@ -89,7 +89,7 @@ C     initialize to zero and warn user
       if (yadprefix.eq.'g_') then
         il = ILNBLNK(fname(2))
         write(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
-        inquire(file=gfname,exist=g_exst)
+        inquire(file=gfname(1:il+5),exist=g_exst)
         if (.not. g_exst) then
             write(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
      &          'could not find ', gfname(1:il+5)

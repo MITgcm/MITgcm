@@ -67,7 +67,8 @@ C   myThid         :: Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM) || \
+     defined (ALLOW_TANGENTLINEAR_RUN))
 #ifdef ALLOW_AUTODIFF_MONITOR
 
 C !LOCAL VARIABLES:
@@ -169,7 +170,7 @@ C --- 2. Fill diagnostics
 #endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
-#endif /* ALLOW_ADJOINT_RUN */
+#endif /* ALLOW_ADJOINT_RUN || ADMTLM || TANGENGLINEAR */
 
       RETURN
       END
