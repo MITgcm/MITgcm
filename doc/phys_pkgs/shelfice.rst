@@ -186,23 +186,23 @@ integration, :math:`\eta` adjusts so that the isostatic equilibrium is
 maintained for sufficiently slow and large scale motion.
 
 In MITgcm, the total pressure anomaly :math:`p'_{tot}` which is used
-for pressure gradient computations is defined by substracting a purely
-depth dependent contribution :math:`-g\rho_{0}z` with a constant
-reference density :math:`\rho_{0}` from :math:`p_{tot}`.
+for pressure gradient computations is defined by subtracting a purely
+depth dependent contribution :math:`-g\rho_c z` using constant
+reference density :math:`\rho_c` from :math:`p_{tot}`.
 :eq:`pressureocean` becomes
 
 .. math::
-     p_{tot} = p_{top} - g \rho_0 (z+h)  + g \rho_0 \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_0) \, dz} + \, p_{NH}
+     p_{tot} = p_{top} - g \rho_c (z+h)  + g \rho_c \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_c) \, dz} + \, p_{NH}
      :label: pressure
 
 and after rearranging
 
 .. math::
-   p'_{tot} = p'_{top} + g \rho_0 \eta + \, \int_z^{\eta-h}{g (\rho-\rho_0) \, dz} + \, p_{NH}
+   p'_{tot} = p'_{top} + g \rho_c \eta + \, \int_z^{\eta-h}{g (\rho-\rho_c) \, dz} + \, p_{NH}
 
-with :math:`p'_{tot} = p_{tot} + g\,\rho_0\,z` and
+with :math:`p'_{tot} = p_{tot} + g\,\rho_c\,z` and
 :math:`p'_{top} = p_{top} -
-g\,\rho_0\,h`. The non-hydrostatic pressure contribution :math:`p_{NH}`
+g\,\rho_c\,h`. The non-hydrostatic pressure contribution :math:`p_{NH}`
 is neglected in the following.
 
 In practice, the ice shelf contribution to :math:`p_{top}` is computed
@@ -221,7 +221,7 @@ cell :math:`k` as
 
 .. math::
    p'_{k} = p'_{top} + g\rho_{n}\eta +
-   g\,\sum_{k'=n}^{k}\left((\rho_{k'}-\rho_{0})\Delta{z_{k'}}
+   g\,\sum_{k'=n}^{k}\left((\rho_{k'}-\rho_c)\Delta{z_{k'}}
      \frac{1+H(k'-k)}{2}\right)
    :label: discretizedpressure
 
@@ -257,7 +257,7 @@ interaction :math:`g_{\theta}` to the total tendency terms
 :math:`\theta^{n+1} = f(\theta^{n},\Delta{t},G_{\theta}^{n})` are
 
 .. math::
-   g_{\theta,k}   = \frac{Q}{\rho_{0} c_{p} h_{k} \Delta{z}_{k}}
+   g_{\theta,k}   = \frac{Q}{\rho_c c_{p} h_{k} \Delta{z}_{k}}
    \text{ and } g_{\theta,k+1} = 0
    :label: orgtendency
 
@@ -269,12 +269,12 @@ the dashed line in cell C) and applying the averaged tendency to cell A
 layer :math:`k+1`) yields
 
 .. math::
-   g_{\theta,k}^*   = \frac{Q}{\rho_{0} c_{p} \Delta{z}_{k}}
+   g_{\theta,k}^*   = \frac{Q}{\rho_c c_{p} \Delta{z}_{k}}
    :label: tendencyk
 
 .. math::
    g_{\theta,k+1}^*
-   = \frac{Q}{\rho_{0} c_{p} \Delta{z}_{k}}
+   = \frac{Q}{\rho_c c_{p} \Delta{z}_{k}}
    \frac{ \Delta{z}_{k} ( 1- h_{k} )}{\Delta{z}_{k+1}}
    :label: tendencykp1
 
@@ -414,7 +414,7 @@ the shelf ice-ocean interface is
 equal to the salt flux due to melting and freezing:
 
 .. math::
-   \rho \gamma_{S} (S - S_{b}) = - q\,(S_{b}-S_{I})
+   \rho_c \, \gamma_{S} (S - S_{b}) = - q\,(S_{b}-S_{I})
    :label: hellmersaltbalance
 
 where :math:`\gamma_S =` :varlink:`SHELFICEsaltToHeatRatio`
