@@ -163,8 +163,8 @@ CEOP
 #ifdef ALLOW_OBCS_EAST
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBEt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE OBEs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBEt(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE OBEs(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
 # endif
         IF ( useStevensEast ) THEN
 C     Eastern OB
@@ -249,6 +249,9 @@ CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cflMer, gFacM = comlev1_bibj, key=ikey, kind=isbyte
+# endif
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_EAST(
      U        OBEt,
@@ -290,8 +293,8 @@ C ------------------------------------------------------------------------------
 #ifdef ALLOW_OBCS_WEST
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBWt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE OBWs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBWt(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE OBWs(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
 # endif
         IF ( useStevensWest ) THEN
 C     Western OB
@@ -376,6 +379,9 @@ CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cflMer, gFacM = comlev1_bibj, key=ikey, kind=isbyte
+# endif
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_WEST(
      U        OBWt,
@@ -401,8 +407,8 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_NORTH
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBNt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE OBNs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBNt(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE OBNs(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
 # endif
         IF ( useStevensNorth ) THEN
 C         Northern OB
@@ -487,6 +493,9 @@ CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cflZon, gFacZ = comlev1_bibj, key=ikey, kind=isbyte
+# endif
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_NORTH(
      U        OBNt,
@@ -513,8 +522,8 @@ C ------------------------------------------------------------------------------
 #ifdef ALLOW_OBCS_SOUTH
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE OBSt(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE OBSs(:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE OBSt(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE OBSs(:,:,bi,bj)  = comlev1_bibj, key=ikey, kind=isbyte
 # endif
         IF ( useStevensSouth ) THEN
 C         Southern OB
@@ -599,6 +608,9 @@ CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
            ENDIF
           ENDDO
          ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cflZon, gFacZ = comlev1_bibj, key=ikey, kind=isbyte
+# endif
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_SOUTH(
      U        OBSt,
