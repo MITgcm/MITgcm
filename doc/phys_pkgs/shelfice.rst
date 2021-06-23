@@ -69,9 +69,9 @@ obtained by integrating an approximate density from the surface at
 :math:`z=0` down to the bottom of the last fully dry cell within the
 ice shelf, see :eq:`surfacepressure`. Note however the file :varlink:`SHELFICEloadAnomalyFile` must
 not be :math:`p_{top}`, but
-:math:`p_{top}-g\sum_{k'=1}^{n-1}\rho_{0}\Delta{z}_{k'}`, with
-:math:`\rho_{0}=` :varlink:`rhoConst`, so that in the absence of a :math:`\rho^{*}`
-that is different from :math:`\rho_{0}`, the anomaly is zero.
+:math:`p_{top}-g\sum_{k'=1}^{n-1}\rho_c \Delta{z}_{k'}`, with
+:math:`\rho_c =` :varlink:`rhoConst`, so that in the absence of a :math:`\rho^{*}`
+that is different from :math:`\rho_c`, the anomaly is zero.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.28}|\Y{.455}|
 
