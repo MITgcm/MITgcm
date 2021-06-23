@@ -389,7 +389,7 @@ assumed to be the in-situ freezing point temperature of sea-water
    - 7.61 \times 10^{-4} p_{b}.
    :label: hellmerfreeze
 
-where :math:`T_f` is given in Kelvin and :math:`p_{b}` is in dBar.
+where :math:`T_f` is given :sup:`o`\ C and :math:`p_{b}` is in dBar.
 In :eq:`jenkinsheatbudget`, the diffusive heat flux at the ice-ocean
 interface can be appproximated by assuming a linear temperature
 profile in the ice and approximating the vertical derivative of
