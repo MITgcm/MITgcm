@@ -1426,23 +1426,22 @@ To do this you will need a working python installation with the following packag
  - sphinx_rtd_theme
  - numpy
 
-There are many tools available to create a python environment with these packages on your local machine (e.g., using ``pip install``)
-and if you are comfortable doing so on your own, go ahead. Note that as of this writing (December 2020), sphinxcontrib-bibtex versions
-2.0.0 and higher are not supported (we suggest using version 1.0.0).
-
-However, if you are new to python, or less experienced, we suggest the following steps:
-
-#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
-   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
-   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
-#. Install MITgcm doc requirements:
+These packages can be installed from the Python Package Index using pip.  If
+you are using `Anaconda <https://www.anaconda.com/>`_ or one of its variants
+and would like to use conda to install them, you will need the conda-forge
+channel.  You can create (and use) a clean environment with the required
+packages like this:
 
 ::
 
    cd MITgcm
-   conda install --file doc/requirements.txt
+   conda create --name mitgcm_build_the_docs --channel conda-forge --file doc/requirements.txt
+   conda activate mitgcm_build_the_docs
+   [...] # do the work
+   conda deactivate
 
-Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
+Once these modules are installed you can build the html version of the manual
+by running ``make html`` in the ``doc`` directory.
 
 To build the pdf version of the manual you will also need a working version of LaTeX that includes
 `several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
