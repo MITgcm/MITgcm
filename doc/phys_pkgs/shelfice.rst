@@ -327,7 +327,10 @@ boundary layer,  :math:`\rho_c` the density of seawater
 and :math:`\gamma_X` is the turbulent exchange (or transfer)
 coefficient (parameters :varlink:`SHELFICEheatTransCoeff` and
 :varlink:`SHELFICEsaltTransCoeff`), in
-units of an exchange velocity.
+units of an exchange velocity. In-situ temperature, computed locally
+from tracer potential temperature, is
+required here to accurately compute the in-situ freezing point of seawater
+in order to determine ice melt.
 
 The tracer budget for the infinitesimal boundary layer takes the general
 form:
@@ -338,9 +341,8 @@ form:
    :label: jenkinsgenbudget
 
 where the LHS represents diffusive flux from the ice evaluated at the
-interface between the infinitesimal boundary layer
-and the ice, and the RHS
-represents the turbulent and advective exchanges
+interface between the infinitesimal boundary layer and the ice,
+and the RHS represents the turbulent and advective exchanges
 between the infinitesimal
 layer and the ocean and the advective exchange between the boundary
 layer and the ice (:math:`qX_{I}`, this flux will be zero if the ice
@@ -372,10 +374,8 @@ where :math:`\kappa_{I,T}` is the thermal ice
 diffusivity (:varlink:`SHELFICEkappa`),
 :math:`L` is the latent heat of fusion (:varlink:`SHELFICElatentHeat`),
 :math:`c_{p}` is the specific heat capacity of water
-(:varlink:`HeatCapacity_Cp`), :math:`c_{p,I}` the heat capacity of
-the ice shelf (:varlink:`SHELFICEHeatCapacity_Cp`),
-:math:`T_{S}` the (surface) temperature of the 
-ice shelf (:varlink:`SHELFICEthetaSurface`).
+(:varlink:`HeatCapacity_Cp`), and :math:`c_{p,I}` the heat capacity of
+the ice shelf (:varlink:`SHELFICEHeatCapacity_Cp`).
 A reasonable choice for :math:`\gamma_T` 
 (:varlink:`SHELFICEheatTransCoeff`),
 the turbulent exchange coefficient of
@@ -404,7 +404,9 @@ budget of the infinitesimal layer at the ice-ocean interface becomes
    \approx \rho_{I} \, c_{p,I} \, \kappa_{I,T} \frac{(T_{S} - T_{b})}{h}
    :label: dTdzdiffus
 
-where :math:`h` is the ice-shelf draft. Alternatively, assuming
+where :math:`T_{S}` the (surface) temperature of the 
+ice shelf (:varlink:`SHELFICEthetaSurface`) and :math:`h`
+is the ice-shelf draft. Alternatively, assuming
 that the ice is "advected" vertically as implied by the meltflux
 :math:`q`, the diffusive flux can be approximated as
 :math:`\min(q,0)\,c_{p,I} (T_{S} - T_{b})` (runtime flag
