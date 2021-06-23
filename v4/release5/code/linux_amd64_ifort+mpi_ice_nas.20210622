@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# Used to run the testreport on pleiades with:
+# module load comp-intel/2016.2.181 mpi-sgi/mpt.2.14r19 hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
+# works on all types of nodes
+
+FC=ifort
+CC=icc
+
+CPP='/lib/cpp -traditional -P'
+DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4 -DINTEL_COMMITQQ'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+
+#NOOPTFLAGS='-O1 -fp-model precise'
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+CFLAGS='-O0'
+FFLAGS="$FFLAGS -convert big_endian -assume byterecl"
+
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+CFLAGS="$CFLAGS -fPIC"
+FFLAGS="$FFLAGS -fPIC"
+#- For really big executable (> 2 GB), uncomment following 2 lines
+FFLAGS="$FFLAGS -mcmodel=medium -shared-intel"
+CFLAGS="$CFLAGS -mcmodel=medium -shared-intel"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+LDADD='-shared-intel'
+
+FFLAGS="$FFLAGS -W0 -WB"
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O2 -ipo -fp-model precise -align -axCORE-AVX2 -xSSE4.2 -traceback -ftz'
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F ini_parms.F'
+    NOOPTFILES="$NOOPTFILES obcs_init_fixed.F"
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -noalign'
+  else                          #- development/check options:
+   #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
+    FOPTIM="-O0 -noalign -g -traceback"
+    NOOPTFLAGS=$FOPTIM
+    NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
+    FOPTIM="$FOPTIM -warn all -warn nounused"
+    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+LIBS='-L/nasa/sgi/mpt/2.14r19/lib -lmpi -L/nasa/netcdf/4.4.1.1_mpt/lib -lnetcdf'
+INCLUDES='-I/nasa/sgi/mpt/2.14r19/include -I/nasa/netcdf/4.4.1.1_mpt/include'
+#INCLUDEDIRS='/nasa/sgi/mpt/2.14r19/include'
+
+#- used for parallel (MPI) DIVA
+ MPIINCLUDEDIR='/nasa/sgi/mpt/2.14r19/include'
+#MPI_HEADER_FILES='mpif.h mpiof.h'
