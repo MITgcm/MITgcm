@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix incorrect order of array indices for "objf_gencost" and "num_gencost"
+    in 2 gencost v4 S/R (bpv4 & sstv4).
 o eessup/inc & pkg/thsice:
   - Remove 2 CPP options for deprecated code and remove corresponding code:
     a) USE_OLD_MACROS_R4R8toRSRL (added in May 2009) and
