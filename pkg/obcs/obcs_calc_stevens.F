@@ -1051,9 +1051,9 @@ C    myThid    :: my Thread Id number
 
 #ifdef ALLOW_OBCS_STEVENS
 C     !LOCAL VARIABLES:
-C    bi, bj    :: indices of current tile
-C    I,j,k     :: loop indices
-C    Iobc,Jobc :: position-index of open boundary
+C     bi, bj     :: indices of current tile
+C     i,j,k      :: loop indices
+C     Iobc, Jobc :: position-index of open boundary
       INTEGER bi,bj,i,j,k,Iobc,Jobc
 CEOP
 
