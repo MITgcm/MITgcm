@@ -401,6 +401,12 @@ C     d(qh)/d(TICE)
            dqh_dTs(I,J) = cc1*cc3t/((cc2-cc3t*Ppascals)**2 *t2)
           ENDIF
 
+         ENDIF
+        ENDDO
+       ENDDO
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
 CADJ &                     key = iicekey, byte = isbyte
@@ -440,19 +446,25 @@ C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
           tsurfLoc(I,J) = tsurfLoc(I,J)
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
+          IF ( useMaykutSatVapPoly ) THEN
+            tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
+          ENDIF
+C     If the search leads to tsurfLoc < 50 Kelvin, restart the search at
+C     tsurfLoc = TMELT. Note that one solution to the energy balance problem is
+C     an extremely low temperature - a temperature far below realistic values.
+c         IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) tsurfLoc(I,J) = TMELT
+C   Comments & code above not relevant anymore (from older version, when
+C   trying Maykut-Polynomial & dqh_dTs > 0 ?): commented out
+         ENDIF
+        ENDDO
+       ENDDO
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
-          IF ( useMaykutSatVapPoly ) THEN
-            tsurfLoc(I,J) = MAX( celsius2K+MIN_TICE, tsurfLoc(I,J) )
-          ENDIF
-C     If the search leads to tsurfLoc < 50 Kelvin, restart the search
-C     at tsurfLoc = TMELT.  Note that one solution to the energy balance problem
-C     is an extremely low temperature - a temperature far below realistic values.
-c         IF (tsurfLoc(I,J) .LT. 50.0 _d 0 ) tsurfLoc(I,J) = TMELT
-C   Comments & code above not relevant anymore (from older version, when
-C   trying Maykut-Polynomial & dqh_dTs > 0 ?): commented out
           tsurfLoc(I,J) = MIN( tsurfLoc(I,J), TMELT )
 
 #ifdef SEAICE_DEBUG
@@ -471,25 +483,31 @@ C   trying Maykut-Polynomial & dqh_dTs > 0 ?): commented out
       ENDDO                     !/* Iterations */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      DO J=1,sNy
-       DO I=1,sNx
-        IF ( iceOrNot(I,J) ) THEN
-
-C     Save updated tsurf and finalize the flux terms
-         TSURFout(I,J) = tsurfLoc(I,J)
 
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
 Cgf no additional dependency through solver, snow, etc.
-         IF ( SEAICEadjMODE.GE.2 ) THEN
+      IF ( SEAICEadjMODE.GE.2 ) THEN
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
           CALL ZERO_ADJ_1D( 1, TSURFin(I,J), myThid)
           absorbedSW(I,J) = 0.3 _d 0 *SWDOWN(I,J,bi,bj)
           IcePenetSW(I,J)= 0. _d 0
          ENDIF
-         IF ( postSolvTempIter.EQ.2 .OR. SEAICEadjMODE.GE.2 ) THEN
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( postSolvTempIter.EQ.2 .OR. SEAICEadjMODE.GE.2 ) THEN
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
           t1 = TSURFin(I,J)
 #else /* SEAICE_MODIFY_GROWTH_ADJ */
 
-         IF ( postSolvTempIter.EQ.2 ) THEN
+      IF ( postSolvTempIter.EQ.2 ) THEN
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
 C     Recalculate the fluxes based on the (possibly) adjusted TSURF
           t1 = tsurfLoc(I,J)
 #endif /* SEAICE_MODIFY_GROWTH_ADJ */
@@ -533,7 +551,13 @@ C note that F_c is flipped sign in this rewrite for some reason
           ENDIF
 C IGF_SIR-e
 
-         ELSEIF ( postSolvTempIter.EQ.1 ) THEN
+         ENDIF
+        ENDDO
+       ENDDO
+      ELSEIF ( postSolvTempIter.EQ.1 ) THEN
+       DO J=1,sNy
+        DO I=1,sNx
+         IF ( iceOrNot(I,J) ) THEN
 C     Update fluxes (consistent with the linearized formulation)
           delTsurf  = tsurfLoc(I,J)-tsurfPrev(I,J)
           F_c(I,J)  = effConduct(I,J)*(tempFrz(I,J)-tsurfLoc(I,J))
@@ -545,7 +569,15 @@ c        ELSEIF ( postSolvTempIter.EQ.0 ) THEN
 C     Take fluxes from last iteration
 
          ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+      DO J=1,sNy
+       DO I=1,sNx
+        IF ( iceOrNot(I,J) ) THEN
 
+C     Save updated tsurf and finalize the flux terms
+         TSURFout(I,J) = tsurfLoc(I,J)
 C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
 C     F_lh is positive upward (sea ice looses heat) and FWsublim
 C     is also positive upward (atmosphere gains freshwater)
