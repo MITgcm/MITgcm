@@ -132,7 +132,6 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define _GLOBAL_MAX_RS(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #define _MPI_TYPE_RS MPI_REAL
 #endif
-#endif
 
 #define _RL Real*8
 #define RL_IS_REAL8
