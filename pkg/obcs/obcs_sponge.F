@@ -641,33 +641,12 @@ C     == Local variables ==
 C     Loop counters
       INTEGER i, j, isl, jsl
       _RL srelax, lambda_obcs_s
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3, ikey, kkey
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( useOBCSsponge .AND. spongeThickness.NE.0 ) THEN
-
-#ifdef ALLOW_AUTODIFF_TAMC
-       act1 = bi - myBxLo(myThid)
-       max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-       act2 = bj - myByLo(myThid)
-       max2 = myByHi(myThid) - myByLo(myThid) + 1
-       act3 = myThid - 1
-       max3 = nTx*nTy
-       act4 = ikey_dynamics - 1
-       ikey = (act1 + 1) + act2*max1
-     &      + act3*max1*max2
-     &      + act4*max1*max2*max3
-       kkey = (ikey-1)*Nr + k
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C Northern Open Boundary
 #ifdef ALLOW_OBCS_NORTH
        IF ( OBCSsponge_N .AND. OBCSsponge_Salt ) THEN
-c #ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE OBNs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
-c #endif
         DO i=iMin,iMax
          IF ( OB_Jn(i,bi,bj).NE.OB_indexNone ) THEN
           DO jsl= 1,spongeThickness
@@ -705,9 +684,6 @@ c #endif
 C Southern Open Boundary
 #ifdef ALLOW_OBCS_SOUTH
        IF ( OBCSsponge_S .AND. OBCSsponge_Salt ) THEN
-c #ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE OBSs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
-c #endif
         DO i=iMin,iMax
          IF ( OB_Js(i,bi,bj).NE.OB_indexNone ) THEN
           DO jsl= 1,spongeThickness
@@ -745,9 +721,6 @@ c #endif
 C Eastern Open Boundary
 #ifdef ALLOW_OBCS_EAST
       IF ( OBCSsponge_E .AND. OBCSsponge_Salt ) THEN
-c #ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE OBEs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
-c #endif
        DO j=jMin,jMax
         IF ( OB_Ie(j,bi,bj).NE.OB_indexNone ) THEN
          DO isl= 1,spongeThickness
@@ -785,9 +758,6 @@ c #endif
 C Western Open Boundary
 #ifdef ALLOW_OBCS_WEST
       IF ( OBCSsponge_W .AND. OBCSsponge_Salt ) THEN
-c #ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE OBWs(:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
-c #endif
        DO j=jMin,jMax
         IF ( OB_Iw(j,bi,bj).NE.OB_indexNone ) THEN
          DO isl= 1,spongeThickness
