@@ -1,8 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix incorrect order of array indices for "objf_gencost" and "num_gencost"
+    in 2 gencost v4 S/R (bpv4 & sstv4).
+o eessup/inc & pkg/thsice:
+  - Remove 2 CPP options for deprecated code and remove corresponding code:
+    a) USE_OLD_MACROS_R4R8toRSRL (added in May 2009) and
+    b) OLD_THSICE_CALL_SEQUENCE  (added in Jan 2013).
 o pkg/shelfice:
-  - fix missing loacal keys declaration in shelfice_thermodynamics.F for TAF
+  - fix missing local keys declaration in shelfice_thermodynamics.F for TAF
     storge dir. with SHI_ALLOW_GAMMAFRICT defined ;
   - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h".
 o tools/build_options:
