@@ -69,19 +69,31 @@ C     i,j, bi,bj  :: loop indices
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
 
-            IF ( .NOT.SHELFICEDynMassOnly ) THEN
-             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &        + shelfIceFreshWaterFlux(i,j,bi,bj)*deltaT
-            ENDIF
+           IF ( .NOT.SHELFICEDynMassOnly ) THEN
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &              + shelfIceFreshWaterFlux(i,j,bi,bj)*deltaT
+             ENDDO
+            ENDDO
+           ENDIF
 
-            shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &        + shelfIceMassDynTendency(i,j,bi,bj)*deltaT
-
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &              + shelfIceMassDynTendency(i,j,bi,bj)*deltaT
+            ENDDO
            ENDDO
-          ENDDO
+
+C--    quick fix to prevent ice-shelf mass to become negative
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) =
+     &              MAX( shelficeMass(i,j,bi,bj), zeroRL )
+            ENDDO
+           ENDDO
+
          ENDDO
         ENDDO
        ENDIF

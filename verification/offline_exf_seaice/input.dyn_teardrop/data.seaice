@@ -1,0 +1,39 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ usePW79thermodynamics=.FALSE.,
+ SEAICE_strength    = 2.6780e+04,
+# JFNK-convergence is better with this old default value (2 times the new
+# default) probably because the ice starts to move earlier
+ SEAICE_drag = 0.002,
+#
+ OCEAN_drag         = 8.1541e-04,
+ SEAICE_no_Slip     = .FALSE.,
+# LSR solver parameter
+ LSR_ERROR          = 1.E-12,
+ SEAICElinearIterMax= 1500,
+ LSR_mixIniGuess    = 1,
+# End of LSR solver parameter
+# JFNK solver parameters
+# SEAICEetaZmethod    = 3,
+# SEAICEuseJFNK       = .TRUE.,
+# SEAICEpreconLinIter = 10,
+# SEAICEnonLinIterMax = 100,
+# SEAICElinearIterMax = 50,
+# SEAICEnonLinTol     = 1.e-09,
+# SEAICE_JFNK_lsIter  = 0,
+# JFNKres_tFac        = 0.5,
+# SEAICE_JFNKalpha    = 1.5,
+# end of JFNK solver parameters
+#- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
+#SEAICEadvScheme    = 77, # this is the new default
+#AreaFile  = 'const100.bin',
+#HeffFile  = 'const+20.bin',
+#HsnowFile = 'const_00.bin',
+ SEAICEwriteState   = .TRUE.,
+ SEAICE_monFreq = 1800.,
+ SEAICEuseTD = .TRUE.,
+ SEAICE_tensilFac = 0.05,
+ &
+
+ &SEAICE_PARM03
+ &

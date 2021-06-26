@@ -91,6 +91,7 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
+     & SEAICEuseMCS, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
      & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
      & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
@@ -146,6 +147,7 @@ C--   SEAICE parameters
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
+     & SEAICE_eccfr, SEAICEtdMU, SEAICEmcMu,
      & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
@@ -225,6 +227,10 @@ C--   set default sea ice parameters
       SEAICEuseTilt      = .TRUE.
       SEAICEheatConsFix  = .FALSE.
       SEAICEuseTEM       = .FALSE.
+      SEAICEuseMCS       = .FALSE.
+      SEAICEuseMCE       = .FALSE.
+      SEAICEuseTD        = .FALSE.
+      SEAICEusePL        = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseEVPstar   = .FALSE.
@@ -397,8 +403,11 @@ C
       SEAICE_cStar       = 20.    _d 0
       SEAICEpressReplFac = 1.     _d 0
       SEAICE_eccen       = 2.     _d 0
+      SEAICE_eccfr       = UNSET_RL
       SEAICE_tensilFac   = 0.     _d 0
       SEAICE_tensilDepth = 0.     _d 0
+      SEAICEtdMU         = 1.     _d 0
+      SEAICEmcMu         = 1.     _d 0
 C     coefficients for flux computations/bulk formulae
       SEAICE_dalton      = 1.75   _d -03
 #ifdef ALLOW_EXF
@@ -667,6 +676,8 @@ C--   Set default values (if not specified in data.seaice namelist)
 
 C--   Default for regularizing Delta to remain backward compatible
       IF ( SEAICE_deltaMin .EQ. UNSET_RL ) SEAICE_deltaMin = SEAICE_EPS
+C--   Default is to have a normal flow rule if SEAICE_eccfr is not set
+      IF (SEAICE_eccfr .EQ. UNSET_RL ) SEAICE_eccfr = SEAICE_eccen
 
 C--   If no PDF was prescribed use the default uniform pdf
       tmp = SEAICE_multDim
@@ -825,7 +836,11 @@ C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
 C     maximum number of LSOR steps in default Picard solver
 C     (=previous default for retired SOLV_MAX_ITERS)
+#ifdef ALLOW_AUTODIFF
+       SEAICElinearIterMax = SOLV_MAX_FIXED
+#else
        SEAICElinearIterMax = 1500
+#endif
 C     the maximum number of Krylov dimensions of 50 is hard coded in
 C     S/R SEAICE_FGMRES, so that more than 50 linear iterations will
 C     restart GMRES

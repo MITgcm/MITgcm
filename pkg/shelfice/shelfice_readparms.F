@@ -39,6 +39,7 @@ C  msgBuf               :: message buffer
 CEOP
 
       NAMELIST /SHELFICE_PARM01/
+     &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff,
      &     SHELFICEsaltTransCoeff,
      &     SHELFICEMassStepping,
@@ -105,6 +106,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0
+      SHELFICEsaltToHeatRatio  =   5.05 _d -03
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
       SHELFICEkappa            =   1.54 _d -06
@@ -167,7 +169,7 @@ C Close the open data file
 C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
-     &     5.05 _d -3 *SHELFICEheatTransCoeff
+     &     SHELFICEsaltToHeatRatio * SHELFICEheatTransCoeff
 
 C New calcUstar expression not available with SHELFICEboundaryLayer:
       IF ( SHELFICEboundaryLayer ) SHELFICE_oldCalcUStar = .TRUE.

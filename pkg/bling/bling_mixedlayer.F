@@ -25,7 +25,7 @@ C     === Global variables ===
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
@@ -226,4 +226,3 @@ c           SumMLDepth(i,j) = 0. _d 0
 
       RETURN
       END
-

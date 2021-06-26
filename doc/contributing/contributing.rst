@@ -1094,6 +1094,7 @@ requiring an html format build, or downloaded as a pdf file.
 When you have completed your documentation edits, you should double
 check both versions are to your satisfaction, particularly noting that
 figure sizing and placement may be rendered differently in the pdf build.
+See :ref:`building_the_manual` for detail.
 
 Section headings
 ----------------
@@ -1403,9 +1404,15 @@ The backslash removes the space between the unit and the exponent. Similarly, fo
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
 
+Line length: as recommended in the
+`sphinx style guide <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#line-length>`_,
+lines of raw rst text should be kept to fewer than 80 characters (this
+restriction does not apply to tables, URLs, etc. where a line break might
+cause difficulty).
+
 - Todo: determine how to break up sections into smaller files
 
-- discuss | lines
+.. _building_the_manual:
 
 Building the manual
 -------------------

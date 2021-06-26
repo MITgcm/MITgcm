@@ -1,3 +1,11 @@
+Version 0.1.2, 2021-01-11
+- Fix readstats for multiple fields in one file
+- Fix more deprecation and syntax warnings
+- Add more llc utilities:
+  o div computes diverenge of a vector field on u/v points
+  o uv2c averages the components of a vector field to c points
+  o grad computates gradient of scalar field
+
 Version 0.1.1, 2019-09-26
 - Fix some deprecation warnings from numpy and matplotlib
 - Change doc strings to numpy format so they work with autodoc

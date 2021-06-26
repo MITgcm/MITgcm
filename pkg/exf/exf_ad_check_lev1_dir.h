@@ -4,6 +4,9 @@ c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
 #ifdef ALLOW_EXF
+C     most of these fields are here for safety only, because it should
+C     always be possible to save the field hflux instead of hflux0 and
+C     hflux1 in the innermost checkpoint level
 
 CADJ STORE hflux0    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hflux1    = comlev1, key=ikey_dynamics, kind=isbyte

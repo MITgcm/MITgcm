@@ -39,8 +39,9 @@ C     == Global variables ===
 # include "CD_CODE_VARS.h"
 #endif
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-# include "tamc_keys.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -186,6 +187,11 @@ C     addDissV    :: merid momentum tendency from 3-D Smag. viscosity
       INTEGER jMin, jMax
       PARAMETER( iMin = 0 , iMax = sNx+1 )
       PARAMETER( jMin = 0 , jMax = sNy+1 )
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER idynkey, kkey
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
 c     LOGICAL dPhiHydDiagIsOn
@@ -276,16 +282,16 @@ CHPF$&                  )
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          idynkey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        idynkey = (act1 + 1) + act2*max1
+     &                       + act3*max1*max2
+     &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -677,6 +683,10 @@ C     has to be removed by something like the following subroutine:
 C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskInC, maskInC, rA, drF,
 C     &                     'phiHydLow', myTime, myThid )
 Cml)
+
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+      CALL DIAGS_SOUND_SPEED( myThid )
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

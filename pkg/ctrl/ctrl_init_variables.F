@@ -41,10 +41,6 @@ c     == local variables ==
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer ntmp
-      integer ivarindex
 
 c     == end of interface ==
 
@@ -52,10 +48,6 @@ c     == end of interface ==
       jthi = myByHi(myThid)
       itlo = myBxLo(myThid)
       ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
 
 #ifdef ECCO_CTRL_DEPRECATED
       do bj = jtlo,jthi
@@ -70,8 +62,8 @@ c     == end of interface ==
 #ifdef ALLOW_HFLUX_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_hflux0(i,j,bi,bj) = 0. _d 0
               xx_hflux1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -83,8 +75,8 @@ c     == end of interface ==
 #ifdef ALLOW_SFLUX_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_sflux0(i,j,bi,bj) = 0. _d 0
               xx_sflux1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -96,8 +88,8 @@ c     == end of interface ==
 #ifdef ALLOW_USTRESS_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_tauu0(i,j,bi,bj) = 0. _d 0
               xx_tauu1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -109,8 +101,8 @@ c     == end of interface ==
 #ifdef ALLOW_VSTRESS_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_tauv0(i,j,bi,bj) = 0. _d 0
               xx_tauv1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -122,8 +114,8 @@ c     == end of interface ==
 #ifdef ALLOW_UWIND_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_uwind0(i,j,bi,bj) = 0. _d 0
               xx_uwind1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -135,8 +127,8 @@ c     == end of interface ==
 #ifdef ALLOW_VWIND_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_vwind0(i,j,bi,bj) = 0. _d 0
               xx_vwind1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -148,8 +140,8 @@ c     == end of interface ==
 #ifdef ALLOW_ATEMP_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_atemp0(i,j,bi,bj) = 0. _d 0
               xx_atemp1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -161,8 +153,8 @@ c     == end of interface ==
 #ifdef ALLOW_AQH_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_aqh0(i,j,bi,bj) = 0. _d 0
               xx_aqh1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -174,8 +166,8 @@ c     == end of interface ==
 #ifdef ALLOW_PRECIP_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_precip0(i,j,bi,bj) = 0. _d 0
               xx_precip1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -187,8 +179,8 @@ c     == end of interface ==
 #ifdef ALLOW_SWFLUX_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_swflux0(i,j,bi,bj) = 0. _d 0
               xx_swflux1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -200,8 +192,8 @@ c     == end of interface ==
 #ifdef ALLOW_SWDOWN_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_swdown0(i,j,bi,bj) = 0. _d 0
               xx_swdown1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -213,8 +205,8 @@ c     == end of interface ==
 #ifdef ALLOW_LWFLUX_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_lwflux0(i,j,bi,bj) = 0. _d 0
               xx_lwflux1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -226,8 +218,8 @@ c     == end of interface ==
 #ifdef ALLOW_LWDOWN_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_lwdown0(i,j,bi,bj) = 0. _d 0
               xx_lwdown1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -239,8 +231,8 @@ c     == end of interface ==
 #ifdef ALLOW_EVAP_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_evap0(i,j,bi,bj) = 0. _d 0
               xx_evap1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -252,8 +244,8 @@ c     == end of interface ==
 #ifdef ALLOW_SNOWPRECIP_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_snowprecip0(i,j,bi,bj) = 0. _d 0
               xx_snowprecip1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -265,8 +257,8 @@ c     == end of interface ==
 #ifdef ALLOW_APRESSURE_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_apressure0(i,j,bi,bj) = 0. _d 0
               xx_apressure1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -278,8 +270,8 @@ c     == end of interface ==
 #ifdef ALLOW_RUNOFF_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_runoff0(i,j,bi,bj) = 0. _d 0
               xx_runoff1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -291,8 +283,8 @@ c     == end of interface ==
 #ifdef ALLOW_SST_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_sst0(i,j,bi,bj) = 0. _d 0
               xx_sst1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -304,8 +296,8 @@ c     == end of interface ==
 #ifdef ALLOW_SSS_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_sss0(i,j,bi,bj) = 0. _d 0
               xx_sss1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -317,8 +309,8 @@ c     == end of interface ==
 #ifdef ALLOW_SHIFWFLX_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               xx_shifwflx0(i,j,bi,bj) = 0. _d 0
               xx_shifwflx1(i,j,bi,bj) = 0. _d 0
             enddo
@@ -330,8 +322,8 @@ c     == end of interface ==
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
               bottomDragFld(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
@@ -342,8 +334,8 @@ c     == end of interface ==
 #ifdef ALLOW_ATM_MEAN_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
 # ifdef ALLOW_ATEMP_CONTROL
               xx_atemp_mean (i,j,bi,bj) = 0. _d 0
 # endif

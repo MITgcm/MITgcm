@@ -22,7 +22,6 @@ C !USES: ===============================================================
 #include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -43,6 +42,11 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  iTracer :: tracer index
       INTEGER iTracer
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER iptrkey, kkey
+#endif
 CEOP
 
 C Loop over tracers
@@ -50,26 +54,25 @@ C Loop over tracers
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = iTracer - 1
-          max0 = PTRACERS_num
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          iptrkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          kkey = (iptrkey-1)*Nr + k
+        act0 = iTracer - 1
+        max0 = PTRACERS_num
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        iptrkey = (act0 + 1) + act1*max0
+     &                       + act2*max0*max1
+     &                       + act3*max0*max1*max2
+     &                       + act4*max0*max1*max2*max3
+        kkey = (iptrkey-1)*Nr + k
 CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-         CALL CONVECTIVELY_MIXTRACER(
+        CALL CONVECTIVELY_MIXTRACER(
      I           bi,bj,k,weightA,weightB,
      U           pTracer(1-OLx,1-OLy,1,1,1,iTracer),
      I           myThid )

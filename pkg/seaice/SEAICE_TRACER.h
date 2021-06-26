@@ -42,7 +42,7 @@ C     SItrExpand0       - for ice cover thermo. exans.  - constant tracer value
 C     SItrFile        - File containing initial sea ice tracer
 C     SItrName        - tracer name ('salinity', 'age', 'one', etc.)
 C     SItrNameLong    - tracer long name
-C     SItrUnit        - tracer unit ('psu','s','kg/kg', etc.)
+C     SItrUnit        - tracer unit ('g/kg','s','kg/kg', etc.)
 C     SItrMate        - variable to which the tracer is associated ('HEFF','AREA',etc.)
       CHARACTER*(MAX_LEN_FNAM) SItrFile(SItrMaxNum)
       CHARACTER*(MAX_LEN_FNAM) SItrName(SItrMaxNum)

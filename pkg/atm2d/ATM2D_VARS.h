@@ -204,7 +204,7 @@ C     These are the fluxes actually passed to the ocean model (w/some unit/sign 
        _RL pass_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! slp anomaly -> ocean (pascals)
        _RL pass_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! atmos pCO2 -> ocean (parts by volume, i.e. ppmv*1e-6)
        _RL pass_sIceLoad(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! seaice mass loading -> ocean
-       _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s)
+       _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (g/m^2/s)
 
 
       COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm, snowPrc
@@ -278,4 +278,3 @@ C      Variables passed from ocean model
        _RL sssFromOcn(1:sNx,1:sNy)
        _RL oFluxCO2(1:sNx,1:sNy)   ! flux of CO2 from ocean DIC etc. package (mol/m2/s)
        _RL mlDepth(1:sNx,1:sNy)    ! at present, simply the depth of top ocean grid cell (m)
-

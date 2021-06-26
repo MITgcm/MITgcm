@@ -63,7 +63,6 @@ C     == global variables ==
 #include "EXF_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -81,6 +80,11 @@ C     !LOCAL VARIABLES:
       INTEGER jmin, jmax
       PARAMETER ( imin = 1-OLx , imax = sNx+OLx )
       PARAMETER ( jmin = 1-OLy , jmax = sNy+OLy )
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+#endif
 CEOP
 
 C--   set surface level index:

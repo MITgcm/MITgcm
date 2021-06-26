@@ -110,7 +110,7 @@ c       tTitle = 'Conservative Temp.   '
         sTitle = ' Absolute Salinity  '
       ELSE
         tUnit4c= 'degC'
-        sUnit5c= 'psu  '
+        sUnit5c= 'g/kg '
 c       tTitle = 'Potential Temperature'
         sTitle = ' Salinity           '
       ENDIF
@@ -917,6 +917,15 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 # endif /* ALLOW_GMREDI */
 #endif /* ALLOW_EDDYPSI */
 
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+      diagName  = 'CSound  '
+      diagTitle = 'Speed of sound in seawater'
+      diagUnits = 'm/s             '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
 #ifdef ALLOW_AUTODIFF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Adjoint state variables
@@ -960,11 +969,97 @@ C     Adjoint state variables
 
       diagName  = 'ADJsalt '
       diagTitle = 'dJ/dSalt: Sensitivity to salinity'
-      diagUnits = 'dJ/psu          '
+      diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C--   surface fluxes:
+      diagName  = 'ADJtaux '
+      diagTitle = 'dJ/dTaux: Senstivity to zonal surface wind stress'
+      diagUnits = 'dJ/(N/m^2)      '
+      diagCode  = 'UU A    U1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJtauy '
+      diagTitle = 'dJ/dTauy: Sensitivity to merid. surface wind stress'
+      diagUnits = 'dJ/(N/m^2)      '
+      diagCode  = 'VV A    U1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJempmr'
+      diagTitle = 'dJ/dEmPmR: Sensitivity to net surface Fresh-Water'
+     &          //' flux into the ocean'
+      diagUnits = 'dJ/(kg/m^2/s)   '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJqnet'
+      diagTitle = 'dJ/dQnet: Sensitivity to net surface heat flux'
+     &          //'into the ocean'
+      diagUnits = 'dJ/(W/m^2)      '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJqsw'
+      diagTitle = 'dJ/dQsw: Sensitivitiy to net Short-Wave radiation'
+      diagUnits = 'dJ/(W/m^2)      '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJsst'
+      diagTitle = 'dJ/dSST: Sensitivity to Sea Surface Temperature'
+      diagUnits = 'dJ/K'
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJsss'
+      diagTitle = 'dJ/dSSS: Sensitivity to Sea Surface Salinity'
+      diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C Miscellanious
+      diagName  = 'ADJbtdrg'
+      diagTitle = 'dJ/dCd: Sensitivity to bottom drag coefficient'
+      diagUnits = 'dJ/d()'
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJdifkr'
+      diagTitle = 'dJ/dKr: Sensitivity to vertical diffusivity'
+      diagUnits = 'dJ/d(m^2/s))'
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJepsix'
+      diagTitle = 'dJ/dEddyPsiX: Sensitivity to zonal eddy'
+     &           //'streamfunction'
+      diagUnits = 'dJ/(m^2/s)      '
+      diagCode  = 'UURA    UR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJepsiy'
+      diagTitle = 'dJ/dEddyPsiY: Sensitivity to meridional eddy'
+     &           //'streamfunction'
+      diagUnits = 'dJ/(m^2/s)      '
+      diagCode  = 'VVRA    UR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 #endif /* ALLOW_AUTODIFF */
 
       RETURN

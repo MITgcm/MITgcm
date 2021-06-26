@@ -532,7 +532,7 @@ C     --> save current value into "surf_pRef_save"
      I           myThid )
 C-    Reference value
             WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,A,F11.5)')
-     &           'rho(', sFld(i,j), ' PSU,',
+     &           'rho(', sFld(i,j), ' g/kg,',
      &           tFld(i,j), ' degC,',
      &           pLoc(kcheck)*SItoBar, ' bar)',
      &           ' = ', rLoc(kcheck), ' ', bLoc(kcheck)
@@ -545,7 +545,7 @@ C-    Reference value
           ELSE
 C-    Reference value
             WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,A,F11.5)')
-     &           'rho(', sFld(i,j), ' PSU,',
+     &           'rho(', sFld(i,j), ' g/kg,',
      &           tFld(i,j), ' degC,',
      &           pLoc(kcheck)*SItoBar, ' bar)',
      &           ' = ', rLoc(kcheck)

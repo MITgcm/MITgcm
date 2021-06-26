@@ -38,11 +38,12 @@
 #                  'SIflxAtm','SIfrwAtm',
 #                  'EXFqnet ','EXFempmr',
 #- with pkg/seaice:
-  fields(1:10,2) = 'SIarea  ','SIheff  ','THETA   ','SItices ',
+  fields(1:8,2)  = 'SIarea  ','SIheff  ','THETA   ','SItices ',
 #                  'SIuice  ','SIvice  ','SIhsnow ',
 #                  'oceQnet ','oceQsw  ','oceFWflx','oceSflux',
                    'SIqnet  ','SIqsw   ','SIempmr ','oceSflux',
-                   'SIatmQnt','SIatmFW ',
+#- comment out SIatmQnt (not filled in seaice_growth_adx.F):
+#                  'SIatmQnt','SIatmFW ',
    fileName(2) = 'iceDiag',
   frequency(2) =  86400.,
   missing_value(2) = -999.,
@@ -83,11 +84,12 @@
 #                      'SIflxAtm','SIfrwAtm',
 #- with pkg/seaice:
 #stat_fields(1:11,1) = 'SIarea  ','SIheff  ','SIhsnow ',
- stat_fields(1:10,1) = 'SIarea  ','SIheff  ',
+ stat_fields(1:8,1)  = 'SIarea  ','SIheff  ',
                        'THETA   ','SItices ',
 #                      'oceQnet ','oceQsw  ','oceFWflx','oceSflux',
                        'SIqnet  ','SIqsw   ','SIempmr ','oceSflux',
-                       'SIatmQnt','SIatmFW ',
+#- comment out SIatmQnt (not filled in seaice_growth_adx.F):
+#                      'SIatmQnt','SIatmFW ',
   stat_fName(1) = 'iceStDiag',
    stat_freq(1) = 43200.,
   stat_phase(1) = 3600.,
