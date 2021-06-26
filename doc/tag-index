@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o files that include "tamc.h":
+  - add missing declaration of local keys for TAF store-dir in pkg/obcs
+    (ALLOW_OBCS_STEVENS) and pkg/bling (USE_BLING_V1, PHYTO_SELF_SHADING) ;
+  - add missing AUTODIFF_OPTIONS.h in few places (e.g., in pkg/ebm), needed to
+    get ALLOW_AUTODIFF_TAMC defined ;
+  - change few ALLOW_AUTODIFF <-> ALLOW_AUTODIFF_TAMC ;
+  - remove included "tamc.h" in few files from pkgs seaice, streamice, bling, +
+    in exf_radiation, longstep_thermodynamics, obcs_sponge & pp81_ri_number S/R.
+  - define ALLOW_OBCS_STEVENS in AD exp. obcs_ctrl (to check it compiles).
 o pkg/ecco:
   - fix incorrect order of array indices for "objf_gencost" and "num_gencost"
     in 2 gencost v4 S/R (bpv4 & sstv4).
