@@ -273,9 +273,6 @@ C <<-- OpenAD
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
@@ -286,6 +283,10 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid :: Thread number for this instance of the routine.
       INTEGER myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -300,8 +301,8 @@ C     myIter :: Iteration counter for this thread
       LOGICAL exst
       LOGICAL lastdiva
 C -->> OpenAD
-      _RL foo(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL foo2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL foo(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL foo2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fname
 C     Temprarily change precision to agree with ctrlprec
@@ -311,12 +312,6 @@ C     Temprarily change precision to agree with ctrlprec
       INTEGER i1, i2, i3, i4, i5
 #endif
 C <<-- OpenAD
-
-C     !EXTERNAL VARIABLES:
-c     == external ==
-      integer  ilnblnk
-      external ilnblnk
-
 CEOP
 
 C--   set default:
@@ -333,13 +328,13 @@ C-    Set the execution mode
       our_rev_mode%adjoint=.FALSE.
       our_rev_mode%switchedToCheckpoint=.FALSE.
 C-    Initialize the tape
-      call oad_tape_init()
+      CALL OAD_TAPE_INIT()
 C-    Initialize the checkpoint areas
-      call cp_init()
+      CALL CP_INIT()
 C <<-- OpenAD
 
 #ifdef ALLOW_PETSC
-      call streamice_initialize_petsc
+      CALL STREAMICE_INITIALIZE_PETSC
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -375,7 +370,7 @@ C <<-- OpenAD
 # ifdef  ALLOW_CTRL
 # ifndef EXCLUDE_CTRL_PACK
       IF (useCTRL) THEN
-         inquire( file='costfinal', exist=exst )
+         INQUIRE( file='costfinal', exist=exst )
          IF ( .NOT. exst ) THEN
             IF ( (optimcycle.NE.0 .OR. .NOT.doinitxx)
      &           .AND. doMainUnpack ) THEN
@@ -406,7 +401,7 @@ C <<-- OpenAD
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'
-      inquire( file='costfinal', exist=exst )
+      INQUIRE( file='costfinal', exist=exst )
       IF ( .NOT. exst) THEN
 #   ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL('MDTHE_MAIN_LOOP',myThid)
@@ -441,7 +436,7 @@ C -->> OpenAD
       CALL TIMER_START('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
       our_rev_mode%plain=.FALSE.
       our_rev_mode%tape=.TRUE.
-      call timeratio()
+      CALL TIMERATIO()
       CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
       CALL TIMER_START('THE_MAIN_LOOP (A)      [THE_MODEL_MAIN]',myThid)
@@ -453,9 +448,9 @@ C -->> OpenAD
       IF (myProcID .EQ. 0) THEN
         fc%d=1.0
       ENDIF
-      call timeratio()
+      CALL TIMERATIO()
       CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
-      call timeratio()
+      CALL TIMERATIO()
       our_rev_mode%arg_store=.FALSE.
       our_rev_mode%arg_restore=.FALSE.
       our_rev_mode%plain=.TRUE.
@@ -463,21 +458,21 @@ C -->> OpenAD
       our_rev_mode%adjoint=.FALSE.
 #   ifdef OAD_DEBUG
 #    if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
-      do i1=1-olx,snx+olx
-        do i2=1-oly,sny+oly
-          do i3=1,nr
-            do i4=1,nsx
-              do i5=1,nsy
+      DO i1=1-OLx,sNx+OLx
+        DO i2=1-OLy,sNy+OLy
+          DO i3=1,nr
+            DO i4=1,nSx
+              DO i5=1,nSy
                  write (standardmessageunit,
      +'(A,5(I3,A),E25.17E3,A,E25.17E3)')
      +'OAD: (',
      +i1,',',i2,',',i3,',',i4,',',i5,') salt/theta ',
      +xx_salt(i1,i2,i3,i4,i5)%d,'/',xx_theta(i1,i2,i3,i4,i5)%d
-              end do
-            end do
-          end do
-        end do
-      end do
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 #    endif
 #   endif /* OAD_DEBUG */
 C     Temporarily change setting of writeBinaryPrec
@@ -487,68 +482,68 @@ C     Temporarily change setting of writeBinaryPrec
 #   ifndef ALLOW_OPENAD_ACTIVE_READ_XYZ
 #   ifdef ALLOW_THETA0_CONTROL
       foo=xx_theta%d
-      il=ilnblnk( xx_theta_file )
+      il=ILNBLNK( xx_theta_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_theta_file(1:il),'.'
-      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+      CALL WRITE_FLD_XYZ_RL(fname,suff,foo,myIter,1)
 #   endif
 #   ifdef ALLOW_SALT0_CONTROL
       foo=xx_salt%d
-      il=ilnblnk( xx_salt_file )
+      il=ILNBLNK( xx_salt_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_salt_file(1:il),'.'
-      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+      CALL WRITE_FLD_XYZ_RL(fname,suff,foo,myIter,1)
 #   endif
 #   ifdef ALLOW_DIFFKR_CONTROL
       foo=diffkr%d
-      il=ilnblnk( xx_diffkr_file )
+      il=ILNBLNK( xx_diffkr_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_diffkr_file(1:il),'.'
-      call write_fld_xyz_rl(fname,suff,foo,myIter,1)
+      CALL WRITE_FLD_XYZ_RL(fname,suff,foo,myIter,1)
 #   endif
 #   endif /* ALLOW_OPENAD_ACTIVE_READ_XYZ */
 
 #   ifdef ALLOW_TAUU0_CONTROL
       foo2D=fu%d
-      il=ilnblnk( xx_tauu_file )
+      il=ILNBLNK( xx_tauu_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_tauu_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_TAUV0_CONTROL
       foo2D=fv%d
-      il=ilnblnk( xx_tauv_file )
+      il=ILNBLNK( xx_tauv_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_tauv_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_HFLUX0_CONTROL
       foo2D=qnet%d
-      il=ilnblnk( xx_hflux_file )
+      il=ILNBLNK( xx_hflux_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_hflux_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_SFLUX0_CONTROL
       foo2D=empmr%d
-      il=ilnblnk( xx_sflux_file )
+      il=ILNBLNK( xx_sflux_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_sflux_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_HFLUXM_CONTROL
       foo2D=xx_hfluxm%d
-      il=ilnblnk( xx_hfluxm_file )
+      il=ILNBLNK( xx_hfluxm_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_hfluxm_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 #   ifdef ALLOW_ETAN0_CONTROL
       foo2D=etan%d
-      il=ilnblnk( xx_etan_file )
+      il=ILNBLNK( xx_etan_file )
       write(fname(1:MAX_LEN_FNAM),'(3a)')
      &     'ad',xx_etan_file(1:il),'.'
-      call write_fld_xy_rl(fname,suff,foo2D,myIter,1)
+      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
 #   endif
 cc#   ifdef ALLOW_GENARR2D_CONTROL
 cc      do ik = 1, maxCtrlArr2D
@@ -638,7 +633,7 @@ C--   Call time stepping loop of full model
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
 #ifdef ALLOW_PETSC
-      call streamice_finalize_petsc
+      CALL STREAMICE_FINALIZE_PETSC
 #endif
 
 #ifdef ALLOW_MNC
