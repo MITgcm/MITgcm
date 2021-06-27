@@ -1,4 +1,7 @@
 #include "EBM_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP 0
 C !ROUTINE: EBM_AREA_T

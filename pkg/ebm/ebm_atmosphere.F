@@ -1,4 +1,7 @@
 #include "EBM_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP 0
 C !ROUTINE: EBM_ATMOSPHERE
@@ -96,8 +99,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        DO j=1-oLy,sNy+oLy
-         DO i=1-oLx,sNx+oLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           S(i,j,bj) = 0.0
           P2(i,j,bj) = 0.0
           P4(i,j,bj) = 0.0

@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
       SUBROUTINE SEAICE_FREEDRIFT( myTime, myIter, myThid )
@@ -20,10 +17,6 @@ C     === Global variables ===
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     === Routine arguments ===
 C     myTime :: Simulation time
@@ -83,7 +76,7 @@ C air-ice stress at cell center
           tauy_onIce_cntr=HALF*
      &      (FORCEY0(i,j,bi,bj)+FORCEY0(i,j+1,bi,bj))
 C mass of ice per unit area (kg/m2) times coriolis f
-          mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(I,J,bi,bj)
+          mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(i,j,bi,bj)
 C ocean velocity at cell center
           uvel_cntr=HALF*(uvel(i,j,kSrf,bi,bj)+uvel(i+1,j,kSrf,bi,bj))
           vvel_cntr=HALF*(vvel(i,j,kSrf,bi,bj)+vvel(i,j+1,kSrf,bi,bj))
@@ -103,7 +96,7 @@ C norm of angle of rhs
 
 C solve for norm:
 C ===============
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+          IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag_south
           ELSE
            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag
@@ -121,7 +114,7 @@ C discriminant
 
 C solve for angle:
 C ================
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+          IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
            tmpscal1 = SEAICE_waterDrag_south*rhoConst
           ELSE
            tmpscal1 = SEAICE_waterDrag*rhoConst
