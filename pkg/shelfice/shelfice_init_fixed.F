@@ -44,9 +44,6 @@ C     i, j, bi, bj :: Loop counters
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_CTRL
       INTEGER k
-# ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
-      _RL dummy
-# endif
 #endif
 
 #ifdef ALLOW_MNC
@@ -110,38 +107,6 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
        ENDDO
       ENDDO
 #endif /* ALLOW_CTRL */
-
-#ifdef ALLOW_COST
-#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
-      defined (ALLOW_SHIFWFLX_CONTROL))
-      IF ( shifwflx_errfile .NE. ' ' ) THEN
-       CALL READ_REC_XY_RL( shifwflx_errfile, wshifwflx, 1, 0, myThid )
-      ENDIF
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-c--   Test for missing values.
-          IF (wshifwflx(i,j,bi,bj) .LT. -9900.) THEN
-           wshifwflx(i,j,bi,bj) = 0. _d 0
-          ENDIF
-c--   use weight as mask
-          wshifwflx(i,j,bi,bj) =
-     &         max(wshifwflx(i,j,bi,bj),wshifwflx0)
-     &         *maskSHI(i,j,1,bi,bj)
-          IF (wshifwflx(i,j,bi,bj) .NE. 0.) THEN
-           wshifwflx(i,j,bi,bj) =
-     &          1./wshifwflx(i,j,bi,bj)/wshifwflx(i,j,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL ACTIVE_WRITE_XY_LOC( 'wshifwflx', wshifwflx,
-     &                          1, 0, myThid, dummy )
-#endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION and ALLOW_SHIFWFLX_CONTROL */
-#endif /* ALLOW_COST */
 
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',

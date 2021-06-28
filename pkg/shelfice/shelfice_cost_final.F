@@ -33,10 +33,6 @@ C     == Global variables ===
 # include "cost.h"
 # include "optim.h"
 #endif
-#if  (defined ALLOW_SHIFWFLX_CONTROL && \
-      defined ALLOW_SHIFWFLX_COST_CONTRIBUTION)
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: Thread number for this instance of the routine.
@@ -67,12 +63,7 @@ CEOP
 cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
-#ifdef ALLOW_ECCO
-#if  (defined ALLOW_SHIFWFLX_CONTROL && \
-      defined ALLOW_SHIFWFLX_COST_CONTRIBUTION)
-      CALL SHELFICE_COST_SHIFWFLX( myThid )
-#endif /* ALLOW_SHIFWFLX_CONTROL and ALLOW_SHIFWFLX_COST_CONTRIBUTION */
-#else
+#ifndef ALLOW_ECCO
 C--   Calculate cost function on tile of this instance
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -96,19 +87,14 @@ C--   Sum up all contributions.
        DO bi = myBxLo(myThid), myBxHi(myThid)
         write(standardmessageunit,'(A,D22.15)')
      &       ' --> objf_shelfice(bi,bj) = ', objf_shelfice(bi,bj)
-        write(standardmessageunit,'(A,D22.15)')
-     &       ' --> objf_shifwflx(bi,bj) = ', objf_shifwflx(bi,bj)
         tile_fc(bi,bj) = tile_fc(bi,bj)
      &       + mult_shelfice * objf_shelfice(bi,bj)
-     &       + mult_shifwflx * objf_shifwflx(bi,bj)
 
        ENDDO
       ENDDO
 
       CALL GLOBAL_SUM_TILE_RL( objf_shelfice, f_shelfice, myThid )
-      CALL GLOBAL_SUM_TILE_RL( objf_shifwflx, f_shifwflx, myThid )
 cML      CALL GLOBAL_SUM_TILE_RL( num_shelfice, no_shelfice, myThid )
-      CALL GLOBAL_SUM_TILE_RL( num_shifwflx, no_shifwflx, myThid )
 
 # ifndef ALLOW_OPENAD
 C--   Each process has calculated the global part for itself.
@@ -121,7 +107,6 @@ C--   Each process has calculated the global part for itself.
        WRITE(ifc,*) 'fc =', fc
 cML       WRITE(ifc,*) 'f_shelfice =', f_shelfice, no_shelfice
        WRITE(ifc,*) 'f_shelfice =', f_shelfice
-       WRITE(ifc,*) 'f_shifwflx =', f_shifwflx, no_shifwflx
 
        CLOSE(ifc)
 
