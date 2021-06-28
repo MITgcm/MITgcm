@@ -116,6 +116,7 @@ CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow = comlev1, key = ikey_dynamics, kind = isbyte
 # include "seaice_ad_check_lev1_dir.h"
 #endif
 
