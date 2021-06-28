@@ -727,22 +727,6 @@ C     end bi,bj loops
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
       ENDIF
 
-C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
-#ifndef ALLOW_AUTODIFF
-c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-c     ENDIF
-#endif /* ndef ALLOW_AUTODIFF */
-
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
        CALL DIAGNOSTICS_FILL_RS(shelfIceFreshWaterFlux,'SHIfwFlx',

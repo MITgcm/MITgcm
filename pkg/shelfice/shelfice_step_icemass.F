@@ -100,6 +100,18 @@ C--    quick fix to prevent ice-shelf mass to become negative
 
        _EXCH_XY_RL( shelficeMass, myThid )
 
+C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
