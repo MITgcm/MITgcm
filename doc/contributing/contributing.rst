@@ -1427,10 +1427,11 @@ To do this you will need a working python installation with the following packag
  - numpy
 
 These packages can be installed from the Python Package Index using pip.  If
-you are using `Anaconda <https://www.anaconda.com/>`_ or one of its variants
-and would like to use conda to install them, you will need the conda-forge
-channel.  You can create (and use) a clean environment with the required
-packages like this:
+you are familiar with python virtual environments and have an existing python
+installation using `Anaconda <https://www.anaconda.com/>`_ or one of its
+variants, we recommend you use conda to install these packages as available
+on the conda-forge channel.  You can create (and use) a clean environment with
+the required packages like this:
 
 ::
 
@@ -1440,7 +1441,20 @@ packages like this:
    [...] # do the work
    conda deactivate
 
-Once these modules are installed you can build the html version of the manual
+
+Alternatively, if you are not a python user and want a simple python installation
+that permanently installs these packages, we recommend the following:
+
+ #. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
+    to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
+    you can use it right away. This is a minimal anaconda with conda-forge already set as default.
+ #. Install MITgcm doc requirements:
+    cd MITgcm
+    conda install --file doc/requirements.txt
+
+
+Regardless of which installation method you choose, once these modules
+are installed you can build the html version of the manual
 by running ``make html`` in the ``doc`` directory.
 
 To build the pdf version of the manual you will also need a working version of LaTeX that includes
