@@ -7,7 +7,7 @@ C     !INTERFACE:
 C     #include "MONITOR.h"
 
 C     !DESCRIPTION:
-C     Contains the state (parameters) for the ``monitor'' package.
+C     Contains the state (parameters) for the "monitor" package.
 C
 C     Monitor routines (prefixed MON\_) provide a simple set of
 C     utilities for outputting useful runtime diagnostic

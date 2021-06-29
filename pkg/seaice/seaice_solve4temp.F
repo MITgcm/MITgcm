@@ -152,6 +152,9 @@ C     local copies of global variables
       _RL ALB_SNOW   (1:sNx,1:sNy)
 C     iceOrNot :: this is HICE_ACTUAL.GT.0.
       LOGICAL iceOrNot(1:sNx,1:sNy)
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER iicekey
+#endif
 #ifdef SEAICE_DEBUG
 #endif /* SEAICE_DEBUG */
 

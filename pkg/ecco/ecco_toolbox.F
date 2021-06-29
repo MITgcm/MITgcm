@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C--  File ecco_toolbox.F: Routines to handle basic operations common in ecco.
 C--   Contents
@@ -1246,4 +1249,3 @@ c--        Convert to weight
 
       RETURN
       END
-

@@ -31,7 +31,6 @@ C     == Global variables ==
 #include "SEAICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==

@@ -4,9 +4,6 @@
 #else
 # define OBCS_UVICE_OLD
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_CALC_STRAINRATES
@@ -36,10 +33,6 @@ C     === Global variables ===
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -197,14 +190,14 @@ C     The masking is ugly, but hopefully effective.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #ifdef SEAICE_DYN_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
       CALL ZERO_ADJ( 1, e11Loc, myThid)
       CALL ZERO_ADJ( 1, e12Loc, myThid)
       CALL ZERO_ADJ( 1, e22Loc, myThid)
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */

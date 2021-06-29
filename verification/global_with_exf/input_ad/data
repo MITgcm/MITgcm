@@ -40,24 +40,20 @@
 
 # Time stepping parameters
  &PARM03
- nIter0 =      0,
- nTimeSteps = 20,
-# 100 years of integration will yield a reasonable flow field
-# startTime  =          0.,
-# endTime    = 3110400000.,
- deltaTmom = 1200.0,
+ nIter0 =     0,
+ nTimeSteps= 20,
+#- 100 years of integration will yield a reasonable flow field
+# endTime  = 3110400000.,
+ deltaTmom = 1200.,
  tauCD =     321428.,
- deltaTtracer= 43200.0,
- deltaTClock = 43200.0,
-# if you are using a version later than checkpoint45d on the main branch
-# you can uncomment the following line and increase the time step
-# deltaTtracer and deltaTClock to 172800.0 as well to speed up the
-# asynchronous time stepping
-# deltaTfreesurf = 172800.0,
+ deltaTtracer= 43200.,
+ deltaTClock = 43200.,
  abEps = 0.1,
  pChkptFreq= 311040000.,
- dumpFreq=   311040000.,
- monitorFreq=1.,
+ dumpFreq =  311040000.,
+ monitorSelect= 2,
+ monitorFreq =  432000.,
+ adjMonitorFreq=259200.,
  &
 
 # Gridding parameters

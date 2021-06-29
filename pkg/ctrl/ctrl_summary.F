@@ -18,6 +18,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 
 #ifdef ALLOW_CAL
 # include "cal.h"
@@ -395,28 +396,36 @@ c allow for switching off correl2d in adjoint
      &' -> 2D control, genarr2d no. ',iarr,
      &' is in use'
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
 
         il   = ILNBLNK( xx_genarr2d_file(iarr) )
         write(msgbuf,'(a,a)')
      &'      file       = ',xx_genarr2d_file(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
         il   = ILNBLNK( xx_genarr2d_weight(iarr) )
         write(msgbuf,'(a,a)')
      &'      weight     = ',xx_genarr2d_weight(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      index      = ', 100+iarr
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      ncvarindex = ', ncvarindex(100+iarr)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
 
-         do jarr=1,maxCtrlProc
-          if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
-            il = ilnblnk(xx_genarr2d_preproc(jarr,iarr))
-            write(msgbuf,'(a,a)') ' preprocess = ',
+        do jarr=1,maxCtrlProc
+         if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
+          il = ilnblnk(xx_genarr2d_preproc(jarr,iarr))
+          write(msgbuf,'(a,a)') ' preprocess = ',
      &                            xx_genarr2d_preproc(jarr,iarr)(1:il)
-            call print_message( msgbuf, standardmessageunit,
+          call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
-          endif
-         enddo
+         endif
+        enddo
 
        endif
       enddo
@@ -431,28 +440,37 @@ c allow for switching off correl2d in adjoint
      &' -> 3d control, genarr3d no. ',iarr,
      &' is in use'
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
 
         il   = ILNBLNK( xx_genarr3d_file(iarr) )
         write(msgbuf,'(a,a)')
      &'      file       = ',xx_genarr3d_file(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
         il   = ILNBLNK( xx_genarr3d_weight(iarr) )
         write(msgbuf,'(a,a)')
      &'      weight     = ',xx_genarr3d_weight(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      index      = ', 200+iarr
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      ncvarindex = ', ncvarindex(200+iarr)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
 
-         do jarr=1,maxCtrlProc
-          if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then
-            il = ilnblnk(xx_genarr3d_preproc(jarr,iarr))
-            write(msgbuf,'(a,a)') ' preprocess = ',
-     &                            xx_genarr3d_preproc(jarr,iarr)(1:il)
-            call print_message( msgbuf, standardmessageunit,
+
+        do jarr=1,maxCtrlProc
+         if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then
+          il = ilnblnk(xx_genarr3d_preproc(jarr,iarr))
+          write(msgbuf,'(a,a)') ' preprocess = ',
+     &         xx_genarr3d_preproc(jarr,iarr)(1:il)
+          call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
-          endif
-         enddo
+         endif
+        enddo
 
        endif
       enddo
@@ -466,61 +484,71 @@ c allow for switching off correl2d in adjoint
      &' -> time variable 2D control, gentim2d no. ',iarr,
      &' is in use'
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
 
         il   = ILNBLNK( xx_gentim2d_file(iarr) )
         write(msgbuf,'(a,a)')
      &'      file       = ',xx_gentim2d_file(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
 
         il   = ILNBLNK( xx_gentim2d_weight(iarr) )
         write(msgbuf,'(a,a)')
      &'      weight     = ',xx_gentim2d_weight(iarr)(1:il)
         call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      index      = ', 300+iarr
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i5.4)')
+     &'      ncvarindex = ', ncvarindex(300+iarr)
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_CAL
-        call cal_TimeInterval( xx_gentim2d_period(iarr),
-     &                         'secs', timeint, mythid )
-        write(msgbuf,'(a,i9.8,i7.6)')
-     &'      period     = ',(timeint(i), i=1,2)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+        if ( useCAL ) then
+         call cal_TimeInterval( xx_gentim2d_period(iarr),
+     &                          'secs', timeint, mythid )
+         write(msgbuf,'(a,i9.8,i7.6)')
+     &        '      period     = ',(timeint(i), i=1,2)
+         call print_message( msgbuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+        endif
 #endif
 
-         do jarr=1,maxCtrlProc
-          if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
-            il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
-            write(msgbuf,'(a,a)') '      preprocess = ',
-     &                        xx_gentim2d_preproc(jarr,iarr)(1:il)
-            call print_message( msgbuf, standardmessageunit,
+        do jarr=1,maxCtrlProc
+         if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
+          il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
+          write(msgbuf,'(a,a)') '      preprocess = ',
+     &         xx_gentim2d_preproc(jarr,iarr)(1:il)
+          call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
 C
           if (xx_gentim2d_preproc_c(jarr,iarr).NE.' ') then
-            il = ilnblnk(xx_gentim2d_preproc_c(jarr,iarr))
-            write(msgbuf,'(a,a)') '        param. (text)= ',
-     &                        xx_gentim2d_preproc_c(jarr,iarr)(1:il)
-            call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
+           il = ilnblnk(xx_gentim2d_preproc_c(jarr,iarr))
+           write(msgbuf,'(a,a)') '        param. (text)= ',
+     &          xx_gentim2d_preproc_c(jarr,iarr)(1:il)
+           call print_message( msgbuf, standardmessageunit,
+     &                         SQUEEZE_RIGHT , mythid)
           endif
 C
           if (xx_gentim2d_preproc_i(jarr,iarr).NE.0) then
-            write(msgbuf,'(a,i6)') '        param. (int.)= ',
-     &                        xx_gentim2d_preproc_i(jarr,iarr)
-            call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
+           write(msgbuf,'(a,i6)') '        param. (int.)= ',
+     &          xx_gentim2d_preproc_i(jarr,iarr)
+           call print_message( msgbuf, standardmessageunit,
+     &                         SQUEEZE_RIGHT , mythid)
           endif
 C
           if (xx_gentim2d_preproc_r(jarr,iarr).NE.0. _d 0) then
-            write(msgbuf,'(a,e10.3)') '        param. (real)= ',
-     &                        xx_gentim2d_preproc_r(jarr,iarr)
-            call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
+           write(msgbuf,'(a,e10.3)') '        param. (real)= ',
+     &          xx_gentim2d_preproc_r(jarr,iarr)
+           call print_message( msgbuf, standardmessageunit,
+     &                         SQUEEZE_RIGHT , mythid)
           endif
 
-          endif
-         enddo
+         endif
+        enddo
 
        endif
       enddo
@@ -551,4 +579,3 @@ C
 
       return
       end
-

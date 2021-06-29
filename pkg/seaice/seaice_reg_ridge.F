@@ -73,6 +73,11 @@ C     reciprocal number of ice classes nITD
 C     Helper variables for diagnostics
       _RL DIAGarrayA    (1:sNx,1:sNy)
 #endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER iicekey
+#endif
 CEOP
 
 C

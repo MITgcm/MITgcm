@@ -136,6 +136,7 @@ CADJ STORE pc, ps, pw       = tapelev3, key = ilev_3
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow  = tapelev3, key = ilev_3
 # include "seaice_ad_check_lev3_dir.h"
 #endif /* ALLOW_SEAICE */
 
@@ -158,10 +159,6 @@ CADJ STORE pc, ps, pw       = tapelev3, key = ilev_3
 #ifdef ALLOW_OFFLINE
 # include "offline_ad_check_lev3_dir.h"
 #endif /* ALLOW_OFFLINE */
-
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev3_dir.h"
-#endif
 
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev3_dir.h"

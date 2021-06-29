@@ -59,12 +59,16 @@ if test "x$IEEE" = x ; then     #- with optimisation:
     NOOPTFILES='obcs_init_fixed.F'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
-    # "-mp" is for ieee "maintain precision"
-    FOPTIM='-O0 -noalign -xHost -ip -mp'
+    # "-fp-model [keyword]" is the recommended method of controlling precision
+    FOPTIM='-O0 -noalign -xHost -ip -fp-model consistent'
+# alternatives, see man pages for details
+#   FOPTIM='-O0 -noalign -xHost -ip -mp1'
+#   FOPTIM='-O0 -noalign -xHost -ip -fp-model precise'
+#   FOPTIM='-O0 -noalign -xHost -ip -mieee-fp'
   else                          #- development/check options:
 #    FFLAGS="$FFLAGS -warn all -warn nounused"
     FFLAGS="$FFLAGS -warn unused"
-    FOPTIM="-fpe0 -check all -ftrapuv"
+    FOPTIM="-fpe0 -check all -ftrapuv -fp-model precise"
     FOPTIM="$FOPTIM -O0 -noalign -g -traceback"
   fi
 fi

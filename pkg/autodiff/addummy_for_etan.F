@@ -14,7 +14,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE ADDUMMY_FOR_ETAN                           |
+C     | SUBROUTINE ADDUMMY_FOR_ETAN                              |
 C     *==========================================================*
 C     Extract adjoint variable for sea level height
 C     from TAMC/TAF-generated
@@ -33,7 +33,7 @@ C     have to be written at the same time.
 C
 C     Created: Tim Smith, tsmith@ices.utexas.edu, Sept 12 2018
 C     *==========================================================*
-C     | SUBROUTINE ADDUMMY_FOR_ETAN                           |
+C     | SUBROUTINE ADDUMMY_FOR_ETAN                              |
 C     *==========================================================*
 C     \ev
 
@@ -50,13 +50,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OPENAD
-# include "DYNVARS.h"
-# include "FFIELDS.h"
-#endif
-#include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-c#include "GRID.h"
+# ifdef ALLOW_OPENAD
+#  include "DYNVARS.h"
+# endif
+# include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # ifndef ALLOW_OPENAD
 #  include "adcommon.h"
@@ -73,8 +71,6 @@ C     myIter  :: iteration counter for this thread
 C     myThid  :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
-C      _RL     myTime
-C      INTEGER myIter
       INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
@@ -85,67 +81,35 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
+C     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_OPENAD
-      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+c     CHARACTER*(10) suff
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RS dumRS(1)
+      LOGICAL doDump
 CEOP
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     & ) THEN
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
 
-        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      IF ( doDump ) THEN
+C increment ad dump record number (used only if dumpAdByRec is true)
+C could be just dumpAdRecEt=dumpAdRecMn+1 ????
+       dumpAdRecEt = dumpAdRecEt + 1
+       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 
-c increment ad dump record number (used only if dumpAdByRec is true)
-        dumpAdRecEt=dumpAdRecEt+1
-c#ifdef ALLOW_DEBUG
-c      IF ( debugMode ) print*,'dumpAdRecEt',dumpAdRecEt
-c#endif
-
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
 #ifndef ALLOW_OPENAD
-C-----------------------------------------------------------------------
-
-        IF ( dumpAdByRec ) THEN
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           adEtaN, dumpAdRecEt, myIter, myThid)
-        ELSE
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           adEtaN, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XY(dumRS, adetan, 'ADJetan ', 'ADJetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter,myThid)
 #else /* ndef ALLOW_OPENAD */
-C-----------------------------------------------------------------------
-
-        IF ( dumpAdByRec ) THEN
-          var2Du = etaN%d
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           var2Du, dumpAdRecEt, myIter, myThid)
-        ELSE
-          var2Du = etaN%d
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           var2Du, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XY(dumRS, etaN%d, 'ADJetan ', 'ADJetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter,myThid)
 #endif /* ndef ALLOW_OPENAD */
-C-----------------------------------------------------------------------
+
+      IF ( doDump ) THEN
 
 C-- NOW NMC output
-
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_MNC
         IF ( useMNC .AND. autodiff_mnc ) THEN

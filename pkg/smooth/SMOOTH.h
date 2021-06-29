@@ -32,6 +32,8 @@ c fields:
      & smooth3D_Lz(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy),
      & smooth3Dnorm (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
+      character*(5) smooth3DmaskName(smoothOpNbMax)
+
       integer smooth2Dnbt(smoothOpNbMax),
      & smooth2Dtype(smoothOpNbMax),smooth2Dsize(smoothOpNbMax),
      & smooth2Dfilter(smoothOpNbMax)
@@ -40,6 +42,8 @@ c fields:
      & smooth2D_Lx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy),
      & smooth2D_Ly(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy),
      & smooth2Dnorm (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+
+      character*(5) smooth2DmaskName(smoothOpNbMax)
 
       _RL 
      & smooth3D_kappaR (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy),
@@ -67,6 +71,9 @@ c fields:
      & smooth3D_Lx,smooth3D_Ly,smooth3D_Lz,
      & smooth2D_Lx0,smooth2D_Ly0,
      & smooth2D_Lx,smooth2D_Ly
+
+      COMMON /smooth_flds_c/
+     & smooth3DmaskName, smooth2DmaskName
 
       COMMON /smooth_operators_i/
      & smooth3Dnbt, smooth2Dnbt,

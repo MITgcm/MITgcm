@@ -109,6 +109,9 @@ C o2 solubility relation coefficients
       _RL ttemp
       _RL stemp
       _RL oCnew
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC

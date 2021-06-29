@@ -23,6 +23,10 @@
                    'TRAC04  ','TRAC05  ','TRAC06  ',
                    'TRAC07  ','TRAC08  ',
   frequency(1)   = 432000.,
+
+  fileName(2)    = 'soundSpeedDiag',
+  fields(1:1,2)  = 'CSound  ',
+  frequency(2)   = 86400.,
  &
 
 #--------------------

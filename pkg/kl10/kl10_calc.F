@@ -35,7 +35,6 @@ C !USES: ============================================================
 #include "KL10.h"
 c#ifdef ALLOW_AUTODIFF_TAMC
 c# include "tamc.h"
-c# include "tamc_keys.h"
 c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================

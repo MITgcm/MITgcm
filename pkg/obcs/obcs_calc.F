@@ -1,4 +1,7 @@
 #include "OBCS_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif /* ALLOW_CTRL */
 
 CBOP
 C     !ROUTINE: OBCS_CALC
@@ -405,6 +408,26 @@ C--     Calculate future values on open boundaries
         CALL OBCS_PRESCRIBE_READ( futureTime, futureIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
+
+C ------------------------------------------------------------------------------
+C     read control parameter contributions here to be independent of flags
+C     ALLOW_OBCS_PRESCRIBE and useOBCSprescribe
+#ifdef ALLOW_CTRL
+      IF ( useCTRL ) THEN
+# ifdef ALLOW_OBCSN_CONTROL
+       CALL CTRL_GETOBCSN ( futureTime, futureIter, mythid )
+# endif
+# ifdef ALLOW_OBCSS_CONTROL
+       CALL CTRL_GETOBCSS ( futureTime, futureIter, mythid )
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+       CALL CTRL_GETOBCSW ( futureTime, futureIter, myThid )
+# endif
+# ifdef ALLOW_OBCSE_CONTROL
+       CALL CTRL_GETOBCSE ( futureTime, futureIter, myThid )
+# endif
+      ENDIF
+#endif /* ALLOW_CTRL */
 
 C ------------------------------------------------------------------------------
 
