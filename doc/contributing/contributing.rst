@@ -1445,15 +1445,15 @@ the required packages like this:
 Alternatively, if you are not a python user and want a simple python installation
 that permanently installs these packages, we recommend the following:
 
- #. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
-    to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
-    you can use it right away. This is a minimal anaconda with conda-forge already set as default.
- #. Install MITgcm doc requirements:
+#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
+   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
+   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
+#. Install MITgcm doc requirements:
 
-::
+   ::
 
-   cd MITgcm
-   conda install --file doc/requirements.txt
+     cd MITgcm
+     conda install --file doc/requirements.txt
 
 
 Regardless of which installation method you choose, once these modules
