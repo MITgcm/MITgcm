@@ -136,7 +136,7 @@ C     factors to scale the vertical (pressure) coordinates
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER ikeyLoc
+      INTEGER ikeyLoc, kkeyLoc
 #endif
 CEOP
 
@@ -316,6 +316,26 @@ C--   Impose upper and lower bound for mixing length
           MaxLength=totalDepth(i,j)*recip_coordFac
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
+          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -342,6 +362,24 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
         ENDDO
        ENDDO
 
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
+          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
+         ENDDO
+        ENDDO
+       ENDDO
+
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
 #ifdef ALLOW_AUTODIFF
@@ -354,6 +392,11 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 #endif
        DO k=kTop,kBot,kDir
         km1 = MIN(k-kDir,Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,km1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
@@ -370,10 +413,33 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
         kp1 = k+kDir
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,kp1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &        GGL90mixingLength(i,j,kp1)+drF(k)*recip_coordFac)
+         ENDDO
+        ENDDO
+       ENDDO
+
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
+          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -391,6 +457,11 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 #endif
        DO k=kTop,kBot,kDir
         km1 = MIN(k-kDir,Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE mxLength_Dn(:,:,km1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
@@ -407,6 +478,11 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
         kp1 = k+kDir
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,kp1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
@@ -442,6 +518,9 @@ C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
       IF ( mxlMaxFlag.NE.3 ) THEN
 C     for mxlMaxFlag=3, this has already been done
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
