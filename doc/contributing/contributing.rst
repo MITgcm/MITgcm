@@ -1446,9 +1446,9 @@ we recommend following the `Anaconda installation procedure
 <https://www.anaconda.com/products/individual#Downloads>`_, then following the recipe above.
 You do not need to learn python to build the manual; just note you should
 type ``conda activate mitgcm_build_the_docs`` in a shell when starting up
-a manual editing session, and ``conda deactivate`` when you finish (note you
+a manual editing session, and ``conda deactivate`` when you finish (also note you
 only need to perform the ``conda create ...`` step above when you **initially** follow
-the recipe above). This will maintain a clean, separate python `virtual environment
+the recipe). This will maintain a clean, separate python `virtual environment
 <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
 for manual compilation and won't interfere with your python setup should you
 decide to learn python in the future.
