@@ -1428,10 +1428,8 @@ installation with the following packages installed:
  - numpy
 
 These packages can be installed from the Python Package Index using pip. If you
-are familiar with python `virtual environments
-<https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
-and have an existing python installation using `Anaconda
-<https://www.anaconda.com/>`_ or one of its variants (e.g. `miniconda
+have an existing python installation using `Anaconda
+<https://www.anaconda.com/>`_ or one of its variants (e.g., `miniconda
 <https://docs.conda.io>`_), we recommend that you can create (and use) a clean
 environment with the required packages like this:
 
@@ -1443,27 +1441,20 @@ environment with the required packages like this:
    [...] # do the work
    conda deactivate
 
+If you don't yet have a python installation on your computer,
+we recommend following the `Anaconda installation procedure 
+<https://www.anaconda.com/products/individual#Downloads>`_, then following the recipe above.
+You do not need to learn python to build the manual; just note you should
+type ``conda activate mitgcm_build_the_docs`` in a shell when starting up
+a manual editing session, and ``conda deactivate`` when you finish (note you
+only need to perform the ``conda create ...`` step above when you **initially** follow
+the recipe above). This will maintain a clean, separate python `virtual environment
+<https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
+for manual compilation and won't interfere with your python setup should you
+decide to learn python in the future.
 
-Alternatively, if you are not a python user and want a simple python
-installation that permanently installs these packages, we recommend the
-following:
-
-#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for
-   linux, win, or mac). Follow the instructions to run the installer from a
-   terminal window. Make sure to say "yes" when it asks to initialize
-   Miniforge3 -- that way you can use it right away. This is a minimal anaconda
-   with conda-forge already set as default.
-#. Install MITgcm doc requirements:
-
-   ::
-
-     cd MITgcm
-     conda install --file doc/requirements.txt
-
-
-Regardless of which installation method you choose, once these modules are
-installed you can build the html version of the manual by running ``make html``
-in the ``doc`` directory.
+Once these modules are installed you can build the html version of the manual
+by running ``make html`` in the ``doc`` directory.
 
 To build the pdf version of the manual you will also need a working version of
 LaTeX that includes `several packages
