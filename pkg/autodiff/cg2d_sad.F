@@ -3,13 +3,16 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
+C--   File cg2d_sad.F: Code for hand written adjoint of cg2d
+C--    Contents
+C--   CG2D_SAD        - computes the adjoint of cg2d
+C--   CG2D_STORE      - saves input field to or restores from a common block
+
 CBOP
 C     !ROUTINE: CG2D_SAD
 C     !INTERFACE:
       SUBROUTINE CG2D_SAD(
-     I                    cg2d_b,
      U                    cg2d_b_ad,
-     I                    cg2d_x,
      U                    cg2d_x_ad,
      U                    numIters, nIterMin,
      I                    myThid )
@@ -51,8 +54,6 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     cg2d_b_ad :: Adjoint of source term (on input = 0)
 C     cg2d_x_ad :: Adjoint of the solution
-C     cg2d_b    :: rhs of fwd matrix equation (needed for recomputation)
-C     cg2d_x    :: First guess of cg2d ( gravity * etaN, only input )
 C     firstResidual :: the initial residual before any iterations
 C     minResidualSq :: the lowest residual reached (squared)
 C     lastResidual  :: the actual residual reached
@@ -63,8 +64,6 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cg2d_b   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cg2d_x   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
@@ -88,11 +87,13 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  :: tile indices
 C     i,j    :: Loop counters
+C     cg2d_x :: local copy of cg2d_x to be restored from "tape"
       INTEGER i,j,bi,bj
       _RL  firstResidual, minResidualSq, lastResidual
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       INTEGER numItersFwd, nIterMinFwd
       _RL  recip_cg2dNorm
+      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -177,33 +178,8 @@ C     we just call it every timestep but only for a higher debugLevel
       ENDIF
 
       IF ( cg2dFullAdjoint ) THEN
-C     recompute cg2d_x
-       IF ( debugLevel .GE. debLevZero ) THEN
-        _BEGIN_MASTER( myThid )
-        WRITE(standardmessageunit,'(A)')
-     &        ' Recompute cg2d_x in S/R CG2D_SAD'
-        _END_MASTER( myThid )
-       ENDIF
-#ifdef ALLOW_SRCG
-       IF ( useSRCGSolver ) THEN
-C--   Call the single reduce CG solver
-        CALL CG2D_SR(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numItersFwd, nIterMinFwd,
-     I           myThid )
-       ELSE
-#else
-       IF (.TRUE.) THEN
-#endif /* ALLOW_SRCG */
-C--   Call the default CG solver
-        CALL CG2D(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numItersFwd, nIterMinFwd,
-     I           myThid )
-       ENDIF
-       _EXCH_XY_RL( cg2d_x, myThid )
+C     restore cg2d_x
+       CALL CG2D_STORE( cg2d_x, .FALSE., myThid )
 
 C     Compute derivative of coefficient matrix.
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -253,6 +229,96 @@ C     the solution, because we fake the AD code of cg2d.
           pW_ad  (i,j,bi,bj) = 0. _d 0
           pS_ad  (i,j,bi,bj) = 0. _d 0
           pC_ad  (i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      RETURN
+      END
+
+C--------1---------2---------3---------4---------5---------6---------7--
+
+CBOP
+C     !ROUTINE: CG2D_STORE
+C     !INTERFACE:
+      SUBROUTINE CG2D_STORE(
+     U                      cg2d_x,
+     I                      doStore,
+     I                      myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CG2D_STORE
+C     | o Hand written tape routine
+C     *==========================================================*
+C     | This routine is called from solve_for_pressure to
+C     | to force TAF to store cg2d_x
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "AUTODIFF_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     cg2d_x    :: The solution to be stored and restored
+C     doStore   :: Store or restore based on the logical
+C     myThid    :: Thread on which I am working.
+      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      LOGICAL doStore
+      INTEGER myThid
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
+      _RL cg2d_tape(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,nchklev_1)
+      COMMON /CG2D_TAPE_RL/ cg2d_tape
+
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     bi,bj  :: tile indices
+C     i,j    :: Loop counters
+      INTEGER i,j,bi,bj
+CEOP
+
+C--   mark output of cg2d as being called from here
+      IF ( debugLevel .GE. debLevZero ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(standardmessageunit,'(A,L)')
+     &      ' Calling CG2D_STORE with doStore = ', doStore
+       WRITE(standardmessageunit,'(A,I4)')
+     &      ' Calling CG2D_STORE with ikey_dynamics = ', ikey_dynamics
+       _END_MASTER( myThid )
+      ENDIF
+
+      IF ( doStore ) THEN
+C     Save input cg2d_x to local common block
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg2d_tape(i,j,bi,bj,ikey_dynamics) = cg2d_x(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+C     Restore output cg2d_x from local common block
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg2d_x(i,j,bi,bj) = cg2d_tape(i,j,bi,bj,ikey_dynamics)
           ENDDO
          ENDDO
         ENDDO

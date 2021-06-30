@@ -32,6 +32,9 @@ C     == Global variables
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
@@ -306,6 +309,10 @@ C--   Call the default CG solver
       ENDIF
 #endif /* DISCONNECTED_TILES */
       _EXCH_XY_RL( cg2d_x, myThid )
+#ifdef ALLOW_AUTODIFF
+      IF (  .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
+     &     CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
+#endif
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
