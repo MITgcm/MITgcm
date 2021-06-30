@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix (untested) multi-threading and recomputations in seaice_solve4temp.F
 o files that include "tamc.h":
   - add missing declaration of local keys for TAF store-dir in pkg/obcs
     (ALLOW_OBCS_STEVENS) and pkg/bling (USE_BLING_V1, PHYTO_SELF_SHADING) ;
