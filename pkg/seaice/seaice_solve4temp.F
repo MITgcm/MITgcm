@@ -487,7 +487,6 @@ CADJ STORE tsurfLoc = comlev1_solve4temp, key = iicekey, byte = isbyte
       ENDDO                     !/* Iterations */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-
 #ifdef SEAICE_MODIFY_GROWTH_ADJ
 Cgf no additional dependency through solver, snow, etc.
       IF ( SEAICEadjMODE.GE.2 ) THEN
@@ -507,7 +506,6 @@ Cgf no additional dependency through solver, snow, etc.
          IF ( iceOrNot(I,J) ) THEN
           t1 = TSURFin(I,J)
 #else /* SEAICE_MODIFY_GROWTH_ADJ */
-
       IF ( postSolvTempIter.EQ.2 ) THEN
        DO J=1,sNy
         DO I=1,sNx
