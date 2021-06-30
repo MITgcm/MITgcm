@@ -2,9 +2,6 @@
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_OCEANDRAG_COEFFS
@@ -35,10 +32,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

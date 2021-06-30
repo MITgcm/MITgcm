@@ -95,7 +95,10 @@ C     === Local variables ===
       _RL atten_bg
       _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itdkey
 #endif
+#endif /* PHYTO_SELF_SHADING */
       INTEGER i,j,k
       LOGICAL QSW_underice
 CEOP
