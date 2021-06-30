@@ -1417,8 +1417,9 @@ cause difficulty).
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
-To do this you will need a working python installation with the following packages installed:
+Once you've made your changes to the manual, you should build it locally to
+verify that it works as expected.  To do this you will need a working python
+installation with the following packages installed:
 
  - sphinx
  - sphinxcontrib-bibtex
@@ -1426,12 +1427,13 @@ To do this you will need a working python installation with the following packag
  - sphinx_rtd_theme
  - numpy
 
-These packages can be installed from the Python Package Index using pip.  If
-you are familiar with python virtual environments and have an existing python
-installation using `Anaconda <https://www.anaconda.com/>`_ or one of its
-variants, we recommend you use conda to install these packages as available
-on the conda-forge channel.  You can create (and use) a clean environment with
-the required packages like this:
+These packages can be installed from the Python Package Index using pip. If you
+are familiar with python `virtual environments
+<https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
+and have an existing python installation using `Anaconda
+<https://www.anaconda.com/>`_ or one of its variants (e.g. `miniconda
+<https://docs.conda.io>`_), we recommend that you can create (and use) a clean
+environment with the required packages like this:
 
 ::
 
@@ -1442,12 +1444,15 @@ the required packages like this:
    conda deactivate
 
 
-Alternatively, if you are not a python user and want a simple python installation
-that permanently installs these packages, we recommend the following:
+Alternatively, if you are not a python user and want a simple python
+installation that permanently installs these packages, we recommend the
+following:
 
-#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
-   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
-   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
+#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for
+   linux, win, or mac). Follow the instructions to run the installer from a
+   terminal window. Make sure to say "yes" when it asks to initialize
+   Miniforge3 -- that way you can use it right away. This is a minimal anaconda
+   with conda-forge already set as default.
 #. Install MITgcm doc requirements:
 
    ::
@@ -1456,13 +1461,16 @@ that permanently installs these packages, we recommend the following:
      conda install --file doc/requirements.txt
 
 
-Regardless of which installation method you choose, once these modules
-are installed you can build the html version of the manual
-by running ``make html`` in the ``doc`` directory.
+Regardless of which installation method you choose, once these modules are
+installed you can build the html version of the manual by running ``make html``
+in the ``doc`` directory.
 
-To build the pdf version of the manual you will also need a working version of LaTeX that includes
-`several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
-not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
+To build the pdf version of the manual you will also need a working version of
+LaTeX that includes `several packages
+<http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_
+that are not always found in minimal LaTeX installations. The command to build
+the pdf version is ``make latexpdf``, which should also be run in the ``doc``
+directory.
 
 .. _sec_pullreq:
 
