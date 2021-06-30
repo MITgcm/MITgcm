@@ -653,10 +653,6 @@ The most important command-line options are:
     compiler options to check array bounds and add other additional warning
     and debugging flags.
 
-``-use_r4``
-    force model variables ``_RS`` to be declared ``real*4``
-    (see :numref:`cpp_eeoptions_doc`)
-
 ``–make «/PATH/TO/GMAKE»``
     due to the poor handling of soft-links and other bugs common with
     the ``make`` versions provided by commercial unix vendors, GNU
@@ -1536,11 +1532,15 @@ must be set in files ``${PKG}_OPTIONS.h``.
 Preprocessor Execution Environment Options
 ------------------------------------------
 
-The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
-directory :filelink:`eesupp/inc/` contains a number of CPP flags related to the
-execution environment where the model will run. Many of these flags were
+**Most MITgcm users can skip this section**; many of these flags were
 intended for very specific platform environments, and not meant to be changed
-for more general environments. Below we describe the subset of user-editable CPP flags:
+for more general environments (an exception being if you are using a coupled 
+setup, see below).
+
+The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
+directory :filelink:`eesupp/inc/` contains a number of CPP flags related to
+the execution environment where the model will run. Below we describe the
+subset of user-editable CPP flags:
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
@@ -1552,8 +1552,6 @@ for more general environments. Below we describe the subset of user-editable CPP
    | CPP Flag Name                                 | Default | Description                                                                                                          |
    +===============================================+=========+======================================================================================================================+
    | :varlink:`GLOBAL_SUM_ORDER_TILES`             | #define | always cumulate tile local-sum in the same order by applying MPI allreduce to array of tiles                         |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`GLOBAL_SUM_SEND_RECV`               | #undef  | alternative way of doing global sum without MPI allreduce call                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`CG2D_SINGLECPU_SUM`                 | #undef  | alternative way of doing global sum on a single CPU  to eliminate tiling-dependent roundoff errors                   |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
@@ -1571,8 +1569,7 @@ for more general environments. Below we describe the subset of user-editable CPP
 The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
 :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to
 achieve numerically reproducible global sums for a given tile domain
-decomposition.
-As implemented however, this
+decomposition. As implemented however, this
 approach will increase the volume of network traffic in a way that scales
 with the total number of tiles.
 Profiling has shown that letting the code fall through to a baseline
@@ -1631,15 +1628,14 @@ and considered locally as a doubly periodic patch.
 
 MITgcm ``_RS`` variables are forced to be declared as
 ``real*4`` if CPP-flag :varlink:`REAL4_IS_SLOW` to is set to ``#undef``
-in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`.
+in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
 (``_RS`` is a macro used in declaring real variables that, in principle,
-do not require double precision, and thus if declared as single precion
-use less memory.)
-However, this option is not recommended
+do not require double precision, and thus if declared as single precision
+use less memory). However, this option is not recommended
 except for computational benchmarking or for testing the trade-off between memory
-footprint and model precision. To activate this option,
-*do not* make a change in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`;
-instead it can be switched on using the :filelink:`genmake2 <tools/genmake2>`
+footprint and model precision.  **Note: there is no need to edit** 
+:filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`, since this
+option can be activated using the :filelink:`genmake2 <tools/genmake2>`
 command line option ``-use_r4``,  as done in some regression tests
 (see testing `results <https://mitgcm.org/testing-summary>`_
 page tests with optfile suffix ``.use_r4``).
