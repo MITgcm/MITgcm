@@ -1430,8 +1430,8 @@ installation with the following packages installed:
 These packages can be installed from the Python Package Index using pip. If you
 have an existing python installation using `Anaconda
 <https://www.anaconda.com/>`_ or one of its variants (e.g., `miniconda
-<https://docs.conda.io>`_), we recommend that you can create (and use) a clean
-environment with the required packages like this:
+<https://docs.conda.io/en/latest/miniconda.html>`_), we recommend that you can
+create (and use) a clean environment with the required packages like this:
 
 ::
 
@@ -1441,14 +1441,15 @@ environment with the required packages like this:
    [...] # do the work
    conda deactivate
 
-If you don't yet have a python installation on your computer,
-we recommend following the `Anaconda installation procedure 
-<https://www.anaconda.com/products/individual#Downloads>`_, then following the recipe above.
-You do not need to learn python to build the manual; just note you should
-type ``conda activate mitgcm_build_the_docs`` in a shell when starting up
-a manual editing session, and ``conda deactivate`` when you finish (also note you
-only need to perform the ``conda create ...`` step above when you **initially** follow
-the recipe). This will maintain a clean, separate python `virtual environment
+If you don't yet have a python installation on your computer, we recommend
+following the `Anaconda installation procedure
+<https://www.anaconda.com/products/individual#Downloads>`_, then following the
+recipe above.  You do not need to learn python to build the manual; just note
+you should type ``conda activate mitgcm_build_the_docs`` in a shell when
+starting up a manual editing session, and ``conda deactivate`` when you finish
+(also note you only need to perform the ``conda create ...`` step above when
+you **initially** follow the recipe). This will maintain a clean, separate
+python `virtual environment
 <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
 for manual compilation and won't interfere with your python setup should you
 decide to learn python in the future.
