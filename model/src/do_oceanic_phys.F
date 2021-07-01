@@ -363,6 +363,9 @@ CADJ STORE salt     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE evap     = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 # endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phiHydLow= comlev1, key=ikey_dynamics, byte=isbyte
+#endif
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 cph-adj-test(
@@ -416,11 +419,20 @@ CADJ STORE Qice1, Qice2      = comlev1, key=ikey_dynamics, kind=isbyte
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
         CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tices = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uIce  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vIce  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 # ifdef ALLOW_COST
         CALL SEAICE_COST_SENSI ( myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_AUTODIFF
       ELSEIF ( SEAICEadjMODE .EQ. -1 ) THEN
+CADJ STORE area     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fu,fv    = comlev1, key=ikey_dynamics, kind=isbyte
         CALL SEAICE_FAKE( myTime, myIter, myThid )
 # endif /* ALLOW_AUTODIFF */
