@@ -101,8 +101,8 @@
 
 # Input datasets
  &PARM05
- bathyFile      ='bathy_Hmin50.bin',
+ bathyFile      ='bathy_in_P.bin',
  geoPotAnomFile ='geopotanom.bin',
- hydrogThetaFile='lev_T_cs_15k.bin',
- hydrogSaltFile ='lev_S_cs_15k.bin',
+ hydrogThetaFile='lev_T_cs_flip15.bin',
+ hydrogSaltFile ='lev_S_cs_flip15.bin',
  &
