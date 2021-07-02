@@ -60,37 +60,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-         wT_Tile(bi,bj) = 0.
-         wS_Tile(bi,bj) = 0.
-         IF (usingZCoords) THEN
-          DO j=1,sNy
-           DO i=1,sNx
-            ks = ksurfC(i,j,bi,bj)
-            IF (ks.LE.Nr) THEN
-             wT_Tile(bi,bj) = wT_Tile(bi,bj)
+        wT_Tile(bi,bj) = 0.
+        wS_Tile(bi,bj) = 0.
+        DO j=1,sNy
+         DO i=1,sNx
+          ks = ksurfC(i,j,bi,bj)
+          IF (ks.LE.Nr) THEN
+           wT_Tile(bi,bj) = wT_Tile(bi,bj)
      &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
      &                          *thetaFld(i,j,ks,bi,bj)
-             wS_Tile(bi,bj) = wS_Tile(bi,bj)
+           wS_Tile(bi,bj) = wS_Tile(bi,bj)
      &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
      &                          *saltFld(i,j,ks,bi,bj)
-            ENDIF
-           ENDDO
-          ENDDO
-         ELSEIF (usingPCoords) THEN
-          DO j=1,sNy
-           DO i=1,sNx
-            ks = kLowC(i,j,bi,bj)
-            IF (ks.GE.1) THEN
-             wT_Tile(bi,bj) = wT_Tile(bi,bj)
-     &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
-     &                          *thetaFld(i,j,ks,bi,bj)
-             wS_Tile(bi,bj) = wS_Tile(bi,bj)
-     &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
-     &                          *saltFld(i,j,ks,bi,bj)
-            ENDIF
-           ENDDO
-          ENDDO
-         ENDIF
+          ENDIF
+         ENDDO
+        ENDDO
 c#ifdef ALLOW_AUTODIFF_TAMC
 c        wT_Mean = wT_Mean + wT_Tile(bi,bj)
 c        wS_Mean = wS_Mean + wS_Tile(bi,bj)
@@ -109,10 +93,10 @@ c#else
 c#endif
 
       IF ( globalArea.GT.0. ) THEN
-        _BEGIN_MASTER( myThid )
-        TsurfCor = wT_Mean / globalArea
-        SsurfCor = wS_Mean / globalArea
-        _END_MASTER( myThid )
+       _BEGIN_MASTER( myThid )
+       TsurfCor = wT_Mean / globalArea
+       SsurfCor = wS_Mean / globalArea
+       _END_MASTER( myThid )
       ENDIF
       _BARRIER
 

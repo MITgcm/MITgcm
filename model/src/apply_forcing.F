@@ -642,23 +642,14 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       IF ( usingZCoords ) THEN
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
-           gT_arr(i,j) = gT_arr(i,j)
-     &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ELSEIF ( kSurface .EQ. Nr .AND. k .EQ. Nr ) THEN
-        DO j=0,sNy+1
-         DO i=0,sNx+1
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
           gT_arr(i,j) = gT_arr(i,j)
      &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-         ENDDO
+         ENDIF
         ENDDO
-       ENDIF
+       ENDDO
       ENDIF
 
 #ifdef ALLOW_GEOTHERMAL_FLUX
@@ -956,23 +947,14 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       IF ( usingZCoords ) THEN
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
-            gS_arr(i,j) = gS_arr(i,j)
-     &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ELSEIF ( kSurface .EQ. Nr .AND. k .EQ. Nr ) THEN
-        DO j=0,sNy+1
-         DO i=0,sNx+1
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
           gS_arr(i,j) = gS_arr(i,j)
      &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-         ENDDO
+         ENDIF
         ENDDO
-       ENDIF
+       ENDDO
       ENDIF
 
 #ifdef ALLOW_SHELFICE
