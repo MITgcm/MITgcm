@@ -220,6 +220,8 @@ C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculatio
       _RL windStress            ! surface wind-stress (@ grid cell center)
 
 #ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
       INTEGER ikey_1
       INTEGER ikey_2
 #endif

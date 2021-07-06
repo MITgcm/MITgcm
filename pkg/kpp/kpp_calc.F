@@ -123,7 +123,6 @@ C !USES: ===============================================================
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
@@ -145,13 +144,13 @@ C !FUNCTIONS:
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 c     minusone, p0, p5, p25, p125, p0625
-c     imin, imax, jmin, jmax  - array computation indices
+c     iMin, iMax, jMin, jMax  - array computation indices
       _RL        minusone
       PARAMETER( minusone=-1.0)
       _RL        p0    , p5    , p25     , p125      , p0625
       PARAMETER( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
-      INTEGER   imin      ,imax          ,jmin      ,jmax
-      PARAMETER(imin=2-OLx,imax=sNx+OLx-1,jmin=2-OLy,jmax=sNy+OLy-1)
+      INTEGER   iMin      ,iMax          ,jMin      ,jMax
+      PARAMETER(iMin=2-OLx,iMax=sNx+OLx-1,jMin=2-OLy,jMax=sNy+OLy-1)
 
 c Local arrays and variables
 c     work?  (nx,ny)       - horizontal working arrays
@@ -200,27 +199,29 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
-      INTEGER i, j, k, kSurf, kp1, km1, im1, ip1, jm1, jp1
-      INTEGER ikppkey
+      integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
+      integer ikppkey
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikppkey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ikppkey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
 #else /* ALLOW_AUTODIFF_TAMC */
-          ikppkey = 0
+      ikppkey = 0
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-c     surface index
-      kSurf = 1
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,deltaTClock)
      1     .OR. myTime .EQ. startTime ) THEN
@@ -313,6 +314,8 @@ c     horizontally smooth density related quantities with 121 filters
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
 
+c     surface index
+      kSurf = 1
       DO k = 1, Nr
        km1 = max(1,k-1)
        kp1 = min(Nr,k+1)
@@ -328,6 +331,9 @@ c     of the cell; therefore the proper masking is maskC(k)*maskC(k+1)
      &        * maskC(i,j,kp1,bi,bj)
          ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kp1,bi,bj)
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
+#endif /* ALLOW_SHELFICE */
          Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kSurf,bi,bj)
          IF(k.EQ.nzmax(i,j,bi,bj)) THEN
@@ -365,8 +371,8 @@ CMLC     underneath the ice shelves and the following lines are only here
 CMLC     to remind me that this still needs to be sorted out.
 CML      shelfIceFac = 0. _d 0
 CML      IF ( useShelfIce ) selfIceFac = 1. _d 0
-CML      DO j = jmin, jmax
-CML       DO i = imin, imax
+CML      DO j = jMin, jMax
+CML       DO i = iMin, iMax
 CML        surfForcT = surfaceForcingT(i,j,bi,bj)
 CML     &       + shelficeForcingT(i,j,bi,bj) * shelfIceFac
 CML        surfForcS = surfaceForcingS(i,j,bi,bj)
@@ -401,8 +407,8 @@ c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
 
 #ifdef ALLOW_SALT_PLUME
-      DO j=jmin,jmax
-       DO i=imin,imax
+      DO j=jMin,jMax
+       DO i=iMin,iMax
 #ifndef SALT_PLUME_VOLUME
         temp1(i,j,1) = saltPlumeFlux(i,j,bi,bj)
         temp2(i,j,1) = 0. _d 0
@@ -436,7 +442,7 @@ c------------------------------------------------------------------------
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
-     I     ikppkey, imin, imax, jmin, jmax, bi, bj, myTime, myThid )
+     I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 CMLcph(
 CML#ifdef ALLOW_AUTODIFF_TAMC
@@ -456,10 +462,10 @@ c initialize arrays to zero
 c     shsq computation
       DO k = 1, Nrm1
        kp1 = k + 1
-       DO j = jmin, jmax
+       DO j = jMin, jMax
         jm1 = j - 1
         jp1 = j + 1
-        DO i = imin, imax
+        DO i = iMin, iMax
          im1 = i - 1
          ip1 = i + 1
          shsq(i,j,k) = p5 * (
@@ -568,8 +574,8 @@ c-----------------------------------------------------------------------
 
       DO k = 1, Nr
        km1 = max(1,k-1)
-       DO j = jmin, jmax
-        DO i = imin, imax
+       DO j = jMin, jMax
+        DO i = iMin, iMax
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
@@ -581,10 +587,11 @@ c-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
-      DO j = jmin, jmax
-       DO i = imin, imax
+      kSurf = 1
+      DO j = jMin, jMax
+       DO i = iMin, iMax
 #ifdef ALLOW_SHELFICE
-        IF ( useShelfIce ) k = kTopC(i,j,bi,bj)
+        IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,kSurf,bi,bj)
        ENDDO

@@ -48,7 +48,9 @@ C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
+#if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
       LOGICAL solve4Stress
+#endif
 
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       INTEGER iarr, k2

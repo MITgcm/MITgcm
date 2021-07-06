@@ -49,6 +49,10 @@ C     LOCAL VARIABLES
       EXTERNAL ETA_GL_STREAMICE
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+#endif
       INTEGER ikey_1
 #endif
       _RL STREAMICE_BSTRESS_EXP

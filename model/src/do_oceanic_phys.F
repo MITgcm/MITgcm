@@ -147,8 +147,9 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
-# include "tamc.h"
-# include "tamc_keys.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "FFIELDS.h"
 # include "SURFACE.h"
 # include "EOS.h"
@@ -225,6 +226,11 @@ C     i,j,k         :: loop indices
 #ifdef ALLOW_AUTODIFF
       _RL thetaRef
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER kkey, itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -310,7 +316,6 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
       ENDIF
 #endif /* ALLOW_FRAZIL */
 
-#ifndef OLD_THSICE_CALL_SEQUENCE
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -341,7 +346,6 @@ C       and modify forcing terms including effects from ice
         CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
       ENDIF
 #endif /* ALLOW_THSICE */
-#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_SEAICE
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -442,30 +446,6 @@ CADJ STORE qsw               = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area              = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
-
-#ifdef OLD_THSICE_CALL_SEQUENCE
-#if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
-      IF ( useThSIce .AND. fluidIsWater ) THEN
-# ifdef ALLOW_AUTODIFF_TAMC
-cph(
-#  ifdef NONLIN_FRSURF
-CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE salt,theta        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE qnet,qsw, empmr   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hFac_surfC        = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
-# endif
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('THSICE_MAIN',myThid)
-# endif
-C--     Step forward Therm.Sea-Ice variables
-C       and modify forcing terms including effects from ice
-        CALL TIMER_START('THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
-        CALL THSICE_MAIN( myTime, myIter, myThid )
-        CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
-      ENDIF
-#endif /* ALLOW_THSICE */
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce .AND. fluidIsWater ) THEN

@@ -47,9 +47,14 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
+#ifndef HAVE_SYSTEM
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
       CHARACTER*(MAX_LEN_FNAM) namBuf
-      INTEGER iL, pIL, myLev
+      INTEGER iL, pIL
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      INTEGER myLev
+#endif
 CEOP
 
 c     initialize ad dump record number (used only if dumpAdByRec is true)

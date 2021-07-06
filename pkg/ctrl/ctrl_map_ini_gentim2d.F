@@ -34,8 +34,8 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-#include "tamc.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -43,6 +43,10 @@ C     == routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_GENTIM2D_CONTROL
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
@@ -72,8 +76,6 @@ C     == local variables ==
 #endif
       integer bi,bj
       integer i,j,k2
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
       integer ilgen
 CEOP
 
@@ -163,7 +165,7 @@ c-- docycle
 
         DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
@@ -219,7 +221,7 @@ c       print*,'nyearsINT',nyearsINT,nyearsRL
          call ecco_zero(xx_gen,1,zeroRL,myThid)
 
          do jrec=1,nyearsINT
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
@@ -236,7 +238,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 
          call ecco_div(xx_gen,1,nyearsRL,myThid)
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
@@ -252,7 +254,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 c subtract cyclic average
         DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
@@ -288,7 +290,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 c-- scaling and smoothing
 
         DO irec = 1, diffrec
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 

@@ -50,17 +50,11 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
 
       integer ivar
       integer startrec
       integer endrec
       integer diffrec
-      integer iarr
-      character*(1) ncvargrdtmp
 
       _RL dummy
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -71,6 +65,12 @@ c     == local variables ==
       EXTERNAL MDS_RECLEN
 #endif
 
+#if ( defined ALLOW_GENTIM2D_CONTROL || \
+      defined ALLOW_GENARR2D_CONTROL || \
+      defined ALLOW_GENARR3D_CONTROL )
+      INTEGER iarr
+      CHARACTER*(1) ncvargrdtmp
+#endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       CHARACTER*(MAX_LEN_FNAM) fnamegen
       INTEGER ilgen, k2, diffrecFull, endrecFull
@@ -82,15 +82,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-      jtlo = mybylo(myThid)
-      jthi = mybyhi(myThid)
-      itlo = mybxlo(myThid)
-      ithi = mybxhi(myThid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
 
 c--     Set default values.
       do ivar = 1,maxcvars
@@ -962,10 +953,10 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do j = jmin,jmax
-         do i = imin,imax
+      do bj = mybylo(myThid), mybyhi(myThid)
+       do bi = mybxlo(myThid), mybxhi(myThid)
+        do j = 1-OLy, sNy+OLy
+         do i = 1-OLx, sNx+Olx
           wareaunit (i,j,bi,bj) = 1.0
 #ifndef ALLOW_ECCO
           whflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)

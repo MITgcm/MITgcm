@@ -35,15 +35,12 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer errio
-      integer il
       integer iUnit
 c     this is a dummy parameter that is never used; it is introduced here
 c     so that we can have compatible namelists between mitgmcuv_ad and
 c     optim.x compiled from optim_m1qn3
       _RL dfminFrac
 
-      character*(max_len_prec) record
       character*(max_len_mbuf) msgbuf
 
 c     == external ==
@@ -115,4 +112,3 @@ c--     Set default values.
 
       return
       end
-

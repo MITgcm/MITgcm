@@ -1,7 +1,7 @@
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_SGS(
+      SUBROUTINE BLING_SGS(
      I           bi, bj, imin, imax, jmin, jmax,
      I           myTime, myIter, myThid)
 
@@ -22,9 +22,6 @@ C     === Global variables ===
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-#endif
 
 C     === Routine arguments ===
 C     bi,bj         :: tile indices
