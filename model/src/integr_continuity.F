@@ -78,6 +78,11 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
 #endif /* ndef ALLOW_ADDFLUID */
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+# if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER idynkey
+# endif
 #else
       _RL rStarDhDt(1)
 #endif
