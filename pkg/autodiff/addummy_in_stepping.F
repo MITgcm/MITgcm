@@ -300,10 +300,6 @@ C-----------------------------------------------------------------------
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
-CML(  Does not make sense at this point
-CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
-CML     &       adxx_r_low, myIter, myThid)
-CML)
       CALL DUMP_ADJ_XYZ(
      &     adhfacc,dumRL,'ADJhFacC','ADJhFacC.',
      &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
@@ -416,10 +412,6 @@ C-----------------------------------------------------------------------
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
-CML(  Does not make sense at this point
-CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
-CML     &       adxx_r_low, myIter, myThid)
-CML)
       CALL DUMP_ADJ_XYZ(
      &     hFacC%d,dumRL,'ADJhFacC','ADJhFacC.',
      &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
