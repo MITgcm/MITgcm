@@ -123,7 +123,7 @@ cph       if (xx_gentim2d_weight(iarr).NE.' ') then
 
         DO irec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
          call active_read_xy( fnamegenIn, xx_gen, irec,
@@ -171,7 +171,7 @@ c-- end irec loop
         DO jrec = 1, replicated_ntimes
         DO irec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
         IF (krec.LE.endrec) THEN
