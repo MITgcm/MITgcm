@@ -43,6 +43,7 @@ C     == global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     == routine arguments ==
       INTEGER myThid
 
 #if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
@@ -52,6 +53,7 @@ C     !FUNCTIONS:
 #endif
 
 C     !LOCAL VARIABLES:
+C     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined(ALLOW_GENARR3D_CONTROL))
       INTEGER iarr
 #endif
