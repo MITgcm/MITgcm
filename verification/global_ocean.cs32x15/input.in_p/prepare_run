@@ -25,7 +25,7 @@ else
 fi
 
 #- in order to save disc space, take files:
-fileList=`(cd ../input.seaice ; ls -1 *.bin eedata* data.*)`
+fileList=`(cd ../input.seaice ; ls -1 *.bin data.*)`
 
 #- from this dir:
 fromDir="../input.seaice"
