@@ -1,5 +1,7 @@
 #include "CTRL_OPTIONS.h"
-#include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_GENTIM2D
@@ -27,7 +29,7 @@ C     === Global variables ===
 #include "AUTODIFF_MYFIELDS.h"
 #endif
 #ifdef ALLOW_STREAMICE
-#include "STREAMICE.h"
+# include "STREAMICE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -60,17 +62,6 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   generic - user-defined control vars
-
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-Oly,sNy+Oly
-          DO I = 1-Olx,sNx+Olx
-           bdot_streamice(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
       DO iarr = 1, maxCtrlTim2D
 
        IF (xx_gentim2d_weight(iarr).NE.' ') THEN
@@ -85,30 +76,6 @@ C--   generic - user-defined control vars
          ENDDO
         ENDDO
 C
-!       CALL CTRL_GET_GEN (
-!     I      xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-!     I      xx_gentim2d_startdate(1,iarr),
-!     I      xx_gentim2d_period(iarr),
-!     I      maskC,
-!     O      xx_gentim2d_loc,
-!     I      xx_gentim2d0(1-Olx,1-Oly,1,1,iarr),
-!     I      xx_gentim2d1(1-Olx,1-Oly,1,1,iarr),
-!     I      xx_gentim2d_dummy(iarr),
-!     I      zeroRL, zeroRL,
-!     I      mytime, myiter, mythid )
-
-!       CALL CTRL_GET_GEN (
-!     I      xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-!     I      xx_gentim2d_startdate(1,iarr),
-!     I      xx_gentim2d_period(iarr),
-!     I      maskC,
-!     O      xx_gentim2d_loc,
-!     I      xx_gentim2d0(1-Olx,1-Oly,1,1,iarr),
-!     I      xx_gentim2d1(1-Olx,1-Oly,1,1,iarr),
-!     I      xx_gentim2d_dummy(iarr),
-!     I      zeroRL, zeroRL, genweight,
-!     I      mytime, myiter, mythid )
-
         CALL CTRL_GET_MASK2D( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &      mask2D, myThid )
         CALL CTRL_GET_GEN (
@@ -179,14 +146,13 @@ C
         ENDIF !IF (xx_gentim2d_glosum(iarr)) THEN
 
 C--   begin customized code for experiment hs94.1x64x5
+
         IF ( iarr .EQ. 1 ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j = 1-OLy,sNy+OLy
-            DO i = 1-Olx,sNx+OLx
-             bdot_streamice(i,j,bi,bj) =
-     &            bdot_streamice(i,j,bi,bj)+
-     &            xx_gentim2d(i,j,bi,bj,iarr)
+           DO J = 1-Oly,sNy+Oly
+            DO I = 1-Olx,sNx+Olx
+             bdot_streamice(i,j,bi,bj) = xx_gentim2d(i,j,bi,bj,iarr)
             ENDDO
            ENDDO
           ENDDO
@@ -197,7 +163,6 @@ C--   end customized code
        ENDIF !IF (xx_gentim2d_weight(iarr).NE.' ') THEN
 
       ENDDO !DO iarr = 1, maxCtrlTim2D
-
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
