@@ -15,7 +15,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *=================================================================
 C     | SUBROUTINE CTRL_MAP_GENARR2D
-C     | Add the generic arrays of the
+C     | Add the generic 2D-arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
 C     *=================================================================
@@ -136,28 +136,28 @@ C --- Do any smoothing
         DO j = 1,sNy
          DO i = 1,sNx
 c scale param adjustment
-            IF ( (mask2D(i,j,bi,bj).NE.0.).AND.
-     &           (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
-              IF (doscaling) THEN
-                  xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
-     &                     /SQRT( wgenarr2d(i,j,bi,bj,iarr) )
-                IF (dolog10ctrl) THEN
-                  xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
-                  xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
-                ENDIF ! log10ctrls
-              ENDIF ! doscaling
-            ELSE
-              xx_gen(i,j,bi,bj) = 0.
-            ENDIF
+          IF ( (mask2D(i,j,bi,bj).NE.0.).AND.
+     &         (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
+           IF (doscaling) THEN
+            xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
+     &               /SQRT( wgenarr2d(i,j,bi,bj,iarr) )
+            IF (dolog10ctrl) THEN
+             xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
+             xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+            ENDIF ! log10ctrls
+           ENDIF ! doscaling
+          ELSE
+           xx_gen(i,j,bi,bj) = 0.
+          ENDIF
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-            IF ( .NOT. dolog10ctrl ) THEN
-              fld(i,j,bi,bj) = fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
-            ELSE
-              fld(i,j,bi,bj) = xx_gen(i,j,bi,bj)
-            ENDIF
-          ENDDO
+          IF ( .NOT. dolog10ctrl ) THEN
+           fld(i,j,bi,bj) = fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
+          ELSE
+           fld(i,j,bi,bj) = xx_gen(i,j,bi,bj)
+          ENDIF
          ENDDO
+        ENDDO
        ENDDO
       ENDDO
 
@@ -184,7 +184,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *=================================================================
 C     | SUBROUTINE CTRL_MAP_GENARR3D
-C     | Add the generic arrays of the
+C     | Add the generic 3D-arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
 C     *=================================================================
@@ -232,7 +232,7 @@ C     !LOCAL VARIABLES:
       INTEGER ilgen
       LOGICAL doglobalread
       LOGICAL ladinit
-      _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
 c--   Now, read the control vector.
@@ -280,7 +280,7 @@ c               passed to data.ctrl, (default = 0.0)
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',nR,1,nR,wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),dummyRS,1,myThid)
+     & 'RL',Nr,1,Nr,wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),dummyRS,1,myThid)
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XYZ( fnamegenIn, xx_gen, 1, doglobalread,
@@ -289,6 +289,10 @@ c               passed to data.ctrl, (default = 0.0)
       CALL READ_REC_XYZ_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
 
+C --- Get appropriate mask for ctrl variable
+      CALL CTRL_GET_MASK3D(xx_genarr3d_file(iarr), mask3D, myThid)
+
+C --- Do any smoothing
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
        IF (dowc01) CALL SMOOTH_CORREL3D( xx_gen, numsmo, myThid )
@@ -296,36 +300,32 @@ c               passed to data.ctrl, (default = 0.0)
       ENDIF
 #endif
 
-C --- Get appropriate mask
-      CALL CTRL_GET_MASK3D(xx_genarr3d_file(iarr), mask3D, myThid)
-
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,nr
+        DO k = 1,Nr
          DO j = 1,sNy
           DO i = 1,sNx
 c scale param adjustment
-            IF ( (mask3D(i,j,k,bi,bj).NE.0.).AND.
-     &           (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) THEN
-             IF (doscaling) THEN
-              xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-     &                 /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
-              IF (dolog10ctrl) THEN
-               xx_gen(i,j,k,bi,bj) =
-     &              xx_gen(i,j,k,bi,bj) + log10initval
-               xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
-              ENDIF ! log10ctrls
-             ENDIF ! doscaling
-            ELSE
-              xx_gen(i,j,k,bi,bj)=0.
-            ENDIF
+           IF ( (mask3D(i,j,k,bi,bj).NE.0.).AND.
+     &          (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) THEN
+            IF (doscaling) THEN
+             xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+     &                /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
+             IF (dolog10ctrl) THEN
+              xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
+              xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+             ENDIF ! log10ctrls
+            ENDIF ! doscaling
+           ELSE
+            xx_gen(i,j,k,bi,bj)=0.
+           ENDIF
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-            IF ( .NOT. dolog10ctrl ) THEN
-             fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
-            ELSE
-             fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-            ENDIF
+           IF ( .NOT. dolog10ctrl ) THEN
+            fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
+           ELSE
+            fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
