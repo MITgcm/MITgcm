@@ -305,15 +305,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          write(fname(1:80),'(3a,i10.10)')
      &        yadmark, xx_bottomdrag_file(1:il),'.',optimcycle
-#endif /* ALLOW_HFLUXM_CONTROL */
-
-#ifdef ALLOW_HFLUXM_CONTROL
-      else if ( grdchkvarindex .eq. 24 ) then
-         il=ilnblnk( xx_hfluxm_file )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
-     &        yadmark, xx_hfluxm_file(1:il),'.',optimcycle
-#endif /* ALLOW_HFLUXM_CONTROL */
+#endif /* ALLOW_BOTTOMDRAG_CONTROL */
 
 #ifdef ALLOW_GEN2D_CONTROL
       else if ( grdchkvarindex .eq. 30 ) then

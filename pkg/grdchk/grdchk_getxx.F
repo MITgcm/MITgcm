@@ -418,18 +418,6 @@ c--   == end of interface ==
          end if
 #endif /* ALLOW_BOTTOMDRAG_CONTROL */
 
-#ifdef ALLOW_HFLUXM_CONTROL
-      else if ( grdchkvarindex .eq. 24 ) then
-         il=ilnblnk( xx_hfluxm_file )
-         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_hfluxm_file(1:il),'.',optimcycle
-         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
-     &           xx_hfluxm_file(1:il),'.',optimcycle
-         end if
-#endif /* ALLOW_HFLUXM_CONTROL */
-
 #ifdef ALLOW_GEN2D_CONTROL
       else if ( grdchkvarindex .eq. 30 ) then
          il=ilnblnk( xx_gen2d_file )

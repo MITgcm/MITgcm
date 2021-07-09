@@ -132,9 +132,6 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       character*( 80)   fname_siarea(3)
       character*( 80)   fname_siheff(3)
       character*( 80)   fname_sihsnow(3)
-cHFLUXM_CONTROL
-      character*( 80)   fname_hfluxm(3)
-cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
 
@@ -228,9 +225,6 @@ c--   Assign file names.
       call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
       call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
       call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
-cHFLUXM_CONTROL
-      call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
-cHFLUXM_CONTROL
 #endif /* ECCO_CTRL_DEPRECATED */
 
 c--     Only the master thread will do I/O.
@@ -659,16 +653,6 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, forcingPrecond,
      &         fname_bottomdrag(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_HFLUXM_CONTROL
-          ivartype    = 24
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "whfluxm"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_hfluxm(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 

@@ -84,9 +84,6 @@ c     ==================================================================
      &                  , xx_iestaubar_mean_dummy
      &                  , xx_gen2d_dummy
      &                  , xx_gen3d_dummy
-cHFLUXM_CONTROL
-     &                  , xx_hfluxm_dummy
-cHFLUXM_CONTROL
      &                  , xx_shifwflx_dummy
 
       _RL xx_theta_dummy
@@ -166,9 +163,6 @@ c
       _RL xx_smrsstbar_mean_dummy
       _RL xx_smrsssbar_mean_dummy
       _RL xx_iestaubar_mean_dummy
-cHFLUXM_CONTROL
-      _RL xx_hfluxm_dummy
-cHFLUXM_CONTROL
       _RL xx_shifwflx_dummy
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
@@ -188,5 +182,3 @@ C--   Parameters maxCtrlArr2D, maxCtrlArr3D, maxCtrlTim2D are set in CTRL_SIZE.h
 c     ==================================================================
 c     END OF HEADER CONTROL DUMMIES
 c     ==================================================================
-
-

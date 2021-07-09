@@ -340,9 +340,6 @@ c$openad INDEPENDENT(xx_kapgm)
 # ifdef ALLOW_TR10_CONTROL
 c$openad INDEPENDENT(xx_tr1)
 # endif
-# ifdef ALLOW_HFLUXM_CONTROL
-c$openad INDEPENDENT(xx_hfluxm)
-# endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)
