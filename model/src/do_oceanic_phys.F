@@ -349,43 +349,23 @@ C       and modify forcing terms including effects from ice
 
 #ifdef ALLOW_SEAICE
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area     = comlev1, key=ikey_dynamics, kind=isbyte
-c CADJ STORE fu,fv    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE qnet     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE qsw      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE theta    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE salt     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qnet  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE qsw   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fu,fv = comlev1, key=ikey_dynamics, kind=isbyte
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
-CADJ STORE evap     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE evap  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 # endif /* ALLOW_AUTODIFF_TAMC */
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-cph-adj-test(
-CADJ STORE hsnow    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE heff     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE tices    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE empmr    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE saltflux = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE fu,fv    = comlev1, key=ikey_dynamics, kind=isbyte
-cph-adj-test)
-#ifdef ALLOW_EXF
+CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef ALLOW_EXF
 CADJ STORE atemp,aqh,precip  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swdown,lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uwind,vwind       = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
-CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
-#  ifdef SEAICE_CGRID
-CADJ STORE stressdivergencex = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE stressdivergencey = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
-#  ifdef SEAICE_ALLOW_DYNAMICS
-CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
-#   ifdef SEAICE_ALLOW_EVP
-CADJ STORE seaice_sigma1     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE seaice_sigma2     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE seaice_sigma12    = comlev1, key=ikey_dynamics, kind=isbyte
-#   endif
 #  endif
 #  ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE hsalt             = comlev1, key=ikey_dynamics, kind=isbyte
@@ -412,18 +392,23 @@ CADJ STORE Qice1, Qice2      = comlev1, key=ikey_dynamics, kind=isbyte
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
         CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tices = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uIce  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vIce  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 # ifdef ALLOW_COST
         CALL SEAICE_COST_SENSI ( myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_AUTODIFF
       ELSEIF ( SEAICEadjMODE .EQ. -1 ) THEN
-CADJ STORE fu,fv    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area = comlev1, key=ikey_dynamics, kind=isbyte
         CALL SEAICE_FAKE( myTime, myIter, myThid )
 # endif /* ALLOW_AUTODIFF */
       ENDIF
-c # ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
-c # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_SEAICE */
 
 #if (defined ALLOW_OCN_COMPON_INTERF) && (defined ALLOW_THSICE)
