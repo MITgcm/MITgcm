@@ -210,6 +210,9 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER iarr
       INTEGER myThid
 
+#ifdef ALLOW_OPENAD
+      STOP 'ABNORMAL END: CTRL_MAP_GENARR3D is empty'
+#else /* ALLOW_OPENAD */
 #ifdef ALLOW_GENARR3D_CONTROL
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
@@ -346,6 +349,7 @@ C  xx_uvel and xx_vvel are read in.
      &         'RL', Nr, 1, Nr, fld, dummyRS, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
+#endif /* ALLOW_OPENAD */
 
       RETURN
       END
