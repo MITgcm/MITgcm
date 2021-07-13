@@ -446,7 +446,6 @@ C     kSurface  :: index of surface level
       _RL minusone
       PARAMETER (minusOne=-1.)
       _RL swfracb(2)
-      INTEGER kp1
 #endif
 #endif /* USE_OLD_EXTERNAL_FORCING */
 CEOP
@@ -689,27 +688,26 @@ c     IF ( usePenetratingSW ) THEN
        IF ( usingZCoords ) THEN
         swfracb(1)=abs(rF(k))
         swfracb(2)=abs(rF(k+1))
+        km = k
+        kp = MIN(k+1,Nr)
        ELSEIF ( kSurface .EQ. Nr ) THEN
 C     this is the oceanic pressure coordinate case
         swfracb(1)=abs(rF(k))*recip_rhoConst*recip_gravity
         swfracb(2)=abs(rF(k+1))*recip_rhoConst*recip_gravity
+        km = MAX(k-1,1)
+        kp = k
        ENDIF
        CALL SWFRAC(
      I             2, minusOne,
      U             swfracb,
      I             myTime, 1, myThid )
-       kp1 = k+1
-       IF (k.EQ.Nr) THEN
-        kp1 = k
-        IF ( usingZCoords ) swfracb(2)=0. _d 0
-       ELSEIF (k.EQ.1 .AND. usingPCoords ) THEN
-        swfracb(1) = 0. _d 0
-       ENDIF
+       IF (k.EQ.Nr .AND. usingZCoords ) swfracb(2) = 0. _d 0
+       IF (k.EQ.1  .AND. usingPCoords ) swfracb(1) = 0. _d 0
        DO j=0,sNy+1
         DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
-     &        + Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
-     &                         -swfracb(2)*maskC(i,j,kp1, bi,bj))
+     &        + Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,km,bi,bj)
+     &                         -swfracb(2)*maskC(i,j,kp,bi,bj))
      &        *recip_Cp*mass2rUnit * gravitySign
      &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
