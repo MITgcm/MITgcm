@@ -63,7 +63,9 @@ C     == routine arguments ==
 C     == local variables ==
       INTEGER i, j, bi, bj
 #ifdef ALLOW_CTRL
+# if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif
 #endif
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -721,6 +723,9 @@ cdm #endif
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           IF (xx_gentim2d_file(iarr)(1:13).EQ.'xx_snowprecip')
+     &       snowprecip(i,j,bi,bj)=snowprecip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwflux')
      &       lwflux(i,j,bi,bj)=lwflux(i,j,bi,bj)+
