@@ -683,7 +683,7 @@ C     where the flux at the bottom is applied as kSurfC
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-C     Put detph of interface above & below current level in swfracb (1 & 2)
+C     Put depth of interface above & below current level in swfracb (1 & 2)
 C     and SWFRAC returns fraction of light that crosses these interfaces ;
 C     note: here km is for the mask below current level k
        IF ( usingZCoords ) THEN
@@ -700,8 +700,7 @@ C     this is the oceanic pressure coordinate case
      I             2, oneRL,
      U             swfracb,
      I             myTime, myIter, myThid )
-       IF ( ( k.EQ.Nr .AND. usingZCoords ) .OR.
-     &      ( k.EQ.1  .AND. usingPCoords ) ) swfracb(2) = 0. _d 0
+       IF ( k.EQ.km ) swfracb(2) = 0. _d 0
        DO j=0,sNy+1
         DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
