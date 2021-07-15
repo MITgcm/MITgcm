@@ -42,13 +42,17 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
       INTEGER k
-#ifdef ECCO_CTRL_DEPRECATED
+#if (defined ALLOW_BOTTOMDRAG_CONTROL) \
+      || (defined ALLOW_SHIFWFLX_CONTROL) \
+      || (defined ECCO_CTRL_DEPRECATED)
       INTEGER i,j
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
       INTEGER itlo,ithi
       INTEGER jtlo,jthi
 #endif
-CEOP
 c     == end of interface ==
+CEOP
 
 #ifdef ECCO_CTRL_DEPRECATED
       jtlo = myByLo(myThid)
@@ -344,8 +348,8 @@ c     == end of interface ==
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      DO bj = jtlo,jthi
-        DO bi = itlo,ithi
+      DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx
               xx_shifwflx0(i,j,bi,bj) = 0. _d 0
@@ -357,8 +361,8 @@ c     == end of interface ==
 #endif
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      DO bj = jtlo,jthi
-        DO bi = itlo,ithi
+      DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx
               bottomDragFld(i,j,bi,bj) = 0. _d 0
