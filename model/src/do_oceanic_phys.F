@@ -201,7 +201,7 @@ C     myThid :: Thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     rhoK, rhoKm1  :: Density at current level, and level above
+C     rhoKp1,rhoKm1 :: Density at current level, and @ level minus one
 C     iMin, iMax    :: Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj        :: tile indices
@@ -771,6 +771,11 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
 CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
              IF ( usingZCoords ) THEN
+              DO j=jMin,jMax
+               DO i=iMin,iMax
+                rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
+               ENDDO
+              ENDDO
               CALL FIND_RHO_2D(
      I                 iMin, iMax, jMin, jMax, k,
      I                 theta(1-OLx,1-OLy,k-1,bi,bj),
@@ -794,14 +799,6 @@ CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
 #ifdef ALLOW_DEBUG
             IF (debugMode) CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
-cph Avoid variable aliasing for adjoint !!!
-            IF ( usingZCoords ) THEN
-             DO j=jMin,jMax
-              DO i=iMin,iMax
-               rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
-              ENDDO
-             ENDDO
-            ENDIF
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
      I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
