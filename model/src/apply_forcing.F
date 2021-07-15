@@ -443,8 +443,6 @@ C     kSurface  :: index of surface level
       _RL tmpFac, delPI
       _RL recip_Cp
 #ifdef SHORTWAVE_HEATING
-      _RL minusone
-      PARAMETER (minusOne=-1.)
       _RL swfracb(2)
 #endif
 #endif /* USE_OLD_EXTERNAL_FORCING */
@@ -685,35 +683,36 @@ C     where the flux at the bottom is applied as kSurfC
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
+C     Put detph of interface above & below current level in swfracb (1 & 2)
+C     and SWFRAC returns fraction of light that crosses these interfaces ;
+C     note: here km is for the mask below current level k
        IF ( usingZCoords ) THEN
-        swfracb(1)=abs(rF(k))
-        swfracb(2)=abs(rF(k+1))
-        km = k
-        kp = MIN(k+1,Nr)
-       ELSEIF ( kSurface .EQ. Nr ) THEN
+        swfracb(1) = rF(k)
+        swfracb(2) = rF(k+1)
+        km = MIN(k+1,Nr)
+       ELSE
 C     this is the oceanic pressure coordinate case
-        swfracb(1)=abs(rF(k))*recip_rhoConst*recip_gravity
-        swfracb(2)=abs(rF(k+1))*recip_rhoConst*recip_gravity
+        swfracb(1) = -rF(k+1)*recip_rhoConst*recip_gravity
+        swfracb(2) = -rF(k)*recip_rhoConst*recip_gravity
         km = MAX(k-1,1)
-        kp = k
        ENDIF
        CALL SWFRAC(
-     I             2, minusOne,
+     I             2, oneRL,
      U             swfracb,
-     I             myTime, 1, myThid )
-       IF (k.EQ.Nr .AND. usingZCoords ) swfracb(2) = 0. _d 0
-       IF (k.EQ.1  .AND. usingPCoords ) swfracb(1) = 0. _d 0
+     I             myTime, myIter, myThid )
+       IF ( ( k.EQ.Nr .AND. usingZCoords ) .OR.
+     &      ( k.EQ.1  .AND. usingPCoords ) ) swfracb(2) = 0. _d 0
        DO j=0,sNy+1
         DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
-     &        + Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,km,bi,bj)
-     &                         -swfracb(2)*maskC(i,j,kp,bi,bj))
-     &        *recip_Cp*mass2rUnit * gravitySign
+     &        - Qsw(i,j,bi,bj)*( swfracb(1)*maskC(i,j,k,bi,bj)
+     &                         - swfracb(2)*maskC(i,j,km,bi,bj) )
+     &        *recip_Cp*mass2rUnit
      &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
-#endif
+#endif /* SHORTWAVE_HEATING */
 
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL )
