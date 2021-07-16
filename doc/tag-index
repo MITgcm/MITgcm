@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68a (2021/07/16)
 o pkg/seaice:
   - clean up and simplify TAF store directives in do_oceanic_phys.F
     for seaice_model to avoid unnecessary recomputations ;
