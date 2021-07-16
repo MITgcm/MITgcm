@@ -74,7 +74,7 @@ C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
-C     geoPotAnomFile  :: File containing constand geopotential anomaly due to
+C     geoPotAnomFile  :: File containing constant geopotential anomaly due to
 C                        density structure
 C     addMassFile     :: File containing source/sink of fluid in the interior
 C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data

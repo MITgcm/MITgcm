@@ -207,12 +207,10 @@ C                               or topographic geopotential anom. (p-coord)
        ENDDO
       ENDDO
 
-#ifdef ATMOSPHERIC_LOADING
       IF ( geoPotAnomFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( geoPotAnomFile, ' ', phi0Surf, 0, myThid )
       ENDIF
       CALL EXCH_XY_RS( phi0Surf  , myThid )
-#endif
 
       IF ( fluidIsAir .AND. topoFile.NE.' ' ) THEN
 
