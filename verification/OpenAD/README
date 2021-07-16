@@ -2,8 +2,8 @@ Starting a configuration for OpenAD
 19-Aug-2005, heimbach@mit.edu, utke@mcs.anl.gov, cnh@mit.edu
 ############################################################
 
-This experiment is derived from global_ocean.90x40x15,
-but excludes packages gmredi, kpp.
+This experiment is derived from global_ocean.90x40x15.
+Additionally it tests packages gmredi, kpp, and ggl90.
 
 STEP 1:
 ######
@@ -11,7 +11,7 @@ To bypass incomplete canonicalizer, convert COMMON blocks to MODULES.
 Successfully completed.
 The built process needed to be modified, and some routines
 needed changes. Most changes were commited to default routines,
-the remaining changes are kept in code/ for now.
+the remaining changes are kept in code_oad/ for now.
 
 To build:
 --------
@@ -23,8 +23,8 @@ o long version:
 --------------
 # (chdir to built/; assume we are in built/)
 #
-# generate makefile using ifort and modified genmake2 in ../code/
-../code/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -mods ../code
+# generate makefile using ifort and modified genmake2 in ../code_oad/
+../../../tools/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -mods ../code_oad
 #
 # make dependencies
 make depend
@@ -64,14 +64,13 @@ STEP 2:
 ######
 Generate code for AD-related routines.
 
-Similar to step 1, but look in code_ad/ instead of code/
+Similar to step 1, but look in code_ad/ instead of code_oad/
 
 To build:
 --------
 o short version:
 ---------------
 
-../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
+../../../tools/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
 
 make adAll
-
