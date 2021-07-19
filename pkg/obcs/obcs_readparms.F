@@ -155,6 +155,8 @@ C     retired parameters
      &          OBNwFile, OBSwFile, OBEwFile, OBWwFile,
      &          OBNAmFile, OBSAmFile, OBEAmFile, OBWAmFile,
      &          OBNPhFile, OBSPhFile, OBEPhFile, OBWPhFile,
+     &          OBNAmtFile, OBSAmtFile, OBEAmtFile, OBWAmtFile,
+     &          OBNPhtFile, OBSPhtFile, OBEPhtFile, OBWPhtFile,
 #ifdef ALLOW_PTRACERS
      &          OBCS_u1_adv_Tr,
      &          OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile,
@@ -338,6 +340,14 @@ C--   Default flags and values for OBCS
       OBSPhFile = ' '
       OBEPhFile = ' '
       OBWPhFile = ' '
+      OBNAmtFile = ' '
+      OBSAmtFile = ' '
+      OBEAmtFile = ' '
+      OBWAmtFile = ' '
+      OBNPhtFile = ' '
+      OBSPhtFile = ' '
+      OBEPhtFile = ' '
+      OBWPhtFile = ' '
 #ifdef ALLOW_PTRACERS
       DO iTracer = 1, PTRACERS_num
        OBCS_u1_adv_Tr(iTracer) = 0

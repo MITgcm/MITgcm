@@ -169,6 +169,8 @@ C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
      &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNamtFile, OBSamtFile, OBEamtFile, OBWamtFile,
+     &      OBNphtFile, OBSphtFile, OBEphtFile, OBWphtFile,
      &      OBNconnectFile, OBSconnectFile,
      &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile
@@ -181,6 +183,8 @@ C insideOBmaskFile   :: File to specify Inside OB region mask (zero beyond OB)
      &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNamFile, OBSamFile, OBEamFile, OBWamFile,
      &      OBNphFile, OBSphFile, OBEphFile, OBWphFile,
+     &      OBNamtFile, OBSamtFile, OBEamtFile, OBWamtFile,
+     &      OBNphtFile, OBSphtFile, OBEphtFile, OBWphtFile,
      &      OBNconnectFile, OBSconnectFile,
      &      OBEconnectFile, OBWconnectFile,
      &      insideOBmaskFile
