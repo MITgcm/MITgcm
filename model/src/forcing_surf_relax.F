@@ -192,8 +192,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
         IF ( balancePrintMean ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(A,e24.17,1X,E24.17)')
-     &        'rm Global mean of SSTrelax =',  myTime, globAver
+         WRITE(msgBuf,'(A,1PE23.14,A,I10)')
+     &        'rm Global mean of SSTrelax =', globAver, ' @ it=', myIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
          _END_MASTER( myThid )
@@ -228,8 +228,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDDO
         IF ( balancePrintMean ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(A,e24.17,1X,E24.17)')
-     &        'rm Global mean of SSSrelax =',  myTime, globAver
+         WRITE(msgBuf,'(A,1PE23.14,A,I10)')
+     &        'rm Global mean of SSSrelax =', globAver, ' @ it=', myIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
          _END_MASTER( myThid )
