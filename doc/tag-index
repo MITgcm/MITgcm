@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - require sphinxcontrib-bibtex 2.0.0 or higher
+
 checkpoint68a (2021/07/16)
 o pkg/seaice:
   - clean up and simplify TAF store directives in do_oceanic_phys.F
