@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.90x40x15:
+  - increase "grdchk_eps" from 1e-7 to 10 in AD test kapgm to improve
+    accuracy of FD gradients ; update reference output.
 o verification/OpenAD:
   - add ggl90 pkg to code_ad/packages.conf to get it tested in one TAF-AD exp.
 o doc:
