@@ -65,6 +65,12 @@ C     kSrf, kBottom    :: vertical indices of domain boundaries
 C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
 C     implDissFac      :: implicit Dissipation Factor (in [0-1])
+C
+C     In general, all 3D variables are defined at W-points (i.e.,
+C     between k and k-1), all 2D variables are also defined at W-points
+C     or at the very surface level (like uStarSquare)
+C
+C     totalDepth       :: thickness of water column (inverse of recip_Rcol)
 C     uStarSquare      :: square of friction velocity
 C     verticalShear    :: (squared) vertical shear of horizontal velocity
 C     Nsquare          :: squared buoyancy freqency
@@ -75,64 +81,62 @@ C     KappaE           :: (local) diffusivity parameter for TKE (eq.15)
 C     TKEdissipation   :: dissipation of TKE
 C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
-C     totalDepth       :: thickness of water column (inverse of recip_Rcol)
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k, kp1, km1, kSrf, kBottom, kTop, kBot, kDir, delK
-      _RL     explDissFac, implDissFac
-      _RL     uStarSquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     verticalShear(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     KappaM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     KappaH
-c     _RL     Nsquare
-      _RL     Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-c     _RL     SQRTTKE
-      _RL     SQRTTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     RiNumber
-#ifdef ALLOW_GGL90_IDEMIX
-      _RL     IDEMIX_RiNumber
-#endif
-      _RL     TKEdissipation
-      _RL     tempU, tempUp, tempV, tempVp, prTemp
-      _RL     MaxLength, tmpmlx, tmpVisc
-      _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     mxLength_Dn      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#ifdef ALLOW_DIAGNOSTICS
-      _RL     surf_flx_tke     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif /* ALLOW_DIAGNOSTICS */
-C     hFac(I)  :: fractional thickness of W-cell
-      _RL       hFac
-#ifdef ALLOW_GGL90_IDEMIX
-      _RL       hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif /* ALLOW_GGL90_IDEMIX */
-      _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C-    tri-diagonal matrix
-      _RL     a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER errCode
+      _RL explDissFac, implDissFac
+      _RL totalDepth   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uStarSquare  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL verticalShear(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KappaM       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KappaH
+c     _RL Nsquare
+      _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     _RL SQRTTKE
+      _RL SQRTTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL RiNumber
+#ifdef ALLOW_GGL90_IDEMIX
+      _RL IDEMIX_RiNumber
+#endif
+      _RL TKEdissipation
+      _RL tempU, tempUp, tempV, tempVp, prTemp
+      _RL MaxLength, tmpmlx, tmpVisc
+      _RL TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL mxLength_Dn      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_GGL90_IDEMIX
+      _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif /* ALLOW_GGL90_IDEMIX */
+      _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL hFac
+C-    tri-diagonal matrix
+      _RL a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     This mixed layer model is not invariant under coordinate
+C     transformation to pressure coordinates, so we need these
+C     factors to scale the vertical (pressure) coordinates
+      _RL coordFac, recip_coordFac
 #ifdef ALLOW_GGL90_HORIZDIFF
 C     xA, yA   :: area of lateral faces
 C     dfx, dfy :: diffusive flux across lateral faces
 C     gTKE     :: right hand side of diffusion equation
-      _RL     xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    gTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL xA  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL yA  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfx (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfy (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
 #endif
-C     This mixed layer model is not invariant under coordinate
-C     transformation to pressure coordinates, so we need these
-C     factors to scale the vertical (pressure) coordinates
-      _RL     coordFac, recip_coordFac
+#ifdef ALLOW_DIAGNOSTICS
+      _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
@@ -148,6 +152,11 @@ CEOP
       p16 = 0.0625 _d 0
 #endif
 
+#ifndef ALLOW_AUTODIFF
+C     For one layer a mixed layer model makes no sense, but we hide the
+C     extra exit point from the AD-source to source translators.
+      IF ( Nr .EQ. 1 ) RETURN
+#endif
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
@@ -316,26 +325,6 @@ C--   Impose upper and lower bound for mixing length
           MaxLength=totalDepth(i,j)*recip_coordFac
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -358,24 +347,6 @@ C--   Impose upper and lower bound for mixing length
 c         MaxLength=MAX(MaxLength,20. _d 0)
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -422,24 +393,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &        GGL90mixingLength(i,j,kp1)+drF(k)*recip_coordFac)
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -809,7 +762,7 @@ C      Neumann bottom boundary condition for TKE: no flux from bottom
        IF ( usingPCoords ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
+          kBottom=MIN(kSurfC(i,j,bi,bj)+1,Nr)
           a3d(i,j,kBottom) = 0. _d 0
          ENDDO
         ENDDO
@@ -886,7 +839,7 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
        IF ( usingPCoords ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
+          kBottom=MIN(kSurfC(i,j,bi,bj)+1,Nr)
           GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
      &                                - GGL90TKEbottom*a3d(i,j,kBottom)
           a3d(i,j,kBottom) = 0. _d 0
@@ -949,15 +902,15 @@ C     ===============================
      &           + GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj) ) )
      &             )/(
      &     p4
-     &    +p8 *( (  maskC(i-1,j  ,k,bi,bj)*mskCor(i-1,j  ,bi,bj)
-     &           +  maskC(i+1,j  ,k,bi,bj)*mskCor(i+1,j  ,bi,bj) )
-     &         + (  maskC(i  ,j-1,k,bi,bj)*mskCor(i  ,j-1,bi,bj)
-     &           +  maskC(i  ,j+1,k,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &    +p16*( (  maskC(i+1,j+1,k,bi,bj)* mskCor(i+1,j+1,bi,bj)
-     &           +  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj) )
-     &         + (  maskC(i+1,j-1,k,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &           +  maskC(i-1,j+1,k,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
-     &               )*maskC(i,j,k,bi,bj)*mskCor(i,j,bi,bj)
+     &    +p8 *(( maskC(i-1,j  ,k-delK,bi,bj)*mskCor(i-1,j  ,bi,bj)
+     &          + maskC(i+1,j  ,k-delK,bi,bj)*mskCor(i+1,j  ,bi,bj) )
+     &         +( maskC(i  ,j-1,k-delK,bi,bj)*mskCor(i  ,j-1,bi,bj)
+     &          + maskC(i  ,j+1,k-delK,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
+     &    +p16*(( maskC(i+1,j+1,k-delK,bi,bj)* mskCor(i+1,j+1,bi,bj)
+     &          + maskC(i-1,j-1,k-delK,bi,bj)*mskCor(i-1,j-1,bi,bj) )
+     &         +( maskC(i+1,j-1,k-delK,bi,bj)*mskCor(i+1,j-1,bi,bj)
+     &          + maskC(i-1,j+1,k-delK,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
+     &               )*maskC(i,j,k-delK,bi,bj)*mskCor(i,j,bi,bj)
 #else
          tmpVisc = GGL90visctmp(i,j,k)
 #endif
@@ -981,16 +934,16 @@ C     ===============================
      &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *( (  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &           +  maskC(i  ,j-1,k,bi,bj)*mskCor(i  ,j-1,bi,bj) )
-     &         + (  maskC(i-1,j+1,k,bi,bj)*mskCor(i-1,j+1,bi,bj)
-     &           +  maskC(i  ,j+1,k,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &               )*maskC(i-1,j,k,bi,bj)*mskCor(i-1,j,bi,bj)
-     &                *maskC(i  ,j,k,bi,bj)*mskCor(i  ,j,bi,bj)
+     &    +p8 *(( maskC(i-1,j-1,k-delK,bi,bj)*mskCor(i-1,j-1,bi,bj)
+     &          + maskC(i  ,j-1,k-delK,bi,bj)*mskCor(i  ,j-1,bi,bj) )
+     &         +( maskC(i-1,j+1,k-delK,bi,bj)*mskCor(i-1,j+1,bi,bj)
+     &          + maskC(i  ,j+1,k-delK,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
+     &               )*maskC(i-1,j,k-delK,bi,bj)*mskCor(i-1,j,bi,bj)
+     &                *maskC(i  ,j,k-delK,bi,bj)*mskCor(i  ,j,bi,bj)
 #else
-         tmpVisc = _maskW(i,j,k,bi,bj) * halfRL
+         tmpVisc = _maskW(i,j,k-delK,bi,bj) * halfRL
      &          *( GGL90visctmp(i-1,j,k)
-     &           + GGL90visctmp(i,j,k) )
+     &           + GGL90visctmp(i,  j,k) )
 #endif
          tmpVisc = MIN( tmpVisc , GGL90viscMax )
      &        * coordFac*coordFac
@@ -1012,16 +965,16 @@ C     ===============================
      &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *( (  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &           +  maskC(i-1,j  ,k,bi,bj)*mskCor(i-1,j  ,bi,bj) )
-     &         + (  maskC(i+1,j-1,k,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &           +  maskC(i+1,j  ,k,bi,bj)*mskCor(i+1,j  ,bi,bj) ) )
-     &               )*maskC(i,j-1,k,bi,bj)*mskCor(i,j-1,bi,bj)
-     &                *maskC(i,j  ,k,bi,bj)*mskCor(i,j  ,bi,bj)
+     &    +p8 *(( maskC(i-1,j-1,k-delK,bi,bj)*mskCor(i-1,j-1,bi,bj)
+     &          + maskC(i-1,j  ,k-delK,bi,bj)*mskCor(i-1,j  ,bi,bj) )
+     &         +( maskC(i+1,j-1,k-delK,bi,bj)*mskCor(i+1,j-1,bi,bj)
+     &          + maskC(i+1,j  ,k-delK,bi,bj)*mskCor(i+1,j  ,bi,bj) ) )
+     &               )*maskC(i,j-1,k-delK,bi,bj)*mskCor(i,j-1,bi,bj)
+     &                *maskC(i,j  ,k-delK,bi,bj)*mskCor(i,j  ,bi,bj)
 #else
-         tmpVisc = _maskS(i,j,k,bi,bj) * halfRL
+         tmpVisc = _maskS(i,j,k-delK,bi,bj) * halfRL
      &          *( GGL90visctmp(i,j-1,k)
-     &           + GGL90visctmp(i,j,k) )
+     &           + GGL90visctmp(i,j,  k) )
 #endif
          tmpVisc = MIN( tmpVisc , GGL90viscMax )
      &        * coordFac*coordFac
