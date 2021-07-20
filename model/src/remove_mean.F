@@ -93,9 +93,9 @@ C     Print the global mean to standard output, this is a measure for
 C     the drift of the array arr
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,a,e24.17,1x,e24.17)')
+       WRITE(msgbuf,'(a,a,a,e24.17)')
      &      'REMOVE_MEAN_RL: Global mean of ',
-     &      arrName, ' = ', myTime, theMean
+     &      arrName, ' = ', theMean
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , 1)
        _END_MASTER( myThid )
@@ -198,9 +198,9 @@ C     Print the global mean to standard output, this is a measure for
 C     the drift of the array arr
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,a,e24.17,1x,e24.17)')
+       WRITE(msgbuf,'(a,a,a,e24.17)')
      &      'REMOVE_MEAN_RS: Global mean of ',
-     &      arrName, ' = ', myTime, theMean
+     &      arrName, ' = ', theMean
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , 1)
        _END_MASTER( myThid )
