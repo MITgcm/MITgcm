@@ -321,12 +321,12 @@ c ------------------------------------
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen_lsc)*
      &          maskc(i,j,1,bi,bj)
-             objf_gencost(kgen_lsc,bi,bj) =
-     &          objf_gencost(kgen_lsc,bi,bj)
+             objf_gencost(bi,bj,kgen_lsc) =
+     &          objf_gencost(bi,bj,kgen_lsc)
      &            +junk*junk*junkweight/ndaysaveRL
              if ( (junkweight.GT.0.).AND.(nb_sst(i,j,bi,bj).GT.0.) )
-     &          num_gencost(kgen_lsc,bi,bj) =
-     &          num_gencost(kgen_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
+     &          num_gencost(bi,bj,kgen_lsc) =
+     &          num_gencost(bi,bj,kgen_lsc) + 1. _d 0 /ndaysaveRL
             enddo
            enddo
           enddo
@@ -432,11 +432,11 @@ c compute cost:
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen)*
      &          maskc(i,j,1,bi,bj)*msk_sst(i,j,bi,bj)
-             objf_gencost(kgen,bi,bj) =
-     &          objf_gencost(kgen,bi,bj)+junk*junk*junkweight
+             objf_gencost(bi,bj,kgen) =
+     &          objf_gencost(bi,bj,kgen)+junk*junk*junkweight
              if (junkweight.GT.0.)
-     &          num_gencost(kgen,bi,bj) =
-     &          num_gencost(kgen,bi,bj) + 1. _d 0
+     &          num_gencost(bi,bj,kgen) =
+     &          num_gencost(bi,bj,kgen) + 1. _d 0
             enddo
            enddo
           enddo
