@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/OpenAD:
+  - add ggl90 pkg to code_ad/packages.conf to get it tested in one TAF-AD exp.
 o doc:
   - require sphinxcontrib-bibtex 2.0.0 or higher
 
