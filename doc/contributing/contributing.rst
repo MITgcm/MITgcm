@@ -1094,6 +1094,7 @@ requiring an html format build, or downloaded as a pdf file.
 When you have completed your documentation edits, you should double
 check both versions are to your satisfaction, particularly noting that
 figure sizing and placement may be rendered differently in the pdf build.
+See :ref:`building_the_manual` for detail.
 
 Section headings
 ----------------
@@ -1411,11 +1412,14 @@ cause difficulty).
 
 - Todo: determine how to break up sections into smaller files
 
+.. _building_the_manual:
+
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
-To do this you will need a working python installation with the following packages installed:
+Once you've made your changes to the manual, you should build it locally to
+verify that it works as expected.  To do this you will need a working python
+installation with the following packages installed:
 
  - sphinx
  - sphinxcontrib-bibtex
@@ -1423,27 +1427,42 @@ To do this you will need a working python installation with the following packag
  - sphinx_rtd_theme
  - numpy
 
-There are many tools available to create a python environment with these packages on your local machine (e.g., using ``pip install``)
-and if you are comfortable doing so on your own, go ahead. Note that as of this writing (December 2020), sphinxcontrib-bibtex versions
-2.0.0 and higher are not supported (we suggest using version 1.0.0).
-
-However, if you are new to python, or less experienced, we suggest the following steps:
-
-#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
-   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
-   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
-#. Install MITgcm doc requirements:
+These packages can be installed from the Python Package Index using pip. If you
+have an existing python installation using `Anaconda
+<https://www.anaconda.com/>`_ or one of its variants (e.g., `miniconda
+<https://docs.conda.io/en/latest/miniconda.html>`_), we recommend that you can
+create (and use) a clean environment with the required packages like this:
 
 ::
 
    cd MITgcm
-   conda install --file doc/requirements.txt
+   conda create --name mitgcm_build_the_docs --channel conda-forge --file doc/requirements.txt
+   conda activate mitgcm_build_the_docs
+   [...] # do the work
+   conda deactivate
 
-Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
+If you don't yet have a python installation on your computer, we recommend
+following the `Anaconda installation procedure
+<https://www.anaconda.com/products/individual#Downloads>`_, then following the
+recipe above.  You do not need to learn python to build the manual; just note
+you should type ``conda activate mitgcm_build_the_docs`` in a shell when
+starting up a manual editing session, and ``conda deactivate`` when you finish
+(also note you only need to perform the ``conda create ...`` step above when
+you **initially** follow the recipe). This will maintain a clean, separate
+python `virtual environment
+<https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
+for manual compilation and won't interfere with your python setup should you
+decide to learn python in the future.
 
-To build the pdf version of the manual you will also need a working version of LaTeX that includes
-`several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
-not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
+Once these modules are installed you can build the html version of the manual
+by running ``make html`` in the ``doc`` directory.
+
+To build the pdf version of the manual you will also need a working version of
+LaTeX that includes `several packages
+<http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_
+that are not always found in minimal LaTeX installations. The command to build
+the pdf version is ``make latexpdf``, which should also be run in the ``doc``
+directory.
 
 .. _sec_pullreq:
 

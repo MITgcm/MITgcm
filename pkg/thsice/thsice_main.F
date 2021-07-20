@@ -170,14 +170,6 @@ C-   end if not useCheapAML
         ENDIF
 #endif
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-C-      do sea-ice advection before getting surface fluxes
-C Note: will inline this S/R once thSIce in Atmos. set-up is settled
-        IF ( thSIceAdvScheme.GT.0 )
-     &   CALL THSICE_DO_ADVECT(
-     I                   bi,bj, myTime, myIter, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
-
 #ifndef ALLOW_AUTODIFF
         IF ( useBulkforce .OR. useCheapAML ) THEN
          CALL THSICE_GET_PRECIP(
@@ -284,10 +276,6 @@ C--   Exchange fields that are advected by seaice dynamics
      &               .OR. stressReduction.GT.zeroRL ) THEN
         CALL THSICE_DO_EXCH( myThid )
       ENDIF
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      IF ( useRealFreshWaterFlux )
-     &  _EXCH_XY_RS( sIceLoad, myThid )
-#else /* OLD_THSICE_CALL_SEQUENCE */
       IF ( thSIceAdvScheme.GT.0 .AND. .NOT.useSEAICE ) THEN
 C-    when useSEAICE=.true., this S/R is called from SEAICE_MODEL;
 C     otherwise, call it from here, after thsice-thermodynamics is done
@@ -296,7 +284,6 @@ C     otherwise, call it from here, after thsice-thermodynamics is done
       ELSEIF ( thSIceAdvScheme.LE.0 .AND. useRealFreshWaterFlux ) THEN
         _EXCH_XY_RS( sIceLoad, myThid )
       ENDIF
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -315,11 +302,7 @@ C     otherwise, call it from here, after thsice-thermodynamics is done
 
 C--   Cumulate time-averaged fields and also fill-up flux diagnostics
 C     (if not done in THSICE_DO_ADVECT call)
-#ifdef OLD_THSICE_CALL_SEQUENCE
-        IF ( .TRUE. ) THEN
-#else /* OLD_THSICE_CALL_SEQUENCE */
         IF ( thSIceAdvScheme.LE.0 ) THEN
-#endif /* OLD_THSICE_CALL_SEQUENCE */
          CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
         ENDIF
