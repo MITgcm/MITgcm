@@ -58,10 +58,11 @@ C     myThid :: My Thread Id number
 #ifdef ALLOW_GGL90
 
 C !LOCAL VARIABLES: ====================================================
-C Local constants
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k, kp1,km1 :: array computation indices
 C     kSrf, kBottom    :: vertical indices of domain boundaries
+C     kup, kdn         :: index above and below current level
+C     kTop, kBot, kDir, delK :: vertical loop ranges and increments
 C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
 C     implDissFac      :: implicit Dissipation Factor (in [0-1])
@@ -83,7 +84,8 @@ C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER iMin ,iMax ,jMin ,jMax
-      INTEGER i, j, k, kp1, km1, kSrf, kBottom, kTop, kBot, kDir, delK
+      INTEGER i, j, k, kp1, km1, kSrf, kBottom
+      INTEGER kup, kdn, kTop, kBot, kDir, delK
       INTEGER errCode
       _RL explDissFac, implDissFac
       _RL totalDepth   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -362,37 +364,38 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        ENDDO
 #endif
        DO k=kTop,kBot,kDir
-        km1 = MIN(k-kDir,Nr)
+        kup = MIN(k-kDir,Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,km1)
+CADJ STORE GGL90mixingLength(:,:,kup)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,km1)+drF(km1)*recip_coordFac)
+     &        GGL90mixingLength(i,j,kup)+drF(kup)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
        k=kBot
+       kdn=k-delK
        DO j=jMin,jMax
         DO i=iMin,iMax
          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLengthMin+drF(k-delK)*recip_coordFac)
+     &        GGL90mixingLengthMin+drF(kdn)*recip_coordFac)
         ENDDO
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
-        kp1 = k+kDir
+        kdn = k+kDir
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kp1)
+CADJ STORE GGL90mixingLength(:,:,kdn)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kp1)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,kdn)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
@@ -409,37 +412,38 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        ENDDO
 #endif
        DO k=kTop,kBot,kDir
-        km1 = MIN(k-kDir,Nr)
+        kup = MIN(k-kDir,Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE mxLength_Dn(:,:,km1)
+CADJ STORE mxLength_Dn(:,:,kup)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        mxLength_Dn(i,j,km1)+drF(km1)*recip_coordFac)
+     &        mxLength_Dn(i,j,kup)+drF(kup)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
        k=kBot
+       kdn=k-delK
        DO j=jMin,jMax
         DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &       GGL90mixingLengthMin+drF(k-delK)*recip_coordFac)
+     &       GGL90mixingLengthMin+drF(kdn)*recip_coordFac)
         ENDDO
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
-        kp1 = k+kDir
+        kdn = k+kDir
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kp1)
+CADJ STORE GGL90mixingLength(:,:,kdn)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kp1)+drF(k-delK)*recip_coordFac)
+     &        GGL90mixingLength(i,j,kdn)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
