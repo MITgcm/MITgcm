@@ -139,7 +139,7 @@ C     == routine arguments ==
 C     !LOCAL VARIABLES:
 C     == local variables ==
       INTEGER bi,bj
-      INTEGER i,j,ksrf
+      INTEGER i,j,ks
 C     == end of interface ==
 CEOP
 
@@ -258,15 +258,15 @@ C             fresh-water flux from Precipitation and Evaporation.
 #endif /* ALLOW_ATM_TEMP */
 
 C     Apply runoff, masks and exchanges
-        ksrf = 1
-        IF ( usingPCoords ) ksrf = Nr
+        ks = 1
+        IF ( usingPCoords ) ks = Nr
         DO j = 1,sNy
          DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
           sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 #endif
-          hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ksrf,bi,bj)
-          sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ksrf,bi,bj)
+          hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+          sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
          ENDDO
         ENDDO
 
@@ -316,8 +316,8 @@ C     applying control variables, but before exf_diagnostics_fill.
 C     Therefore, we DO it exactly here:
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-oLy,sNy+oLy
-         DO i = 1-oLx,sNx+oLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj) + swflux(i,j,bi,bj)
          ENDDO
         ENDDO

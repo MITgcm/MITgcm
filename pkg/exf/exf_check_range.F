@@ -11,7 +11,7 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"      
+#include "PARAMS.h"
 #include "GRID.h"
 
 #include "EXF_PARAM.h"
@@ -216,6 +216,7 @@ C     Runoff temperature.
        STOP 'ABNORMAL END: S/R EXF_CHECK_RANGE'
       ENDIF
       _END_MASTER( myThid )
+      _BARRIER
 
       RETURN
       END

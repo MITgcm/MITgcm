@@ -471,10 +471,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
            IF ( climustrfile .NE. ' ' .AND.
      &          climustrperiod .EQ. 0. )
-     &          uvel(i,j,ks,bi,bj) = climustr(i,j,bi,bj)
+     &          uVel(i,j,ks,bi,bj) = climustr(i,j,bi,bj)
            IF ( climvstrfile .NE. ' ' .AND.
      &          climvstrperiod .EQ. 0. )
-     &          vvel(i,j,ks,bi,bj) = climvstr(i,j,bi,bj)
+     &          vVel(i,j,ks,bi,bj) = climvstr(i,j,bi,bj)
 # endif
            IF ( maskC(i,j,ks,bi,bj) .NE. 0. .AND.
      &             theta(i,j,ks,bi,bj) .EQ. 0. ) THEN
