@@ -36,7 +36,7 @@ C     k - loop counter for ITD categories
 #endif
 C     i,j, bi,bj  :: Loop counters
       INTEGER i, j, bi, bj
-      INTEGER kSurface
+      INTEGER kSrf
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
@@ -48,15 +48,15 @@ cif   penetrating the model shallowest layer
       _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
 C     local copy of surface layer thickness in meters
-      _RL deltaZloc
+      _RL dzSurf
 #ifndef SEAICE_CGRID
       _RL mask_uice
 #endif
 
       IF ( usingPCoords ) THEN
-       kSurface        = Nr
+       kSrf        = Nr
       ELSE
-       kSurface        = 1
+       kSrf        = 1
       ENDIF
 
 C     Initialize MNC variable information for SEAICE
@@ -88,18 +88,18 @@ C     restart parameter
 #endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
-       deltaZloc = drF(kSurface)
+       dzSurf = drF(kSrf)
        IF ( usingPCoords )
-     &      deltaZloc = drF(kSurface) * recip_rhoConst * recip_gravity
+     &      dzSurf = drF(kSrf) * recip_rhoConst * recip_gravity
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
           SEAICE_mcPheePiston = SEAICE_availHeatFrac
-     &                        * deltaZloc/SEAICE_deltaTtherm
+     &                        * dzSurf/SEAICE_deltaTtherm
         ELSE
           SEAICE_mcPheePiston = MCPHEE_TAPER_FAC
      &                        * STANTON_NUMBER * USTAR_BASE
           SEAICE_mcPheePiston = MIN( SEAICE_mcPheePiston,
-     &                          deltaZloc/SEAICE_deltaTtherm )
+     &                          dzSurf/SEAICE_deltaTtherm )
         ENDIF
 
       ENDIF
@@ -247,11 +247,6 @@ C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
 
 C--   Initialise grid parameters that do no change during the integration
-      IF ( usingPCoords ) THEN
-       kSurface = Nr
-      ELSE
-       kSurface = 1
-      ENDIF
 
 C--   Initialise grid info
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -266,9 +261,9 @@ C-    loops on tile indices bi,bj:
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFM  (i,j,bi,bj) = maskC(i,j,kSurface,bi,bj)
-          SIMaskU(i,j,bi,bj) = maskW(i,j,kSurface,bi,bj)
-          SIMaskV(i,j,bi,bj) = maskS(i,j,kSurface,bi,bj)
+          HEFFM  (i,j,bi,bj) = maskC(i,j,kSrf,bi,bj)
+          SIMaskU(i,j,bi,bj) = maskW(i,j,kSrf,bi,bj)
+          SIMaskV(i,j,bi,bj) = maskS(i,j,kSrf,bi,bj)
          ENDDO
         ENDDO
 #ifndef SEAICE_CGRID
