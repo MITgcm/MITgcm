@@ -242,7 +242,7 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+        IF ( usingPCoords ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            phiSurf(i,j) = phiHydLow(i,j,bi,bj)
