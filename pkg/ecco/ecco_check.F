@@ -277,6 +277,7 @@ c ============ backward compatibility checks
 
 c ============ check for missing data files
 
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
      & bpdatfile, bpstartdate(1), myThid )
@@ -296,6 +297,7 @@ c ============ check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c ============ deprecated codes related checks
 
