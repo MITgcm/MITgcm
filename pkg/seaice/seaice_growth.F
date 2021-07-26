@@ -344,7 +344,7 @@ c     recip_multDim        = 1./float(SEAICE_multDim)
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
 C     Cutoff for iceload
-      heffTooHeavy = dzSurf * halfRL
+      heffTooHeavy = dzSurf * 0.2 _d 0
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
       SNOW2ICE     = ONE / ICE2SNOW
