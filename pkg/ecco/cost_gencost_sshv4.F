@@ -539,7 +539,7 @@ cgf =======================================================
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -936,7 +936,7 @@ c ------------------------------------------------------
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1215,7 +1215,7 @@ c time associated with this ndaysrec mean
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
