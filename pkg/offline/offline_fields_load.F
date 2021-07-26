@@ -1,4 +1,7 @@
 #include "OFFLINE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: OFFLINE_FIELDS_LOAD
