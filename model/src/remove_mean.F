@@ -41,7 +41,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myIter
       INTEGER myThid
 
-C#ifdef ALLOW_BALANCE_FLUXES
 C     !LOCAL VARIABLES:
       INTEGER bi, bj, i, j, k
       _RL volTile(nSx,nSy), sumTile(nSx,nSy)
@@ -101,7 +100,6 @@ C     of the magnitude of the correction to array arrFld
        _END_MASTER( myThid )
       ENDIF
 
-C#endif /* ALLOW_BALANCE_FLUXES */
       RETURN
       END
 
@@ -141,7 +139,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myIter
       INTEGER myThid
 
-C#ifdef ALLOW_BALANCE_FLUXES
 C     !LOCAL VARIABLES:
       INTEGER bi, bj, i, j, k
       _RL volTile(nSx,nSy), sumTile(nSx,nSy)
@@ -201,6 +198,5 @@ C     of the magnitude of the correction to array arrFld
        _END_MASTER( myThid )
       ENDIF
 
-C#endif /* ALLOW_BALANCE_FLUXES */
       RETURN
       END
