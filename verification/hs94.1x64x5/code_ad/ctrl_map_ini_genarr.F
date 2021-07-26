@@ -58,8 +58,8 @@ C     == local variables ==
       INTEGER iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-      _RL     sstField(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL     sssField(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     airTlev1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     airQlev1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
@@ -188,22 +188,22 @@ C--   begin customized code for experiment hs94.1x64x5
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          sstField(i,j,bi,bj) = theta(i,j,1,bi,bj)
-          sssField(i,j,bi,bj) = salt (i,j,1,bi,bj)
+          airTlev1(i,j,bi,bj) = theta(i,j,1,bi,bj)
+          airQlev1(i,j,bi,bj) = salt (i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
       iarr = 1
-      CALL CTRL_MAP_GENARR2D( sstField, iarr, myThid )
+      CALL CTRL_MAP_GENARR2D( airTlev1, iarr, myThid )
       iarr = 2
-      CALL CTRL_MAP_GENARR2D( sssField, iarr, myThid )
+      CALL CTRL_MAP_GENARR2D( airQlev1, iarr, myThid )
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
-          theta(i,j,1,bi,bj) = sstField(i,j,bi,bj)
-          salt (i,j,1,bi,bj) = sssField(i,j,bi,bj)
+          theta(i,j,1,bi,bj) = airTlev1(i,j,bi,bj)
+          salt (i,j,1,bi,bj) = airQlev1(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
