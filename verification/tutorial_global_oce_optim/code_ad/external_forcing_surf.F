@@ -90,11 +90,11 @@ C     balance fluxes
       tmpVar(1) = oneRS
       IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
         CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, tmpVar,
-     &                       'EmPmR', myTime, myThid )
+     &                       'EmPmR', myTime, myIter, myThid )
       ENDIF
       IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
         CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, tmpVar,
-     &                       'Qnet ', myTime, myThid )
+     &                       'Qnet ', myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_BALANCE_FLUXES */
 

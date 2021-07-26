@@ -599,7 +599,7 @@ makemodel()
 	else
 	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
 				>> $CDIR"/summary.txt"
-	    adfile=missing ; nlfd=0 ; ndop=0
+	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
 	fi
 	if test $adfile != missing ; then
 	    # count number of times load_fields_driver and do_oceanic_phys are called
@@ -611,9 +611,10 @@ makemodel()
 		nlfd=$((nlfd-1))
 	    fi
 	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
+	    nsm=`grep "call seaice_model(" ${adfile} | wc -l`
 	fi
-	echo " load_fields_driver, do_oceanic_phys are called " \
-	     "( $nlfd , $ndop ) time(s)" >> $CDIR"/summary.txt"
+	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
+	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
     fi
     if test $mk_fail != 0 ; then return $mk_fail ; fi
     )
@@ -1013,7 +1014,7 @@ formatresults()
 	if test $tafrep = 1 ; then
 	    grep '^ TAF reports ' $CDIR/summary.txt | awk '{printf "  (e=%i, w=%i,",$3,$6}'
 	    grep '^ load_fields_driver,' $CDIR/summary.txt \
-		| awk '{printf " lfd=%i, dop=%i)",$6,$8}'
+		| awk '{printf " lfd=%i, dop=%i, sm=%i)",$7,$9,$11}'
 	fi
     fi
     printf '\n'
