@@ -28,7 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
 C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
-#define ECCO_CTRL_DEPRECATED
+#undef ECCO_CTRL_DEPRECATED
 
 #define EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
@@ -71,11 +71,8 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPGM_CONTROL_OLD
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
-#define ALLOW_GEN2D_CONTROL
-#undef ALLOW_DIC_CONTROL
-
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
 
