@@ -585,11 +585,11 @@ c     call active_write_xyz( 'maskCtrlC', maskC, 1, 0, mythid, dummy)
 c     call active_write_xyz( 'maskCtrlW', maskW, 1, 0, mythid, dummy)
 c     call active_write_xyz( 'maskCtrlS', maskS, 1, 0, mythid, dummy)
 c#else
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY ', Nr,
      I                          1, .FALSE., 0, mythid, dummyRS )
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY ', Nr,
      I                          1, .FALSE., 0, mythid, dummyRS )
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY ', Nr,
      I                          1, .FALSE., 0, mythid, dummyRS )
 c#endif
 #ifdef ALLOW_EFLUXP0_CONTROL
@@ -599,7 +599,7 @@ c#endif
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
 c#else
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlI', maskSHI, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlI', maskSHI, 'XY ', Nr,
      I                          1, .FALSE., 0, mythid, dummyRS )
 c#endif
 #endif

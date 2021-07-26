@@ -151,124 +151,172 @@ C     data for the period ahead and the period behind myTime.
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
       IF ( OBEuFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
       IF ( OBEvFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
       IF ( OBEtFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
       IF ( OBEsFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
       IF ( OBEwFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEwFile, fp,Nr,OBEw1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBEetaFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta0,iRec0,myIter,myThid)
-       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta1,iRec1,myIter,myThid)
+       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta0,iRec0,
+     &                      'east ', myIter,myThid )
+       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta1,iRec1,
+     &                      'east ', myIter,myThid )
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
 C     Western boundary
       IF ( OBWuFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
       IF ( OBWvFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
       IF ( OBWtFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
       IF ( OBWsFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
       IF ( OBWwFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw0,iRec0,myIter,myThid )
-       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw1,iRec1,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWwFile, fp,Nr,OBWw1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBWetaFile .NE. ' '  ) THEN
-       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta0,iRec0,myIter,myThid)
-       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta1,iRec1,myIter,myThid)
+       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta0,iRec0,
+     &                      'west ',myIter,myThid )
+       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta1,iRec1,
+     &                      'west ',myIter,myThid )
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
       IF ( OBNuFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBNvFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBNtFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBNsFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
       IF ( OBNwFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNwFile, fp,Nr,OBNw1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBNetaFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta0,iRec0,myIter,myThid)
-       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta1,iRec1,myIter,myThid)
+       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta0,iRec0,'north',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta1,iRec1,'north',
+     &                      myIter,myThid )
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
       IF ( OBSuFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBSvFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBStFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
       IF ( OBSsFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
       IF ( OBSwFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw0,iRec0,myIter,myThid )
-       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw1,iRec1,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSwFile, fp,Nr,OBSw1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
       IF ( OBSetaFile .NE. ' '  ) THEN
-       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta0,iRec0,myIter,myThid)
-       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta1,iRec1,myIter,myThid)
+       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta0,iRec0,'south',
+     &                      myIter,myThid )
+       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta1,iRec1,'south',
+     &                      myIter,myThid )
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
@@ -281,36 +329,36 @@ C     read boundary values for passive tracers
 C     Eastern boundary
         IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &                OBEptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &        OBEptr0(1-Oly,1,1,1,iTr), iRec0, 'east ', myIter, myThid )
          CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &                OBEptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &        OBEptr1(1-Oly,1,1,1,iTr), iRec1, 'east ', myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
         IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &                OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &        OBWptr0(1-Oly,1,1,1,iTr), iRec0, 'west ', myIter, myThid )
          CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &                OBWptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &        OBWptr1(1-Oly,1,1,1,iTr), iRec1, 'west ', myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
         IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &                OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &        OBNptr0(1-Oly,1,1,1,iTr), iRec0, 'north',myIter, myThid )
          CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &                OBNptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &        OBNptr1(1-Oly,1,1,1,iTr), iRec1, 'north',myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
         IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &                OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &        OBSptr0(1-Oly,1,1,1,iTr), iRec0,'south', myIter, myThid )
          CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &                OBSptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &        OBSptr1(1-Oly,1,1,1,iTr), iRec1,'south', myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 C     end do iTr
@@ -359,25 +407,30 @@ C      Read constant boundary conditions only for myIter = nIter0
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
         IF ( OBEuFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEuFile,fp,Nr,OBEu0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBEuFile,fp,Nr,OBEu0,iRec0,'east ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBEvFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEvFile,fp,Nr,OBEv0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBEvFile,fp,Nr,OBEv0,iRec0,'east ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBEtFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEtFile,fp,Nr,OBEt0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBEtFile,fp,Nr,OBEt0,iRec0,'east ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBEsFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEsFile,fp,Nr,OBEs0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBEsFile,fp,Nr,OBEs0,iRec0,'east ',
+     &                        myIter,myThid )
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBEwFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEwFile,fp,Nr,OBEw0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBEwFile,fp,Nr,OBEw0,iRec0,'east ',
+     &                        myIter,myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBEetaFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBEetaFile, fp, 1, OBEeta0, iRec0,
+         CALL READ_REC_YZ_RL( OBEetaFile, fp, 1, OBEeta0, iRec0,'east ',
      &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
@@ -385,25 +438,30 @@ C     Eastern boundary
 #ifdef ALLOW_OBCS_WEST
 C     Western boundary
         IF ( OBWuFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWuFile,fp,Nr,OBWu0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBWuFile,fp,Nr,OBWu0,iRec0,'west ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBWvFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWvFile,fp,Nr,OBWv0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBWvFile,fp,Nr,OBWv0,iRec0,'west ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBWtFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWtFile,fp,Nr,OBWt0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBWtFile,fp,Nr,OBWt0,iRec0,'west ',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBWsFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWsFile,fp,Nr,OBWs0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBWsFile,fp,Nr,OBWs0,iRec0,'west ',
+     &                        myIter,myThid )
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBWwFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWwFile,fp,Nr,OBWw0,iRec0,myIter,myThid )
+         CALL READ_REC_YZ_RL( OBWwFile,fp,Nr,OBWw0,iRec0,'west ',
+     &                        myIter,myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBWetaFile .NE. ' '  ) THEN
-         CALL READ_REC_YZ_RL( OBWetaFile, fp, 1, OBWeta0, iRec0,
+         CALL READ_REC_YZ_RL( OBWetaFile, fp, 1, OBWeta0, iRec0,'west ',
      &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
@@ -411,25 +469,30 @@ C     Western boundary
 #ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
         IF ( OBNuFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNuFile,fp,Nr,OBNu0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNuFile,fp,Nr,OBNu0,iRec0,'north',
+     &                        myIter, myThid )
         ENDIF
         IF ( OBNvFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNvFile,fp,Nr,OBNv0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNvFile,fp,Nr,OBNv0,iRec0,'north',
+     &                        myIter, myThid )
         ENDIF
         IF ( OBNtFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNtFile,fp,Nr,OBNt0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNtFile,fp,Nr,OBNt0,iRec0,'north',
+     &                        myIter, myThid )
         ENDIF
         IF ( OBNsFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNsFile,fp,Nr,OBNs0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNsFile,fp,Nr,OBNs0,iRec0,'north',
+     &                        myIter, myThid )
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBNwFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNwFile,fp,Nr,OBNw0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBNwFile,fp,Nr,OBNw0,iRec0,'north',
+     &                        myIter, myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBNetaFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBNetaFile, fp, 1, OBNeta0, iRec0,
+         CALL READ_REC_XZ_RL( OBNetaFile, fp, 1, OBNeta0, iRec0,'north',
      &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
@@ -437,25 +500,30 @@ C     Northern boundary
 #ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
         IF ( OBSuFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBSuFile,fp,Nr,OBSu0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBSuFile,fp,Nr,OBSu0,iRec0,'south',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBSvFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBSvFile,fp,Nr,OBSv0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBSvFile,fp,Nr,OBSv0,iRec0,'south',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBStFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBStFile,fp,Nr,OBSt0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBStFile,fp,Nr,OBSt0,iRec0,'south',
+     &                        myIter,myThid )
         ENDIF
         IF ( OBSsFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBSsFile,fp,Nr,OBSs0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBSsFile,fp,Nr,OBSs0,iRec0,'south',
+     &                        myIter,myThid )
         ENDIF
 # ifdef ALLOW_NONHYDROSTATIC
         IF ( OBSwFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBSwFile,fp,Nr,OBSw0,iRec0,myIter,myThid )
+         CALL READ_REC_XZ_RL( OBSwFile,fp,Nr,OBSw0,iRec0,'south',
+     &                        myIter,myThid )
         ENDIF
 # endif /* ALLOW_NONHYDROSTATIC */
 # ifdef NONLIN_FRSURF
         IF ( OBSetaFile .NE. ' '  ) THEN
-         CALL READ_REC_XZ_RL( OBSetaFile, fp, 1, OBSeta0, iRec0,
+         CALL READ_REC_XZ_RL( OBSetaFile, fp, 1, OBSeta0, iRec0,'south',
      &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
@@ -468,28 +536,28 @@ C     read passive tracer boundary values
 C     Eastern boundary
           IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &               OBEptr0(1-Oly,1,1,1,iTr), iRec0,myIter, myThid )
+     &          OBEptr0(1-Oly,1,1,1,iTr), iRec0,'east ',myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
           IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &               OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &          OBWptr0(1-Oly,1,1,1,iTr), iRec0,'west ',myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
           IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &               OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &          OBNptr0(1-Oly,1,1,1,iTr), iRec0,'north',myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
           IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &               OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &          OBSptr0(1-Oly,1,1,1,iTr), iRec0,'south',myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 C     end do iTr

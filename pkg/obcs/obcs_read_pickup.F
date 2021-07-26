@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "OBCS_PARAMS.h"
 #include "OBCS_FIELDS.h"
 #include "ORLANSKI.h"
@@ -58,34 +59,60 @@ C     doing IO, we need a barrier here to wait for every one to finish.
       IF ( useOrlanskiNorth ) THEN
 C     READ N and S OB storage and phase speed arrays
         WRITE(fn,'(2A)') 'pickup_orlanskiN.',suff
-        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_1, 1,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_2, 2,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_3, 3,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_4, 4,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_1, 5,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_2, 6,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_3, 7,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_4, 8,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_1, 9,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_2,10,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_3,11,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_4,12,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_1,13,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_2,14,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_3,15,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_4,16,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_UN , 17,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_VN , 18,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TN , 19,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SN , 20,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_1, 1,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_2, 2,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_3, 3,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_4, 4,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_1, 5,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_2, 6,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_3, 7,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VN_STORE_4, 8,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_1, 9,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_2,10,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_3,11,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TN_STORE_4,12,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_1,13,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_2,14,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_3,15,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SN_STORE_4,16,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_UN , 17,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_VN , 18,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TN , 19,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SN , 20,'north',
+     &                      myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_1,21,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_2,22,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_3,23,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_4,24,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WN , 25,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, OBNw    , 26,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_1,21,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_2,22,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_3,23,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_4,24,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WN , 25,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, OBNw    , 26,'north',
+     &                      myIter,myThid)
        ENDIF
 #endif
       ENDIF
@@ -94,34 +121,60 @@ C     READ N and S OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_SOUTH
       IF ( useOrlanskiSouth ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiS.',suff
-        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_1, 1,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_2, 2,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_3, 3,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_4, 4,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_1, 5,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_2, 6,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_3, 7,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_4, 8,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_1, 9,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_2,10,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_3,11,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_4,12,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_1,13,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_2,14,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_3,15,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_4,16,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_US , 17,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_VS , 18,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TS , 19,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SS , 20,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_1, 1,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_2, 2,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_3, 3,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_4, 4,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_1, 5,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_2, 6,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_3, 7,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,VS_STORE_4, 8,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_1, 9,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_2,10,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_3,11,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,TS_STORE_4,12,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_1,13,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_2,14,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_3,15,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,SS_STORE_4,16,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_US , 17,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_VS , 18,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TS , 19,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SS , 20,'south',
+     &                      myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_1,21,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_2,22,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_3,23,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_4,24,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WS , 25,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr, OBSw    , 26,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_1,21,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_2,22,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_3,23,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_4,24,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WS , 25,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr, OBSw    , 26,'south',
+     &                      myIter,myThid)
        ENDIF
 #endif
       ENDIF
@@ -131,34 +184,60 @@ C     READ E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
       IF ( useOrlanskiEast ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiE.',suff
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_3, 3,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_4, 4,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_1, 5,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_2, 6,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_3, 7,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_4, 8,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_1, 9,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_2,10,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_3,11,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_4,12,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_1,13,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_2,14,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_3,15,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_4,16,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_UE , 17,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_VE , 18,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_3, 3,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_4, 4,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_1, 5,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_2, 6,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_3, 7,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VE_STORE_4, 8,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_1, 9,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_2,10,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_3,11,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TE_STORE_4,12,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_1,13,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_2,14,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_3,15,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SE_STORE_4,16,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_UE , 17,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_VE , 18,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,'east ',
+     &                      myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, OBEw    , 26,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, OBEw    , 26,'east ',
+     &                      myIter,myThid)
        ENDIF
 #endif
       ENDIF
@@ -167,36 +246,63 @@ C     READ E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_WEST
       IF ( useOrlanskiWest ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiW.',suff
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_3, 3,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_4, 4,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_1, 5,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_2, 6,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_3, 7,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_4, 8,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_1, 9,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_2,10,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_3,11,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_4,12,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_1,13,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_2,14,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_3,15,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_4,16,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_UW , 17,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_VW , 18,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_3, 3,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_4, 4,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_1, 5,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_2, 6,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_3, 7,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,VW_STORE_4, 8,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_1, 9,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_2,10,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_3,11,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,TW_STORE_4,12,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_1,13,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_2,14,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_3,15,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,SW_STORE_4,16,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_UW , 17,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_VW , 18,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,'west ',
+     &                      myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr, OBWw    , 26,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr, OBWw    , 26,'west ',
+     &                      myIter,myThid)
        ENDIF
 #endif
+
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
@@ -222,36 +328,48 @@ c#endif
 #ifdef ALLOW_OBCS_NORTH
       IF ( useStevensNorth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensN.',suff
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNtStevens, 2,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNsStevens, 3,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNvStevens, 1,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNtStevens, 2,'north',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBNsStevens, 3,'north',
+     &                      myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
       IF ( useStevensSouth ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensS.',suff
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBStStevens, 2,myIter,myThid)
-        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSsStevens, 3,myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSvStevens, 1,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBStStevens, 2,'south',
+     &                      myIter,myThid)
+        CALL READ_REC_XZ_RL(fn,prec,Nr,OBSsStevens, 3,'south',
+     &                      myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
       IF ( useStevensEast ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensE.',suff
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,'east ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,'east ',
+     &                      myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
       IF ( useStevensWest ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensW.',suff
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,myIter,myThid)
-        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,'west ',
+     &                      myIter,myThid)
+        CALL READ_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,'west ',
+     &                      myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS_STEVENS */

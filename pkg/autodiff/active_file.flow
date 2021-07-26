@@ -48,23 +48,23 @@ c subroutine active_read_xz
 c----------------------------------------
 cadj SUBROUTINE active_read_xz FTLNAME = g_active_read_xz
 cadj SUBROUTINE active_read_xz ADNAME  = adactive_read_xz
-cadj SUBROUTINE active_read_xz INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_xz INPUT   = 1   , 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE active_read_xz OUTPUT  =    2
-cadj SUBROUTINE active_read_xz ACTIVE  =    2,                8
-cadj SUBROUTINE active_read_xz DEPEND  = 1,    3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_xz ACTIVE  =    2,                   9
+cadj SUBROUTINE active_read_xz DEPEND  = 1,    3, 4, 5, 6, 7, 8, 9
 
 c----------------------------------------
 c subroutine active_read_yz
 c----------------------------------------
 cadj SUBROUTINE active_read_yz FTLNAME = g_active_read_yz
 cadj SUBROUTINE active_read_yz ADNAME  = adactive_read_yz
-cadj SUBROUTINE active_read_yz INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_yz INPUT   = 1   , 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE active_read_yz OUTPUT  =    2
-cadj SUBROUTINE active_read_yz ACTIVE  =    2,                8
-cadj SUBROUTINE active_read_yz DEPEND  = 1,    3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_yz ACTIVE  =    2,                   9
+cadj SUBROUTINE active_read_yz DEPEND  = 1,    3, 4, 5, 6, 7, 8, 9
 
 c----------------------------------------
-c subroutine active_read_yz
+c subroutine active_read_1d
 c----------------------------------------
 cadj SUBROUTINE active_read_1d FTLNAME = g_active_read_1d
 cadj SUBROUTINE active_read_1d ADNAME  = adactive_read_1d
@@ -98,20 +98,20 @@ c subroutine active_write_xz
 c----------------------------------------
 cadj SUBROUTINE active_write_xz FTLNAME = g_active_write_xz
 cadj SUBROUTINE active_write_xz ADNAME  = adactive_write_xz
-cadj SUBROUTINE active_write_xz INPUT   = 1, 2, 3, 4, 5, 6
-cadj SUBROUTINE active_write_xz OUTPUT  =                6
-cadj SUBROUTINE active_write_xz ACTIVE  =    2         , 6
-cadj SUBROUTINE active_write_xz DEPEND  = 1,    3, 4, 5
+cadj SUBROUTINE active_write_xz INPUT   = 1, 2, 3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_xz OUTPUT  =                   7
+cadj SUBROUTINE active_write_xz ACTIVE  =    2            , 7
+cadj SUBROUTINE active_write_xz DEPEND  = 1,    3, 4, 5, 6
 
 c----------------------------------------
 c subroutine active_write_yz
 c----------------------------------------
 cadj SUBROUTINE active_write_yz FTLNAME = g_active_write_yz
 cadj SUBROUTINE active_write_yz ADNAME  = adactive_write_yz
-cadj SUBROUTINE active_write_yz INPUT   = 1, 2, 3, 4, 5, 6
-cadj SUBROUTINE active_write_yz OUTPUT  =                6
-cadj SUBROUTINE active_write_yz ACTIVE  =    2         , 6
-cadj SUBROUTINE active_write_yz DEPEND  = 1,    3, 4, 5
+cadj SUBROUTINE active_write_yz INPUT   = 1, 2, 3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_yz OUTPUT  =                   7
+cadj SUBROUTINE active_write_yz ACTIVE  =    2            , 7
+cadj SUBROUTINE active_write_yz DEPEND  = 1,    3, 4, 5, 6
 
 c----------------------------------------
 c subroutine active_write_1d

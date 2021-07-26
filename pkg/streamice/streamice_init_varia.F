@@ -625,7 +625,7 @@ c     IT IS WRITTEN OVER IN FIRST TIMESTEP
      & STREAMICE_hmask, 0, myThid )
 #ifdef ALLOW_CTRL
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlst', STREAMICE_ctrl_mask,
-     &  'XY', Nr, 1, .FALSE., 0, myThid, dummyRS )
+     &  'XY ', Nr, 1, .FALSE., 0, myThid, dummyRS )
 #endif
 c      call active_write_xyz( 'maskCtrlS', STREAMICE_ctrl_mask, 1, 0,
 c     & myThid, dummy)

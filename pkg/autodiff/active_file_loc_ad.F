@@ -213,6 +213,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              adactive_var
@@ -224,6 +225,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              dummy,
@@ -261,6 +263,7 @@ C                      variable and write to active file
       _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myIter,myThid
+      CHARACTER*(5) slice
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
@@ -287,7 +290,7 @@ CEOP
       CALL ACTIVE_READ_XZ_RL(
      &                 fname, adactive_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END
@@ -302,6 +305,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              adactive_var
@@ -313,6 +317,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              dummy,
@@ -349,6 +354,7 @@ C                      variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter,myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
@@ -376,7 +382,7 @@ CEOP
       CALL ACTIVE_READ_YZ_RL(
      &                 fname, adactive_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END
@@ -553,6 +559,7 @@ C     !INTERFACE:
       subroutine adactive_write_xz_loc(
      I                               active_var_file,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      U                               adactive_var,
@@ -563,6 +570,7 @@ C     !INTERFACE:
      I                               active_var_file,
      U                               adactive_var,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      I                               dummy
@@ -594,6 +602,7 @@ C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter,myThid
       _RL dummy
 
@@ -621,7 +630,7 @@ CEOP
       CALL ACTIVE_WRITE_XZ_RL(
      &                 fname, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END
@@ -634,6 +643,7 @@ C     !INTERFACE:
       subroutine adactive_write_yz_loc(
      I                               active_var_file,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      U                               adactive_var,
@@ -644,6 +654,7 @@ C     !INTERFACE:
      I                               active_var_file,
      U                               adactive_var,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      I                               dummy
@@ -676,6 +687,7 @@ C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter,myThid
       _RL dummy
 
@@ -703,7 +715,7 @@ CEOP
       CALL ACTIVE_WRITE_YZ_RL(
      &                 fname, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END

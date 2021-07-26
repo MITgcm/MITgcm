@@ -43,6 +43,7 @@ c     == local variables ==
       integer itlo,ithi
       integer jtlo,jthi
       integer irec,nrec_nl
+      CHARACTER*(5) slice
 
       _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
       _RL globfldxz(1-OLx:sNx+OLx,nr,nSx,nSy)
@@ -55,6 +56,9 @@ c     == end of interface ==
       jthi = myByHi(myThid)
       itlo = myBxLo(myThid)
       ithi = myBxHi(myThid)
+
+      if (ivartype.eq.11) slice = 'north'
+      if (ivartype.eq.12) slice = 'south'
 
 c     Initialise temporary file
       do bj = jtlo,jthi
@@ -96,7 +100,7 @@ C     method that works for .not.useSingleCPUio cannot be used
       do irec = nrec_nl*Ny+1, ncvarrecs(ivartype)
         CALL MDSWRITEFIELDXZ( fname, ctrlprec, .FALSE., 'RL',
      &                        Nr, globfldxz,
-     &                        irec, optimcycle, myThid )
+     &                        irec, slice, optimcycle, myThid )
       enddo
 
       RETURN

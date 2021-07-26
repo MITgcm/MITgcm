@@ -150,7 +150,7 @@ c--   Loop over records.
       do irec = 1,nrec
 
         call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
+     &                       ladinit, 'south', optimcycle, mythid
      &        , xx_obcss_dummy )
 
 cgg    Need to solve for iobcs would have been.
@@ -161,7 +161,7 @@ cgg          print*,'S IREC, IOBCS',irec, iobcs
 
           call active_read_xz( 'maskobcss', maskxz,
      &                         iobcs,
-     &                         doglobalread, ladinit, 0,
+     &                         doglobalread, ladinit, 'south', 0,
      &                         mythid, dummy )
 
 

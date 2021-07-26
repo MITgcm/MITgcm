@@ -159,7 +159,7 @@ C    and shorter enough to be written to msgBuf with other informations
       ENDIF
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
-        WRITE(msgBuf,'(3A,I10)')
+        WRITE(msgBuf,'(3A)')
      &    ' MDS_READ_FIELD: file="', fName(1:IL), '"'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )

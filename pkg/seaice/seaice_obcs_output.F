@@ -56,7 +56,6 @@ C--   Write OB aray to binary files (mainly for debugging => use "diagFreq")
      &     DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
      &   ) THEN
 
-       _BARRIER
         prec = writeBinaryPrec
 c       IF ( rwSuffixType.EQ.0 ) THEN
           WRITE(suff,'(I10.10)') myIter
@@ -67,42 +66,40 @@ c       ENDIF
 C     Write Sea-Ice OB arrays
 # ifdef ALLOW_OBCS_NORTH
         WRITE(fn,'(2A)') 'seaice_ob_N.', suff
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNa,    1,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNh,    2,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsl,   3,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsn,   4,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNuice, 5,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNvice, 6,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNa,   1,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNh,   2,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsl,  3,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsn,  4,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNuice,5,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNvice,6,'north',myIter,myThid)
 # endif
 # ifdef ALLOW_OBCS_SOUTH
         WRITE(fn,'(2A)') 'seaice_ob_S.', suff
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSa,    1,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSh,    2,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsl,   3,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsn,   4,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSuice, 5,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSvice, 6,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSa,   1,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSh,   2,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsl,  3,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsn,  4,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSuice,5,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSvice,6,'south',myIter,myThid)
 # endif
 # ifdef ALLOW_OBCS_EAST
         WRITE(fn,'(2A)') 'seaice_ob_E.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEa,    1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEh,    2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsl,   3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsn,   4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEuice, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEvice, 6,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEa,   1,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEh,   2,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsl,  3,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsn,  4,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEuice,5,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEvice,6,'east ',myIter,myThid)
 # endif
 # ifdef ALLOW_OBCS_WEST
         WRITE(fn,'(2A)') 'seaice_ob_W.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWa,    1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWh,    2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsl,   3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsn,   4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice, 6,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWa,   1,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWh,   2,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsl,  3,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsn,  4,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice,5,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice,6,'west ',myIter,myThid)
 # endif
-
-       _BARRIER
 
       ENDIF
 

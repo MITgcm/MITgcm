@@ -119,7 +119,7 @@ c--   Get the counters, flags, and the interpolation factor.
        if ( obcsefirst ) then
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount0-1)*nobcs+iobcs,
-     &                       doglobalread, ladinit, optimcycle,
+     &                       doglobalread, ladinit, 'east ',optimcycle,
      &                       mythid, xx_obcse_dummy )
 
         do bj = jtlo,jthi
@@ -188,7 +188,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
 
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount1-1)*nobcs+iobcs,
-     &                       doglobalread, ladinit, optimcycle,
+     &                       doglobalread, ladinit, 'east ',optimcycle,
      &                       mythid, xx_obcse_dummy )
 
         do bj = jtlo,jthi
