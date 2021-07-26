@@ -2,6 +2,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
+#endif
 
 C--   File ctrl_map_ini_genarr.F: Generic arrays control vector
 C--    Contents:
@@ -49,6 +52,9 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+# include "DIC_VARS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
@@ -69,6 +75,9 @@ C     !LOCAL VARIABLES:
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       INTEGER i, j, bi, bj, k2
       LOGICAL dragThermoEqualMom
+# endif
+# if (defined ALLOW_DIC && defined DIC_BIOTIC)
+      INTEGER igen_alpha
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -113,6 +122,10 @@ C--   generic 2D control variables
         IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
      &     igen_shiCDrag=iarr
 # endif
+#endif
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_alpha')
+     &     igen_alpha=iarr
 #endif
        ENDIF
       ENDDO
@@ -185,6 +198,10 @@ C--      u* drag coefficient
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+      IF (igen_alpha.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
+#endf
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
