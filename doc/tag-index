@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - improve REMOVE_MEAN_RL/RS subroutines (address issues raised in issue #501)
+    including results independent of tile to proc mapping, correction extended
+    to overlap regions, improve accuracy of _RS version when RS is real*4 and
+    and enable the use 2-D mask maskInC/W/S when applied to 3-D array. Change
+    argument list (add myIter, flip order + change mask arg from 3-D to 2-D).
 o verification/global_ocean.90x40x15:
   - increase "grdchk_eps" from 1e-7 to 10 in AD test kapgm to improve
     accuracy of FD gradients ; update reference output.
