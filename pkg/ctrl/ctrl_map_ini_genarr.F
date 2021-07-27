@@ -201,7 +201,7 @@ C--      u* drag coefficient
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
       IF (igen_alpha.GT.0)
      &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
-#endf
+#endif
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
