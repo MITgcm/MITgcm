@@ -28,7 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
 C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
-#define ECCO_CTRL_DEPRECATED
+#undef ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
 #define ALLOW_NONDIMENSIONAL_CONTROL_IO
@@ -73,8 +73,8 @@ C       >>> Radiation
 #undef  ALLOW_LWFLUX_CONTROL
 
 C       >>> seaice init. conditions
-#define  ALLOW_SIAREA_CONTROL
-#define  ALLOW_SIHEFF_CONTROL
+CML#define  ALLOW_SIAREA_CONTROL
+CML#define  ALLOW_SIHEFF_CONTROL
 #undef  ALLOW_SIHSNOW_CONTROL
 
 C       >>> Other Control.
@@ -88,9 +88,9 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
 
 C  o  store and read value of fmin in control vector file
 C     This flag does not have a good name, because it is only used in
