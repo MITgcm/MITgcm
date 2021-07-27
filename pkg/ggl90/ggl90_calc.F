@@ -244,7 +244,7 @@ CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
         uStarSquare(i,j)   = 0. _d 0
         verticalShear(i,j) = 0. _d 0
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-        rMixingLength(i,j,1)  = 0. _d 0
+c       rMixingLength(i,j,1)  = 0. _d 0
         mxLength_Dn(i,j,kSrf) = GGL90mixingLengthMin
 #ifdef ALLOW_AUTODIFF
         IF (maskC(i,j,1,bi,bj).GT.0) THEN
@@ -311,16 +311,11 @@ C- ensure mixing between first and second level
       ENDIF
 
 C--   Impose upper and lower bound for mixing length
+#ifdef ALLOW_AUTODIFF
+CADJ INCOMPLETE GGL90mixingLength
+#endif
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
-#ifdef ALLOW_AUTODIFF
-       k=1
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
-        ENDDO
-       ENDDO
-#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -333,14 +328,6 @@ C--   Impose upper and lower bound for mixing length
 
       ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
 
-#ifdef ALLOW_AUTODIFF
-       k=1
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
-        ENDDO
-       ENDDO
-#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -355,99 +342,166 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
-#ifdef ALLOW_AUTODIFF
-       k=1
+       IF ( usingPcoords ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
        DO j=jMin,jMax
         DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
+         GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
+     &        GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
         ENDDO
        ENDDO
-#endif
-       DO k=kTop,kBot,kDir
-        kup = MIN(k-kDir,Nr)
+       DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kup)
+CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kup)+drF(kup)*recip_coordFac)
+     &        GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
-       k=kBot
-       kdn=k-delK
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLengthMin+drF(kdn)*recip_coordFac)
-        ENDDO
-       ENDDO
-       DO k=kBot-kDir,kTop,-kDir
-        kdn = k+kDir
+       DO k=2,Nr
+        kdn = k-1
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kdn)
+CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kdn)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,k-1)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
+       ELSE
+       DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &        GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
+         ENDDO
+        ENDDO
+       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
+     &        GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
+        ENDDO
+       ENDDO
+       DO k=Nr-1,2,-1
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k+1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &        GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+         ENDDO
+        ENDDO
+       ENDDO
+       ENDIF
 
       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
 
-#ifdef ALLOW_AUTODIFF
-       k=1
+       IF ( usingPcoords ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
        DO j=jMin,jMax
         DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
-         mxLength_Dn(i,j,k)       = GGL90mixingLengthMin
+         mxLength_Dn(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
+     &       GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
         ENDDO
        ENDDO
-#endif
-       DO k=kTop,kBot,kDir
-        kup = MIN(k-kDir,Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+       DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE mxLength_Dn(:,:,kup)
+CADJ STORE mxLength_Dn(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        mxLength_Dn(i,j,kup)+drF(kup)*recip_coordFac)
+     &        mxLength_Dn(i,j,k+1)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
-       k=kBot
-       kdn=k-delK
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &       GGL90mixingLengthMin+drF(kdn)*recip_coordFac)
-        ENDDO
-       ENDDO
-       DO k=kBot-kDir,kTop,-kDir
-        kdn = k+kDir
+       DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
         kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kdn)
+CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kdn)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,k-1)+drF(k)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
+       ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+       DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE mxLength_Dn(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &        mxLength_Dn(i,j,k-1)+drF(k-1)*recip_coordFac)
+         ENDDO
+        ENDDO
+       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+          GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
+     &       GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
+        ENDDO
+       ENDDO
+       DO k=Nr-1,2,-1
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k+1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &        GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+         ENDDO
+        ENDDO
+       ENDDO
+       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
