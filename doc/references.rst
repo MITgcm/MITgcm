@@ -7,5 +7,5 @@
 
    .. rubric:: References
 
-.. bibliography:: manual_references.bib
+.. bibliography::
    :all:
