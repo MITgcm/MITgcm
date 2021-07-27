@@ -307,6 +307,10 @@ CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
 CADJ STORE shiTransCoeffT         = tapelev_init, key=1
 CADJ STORE shiTransCoeffS         = tapelev_init, key=1
 # endif
+# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE H_streamice = tapelev_init, key=1
+CADJ STORE B_glen      = tapelev_init, key=1
+# endif
 #endif
 
 #ifdef ALLOW_OPENAD
