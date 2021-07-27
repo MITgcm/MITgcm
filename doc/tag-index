@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - move S/R CTRL_MAP_GENARR2D/3D out of file "ctrl_map_ini_genarr.F" into
+    a new file "ctrl_map_genarr.F" ;
+  - clean-up local versions of ctrl_map_gentim2d.F and ctrl_map_ini_genarr.F
+    from code_ad dirs (i.e., minimize diff with standard version from pkg/ctrl).
 o model/src:
   - improve REMOVE_MEAN_RL/RS subroutines (address issues raised in issue #501)
     including results independent of tile to proc mapping, correction extended
