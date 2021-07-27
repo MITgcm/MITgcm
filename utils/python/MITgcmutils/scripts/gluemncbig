@@ -400,7 +400,7 @@ class netcdf_file(object):
         sync : Identical function
 
         """
-        if getattr(self, 'mode', None) is 'w':
+        if getattr(self, 'mode', None) == 'w':
             if self.delay:
                 if not self._mapped:
                     self._map()
@@ -419,7 +419,7 @@ class netcdf_file(object):
     def _map(self):
         self.fp.seek(0)
         self.fp.write(b'CDF')
-        self.fp.write(array(self.version_byte, '>b').tostring())
+        self.fp.write(array(self.version_byte, '>b').tobytes())
 
         # Write headers
         self._write_numrecs()
@@ -583,7 +583,7 @@ class netcdf_file(object):
     def _write(self):
         self.fp.seek(0)
         self.fp.write(b'CDF')
-        self.fp.write(array(self.version_byte, '>b').tostring())
+        self.fp.write(array(self.version_byte, '>b').tobytes())
 
         # Write headers and data.
         self._write_numrecs()
@@ -704,7 +704,7 @@ class netcdf_file(object):
             if (var.data.dtype.byteorder == '<' or 
                     (var.data.dtype.byteorder == '=' and LITTLE_ENDIAN)):
                 var.data = var.data.byteswap()
-            self.fp.write(var.data.tostring())
+            self.fp.write(var.data.tobytes())
             count = var.data.size * var.data.itemsize
             self.fp.write(b'\x00' * (var._vsize - count))
         else:  # record variable
@@ -718,7 +718,7 @@ class netcdf_file(object):
                 if (rec.dtype.byteorder == '<' or 
                         (rec.dtype.byteorder == '=' and LITTLE_ENDIAN)):
                     rec = rec.byteswap()
-                self.fp.write(rec.tostring())
+                self.fp.write(rec.tobytes())
                 # Padding
                 count = rec.size * rec.itemsize
                 self.fp.write(b'\x00' * (var._vsize - count))
@@ -771,7 +771,7 @@ class netcdf_file(object):
         if not values.shape and (values.dtype.byteorder == '<' or
                 (values.dtype.byteorder == '=' and LITTLE_ENDIAN)):
             values = values.byteswap()
-        self.fp.write(values.tostring())
+        self.fp.write(values.tobytes())
         count = values.size * values.itemsize
         self.fp.write(b'\x00' * (-count % 4))  # pad
 
@@ -979,7 +979,7 @@ class netcdf_file(object):
         values = self.fp.read(int(count))
         self.fp.read(-count % 4)  # read padding
 
-        if type.char is not 'c':
+        if type.char != 'c':
             values = frombuffer(values, type)
             if values.shape == (1,): values = values[0]
         else:
@@ -994,7 +994,7 @@ class netcdf_file(object):
             self._pack_int64(begin)
 
     def _pack_int(self, value):
-        self.fp.write(array(value, '>i').tostring())
+        self.fp.write(array(value, '>i').tobytes())
     _pack_int32 = _pack_int
 
     def _unpack_int(self):
@@ -1002,7 +1002,7 @@ class netcdf_file(object):
     _unpack_int32 = _unpack_int
 
     def _pack_int64(self, value):
-        self.fp.write(array(value, '>q').tostring())
+        self.fp.write(array(value, '>q').tobytes())
 
     def _unpack_int64(self):
         return frombuffer(self.fp.read(8), '>q')[0]

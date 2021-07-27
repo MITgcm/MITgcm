@@ -59,8 +59,6 @@ c we may need these for the checkpointing
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
-      use tamc_mod
-      use tamc_keys_mod
       use cost_mod
       use g_cost_mod
       use ctrl_mod
@@ -68,7 +66,7 @@ c we may need these for the checkpointing
       use ctrl_weights_mod
       use optim_mod
       use grdchk_mod
-      
+
 !$TEMPLATE_PRAGMA_DECLARATIONS
       LOGICAL :: initialized=.FALSE.
       TYPE(rvAction),save :: theAction
@@ -89,27 +87,27 @@ c we may need these for the checkpointing
      +                                         '
       our_indent=our_indent+1
 
-      write(standardmessageunit, '(A,A,A)', ADVANCE='NO') 
+      write(standardmessageunit, '(A,A,A)', ADVANCE='NO')
      +'OAD:',indentation(1:our_indent), 'enter __SRNAME__:'
       call oad_dump_revmod(); call oad_dump_tapestats()
-      write(standardmessageunit,*) 
+      write(standardmessageunit,*)
 #endif
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
-      if (our_rev_mode%arg_store) then 
+      if (our_rev_mode%arg_store) then
 	call cp_write_open()
 #ifdef OAD_DEBUG_JOINT
-         write(standardmessageunit,'(A,A,A)') 
-     +'OAD:',indentation(1:our_indent), 
+         write(standardmessageunit,'(A,A,A)')
+     +'OAD:',indentation(1:our_indent),
      +' __SRNAME__: entering arg store'
 #endif
 !$PLACEHOLDER_PRAGMA$ id=8
        call cp_close()
-      end if 
+      end if
       if (our_rev_mode%arg_restore) then
 #ifdef OAD_DEBUG_JOINT
-         write(standardmessageunit,'(A,A,A)') 
-     +'OAD:',indentation(1:our_indent), 
+         write(standardmessageunit,'(A,A,A)')
+     +'OAD:',indentation(1:our_indent),
      +' __SRNAME__: entering arg restore'
 #endif
 	call cp_read_open()
@@ -118,8 +116,8 @@ c we may need these for the checkpointing
       end if
       if (our_rev_mode%plain) then
 #ifdef OAD_DEBUG_JOINT
-         write(standardmessageunit,'(A,A,A)') 
-     +'OAD:',indentation(1:our_indent), 
+         write(standardmessageunit,'(A,A,A)')
+     +'OAD:',indentation(1:our_indent),
      +' __SRNAME__: run plain, down plain'
 #endif
 #ifdef ALLOW_OPENAD_DIVA
@@ -128,7 +126,7 @@ c we may need these for the checkpointing
         print *, 'DIVA Revolve Plain PROD = ', PROD
         CALL OpenAD_forward_step( PROD, mytime, myiter, mythid )
       enddo
-#else 
+#else
       DO iloop = 1, nTimeSteps
         CALL OpenAD_forward_step( iloop, mytime, myiter, mythid )
       enddo
@@ -136,8 +134,8 @@ c we may need these for the checkpointing
       end if
       if (our_rev_mode%tape) then
 #ifdef OAD_DEBUG_JOINT
-         write(standardmessageunit,'(A,A,A)') 
-     +'OAD:',indentation(1:our_indent), 
+         write(standardmessageunit,'(A,A,A)')
+     +'OAD:',indentation(1:our_indent),
      +' __SRNAME__: run tape, down revolve until first U turn'
 #endif
          currIter=0
@@ -147,7 +145,7 @@ c we may need these for the checkpointing
          IF (.NOT.initialized) WRITE(*,'(A,A)') 'Error: ', errorMsg
          do while (theAction%actionFlag/=rvDone)
            theAction=rvNextAction()
-           select case (theAction%actionFlag) 
+           select case (theAction%actionFlag)
              case (rvStore)
                 call cp_write_open(theAction%cpNum+jointCPCount)
 !$PLACEHOLDER_PRAGMA$ id=8
@@ -155,45 +153,45 @@ c we may need these for the checkpointing
              case (rvForward)
                 call OAD_revPlain
                 do currIter=currIter,theAction%iteration-1
-#ifdef ALLOW_OPENAD_DIVA 
+#ifdef ALLOW_OPENAD_DIVA
                    PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
                    print *, 'DIVA Revolve Tape rvForward PROD = ', PROD
-                   CALL OpenAD_forward_step( PROD, mytime, 
+                   CALL OpenAD_forward_step( PROD, mytime,
      +myiter, mythid )
 #else
                    CALL OpenAD_forward_step( currIter+1, mytime,
-     +myiter, mythid ) 
+     +myiter, mythid )
 #endif
                 end do
                 call OAD_revTape
              case (rvFirstUTurn)
-#ifdef ALLOW_OPENAD_DIVA 
+#ifdef ALLOW_OPENAD_DIVA
                 PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
                 print *, 'DIVA Revolve Tape rvFirstUTurn PROD = ', PROD
-                CALL OpenAD_forward_step( PROD, mytime, myiter, 
+                CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else
                 CALL OpenAD_forward_step( currIter+1, mytime, myiter,
      +mythid )
 #endif
 ! get out now ...
-                exit                
-             end select   
+                exit
+             end select
           end do
-      end if 
+      end if
       if (our_rev_mode%adjoint) then
         IF (.NOT.initialized) WRITE(*,'(A)') 'Error: not initialized'
         do while (theAction%actionFlag/=rvDone)
-           select case (theAction%actionFlag) 
+           select case (theAction%actionFlag)
              case (rvFirstUTurn)
 !we taped already ... see above
-#ifdef ALLOW_OPENAD_DIVA 
-                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1))) 
+#ifdef ALLOW_OPENAD_DIVA
+                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
                 print *, 'DIVA Revolve Adjoint rvFirstUTurn PROD = ', PROD
-                CALL OpenAD_forward_step( PROD, mytime, myiter, 
+                CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else
-                CALL OpenAD_forward_step( currIter+1, mytime, myiter, 
+                CALL OpenAD_forward_step( currIter+1, mytime, myiter,
      +mythid )
 #endif
              case (rvStore)
@@ -221,12 +219,12 @@ c we may need these for the checkpointing
                 call OAD_revAdjoint
              case (rvUTurn)
 #ifdef ALLOW_OPENAD_DIVA
-                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1))) 
+                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
 #endif
                 call OAD_revTape
 #ifdef ALLOW_OPENAD_DIVA
                 print *, 'DIVA Revolve Adjoint rvUTurn tp PROD = ', PROD 
-                CALL OpenAD_forward_step( PROD, mytime, myiter, 
+                CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else
                 CALL OpenAD_forward_step( currIter+1, mytime, myiter,
@@ -235,22 +233,22 @@ c we may need these for the checkpointing
                 call OAD_revAdjoint
 #ifdef ALLOW_OPENAD_DIVA
                 print *, 'DIVA Revolve Adjoint rvUTurn ad PROD = ', PROD 
-                CALL OpenAD_forward_step( PROD, mytime, myiter, 
+                CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else
                 CALL OpenAD_forward_step( currIter+1, mytime, myiter,
      +mythid )
 #endif
-           end select   
+           end select
            theAction=rvNextAction()
         end do
-      end if 
+      end if
 
 #ifdef OAD_DEBUG_JOINT
-      write(standardmessageunit,'(A,A,A)', ADVANCE='NO') 
+      write(standardmessageunit,'(A,A,A)', ADVANCE='NO')
      +'OAD:',indentation(1:our_indent), 'leave __SRNAME__:'
       call oad_dump_revmod(); call oad_dump_tapestats()
-      write(standardmessageunit,*) 
+      write(standardmessageunit,*)
 
       our_indent=our_indent-1
 #endif

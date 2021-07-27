@@ -19,7 +19,9 @@ C     == Global variables ===
 # include "AUTODIFF.h"
 #endif
 #ifdef ALLOW_WHIO_3D
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "MDSIO_BUFF_WH.h"
 #endif
 

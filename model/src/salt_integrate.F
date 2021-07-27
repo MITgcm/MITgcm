@@ -59,9 +59,8 @@ C     == GLobal variables ==
 # include "GAD.h"
 # include "GAD_SOM_VARS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -137,6 +136,11 @@ C     gs_AB      :: Adams-Bashforth salinity tendency increment
 #ifdef ALLOW_ADAMSBASHFORTH_3
       INTEGER m2
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER itdkey, kkey
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       iterNb = myIter
@@ -166,16 +170,16 @@ C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          itdkey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      itdkey = (act1 + 1) + act2*max1
+     &                    + act3*max1*max2
+     &                    + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Apply AB on S :
@@ -220,6 +224,8 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
         ENDDO
        ENDDO
       ENDDO
+#endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wFld(:,:,:)         = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE salt(:,:,:,bi,bj)   = comlev1_bibj , key=itdkey, byte=isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
@@ -228,7 +234,7 @@ CADJ STORE gsNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
 # else
 CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
       CALL CALC_3D_DIFFUSIVITY(

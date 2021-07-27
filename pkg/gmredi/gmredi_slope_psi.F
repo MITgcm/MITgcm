@@ -34,7 +34,6 @@ C     == Global variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
@@ -64,6 +63,11 @@ C     == Local variables ==
       INTEGER i,j
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeTmpSpec,slopeMaxSpec
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER igmkey, kkey
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -99,7 +99,9 @@ C     betaFacU/V     :: analog betaFacP1U/V
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikeyloc
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikeyloc, iicekey
 #else
       INTEGER nEVPstepMax
 #endif
@@ -744,7 +746,7 @@ C
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-      IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+        CALL SEAICE_BOTTOMDRAG_COEFFS(
      I       uIce, vIce, HEFFM,
 #ifdef SEAICE_ITD
      I       HEFFITD, AREAITD, AREA,

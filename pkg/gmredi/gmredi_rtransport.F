@@ -35,7 +35,6 @@ C     == GLobal variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
@@ -64,6 +63,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER igadkey, kkey
+#endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef GM_BOLUS_ADVEC
@@ -71,25 +75,24 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = trIdentity - 1
-          max0 = maxpass
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          kkey = (igadkey-1)*Nr + k
-          if (trIdentity.GT.maxpass) then
-             print *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
-             STOP 'maxpass seems smaller than trIdentity'
-          endif
+      act0 = trIdentity - 1
+      max0 = maxpass
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      igadkey = (act0 + 1) + act1*max0
+     &                     + act2*max0*max1
+     &                     + act3*max0*max1*max2
+     &                     + act4*max0*max1*max2*max3
+      kkey = (igadkey-1)*Nr + k
+      IF (trIdentity.GT.maxpass) THEN
+       PRINT *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
+       STOP 'maxpass seems smaller than trIdentity'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Surface flux is zero

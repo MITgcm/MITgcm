@@ -68,8 +68,6 @@ c     == local variables ==
       real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
       real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
-      character*(128)   cfile
-
       _RL delZnorm
       integer reclen, irectrue
       integer cunit2, cunit3
@@ -534,4 +532,3 @@ c-- 2.4:
 
       return
       end
-

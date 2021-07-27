@@ -1,5 +1,3 @@
-#include "PACKAGES_CONFIG.h"
-
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -112,12 +110,7 @@ c     and writing data.
       INTEGER    maxcube
       PARAMETER( maxcube     = 3 )
 
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey, iptrkey
 
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
-

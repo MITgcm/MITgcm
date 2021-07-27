@@ -38,11 +38,10 @@ c These includes are needed for
 c AD-checkpointing.
 c They provide the fields to be stored.
 
-# include "GRID.h"
-# include "DYNVARS.h"
-# include "FFIELDS.h"
-# include "SURFACE.h"
-# include "AUTODIFF.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#include "SURFACE.h"
 
 #ifdef ALLOW_OBCS
 # include "OBCS_FIELDS.h"
@@ -62,6 +61,8 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 # include "CTRL_OBCS.h"
 #endif
+c     it is important that this file is included after SEAICE_SIZE.h
+#include "AUTODIFF_STORE.h"
 
 c     == routine arguments ==
 c     note: under the multi-threaded model myIter and
@@ -461,41 +462,41 @@ C--   Over all tiles
 C-      2D arrays
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          AREA(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,1)
-          HEFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,2)
-          HSNOW(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,3)
-CML          TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
-          RUNOFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,5)
+          AREA  (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 1)
+          HEFF  (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 2)
+          HSNOW (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 3)
+          RUNOFF(I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 4)
+          UICE  (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 5)
+          VICE  (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 6)
+          ZETA  (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 7)
+          ETA   (I,J,bi,bj)            = StoreSEAICE(I,J,bi,bj, 8)
 # ifdef SEAICE_CGRID
-          stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,14)
-          stressDivergenceY(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,15)
-# endif
-# ifdef SEAICE_MULTICATEGORY
-cph moved to seaice_ad_check_lev because of extra dim. MULTDIM
-cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
-# endif
-          UICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,7)
-          VICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,8)
-          ZETA(I,J,bi,bj)      = StoreSEAICE(I,J,bi,bj,9)
-          ETA(I,J,bi,bj)       = StoreSEAICE(I,J,bi,bj,10)
-# ifdef SEAICE_CGRID
-          dwatn(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,11)
+          dwatn(I,J,bi,bj)             = StoreSEAICE(I,J,bi,bj, 9)
 #  ifdef SEAICE_ALLOW_BOTTOMDRAG
-          cbotc(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,12)
+          cbotc(I,J,bi,bj)             = StoreSEAICE(I,J,bi,bj,10)
 #  endif /* SEAICE_ALLOW_BOTTOMDRAG */
-CML          seaicemasku(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,12)
-CML          seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
+          stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,11)
+          stressDivergenceY(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,12)
 # endif /* SEAICE_CGRID */
 # ifdef SEAICE_ALLOW_EVP
-          seaice_sigma1(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,16)
-          seaice_sigma2(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,17)
-          seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,18)
+          seaice_sigma1    (I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,13)
+          seaice_sigma2    (I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,14)
+          seaice_sigma12   (I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,15)
 # endif /* SEAICE_ALLOW_EVP */
 # ifdef SEAICE_VARIABLE_SALINITY
-          HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,19)
+          HSALT            (I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,16)
 # endif
          ENDDO
         ENDDO
+C--   this 3D array comes last because it has a variable size nITD
+        DO k=1,nITD
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           TICES(I,J,k,bi,bj) = StoreSEAICE(I,J,bi,bj,16+k)
+          ENDDO
+         ENDDO
+        ENDDO
+C
        ENDDO
       ENDDO
 #endif /* ALLOW_SEAICE */

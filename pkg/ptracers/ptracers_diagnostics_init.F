@@ -228,6 +228,18 @@ C--    Add diagnostics for other pkg contribution to ptracer solution
        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AUTODIFF
+       WRITE(diagName,'(A6,A2)') 'ADJptr',PTRACERS_ioLabel(iTrc)
+       WRITE(diagTitle,'(3A)') 'sensitivity to ',
+     &                         longName(1:ilng), ' concentration'
+       WRITE(diagUnits,'(2A)') 'dJ/',trcUnits
+       diagCode  = 'SMRA    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
 
       diagName  = 'Add2EmP '

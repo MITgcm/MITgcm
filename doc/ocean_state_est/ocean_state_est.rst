@@ -5,7 +5,7 @@ Ocean State Estimation Packages
 
 This chapter describes packages that have been introduced for ocean
 state estimation purposes and in relation with automatic differentiation
-(see :ref:`chap_autodiff`). Various examples in this chapter rely on two 
+(see :ref:`chap_autodiff`). Various examples in this chapter rely on two
 model configurations that can be setup as explained in :ref:`sec:exp:llc`
 
 .. _sec:pkg:ecco:
@@ -51,7 +51,7 @@ from adjustable model parameters (:math:`\vec{v}`) through model
 dynamics integration (:math:`\mathcal{M}`), diagnostic calculations
 (:math:`\mathcal{D}`), and averaging in space and time
 (:math:`\mathcal{S}`). Alternatively :math:`\mathcal{S}` stands for
-subsampling in space and time in the context of 
+subsampling in space and time in the context of
 :numref:`sec:pkg:profiles` (:ref:`sec:pkg:profiles`). Plain
 model-data misfits (:math:`\vec{m}_i-\vec{o}_i`) can be penalized
 directly in Eq. :eq:`Jtotal` but penalized misfits
@@ -184,11 +184,11 @@ YC.
 
 .. table:: Run-time parameters used in formulating generic cost functions
            and defined via `ecco_gencost_nml`` namelist in ``data.ecco``.
-           All parameters are vectors of length ``NGENCOST`` (the # of 
+           All parameters are vectors of length ``NGENCOST`` (the # of
            available cost terms) except for ``gencost_proc*`` are arrays
            of size ``NGENPPROC``\ :math:`\times`\ ``NGENCOST`` (10 :math:`\times`\
            20 by default; can be changed in ``ecco.h`` at compile time). In addition,
-           the ``gencost_is3d`` internal parameter is reset to true on the 
+           the ``gencost_is3d`` internal parameter is reset to true on the
            fly in all 3D cases in :numref:`gencost_ecco_barfile`.
   :name: gencost_ecco_params
 
@@ -282,8 +282,8 @@ YC.
            (:numref:`costgen`). An extension starting with ‘\_’ can be
            appended at the end of the variable name to distinguish between separate
            cost function terms. Note: the ‘m_eta’ formula depends on the
-           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile time options
-           and ‘useRealFreshWaterFlux’ run time parameter.
+           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile-time options
+           and ‘useRealFreshWaterFlux’ run-time parameter.
   :name: gencost_ecco_barfile
 
   +-----------------------+-----------------------+-----------------------+
@@ -434,7 +434,7 @@ masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
 .. table:: Implemented ``gencost_barfile`` options (as of checkpoint
-           65z) that can be used via ``cost_gencost_boxmean.F``
+           67x) that can be used via ``cost_gencost_boxmean.F``
            (:numref:`intgen`).
   :name: genint_ecco_barfile
 
@@ -447,6 +447,11 @@ horizontal transport (or overturn) will be computed accordingly.
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_eta``   | mean of SSH over box             | specify box      |
   +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shifwf``| total shelfice freshwater flux   | specify box      |
+  |                     | over box                         |                  |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
+  +---------------------+----------------------------------+------------------+
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
 
@@ -457,22 +462,35 @@ Custom Cost Functions
 
 This section (very much a work in progress...) pertains to the special
 cases of ``cost_gencost_bpv4.F``, ``cost_gencost_seaicev4.F``,
-``cost_gencost_sshv4.F``, ``cost_gencost_sstv4.F``, and
-``cost_gencost_transp.F``. The cost_gencost_transp.F function can be
+``cost_gencost_sshv4.F``, ``cost_gencost_sstv4.F``,
+``cost_gencost_transp.F``, and ``cost_gencost_moc.F``.
+The ``cost_gencost_transp.F`` function can be
 used to compute a transport of volume, heat, or salt through a specified
 section (non quadratic cost function). To this end one sets
 ``gencost_name = ‘transp*’``, where ``*`` is an optional suffix starting
 with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
 
+The ``cost_gencost_moc.F`` function is similar to transport function, but is intended to
+compute the meridional overturning streamfunction maximum based on the volumetric
+transport integrated from the floor to surface, as in Smith and Heimbach (2019)
+:cite:`smith:19`.
+Therefore, this function is intended to work with ``gencost_barfile = m_trVol``,
+and note that the first 3 characters of ``gencost_name`` must be
+``moc``, as depicted in :numref:`gencost_ecco_name`.
+Users can specify a latitude band to compute the MOC with appropriately
+defined West ('W') and South ('S') masks as described in :numref:`intgen`.
+As an example see parameter group (3) in
+`this data.ecco file <https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/input_ad.sens/data.ecco>`_ .
+
 Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
 Users interested in computing volumetric transports through a section
-are recommended to use the ``m_horflux_vol`` capabilities described above as 
-it is regularly tested. Users interested in computing heat and salt transport 
+are recommended to use the ``m_horflux_vol`` capabilities described above as
+it is regularly tested. Users interested in computing heat and salt transport
 should note the following about ``m_trHeat`` and ``m_trSalt``:
 
     1. The associated advection scheme with transports may be inconsistent with
-       the model unless ``ENUM_CENTERED_2ND`` is implemented 
+       the model unless ``ENUM_CENTERED_2ND`` is implemented
     2. Bolus velocities are not included
     3. Diffusion components are not included
 
@@ -531,6 +549,9 @@ should note the following about ``m_trHeat`` and ``m_trSalt``:
   | ``transp_trSalt``     | salt transport        | specify masks         |
   |                       |                       | (:numref:`intgen`)    |
   +-----------------------+-----------------------+-----------------------+
+  | ``moc_trVol``         | meridional ovt.       | specify masks         |
+  |                       | streamfn. maximum     | (:numref:`intgen`)    |
+  +-----------------------+-----------------------+-----------------------+
 
 Key Routines
 ~~~~~~~~~~~~
@@ -566,7 +587,7 @@ comparison online and formulate a least-squares problem (ECCO
 application).
 
 The pkg/profiles namelist is called data.profiles. In the example below,
-it includes two input netcdf file names (ARGOifremer_r8.nc 
+it includes two input netcdf file names (ARGOifremer_r8.nc
 and XBT_v5.nc) that should be linked to the run directory
 and *cost function* multipliers that only matter in the
 context of automatic differentiation (see :ref:`chap_autodiff`). The
@@ -578,7 +599,7 @@ velocity, sea surface height anomaly, and passive tracer.
 .. more updates are needed below
 
 The netcdf input file structure is illustrated in the case of XBT_v5.nc
-To create such files, one can use the MITprof matlab toolbox obtained 
+To create such files, one can use the MITprof matlab toolbox obtained
 from https://github.com/gaelforget/MITprof .
 At run time, each file is scanned to determine which
 variables are included; these will be interpolated. The (final) output
@@ -658,8 +679,24 @@ CTRL: Model Parameter Adjustment Capability
 
 Author: Gael Forget
 
-The parameters available for configuring generic cost terms in
-``data.ctrl`` are given in :numref:`gencost_ctrl_params`.
+Package :filelink:`ctrl <pkg/ctrl>` provides an interface to defining
+the control variables for an optimization. After defining CPP-flags
+:varlink:`ALLOW_GENTIM2D_CONTROL`, :varlink:`ALLOW_GENARR2D_CONTROL`,
+:varlink:`ALLOW_GENARR3D_CONTROL` in :filelink:`CTRL_OPTIONS.h
+<pkg/ctrl/CTRL_OPTIONS.h`, the parameters available for configuring
+generic cost terms in ``data.ctrl`` are given in
+:numref:`gencost_ctrl_params`.  The control variables are stored as
+fields on the model grid in files ``$ctrlvar.$iternumber.data/meta``,
+and corresponding gradients in ``ad$ctrlvar.$iternumber.data/meta``,
+where ``$ctrl`` is defined in ``data.ctrl`` (see :numref:`gencost_ctrl_files` for
+possible options) and ``$iternumber`` is the
+10-digit iteration number of the optimization. Further,
+:filelink:`ctrl <pkg/ctrl>` maps the gradient fields to a vector that
+can be handed over to an optimization routine (see
+:numref:`sectionoptim`) and maps the resulting new control vector
+to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
+:filelink:`CTRL_OPTIONS.h <pkg/ctrl/CTRL_OPTIONS.h>`.
+
 
 .. table:: Parameters in ``ctrl_nml_genarr`` namelist in ``data.ctrl``.
            The ``*`` can be replaced by ``arr2d``, ``arr3d``, or ``tim2d`` for
@@ -690,7 +727,8 @@ The parameters available for configuring generic cost terms in
   |                       |                       | )                              |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_c`` | character(*)          | Preprocessor                   |
-  |                       |                       | character arguments            |
+  |                       |                       | character arguments (see       |
+  |                       |                       | :numref:`genarr_preproc_c`)    |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_i`` | integer(*)            | Preprocessor integer           |
   |                       |                       | arguments                      |
@@ -726,7 +764,7 @@ The parameters available for configuring generic cost terms in
   |                       |                       | still 2D)                      |
   +-----------------------+-----------------------+--------------------------------+
 
-.. table:: Generic control prefixes implemented as of checkpoint 65z.
+.. table:: Generic control prefixes implemented as of checkpoint 67x.
   :name: gencost_ctrl_files
 
   +-----------------------+-----------------------+-----------------------+
@@ -741,6 +779,20 @@ The parameters available for configuring generic cost terms in
   |                       | ``xx_bottomdrag``     | bottom drag           |
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_geothermal``     | geothermal heat flux  |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoefft``      | shelfice thermal      |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoeffs``      | shelfice salinity     |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicdrag``       | shelfice drag         |
+  |                       |                       | coefficient (see      |
+  |                       |                       | :numref:`shi_ctrl`)   |
   +-----------------------+-----------------------+-----------------------+
   | 3D, time-invariant    | ``genarr3d``          |                       |
   | controls              |                       |                       |
@@ -777,6 +829,8 @@ The parameters available for configuring generic cost terms in
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_precip``         | precipitation         |
   +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_runoff``         | river runoff          |
+  +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_uwind``          | zonal wind            |
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_vwind``          | meridional wind       |
@@ -789,9 +843,15 @@ The parameters available for configuring generic cost terms in
   |                       | ``xx_gen_precip``     | globally averaged     |
   |                       |                       | precipitation?        |
   +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_hflux``          | net heat flux         |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_sflux``          | net salt (EmPmR) flux |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shifwflx``       | shelfice melt rate    |
+  +-----------------------+-----------------------+-----------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
-           65z. Notes: :math:`^a`: If ``noscaling`` is false, the control
+           67x. Notes: :math:`^a`: If ``noscaling`` is false, the control
            adjustment is scaled by one on the square root of the weight before
            being added to the base control variable; if ``noscaling`` is true, the
            control is multiplied by the weight in the cost function itself.
@@ -818,8 +878,8 @@ The parameters available for configuring generic cost terms in
   | ``variaweight``       | Use time-varying      | —                     |
   |                       | weight                |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``noscaling``\ :math: | Do not scale with     | —                     |
-  | `^{a}`                | ``xx_gen*_weight``    |                       |
+  | ``noscaling``         | Do not scale with     | —                     |
+  | :math:`^{a}`          | ``xx_gen*_weight``    |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``documul``           | Sets                  | —                     |
   |                       | ``xx_gentim2d_cumsum``|                       |
@@ -828,6 +888,21 @@ The parameters available for configuring generic cost terms in
   | ``doglomean``         | Sets                  | —                     |
   |                       | ``xx_gentim2d_glosum``|                       |
   |                       |                       |                       |
+  +-----------------------+-----------------------+-----------------------+
+
+
+.. table:: ``xx_gen????d_preproc_c`` options implemented as of checkpoint
+           67x.
+  :name: genarr_preproc_c
+
+  +-----------------------+-----------------------+-----------------------+
+  | name                  | description           | arguments             |
+  +=======================+=======================+=======================+
+  |``log10ctrl``          | Control adjustments to| See                   |
+  |                       | base 10 logarithm of  | :numref:`log_ctrl`    |
+  |                       | 2D or 3D array        |                       |
+  |                       | (not available for    |                       |
+  |                       | ``xx_gentim2d``).     |                       |
   +-----------------------+-----------------------+-----------------------+
 
 The control problem is non-dimensional by default, as reflected in the
@@ -866,6 +941,77 @@ cost function penalty [:math:`\beta_j` in :eq:`Jtotal`;
 does not directly appear in the estimation problem, but only serves to
 push the optimization process in a certain direction in control space;
 this operator is specified by ``gen*Precond`` (:math:`=1` by default).
+
+Note that control parameters exist for each individual near surface atmospheric state
+variable, as well as the net heat and salt (EmPmR) fluxes.
+The user must be mindful of control parameter combinations that make sense
+according to their specific setup, e.g., with the :ref:`EXF
+package <ssub_phys_pkg_exf_config>`.
+
+.. _shi_ctrl:
+
+Shelfice Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The available iceshelf control parameters depend on the form of transfer
+coefficient used in the simulation.
+
+The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available when the
+velocity **independent** form of transfer coefficients is used, by setting
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT`
+in :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>` at
+compile time (see :numref:`tab_phys_pkg_shelfice_compileparms`) and
+:varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`).  These parameters provide
+adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.  If only one
+of either is used, the value of the other is set based on the control
+adjustments used together with :varlink:`SHELFICEsaltToHeatRatio`, which can be
+set in ``data.shelfice``.  See :ref:`tab_phys_pkg_shelfice_runtimeparms` for
+the default.
+
+The adjustment ``xx_shicdrag`` is available in the velocity **dependent** form
+of the ice-ocean transfer coefficients, which is specified by ``#define``
+:varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict`
+``=.TRUE.`` at compile time and run time respectively.  This parameter provides
+adjustments to the drag coefficient at the ice ocean boundary, but by default
+only adjusts the drag coefficient used to compute the thermal and freshwater
+fluxes, neglecting the momentum contributions.  To allow the contribution
+directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
+in ``data.ctrl``.
+
+.. _log_ctrl:
+
+Logarithmic Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As indicated in :numref:`genarr_preproc_c`, the base-10 logarithm of a
+control field can be adjusted by specifying the character option
+``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2`` and ``iarr``
+as appropriate, and ``*d`` denoting that ``2d`` or ``3d`` are available.
+As a concrete example, if the control parameter is updating ``fld2d``,
+then the field will be set as follows:
+
+.. code-block:: fortran
+
+	fld2d(i,j,bi,bj) = 10**( log10InitVal + xx_genarr2d(i,j,bi,bj,iarr) )
+
+where ``log10InitVal`` is a scalar with a default value of 0, but can be changed
+by setting ``gencost_preproc_r(k2,iarr)``. This is useful in the case where
+``doInitXX=.TRUE.``.
+Concretely, if we had an initial guess for ``fld2d = 10^-4`` then one could set
+the following in ``data.ctrl``:
+
+::
+
+	xx_genarr2d_file(1) = 'xx_fld2d'
+	xx_genarr2d_weight(1) = 'nonzero_weights.data'
+	xx_genarr2d_preproc_c(1,1) = 'log10ctrl'
+	xx_genarr2d_preproc_r(1,1) = -4. ,
+
+Note that the ``log10ctrl`` option can only be used when a weight file
+is provided, and finally that this log-option cannot be used with
+``xx_gen*_preproc(k2,iarr) = 'noscaling',``.
+
 
 .. _sec:pkg:smooth:
 
@@ -1071,7 +1217,7 @@ iteration to update Hessian:
 
     Example 2: jmin = 3, jmax = 7, mupd = 5   ---> jmax = 2
 
-      1   2   3   |  
+      1   2   3   |
     |___|___|___| | |___|___| |___|___| |___|___| |___|___| |___|___|
                   |     6         7         3         4         5
 
@@ -1091,7 +1237,7 @@ Error handling
           |             create or open OPWARMD
           |
           |---- check consistency between OPWARMI and model parameters
-          | 
+          |
           |---- >>> if COLD start: <<<
           |      |  first simulation with f.g. xx_0; output: first ff_0, gg_0
           |      |  set first preconditioner value xdiff_0 to 1
@@ -1112,7 +1258,7 @@ Error handling
           |      )       |      |  first optimization after cold start:
           |      (       |      |  preconditioner estimated via ff_0 - ff_(first guess)
           |      )       |      |  dd(i-1) = -gg(i-1)*preco
-          |      (       |      |  
+          |      (       |      |
           |      )       |     >>> if jmax > 0 <<<
           |      (       |         dd(i-1) = -gg(i-1)
           |      )       |         CALL HESSUPD
@@ -1139,7 +1285,7 @@ Error handling
           |      (---- CALL OPTLINE / LSLINE
           |      )       |
           |      (       |---- /// loop over simulations
-          |      )              (  
+          |      )              (
           |      (              )---- CALL SIMUL
           |      )              (       |
           |      (              )       |----  input: xdiff(i)
@@ -1181,7 +1327,7 @@ Error handling
           |      (                               for new simulation
           |      )                               N.B.: new xx is thus not based on new gg, but
           |      (                                     rather on new step size tact
-          |      )        
+          |      )
           |      (---- store new values xx(i), gg(i) to OPWARMD (first 2 entries)
           |      )---- >>> if ifail = 7,8,9 <<<
           |      (         goto 1000
@@ -1191,7 +1337,7 @@ Error handling
 ::
 
          ...    ...
-          |      )        
+          |      )
           |      (---- store new values xx(i), gg(i) to OPWARMD (first 2 entries)
           |      )---- >>> if ifail = 7,8,9 <<<
           |      (         goto 1000
@@ -1300,7 +1446,7 @@ does the following: ::
   call m1qn3 (simul_rc,...,xx,objf,adxx,...,reverse,indic,...)
   call optim_store_m1qn3( ..., .true. )          ! write state of m1qn3
   call optim_writedata( nn, ctrlname, ..., xx )  ! write control vector
-  
+
 The optimization loop is executed outside of this program within a script.
 
 The code can be obtained at https://github.com/mjlosch/optim_m1qn3
@@ -1331,7 +1477,7 @@ and following the directions provided `here for global_oce_cs32 <https://github.
 or `here for global_oce_llc90 <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`__. These model configurations
 are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
 Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
-To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 
+To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below.
 The various commands can also be used to run these examples outside of crontab, directly at the command line via the `testreport capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/>`__.
 
 .. note::
@@ -1347,7 +1493,7 @@ The various commands can also be used to run these examples outside of crontab, 
     % module use /usr/share/Modules
     % module load openmpi-x86_64
     % setenv MPI_INC_DIR $MPI_INCLUDE
-    % 
+    %
     % cd ~/MITgcm
     % #mkdir gitpull.log
     % set D=`date +%Y-%m-%d`
@@ -1373,5 +1519,3 @@ The various commands can also be used to run these examples outside of crontab, 
     % #adjoint case:
     % ./testreport -clean -t 'global_oce_*'
     % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -ad -t 'global_oce_*' -addr username@something.whatever
-
-

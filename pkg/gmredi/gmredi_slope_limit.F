@@ -50,7 +50,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
@@ -115,6 +114,11 @@ C     == Local variables ==
       _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
       _RL minTransLay
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+#endif
 
 C-   need to put this one in GM namelist :
       _RL GM_bigSlope
@@ -578,14 +582,10 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 
        ELSEIF (GM_taper_scheme.EQ.'stableGmAdjTap') THEN
 
-#ifndef GMREDI_WITH_STABLE_ADJOINT
+#ifdef GMREDI_WITH_STABLE_ADJOINT
 
-        STOP 'Need to compile wth "#define GMREDI_WITH_STABLE_ADJOINT"'
-
-#else  /* GMREDI_WITH_STABLE_ADJOINT */
-
-c special choice for adjoint/optimization of parameters
-c (~ strong clipping, reducing non linearity of kw=f(K))
+C special choice for adjoint/optimization of parameters
+C (~ strong clipping, reducing non linearity of kw=f(K))
 
         slopeMax= 2. _d -3
 
@@ -596,17 +596,29 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          DO i=1-OLx+1,sNx+OLx
           slopeSqTmp=SlopeX(i,j)*SlopeX(i,j)
      &              +SlopeY(i,j)*SlopeY(i,j)
-        
+
           IF ( slopeSqTmp .GT. slopeMax**2 ) then
            slopeTmp=sqrt(slopeSqTmp)
            SlopeX(i,j)=SlopeX(i,j)*slopeMax/slopeTmp
            SlopeY(i,j)=SlopeY(i,j)*slopeMax/slopeTmp
           ENDIF
+         ENDDO
+        ENDDO
+
+C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
+C block above to reduce TAF recomputations. The assignment of taperFct is
+C also moved to keep the original order of operations.
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
          ENDDO
         ENDDO
+
+#else  /* GMREDI_WITH_STABLE_ADJOINT */
+
+        STOP 'Need to compile wth "#define GMREDI_WITH_STABLE_ADJOINT"'
 
 #endif /* GMREDI_WITH_STABLE_ADJOINT */
 

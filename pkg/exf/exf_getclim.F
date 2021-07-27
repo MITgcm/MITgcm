@@ -5,6 +5,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       SUBROUTINE EXF_GETCLIM(
      I                        myTime, myIter, myThid )
@@ -54,6 +57,9 @@ c     == global variables ==
 #  include "ecco_cost.h"
 # endif
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 c     == routine arguments ==
 
@@ -66,6 +72,9 @@ c     myThid - thread number for this instance of the routine.
 c     == local variables ==
 
       INTEGER bi, bj, i, j
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 c     == end of interface ==
 
@@ -83,6 +92,10 @@ c     Get values of climatological sst fields.
 #endif
      I     myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     this avoids storing climsst0/1
+CADJ STORE climsst      = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy
@@ -101,9 +114,10 @@ c--   Update the tile edges.
 
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # ifdef ALLOW_SST_CONTROL
+      CALL CTRL_GET_MASK2D( xx_sst_file, mask2D, myThid )
       CALL CTRL_GET_GEN (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
-     &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
+     &     mask2D, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
      &     xx_sst_remo_intercept, xx_sst_remo_slope,
      &     wsst, myTime, myIter, myThid )
 # endif
@@ -129,9 +143,10 @@ c--   Update the tile edges.
 
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # ifdef ALLOW_SSS_CONTROL
+      CALL CTRL_GET_MASK2D( xx_sss_file, mask2D, myThid )
       CALL CTRL_GET_GEN (
      &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
-     &     maskc, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
+     &     mask2D, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
      &     xx_sss_remo_intercept, xx_sss_remo_slope,
      &     wsss, myTime, myIter, myThid )
 # endif

@@ -84,7 +84,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
        CALL TIMEAVE_CUMUL_1T( tFluxtave, tmpFld, 1,
      &                                   deltaTClock, bi, bj, myThid)
 
-C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
+C     sFlux (=salt flux [g/m2/s], positive <-> increasing salinity)
        DO j=1,sNy
         DO i=1,sNx
          tmpFld(i,j)=

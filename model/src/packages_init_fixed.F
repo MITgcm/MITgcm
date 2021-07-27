@@ -359,14 +359,6 @@ C--   in order to provide the weight files
       ENDIF
 #endif
 
-#ifdef ALLOW_SMOOTH
-      IF (useSMOOTH) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('SMOOTH_INIT_FIXED',myThid)
-# endif
-        CALL SMOOTH_INIT_FIXED(myThid)
-      ENDIF
-#endif /* ALLOW_SMOOTH */
 
 #ifdef ALLOW_ECCO
       IF (useECCO) THEN
@@ -457,6 +449,15 @@ C--   Initialise fixed array for Float pkg
         CALL SHELFICE_INIT_FIXED( myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_SMOOTH
+      IF (useSMOOTH) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SMOOTH_INIT_FIXED',myThid)
+# endif
+        CALL SMOOTH_INIT_FIXED(myThid)
+      ENDIF
+#endif /* ALLOW_SMOOTH */
 
 #ifdef ALLOW_ICEFRONT
       IF (useICEFRONT) THEN

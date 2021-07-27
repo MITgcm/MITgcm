@@ -159,10 +159,6 @@ CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 # include "offline_ad_check_lev4_dir.h"
 #endif /* ALLOW_OFFLINE */
 
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev4_dir.h"
-#endif
-
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev4_dir.h"
 #endif
