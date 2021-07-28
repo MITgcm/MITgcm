@@ -20,10 +20,10 @@ For a field (:math:`T`) at every grid point the tendency is modified so that:
 where :math:`M_{rbc}` is a 3-D mask (no time dependence) between 0
 and 1. Values are relaxed to a field given by :math:`T_{rbc}`, which can be set
 to vary in time.
-Where :math:`M_{rbc}(x,y,z) = 1.0`, relaxing timescale is :math:`1/\tau_T`;
+Where :math:`M_{rbc}(x,y,z) = 1.0`, relaxing timescale is :math:`\tau_T`;
 where :math:`M_{rbc}(x,y,z) = 0.0`, there is no relaxing.  If
 :math:`M_{rbc}(x,y,z) = 0.5` then relaxation occurs but at a timescale
-:math:`2/\tau_T`.
+:math:`2 \tau_T`.
 
 A separate mask can be used for :math:`\theta, S` and ptracers and each of
 these can be relaxed or not and can have its own timescale
@@ -51,7 +51,7 @@ set in ``data.rbcs``, and their default values.
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | :varlink:`rbcsForcingCycle`        | PARM01 | 0.0                    | repeat cycle of forcing fields (in seconds), zero means non-cyclic forcing                                                                                   |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`rbcsForcingOffset`       | PARM01 | 0.0                    | time offset of forcing fields (in seconds, default 0), relative to time averages starting at :math:`t=0`,                                                    |
+   | :varlink:`rbcsForcingOffset`       | PARM01 | 0.0                    | time offset of forcing fields (in seconds), relative to time averages starting at :math:`t=0`,                                                               |
    |                                    |        |                        | i.e., the first forcing record/file is placed at (:varlink:`rbcsForcingOffset` + :varlink:`rbcsForcingPeriod` )/2; see below for examples                    |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | :varlink:`rbcsSingleTimeFiles`     | PARM01 | FALSE                  | if ``.TRUE.``, forcing fields are given one file per :varlink:`rbcsForcingPeriod`                                                                            |
@@ -67,7 +67,7 @@ set in ``data.rbcs``, and their default values.
    | :varlink:`useRBCuVel`,             |        |                        |                                                                                                                                                              |
    | :varlink:`useRBCvVel`              |        |                        |                                                                                                                                                              |
    +------------------------------------+--------+------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`tauRelaxT`,              | PARM01 | 0.0                    | timescales (in seconds) for relaxing T/S/U/V (:math:`\tau_T` in equation above); required if the corresponding ``useRBCxxx`` is ``.TRUE``                    |
+   | :varlink:`tauRelaxT`,              | PARM01 | 0.0                    | timescales (in seconds) for relaxing T/S/U/V (:math:`\tau_T` in equation above); required if the corresponding ``useRBCxxx`` is ``.TRUE.``                   |
    | :varlink:`tauRelaxS`,              |        |                        |                                                                                                                                                              |
    | :varlink:`tauRelaxU`,              |        |                        |                                                                                                                                                              |
    | :varlink:`tauRelaxV`               |        |                        |                                                                                                                                                              |
@@ -96,7 +96,7 @@ Timing of relaxation forcing fields
 For constant-in-time relaxation, set :varlink:`rbcsForcingPeriod` =0. For
 time-varying relaxation, :numref:`tab_phys_pkg_rbcs_timing` illustrates the
 relation between model time and forcing fields (either records in one big file
-or, for :varlink:`rbcsSingleTimeFiles` = :``.TRUE.`` , individual files labeled
+or, for :varlink:`rbcsSingleTimeFiles` = ``.TRUE.`` , individual files labeled
 with an iteration number). With :varlink:`rbcsSingleTimeFiles` = ``.TRUE.`` ,
 this is the same as in the offline package, except that the forcing offset is
 in seconds.
