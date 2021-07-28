@@ -375,7 +375,7 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,k-1)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
@@ -454,7 +454,7 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,k-1)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
