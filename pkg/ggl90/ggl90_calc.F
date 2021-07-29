@@ -61,7 +61,6 @@ C !LOCAL VARIABLES: ====================================================
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k, kp1,km1 :: array computation indices
 C     kSrf, kBottom    :: vertical indices of domain boundaries
-C     kup, kdn         :: index above and below current level
 C     kTop, kBot, kDir, delK :: vertical loop ranges and increments
 C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
@@ -85,7 +84,7 @@ C         rMixingLength:: inverse of mixing length
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k, kp1, km1, kSrf, kBottom
-      INTEGER kup, kdn, kTop, kBot, kDir, delK
+      INTEGER kTop, kBot, kDir, delK
       INTEGER errCode
       _RL explDissFac, implDissFac
       _RL totalDepth   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -342,113 +341,171 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
-C     Downward sweep, extra treatment of k=Nr for p-coordinates
-C     because level Nr+1 is not available
+       IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
 CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-       IF ( usingPcoords ) THEN
+C     Downward sweep, extra treatment of k=Nr for p-coordinates
+C     because level Nr+1 is not available
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
          ENDDO
         ENDDO
-       ENDIF
-       DO k=kTop-delK,kBot,kDir
-        kup = k-kDir
+        DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kup)
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kup)+drF(kup-delK)*recip_coordFac)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
+C     Upward sweep
+        DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Downward sweep
+        DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
+          ENDDO
+         ENDDO
+        ENDDO
 C     Upward sweep, extra treatment of k=Nr for z-coordinates
 C     because level Nr+1 is not available
-       IF ( .NOT. usingPcoords ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
          ENDDO
         ENDDO
-       ENDIF
-       DO k=kBot+delK-1, kTop,-kDir
-        kdn = k+kDir
+        DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kdn)
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kdn)+drF(k-delK)*recip_coordFac)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
 
-C     Downward sweep, extra treatment of k=Nr for p-coordinates
-C     because level Nr+1 is not available
+       IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
 CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-       IF ( usingPcoords ) THEN
+C     Downward sweep, extra treatment of k=Nr for p-coordinates
+C     because level Nr+1 is not available
         DO j=jMin,jMax
          DO i=iMin,iMax
           mxLength_Dn(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
          ENDDO
         ENDDO
-       ENDIF
-       DO k=kTop-delK,kBot,kDir
-        kup = k-kDir
+        DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE mxLength_Dn(:,:,kup)
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE mxLength_Dn(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        mxLength_Dn(i,j,kup)+drF(kup-delK)*recip_coordFac)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          mxLength_Dn(i,j,k+1)+drF(k)*recip_coordFac)
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
+C     Upward sweep
+        DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Downward sweep
+        DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE mxLength_Dn(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          mxLength_Dn(i,j,k-1)+drF(k-1)*recip_coordFac)
+          ENDDO
+         ENDDO
+        ENDDO
 C     Upward sweep, extra treatment of k=Nr for z-coordinates
 C     because level Nr+1 is not available
-       IF ( .NOT. usingPcoords ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
          ENDDO
         ENDDO
-       ENDIF
-       DO k=kBot+delK-1, kTop,-kDir
-        kdn = k+kDir
+        DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkeyLoc = (ikeyLoc-1)*Nr + k
-CADJ STORE GGL90mixingLength(:,:,kdn)
+         kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kdn)+drF(k-delK)*recip_coordFac)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
       ELSE
        STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing length limit)'
