@@ -512,21 +512,23 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
       ENDIF
 C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
-#endif
-      DO k=2,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-        ENDDO
-       ENDDO
-      ENDDO
       IF ( mxlMaxFlag.EQ.3 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &                                  mxLength_Dn(i,j,k))
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           tmpmlx = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k) )
           tmpmlx = MAX( tmpmlx, GGL90mixingLengthMin)
           rMixingLength(i,j,k) = 1. _d 0 / tmpmlx
@@ -534,9 +536,22 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
         ENDDO
        ENDDO
       ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
+#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+#ifdef ALLOW_AUTODIFF
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
