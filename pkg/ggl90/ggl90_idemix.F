@@ -1,4 +1,15 @@
 #include "GGL90_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
+
+C--  File ggl90_idemix.F:
+C--   Contents
+C--   o GGL90_IDEMIX
+C--   o IDEMIX_gofx2
+C--   o IDEMIX_hofx1
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C     !ROUTINE: GGL90_IDEMIX
@@ -29,8 +40,7 @@ C     === Global variables ===
 #include "GRID.h"
 
 #ifdef ALLOW_GMREDI
-#include "GMREDI_OPTIONS.h"
-#include "GMREDI.h"
+# include "GMREDI.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -57,6 +67,7 @@ C     === Local variables ===
       INTEGER i, j, k, kp1, km1
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
+      _RL  deltaTloc
       _RL  fxa,fxb,fxc,cstar
       _RL  coordFac, recip_coordFac
       _RL  IDEMIX_gofx2,IDEMIX_hofx1
@@ -86,6 +97,7 @@ CEOP
        kSrf =  1
        kTop =  2
       ENDIF
+      deltaTloc = dTtracerLev(kSrf)
 
       coordFac = 1. _d 0
       IF ( usingPCoords) coordFac = gravity * rhoConst
@@ -122,8 +134,8 @@ c-----------------------------------------------------------------------
         DO i=1-OLx,sNx+OLx
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k) * coordFac
-         fxb = max( 1. _d -6, abs( fCori(i,j,bi,bj) ))
-         Nsquare(i,j,k)= max( 100.*fxb*fxb, Nsquare(i,j,k) )
+         fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
+         Nsquare(i,j,k)= MAX( 100.*fxb*fxb, Nsquare(i,j,k) )
      &                 *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
@@ -146,15 +158,15 @@ c-----------------------------------------------------------------------
       DO k=2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          fxb = max( 1. _d -6, abs( fCori(i,j,bi,bj) ))
+          fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
           fxa = SQRT(Nsquare(i,j,k))/fxb
           cstar = bN0(i,j)/(pi*IDEMIX_jstar)
-          c0(i,j,k)=max(0. _d 0,
+          c0(i,j,k)=MAX(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
-          IDEMIX_V0(i,j,k,bi,bj)=max(0. _d 0,
+          IDEMIX_V0(i,j,k,bi,bj)=MAX(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
-          fxc = max( 1. _d 0 , fxa )
-          fxc = log( fxc + sqrt( fxc*fxc -1.))
+          fxc = MAX( 1. _d 0 , fxa )
+          fxc = LOG( fxc + SQRT( fxc*fxc -1.))
           IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
      &         (IDEMIX_jstar*pi/(GGL90eps+bN0(i,j)) )**2
         ENDDO
@@ -168,9 +180,9 @@ C     tau_h V0**2 *dt/dx**2 < 0.25 <=> V0 < sqrt( 0.25 * dx**2/(dt*tau_h) )
        DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          fxa = sqrt( 1. _d 0/( dTtracerLev(k) * IDEMIX_tau_h ) )
-          fxb = 0.5*min( _dxF(i,j,bi,bj), _dyF(i,j,bi,bj) )*fxa
-          IDEMIX_V0(i,j,k,bi,bj) = min( IDEMIX_V0(i,j,k,bi,bj), fxb )
+          fxa = SQRT( 1. _d 0/( deltaTloc * IDEMIX_tau_h ) )
+          fxb = 0.5*MIN( _dxF(i,j,bi,bj), _dyF(i,j,bi,bj) )*fxa
+          IDEMIX_V0(i,j,k,bi,bj) = MIN( IDEMIX_V0(i,j,k,bi,bj), fxb )
          ENDDO
         ENDDO
        ENDDO
@@ -181,7 +193,7 @@ c-----------------------------------------------------------------------
 
 c     vertically integrated forcing
 #ifdef ALLOW_GMREDI
-      if (useGmredi) then
+      IF (useGmredi) THEN
 #ifdef GM_EG_PROGNOSTIC
        DO k=1,Nr
         DO j=1-OLy,sNy+OLy
@@ -192,20 +204,20 @@ c     vertically integrated forcing
          ENDDO
         ENDDO
        ENDDO
-#else
+#else /* GM_EG_PROGNOSTIC */
        DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            gm_forc(i,j) = gm_forc(i,j)
-     &              +max( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
+     &              +MAX( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
      &               *drC(k)*recip_coordFac*hFacI(i,j,k)
          ENDDO
         ENDDO
        ENDDO
-#endif
-      endif
+#endif /* GM_EG_PROGNOSTIC */
+      ENDIF
 
-      if (IDEMIX_include_GM .and. useGmredi) then
+      IF (IDEMIX_include_GM .AND. useGmredi) THEN
 c      inject locally
 #ifdef GM_EG_PROGNOSTIC
        DO k=2,Nr
@@ -217,19 +229,19 @@ c      inject locally
          ENDDO
         ENDDO
        ENDDO
-#else
+#else /* GM_EG_PROGNOSTIC */
        DO k=2,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           forc(i,j,k) = forc(i,j,k)
-     &              +max( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
+     &              +MAX( 0. _d 0,Kwz(i,j,k,bi,bj)*Nsquare(i,j,k) )
          ENDDO
         ENDDO
        ENDDO
-#endif
-      endif
+#endif /* GM_EG_PROGNOSTIC */
+      ENDIF
 
-      if (IDEMIX_include_GM_bottom .and. useGmredi) then
+      IF (IDEMIX_include_GM_bottom .AND. useGmredi) THEN
 c      inject at bottom box only
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -243,8 +255,8 @@ c      inject at bottom box only
      &                  *recip_hFacI(i,j,kBot)
         ENDDO
        ENDDO
-      endif
-#endif
+      ENDIF
+#endif /* ALLOW_GMREDI */
 
 c-----------------------------------------------------------------------
 c     horizontal diffusion of IW energy
@@ -257,8 +269,8 @@ c-----------------------------------------------------------------------
      &        IDEMIX_V0(i-1,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
      &       +IDEMIX_V0(i  ,j,k,bi,bj)*maskC(i  ,j,k,bi,bj))
           dfx(i,j) = -fxa*_dyG(i,j,bi,bj)*drC(k)
-     &                *(min(.5 _d 0,_hFacW(i,j,k-1,bi,bj) ) +
-     &                  min(.5 _d 0,_hFacW(i,j,k  ,bi,bj) ) )
+     &                *(MIN(.5 _d 0,_hFacW(i,j,k-1,bi,bj) ) +
+     &                  MIN(.5 _d 0,_hFacW(i,j,k  ,bi,bj) ) )
      &      *_recip_dxC(i,j,bi,bj)
      &      *(IDEMIX_V0(i  ,j,k,bi,bj)*IDEMIX_E(i  ,j,k,bi,bj)
      &       -IDEMIX_V0(i-1,j,k,bi,bj)*IDEMIX_E(i-1,j,k,bi,bj))
@@ -274,8 +286,8 @@ c-----------------------------------------------------------------------
      &        IDEMIX_V0(i,j  ,k,bi,bj)*maskC(i,j  ,k,bi,bj)
      &       +IDEMIX_V0(i,j-1,k,bi,bj)*maskC(i,j-1,k,bi,bj) )
           dfy(i,j) = -fxa*_dxG(i,j,bi,bj)*drC(k)
-     &                *(min(.5 _d 0,_hFacS(i,j,k-1,bi,bj) ) +
-     &                  min(.5 _d 0,_hFacS(i,j,k  ,bi,bj) ) )
+     &                *(MIN(.5 _d 0,_hFacS(i,j,k-1,bi,bj) ) +
+     &                  MIN(.5 _d 0,_hFacS(i,j,k  ,bi,bj) ) )
      &      *_recip_dyC(i,j,bi,bj)
      &      *(IDEMIX_V0(i,j  ,k,bi,bj)*IDEMIX_E(i,j  ,k,bi,bj)
      &       -IDEMIX_V0(i,j-1,k,bi,bj)*IDEMIX_E(i,j-1,k,bi,bj))
@@ -288,7 +300,7 @@ c-----------------------------------------------------------------------
         DO j=jMin,jMax
          DO i=iMin,iMax
           IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
-     &       + dTtracerLev(k)*(-recip_drC(k)*recip_rA(i,j,bi,bj)
+     &       + deltaTloc*(-recip_drC(k)*recip_rA(i,j,bi,bj)
      &                   *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))+(dfy(i,j+1)-dfy(i,j)) )  )
      &         *maskC(i,j,k,bi,bj) ! paranoia setting
@@ -302,7 +314,7 @@ c-----------------------------------------------------------------------
        DO j=jMin,jMax
         DO i=iMin,iMax
           IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
-     &                      + forc(i,j,k)*dTtracerLev(k)
+     &                      + forc(i,j,k)*deltaTloc
         ENDDO
        ENDDO
       ENDDO
@@ -315,7 +327,7 @@ C     delta(1) and delta(Nr) are zero by initialisation
       DO k=2,Nr-1
        DO j=jMin,jMax
         DO i=iMin,iMax
-         delta(i,j,k)  = dTtracerLev(k)*IDEMIX_tau_v
+         delta(i,j,k)  = deltaTloc*IDEMIX_tau_v
      &        *recip_drF(k)*coordFac*recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(c0(i,j,k)+c0(i,j,k+1))
         ENDDO
@@ -403,7 +415,7 @@ C--   Center diagonal
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
+         b3d(i,j,k) = 1. _d 0+deltaTloc*IDEMIX_tau_d(i,j,k,bi,bj)
      &         *IDEMIX_E(i,j,k,bi,bj)
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &        - ( a3d(i,j,k) + c3d(i,j,k) ) * c0(i,j,k)
@@ -429,7 +441,7 @@ C--   Apply flux boundary condition
       DO j=jMin,jMax
        DO i=iMin,iMax
         IDEMIX_E(i,j,kTop,bi,bj) = IDEMIX_E(i,j,kTop,bi,bj)
-     &       +dTtracerLev(kTop)*IDEMIX_F_s(i,j,bi,bj)
+     &       +deltaTloc*IDEMIX_F_s(i,j,bi,bj)
      &       *recip_drC(kTop)*coordFac*recip_hFacI(i,j,kTop)
      &       *maskC(i,j,kTop,bi,bj)
        ENDDO
@@ -439,7 +451,7 @@ C--   Apply flux boundary condition
         DO i=iMin,iMax
          kBot = MAX(kLowC(i,j,bi,bj),1)
          IDEMIX_E(i,j,kBot,bi,bj) = IDEMIX_E(i,j,kBot,bi,bj)
-     &        -dTtracerLev(kBot)*IDEMIX_F_b(i,j,bi,bj)
+     &        -deltaTloc*IDEMIX_F_b(i,j,bi,bj)
      &        *recip_drC(kBot)*coordFac*recip_hFacI(i,j,kBot)
      &        *maskC(i,j,kBot,bi,bj)
         ENDDO
@@ -449,7 +461,7 @@ C--   Apply flux boundary condition
         DO i=iMin,iMax
          kBot = MIN(kSurfC(i,j,bi,bj)+1,Nr)
          IDEMIX_E(i,j,kBot,bi,bj) = IDEMIX_E(i,j,kBot,bi,bj)
-     &        -dTtracerLev(kBot)*IDEMIX_F_b(i,j,bi,bj)
+     &        -deltaTloc*IDEMIX_F_b(i,j,bi,bj)
      &        *recip_drC(kBot)*coordFac*recip_hFacI(i,j,kBot)
      &        *maskC(i,j,kBot,bi,bj)
         ENDDO
@@ -477,8 +489,8 @@ c-----------------------------------------------------------------------
           osborn_diff(i,j,k) = IDEMIX_mixing_efficiency
      &     *IDEMIX_tau_d(i,j,k,bi,bj)
      &         *IDEMIX_E(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)
-     &     /max(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
-          osborn_diff(i,j,k) = min(IDEMIX_diff_max,osborn_diff(i,j,k))
+     &     /MAX(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
+          osborn_diff(i,j,k) = MIN(IDEMIX_diff_max,osborn_diff(i,j,k))
          ENDDO
         ENDDO
        ENDDO
