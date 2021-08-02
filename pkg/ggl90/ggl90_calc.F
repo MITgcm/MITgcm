@@ -561,7 +561,7 @@ C     implemement various mixing parameters efficiently)
        km1 = k-1
 
 #ifdef ALLOW_GGL90_HORIZDIFF
-      IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
+       IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
 C     horizontal diffusion of TKE (requires an exchange in
 C      do_fields_blocking_exchanges)
 C     common factors
@@ -771,7 +771,7 @@ C--   Lower diagonal
        km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( usingPCoords) km1=MIN(Nr,MAX(kSurfC(i,j,bi,bj),k-1))
+         IF ( usingPCoords) km1=MIN(Nr,MAX(kSurfC(i,j,bi,bj)+1,k-1))
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k-1) with recip_hFacC(k-1)
