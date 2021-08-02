@@ -76,7 +76,8 @@ Description
 ===========
 
 When :filelink:`pkg/shelfice` is enabled, the elevation of the free surface in a grid cell is
-determined by the mass of the ice shelf in that cell. In general use of :filelink:`shelfice <pkg/shelfice>`
+determined by the mass of the ice shelf in that cell, see Jordan et al. (2018)
+:cite:`jordan:18`.  In general use of :filelink:`shelfice <pkg/shelfice>`
 this mass is held constant, but if it is allowed to change the free surface adjusts if :varlink:`implicitFreeSurface` ``= .true.``
 through adjustment of the thickness of the top-level cell (:numref:`figremesh1`). If :varlink:`nonlinFreeSurf`\ ``=4``
 these changes are fully accounted for in the ocean dynamics and tracer transport. However:
@@ -109,7 +110,6 @@ can be set in ``data.shelfice`` to allow volume conservation.
    and the distance between the two, :math:`\eta`, and (b) the extent of the ice-shelf boundary layer used to calculate velocities,
    Bv (red), and tracers, B :math:`_\chi` (blue), used in the melt rate calculation.
    The model grid is represented by dashed lines with the actual sizeof the cells represented by the solid lines.
-   From Jordan et al. (2018) :cite:`jordan:18`.
 
 .. figure:: figs/remesh2.*
    :width: 80%
@@ -119,7 +119,7 @@ can be set in ``data.shelfice`` to allow volume conservation.
 
    Schematic representation of dimensionless vertical grid size, :math:`h_c`, and reference ice-shelf depth, `d`,
    at i=2 in (a) a "normal" case, (b) a cell with :math:`h_c` > :math:`h_{max}` at i=2, k=2 just before a model
-   remesh check, and (c) the same cell just after a model remesh has occurred. From Jordan et al. (2018) :cite:`jordan:18`.
+   remesh check, and (c) the same cell just after a model remesh has occurred.
 
 .. _ssub_phys_remesh_topdr:
 
