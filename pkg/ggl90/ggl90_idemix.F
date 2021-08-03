@@ -2,6 +2,7 @@
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
+#undef GM_EG_PROGNOSTIC
 
 C--  File ggl90_idemix.F:
 C--   Contents
@@ -61,16 +62,18 @@ C     myThid :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_GGL90_IDEMIX
-C     !LOCAL VARIABLES :
+C     !FUNCTIONS:
+      _RL  IDEMIX_gofx2, IDEMIX_hofx1
+
+C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER iMin ,iMax ,jMin ,jMax
-      INTEGER i, j, k, kp1, km1
+      INTEGER i, j, k, kl, kp1, km1
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL  deltaTloc
       _RL  fxa,fxb,fxc,cstar
       _RL  coordFac, recip_coordFac
-      _RL  IDEMIX_gofx2,IDEMIX_hofx1
       _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  dfx        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dfy        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -160,7 +163,7 @@ c-----------------------------------------------------------------------
         DO i=1-OLx,sNx+OLx
           fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
           fxa = SQRT(Nsquare(i,j,k))/fxb
-          cstar = bN0(i,j)/(pi*IDEMIX_jstar)
+          cstar = bN0(i,j)/(PI*IDEMIX_jstar)
           c0(i,j,k)=MAX(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
           IDEMIX_V0(i,j,k,bi,bj)=MAX(0. _d 0,
@@ -168,7 +171,7 @@ c-----------------------------------------------------------------------
           fxc = MAX( 1. _d 0 , fxa )
           fxc = LOG( fxc + SQRT( fxc*fxc -1.))
           IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
-     &         (IDEMIX_jstar*pi/(GGL90eps+bN0(i,j)) )**2
+     &         (IDEMIX_jstar*PI/(GGL90eps+bN0(i,j)) )**2
         ENDDO
        ENDDO
       ENDDO
@@ -262,19 +265,21 @@ c-----------------------------------------------------------------------
 c     horizontal diffusion of IW energy
 c-----------------------------------------------------------------------
        DO k=2,Nr
+        kl = k
+        IF ( usingPCoords ) kl = k - 1
         DO j=1-OLy,sNy+OLy
          dfx(1-OLx,j)=0. _d 0
          DO i=1-OLx+1,sNx+OLx
           fxa = IDEMIX_tau_h*0.5 _d 0*(
-     &        IDEMIX_V0(i-1,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
-     &       +IDEMIX_V0(i  ,j,k,bi,bj)*maskC(i  ,j,k,bi,bj))
+     &        IDEMIX_V0(i-1,j,k,bi,bj)*maskC(i-1,j,kl,bi,bj)
+     &       +IDEMIX_V0(i  ,j,k,bi,bj)*maskC(i  ,j,kl,bi,bj))
           dfx(i,j) = -fxa*_dyG(i,j,bi,bj)*drC(k)
      &                *(MIN(.5 _d 0,_hFacW(i,j,k-1,bi,bj) ) +
      &                  MIN(.5 _d 0,_hFacW(i,j,k  ,bi,bj) ) )
      &      *_recip_dxC(i,j,bi,bj)
      &      *(IDEMIX_V0(i  ,j,k,bi,bj)*IDEMIX_E(i  ,j,k,bi,bj)
      &       -IDEMIX_V0(i-1,j,k,bi,bj)*IDEMIX_E(i-1,j,k,bi,bj))
-     &         *maskW(i,j,k,bi,bj) ! paranoia setting
+     &         *maskW(i,j,kl,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
         DO i=1-OLx,sNx+OLx
@@ -283,15 +288,15 @@ c-----------------------------------------------------------------------
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           fxa = IDEMIX_tau_h*0.5 _d 0*(
-     &        IDEMIX_V0(i,j  ,k,bi,bj)*maskC(i,j  ,k,bi,bj)
-     &       +IDEMIX_V0(i,j-1,k,bi,bj)*maskC(i,j-1,k,bi,bj) )
+     &        IDEMIX_V0(i,j  ,k,bi,bj)*maskC(i,j  ,kl,bi,bj)
+     &       +IDEMIX_V0(i,j-1,k,bi,bj)*maskC(i,j-1,kl,bi,bj) )
           dfy(i,j) = -fxa*_dxG(i,j,bi,bj)*drC(k)
      &                *(MIN(.5 _d 0,_hFacS(i,j,k-1,bi,bj) ) +
      &                  MIN(.5 _d 0,_hFacS(i,j,k  ,bi,bj) ) )
      &      *_recip_dyC(i,j,bi,bj)
      &      *(IDEMIX_V0(i,j  ,k,bi,bj)*IDEMIX_E(i,j  ,k,bi,bj)
      &       -IDEMIX_V0(i,j-1,k,bi,bj)*IDEMIX_E(i,j-1,k,bi,bj))
-     &         *maskS(i,j,k,bi,bj) ! paranoia setting
+     &         *maskS(i,j,kl,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
 c-----------------------------------------------------------------------
@@ -303,7 +308,7 @@ c-----------------------------------------------------------------------
      &       + deltaTloc*(-recip_drC(k)*recip_rA(i,j,bi,bj)
      &                   *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))+(dfy(i,j+1)-dfy(i,j)) )  )
-     &         *maskC(i,j,k,bi,bj) ! paranoia setting
+     &         *maskC(i,j,kl,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
        ENDDO ! k loop
@@ -352,11 +357,10 @@ C     delta(1) and delta(Nr) are zero by initialisation
 C--   Lower diagonal  for E_(k-1) : -delta_k-1 c_k-1/drC_k
 C     but leaving the contribution of c0_k-1 for later
       DO k=2,Nr
-       km1=MAX(k-1,2)
        DO j=jMin,jMax
         DO i=iMin,iMax
 C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
-         a3d(i,j,k) = -delta(i,j,km1)
+         a3d(i,j,k) = -delta(i,j,k-1)
      &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
      &        *maskC(i,j,k,bi,bj)
         ENDDO
@@ -378,7 +382,6 @@ C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
 
 C     treat bottom and surface boundaries for coeffients
 C     of upper and lower diagonal by masking
-      kp1=MIN(2,Nr)
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -386,7 +389,7 @@ C     a3d at bottom is zero
          kBot=MIN(kSurfC(i,j,bi,bj)+1,Nr)
          a3d(i,j,kBot) = 0. _d 0
 C     for p-coords, c3d is zero at the surface, too
-         c3d(i,j,Nr)      = 0. _d 0
+         c3d(i,j,Nr)   = 0. _d 0
         ENDDO
        ENDDO
       ELSEIF ( usingZCoords ) THEN
@@ -396,7 +399,7 @@ C     c3d at bottom is zero
          kBot = MAX(kLowC(i,j,bi,bj),1)
          c3d(i,j,kBot) = 0. _d 0
 C     for z-coords, a3d is zero at the surface (level 2), too
-         a3d(i,j,kp1)     = 0. _d 0
+         a3d(i,j,kTop) = 0. _d 0
         ENDDO
        ENDDO
       ENDIF
@@ -430,7 +433,6 @@ C     been used for the center diagonal: add the contribution of c0_k+/-1
        km1=MAX(k-1,2)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( usingZCoords ) kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
          a3d(i,j,k) = a3d(i,j,k)*c0(i,j,km1)
          c3d(i,j,k) = c3d(i,j,k)*c0(i,j,kp1)
         ENDDO
@@ -438,12 +440,14 @@ C     been used for the center diagonal: add the contribution of c0_k+/-1
       ENDDO
 
 C--   Apply flux boundary condition
+      kl = kTop
+      IF ( usingPCoords ) kl = kTop - 1
       DO j=jMin,jMax
        DO i=iMin,iMax
         IDEMIX_E(i,j,kTop,bi,bj) = IDEMIX_E(i,j,kTop,bi,bj)
      &       +deltaTloc*IDEMIX_F_s(i,j,bi,bj)
      &       *recip_drC(kTop)*coordFac*recip_hFacI(i,j,kTop)
-     &       *maskC(i,j,kTop,bi,bj)
+     &       *maskC(i,j,kl,bi,bj)
        ENDDO
       ENDDO
       IF ( usingZCoords) THEN
@@ -463,7 +467,7 @@ C--   Apply flux boundary condition
          IDEMIX_E(i,j,kBot,bi,bj) = IDEMIX_E(i,j,kBot,bi,bj)
      &        -deltaTloc*IDEMIX_F_b(i,j,bi,bj)
      &        *recip_drC(kBot)*coordFac*recip_hFacI(i,j,kBot)
-     &        *maskC(i,j,kBot,bi,bj)
+     &        *maskC(i,j,kBot-1,bi,bj)
         ENDDO
        ENDDO
       ENDIF
