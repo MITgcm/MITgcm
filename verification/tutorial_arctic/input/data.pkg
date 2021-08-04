@@ -1,0 +1,13 @@
+# Packages
+ &PACKAGES
+ useSEAICE      = .TRUE.,
+ useGMRedi      = .TRUE.,
+ useKPP         = .TRUE.,
+ useDiagnostics = .TRUE.,
+ useEXF         = .TRUE.,
+ useCal         = .TRUE.,
+ useOBCS        = .TRUE.,
+ useFRAZIL      = .TRUE.,
+ usePTRACERS    = .FALSE.,
+ useRBCS        = .FALSE.,
+ &
