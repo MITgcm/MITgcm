@@ -232,6 +232,8 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
         ENDDO
        ENDDO
       ENDDO
+#endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wFld(:,:,:)         = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj , key=itdkey, byte=isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
@@ -240,7 +242,7 @@ CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
 # else
 CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
       CALL CALC_3D_DIFFUSIVITY(

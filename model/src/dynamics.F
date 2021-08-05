@@ -681,7 +681,7 @@ C     In order to compare the variance of phiHydLow of a p/z-coordinate
 C     run with etaH of a z/p-coordinate run the drift of phiHydLow
 C     has to be removed by something like the following subroutine:
 C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskInC, maskInC, rA, drF,
-C     &                     'phiHydLow', myTime, myThid )
+C     &                     'phiHydLow', myTime, myIter, myThid )
 Cml)
 
 #ifdef INCLUDE_SOUNDSPEED_CALC_CODE
