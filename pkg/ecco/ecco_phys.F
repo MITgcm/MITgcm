@@ -59,6 +59,11 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+      _RL AREAsumTile(nSx,nSy),PLOADsumTile(nSx,nSy)
+      _RL tmpfac
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
       _RL sIceLoadFac
 #endif
 #ifdef ALLOW_PSBAR_STERIC
@@ -124,6 +129,36 @@ c    &                       SQUEEZE_RIGHT, myThid )
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+      tmpfac = recip_rhoConst*recip_gravity
+      ploadbar = 0. _d 0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          PLOADsumTile(bi,bj)=0. _d 0
+          AREAsumTile(bi,bj)=0. _d 0
+          AREAsumGlob=0. _d 0
+          PLOADsumGlob=0. _d 0
+          ploadbar = 0. _d 0
+          do j = 1,sNy
+            do i =  1,sNx
+              PLOADsumTile(bi,bj)=PLOADsumTile(bi,bj)+
+     &          pload(i,j,bi,bj)*
+     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+              AREAsumTile(bi,bj)=AREAsumTile(bi,bj)+
+     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+      CALL GLOBAL_SUM_TILE_RL( AREAsumTile, AREAsumGlob, myThid )
+      CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
+      ploadbar=PLOADsumGlob/AREAsumGlob
+
+c     WRITE(msgBuf,'(A,1PE21.14)') ' ploadbar= ', ploadbar
+c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c    &                       SQUEEZE_RIGHT, myThid )
+#endif
+
       sIceLoadFac=zeroRL
       IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
 #endif
@@ -132,13 +167,51 @@ c    &                       SQUEEZE_RIGHT, myThid )
        DO bi=myBxLo(myThid),myBxHi(myThid)
             do j = jmin,jmax
               do i =  imin,imax
+C calculte total sea level including inverse barometer (IB) effect if 
+C  there is air pressure forcing
                 m_eta(i,j,bi,bj)=
-     &                 etan(i,j,bi,bj)
+     &                (etan(i,j,bi,bj)
 #ifdef ATMOSPHERIC_LOADING
      &                +sIceLoad(i,j,bi,bj)*sIceLoadFac
 #endif
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+
+C calculte total ocean bottom pressure including air pressure if 
+C  there is any. 
+                m_bp(i,j,bi,bj)=
+     &                (phiHydLow(i,j,bi,bj)
+#ifdef ALLOW_PSBAR_STERIC
+C add back the correction due to the global mean steric ssh change,
+C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
+     &                 +sterGloH * gravity
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+C calculate IB correction m_eta_ib (in m)
+                m_eta_ib(i,j,bi,bj)=
+     &           (ploadbar-pload(i,j,bi,bj))*tmpfac
+     &           * maskC(i,j,1,bi,bj)
+C calculte dynamic sea level for comparison with altimetry data (in m)
+                m_eta_dyn(i,j,bi,bj)=
+     &           (m_eta(i,j,bi,bj) - m_eta_ib(i,j,bi,bj))
+     &           * maskC(i,j,1,bi,bj)
+
+C calculate GRACE-equvivalent ocean bottom pressure (in m2/s2)
+                m_bp_nopabar(i,j,bi,bj)=
+     &                (phiHydLow(i,j,bi,bj)
+#ifdef ALLOW_PSBAR_STERIC
+C add back the correction due to the global mean steric ssh change,
+C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
+     &                 +sterGloH * gravity
+     &                 - ploadbar * recip_rhoConst
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+#endif
 #endif
               enddo
             enddo
@@ -173,6 +246,12 @@ c-- init
       call ecco_zero(trVol,Nr,zeroRL,myThid)
       call ecco_zero(trHeat,Nr,zeroRL,myThid)
       call ecco_zero(trSalt,Nr,zeroRL,myThid)
+      call ecco_zero(trVolW,Nr,zeroRL,myThid)
+      call ecco_zero(trHeatW,Nr,zeroRL,myThid)
+      call ecco_zero(trSaltW,Nr,zeroRL,myThid)
+      call ecco_zero(trVolS,Nr,zeroRL,myThid)
+      call ecco_zero(trHeatS,Nr,zeroRL,myThid)
+      call ecco_zero(trSaltS,Nr,zeroRL,myThid)
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
@@ -265,7 +344,11 @@ c
           tmpmsk2 = 0. _d 0
           if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
             tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-            tmpfld=m_eta(i,j,bi,bj)
+            if (gencost_barfile(kgen)(1:17).EQ.'m_boxmean_eta_dyn') then
+              tmpfld=m_eta_dyn(i,j,bi,bj)
+            else
+              tmpfld=m_eta(i,j,bi,bj)
+            endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
 #ifdef ALLOW_SHELFICE

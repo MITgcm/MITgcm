@@ -45,6 +45,9 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
 c     == routine arguments ==
 
@@ -117,31 +120,49 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
         do j = jmin,jmax
          do i =  imin,imax
 
-         if (gencost_barfile(k)(1:5).EQ.'m_eta') then
-           gencost_modfld(i,j,bi,bj,k) = 
+         if (gencost_barfile(k)(1:5).EQ.'m_eta' .and.
+     &       gencost_barfile(k)(1:9).NE.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
      &      m_eta(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_boxmean') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:9).EQ.'m_horflux') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sst') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      THETA(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sss') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:4).EQ.'m_bp') then
-           gencost_modfld(i,j,bi,bj,k) = 
-     &      (phiHydLow(i,j,bi,bj)
-#ifdef ALLOW_PSBAR_STERIC
-C add back the correction due to the global mean steric ssh change, 
-C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &       + sterGloH * gravity
+C drifter velocity costs at hard-coded vertical level 2 (=15 m for ECCO V4)
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterUE') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_UE(i,j,2,bi,bj)*maskC(i,j,2,bi,bj)
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_VN(i,j,2,bi,bj)*maskC(i,j,2,bi,bj)
+#ifdef ALLOW_SHELFICE
+         elseif (gencost_barfile(k)(1:10).EQ.'m_shifwflx') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      SHIICFFreshWaterFlux(i,j,bi,bj)
+     &      *mask2dSHIICF(i,j,bi,bj)
 #endif
-     &      )*maskC(i,j,1,bi,bj)
-
+         elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
+     &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+         elseif (gencost_barfile(k)(1:9).EQ.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_eta_dyn(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:12).EQ.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp_nopabar(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#endif
+#endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
          elseif (gencost_barfile(k)(1:16).EQ.'m_geothermalflux') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -149,7 +170,7 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 #endif
 #ifdef ALLOW_EXF
          elseif (gencost_barfile(k)(1:9).EQ.'m_ustress') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      zontau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_vstress') then
            gencost_modfld(i,j,bi,bj,k) = 

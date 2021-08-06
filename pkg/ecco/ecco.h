@@ -130,8 +130,17 @@ c                 the current model integration.
 
       common /ecco_r/
      &                    m_eta,m_UE,m_VN,
+     &                    m_bp,
 #ifdef ALLOW_PSBAR_STERIC
      &                    sterGloH,
+#endif
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+     &                    ploadbar,
+     &                    AREAsumGlob, PLOADsumGlob,
+     &                    m_bp_nopabar,
+     &                    m_eta_dyn, m_eta_ib,
+#endif
 #endif
      &                    trVol, trHeat, trSalt,
      &                    VOLsumGlob_0, VOLsumGlob,
@@ -141,8 +150,17 @@ c                 the current model integration.
       _RL frame   (1-olx:snx+olx,1-oly:sny+oly           )
       _RL cosphi  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL m_eta(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL m_bp(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
 #ifdef ALLOW_PSBAR_STERIC
       _RL sterGloH
+#endif
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+      _RL ploadbar, AREAsumGlob, PLOADsumGlob
+      _RL m_bp_nopabar(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL m_eta_dyn(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL m_eta_ib(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+#endif
 #endif
       _RL m_UE (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL m_VN (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -167,7 +185,7 @@ c     =============================
 c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
-      PARAMETER ( NGENCOST=30 )
+      PARAMETER ( NGENCOST=40 )
 
       INTEGER NGENCOST3D
 #ifdef ALLOW_GENCOST3D
@@ -180,7 +198,7 @@ c     =============================
       PARAMETER ( NGENPPROC=10 )
 
       INTEGER N1DDATA
-      PARAMETER ( N1DDATA=300 )
+      PARAMETER ( N1DDATA=500 )
 
 c     empty pre/post-processing :
 c     =========================
