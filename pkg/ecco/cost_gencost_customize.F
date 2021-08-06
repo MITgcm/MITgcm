@@ -146,7 +146,7 @@ C drifter velocity costs at hard-coded vertical level 2 (=15 m for ECCO V4)
 #ifdef ALLOW_SHELFICE
          elseif (gencost_barfile(k)(1:10).EQ.'m_shifwflx') then
            gencost_modfld(i,j,bi,bj,k) =
-     &      SHIICFFreshWaterFlux(i,j,bi,bj)
+     &      shelficeFreshWaterFlux(i,j,bi,bj)
      &      *mask2dSHIICF(i,j,bi,bj)
 #endif
          elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
