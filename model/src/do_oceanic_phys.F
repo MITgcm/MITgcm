@@ -963,7 +963,7 @@ CADJ STORE GGL90TKE(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--     Compute GGL90 mixing coefficients
-        IF (useGGL90) THEN
+        IF ( useGGL90 .AND. Nr.GT.1 ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('GGL90_CALC',myThid)
 #endif

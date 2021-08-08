@@ -16,11 +16,12 @@ C     | SUBROUTINE GGL90_CALC                                    |
 C     | o Compute all GGL90 fields defined in GGL90.h            |
 C     *==========================================================*
 C     | Equation numbers refer to                                |
-C     | Gaspar et al. (1990), JGR 95 (C9), pp 16,179             |
+C     |  Gaspar et al. (1990), JGR 95 (C9), pp 16,179            |
 C     | Some parts of the implementation follow Blanke and       |
-C     | Delecuse (1993), JPO, and OPA code, in particular the    |
-C     | computation of the                                       |
-C     | mixing length = max(min(lk,depth),lkmin)                 |
+C     |  Delecuse (1993), JPO, and OPA code, in particular the   |
+C     |  computation of the                                      |
+C     |  mixing length = max(min(lk,depth),lkmin)                |
+C     | Note: Only call this S/R if Nr > 1 (no use if Nr=1)      |
 C     *==========================================================*
 
 C global parameters updated by ggl90_calc
@@ -157,11 +158,6 @@ CEOP
       p16 = 0.0625 _d 0
 #endif
 
-#ifndef ALLOW_AUTODIFF
-C     For one layer a mixed layer model makes no sense, but we hide the
-C     extra exit point from the AD-source to source translators.
-      IF ( Nr .EQ. 1 ) RETURN
-#endif
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
