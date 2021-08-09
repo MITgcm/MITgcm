@@ -34,8 +34,8 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-#include "tamc.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -43,6 +43,10 @@ C     == routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_GENTIM2D_CONTROL
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
@@ -63,6 +67,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RS dummyRS(1)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -71,8 +76,6 @@ C     == local variables ==
 #endif
       integer bi,bj
       integer i,j,k2
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
       integer ilgen
 CEOP
 
@@ -144,17 +147,17 @@ C--   generic 2D control variables
 
 c-- docycle
 
-        replicated_nrec=endrec
+        replicated_nrec=diffrec
         replicated_ntimes=0
         do k2 = 1, maxCtrlProc
          if (xx_gentim2d_preproc(k2,iarr).EQ.'docycle') then
            if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
-            replicated_nrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+            replicated_nrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
             replicated_ntimes=
-     &       int(float(endrec)/float(replicated_nrec))
-            if (replicated_ntimes*replicated_nrec.LT.endrec)
+     &       int(float(diffrec)/float(replicated_nrec))
+            if (replicated_ntimes*replicated_nrec.LT.diffrec)
      &      replicated_ntimes=replicated_ntimes+1
-            if (replicated_ntimes*replicated_nrec.GT.endrec)
+            if (replicated_ntimes*replicated_nrec.GT.diffrec)
      &      replicated_ntimes=replicated_ntimes-1
            endif
          endif
@@ -162,7 +165,7 @@ c-- docycle
 
         DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
@@ -218,7 +221,7 @@ c       print*,'nyearsINT',nyearsINT,nyearsRL
          call ecco_zero(xx_gen,1,zeroRL,myThid)
 
          do jrec=1,nyearsINT
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
@@ -227,7 +230,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec, 
+           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
      &                       1, myThid )
 #endif
            call ecco_add(xx_gen_tmp,1,xx_gen,1,myThid)
@@ -235,7 +238,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 
          call ecco_div(xx_gen,1,nyearsRL,myThid)
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
@@ -251,7 +254,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 c subtract cyclic average
         DO jrec = 1, replicated_ntimes+1
         DO irec = 1, replicated_nrec
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
         krec=replicated_nrec*(jrec-1)+irec
@@ -286,8 +289,8 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 
 c-- scaling and smoothing
 
-        DO irec = 1, endrec
-#ifdef ALLOW_AUTODIFF
+        DO irec = 1, diffrec
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
 
@@ -308,10 +311,13 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &    .FALSE.,'RL',1,1,1,wgentim2d(1-Olx,1-Oly,1,1,iarr),
      &    dummyRS,jrec,myThid )
 
+C --- Get appropriate mask
+      call ctrl_get_mask2D(xx_gentim2d_file(iarr), mask2D, myThid)
+
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN
-          IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
-          IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
+          IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
+          IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
@@ -319,7 +325,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
-             if ((maskC(i,j,1,bi,bj).NE.0.).AND.
+             if ((mask2D(i,j,bi,bj).NE.0.).AND.
      &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
                IF (doscaling) then
                 xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
@@ -334,7 +340,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          ENDDO
 #endif /* ALLOW_OPENAD */
 
-         CALL CTRL_BOUND_2D(xx_gen,maskC,
+         CALL CTRL_BOUND_2D(xx_gen,mask2D,
      &        xx_gentim2d_bounds(1,iarr),myThid)
 
          CALL EXCH_XY_RL ( xx_gen , myThid )
@@ -360,4 +366,3 @@ c-- end iarr loop
 
       RETURN
       END
-

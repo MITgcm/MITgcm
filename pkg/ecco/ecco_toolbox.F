@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C--  File ecco_toolbox.F: Routines to handle basic operations common in ecco.
 C--   Contents
@@ -1165,6 +1168,7 @@ C     !INTERFACE:
      O                           localweight,
      I                           iRec,
      I                           nnzbar,
+     I                           dosumsq,
      I                           myThid
      &                         )
 
@@ -1192,6 +1196,7 @@ C     iRec:            record number
       INTEGER iRec
       INTEGER myThid
       INTEGER nnzbar
+      LOGICAL dosumsq
 
 #ifdef ALLOW_ECCO
 
@@ -1226,12 +1231,13 @@ CEOP
 c--        Test for missing values.
            if (localweight(i,j,k,bi,bj) .lt. -9900.) then
              localweight(i,j,k,bi,bj) = 0. _d 0
-           endif
 c--        Convert to weight
-           if (localweight(i,j,k,bi,bj) .ne. 0.) then
+           elseif ( localweight(i,j,k,bi,bj).ne.0. .AND. dosumsq ) then
               localweight(i,j,k,bi,bj) =
-     &             1./localweight(i,j,k,bi,bj)/
-     &                localweight(i,j,k,bi,bj)
+     &          oneRL/localweight(i,j,k,bi,bj)/localweight(i,j,k,bi,bj)
+           elseif ( localweight(i,j,k,bi,bj).ne.0. ) then
+              localweight(i,j,k,bi,bj) =
+     &           oneRL/localweight(i,j,k,bi,bj)
            endif
           enddo
          enddo
@@ -1243,4 +1249,3 @@ c--        Convert to weight
 
       RETURN
       END
-

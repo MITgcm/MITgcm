@@ -25,6 +25,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+# include "DYNVARS.h"
+#endif
 c#include "MOM_VISC.h"
 
 C     !INPUT PARAMETERS:
@@ -73,7 +76,7 @@ C     S13   :: Squared of strain component Vxz @ above uVel
 C     S23   :: Squared of strain component Vyz @ above vVel
       INTEGER i, j
       INTEGER kl, n
-      _RL twoThird, tmpFac
+      _RL twoThird, tmpFac, locVisc
       _RL S66(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL S12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL S13(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -117,13 +120,13 @@ C--  ------------------------------------------------------------------
 C     Current level k --> n=1
       kl = k
       n = 1
-      tmpFac = smag3D_coeff*twoRL*SQRT(twoRL)*drF(kl)**twoThird
+      tmpFac = twoRL*SQRT(twoRL)*drF(kl)**twoThird
 
 C     viscAh3d_00 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell center
 
       DO j=1-OLy,sNy+OLy-1
        DO i=1-OLx,sNx+OLx-1
-         viscAh3d_00(i,j,kl) =
+         locVisc =
      &    smag3D_hLsC(i,j,bi,bj)*tmpFac*SQRT(
      &            S66( i , j , n )
      &   +  0.5*( S12( i ,j+1, n )+S12(i+1,j+1, n )
@@ -133,11 +136,16 @@ C     viscAh3d_00 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell center
      &   +  0.5*( S23( i , j , n )+S23( i ,j+1, n )
      &           +S23( i , j ,n+1)+S23( i ,j+1,n+1) )
      &                                      )
+         viscAh3d_00(i,j,kl) = locVisc*smag3D_coeff
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+         smag3D_diffK(i,j,kl,bi,bj) = locVisc*smag3D_diffCoeff
+#endif
        ENDDO
       ENDDO
 
 C     viscAh3d_12 = sqrt( S11+S22+S33+2*(S12+S13+S23) ) @ grid-cell corner
 
+      tmpFac = smag3D_coeff*tmpFac
       DO j=2-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
          viscAh3d_12(i,j,kl) =

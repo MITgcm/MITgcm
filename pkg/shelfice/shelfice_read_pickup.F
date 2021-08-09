@@ -5,7 +5,7 @@ CBOP
 C     !ROUTINE: SHELFICE_READ_PICKUP
 
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_READ_PICKUP( myThid )
+      SUBROUTINE SHELFICE_READ_PICKUP( seqFlag, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Reads current state of SHELFICE from a pickup file
@@ -18,7 +18,13 @@ C     !USES:
 #include "SHELFICE.h"
 
 C     !INPUT PARAMETERS:
-C     myThid      :: my Thread Id number
+C     seqFlag :: flag that indicate where this S/R is called from:
+C             :: =0 called early on, from: ini_masks_etc.F
+C             :: =1 called from INIT_VARIA (i.e. usual place)
+C     myIter  :: my time-step number
+C     myThid  :: my Thread Id number
+      INTEGER seqFlag
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
@@ -47,25 +53,25 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-       IF ( pickupSuff.EQ.' ' ) THEN
+      IF ( pickupSuff.EQ.' ' ) THEN
         IF ( rwSuffixType.EQ.0 ) THEN
           WRITE(fn,'(A,I10.10)') 'pickup_shelfice.', nIter0
         ELSE
           CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
           WRITE(fn,'(A,A)') 'pickup_shelfice.', suff
         ENDIF
-       ELSE
+      ELSE
         WRITE(fn,'(A,A10)')    'pickup_shelfice.', pickupSuff
-       ENDIF
-       fp = precFloat64
+      ENDIF
+      fp = precFloat64
 
-       CALL READ_MFLDS_SET(
+      CALL READ_MFLDS_SET(
      I                      fn,
      O                      nbFields, filePrec,
      I                      Nr, nIter0, myThid )
 
-       _BEGIN_MASTER( myThid )
-       IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
+      _BEGIN_MASTER( myThid )
+      IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
          WRITE(msgBuf,'(2A,I4)') 'SHELFICE_READ_PICKUP: ',
      &    'pickup-file binary precision do not match !'
          CALL PRINT_ERROR( msgBuf, myThid )
@@ -74,10 +80,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL PRINT_ERROR( msgBuf, myThid )
          CALL ALL_PROC_DIE( 0 )
          STOP 'ABNORMAL END: S/R SHELFICE_READ_PICKUP (data-prec Pb)'
-       ENDIF
-       _END_MASTER( myThid )
+      ENDIF
+      _END_MASTER( myThid )
 
-       IF ( nbFields.LE.0 ) THEN
+      IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
         ioUnit = errorMessageUnit
         IF ( pickupStrictlyMatch ) THEN
@@ -115,40 +121,49 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           STOP 'ABNORMAL END: S/R SHELFICE_READ_PICKUP'
          ENDIF
         ENDIF
-       ENDIF
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-       IF ( nbFields.EQ.0 ) THEN
-C---   Old way to read pickup:
+      IF ( nbFields.EQ.0 ) THEN
+C---  Old way to read pickup:
 
-       ELSE
-C---   New way to read SHELFICE pickup:
+      ELSE
+C---  New way to read SHELFICE pickup:
         nj = 0
-C---    read SHELFICE 3-D fields for restart
+C-    read SHELFICE 3-D fields for restart
         nj = nj*Nr
-C---    read STREAMICE 2-D fields for restart
+C-    read SHELFICE 2-D fields for restart
 
-        CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
+        IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping ) THEN
+          CALL READ_MFLDS_3D_RL( 'SHI_mass', shelficeMass,
      &                                 nj, fp, 1 , nIter0, myThid )
+        ENDIF
 
-C--    end: new way to read pickup file
-       ENDIF
+#ifdef ALLOW_SHELFICE_REMESHING
+        IF ( seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
+          CALL READ_MFLDS_LEV_RS( 'R_Shelfi', R_shelfIce,
+     &                            nj, fp, 1, 1, 1, nIter0, myThid )
+        ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
 
-C--    Check for missing fields:
-       nMissing = missFldDim
-       CALL READ_MFLDS_CHECK(
+C--   end: new way to read pickup file
+      ENDIF
+
+C--   Check for missing fields:
+      nMissing = missFldDim
+      CALL READ_MFLDS_CHECK(
      O                     missFldList,
      U                     nMissing,
      I                     nIter0, myThid )
-       IF ( nMissing.GT.missFldDim ) THEN
+      IF ( nMissing.GT.missFldDim ) THEN
          WRITE(msgBuf,'(2A,I4)') 'SHELFICE_READ_PICKUP: ',
      &     'missing fields list has been truncated to', missFldDim
          CALL PRINT_ERROR( msgBuf, myThid )
          CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R SHELFICE_READ_PICKUP (list-size Pb)'
-       ENDIF
-       IF ( nMissing.GE.1 ) THEN
+      ENDIF
+      IF ( nMissing.GE.1 ) THEN
         ioUnit = errorMessageUnit
         DO j=1,nMissing
          WRITE(msgBuf,'(4A)') 'SHELFICE_READ_PICKUP: ',
@@ -157,11 +172,17 @@ C--    Check for missing fields:
         ENDDO
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R SHELFICE_READ_PICKUP'
-       ENDIF
+      ENDIF
 
-C--    Update overlap regions:
-
-        CALL EXCH_XY_RL( shelfIceMass, myThid )
+C--   Update overlap regions:
+      IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping ) THEN
+        CALL EXCH_XY_RL( shelficeMass, myThid )
+      ENDIF
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
+        CALL EXCH_XY_RS( R_shelfIce, myThid )
+      ENDIF
+#endif
 
 #endif /* ALLOW_SHELFICE */
 

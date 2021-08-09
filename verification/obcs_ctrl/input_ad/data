@@ -39,14 +39,14 @@
  endTime=4800.,
  deltaTmom=1200.0,
  deltaTtracer=1200.0,
- dumpInitAndLast=.TRUE.,
  abEps=0.1,
+ dumpInitAndLast=.TRUE.,
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=2628000.0,
-#monitorFreq=432000.,
- monitorFreq=3600.,
- monitorSelect=1,
+ monitorSelect= 1,
+ monitorFreq = 4800.,
+ adjMonitorFreq=3600.,
  &
 # Gridding parameters
  &PARM04

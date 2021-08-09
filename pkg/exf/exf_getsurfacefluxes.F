@@ -63,7 +63,7 @@ c     == routine arguments ==
 c     == global variables ==
 
 #ifdef ALLOW_CTRL
-
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -121,6 +121,12 @@ c     == end of interface ==
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)
      &          +xx_gentim2d(i,j,bi,bj,iarr)
 #endif
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_hflux')
+     &       hflux(i,j,bi,bj)=hflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_sflux')
+     &       sflux(i,j,bi,bj)=sflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
            enddo
          ENDDO
         ENDDO
@@ -132,17 +138,19 @@ c     == end of interface ==
 #if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
 
 #ifdef ALLOW_HFLUX_CONTROL
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_hflux_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
-     &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
+     &     mask2D, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
      &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
      &     whflux, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_SFLUX_CONTROL
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_sflux_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
-     &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
+     &     mask2D, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
      &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
      &     wsflux, mytime, myiter, mythid )
 #endif
@@ -153,17 +161,19 @@ c     == end of interface ==
 #ifndef ALLOW_ROTATE_UV_CONTROLS
 
 #ifdef ALLOW_USTRESS_CONTROL
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_tauu_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     mask2D, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     wtauu, mytime, myiter, mythid )
 #endif
 
 #ifdef ALLOW_VSTRESS_CONTROL
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_tauv_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     mask2D, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 #endif
@@ -171,16 +181,17 @@ c     == end of interface ==
 #else
 
 #if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_VSTRESS_CONTROL))
-
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_tauu_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     maskc, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     mask2D, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     wtauu, mytime, myiter, mythid )
 
-      call ctrl_get_gen ( 
+      CALL CTRL_GET_MASK2D( xx_tauv_file, mask2D, myThid )
+      call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     maskc, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     mask2D, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 
@@ -204,7 +215,7 @@ c     == end of interface ==
         CALL EXCH_UV_XY_RL( tmpUX, tmpVY, .TRUE., myThid )
       ELSE
         CALL EXCH_UV_AGRID_3D_RL( tmpUX, tmpVY, .TRUE., 1, myThid)
-      ENDIF  
+      ENDIF
 
         do bj = mybylo(mythid),mybyhi(mythid)
          do bi = mybxlo(mythid),mybxhi(mythid)

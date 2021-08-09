@@ -79,10 +79,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MOM_VISC.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
@@ -107,7 +106,9 @@ C     !LOCAL VARIABLES:
       _RL shiftAh, shiftA4
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER lockey_1, lockey_2
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, lockey_1, lockey_2
 #endif
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
@@ -138,26 +139,30 @@ C     !LOCAL VARIABLES:
       _RL viscAh_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sqargQG
+#endif
       _RL viscAh_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sqargAh, sqargA4, sqargAhD, sqargA4D, sqargSmag
       LOGICAL calcLeith, calcSmag, calcLeithQG
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
-          lockey_1 = (ikey-1)*Nr + k
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ikey = (act1 + 1) + act2*max1
+     &                  + act3*max1*max2
+     &                  + act4*max1*max2*max3
+      lockey_1 = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :
@@ -237,23 +242,23 @@ c         viscAh_Z(i,j) = viscAhZ
 c         viscA4_D(i,j) = viscA4D
 c         viscA4_Z(i,j) = viscA4Z
 
-          visca4_zsmg(i,j) = 0. _d 0
-          viscah_zsmg(i,j) = 0. _d 0
-
-          viscAh_Dlth(i,j) = 0. _d 0
-          viscA4_Dlth(i,j) = 0. _d 0
-          viscAh_DlthD(i,j)= 0. _d 0
-          viscA4_DlthD(i,j)= 0. _d 0
-          viscAh_DLthQG(i,j)= 0. _d 0
+          viscAh_DLth(i,j) = 0. _d 0
+          viscAh_ZLth(i,j) = 0. _d 0
+          viscA4_DLth(i,j) = 0. _d 0
+          viscA4_ZLth(i,j) = 0. _d 0
+          viscAh_DLthD(i,j)= 0. _d 0
+          viscAh_ZLthD(i,j)= 0. _d 0
+          viscA4_DLthD(i,j)= 0. _d 0
+          viscA4_ZLthD(i,j)= 0. _d 0
+#ifdef ALLOW_LEITH_QG
+          viscAh_DLthQG(i,j) = 0. _d 0
+          viscAh_ZLthQG(i,j) = 0. _d 0
+#endif
 
           viscAh_DSmg(i,j) = 0. _d 0
+          viscAh_ZSmg(i,j) = 0. _d 0
           viscA4_DSmg(i,j) = 0. _d 0
-
-          viscAh_ZLth(i,j) = 0. _d 0
-          viscA4_ZLth(i,j) = 0. _d 0
-          viscAh_ZLthD(i,j)= 0. _d 0
-          viscA4_ZLthD(i,j)= 0. _d 0
-          viscAh_ZLthQG(i,j)= 0. _d 0
+          viscA4_ZSmg(i,j) = 0. _d 0
         ENDDO
        ENDDO
 
@@ -319,7 +324,8 @@ C-       gradient in y direction:
           ENDDO
          ENDDO
 
-        IF (calcLeithQG) THEN
+#ifdef ALLOW_LEITH_QG
+        IF ( calcLeithQG ) THEN
 C      horizontal gradient of vorticity and vortex stretching:
 C        In the case of using QG Leith, we want to add a term
 C        before calculating vector magnitude, so add to the
@@ -366,6 +372,7 @@ C        Average d/dy of stretching onto U-points to match vrtDy
          ENDDO
 C      end if calcLeithQG
         ENDIF
+#endif /* ALLOW_LEITH_QG */
 
 C--   end if calcLeith
        ENDIF
@@ -421,16 +428,39 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_DLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_DLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_DLthd(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_DLthd(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
-          viscAh_DLthQG(i,j) =
-     &     SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
+          sqargAh  = leith2fac*grdVrt+leithD2fac*grdDiv
+          sqargA4  = leith4fac*grdVrt+leithD4fac*grdDiv
+          sqargAhD = leithD2fac*grdDiv
+          sqargA4D = leithD4fac*grdDiv
+#ifdef ALLOW_LEITH_QG
+          sqargQG  = leithQG2fac*(grdVrt+grdDiv)
+#endif
+
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargAh .GT.0. _d 0) sqargAh = SQRT(sqargAh)
+          IF (sqargA4 .GT.0. _d 0) sqargA4 = SQRT(sqargA4)
+          IF (sqargAhD .GT.0. _d 0) sqargAhD = SQRT(sqargAhD)
+          IF (sqargA4D .GT.0. _d 0) sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          IF (sqargQG .GT.0. _d 0) sqargQG = SQRT(sqargQG)
+# endif
+#else /* ALLOW_AUTODIFF */
+          sqargAh = SQRT(sqargAh)
+          sqargA4 = SQRT(sqargA4)
+          sqargAhD = SQRT(sqargAhD)
+          sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          sqargQG = SQRT(sqargQG)
+# endif
+#endif /* ALLOW_AUTODIFF */
+          viscAh_DLth(i,j) = sqargAh  * L3
+          viscA4_DLth(i,j) = sqargA4  * L5
+          viscAh_DLthd(i,j)= sqargAhD * L3
+          viscA4_DLthd(i,j)= sqargA4D * L5
+#ifdef ALLOW_LEITH_QG
+          viscAh_DLthQG(i,j)=sqargQG  * L3
+#endif
 
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by as much as 4X)
@@ -443,25 +473,35 @@ C This approximation is good to the same order as above...
           grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
           grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
 
-          viscAh_Dlth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
-          viscA4_Dlth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
-          viscAh_DlthD(i,j)=((leithD2fac*grdDiv))*L3
-          viscA4_DlthD(i,j)=((leithD4fac*grdDiv))*L5
+          viscAh_DLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          viscA4_DLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
+          viscAh_DLthD(i,j)=((leithD2fac*grdDiv))*L3
+          viscA4_DLthD(i,j)=((leithD4fac*grdDiv))*L5
+#ifdef ALLOW_LEITH_QG
           viscAh_DLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
+#endif
 
          ELSE
-          viscAh_Dlth(i,j)=0. _d 0
-          viscA4_Dlth(i,j)=0. _d 0
-          viscAh_DlthD(i,j)=0. _d 0
-          viscA4_DlthD(i,j)=0. _d 0
+          viscAh_DLth(i,j)=0. _d 0
+          viscA4_DLth(i,j)=0. _d 0
+          viscAh_DLthD(i,j)=0. _d 0
+          viscA4_DLthD(i,j)=0. _d 0
+#ifdef ALLOW_LEITH_QG
           viscAh_DLthQG(i,j)=0. _d 0
+#endif
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_DSmg(i,j)=L2
-     &       *SQRT(tension(i,j)**2
+          sqargSmag = tension(i,j)**2
      &       +0.25 _d 0*(strain(i+1, j )**2+strain( i ,j+1)**2
-     &                  +strain(i  , j )**2+strain(i+1,j+1)**2))
+     &                  +strain(i  , j )**2+strain(i+1,j+1)**2)
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargSmag.GT.0. _d 0) sqargSmag = SQRT(sqargSmag)
+#else
+          sqargSmag = SQRT(sqargSmag)
+#endif
+          viscAh_DSmg(i,j)=L2*sqargSmag
           viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
           viscAh_DSmg(i,j)=smag2fac*viscAh_DSmg(i,j)
          ELSE
@@ -472,13 +512,16 @@ C This approximation is good to the same order as above...
 
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
-     &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)+viscAh_DLthQG(i,j)
+     &         + viscAh_DLth(i,j)+viscAh_DSmg(i,j)
+#ifdef ALLOW_LEITH_QG
+     &         + viscAh_DLthQG(i,j)
+#endif
 #ifdef ALLOW_3D_VISCAH
-     &          +viscAhDfld(i,j,k,bi,bj)
-#ifdef ALLOW_AUTODIFF
+     &         + viscAhDfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
      &          *viscFacAdj
-#endif
-#endif
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_3D_VISCAH */
          viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
          viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -486,13 +529,13 @@ C  Harmonic on Div.u points
 
 C  BiHarmonic on Div.u points
          Alin=viscA4D+viscA4Grid*L4rdt
-     &          +viscA4_DLth(i,j)+viscA4_DSmg(i,j)
+     &         + viscA4_DLth(i,j)+viscA4_DSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
-     &          +viscA4Dfld(i,j,k,bi,bj)
-#ifdef ALLOW_AUTODIFF
+     &         + viscA4Dfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
      &          *viscFacAdj
-#endif
-#endif
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_3D_VISCA4 */
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
@@ -538,16 +581,38 @@ C This is the vector magnitude of grad(div.v) squared
      &                     + (divDy(i-1,j)*divDy(i-1,j)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_ZLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_ZLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_ZLthD(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_ZLthD(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
-          viscAh_ZLthQG(i,j)=
-     &     SQRT(leithQG2fac*(grdVrt + grdDiv))*L3
+          sqargAh  = leith2fac*grdVrt+leithD2fac*grdDiv
+          sqargA4  = leith4fac*grdVrt+leithD4fac*grdDiv
+          sqargAhD = leithD2fac*grdDiv
+          sqargA4D = leithD4fac*grdDiv
+#ifdef ALLOW_LEITH_QG
+          sqargQG  = leithQG2fac*(grdVrt+grdDiv)
+#endif
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargAh .GT.0. _d 0) sqargAh = SQRT(sqargAh)
+          IF (sqargA4 .GT.0. _d 0) sqargA4 = SQRT(sqargA4)
+          IF (sqargAhD .GT.0. _d 0) sqargAhD = SQRT(sqargAhD)
+          IF (sqargA4D .GT.0. _d 0) sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          IF (sqargQG .GT.0. _d 0) sqargQG = SQRT(sqargQG)
+# endif
+#else /* ALLOW_AUTODIFF */
+          sqargAh = SQRT(sqargAh)
+          sqargA4 = SQRT(sqargA4)
+          sqargAhD = SQRT(sqargAhD)
+          sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          sqargQG = SQRT(sqargQG)
+# endif
+#endif /* ALLOW_AUTODIFF */
+          viscAh_ZLth(i,j) = sqargAh  * L3
+          viscA4_ZLth(i,j) = sqargA4  * L5
+          viscAh_ZLthd(i,j)= sqargAhD * L3
+          viscA4_ZLthd(i,j)= sqargA4D * L5
+#ifdef ALLOW_LEITH_QG
+          viscAh_ZLthQG(i,j)=sqargQG  * L3
+#endif
 
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by 4X)
@@ -563,20 +628,30 @@ C but this approximation will work on cube (and differs by 4X)
           viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
           viscAh_ZLthD(i,j)=(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=(leithD4fac*grdDiv)*L5
+#ifdef ALLOW_LEITH_QG
           viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
+#endif
          ELSE
           viscAh_ZLth(i,j)=0. _d 0
           viscA4_ZLth(i,j)=0. _d 0
           viscAh_ZLthD(i,j)=0. _d 0
           viscA4_ZLthD(i,j)=0. _d 0
+#ifdef ALLOW_LEITH_QG
           viscAh_ZLthQG(i,j)=0. _d 0
+#endif
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_ZSmg(i,j)=L2
-     &      *SQRT(strain(i,j)**2
+          sqargSmag = strain(i,j)**2
      &        +0.25 _d 0*(tension( i , j )**2+tension( i ,j-1)**2
-     &                   +tension(i-1, j )**2+tension(i-1,j-1)**2))
+     &                   +tension(i-1, j )**2+tension(i-1,j-1)**2)
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargSmag.GT.0. _d 0) sqargSmag = SQRT(sqargSmag)
+#else
+          sqargSmag = SQRT(sqargSmag)
+#endif
+          viscAh_ZSmg(i,j)=L2*sqargSmag
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
          ENDIF
@@ -584,9 +659,15 @@ C but this approximation will work on cube (and differs by 4X)
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
-     &         +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j) + viscAh_ZLthQG(i,j)
+     &         + viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
+#ifdef ALLOW_LEITH_QG
+     &         + viscAh_ZLthQG(i,j)
+#endif
 #ifdef ALLOW_3D_VISCAH
-     &          +viscAhZfld(i,j,k,bi,bj)
+     &         + viscAhZfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
+     &          *viscFacAdj
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
 #endif
          viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
@@ -595,9 +676,12 @@ C  Harmonic on Zeta points
 
 C  BiHarmonic on Zeta points
          Alin=viscA4Z+viscA4Grid*L4rdt
-     &           +viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
+     &         + viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
-     &          +viscA4Zfld(i,j,k,bi,bj)
+     &         + viscA4Zfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
+     &          *viscFacAdj
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
 #endif
          viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
@@ -688,18 +772,18 @@ c     ENDIF
      &                       k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD',
      &                       k,1,2,bi,bj,myThid)
-
+#ifdef ALLOW_LEITH_QG
        CALL DIAGNOSTICS_FILL(viscAh_DLthQG,'VAHDLTHQ',
      &                       k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscAh_ZLthQG,'VAHZLTHQ',
      &                       k,1,2,bi,bj,myThid)
-
+#endif
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DSmg,'VA4DSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscAh_ZSmg,'VAHZSMAG',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZSmg,'VA4ZSMAG',k,1,2,bi,bj,myThid)
       ENDIF
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

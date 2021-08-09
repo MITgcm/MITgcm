@@ -36,10 +36,6 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 # include "optim.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -75,13 +71,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = 0
-          ikey = (act3 + 1) + act4*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -219,7 +208,7 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine ctrl_map_ini_gen2D(xxFileCur, wFileCur, xxDummyCur,
-     & boundsVec, paramFld2d, maskFld3d, paramSmooth, mythid )
+     & boundsVec, paramFld2d, mask2D, paramSmooth, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_gen2D
@@ -231,7 +220,7 @@ c              - Generetic routine for an individual 2D control term
 c                (to be called from ctrl_map_ini in a loop e.g.)
 c
 c     ==================================================================
-c     SUBROUTINE ctrl_map_ini_gen3D
+c     SUBROUTINE ctrl_map_ini_gen2D
 c     ==================================================================
 
       implicit none
@@ -250,27 +239,22 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 # include "optim.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
       integer mythid
       character*(*) wFileCur,xxFileCur
       _RL boundsVec(5),tmpMax,xxDummyCur
-
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xxFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL paramFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS maskFld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer paramSmooth
 
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -283,19 +267,13 @@ c     == local variables ==
       character*( 80) fnamegeneric
       _RS dummyRS(1)
 
+
 c     == external ==
 
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = 0
-          ikey = (act3 + 1) + act4*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -343,7 +321,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
         do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-      if ( (maskFld3d(i,j,1,bi,bj).NE.0.).AND.
+      if ( (mask2D(i,j,bi,bj).NE.0.).AND.
      & (wFld2d(i,j,bi,bj).GT.0.) ) then
        tmpMax=boundsVec(5)/sqrt(wFld2d(i,j,bi,bj))
       if ( abs(xxFld2d(i,j,bi,bj)).GT.tmpMax ) then
@@ -360,7 +338,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
 
 #ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL2D
-      if (useSMOOTH) call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+      if (useSMOOTH) call smooth2d(xxFld2d,mask2D,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
       CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -384,7 +362,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
 #ifdef ALLOW_SMOOTH
 c apply Weaver And Courtier correlation operator
       if ( paramSmooth.NE.0 .AND. useSMOOTH ) then
-       call smooth_correl2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+       call smooth_correl2d(xxFld2d,mask2D,paramSmooth,mythid)
       endif
 #endif
 
@@ -393,7 +371,7 @@ c apply Weaver And Courtier correlation operator
             do j = jmin,jmax
               do i = imin,imax
 c scale param adjustment
-      if ( (maskFld3d(i,j,1,bi,bj).NE.0.)
+      if ( (mask2D(i,j,bi,bj).NE.0.)
      & .AND. (wFld2d(i,j,bi,bj).GT.0.) ) then
       xxFld2d(i,j,bi,bj)=xxFld2d(i,j,bi,bj)
      & /sqrt( wFld2d(i,j,bi,bj) )
@@ -409,7 +387,7 @@ c scale param adjustment
 
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 
-      CALL CTRL_BOUND_2D(paramFld2d,maskFld3d,boundsVec,myThid)
+      CALL CTRL_BOUND_2D(paramFld2d,mask2D,boundsVec,myThid)
 
       IF ( ctrlSmoothCorrel2D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')

@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_readparms( myThid )
 
@@ -689,6 +692,16 @@ catn add cost global transport using gencost framework
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
+cts moc cost function using gencost framework
+         elseif ( gencost_name(k)(1:3).EQ.'moc' ) then
+           gencost_flag(k)=-5
+           using_gencost(k)=.TRUE.
+           il=ilnblnk(gencost_name(k))
+           WRITE(msgBuf,'(A,i2,2A,L5)') 'gencost k_moc=',
+     &     k,gencost_name(k)(1:il),': ',using_gencost(k)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+
 c pre-specified generic cost terms that create their own barfile
          elseif (
      &        (gencost_name(k).EQ.'siv4-conc').OR.
@@ -709,8 +722,8 @@ c identified three dimensional variables
      &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
      &        (gencost_barfile(k)(1:9).EQ.'m_kapredi').OR.
      &        (gencost_barfile(k)(1:7).EQ.'m_trVol').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trHeat').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trSalt')
+     &        (gencost_barfile(k)(1:8).EQ.'m_trHeat').OR.
+     &        (gencost_barfile(k)(1:8).EQ.'m_trSalt')
      &       )
      &        gencost_is3d(k)=.TRUE.
 
@@ -726,8 +739,9 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3 .or. 
-     &           gencost_flag(k).eq.-4     ) ) then
+     &          (gencost_flag(k).EQ.-3 .or.
+     &           gencost_flag(k).eq.-4 .or.
+     &           gencost_flag(k).eq.-5    ) ) then
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'

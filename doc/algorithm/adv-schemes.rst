@@ -8,6 +8,8 @@ the advected tracer are linear and a function only of the flow, not the
 tracer field it self. We discuss these first since they are most
 commonly used in the field and most familiar.
 
+.. _adv_cent_2ord:
+
 Centered second order advection-diffusion
 -----------------------------------------
 

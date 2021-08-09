@@ -6,7 +6,7 @@ c
 #ifdef AUTODIFF_USE_OLDSTORE_2D
 c
 CADJ STORE etan  = tapelev4, key = ilev_4
-CADJ STORE surfaceforcingTice = tapelev4, key = ilev_4
+#ifndef EXCLUDE_FFIELDS_LOAD
 CADJ STORE taux0 = tapelev4, key = ilev_4
 CADJ STORE taux1 = tapelev4, key = ilev_4
 CADJ STORE tauy0 = tapelev4, key = ilev_4
@@ -21,14 +21,19 @@ CADJ STORE sss0 = tapelev4, key = ilev_4
 CADJ STORE sss1 = tapelev4, key = ilev_4
 CADJ STORE saltflux0 = tapelev4, key = ilev_4
 CADJ STORE saltflux1 = tapelev4, key = ilev_4
-#ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE qsw0 = tapelev4, key = ilev_4
 CADJ STORE qsw1 = tapelev4, key = ilev_4
-#endif
-#ifdef ATMOSPHERIC_LOADING
+# endif
+# ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothFlux0 = tapelev4, key = ilev_4
+CADJ STORE geothFlux1 = tapelev4, key = ilev_4
+# endif
+# ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0 = tapelev4, key = ilev_4
 CADJ STORE pload1 = tapelev4, key = ilev_4
-#endif
+# endif
+#endif /* ndef EXCLUDE_FFIELDS_LOAD */
 #ifdef EXACT_CONSERV
 CADJ STORE etaH = tapelev4, key = ilev_4
 CADJ STORE dEtaHdt = tapelev4, key = ilev_4
@@ -93,12 +98,8 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev4, key = ilev_4
 # endif
 
-# ifdef ALLOW_CG2D_NSA
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     tapelev4, key = ilev_4
-CADJ STORE pc, ps, pw =
-CADJ &     tapelev4, key = ilev_4
-# endif
+CADJ STORE aW2d, aS2d, aC2d = tapelev4, key = ilev_4
+CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 
 #endif /* NONLIN_FRSURF */
 
@@ -157,10 +158,6 @@ CADJ &     tapelev4, key = ilev_4
 #ifdef ALLOW_OFFLINE
 # include "offline_ad_check_lev4_dir.h"
 #endif /* ALLOW_OFFLINE */
-
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev4_dir.h"
-#endif
 
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev4_dir.h"

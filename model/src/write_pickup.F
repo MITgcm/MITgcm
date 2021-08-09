@@ -23,13 +23,11 @@ C     !USES:
 #include "PARAMS.h"
 #include "RESTART.h"
 #include "DYNVARS.h"
+#include "NH_VARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
-#endif
-#ifdef ALLOW_NONHYDROSTATIC
-# include "NH_VARS.h"
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
@@ -133,6 +131,7 @@ C---  write State 3-D fields for restart
         IF (j.LE.listDim) wrFldList(j) = 'Salt    '
 C---  write 3-D fields for AB-restart
 #ifdef ALLOW_ADAMSBASHFORTH_3
+
         m1 = 1 + MOD(myIter+1,2)
         m2 = 1 + MOD( myIter ,2)
       IF ( momStepping ) THEN
@@ -222,7 +221,26 @@ C--   W velocity:
        ENDIF
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_QHYD_STAGGER_TS
+C--   Quasi-Hydrostatic Adams-Bashforth variables:
+      IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, Nr, QHydGwNm(1-OLx,1-OLy,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'QH_GwNm1'
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, Nr, QHydGwNm(1-OLx,1-OLy,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'QH_GwNm2'
+       ENDIF
+      ENDIF
+#endif /* ALLOW_QHYD_STAGGER_TS */
+
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
+
        IF ( momStepping ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm1,  -j, myIter, myThid )
@@ -254,6 +272,15 @@ C--   W velocity:
         IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_QHYD_STAGGER_TS
+C--   Quasi-Hydrostatic Adams-Bashforth variables:
+      IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn,fp, Nr, QHydGwNm, -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'QH_GwNm1'
+      ENDIF
+#endif /* ALLOW_QHYD_STAGGER_TS */
+
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
 C-    write Full Pressure for EOS in pressure:
@@ -269,6 +296,17 @@ C-    write Full Pressure for EOS in pressure:
         IF (j.LE.listDim) wrFldList(j) = 'Phi_NHyd'
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C-    With synchronous time-stepping, Smag-3D diffusivity is lagging by 1 time-step
+C     (i.e., used before being updated meaning field is from previous time-step calc)
+C     --> needs to be stored in pickup file
+       IF ( smag3D_diffCoeff.GT.zeroRL .AND. .NOT.staggerTimeStep ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, smag3D_diffK,
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SmagDiff'
+       ENDIF
+#endif /* ALLOW_SMAG_3D_DIFFUSIVITY */
 #ifdef ALLOW_ADDFLUID
 C-    write mass source/sink of fluid (but not needed if selectAddFluid=-1)
        IF ( selectAddFluid.NE.0 ) THEN

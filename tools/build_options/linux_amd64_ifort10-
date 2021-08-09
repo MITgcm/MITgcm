@@ -1,0 +1,125 @@
+#!/bin/bash
+#
+#  Build options for version 10 and older of intel compiler on Linux AMD64 platform
+#
+# Composed and tested by ce107 on ross/weddell (Opteron system)
+# Should work fine on EM64T and other AMD64 compatible Intel systems
+# a) Processor specific flags:
+#    1) for more speed on Core2 processors replace -xW with -xT
+#    2) for more speed on Pentium4 based EM64T processors replaces -xW with -xP
+# b) For more speed, provided your data size doesn't exceed 2GB you can
+# remove -fPIC which carries a performance penalty of 2-6%.
+# c) Provided that the libraries you link to are compiled with -fPIC this
+# optfile should work.
+# d) You can replace -fPIC with -mcmodel=medium which may perform faster
+# than -fPIC and still support data sizes over 2GB per process but all
+# the libraries you link to must be compiled with -fPIC or -mcmodel=medium
+# e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
+# impact appears to be minimal.
+#
+# MPI : DON'T FORGET to set environment variable MPI_INC_DIR to the include
+#       directory of your MPI implementation
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#  NOTE: with MPI+OpenMP, need to set KMP_STACKSIZE in ~/.tcshrc (but curiously,
+#        works without OMP_NUM_THREADS in ~/.tcshrc).
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=mpicc
+  FC=mpif77
+  F90C=mpif90
+  LINK="$F90C -i-dynamic -no-ipo"
+else
+  CC=icc
+  FC=ifort
+  F90C=ifort
+  LINK="$F90C -i-dynamic -no-ipo"
+fi
+
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
+FFLAGS="$FFLAGS -fPIC"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-O2 -align -xW -ip'
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    # "-mp" is for ieee "maintain precision"
+    FOPTIM='-O0 -noalign -xW -ip -mp'
+  else                          #- development/check options:
+    FFLAGS="$FFLAGS -warn all -warn nounused"
+    FOPTIM="-fpe0 -fpstkchk -fpmodel except -check all -ftrapuv"
+    FOPTIM="$FOPTIM -O0 -noalign -g -traceback"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0 -ip -fPIC'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIRS="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIRS="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIRS="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIRS="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDEDIRS='/usr/include/netcdf-3'
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf'
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf/include'
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDEDIRS='/usr/local/include'
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi

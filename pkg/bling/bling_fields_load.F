@@ -280,7 +280,7 @@ C     Atmospheric carbon dioxide concentration
      I     apco2StartTime, apco2period, apco2RepCycle,
      I     exf_inscal_apco2,
      I     apco2_exfremo_intercept, apco2_exfremo_slope,
-     U     atm_pco2, apco20, apco21,
+     U     apco2, apco20, apco21,
 # ifdef USE_EXF_INTERPOLATION
      I     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
      I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,

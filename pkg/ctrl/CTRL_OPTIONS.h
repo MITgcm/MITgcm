@@ -26,12 +26,18 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+#undef ECCO_CTRL_DEPRECATED
+
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
 #undef ALLOW_THETA0_CONTROL
 #undef ALLOW_SALT0_CONTROL
+#undef ALLOW_UVEL0_CONTROL
+#undef ALLOW_VVEL0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL

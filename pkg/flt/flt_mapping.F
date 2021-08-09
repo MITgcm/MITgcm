@@ -115,9 +115,7 @@ C     == routine arguments ==
 C     == local variables ==
       _RL ddx, ddy
       INTEGER i, j
-#ifdef DEVEL_FLT_EXCH2
       _RL xx_ij,xx_ip1j,xx_ijp1,xx_ip1jp1
-#endif
 
 C     == end of interface ==
 
@@ -150,7 +148,6 @@ C       bilinear interpolation within grid cell (should use arcs instead?)
      &                 + ddx*ddy*( yG(i+1,j+1,bi,bj) - yG(i+1,j,bi,bj)
      &                           - yG(i,j+1,bi,bj) + yG(i,j,bi,bj) )
 
-#ifdef DEVEL_FLT_EXCH2
         xx_ij=xG(i,j,bi,bj)
         xx_ip1j=xG(i+1,j,bi,bj)
         xx_ijp1=xG(i,j+1,bi,bj)
@@ -164,7 +161,6 @@ C       bilinear interpolation within grid cell (should use arcs instead?)
         xx = xx_ij + ddx*( xx_ip1j - xx_ij )
      &             + ddy*( xx_ijp1 - xx_ij )
      &         + ddx*ddy*( xx_ip1jp1 - xx_ip1j - xx_ijp1 + xx_ij )
-#endif
 
       ELSE
         STOP 'FLT_MAP_IJLOCAL2XY: not yet coded for this grid'

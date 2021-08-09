@@ -50,9 +50,8 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -97,6 +96,11 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER i, j, it2d
       INTEGER actualIts
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2
+      INTEGER max1
+      INTEGER icg2dkey, ikey
+#endif
       _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
       _RL    eta_qrN, eta_qrNtile(nSx,nSy)
@@ -127,10 +131,10 @@ CEOP
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = myThid - 1
-          max1 = nTx*nTy
-          act2 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
+      act1 = myThid - 1
+      max1 = nTx*nTy
+      act2 = ikey_dynamics - 1
+      ikey = (act1 + 1) + act2*max1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise auxiliary constant, some output variable and inverter

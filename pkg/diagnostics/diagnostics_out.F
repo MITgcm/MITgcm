@@ -125,23 +125,23 @@ c       timeRec(1) = myTime - freq(listId)
 C     a) find the time of the previous multiple of output freq:
         timeRec(1) = myTime-deltaTClock*0.5 _d 0
         timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
-        i = INT( timeRec(1) )
-        IF ( timeRec(1).LT.0. ) THEN
-          tmpLoc = FLOAT(i)
-          IF ( timeRec(1).NE.tmpLoc ) i = i - 1
+        tmpLoc     = DINT( timeRec(1) )
+        IF ( timeRec(1).LT.zeroRL ) THEN
+          IF ( timeRec(1).NE.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
         ENDIF
-        timeRec(1) = phase(listId) + freq(listId)*FLOAT(i)
-c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
+        timeRec(1) = phase(listId) + freq(listId)*tmpLoc
+c       WRITE(0,'(3I5,A,2F17.4)') myProcId, myThid, listId,
+c    &                     ' f ', tmpLoc, timeRec(1)/deltaTClock
         timeRec(1) = MAX( timeRec(1), startTime )
 
 C     b) round off to nearest multiple of time-step:
         timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
-        i = NINT( timeRec(1) )
+        tmpLoc = DNINT( timeRec(1) )
 C     if just half way, NINT will return the next time-step: correct this
-        tmpLoc = FLOAT(i) - 0.5 _d 0
-        IF ( timeRec(1).EQ.tmpLoc ) i = i - 1
-        timeRec(1) = baseTime + deltaTClock*FLOAT(i)
-c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
+        IF ( (timeRec(1)+halfRL).EQ.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
+        timeRec(1) = baseTime + deltaTClock*tmpLoc
+c       WRITE(0,'(3I5,A,2F17.4)') myProcId, myThid, listId,
+c    &                     '   ', tmpLoc, timeRec(1)/deltaTClock
       ENDIF
 C--   Convert time to iteration number (debug)
 c     DO i=1,nTimRec

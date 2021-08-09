@@ -45,7 +45,7 @@ C       ta  = total alkalinity (eq/m^3)
 C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
+C       s   = salinity (g/kg)
         INTEGER donewt
         INTEGER inewtonmax
         INTEGER ibrackmax
@@ -359,7 +359,7 @@ C       ta  = total alkalinity (eq/m^3)
 C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
+C       s   = salinity (g/kg)
         _RL  t, s, pt, sit, ta
         _RL  pCO2surfloc, diclocal, pHlocal
         _RL  fflocal, btlocal, stlocal, ftlocal
@@ -504,7 +504,7 @@ C       ta  = total alkalinity (eq/m^3)
 C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
+C       s   = salinity (g/kg)
 C OUTPUT
 C IMPORTANT: Some words about units - (JCO, 4/4/1999)
 C     - Models carry tracers in mol/m^3 (on a per volume basis)
@@ -793,7 +793,7 @@ C       ta  = total alkalinity (eq/m^3)
 C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
+C       s   = salinity (g/kg)
 C OUTPUT
 C IMPORTANT: Some words about units - (JCO, 4/4/1999)
 C     - Models carry tracers in mol/m^3 (on a per volume basis)

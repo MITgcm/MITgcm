@@ -1,4 +1,3 @@
-
 .. _sec_global_oce_latlon:
 
 Global Ocean Simulation
@@ -329,7 +328,7 @@ the model domain.
        :alt: restoring sss field
        :name: fig_sim_config_sclim
 
-       Annual mean of relaxation salinity (psu)
+       Annual mean of relaxation salinity (g/kg)
 
   .. figure:: figs/tx.png
        :width: 90%

@@ -49,7 +49,6 @@ C     == Global variables ==
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==
@@ -108,7 +107,9 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL cDrag   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -128,6 +129,8 @@ C     xxxFac :: On-off tracer parameters used for switching terms off.
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
 #ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
       INTEGER imomkey
 #endif
 
@@ -146,20 +149,19 @@ C--   (at least in part)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = k - 1
-          max0 = Nr
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          imomkey = (act0 + 1)
-     &                    + act1*max0
-     &                    + act2*max0*max1
-     &                    + act3*max0*max1*max2
-     &                    + act4*max0*max1*max2*max3
+      act0 = k - 1
+      max0 = Nr
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      imomkey = (act0 + 1) + act1*max0
+     &                     + act2*max0*max1
+     &                     + act3*max0*max1*max2
+     &                     + act4*max0*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock)
@@ -210,7 +212,9 @@ c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
         stretching(i,j) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
         Nsquare(i,j) = 0. _d 0
+#endif
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
@@ -388,9 +392,11 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
      I            hDiv, vort3BC, tension, strainBC, stretching,
      I            KE, hfacZ, myThid )
-       ENDIF
-
 #ifdef ALLOW_AUTODIFF_TAMC
+# ifndef AUTODIFF_ALLOW_VISCFACADJ
+C     These store directive must not be here, if you want to recompute
+C     these viscosity coefficients with a modified viscFacAdj = viscFacInAd
+C     because the store directives intentionally prevent the recomputation.
 CADJ STORE viscAh_Z(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 CADJ STORE viscAh_D(:,:) =
@@ -399,14 +405,12 @@ CADJ STORE viscA4_Z(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 CADJ STORE viscA4_D(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-#endif
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_AUTODIFF_TAMC */
+       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hDiv(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE hFacZ(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
 
@@ -415,12 +419,6 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      I                      myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE del2u(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE del2v(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-#endif
          CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
          CALL MOM_CALC_RELVORT3(bi,bj,k,
      &                          del2u,del2v,hFacZ,zStar,myThid)
@@ -532,18 +530,20 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
-       IF ( useShelfIce ) THEN
+       IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL SHELFICE_U_DRAG( bi, bj, k,
-     I                uFld, vFld, KE, kappaRU,
-     O                vF,
-     I                myThid )
+        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRU, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
-          guDiss(i,j) = guDiss(i,j) + vF(i,j)
+           gUdiss(i,j) = gUdiss(i,j)
+     &                 - cDrag(i,j)*uFld(i,j)
+     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
          ENDDO
         ENDDO
        ENDIF
@@ -621,18 +621,20 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
-       IF ( useShelfIce ) THEN
+       IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL SHELFICE_V_DRAG( bi, bj, k,
-     I                uFld, vFld, KE, kappaRV,
-     O                vF,
-     I                myThid )
+        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRV, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+           gvDiss(i,j) = gvDiss(i,j)
+     &                 - cDrag(i,j)*vFld(i,j)
+     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
          ENDDO
         ENDDO
        ENDIF

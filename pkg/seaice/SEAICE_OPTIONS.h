@@ -115,6 +115,16 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # define SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
+C     allow the use of the Mohr Coulomb rheology (runtime flag SEAICEuseMCS)
+C     as defined in (Ip 1991) /!\ This is known to give unstable results,
+C     use with caution
+# undef SEAICE_ALLOW_MCS
+C     allow the use of Mohr Coulomb with elliptical plastic potential
+C     (runtime flag SEAICEuseMCE)
+# undef SEAICE_ALLOW_MCE
+C     allow the teardrop and parabolic lens  rheology
+C     (runtime flag SEAICEuseTD and SEAICEusePL)
+# undef SEAICE_ALLOW_TEARDROP
 C     Use LSR vector code; not useful on non-vector machines, because it
 C     slows down convergence considerably, but the extra iterations are
 C     more than made up by the much faster code on vector machines. For
@@ -158,9 +168,9 @@ C     the ocean at the end of seaice_growth in a conservative manner.
 C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
 
-C--   Enable the adjointable sea-ice thermodynamic model
-C     uses seaice_growth_adx.F and seaice_solve4temp_adx.F
-#undef ALLOW_SEAICE_GROWTH_ADX
+C--   Use the adjointable sea-ice thermodynamic model
+C     in seaice_growth_adx.F instead of seaice_growth.F
+#undef SEAICE_USE_GROWTH_ADX
 
 C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT

@@ -9,6 +9,9 @@
  useSmag3D = .TRUE.,
 #- to recover results with missing scaling:
  smag3D_coeff=8.838834764831845E-4,
+#- to use Smag3D diffusivity, set non-dimensional Smag3D diffusion
+#  coeff: smag3D_diffCoeff (default = 0 --> unused) as shown below:
+# smag3D_diffCoeff= 1.E-4,
  viscAh=1.E-5,
  viscAz=1.E-5,
  no_slip_sides=.FALSE.,

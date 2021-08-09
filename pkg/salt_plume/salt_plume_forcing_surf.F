@@ -58,7 +58,7 @@ C     ks                   :: surface level index
      &   *theta(i,j,1,bi,bj)*rhoConst
      &   *HeatCapacity_Cp
 
-Cunits: surfaceForcingT [Kelvin.m/s], surfaceForcingS [psu.m/s]
+Cunits: surfaceForcingT [Kelvin.m/s], surfaceForcingS [g/kg.m/s]
 C SPforcS1 has same unit as saltPlumeFlux [g/m2/s]=[g/kg kg/m2/s]
 C SPforcT1: [W/m2]
         surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)

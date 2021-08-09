@@ -1,3 +1,4 @@
+.. _sec_global_oce_in_p_coor:
 
 Global Ocean Simulation in Pressure Coordinates
 ===============================================
@@ -263,7 +264,7 @@ shows the depth contours of the model domain.
        :alt: restoring sss field
        :name: fig_sim_config_sclim_pcoord
 
-       Annual mean of relaxation salinity (psu)
+       Annual mean of relaxation salinity (g/kg)
 
   .. figure:: ../global_oce_latlon/figs/tx.png
        :width: 90%

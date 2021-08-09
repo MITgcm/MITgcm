@@ -53,6 +53,10 @@ C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
+C o Include/exclude sound speed calculation code
+C o (Note that this is a diagnostic from Del Grasso algorithm, not derived from EOS)
+#undef INCLUDE_SOUNDSPEED_CALC_CODE
+
 C-- Vertical mixing code options:
 
 C o Include/exclude call to S/R CONVECT
@@ -73,6 +77,10 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #undef EXCLUDE_PCELL_MIX_CODE
 
+C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
+C   for tracers (after scaling by constant Prandtl number)
+#undef ALLOW_SMAG_3D_DIFFUSIVITY
+
 C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
@@ -83,6 +91,9 @@ C o Include/exclude Implicit vertical advection code
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
+
+C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
+#undef ALLOW_QHYD_STAGGER_TS
 
 C-- Model formulation options:
 
@@ -148,10 +159,6 @@ C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
-
-C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
-C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
-#undef OLD_THSICE_CALL_SEQUENCE
 
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
 #undef USE_OLD_EXTERNAL_FORCING

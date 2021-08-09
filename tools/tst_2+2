@@ -106,7 +106,7 @@ if test $flag = 'NC' -o $flag = 'All' ; then Multi=1 ; else Multi=0 ; fi
 if test "x$cmdEXE" = x
 then
   if [ $mpi -ge 1 ] ; then
-    cmdEXE="mpirun -machinefile ../../mf -v -np 2 $gcmEXE"
+    cmdEXE="mpirun -machinefile ../../mf -np 2 $gcmEXE"
   else
     cmdEXE=$gcmEXE
   fi
@@ -170,9 +170,11 @@ done
 if [ $prt -ge 2 ] ; then echo ' ' ; fi
 # add nIter0 & nTimeSteps in namelist "PARM03":
 Dbl=`expr $Nit \* 2`
-sed "/^ *\&PARM03/a \ nTimeSteps=$Dbl," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nTimeSteps=$Dbl," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
-sed "/^ *\&PARM03/a \ nIter0=$iter," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nIter0=$iter," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
 echo "prepare file 'data.tst' : done"
 if  [ $prt -ge 1 ] ; then

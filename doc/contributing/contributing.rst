@@ -645,7 +645,7 @@ different parameters and input files, with a primary input set-up (e.g., ``input
 results (e.g., ``results/output.txt`` or ``results/output_adm.txt``)  and with one or several secondary inputs
 (e.g., ``input.«OTHER»/`` or ``input_ad.«OTHER»/``) and corresponding results (e.g., ``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``).
 
-directory TESTDIR/code/
+directory «TESTDIR»/code/
    Contains the test-experiment specific source code (i.e., files that have been modified from the standard
    MITgcm repository version) used to build the MITgcm executable (``mitgcmuv``)
    for forward-test (using ``genmake2 -mods=../code``).
@@ -660,7 +660,7 @@ directory TESTDIR/code/
    (see :numref:`testreport_utility`, ``testreport -MPI``); then it is
    linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable.
 
-directory TESTDIR/code_ad/
+directory «TESTDIR»/code_ad/
    Contains  the  test-experiment  specific  source  code  used  to  build  the  MITgcm  executable  (``mitgcmuv_ad``)  for
    adjoint-test  (using ``genmake2 -mods=../code_ad``).  It  can  also  contain  specific  source  files  with  the  suffix
    ``_mpi`` (see above).
@@ -683,11 +683,11 @@ directory TESTDIR/input/
    :filelink:`testreport <verification/testreport>` runs this script in
    directory ``TESTDIR/run/`` after linking all the input files from ``TESTDIR/input/``.
 
-directory TESTDIR/input_ad/
+directory «TESTDIR»/input_ad/
    Contains the input and parameter files used to run the primary adjoint test of this test-experiment. It can also
    contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` as described above.
 
-directory TESTDIR/input.«OTHER»/
+directory «TESTDIR»/input.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER forward test of this test-experiment.
     It can also contain specific parameter files with suffix ``.mpi`` or ``.mth`` and shell script
     ``prepare_run`` (see above).
@@ -695,7 +695,7 @@ directory TESTDIR/input.«OTHER»/
     The presence or absence the file ``eedata.mth`` determines whether or not a secondary multi-threaded test on this
     test-experiment is performed or skipped.
 
-directory TESTDIR/input_ad.«OTHER»/
+directory «TESTDIR»/input_ad.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER adjoint test of this test-experiment. It
     can also contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` (see above).
 
@@ -710,7 +710,7 @@ directory «TESTDIR»/results/
   is testing or skipping this test-experiment. Reference standard output for secondary tests
   (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
 
-directory TESTDIR/run/
+directory «TESTDIR»/run/
     Initially empty directory where :filelink:`testreport <verification/testreport>`
     will run the MITgcm executable for primary forward and adjoint tests.
 
@@ -726,7 +726,7 @@ directory TESTDIR/run/
 
     The sequence for an adjoint test is similar, with ``../input_ad/`` replacing ``../input/``.
 
-directory TESTDIR/tr_run.«OTHER»/
+directory «TESTDIR»/tr_run.«OTHER»/
     Directory created by :filelink:`testreport <verification/testreport>`
     to run the MITgcm executable for secondary "OTHER" forward or adjoint tests.
 
@@ -1094,6 +1094,7 @@ requiring an html format build, or downloaded as a pdf file.
 When you have completed your documentation edits, you should double
 check both versions are to your satisfaction, particularly noting that
 figure sizing and placement may be rendered differently in the pdf build.
+See :ref:`building_the_manual` for detail.
 
 Section headings
 ----------------
@@ -1403,15 +1404,22 @@ The backslash removes the space between the unit and the exponent. Similarly, fo
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
 
+Line length: as recommended in the
+`sphinx style guide <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#line-length>`_,
+lines of raw rst text should be kept to fewer than 80 characters (this
+restriction does not apply to tables, URLs, etc. where a line break might
+cause difficulty).
+
 - Todo: determine how to break up sections into smaller files
 
-- discuss | lines
+.. _building_the_manual:
 
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
-To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
+Once you've made your changes to the manual, you should build it locally to
+verify that it works as expected.  To do this you will need a working python
+installation with the following packages installed:
 
  - sphinx
  - sphinxcontrib-bibtex
@@ -1419,11 +1427,42 @@ To do this you will need a working python installation with the following module
  - sphinx_rtd_theme
  - numpy
 
-Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
+These packages can be installed from the Python Package Index using pip. If you
+have an existing python installation using `Anaconda
+<https://www.anaconda.com/>`_ or one of its variants (e.g., `miniconda
+<https://docs.conda.io/en/latest/miniconda.html>`_), we recommend that you can
+create (and use) a clean environment with the required packages like this:
 
-To build the pdf version of the manual you will also need a working version of LaTeX that includes
-`several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
-not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
+::
+
+   cd MITgcm
+   conda create --name mitgcm_build_the_docs --channel conda-forge --file doc/requirements.txt
+   conda activate mitgcm_build_the_docs
+   [...] # do the work
+   conda deactivate
+
+If you don't yet have a python installation on your computer, we recommend
+following the `Anaconda installation procedure
+<https://www.anaconda.com/products/individual#Downloads>`_, then following the
+recipe above.  You do not need to learn python to build the manual; just note
+you should type ``conda activate mitgcm_build_the_docs`` in a shell when
+starting up a manual editing session, and ``conda deactivate`` when you finish
+(also note you only need to perform the ``conda create ...`` step above when
+you **initially** follow the recipe). This will maintain a clean, separate
+python `virtual environment
+<https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_
+for manual compilation and won't interfere with your python setup should you
+decide to learn python in the future.
+
+Once these modules are installed you can build the html version of the manual
+by running ``make html`` in the ``doc`` directory.
+
+To build the pdf version of the manual you will also need a working version of
+LaTeX that includes `several packages
+<http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_
+that are not always found in minimal LaTeX installations. The command to build
+the pdf version is ``make latexpdf``, which should also be run in the ``doc``
+directory.
 
 .. _sec_pullreq:
 

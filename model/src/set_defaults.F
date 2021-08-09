@@ -101,6 +101,7 @@ C--   Set default "physical" parameters
       nh_Am2              = 1. _d 0
       gravity             = 9.81 _d 0
       gBaro               = UNSET_RL
+      surf_pRef           = 101325. _d 0
       rhoNil              = 999.8 _d 0
       rhoConst            = UNSET_RL
 C-- jmc : the default is to set rhoConstFresh to rhoConst (=rhoNil by default)
@@ -117,6 +118,7 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
 C-    viscosity and diffusivity default value:
       viscAh              = 0. _d 3
       smag3D_coeff        = 1. _d -2
+      smag3D_diffCoeff    = 0. _d 0
       viscAhGrid          = 0. _d 0
       viscAhGridMin       = 0. _d 0
       viscAhGridMax       = 1. _d 21

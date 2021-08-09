@@ -20,3 +20,20 @@
  cost_iprec  = 32,
  cost_yftype = 'RL',
  &
+
+ &ECCO_GENCOST_NML
+ gencost_avgperiod(1)  = 'month',
+ gencost_barfile(1) = 'm_theta',
+ gencost_datafile(1) = 'FinalThetaObs.bin',
+ gencost_errfile(1) = 'errorTtot.err',
+ gencost_name(1) = 'theta',
+ gencost_is3d(1) = .TRUE.,
+ gencost_preproc(1,1) = 'clim',
+ gencost_preproc_i(1,1)=12,
+ gencost_spmin(1) = -1.8,
+ gencost_spmax(1) = 40.,
+ gencost_spzero(1) = 0.,
+# this is default
+ gencost_outputlevel(1)=0,
+ mult_gencost(1) = 1.,
+ &

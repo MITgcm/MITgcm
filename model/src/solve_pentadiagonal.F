@@ -308,82 +308,89 @@ CADJ loop = sequential
       DO k=1,Nr
 C--   Forward sweep (starting from top)
 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-
-          IF (k.EQ.1) THEN
+       IF ( k .EQ. 1 ) THEN
 C-    just copy terms
-           c5d_prime(i,j,k) = c5d(i,j,k)
-           d5d_prime(i,j,k) = d5d(i,j,k)
-           e5d_prime(i,j,k) = e5d(i,j,k)
-           y5d_prime(i,j,k) = y5d_m1(i,j,k)
-          ELSEIF (k.EQ.2) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          c5d_prime(i,j,k) = c5d(i,j,k)
+          d5d_prime(i,j,k) = d5d(i,j,k)
+          e5d_prime(i,j,k) = e5d(i,j,k)
+          y5d_prime(i,j,k) = y5d_m1(i,j,k)
+         ENDDO
+        ENDDO
+       ELSEIF ( k .EQ. 2 ) THEN
 C-    subtract one term
-           c5d_prime(i,j,k) = c5d(i,j,k)
-     &      -b5d(i,j,k)*d5d_prime(i,j,k-1)
-           d5d_prime(i,j,k) = d5d(i,j,k)
-     &      -b5d(i,j,k)*e5d_prime(i,j,k-1)
-           e5d_prime(i,j,k) = e5d(i,j,k)
-           y5d_prime(i,j,k) = y5d_m1(i,j,k)
-     &      -b5d(i,j,k)*y5d_prime(i,j,k-1)
-          ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          tmpVar = b5d(i,j,k)
+          c5d_prime(i,j,k) = c5d(i,j,k)    - tmpVar*d5d_prime(i,j,k-1)
+          d5d_prime(i,j,k) = d5d(i,j,k)    - tmpVar*e5d_prime(i,j,k-1)
+          e5d_prime(i,j,k) = e5d(i,j,k)
+          y5d_prime(i,j,k) = y5d_m1(i,j,k) - tmpVar*y5d_prime(i,j,k-1)
+         ENDDO
+        ENDDO
+       ELSE
 C-    subtract two terms
-           c5d_prime(i,j,k) = c5d(i,j,k)
-     &      -a5d(i,j,k)*e5d_prime(i,j,k-2)
-     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(i,j,k-2))
-     &      *d5d_prime(i,j,k-1)
-           d5d_prime(i,j,k) = d5d(i,j,k)
-     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(i,j,k-2))
-     &      *e5d_prime(i,j,k-1)
-           e5d_prime(i,j,k) = e5d(i,j,k)
-           y5d_prime(i,j,k) = y5d_m1(i,j,k)
-     &      -a5d(i,j,k)*y5d_prime(i,j,k-2)
-     &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(i,j,k-2))
-     &      *y5d_prime(i,j,k-1)
-          ENDIF
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          tmpVar = b5d(i,j,k)-a5d(i,j,k)*d5d_prime(i,j,k-2)
+          c5d_prime(i,j,k) = c5d(i,j,k)    - tmpVar*d5d_prime(i,j,k-1)
+     &         -a5d(i,j,k)*e5d_prime(i,j,k-2)
+          d5d_prime(i,j,k) = d5d(i,j,k)    - tmpVar*e5d_prime(i,j,k-1)
+          e5d_prime(i,j,k) = e5d(i,j,k)
+          y5d_prime(i,j,k) = y5d_m1(i,j,k) - tmpVar*y5d_prime(i,j,k-1)
+     &         -a5d(i,j,k)*y5d_prime(i,j,k-2)
+         ENDDO
+        ENDDO
+       ENDIF
 
 C-    normalization
-          tmpVar = c5d_prime(i,j,k)
-          IF ( tmpVar.NE.0. _d 0 ) THEN
-           recVar = 1. _d 0 / tmpVar
-           d5d_prime(i,j,k) = d5d_prime(i,j,k)*recVar
-           e5d_prime(i,j,k) = e5d_prime(i,j,k)*recVar
-           y5d_prime(i,j,k) = y5d_prime(i,j,k)*recVar
-          ELSE
-           d5d_prime(i,j,k) = 0. _d 0
-           e5d_prime(i,j,k) = 0. _d 0
-           y5d_prime(i,j,k) = 0. _d 0
-           errCode = 1
-          ENDIF
-
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         tmpVar = c5d_prime(i,j,k)
+         IF ( tmpVar.NE.0. _d 0 ) THEN
+          recVar = 1. _d 0 / tmpVar
+          d5d_prime(i,j,k) = d5d_prime(i,j,k)*recVar
+          e5d_prime(i,j,k) = e5d_prime(i,j,k)*recVar
+          y5d_prime(i,j,k) = y5d_prime(i,j,k)*recVar
+         ELSE
+          d5d_prime(i,j,k) = 0. _d 0
+          e5d_prime(i,j,k) = 0. _d 0
+          y5d_prime(i,j,k) = 0. _d 0
+          errCode = 1
+         ENDIF
         ENDDO
        ENDDO
 
 C-    end k-loop
       ENDDO
 
-CADJ loop = sequential
 C--   Backward sweep (starting from bottom)
+CADJ loop = sequential
       DO k=Nr,1,-1
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-         IF (k.EQ.Nr) THEN
+       IF ( k .EQ. Nr ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           y5d(i,j,k) =    y5d_prime(i,j,k)
-         ELSEIF (k.EQ.Nr-1) THEN
+         ENDDO
+        ENDDO
+       ELSEIF ( k .EQ. Nr-1 ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           y5d(i,j,k) =    y5d_prime(i,j,k)
      &     - y5d(i,j,k+1)*d5d_prime(i,j,k)
-         ELSE
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           y5d(i,j,k) =    y5d_prime(i,j,k)
      &     - y5d(i,j,k+1)*d5d_prime(i,j,k)
      &     - y5d(i,j,k+2)*e5d_prime(i,j,k)
-         ENDIF
+         ENDDO
         ENDDO
-       ENDDO
-C-    end k-loop
+       ENDIF
+C-    k-loop
       ENDDO
 
 #endif /* SOLVE_DIAGONAL_KINNER */

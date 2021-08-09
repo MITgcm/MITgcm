@@ -506,7 +506,7 @@ C     Calendar data.
       apressurestartdate1    = 0
       apressurestartdate2    = 0
       apressureperiod        = 0.0 _d 0
-      apressureconst         = 0.0 _d 0
+      apressureconst         = surf_pRef
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 

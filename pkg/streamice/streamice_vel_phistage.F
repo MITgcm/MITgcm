@@ -7,22 +7,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 #ifndef ALLOW_OPENAD
-      SUBROUTINE STREAMICE_VEL_PHISTAGE ( 
-     I                   myThid, 
-     I                   maxNLIter, 
-     I                   maxCGiter, 
-     O                   cgtol, 
+      SUBROUTINE STREAMICE_VEL_PHISTAGE (
+     I                   myThid,
+     I                   maxNLIter,
+     I                   maxCGiter,
+     O                   cgtol,
      O                   nL_iter,
      O                   CONVERGED,
      O                   err_last_change,
      O                   err_init,
      I                   isinloop)
 #else
-      SUBROUTINE STREAMICE_VEL_PHISTAGE ( 
-     I                   myThid, 
-     I                   maxNLIter, 
-     I                   maxCGiter, 
-     O                   cgtol, 
+      SUBROUTINE STREAMICE_VEL_PHISTAGE (
+     I                   myThid,
+     I                   maxNLIter,
+     I                   maxCGiter,
+     O                   cgtol,
      O                   nL_iter,
      O                   adj_iter,
      O                   CONVERGED,
@@ -47,11 +47,6 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
       INTEGER maxNLIter
@@ -68,15 +63,14 @@ C     !INPUT/OUTPUT ARGUMENTS
       LOGICAL adj_CONVERGED
 #endif
 
-#ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_STREAMICE_OAD_FP
 
 C     LOCAL VARIABLES
 
       INTEGER i, j, bi, bj, cg_iters, m
       _RL err_max_fp, errmax
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      
+
 #ifdef ALLOW_OPENAD
       adj_iter=0
       adj_CONVERGED=.false.
@@ -96,7 +90,6 @@ C     LOCAL VARIABLES
 C!!!!!!!!!!! conv check
 
           if (STREAMICE_chkresidconvergence) then
-
 
            WRITE(msgBuf,'(A,E15.7)') 'err/err_init', err_max/err_init
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGH
@@ -130,7 +123,6 @@ C!!!!!!!!!!! conv check
             CONVERGED = .true.
            ENDIF
 
-
           endif
 
           DO bj = myByLo(myThid), myByHi(myThid)
@@ -152,16 +144,11 @@ C!!!!!!!!!!! conv check
            ENDDO
           ENDDO
 
-
 C!!!!!!!!!!! end conv check
-
 
         end if
       end if
 
-
-
-#endif
-#endif
+#endif /* ALLOW_STREAMICE_OAD_FP */
       RETURN
       END

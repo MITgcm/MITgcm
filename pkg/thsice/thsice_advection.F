@@ -2,6 +2,9 @@
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -57,7 +60,6 @@ C !USES: ===============================================================
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -137,6 +139,11 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey, ikey_4
+#endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
       INTEGER idb,jdb,biDb
@@ -212,7 +219,7 @@ C--   Start horizontal fluxes
 
 C--   set mask West & South (and local Centered mask)
       DO j=1-OLy,sNy+OLy
-       maskLocW(1-Olx,j) = 0.
+       maskLocW(1-OLx,j) = 0.
        DO i=2-OLx,sNx+OLx
         maskLocW(i,j) = MIN( maskOc(i-1,j), maskOc(i,j) )
 #ifdef ALLOW_OBCS
@@ -221,7 +228,7 @@ C--   set mask West & South (and local Centered mask)
        ENDDO
       ENDDO
       DO i=1-OLx,sNx+OLx
-       maskLocS(i,1-Oly) = 0.
+       maskLocS(i,1-OLy) = 0.
       ENDDO
       DO j=2-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -242,13 +249,11 @@ C     use "maksInC" to prevent updating tracer field in OB regions
        ENDDO
       ENDDO
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
        withSigns = .FALSE.
        CALL FILL_CS_CORNER_UV_RS(
      &      withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
-cph-exch2#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
@@ -313,13 +318,12 @@ CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
 C-     Advective flux in X
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             af(i,j) = 0.
           ENDDO
          ENDDO
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
          IF ( overlapOnly ) THEN
           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
@@ -328,12 +332,11 @@ C-     Internal exchange for calculations in X
      &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
 
 C-     Compute CFL number
          IF ( useGridArea ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=2-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=2-OLx,sNx+OLx
             uCfl(i,j) = deltaTadvect*(
      &          MAX( uTrans(i,j), 0. _d 0 )*recip_rA(i-1,j,bi,bj)
      &         +MAX(-uTrans(i,j), 0. _d 0 )*recip_rA( i ,j,bi,bj)
@@ -341,8 +344,8 @@ C-     Compute CFL number
            ENDDO
           ENDDO
          ELSE
-          DO j=1-Oly,sNy+Oly
-           DO i=2-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=2-OLx,sNx+OLx
             uCfl(i,j) = deltaTadvect*(
      &        MAX( uTrans(i,j), 0. _d 0 )/MAX( iceVol(i-1,j), iceEps )
      &       +MAX(-uTrans(i,j), 0. _d 0 )/MAX( iceVol( i ,j), iceEps )
@@ -378,7 +381,6 @@ C-     Compute CFL number
      & 'THSICE_ADVECTION: adv. scheme incompatibale with multi-dim'
          ENDIF
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
@@ -387,7 +389,6 @@ C--   Internal exchange for next calculations in Y
      &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
 
 C--   Advective flux in X : done
         ENDIF
@@ -539,7 +540,6 @@ C-     Advective flux in Y
           ENDDO
          ENDDO
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
          IF ( overlapOnly ) THEN
           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
@@ -548,12 +548,11 @@ C-     Internal exchange for calculations in Y
      &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
 
 C-     Compute CFL number
          IF ( useGridArea ) THEN
-          DO j=2-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=2-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             vCfl(i,j) = deltaTadvect*(
      &          MAX( vTrans(i,j), 0. _d 0 )*recip_rA(i,j-1,bi,bj)
      &         +MAX(-vTrans(i,j), 0. _d 0 )*recip_rA(i, j ,bi,bj)
@@ -561,8 +560,8 @@ C-     Compute CFL number
            ENDDO
           ENDDO
          ELSE
-          DO j=2-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=2-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             vCfl(i,j) = deltaTadvect*(
      &        MAX( vTrans(i,j), 0. _d 0 )/MAX( iceVol(i,j-1), iceEps )
      &       +MAX(-vTrans(i,j), 0. _d 0 )/MAX( iceVol(i, j ), iceEps )
@@ -598,7 +597,6 @@ C-     Compute CFL number
      &  'THSICE_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceFld, bi,bj, myThid )
@@ -606,7 +604,6 @@ cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
      &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
-cph-exch2#endif
 
 C-     Advective flux in Y : done
         ENDIF

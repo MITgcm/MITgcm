@@ -66,7 +66,9 @@ C     gV_dpy       :: implicit part of pressure gradient tendency
       _RL     gV_dpy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL dPhiDiagIsOn, implDisDiagIsOn
+# ifdef ALLOW_SOLVE4_PS_AND_DRAG
       _RL tmpFac
+# endif
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -283,6 +285,15 @@ C         kSurfS = Nr+1 if dry column
      &                             0, 1, 1, bi, bj, myThid )
        ENDIF
       ENDIF
+
+# ifdef ALLOW_SHELFICE
+      IF ( useShelfIce .AND. useDiagnostics ) THEN
+        CALL SHELFICE_DIAGNOSTICS_DRAG(
+     I                uVel(1-OLx,1-OLy,1,bi,bj),
+     I                vVel(1-OLx,1-OLy,1,bi,bj),
+     I                bi, bj, myIter, myThid )
+      ENDIF
+# endif /* ALLOW_SHELFICE */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
