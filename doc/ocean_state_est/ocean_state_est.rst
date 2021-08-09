@@ -182,6 +182,14 @@ staggered model velocity points). Preparing gridded velocity data sets
 for use in cost functions thus boils down to interpolating them to XC /
 YC.
 
+The gencost_kLev_select option allows the user to select the vertical 
+level of a 3D field, thereby creating a 2D field out of that slice which 
+is used for the cost computation. For example, drifter velocities correspond 
+to the second depth level of the grid used in ECCOv4, so velocities are 
+selected from this depth level to compare to the drifter observations. 
+The user can specify this in data.ecco with: gencost_kLev_select( i ) = 2, 
+where i is replaced with the index for that cost function term.
+
 .. table:: Run-time parameters used in formulating generic cost functions
            and defined via `ecco_gencost_nml`` namelist in ``data.ecco``.
            All parameters are vectors of length ``NGENCOST`` (the # of
@@ -275,6 +283,10 @@ YC.
   | ``gencost_enddate2``  | integer               | Not fully implemented             |
   |                       |                       | (used only in                     |
   |                       |                       | :numref:`v4custom`)               |
+  +-----------------------+-----------------------+-----------------------------------+
+  |``gencost_kLev_select``| integer               | Vertical level of a 3D field to   |
+  |                       |                       | create a 2D field for cost        |
+  |                       |                       | computation                       |
   +-----------------------+-----------------------+-----------------------------------+
 
 .. table:: Implemented ``gencost_barfile`` options (as of checkpoint
