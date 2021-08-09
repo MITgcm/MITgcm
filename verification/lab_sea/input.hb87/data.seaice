@@ -35,8 +35,6 @@
  SEAICEscaleSurfStress = .FALSE.,
  SEAICEaddSnowMass     = .FALSE.,
  SEAICE_waterDrag  = 0.005355404089581304,
- SEAICEuseEVPstar   = .FALSE.,
- SEAICEuseEVPrev    = .FALSE.,
  &
 
  &SEAICE_PARM03
