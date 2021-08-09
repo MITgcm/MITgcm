@@ -45,7 +45,6 @@ C     === Global variables ===
 #include "MNC_PARAMS.h"
 #endif
 #include "MY82.h"
-#include "MY82_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
