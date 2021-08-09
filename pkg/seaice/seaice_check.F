@@ -774,85 +774,89 @@ C     end if usePW79thermodynamics
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
         ENDIF
        ENDIF
-      ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
 
-#ifdef SEAICE_ALLOW_EVP
-# ifdef ALLOW_AUTODIFF_TAMC
-      IF ( SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: need to set nEVPstepMax to >= '//
-     &      'SEAICEnEVPstarSteps'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,I4)')
-     &      'SEAICE_CHECK: SEAICEnEVPstarSteps = ', SEAICEnEVPstarSteps
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-# endif
-      IF ( .NOT.(SEAICEuseEVPstar.OR.SEAICEuseEVPrev)
-     &     .AND. SEAICEnEVPstarSteps.NE.
-     &     INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
-     &      'set in namelist, but SEAICEuseEVPstar = .FALSE.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#else
-      IF ( SEAICEuseEVP ) THEN
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE., so EVP is turned on'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: by setting appropriate runtime parameters,'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
-     &      'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-#endif
-
-#ifdef SEAICE_ALLOW_EVP
-      IF ( SEAICEuseEVP .AND. (SEAICE_eccfr.NE.SEAICE_eccen) ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseEVP = .TRUE., '//
-     &      'so EVP is turned on by setting appropriate'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,F5.2,A,F5.2,A)')
-     &      'SEAICE_CHECK: runtime parameters, but SEAICE_eccfr(=',
-     &      SEAICE_eccfr , ')/=SEAICE_eccen(=', SEAICE_eccen, ')'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')'SEAICE_CHECK: implies a non-normal flow '//
-     &      'rule for the elliptical yield curve,'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: which is not implemented for EVP.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-      IF ( SEAICEuseEVP .AND. (
-# ifdef SEAICE_ALLOW_TEARDROP
-     &     SEAICEuseTD .OR. SEAICEusePL .OR.
-# endif
-# ifdef SEAICE_ALLOW_MCE
-     &     SEAICEuseMCE .OR.
-# endif
-# ifdef SEAICE_ALLOW_MCS
-     &     SEAICEuseMCS .OR.
-# endif
-     &     .FALSE. ) )  THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCS, '//
-     &     'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: and SEAICEuseEVP = .TRUE., '//
-     &      'but these non-standard rheologies'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: are not implemented for EVP'
+# ifdef SEAICE_ALLOW_EVP
+       IF ( SEAICEuseEVP ) THEN
+#  ifdef ALLOW_AUTODIFF_TAMC
+        IF ( SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_CHECK: need to set nEVPstepMax to >= '//
+     &        'SEAICEnEVPstarSteps'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A,I4)')
+     &   'SEAICE_CHECK: SEAICEnEVPstarSteps = ', SEAICEnEVPstarSteps
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+#  endif
+        IF ( .NOT.(SEAICEuseEVPstar.OR.SEAICEuseEVPrev)
+     &       .AND. SEAICEnEVPstarSteps.NE.
+     &       INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
+         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
+     &        'set in namelist, but SEAICEuseEVPstar = .FALSE.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+       ENDIF
+# else
+       IF ( SEAICEuseEVP ) THEN
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_CHECK: SEAICEuseEVP = .TRUE., so EVP is turned on'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_CHECK: by setting appropriate runtime parameters,'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
+     &       'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
+       ENDIF
+# endif
+
+#ifdef SEAICE_ALLOW_EVP
+       IF ( SEAICEuseEVP .AND. (SEAICE_eccfr.NE.SEAICE_eccen) ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseEVP = .TRUE., '//
+     &       'so EVP is turned on by setting appropriate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,F5.2,A,F5.2,A)')
+     &       'SEAICE_CHECK: runtime parameters, but SEAICE_eccfr(=',
+     &       SEAICE_eccfr , ')/=SEAICE_eccen(=', SEAICE_eccen, ')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')'SEAICE_CHECK: implies a non-normal flow '//
+     &       'rule for the elliptical yield curve,'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_CHECK: which is not implemented for EVP.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+       IF ( SEAICEuseEVP .AND. (
+# ifdef SEAICE_ALLOW_TEARDROP
+     &      SEAICEuseTD .OR. SEAICEusePL .OR.
+# endif
+# ifdef SEAICE_ALLOW_MCE
+     &      SEAICEuseMCE .OR.
+# endif
+# ifdef SEAICE_ALLOW_MCS
+     &      SEAICEuseMCS .OR.
+# endif
+     &      .FALSE. ) ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCS, '//
+     &      'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: and SEAICEuseEVP = '//
+     &       '.TRUE., but these non-standard rheologies'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &       'SEAICE_CHECK: are not implemented for EVP'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
+
+C     SEAICEuseDynamics
+      ENDIF
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
       IF ( SEAICEuseMultiTileSolver ) THEN
