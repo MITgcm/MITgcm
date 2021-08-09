@@ -248,7 +248,7 @@ C     and modify hFac(C,W,S) accordingly :
 #ifdef ALLOW_AUTODIFF_TAMC
 C     These fields are only updated in the surface layer and TAF gets
 C     confused about it so that their contribution is not always added
-C     to the hfac*_ad lateron. This directives fixes that.
+C     to the hfac*_ad lateron. This directive fixes that.
 CADJ INCOMPLETE recip_hFacC, recip_hFacW, recip_hFacS
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
