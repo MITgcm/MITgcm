@@ -51,8 +51,6 @@ C     myThid - Thread number of this instance of S/R CONVECT
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_OPPS
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     msgBuf      - Informational/error meesage buffer
@@ -179,7 +177,13 @@ C     determine range of temperature and salinity
         ENDIF
        ENDDO
       ENDDO
-#endif /* ALLOW_OPPS */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(OPPSconvectCount, 'OPPScadj',
+     &      0 , Nr, 1, bi, bj, myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
