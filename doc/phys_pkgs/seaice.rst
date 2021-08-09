@@ -161,9 +161,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_deltaTevp`        | 0.0                          | EVP sub-cycling time step (s); values :math:`>` 0 turn on EVP           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseEVPstar`        | TRUE                         | use modified EVP\* instead of EVP, following :cite:`lemieux12`          |
+  | :varlink:`SEAICEuseEVPstar`        | TRUE                         | use modified EVP\* instead of EVP, following :cite:`lemieux:12`         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseEVPrev`         | TRUE                         | "revisited form" variation on EVP\*, following :cite:`bouillon13`       |
+  | :varlink:`SEAICEuseEVPrev`         | TRUE                         | "revisited form" variation on EVP\*, following :cite:`bouillon:13`      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEnEVPstarSteps`     | unset                        | number of modified EVP\* iterations                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -848,10 +848,10 @@ method is the default method in MITgcm. The number of nonlinear iteration steps
 or pseudo-time steps can be controlled by the run-time parameter
 :varlink:`SEAICEnonLinIterMax`.  This parameter's default is 2, but using a
 number of at least 10 is recommended for better solutions that are converged at
-least in an energy norm sense (Zhang and Hibler 1997) :cite:`zhang97`.
+least in an energy norm sense (Zhang and Hibler 1997) :cite:`zhang:97`.
 
 In order to overcome the poor convergence of the Picard-solver, Lemieux et
-al. (2010) :cite:`lemieux10` introduced a Jacobian-free Newton-Krylov solver
+al. (2010) :cite:`lemieux:10` introduced a Jacobian-free Newton-Krylov solver
 for the sea ice momentum equations. This solver is also implemented in MITgcm
 (see Losch et al. 2014 :cite:`losch:14`). The Newton method transforms
 minimizing the residual :math:`\mathbf{F}(\mathbf{x}) =
@@ -1037,7 +1037,7 @@ timescale :math:`T` for elastic waves
 :math:`T=E_{0}\Delta{t}` with the tunable parameter :math:`E_0<1` and the
 external (long) timestep :math:`\Delta{t}`.  :math:`E_{0} = \frac{1}{3}` is the
 default value in the code and close to what Hunke and Dukowicz (1997)
-:cite:`hun97` recommend.
+:cite:`hunke:97` recommend.
 
 We do not recommend to use the EVP solver in its original form. Instead, use
 mEVP or aEVP instead (see :numref:`para_phys_pkg_seaice_EVPstar`). If you
@@ -1049,7 +1049,7 @@ default). By default, the runtime parameters :varlink:`SEAICEuseEVPstar` and
 behavoir of EVP, but for the original EVP they should be set to ``FALSE``.  The
 solver is turned on by setting the sub-cycling time step
 :varlink:`SEAICE_deltaTevp` to a value larger than zero. The choice of this
-time step is under debate.  Hunke and Dukowicz (1997) :cite:`hun97` recommend
+time step is under debate.  Hunke and Dukowicz (1997) :cite:`hunke:97` recommend
 order 120 time steps for the EVP solver within one model time step
 :math:`\Delta{t}` (:varlink:`deltaTmom`). One can also choose order 120 time
 steps within the forcing time scale, but then we recommend adjusting the
@@ -1087,7 +1087,7 @@ of a residual :math:`|\mathbf{u}^{p+1}-\mathbf{u}^{p}|` that, as
 where the sub-cycling has no association with time-relation (through
 :math:`\Delta{t}_{\mathrm{EVP}}`). With the default setting of
 :varlink:`SEAICEuseEVPstar` ``=.TRUE.`` (default), this form of EVP is used.
-Using the terminology of Kimmritz et al. 2015 :cite:`kimmritz15`, the evolution
+Using the terminology of Kimmritz et al. 2015 :cite:`kimmritz:15`, the evolution
 equations of stress :math:`\sigma_{ij}` and momentum :math:`\mathbf{u}` can be
 written as:
 
@@ -1113,20 +1113,22 @@ replace the time stepping parameters :varlink:`SEAICE_deltaTevp`
 and :math:`\beta` determine the speed of convergence and the
 stability. Usually, it makes sense to use :math:`\alpha = \beta`, and
 :varlink:`SEAICEnEVPstarSteps` :math:`\gg (\alpha,\,\beta)` (Kimmritz et
-al. 2015 :cite:`kimmritz15`). Currently, there is no termination criterion and
+al. 2015 :cite:`kimmritz:15`). Currently, there is no termination criterion and
 the number of mEVP iterations is fixed to :varlink:`SEAICEnEVPstarSteps`.
 
-In order to use mEVP in MITgcm, make sure that :varlink:`SEAICEuseEVPstar` ``=
-.TRUE.,`` (default, or set in ``data.seaice``). By default
-:varlink:`SEAICEuseEVPrev` ``=.TRUE.,`` and the actual form of equations
-:eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used with fewer implicit terms
-and the factor of :math:`e^{2}` dropped in the stress equations
-:eq:`eq_evpstresstensor2` and :eq:`eq_evpstresstensor12`. Although this
-modifies the original EVP-equations, it turns out to improve convergence
-(Bouillon et al. 2013 :cite:`bouillon13`).
+In order to use mEVP in MITgcm, compile with both ``#define``
+:varlink:`SEAICE_CGRID` and ``#define`` :varlink:`SEAICE_ALLOW_EVP` in
+:filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` (default) and make
+sure that :varlink:`SEAICEuseEVPstar` ``= .TRUE.,`` (default, or set in
+``data.seaice``). By default :varlink:`SEAICEuseEVPrev` ``=.TRUE.,`` and the
+actual form of equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used
+with fewer implicit terms and the factor of :math:`e^{2}` dropped in the stress
+equations :eq:`eq_evpstresstensor2` and :eq:`eq_evpstresstensor12`. Although
+this modifies the original EVP-equations, it turns out to improve convergence
+(Bouillon et al. 2013 :cite:`bouillon:13`).
 
 The aEVP scheme is an enhanced variant of mEVP (Kimmritz et al. 2016
-:cite:`kimmritz16`), where the value of :math:`\alpha` is set dynamically based
+:cite:`kimmritz:16`), where the value of :math:`\alpha` is set dynamically based
 on the stability criterion
 
 .. math::
@@ -1138,11 +1140,11 @@ with the grid cell area :math:`A_c` and the ice and snow mass :math:`m`.  This
 choice sacrifices speed of convergence for stability with the result that aEVP
 converges quickly to VP where :math:`\alpha` can be small and more slowly in
 areas where the equations are stiff. In practice, aEVP leads to an overall
-better convergence than mEVP (Kimmritz et al. 2016 :cite:`kimmritz16`). To use
+better convergence than mEVP (Kimmritz et al. 2016 :cite:`kimmritz:16`). To use
 aEVP in MITgcm set :varlink:`SEAICEaEVPcoeff` :math:`= \tilde{c}`; this also
 sets the default values of :varlink:`SEAICEaEVPcStar` (:math:`c=4`) and
 :varlink:`SEAICEaEVPalphaMin` (:math:`\alpha_{\min}=5`). Good convergence has
-been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz16`):
+been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz:16`):
 
 ::
 
