@@ -51,13 +51,11 @@ C#endif /* ALLOW_MNC */
           mskCor(i,j,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
-# ifdef ALLOW_EXCH2
         IF ( useCubedSphereExchange ) THEN
           CALL FILL_CS_CORNER_TR_RL( 0, .FALSE.,
      U                               mskCor(1-OLx,1-OLy,bi,bj),
-     I                               bi,bj, myThid )
+     I                               bi, bj, myThid )
         ENDIF
-# endif
        ENDDO
       ENDDO
 #endif
