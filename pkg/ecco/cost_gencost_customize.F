@@ -45,9 +45,6 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif
 
 c     == routine arguments ==
 
@@ -62,6 +59,7 @@ c     == local variables ==
       integer k2,kk
       integer itr
 #endif
+      integer kLev_select
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
       _RL zontau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -115,6 +113,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 
       do k=1,NGENCOST
       itr=gencost_itracer(k)
+      kLev_select=gencost_kLev_select(k) 
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
@@ -139,16 +138,10 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 C drifter velocity costs at hard-coded vertical level 2 (=15 m for ECCO V4)
          elseif (gencost_barfile(k)(1:11).EQ.'m_drifterUE') then
            gencost_modfld(i,j,bi,bj,k) =
-     &      m_UE(i,j,2,bi,bj)*maskC(i,j,2,bi,bj)
+     &      m_UE(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
          elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
            gencost_modfld(i,j,bi,bj,k) =
-     &      m_VN(i,j,2,bi,bj)*maskC(i,j,2,bi,bj)
-#ifdef ALLOW_SHELFICE
-         elseif (gencost_barfile(k)(1:10).EQ.'m_shifwflx') then
-           gencost_modfld(i,j,bi,bj,k) =
-     &      shelficeFreshWaterFlux(i,j,bi,bj)
-     &      *mask2dSHIICF(i,j,bi,bj)
-#endif
+     &      m_VN(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
          elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
      &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
            gencost_modfld(i,j,bi,bj,k) =

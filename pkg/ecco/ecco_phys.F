@@ -153,12 +153,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
       CALL GLOBAL_SUM_TILE_RL( AREAsumTile, AREAsumGlob, myThid )
       CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
       ploadbar=PLOADsumGlob/AREAsumGlob
-
-c     WRITE(msgBuf,'(A,1PE21.14)') ' ploadbar= ', ploadbar
-c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-c    &                       SQUEEZE_RIGHT, myThid )
 #endif
-
       sIceLoadFac=zeroRL
       IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
 #endif
