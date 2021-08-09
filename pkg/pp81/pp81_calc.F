@@ -116,6 +116,13 @@ C     Mask land points
 C     end K-loop
       ENDDO
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(PPviscAr,'PPviscAr',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(PPdiffKr,'PPdiffKr',0,Nr,1,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 #endif /* ALLOW_PP81 */
 
       RETURN
