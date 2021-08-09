@@ -124,6 +124,8 @@ C       |-- GMREDI_DO_EXCH
 C       |
 C       |-- KPP_DO_EXCH
 C       |
+C       |-- GGL90_EXCHANGES
+C       |
 C       |-- DIAGS_RHO_G
 C       |-- DIAGS_OCEANIC_SURF_FLUX
 C       |-- SALT_PLUME_DIAGNOSTICS_FILL
@@ -1074,6 +1076,11 @@ C---  if fluid Is Water: end
         CALL KPP_DO_EXCH( myThid )
       ENDIF
 #endif /* ALLOW_KPP */
+
+#ifdef ALLOW_GGL90
+      IF ( useGGL90 )
+     &  CALL GGL90_EXCHANGES( myThid )
+#endif /* ALLOW_GGL90 */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
