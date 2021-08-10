@@ -7,31 +7,31 @@ c
 c
 CADJ STORE etan  = tapelev2, key = ilev_2
 #ifndef EXCLUDE_FFIELDS_LOAD
-CADJ STORE taux0 = tapelev2, key = ilev_2
-CADJ STORE taux1 = tapelev2, key = ilev_2
-CADJ STORE tauy0 = tapelev2, key = ilev_2
-CADJ STORE tauy1 = tapelev2, key = ilev_2
-CADJ STORE qnet0 = tapelev2, key = ilev_2
-CADJ STORE qnet1 = tapelev2, key = ilev_2
-CADJ STORE empmr0 = tapelev2, key = ilev_2
-CADJ STORE empmr1 = tapelev2, key = ilev_2
-CADJ STORE sst0 = tapelev2, key = ilev_2
-CADJ STORE sst1 = tapelev2, key = ilev_2
-CADJ STORE sss0 = tapelev2, key = ilev_2
-CADJ STORE sss1 = tapelev2, key = ilev_2
-CADJ STORE saltflux0 = tapelev2, key = ilev_2
-CADJ STORE saltflux1 = tapelev2, key = ilev_2
+CADJ STORE taux0 = tapelvs2, key = ilev_2
+CADJ STORE taux1 = tapelvs2, key = ilev_2
+CADJ STORE tauy0 = tapelvs2, key = ilev_2
+CADJ STORE tauy1 = tapelvs2, key = ilev_2
+CADJ STORE qnet0 = tapelvs2, key = ilev_2
+CADJ STORE qnet1 = tapelvs2, key = ilev_2
+CADJ STORE empmr0 = tapelvs2, key = ilev_2
+CADJ STORE empmr1 = tapelvs2, key = ilev_2
+CADJ STORE sst0 = tapelvs2, key = ilev_2
+CADJ STORE sst1 = tapelvs2, key = ilev_2
+CADJ STORE sss0 = tapelvs2, key = ilev_2
+CADJ STORE sss1 = tapelvs2, key = ilev_2
+CADJ STORE saltflux0 = tapelvs2, key = ilev_2
+CADJ STORE saltflux1 = tapelvs2, key = ilev_2
 # ifdef SHORTWAVE_HEATING
-CADJ STORE qsw0 = tapelev2, key = ilev_2
-CADJ STORE qsw1 = tapelev2, key = ilev_2
+CADJ STORE qsw0 = tapelvs2, key = ilev_2
+CADJ STORE qsw1 = tapelvs2, key = ilev_2
 # endif
 # ifdef ALLOW_GEOTHERMAL_FLUX
-CADJ STORE geothFlux0 = tapelev2, key = ilev_2
-CADJ STORE geothFlux1 = tapelev2, key = ilev_2
+CADJ STORE geothFlux0 = tapelvs2, key = ilev_2
+CADJ STORE geothFlux1 = tapelvs2, key = ilev_2
 # endif
 # ifdef ATMOSPHERIC_LOADING
-CADJ STORE pload0 = tapelev2, key = ilev_2
-CADJ STORE pload1 = tapelev2, key = ilev_2
+CADJ STORE pload0 = tapelvs2, key = ilev_2
+CADJ STORE pload1 = tapelvs2, key = ilev_2
 # endif
 #endif /* ndef EXCLUDE_FFIELDS_LOAD */
 #ifdef EXACT_CONSERV
@@ -72,7 +72,7 @@ CADJ STORE StoreDynVars3D     = tapelev2, key = ilev_2
 c
 #endif /* AUTODIFF_USE_OLDSTORE_3D */
 
-CADJ STORE phi0surf     = tapelev2, key = ilev_2
+CADJ STORE phi0surf     = tapelvs2, key = ilev_2
 CADJ STORE saltflux     = tapelev2, key = ilev_2
 
 #ifdef EXACT_CONSERV
@@ -80,12 +80,12 @@ cphCADJ STORE hDivFlow  = tapelev2, key = ilev_2
 #endif /* EXACT_CONSERV */
 
 #ifdef NONLIN_FRSURF
-CADJ STORE hfac_surfc    = tapelev2, key = ilev_2
-CADJ STORE hfac_surfs    = tapelev2, key = ilev_2
-CADJ STORE hfac_surfw    = tapelev2, key = ilev_2
-CADJ STORE hFac_surfNm1C= tapelev2, key = ilev_2
-CADJ STORE hFac_surfNm1S= tapelev2, key = ilev_2
-CADJ STORE hFac_surfNm1W= tapelev2, key = ilev_2
+CADJ STORE hfac_surfc    = tapelvs2, key = ilev_2
+CADJ STORE hfac_surfs    = tapelvs2, key = ilev_2
+CADJ STORE hfac_surfw    = tapelvs2, key = ilev_2
+CADJ STORE hFac_surfNm1C= tapelvs2, key = ilev_2
+CADJ STORE hFac_surfNm1S= tapelvs2, key = ilev_2
+CADJ STORE hFac_surfNm1W= tapelvs2, key = ilev_2
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw
@@ -98,8 +98,8 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev2, key = ilev_2
 # endif
 
-CADJ STORE aW2d, aS2d, aC2d = tapelev2, key = ilev_2
-CADJ STORE pc, ps, pw       = tapelev2, key = ilev_2
+CADJ STORE aW2d, aS2d, aC2d = tapelvs2, key = ilev_2
+CADJ STORE pc, ps, pw       = tapelvs2, key = ilev_2
 
 #endif /* NONLIN_FRSURF */
 
@@ -176,12 +176,12 @@ CADJ STORE pc, ps, pw       = tapelev2, key = ilev_2
 #endif
 
 #ifdef ALLOW_EBM
-CADJ STORE fu    = tapelev2, key = ilev_2
-CADJ STORE fv    = tapelev2, key = ilev_2
-CADJ STORE qnet  = tapelev2, key = ilev_2
-CADJ STORE qsw   = tapelev2, key = ilev_2
-CADJ STORE sss   = tapelev2, key = ilev_2
-CADJ STORE empmr = tapelev2, key = ilev_2
+CADJ STORE fu    = tapelvs2, key = ilev_2
+CADJ STORE fv    = tapelvs2, key = ilev_2
+CADJ STORE qnet  = tapelvs2, key = ilev_2
+CADJ STORE qsw   = tapelvs2, key = ilev_2
+CADJ STORE sss   = tapelvs2, key = ilev_2
+CADJ STORE empmr = tapelvs2, key = ilev_2
 # include "ebm_ad_check_lev2_dir.h"
 #endif /* ALLOW_EBM */
 
