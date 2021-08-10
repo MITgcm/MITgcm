@@ -20,10 +20,10 @@ For a field (:math:`T`) at every grid point the tendency is modified so that:
 where :math:`M_{rbc}` is a 3-D mask (no time dependence) between 0
 and 1. Values are relaxed to a field given by :math:`T_{rbc}`, which can be set
 to vary in time.
-Where :math:`M_{rbc}(x,y,z) = 1.0`, relaxing timescale is :math:`\tau_T`;
+Where :math:`M_{rbc}(x,y,z) = 1.0`, the relaxing timescale is :math:`\tau_T`;
 where :math:`M_{rbc}(x,y,z) = 0.0`, there is no relaxing.  If
-:math:`M_{rbc}(x,y,z) = 0.5` then relaxation occurs but at a timescale
-:math:`2 \tau_T`.
+:math:`M_{rbc}(x,y,z) = 0.5` then relaxation occurs but at a timescale of
+:math:`2\,\tau_T`.
 
 A separate mask can be used for :math:`\theta, S` and ptracers and each of
 these can be relaxed or not and can have its own timescale
@@ -34,7 +34,7 @@ Key subroutines and parameters
 
 The only compile-time parameter you are likely to have to change is in
 :filelink:`RBCS_SIZE.h <pkg/rbcs/RBCS_SIZE.h>`, the number of masks,
-PARAMETER(:varlink:`maskLEN` = 3 ) by default, see below.
+PARAMETER( :varlink:`maskLEN` = 3 ) by default, see below.
 
 :numref:`tab_phys_pkg_rbcs_runtime_flags` summarizes the runtime flags that are
 set in ``data.rbcs``, and their default values.
