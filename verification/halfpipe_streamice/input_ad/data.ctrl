@@ -8,8 +8,6 @@
  xx_genarr2d_weight(1) = 'wunit',
  xx_genarr2d_file(2)   = 'xx_genarr2d2',
  xx_genarr2d_weight(2) = 'wunit',
- xx_genarr3d_file(1)   = 'xx_genarr3d1',
- xx_genarr3d_weight(1) = 'wunit',
  xx_gentim2d_file(1)   = 'xx_gentim2d1',
  xx_gentim2d_period(1) = 6307200
  xx_gentim2d_weight(1) = 'wunit',
