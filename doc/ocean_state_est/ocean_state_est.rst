@@ -178,12 +178,13 @@ velocity data sets for use in cost functions thus boils down to interpolating
 them to XC / YC.
 
 The :varlink:`gencost_kLev_select` option allows the user to select the
-vertical level of a 3D field, thereby creating a 2D field out of that slice
-which is used for the cost computation. For example, drifter velocities
-correspond to the second depth level of the grid used in ECCOv4, so velocities
-are selected from this depth level to compare to the drifter observations.  The
-user can specify this in ``data.ecco`` with: ``gencost_kLev_select( i ) = 2``,
-where i is replaced with the index for that cost function term.
+vertical level of a 3D model field, thereby creating a 2D field out of that
+slice which is used for the cost computation. For example, drifter velocities
+correspond to the second depth level of the grid used in ECCOv4, so model
+velocities are selected from this depth level to compare to the drifter
+observations. The user can specify this in ``data.ecco`` with:
+:varlink:`gencost_kLev_select` ``( i ) = 2``, where i is replaced with the
+index for that cost function term.
 
 .. table:: Run-time parameters used in formulating generic cost functions and
            defined via `ecco_gencost_nml`` namelist in ``data.ecco``.  All
