@@ -3,7 +3,7 @@
 # include "SHELFICE_OPTIONS.h"
 #endif
 
-      subroutine ecco_phys( mythid )
+      subroutine ecco_phys( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_phys
@@ -36,7 +36,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -162,7 +162,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
        DO bi=myBxLo(myThid),myBxHi(myThid)
             do j = jmin,jmax
               do i =  imin,imax
-C calculte total sea level including inverse barometer (IB) effect if 
+C calculte total sea level including inverse barometer (IB) effect if
 C  there is air pressure forcing
                 m_eta(i,j,bi,bj)=
      &                (etan(i,j,bi,bj)
@@ -174,8 +174,8 @@ C  there is air pressure forcing
 #endif
      &                ) * maskC(i,j,1,bi,bj)
 
-C calculte total ocean bottom pressure including air pressure if 
-C  there is any. 
+C calculte total ocean bottom pressure including air pressure if
+C  there is any.
                 m_bp(i,j,bi,bj)=
      &                (phiHydLow(i,j,bi,bj)
 #ifdef ALLOW_PSBAR_STERIC
@@ -228,8 +228,7 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 
       CALL ROTATE_UV2EN_RL(
      U          uVel, vVel, m_UE, m_VN,
-     I          .TRUE., .TRUE., .FALSE., Nr, mythid )
-
+     I          .TRUE., .TRUE., .FALSE., Nr, myThid )
 
 c--   trVol : volume flux    --- [m^3/sec] (order of 10^6 = 1 Sv)
 c--   trHeat: heat transport --- [Watt] (order of 1.E15 = PW)
@@ -339,11 +338,12 @@ c
           tmpmsk2 = 0. _d 0
           if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
             tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+            tmpfld = m_eta(i,j,bi,bj)
+#if (defined ATMOSPHERIC_LOADING) && (defined ALLOW_IB_CORR)
             if (gencost_barfile(kgen)(1:17).EQ.'m_boxmean_eta_dyn') then
-              tmpfld=m_eta_dyn(i,j,bi,bj)
-            else
-              tmpfld=m_eta(i,j,bi,bj)
+              tmpfld = m_eta_dyn(i,j,bi,bj)
             endif
+#endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
 #ifdef ALLOW_SHELFICE
@@ -471,7 +471,6 @@ cts ---
       enddo
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
-
 
       return
       end
