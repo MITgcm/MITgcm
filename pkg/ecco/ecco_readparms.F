@@ -499,8 +499,8 @@ catn  eccov4 will run without needing to read in these params
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
         cost_yftype = 'RL'
-        sterGloH_output       =      .TRUE.
-        keep_sgh_file_open    =      .TRUE.
+        sterGloH_output       =      .FALSE.
+        keep_sgh_file_open    =      .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '
