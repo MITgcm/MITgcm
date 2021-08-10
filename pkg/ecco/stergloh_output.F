@@ -54,24 +54,26 @@ C-----------------------------------------------------------------
 C     Save the global mean steric heigt change at every time step
 C-----------------------------------------------------------------
 
-      irecord      = myIter - nIter0 + 1
+      IF ( sterGloH_output ) THEN
+        irecord      = myIter - nIter0 + 1
 
 #ifdef ALLOW_MDSIO
-      _BEGIN_MASTER(myThid)
-C-    multi-threaded: only write it once (by master thread)
-       IF ( rwSuffixType.EQ.0 ) THEN
-         WRITE(fName,'(A,I10.10)') 'sterGloH_global.', nIter0
-       ELSE
-         CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
-         WRITE(fName,'(A,A)') 'sterGloH_global.', suff
-       ENDIF
-       ioUnit  = 0
-       CALL MDS_WRITEVEC_LOC(
-     I           fName, precFloat64, ioUnit,
-     I           'RL', narr, sterGloH, dummyRS,
-     I           0, 0, irecord, myIter, myThid )
-      _END_MASTER(myThid)
+        _BEGIN_MASTER(myThid)
+C-      multi-threaded: only write it once (by master thread)
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(fName,'(A,I10.10)') 'sterGloH_global.', nIter0
+         ELSE
+           CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+           WRITE(fName,'(A,A)') 'sterGloH_global.', suff
+         ENDIF
+         ioUnit  = 0
+         CALL MDS_WRITEVEC_LOC(
+     I             fName, precFloat64, ioUnit,
+     I             'RL', narr, sterGloH, dummyRS,
+     I             0, 0, irecord, myIter, myThid )
+        _END_MASTER(myThid)
 #endif /* ALLOW_MDSIO */
+      ENDIF
 
 #endif /* ALLOW_PSBAR_STERIC */
 #endif /* ALLOW_ECCO */

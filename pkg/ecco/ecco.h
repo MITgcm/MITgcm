@@ -151,6 +151,13 @@ c                 the current model integration.
       _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
+c     Two runtime parameters related to outputting sterGloH 
+c     sterGloH_output:    output sterGloH at each time step if true
+c     keep_sgh_file_open: keep the sterGloH file open if true 
+      common /ecco_l/
+     &                    sterGloH_output, keep_sgh_file_open
+      LOGICAL sterGloH_output, keep_sgh_file_open
+
 c     file precision and field type
       common /prec_type_cost/
      &                        cost_iprec,
