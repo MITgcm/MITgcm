@@ -24,6 +24,7 @@ c     == global variables ==
 #include "FFIELDS.h"
 #include "GRID.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 #ifdef ALLOW_PTRACERS

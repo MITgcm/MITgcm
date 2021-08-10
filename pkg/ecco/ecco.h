@@ -177,29 +177,6 @@ c     file precision and field type
       integer cost_iprec
       character*(2) cost_yftype
 
-c     Number of User Cost terms:
-c     =============================
-      INTEGER NUSERCOST
-      PARAMETER ( NUSERCOST=10 )
-
-c     Number of Generic Cost terms:
-c     =============================
-      INTEGER NGENCOST
-      PARAMETER ( NGENCOST=40 )
-
-      INTEGER NGENCOST3D
-#ifdef ALLOW_GENCOST3D
-      PARAMETER ( NGENCOST3D=6 )
-#else
-      PARAMETER ( NGENCOST3D=0 )
-#endif
-
-      INTEGER NGENPPROC
-      PARAMETER ( NGENPPROC=10 )
-
-      INTEGER N1DDATA
-      PARAMETER ( N1DDATA=500 )
-
 c     empty pre/post-processing :
 c     =========================
       common /ecco_nogencost_c/

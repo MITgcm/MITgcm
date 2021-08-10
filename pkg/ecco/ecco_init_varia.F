@@ -19,7 +19,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-
+#include "ECCO_SIZE.h"
 #include "ecco.h"
 #ifdef ALLOW_COST
 # include "cost.h"

@@ -31,6 +31,7 @@ c     ==================================================================
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "ECCO_SIZE.h"
 #include "ecco.h"
 
 #ifdef ALLOW_CTRL

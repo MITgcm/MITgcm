@@ -45,6 +45,7 @@ c     == global variables ==
 #  include "SEAICE_COST.h"
 # endif
 #else /* ndef ECCO_CTRL_DEPRECATED */
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif /* ECCO_CTRL_DEPRECATED */
 

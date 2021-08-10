@@ -29,6 +29,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 

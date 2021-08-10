@@ -30,6 +30,7 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 

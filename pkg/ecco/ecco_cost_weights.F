@@ -42,6 +42,7 @@ c     == global variables ==
 #  include "ctrl.h"
 # endif
 #else
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 # include "ecco_local_params.h"
 #endif /* ECCO_CTRL_DEPRECATED */
