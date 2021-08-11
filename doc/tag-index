@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tutorial_reentrant_channel:
+  - add python notebook (for analysis), add python script to generate input
+    files (+ update matlab version) and update this tutorial docs.
 o verification/vermix:
   - change ggl90 secondary test to use (pkg/ggl90) mxlMaxFlag=3 (instead of 2)
     and update reference output.
