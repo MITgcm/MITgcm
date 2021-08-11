@@ -237,6 +237,19 @@ C     == Local variables ==
 #ifdef STORE_LOADEDREC_TEST
       INTEGER bi,bj
 #endif /* STORE_LOADEDREC_TEST */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER ilev_1
+      INTEGER ilev_2
+# ifndef AUTODIFF_2_LEVEL_CHECKPOINT
+      INTEGER ilev_3
+#  endif
+# ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+      INTEGER ilev_4
+# endif
+      INTEGER max_lev2
+      INTEGER max_lev3
+      INTEGER max_lev4
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -283,10 +296,10 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
-      ikey_dynamics = 1
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
+      ikey_dynamics = 1
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
@@ -299,6 +312,10 @@ CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
 CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
 CADJ STORE shiTransCoeffT         = tapelev_init, key=1
 CADJ STORE shiTransCoeffS         = tapelev_init, key=1
+# endif
+# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE H_streamice = tapelev_init, key=1
+CADJ STORE B_glen      = tapelev_init, key=1
 # endif
 #endif
 
@@ -615,7 +632,7 @@ c--     >>> Loop body start <<<
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + deltaTClock*(iloop-1)
-# ifndef ALLOW_OPENAD
+# ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = ilev_1
 # endif
 #endif

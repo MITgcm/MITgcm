@@ -1,6 +1,77 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tutorial_reentrant_channel:
+  - add python notebook (for analysis), add python script to generate input
+    files (+ update matlab version) and update this tutorial docs.
+o verification/vermix:
+  - change ggl90 secondary test to use (pkg/ggl90) mxlMaxFlag=3 (instead of 2)
+    and update reference output.
+o pkg/ctrl:
+  - move S/R CTRL_MAP_GENARR2D/3D out of file "ctrl_map_ini_genarr.F" into
+    a new file "ctrl_map_genarr.F" ;
+  - clean-up local versions of ctrl_map_gentim2d.F and ctrl_map_ini_genarr.F
+    from code_ad dirs (i.e., minimize diff with standard version from pkg/ctrl).
+o model/src:
+  - improve REMOVE_MEAN_RL/RS subroutines (address issues raised in issue #501)
+    including results independent of tile to proc mapping, correction extended
+    to overlap regions, improve accuracy of _RS version when RS is real*4 and
+    and enable the use 2-D mask maskInC/W/S when applied to 3-D array. Change
+    argument list (add myIter, flip order + change mask arg from 3-D to 2-D).
+o verification/global_ocean.90x40x15:
+  - increase "grdchk_eps" from 1e-7 to 10 in AD test kapgm to improve
+    accuracy of FD gradients ; update reference output.
+o verification/OpenAD:
+  - add ggl90 pkg to code_ad/packages.conf to get it tested in one TAF-AD exp.
+o doc:
+  - require sphinxcontrib-bibtex 2.0.0 or higher
+
+checkpoint68a (2021/07/16)
+o pkg/seaice:
+  - clean up and simplify TAF store directives in do_oceanic_phys.F
+    for seaice_model to avoid unnecessary recomputations ;
+  - in testreport, count and report number of times s/r seaice_model is called.
+o pkg/seaice:
+  - fix (untested) multi-threading and recomputations in seaice_solve4temp.F
+o files that include "tamc.h":
+  - add missing declaration of local keys for TAF store-dir in pkg/obcs
+    (ALLOW_OBCS_STEVENS) and pkg/bling (USE_BLING_V1, PHYTO_SELF_SHADING) ;
+  - add missing AUTODIFF_OPTIONS.h in few places (e.g., in pkg/ebm), needed to
+    get ALLOW_AUTODIFF_TAMC defined ;
+  - change few ALLOW_AUTODIFF <-> ALLOW_AUTODIFF_TAMC ;
+  - remove included "tamc.h" in few files from pkgs seaice, streamice, bling, +
+    in exf_radiation, longstep_thermodynamics, obcs_sponge & pp81_ri_number S/R.
+  - define ALLOW_OBCS_STEVENS in AD exp. obcs_ctrl (to check it compiles).
+o pkg/ecco:
+  - fix incorrect order of array indices for "objf_gencost" and "num_gencost"
+    in 2 gencost v4 S/R (bpv4 & sstv4).
+o eessup/inc & pkg/thsice:
+  - Remove 2 CPP options for deprecated code and remove corresponding code:
+    a) USE_OLD_MACROS_R4R8toRSRL (added in May 2009) and
+    b) OLD_THSICE_CALL_SEQUENCE  (added in Jan 2013).
+o pkg/shelfice:
+  - fix missing local keys declaration in shelfice_thermodynamics.F for TAF
+    storge dir. with SHI_ALLOW_GAMMAFRICT defined ;
+  - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h".
+o tools/build_options:
+  - update gfortran optfile for MacBook Pro "darwin_amd64_gfortran" to work with
+    gfortran version 10 (or higher), similar to linux version update.
+o pkg/ctrl & other:
+  - cleanup: move declarations of local variables from header files ctrl.h and
+    AUTODIFF.h to the local variables section in the respective routines ;
+  - move declaration of local keys and variables from header file tamc.h to
+    subroutines where they are used.
+  ==> IMPORTANT: This requires updating all customised versions of "tamc.h",
+    from each and every TAF-AD setup.
+  - remove tamc_keys.h + remove tamc (+tamc_keys) from all "cb2mFiles" lists ;
+  - disentangle ALLOW_AUTODIFF/ALLOW_AUTODIFF_TAMC/ALLOW_OPENAD a bit more ;
+  - remove unused variables where this is straightforward ;
+  - remove a few i/jmin/max variables.
+
+checkpoint67z (2021/06/12)
+o veritication:
+  - make testreport count and report the number calls of S/R load_fields_driver
+    and do_oceanic_phys in AD-code (similar to TAF error & warning count).
 o pkg/kpp:
   - add CPP-flags to turn off diffusivity matching at bottom of boundary layer ;
   - add CPP-flag to turn on taper shear mixing in the case of very small shear ;

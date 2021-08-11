@@ -41,6 +41,7 @@ C !USES: ============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
 C     bi, bj :: Current tile indices
@@ -130,8 +131,8 @@ C     gTKE     :: right hand side of diffusion equation
       _RL p4, p8, p16
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-C     INTEGER act1, act2, act3, act4
-C     INTEGER max1, max2, max3
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
       INTEGER ikeyLoc
 #endif
 CEOP
@@ -168,16 +169,16 @@ C     explicit/implicit timestepping weights for dissipation
 C     For nonlinear free surface and especially with r*-coordinates, the
 C     hFacs change every timestep, so we need to update them here in the
 C     case of using IDEMIX.
-       DO K=1,Nr
-        Km1 = MAX(K-1,1)
+       DO k=1,Nr
+        Km1 = MAX(k-1,1)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           hFac =
      &         MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
      &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
-          recip_hFacI(I,J,K)=0. _d 0
+          recip_hFacI(i,j,k)=0. _d 0
           IF ( hFac .NE. 0. _d 0 )
-     &         recip_hFacI(I,J,K)=1. _d 0/hFac
+     &         recip_hFacI(i,j,k)=1. _d 0/hFac
 #ifdef ALLOW_GGL90_IDEMIX
           hFacI(i,j,k) = hFac
 #endif /* ALLOW_GGL90_IDEMIX */

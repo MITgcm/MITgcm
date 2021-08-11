@@ -39,7 +39,6 @@ C     == Global data ==
 # include "PTRACERS_PARAMS.h"
 #endif
 c#ifdef ALLOW_AUTODIFF_TAMC
-c# include "tamc_keys.h"
 c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:

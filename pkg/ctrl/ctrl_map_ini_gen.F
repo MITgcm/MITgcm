@@ -36,10 +36,6 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 # include "optim.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-# include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -75,13 +71,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = 0
-          ikey = (act3 + 1) + act4*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -250,10 +239,6 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 # include "optim.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
 
 c     == routine arguments ==
 
@@ -269,7 +254,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -289,13 +274,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifdef ALLOW_AUTODIFF_TAMC
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = 0
-          ikey = (act3 + 1) + act4*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)

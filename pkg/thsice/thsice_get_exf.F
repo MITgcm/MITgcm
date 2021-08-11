@@ -38,7 +38,6 @@ C     == Global data ==
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # include "THSICE_SIZE.h"
 #endif
 
@@ -149,6 +148,11 @@ C     latent heat of evaporation or sublimation [J/kg]
       _RL lath
       _RL qsat_fac
       _RL qsat_exp
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey, ikey_1, ikey_2
+#endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
       INTEGER stdUnit
@@ -210,14 +214,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey_1 = i
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        ikey_1 = i
      &         + sNx*(j-1)
      &         + sNx*sNy*(it2-1)
      &         + sNx*sNy*MaxTsf*act1
@@ -280,20 +284,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO j=jMin,jMax
         DO i=iMin,iMax
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*(it2-1)
-     &         + sNx*sNy*MaxTsf*act1
-     &         + sNx*sNy*MaxTsf*max1*act2
-     &         + sNx*sNy*MaxTsf*max1*max2*act3
-     &         + sNx*sNy*MaxTsf*max1*max2*max3*act4
+         act1 = bi - myBxLo(myThid)
+         max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+         act2 = bj - myByLo(myThid)
+         max2 = myByHi(myThid) - myByLo(myThid) + 1
+         act3 = myThid - 1
+         max3 = nTx*nTy
+         act4 = ikey_dynamics - 1
+         ikey_1 = i
+     &          + sNx*(j-1)
+     &          + sNx*sNy*(it2-1)
+     &          + sNx*sNy*MaxTsf*act1
+     &          + sNx*sNy*MaxTsf*max1*act2
+     &          + sNx*sNy*MaxTsf*max1*max2*act3
+     &          + sNx*sNy*MaxTsf*max1*max2*max3*act4
 C--
 CADJ STORE sh(i,j,bi,bj) = comlev1_thsice_3, key = ikey_1
 #endif
@@ -334,14 +338,14 @@ C     start iteration
      &         (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-                  ikey_2 = iter
-     &                  + niter_bulk*(i-1)
-     &                  + niter_bulk*sNx*(j-1)
-     &                  + niter_bulk*sNx*sNy*(it2-1)
-     &                  + niter_bulk*sNx*sNy*MaxTsf*act1
-     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*act2
-     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*max2*act3
-     &                  + niter_bulk*sNx*sNy*MaxTsf*max1*max2*max3*act4
+           ikey_2 = iter
+     &            + niter_bulk*(i-1)
+     &            + niter_bulk*sNx*(j-1)
+     &            + niter_bulk*sNx*sNy*(it2-1)
+     &            + niter_bulk*sNx*sNy*MaxTsf*act1
+     &            + niter_bulk*sNx*sNy*MaxTsf*max1*act2
+     &            + niter_bulk*sNx*sNy*MaxTsf*max1*max2*act3
+     &            + niter_bulk*sNx*sNy*MaxTsf*max1*max2*max3*act4
 CADJ STORE rdn(i,j)    = comlev1_thsice_5, key = ikey_2
 CADJ STORE ustar(i,j)  = comlev1_thsice_5, key = ikey_2
 CADJ STORE qstar(i,j)  = comlev1_thsice_5, key = ikey_2

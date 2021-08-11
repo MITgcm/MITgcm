@@ -16,11 +16,3 @@ c ad dump record number (used only if dumpAdByRec is true)
       COMMON /AUTODIFF_DUMP_AD_REC/
      &       dumpAdRecMn, dumpAdRecDy, dumpAdRecSi,
      &       dumpAdRecEt
-
-      INTEGER ilev_1
-      INTEGER ilev_2
-      INTEGER ilev_3
-      INTEGER ilev_4
-      INTEGER max_lev2
-      INTEGER max_lev3
-      INTEGER max_lev4

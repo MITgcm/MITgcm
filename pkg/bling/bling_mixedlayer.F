@@ -1,7 +1,7 @@
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_MIXEDLAYER(
+      SUBROUTINE BLING_MIXEDLAYER(
      U           sumMLDepth,
      I           bi, bj, imin, imax, jmin, jmax,
      I           myTime, myIter, myThid)
@@ -25,9 +25,6 @@ C     === Global variables ===
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-#endif
 
 C     === Routine arguments ===
 C     bi,bj         :: tile indices
@@ -56,9 +53,9 @@ C     === Local variables ===
       _RL blg_minstra(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL blg_str2   (Nr)
       _RL blg_str2max
-       integer blgI,blgJ
+       INTEGER blgI,blgJ
 #endif
-       integer i,j,k
+       INTEGER i,j,k
 CEOP
 
 # ifndef BLING_USE_THRESHOLD_MLD
@@ -226,4 +223,3 @@ c           SumMLDepth(i,j) = 0. _d 0
 
       RETURN
       END
-

@@ -59,7 +59,7 @@ c     == local variables ==
       character*( 80)   fnamegeneric
 
       _RL     fac
-      _RL tmptest
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 c     == external ==
       integer  ilnblnk
@@ -87,6 +87,16 @@ CEOP
       else
         fac = 0. _d 0
       endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
 
 #ifdef ALLOW_SIAREA_CONTROL
 c--   siarea.
