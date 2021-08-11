@@ -136,6 +136,7 @@ CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow  = tapelev4, key = ilev_4
 # include "seaice_ad_check_lev4_dir.h"
 #endif /* ALLOW_SEAICE */
 
