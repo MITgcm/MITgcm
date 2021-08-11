@@ -55,16 +55,16 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER iTracer
 #endif
       _RL SEAICE_mcphee_max
-      INTEGER  kSurface
+      INTEGER  kSrf
       INTEGER  i
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface        = Nr
+      IF ( usingPCoords ) THEN
+       kSrf        = Nr
       ELSE
-       kSurface        = 1
+       kSrf        = 1
       ENDIF
       ioUnit = errorMessageUnit
 
@@ -117,7 +117,9 @@ C--   check ice cover fraction formula
 
 C--   check concistency of turbulent flux term etc. specification
 
-       SEAICE_mcphee_max=drF(kSurface)/SEAICE_deltaTtherm
+       SEAICE_mcphee_max=drF(kSrf)/SEAICE_deltaTtherm
+       IF ( usingPCoords ) SEAICE_mcphee_max
+     &      = SEAICE_mcphee_max * recip_rhoConst * recip_gravity
        IF ( SEAICE_mcPheePiston .LT. 0. _d 0 .OR.
      &      SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
@@ -1008,7 +1010,6 @@ C      STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
-
 
 C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 #ifndef SEAICE_ALLOW_FREEDRIFT

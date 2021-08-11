@@ -272,39 +272,39 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       CALL WRITE_0D_RL( GGL90taveFreq, INDEX_NONE,'GGL90taveFreq =',
      &'   /* GGL90 averaging interval ( s ). */')
       CALL WRITE_0D_L(GGL90mixingMaps,INDEX_NONE,
-     &     'GGL90mixingMAPS =', '   /* GGL90 IO flag. */')
+     &     'GGL90mixingMAPS =', '   /* GGL90 IO flag */')
       CALL WRITE_0D_L(GGL90writeState,INDEX_NONE,
-     &     'GGL90writeState =', '   /* GGL90 IO flag. */')
+     &     'GGL90writeState =', '   /* GGL90 IO flag */')
       CALL WRITE_0D_RL( GGL90ck, INDEX_NONE,'GGL90ck =',
-     &'   /* GGL90 viscosity parameter. */')
+     &'   /* GGL90 viscosity parameter */')
       CALL WRITE_0D_RL( GGL90ceps, INDEX_NONE,'GGL90ceps =',
-     &'   /* GGL90 dissipation parameter. */')
+     &'   /* GGL90 dissipation parameter */')
       CALL WRITE_0D_RL( GGL90alpha, INDEX_NONE,'GGL90alpha =',
-     &'   /* GGL90 TKE diffusivity parameter. */')
+     &'   /* GGL90 TKE diffusivity parameter */')
       CALL WRITE_0D_RL( GGL90m2, INDEX_NONE,'GGL90m2 =',
-     &'   /* GGL90 wind stress to vertical stress ratio. */')
+     &'   /* GGL90 wind stress to vertical stress ratio */')
       CALL WRITE_0D_RL( GGL90TKEmin, INDEX_NONE,'GGL90TKEmin =',
-     &'   /* GGL90 minimum kinetic energy ( m^2/s^2 ). */')
+     &'   /* GGL90 minimum kinetic energy ( m^2/s^2 ) */')
       CALL WRITE_0D_RL( GGL90TKEsurfMin, INDEX_NONE,
      &     'GGL90TKEsurfMin =',
-     &'   /* GGL90 minimum surface kinetic energy ( m^2/s^2 ). */')
+     &'   /* GGL90 minimum surface kinetic energy ( m^2/s^2 ) */')
       CALL WRITE_0D_RL( GGL90TKEbottom, INDEX_NONE,
      &     'GGL90TKEbottom =',
-     &     '   /* GGL90 bottom kinetic energy ( m^2/s^2 ). */')
+     &     '   /* GGL90 bottom kinetic energy ( m^2/s^2 ) */')
       CALL WRITE_0D_RL( GGL90viscMax, INDEX_NONE,'GGL90viscMax =',
-     &     '   /* GGL90 upper limit for viscosity ( m^2/s ). */')
+     &     '   /* GGL90 upper limit for viscosity (m^2/s ) */')
       CALL WRITE_0D_RL( GGL90diffMax, INDEX_NONE,'GGL90diffMax =',
-     &     '   /* GGL90 upper limit for diffusivity ( m^2/s ). */')
+     &     '   /* GGL90 upper limit for diffusivity (m^2/s ) */')
       CALL WRITE_0D_RL( GGL90diffTKEh, INDEX_NONE,'GGL90diffTKEh =',
-     &     '   /* GGL90 horizontal diffusivity for TKE ( m^2/s ). */')
+     &     '   /* GGL90 horizontal diffusivity for TKE ( m^2/s ) */')
       CALL WRITE_0D_RL( GGL90mixingLengthMin, INDEX_NONE,
      &     'GGL90mixingLengthMin =',
-     &     '   /* GGL90 minimum mixing length ( m ). */')
+     &     '   /* GGL90 minimum mixing length (m) */')
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
       CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
      &     'mxlSurfFlag =',
-     &     '   /* GGL90 flag for near surface mixing. */')
+     &     '   /* GGL90 flag for near surface mixing */')
       CALL WRITE_0D_L( calcMeanVertShear, INDEX_NONE,
      &     'calcMeanVertShear =',
      &     ' /* calc Mean of Vert.Shear (vs shear of Mean flow) */')
@@ -314,7 +314,7 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(GGL90_dirichlet,INDEX_NONE,
-     & 'GGL90writeState =', '   /* GGL90 Boundary condition flag. */')
+     & 'GGL90_dirichlet =', '   /* GGL90 Boundary condition flag */')
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
