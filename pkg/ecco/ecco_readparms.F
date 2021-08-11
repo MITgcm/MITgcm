@@ -168,7 +168,8 @@ c--   Read the namelist input.
      &                   wmean_snowprecip, wmean_apressure,
      &                   cost_iprec, cost_yftype
      &                   ,topexmeanfile
-     &                   ,sterGloH_output, keep_sgh_file_open
+     &                   ,ecco_output_sterGloH
+     &                   ,ecco_keepTSeriesOutp_open
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -499,8 +500,8 @@ catn  eccov4 will run without needing to read in these params
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
         cost_yftype = 'RL'
-        sterGloH_output       =      .FALSE.
-        keep_sgh_file_open    =      .FALSE.
+        ecco_output_sterGloH  =      .FALSE.
+        ecco_keepTSeriesOutp_open    =      .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '

@@ -54,7 +54,7 @@ C-----------------------------------------------------------------
 C     Save the global mean steric heigt change at every time step
 C-----------------------------------------------------------------
 
-      IF ( sterGloH_output ) THEN
+      IF ( ecco_output_sterGloH ) THEN
         irecord      = myIter - nIter0 + 1
 
 #ifdef ALLOW_MDSIO
