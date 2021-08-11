@@ -7,12 +7,12 @@ CADJ STORE silica            = tapelev2, key = ilev_2
 CADJ STORE atmospco2         = tapelev2, key = ilev_2
 
 C common dic_load
-CADJ STORE dicwind0,dicwind1   = tapelev2, key = ilev_2
-CADJ STORE ice0,ice1         = tapelev2, key = ilev_2
-CADJ STORE atmosp0,atmosp1   = tapelev2, key = ilev_2
-CADJ STORE silica0,silica1   = tapelev2, key = ilev_2
+CADJ STORE dicwind0,dicwind1   = tapelvs2, key = ilev_2
+CADJ STORE ice0,ice1         = tapelvs2, key = ilev_2
+CADJ STORE atmosp0,atmosp1   = tapelvs2, key = ilev_2
+CADJ STORE silica0,silica1   = tapelvs2, key = ilev_2
 #ifdef ALLOW_FE
-CADJ STORE feinput0,feinput1 = tapelev2, key = ilev_2
+CADJ STORE feinput0,feinput1 = tapelvs2, key = ilev_2
 #endif
 
 CADJ STORE gsm_s             = tapelev2, key = ilev_2
@@ -27,4 +27,3 @@ CADJ STORE totcost  = tapelev2, key = ilev_2
 #endif
 
 #endif /* ALLOW_DIC */
-
