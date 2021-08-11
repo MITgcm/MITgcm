@@ -28,13 +28,13 @@ CPP             = cat $< | /lib/cpp -P -traditional
 # CPP		= cat $< | /usr/ccs/lib/cpp
 
 INCLUDEDIRS     = -I.				\
-		  -I../verification/natl_box_adjoint/build/
+		  -I../verification/tutorial_global_oce_optim/build/
 
 LIBDIRS         = -L.				\
                   -L../lsopt/
 
 LIBS            = -llsopt_ecco			\
-		  -lblas1
+		  -lblas
 
 # OPTMODE is either equal to OFFLINE or ONLINE
 OPTMODE         = OFFLINE
@@ -64,6 +64,7 @@ FC              = f77
 # AER cluster
 #FC		= /opt/mpich/bin/mpif77
 #FFLAGS		= -byteswapio -r8 -Mnodclchk -Mextend
+FFLAGS          = -fconvert=big-endian -fimplicit-none
 
 # File removal.
 RM		= rm -f
