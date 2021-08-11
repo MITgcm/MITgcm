@@ -1,7 +1,8 @@
 #ifdef ALLOW_STREAMICE
 
+CADJ STORE streamice_hmask = tapelvs3, key = ilev_3
+
 CADJ STORE area_shelf_streamice = tapelev3, key = ilev_3
-CADJ STORE streamice_hmask = tapelev3, key = ilev_3
 CADJ STORE u_streamice = tapelev3, key = ilev_3
 CADJ STORE v_streamice = tapelev3, key = ilev_3
 CADJ STORE h_streamice = tapelev3, key = ilev_3

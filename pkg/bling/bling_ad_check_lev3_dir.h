@@ -19,16 +19,16 @@ CADJ STORE phyto_lg          = tapelev3, key = ilev_3
 CADJ STORE phyto_diaz        = tapelev3, key = ilev_3
 # endif
 
-CADJ STORE dicwind0          = tapelev3, key = ilev_3
-CADJ STORE dicwind1          = tapelev3, key = ilev_3
-CADJ STORE atmosp0           = tapelev3, key = ilev_3
-CADJ STORE atmosp1           = tapelev3, key = ilev_3
-CADJ STORE silica0           = tapelev3, key = ilev_3
-CADJ STORE silica1           = tapelev3, key = ilev_3
-CADJ STORE ice0              = tapelev3, key = ilev_3
-CADJ STORE ice1              = tapelev3, key = ilev_3
-CADJ STORE feinput0          = tapelev3, key = ilev_3
-CADJ STORE feinput1          = tapelev3, key = ilev_3
+CADJ STORE dicwind0          = tapelvs3, key = ilev_3
+CADJ STORE dicwind1          = tapelvs3, key = ilev_3
+CADJ STORE atmosp0           = tapelvs3, key = ilev_3
+CADJ STORE atmosp1           = tapelvs3, key = ilev_3
+CADJ STORE silica0           = tapelvs3, key = ilev_3
+CADJ STORE silica1           = tapelvs3, key = ilev_3
+CADJ STORE ice0              = tapelvs3, key = ilev_3
+CADJ STORE ice1              = tapelvs3, key = ilev_3
+CADJ STORE feinput0          = tapelvs3, key = ilev_3
+CADJ STORE feinput1          = tapelvs3, key = ilev_3
 
 #ifdef ALLOW_EXF
 CADJ STORE apressure         = tapelev3, key = ilev_3
@@ -38,4 +38,3 @@ CADJ STORE apco21            = tapelev3, key = ilev_3
 # endif
 
 #endif /* ALLOW_BLING */
-
