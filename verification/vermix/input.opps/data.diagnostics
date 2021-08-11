@@ -25,8 +25,9 @@
 # fileFlags(1) = 'D       ',
 # frequency(1) = 432000.,
 
-  fields(1:6,2)  = 'UVEL    ','VVEL    ','WVEL    ',
+  fields(1:7,2)  = 'UVEL    ','VVEL    ','WVEL    ',
                    'THETA   ','PHIHYD  ','DFrI_TH ',
+                   'OPPScadj',
    fileName(2) = 'dynDiag',
   frequency(2) = 432000.,
 
@@ -65,4 +66,3 @@
 #  stat_freq(1) = -86400.,
 # stat_phase(1) = 0.,
  &
-

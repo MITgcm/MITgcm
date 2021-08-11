@@ -47,7 +47,6 @@ C     myThid :: My Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_MY82
 C !LOCAL VARIABLES: ====================================================
 c Local constants
 C     imin, imax, jmin, jmax  - array computation indices
@@ -179,7 +178,13 @@ C     Set a maximum and mask land point
 C     end third k-loop
       ENDDO
 
-#endif /* ALLOW_MY82 */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(MYviscAr,'MYVISCAR',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(MYdiffKr,'MYDIFFKR',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(MYhbl   ,'MYHBL   ',0,1 ,1,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

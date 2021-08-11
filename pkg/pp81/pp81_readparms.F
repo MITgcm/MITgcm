@@ -41,8 +41,7 @@ CEOP
      &     PPalpha,
      &     PPdumpFreq,
      &     PPMixingMaps,
-     &     PPwriteState,
-     &     PPtaveFreq
+     &     PPwriteState
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -70,7 +69,6 @@ C Set defaults values for parameters in PP81.h
       PPalpha      = 5. _d 0
       RiLimit      = UNSET_RL
       PPdumpFreq   = dumpFreq
-      PPtaveFreq   = taveFreq
       PPMixingMaps = .FALSE.
       PPwriteState = .FALSE.
 

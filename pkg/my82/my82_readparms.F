@@ -38,8 +38,7 @@ CEOP
      &     MYhblScale,
      &     MYdumpFreq,
      &     MYMixingMaps,
-     &     MYwriteState,
-     &     MYtaveFreq
+     &     MYwriteState
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -64,7 +63,6 @@ C Set defaults values for parameters in MY82.h
       MYhblScale   = 0.1 _d 0
       RiMax        = 0.1950 _d 0
       MYdumpFreq   = dumpFreq
-      MYtaveFreq   = taveFreq
       MYMixingMaps = .FALSE.
       MYwriteState = .FALSE.
 
