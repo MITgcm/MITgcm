@@ -850,7 +850,7 @@ or pseudo-time steps can be controlled by the run-time parameter
 number of at least 10 is recommended for better solutions that are converged at
 least in an energy norm sense (Zhang and Hibler 1997) :cite:`zhang:97`.
 
-In order to overcome the poor convergence of the Picard-solver, Lemieux et
+In order to overcome the poor convergence of the Picard solver, Lemieux et
 al. (2010) :cite:`lemieux:10` introduced a Jacobian-free Newton-Krylov solver
 for the sea ice momentum equations. This solver is also implemented in MITgcm
 (see Losch et al. 2014 :cite:`losch:14`). The Newton method transforms
@@ -921,19 +921,19 @@ The Krylov method iteratively improves the approximate solution to
 -\mathbf{J}(\mathbf{x}^{k-1})\,\delta\mathbf{x}^{k}_{0}` is the initial
 residual of :eq:`eq_jfnklin`;
 :math:`\mathbf{r}_0=-\mathbf{F}(\mathbf{x}^{k-1})` with the first guess
-:math:`\delta\mathbf{x}^{k}_{0}=0`. We allow a Krylov-subspace of dimension \
+:math:`\delta\mathbf{x}^{k}_{0}=0`. We allow a Krylov subspace of dimension \
 :math:`m=50` and we do allow restarts for more than 50 Krylov iterations.  The
 preconditioning operation involves applying :math:`\mathbf{P}^{-1}` to the
 basis vectors :math:`\mathbf{v}_0, \mathbf{v}_1, \mathbf{v}_2, \ldots,
 \mathbf{v}_m` of the Krylov subspace. This operation is approximated by solving
 the linear system :math:`\mathbf{P}\,\mathbf{w}=\mathbf{v}_i`.  Because
 :math:`\mathbf{P} \approx \mathbf{A}(\mathbf{x}^{k-1})`, we can use the
-LSR-algorithm already implemented in the Picard solver. Each preconditioning
-operation uses a fixed number of 10 LSR-iterations avoiding any termination
+LSR algorithm already implemented in the Picard solver. Each preconditioning
+operation uses a fixed number of 10 LSR iterations avoiding any termination
 criterion. More details and results can be found in Losch et al. (2014)
 :cite:`losch:14`).
 
-To use the JFNK-solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.,`` in the
+To use the JFNK solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.`` in the
 namelist file ``data.seaice``; ``#define`` :varlink:`SEAICE_ALLOW_JFNK` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and we recommend
 using a smooth regularization of :math:`\zeta` by ``#define``
@@ -972,12 +972,12 @@ number of Krylov iterations :varlink:`SEAICEkrylovIterMax` :math:`= 50`,
 because the Krylov subspace has a fixed dimension of 50 (but restarts are
 allowed for :varlink:`SEAICEkrylovIterMax` :math:`> 50`).
 
-Setting :varlink:`SEAICEuseStrImpCpl` ``= .TRUE.,`` turns on “strength implicit
-coupling” (see Hutchings et al. 2004 :cite:`hutchings:04`) in the LSR-solver
-and in the LSR-preconditioner for the JFNK-solver. In this mode, the different
+Setting :varlink:`SEAICEuseStrImpCpl` ``= .TRUE.`` turns on “strength implicit
+coupling” (see Hutchings et al. 2004 :cite:`hutchings:04`) in the LSR solver
+and in the LSR preconditioner for the JFNK solver. In this mode, the different
 contributions of the stress divergence terms are reordered so as to increase
 the diagonal dominance of the system matrix.  Unfortunately, the convergence
-rate of the LSR solver is increased only slightly, while the JFNK-convergence
+rate of the LSR solver is increased only slightly, while the JFNK convergence
 appears to be unaffected.
 
 .. _para_phys_pkg_seaice_EVPdynamics:
@@ -998,7 +998,7 @@ steady state,
     = \dot{\epsilon}_{ij}.
    :label: eq_evpequation
 
-The EVP-model uses an explicit time stepping scheme with a short timestep.
+The EVP model uses an explicit time stepping scheme with a short timestep.
 According to the recommendation in Hunke and Dukowicz (1997) :cite:`hunke:97`,
 the EVP-model should be stepped forward in time 120 times
 (:varlink:`SEAICE_deltaTevp` = :varlink:`SEAICE_deltaTdyn` /120) within the
@@ -1045,8 +1045,8 @@ really need to use the original EVP solver, make sure that both ``#define``
 :varlink:`SEAICE_CGRID` and ``#define`` :varlink:`SEAICE_ALLOW_EVP` are set in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` (both are defined by
 default). By default, the runtime parameters :varlink:`SEAICEuseEVPstar` and
-:varlink:`SEAICEuseEVPrev` are set to ``TRUE``, which already improves the
-behavoir of EVP, but for the original EVP they should be set to ``FALSE``.  The
+:varlink:`SEAICEuseEVPrev` are set to ``.TRUE.``, which already improves the
+behavoir of EVP, but for the original EVP they should be set to ``.FALSE.``.  The
 solver is turned on by setting the sub-cycling time step
 :varlink:`SEAICE_deltaTevp` to a value larger than zero. The choice of this
 time step is under debate.  Hunke and Dukowicz (1997) :cite:`hunke:97` recommend
@@ -1085,7 +1085,7 @@ of a residual :math:`|\mathbf{u}^{p+1}-\mathbf{u}^{p}|` that, as
 :math:`\mathbf{u}^{p+1} \rightarrow \mathbf{u}^{n+1}`, converges to
 :math:`0`. In this way EVP can be re-interpreted as a pure iterative solver
 where the sub-cycling has no association with time-relation (through
-:math:`\Delta{t}_{\mathrm{EVP}}`). With the default setting of
+:math:`\Delta{t}_{\mathrm{EVP}}`). With the setting of
 :varlink:`SEAICEuseEVPstar` ``=.TRUE.`` (default), this form of EVP is used.
 Using the terminology of Kimmritz et al. 2015 :cite:`kimmritz:15`, the evolution
 equations of stress :math:`\sigma_{ij}` and momentum :math:`\mathbf{u}` can be
@@ -1119,12 +1119,12 @@ the number of mEVP iterations is fixed to :varlink:`SEAICEnEVPstarSteps`.
 In order to use mEVP in MITgcm, compile with both ``#define``
 :varlink:`SEAICE_CGRID` and ``#define`` :varlink:`SEAICE_ALLOW_EVP` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` (default) and make
-sure that :varlink:`SEAICEuseEVPstar` ``= .TRUE.,`` (default, or set in
-``data.seaice``). By default :varlink:`SEAICEuseEVPrev` ``=.TRUE.,`` and the
+sure that :varlink:`SEAICEuseEVPstar` ``= .TRUE.`` (default).
+By default :varlink:`SEAICEuseEVPrev` ``=.TRUE.`` and the
 actual form of equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used
 with fewer implicit terms and the factor of :math:`e^{2}` dropped in the stress
 equations :eq:`eq_evpstresstensor2` and :eq:`eq_evpstresstensor12`. Although
-this modifies the original EVP-equations, it turns out to improve convergence
+this modifies the original EVP equations, it turns out to improve convergence
 (Bouillon et al. 2013 :cite:`bouillon:13`).
 
 The aEVP scheme is an enhanced variant of mEVP (Kimmritz et al. 2016
@@ -1141,7 +1141,8 @@ choice sacrifices speed of convergence for stability with the result that aEVP
 converges quickly to VP where :math:`\alpha` can be small and more slowly in
 areas where the equations are stiff. In practice, aEVP leads to an overall
 better convergence than mEVP (Kimmritz et al. 2016 :cite:`kimmritz:16`). To use
-aEVP in MITgcm set :varlink:`SEAICEaEVPcoeff` :math:`= \tilde{c}`; this also
+aEVP in MITgcm set :varlink:`SEAICEaEVPcoeff` :math:`= \tilde{c}`
+(see :eq:`eq_aevpalpha`; default is unset); this also
 sets the default values of :varlink:`SEAICEaEVPcStar` (:math:`c=4`) and
 :varlink:`SEAICEaEVPalphaMin` (:math:`\alpha_{\min}=5`). Good convergence has
 been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz:16`):
@@ -1155,10 +1156,10 @@ been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz:16`):
    SEAICEuseEVPstar     = .TRUE.,
    SEAICEuseEVPrev      = .TRUE.,
 
-Note, that probably because of the C-grid staggering of velocities and
+Because of the C-grid staggering of velocities and
 stresses, mEVP may not converge as successfully as in Kimmritz et al. (2015)
-:cite:`kimmritz:15`, see also Kimmritz et al. (2016) :cite:`kimmritz:16`, and
-that convergence at very high resolution (order 5 km) has not been studied yet.
+:cite:`kimmritz:15`, see also Kimmritz et al. (2016) :cite:`kimmritz:16`.
+Convergence at very high resolution (order 5 km) has not yet been studied.
 
 .. _para_phys_pkg_seaice_iceoceanstress:
 
@@ -1477,7 +1478,7 @@ the snow is flooded, a simple mass conserving parameterization of snowice
 formation (a flood-freeze algorithm following Archimedes’ principle) turns snow
 into ice until the ice surface is back at :math:`z=0` (see Leppäranta 1983
 :cite:`leppaeranta:83`).  The flood-freeze algorithm is turned on with run-time
-parameter :varlink:`SEAICEuseFlooding` =.TRUE..
+parameter :varlink:`SEAICEuseFlooding` ``=.TRUE.``.
 
 .. _para_phys_pkg_seaice_advection:
 
