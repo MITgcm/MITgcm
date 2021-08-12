@@ -46,7 +46,8 @@ C     GGL90taveFreq   - analogue of taveFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
 C     GGL90writeState - output to files        (default = .FALSE.)
 C
-C Time varying parameters computed by subroutine ggl90_calc
+C Time varying parameters computed by subroutine ggl90_calc, defined at
+C interface (wVel-like)
 C     GGL90TKE    - prognostic variable stepped forward in time ((m/s)^2)
 C     GGL90viscAr - Vertical eddy viscosity coefficient         (m^2/s)
 C     GGL90diffKr - Vertical diffusion coefficient for heat,
@@ -101,36 +102,57 @@ CEOP
 #endif
 
 #ifdef ALLOW_GGL90_IDEMIX
-c-----------------------------------------------------------------------
-c   IDEMIX parameter
-c-----------------------------------------------------------------------
-      _RL  IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma, IDEMIX_jstar
-      _RL  IDEMIX_mu0, IDEMIX_diff_min
-      _RL  IDEMIX_mixing_efficiency, IDEMIX_diff_max
-      _RL  IDEMIX_frac_F_b, IDEMIX_frac_F_s
-c-----------------------------------------------------------------------
-c      IDEMIX 3-d fields
-c-----------------------------------------------------------------------
+C-----------------------------------------------------------------------
+C     IDEMIX parameters
+C     IDEMIX_tau_v :: time scale for vertical symmetrisation (s), def: 1d
+C     IDEMIX_tau_h :: time scale for horizontal symmetrisation (s), def: 10d
+C     IDEMIX_gamma :: scaling factor (see Olbers and Eden 2013, App) def: 1.57
+C     IDEMIX_jstar :: spectral bandwidth in modes (default=10.)
+C     IDEMIX_mu0   :: dissipation parameter (default 4/3)
+C     IDEMIX_diff_min :: minimum diffusivity, not used (def: 1e-9)
+C     IDEMIX_mixing_efficiency :: used for diagnosing Osborn diff (def: 0.1666)
+C     IDEMIX_diff_max :: maximum Osborn diffusivity (def: 1)
+C     IDEMIX_frac_F_b :: scaling factor for  bottom forcing (def: 1)
+C     IDEMIX_frac_F_s :: scaling factor for surface forcing (def: 0.2)
+C-----------------------------------------------------------------------
+      _RL IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma, IDEMIX_jstar
+      _RL IDEMIX_mu0, IDEMIX_diff_min
+      _RL IDEMIX_mixing_efficiency, IDEMIX_diff_max
+      _RL IDEMIX_frac_F_b, IDEMIX_frac_F_s
+C-----------------------------------------------------------------------
+C     IDEMIX 3-d fields, defined at interfaces (wVel-like)
+C     IDEMIX_E     :: total energy of internal waves
+C     IDEMIX_V0    :: mean lateral group velocity
+C     IDEMIX_tau_d :: dissipation parameter (see Olbers and Eden 2013, eq.12)
+C-----------------------------------------------------------------------
       _RL IDEMIX_E    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL IDEMIX_V0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL IDEMIX_tau_d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c-----------------------------------------------------------------------
-c      IDEMIX 2-d fields
-c-----------------------------------------------------------------------
+C-----------------------------------------------------------------------
+C     IDEMIX 2-d fields
+C     IDEMIX_F_B :: internal wave energy bottom forcing field (e.g., tides)
+C     IDEMIX_F_S :: IW energy surface forcing field (e.g., wind stress)
+C-----------------------------------------------------------------------
       _RL IDEMIX_F_B(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL IDEMIX_F_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /GGL90_IDEMIX_01/ IDEMIX_E,IDEMIX_V0,IDEMIX_tau_d
+      COMMON /GGL90_IDEMIX_R/ IDEMIX_E,IDEMIX_V0,IDEMIX_tau_d
      &     ,IDEMIX_F_b,IDEMIX_F_S
      &     ,IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma,IDEMIX_jstar
      &     ,IDEMIX_mu0,IDEMIX_mixing_efficiency,IDEMIX_diff_max
      &     ,IDEMIX_diff_min,IDEMIX_frac_F_b, IDEMIX_frac_F_s
 
+C     IDEMIX_tidal_file :: file containing tidal forcing
+C     IDEMIX_wind_file  :: file containing surface wind forcing
       CHARACTER*(MAX_LEN_FNAM)
      &            IDEMIX_tidal_file, IDEMIX_wind_file
+      COMMON /GLL90_IDEMIX_C/
+     &            IDEMIX_tidal_file, IDEMIX_wind_file
+
+C     IDEMIX_include_GM :: logical flag
+C     IDEMIX_include_GM_bottom :: logical flag
       LOGICAL     IDEMIX_include_GM, IDEMIX_include_GM_bottom
-      COMMON /GLL90_IMIX_02/
-     &            IDEMIX_tidal_file, IDEMIX_wind_file,
+      COMMON /GLL90_IDEMIX_L/
      &            IDEMIX_include_GM, IDEMIX_include_GM_bottom
 #endif /* ALLOW_GGL90_IDEMIX */
 

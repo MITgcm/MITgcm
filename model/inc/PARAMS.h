@@ -74,6 +74,8 @@ C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
+C     geoPotAnomFile  :: File containing constant geopotential anomaly due to
+C                        density structure
 C     addMassFile     :: File containing source/sink of fluid in the interior
 C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data
 C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
@@ -94,7 +96,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                surfQfile, surfQnetFile, surfQswFile,
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                pLoadFile, addMassFile,
+     &                pLoadFile, geoPotAnomFile, addMassFile,
      &                eddyPsiXFile, eddyPsiYFile, geothermalFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
@@ -133,6 +135,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) pLoadFile
+      CHARACTER*(MAX_LEN_FNAM) geoPotAnomFile
       CHARACTER*(MAX_LEN_FNAM) addMassFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiYFile
@@ -624,6 +627,8 @@ C     rUnit2mass :: units conversion factor (surface forcing),
 C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
+C     sIceLoadFac:: factor to scale (and turn off) sIceLoad (sea-ice loading)
+C                   default = 1
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
@@ -838,7 +843,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
-     & smoothAbsFuncRange,
+     & smoothAbsFuncRange, sIceLoadFac,
      & tCylIn, tCylOut,
      & phiEuler, thetaEuler, psiEuler
 
@@ -979,6 +984,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL bottomDragLinear
       _RL bottomDragQuadratic
       _RL smoothAbsFuncRange
+      _RL sIceLoadFac
       _RL nh_Am2
       _RL tCylIn, tCylOut
       _RL phiEuler, thetaEuler, psiEuler

@@ -3,10 +3,10 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SEAICE_MNC_INIT
-      
+
 C     !INTERFACE:
       SUBROUTINE SEAICE_MNC_INIT( myThid )
-      
+
 C     !DESCRIPTION:
 C     Initialize SEAICE variables within MNC
 

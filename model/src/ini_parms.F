@@ -235,7 +235,7 @@ C--   Continuous equation parameters
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
-     & smoothAbsFuncRange,
+     & smoothAbsFuncRange, sIceLoadFac,
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax
 
@@ -293,7 +293,8 @@ C--   Input files
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
      & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile, addMassFile, tCylIn, tCylOut,
+     & dQdTFile, ploadFile, geoPotAnomFile, addMassFile,
+     & tCylIn, tCylOut,
      & eddyPsiXFile, eddyPsiYFile, geothermalFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name

@@ -40,8 +40,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#include "PARAMS.h"
 #ifdef ALLOW_BULK_OFFLINE
-# include "PARAMS.h"
 # include "DYNVARS.h"
 #endif
 #include "EXF_PARAM.h"
@@ -71,12 +71,15 @@ c     myThid - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      INTEGER bi, bj, i, j
+      INTEGER bi, bj, i, j, ks
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 c     == end of interface ==
+
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
@@ -187,25 +190,25 @@ c     Get values of climatological ustr fields.
 # ifdef ALLOW_CLIMSST_RELAXATION
            IF ( climsstfile .NE. ' ' .AND.
      &          climsstperiod .NE. 0. )
-     &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+     &          theta(i,j,ks,bi,bj) = climsst(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
            IF ( climsssfile .NE. ' ' .AND.
      &          climsssperiod .NE. 0. )
-     &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
+     &          salt(i,j,ks,bi,bj) = climsss(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
            IF ( climustrfile .NE. ' ' .AND.
      &          climustrperiod .NE. 0. )
-     &          uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
+     &          uVel(i,j,ks,bi,bj) = climustr(i,j,bi,bj)
            IF ( climvstrfile .NE. ' ' .AND.
      &          climvstrperiod .NE. 0. )
-     &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
+     &          vVel(i,j,ks,bi,bj) = climvstr(i,j,bi,bj)
 # endif
-           IF ( myIter .EQ. niter0 ) THEN
-              IF ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
-     &             theta(i,j,1,bi,bj) .EQ. 0. ) THEN
-                print *, 'ph-warn-exf-clim ', i, j, theta(i,j,1,bi,bj)
+           IF ( myIter .EQ. nIter0 ) THEN
+              IF ( maskC(i,j,ks,bi,bj) .NE. 0. .AND.
+     &             theta(i,j,ks,bi,bj) .EQ. 0. ) THEN
+                print *, 'ph-warn-exf-clim ', i, j, theta(i,j,ks,bi,bj)
 cph                STOP 'in exf_getclim'
               ENDIF
            ENDIF

@@ -176,6 +176,7 @@ C-    viscosity and diffusivity default value:
       buoyancyRelation    = 'OCEANIC'
       selectP_inEOS_Zc    = UNSET_I
       smoothAbsFuncRange  = 0. _d 0
+      sIceLoadFac         = 1. _d 0
       hFacMin             = 1. _d 0
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
@@ -385,6 +386,7 @@ C--   Input files
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
       pLoadFile       = ' '
+      geoPotAnomFile  = ' '
       addMassFile     = ' '
       eddyPsiXFile    = ' '
       eddyPsiYFile    = ' '

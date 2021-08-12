@@ -185,7 +185,7 @@ C     cc0 = TEN ** aa2
       cc1 = cc0*aa1*bb1*Ppascals*lnTEN
       cc2 = cc0*bb2
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface        = Nr
       ELSE
        kSurface        = 1

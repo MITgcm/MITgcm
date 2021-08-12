@@ -242,29 +242,43 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        DO j=1-OLy,sNy+OLy
+        IF ( usingPCoords ) THEN
+         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+           phiSurf(i,j) = phiHydLow(i,j,bi,bj)
           ENDDO
-        ENDDO
+         ENDDO
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
 #ifdef ATMOSPHERIC_LOADING
-C-    add atmospheric loading and Sea-Ice loading
-        IF ( useRealFreshWaterFlux ) THEN
+C--   add atmospheric loading and Sea-Ice loading as it is done for phi0surf
+C--   in S/R external_forcing_surf
+        IF ( usingZCoords ) THEN
+         IF ( useRealFreshWaterFlux ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + ( pload(i,j,bi,bj)
-     &                      +sIceLoad(i,j,bi,bj)*gravity
+     &                      +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
      &                     )*recip_rhoConst
            ENDDO
           ENDDO
-        ELSE
+         ELSE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + pload(i,j,bi,bj)*recip_rhoConst
            ENDDO
           ENDDO
+         ENDIF
+C       ELSEIF ( usingPCoords ) THEN
+C     The true atmospheric P-loading is not yet implemented for P-coord
+C     (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
         ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 C--   basic forcing by wind stress
