@@ -45,9 +45,9 @@ c--   Read the namelist input.
      &       , mult_depth
 #endif
      &       , lastinterval
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
      &                 , mult_temp_tut, mult_hflux_tut
-#endif
+cHFLUXM_CONTROL
 
       _BEGIN_MASTER( myThid )
 
@@ -66,10 +66,10 @@ c--     Set default values.
 #ifdef ALLOW_COST_DEPTH
         mult_depth            =      0. _d 0
 #endif
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
         mult_temp_tut         =      0. _d 0
         mult_hflux_tut        =      0. _d 0
-#endif
+cHFLUXM_CONTROL
 
 c--     30*24*3600 = 2592000 = 1 model month
         lastinterval = 2592000.

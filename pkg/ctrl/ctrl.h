@@ -305,6 +305,9 @@ C
 #  ifdef ALLOW_TR10_CONTROL
      &      , xx_tr1
 #  endif
+#  ifdef ALLOW_HFLUXM_CONTROL
+     &      , xx_hfluxm
+#  endif
 # endif /* ECCO_CTRL_DEPRECATED */
 
 # ifdef ALLOW_GENARR2D_CONTROL
@@ -328,6 +331,9 @@ C
 #  endif
 #  ifdef ALLOW_TR10_CONTROL
       _RL xx_tr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#  endif
+#  ifdef ALLOW_HFLUXM_CONTROL
+      _RL xx_hfluxm(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #  endif
 # endif /* ECCO_CTRL_DEPRECATED */
 
@@ -632,6 +638,9 @@ c     xx_tauv_file  - control vector meridional wind stress file.
      &                    , xx_sihsnow_file
      &                    , xx_gen2d_file
      &                    , xx_gen3d_file
+cHFLUXM_CONTROL
+     &                    , xx_hfluxm_file
+cHFLUXM_CONTROL
      &                    , xx_shifwflx_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
@@ -683,6 +692,9 @@ c     xx_tauv_file  - control vector meridional wind stress file.
       character*(MAX_LEN_FNAM) xx_sihsnow_file
       character*(MAX_LEN_FNAM) xx_gen2d_file
       character*(MAX_LEN_FNAM) xx_gen3d_file
+cHFLUXM_CONTROL
+      character*(MAX_LEN_FNAM) xx_hfluxm_file
+cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_shifwflx_file
 
 c     Calendar information for the control variables:

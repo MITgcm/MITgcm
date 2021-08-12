@@ -201,6 +201,10 @@ CADJ STORE objf_tracer = tapelev4, key = ilev_4
 CADJ STORE objf_transport = tapelev4, key = ilev_4
 #endif
 
+#ifdef ALLOW_HFLUXM_CONTROL
+CADJ STORE qnetm          = tapelev4, key = ilev_4
+#endif
+
 #ifdef ALLOW_SEAICE
 cph temporary for HD
 # ifdef ANNUAL_BALANCE

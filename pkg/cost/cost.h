@@ -53,10 +53,10 @@ C     tile_fc   :: Final cost function contribution from this tile
      &                objf_depth,
 #endif
      &                objf_eflux
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
      &               ,objf_hflux_tut
      &               ,objf_temp_tut
-#endif
+cHFLUXM_CONTROL
 
       _RL  objf_atl  (nsx,nsy)
       _RL  objf_test (nsx,nsy)
@@ -70,10 +70,10 @@ C     tile_fc   :: Final cost function contribution from this tile
 #ifdef ALLOW_COST_DEPTH
       _RL  objf_depth (nsx,nsy)
 #endif
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
       _RL  objf_hflux_tut (nsx,nsy)
       _RL  objf_temp_tut (nsx,nsy)
-#endif
+cHFLUXM_CONTROL
 
       common /cost_param_r/
      &                lastinterval
@@ -110,10 +110,10 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &           mult_depth,
 #endif
      &                    multEtan
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
      &                   ,mult_hflux_tut
      &                   ,mult_temp_tut
-#endif
+cHFLUXM_CONTROL
 
       _RL  mult_atl
       _RL  mult_test
@@ -132,10 +132,10 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
 #ifdef ALLOW_COST_DEPTH
       _RL  mult_depth
 #endif
-#ifdef ALLOW_COST_HFLUXM
+cHFLUXM_CONTROL
       _RL  mult_hflux_tut
       _RL  mult_temp_tut
-#endif
+cHFLUXM_CONTROL
 
 #ifdef ALLOW_COST_TEST
       common /cost_test_i/
@@ -161,3 +161,4 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
 c     ==================================================================
 c     END OF HEADER COST
 c     ==================================================================
+

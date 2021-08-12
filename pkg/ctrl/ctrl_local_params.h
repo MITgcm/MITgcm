@@ -62,6 +62,9 @@ c     xx_tauv_file  - control vector meridional wind stress file.
      &                    , xx_sihsnow_file
      &                    , xx_gen2d_file
      &                    , xx_gen3d_file
+cHFLUXM_CONTROL
+     &                    , xx_hfluxm_file
+cHFLUXM_CONTROL
      &                    , xx_shifwflx_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
@@ -113,6 +116,9 @@ c     xx_tauv_file  - control vector meridional wind stress file.
       character*(MAX_LEN_FNAM) xx_sihsnow_file
       character*(MAX_LEN_FNAM) xx_gen2d_file
       character*(MAX_LEN_FNAM) xx_gen3d_file
+cHFLUXM_CONTROL
+      character*(MAX_LEN_FNAM) xx_hfluxm_file
+cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_shifwflx_file
 
 c     Calendar information for the control variables:
@@ -359,3 +365,4 @@ c                         control part.
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl.h
 c     ==================================================================
+
