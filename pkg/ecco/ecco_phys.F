@@ -65,7 +65,7 @@ c- note defined with overlap here, not needed, but more efficient
       _RL tmpfac
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-      _RL sIceLoadFac
+      _RL sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -155,8 +155,8 @@ c    &                       SQUEEZE_RIGHT, myThid )
       CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
       ploadbar=PLOADsumGlob/AREAsumGlob
 #endif
-      sIceLoadFac=zeroRL
-      IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
+      sIceLoadFacLoc=zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -168,7 +168,7 @@ C  there is air pressure forcing
                 m_eta(i,j,bi,bj)=
      &                (etan(i,j,bi,bj)
 #ifdef ATMOSPHERIC_LOADING
-     &                +sIceLoad(i,j,bi,bj)*sIceLoadFac
+     &                +sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
