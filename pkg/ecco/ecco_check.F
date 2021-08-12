@@ -694,7 +694,7 @@ c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
      &    '** WARNING ** S/R ECCO_CHECK: missing file: ',
-     &    ' for altimeter data so cost gets switched off'
+     &    'for altimeter data so cost gets switched off'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       else
@@ -795,7 +795,7 @@ c switch off cost function term
            IF ( (.NOT.exst).AND.(yday.GE.locy) ) THEN
 c warn user as we override using_cost_local
              WRITE(msgBuf,'(5A)')
-     &       '** WARNING ** ECCO_CHECK_FILES: missing',fname,
+     &       '** WARNING ** ECCO_CHECK_FILES: missing ',fname,
      &       ' so ',localname,' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
