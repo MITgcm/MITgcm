@@ -37,8 +37,8 @@ c     == routine arguments ==
 
 C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL     active_tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
       INTEGER nnzbar, nrecloc
@@ -83,4 +83,3 @@ c--   Loop over month
 
       RETURN
       END
-

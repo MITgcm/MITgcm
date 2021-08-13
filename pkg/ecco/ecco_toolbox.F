@@ -5,28 +5,29 @@
 
 C--  File ecco_toolbox.F: Routines to handle basic operations common in ecco.
 C--   Contents
-C--   o ecco_zero
-C--   o ecco_cp
-C--   o ecco_cprsrl
-C--   o ecco_diffmsk
-C--   o ecco_diffanommsk
-C--   o ecco_obsmsk
-C--   o ecco_addcost
-C--   o ecco_add
-C--   o ecco_subtract
-C--   o ecco_addmask
-C--   o ecco_div
-C--   o ecco_divfield
-C--   o ecco_mult
-C--   o ecco_multfield
-C--   o ecco_readbar
-C--   o ecco_readwei
+C--   o ECCO_ZERO
+C--   o ECCO_CP
+C--   o ECCO_CPRSRL
+C--   o ECCO_DIFFMSK
+C--   o ECCO_DIFFANOMMSK
+C--   o ECCO_OBSMSK
+C--   o ECCO_ADDCOST
+C--   o ECCO_ADD
+C--   o ECCO_SUBTRACT
+C--   o ECCO_ADDMASK
+C--   o ECCO_DIV
+C--   o ECCO_DIVFIELD
+C--   o ECCO_MULT
+C--   o ECCO_MULTFIELD
+C--   o ECCO_OFFSET
+C--   o ECCO_READBAR
+C--   o ECCO_READWEI
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_zero
+C     !ROUTINE: ECCO_ZERO
 C     !INTERFACE:
-      subroutine ecco_zero( fld, nnzloc, zeroloc, myThid )
+      SUBROUTINE ECCO_ZERO( fld, nnzloc, zeroloc, myThid )
 C     !DESCRIPTION: \bv
 C     fill a field with zeroloc
 C     \ev
@@ -34,51 +35,35 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL zeroloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzloc
-             do j = jmin,jmax
-              do i = imin,imax
-                fld(i,j,k,bi,bj) = zeroloc
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzloc
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           fld(i,j,k,bi,bj) = zeroloc
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -87,9 +72,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_diffmsk
+C     !ROUTINE: ECCO_DIFFMSK
 C     !INTERFACE:
-      subroutine ecco_diffmsk(
+      SUBROUTINE ECCO_DIFFMSK(
      I                   localbar, nnzbar, localobs, nnzobs, localmask,
      I                   spminloc, spmaxloc, spzeroloc,
      O                   localdif, difmask,
@@ -103,73 +88,54 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
+c--   Determine the model-data difference mask
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzobs
+         DO j = 1,sNy
+          DO i = 1,sNx
 #ifdef ECCO_CTRL_DEPRECATED
-               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
-     &                           localmask(i,j,k,bi,bj)
+           difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                            localmask(i,j,k,bi,bj)
 #else
-               difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+           difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
 #endif
-                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
-     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
-     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
-                   difmask(i,j,k,bi,bj) = 0. _d 0
-                endif
-               localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
-     &             (localbar(i,j,k,bi,bj)-localobs(i,j,k,bi,bj))
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+           IF ( localobs(i,j,k,bi,bj) .LT. spminloc .OR.
+     &          localobs(i,j,k,bi,bj) .GT. spmaxloc .OR.
+     &          localobs(i,j,k,bi,bj) .EQ. spzeroloc ) THEN
+            difmask(i,j,k,bi,bj) = 0. _d 0
+           ENDIF
+           localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
+     &          (localbar(i,j,k,bi,bj)-localobs(i,j,k,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -178,9 +144,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_diffanommsk
+C     !ROUTINE: ECCO_DIFFANOMMSK
 C     !INTERFACE:
-      subroutine ecco_diffanommsk(
+      SUBROUTINE ECCO_DIFFANOMMSK(
      I                   localbar, localbarmean, nnzbar,
      I                   localobs, localobsmean, nnzobs,
      I                   localmask,
@@ -196,76 +162,57 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localbarmean (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localobsmean (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localbar    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localbarmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localobs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localobsmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdif    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL difmask     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
+c--   Determine the model-data difference mask
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzobs
+         DO j = 1,sNy
+          DO i = 1,sNx
 #ifdef ECCO_CTRL_DEPRECATED
-               difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
-     &                           localmask(i,j,k,bi,bj)
+           difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                            localmask(i,j,k,bi,bj)
 #else
-               difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+           difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
 #endif
-                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
-     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
-     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
-                   difmask(i,j,k,bi,bj) = 0. _d 0
-                endif
-               localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
-     &           ( (localbar(i,j,k,bi,bj)-localbarmean(i,j,k,bi,bj))
-     &            -(localobs(i,j,k,bi,bj)-localobsmean(i,j,k,bi,bj)) )
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+           IF ( localobs(i,j,k,bi,bj) .LT. spminloc .OR.
+     &          localobs(i,j,k,bi,bj) .GT. spmaxloc .OR.
+     &          localobs(i,j,k,bi,bj) .EQ. spzeroloc ) THEN
+            difmask(i,j,k,bi,bj) = 0. _d 0
+           ENDIF
+           localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
+     &          ( (localbar(i,j,k,bi,bj)-localbarmean(i,j,k,bi,bj))
+     &           -(localobs(i,j,k,bi,bj)-localobsmean(i,j,k,bi,bj)) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -274,9 +221,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_obsmsk
+C     !ROUTINE: ECCO_OBSMSK
 C     !INTERFACE:
-      subroutine ecco_obsmsk(
+      SUBROUTINE ECCO_OBSMSK(
      I                   localbar, nnzbar, localobs, nnzobs, localmask,
      I                   spminloc, spmaxloc, spzeroloc,
      O                   localout, obsmask,
@@ -290,73 +237,54 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
-      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
+c--   Determine the model-data difference mask
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzobs
+         DO j = 1,sNy
+          DO i = 1,sNx
 #ifdef ECCO_CTRL_DEPRECATED
-               obsmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
-     &                           localmask(i,j,k,bi,bj)
+           obsmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
+     &                            localmask(i,j,k,bi,bj)
 #else
-               obsmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+           obsmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
 #endif
-                if ( localobs(i,j,k,bi,bj) .lt. spminloc .or.
-     &               localobs(i,j,k,bi,bj) .gt. spmaxloc .or.
-     &               localobs(i,j,k,bi,bj) .eq. spzeroloc ) then
-                   obsmask(i,j,k,bi,bj) = 0. _d 0
-                endif
-               localout(i,j,k,bi,bj) = obsmask(i,j,k,bi,bj)*
-     &             localbar(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+           IF ( localobs(i,j,k,bi,bj) .LT. spminloc .OR.
+     &          localobs(i,j,k,bi,bj) .GT. spmaxloc .OR.
+     &          localobs(i,j,k,bi,bj) .EQ. spzeroloc ) THEN
+            obsmask(i,j,k,bi,bj) = 0. _d 0
+           ENDIF
+           localout(i,j,k,bi,bj) = obsmask(i,j,k,bi,bj)*
+     &          localbar(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -365,9 +293,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_cp
+C     !ROUTINE: ECCO_CP
 C     !INTERFACE:
-      subroutine ecco_cp(
+      SUBROUTINE ECCO_CP(
      I                   fldIn, nzIn, fldOut, nzOut,
      I                   myThid
      &                   )
@@ -379,56 +307,37 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nzOut
-             do j = jmin,jmax
-              do i = imin,imax
-               fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+c--
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -437,9 +346,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_cprsrl
+C     !ROUTINE: ECCO_CPRSRL
 C     !INTERFACE:
-      subroutine ecco_cprsrl(
+      SUBROUTINE ECCO_CPRSRL(
      I                   fldIn, nzIn, fldOut, nzOut,
      I                   myThid
      &                   )
@@ -451,56 +360,37 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RS fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nzOut
-             do j = jmin,jmax
-              do i = imin,imax
-               fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+c--
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -509,9 +399,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_addcost
+C     !ROUTINE: ECCO_ADDCOST
 C     !INTERFACE:
-      subroutine ecco_addcost(
+      SUBROUTINE ECCO_ADDCOST(
      I               localdif, localweight, difmask, nnzobs, dosumsq,
      U               objf_local, num_local,
      I               myThid
@@ -524,79 +414,59 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs
 
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      _RL objf_local(nSx,nSy)
-      _RL num_local(nSx,nSy)
+      _RL objf_local (nSx,nSy)
+      _RL num_local  (nSx,nSy)
 
-      logical dosumsq
+      LOGICAL dosumsq
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 
       _RL localwww
       _RL localcost
       _RL junk
-
 CEOP
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
 
       localwww = 0. _d 0
 
 c--     Compute normalized model-obs cost function
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            localcost    = 0. _d 0
-            do k = 1,nnzobs
-             do j = jmin,jmax
-              do i = imin,imax
-                localwww  = localweight(i,j,k,bi,bj)
-     &                    * difmask(i,j,k,bi,bj)
-                junk      = localdif(i,j,k,bi,bj)
-                if(dosumsq) then
-                  localcost = localcost + junk*junk*localwww
-                else
-                  localcost = localcost + junk*localwww
-                endif
-                if ( localwww .ne. 0. )
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        localcost    = 0. _d 0
+        DO k = 1,nnzobs
+         DO j = 1,sNy
+          DO i = 1,sNx
+           localwww  = localweight(i,j,k,bi,bj) * difmask(i,j,k,bi,bj)
+           junk      = localdif(i,j,k,bi,bj)
+           IF ( dosumsq ) THEN
+            localcost = localcost + junk*junk*localwww
+           ELSE
+            localcost = localcost + junk*localwww
+           ENDIF
+           IF ( localwww .NE. 0. )
      &               num_local(bi,bj) = num_local(bi,bj) + 1. _d 0
-              enddo
-             enddo
-            enddo
-            objf_local(bi,bj) = objf_local(bi,bj) + localcost
-          enddo
-        enddo
+          ENDDO
+         ENDDO
+        ENDDO
+        objf_local(bi,bj) = objf_local(bi,bj) + localcost
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -605,9 +475,9 @@ c--     Compute normalized model-obs cost function
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_add
+C     !ROUTINE: ECCO_ADD
 C     !INTERFACE:
-      subroutine ecco_add(
+      SUBROUTINE ECCO_ADD(
      I                   fldIn, nzIn, fldOut, nzOut,
      I                   myThid
      &                   )
@@ -619,57 +489,37 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nzOut
-             do j = jmin,jmax
-              do i = imin,imax
-               fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
-     &                             + fldIn(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                          + fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -678,9 +528,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_subtract
+C     !ROUTINE: ECCO_SUBTRACT
 C     !INTERFACE:
-      subroutine ecco_subtract(
+      SUBROUTINE ECCO_SUBTRACT(
      I                   fldIn, nzIn, fldOut, nzOut,
      I                   myThid
      &                   )
@@ -692,7 +542,7 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -700,48 +550,33 @@ C     == global variables ==
 # include "ecco.h"
 #endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nzOut
-             do j = jmin,jmax
-              do i = imin,imax
-               fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
-     &                             - fldIn(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                          - fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -750,9 +585,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_addmask
+C     !ROUTINE: ECCO_ADDMASK
 C     !INTERFACE:
-      subroutine ecco_addmask(
+      SUBROUTINE ECCO_ADDMASK(
      I                   fldIn, fldInmask, nzIn, fldOut, fldOutnum,
      I                   nzOut, myThid
      &                   )
@@ -765,63 +600,42 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldInmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-      _RL fldOutnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldIn     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldInmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOut    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldOutnum (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-c--     Determine the model-data difference mask
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nzOut
-             do j = jmin,jmax
-              do i = imin,imax
-               if(fldInmask(i,j,k,bi,bj) .NE. 0. _d 0) then
-                fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
-     &                              + fldIn(i,j,k,bi,bj)
-                fldOutnum(i,j,k,bi,bj) = fldOutnum(i,j,k,bi,bj)
-     &           + 1. _d 0
-               endif
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1,sNy
+          DO i = 1,sNx
+           IF ( fldInmask(i,j,k,bi,bj) .NE. 0. _d 0 ) THEN
+            fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
+     &                           + fldIn(i,j,k,bi,bj)
+            fldOutnum(i,j,k,bi,bj) = fldOutnum(i,j,k,bi,bj) + 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -830,9 +644,9 @@ c--     Determine the model-data difference mask
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_div
+C     !ROUTINE: ECCO_DIV
 C     !INTERFACE:
-      subroutine ecco_div( fld, nnzloc, numerloc, myThid )
+      SUBROUTINE ECCO_DIV( fld, nnzloc, numerloc, myThid )
 C     !DESCRIPTION: \bv
 C     divide a field with RL constant
 C     \ev
@@ -840,50 +654,37 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL numerloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzloc
-             do j = jmin,jmax
-              do i = imin,imax
-                fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/numerloc
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      IF ( numerloc .NE. 0. _d 0 ) THEN
+       DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,nnzloc
+          DO j = 1,sNy
+           DO i = 1,sNx
+            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/numerloc
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_ECCO */
 
@@ -892,9 +693,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_divfield
+C     !ROUTINE: ECCO_DIVFIELD
 C     !INTERFACE:
-      subroutine ecco_divfield( fld, nnzloc, flddenom, myThid )
+      SUBROUTINE ECCO_DIVFIELD( fld, nnzloc, flddenom, myThid )
 C     !DESCRIPTION: \bv
 C     divide a field by another field
 C     \ev
@@ -902,55 +703,39 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-      _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzloc
-             do j = jmin,jmax
-              do i = imin,imax
-                if(flddenom(i,j,k,bi,bj) .NE. 0. _d 0) then
-                 fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/
-     &                   flddenom(i,j,k,bi,bj)
-                else
-                 fld(i,j,k,bi,bj) = 0. _d 0
-                endif
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzloc
+         DO j = 1,sNy
+          DO i = 1,sNx
+           IF ( flddenom(i,j,k,bi,bj) .NE. 0. _d 0 ) THEN
+            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/flddenom(i,j,k,bi,bj)
+           ELSE
+            fld(i,j,k,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -959,9 +744,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_mult
+C     !ROUTINE: ECCO_MULT
 C     !INTERFACE:
-      subroutine ecco_mult( fld, nnzloc, multloc, myThid )
+      SUBROUTINE ECCO_MULT( fld, nnzloc, multloc, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field with RL constant
 C     \ev
@@ -969,50 +754,35 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL multloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzloc
-             do j = jmin,jmax
-              do i = imin,imax
-                fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)*multloc
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzloc
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)*multloc
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 
@@ -1021,9 +791,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_multfield
+C     !ROUTINE: ECCO_MULTFIELD
 C     !INTERFACE:
-      subroutine ecco_multfield( fld, nnzloc, fld2, myThid )
+      SUBROUTINE ECCO_MULTFIELD( fld, nnzloc, fld2, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field by another field, fld2 is updated on output
 C     \ev
@@ -1031,28 +801,135 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-      _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
+CEOP
 
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzloc
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fld2(i,j,k,bi,bj) = fld(i,j,k,bi,bj) * fld2(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ECCO_RESTRICTTOPO
+C     !INTERFACE:
+      SUBROUTINE ECCO_RESTRICTTOPO( difmask, nnzloc, topomin, myThid )
+C     !DESCRIPTION: \bv
+C     set difmask to zero where topography is shallower that topomin
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      INTEGER myThid
+      INTEGER nnzloc
+      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL topomin
+
+#ifdef ALLOW_ECCO
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
+CEOP
+
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+           IF ( R_low(i,j,bi,bj) .GT. topomin ) THEN
+            DO k = 1,nnzloc
+             difmask(i,j,k,bi,bj) = zeroRL
+            ENDDO
+           ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ECCO_OFFSET
+C     !INTERFACE:
+      SUBROUTINE ECCO_OFFSET(
+     I                   fname,
+     U                   fld,
+     I                   difmask, nnzobs,
+     I                   myThid
+     &                   )
+
+C     !DESCRIPTION: \bv
+C     remove mean of masked field
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      INTEGER myThid
+      INTEGER nnzobs
+
+      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      CHARACTER*(*) fname
+
+#ifdef ALLOW_ECCO
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj,i,j,k
+      INTEGER itlo,ithi
+      INTEGER jtlo,jthi
+      INTEGER jmin,jmax
+      INTEGER imin,imax
+      _RL volTile(nSx,nSy), sumTile(nSx,nSy)
+      _RL tmpVol, volGlob, sumGlob
+      _RL theMean
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       jtlo = myByLo(myThid)
@@ -1064,28 +941,69 @@ CEOP
       imin = 1
       imax = sNx
 
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nnzloc
-             do j = jmin,jmax
-              do i = imin,imax
-                fld2(i,j,k,bi,bj) = fld(i,j,k,bi,bj)*
-     &                   fld2(i,j,k,bi,bj)
-              enddo
-             enddo
-            enddo
-          enddo
-        enddo
+c--   Compute the mean
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        volTile(bi,bj) = 0. _d 0
+        sumTile(bi,bj) = 0. _d 0
+        DO k = 1,nnzobs
+         DO j = 1,sNy
+          DO i = 1,sNx
+           tmpVol = difmask(i,j,k,bi,bj)
+           volTile(bi,bj) = volTile(bi,bj) + tmpVol
+           sumTile(bi,bj) = sumTile(bi,bj) + tmpVol*fld(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      CALL GLOBAL_SUM_TILE_RL( volTile, volGlob, myThid )
+      CALL GLOBAL_SUM_TILE_RL( sumTile, sumGlob, myThid )
+
+      if ( volGlob.GT.zeroRL ) THEN
+       theMean = sumGlob/volGlob
+       DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,nnzobs
+          DO j = 1,sNy
+           DO i = 1,sNx
+            IF (difmask(i,j,k,bi,bj) .NE. 0. _d 0) THEN
+             fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj) - theMean
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       theMean = 0. _d 0
+      ENDIF
+
+C     Print the global mean to standard output
+      _BEGIN_MASTER( myThid )
+      WRITE(msgBuf,'(3A,1PE21.14)')
+     &      'ecco_offset: # of nonzero constributions to mean of ',
+     &      fname, ' = ', volGlob
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(3A,1PE21.14)')
+     &      'ecco_offset:                         Global mean of ',
+     &      fname, ' = ', theMean
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+      _END_MASTER( myThid )
 
 #endif /* ALLOW_ECCO */
 
       RETURN
       END
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--- +----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_readbar
+C     !ROUTINE: ECCO_READBAR
 C     !INTERFACE:
-      subroutine ecco_readbar(
+      SUBROUTINE ECCO_READBAR(
      I                           active_var_file,
      O                           active_var,
      I                           iRec,
@@ -1101,20 +1019,20 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
 # include "ecco.h"
 #endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
 C     active_var_file: filename
 C     active_var:      array
 C     iRec:            record number
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
       INTEGER nnzbar
@@ -1122,37 +1040,50 @@ C     iRec:            record number
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
       LOGICAL doglobalread
       LOGICAL lAdInit
-
+      _RL     tmpFld2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER i,j,bi,bj
 CEOP
 
       doglobalread = .false.
       ladinit      = .false.
 
 #ifdef ALLOW_AUTODIFF
-        if ( nnzbar .EQ. 1 ) then
-           call active_read_xy( active_var_file, active_var,
+        IF ( nnzbar .EQ. 1 ) THEN
+           CALL ACTIVE_READ_XY( active_var_file, tmpFld2D,
      &                      irec, doglobalread,
      &                      ladinit, eccoiter, myThid,
      &                      dummy )
-        else
-           call active_read_xyz( active_var_file, active_var,
+        ELSE
+           CALL ACTIVE_READ_XYZ( active_var_file, active_var,
      &                       irec, doglobalread,
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
-        endif
+        ENDIF
 #else
-        if ( nnzbar .EQ. 1 ) then
-           CALL READ_REC_XY_RL( active_var_file, active_var,
+        IF ( nnzbar .EQ. 1 ) THEN
+           CALL READ_REC_XY_RL( active_var_file, tmpFld2D,
      &                          iRec, 1, myThid )
-        else
+        ELSE
            CALL READ_REC_XYZ_RL( active_var_file, active_var,
      &                          iRec, 1, myThid )
-        endif
+        ENDIF
 #endif
+
+      IF ( nnzbar .EQ. 1 ) THEN
+       DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+           active_var(i,j,1,bi,bj) = tmpFld2D(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_ECCO */
 
@@ -1161,9 +1092,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ecco_readwei
+C     !ROUTINE: ECCO_READWEI
 C     !INTERFACE:
-      subroutine ecco_readwei(
+      SUBROUTINE ECCO_READWEI(
      I                           localerr_file,
      O                           localweight,
      I                           iRec,
@@ -1179,20 +1110,20 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
-C     == global variables ==
+C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
 # include "ecco.h"
 #endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
 C     localerr_file: filename
 C     localweight:      array
 C     iRec:            record number
       CHARACTER*(*) localerr_file
-      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
       INTEGER nnzbar
@@ -1200,50 +1131,51 @@ C     iRec:            record number
 
 #ifdef ALLOW_ECCO
 
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj
+      INTEGER i,j,k
+      _RL     tmpFld2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
-      CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
-     &                     localweight, iRec, 1, myThid )
+      IF ( nnzbar .EQ. 1 ) THEN
+       CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
+     &                      tmpFld2D, iRec, 1, myThid )
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+           localweight(i,j,1,bi,bj) = tmpFld2D(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
+     &                      localweight, iRec, 1, myThid )
+      ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j = jmin,jmax
-         DO i = imin,imax
-          DO k = 1,nnzbar
+        DO k = 1,nnzbar
+         DO j = 1,sNy
+          DO i = 1,sNx
 c--        Test for missing values.
-           if (localweight(i,j,k,bi,bj) .lt. -9900.) then
+           IF (localweight(i,j,k,bi,bj) .LT. -9900.) THEN
              localweight(i,j,k,bi,bj) = 0. _d 0
 c--        Convert to weight
-           elseif ( localweight(i,j,k,bi,bj).ne.0. .AND. dosumsq ) then
+           ELSEIF ( localweight(i,j,k,bi,bj).NE.0. .AND. dosumsq ) THEN
               localweight(i,j,k,bi,bj) =
      &          oneRL/localweight(i,j,k,bi,bj)/localweight(i,j,k,bi,bj)
-           elseif ( localweight(i,j,k,bi,bj).ne.0. ) then
+           ELSEIF ( localweight(i,j,k,bi,bj).ne.0. ) THEN
               localweight(i,j,k,bi,bj) =
      &           oneRL/localweight(i,j,k,bi,bj)
-           endif
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_ECCO */
 

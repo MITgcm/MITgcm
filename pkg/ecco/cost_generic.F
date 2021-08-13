@@ -231,14 +231,13 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
       integer i,j,k
       integer irec, jrec
       integer il, k2
       integer localrec, obsrec
       integer nrecloop, nrecclim, k2smooth
       logical domean, doanom, dovarwei, doclim, dosmooth, dosumsq
+      logical dooffset, dorestricttopo
 
       _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -246,6 +245,7 @@ c     == local variables ==
       _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localtmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localobs2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -253,12 +253,14 @@ c     == local variables ==
       _RL localdifsum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
+#ifdef ALLOW_SMOOTH
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
       _RL fac
+      _RL topomin
 
       character*(128) fname1, fname2, fname3
-      character*200 msgbuf
 
       logical exst
 
@@ -275,6 +277,7 @@ CEOP
       call ecco_zero(localmask,Nr,zeroRL,myThid)
 
       call ecco_zero(localobs,Nr,zeroRL,myThid)
+      call ecco_zero(localobs2D,1,zeroRL,myThid)
       call ecco_zero(localdif,Nr,zeroRL,myThid)
       call ecco_zero(difmask,Nr,zeroRL,myThid)
 
@@ -287,6 +290,8 @@ CEOP
       doanom=.FALSE.
       dovarwei=.FALSE.
       dosmooth=.FALSE.
+      dooffset=.FALSE.
+      dorestricttopo=.FALSE.
       k2smooth=1
       doclim=.FALSE.
       nrecclim=nrecloc
@@ -297,6 +302,11 @@ CEOP
           if (preproc(k2).EQ.'anom') doanom=.TRUE.
           if (preproc(k2).EQ.'variaweight') dovarwei=.TRUE.
           if (preproc(k2).EQ.'nosumsq') dosumsq=.FALSE.
+          if (preproc(k2).EQ.'offset') dooffset=.TRUE.
+          if (preproc(k2).EQ.'restricttopo') then
+           dorestricttopo=.TRUE.
+           topomin = preproc_r(k2)
+          endif
           if (posproc(k2).EQ.'smooth') then
             dosmooth=.TRUE.
             k2smooth=k2
@@ -396,21 +406,40 @@ c--     load model average and observed average
         call ecco_mult(localbar,nnzbar,fac,myThid)
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
-        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
-     &    CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
+        if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
+         if ( nnzobs .eq. 1 ) then
+          call ecco_zero(localobs2D,nnzobs,spzeroloc,myThid)
+          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
+     &                         localobs2D, localrec, 1, myThid )
+          do bj = myByLo(myThid), myByHi(myThid)
+           do bi = myBxLo(myThid), myBxHi(myThid)
+            do j = 1,sny
+             do i = 1,snx
+              localobs(i,j,1,bi,bj)=localobs2D(i,j,bi,bj)
+             enddo
+            enddo
+           enddo
+          enddo
+         else
+          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
      &                         localobs, localrec, 1, myThid )
+         endif
+        endif
 
 c--     Compute masked model-data difference
         call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,
      &     localmask, spminloc, spmaxloc, spzeroloc,
      &     localdif, difmask, myThid )
 
+        if ( dorestricttopo ) call ecco_restricttopo(
+     &       difmask, nnzobs, topomin, mythid )
+
         if ( doanom ) call ecco_subtract( localdifmeanIn,
      &     nnzobs, localdif, nnzobs, myThid )
 
         if ( domean.OR.doanom )
-     &    call ecco_addmask(localdif,difmask, nnzobs,localdifsum,
-     &    localdifnum, nnzobs,myThid)
+     &    call ecco_addmask(l ocaldif, difmask,nnzobs, localdifsum,
+     &    localdifnum, nnzobs, myThid )
 
         if (addVariaCost) then
 
@@ -448,6 +477,14 @@ c--   End of loop over obsfile records.
       call ecco_divfield(localdifmeanOut,nnzobs,localdifnum,myThid)
       call ecco_cp(localdifnum,nnzobs,localdifmsk,nnzobs,myThid)
       call ecco_divfield(localdifmsk,nnzobs,localdifnum,myThid)
+
+      if (dooffset) then
+       il=ilnblnk(localbarfile)
+       call ecco_offset(
+     I      localbarfile(1:il),
+     U      localdifmeanOut,
+     I      localdifmsk,nnzobs,myThid)
+      endif
 
       if ( domean ) then
 c--     Compute normalized model-obs cost function
