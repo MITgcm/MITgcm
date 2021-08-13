@@ -100,9 +100,6 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
         IF ( SHI_useRealFWflux ) THEN
 C-    Allows PmE to be used even if boundary layer is being used,
 C     as long as SHI_withBL_realFWflux is set to account for advective flux
-#ifdef ALLOW_AUTODIFF
-          STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
-#else /* ALLOW_AUTODIFF */
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
@@ -111,7 +108,6 @@ c           IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
 c           ENDIF
            ENDDO
           ENDDO
-#endif /* ALLOW_AUTODIFF */
         ENDIF
 
 #ifdef EXACT_CONSERV

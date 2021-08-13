@@ -306,19 +306,6 @@ c     == end of interface ==
       enddo
 #endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = 1-OLy,sNy+OLy
-            do i = 1-OLx,sNx+OLx
-              xx_shifwflx0(i,j,bi,bj) = 0. _d 0
-              xx_shifwflx1(i,j,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
-#endif
-
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       do bj = jtlo,jthi
         do bi = itlo,ithi

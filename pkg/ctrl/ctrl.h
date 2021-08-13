@@ -482,14 +482,6 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_sss1
 # endif
 
-# ifdef ALLOW_SHIFWFLX_CONTROL
-      common /controlaux_shifwflx_r/
-     &                      xx_shifwflx0,
-     &                      xx_shifwflx1
-      _RL xx_shifwflx0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL xx_shifwflx1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-# endif /* ALLOW_SHIFWFLX_CONTROL */
-
 # if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
