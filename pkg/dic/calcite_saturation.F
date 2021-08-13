@@ -177,6 +177,8 @@ c........................................................
 #ifdef CARBONCHEM_SOLVESAPHE
       ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
+C- convert carbonate to mol kg^-1-SW for calculation of saturation state
+             carbonate=carbonate*permil
 
              omegaC(i,j,k,bi,bj) = calcium * carbonate /
      &                          Ksp_TP_Calc(i,j,bi,bj)
