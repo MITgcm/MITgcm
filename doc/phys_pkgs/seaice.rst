@@ -89,7 +89,7 @@ Enabling the package
 --------------------
 
 :filelink:`seaice <pkg/seaice>` package is switched on/off at run-time by
-setting :varlink:`useSEAICE` ``= .TRUE.`` in ``data.pkg``.
+setting :varlink:`useSEAICE` ``= .TRUE.,`` in ``data.pkg``.
 
 General flags and parameters
 ----------------------------
@@ -133,7 +133,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEupdateOceanStress` |     TRUE                     | update ocean surface stress accounting for sea ice cover                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEscaleSurfStress`   |    TRUE                      | scale atmosphere and ocean-surface stress on ice by concentration (AREA)|
+  | :varlink:`SEAICEscaleSurfStress`   |     TRUE                     | scale atmosphere and ocean-surface stress on ice by concentration (AREA)|
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEaddSnowMass`       |     TRUE                     | in computing seaiceMass, add snow contribution                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -732,7 +732,7 @@ capped to suppress any tensile stress:
 
 To enable this method, set ``#define`` :varlink:`SEAICE_ALLOW_TEM` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and turn it on with
-:varlink:`SEAICEuseTEM` ``=.TRUE.`` in ``data.seaice``. This parameter
+:varlink:`SEAICEuseTEM` ``=.TRUE.,`` in ``data.seaice``. This parameter
 combination implies the default of :varlink:`SEAICEmcMU` :math:`= 1.0`.
 
 Instead of an ellipse that is truncated by constant slope coulombic limbs, this
@@ -754,7 +754,7 @@ Mohr-Coulomb yield curve with elliptical plastic potential
 
 To use a Mohr-Coulomb rheology, set ``#define`` :varlink:`SEAICE_ALLOW_MCE` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and
-:varlink:`SEAICEuseMCE` ``= .TRUE.`` in ``data.seaice``.  This Mohr-Coulomb
+:varlink:`SEAICEuseMCE` ``= .TRUE.,`` in ``data.seaice``.  This Mohr-Coulomb
 yield curve uses an elliptical plastic potential to define the flow rule.  The
 slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in
 ``data.seaice``, and the plastic potential ellipse aspect ratio is set by
@@ -773,7 +773,7 @@ Mohr-Coulomb yield curve with shear flow rule
 To use the specifc Mohr-Coulomb rheology as defined first by Ip et al. (1991)
 :cite:`ip:91`, set ``#define`` :varlink:`SEAICE_ALLOW_MCS` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and
-:varlink:`SEAICEuseMCS` ``= .TRUE.`` in ``data.seaice``.  The slope of the
+:varlink:`SEAICEuseMCS` ``= .TRUE.,`` in ``data.seaice``.  The slope of the
 Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in
 ``data.seaice``.  For details of this rheology, including the tensile strength,
 see https://doi.org/10.26092/elib/380, Chapter 2.
@@ -795,7 +795,7 @@ https://doi.org/10.26092/elib/380, Chapter 2).
 
 To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and
-:varlink:`SEAICEuseTD` ``= .TRUE.`` in ``data.seaice``. The size of the yield
+:varlink:`SEAICEuseTD` ``= .TRUE.,`` in ``data.seaice``. The size of the yield
 curve can be modified by changing the tensile strength, using
 :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
@@ -814,7 +814,7 @@ https://doi.org/10.26092/elib/380, Chapter 2).
 
 To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and
-:varlink:`SEAICEusePL` ``= .TRUE.`` in ``data.seaice``. The size of the yield
+:varlink:`SEAICEusePL` ``= .TRUE.,`` in ``data.seaice``. The size of the yield
 curve can be modified by changing the tensile strength, using
 :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
@@ -933,7 +933,7 @@ operation uses a fixed number of 10 LSR iterations avoiding any termination
 criterion. More details and results can be found in Losch et al. (2014)
 :cite:`losch:14`).
 
-To use the JFNK solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.`` in the
+To use the JFNK solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.,`` in the
 namelist file ``data.seaice``; ``#define`` :varlink:`SEAICE_ALLOW_JFNK` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and we recommend
 using a smooth regularization of :math:`\zeta` by ``#define``
@@ -972,7 +972,7 @@ number of Krylov iterations :varlink:`SEAICEkrylovIterMax` :math:`= 50`,
 because the Krylov subspace has a fixed dimension of 50 (but restarts are
 allowed for :varlink:`SEAICEkrylovIterMax` :math:`> 50`).
 
-Setting :varlink:`SEAICEuseStrImpCpl` ``= .TRUE.`` turns on “strength implicit
+Setting :varlink:`SEAICEuseStrImpCpl` to ``.TRUE.`` turns on “strength implicit
 coupling” (see Hutchings et al. 2004 :cite:`hutchings:04`) in the LSR solver
 and in the LSR preconditioner for the JFNK solver. In this mode, the different
 contributions of the stress divergence terms are reordered so as to increase
@@ -1086,7 +1086,7 @@ of a residual :math:`|\mathbf{u}^{p+1}-\mathbf{u}^{p}|` that, as
 :math:`0`. In this way EVP can be re-interpreted as a pure iterative solver
 where the sub-cycling has no association with time-relation (through
 :math:`\Delta{t}_{\mathrm{EVP}}`). With the setting of
-:varlink:`SEAICEuseEVPstar` ``=.TRUE.`` (default), this form of EVP is used.
+:varlink:`SEAICEuseEVPstar` to  ``.TRUE.`` (default), this form of EVP is used.
 Using the terminology of Kimmritz et al. 2015 :cite:`kimmritz:15`, the evolution
 equations of stress :math:`\sigma_{ij}` and momentum :math:`\mathbf{u}` can be
 written as:
@@ -1119,8 +1119,8 @@ the number of mEVP iterations is fixed to :varlink:`SEAICEnEVPstarSteps`.
 In order to use mEVP in MITgcm, compile with both ``#define``
 :varlink:`SEAICE_CGRID` and ``#define`` :varlink:`SEAICE_ALLOW_EVP` in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` (default) and make
-sure that :varlink:`SEAICEuseEVPstar` ``= .TRUE.`` (default).
-By default :varlink:`SEAICEuseEVPrev` ``=.TRUE.`` and the
+sure that :varlink:`SEAICEuseEVPstar` ``= .TRUE.,`` (default) in ``data.seaice``.
+By default :varlink:`SEAICEuseEVPrev` is set to ``.TRUE.`` and the
 actual form of equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used
 with fewer implicit terms and the factor of :math:`e^{2}` dropped in the stress
 equations :eq:`eq_evpstresstensor2` and :eq:`eq_evpstresstensor12`. Although
@@ -1182,7 +1182,7 @@ that is used to advect tracers, is really an average over the ocean surface
 velocity and the ice velocity leading to an inconsistency as the ice
 temperature and salinity are different from the oceanic variables. To turn on
 the stress formulation of Hibler and Bryan (1987) :cite:`hibler:87`, set
-:varlink:`useHB87StressCoupling` ``=.TRUE.``, in ``data.seaice``.
+:varlink:`useHB87StressCoupling` ``=.TRUE.,``, in ``data.seaice``.
 
 .. _para_phys_pkg_seaice_discretization:
 
@@ -1449,7 +1449,7 @@ run-time parameter :varlink:`SEAICE_PDF` (1D-array of lenght :varlink:`nITD`)
 can be used to prescribe an arbitrary distribution of ice thicknesses, for
 example derived from observed distributions (Castro-Morales et al. 2014
 :cite:`castro-morales:14`). In order to include the ice thickness distribution
-also for snow, set :varlink:`SEAICE_useMultDimSnow` ``= .TRUE.`` (this is the
+also for snow, set :varlink:`SEAICE_useMultDimSnow` to ``.TRUE.`` (this is the
 default); only then, the parameterization of always having a fraction of thin
 ice is efficient and generally thicker ice is produced (see Castro-Morales et
 al. 2014 :cite:`castro-morales:14`).
@@ -1478,7 +1478,7 @@ the snow is flooded, a simple mass conserving parameterization of snowice
 formation (a flood-freeze algorithm following Archimedes’ principle) turns snow
 into ice until the ice surface is back at :math:`z=0` (see Leppäranta 1983
 :cite:`leppaeranta:83`).  The flood-freeze algorithm is turned on with run-time
-parameter :varlink:`SEAICEuseFlooding` ``=.TRUE.``.
+parameter :varlink:`SEAICEuseFlooding` set to ``.TRUE.``.
 
 .. _para_phys_pkg_seaice_advection:
 
@@ -1571,7 +1571,7 @@ category model, ridge formation is treated implicitly by limiting the ice
 concentration to a maximum of one (see Hibler 1979 :cite:`hibler:79`), so that
 further volume increase in convergent motion leads to thicker ice. (This is
 also the default for ITD models; to change from the default, set run-time
-parameter :varlink:`SEAICEsimpleRidging` ``=.FALSE.`` in ``data.seaice``).  For
+parameter :varlink:`SEAICEsimpleRidging` ``=.FALSE.,`` in ``data.seaice``).  For
 the ITD model, the ridging mode in convergence
 
 .. math::
@@ -1594,7 +1594,7 @@ solutions. These functions are smooth and avoid non-differentiable
 discontinuities, but so far we did not find any noise issues as in Lipscomb et
 al. (2007) :cite:`lipscomb:07`.
 
-With :varlink:`SEAICEpartFunc` =1 in ``data.seaice``, the participation
+With :varlink:`SEAICEpartFunc` ``= 1,`` in ``data.seaice``, the participation
 function with the relative amount of ice of thickness :math:`h` weighted by an
 exponential function
 
@@ -1606,7 +1606,7 @@ distribution function, :math:`b_0` a normalization factor, and :math:`a^*`
 (:varlink:`SEAICEaStar`) the exponential constant that determines which
 relative amount of thicker and thinner ice take part in ridging.
 
-With :varlink:`SEAICEredistFunc` =1 in ``data.seaice``, the ice generated by
+With :varlink:`SEAICEredistFunc` ``= 1,`` in ``data.seaice``, the ice generated by
 ridging is calculated as
 
 .. math::
@@ -1686,7 +1686,7 @@ contains the more physical assumptions about energy conservation.  For that
 reason alone this parameterization is often considered to be more physically
 realistic than :eq:`eq_icestrength`, but in practice, the success is not so
 clear (Ungermann et al. 2007 :cite:`ungermann:17`).  Ergo, the default is to
-use :eq:`eq_icestrength`; set :varlink:`useHibler79IceStrength` ``=.FALSE.`` in
+use :eq:`eq_icestrength`; set :varlink:`useHibler79IceStrength` ``=.FALSE.,`` in
 ``data.seaice`` to change this behavior.
 
 Known issues and work-arounds
@@ -1695,7 +1695,7 @@ Known issues and work-arounds
 - An often encountered problem in long simulations with sea ice models is
   (local) perpetually increasing sea ice (plus snow) height; this is
   problematic when using a non-linear free surface and
-  :varlink:`useRealFreshWaterFlux` ``=.TRUE.``, because the mass of the sea ice
+  :varlink:`useRealFreshWaterFlux` set to ``.TRUE.``, because the mass of the sea ice
   places a load on the sea surface, which if too large, can cause the surface
   cells of the model to become too thin so that the model eventually stops with
   an error message. Usually this problem occurs because of dynamical ice growth
