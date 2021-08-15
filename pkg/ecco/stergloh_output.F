@@ -10,7 +10,7 @@ C !INTERFACE:
 C !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE STERGLOH_OUTPUT
-C     | o Ouput the global steric height change (Greatbatch correction) 
+C     | o Ouput the global steric height change (Greatbatch correction)
 C     *==========================================================*
 
 C !USES:
@@ -20,7 +20,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
-#include "ecco.h"
+# include "ecco.h"
 #endif
 
 C !INPUT PARAMETERS:
@@ -35,8 +35,13 @@ C     myThid    :: my Thread Id number
 #ifdef ALLOW_PSBAR_STERIC
 
 C !FUNCTIONS:
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+c     LOGICAL  DIFFERENT_MULTIPLE
+c     EXTERNAL DIFFERENT_MULTIPLE
+
+C--   Local variables shared by S/R within this file (stergloh_output.F)
+C     IOunit_outpFile :: IO-unit of binary output file
+      INTEGER IOunit_outpFile
+      COMMON /STERGLOH_OUTPUT_LOCAL/ IOunit_outpFile
 
 C !LOCAL VARIABLES:
 C     fName     :: output file name
@@ -55,23 +60,57 @@ C     Save the global mean steric heigt change at every time step
 C-----------------------------------------------------------------
 
       IF ( ecco_output_sterGloH ) THEN
-        irecord      = myIter - nIter0 + 1
+        irecord = myIter - nIter0 + 1
 
 #ifdef ALLOW_MDSIO
-        _BEGIN_MASTER(myThid)
-C-      multi-threaded: only write it once (by master thread)
-         IF ( rwSuffixType.EQ.0 ) THEN
-           WRITE(fName,'(A,I10.10)') 'sterGloH_global.', nIter0
-         ELSE
-           CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
-           WRITE(fName,'(A,A)') 'sterGloH_global.', suff
-         ENDIF
-         ioUnit  = 0
-         CALL MDS_WRITEVEC_LOC(
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fName,'(A,I10.10)') 'sterGloH_global.', nIter0
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+          WRITE(fName,'(A,A)') 'sterGloH_global.', suff
+        ENDIF
+
+        IF ( ecco_keepTSeriesOutp_open ) THEN
+          IF ( myIter .EQ. nIter0 ) THEN
+C-    to open new IO unit and keep it open
+            ioUnit = -1
+          ELSE
+C-    to write to already open IO unit
+            ioUnit = IOunit_outpFile
+          ENDIF
+C-    skip writing meta file (unless last time to write to file)
+          IF ( myIter .NE. nEndIter ) irecord = -irecord
+        ELSE
+C-    to open new IO unit, write and close it all within same call
+          ioUnit  = 0
+        ENDIF
+
+        CALL MDS_WRITEVEC_LOC(
      I             fName, precFloat64, ioUnit,
      I             'RL', narr, sterGloH, dummyRS,
      I             0, 0, irecord, myIter, myThid )
-        _END_MASTER(myThid)
+
+        IF ( ecco_keepTSeriesOutp_open ) THEN
+C-      multi-threaded: only master-thread save IO-unit to shared variable
+C                 (in common block) and close open file (after last write)
+          _BEGIN_MASTER(myThid)
+          IF ( myIter .EQ. nIter0 ) THEN
+C-      save for next write to same file:
+            IOunit_outpFile = ioUnit
+          ENDIF
+          IF ( myIter .EQ. nEndIter ) THEN
+C-      after last write, close IO-unit:
+            IF ( debugLevel.GE.debLevC ) THEN
+              WRITE(msgBuf,'(3A)')
+     &        ' STERGLOH_OUTPUT: close file: ', fName(1:26), '.data'
+              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                            SQUEEZE_RIGHT, myThid )
+            ENDIF
+            CLOSE( ioUnit )
+          ENDIF
+          _END_MASTER(myThid)
+        ENDIF
+
 #endif /* ALLOW_MDSIO */
       ENDIF
 
