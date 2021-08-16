@@ -223,8 +223,8 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) outname
 
       logical addVariaCost
-      _RL localdifmeanIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localdifmeanOut  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdifmeanIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdifmeanOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -245,13 +245,12 @@ c     == local variables ==
       _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localtmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localobs2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      _RL localdifmsk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localdifsum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localdifnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdifmsk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdifsum(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdifnum(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_SMOOTH
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -277,7 +276,6 @@ CEOP
       call ecco_zero(localmask,Nr,zeroRL,myThid)
 
       call ecco_zero(localobs,Nr,zeroRL,myThid)
-      call ecco_zero(localobs2D,1,zeroRL,myThid)
       call ecco_zero(localdif,Nr,zeroRL,myThid)
       call ecco_zero(difmask,Nr,zeroRL,myThid)
 
@@ -407,23 +405,8 @@ c--     load model average and observed average
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-         if ( nnzobs .eq. 1 ) then
-          call ecco_zero(localobs2D,nnzobs,spzeroloc,myThid)
-          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
-     &                         localobs2D, localrec, 1, myThid )
-          do bj = myByLo(myThid), myByHi(myThid)
-           do bi = myBxLo(myThid), myBxHi(myThid)
-            do j = 1,sny
-             do i = 1,snx
-              localobs(i,j,1,bi,bj)=localobs2D(i,j,bi,bj)
-             enddo
-            enddo
-           enddo
-          enddo
-         else
-          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
+         CALL READ_REC_LEV_RL( fname2, cost_iprec, Nr, 1, nnzobs,
      &                         localobs, localrec, 1, myThid )
-         endif
         endif
 
 c--     Compute masked model-data difference
@@ -438,7 +421,7 @@ c--     Compute masked model-data difference
      &     nnzobs, localdif, nnzobs, myThid )
 
         if ( domean.OR.doanom )
-     &    call ecco_addmask(l ocaldif, difmask,nnzobs, localdifsum,
+     &    call ecco_addmask( localdif, difmask, nnzobs, localdifsum,
      &    localdifnum, nnzobs, myThid )
 
         if (addVariaCost) then

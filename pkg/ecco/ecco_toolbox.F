@@ -1135,25 +1135,10 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
-      _RL     tmpFld2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-      IF ( nnzbar .EQ. 1 ) THEN
-       CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
-     &                      tmpFld2D, iRec, 1, myThid )
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
-           localweight(i,j,1,bi,bj) = tmpFld2D(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
+      CALL READ_REC_LEV_RL( localerr_file, cost_iprec, Nr, 1, nnzbar,
      &                      localweight, iRec, 1, myThid )
-      ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
