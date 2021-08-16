@@ -636,9 +636,9 @@ C     by averaging (@ grid-cell center) the 4 vertical shear compon @ U,V pos.
           tempV  = ( vVel(i, j ,km1,bi,bj) - vVel(i, j ,k,bi,bj) )
           tempVp = ( vVel(i,j+1,km1,bi,bj) - vVel(i,j+1,k,bi,bj) )
           verticalShear(i,j) = (
-     &                 ( tempU*tempU + tempUp*tempUp )*halfRL
-     &               + ( tempV*tempV + tempVp*tempVp )*halfRL
-     &                         )*recip_drC(k)*recip_drC(k)
+     &                 ( tempU*tempU + tempUp*tempUp )
+     &               + ( tempV*tempV + tempVp*tempVp )
+     &                         )*halfRL*recip_drC(k)*recip_drC(k)
      &                          *coordFac*coordFac
          ENDDO
         ENDDO
@@ -855,7 +855,6 @@ C     impose TKE(1) = 0.
        ENDDO
       ENDIF
 C     end set up matrix
-C
 
 C     Apply boundary condition
       IF ( calcMeanVertShear ) THEN
@@ -866,10 +865,10 @@ C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
          tempUp = surfaceForcingU(i+1,j,bi,bj)
          tempV  = surfaceForcingV(i, j ,bi,bj)
          tempVp = surfaceForcingV(i,j+1,bi,bj)
-         uStarSquare(i,j) = SQRT( 0.5 _d 0 *
-     &        ( tempU*tempU + tempUp*tempUp
-     &        + tempV*tempV + tempVp*tempVp )
-     &                           )*recip_coordFac
+         uStarSquare(i,j) = SQRT(
+     &        ( ( tempU*tempU + tempUp*tempUp )
+     &        + ( tempV*tempV + tempVp*tempVp )
+     &        )*halfRL          )*recip_coordFac
         ENDDO
        ENDDO
       ELSE
@@ -881,7 +880,7 @@ C     estimate friction velocity uStar from surface forcing
      &               + surfaceForcingU(i+1,j,  bi,bj) ) )**2
      &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
      &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-     &                           )*recip_coordFac
+     &                          )*recip_coordFac
         ENDDO
        ENDDO
       ENDIF
