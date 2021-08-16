@@ -866,9 +866,15 @@ C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
          tempV  = surfaceForcingV(i, j ,bi,bj)
          tempVp = surfaceForcingV(i,j+1,bi,bj)
          uStarSquare(i,j) = SQRT(
-     &        ( ( tempU*tempU + tempUp*tempUp )
-     &        + ( tempV*tempV + tempVp*tempVp )
+     &        ( tempU*tempU + tempUp*tempUp
+     &        + tempV*tempV + tempVp*tempVp
      &        )*halfRL          )*recip_coordFac
+C Note: adding parenthesis in 4 terms sum (-> 2 group of 2) as below:
+c        uStarSquare(i,j) = SQRT(
+c    &        ( ( tempU*tempU + tempUp*tempUp )
+c    &        + ( tempV*tempV + tempVp*tempVp )
+c    &        )*halfRL          )*recip_coordFac
+C       seems to break restart !
         ENDDO
        ENDDO
       ELSE
