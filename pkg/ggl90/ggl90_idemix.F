@@ -72,20 +72,25 @@ C     === Local variables ===
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL  deltaTloc
+C     cstar :: vertical integral over N, eq (13) in Olbers+Eden (2013)
       _RL  fxa,fxb,fxc,cstar
       _RL  coordFac, recip_coordFac
-      _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  dfx        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dfy        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     bN0  :: vertically integrated N
+      _RL  bN0        ((1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  delta      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  bN0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  a3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  b3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  c3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  osborn_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     c0 ::  mean vertical group velocity, defined at interfaces (wVel-like)
       _RL  c0         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  forc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  gm_forc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      _RL  osborn_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
 CEOP
 
       iMin = 2-OLx
@@ -115,9 +120,11 @@ C     Initialize local fields
          a3d(i,j,k)     = 0. _d 0
          b3d(i,j,k)     = 1. _d 0
          c3d(i,j,k)     = 0. _d 0
-         osborn_diff(i,j,k) = 0. _d 0
          c0(i,j,k)      = 0. _d 0
          forc(i,j,k)    = 0. _d 0
+#ifdef ALLOW_DIAGNOSTICS
+         osborn_diff(i,j,k) = 0. _d 0
+#endif
         ENDDO
        ENDDO
       ENDDO
