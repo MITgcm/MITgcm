@@ -73,12 +73,12 @@ C     === Local variables ===
       INTEGER errCode
       _RL  deltaTloc
 C     cstar :: vertical integral over N, eq (13) in Olbers+Eden (2013)
-      _RL  fxa,fxb,fxc,cstar
+      _RL  fxa,fxb,fxc,cstar,twoOverPi
       _RL  coordFac, recip_coordFac
       _RL  dfx        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dfy        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     bN0  :: vertically integrated N
-      _RL  bN0        ((1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  bN0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  delta      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  a3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -110,6 +110,8 @@ CEOP
       coordFac = 1. _d 0
       IF ( usingPCoords) coordFac = gravity * rhoConst
       recip_coordFac = 1./coordFac
+
+      twoOverPi = 2. _d 0/PI
 
 C     Initialize local fields
       DO k = 1, Nr
@@ -172,9 +174,9 @@ c-----------------------------------------------------------------------
           fxa = SQRT(Nsquare(i,j,k))/fxb
           cstar = bN0(i,j)/(PI*IDEMIX_jstar)
           c0(i,j,k)=MAX(0. _d 0,
-     &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
+     &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa,twoOverPI))
           IDEMIX_V0(i,j,k,bi,bj)=MAX(0. _d 0,
-     &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
+     &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa,twoOverPI))
           fxc = MAX( 1. _d 0 , fxa )
           fxc = LOG( fxc + SQRT( fxc*fxc -1.))
           IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
@@ -524,29 +526,26 @@ c-----------------------------------------------------------------------
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#endif /* ALLOW_GGL90_IDEMIX */
       RETURN
       END
 
-#ifdef ALLOW_GGL90_IDEMIX
 C     helper functions
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      _RL FUNCTION IDEMIX_gofx2(xx)
+      _RL FUNCTION IDEMIX_gofx2(xx,toPI)
       IMPLICIT NONE
-      _RL x,c,xx
-      _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
+      _RL xx
+      _RL toPI                  ! 2.d0/PI
+      _RL x,c
       x=MAX(3.d0,xx)
-      c= 1.d0-(2.d0/pi)*ASIN(1.d0/x)
-      IDEMIX_gofx2 = 2.d0/pi/c*0.9d0*x**(-2.d0/3.d0)*(1.-EXP(-x/4.3d0))
+      c= 1.d0-toPI*ASIN(1.d0/x)
+      IDEMIX_gofx2 = toPI/c*0.9d0*x**(-2.d0/3.d0)*(1.-EXP(-x/4.3d0))
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      _RL FUNCTION IDEMIX_hofx1(x)
+      _RL FUNCTION IDEMIX_hofx1(x,toPI)
       IMPLICIT NONE
       _RL x
-      _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
-      IDEMIX_hofx1 = (2.d0/pi)/(1.d0-(2.d0/pi)*
-     &              ASIN(1.d0/MAX(1.01d0,x)))*(x-1.d0)/(x+1.d0)
+      _RL toPI                  ! 2.d0/PI
+      IDEMIX_hofx1 = toPI/(1.d0-toPI*ASIN(1.d0/MAX(1.01d0,x)))
+     &     *(x-1.d0)/(x+1.d0)
       END
 #endif /* ALLOW_GGL90_IDEMIX */
