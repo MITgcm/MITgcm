@@ -34,7 +34,8 @@ C     GGL90mixingLengthMin - Mininum mixing length
 C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
 C     mxlSurfFlag     - Flag to force mixing near ocean surface (default= F )
 C     calcMeanVertShear :: calculate the mean (@ grid-cell center) of vertical
-C                          shear compon. (instead of vert. shear of mean flow)
+C                          shear compon. (instead of vert. shear of mean flow);
+C                          also applies to surface stress (uStarSquare)
 C
 C     useIDEMIX       - turn on internal wave mixing contribution modeled by
 C                       IDEMIX version 1:

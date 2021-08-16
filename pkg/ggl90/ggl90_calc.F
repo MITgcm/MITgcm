@@ -858,17 +858,33 @@ C     end set up matrix
 C
 
 C     Apply boundary condition
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-C     estimate friction velocity uStar from surface forcing
-        uStarSquare(i,j) = SQRT(
-     &    ( .5 _d 0*( surfaceForcingU(i,  j,  bi,bj)
-     &              + surfaceForcingU(i+1,j,  bi,bj) ) )**2
-     &  + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
-     &              + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-     &                     )*recip_coordFac
+      IF ( calcMeanVertShear ) THEN
+C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         tempU  = surfaceForcingU( i ,j,bi,bj)
+         tempUp = surfaceForcingU(i+1,j,bi,bj)
+         tempV  = surfaceForcingV(i, j ,bi,bj)
+         tempVp = surfaceForcingV(i,j+1,bi,bj)
+         uStarSquare(i,j) = SQRT( 0.5 _d 0 *
+     &        ( tempU*tempU + tempUp*tempUp
+     &        + tempV*tempV + tempVp*tempVp )
+     &                           )*recip_coordFac
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C     estimate friction velocity uStar from surface forcing
+         uStarSquare(i,j) = SQRT(
+     &     ( .5 _d 0*( surfaceForcingU(i,  j,  bi,bj)
+     &               + surfaceForcingU(i+1,j,  bi,bj) ) )**2
+     &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
+     &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
+     &                           )*recip_coordFac
+        ENDDO
+       ENDDO
+      ENDIF
 C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
