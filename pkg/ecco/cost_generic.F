@@ -237,7 +237,7 @@ c     == local variables ==
       integer localrec, obsrec
       integer nrecloop, nrecclim, k2smooth
       logical domean, doanom, dovarwei, doclim, dosmooth, dosumsq
-      logical dooffset, dorestricttopo
+      logical dooffset, domaskmindepth
 
       _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -291,7 +291,7 @@ CEOP
       dovarwei=.FALSE.
       dosmooth=.FALSE.
       dooffset=.FALSE.
-      dorestricttopo=.FALSE.
+      domaskmindepth=.FALSE.
       k2smooth=1
       doclim=.FALSE.
       nrecclim=nrecloc
@@ -303,8 +303,8 @@ CEOP
           if (preproc(k2).EQ.'variaweight') dovarwei=.TRUE.
           if (preproc(k2).EQ.'nosumsq') dosumsq=.FALSE.
           if (preproc(k2).EQ.'offset') dooffset=.TRUE.
-          if (preproc(k2).EQ.'restricttopo') then
-           dorestricttopo=.TRUE.
+          if (preproc(k2).EQ.'mindepth') then
+           domaskmindepth=.TRUE.
            topomin = preproc_r(k2)
           endif
           if (posproc(k2).EQ.'smooth') then
@@ -431,7 +431,7 @@ c--     Compute masked model-data difference
      &     localmask, spminloc, spmaxloc, spzeroloc,
      &     localdif, difmask, myThid )
 
-        if ( dorestricttopo ) call ecco_restricttopo(
+        if ( domaskmindepth ) call ecco_maskmindepth(
      &       difmask, nnzobs, topomin, mythid )
 
         if ( doanom ) call ecco_subtract( localdifmeanIn,

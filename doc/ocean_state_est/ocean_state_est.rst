@@ -384,6 +384,11 @@ YC.
   |                       | :math:`\vec{m}_i` by  | factor                |
   |                       | a scaling factor      |                       |
   +-----------------------+-----------------------+-----------------------+
+  | ``offset``            | subtract mean misfit  | —                     |
+  +-----------------------+-----------------------+-----------------------+
+  | ``mindepth``          | mask (ignore) misfit  | real: minimum water   |
+  |                       | above minimum depth   | depth (:math:`< 0`)   |
+  +-----------------------+-----------------------+-----------------------+
   | ``gencost_posproc``   |                       |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``smooth``            | Smooth misfits        | character: smoothing  |

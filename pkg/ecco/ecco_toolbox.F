@@ -838,9 +838,9 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ECCO_RESTRICTTOPO
+C     !ROUTINE: ECCO_MASKMINDEPTH
 C     !INTERFACE:
-      SUBROUTINE ECCO_RESTRICTTOPO( difmask, nnzloc, topomin, myThid )
+      SUBROUTINE ECCO_MASKMINDEPTH( difmask, nnzloc, topomin, myThid )
 C     !DESCRIPTION: \bv
 C     set difmask to zero where topography is shallower that topomin
 C     \ev
