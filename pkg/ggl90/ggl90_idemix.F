@@ -526,9 +526,11 @@ c-----------------------------------------------------------------------
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+#endif /* ALLOW_GGL90_IDEMIX */
       RETURN
       END
 
+#ifdef ALLOW_GGL90_IDEMIX
 C     helper functions
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL FUNCTION IDEMIX_gofx2(xx,toPI)
