@@ -116,6 +116,9 @@ c     _RL SQRTTKE
       _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_IDEMIX
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     IDEMIX_gTKE :: TKE tendency due to internal waves
+C                    (output of S/R GGL90_IDEMIX)
+      _RL IDEMIX_gTKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
@@ -263,7 +266,9 @@ c       rMixingLength(i,j,1)  = 0. _d 0
 
 #ifdef ALLOW_GGL90_IDEMIX
       IF ( useIDEMIX) CALL GGL90_IDEMIX(
-     &   bi, bj, hFacI, recip_hFacI, sigmaR, myTime, myIter, myThid )
+     I     bi, bj, hFacI, recip_hFacI, sigmaR,
+     O     IDEMIX_gTKE,
+     I     myTime, myIter, myThid )
 #endif /* ALLOW_GGL90_IDEMIX */
 
       DO k = 2, Nr
@@ -671,7 +676,7 @@ C     account for partical cell factor in vertical shear:
      &         /(verticalShear(i,j)+GGL90eps)
 CML         IDEMIX_RiNumber = 1./GGL90eps
           IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
-     &     (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
+     &         ( GGL90eps + IDEMIX_gTKE(i,j,k) )
           prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
           TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
           TKEPrandtlNumber(i,j,k) = MAX( oneRL,TKEPrandtlNumber(i,j,k) )
@@ -719,9 +724,7 @@ C     add IDEMIX contribution to the turbulent kinetic energy
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
-     &         + deltaTloc*(
-     &         + IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2
-     &         )
+     &         + deltaTloc*IDEMIX_gTKE(i,j,k)
          ENDDO
         ENDDO
        ENDIF
