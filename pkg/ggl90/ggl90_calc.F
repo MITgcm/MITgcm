@@ -213,6 +213,15 @@ C     case of using IDEMIX.
         ENDDO
        ENDDO
 
+#ifdef ALLOW_GGL90_IDEMIX
+C     step forward IDEMIX_E(energy) and compute tendency for TKE,
+C     IDEMIX_gTKE = tau_d * IDEMIX_E**2, following Olbers and Eden (2013)
+      IF ( useIDEMIX) CALL GGL90_IDEMIX(
+     I     bi, bj, hFacI, recip_hFacI, sigmaR,
+     O     IDEMIX_gTKE,
+     I     myTime, myIter, myThid )
+#endif /* ALLOW_GGL90_IDEMIX */
+
 C     Initialize local fields
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -263,13 +272,6 @@ c       rMixingLength(i,j,1)  = 0. _d 0
 #endif /* ALLOW_GGL90_HORIZDIFF */
        ENDDO
       ENDDO
-
-#ifdef ALLOW_GGL90_IDEMIX
-      IF ( useIDEMIX) CALL GGL90_IDEMIX(
-     I     bi, bj, hFacI, recip_hFacI, sigmaR,
-     O     IDEMIX_gTKE,
-     I     myTime, myIter, myThid )
-#endif /* ALLOW_GGL90_IDEMIX */
 
       DO k = 2, Nr
        kl = k-delK
