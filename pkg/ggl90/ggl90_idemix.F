@@ -510,6 +510,8 @@ C     generate TKE tendency due to internal waves (output)
         DO i=iMin,iMax
          gTKE(i,j,k) =
      &        tau_d(i,j,k)*IDEMIX_E(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)
+C-    to reproduce older results (before adding output arguement gTKE)
+c    &        tau_d(i,j,k)*IDEMIX_E(i,j,k,bi,bj)**2
         ENDDO
        ENDDO
       ENDDO
