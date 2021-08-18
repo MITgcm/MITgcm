@@ -96,8 +96,8 @@ c     == end of interface ==
        dosumsq=.TRUE.
        call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
        if ( gencost_errfile(kgen) .NE. ' ' )
-     &   call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
+     &   call ecco_readwei2d(gencost_errfile(kgen),
+     &     gencost_weight(:,:,1,1,kgen),1,dosumsq,myThid)
 
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm

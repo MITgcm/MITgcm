@@ -39,12 +39,11 @@ c     == local variables ==
       integer nrecloc, localrec
       integer localstartdate(4)
 
-      _RL myobs     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdif  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL difmask   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL myobs   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL mybar   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localdif(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL difmask (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localtmp(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       _RL dummy,facCost,facNum
 c- facNum is 1 divided by the number of tiles in SIZE dot h
@@ -56,14 +55,13 @@ c- facNum is 1 divided by the number of tiles in SIZE dot h
       _RL tmpMeanGlo,tmpNumGlo
 
       character*(MAX_LEN_FNAM) mybarfile
-      character*(MAX_LEN_FNAM) myobsfile
 
       integer kgen(NGENCOST3D)
       integer bi,bj
-      integer i,j,k
+      integer k
       integer itlo,ithi
       integer jtlo,jthi
-      integer obsrec,irec,jrec
+      integer obsrec,irec
       integer il,k2
       integer icount,icount_transp
       logical dosumsq, dovarwei, doreadobs
@@ -73,9 +71,6 @@ c- facNum is 1 divided by the number of tiles in SIZE dot h
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-
-      logical doglobalread
-      logical ladinit
       character*(MAX_LEN_MBUF) msgbuf
       character*(128) fname1, fname0
 
@@ -139,7 +134,7 @@ c--   Initialise local variables.
         nrecloc=0
         nrecloc=gencost_nrec(kgen(icount))
 
-c-- only enters if there is at least 1 record 
+c-- only enters if there is at least 1 record
         if(nrecloc.gt.0) then
 
           facCost=1. _d 0 / float(nrecloc)
@@ -166,7 +161,7 @@ c to work for comparison of characters so match dosumsq for now.
 
 c-- report of dosumsq flag to make sure it is false
           il=ilnblnk(gencost_name(kgen(icount)))
-          write(msgbuf,'(3A,L5,2A)') 
+          write(msgbuf,'(3A,L5,2A)')
      &    'Cost ',gencost_name(kgen(icount))(1:il),
      &    ' dosumsq: ',dosumsq,' preproc(1): ',preproc(1)(1:7)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -179,11 +174,11 @@ c-- set obsfile if defined. Not use for now. send warning
           doreadobs=.FALSE.
           if( .not. gencost_datafile(kgen(icount)).eq.' ') then
 c            doreadobs=.TRUE.
-            write(msgbuf,'(A)') 
+            write(msgbuf,'(A)')
      &      '**WARNING** S/R COST_GENCOST_TRANSP: gencost_datafile '
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
-            write(msgbuf,'(A)') 
+            write(msgbuf,'(A)')
      &      'are currently ignored. Adjust the S/R to add code.'
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
@@ -210,7 +205,7 @@ c gencost_mask and fname0 are dummy, get fname1 from mybarfile
             call cost_gencal(mybarfile,gencost_mask(kgen(icount)),
      &       irec,localstartdate,localperiod,fname1,
      &       fname0,localrec,obsrec,exst,mythid)
-            call cost_genread(fname1,mybar,localtmp,irec,nnzbar,
+            call cost_genread(fname1,mybar,localtmp,irec,nr,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,mythid)
 
@@ -235,7 +230,7 @@ c-- keep total at each irec to print out for time-series
               ENDDO
             ENDDO
 
-c compute obs minus bar (localdif) and mask (difmask) 
+c compute obs minus bar (localdif) and mask (difmask)
 c note localtmp is set to 1.
             call ecco_zero(localtmp,nnzobs,oneRL,mythid)
             call ecco_zero(localdif,nnzobs,zeroRL,mythid)
@@ -286,7 +281,7 @@ c sum that is actually be used in cost function
 
           enddo !irec
 
-c-- last step: 
+c-- last step:
 c-- divide by number of record to get mean transport:
 c-- make num_gencost equals number of months/days used
           do bj = jtlo,jthi

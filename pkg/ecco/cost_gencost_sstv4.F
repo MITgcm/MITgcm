@@ -136,11 +136,11 @@ c ------
       call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
       call ecco_zero(gencost_weight(:,:,1,1,kgen_lsc),1,zeroRL,myThid)
       if ( gencost_errfile(kgen) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
+     &     call ecco_readwei2d(gencost_errfile(kgen),
+     &     gencost_weight(:,:,1,1,kgen),1,dosumsq,myThid)
       if ( gencost_errfile(kgen_lsc) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen_lsc),
-     &     gencost_weight(:,:,1,1,kgen_lsc),1,1,dosumsq,myThid)
+     &     call ecco_readwei2d(gencost_errfile(kgen_lsc),
+     &     gencost_weight(:,:,1,1,kgen_lsc),1,dosumsq,myThid)
 
       call cal_FullDate(19920101,0,locstartdate,myThid)
 

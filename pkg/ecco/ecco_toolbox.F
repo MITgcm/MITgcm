@@ -19,9 +19,11 @@ C--   o ECCO_DIV
 C--   o ECCO_DIVFIELD
 C--   o ECCO_MULT
 C--   o ECCO_MULTFIELD
+C--   o ECCO_MASKMINDEPTH
 C--   o ECCO_OFFSET
 C--   o ECCO_READBAR
 C--   o ECCO_READWEI
+C--   o ECCO_READWEI2D
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -54,10 +56,10 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            fld(i,j,k,bi,bj) = zeroloc
           ENDDO
          ENDDO
@@ -114,7 +116,7 @@ CEOP
 
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzobs
          DO j = 1,sNy
           DO i = 1,sNx
@@ -190,7 +192,7 @@ CEOP
 
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzobs
          DO j = 1,sNy
           DO i = 1,sNx
@@ -263,7 +265,7 @@ CEOP
 
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzobs
          DO j = 1,sNy
           DO i = 1,sNx
@@ -328,7 +330,7 @@ CEOP
 
 c--
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
          DO j = 1,sNy
           DO i = 1,sNx
@@ -381,7 +383,7 @@ CEOP
 
 c--
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
          DO j = 1,sNy
           DO i = 1,sNx
@@ -447,7 +449,7 @@ CEOP
 
 c--     Compute normalized model-obs cost function
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         localcost    = 0. _d 0
         DO k = 1,nnzobs
          DO j = 1,sNy
@@ -498,8 +500,8 @@ C     == Routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn ,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -509,7 +511,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
          DO j = 1,sNy
           DO i = 1,sNx
@@ -566,7 +568,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
          DO j = 1,sNy
           DO i = 1,sNx
@@ -622,7 +624,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
          DO j = 1,sNy
           DO i = 1,sNx
@@ -674,7 +676,7 @@ CEOP
 
       IF ( numerloc .NE. 0. _d 0 ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO k = 1,nnzloc
           DO j = 1,sNy
            DO i = 1,sNx
@@ -722,7 +724,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
          DO j = 1,sNy
           DO i = 1,sNx
@@ -773,7 +775,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
          DO j = 1,sNy
           DO i = 1,sNx
@@ -820,7 +822,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
          DO j = 1,sNy
           DO i = 1,sNx
@@ -868,7 +870,7 @@ C     == Local variables ==
 CEOP
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
           DO i = 1,sNx
            IF ( R_low(i,j,bi,bj) .GT. topomin ) THEN
@@ -943,7 +945,7 @@ CEOP
 
 c--   Compute the mean
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         volTile(bi,bj) = 0. _d 0
         sumTile(bi,bj) = 0. _d 0
         DO k = 1,nnzobs
@@ -964,7 +966,7 @@ c--   Compute the mean
       if ( volGlob.GT.zeroRL ) THEN
        theMean = sumGlob/volGlob
        DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO k = 1,nnzobs
           DO j = 1,sNy
            DO i = 1,sNx
@@ -1007,6 +1009,7 @@ C     !INTERFACE:
      I                           active_var_file,
      O                           active_var,
      I                           iRec,
+     I                           nz,
      I                           nnzbar,
      I                           dummy,
      I                           myThid
@@ -1031,10 +1034,13 @@ C     == Routine arguments ==
 C     active_var_file: filename
 C     active_var:      array
 C     iRec:            record number
+C     nz:              size of active_var
+C     nnzbar:          number vertical levels used
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nz,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
+      INTEGER nz
       INTEGER nnzbar
       _RL     dummy
 
@@ -1052,25 +1058,29 @@ CEOP
       ladinit      = .false.
 
 #ifdef ALLOW_AUTODIFF
-        IF ( nnzbar .EQ. 1 ) THEN
-           CALL ACTIVE_READ_XY( active_var_file, tmpFld2D,
+      IF ( nnzbar .EQ. 1 ) THEN
+       CALL ACTIVE_READ_XY( active_var_file, tmpFld2D,
      &                      irec, doglobalread,
      &                      ladinit, eccoiter, myThid,
      &                      dummy )
-        ELSE
-           CALL ACTIVE_READ_XYZ( active_var_file, active_var,
+      ELSEIF ( nnzbar .EQ. Nr ) THEN
+       CALL ACTIVE_READ_XYZ( active_var_file, active_var,
      &                       irec, doglobalread,
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
-        ENDIF
+      ELSE
+       STOP 'Oops, should not happen in ecco_readbar'
+      ENDIF
 #else
-        IF ( nnzbar .EQ. 1 ) THEN
-           CALL READ_REC_XY_RL( active_var_file, tmpFld2D,
-     &                          iRec, 1, myThid )
-        ELSE
-           CALL READ_REC_XYZ_RL( active_var_file, active_var,
-     &                          iRec, 1, myThid )
-        ENDIF
+      IF ( nnzbar .EQ. 1 ) THEN
+       CALL READ_REC_XY_RL( active_var_file, tmpFld2D,
+     &                      iRec, 1, myThid )
+      ELSEIF ( nnzbar .EQ. Nr ) THEN
+       CALL READ_REC_XYZ_RL( active_var_file, active_var,
+     &                        iRec, 1, myThid )
+      ELSE
+       STOP 'Oops, should not happen in ecco_readbar'
+      ENDIF
 #endif
 
       IF ( nnzbar .EQ. 1 ) THEN
@@ -1157,6 +1167,79 @@ c--        Convert to weight
      &           oneRL/localweight(i,j,k,bi,bj)
            ENDIF
           ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ECCO_READWEI2D
+C     !INTERFACE:
+      SUBROUTINE ECCO_READWEI2D(
+     I                           localerr_file,
+     O                           localweight,
+     I                           iRec,
+     I                           dosumsq,
+     I                           myThid
+     &                         )
+
+C     !DESCRIPTION: \bv
+C     reads 2D-uncertainty field and compute weight as squared inverse
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     localerr_file: filename
+C     localweight:      array
+C     iRec:            record number
+      CHARACTER*(*) localerr_file
+      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iRec
+      INTEGER myThid
+      LOGICAL dosumsq
+
+#ifdef ALLOW_ECCO
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER bi,bj
+      INTEGER i,j
+CEOP
+
+      CALL READ_REC_LEV_RL( localerr_file, cost_iprec, 1, 1, 1,
+     &                      localweight, iRec, 1, myThid )
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+c--        Test for missing values.
+          IF (localweight(i,j,bi,bj) .LT. -9900.) THEN
+           localweight(i,j,bi,bj) = 0. _d 0
+c--        Convert to weight
+          ELSEIF ( localweight(i,j,bi,bj).NE.0. .AND. dosumsq ) THEN
+           localweight(i,j,bi,bj) =
+     &          oneRL/localweight(i,j,bi,bj)/localweight(i,j,bi,bj)
+          ELSEIF ( localweight(i,j,bi,bj).ne.0. ) THEN
+           localweight(i,j,bi,bj) =
+     &          oneRL/localweight(i,j,bi,bj)
+          ENDIF
          ENDDO
         ENDDO
        ENDDO

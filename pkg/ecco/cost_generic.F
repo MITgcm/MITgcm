@@ -398,7 +398,7 @@ c--     determine records and file names
 
 c--     load model average and observed average
         call ecco_zero(localbar,nnzbar,zeroRL,myThid)
-        call cost_genread( fname1, localbar, localtmp, irec, nnzbar,
+        call cost_genread( fname1, localbar, localtmp, irec, Nr, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r,
      &       dummy, myThid )
         call ecco_mult(localbar,nnzbar,fac,myThid)

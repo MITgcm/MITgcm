@@ -67,11 +67,7 @@ c old:heff -> model has excess of iceconc     -> new:exconc
       integer igen_conc, igen_deconc, igen_exconc
 
       integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
+      integer k
       integer irec, jrec
       integer  il, k2
       integer localrec
@@ -103,15 +99,6 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
 c=============== PART 0: initilization ===================
 
 c-- detect the relevant gencost indices
@@ -131,8 +118,8 @@ c C) igen_exconc needs both igen_conc and igen_deconc
       if (igen_conc.NE.0) then
 
 c-- initialize objf and num:
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
           objf_gencost(bi,bj,igen_conc) = 0. _d 0
           num_gencost(bi,bj,igen_conc)  = 0. _d 0
           if(igen_deconc.ne.0) then
@@ -204,18 +191,18 @@ c====================================================
         call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
 #ifdef SEAICECOST_JPL
        fname0w=gencost_errfile(igen_conc)
-       call ecco_readwei(fname0w,localweight,localrec,
-     &      nnzsiv4,dosumsq,myThid)
-       call ecco_readwei(gencost_errfile(igen_deconc),
+       call ecco_readwei2d(fname0w,localweight,localrec,
+     &      dosumsq,myThid)
+       call ecco_readwei2d(gencost_errfile(igen_deconc),
      &      gencost_weight(1,1,1,1,igen_deconc),localrec,
-     &      nnzsiv4,dosumsq,myThid)
-       call ecco_readwei(gencost_errfile(igen_exconc),
+     &      dosumsq,myThid)
+       call ecco_readwei2d(gencost_errfile(igen_exconc),
      &      gencost_weight(1,1,1,1,igen_exconc),localrec,
-     &      nnzsiv4,dosumsq,myThid)
+     &      dosumsq,myThid)
 #else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-          call ecco_readwei(fname0w,localweight,localrec,
-     &      nnzsiv4,dosumsq,myThid)
+          call ecco_readwei2d(fname0w,localweight,localrec,
+     &      dosumsq,myThid)
         else
           WRITE(standardMessageUnit,'(A)')
      &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
@@ -235,7 +222,7 @@ c--1.2.A sea-ice concentration barfile
         call cost_gencal(areabarfile,gencost_datafile(igen_conc),
      &   irec,localstartdate,localperiod,fname1,
      &   fname0,localrec,obsrec,exst,myThid)
-        call cost_genread(fname1,areabar,localtmp,irec,nnzbar,
+        call cost_genread(fname1,areabar,localtmp,irec,1,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,myThid)
 
@@ -245,7 +232,7 @@ c--1.2.B sst as proxy for deconc barfile, needs igen_conc
          call cost_gencal(deconcbarfile,gencost_datafile(igen_conc),
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
-         call cost_genread(fname1,deconcbar,localtmp,irec,nnzbar,
+         call cost_genread(fname1,deconcbar,localtmp,irec,1,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,myThid)
         endif
@@ -256,7 +243,7 @@ c--1.2.C heff as proxy for exconc barfile, need igen_conc and igen_exconc
          call cost_gencal(exconcbarfile,gencost_datafile(igen_conc),
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
-         call cost_genread(fname1,exconcbar,localtmp,irec,nnzbar,
+         call cost_genread(fname1,exconcbar,localtmp,irec,1,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,myThid)
         endif
@@ -401,10 +388,6 @@ c     == routine arguments ==
 
 c    == local variables ==
       integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
       integer i,j,k
 
 C- jmc: params SEAICE_freeze has been retired; set it locally until someone
@@ -436,15 +419,6 @@ CEOP
       const1=HeatCapacity_Cp*rhoNil*drF(1)
       const2=SEAICE_lhFusion*SEAICE_rhoIce
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
 c intialize
       call ecco_zero(localfld,nnzobs,zeroRL,myThid)
       call ecco_zero(localfldmsk,nnzobs,zeroRL,myThid)
@@ -460,11 +434,11 @@ c HEFF_target = epsilon_HEFF [m]
 c E_target  = -(HEFF_target*SEAICE_lhFusion*SEAICE_rhoIce)
 c cost=(Model-data)^2
       if(flag_exconc_deconc.EQ.'de') then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
            do k = 1,nnzobs
-            do j = jmin,jmax
-             do i = imin,imax
+            do j = 1-OLy,sNy+OLy
+             do i = 1-OLx,sNx+OLx
 
               if ( (concbar(i,j,k,bi,bj) .LE. 0.).AND.
      &               (localobs(i,j,k,bi,bj) .GT. 0.) ) then
@@ -496,11 +470,11 @@ c E_target = (epsilonTemp) * HeatCapacity_Cp * rhoNil * drF(1)
 c cost(Model-data)^2
 
       if(flag_exconc_deconc.EQ.'ex') then
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
            do k = 1,nnzobs
-            do j = jmin,jmax
-             do i = imin,imax
+            do j = 1-OLy,sNy+OLy
+             do i = 1-OLx,sNx+OLx
 
               if ((localobs(i,j,k,bi,bj) .LE. SEAICE_cutoff_area).AND.
      &        (exconcbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff)) then
