@@ -28,4 +28,9 @@
  IDEMIX_include_GM        = .FALSE.,
  IDEMIX_tidal_file = 'idemix_tidal_forcing.192x32.bin',
  IDEMIX_wind_file  = 'idemix_wind_forcing.192x32.bin',
+# these are old defaults that are not recommended
+ IDEMIX_tau_v =  86400.0,
+ IDEMIX_jstar = 10.0,
+#IDEMIX_mu0   = 4.0/3.0
+ IDEMIX_mu0   = 1.3333333333333333,
  &
