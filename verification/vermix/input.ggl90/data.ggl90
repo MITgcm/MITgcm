@@ -3,11 +3,11 @@
 # =====================================================================
  &GGL90_PARM01
  GGL90writeState=.TRUE.,
-#GGL90diffTKEh=1.e3,
+#GGL90diffTKEh=1.E3,
 #GGL90alpha=30.,
 #GGL90TKEFile = 'TKE.init',
- GGL90TKEmin = 1.e-7,
- mxlMaxFlag=2,
+ GGL90TKEmin = 1.E-7,
+ mxlMaxFlag=3,
 #GGL90ck=0.15,
 #GGL90ceps = 0.35,
 #GGL90m2 = 5.,

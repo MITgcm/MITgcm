@@ -150,6 +150,9 @@ C     stored files.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phi0surf = tapelev_init, key = 1
+#endif
       CALL INI_FIELDS( myThid )
 
 C--   Initialise 3-dim. diffusivities

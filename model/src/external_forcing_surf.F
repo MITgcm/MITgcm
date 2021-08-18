@@ -361,7 +361,7 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
           DO j = jMin, jMax
            DO i = iMin, iMax
             phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
-     &                          +sIceLoad(i,j,bi,bj)*gravity
+     &                          +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
      &                            )*recip_rhoConst
            ENDDO
           ENDDO
