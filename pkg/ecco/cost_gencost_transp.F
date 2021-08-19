@@ -239,14 +239,14 @@ c note localtmp is set to 1.
 c take care to set sp[min,max,zero]loc carefully to not
 c filter out signal.  Can consider skip diffmsk step
             call ecco_diffmsk(
-     I       mybar, nnzbar, myobs, nnzobs, localtmp,
-     I       spminloc, spmaxloc, spzeroloc,
+     I       mybar, myobs, localtmp,
+     I       nnzbar, nnzobs,spminloc, spmaxloc, spzeroloc,
      O       localdif, difmask,
      I       myThid )
 
             call ecco_zero(localtmp,nnzobs,oneRL,mythid)
             call ecco_addcost(
-     I       localdif,localtmp,difmask,nnzobs,dosumsq,
+     I       localdif,localtmp,difmask,nr,nnzobs,dosumsq,
      O       tmpMeanTile,tmpNumTile,
      I       mythid)
 
@@ -254,7 +254,7 @@ cc either use ecco_diffmsk and ecco_addcost from above or simplify
 cc to call below. For now keep syntax consistent with gencost
 c            call ecco_zero(localtmp,nnzobs,oneRL,mythid)
 c            call ecco_addcost(
-c     I       mybar,localtmp,localtmp,nnzobs,dosumsq,
+c     I       mybar,localtmp,localtmp,nr,nnzobs,dosumsq,
 c     O       tmpMeanTile,tmpNumTile,
 c     I       mythid)
 

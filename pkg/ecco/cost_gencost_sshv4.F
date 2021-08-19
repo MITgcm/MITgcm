@@ -217,28 +217,28 @@ c-- detect the relevant gencost indices
       call ecco_zero(gencost_weight(:,:,1,1,igen_gfo),1,zeroRL,myThid)
       if (igen_mdt.GT.0) then
        if ( gencost_errfile(igen_mdt) .NE. ' ' )
-     &     call ecco_readwei2d(gencost_errfile(igen_mdt),
+     &     call ecco_readwei(gencost_errfile(igen_mdt),
      &     gencost_weight(:,:,1,1,igen_mdt),1,dosumsq,myThid)
       endif
       if (igen_lsc.GT.0) then
        if ( gencost_errfile(igen_lsc) .NE. ' ' )
-     &     call ecco_readwei2d(gencost_errfile(igen_lsc),
-     &     gencost_weight(:,:,1,1,igen_lsc),1,dosumsq,myThid)
+     &     call ecco_readwei(gencost_errfile(igen_lsc),
+     &     gencost_weight(:,:,1,1,igen_lsc),1,1,1,dosumsq,myThid)
       endif
       if (igen_tp.GT.0) then
        if ( gencost_errfile(igen_tp) .NE. ' ' )
-     &     call ecco_readwei2d(gencost_errfile(igen_tp),
-     &     gencost_weight(:,:,1,1,igen_tp),1,dosumsq,myThid)
+     &     call ecco_readwei(gencost_errfile(igen_tp),
+     &     gencost_weight(:,:,1,1,igen_tp),1,1,1,dosumsq,myThid)
       endif
       if (igen_ers.GT.0) then
        if ( gencost_errfile(igen_ers) .NE. ' ' )
-     &     call ecco_readwei2d(gencost_errfile(igen_ers),
-     &     gencost_weight(:,:,1,1,igen_ers),1,dosumsq,myThid)
+     &     call ecco_readwei(gencost_errfile(igen_ers),
+     &     gencost_weight(:,:,1,1,igen_ers),1,1,1,dosumsq,myThid)
       endif
       if (igen_gfo.GT.0) then
        if ( gencost_errfile(igen_gfo) .NE. ' ' )
-     &     call ecco_readwei2d(gencost_errfile(igen_gfo),
-     &     gencost_weight(:,:,1,1,igen_gfo),1,dosumsq,myThid)
+     &     call ecco_readwei(gencost_errfile(igen_gfo),
+     &     gencost_weight(:,:,1,1,igen_gfo),1,1,1,dosumsq,myThid)
       endif
 
 c switch for excluding global mean

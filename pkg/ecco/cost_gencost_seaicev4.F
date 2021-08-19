@@ -171,7 +171,7 @@ c-- initialize arrays, copy maskC to localmask
       call ecco_zero(localobs,1,spzeroloc,myThid)
       call ecco_zero(localweight,1,zeroRL,myThid)
       call ecco_zero(localmask,Nr,zeroRL,myThid)
-      call ecco_cprsrl(maskC,Nr,localmask,Nr,myThid)
+      call ecco_cprsrl(maskC,localmask,Nr,Nr,myThid)
 
 c=============== PART 1: main loop ===================
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
@@ -191,18 +191,18 @@ c====================================================
         call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
 #ifdef SEAICECOST_JPL
        fname0w=gencost_errfile(igen_conc)
-       call ecco_readwei2d(fname0w,localweight,localrec,
-     &      dosumsq,myThid)
-       call ecco_readwei2d(gencost_errfile(igen_deconc),
+       call ecco_readwei(fname0w,localweight,localrec,
+     &      1,1,dosumsq,myThid)
+       call ecco_readwei(gencost_errfile(igen_deconc),
      &      gencost_weight(1,1,1,1,igen_deconc),localrec,
-     &      dosumsq,myThid)
-       call ecco_readwei2d(gencost_errfile(igen_exconc),
+     &      1,1,dosumsq,myThid)
+       call ecco_readwei(gencost_errfile(igen_exconc),
      &      gencost_weight(1,1,1,1,igen_exconc),localrec,
-     &      dosumsq,myThid)
+     &      1,1,dosumsq,myThid)
 #else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-          call ecco_readwei2d(fname0w,localweight,localrec,
-     &      dosumsq,myThid)
+          call ecco_readwei(fname0w,localweight,localrec,
+     &      1,1,dosumsq,myThid)
         else
           WRITE(standardMessageUnit,'(A)')
      &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
@@ -270,14 +270,14 @@ c compute obs minus bar (localdif) and mask (difmask)
         call ecco_zero(localdif,nnzsiv4,zeroRL,myThid)
         call ecco_zero(difmask,nnzsiv4,zeroRL,myThid)
         call ecco_diffmsk(
-     I     areabar, nnzbar, localobs, nnzsiv4, localmask,
-     I     spminloc, spmaxloc, spzeroloc,
+     I     areabar, localobs, localmask,
+     I     nnzbar, nnzsiv4, spminloc, spmaxloc, spzeroloc,
      O     localdif, difmask,
      I     myThid )
 
 c---1.4.A area term:
         call ecco_addcost(
-     I     localdif,localweight,difmask,nnzsiv4,dosumsq,
+     I     localdif,localweight,difmask,nnzsiv4,nnzsiv4,dosumsq,
      O     objf_gencost(1,1,igen_conc),num_gencost(1,1,igen_conc),
      I     myThid)
 
@@ -294,11 +294,11 @@ c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
-        call ecco_cp(gencost_weight(1,1,1,1,igen_deconc),nnzsiv4,
-     O       localtmp,nnzsiv4,myThid)
+        call ecco_cp(gencost_weight(1,1,1,1,igen_deconc),
+     O       localtmp,nnzsiv4,nnzsiv4,myThid)
 #endif
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
+     I      localdif,localtmp,difmask1,nnzsiv4,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
      I      myThid)
         endif
@@ -316,11 +316,11 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
-        call ecco_cp(gencost_weight(1,1,1,1,igen_exconc),nnzsiv4,
-     O       localtmp,nnzsiv4,myThid)
+        call ecco_cp(gencost_weight(1,1,1,1,igen_exconc),
+     O       localtmp,nnzsiv4,nnzsiv4,myThid)
 #endif
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
+     I      localdif,localtmp,difmask1,nnzsiv4,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
      I      myThid)
         endif
@@ -337,8 +337,6 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
       end
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#include "ECCO_OPTIONS.h"
 
       subroutine get_exconc_deconc(
      I    localobs,nnzobs,concbar,exconcbar,deconcbar,nnzbar,

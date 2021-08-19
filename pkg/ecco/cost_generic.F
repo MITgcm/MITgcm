@@ -388,7 +388,7 @@ c--     load weights
         call ecco_zero(localweight,nnzobs,zeroRL,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
      &  call ecco_readwei(fname3,localweight,
-     &                    localrec,nnzobs,dosumsq,myThid)
+     &                    localrec,Nr,nnzobs,dosumsq,myThid)
 
 c--     determine records and file names
         exst=.FALSE.
@@ -401,7 +401,7 @@ c--     load model average and observed average
         call cost_genread( fname1, localbar, localtmp, irec, Nr, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r,
      &       dummy, myThid )
-        call ecco_mult(localbar,nnzbar,fac,myThid)
+        call ecco_mult(localbar,Nr,nnzbar,fac,myThid)
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
@@ -410,19 +410,19 @@ c--     load model average and observed average
         endif
 
 c--     Compute masked model-data difference
-        call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,
-     &     localmask, spminloc, spmaxloc, spzeroloc,
+        call ecco_diffmsk( localbar, localobs, localmask,
+     &     Nr, nnzobs, spminloc, spmaxloc, spzeroloc,
      &     localdif, difmask, myThid )
 
         if ( domaskmindepth ) call ecco_maskmindepth(
-     &       difmask, nnzobs, topomin, mythid )
+     &       difmask, Nr, nnzobs, topomin, mythid )
 
         if ( doanom ) call ecco_subtract( localdifmeanIn,
-     &     nnzobs, localdif, nnzobs, myThid )
+     &       localdif, Nr, nnzobs, myThid )
 
-        if ( domean.OR.doanom )
-     &    call ecco_addmask( localdif, difmask, nnzobs, localdifsum,
-     &    localdifnum, nnzobs, myThid )
+        if ( domean.OR.doanom ) call ecco_addmask(
+     &       localdif, difmask, localdifsum,
+     &       localdifnum, Nr, nnzobs, myThid )
 
         if (addVariaCost) then
 
@@ -436,7 +436,7 @@ c--     Compute masked model-data difference
 
 c--     Compute normalized model-obs cost function
         call ecco_addcost(
-     I             localdif, localweight, difmask, nnzobs, dosumsq,
+     I             localdif, localweight, difmask, Nr, nnzobs, dosumsq,
      U             objf_local, num_local,
      I             myThid
      &             )
@@ -456,24 +456,26 @@ c--     output model-data difference to disk
 c--   End of loop over obsfile records.
 
       call ecco_zero(localdifmeanOut,Nr,zeroRL,myThid)
-      call ecco_cp(localdifsum,nnzobs,localdifmeanOut,nnzobs,myThid)
-      call ecco_divfield(localdifmeanOut,nnzobs,localdifnum,myThid)
-      call ecco_cp(localdifnum,nnzobs,localdifmsk,nnzobs,myThid)
-      call ecco_divfield(localdifmsk,nnzobs,localdifnum,myThid)
+      call ecco_cp      (localdifsum,localdifmeanOut,Nr,nnzobs,myThid)
+      call ecco_divfield(localdifmeanOut,localdifnum,Nr,nnzobs,myThid)
+      call ecco_cp      (localdifnum,localdifmsk,Nr,nnzobs,myThid)
+      call ecco_divfield(localdifmsk,localdifnum,Nr,nnzobs,myThid)
 
       if (dooffset) then
        il=ilnblnk(localbarfile)
        call ecco_offset(
      I      localbarfile(1:il),
      U      localdifmeanOut,
-     I      localdifmsk,nnzobs,myThid)
+     I      localdifmsk,Nr,nnzobs,myThid)
       endif
 
       if ( domean ) then
 c--     Compute normalized model-obs cost function
         call ecco_addcost(
-     I      localdifmeanOut, localweight, localdifmsk, nnzobs, dosumsq,
-     U      objf_local, num_local, myThid)
+     I                    localdifmeanOut, localweight, localdifmsk,
+     I                    Nr, nnzobs, dosumsq,
+     U                    objf_local, num_local,
+     I                    myThid )
 
 c--     output model-data difference to disk
         if ( outlev.GT.0 ) then

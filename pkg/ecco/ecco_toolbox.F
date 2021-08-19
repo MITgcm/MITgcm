@@ -9,16 +9,16 @@ C--   o ECCO_ZERO
 C--   o ECCO_CP
 C--   o ECCO_CPRSRL
 C--   o ECCO_DIFFMSK
-C--   o ECCO_DIFFANOMMSK
-C--   o ECCO_OBSMSK
+C--   o ECCO_DIFFANOMMSK (currently not used)
+C--   o ECCO_OBSMSK      (currently not used)
 C--   o ECCO_ADDCOST
-C--   o ECCO_ADD
+C--   o ECCO_ADD         (currently not used)
 C--   o ECCO_SUBTRACT
 C--   o ECCO_ADDMASK
 C--   o ECCO_DIV
 C--   o ECCO_DIVFIELD
 C--   o ECCO_MULT
-C--   o ECCO_MULTFIELD
+C--   o ECCO_MULTFIELD   (currently not used)
 C--   o ECCO_MASKMINDEPTH
 C--   o ECCO_OFFSET
 C--   o ECCO_READBAR
@@ -77,8 +77,8 @@ CBOP
 C     !ROUTINE: ECCO_DIFFMSK
 C     !INTERFACE:
       SUBROUTINE ECCO_DIFFMSK(
-     I                   localbar, nnzbar, localobs, nnzobs, localmask,
-     I                   spminloc, spmaxloc, spzeroloc,
+     I                   localbar, localobs, localmask,
+     I                   nzIn, nLev,spminloc, spmaxloc, spzeroloc,
      O                   localdif, difmask,
      I                   myThid
      &                   )
@@ -97,13 +97,15 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzobs, nnzbar
+      INTEGER nLev, nzIn
 
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+C     this is hardwired to Nr for now, because of cost_gencost_seaicev4.F
       _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     output
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -115,9 +117,10 @@ C     == Local variables ==
 CEOP
 
 c--   Determine the model-data difference mask
+      IF ( nLev .GT. nzIn ) STOP 'ECCO_CP: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzobs
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
 #ifdef ECCO_CTRL_DEPRECATED
@@ -190,6 +193,7 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      STOP 'ECCO_DIFFANOMMSK: Array boundaries need to be adjusted'
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -263,6 +267,7 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      STOP 'ECCO_OBS: Array boundaries need to be adjusted'
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -298,7 +303,7 @@ CBOP
 C     !ROUTINE: ECCO_CP
 C     !INTERFACE:
       SUBROUTINE ECCO_CP(
-     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   fldIn, fldOut, nzIn, nlev,
      I                   myThid
      &                   )
 
@@ -316,10 +321,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nzOut, nzIn
+      INTEGER nLev, nzIn
 
-      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -329,9 +334,10 @@ C     == Local variables ==
 CEOP
 
 c--
+      IF ( nLev .GT. nzIn ) STOP 'ECCO_CP: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nzOut
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
@@ -351,7 +357,7 @@ CBOP
 C     !ROUTINE: ECCO_CPRSRL
 C     !INTERFACE:
       SUBROUTINE ECCO_CPRSRL(
-     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   fldIn, fldOut, nzIn, nLev,
      I                   myThid
      &                   )
 
@@ -369,7 +375,7 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nzOut, nzIn
+      INTEGER nLev, nzIn
 
       _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -382,9 +388,10 @@ C     == Local variables ==
 CEOP
 
 c--
+      IF ( nLev .GT. nzIn ) STOP 'ECCO_CPRSRL: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nzOut
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
@@ -404,10 +411,10 @@ CBOP
 C     !ROUTINE: ECCO_ADDCOST
 C     !INTERFACE:
       SUBROUTINE ECCO_ADDCOST(
-     I               localdif, localweight, difmask, nnzobs, dosumsq,
-     U               objf_local, num_local,
-     I               myThid
-     &               )
+     I     localdif, localweight, difmask, nzIn, nLev, dosumsq,
+     U     objf_local, num_local,
+     I     myThid
+     &     )
 
 C     !DESCRIPTION: \bv
 C     adds to a cost function term
@@ -423,11 +430,12 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzobs
+      INTEGER nzIn
+      INTEGER nLev
 
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
       _RL objf_local (nSx,nSy)
       _RL num_local  (nSx,nSy)
@@ -447,11 +455,12 @@ CEOP
 
       localwww = 0. _d 0
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_ADDCOST: nLev > nzIn not allowed.'
 c--     Compute normalized model-obs cost function
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         localcost    = 0. _d 0
-        DO k = 1,nnzobs
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            localwww  = localweight(i,j,k,bi,bj) * difmask(i,j,k,bi,bj)
@@ -510,6 +519,7 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      STOP 'ECCO_ADD: Array boundaries need to be adjusted'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
@@ -533,7 +543,7 @@ CBOP
 C     !ROUTINE: ECCO_SUBTRACT
 C     !INTERFACE:
       SUBROUTINE ECCO_SUBTRACT(
-     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   fldIn, fldOut, nzIn, nLev,
      I                   myThid
      &                   )
 
@@ -555,10 +565,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nzOut, nzIn
+      INTEGER nLev, nzIn
 
-      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -567,9 +577,10 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_SUBTRACT: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nzOut
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
@@ -590,8 +601,8 @@ CBOP
 C     !ROUTINE: ECCO_ADDMASK
 C     !INTERFACE:
       SUBROUTINE ECCO_ADDMASK(
-     I                   fldIn, fldInmask, nzIn, fldOut, fldOutnum,
-     I                   nzOut, myThid
+     I                   fldIn, fldInmask, fldOut, fldOutnum, nzIn,
+     I                   nLev, myThid
      &                   )
 
 C     !DESCRIPTION: \bv
@@ -609,12 +620,12 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nzOut, nzIn
+      INTEGER nLev, nzIn
 
-      _RL fldIn     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldInmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOut    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOutnum (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldIn     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldInmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOutnum (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -623,9 +634,10 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_ADDMASK: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nzOut
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            IF ( fldInmask(i,j,k,bi,bj) .NE. 0. _d 0 ) THEN
@@ -648,7 +660,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_DIV
 C     !INTERFACE:
-      SUBROUTINE ECCO_DIV( fld, nnzloc, numerloc, myThid )
+      SUBROUTINE ECCO_DIV( fld, nzIn, nLev, numerloc, myThid )
 C     !DESCRIPTION: \bv
 C     divide a field with RL constant
 C     \ev
@@ -663,24 +675,27 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzloc
+      INTEGER nzIn, nLev
       _RL numerloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,i,j,k
+      _RL recip_num
 CEOP
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIV: nLev > nzIn not allowed.'
       IF ( numerloc .NE. 0. _d 0 ) THEN
+       recip_num = 1. _d 0 / numerloc
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO k = 1,nnzloc
+         DO k = 1,nLev
           DO j = 1,sNy
            DO i = 1,sNx
-            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/numerloc
+            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj) * recip_num
            ENDDO
           ENDDO
          ENDDO
@@ -697,7 +712,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_DIVFIELD
 C     !INTERFACE:
-      SUBROUTINE ECCO_DIVFIELD( fld, nnzloc, flddenom, myThid )
+      SUBROUTINE ECCO_DIVFIELD( fld, flddenom, nzIn, nLev, myThid )
 C     !DESCRIPTION: \bv
 C     divide a field by another field
 C     \ev
@@ -712,9 +727,9 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzloc
-      _RL fld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER nzIn, nLev
+      _RL fld      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -723,9 +738,10 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIVFIELD: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzloc
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            IF ( flddenom(i,j,k,bi,bj) .NE. 0. _d 0 ) THEN
@@ -748,7 +764,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_MULT
 C     !INTERFACE:
-      SUBROUTINE ECCO_MULT( fld, nnzloc, multloc, myThid )
+      SUBROUTINE ECCO_MULT( fld, nzIn, nLev, multloc, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field with RL constant
 C     \ev
@@ -763,9 +779,9 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzloc
+      INTEGER nzIn, nLev
       _RL multloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -774,9 +790,10 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIV: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzloc
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)*multloc
@@ -821,6 +838,7 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      STOP 'ECCO_ADD: Array boundaries need to be adjusted'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
@@ -842,7 +860,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_MASKMINDEPTH
 C     !INTERFACE:
-      SUBROUTINE ECCO_MASKMINDEPTH( difmask, nnzloc, topomin, myThid )
+      SUBROUTINE ECCO_MASKMINDEPTH(
+     U     difmask,
+     I     nzIn, nLev, topomin, myThid )
 C     !DESCRIPTION: \bv
 C     set difmask to zero where topography is shallower that topomin
 C     \ev
@@ -858,8 +878,8 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzloc
-      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER nzIn, nLev
+      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL topomin
 
 #ifdef ALLOW_ECCO
@@ -869,12 +889,14 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
+      IF ( nLev .GT. nzIn )
+     &     STOP 'ECCO_MASKMINDEPTH: nLev > nzIn not allowed.'
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
           DO i = 1,sNx
            IF ( R_low(i,j,bi,bj) .GT. topomin ) THEN
-            DO k = 1,nnzloc
+            DO k = 1,nLev
              difmask(i,j,k,bi,bj) = zeroRL
             ENDDO
            ENDIF
@@ -895,7 +917,7 @@ C     !INTERFACE:
       SUBROUTINE ECCO_OFFSET(
      I                   fname,
      U                   fld,
-     I                   difmask, nnzobs,
+     I                   difmask, nzIn, nLev,
      I                   myThid
      &                   )
 
@@ -913,10 +935,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzobs
+      INTEGER nzIn, nLev
 
-      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL difmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       CHARACTER*(*) fname
 
 #ifdef ALLOW_ECCO
@@ -924,31 +946,19 @@ C     == Routine arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,i,j,k
-      INTEGER itlo,ithi
-      INTEGER jtlo,jthi
-      INTEGER jmin,jmax
-      INTEGER imin,imax
       _RL volTile(nSx,nSy), sumTile(nSx,nSy)
       _RL tmpVol, volGlob, sumGlob
       _RL theMean
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
+      IF ( nLev.GT.nzIn ) STOP 'ECCO_OFFSET: nLev > nzIn not allowed.'
 c--   Compute the mean
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         volTile(bi,bj) = 0. _d 0
         sumTile(bi,bj) = 0. _d 0
-        DO k = 1,nnzobs
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            tmpVol = difmask(i,j,k,bi,bj)
@@ -967,7 +977,7 @@ c--   Compute the mean
        theMean = sumGlob/volGlob
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO k = 1,nnzobs
+         DO k = 1,nLev
           DO j = 1,sNy
            DO i = 1,sNx
             IF (difmask(i,j,k,bi,bj) .NE. 0. _d 0) THEN
@@ -1108,7 +1118,8 @@ C     !INTERFACE:
      I                           localerr_file,
      O                           localweight,
      I                           iRec,
-     I                           nnzbar,
+     I                           nzIn,
+     I                           nLev,
      I                           dosumsq,
      I                           myThid
      &                         )
@@ -1133,10 +1144,11 @@ C     localerr_file: filename
 C     localweight:      array
 C     iRec:            record number
       CHARACTER*(*) localerr_file
-      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
-      INTEGER nnzbar
+      INTEGER nzIn
+      INTEGER nLev
       LOGICAL dosumsq
 
 #ifdef ALLOW_ECCO
@@ -1147,12 +1159,12 @@ C     == Local variables ==
       INTEGER i,j,k
 CEOP
 
-      CALL READ_REC_LEV_RL( localerr_file, cost_iprec, Nr, 1, nnzbar,
+      CALL READ_REC_LEV_RL( localerr_file, cost_iprec, nzIn, 1, nLev,
      &                      localweight, iRec, 1, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzbar
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
 c--        Test for missing values.
@@ -1167,79 +1179,6 @@ c--        Convert to weight
      &           oneRL/localweight(i,j,k,bi,bj)
            ENDIF
           ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-#endif /* ALLOW_ECCO */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: ECCO_READWEI2D
-C     !INTERFACE:
-      SUBROUTINE ECCO_READWEI2D(
-     I                           localerr_file,
-     O                           localweight,
-     I                           iRec,
-     I                           dosumsq,
-     I                           myThid
-     &                         )
-
-C     !DESCRIPTION: \bv
-C     reads 2D-uncertainty field and compute weight as squared inverse
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == Global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     localerr_file: filename
-C     localweight:      array
-C     iRec:            record number
-      CHARACTER*(*) localerr_file
-      _RL     localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER iRec
-      INTEGER myThid
-      LOGICAL dosumsq
-
-#ifdef ALLOW_ECCO
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj
-      INTEGER i,j
-CEOP
-
-      CALL READ_REC_LEV_RL( localerr_file, cost_iprec, 1, 1, 1,
-     &                      localweight, iRec, 1, myThid )
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j = 1,sNy
-         DO i = 1,sNx
-c--        Test for missing values.
-          IF (localweight(i,j,bi,bj) .LT. -9900.) THEN
-           localweight(i,j,bi,bj) = 0. _d 0
-c--        Convert to weight
-          ELSEIF ( localweight(i,j,bi,bj).NE.0. .AND. dosumsq ) THEN
-           localweight(i,j,bi,bj) =
-     &          oneRL/localweight(i,j,bi,bj)/localweight(i,j,bi,bj)
-          ELSEIF ( localweight(i,j,bi,bj).ne.0. ) THEN
-           localweight(i,j,bi,bj) =
-     &          oneRL/localweight(i,j,bi,bj)
-          ENDIF
          ENDDO
         ENDDO
        ENDDO
