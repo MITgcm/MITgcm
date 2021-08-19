@@ -72,7 +72,7 @@ C     == local variables ==
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer nyearsINT
-      _RL     nyearsRL
+      _RL     recip_nyearsRL
 #endif
       integer bi,bj
       integer i,j,k2
@@ -88,6 +88,9 @@ c--   Now, read the control vector.
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
           xx_gen(i,j,bi,bj)=0. _d 0
+#ifdef ALLOW_ECCO
+          xx_gen_tmp(i,j,bi,bj)=0. _d 0
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -104,7 +107,8 @@ C--   generic 2D control variables
        if (xx_gentim2d_weight(iarr).NE.' ') then
 #endif
 
-        fnamebase = xx_gentim2d_file(iarr)
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
         call ctrl_init_rec ( fnamebase,
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
@@ -136,8 +140,8 @@ C--   generic 2D control variables
           endif
         enddo
 
-        fnamebase = xx_gentim2d_file(iarr)
-        ilgen=ilnblnk( fnamebase )
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
         write(fnamegenIn(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.',optimcycle
         write(fnamegenOut(1:80),'(2a,i10.10)')
@@ -163,28 +167,28 @@ c-- docycle
          endif
         enddo
 
-        DO jrec = 1, replicated_ntimes+1
-        DO irec = 1, replicated_nrec
+        DO jrec = 1,replicated_ntimes+1
+         DO irec = 1,replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+C     ADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
-        krec=replicated_nrec*(jrec-1)+irec
-        IF (krec.LE.endrec) THEN
+          krec=replicated_nrec*(jrec-1)+irec
+          IF (krec.LE.endrec) THEN
 #ifdef ALLOW_AUTODIFF
-         call active_read_xy( fnamegenIn, xx_gen, irec,
-     &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_gentim2d_dummy(iarr) )
+           CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, irec,
+     &                          doglobalread, ladinit, optimcycle,
+     &                          mythid, xx_gentim2d_dummy(iarr) )
 #else
-         CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
+           CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
 #endif
 #ifdef ALLOW_AUTODIFF
-         call active_write_xy( fnamegenOut, xx_gen, krec, optimcycle,
-     &       mythid, xx_gentim2d_dummy(iarr) )
+           CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
+     &                           mythid, xx_gentim2d_dummy(iarr) )
 #else
-         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+           CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
-        ENDIF
-        ENDDO
+          ENDIF
+         ENDDO
         ENDDO
 
 c-- rmcycle
@@ -212,31 +216,56 @@ c       print*,'endrec',endrec,replicated_ntimes,replicated_nrec
 c create cyclic average
 
         nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
-        nyearsRL=float(nyearsINT)
+        recip_nyearsRL=1. _d 0/float(nyearsINT)
 
 c       print*,'nyearsINT',nyearsINT,nyearsRL
 
         DO irec = 1, replicated_nrec
 
-         call ecco_zero(xx_gen,1,zeroRL,myThid)
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
+             xx_gen(i,j,bi,bj) = zeroRL
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
 
-         do jrec=1,nyearsINT
+         DO jrec=1,nyearsINT
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
-           krec=irec+(jrec-1)*replicated_nrec
+          krec=irec+(jrec-1)*replicated_nrec
 #ifdef ALLOW_AUTODIFF
-           call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
-     &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_gentim2d_dummy(iarr) )
+          call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
-     &                       1, myThid )
+          CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
+     &                         1, myThid )
 #endif
-           call ecco_add(xx_gen_tmp,1,xx_gen,1,myThid)
-         enddo
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO j = 1,sNy
+             DO i = 1,sNx
+              xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)+xx_gen_tmp(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+C     end jrec
+         ENDDO
 
-         call ecco_div(xx_gen,1,nyearsRL,myThid)
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx
+             xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) * recip_nyearsRL
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
@@ -273,7 +302,15 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #else
          CALL READ_REC_XY_RL( fnamegenTmp, xx_gen_tmp, iRec, 1, myThid )
 #endif
-         CALL ecco_subtract(xx_gen_tmp,1,xx_gen,1,myThid)
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO j = 1,sNy
+             DO i = 1,sNx
+              xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)-xx_gen_tmp(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
 #ifdef ALLOW_AUTODIFF
          CALL active_write_xy( fnamegenOut, xx_gen, kRec, optimcycle,
      &       mythid, xx_gentim2d_dummy(iarr) )
