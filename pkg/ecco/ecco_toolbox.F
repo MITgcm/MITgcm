@@ -23,7 +23,7 @@ C--   o ECCO_MASKMINDEPTH
 C--   o ECCO_OFFSET
 C--   o ECCO_READBAR
 C--   o ECCO_READWEI
-C--   o ECCO_READWEI2D
+C--   o ECCO_ERROR
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -117,7 +117,8 @@ C     == Local variables ==
 CEOP
 
 c--   Determine the model-data difference mask
-      IF ( nLev .GT. nzIn ) STOP 'ECCO_CP: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_DIFFMSK',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -193,7 +194,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      STOP 'ECCO_DIFFANOMMSK: Array boundaries need to be adjusted'
+      CALL ECCO_ERROR('ECCO_DIFFANOMMSK',
+     &     'Array boundaries need to be adjusted', myThid)
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -267,7 +269,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      STOP 'ECCO_OBS: Array boundaries need to be adjusted'
+      CALL ECCO_ERROR('ECCO_OBS',
+     &     'Array boundaries need to be adjusted', myThid)
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -334,7 +337,8 @@ C     == Local variables ==
 CEOP
 
 c--
-      IF ( nLev .GT. nzIn ) STOP 'ECCO_CP: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_CP',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -388,7 +392,8 @@ C     == Local variables ==
 CEOP
 
 c--
-      IF ( nLev .GT. nzIn ) STOP 'ECCO_CPRSRL: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_CPRSRL',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -455,7 +460,8 @@ CEOP
 
       localwww = 0. _d 0
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_ADDCOST: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_ADDCOST',
+     &     'nLev > nzIn not allowed.', myThid)
 c--     Compute normalized model-obs cost function
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -519,7 +525,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      STOP 'ECCO_ADD: Array boundaries need to be adjusted'
+      CALL ECCO_ERROR('ECCO_ADD',
+     &     'Array boundaries need to be adjusted', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nzOut
@@ -577,7 +584,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_SUBTRACT: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_SUBTRACT',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -634,7 +642,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_ADDMASK: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_ADDMASK',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -687,7 +696,8 @@ C     == Local variables ==
       _RL recip_num
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIV: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_DIV',
+     &     'nLev > nzIn not allowed.', myThid)
       IF ( numerloc .NE. 0. _d 0 ) THEN
        recip_num = 1. _d 0 / numerloc
        DO bj = myByLo(myThid),myByHi(myThid)
@@ -738,7 +748,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIVFIELD: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_DIVFIELD',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -790,7 +801,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_DIV: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_MULT',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nLev
@@ -838,7 +850,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      STOP 'ECCO_ADD: Array boundaries need to be adjusted'
+      CALL ECCO_ERROR('ECCO_MULTFIELD',
+     &     'Array boundaries need to be adjusted', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzloc
@@ -889,8 +902,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      IF ( nLev .GT. nzIn )
-     &     STOP 'ECCO_MASKMINDEPTH: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_MASMINDEPTH',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
@@ -952,7 +965,8 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      IF ( nLev.GT.nzIn ) STOP 'ECCO_OFFSET: nLev > nzIn not allowed.'
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_OFFSET',
+     &     'nLev > nzIn not allowed.', myThid)
 c--   Compute the mean
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -1079,7 +1093,8 @@ CEOP
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
       ELSE
-       STOP 'Oops, should not happen in ecco_readbar'
+       CALL ECCO_ERROR('ECCO_READBAR',
+     &      'this should not happen.', myThid)
       ENDIF
 #else
       IF ( nnzbar .EQ. 1 ) THEN
@@ -1089,7 +1104,8 @@ CEOP
        CALL READ_REC_XYZ_RL( active_var_file, active_var,
      &                        iRec, 1, myThid )
       ELSE
-       STOP 'Oops, should not happen in ecco_readbar'
+       CALL ECCO_ERROR('ECCO_READBAR',
+     &      'this should not happen.', myThid)
       ENDIF
 #endif
 
@@ -1183,6 +1199,46 @@ c--        Convert to weight
         ENDDO
        ENDDO
       ENDDO
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ECCO_ERROR
+C     !INTERFACE:
+      SUBROUTINE ECCO_ERROR( srname, errmsg, myThid )
+C     !DESCRIPTION: \bv
+C     prints error messages and stops
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     srname :: name of caller
+C     errmsg :: error message to be printed
+      CHARACTER*(*) srname, errmsg
+      INTEGER myThid
+
+#ifdef ALLOW_ECCO
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      WRITE(msgBuf,'(A,A,A)') srname, ': ', errmsg
+      CALL PRINT_ERROR( msgBuf, myThid )
+      CALL ALL_PROC_DIE( myThid )
+      STOP 'ABNORMAL END: S/R ECCO_ERROR'
 
 #endif /* ALLOW_ECCO */
 
