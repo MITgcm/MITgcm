@@ -253,6 +253,7 @@ c     == local variables ==
       _RL localdifnum(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_SMOOTH
+      _RL tmpfld2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
@@ -354,7 +355,7 @@ C     the routine ecco_cprsrl does not copy overlaps
          ENDDO
 
         ELSE
-         STOP 'cost_generic: wrong ylocmask'
+         CALL ECCO_ERROR('COST_GENLOOP', 'wrong ylocmask', myThid)
         ENDIF
 
 #ifdef ALLOW_SMOOTH
@@ -362,6 +363,7 @@ C       Set 2D Mask for 2D smooth routine
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
           mask2D(i,j,bi,bj) = localmask(i,j,1,bi,bj)
+          tmpFld2D(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 #endif
@@ -385,7 +387,7 @@ c--     load weights
         call cost_gencal(localbarfile, localerrfile,
      &     jrec, localstartdate, localperiod, fname1,
      &     fname3, localrec, obsrec, exst, myThid )
-        call ecco_zero(localweight,nnzobs,zeroRL,myThid)
+        call ecco_zero(localweight,Nr,zeroRL,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
      &  call ecco_readwei(fname3,localweight,
      &                    localrec,Nr,nnzobs,dosumsq,myThid)
@@ -397,13 +399,13 @@ c--     determine records and file names
      &     fname2, localrec, obsrec, exst, myThid )
 
 c--     load model average and observed average
-        call ecco_zero(localbar,nnzbar,zeroRL,myThid)
+        call ecco_zero(localbar,Nr,zeroRL,myThid)
         call cost_genread( fname1, localbar, localtmp, irec, Nr, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r,
      &       dummy, myThid )
         call ecco_mult(localbar,Nr,nnzbar,fac,myThid)
 
-        call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
+        call ecco_zero(localobs,Nr,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
          CALL READ_REC_LEV_RL( fname2, cost_iprec, Nr, 1, nnzobs,
      &                         localobs, localrec, 1, myThid )
@@ -427,28 +429,46 @@ c--     Compute masked model-data difference
         if (addVariaCost) then
 
 #ifdef ALLOW_SMOOTH
-        if ( useSMOOTH.AND.dosmooth.AND.
-     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) then
-        call smooth_hetero2d(localdif,mask2D,
-     &     posproc_c(k2smooth),posproc_i(k2smooth),myThid)
-        endif
+         IF ( useSMOOTH.AND.dosmooth.AND.
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j = 1-OLy,sNy+OLy
+             DO i = 1-OLx,sNx+OLx
+              tmpFld2D(i,j,bi,bj) = localdif(i,j,1,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+          CALL SMOOTH_HETERO2D(tmpFld2D,mask2D,
+     &         posproc_c(k2smooth),posproc_i(k2smooth),myThid)
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j = 1-OLy,sNy+OLy
+             DO i = 1-OLx,sNx+OLx
+              localdif(i,j,1,bi,bj) = tmpFld2D(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDIF
 #endif
 
 c--     Compute normalized model-obs cost function
-        call ecco_addcost(
+         call ecco_addcost(
      I             localdif, localweight, difmask, Nr, nnzobs, dosumsq,
      U             objf_local, num_local,
      I             myThid
      &             )
 c--     output model-data difference to disk
-        if ( outlev.GT.0 ) then
+         if ( outlev.GT.0 ) then
           il=ilnblnk(outname)
           write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
           if ( nnzobs.EQ.1 ) CALL
      &    WRITE_REC_XY_RL( fname3, localdif,irec, eccoiter, myThid )
           if ( nnzobs.EQ.nr ) CALL
      &    WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, myThid )
-        endif
+         endif
 
         endif
 
