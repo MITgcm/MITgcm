@@ -71,9 +71,7 @@ C--   Over all tiles
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IDEMIX_E(i,j,k,bi,bj)     = 0. _d 0
-           IDEMIX_V0(i,j,k,bi,bj)    = 0. _d 0
-           IDEMIX_tau_d(i,j,k,bi,bj) = 0. _d 0
+           IDEMIX_E(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
