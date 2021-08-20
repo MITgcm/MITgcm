@@ -18,32 +18,20 @@ C     !INTERFACE:
      U                numIters, nIterMin,
      I                myThid )
 C     !DESCRIPTION: \bv
-C     *==========================================================*
+C     *================================================================*
 C     | SUBROUTINE CG2D_NSA
-C     | o Two-dimensional grid problem conjugate-gradient
-C     |   inverter (with preconditioner).
+C     | o Two-dimensional grid problem conjugate-gradient inverter
+C     |   (with preconditioner).
 C     | o This version is used only in the case when the matrix
-C     |   operator is not "self-adjoint" (NSA). Any remaining
-C     |   residuals will immediately reported to the department
-C     |   of homeland security.
-C     *==========================================================*
+C     |   operator is Not "Self-Adjoint" (NSA). Any remaining residuals
+C     |   will be immediately reported to the National Security Agency
+C     *================================================================*
 C     | Con. grad is an iterative procedure for solving Ax = b.
 C     | It requires the A be symmetric.
-C     | This implementation assumes A is a five-diagonal
-C     | matrix of the form that arises in the discrete
-C     | representation of the del^2 operator in a
-C     | two-dimensional space.
-C     | Notes:
-C     | ======
-C     | This implementation can support shared-memory
-C     | multi-threaded execution. In order to do this COMMON
-C     | blocks are used for many of the arrays - even ones that
-C     | are only used for intermedaite results. This design is
-C     | OK if you want to all the threads to collaborate on
-C     | solving the same problem. On the other hand if you want
-C     | the threads to solve several different problems
-C     | concurrently this implementation will not work.
-C     *==========================================================*
+C     | This implementation assumes A is a five-diagonal matrix
+C     | of the form that arises in the discrete representation of
+C     | the del^2 operator in a two-dimensional space.
+C     *================================================================*
 C     \ev
 
 C     !USES:
@@ -58,7 +46,6 @@ C     === Global data ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     cg2d_b    :: The source term or "right hand side" (Output: normalised RHS)
 C     cg2d_x    :: The solution (Input: first guess)
 C     firstResidual :: the initial residual before any iterations
@@ -80,7 +67,6 @@ C     myThid    :: Thread on which I am working.
 
 #ifdef ALLOW_CG2D_NSA
 C     !LOCAL VARIABLES:
-C     === Local variables ====
 C     bi, bj     :: tile index in X and Y.
 C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
 C     actualIts  :: actual CG iteration number
@@ -96,6 +82,13 @@ C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
 C     cg2d_min   :: used to store solution corresponding to lowest residual.
 C     msgBuf     :: Informational/error message buffer
+C--   local working array (used to be in CG2D.h common block:
+C     cg2d_q     :: Intermediate matrix-vector product term
+C     cg2d_r     ::   *same*
+C     cg2d_s     ::   *same*
+C     cg2d_z     :: Intermediate matrix-vector product term
+C                :: reduces the number of recomputation in adjoint mode
+C                :: this field is superfluous if your cg2d is self-adjoint.
       INTEGER bi, bj
       INTEGER i, j, it2d
       INTEGER actualIts
@@ -114,6 +107,12 @@ C     msgBuf     :: Informational/error message buffer
       _RL    rhsMax,  rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
+      _RL    cg2d_z(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+C     Fields cg2d_r and ct2d_s are exchanged and since there is no AD-exchanges
+C     for fields with smaller overlap, they are defined with full overlap size
+      _RL    cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -193,12 +192,12 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
         sumRHStile(bi,bj) = 0. _d 0
         DO j=0,sNy+1
          DO i=0,sNx+1
-          cg2d_sf(i,j,bi,bj) = 0.
+          cg2d_s(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
         DO j=1,sNy
          DO i=1,sNx
-          cg2d_rf(i,j,bi,bj) = cg2d_b(i,j,bi,bj) -
+          cg2d_r(i,j,bi,bj) = cg2d_b(i,j,bi,bj) -
      &    (aW2d(i  ,j  ,bi,bj)*cg2d_x(i-1,j  ,bi,bj)
      &    +aW2d(i+1,j  ,bi,bj)*cg2d_x(i+1,j  ,bi,bj)
      &    +aS2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j-1,bi,bj)
@@ -206,7 +205,7 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
      &    +aC2d(i  ,j  ,bi,bj)*cg2d_x(i  ,j  ,bi,bj)
      &    )
           errTile(bi,bj)    = errTile(bi,bj)
-     &                      + cg2d_rf(i,j,bi,bj)*cg2d_rf(i,j,bi,bj)
+     &                      + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -214,7 +213,7 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
       ENDDO
 
 c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
-      CALL EXCH_XY_RL ( cg2d_rf, myThid )
+      CALL EXCH_XY_RL ( cg2d_r, myThid )
       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       actualIts = 0
@@ -255,8 +254,8 @@ CADJ STORE err_sq = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE cg2d_rf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
-CADJ STORE cg2d_sf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -264,13 +263,13 @@ CADJ STORE cg2d_sf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
          DO j=1,sNy
           DO i=1,sNx
            cg2d_z(i,j,bi,bj) =
-     &      pC(i  ,j  ,bi,bj)*cg2d_rf(i  ,j  ,bi,bj)
-     &     +pW(i  ,j  ,bi,bj)*cg2d_rf(i-1,j  ,bi,bj)
-     &     +pW(i+1,j  ,bi,bj)*cg2d_rf(i+1,j  ,bi,bj)
-     &     +pS(i  ,j  ,bi,bj)*cg2d_rf(i  ,j-1,bi,bj)
-     &     +pS(i  ,j+1,bi,bj)*cg2d_rf(i  ,j+1,bi,bj)
+     &      pC(i  ,j  ,bi,bj)*cg2d_r(i  ,j  ,bi,bj)
+     &     +pW(i  ,j  ,bi,bj)*cg2d_r(i-1,j  ,bi,bj)
+     &     +pW(i+1,j  ,bi,bj)*cg2d_r(i+1,j  ,bi,bj)
+     &     +pS(i  ,j  ,bi,bj)*cg2d_r(i  ,j-1,bi,bj)
+     &     +pS(i  ,j+1,bi,bj)*cg2d_r(i  ,j+1,bi,bj)
            eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
-     &     +cg2d_z(i,j,bi,bj)*cg2d_rf(i,j,bi,bj)
+     &     +cg2d_z(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -293,8 +292,8 @@ CML       eta_qrNM1 = eta_qrN
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_sf(i,j,bi,bj) = cg2d_z(i,j,bi,bj)
-     &                       + cgBeta*cg2d_sf(i,j,bi,bj)
+           cg2d_s(i,j,bi,bj) = cg2d_z(i,j,bi,bj)
+     &                       + cgBeta*cg2d_s(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -303,13 +302,13 @@ CML       eta_qrNM1 = eta_qrN
 C--    Do exchanges that require messages i.e. between
 C--    processes.
 c      CALL EXCH_S3D_RL( cg2d_s, 1, myThid )
-       CALL EXCH_XY_RL ( cg2d_sf, myThid )
+       CALL EXCH_XY_RL ( cg2d_s, myThid )
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
-CADJ STORE cg2d_sf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* not ALLOW_LOOP_DIRECTIVE */
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -318,13 +317,13 @@ CADJ STORE cg2d_sf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
          DO j=1,sNy
           DO i=1,sNx
            cg2d_q(i,j,bi,bj) =
-     &     aW2d(i  ,j  ,bi,bj)*cg2d_sf(i-1,j  ,bi,bj)
-     &    +aW2d(i+1,j  ,bi,bj)*cg2d_sf(i+1,j  ,bi,bj)
-     &    +aS2d(i  ,j  ,bi,bj)*cg2d_sf(i  ,j-1,bi,bj)
-     &    +aS2d(i  ,j+1,bi,bj)*cg2d_sf(i  ,j+1,bi,bj)
-     &    +aC2d(i  ,j  ,bi,bj)*cg2d_sf(i  ,j  ,bi,bj)
+     &     aW2d(i  ,j  ,bi,bj)*cg2d_s(i-1,j  ,bi,bj)
+     &    +aW2d(i+1,j  ,bi,bj)*cg2d_s(i+1,j  ,bi,bj)
+     &    +aS2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j-1,bi,bj)
+     &    +aS2d(i  ,j+1,bi,bj)*cg2d_s(i  ,j+1,bi,bj)
+     &    +aC2d(i  ,j  ,bi,bj)*cg2d_s(i  ,j  ,bi,bj)
            alphaTile(bi,bj) = alphaTile(bi,bj)
-     &                      + cg2d_sf(i,j,bi,bj)*cg2d_q(i,j,bi,bj)
+     &                      + cg2d_s(i,j,bi,bj)*cg2d_q(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -337,7 +336,7 @@ C==    Update simultaneously solution and residual vectors (and Iter number)
 C      Now compute "interior" points.
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
-CADJ STORE cg2d_rf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_LOOP_DIRECTIVE */
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -345,10 +344,10 @@ CADJ STORE cg2d_rf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
          errTile(bi,bj) = 0. _d 0
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_x(i,j,bi,bj)=cg2d_x(i,j,bi,bj)+alpha*cg2d_sf(i,j,bi,bj)
-           cg2d_rf(i,j,bi,bj)=cg2d_rf(i,j,bi,bj)-alpha*cg2d_q(i,j,bi,bj)
+           cg2d_x(i,j,bi,bj)=cg2d_x(i,j,bi,bj)+alpha*cg2d_s(i,j,bi,bj)
+           cg2d_r(i,j,bi,bj)=cg2d_r(i,j,bi,bj)-alpha*cg2d_q(i,j,bi,bj)
            errTile(bi,bj) = errTile(bi,bj)
-     &                    + cg2d_rf(i,j,bi,bj)*cg2d_rf(i,j,bi,bj)
+     &                    + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -366,7 +365,7 @@ CADJ STORE cg2d_rf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
        ENDIF
 
 c      CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
-       CALL EXCH_XY_RL ( cg2d_rf, myThid )
+       CALL EXCH_XY_RL ( cg2d_r, myThid )
 
 Cml   end of if "err >= cg2dTolerance" block ; end main solver loop
       ENDIF
@@ -404,69 +403,69 @@ C--   Return parameters to caller
 C     These routines are routinely part of the TAMC/TAF library that is
 C     not included in the MITcgm, therefore they are mimicked here.
 
-      subroutine adstore(chardum,int1,idow,int2,int3,icount)
+      SUBROUTINE ADSTORE(chardum,int1,idow,int2,int3,icount)
 
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "tamc.h"
 
-      character*(*) chardum
-      integer int1, int2, int3, idow, icount
+      CHARACTER*(*) chardum
+      INTEGER int1, int2, int3, idow, icount
 
 C     the length of this vector must be greater or equal
 C     twice the number of timesteps
-      integer nidow
+      INTEGER nidow
 #ifdef ALLOW_TAMC_CHECKPOINTING
-      parameter ( nidow = 2*nchklev_1*nchklev_2*nchklev_3 )
+      PARAMETER ( nidow = 2*nchklev_1*nchklev_2*nchklev_3 )
 #else
-      parameter ( nidow = 1000000 )
+      PARAMETER ( nidow = 1000000 )
 #endif /* ALLOW_TAMC_CHECKPOINTING */
-      integer istoreidow(nidow)
-      common /istorecommon/ istoreidow
+      INTEGER istoreidow(nidow)
+      COMMON /istorecommon/ istoreidow
 
-      print *, 'adstore: ', chardum, int1, idow, int2, int3, icount
+      PRINT *, 'ADSTORE: ', chardum, int1, idow, int2, int3, icount
 
-      if ( icount .gt. nidow ) then
-         print *, 'adstore: error: icount > nidow = ', nidow
-         stop 'ABNORMAL STOP in adstore'
-      endif
+      IF ( icount .GT. nidow ) THEN
+         PRINT *, 'adstore: error: icount > nidow = ', nidow
+         STOP 'ABNORMAL STOP in ADSTORE'
+      ENDIF
 
       istoreidow(icount) = idow
 
-      return
-      end
+      RETURN
+      END
 
-      subroutine adresto(chardum,int1,idow,int2,int3,icount)
+      SUBROUTINE ADRESTO(chardum,int1,idow,int2,int3,icount)
 
-      implicit none
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "tamc.h"
 
-      character*(*) chardum
-      integer int1, int2, int3, idow, icount
+      CHARACTER*(*) chardum
+      INTEGER int1, int2, int3, idow, icount
 
 C     the length of this vector must be greater or equal
 C     twice the number of timesteps
-      integer nidow
+      INTEGER nidow
 #ifdef ALLOW_TAMC_CHECKPOINTING
-      parameter ( nidow = 2*nchklev_1*nchklev_2*nchklev_3 )
+      PARAMETER ( nidow = 2*nchklev_1*nchklev_2*nchklev_3 )
 #else
-      parameter ( nidow = 1000000 )
+      PARAMETER ( nidow = 1000000 )
 #endif /* ALLOW_TAMC_CHECKPOINTING */
-      integer istoreidow(nidow)
-      common /istorecommon/ istoreidow
+      INTEGER istoreidow(nidow)
+      COMMON /istorecommon/ istoreidow
 
-      print *, 'adresto: ', chardum, int1, idow, int2, int3, icount
+      PRINT *, 'ADRESTO: ', chardum, int1, idow, int2, int3, icount
 
-      if ( icount .gt. nidow ) then
-         print *, 'adstore: error: icount > nidow = ', nidow
-         stop 'ABNORMAL STOP in adstore'
-      endif
+      IF ( icount .GT. nidow ) THEN
+         PRINT *, 'ADRESTO: error: icount > nidow = ', nidow
+         STOP 'ABNORMAL STOP in ADRESTO'
+      ENDIF
 
       idow = istoreidow(icount)
 
-      return
-      end
+      RETURN
+      END
 #endif /* ALLOW_AUTODIFF_TAMC and ALLOW_LOOP_DIRECTIVE */
