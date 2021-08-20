@@ -523,7 +523,7 @@ CML      endif
 C
 C     determine res. norm. and test for convergence
 C
-      hh(i,i,myThid) = c(i,myThid)*hh(i, i,myThid) 
+      hh(i,i,myThid) = c(i,myThid)*hh(i, i,myThid)
      &     +           s(i,myThid)*hh(i1,i,myThid)
       ro = abs(rs(i1,myThid))
       if (iout .gt. 0) then
@@ -536,7 +536,7 @@ C
 CML   The original code uses only im as the maximum allowed iterations, but
 CML   I want no more than maxits iterations, so we change the code here.
 CML      if (i .lt. im .and. (ro .gt. eps1(myThid)))  goto 4
-      if (i .lt. im .and. its .lt. maxits 
+      if (i .lt. im .and. its .lt. maxits
      &     .and. (ro .gt. eps1(myThid))) goto 4
 C
 C     now compute solution. first solve upper triangular system.

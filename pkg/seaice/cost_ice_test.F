@@ -79,14 +79,18 @@ c     == external functions ==
 
 c     == end of interface ==
 
+      if ( usingPCoords ) then
+       kSrf = Nr
+      else
+       kSrf = 1
+      endif
       if ( myTime .GT. (endTime - lastinterval) ) then
          tempVar = 1. _d 0/
      &             ( ( 1. _d 0 + min(endTime-startTime,lastinterval) )
      &             / deltaTClock )
 
-         kSrf = 1
 cph(
-      write(standardMessageUnit,*) 'ph-ice B ', myiter, 
+      write(standardMessageUnit,*) 'ph-ice B ', myiter,
      &        theta(4,4,kSrf,1,1), area(4,4,1,1), heff(4,4,1,1)
 cph)
          if ( cost_ice_flag .eq. 1 ) then
@@ -145,7 +149,7 @@ c     heat content of top level plus latent heat of sea-ice
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
      &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
-     &                 drF(1) * 3996. _d 0 * 1026. _d 0 -
+     &                 drF(kSrf) * 3996. _d 0 * 1026. _d 0 -
      &                 HEFF(i,j,bi,bj) * 334000. _d 0 * 910. _d 0 )
                enddo
               enddo
@@ -161,7 +165,7 @@ c     heat content of top level
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
      &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
-     &                 drF(1) * 3996. _d 0 * 1026. _d 0 )
+     &                 drF(kSrf) * 3996. _d 0 * 1026. _d 0 )
                enddo
               enddo
              enddo
@@ -176,7 +180,7 @@ c     heat content of top level plus sea-ice plus latent heat of snow
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
      &                 (THETA(i,j,kSrf,bi,bj) + 1.96 _d 0 ) *
-     &                 drF(1) * 3996. _d 0 * 1026. _d 0 +
+     &                 drF(kSrf) * 3996. _d 0 * 1026. _d 0 +
      &                 (TICES(i,j,1,bi,bj) - 273.15 _d 0 + 1.96 _d 0 ) *
      &                 HEFF(i,j,bi,bj) * 2090. _d 0 * 910. _d 0 -
      &                 HEFF(i,j,bi,bj) * 334000. _d 0 * 910. _d 0 -

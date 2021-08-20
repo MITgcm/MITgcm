@@ -11,6 +11,7 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 #include "EXF_PARAM.h"
@@ -23,7 +24,7 @@ C     myThid - thread number for this instance of the routine.
       INTEGER myIter, myThid
 
 C     == local variables ==
-      INTEGER i, j, bi, bj
+      INTEGER i, j, ks, bi, bj
       INTEGER exferr
 
 C     == end of interface ==
@@ -34,6 +35,8 @@ C--   Only master thread can safely write directly to standard output:
       _BARRIER
       _BEGIN_MASTER( myThid )
 
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
 c     DO bj = myByLo(myThid), myByHi(myThid)
 c      DO bi = myBxLo(myThid), myBxHi(myThid)
       DO bj = 1, nSy
@@ -49,7 +52,7 @@ c        DO i = 1-OLx, sNx+OLx
 C     Heat flux.
           IF ( ( hflux(i,j,bi,bj) .GT. 1600. .OR.
      &         hflux(i,j,bi,bj) .LT. -500. ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: hflux out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, hflux(i,j,bi,bj)
@@ -58,7 +61,7 @@ C     Heat flux.
 
 C     Freshwater flux.
           IF ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: sflux out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, sflux(i,j,bi,bj)
@@ -67,7 +70,7 @@ C     Freshwater flux.
 
 C     Zonal wind stress.
           IF ( ABS(ustress(i,j,bi,bj)) .GT. 2.7 .AND.
-     &         maskW(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskW(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: ustress out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, ustress(i,j,bi,bj)
@@ -76,7 +79,7 @@ C     Zonal wind stress.
 
 C     Meridional wind stress.
           IF ( ABS(vstress(i,j,bi,bj)) .GT. 2.3 .AND.
-     &         maskS(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskS(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: vstress out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, vstress(i,j,bi,bj)
@@ -86,7 +89,7 @@ C     Meridional wind stress.
           IF ( useAtmWind ) THEN
 C     zonal wind speed
            IF ( ABS(uwind(i,j,bi,bj)) .GT. 100. .AND.
-     &         maskW(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskW(i,j,ks,bi,bj) .NE. 0. ) THEN
             WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: uwind out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, uwind(i,j,bi,bj)
@@ -95,7 +98,7 @@ C     zonal wind speed
 
 C     zonal wind speed
            IF ( ABS(vwind(i,j,bi,bj)) .GT. 100. .AND.
-     &         maskS(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskS(i,j,ks,bi,bj) .NE. 0. ) THEN
             WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: vwind out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, vwind(i,j,bi,bj)
@@ -106,7 +109,7 @@ C     zonal wind speed
 C     wind speed modulus
           IF ( ( wspeed(i,j,bi,bj) .LT. 0. .OR.
      &         wspeed(i,j,bi,bj) .GT. 100. ) .AND.
-     &         maskS(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskS(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: wspeed out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, wspeed(i,j,bi,bj)
@@ -117,7 +120,7 @@ C     wind speed modulus
 C     2-m air temperature
           IF ( (atemp(i,j,bi,bj) .LT. 183 .OR.
      &         atemp(i,j,bi,bj) .GT. 343 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(2A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: atemp + exf_offset_atemp ',
      &          'out of range for bi,bj,i,j,it= ',
@@ -128,7 +131,7 @@ C     2-m air temperature
 C     2-m specific humidity
           IF ( (aqh(i,j,bi,bj) .LT. 0. .OR.
      &         aqh(i,j,bi,bj) .GT. 0.1 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: aqh out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, aqh(i,j,bi,bj)
@@ -138,7 +141,7 @@ C     2-m specific humidity
 C     precipitation rate
           IF ( (precip(i,j,bi,bj) .LT. 0. .OR.
      &         precip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: precip out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, precip(i,j,bi,bj)
@@ -148,7 +151,7 @@ C     precipitation rate
 C     snow
           IF ( (snowprecip(i,j,bi,bj) .LT. 0. .OR.
      &         snowprecip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(2A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: snowprecip out of range ',
      &          'for bi,bj,i,j,it= ',
@@ -161,7 +164,7 @@ C     snow
 C     Short wave radiative flux.
           IF ( (swflux(i,j,bi,bj) .GT. 1. .OR.
      &         swflux(i,j,bi,bj) .LT. -1000. ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: swflux out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, swflux(i,j,bi,bj)
@@ -173,7 +176,7 @@ C     Short wave radiative flux.
 C     Runoff.
           IF ( (runoff(i,j,bi,bj) .LT. 0. .OR.
      &         runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: runoff out of range for bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, runoff(i,j,bi,bj)
@@ -191,7 +194,7 @@ C     Runoff.
 C     Runoff temperature.
           IF ( (runoftemp(i,j,bi,bj) .LT. -2. .OR.
      &         runoff(i,j,bi,bj) .GT. 36 ) .AND.
-     &         maskC(i,j,1,bi,bj) .NE. 0. ) THEN
+     &         maskC(i,j,ks,bi,bj) .NE. 0. ) THEN
            WRITE(standardMessageUnit,'(A,5(1X,I6),2X,D22.15)')
      &          'EXF WARNING: runoftemp out of range at bi,bj,i,j,it= ',
      &          bi, bj, i, j, myIter, runoff(i,j,bi,bj)
@@ -213,6 +216,7 @@ C     Runoff temperature.
        STOP 'ABNORMAL END: S/R EXF_CHECK_RANGE'
       ENDIF
       _END_MASTER( myThid )
+      _BARRIER
 
       RETURN
       END
