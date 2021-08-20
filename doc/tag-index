@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - add time-series output of global mean steric height change at each time step
+    (variable: sterGloH, with #define ALLOW_PSBAR_STERIC) ; turned on
+    with run-time switch "ecco_output_sterGloH=T" ; add option to keep file open
+    (+ single meta file writing) with "ecco_keepTSeriesOutp_open=T" switch.
 o pkg/ggl90:
   - fix EXCH calls in pkg/ggl90 when IDEMIX is used: no additional EXCH when
     using zero horizontal diffusion of IDEMIX_E (IDEMIX_tau_h=0) but with
