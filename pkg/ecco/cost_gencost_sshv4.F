@@ -218,7 +218,7 @@ c-- detect the relevant gencost indices
       if (igen_mdt.GT.0) then
        if ( gencost_errfile(igen_mdt) .NE. ' ' )
      &     call ecco_readwei(gencost_errfile(igen_mdt),
-     &     gencost_weight(:,:,1,1,igen_mdt),1,dosumsq,myThid)
+     &     gencost_weight(:,:,1,1,igen_mdt),1,1,1,dosumsq,myThid)
       endif
       if (igen_lsc.GT.0) then
        if ( gencost_errfile(igen_lsc) .NE. ' ' )
