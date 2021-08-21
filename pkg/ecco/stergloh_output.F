@@ -49,10 +49,9 @@ C     msgBuf    :: Informational/error message buffer
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER narr
-      PARAMETER( narr = 1 )
       INTEGER irecord
       INTEGER ioUnit
+      _RL     tmpVar(1)
       _RS     dummyRS(1)
 
 C-----------------------------------------------------------------
@@ -85,9 +84,10 @@ C-    to open new IO unit, write and close it all within same call
           ioUnit  = 0
         ENDIF
 
+        tmpVar(1) = sterGloH
         CALL MDS_WRITEVEC_LOC(
      I             fName, precFloat64, ioUnit,
-     I             'RL', narr, sterGloH, dummyRS,
+     I             'RL', 1, tmpVar, dummyRS,
      I             0, 0, irecord, myIter, myThid )
 
         IF ( ecco_keepTSeriesOutp_open ) THEN
