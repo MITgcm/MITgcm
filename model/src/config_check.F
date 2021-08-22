@@ -475,7 +475,6 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif /* ALLOW_SRCG */
 
-#if ( defined ALLOW_CG2D_NSA && defined ALLOW_SRCG )
       IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
         WRITE(msgBuf,'(A,A)')
      &      'CONFIG_CHECK: both useNSACGSolver and ',
@@ -483,7 +482,6 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
