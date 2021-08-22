@@ -23,10 +23,8 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_SIZE.h"
 # include "SEAICE_COST.h"
@@ -378,10 +376,8 @@ c     == global variables ==
 # include "SEAICE_COST.h"
 # include "SEAICE_PARAMS.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 
 c     == routine arguments ==
 

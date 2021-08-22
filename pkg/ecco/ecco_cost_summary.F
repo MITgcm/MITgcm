@@ -27,7 +27,7 @@ c     ==================================================================
 
 c     == global variables ==
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
+#ifdef ECCO_CTRL_DEPRECATED
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "ecco_cost.h"
@@ -40,7 +40,7 @@ c     == routine arguments ==
 
       integer mythid
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
+#ifdef ECCO_CTRL_DEPRECATED
 c     == local variables ==
 
       integer il
@@ -318,7 +318,7 @@ c     == end of interface ==
       endif
 #endif /* ALLOW_SSH_GFOANOM_COST_CONTRIBUTION */
 
-#endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
+#endif /* ECCO_CTRL_DEPRECATED */
 
       RETURN
       END

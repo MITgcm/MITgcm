@@ -36,9 +36,7 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ecco_cost.h"
-#endif
+#include "ecco_cost.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"

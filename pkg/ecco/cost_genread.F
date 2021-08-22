@@ -29,10 +29,8 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 
 c     == routine arguments ==
 
@@ -48,8 +46,6 @@ C     myThid:          thread number for this instance
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
       integer preproc_i(NGENPPROC)
       _RL preproc_r(NGENPPROC)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -79,8 +75,6 @@ c--   Loop over month
          call ecco_readbar( active_var_file, active_var,
      &                      irec, nnzbar, dummy, mythid )
       endif
-
-#endif /* ALLOW_ECCO */
 
       RETURN
       END

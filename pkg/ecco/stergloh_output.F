@@ -19,9 +19,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
+#include "ecco.h"
 
 C !INPUT PARAMETERS:
 C     myTime    :: my time in simulation ( s )
@@ -31,7 +29,6 @@ C     myThid    :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_ECCO
 #ifdef ALLOW_PSBAR_STERIC
 
 C !FUNCTIONS:
@@ -122,7 +119,6 @@ C-      after last write, close IO-unit:
       ENDIF
 
 #endif /* ALLOW_PSBAR_STERIC */
-#endif /* ALLOW_ECCO */
 
       RETURN
       END

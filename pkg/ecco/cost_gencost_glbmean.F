@@ -27,17 +27,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 
 c     == routine arguments ==
 
       integer mythid
 
-#ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 #ifdef ALLOW_GENCOST_1D
 
@@ -282,6 +278,4 @@ c--    Remove global mean value
 
 #endif /* ifdef ALLOW_GENCOST_1D */
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
-#endif /* ifdef ALLOW_ECCO */
-
       end

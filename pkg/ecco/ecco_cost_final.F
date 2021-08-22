@@ -26,13 +26,12 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#ifdef ALLOW_ECCO
-# ifdef ECCO_CTRL_DEPRECATED
-#  include "ecco_cost.h"
-# else
-#  include "ECCO_SIZE.h"
-#  include "ecco.h"
-# endif
+#ifdef ECCO_CTRL_DEPRECATED
+# include "ecco_cost.h"
+#else
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"

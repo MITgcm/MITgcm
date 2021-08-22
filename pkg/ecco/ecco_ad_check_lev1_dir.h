@@ -4,8 +4,6 @@ c
 
 #ifdef ALLOW_ECCO_BARSTORES
 
-#ifdef ALLOW_ECCO
-
 CADJ STORE tbar  = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE tbar_daily  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE sbar  = comlev1, key=ikey_dynamics, kind=isbyte
@@ -34,8 +32,6 @@ cccCADJ STORE xx_sssbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE gencost_barfld  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE gencost_dummy = dummytape, key=1, kind=isbyte
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
-
-#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
 CADJ STORE profiles_dummy = dummytape, key=1, kind=isbyte

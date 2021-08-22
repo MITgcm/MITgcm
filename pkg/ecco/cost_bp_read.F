@@ -29,10 +29,8 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 
 c     == routine arguments ==
 
@@ -42,8 +40,6 @@ c     == routine arguments ==
       _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer irec
       integer myThid
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -150,8 +146,6 @@ c              endif
           enddo
         enddo
       enddo
-
-#endif
 
       RETURN
       END

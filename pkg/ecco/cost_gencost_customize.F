@@ -28,10 +28,8 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 #ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
 #  include "SEAICE.h"
