@@ -150,16 +150,12 @@ C                            two-dimensional con. grad solver.
 C     cg2dMinItersNSA     :: Minimum number of iterations in the
 C                            not-self-adjoint version (cg2d_nsa.F) of the
 C                            two-dimensional con. grad solver (default = 0).
-C     cg2dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
 C                            (non-linear free-surf.)
 C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
 C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
-C     cg3dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -223,10 +219,9 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
-     &        cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq,
+     &        cg2dMaxIters, cg2dMinItersNSA,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
-     &        cg3dMaxIters, cg3dChkResFreq,
-     &        printResidualFreq,
+     &        cg3dMaxIters, printResidualFreq,
      &        nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
      &        selectCoriMap,
      &        selectSigmaCoord,
@@ -242,11 +237,9 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dMinItersNSA
-      INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
       INTEGER cg2dUseMinResSol
       INTEGER cg3dMaxIters
-      INTEGER cg3dChkResFreq
       INTEGER printResidualFreq
       INTEGER nIter0
       INTEGER nTimeSteps
