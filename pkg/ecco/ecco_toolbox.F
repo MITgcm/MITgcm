@@ -381,8 +381,8 @@ C     == Routine arguments ==
       INTEGER myThid
       INTEGER nLev, nzIn
 
-      _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
