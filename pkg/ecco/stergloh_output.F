@@ -49,10 +49,9 @@ C     msgBuf    :: Informational/error message buffer
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER narr
-      PARAMETER( narr = 1 )
       INTEGER irecord
       INTEGER ioUnit
+      _RL     tmpVar(1)
       _RS     dummyRS(1)
 
 C-----------------------------------------------------------------
@@ -85,9 +84,10 @@ C-    to open new IO unit, write and close it all within same call
           ioUnit  = 0
         ENDIF
 
+        tmpVar(1) = sterGloH
         CALL MDS_WRITEVEC_LOC(
      I             fName, precFloat64, ioUnit,
-     I             'RL', narr, sterGloH, dummyRS,
+     I             'RL', 1, tmpVar, dummyRS,
      I             0, 0, irecord, myIter, myThid )
 
         IF ( ecco_keepTSeriesOutp_open ) THEN
@@ -98,15 +98,22 @@ C                 (in common block) and close open file (after last write)
 C-      save for next write to same file:
             IOunit_outpFile = ioUnit
           ENDIF
-          IF ( myIter .EQ. nEndIter ) THEN
+          IF ( myIter .EQ. nEndIter .AND. ioUnit .GT. 0 ) THEN
 C-      after last write, close IO-unit:
             IF ( debugLevel.GE.debLevC ) THEN
-              WRITE(msgBuf,'(3A)')
-     &        ' STERGLOH_OUTPUT: close file: ', fName(1:26), '.data'
+              WRITE(msgBuf,'(A,I8,3A)')
+     &          ' STERGLOH_OUTPUT: close ioUnit=', ioUnit,
+     &          ', file: ', fName(1:26), '.data'
               CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                            SQUEEZE_RIGHT, myThid )
             ENDIF
             CLOSE( ioUnit )
+          ELSEIF ( myIter .EQ. nEndIter .AND. debugMode ) THEN
+            WRITE(msgBuf,'(2A,I10,A)')
+     &          ' STERGLOH_OUTPUT: no file to close',
+     &          ' (ioUnit=', ioUnit, ' )'
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
           ENDIF
           _END_MASTER(myThid)
         ENDIF
