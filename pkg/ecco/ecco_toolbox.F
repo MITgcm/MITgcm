@@ -495,7 +495,7 @@ CBOP
 C     !ROUTINE: ECCO_ADD
 C     !INTERFACE:
       SUBROUTINE ECCO_ADD(
-     I                   fldIn, nzIn, fldOut, nzOut,
+     I                   fldIn, fldOut, nzIn, nLev,
      I                   myThid
      &                   )
 
@@ -513,10 +513,10 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nzOut, nzIn
+      INTEGER nLev, nzIn
 
       _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn ,nSx,nSy)
-      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -525,11 +525,11 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      CALL ECCO_ERROR('ECCO_ADD',
-     &     'Array boundaries need to be adjusted', myThid)
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_ADD',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nzOut
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fldOut(i,j,k,bi,bj) = fldOut(i,j,k,bi,bj)
@@ -824,7 +824,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_MULTFIELD
 C     !INTERFACE:
-      SUBROUTINE ECCO_MULTFIELD( fld, nnzloc, fld2, myThid )
+      SUBROUTINE ECCO_MULTFIELD( fld, fld2, nzIn, nLev, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field by another field, fld2 is updated on output
 C     \ev
@@ -839,9 +839,9 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-      INTEGER nnzloc
-      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER nzIn, nLev
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -850,11 +850,11 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      CALL ECCO_ERROR('ECCO_MULTFIELD',
-     &     'Array boundaries need to be adjusted', myThid)
+      IF ( nLev .GT. nzIn ) CALL ECCO_ERROR('ECCO_MULTFIELD',
+     &     'nLev > nzIn not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzloc
+        DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
            fld2(i,j,k,bi,bj) = fld(i,j,k,bi,bj) * fld2(i,j,k,bi,bj)
@@ -1076,6 +1076,7 @@ C     == Local variables ==
       LOGICAL lAdInit
       _RL     tmpFld2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,bi,bj
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       doglobalread = .false.
@@ -1093,6 +1094,7 @@ CEOP
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
       ELSE
+       WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
        CALL ECCO_ERROR('ECCO_READBAR',
      &      'this should not happen.', myThid)
       ENDIF
@@ -1104,6 +1106,7 @@ CEOP
        CALL READ_REC_XYZ_RL( active_var_file, active_var,
      &                        iRec, 1, myThid )
       ELSE
+       WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
        CALL ECCO_ERROR('ECCO_READBAR',
      &      'this should not happen.', myThid)
       ENDIF
