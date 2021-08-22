@@ -33,6 +33,10 @@ C   (3-D generalisation of oceanic real-fresh water flux)
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
+#ifdef ATMOSPHERIC_LOADING
+C o Apply inverse barometer correction
+#define ALLOW_IB_CORR
+#endif
 
 C o Include/exclude balancing surface forcing fluxes code
 #undef ALLOW_BALANCE_FLUXES

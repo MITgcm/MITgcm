@@ -45,8 +45,6 @@ c     == routine arguments ==
       _RL zeroloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
-#ifdef ALLOW_ECCO
-
 c     == local variables ==
 
       integer bi,bj
@@ -80,8 +78,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -107,10 +103,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -124,8 +116,6 @@ c     == routine arguments ==
       _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -172,8 +162,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -201,10 +189,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -220,8 +204,6 @@ c     == routine arguments ==
       _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -269,8 +251,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -296,10 +276,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -313,8 +289,6 @@ c     == routine arguments ==
       _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -361,8 +335,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -386,10 +358,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -398,8 +366,6 @@ c     == routine arguments ==
 
       _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -433,8 +399,6 @@ c--     Determine the model-data difference mask
             enddo
           enddo
         enddo
-
-#endif /* ALLOW_ECCO */
 
       RETURN
       END
@@ -459,10 +423,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -471,8 +431,6 @@ c     == routine arguments ==
 
       _RS fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -506,8 +464,6 @@ c--     Determine the model-data difference mask
             enddo
           enddo
         enddo
-
-#endif /* ALLOW_ECCO */
 
       RETURN
       END
@@ -533,10 +489,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -551,8 +503,6 @@ c     == routine arguments ==
       _RL num_local(nSx,nSy)
 
       logical dosumsq
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -604,8 +554,6 @@ c--     Compute normalized model-obs cost function
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -629,10 +577,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -641,8 +585,6 @@ c     == routine arguments ==
 
       _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -678,8 +620,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -703,10 +643,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -715,8 +651,6 @@ c     == routine arguments ==
 
       _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -751,8 +685,6 @@ CEOP
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -777,10 +709,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -791,8 +719,6 @@ c     == routine arguments ==
       _RL fldInmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
       _RL fldOutnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -832,8 +758,6 @@ c--     Determine the model-data difference mask
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -859,8 +783,6 @@ c     == routine arguments ==
       INTEGER nnzloc
       _RL numerloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -894,8 +816,6 @@ CEOP
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -921,8 +841,6 @@ c     == routine arguments ==
       INTEGER nnzloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
       _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -961,8 +879,6 @@ CEOP
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -988,8 +904,6 @@ c     == routine arguments ==
       INTEGER nnzloc
       _RL multloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -1023,8 +937,6 @@ CEOP
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -1050,8 +962,6 @@ c     == routine arguments ==
       INTEGER nnzloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
       _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -1086,8 +996,6 @@ CEOP
           enddo
         enddo
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -1113,10 +1021,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -1129,8 +1033,6 @@ C     iRec:            record number
       INTEGER myThid
       INTEGER nnzbar
       _RL     dummy
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -1164,8 +1066,6 @@ CEOP
         endif
 #endif
 
-#endif /* ALLOW_ECCO */
-
       RETURN
       END
 
@@ -1192,10 +1092,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -1208,8 +1104,6 @@ C     iRec:            record number
       INTEGER myThid
       INTEGER nnzbar
       LOGICAL dosumsq
-
-#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -1255,8 +1149,6 @@ c--        Convert to weight
         enddo
        enddo
       enddo
-
-#endif /* ALLOW_ECCO */
 
       RETURN
       END

@@ -23,10 +23,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-#endif
+#include "ECCO_SIZE.h"
+#include "ecco.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
