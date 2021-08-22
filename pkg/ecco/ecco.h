@@ -38,14 +38,12 @@ c                                  that has to be used.
       parameter(    eccoUsesAdsuppVersion = '0.1.0' )
       parameter(    eccoUsesOptimVersion  = '2.1.0' )
 
-
 c     Experiment name:
 c     ================
 
       common /ecco_c/
      &                expId
       character*(10)  expId
-
 
 c     Integration information:
 c     ========================
@@ -169,13 +167,17 @@ c                 the current model integration.
       _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-c     file precision and field type
-      common /prec_type_cost/
-     &                        cost_iprec,
-     &                        cost_yftype
+c     Two runtime parameters related to outputting sterGloH
+c     ecco_output_sterGloH :: output sterGloH at each time step if true
+c     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
+      common /ecco_l/
+     &                ecco_output_sterGloH, ecco_keepTSeriesOutp_open
+      LOGICAL ecco_output_sterGloH, ecco_keepTSeriesOutp_open
 
+c     file precision
+      common /prec_type_cost/
+     &                        cost_iprec
       integer cost_iprec
-      character*(2) cost_yftype
 
 c     empty pre/post-processing :
 c     =========================
@@ -336,5 +338,4 @@ c     objf_gencost - gencost user defined contribution
 c     ==================================================================
 c     END OF HEADER ECCO
 c     ==================================================================
-
 

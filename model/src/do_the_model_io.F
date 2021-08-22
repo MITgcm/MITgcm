@@ -55,6 +55,8 @@ C       |
 C       |-- SBO_CALC
 C       |-- SBO_OUTPUT
 C       |
+C       |-- STERGLOH_OUTPUT
+C       |
 C       |-- SEAICE_OUTPUT
 C       |
 C       |-- SHELFICE_OUTPUT
@@ -199,6 +201,12 @@ C     Do SBO diagnostics.
       IF ( useSBO ) THEN
         CALL SBO_CALC( myTime, myIter, myThid )
         CALL SBO_OUTPUT( myTime, myIter, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_ECCO
+      IF ( useECCO ) THEN
+        CALL STERGLOH_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif
 
