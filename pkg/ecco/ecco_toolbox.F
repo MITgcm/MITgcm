@@ -101,8 +101,7 @@ C     == Routine arguments ==
 
       _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-C     this is hardwired to Nr for now, because of cost_gencost_seaicev4.F
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
 C     output
       _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
@@ -177,13 +176,13 @@ C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localbarmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localobs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localobsmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localdif    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL difmask     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localbar    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localbarmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localobs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localobsmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localdif    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL difmask     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -194,8 +193,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      CALL ECCO_ERROR('ECCO_DIFFANOMMSK',
-     &     'Array boundaries need to be adjusted', myThid)
+      IF ( nnzobs .GT. nnzbar ) CALL ECCO_ERROR('ECCO_DIFFANOMMSK',
+     &     'nnzobs > nnzbar not allowed.', myThid)
 c--   Determine the model-data difference mask
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -254,11 +253,11 @@ C     == Routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -269,9 +268,8 @@ C     == Local variables ==
       INTEGER bi,bj,i,j,k
 CEOP
 
-      CALL ECCO_ERROR('ECCO_OBS',
-     &     'Array boundaries need to be adjusted', myThid)
-c--   Determine the model-data difference mask
+      IF ( nnzobs .GT. nnzbar ) CALL ECCO_ERROR('ECCO_OBSMSK',
+     &     'nnzobs > nnzbar not allowed.', myThid)
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO k = 1,nnzobs

@@ -79,8 +79,7 @@ c old:heff -> model has excess of iceconc     -> new:exconc
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
-
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
       _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
       _RL localtmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
       _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
@@ -167,11 +166,15 @@ c-- flag to add cost: true=(obs-mod)*(obs-mod)*weight
         if (preproc(k2).EQ.'nosumsq') dosumsq=.FALSE.
       enddo
 
-c-- initialize arrays, copy maskC to localmask
-      call ecco_zero(localobs,1,spzeroloc,myThid)
-      call ecco_zero(localweight,1,zeroRL,myThid)
-      call ecco_zero(localmask,Nr,zeroRL,myThid)
-      call ecco_cprsrl(maskC,localmask,Nr,Nr,myThid)
+c--   initialize arrays, copy 2D maskInC to 2D localmask; this means
+c     that sea ice cost function contributions on open boundary points
+c     are masked out, probably something that eccov4 can live
+c     with. Alternatively, on has to copy the first level of maskC to
+c     localmask explicitly.
+      call ecco_zero(localobs,nnzsiv4,spzeroloc,myThid)
+      call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
+      call ecco_zero(localmask,nnzsiv4,zeroRL,myThid)
+      call ecco_cprsrl(maskInC,localmask,nnzsiv4,nnzsiv4,myThid)
 
 c=============== PART 1: main loop ===================
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
@@ -222,7 +225,7 @@ c--1.2.A sea-ice concentration barfile
         call cost_gencal(areabarfile,gencost_datafile(igen_conc),
      &   irec,localstartdate,localperiod,fname1,
      &   fname0,localrec,obsrec,exst,myThid)
-        call cost_genread(fname1,areabar,localtmp,irec,1,nnzbar,
+        call cost_genread(fname1,areabar,localtmp,irec,nnzsiv4,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,myThid)
 
@@ -232,9 +235,10 @@ c--1.2.B sst as proxy for deconc barfile, needs igen_conc
          call cost_gencal(deconcbarfile,gencost_datafile(igen_conc),
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
-         call cost_genread(fname1,deconcbar,localtmp,irec,1,nnzbar,
-     &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
-     &       dummy,myThid)
+         call cost_genread(fname1,deconcbar,localtmp,
+     &        irec,nnzsiv4,nnzbar,
+     &        nrecloc,preproc,preproc_c,preproc_i,preproc_r,
+     &        dummy,myThid)
         endif
 
 c--1.2.C heff as proxy for exconc barfile, need igen_conc and igen_exconc
@@ -243,9 +247,10 @@ c--1.2.C heff as proxy for exconc barfile, need igen_conc and igen_exconc
          call cost_gencal(exconcbarfile,gencost_datafile(igen_conc),
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
-         call cost_genread(fname1,exconcbar,localtmp,irec,1,nnzbar,
-     &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
-     &       dummy,myThid)
+         call cost_genread(fname1,exconcbar,localtmp,
+     &        irec,nnzsiv4,nnzbar,
+     &        nrecloc,preproc,preproc_c,preproc_i,preproc_r,
+     &        dummy,myThid)
         endif
 
 c====================================================
