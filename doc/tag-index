@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68b (2021/08/24)
 o pkg/ecco:
   - add time-series output of global mean steric height change at each time step
     (variable: sterGloH, with #define ALLOW_PSBAR_STERIC) ; turned on
