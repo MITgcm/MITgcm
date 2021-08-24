@@ -1,6 +1,25 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68b (2021/08/24)
+o pkg/ecco:
+  - add time-series output of global mean steric height change at each time step
+    (variable: sterGloH, with #define ALLOW_PSBAR_STERIC) ; turned on
+    with run-time switch "ecco_output_sterGloH=T" ; add option to keep file open
+    (+ single meta file writing) with "ecco_keepTSeriesOutp_open=T" switch.
+o pkg/ggl90:
+  - fix EXCH calls in pkg/ggl90 when IDEMIX is used: no additional EXCH when
+    using zero horizontal diffusion of IDEMIX_E (IDEMIX_tau_h=0) but with
+    IDEMIX_tau_h > 0, EXCH both IDEMIX_E and GGL90TKE ; this affects results
+    of test experiment cs32.in_p and fix restart issue ;
+  - more consistent/simpler idemix code: use model parameter value for PI,
+    reduce number of IDEMIX global array, add TKE tendency from IDEMIX as output
+    of S/R GGL90_IDEMIX ; use double product of IDEMIX_E instead of power of 2
+    which affects results at machine truncation level ;
+  - update some IDEMIX default param values (following Pollmann et al., 2017)
+    but keep old default values in global_ocean.90x40x15.idemix ;
+  - apply also option calcMeanVertShear to uStarSquare calculation (wind-stress
+    magnitude) and switch on calcMeanVertShear in test experiment cs32.in_p.
 o model/src + pkgs ggl90, exf & seaice: ocean in P-coordinate
   - read geopotential anomaly directly into phi0surf instead of via pLoad (was
     a hack), specified with new input filename "geoPotAnomFile" in data&PARM05 ;

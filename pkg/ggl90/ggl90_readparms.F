@@ -116,15 +116,18 @@ C     Blanke and Delecluse (1993, JPO) use
 C-----------------------------------------------------------------------
 C     set default parameter for IDEMIX
 C-----------------------------------------------------------------------
-      IDEMIX_tau_v      =  1.0*86400.0 _d 0
+C     New (and different from Olbers and Eden, 20130) parameter default
+C     values for tau_v, jstar, mu0 according to Pollmann et al. (2017):
+      IDEMIX_tau_v      =  2.0*86400.0 _d 0
       IDEMIX_tau_h      = 10.0*86400.0 _d 0
       IDEMIX_gamma      = 1.57 _d 0
-      IDEMIX_jstar      = 10.0 _d 0
-      IDEMIX_mu0        = 4.0 _d 0/3.0 _d 0
+      IDEMIX_jstar      = 5.0 _d 0
+      IDEMIX_mu0        = 1.0 _d 0/3.0 _d 0
       IDEMIX_mixing_efficiency = 0.1666 _d 0
       IDEMIX_diff_max   = 1.0 _d 0
       IDEMIX_diff_min   = 1.0 _d -9
       IDEMIX_frac_F_b   = 1.0 _d 0
+C     only approx. 20% of near inertial wind power input reaches IDEMIX
       IDEMIX_frac_F_s   = 0.2 _d 0
 C     IDEMIX_tidal_file = 'tidal_energy.bin'
 C     IDEMIX_wind_file  = 'wind_energy.bin'

@@ -116,6 +116,9 @@ c     _RL SQRTTKE
       _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_IDEMIX
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     IDEMIX_gTKE :: TKE tendency due to internal waves
+C                    (output of S/R GGL90_IDEMIX)
+      _RL IDEMIX_gTKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
@@ -210,6 +213,15 @@ C     case of using IDEMIX.
         ENDDO
        ENDDO
 
+#ifdef ALLOW_GGL90_IDEMIX
+C     step forward IDEMIX_E(energy) and compute tendency for TKE,
+C     IDEMIX_gTKE = tau_d * IDEMIX_E**2, following Olbers and Eden (2013)
+      IF ( useIDEMIX) CALL GGL90_IDEMIX(
+     I     bi, bj, hFacI, recip_hFacI, sigmaR,
+     O     IDEMIX_gTKE,
+     I     myTime, myIter, myThid )
+#endif /* ALLOW_GGL90_IDEMIX */
+
 C     Initialize local fields
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -260,11 +272,6 @@ c       rMixingLength(i,j,1)  = 0. _d 0
 #endif /* ALLOW_GGL90_HORIZDIFF */
        ENDDO
       ENDDO
-
-#ifdef ALLOW_GGL90_IDEMIX
-      IF ( useIDEMIX) CALL GGL90_IDEMIX(
-     &   bi, bj, hFacI, recip_hFacI, sigmaR, myTime, myIter, myThid )
-#endif /* ALLOW_GGL90_IDEMIX */
 
       DO k = 2, Nr
        kl = k-delK
@@ -636,9 +643,9 @@ C     by averaging (@ grid-cell center) the 4 vertical shear compon @ U,V pos.
           tempV  = ( vVel(i, j ,km1,bi,bj) - vVel(i, j ,k,bi,bj) )
           tempVp = ( vVel(i,j+1,km1,bi,bj) - vVel(i,j+1,k,bi,bj) )
           verticalShear(i,j) = (
-     &                 ( tempU*tempU + tempUp*tempUp )*halfRL
-     &               + ( tempV*tempV + tempVp*tempVp )*halfRL
-     &                         )*recip_drC(k)*recip_drC(k)
+     &                 ( tempU*tempU + tempUp*tempUp )
+     &               + ( tempV*tempV + tempVp*tempVp )
+     &                         )*halfRL*recip_drC(k)*recip_drC(k)
      &                          *coordFac*coordFac
          ENDDO
         ENDDO
@@ -671,7 +678,7 @@ C     account for partical cell factor in vertical shear:
      &         /(verticalShear(i,j)+GGL90eps)
 CML         IDEMIX_RiNumber = 1./GGL90eps
           IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
-     &     (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
+     &         ( GGL90eps + IDEMIX_gTKE(i,j,k) )
           prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
           TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
           TKEPrandtlNumber(i,j,k) = MAX( oneRL,TKEPrandtlNumber(i,j,k) )
@@ -719,9 +726,7 @@ C     add IDEMIX contribution to the turbulent kinetic energy
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
-     &         + deltaTloc*(
-     &         + IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2
-     &         )
+     &         + deltaTloc*IDEMIX_gTKE(i,j,k)
          ENDDO
         ENDDO
        ENDIF
@@ -855,20 +860,41 @@ C     impose TKE(1) = 0.
        ENDDO
       ENDIF
 C     end set up matrix
-C
 
 C     Apply boundary condition
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-C     estimate friction velocity uStar from surface forcing
-        uStarSquare(i,j) = SQRT(
-     &    ( .5 _d 0*( surfaceForcingU(i,  j,  bi,bj)
-     &              + surfaceForcingU(i+1,j,  bi,bj) ) )**2
-     &  + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
-     &              + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-     &                     )*recip_coordFac
+      IF ( calcMeanVertShear ) THEN
+C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         tempU  = surfaceForcingU( i ,j,bi,bj)
+         tempUp = surfaceForcingU(i+1,j,bi,bj)
+         tempV  = surfaceForcingV(i, j ,bi,bj)
+         tempVp = surfaceForcingV(i,j+1,bi,bj)
+         uStarSquare(i,j) = SQRT(
+     &        ( tempU*tempU + tempUp*tempUp
+     &        + tempV*tempV + tempVp*tempVp
+     &        )*halfRL          )*recip_coordFac
+C Note: adding parenthesis in 4 terms sum (-> 2 group of 2) as below:
+c        uStarSquare(i,j) = SQRT(
+c    &        ( ( tempU*tempU + tempUp*tempUp )
+c    &        + ( tempV*tempV + tempVp*tempVp )
+c    &        )*halfRL          )*recip_coordFac
+C       seems to break restart !
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C     estimate friction velocity uStar from surface forcing
+         uStarSquare(i,j) = SQRT(
+     &     ( .5 _d 0*( surfaceForcingU(i,  j,  bi,bj)
+     &               + surfaceForcingU(i+1,j,  bi,bj) ) )**2
+     &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
+     &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
+     &                          )*recip_coordFac
+        ENDDO
+       ENDDO
+      ENDIF
 C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax

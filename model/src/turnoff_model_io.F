@@ -32,6 +32,9 @@ c#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_PARAMS.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ecco.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     seqFlag :: flag that indicates where this S/R is called from:
@@ -79,6 +82,11 @@ C-    should call a S/R EXF_TURNOFF_IO (like SEAICE) to reset this flag
 #ifdef ALLOW_OBCS
 C-    should call a S/R OBCS_TURNOFF_IO (like SEAICE) to reset this flag
       IF ( useOBCS ) OBCS_monitorFreq = 0.
+#endif
+
+#ifdef ALLOW_ECCO
+C-    should call a S/R ECCO_TURNOFF_IO (like SEAICE) to reset this flag
+      IF ( useECCO ) ecco_output_sterGloH = .FALSE.
 #endif
 
 C--   Disable SBO output
