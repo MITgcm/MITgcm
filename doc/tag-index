@@ -1,6 +1,18 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - add code for Full-Adjoint of cg2d in renamed (from cg2d_sad.F) routine
+    cg2d_mad.F (cg2d manual adjoint) ;
+  - new runtime params cg2dFullAdjoint (data.autodiff), useNSACGSolver (data,
+    default to "FALSE"), cg2dMinItersNSA (data, defaults to 0) ;
+  - new sub-verification experiment bottom_ctrl_5x5.facg2d to test new
+    Full-Adjoint capability ;
+  - update primary test experiment bottom_ctrl_5x5 to always use a minimum
+    number of 10 CG2D iterations (changes results but improves accuracy) ;
+  - modify AD-experiment global_ocean.90x40x15.bottomdrag to use full nonlinear
+    free surface (nonlinFreeSurf=4) and cg2dFullAdjoint=True.
+
 checkpoint68b (2021/08/24)
 o pkg/ecco:
   - add time-series output of global mean steric height change at each time step
