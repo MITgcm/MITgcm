@@ -15,6 +15,9 @@
 #  include "KPP_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THERMODYNAMICS
@@ -299,7 +302,8 @@ CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
 CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 # endif
-# if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
+# if (defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL) \
+        && defined ALLOW_GMREDI
 #  ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte

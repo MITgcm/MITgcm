@@ -445,6 +445,10 @@ C---    read 2-D fields, starting with Eta:
           nj = nj*Nr
           CALL READ_MFLDS_3D_RL( 'EtaN    ', etaN,
      &                                     nj, fp, 1 , myIter, myThid )
+        IF ( usingPCoords .AND. useSEAICE ) THEN
+          CALL READ_MFLDS_3D_RL( 'Phi_rLow', phiHydLow,
+     &                                     nj, fp, 1 , myIter, myThid )
+        ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( selectNHfreeSurf.GE.1 ) THEN
           CALL READ_MFLDS_3D_RL( 'dPhiNH  ', dPhiNH,
@@ -567,6 +571,8 @@ C     Fill in edge regions
 
       IF ( storePhiHyd4Phys )
      &  CALL EXCH_3D_RL( totPhiHyd, Nr, myThid )
+      IF ( usingPCoords .AND. useSEAICE )
+     &  CALL EXCH_XY_RL( phiHydLow, myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( use3Dsolver ) THEN

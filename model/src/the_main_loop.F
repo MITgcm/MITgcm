@@ -175,7 +175,8 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_OFFLINE
 #   include "OFFLINE.h"
 #  endif
-#  if (defined ALLOW_CG2D_NSA) || (defined NONLIN_FRSURF)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 #   include "CG2D.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT

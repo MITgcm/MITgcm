@@ -150,6 +150,9 @@ C     stored files.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phi0surf = tapelev_init, key = 1
+#endif
       CALL INI_FIELDS( myThid )
 
 C--   Initialise 3-dim. diffusivities
@@ -245,6 +248,12 @@ C     and modify hFac(C,W,S) accordingly :
 # endif /* DISABLE_SIGMA_CODE */
        ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These fields are only updated in the surface layer and TAF gets
+C     confused about it so that their contribution is not always added
+C     to the hfac*_ad lateron. This directive fixes that.
+CADJ INCOMPLETE recip_hFacC, recip_hFacW, recip_hFacS
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
        ENDIF
       ENDIF

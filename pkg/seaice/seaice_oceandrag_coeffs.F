@@ -60,7 +60,11 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     dragCoeff
 CEOP
 
-      kSrf    = 1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
       tempMin = SEAICEdWatMin*SEAICEdWatMin
 
       DO bj=myByLo(myThid),myByHi(myThid)

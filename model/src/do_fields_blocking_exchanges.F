@@ -99,10 +99,5 @@ C     endif LS_doTimeStep
       ENDIF
 #endif /* ALLOW PTRACERS */
 
-#ifdef ALLOW_GGL90
-      IF (useGGL90)
-     &  CALL GGL90_EXCHANGES(myThid)
-#endif /* ALLOW_GGL90 */
-
       RETURN
       END

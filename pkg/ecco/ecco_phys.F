@@ -59,7 +59,7 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ATMOSPHERIC_LOADING
-      _RL sIceLoadFac
+      _RL sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -124,8 +124,8 @@ c    &                       SQUEEZE_RIGHT, myThid )
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
-      sIceLoadFac=zeroRL
-      IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
+      sIceLoadFacLoc=zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -135,7 +135,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
                 m_eta(i,j,bi,bj)=
      &                 etan(i,j,bi,bj)
 #ifdef ATMOSPHERIC_LOADING
-     &                +sIceLoad(i,j,bi,bj)*sIceLoadFac
+     &                +sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
