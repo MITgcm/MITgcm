@@ -138,6 +138,11 @@ C     debugMode    :: to print debug msg. now read from parameter file eedata
 C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
 C                              (replaced by pkg/frazil)
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
+C Namelist PARM02:
+C     cg2dChkResFreq :: Frequency with which to check 2-D con. grad solver
+C                         residual (was never coded)
+C     cg3dChkResFreq :: Frequency with which to check 3-D con. grad solver
+C                         residual (was never coded)
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -166,6 +171,8 @@ c     _RL gravitySign
       LOGICAL usePickupBeforeC35
       LOGICAL saveDebugMode
       LOGICAL allowInteriorFreezing, useOldFreezing
+C-
+      INTEGER cg2dChkResFreq, cg3dChkResFreq
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -235,17 +242,17 @@ C--   Continuous equation parameters
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
-     & smoothAbsFuncRange,
+     & smoothAbsFuncRange, sIceLoadFac,
      & balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dUseMinResSol,
+     & cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq, cg2dUseMinResSol,
      & cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual,
-     & useSRCGSolver, printResidualFreq
+     & useNSACGSolver, useSRCGSolver, printResidualFreq
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
@@ -293,7 +300,8 @@ C--   Input files
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
      & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile, addMassFile, tCylIn, tCylOut,
+     & dQdTFile, ploadFile, geoPotAnomFile, addMassFile,
+     & tCylIn, tCylOut,
      & eddyPsiXFile, eddyPsiYFile, geothermalFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name
@@ -343,6 +351,8 @@ C--   Initialise retired parameters to unlikely value
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
       useOldFreezing  = .FALSE.
+      cg2dChkResFreq  = UNSET_I 
+      cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -868,6 +878,19 @@ C--   Elliptic solver parameters
        WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM02 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+C     Check for retired parameters still being used
+      IF ( cg2dChkResFreq .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: unused "cg2dChkResFreq"',
+     &  ' is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( cg3dChkResFreq .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: unused "cg3dChkResFreq"',
+     &  ' is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C--   Time stepping parameters

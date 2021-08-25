@@ -45,6 +45,7 @@
 
 # Elliptic solver parameters
  &PARM02
+ useNSACGSolver=.TRUE.,
  cg2dMaxIters=200,
 #cg2dTargetResidual=1.E-17,
  cg2dTargetResWunit=1.E-24,

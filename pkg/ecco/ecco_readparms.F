@@ -58,6 +58,7 @@ C     iUnit       - Work variable for IO unit number
 
 Catn-- retired parameters
       character*(MAX_LEN_FNAM) topexmeanfile
+      character*(2) cost_yftype
       integer nRetired
 
 c     == external functions ==
@@ -166,8 +167,9 @@ c--   Read the namelist input.
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
-     &                   cost_iprec, cost_yftype
-     &                   ,topexmeanfile
+     &                   cost_iprec, ecco_output_sterGloH,
+     &                   ecco_keepTSeriesOutp_open,
+     &                   cost_yftype, topexmeanfile
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -497,10 +499,12 @@ catn  eccov4 will run without needing to read in these params
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
-        cost_yftype = 'RL'
+        ecco_output_sterGloH  =      .FALSE.
+        ecco_keepTSeriesOutp_open =  .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '
+        cost_yftype           =   'RL'
         nRetired              =      0
 
 c--     Next, read the data.ecco file.

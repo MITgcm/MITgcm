@@ -99,12 +99,8 @@ c--
       irec  = 1
       k     = 1
       if ( smrarea_errfile .NE. ' ' ) then
-         IF ( cost_yftype.EQ.'RL' ) THEN
-           CALL READ_REC_3D_RL( smrarea_errfile, cost_iprec, nnz,
-     &                          wsmrarea, irec, 0, mythid )
-         ELSE
-           STOP 'S/R SEAICE_COST_WEIGHTS: invalid cost_yftype'
-         ENDIF
+         CALL READ_REC_3D_RL( smrarea_errfile, cost_iprec, nnz,
+     &                        wsmrarea, irec, 0, mythid )
          do bj = jtlo,jthi
            do bi = itlo,ithi
              do j = jmin,jmax
@@ -143,4 +139,5 @@ c--
 
 #endif
 
+      return
       end

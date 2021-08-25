@@ -54,6 +54,10 @@ C     swflux = - ( 1 - albedo ) * swdown
 #ifdef ALLOW_ATM_TEMP
       ks = 1
       kl = 2
+      IF ( usingPCoords ) THEN
+       ks = Nr
+       kl = Nr-1
+      ENDIF
 
       IF ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' ) THEN
 C     Loop over tiles.
