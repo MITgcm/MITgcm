@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - fix calculation of carbonate saturation state (with CAR_DISS defined) when
+    #define CARBONCHEM_SOLVESAPHE ; no current test run with #define CAR_DISS.
 o pkg/autodiff:
   - add code for Full-Adjoint of cg2d in renamed (from cg2d_sad.F) routine
     cg2d_mad.F (cg2d manual adjoint) ;
