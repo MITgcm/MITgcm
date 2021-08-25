@@ -147,16 +147,15 @@ C     the_run_name    :: string identifying the name of the model "run"
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
 C                            two-dimensional con. grad solver.
-C     cg2dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
+C     cg2dMinItersNSA     :: Minimum number of iterations in the
+C                            not-self-adjoint version (cg2d_nsa.F) of the
+C                            two-dimensional con. grad solver (default = 0).
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
 C                            (non-linear free-surf.)
 C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
 C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
-C     cg3dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -220,10 +219,9 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
-     &        cg2dMaxIters, cg2dChkResFreq,
+     &        cg2dMaxIters, cg2dMinItersNSA,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
-     &        cg3dMaxIters, cg3dChkResFreq,
-     &        printResidualFreq,
+     &        cg3dMaxIters, printResidualFreq,
      &        nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
      &        selectCoriMap,
      &        selectSigmaCoord,
@@ -238,11 +236,10 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
-      INTEGER cg2dChkResFreq
+      INTEGER cg2dMinItersNSA
       INTEGER cg2dPreCondFreq
       INTEGER cg2dUseMinResSol
       INTEGER cg3dMaxIters
-      INTEGER cg3dChkResFreq
       INTEGER printResidualFreq
       INTEGER nIter0
       INTEGER nTimeSteps
@@ -346,6 +343,9 @@ C     maskIniSalt    :: apply mask to initial salinity
 C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
 C     checkIniSalt   :: check for points with identically zero initial salinity
 C- Pressure solver related parameters (PARM02)
+C     useNSACGSolver :: Set to true to use "not self-adjoint" conjugate
+C                       gradient solver that stores the iteration history
+C                       for an iterative adjoint as accuate as possible
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
@@ -432,7 +432,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useSRCGSolver,
+     & useNSACGSolver, useSRCGSolver,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -513,6 +513,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL maskIniSalt
       LOGICAL checkIniTemp
       LOGICAL checkIniSalt
+      LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface

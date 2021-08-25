@@ -91,17 +91,11 @@ c$taf COMMON ctrl_fields_kapredi FTLNAME = g_ctrl_fields_kapredi
 c$taf COMMON ctrl_fields_bottomdrag  ADNAME = adctrl_fields_bottomdrag
 c$taf COMMON ctrl_fields_bottomdrag FTLNAME = g_ctrl_fields_bottomdrag
 
-c$taf COMMON grid_r  ADNAME = adgrid_r
-c$taf COMMON grid_r FTLNAME = g_grid_r
+c$taf COMMON grid_rl  ADNAME = adgrid_rl
+c$taf COMMON grid_rl FTLNAME = g_grid_rl
 
-c$taf COMMON grid_r_c  ADNAME = adgrid_r_c
-c$taf COMMON grid_r_c FTLNAME = g_grid_r_c
-
-c$taf COMMON grid_r_s  ADNAME = adgrid_r_s
-c$taf COMMON grid_r_s FTLNAME = g_grid_r_s
-
-c$taf COMMON grid_r_w  ADNAME = adgrid_r_w
-c$taf COMMON grid_r_w FTLNAME = g_grid_r_w
+c$taf COMMON grid_rs  ADNAME = adgrid_rs
+c$taf COMMON grid_rs FTLNAME = g_grid_rs
 
 c$taf COMMON shelfice_fields_rl  ADNAME = adshelfice_fields_rl
 c$taf COMMON shelfice_fields_rl FTLNAME = g_shelfice_fields_rl
