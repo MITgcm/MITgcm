@@ -108,6 +108,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 
@@ -201,6 +202,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 
@@ -295,6 +297,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 
@@ -383,9 +386,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -455,9 +455,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -528,9 +525,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -623,9 +617,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -696,9 +687,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -769,9 +757,6 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ecco.h"
-#endif
 
 c     == routine arguments ==
 
@@ -1105,6 +1090,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 
@@ -1183,6 +1169,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 

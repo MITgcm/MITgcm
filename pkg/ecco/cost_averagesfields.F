@@ -44,6 +44,7 @@ c     == global variables ==
 #include "CG2D.h"
 
 #ifndef ECCO_CTRL_DEPRECATED
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #else
 # include "ecco_cost.h"

@@ -30,6 +30,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 

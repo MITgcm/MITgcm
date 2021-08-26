@@ -33,6 +33,10 @@ C allow for 3 dimensional generic terms
 
 C include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC
+#ifdef ATMOSPHERIC_LOADING
+C apply inverse barometer correction
+#define ALLOW_IB_CORR
+#endif
 C allow for near-shore and high-latitude altimetry
 #undef ALLOW_SHALLOW_ALTIMETRY
 #undef ALLOW_HIGHLAT_ALTIMETRY

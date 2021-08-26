@@ -29,6 +29,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 #ifdef ALLOW_SEAICE
@@ -59,6 +60,7 @@ c     == local variables ==
       integer k2,kk
       integer itr
 #endif
+      integer kLev_select
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
       _RL zontau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -112,36 +114,48 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 
       do k=1,NGENCOST
       itr=gencost_itracer(k)
+      kLev_select=gencost_kLev_select(k) 
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
          do i =  imin,imax
 
-         if (gencost_barfile(k)(1:5).EQ.'m_eta') then
-           gencost_modfld(i,j,bi,bj,k) = 
+         if (gencost_barfile(k)(1:5).EQ.'m_eta' .and.
+     &       gencost_barfile(k)(1:9).NE.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
      &      m_eta(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_boxmean') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:9).EQ.'m_horflux') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sst') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      THETA(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sss') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:4).EQ.'m_bp') then
-           gencost_modfld(i,j,bi,bj,k) = 
-     &      (phiHydLow(i,j,bi,bj)
-#ifdef ALLOW_PSBAR_STERIC
-C add back the correction due to the global mean steric ssh change, 
-C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &       + sterGloH * gravity
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterUE') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_UE(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_VN(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
+         elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
+     &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+         elseif (gencost_barfile(k)(1:9).EQ.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_eta_dyn(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:12).EQ.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp_nopabar(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #endif
-     &      )*maskC(i,j,1,bi,bj)
-
+#endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
          elseif (gencost_barfile(k)(1:16).EQ.'m_geothermalflux') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -149,7 +163,7 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 #endif
 #ifdef ALLOW_EXF
          elseif (gencost_barfile(k)(1:9).EQ.'m_ustress') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      zontau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_vstress') then
            gencost_modfld(i,j,bi,bj,k) = 
