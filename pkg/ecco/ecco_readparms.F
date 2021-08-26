@@ -25,12 +25,14 @@ c     == global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
-#ifdef ECCO_CTRL_DEPRECATED
-# include "ecco_cost.h"
-#else
-# include "ECCO_SIZE.h"
-# include "ecco.h"
-# include "ecco_local_params.h"
+#ifdef ALLOW_ECCO
+# ifdef ECCO_CTRL_DEPRECATED
+#  include "ecco_cost.h"
+# else
+#  include "ECCO_SIZE.h"
+#  include "ecco.h"
+#  include "ecco_local_params.h"
+# endif
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"

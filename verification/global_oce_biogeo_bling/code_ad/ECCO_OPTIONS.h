@@ -15,6 +15,7 @@ CEOP
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_ECCO
 #ifdef ECCO_CPPOPTIONS_H
 
 C-- When multi-package option-file ECCO_CPPOPTIONS.h is used (directly included
@@ -65,5 +66,6 @@ C       >>> In-Situ Profiles.
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
+#endif /* ALLOW_ECCO */
 #endif /* ECCO_OPTIONS_H */
 
