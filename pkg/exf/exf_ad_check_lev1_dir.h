@@ -105,6 +105,7 @@ CADJ STORE areamask0     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE areamask1     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 
+# ifdef ECCO_CTRL_DEPRECATED
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE xx_hflux1     = comlev1, key=ikey_dynamics, kind=isbyte
@@ -181,5 +182,6 @@ CADJ STORE xx_sst1       = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE xx_sss0       = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE xx_sss1       = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
+# endif /* ECCO_CTRL_DEPRECATED */
 
 #endif /* ALLOW_EXF */

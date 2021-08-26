@@ -1,22 +1,7 @@
-#
-#
 # *********************
 # ECCO controlvariables
 # *********************
  &CTRL_NML
-# xx_theta_file      = 'xx_theta',
-# xx_salt_file       = 'xx_salt',
-# xx_tr1_file        = 'xx_tr1',
-# xx_hflux_file      = 'xx_hflux',
-# xx_sflux_file      = 'xx_sflux',
-# xx_tauu_file       = 'xx_tauu',
-# xx_tauv_file       = 'xx_tauv',
-# xx_sst_file        = 'xx_sst',
-# xx_sss_file        = 'xx_sss',
-# xx_diffkr_file     = 'xx_diffkr',
-# xx_kapgm_file      = 'xx_kapgm',
-#xx_hfacc_file      = 'xx_hfacc',
- xx_depth_file      = 'xx_depth',
  &
 #
 # *********************
@@ -24,4 +9,11 @@
 # *********************
  &CTRL_PACKNAMES
  &
-
+#
+# *********************
+# names for CTRL_GENARR
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr2d_file(1)       = 'xx_depth',
+ xx_genarr2d_weight(1)     = 'ones_64b.bin',
+ &

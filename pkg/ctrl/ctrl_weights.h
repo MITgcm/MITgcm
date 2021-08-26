@@ -17,9 +17,8 @@ c     Define dummy weights as a placeholder
       _RL wedtaux ( nr,nsx,nsy )
       _RL wedtauy ( nr,nsx,nsy )
 
-#if (defined (ALLOW_COST_HFLUXM) || defined (ALLOW_HFLUXM_CONTROL))
+#ifdef ALLOW_COST_HFLUXM
 c     whfluxm       - weight for heat flux.
       common /cost_weights_r/ whfluxm
       _RL whfluxm (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
 #endif
-

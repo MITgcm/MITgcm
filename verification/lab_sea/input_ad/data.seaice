@@ -43,6 +43,9 @@
  &
 
  &SEAICE_PARM02
+# currently COST_ICE_TEST is undefined in SEAICE_OPTIONS.h,
+# so that none of these parameters are used and the cost function
+# contribution by sea ice is zero (f_ice = 0.)
   mult_ice   = 1.,
 # choose which seaice cost term you want
   cost_ice_flag = 1,

@@ -4,7 +4,8 @@
 # ECCO cost function
 # ******************
  &COST_NML
- mult_tracer  = 0.,
  mult_test    = 1.,
- mult_depth   = 1.,
+# only compute depth cost function,
+# but do not add it the global cost function
+ mult_depth   = 0.,
  &

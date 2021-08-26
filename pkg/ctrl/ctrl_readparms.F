@@ -122,11 +122,10 @@ c--   Read the namelist input.
      &  doMainUnpack, doMainPack,
      &  doSinglePrecTapelev,
      &  doAdmtlmBypassAD,
-     &  delZexp, forcingPrecond
+     &  delZexp, forcingPrecond ,ctrlprec
 cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL
-     &  ,ctrlprec
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,

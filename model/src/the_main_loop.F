@@ -312,6 +312,10 @@ CADJ STORE shiTransCoeffS         = tapelev_init, key=1
 CADJ STORE H_streamice = tapelev_init, key=1
 CADJ STORE B_glen      = tapelev_init, key=1
 # endif
+# ifdef ALLOW_DIC
+CADJ STORE co2atmos = tapelev_init, key = 1
+CADJ STORE alpha    = tapelev_init, key = 1
+# endif
 #endif
 
 #ifdef ALLOW_OPENAD

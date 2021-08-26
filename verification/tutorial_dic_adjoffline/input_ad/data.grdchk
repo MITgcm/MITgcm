@@ -12,5 +12,5 @@
  jgloTile         = 1,
  nstep            = 1,
  nend             = 4,
- grdchkvarindex   = 30,
+ grdchkvarindex   = 101,
  &

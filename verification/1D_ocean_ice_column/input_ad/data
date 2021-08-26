@@ -73,6 +73,7 @@
  saltAdvScheme=30,
  vectorInvariantMomentum=.TRUE.,
  useRealFreshWaterFlux = .TRUE.,
+ useSingleCpuIO = .TRUE.,
 # debugLevel=1,
  &
 
@@ -148,4 +149,3 @@
  &PARM05
  bathyFile = 'bathy_1x1_1105m_testpool',
  &
-

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-#  This is the local options file for the "new" version of genmake
-
-if test "x$OPENAD" = x ; then
-  AD_OPTFILE='../code_ad/ad_optfile.local'
-fi

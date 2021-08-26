@@ -55,7 +55,7 @@
  chkptFreq=  0.0,
 #dumpFreq=   1.0,
  monitorFreq = 43200.,
- ADJdumpFreq=   1.0,
+ ADJdumpFreq= 180000.,
  monitorSelect=1,
  &
 # Gridding parameters

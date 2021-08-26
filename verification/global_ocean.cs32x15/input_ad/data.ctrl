@@ -25,7 +25,7 @@
 # not clear why I have to comment this out, but the reference results have no bounds applied
 #xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
 #
- xx_genarr3d_file(3)       = 'xx_ptr',
+ xx_genarr3d_file(3)       = 'xx_ptr1',
  xx_genarr3d_weight(3)     = 'ones_64b.bin',
 #
  xx_genarr3d_file(4)       = 'xx_diffkr',

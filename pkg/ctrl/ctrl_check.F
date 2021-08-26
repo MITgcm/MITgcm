@@ -321,6 +321,25 @@ C     which in turn require a particular set of input fields
 # endif /* ndef EXCLUDE_CTRL_PACK */
 #endif /* ALLOW_PACKUNPACK_METHOD2 */
 
+#ifdef ALLOW_HFLUXM_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFLUXM_CONTROL has been retired.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'tutorial_global_oce_optim, which was the only experiment'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'that used this flag, now uses the generic control xx_qnet'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'to achieve the same thing.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+C     For now only print the error message, but do not increase the
+C     error count so that the model does not stop as along as we have to
+C     put up with the OpenAD version of tutorial_global_oce_optim
+C      errCount = errCount + 1
+#endif /* ALLOW_HFLUXM_CONTROL */
+
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &       'CTRL_CHECK: detected', errCount,' fatal error(s)'
