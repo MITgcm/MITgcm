@@ -5,8 +5,6 @@
 # turn on aEVP with some sensible parameters
   SEAICEaEVPcoeff =0.5,
   SEAICEnEVPstarSteps =500,
-  SEAICEuseEVPstar = .TRUE.,
-  SEAICEuseEVPrev = .TRUE..
 # end of aEVP parameters
   useHB87stressCoupling = .TRUE.,
   SEAICE_no_slip     = .TRUE.,

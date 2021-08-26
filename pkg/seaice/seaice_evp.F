@@ -196,9 +196,8 @@ C     abbreviation eccentricity squared
       recip_ecc2 = 0. _d 0
       IF ( ecc2 .NE. 0. _d 0 ) recip_ecc2=ONE/ecc2
       deltaMinSq = SEAICE_deltaMin**2
-C     determine number of internal time steps
-      nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
-      IF ( SEAICEnEVPstarSteps.NE.UNSET_I ) nEVPstep=SEAICEnEVPstarSteps
+C     copy number of internal time steps from previously defined parameter
+      nEVPstep = SEAICEnEVPstarSteps
 C     SEAICE_evpAlpha = 2. * SEAICE_evpTauRelax/SEAICE_deltaTevp
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
