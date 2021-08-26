@@ -88,7 +88,7 @@ C     cg2d_s     ::   *same*
       _RL    rhsMax
       _RL    rhsNorm
       _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
-      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    cg2d_q(1:sNx,1:sNy,nSx,nSy)
       _RL    cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
 #ifdef CG2D_SINGLECPU_SUM
@@ -143,7 +143,6 @@ C--   Initial residual calculation
 C-    Initialise local working arrays:
         DO j=0,sNy+1
          DO i=0,sNx+1
-          cg2d_q(i,j,bi,bj) = 0. _d 0
           cg2d_r(i,j,bi,bj) = 0. _d 0
           cg2d_s(i,j,bi,bj) = 0. _d 0
          ENDDO

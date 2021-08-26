@@ -106,9 +106,9 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       _RL    rhsMax,  rhsNorm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
-      _RL    cg2d_z(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-C     Fields cg2d_r and ct2d_s are exchanged and since there is no AD-exchanges
+      _RL    cg2d_z(1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_q(1:sNx,1:sNy,nSx,nSy)
+C     Fields cg2d_r and ct2d_s are exchanged and since there are no AD-exchanges
 C     for fields with smaller overlap, they are defined with full overlap size
       _RL    cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -188,8 +188,8 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Initialise local working arrays:
-        DO j=0,sNy+1
-         DO i=0,sNx+1
+        DO j=1,sNy
+         DO i=1,sNx
           cg2d_q(i,j,bi,bj) = 0. _d 0
           cg2d_z(i,j,bi,bj) = 0. _d 0
          ENDDO
