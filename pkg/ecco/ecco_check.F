@@ -32,7 +32,9 @@ C     === Global variables ===
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instances

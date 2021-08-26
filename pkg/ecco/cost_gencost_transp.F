@@ -23,8 +23,10 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
       integer mythid

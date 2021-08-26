@@ -25,8 +25,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_SSH_COST_CONTRIBUTION
 #  ifdef ALLOW_PROFILES

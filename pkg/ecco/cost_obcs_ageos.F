@@ -36,7 +36,9 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
@@ -52,7 +54,8 @@ c     == routine arguments ==
       integer mythid
 
 #if (defined (ALLOW_CTRL) && \
-     defined (ALLOW_OBCS))&
+     defined (ALLOW_OBCS) && \
+     defined (ALLOW_ECCO))
 
 c     == local variables ==
 
@@ -539,7 +542,7 @@ c--   End of loop over records.
 
 #endif
 
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
+#endif /* ALLOW_CTRL, ALLOW_OBCS and ALLOW_ECCO */
 
       return
       end

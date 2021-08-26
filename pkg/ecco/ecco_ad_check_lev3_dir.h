@@ -12,6 +12,8 @@ CADJ STORE hFacS  = tapelev3, key=ilev_3
 
 #ifdef ALLOW_ECCO_BARSTORES
 
+#ifdef ALLOW_ECCO
+
 CADJ STORE tbar  = tapelev3, key=ilev_3
 cccCADJ STORE tbar_daily  = tapelev3, key=ilev_3
 CADJ STORE sbar  = tapelev3, key=ilev_3
@@ -40,6 +42,8 @@ cccCADJ STORE xx_sssbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE gencost_barfld  = tapelev3, key=ilev_3
 CADJ STORE gencost_dummy = dummytape, key=1, kind=isbyte
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+#endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_PROFILES
 CADJ STORE profiles_dummy = dummytape, key=1, kind=isbyte

@@ -20,8 +20,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
 

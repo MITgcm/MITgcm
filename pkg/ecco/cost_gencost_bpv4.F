@@ -26,13 +26,17 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
 
       integer myThid
 
+#ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
 c     == local variables ==
@@ -323,5 +327,7 @@ c-- map to global cost variables
       endif !if (kgen.GT.0) then
 
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
+#endif /* ifdef ALLOW_ECCO */
+
       RETURN
       END

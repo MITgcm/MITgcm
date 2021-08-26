@@ -31,8 +31,10 @@ C     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 
 c     == routine arguments ==
 
@@ -43,6 +45,8 @@ c     == routine arguments ==
       character*(128) fname1, fname2
       integer localrec, obsrec
 
+
+#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -119,6 +123,8 @@ c          assume that the data set is cyclic
            write(fname2(1:128),'(a)') localobsfile(1:il)
            inquire( file=fname2, exist=exst )
         endif
+
+#endif /* ALLOW_ECCO */
 
       RETURN
       END

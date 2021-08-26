@@ -42,7 +42,9 @@ c     == global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
@@ -54,7 +56,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-#if (defined (ALLOW_CTRL)&& defined (ECCO_CTRL_DEPRECATED))
+#if (defined (ALLOW_ECCO) && defined (ALLOW_CTRL)&& defined (ECCO_CTRL_DEPRECATED))
 
       integer startrec
       integer endrec
@@ -409,7 +411,7 @@ c--   Atmos. runoff. contribution to the cost function.
      &     maskC, mythid )
 #endif
 
-#endif /* ALLOW_CTRL, ECCO_CTRL_DEPRECATED */
+#endif /* ECCO_CTRL_DEPRECATED */
 
       RETURN
       END

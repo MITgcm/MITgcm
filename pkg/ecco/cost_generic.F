@@ -33,8 +33,10 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
 #endif
@@ -71,6 +73,8 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) posproc(NGENPPROC)
       character*(MAX_LEN_FNAM) posproc_c(NGENPPROC)
       character*(MAX_LEN_FNAM) outname
+
+#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -142,6 +146,8 @@ C Extra time loop to compute time-mean fields and costs
      &     myIter, myTime, myThid )
       endif
 
+#endif /* ALLOW_ECCO */
+
       return
       end
 
@@ -177,8 +183,10 @@ c     == global variables ==
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "ECCO_SIZE.h"
-#include "ecco.h"
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ecco.h"
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_COST.h"
 #endif
@@ -219,6 +227,8 @@ c     == routine arguments ==
       logical addVariaCost
       _RL localdifmeanIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifmeanOut  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+#ifdef ALLOW_ECCO
 
 c     == local variables ==
 
@@ -465,6 +475,8 @@ c--     output model-data difference to disk
           if ( nnzobs.EQ.nr ) CALL
      &    WRITE_REC_XYZ_RL( fname3, localweight,irec, eccoiter, myThid )
       endif
+
+#endif /* ALLOW_ECCO */
 
       RETURN
       END
