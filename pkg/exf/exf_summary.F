@@ -113,6 +113,9 @@ C--   Print general parameters:
      &  ' /* select EXF-debug printing level */')
       CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq  =',
      &  ' /* EXF monitor frequency [ s ] */')
+      CALL WRITE_0D_I( exf_adjMonSelect, INDEX_NONE,
+     &  'exf_adjMonSelect =',
+     &  ' /* select group of exf AD-variables to monitor */')
       CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
      &  ' /* period for cycling forcing dataset [ s ] */')
       CALL WRITE_0D_RL( climtempfreeze, INDEX_NONE,'climTempFreeze=',

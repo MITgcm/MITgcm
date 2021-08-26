@@ -55,12 +55,20 @@ C     == Local variables ==
 #ifdef ALLOW_MNC
       INTEGER k
 #endif
+      LOGICAL printMonitorHeader
 
-      IF ( DIFFERENT_MULTIPLE(adjmonitorFreq,myTime,deltaTClock) ) THEN
+      IF ( exf_adjMonSelect .GT. 0 .AND.
+     &     DIFFERENT_MULTIPLE(exf_adjMonFreq,myTime,deltaTClock) ) THEN
 
-        IF ( MASTER_CPU_IO(myThid) ) THEN
+       IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it is the only thread that uses those flags):
+
+        printMonitorHeader = ( iwhen .EQ. 3 )
+     &       .OR. ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GT. 2 )
+     &       .OR. ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GT. 1 )
+
+        IF ( printMonitorHeader ) THEN
 
           IF (monitor_stdio) THEN
             mon_write_stdout = .TRUE.
@@ -97,6 +105,8 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
             CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
           ENDIF
 
+C--   endif printMonitorHeader
+        ENDIF
 C--   endif master cpu io
         ENDIF
 
@@ -104,7 +114,7 @@ C--   endif master cpu io
         CALL MON_OUT_I ('_tsnumber', myIter,mon_string_none,myThid)
         CALL MON_OUT_RL('_time_sec', myTime,mon_string_none,myThid)
 
-        IF ( iwhen .EQ.1 ) THEN
+        IF ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GT. 2 ) THEN
 
 C       Print some statistics about input forcing fields
         IF ( stressIsOnCgrid ) THEN
@@ -125,7 +135,7 @@ C       Print some statistics about input forcing fields
         CALL MON_WRITESTATS_RL( 1, adwspeed,  '_adwspeed',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 
-        ELSEIF ( iwhen .EQ.2 ) THEN
+        ELSEIF ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GT. 1 ) THEN
 
 #ifdef ALLOW_ATM_WIND
       IF ( useAtmWind ) THEN
@@ -182,7 +192,7 @@ cph          CALL MON_WRITESTATS_RL( 1, climvstr, '_climvstr',
 cph     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
 #endif
 
-        ELSEIF ( iwhen .EQ.3 ) THEN
+        ELSEIF ( iwhen .EQ. 3 ) THEN
 
           CALL MON_WRITESTATS_RS( 1, adfu, '_adfu',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
@@ -198,6 +208,8 @@ cph     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it is the only thread that uses those flags):
+
+        IF ( printMonitorHeader ) THEN
 
           IF ( mon_write_stdout ) THEN
             WRITE(msgBuf,'(2A)') '// ===========================',
@@ -215,6 +227,8 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
           mon_write_stdout = .FALSE.
           mon_write_mnc    = .FALSE.
 
+C--   endif printMonitorHeader
+        ENDIF
 C--   endif master cpu io
         ENDIF
 
