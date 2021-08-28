@@ -29,9 +29,10 @@ C     pC      :: Main diagonal term of preconditioner.
 C     cg2dNorm :: A matrix normalisation factor.
 C     cg2dTolerance :: cg2d solver Tolerance (solver unit = m2/s2 or no unit,
 C                                             depending on cg2dNormaliseRHS)
-      COMMON /CG2D_I_R/
+      COMMON /CG2D_I_RS/
      &      aW2d, aS2d, aC2d,
-     &      pW, pS, pC,
+     &      pW, pS, pC
+      COMMON /CG2D_I_RL/
      &      cg2dNorm, cg2dTolerance
       _RS  aW2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aS2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
