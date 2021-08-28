@@ -74,12 +74,12 @@ c     _RL  firstResidual, minResidualSq, lastResidual
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
 C     directly imported from TAF-generated code, make sure that they are
 C     consistent with what is found in S/R update_cg2d_ad
-      _RL aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL aS2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL aC2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aS2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aC2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /CG2D_I_R_AD/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
 #endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
