@@ -221,7 +221,7 @@ C                                    2DPERIODIC - varies in x- and
 C                                     y-dirs via streamice_kx_b_init
 C                                     and streamice_ky_b_init
 C     STREAMICEGlenConstConfig    :: mode of Glen's const init
-C                                    FILE - via STREAMICEGlenConstFile 
+C                                    FILE - via STREAMICEGlenConstFile
 C                                    UNIFORM - B_glen_isothermal
 C     STREAMICEBdotConfig         :: mode of ice-shelf melt rate init
 C                                    FILE - via STREAMICEBdotFile
@@ -264,7 +264,7 @@ C                              inferred by transient model calibration"
 C     applied only where stress boundary condition applies
 C
 C     STREAMICEuNormalStressFile
-C     STREAMICEvNormalStressFile  
+C     STREAMICEvNormalStressFile
 C     STREAMICEuShearStressFile
 C     STREAMICEvShearStressFile
 C
