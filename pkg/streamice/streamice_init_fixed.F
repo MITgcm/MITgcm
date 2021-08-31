@@ -296,10 +296,19 @@ C- fill in the overlap (+ BARRIER):
 
 C         INIT VALUES FOR METRIC TERMS
 
-          k1AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
-     &     (dxG(i+1,j,bi,bj)-dxG(i,j,bi,bj))
-          k2AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
-     &     (dyG(i,j+1,bi,bj)-dyG(i,j,bi,bj))
+          IF (.not.usingCartesianGrid) THEN
+
+           k1AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
+     &      (dxG(i+1,j,bi,bj)-dxG(i,j,bi,bj))
+           k2AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
+     &      (dyG(i,j+1,bi,bj)-dyG(i,j,bi,bj))
+         
+          ELSE
+           
+           k1AtC_str(i,j,bi,bj) = 0. _d 0
+           k2AtC_str(i,j,bi,bj) = 0. _d 0
+
+          ENDIF
 
 #ifdef STREAMICE_HYBRID_STRESS
           streamice_basal_geom (i,j,bi,bj) = 1.0
