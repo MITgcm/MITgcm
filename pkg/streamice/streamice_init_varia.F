@@ -60,6 +60,8 @@ C     ZERO OUT FLOATING POINT ARRAYS
           area_shelf_streamice(i,j,bi,bj) = 0. _d 0
           mass_ice_streamice(i,j,bi,bj) = 0. _d 0
           BDOT_streamice(i,j,bi,bj) = 0. _d 0
+          u_streamice_ext(i,j,bi,bj) = 0. _d 0
+          v_streamice_ext(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
           BDOT_streamice1(i,j,bi,bj) = 0. _d 0
 #endif
@@ -422,6 +424,34 @@ c initialize SMB rates
 
 c finish initialize SMB rates
 
+      IF ( STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid ) THEN
+
+       IF ( STREAMICE_uvel_ext_file .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICE_uvel_ext_file, ' ',
+     &      u_streamice_ext, 0, myThid )
+
+       ELSE
+        WRITE(msgBuf,'(A)') 'INIT UVEL - FILENAME MISSING'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+       ENDIF
+
+       IF ( STREAMICE_vvel_ext_file .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICE_vvel_ext_file, ' ',
+     &      v_streamice_ext, 0, myThid )
+
+       ELSE
+        WRITE(msgBuf,'(A)') 'INIT VVEL - FILENAME MISSING'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+       ENDIF
+
+      ENDIF
+
 c initialize basal traction
 
       IF ( STREAMICEbasalTracConfig.EQ.'FILE' ) THEN
@@ -577,6 +607,8 @@ c finish initialize basal trac
       _EXCH_XY_RS(STREAMICE_hmask, myThid )
       _EXCH_XY_RL(area_shelf_streamice, myThid )
       _EXCH_XY_RL(C_basal_friction, myThid )
+      _EXCH_XY_RL(u_streamice_ext, myThid )
+      _EXCH_XY_RL(v_streamice_ext, myThid )
 #ifndef STREAMICE_3D_GLEN_CONST
       _EXCH_XY_RL(B_glen, myThid )
 #else

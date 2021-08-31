@@ -100,6 +100,10 @@ c     INTEGER iarr, tarr
      &     STREAMICE_alt_driving_stress,
      &     STREAMICE_allow_reg_coulomb,
      &     STREAMICE_use_log_ctrl,
+     &     STREAMICE_vel_ext,
+     &     STREAMICE_vel_ext_cgrid,
+     &     STREAMICE_uvel_ext_file,
+     &     STREAMICE_vvel_ext_file,     
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -274,6 +278,8 @@ c      streamice_n_sub_regularize = 4
       STREAMICEvShearTimeDepFile = ' '
       STREAMICEuFluxTimeDepFile = ' '
       STREAMICEvFluxTimeDepFile = ' '
+      STREAMICE_vvel_ext_file = ' '
+      STREAMICE_uvel_ext_file = ' '
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       STREAMICETrac2DBCxFile = ''
@@ -329,6 +335,8 @@ c      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_allow_cpl = .false.
       STREAMICE_use_log_ctrl = .false.
+      STREAMICE_vel_ext = .FALSE.
+      STREAMICE_vel_ext_cgrid = .FALSE.
 c       STREAMICE_hybrid_stress= .FALSE.
 
       min_x_noflow_NORTH = 0.

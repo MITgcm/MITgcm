@@ -294,6 +294,8 @@ C                                    MUMPS -- Direct
 C                                    ILU -- incomplete ILU
 C                                     (will not work in parallel)
 C       see https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/PC/
+C     STREAMICE_uvel_ext_file     :: x-velocity file to replace velocity calc
+C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
 
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickFile
@@ -340,6 +342,9 @@ C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving front
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuFluxTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvFluxTimeDepFile
+
+      CHARACTER*(MAX_LEN_FNAM) STREAMICE_uvel_ext_file
+      CHARACTER*(MAX_LEN_FNAM) STREAMICE_vvel_ext_file
 
 #ifdef ALLOW_PETSC
 c     CHARACTER PARAMS FOR PETSC
@@ -460,6 +465,9 @@ C                                        and Bglen (and initialisation
 C                                        values) given as the
 C                                        *logarithm* of physical values
 C                                        (if false, sqrt is used)
+C     STREAMICE_vel_ext           :: impose velocity with external files
+C     STREAMICE_vel_ext_cgrid     :: impose velocity with external files on C grid
+C                                 ::  (over-rides STREAMICE_vel_ext)
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -481,6 +489,8 @@ C                                        (if false, sqrt is used)
       LOGICAL STREAMICE_alt_driving_stress
       LOGICAL STREAMICE_allow_reg_coulomb
       LOGICAL STREAMICE_use_log_ctrl
+      LOGICAL STREAMICE_vel_ext 
+      LOGICAL STREAMICE_vel_ext_cgrid
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -632,7 +642,8 @@ c     &     A_glen,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
-     &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg
+     &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg,
+     &     u_streamice_ext, v_streamice_ext
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       COMMON /STREAMICE_FLUX_CONTROL/
@@ -715,7 +726,8 @@ c     &     A_glen,
       _RL h_vbdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL C_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef STREAMICE_3D_GLEN_CONST
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

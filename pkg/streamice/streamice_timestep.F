@@ -126,6 +126,9 @@ c**************************************
 #endif
 
 
+      IF (.not.(STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid)) THEN
+
+
 #if (defined (ALLOW_STREAMICE_OAD_FP))
 
        CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
@@ -135,51 +138,51 @@ c**************************************
 
 #else
 
-      if (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) then
+       if (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) then
 
 
-       CALL STREAMICE_VEL_SOLVE( myThid,
+        CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
      &                           myiter )
 
 #ifdef STREAMICE_ECSECRYO_DOSUM
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         sum_square_vel_tile (bi,bj) = 0. _d 0
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           if (streamice_hmask(i,j,bi,bj).eq.1) then
-            sum_square_vel_tile (bi,bj) = 
-     &       sum_square_vel_tile (bi,bj) + 
-     &       U_streamice(i,j,bi,bj)**2 + 
-     &       V_streamice(i,j,bi,bj)**2
-           endif
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          sum_square_vel_tile (bi,bj) = 0. _d 0
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            if (streamice_hmask(i,j,bi,bj).eq.1) then
+             sum_square_vel_tile (bi,bj) = 
+     &        sum_square_vel_tile (bi,bj) + 
+     &        U_streamice(i,j,bi,bj)**2 + 
+     &        V_streamice(i,j,bi,bj)**2
+            endif
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
 
-       CALL GLOBAL_SUM_TILE_RL( 
+        CALL GLOBAL_SUM_TILE_RL( 
      &                sum_square_vel_tile, sum_square_vel, myThid ) 
-       WRITE(msgBuf,'(A,I3,A,1PE22.14)') 'ECSE_CRYO_SUM ', myIter, ', ',
-     &                       sum_square_vel
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+        WRITE(msgBuf,'(A,I3,A,1PE22.14)') 'ECSE_CRYO_SUM ', myIter, ', '
+     &                       ,sum_square_vel
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
 #endif
 
 
-      elseif (do_vel) then
-
-       CALL STREAMICE_VEL_SOLVE( myThid,
+       elseif (do_vel) then
+ 
+        CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_maxnliter_cpl,
      &                           streamice_maxcgiter_cpl,
      &                           myiter )
-      endif
+       endif
 
-      
+      ENDIF
 
 #endif
 
