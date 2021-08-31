@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
+    in adcommon.h, common block adgrid_rs.
 o model/src:
   - fix missing initialisation of local working arrays that were previously
     in common block in CG2D.h (needed when using blank tiles).
