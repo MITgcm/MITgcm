@@ -213,13 +213,15 @@ C     these need to be 2D-arrays for vectorizing code
       _RL ztln                  ! = log(zth/zref)
       _RL tmpbulk
       _RL recip_rhoConstFresh
-      INTEGER ksrf, ksrfp1
+      INTEGER ks, kl
       INTEGER iter
 C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculation
       LOGICAL solve4Stress
       _RL windStress            ! surface wind-stress (@ grid cell center)
 
 #ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
       INTEGER ikey_1
       INTEGER ikey_2
 #endif
@@ -236,7 +238,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
       ENDIF
 
-C-- Set surface parameters :
+      IF ( usingPCoords ) THEN
+       ks = Nr
+       kl = Nr-1
+      ELSE
+       ks = 1
+       kl = 2
+      ENDIF
+
+C--   Set surface parameters :
       zwln = LOG(hu/zref)
       ztln = LOG(ht/zref)
       czol = hu*karman*gravity_mks
@@ -254,8 +264,7 @@ C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        ksrf   = 1
-        ksrfp1 = 2
+
         DO j = 1,sNy
          DO i = 1,sNx
 
@@ -284,11 +293,11 @@ C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
-           Tsf = theta(i,j,ksrf,bi,bj) + cen2kel
+           Tsf = theta(i,j,ks,bi,bj) + cen2kel
            IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
             SSTtmp = sstExtrapol
-     &              *( theta(i,j,ksrf,bi,bj)-theta(i,j,ksrfp1,bi,bj) )
-     &              *  maskC(i,j,ksrfp1,bi,bj)
+     &              *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
+     &              *  maskC(i,j,kl,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
            ENDIF
 

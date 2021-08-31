@@ -35,7 +35,7 @@ c     EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER k
+      INTEGER errCount, k
       _RL tmpVar
 CEOP
 
@@ -49,6 +49,7 @@ C-    For off-line calculation, switch off Momentum and Active-tracers (=T,S):
 #endif /* ALLOW_OFFLINE */
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C--   On/Off flags for each terms of the momentum equation
       nonHydrostatic   = momStepping .AND. nonHydrostatic
@@ -69,27 +70,26 @@ C--   On/Off flags for each terms of the momentum equation
       calc_wVelocity   = momStepping .OR. exactConserv
 
 #ifndef ALLOW_3D_VISCAH
-       IF ( viscAhDfile.NE.' ' .OR. viscAhZfile.NE.' ' ) THEN
+      IF ( viscAhDfile.NE.' ' .OR. viscAhZfile.NE.' ' ) THEN
         WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      'viscAhDfile and viscAhZfile cannot be used with'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      '"#undef ALLOW_3D_VISCAH" in MOM_COMMON_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SET_PARMS'
-c       errCount = errCount + 1
-       ENDIF
+        errCount = errCount + 1
+      ENDIF
 #endif
 #ifndef ALLOW_3D_VISCA4
-       IF ( viscA4Dfile.NE.' ' .OR. viscA4Zfile.NE.' ' ) THEN
+      IF ( viscA4Dfile.NE.' ' .OR. viscA4Zfile.NE.' ' ) THEN
         WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      'viscA4Dfile and viscA4Zfile cannot be used with'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      '"#undef ALLOW_3D_VISCA4" in MOM_COMMON_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SET_PARMS'
-       ENDIF
+        errCount = errCount + 1
+      ENDIF
 #endif
 
 #ifdef ALLOW_MOM_COMMON
@@ -241,7 +241,7 @@ C     set default according to EOS type (as it was until chkpt65t)
           WRITE(msgBuf,'(A,I9,A)') 'SET_PARMS: selectP_inEOS_Zc=',
      &                  selectP_inEOS_Zc, ' : invalid selection'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SET_PARMS'
+          errCount = errCount + 1
         ELSEIF ( .NOT.nonHydrostatic ) THEN
           selectP_inEOS_Zc = MIN( selectP_inEOS_Zc, 2 )
         ENDIF
@@ -250,7 +250,7 @@ C     set default according to EOS type (as it was until chkpt65t)
           WRITE(msgBuf,'(A,I9,2A)') 'SET_PARMS: selectP_inEOS_Zc=',
      &     selectP_inEOS_Zc, ' : invalid with eosType=', eosType
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SET_PARMS'
+          errCount = errCount + 1
         ENDIF
       ELSE
         selectP_inEOS_Zc = -1
@@ -290,7 +290,24 @@ C     several places, test for last iteration with time==endTime :
       ENDIF
 #endif /* ALLOW_LONGSTEP */
 
-C--  After this point, main model parameters are not supposed to be modified.
+      IF ( OLx.LE.0 .OR. OLy.LE.0 ) THEN
+C--   Overlap-size will be checked later in CONFIG_CHECK. This minimal
+C     check here is just to set-up the model grid (INI_GRID) safely.
+        WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
+     &      'model unusable with no overlap (OLx,OLy = 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'SET_PARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R SET_PARMS'
+      ENDIF
+
+C--   After this point, main model parameters are not supposed to be modified.
        WRITE(msgBuf,'(A,A)') 'SET_PARMS: done'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , 1)

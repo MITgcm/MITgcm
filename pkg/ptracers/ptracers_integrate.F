@@ -35,7 +35,6 @@ C !USES: ===============================================================
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -111,6 +110,11 @@ C  gTr_trp          :: passive tracer total transport tendency before gchem
       LOGICAL calcAdvection
       INTEGER iterNb
       _RL dummy(Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER  iptrkey, kkey
+#endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_dt

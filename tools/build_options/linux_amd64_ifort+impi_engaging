@@ -1,0 +1,137 @@
+#!/bin/bash
+#
+#  Build options for ifort with impi on Linux AMD64 platform
+#
+#  Tested on engaging1 (Centos 7) with ifort 2018-01 and impi 2018-01.
+#  Executable will run on Sandybridge, Haswell, Broadwell, Skylake and above.
+#
+#-------
+
+if test "x$MPI" = xtrue ; then
+  CC=${MPICC:=mpiicc}
+  FC=${MPIFC:=mpiifort}
+  F90C=${MPIF90C:=mpiifort}
+  LINK="$F90C -shared-intel -no-ipo"
+else
+  CC=icc
+  FC=ifort
+  F90C=ifort
+  LINK="$F90C -shared-intel"
+fi
+
+DEFINES='-DWORDLENGTH=4'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0 -g'
+NOOPTFILES=''
+
+if test "x$GENERIC" != x ; then
+    # Combined executable with separate code paths for Sandybridge and
+    # Haswell/Broadwell/Skylake processors.  Will take longer to compile.
+    # We avoid AVX512 as it leads to inconsistencies with other
+    # instruction sets, even with -fp-model consistent.
+    # If only targeting Haswell and higher, better use -xCORE-AVX2 below.
+    # To select this option, set the GENERIC environment veriable when
+    # running genmake2, e.g.,
+    #   export GENERIC=yes
+    #   genmake2 ...
+    PROCF=-axAVX,CORE-AVX2
+else
+    # This will run on Sandybridge or higher
+    PROCF=-xAVX
+    # This will run on Haswell or higher
+    #PROCF=-xCORE-AVX2
+    # This will run on Skylake or higher, but may give different results
+    #PROCF=-xCORE-AVX512
+fi
+
+CFLAGS="-O0 -ip -m64 $PROCF"
+FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+#CFLAGS="$CFLAGS -fPIC"
+#FFLAGS="$FFLAGS -fPIC"
+#-  with FC 19, need to use this without -fPIC (which cancels -mcmodel option):
+ CFLAGS="$CFLAGS -mcmodel=medium"
+ FFLAGS="$FFLAGS -mcmodel=medium"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM="-O3 -align -ip -fp-model consistent $PROCF"
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 -fp-model consistent -noalign $PROCF"
+  else                          #- development/check options:
+   #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
+    FOPTIM="-O0 -noalign -g -traceback $PROCF"
+    NOOPTFLAGS=$FOPTIM
+    NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
+    FOPTIM="$FOPTIM -warn all -warn nounused"
+    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIRS="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib64 -L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIRS="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_ROOT}/lib64 -L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIRS="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIRS="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDEDIRS='/usr/include/netcdf-3'
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib64/netcdf-3 -L/usr/lib/netcdf-3'
+elif test -d /usr/local/pkg/netcdf ; then
+    INCLUDEDIRS='/usr/local/pkg/netcdf/include'
+    INCLUDES='-I/usr/local/pkg/netcdf/include'
+    LIBS='-L/usr/local/pkg-x86_64/netcdf/lib64 -L/usr/local/pkg-x86_64/netcdf/lib -L/usr/local/pkg/netcdf/lib64 -L/usr/local/pkg/netcdf/lib'
+elif test -d /usr/include/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf'
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf/include'
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib64 -L/usr/local/netcdf/lib'
+elif test -f /usr/local/include/netcdf.inc ; then
+    INCLUDEDIRS='/usr/local/include'
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64 -L/usr/local/lib'
+fi
+
+if [ -n "$I_MPI_ROOT" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$I_MPI_ROOT/intel64/include"
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+   #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi
+
+if [ -n "$SPICELIBS" ]; then
+    LIBS="$LIBS $SPICELIBS"
+fi

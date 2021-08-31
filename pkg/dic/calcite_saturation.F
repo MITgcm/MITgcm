@@ -139,6 +139,9 @@ C call AHINI_FOR_AT to get better initial guess of pH
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
             debugPrt = .FALSE.
+
+C- convert carbonate to mol kg^-1-SW for calculation of saturation state
+             carbonate=carbonate*permil
       ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */

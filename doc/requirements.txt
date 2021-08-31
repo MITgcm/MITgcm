@@ -1,4 +1,5 @@
 sphinx
-sphinxcontrib-bibtex
+sphinx_rtd_theme
+sphinxcontrib-bibtex>=2
 sphinxcontrib-programoutput
 numpy

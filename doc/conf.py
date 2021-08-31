@@ -41,6 +41,8 @@ extensions = ['sphinx.ext.autodoc',
 
 autodoc_mock_imports = ['matplotlib', 'mpl_toolkits']
 
+bibtex_bibfiles = ['manual_references.bib']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -154,6 +156,11 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'css/custom.css',
+    'css/wrap_tables.css',
+]
+
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -218,7 +225,3 @@ texinfo_documents = [
      author, 'MITgcm', 'A highly configurable general circulation model.',
      'Miscellaneous'),
 ]
-
-def setup(app):
-    app.add_stylesheet('css/custom.css')
-    app.add_stylesheet('css/wrap_tables.css')

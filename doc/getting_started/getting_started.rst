@@ -12,14 +12,18 @@ model is to run one of the tutorial examples provided in the MITgcm repository
 (see :numref:`chap_modelExamples`), so would suggest newer MITgcm users
 jump there following a read-through of the first part of this chapter.
 Information is also provided
-in this chapter on how to customize the code when you are ready to try implementing
-the configuration you have in mind, in the second part (:numref:`customize_model`).
-The code and algorithm are described more fully in :numref:`discret_algorithm` and
+in this chapter on how to customize the code
+when you are ready to try implementing
+the configuration you have in mind, in the second
+part (:numref:`customize_model`).
+The code and algorithm are described more fully in
+:numref:`discret_algorithm` and
 :numref:`sarch` and chapters thereafter.
 
 In this chapter and others (e.g., chapter :ref:`chap_contributing`),
 for arguments where the user is expected to replace the text
-with a user-chosen name, userid, etc., our convention is to show these as upper-case
+with a user-chosen name, userid, etc., our convention
+is to show these as upper-case
 text surrounded by ``« »``, such as ``«USER_MUST_REPLACE_TEXT_HERE»``.
 The ``«`` and ``»`` characters are **NOT** typed when  the text is replaced.
 
@@ -40,17 +44,22 @@ click `here <http://mailman.mitgcm.org/pipermail/mitgcm-support/>`__
 Obtaining the code
 ==================
 
-The MITgcm code and documentation are under continuous development and we generally
-recommend that one downloads the latest version of the code. You will need to decide
-if you want to work in a “git-aware” environment (`Method 1`_) or with a one-time
-“stagnant” download (`Method 2`_). We generally recommend method 1, as it is more
+The MITgcm code and documentation are under
+continuous development and we generally
+recommend that one downloads the latest version of the code.
+You will need to decide if you want to work in a “git-aware”
+environment (`Method 1`_) or with a one-time “stagnant” download (`Method 2`_).
+We generally recommend method 1, as it is more
 flexible and allows your version of the code to be regularly updated as MITgcm
-developers check in bug fixes and new features. However, this typically requires
-at minimum a rudimentary understanding of git in order to make it worth one’s while.
+developers check in bug fixes and new features. However, this typically
+requires at minimum a rudimentary understanding of git in
+order to make it worth one’s while.
 
-Periodically we release an official checkpoint (or “tag”). We recommend one download
+Periodically we release an official checkpoint
+(or “tag”). We recommend one download
 the latest code, unless there are reasons for obtaining a specific checkpoint
-(e.g. duplicating older results, collaborating with someone using an older release, etc.)
+(e.g. duplicating older results, collaborating with
+someone using an older release, etc.)
 
 .. _git-aware_download:
 
@@ -67,8 +76,8 @@ Type:
 
 This will download the latest available code. If you now want to revert this
 code to a specific checkpoint release, first ``cd`` into the MITgcm directory
-you just downloaded, then type ``git checkout checkpoint«XXX»`` where ``«XXX»``
-is the checkpoint version.
+you just downloaded, then type ``git checkout checkpoint«XXX»``
+where ``«XXX»`` is the checkpoint version.
 
 Alternatively, if you prefer to use ssh keys (say for example, you have
 a firewall which won’t allow a https download), type:
@@ -92,8 +101,8 @@ Method 2
 --------
 
 This section describes how to do a one-time download of MITgcm, NOT git-aware.
-In a terminal window, ``cd`` to the directory where you want your code to reside.
-To obtain the current code, type:
+In a terminal window, ``cd`` to the directory where
+you want your code to reside. To obtain the current code, type:
 
 ::
 
@@ -108,59 +117,74 @@ For specific checkpoint release ``XXX``, instead type:
 Updating the code
 =================
 
-There are several different approaches one can use to obtain updates to MITgcm; which is best for
-you depends a bit on how you intend to use MITgcm and your knowledge of git (and/or willingness
-to learn). Below we outline three suggested update pathways:
+There are several different approaches one can use to obtain updates to MITgcm;
+which is best for you depends a bit on how you intend to use MITgcm and your
+knowledge of git (and/or willingness to learn).
+Below we outline three suggested update pathways:
 
 1. **Fresh Download of MITgcm**
 
-This approach is the most simple, and virtually foolproof. Whether you downloaded the code from a static
-zip file (`Method 2`_) or used the git clone command (`Method 1`_), create a new directory and repeat
-this procedure to download a current copy of MITgcm. Say for example you are starting a new
-research project, this would be a great time to grab the most recent code repository and keep this
-new work entirely separate from any past simulations. This approach requires no understanding of git,
-and you are free to make changes to any files in the MIT repo tree (although we generally recommend
-that you avoid doing so, instead working in new subdirectories or on separate scratch disks as described
+This approach is the most simple, and virtually foolproof. Whether you
+downloaded the code from a static zip file (`Method 2`_) or used the git
+clone command (`Method 1`_), create a new directory and repeat
+this procedure to download a current copy of MITgcm. Say for example you
+are starting a new research project, this would be a great time to grab the
+most recent code repository and keep this new work entirely separate
+from any past simulations. This approach requires no understanding of git,
+and you are free to make changes to any files in the MIT repo tree
+(although we generally recommend that you avoid doing so, instead working
+in new subdirectories or on separate scratch disks as described
 :ref:`here <build_elsewhere>`, for example).
 
 2. **Using** ``git pull`` **to update the (unmodified) MITgcm repo tree**
 
-If you have downloaded the code through a git clone command (`Method 1`_ above), you can incorporate
-any changes to the source code (including any changes to any files in the MITgcm repository, new packages
-or analysis routines, etc.) that may have occurred since your original download. There is a simple
-command to bring all code in the repository to a ‘current release’ state. From the MITgcm top directory
+If you have downloaded the code through a git clone command
+(`Method 1`_ above), you can incorporate any changes to the source code
+(including any changes to any files in the MITgcm repository, new packages
+or analysis routines, etc.) that may have occurred since your
+original download. There is a simple command to bring all code in the
+repository to a ‘current release’ state. From the MITgcm top directory
 or any of its subdirectories, type:
 
 ::
 
     % git pull
 
-and all files will be updated to match the current state of the code repository, as it exists
-at `GitHub <https://github.com/MITgcm/MITgcm.git>`_. (*Note:* if you plan to contribute to
-MITgcm and followed the steps to download the code as described in
-:numref:`chap_contributing`, you will need to type ``git pull upstream`` instead.)
+and all files will be updated to match the current state of the code
+repository, as it exists at `GitHub <https://github.com/MITgcm/MITgcm.git>`_.
+(*Note:* if you plan to contribute to MITgcm and followed the steps to
+download the code as described in :numref:`chap_contributing`,
+you will need to type ``git pull upstream`` instead.)
 
-This update pathway is ideal if you are in the midst of a project and you want to incorporate new
-MITgcm features into your executable(s), or take advantage of recently added analysis utilties, etc.
-After the git pull, any changes in model source code and include files will be updated, so you can
-repeat the build procedure (:numref:`building_code`) and you will include all these new features
+This update pathway is ideal if you are in the midst of a project and
+you want to incorporate new MITgcm features into your executable(s),
+or take advantage of recently added analysis utilties, etc.
+After the git pull, any changes in model source code and include files
+will be updated, so you can repeat the build procedure
+(:numref:`building_code`) and you will include all these new features
 in your new executable.
 
-Be forewarned, this will only work if you have not modified ANY of the files in the MITgcm repository
-(adding new files is ok; also, all verification run subdirectories ``build`` and ``run`` are also ignored by git).
-If you have modified files and the ``git pull`` fails with errors, there is no easy fix other than
-to learn something about git (continue reading...)
+Be forewarned, this will only work if you have not modified ANY of the
+files in the MITgcm repository (adding new files is ok; also, all
+verification run subdirectories ``build`` and ``run`` are also ignored by git).
+If you have modified files and the ``git pull`` fails with errors,
+there is no easy fix other than to learn something
+about git (continue reading...)
 
 3. **Fully embracing the power of git!**
 
-Git offers many tools to help organize and track changes in your work.  For example, one might keep separate
-projects on different branches, and update the code separately (using ``git pull``) on these separate branches.
-You can even make changes to code in the MIT repo tree; when git then tries to update code from upstream
-(see :numref:`git_setup`), it will notify you about possible conflicts and even merge the code changes
-together if it can. You can also use ``git commit`` to help you track what you are modifying in your
-simulations over time. If you're planning to submit a pull request to include your changes, you should
-read the contributing guide in :numref:`chap_contributing`, and we suggest you do this model development
-in a separate, fresh copy of the code. See :numref:`using_git_and_github` for more information and how
+Git offers many tools to help organize and track changes in your work.
+For example, one might keep separate projects on different branches,
+and update the code separately (using ``git pull``) on these separate branches.
+You can even make changes to code in the MIT repo tree; when git then
+tries to update code from upstream (see :numref:`git_setup`), it will notify
+you about possible conflicts and even merge the code changes
+together if it can. You can also use ``git commit`` to help you track what
+you are modifying in your simulations over time. If you're planning to
+submit a pull request to include your changes, you should read the
+contributing guide in :numref:`chap_contributing`, and we suggest you do
+this model development in a separate, fresh copy of the code. See
+:numref:`using_git_and_github` for more information and how
 to use git effectively to manage your workflow.
 
 Model and directory structure
@@ -169,46 +193,55 @@ Model and directory structure
 The “numerical” model is contained within a execution environment
 support wrapper. This wrapper is designed to provide a general framework
 for grid-point models; MITgcm is a specific numerical model that makes use of
-this framework (see :numref:`wrapper` for additional detail). Under this structure,
-the model is split into execution
+this framework (see :numref:`wrapper` for additional detail).
+Under this structure, the model is split into execution
 environment support code and conventional numerical model code. The
 execution environment support code is held under the :filelink:`eesupp`
 directory. The grid point model code is held under the :filelink:`model`
-directory. Code execution actually starts in the :filelink:`eesupp` routines and
-not in the :filelink:`model` routines. For this reason the top-level :filelink:`main.F <eesupp/src/main.F>`
-is in the :filelink:`eesupp/src` directory. In general, end-users should not
-need to worry about the wrapper support code. The top-level routine for the numerical
+directory. Code execution actually starts in the :filelink:`eesupp` routines
+and not in the :filelink:`model` routines. For this reason the top-level
+:filelink:`main.F <eesupp/src/main.F>` is in the :filelink:`eesupp/src`
+directory. In general, end-users should not need to worry about the
+wrapper support code. The top-level routine for the numerical
 part of the code is in :filelink:`model/src/the_model_main.F`. Here is a brief
 description of the directory structure of the model under the root tree.
 
 -  :filelink:`model`: this directory contains the main source code. Also
-   subdivided into two subdirectories: :filelink:`model/inc` (includes files) and :filelink:`model/src` (source code).
+   subdivided into two subdirectories: :filelink:`model/inc` (includes files)
+   and :filelink:`model/src` (source code).
 
--  :filelink:`eesupp`: contains the execution environment source code. Also
-   subdivided into two subdirectories: :filelink:`eesupp/inc` and :filelink:`eesupp/src`.
+-  :filelink:`eesupp`: contains the execution environment source code.
+   Also subdivided into two subdirectories: :filelink:`eesupp/inc`
+   and :filelink:`eesupp/src`.
 
 -  :filelink:`pkg`: contains the source code for the packages. Each package
-   corresponds to a subdirectory. For example, :filelink:`pkg/gmredi` contains the
-   code related to the Gent-McWilliams/Redi scheme, :filelink:`pkg/seaice` the code
-   for a dynamic seaice model which can be coupled to the ocean model. The packages are
-   described in detail in :numref:`packagesI` and :numref:`outp_pack`].
+   corresponds to a subdirectory. For example, :filelink:`pkg/gmredi`
+   contains the code related to the Gent-McWilliams/Redi scheme,
+   :filelink:`pkg/seaice` the code for a dynamic seaice model which can be
+   coupled to the ocean model. The packages are described in detail in
+   :numref:`packagesI` and :numref:`outp_pack`].
 
--  :filelink:`doc`: contains MITgcm documentation in reStructured Text (rst) format.
+-  :filelink:`doc`: contains MITgcm documentation in reStructured
+   Text (rst) format.
 
--  :filelink:`tools`: this directory contains various useful tools. For example,
-   :filelink:`genmake2 <tools/genmake2>` is a script written in bash that should be used
-   to generate your makefile. The subdirectory :filelink:`tools/build_options` contains
-   ‘optfiles’ with the compiler options for many different compilers and machines
-   that can run MITgcm (see :numref:`genmake2_optfiles`).
-   This directory also contains subdirectories :filelink:`tools/adjoint_options` and :filelink:`tools/OAD_support`
-   that are used to generate the tangent linear and adjoint model (see details
-   in :numref:`chap_autodiff`).
+-  :filelink:`tools`: this directory contains various useful tools.
+   For example, :filelink:`genmake2 <tools/genmake2>` is a script written
+   in bash that should be used to generate your makefile.
+   The subdirectory :filelink:`tools/build_options` contains
+   ‘optfiles’ with the compiler options for many different
+   compilers and machines that can run MITgcm
+   (see :numref:`genmake2_optfiles`). This directory also contains
+   subdirectories :filelink:`tools/adjoint_options` and
+   :filelink:`tools/OAD_support` that are used to generate the tangent linear
+   and adjoint model (see details in :numref:`chap_autodiff`).
 
--  :filelink:`utils`: this directory contains various utilities. The :filelink:`utils/matlab` subdirectory
+-  :filelink:`utils`: this directory contains various utilities.
+   The :filelink:`utils/matlab` subdirectory
    contains matlab scripts for reading model output directly into
-   matlab. The subdirectory :filelink:`utils/python` contains similar routines for python.
-   :filelink:`utils/scripts` contains C-shell post-processing scripts for
-   joining processor-based and tiled-based model output.
+   matlab. The subdirectory :filelink:`utils/python` contains similar
+   routines for python. :filelink:`utils/scripts` contains C-shell
+   post-processing scripts for joining processor-based and
+   tiled-based model output.
 
 -  :filelink:`verification`: this directory contains the model examples. See
    :numref:`chap_modelExamples`.
@@ -232,12 +265,14 @@ Quickstart Guide
 To compile the code, we use the ``make`` program. This uses a file
 (``Makefile``) that allows us to pre-process source files, specify
 compiler and optimization options and also figures out any file
-dependencies. We supply a script (:filelink:`genmake2 <tools/genmake2>`), described in section
-:numref:`genmake2_desc`, that automatically generates the ``Makefile`` for you. You
-then need to build the dependencies and compile the code (:numref:`make_target_commands`).
+dependencies. We supply a script (:filelink:`genmake2 <tools/genmake2>`),
+described in section :numref:`genmake2_desc`, that automatically generates
+the ``Makefile`` for you. You then need to build the dependencies and
+compile the code (:numref:`make_target_commands`).
 
 As an example, assume that you want to build and run experiment
-:filelink:`verification/exp2`. Let’s build the code in :filelink:`verification/exp2/build`:
+:filelink:`verification/exp2`.
+Let’s build the code in :filelink:`verification/exp2/build`:
 
 ::
 
@@ -249,27 +284,36 @@ First, generate the ``Makefile``:
 
     % ../../../tools/genmake2 -mods ../code -optfile «/PATH/TO/OPTFILE»
 
-The ``-mods`` command line option tells :filelink:`genmake2 <tools/genmake2>` to override model source code
-with any files in the subdirectory ``../code`` (here, you need to configure the size
-of the model domain by overriding MITgcm’s default :filelink:`SIZE.h <model/inc/SIZE.h>`
+The ``-mods`` command line option tells :filelink:`genmake2 <tools/genmake2>`
+to override model source code with any files in the subdirectory ``../code``
+(here, you need to configure the size of the model domain by overriding
+MITgcm’s default :filelink:`SIZE.h <model/inc/SIZE.h>`
 with an edited copy :filelink:`../code/SIZE.h <verification/exp2/code/SIZE.h>`
 containing the specific domain size for :filelink:`exp2 <verification/exp2>`).
 
 The ``-optfile`` command line option tells :filelink:`genmake2 <tools/genmake2>`
-to run the specified :ref:`optfile <genmake2_optfiles>`, a  `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell script,
-during :filelink:`genmake2 <tools/genmake2>`’s execution.
+to run the specified
+:ref:`optfile <genmake2_optfiles>`, a  `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_
+shell script, during :filelink:`genmake2 <tools/genmake2>`’s execution.
 An :ref:`optfile <genmake2_optfiles>` typically contains
-definitions of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_,
-paths, compiler options, and anything else that needs to be set in order to compile on your
-local computer system or cluster with your specific Fortan compiler. As an example, we might
-replace ``«/PATH/TO/OPTFILE»`` with :filelink:`../../../tools/build_options/linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
-for use with the `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_ compiler
+definitions of
+`environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_,
+paths, compiler options, and anything else that needs to be set in order
+to compile on your local computer system or cluster with your specific
+Fortan compiler. As an example, we might replace ``«/PATH/TO/OPTFILE»`` with
+:filelink:`../../../tools/build_options/linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
+for use with the
+`Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_ compiler
 (version 11 and above) on a linux x86_64 platform.
-This and many other :ref:`optfiles <genmake2_optfiles>` for common systems and Fortran compilers are located in :filelink:`tools/build_options`.
+This and many other :ref:`optfiles <genmake2_optfiles>` for common systems
+and Fortran compilers are located in :filelink:`tools/build_options`.
 
-``-mods``, ``-optfile``, and many additional :filelink:`genmake2 <tools/genmake2>` command line options are described
-more fully in :numref:`command_line_options`. Detailed instructions on building with
-`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ are given in :numref:`build_mpi`.
+``-mods``, ``-optfile``, and many additional
+:filelink:`genmake2 <tools/genmake2>` command line options are described
+more fully in :numref:`command_line_options`. Detailed instructions on
+building with
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+are given in :numref:`build_mpi`.
 
 Once a ``Makefile`` has been generated, we create the dependencies with
 the command:
@@ -290,7 +334,8 @@ Next, one can compile the code using:
 
     % make
 
-Assuming no errors occurred, the ``make`` command creates an executable called ``mitgcmuv``.
+Assuming no errors occurred, the ``make`` command creates
+an executable called ``mitgcmuv``.
 
 Now you are ready to run the model. General instructions for doing so
 are given in section :numref:`run_the_model`.
@@ -300,7 +345,8 @@ are given in section :numref:`run_the_model`.
 Generating a ``Makefile`` using genmake2
 ----------------------------------------
 
-A shell script called ``genmake2`` for generating a ``Makefile`` is included as part of MITgcm.
+A shell script called ``genmake2`` for generating a ``Makefile`` is
+included as part of MITgcm.
 Typically ``genmake2`` is used in a sequence of steps as shown below:
 
 ::
@@ -309,38 +355,52 @@ Typically ``genmake2`` is used in a sequence of steps as shown below:
   % make depend
   % make
 
-The first step above creates a unix-style ``Makefile``. The ``Makefile`` is used by ``make``
-to specify how to compile the MITgcm source files (for more detailed descriptions of what the ``make`` tools
-are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__).
+The first step above creates a unix-style ``Makefile``. The ``Makefile``
+is used by ``make`` to specify how to compile the MITgcm source files
+(for more detailed descriptions of what the ``make`` tools
+are, and how they are used, see
+`here <https://www.gnu.org/software/make/make.html>`__).
 
-This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>`, located in the
+This section describes details and capabilities of
+:filelink:`genmake2 <tools/genmake2>`, located in the
 :filelink:`tools` directory. :filelink:`genmake2 <tools/genmake2>` is a shell
-script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including
-`Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells). Like many unix tools, there is a help option that is invoked thru ``genmake2 -h``.
-:filelink:`genmake2 <tools/genmake2>` parses information from the following sources, in this order:
+script written to work in
+`bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all
+“sh”–compatible shells including
+`Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells).
+Like many unix tools, there is a help option that is invoked
+thru ``genmake2 -h``. :filelink:`genmake2 <tools/genmake2>` parses
+information from the following sources, in this order:
 
 #.    Command-line options (see :numref:`command_line_options`)
 
 #.    A ``genmake_local`` file if one is found in the current directory.
       This is a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell
-      script that is executed prior to the :ref:`optfile <genmake2_optfiles>` (see step #3),
-      used in some special model configurations and/or to set some options that can
-      affect which lines of the :ref:`optfile <genmake2_optfiles>` are executed.
-      For example, this :filelink:`genmake_local <verification/cpl_aim+ocn/build_cpl/genmake_local>` file
-      is required for a special setup, building a ‘MITgcm coupler’
-      executable; in a more typical setup, one will not require a ``genmake_local`` file.
+      script that is executed prior to the :ref:`optfile <genmake2_optfiles>`
+      (see step #3), used in some special model configurations and/or to
+      set some options that can affect which lines of the
+      :ref:`optfile <genmake2_optfiles>` are executed.
+      For example, this
+      :filelink:`genmake_local <verification/cpl_aim+ocn/build_cpl/genmake_local>`
+      file is required for a special setup, building a ‘MITgcm coupler’
+      executable; in a more typical setup, one will not require a
+      ``genmake_local`` file.
 
 #.    An “options file” a.k.a. :ref:`optfile <genmake2_optfiles>`
-      (a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell script) specified by the command-line option
-      ``–optfile «/PATH/TO/OPTFILE»``, as mentioned briefly in :numref:`building_quickstart`
+      (a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell
+      script) specified by the command-line option
+      ``–optfile «/PATH/TO/OPTFILE»``, as mentioned briefly
+      in :numref:`building_quickstart`
       and described in detail in :numref:`genmake2_optfiles`.
 
 #.    A ``packages.conf`` file (if one is found) with the specific list of
-      packages to compile (see :numref:`using_packages`). The search path for file ``packages.conf`` is
-      first the current directory, and then each of the ``-mods`` directories
-      in the given order (as described :ref:`here <mods_option>`).
+      packages to compile (see :numref:`using_packages`). The search path for
+      file ``packages.conf`` is first the current directory, and then each
+      of the ``-mods`` directories in the given order (as described
+      :ref:`here <mods_option>`).
 
-When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output might be as follows:
+When you run the :filelink:`genmake2 <tools/genmake2>` script,
+typical output might be as follows:
 
 ::
 
@@ -425,35 +485,43 @@ In the above, notice:
   but here we are building code from within the repository (specifically,
   in one of the verification subdirectory experiments). As such,
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
-  locate all necessary files on its own. To specify a remote ``ROOTDIR``, see :ref:`here <build_elsewhere>`.
-- we specified the :ref:`optfile <genmake2_optfiles>`  :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
+  locate all necessary files on its own. To specify a remote ``ROOTDIR``,
+  see :ref:`here <build_elsewhere>`.
+- we specified the :ref:`optfile <genmake2_optfiles>`
+  :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
   based on the computer system and Fortran compiler we used
   (here, a linux 64-bit machine with gfortran installed).
-- :filelink:`genmake2 <tools/genmake2>` did some simple checking on availability
-  of certain system libraries; all were found (except `LAPACK <https://en.wikipedia.org/wiki/LAPACK>`_,
+- :filelink:`genmake2 <tools/genmake2>` did
+  some simple checking on availability
+  of certain system libraries; all were found (except
+  `LAPACK <https://en.wikipedia.org/wiki/LAPACK>`_,
   which was not checked since it is not needed here).
   `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ only requires a ‘yes’
-  if you want to write `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output;
-  more specifically, a ‘no’ response to “Can we create NetCDF-enabled binaries” will disable
-  including  :filelink:`pkg/mnc` and switch to output plain binary files.
-  While the makefile can still be built with other ‘no’ responses,
-  sometimes this will foretell errors during the
+  if you want to write `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
+  output; more specifically, a ‘no’ response to “Can we create NetCDF-enabled
+  binaries” will disable including  :filelink:`pkg/mnc` and switch to output
+  plain binary files. While the makefile can still be built with other
+  ‘no’ responses, sometimes this will foretell errors during the
   ``make depend`` or ``make`` commands.
-- any ``.F`` or ``.h`` files in the ``-mods`` directory ``../code`` will also be compiled,
-  overriding any MITgcm repository versions of files, if they exist.
-- a handful of packages are being used in this build; see :numref:`using_packages`
-  for more detail about how to enable and disable packages.
-- :filelink:`genmake2 <tools/genmake2>` terminated without error (note output at end
-  after ``===  Done  ===``), generating ``Makefile`` and a log file ``genmake.log``.
-  As mentioned, this does not guarantee that your setup will compile properly, but if
-  there are errors during ``make depend`` or ``make``, these error messages and/or the
-  standard output from :filelink:`genmake2 <tools/genmake2>` or ``genmake.log`` may
-  provide clues as to the problem.
+- any ``.F`` or ``.h`` files in the ``-mods`` directory ``../code`` will
+  also be compiled, overriding any MITgcm repository versions of files,
+  if they exist.
+- a handful of packages are being used in this build; see
+  :numref:`using_packages` for more detail about how to enable and disable
+  packages.
+- :filelink:`genmake2 <tools/genmake2>` terminated without error
+  (note output at end after ``===  Done  ===``), generating ``Makefile`` and
+  a log file ``genmake.log``. As mentioned, this does not guarantee that
+  your setup will compile properly, but if there are errors during
+  ``make depend`` or ``make``, these error messages and/or the
+  standard output from :filelink:`genmake2 <tools/genmake2>` or
+  ``genmake.log`` may provide clues as to the problem.
   If instead :filelink:`genmake2 <tools/genmake2>` finishes with
   a warning message  ``Warning: FORTRAN compiler test failed`` , this means
   that :filelink:`genmake2 <tools/genmake2>` is unable to locate the Fortran
-  compiler or pass a trivial “hello world” Fortran compilation test. In this case, you
-  should see ``genmake.log`` for errors and/or seek assistance from your system administrator;
+  compiler or pass a trivial “hello world” Fortran compilation test.
+  In this case, you should see ``genmake.log`` for errors and/or seek
+  assistance from your system administrator;
   these tests need to pass in order to proceed to the ``make`` steps.
 
 .. _command_line_options:
@@ -471,17 +539,19 @@ command-line options. A complete list of these options can be obtained by:
 The most important command-line options are:
 
 ``–optfile «/PATH/TO/OPTFILE»``
-    (or shorter: ``-of`` ) specifies the :ref:`optfile <genmake2_optfiles>` that should be
-    used for a particular build.
+    (or shorter: ``-of`` ) specifies the :ref:`optfile <genmake2_optfiles>`
+    that should be used for a particular build.
 
-    If no :ref:`optfile <genmake2_optfiles>` is specified through the command line,
-    :filelink:`genmake2 <tools/genmake2>` will try to make a
+    If no :ref:`optfile <genmake2_optfiles>` is specified through the command
+    line, :filelink:`genmake2 <tools/genmake2>` will try to make a
     reasonable guess from the list provided in :filelink:`tools/build_options`.
     The method used for making this guess is to first determine the
     combination of operating system and hardware and
     then find a working Fortran compiler within the user’s path. When
-    these three items have been identified, :filelink:`genmake2 <tools/genmake2>` will try to find an
-    :ref:`optfile <genmake2_optfiles>` that has a matching name.  See :numref:`genmake2_optfiles`.
+    these three items have been identified,
+    :filelink:`genmake2 <tools/genmake2>` will try to find an
+    :ref:`optfile <genmake2_optfiles>` that has a matching name.
+    See :numref:`genmake2_optfiles`.
 
 .. _mods_option:
 
@@ -490,11 +560,13 @@ The most important command-line options are:
     directories contain files with names that may (or may not) exist in
     the main MITgcm source tree but will be overridden by any
     identically-named sources within the ``-mods`` directories.
-    Note the quotes around the list of directories, necessary given multiple arguments.
+    Note the quotes around the list of directories,
+    necessary given multiple arguments.
 
     The order of precedence for versions of files with identical names:
 
-    -  “mods” directories in the order given (e.g., will use copy of file located in DIR1 instead of DIR2)
+    -  “mods” directories in the order given (e.g., will use copy of file
+       located in DIR1 instead of DIR2)
 
     -  Packages either explicitly specified or included by default
 
@@ -507,19 +579,21 @@ The most important command-line options are:
 
 ``-rootdir «/PATH/TO/MITGCMDIR»``
     specify the location of the MITgcm repository top directory (``ROOTDIR``).
-    By default, :filelink:`genmake2 <tools/genmake2>` will try to find this location by
-    looking in parent directories from where :filelink:`genmake2 <tools/genmake2>` is executed
+    By default, :filelink:`genmake2 <tools/genmake2>` will try to find this
+    location by looking in parent directories from where
+    :filelink:`genmake2 <tools/genmake2>` is executed
     (up to 5 directory levels above the current directory).
 
-    In the quickstart example above (:numref:`building_quickstart`) we built the
-    executable in the ``build`` directory of the experiment.
+    In the quickstart example above (:numref:`building_quickstart`) we built
+    the executable in the ``build`` directory of the experiment.
     Below, we show how to configure and compile the code on a scratch disk,
     without having to copy the entire source
-    tree. The only requirement is that you have :filelink:`genmake2 <tools/genmake2>`
+    tree. The only requirement is that you have
+    :filelink:`genmake2 <tools/genmake2>`
     in your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_, or
-    you know the absolute path to :filelink:`genmake2 <tools/genmake2>`. In general, one can
-    compile the code in any given directory by following this procedure.
-    Assuming the model source is in ``~/MITgcm``, then the
+    you know the absolute path to :filelink:`genmake2 <tools/genmake2>`.
+    In general, one can compile the code in any given directory by following
+    this procedure. Assuming the model source is in ``~/MITgcm``, then the
     following commands will build the model in ``/scratch/exp2-run1``:
 
     ::
@@ -530,13 +604,16 @@ The most important command-line options are:
        % make
 
     As an alternative to specifying the MITgcm repository location through
-    the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>` recognizes the
-    `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``$MITGCM_ROOTDIR``.
+    the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>`
+    recognizes the
+    `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
+    ``$MITGCM_ROOTDIR``.
 
 ``-standarddirs «/PATH/TO/STANDARDDIR»``
-    specify a path to the standard MITgcm directories for source and includes files.
-    By default, :filelink:`model` and :filelink:`eesupp`
-    directories (``src`` and ``inc``)  are the “standard dirs”. This command can be used
+    specify a path to the standard MITgcm directories for source and includes
+    files. By default, :filelink:`model` and :filelink:`eesupp`
+    directories (``src`` and ``inc``)  are the “standard dirs”.
+    This command can be used
     to reset these default standard directories,
     or instead NOT include either :filelink:`model` or :filelink:`eesupp`
     as done in some specialized configurations.
@@ -545,30 +622,36 @@ The most important command-line options are:
     generates a makefile for an OpenAD build (see :numref:`ad_openad`)
 
 ``–adoptfile «/PATH/TO/FILE»``
-    (or shorter: ``-adof`` ) specifies the “adjoint” or automatic differentiation options
-    file to be used. The file is analogous to the optfile defined above but it
-    specifies information for the AD build process. See :numref:`adoptfile`.
+    (or shorter: ``-adof`` ) specifies the “adjoint” or automatic
+    differentiation options file to be used. The file is analogous to the
+    optfile defined above but it specifies information for the AD
+    build process. See :numref:`adoptfile`.
 
     The default file is located in
     :filelink:`tools/adjoint_options/adjoint_default` and it defines the “TAF”
     and “TAMC” compiler options.
 
 ``–mpi``
-    enables certain `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ features (using CPP ``#define``)
-    within the code and is necessary for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ builds
+    enables certain
+    `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+    features (using CPP ``#define``) within the code and is necessary for
+    `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ builds
     (see :numref:`build_mpi`).
 
 ``–omp``
-    enables OpenMP code and compiler flag ``OMPFLAG`` (see :numref:`build_openmp`).
+    enables OpenMP code and compiler flag ``OMPFLAG``
+    (see :numref:`build_openmp`).
 
 ``–ieee``
     use IEEE numerics (requires support in optfile).
-    This option is typically a good choice if one wants to compare output from different machines
-    running the same code. Note using IEEE disables all compiler optimizations.
+    This option is typically a good choice if one wants to compare output
+    from different machines running the same code.
+    Note using IEEE disables all compiler optimizations.
 
 ``-devel``
-    use IEEE numerics (requires support in optfile) and add additional compiler options to check
-    array bounds and add other additional warning and debugging flags.
+    use IEEE numerics (requires support in optfile) and add additional
+    compiler options to check array bounds and add other additional warning
+    and debugging flags.
 
 ``–make «/PATH/TO/GMAKE»``
     due to the poor handling of soft-links and other bugs common with
@@ -577,10 +660,10 @@ The most important command-line options are:
     option provides a means for specifying the make executable to be
     used.
 
-While it is possible to use :filelink:`genmake2 <tools/genmake2>` command-line options
-to set the Fortran or C compiler name (``-fc`` and ``-cc`` respectively),
-we generally recommend setting these through an :ref:`optfile <genmake2_optfiles>`,
-as discussed in :numref:`genmake2_optfiles`.
+While it is possible to use :filelink:`genmake2 <tools/genmake2>` command-line
+options to set the Fortran or C compiler name (``-fc`` and ``-cc``
+respectively), we generally recommend setting these through an
+:ref:`optfile <genmake2_optfiles>`, as discussed in :numref:`genmake2_optfiles`.
 Other :filelink:`genmake2 <tools/genmake2>` options  are available to
 enable performance/timing analyses, etc.; see ``genmake2 -h`` for more info.
 
@@ -608,7 +691,8 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
     from a ``uname -m`` command. Some common CPU types:
 
     ``amd64``
-        use this code for x86_64 systems (most common, including AMD and Intel 64-bit CPUs)
+        use this code for x86_64 systems (most common, including AMD and
+        Intel 64-bit CPUs)
 
     ``ia64``
         is for Intel IA64 systems (eg. Itanium, Itanium2)
@@ -617,114 +701,146 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
         is for (old) Mac PowerPC systems
 
 **COMPILER**
-    is the compiler name (generally, the name of the Fortran compiler executable).
-    MITgcm is primarily written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
-    Compiling the code  requires a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler.
-    Any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
+    is the compiler name (generally, the name of the Fortran compiler
+    executable). MITgcm is primarily written in
+    `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
+    Compiling the code  requires a
+    `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler.
+    Any more recent compiler which is backwards compatible with
+    `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
     can also be used; for example, the model will build successfully
     with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
-    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler.
-    A `C99 <https://en.wikipedia.org/wiki/C99>`_ compatible compiler is
-    also need, together with a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ . Some optional
-    packages make use of `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
-    (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
-    or `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_); as such,
-    setups which use these packages require a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
+    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_
+    compiler. A `C99 <https://en.wikipedia.org/wiki/C99>`_ compatible compiler
+    is also need, together with a
+    `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ .
+    Some optional packages make use of
+    `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
+    (either
+    `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
+    or
+    `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_);
+    as such, setups which use these packages require a
+    `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
     or later compiler build.
 
-There are existing optfiles that work with many common hardware/compiler configurations;
-we first suggest you peruse the list in :filelink:`tools/build_options`
-and try to find your platform/compiler configuration. These are the most common:
+There are existing optfiles that work with many common hardware/compiler
+configurations; we first suggest you peruse the list in
+:filelink:`tools/build_options` and try to find your platform/compiler
+configuration. These are the most common:
 
 - :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
 - :filelink:`linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
 - :filelink:`linux_amd64_ifort+impi <tools/build_options/linux_amd64_ifort+impi>`
 - :filelink:`linux_amd64_pgf77 <tools/build_options/linux_amd64_pgf77>`
 
-The above optfiles are all for linux x86_64 (64-bit) systems, utilized in many large high-performance computing centers.
-All of the above will work with single-threaded, `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_,
-or shared memory (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) code configurations.
-gfortran is `GNU Fortran <https://gcc.gnu.org/fortran>`_,
+The above optfiles are all for linux x86_64 (64-bit) systems, utilized in many
+large high-performance computing centers. All of the above will work with
+single-threaded,
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_,
+or shared memory (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) code
+configurations. gfortran is `GNU Fortran <https://gcc.gnu.org/fortran>`_,
 ifort is `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_,
-pgf77 is `PGI Fortran <https://www.pgroup.com/>`_ (formerly known as “The Portland Group”).
-Note in the above list there are two ``ifort`` optfiles:
+pgf77 is `PGI Fortran <https://www.pgroup.com/>`_ (formerly known as
+“The Portland Group”). Note in the above list there are two ``ifort`` optfiles:
 :filelink:`linux_amd64_ifort+impi <tools/build_options/linux_amd64_ifort+impi>`
 is for a specific case of using ``ifort`` with the
-`Intel MPI library <https://software.intel.com/en-us/intel-mpi-library>`_ (a.k.a. ``impi``),
-which requires special define statements in the optfile (in contrast with
-`Open MPI <https://www.open-mpi.org/>`_ or  `MVAPICH2 <http:mvapich.cse.ohio-state.edu/>`_
-libraries; see :numref:`build_mpi`). Note that both ifort optfiles require ifort version 11 or higher.
-Many clusters nowadays use `environment modules <http:modules.sourceforge.net>`_,
-which allows one to easily choose which compiler to use through ``module load «MODULENAME»``,
-automatically configuring your environment for a specific compiler choice
-(type ``echo $PATH`` to see where :filelink:`genmake2 <tools/genmake2>` will look for compilers and system software).
+`Intel MPI library <https://software.intel.com/en-us/intel-mpi-library>`_
+(a.k.a. ``impi``), which requires special define statements in the optfile
+(in contrast with `Open MPI <https://www.open-mpi.org/>`_ or
+`MVAPICH2 <http:mvapich.cse.ohio-state.edu/>`_ libraries;
+see :numref:`build_mpi`). Note that both ifort optfiles require ifort
+version 11 or higher. Many clusters nowadays use
+`environment modules <http:modules.sourceforge.net>`_,
+which allows one to easily choose which compiler to use through
+``module load «MODULENAME»``, automatically configuring your environment
+for a specific compiler choice (type ``echo $PATH`` to see where
+:filelink:`genmake2 <tools/genmake2>` will look for compilers
+and system software).
 
-In most cases, your platform configuration will be included in the available optfiles
-:filelink:`list <tools/build_options/>` and will result in a
-usable ``Makefile`` being generated. If you are unsure which optfile is correct for your configuration,
-you can try not specifying an optfile; on some systems the
-:filelink:`genmake2 <tools/genmake2>` program will be able to automatically
-recognize the hardware, find a compiler and other tools within the user’s
-path, and then make a best guess as to an appropriate optfile
+In most cases, your platform configuration will be included in the available
+optfiles :filelink:`list <tools/build_options/>` and will result in a
+usable ``Makefile`` being generated. If you are unsure which optfile is
+correct for your configuration, you can try not specifying an optfile;
+on some systems the :filelink:`genmake2 <tools/genmake2>` program will be able
+to automatically recognize the hardware, find a compiler and other tools
+within the user’s path, and then make a best guess as to an appropriate optfile
 from the list in the :filelink:`tools/build_options` directory.
 However, for some platforms and code configurations, new
 optfiles must be written. To create a new optfile, it is generally
 best to start with one of the defaults and modify it to suit your needs.
-Like :filelink:`genmake2 <tools/genmake2>`, the optfiles are all written in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (or using a simple
-`sh–compatible <https://en.wikipedia.org/wiki/Bourne_shell>`_ syntax). While nearly all
-`environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ used within
-:filelink:`genmake2 <tools/genmake2>` may be specified in the optfiles, the critical ones that
-should be defined are:
+Like
+:filelink:`genmake2 <tools/genmake2>`, the optfiles are all written in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_
+(or using a simple
+`sh–compatible <https://en.wikipedia.org/wiki/Bourne_shell>`_ syntax).
+While nearly all
+`environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
+used within :filelink:`genmake2 <tools/genmake2>` may be specified in the
+optfiles, the critical ones that should be defined are:
 
 .. _list_of_optfile_env_vars:
 
 ``FC``
-    the Fortran compiler (executable) to use on ``.F`` files, e.g., ``ifort`` or ``gfortran``, or if using MPI, the mpi-wrapper equivalent, e.g., ``mpif77``
+    the Fortran compiler (executable) to use on ``.F`` files, e.g., ``ifort``
+    or ``gfortran``, or if using MPI, the mpi-wrapper equivalent,
+    e.g., ``mpif77``
 
 ``F90C``
-    the Fortran compiler to use on ``.F90`` files (only necessary if your setup includes a package which contains ``.F90`` source code)
+    the Fortran compiler to use on ``.F90`` files (only necessary if your setup
+    includes a package which contains ``.F90`` source code)
 
 ``CC``
-    similarly, the C compiler to use, e.g., ``icc`` or ``gcc``, or if using MPI, the mpi-wrapper equivalent, e.g., ``mpicc``
+    similarly, the C compiler to use, e.g., ``icc`` or ``gcc``, or if using MPI,
+    the mpi-wrapper equivalent, e.g., ``mpicc``
 
 ``DEFINES``
     command-line options passed to the compiler
 
 ``CPP``
-    the C preprocessor to use, and any necessary command-line options, e.g. ``cpp -traditional -P``
+    the C preprocessor to use, and any necessary command-line options,
+    e.g. ``cpp -traditional -P``
 
 ``CFLAGS``, ``FFLAGS``
-    command-line compiler flags required for your C and Fortran compilers, respectively, to compile and execute properly.
-    See your C and Fortran compiler documentation for specific options and syntax.
+    command-line compiler flags required for your C and Fortran compilers,
+    respectively, to compile and execute properly. See your C and Fortran
+    compiler documentation for specific options and syntax.
 
 ``FOPTIM``
-    command-line optimization Fortran compiler settings. See your Fortran compiler documentation for specific options and syntax.
+    command-line optimization Fortran compiler settings. See your Fortran
+    compiler documentation for specific options and syntax.
 
 ``NOOPTFLAGS``
-    command-line settings for special files that should not be optimized using the ``FOPTIM`` flags
+    command-line settings for special files that should not be optimized
+    using the ``FOPTIM`` flags
 
 ``NOOPTFILES``
-    list of source code files that should be compiled using ``NOOPTFLAGS`` settings
+    list of source code files that should be compiled using ``NOOPTFLAGS``
+    settings
 
 ``INCLUDES``
-    path for additional files (e.g., ``netcdf.inc``, ``mpif.h``) to include in the compilation using the command-line ``-I`` option
+    path for additional files (e.g., ``netcdf.inc``, ``mpif.h``) to include
+    in the compilation using the command-line ``-I`` option
 
 ``INCLUDEDIRS``
    path for additional files to be included in the compilation
 
 ``LIBS``
-   path for additional library files that need to be linked to generate the final executable, e.g., ``libnetcdf.a``
+   path for additional library files that need to be linked to generate the
+   final executable, e.g., ``libnetcdf.a``
 
-For example, an excerpt from an optfile which specifies several of these variables (here, for the linux-amd64
-architecture using the PGI Fortran compiler) is as follows:
+For example, an excerpt from an optfile which specifies several of these
+variables (here, for the linux-amd64 architecture using the PGI Fortran
+compiler) is as follows:
 
 .. literalinclude:: ../../tools/build_options/linux_amd64_pgf77
     :start-at: if test "x$MPI" = xtrue ; then
     :end-at: F90OPTIM=$FOPTIM
 
-The :ref:`above <list_of_optfile_env_vars>` list of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
+The
+:ref:`above <list_of_optfile_env_vars>` list of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
 typically specified in an optfile is by no means complete;
-additional variables may be required for your specific setup and/or your specific Fortran (or C) compiler.
+additional variables may be required for your specific setup and/or your
+specific Fortran (or C) compiler.
 
 If you write an optfile for an unrepresented machine or compiler, you
 are strongly encouraged to submit the optfile to the MITgcm project for
@@ -733,20 +849,22 @@ provide help writing or modifing optfiles.  Please submit the file through
 the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_
 or email the MITgcm-support@mitgcm.org list.
 
-Instructions on how to use optfiles to build `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_\ -enabled executables is presented in :numref:`build_mpi`.
+Instructions on how to use optfiles to build
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_\ -enabled
+executables is presented in :numref:`build_mpi`.
 
 .. _make_target_commands:
 
 ``make`` commands
 -----------------
 
-Following a successful build of ``Makefile``, type ``make depend``. This command
-modifies the ``Makefile`` by attaching a (usually, long) list of
+Following a successful build of ``Makefile``, type ``make depend``. This
+command modifies the ``Makefile`` by attaching a (usually, long) list of
 files upon which other files depend. The purpose of this is to reduce
 re-compilation if and when you start to modify the code. The ``make depend``
-command also creates local links for all source files from the source directories
-(see "-mods" description in :numref:`command_line_options`), so that
-all source files to be used are visible from the local build directory,
+command also creates local links for all source files from the source
+directories (see "-mods" description in :numref:`command_line_options`),
+so that all source files to be used are visible from the local build directory,
 either as hardcopy or as symbolic link.
 
 **IMPORTANT NOTE:** Editing the source code files in the build directory
@@ -754,26 +872,28 @@ will not edit a local copy (since these are just links) but will
 edit the original files in :filelink:`model/src` (or :filelink:`model/inc`)
 or in the specified ``-mods`` directory. While the latter might
 be what you intend, editing the master copy in :filelink:`model/src`
-is usually **NOT** what is intended and may cause grief somewhere down the road.
-Rather, if you need to add
+is usually **NOT** what is intended and may cause grief somewhere down
+the road. Rather, if you need to add
 to the list of modified source code files, place a copy of
 the file(s) to edit in the ``-mods`` directory, make the edits to
-these ``-mods`` directory files, go back to the build directory and type ``make Clean``,
-and then re-build the makefile (these latter steps critical or the makefile will not
-link to this newly edited file).
+these ``-mods`` directory files, go back to the build directory and
+type ``make Clean``, and then re-build the makefile (these latter steps
+critical or the makefile will not link to this newly edited file).
 
-The final ``make`` invokes the `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_
+The final ``make`` invokes the
+`C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_
 to produce the “little f” files (``*.f`` and ``*.f90``) and then compiles them
 to object code using the specified Fortran compiler and options.
-The C preprocessor step converts a number of CPP macros and ``#ifdef`` statements to actual Fortran and
-expands C-style ``#include`` statements to incorporate header files into the
-“little f" files. CPP style macros and ``#ifdef`` statements are used to support generating
+The C preprocessor step converts a number of CPP macros and ``#ifdef``
+statements to actual Fortran and expands C-style ``#include`` statements to
+incorporate header files into the “little f" files. CPP style macros and
+``#ifdef`` statements are used to support generating
 different compile code for different model configurations.
-The result of the build process is an executable with the name
-``mitgcmuv``.
+The result of the build process is an executable with the name ``mitgcmuv``.
 
-Additional make “targets” are defined within the makefile to aid in the production
-of adjoint (:numref:`building_adcode_using_taf`) and other versions of MITgcm.
+Additional make “targets” are defined within the makefile to aid in the
+production of adjoint (:numref:`building_adcode_using_taf`) and other
+versions of MITgcm.
 
 On computers with multiple processor cores, the build process can often be sped
 up appreciably using the command:
@@ -785,21 +905,26 @@ up appreciably using the command:
 where the “2” can be replaced with a number that corresponds to the
 number of cores (or discrete CPUs) available.
 
-In addition, there are several housekeeping ``make clean`` options that might be useful:
+In addition, there are several housekeeping ``make clean`` options that might
+be useful:
 
-- ``make clean`` removes files that ``make`` generates (e.g., \*.o and \*.f files)
-- ``make Clean`` removes files and links generated by ``make`` and ``make depend``; strongly recommended for “un-clean” directories which may contain
-  the (perhaps partial) results of previous builds
-- ``make CLEAN`` removes pretty much everything, including any executables and output from :filelink:`genmake2 <tools/genmake2>`
+- ``make clean`` removes files that ``make`` generates
+  (e.g., \*.o and \*.f files)
+- ``make Clean`` removes files and links generated by ``make`` and
+  ``make depend``; strongly recommended for “un-clean” directories which
+  may contain the (perhaps partial) results of previous builds
+- ``make CLEAN`` removes pretty much everything, including any executables
+  and output from :filelink:`genmake2 <tools/genmake2>`
 
 .. _build_mpi:
 
 Building with MPI
 -----------------
 
-Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
-libraries can be complicated due to the
-variety of different `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+Building MITgcm to use
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries can
+be complicated due to the variety of different
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 implementations available, their dependencies
 or interactions with different compilers, and their often ad-hoc
 locations within file systems. For these reasons, its generally a good
@@ -807,16 +932,23 @@ idea to start by finding and reading the documentation for your
 machine(s) and, if necessary, seeking help from your local systems
 administrator.
 
-The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ support are:
+The steps for building MITgcm with
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ support are:
 
-#. Make sure you have `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
-   libraries installed on your computer system or cluster. Different Fortran compilers (and different versions of a specific compiler)
-   will generally require a custom version (of a `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library)
-   built specifically for it. On `environment module <http:modules.sourceforge.net>`_-enabled
+#. Make sure you have
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries
+   installed on your computer system or cluster. Different Fortran compilers
+   (and different versions of a specific compiler) will generally require a
+   custom version (of a
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library)
+   built specifically for it.
+   On `environment module <http:modules.sourceforge.net>`_-enabled
    clusters, one typically must first load a
-   Fortran compiler, then specific `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
-   libraries for that compiler will become available to load. If libraries are not installed, MPI
-   implementations and related tools are available including:
+   Fortran compiler, then specific
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+   libraries for that compiler will become available to load.
+   If libraries are not installed, MPI implementations and related tools are
+   available including:
 
    -  `Open MPI <https://www.open-mpi.org/>`_
 
@@ -828,48 +960,58 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 
    Ask you systems administrator for assistance in installing these libraries.
 
-#. Determine the location of your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+#. Determine the location of your
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    library “wrapper” Fortran compiler, e.g., ``mpif77`` or ``mpifort`` etc.
-   which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.)
-   to compile your code. Often the directory
-   in which these wrappers are located will be automatically added
-   to your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
-   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
-   ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself.
+   which will be used instead of the name of the fortran compiler
+   (``gfortran``, ``ifort``, ``pgi77`` etc.) to compile your code.
+   Often the directory in which these wrappers are located will be
+   automatically added to your
+   `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
+   when you perform a ``module load «SOME_MPI_MODULE»``; thus, you will not
+   need to do anything beyond the module load itself.
    If you are on a cluster that does not support
    `environment modules <http:modules.sourceforge.net>`_,
    you may have to manually add this directory to your path,
-   e.g., type ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in a bash shell.
+   e.g., type ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»``
+   in a bash shell.
 
-#. Determine the location of the includes file ``mpif.h`` and any
-   other `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related includes files.
-   Often these files will be located in a subdirectory off the main
-   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+#. Determine the location of the includes file ``mpif.h`` and any other
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related
+   includes files. Often these files will be located in a subdirectory off
+   the main `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    library ``include/``. In all optfiles in :filelink:`tools/build_options`,
-   it is assumed `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
+   it is assumed
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
    ``$MPI_INC_DIR`` specifies this location; ``$MPI_INC_DIR``
    should be set in your terminal session prior to generating a ``Makefile``.
 
-#. Determine how many processors (i.e., CPU cores) you will be using in your run,
-   and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>`
-   (located in a “modified code” directory, as specified in your :filelink:`genmake2 <tools/genmake2>`
-   :ref:`command-line <command_line_options>`). In :filelink:`SIZE.h <model/inc/SIZE.h>`,
+#. Determine how many processors (i.e., CPU cores) you will be using in your
+   run, and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>`
+   (located in a “modified code” directory, as specified in your
+   :filelink:`genmake2 <tools/genmake2>`
+   :ref:`command-line <command_line_options>`).
+   In :filelink:`SIZE.h <model/inc/SIZE.h>`,
    you will need to set variables :varlink:`nPx`\*\ :varlink:`nPy` to
    match the number of processors you will specify in
    your run script’s MITgcm execution statement (i.e., typically ``mpirun``
    or some similar command, see :numref:`running_mpi`).
    Note that MITgcm does not use
-   `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_ (a feature of
+   `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_
+   (a feature of
    `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_,
    not `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_), so
    all array sizes, and hence the number of processors
-   to be used in your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ run,
-   must be specified at compile-time in addition to run-time. More information about the MITgcm
-   WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>`
+   to be used in your
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ run,
+   must be specified at compile-time in addition to run-time. More information
+   about the MITgcm WRAPPER, domain decomposition, and how to configure
+   :filelink:`SIZE.h <model/inc/SIZE.h>`
    can be found in :numref:`using_wrapper`.
 
-#. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
-   using commands such as:
+#. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi``
+   option using commands such as:
 
    ::
 
@@ -882,10 +1024,11 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 Building  with OpenMP
 ---------------------
 
-Unlike MPI, which requires installation of additional software support libraries, using shared memory
+Unlike MPI, which requires installation of additional software support
+libraries, using shared memory
 (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) for multi-threaded
-executable builds can be accomplished simply through the :filelink:`genmake2 <tools/genmake2>`
-command-line option ``-omp``:
+executable builds can be accomplished simply through the
+:filelink:`genmake2 <tools/genmake2>` command-line option ``-omp``:
 
    ::
 
@@ -893,13 +1036,17 @@ command-line option ``-omp``:
          %  make depend
          %  make
 
-While the most common optfiles specified in :numref:`genmake2_optfiles` include support for the ``-omp`` option,
-some optfiles in :filelink:`tools/build_options` do not include support for multi-threaded executable builds.
-Before using one of the less common optfiles, check whether ``OMPFLAG`` is defined.
+While the most common optfiles specified in :numref:`genmake2_optfiles` include
+support for the ``-omp`` option, some optfiles in
+:filelink:`tools/build_options` do not include support for multi-threaded
+executable builds. Before using one of the less common optfiles,
+check whether ``OMPFLAG`` is defined.
 
-Note that one does not need to specify the number of threads until runtime (see :numref:`running_openmp`).
-However, the default maximum number of threads in MITgcm is set to a (low) value of 4,
-so if you plan on more you will need to change this value in :filelink:`eesupp/inc/EEPARAMS.h` in your modified code directory.
+Note that one does not need to specify the number of threads until runtime
+(see :numref:`running_openmp`). However, the default maximum number of threads
+in MITgcm is set to a (low) value of 4, so if you plan on more you will need
+to change this value in :filelink:`eesupp/inc/EEPARAMS.h` in your modified
+code directory.
 
 .. _run_the_model:
 
@@ -907,7 +1054,8 @@ Running the model
 =================
 
 If compilation finished successfully (:numref:`building_code`) then an
-executable called ``mitgcmuv`` will now exist in the local (``build``) directory.
+executable called ``mitgcmuv`` will now exist in the
+local (``build``) directory.
 
 To run the model as a single process (i.e., not in parallel) simply
 type (assuming you are still in the ``build`` directory):
@@ -919,12 +1067,12 @@ type (assuming you are still in the ``build`` directory):
     % cp ../build/mitgcmuv .
     % ./mitgcmuv
 
-Here, we are making a link to all the support data files (in ``../input/``) needed by the MITgcm
-for this experiment, and then copying the executable from the the build directory.
-The ``./`` in the last step is a safe-guard to make sure you use the local executable in
-case you have others that might exist in your ``$PATH``.
-The above command will spew out many lines of text output to your
-screen. This output contains details such as parameter values as well as
+Here, we are making a link to all the support data files (in ``../input/``)
+needed by the MITgcm for this experiment, and then copying the executable from
+the the build directory. The ``./`` in the last step is a safe-guard to make
+sure you use the local executable in case you have others that might exist in
+your ``$PATH``. The above command will spew out many lines of text output to
+your screen. This output contains details such as parameter values as well as
 diagnostics such as mean kinetic energy, largest CFL number, etc. It is
 worth keeping this text output with the binary output so we normally
 re-direct the ``stdout`` stream as follows:
@@ -938,19 +1086,22 @@ helpful to include the last few line of this ``output.txt`` file along
 with the (``stderr``) error message within any bug reports.
 
 For the example experiment in :filelink:`verification/exp2`, an example of the
-output is kept in :filelink:`verification/exp2/results/output.txt` for comparison. You can compare
-your ``output.txt`` with the corresponding one for that experiment to
-check that your set-up indeed works. Congratulations!
+output is kept in :filelink:`verification/exp2/results/output.txt` for
+comparison. You can compare your ``output.txt`` with the corresponding one for
+that experiment to check that your set-up indeed works. Congratulations!
 
 .. _running_mpi:
 
 Running with MPI
 ----------------
 
-Run the code with the appropriate `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ “run” or “exec” program
-provided with your particular implementation of `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_.
+Run the code with the appropriate
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ “run” or
+“exec” program provided with your particular implementation of
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_.
 Typical `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
-packages such as `Open MPI <https://www.open-mpi.org/>`_ will use something like:
+packages such as `Open MPI <https://www.open-mpi.org/>`_ will
+use something like:
 
    ::
 
@@ -959,47 +1110,57 @@ packages such as `Open MPI <https://www.open-mpi.org/>`_ will use something like
 Sightly more complicated scripts may be needed for many machines
 since execution of the code may be controlled by both the
 `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library
-and a job scheduling and queueing system such as `Slurm <https://slurm.schedmd.com/>`_,
+and a job scheduling and queueing system such as
+`Slurm <https://slurm.schedmd.com/>`_,
 `PBS/TORQUE <http://www.adaptivecomputing.com/products/open-source/torque>`_,
 `LoadLeveler <https://www-03.ibm.com/systems/power/software/loadleveler/>`_,
 or any of a number of similar tools. See your local cluster documentation
-or system administrator for the specific syntax required to run on your computing facility.
+or system administrator for the specific syntax required to run on your
+computing facility.
 
 .. _running_openmp:
 
 Running with OpenMP
 -------------------
 
-Assuming the executable ``mitgcmuv`` was built with OpenMP (see :numref:`build_openmp`),
-the syntax to run a multi-threaded simulation is the same as running single-threaded
-(see :numref:`run_the_model`), except that the following additional steps are required beforehand:
+Assuming the executable ``mitgcmuv`` was built with OpenMP
+(see :numref:`build_openmp`), the syntax to run a multi-threaded simulation is
+the same as running single-threaded (see :numref:`run_the_model`), except that
+the following additional steps are required beforehand:
 
 #. `Environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
-   for the number of threads and the stacksize need to be set prior to executing the model.
-   The exact names of these `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ differ
-   by Fortran compiler, but are typically some variant of ``OMP_NUM_THREADS`` and ``OMP_STACKSIZE``, respectively.
+   for the number of threads and the stacksize need to be set prior to
+   executing the model. The exact names of these
+   `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
+   differ by Fortran compiler, but are typically some variant of
+   ``OMP_NUM_THREADS`` and ``OMP_STACKSIZE``, respectively.
    For the latter, in your run script we recommend adding the line
    ``export OMP_STACKSIZE=400M``  (or for a
-   `C shell <https://en.wikipedia.org/wiki/C_shell>`_-variant, ``setenv OMP_STACKSIZE 400M``).
-   If this stacksize setting is insufficient, MITgcm will crash,
-   in which case a larger number can be used. Similarly, ``OMP_NUM_THREADS`` should
-   be set to the exact number of threads you require.
+   `C shell <https://en.wikipedia.org/wiki/C_shell>`_-variant,
+   ``setenv OMP_STACKSIZE 400M``). If this stacksize setting is insufficient,
+   MITgcm will crash, in which case a larger number can be used. Similarly,
+   ``OMP_NUM_THREADS`` should be set to the exact number of threads you require.
 
-#. In file ``eedata`` you will need to change namelist parameters :varlink:`nTx` and :varlink:`nTy`
-   to reflect the number of threads in x and y, respectively (for a single-threaded run, :varlink:`nTx` \=\ :varlink:`nTy`\ =1).
+#. In file ``eedata`` you will need to change namelist parameters :varlink:`nTx`
+   and :varlink:`nTy` to reflect the number of threads in x and y, respectively
+   (for a single-threaded run, :varlink:`nTx` \=\ :varlink:`nTy`\ =1).
    The value of :varlink:`nTx` \*\ :varlink:`nTy` must equal the value of
-   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``OMP_NUM_THREADS``
-   (or its name-equivalent for your Fortan compiler) or MITgcm will terminate during its initialization with an error message.
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
+   ``OMP_NUM_THREADS`` (or its name-equivalent for your Fortan compiler) or
+   MITgcm will terminate during its initialization with an error message.
 
-MITgcm will take the number of tiles used in the model (as specified in :filelink:`SIZE.h <model/inc/SIZE.h>`)
-and the number of threads (:varlink:`nTx` and :varlink:`nTy` from file ``eedata``),
-and in running will spread the tiles out evenly across the threads. This is done independently for x and y. As such,
-the number of tiles in x (variable :varlink:`nSx` as defined in :filelink:`SIZE.h <model/inc/SIZE.h>`) must divide evenly by
+MITgcm will take the number of tiles used in the model (as specified in
+:filelink:`SIZE.h <model/inc/SIZE.h>`) and the number of threads
+(:varlink:`nTx` and :varlink:`nTy` from file ``eedata``),
+and in running will spread the tiles out evenly across the threads.
+This is done independently for x and y. As such,
+the number of tiles in x (variable :varlink:`nSx` as defined in
+:filelink:`SIZE.h <model/inc/SIZE.h>`) must divide evenly by
 the number of threads in x (namelist parameter :varlink:`nTx`),
-and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will terminate on initialization.
-More information about the MITgcm
-WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>`
-can be found in :numref:`using_wrapper`.
+and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will
+terminate on initialization. More information about the MITgcm
+WRAPPER, domain decomposition, and how to configure
+:filelink:`SIZE.h <model/inc/SIZE.h>` can be found in :numref:`using_wrapper`.
 
 Output files
 ------------
@@ -1007,19 +1168,20 @@ Output files
 The model produces various output files and, when using :filelink:`pkg/mnc`
 (i.e., `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_),
 sometimes even directories. Depending upon the I/O package(s) selected
-at compile time (either :filelink:`pkg/mdsio`, :filelink:`pkg/mnc`, or both as determined by
-``packages.conf``) and the run-time flags set (in
-``data.pkg``), the following output may appear. More complete information describing output files
-and model diagnostics is described in :numref:`outp_pack`.
+at compile time (either :filelink:`pkg/mdsio`, :filelink:`pkg/mnc`, or both as
+determined by ``packages.conf``) and the run-time flags set (in
+``data.pkg``), the following output may appear. More complete information
+describing output files and model diagnostics is described
+in :numref:`outp_pack`.
 
 Raw binary output files
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The “traditional” output files are generated by the :filelink:`pkg/mdsio`
-(see :numref:`pkg_mdsio`).The :filelink:`pkg/mdsio` model data are written according to a
-“meta/data” file format. Each variable is associated with two files with
-suffix names ``.data`` and ``.meta``. The ``.data`` file contains the
-data written in binary form (big endian by default). The ``.meta`` file
+(see :numref:`pkg_mdsio`).The :filelink:`pkg/mdsio` model data are written
+according to a “meta/data” file format. Each variable is associated with two
+files with suffix names ``.data`` and ``.meta``. The ``.data`` file contains
+the data written in binary form (big endian by default). The ``.meta`` file
 is a “header” file that contains information about the size and the
 structure of the ``.data`` file. This way of organizing the output is
 particularly useful when running multi-processors calculations.
@@ -1038,9 +1200,9 @@ which is made of the following files:
    pressure i.e., downward).
 
 -  ``T.00000nIter`` - potential temperature (ocean:
-   :math:`^{\circ}\mathrm{C}`, atmosphere: :math:`^{\circ}\mathrm{K}`).
+   :math:`^{\circ}\mathrm{C}`, atmosphere: :math:`\mathrm{K}`).
 
--  ``S.00000nIter`` - ocean: salinity (psu), atmosphere: water vapor
+-  ``S.00000nIter`` - ocean: salinity (g/kg), atmosphere: water vapor
    (g/kg).
 
 -  ``Eta.00000nIter`` - ocean: surface elevation (m), atmosphere:
@@ -1055,14 +1217,18 @@ In addition, a “pickup” or “checkpoint” file called:
 -  ``pickup.00000nIter``
 
 is written out. This file represents the state of the model in a
-condensed form and is used for restarting the integration (at the specific iteration number).
-Some additional parameterizations and packages also produce separate pickup files, e.g.,
+condensed form and is used for restarting the integration (at the specific
+iteration number). Some additional parameterizations and packages also produce
+separate pickup files, e.g.,
 
--  ``pickup_cd.00000nIter`` if the C-D scheme is used (see :ref:`C_D Scheme <C-D_scheme>`)
+-  ``pickup_cd.00000nIter`` if the C-D scheme is used (see
+   :ref:`C_D Scheme <C-D_scheme>`)
 
--  ``pickup_seaice.00000nIter`` if the seaice package is turned on (see :ref:`sub_phys_pkg_seaice`)
+-  ``pickup_seaice.00000nIter`` if the seaice package is turned on (see
+   :ref:`sub_phys_pkg_seaice`)
 
--  ``pickup_ptracers.00000nIter`` if passive tracers are included in the simulation (see :ref:`sub_phys_pkg_ptracers`)
+-  ``pickup_ptracers.00000nIter`` if passive tracers are included in the
+   simulation (see :ref:`sub_phys_pkg_ptracers`)
 
 Rolling checkpoint files are
 the same as the pickup files but are named differently. Their name
@@ -1075,24 +1241,35 @@ NetCDF output files
 
 :filelink:`pkg/mnc` is a set of routines written to read, write, and
 append `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files.
-Unlike the :filelink:`pkg/mdsio` output, the :filelink:`pkg/mnc`–generated output is usually
-placed within a subdirectory with a name such as ``mnc_output_`` (by default,
-`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ tries to append, rather than overwrite, existing files,
+Unlike the :filelink:`pkg/mdsio` output, the :filelink:`pkg/mnc`–generated
+output is usually placed within a subdirectory with a name such as
+``mnc_output_`` (by default,
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ tries to append,
+rather than overwrite, existing files,
 so a unique output directory is helpful for each separate run).
 
-The :filelink:`pkg/mnc` output files are all in the “self-describing” `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format and
+The :filelink:`pkg/mnc` output files are all in the “self-describing”
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format and
 can thus be browsed and/or plotted using tools such as:
 
 -  `ncdump <https://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf/ncdump.html>`_
-   is a utility which is typically included with every `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
-   install, and converts the `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ binaries into formatted ASCII text files.
+   is a utility which is typically included with every
+   `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
+   install, and converts the
+   `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ binaries
+   into formatted ASCII text files.
 
 -  `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
-   is a very convenient and quick way to plot `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
-   data and it runs on most platforms. `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ is a similar alternative.
+   is a very convenient and quick way to plot
+   `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
+   data and it runs on most platforms.
+   `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ is a similar
+   alternative.
 
--  `MATLAB <https://www.mathworks.com/products/matlab.html>`_, `GrADS <http://cola.gmu.edu/grads/>`_,
-   `IDL <http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx>`_ and other common post-processing environments provide
+-  `MATLAB <https://www.mathworks.com/products/matlab.html>`_,
+   `GrADS <http://cola.gmu.edu/grads/>`_,
+   `IDL <http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx>`_ and
+   other common post-processing environments provide
    built-in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ interfaces.
 
 Looking at the output
@@ -1104,12 +1281,16 @@ MATLAB
 Raw binary output
 ^^^^^^^^^^^^^^^^^
 
-The repository includes a few `MATLAB <https://www.mathworks.com/products/matlab.html>`_ utilities to read binary output
-files written in the :filelink:`/pkg/mdsio` format. The `MATLAB <https://www.mathworks.com/products/matlab.html>`_ scripts are located in the
-directory :filelink:`utils/matlab` under the root tree. The script :filelink:`utils/matlab/rdmds.m`
-reads the data. Look at the comments inside the script to see how to use it.
+The repository includes a few
+`MATLAB <https://www.mathworks.com/products/matlab.html>`_ utilities to read
+binary output files written in the :filelink:`/pkg/mdsio` format. The
+`MATLAB <https://www.mathworks.com/products/matlab.html>`_ scripts are located
+in the directory :filelink:`utils/matlab` under the root tree. The script
+:filelink:`utils/matlab/rdmds.m` reads the data. Look at the comments inside
+the script to see how to use it.
 
-Some examples of reading and visualizing some output in `MATLAB <https://www.mathworks.com/products/matlab.html>`_:
+Some examples of reading and visualizing some output in
+`MATLAB <https://www.mathworks.com/products/matlab.html>`_:
 
 ::
 
@@ -1126,13 +1307,15 @@ Some examples of reading and visualizing some output in `MATLAB <https://www.mat
     >> % iter numbers put in variable 'iters'; 'M' is a character string w/metadata
     >> for n=1:length(iters); imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
 
-Typing ``help rdmds`` in `MATLAB <https://www.mathworks.com/products/matlab.html>`_ will pull up further
+Typing ``help rdmds`` in
+`MATLAB <https://www.mathworks.com/products/matlab.html>`_ will pull up further
 information on how to use the :filelink:`rdmds <utils/matlab/rdmds.m>` utility.
 
 NetCDF output
 ^^^^^^^^^^^^^
 
-Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
+Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
+output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
 are described in :numref:`pkg_mnc`.
 
 .. _sec_python:
@@ -1140,7 +1323,8 @@ are described in :numref:`pkg_mnc`.
 Python
 ~~~~~~
 
-Install the MITgcmutils python package following the instructions in :numref:`MITgcmutils`.
+Install the MITgcmutils python package following the instructions in
+:numref:`MITgcmutils`.
 
 Raw binary output
 ^^^^^^^^^^^^^^^^^
@@ -1161,16 +1345,18 @@ NetCDF output
 ^^^^^^^^^^^^^
 
 The `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output
-is currently produced with one file per processor. This means the individual tiles
-need to be stitched together to create a single
-`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
-:filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line.  If you have installed the MITgcmutils package,
-a copy of gluemncbig should be on your path.  For usage information, see
-:numref:`gluemncbig`.
+is currently produced with one file per processor. This means the individual
+tiles need to be stitched together to create a single
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the
+model domain. The script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`
+can do this efficiently from the command line.  If you have installed the
+MITgcmutils package, a copy of gluemncbig should be on your path.  For usage
+information, see :numref:`gluemncbig`.
 
-The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
-the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
+The following example shows how to use the
+`xarray python package <http://xarray.pydata.org/>`_ to read
+the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file
+into `Python <https://www.python.org/>`_:
 
 ::
 
@@ -1188,13 +1374,18 @@ Model Array Dimensions
 ----------------------     
 
 MITgcm’s array dimensions need to be configured for each unique model domain.
-The size of each tile (in dimensions :math:`x`, :math:`y`, and vertical coordinate :math:`r`)
-the “overlap” region of each tile (in :math:`x` and :math:`y`), the number of tiles in the :math:`x` and :math:`y` dimensions,
-and the number of processes (using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
-in the :math:`x` and :math:`y` dimensions all need to be specified in :filelink:`SIZE.h <model/inc/SIZE.h>`.
-From these parameters, global domain-size variables :varlink:`Nx`, :varlink:`Ny` are computed by the model.
-See a more technical discussion of :filelink:`SIZE.h <model/inc/SIZE.h>` parameters in in :numref:`specify_decomp`, and
-a detailed explanation of an example :filelink:`SIZE.h <model/inc/SIZE.h>` setup in tutorial :ref:`Baroclinic Ocean Gyre <baroc_code_size>`.
+The size of each tile (in dimensions :math:`x`, :math:`y`, and vertical
+coordinate :math:`r`) the “overlap” region of each tile (in :math:`x` and
+:math:`y`), the number of tiles in the :math:`x` and :math:`y` dimensions,
+and the number of processes (using
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
+in the :math:`x` and :math:`y` dimensions all need to be specified in
+:filelink:`SIZE.h <model/inc/SIZE.h>`. From these parameters, global
+domain-size variables :varlink:`Nx`, :varlink:`Ny` are computed by the model.
+See a more technical discussion of :filelink:`SIZE.h <model/inc/SIZE.h>`
+parameters in in :numref:`specify_decomp`, and a detailed explanation of an
+example :filelink:`SIZE.h <model/inc/SIZE.h>` setup in tutorial
+:ref:`Baroclinic Ocean Gyre <baroc_code_size>`.
 
 +----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Default :filelink:`SIZE.h <model/inc/SIZE.h>`    | Description                                                                                             |
@@ -1218,18 +1409,23 @@ a detailed explanation of an example :filelink:`SIZE.h <model/inc/SIZE.h>` setup
 | :varlink:`nPy`                         | 1                                                | number of processes in :math:`y` dimension                                                              |
 +----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-Note the repository version of :filelink:`SIZE.h <model/inc/SIZE.h>` includes several lines of text at the top that will halt compilation with errors. Thus, to use MITgcm you will need
-to copy :filelink:`SIZE.h <model/inc/SIZE.h>` to a code modification directory and make edits, including deleting or commenting out the offending lines of text.
+Note the repository version of :filelink:`SIZE.h <model/inc/SIZE.h>` includes
+several lines of text at the top that will halt compilation with errors. Thus,
+to use MITgcm you will need to copy :filelink:`SIZE.h <model/inc/SIZE.h>` to a
+code modification directory and make edits, including deleting or commenting
+out the offending lines of text.
 
 C Preprocessor Options
 ----------------------
 
 The CPP flags relative to the “numerical model” part of the code are
-defined and set in the file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>` in the directory
-:filelink:`model/inc/`. In the parameter tables in :numref:`customize_model` we have noted CPP options **that need to be changed from the default**
-to enable specific runtime parameter to be used properly.
-Also note many of the options below are for less-common situations or are somewhat obscure, so
-newer users of the MITgcm are encouraged to jump to :numref:`customize_model` where more basic runtime parameters are discussed.
+defined and set in the file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`
+in the directory :filelink:`model/inc/`. In the parameter tables in
+:numref:`customize_model` we have noted CPP options **that need to be changed
+from the default** to enable specific runtime parameter to be used properly.
+Also note many of the options below are for less-common situations or are
+somewhat obscure, so newer users of the MITgcm are encouraged to jump to
+:numref:`customize_model` where more basic runtime parameters are discussed.
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
@@ -1272,11 +1468,15 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
    |                                               |         | for partial-cell in vertical viscosity and diffusion, either from grid-spacing reduction effect or as                |
    |                                               |         | artificially enhanced mixing near surface & bottom for too thin grid-cell                                            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`ALLOW_SMAG_3D_DIFFUSIVITY`          | #undef  | include code for isotropic 3-D Smagorinsky diffusivity for tracers (viscosity scaled by constant Prandtl number)     |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_SOLVE4_PS_AND_DRAG`           | #undef  | include code for combined surface pressure and drag implicit solver                                                  |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`INCLUDE_IMPLVERTADV_CODE`           | #define | include code for implicit vertical advection                                                                         |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_ADAMSBASHFORTH_3`             | #undef  | include code for Adams-Bashforth 3rd-order                                                                           |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`ALLOW_QHYD_STAGGER_TS`              | #undef  | include code for quasi-hydrostatic stagger time-step Adams-Bashforth code                                            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`EXACT_CONSERV`                      | #define | include code for  “exact conservation" of fluid in free-surface formulation                                          |
    |                                               |         | (recompute divergence after pressure solver)                                                                         |
@@ -1306,10 +1506,11 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 
 .. _default_pkg_list:
 
-By default, MITgcm includes several core packages, i.e., these packages are enabled during
-:filelink:`genmake2 <tools/genmake2>` execution if a file ``packages.conf`` is not found.
-See :numref:`using_packages` for more information about ``packages.conf``, and see
-:filelink:`pkg/pkg_groups` for more information about default packages and package groups.
+By default, MITgcm includes several core packages, i.e., these packages are
+enabled during :filelink:`genmake2 <tools/genmake2>` execution if a file
+``packages.conf`` is not found. See :numref:`using_packages` for more
+information about ``packages.conf``, and see :filelink:`pkg/pkg_groups` for
+more information about default packages and package groups.
 These default packages are as follows:
 
 - :filelink:`pkg/mom_common`
@@ -1321,10 +1522,13 @@ These default packages are as follows:
 - :filelink:`pkg/rw`
 - :filelink:`pkg/monitor`
 
-Additional CPP options that affect the model core code are set in files ``${PKG}_OPTIONS.h`` located in these packages' directories. Similarly, optional (non-default) packages
-also include package-specific CPP options that must be set in files ``${PKG}_OPTIONS.h``.
+Additional CPP options that affect the model core code are set in files
+``${PKG}_OPTIONS.h`` located in these packages' directories. Similarly,
+optional (non-default) packages also include package-specific CPP options that
+must be set in files ``${PKG}_OPTIONS.h``.
 
-The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP options that typically will need to be modified by users.
+The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP
+options that typically will need to be modified by users.
 
 .. _customize_model:
 
@@ -1332,28 +1536,34 @@ Customizing the Model Configuration - Runtime Parameters
 ========================================================
 
 When you are ready to run the model in the configuration you want, the
-most straightforward approach is to use and adapt the setup of a tutorial or verification
-experiment (described in :numref:`chap_modelExamples`) that is the closest to your
-configuration. Then, the amount of setup will be minimized. In this
-section, we document the complete list of MITgcm model namelist runtime
+most straightforward approach is to use and adapt the setup of a tutorial or
+verification experiment (described in :numref:`chap_modelExamples`) that is the
+closest to your configuration. Then, the amount of setup will be minimized.
+In this section, we document the complete list of MITgcm model namelist runtime
 parameters set in file ``data``, which needs to be located in the
 directory where you will run the model.
 Model parameters are defined and
-declared in the file :filelink:`PARAMS.h <model/inc/PARAMS.h>` and their default values are
-generally set in the routine :filelink:`set_defaults.F <model/src/set_defaults.F>`, otherwise
-when initialized in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`. :numref:`eedata_parms`
-documents the “execution environment” namelist parameters
+declared in the file :filelink:`PARAMS.h <model/inc/PARAMS.h>` and their
+default values are generally set in the routine
+:filelink:`set_defaults.F <model/src/set_defaults.F>`, otherwise
+when initialized in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`.
+:numref:`eedata_parms` documents the “execution environment” namelist parameters
 in file ``eedata``, which must also reside in the current run directory.
-Note that runtime parameters used by (non-default) MITgcm packages are not documented here but rather in :numref:`packagesI`
-and :numref:`outp_pack`, and prescribed in package-specific ``data.${pkg}`` namelist files which are read in via
-package-specific ``${pkg}_readparms.F`` where ``${pkg}`` is the package name
+Note that runtime parameters used by (non-default) MITgcm packages are not
+documented here but rather in :numref:`packagesI`
+and :numref:`outp_pack`, and prescribed in package-specific ``data.${pkg}``
+namelist files which are read in via package-specific
+``${pkg}_readparms.F`` where ``${pkg}`` is the package name
 (see :numref:`using_packages`).
 
 In what follows, model parameters are grouped into categories related to
-configuration/computational domain, algorithmic parameters, equations solved in the model, parameters related to model forcing, and
-simulation controls. The tables below specify the namelist parameter name, the namelist parameter
-group in ``data`` (and ``eedata`` in :numref:`eedata_parms`), the default value, and a short description of its function.
-Runtime parameters that require **non-default** CPP options to be set prior to compilation (see :numref:`customize_compilation`) for proper use are noted.
+configuration/computational domain, algorithmic parameters, equations solved
+in the model, parameters related to model forcing, and simulation controls.
+The tables below specify the namelist parameter name, the namelist parameter
+group in ``data`` (and ``eedata`` in :numref:`eedata_parms`), the default
+value, and a short description of its function. Runtime parameters that
+require **non-default** CPP options to be set prior to compilation
+(see :numref:`customize_compilation`) for proper use are noted.
 
 Parameters: Configuration, Computational Domain, Geometry, and Time-Discretization
 ----------------------------------------------------------------------------------
@@ -1363,12 +1573,13 @@ Parameters: Configuration, Computational Domain, Geometry, and Time-Discretizati
 Model Configuration
 ~~~~~~~~~~~~~~~~~~~
 
-:varlink:`buoyancyRelation` is
-set to ``OCEANIC`` by default, which employes a :math:`z`-coordinate vertical axis.
-To simulate an ocean using pressure coordinates in the vertical, set it to ``OCEANICP``. For atmospheric simulations,
-:varlink:`buoyancyRelation` needs to be set to ``ATMOSPHERIC``, which also uses pressure as the vertical coordinate.
-The default model configuration is hydrostatic; to run a non-hydrostatic simulation, set the logical
-variable :varlink:`nonHydrostatic` to ``.TRUE.``.
+:varlink:`buoyancyRelation` is set to ``OCEANIC`` by default, which employes a
+:math:`z`-coordinate vertical axis. To simulate an ocean using pressure
+coordinates in the vertical, set it to ``OCEANICP``. For atmospheric
+simulations, :varlink:`buoyancyRelation` needs to be set to ``ATMOSPHERIC``,
+which also uses pressure as the vertical coordinate.
+The default model configuration is hydrostatic; to run a non-hydrostatic
+simulation, set the logical variable :varlink:`nonHydrostatic` to ``.TRUE.``.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -1391,37 +1602,44 @@ Four different grids are available: Cartesian, spherical polar, cylindrical, and
 curvilinear (which includes the cubed sphere). The grid is set
 through the logical variables :varlink:`usingCartesianGrid`,
 :varlink:`usingSphericalPolarGrid`, :varlink:`usingCylindricalGrid`,
-and :varlink:`usingCurvilinearGrid`. Note that the cylindrical grid is designed for modeling a rotating tank,
-so that :math:`x` is the azimuthual direction, :math:`y` is the radial direction,
-and :math:`r` is vertical coordinate (see tutorial :ref:`rotating tank <sec_eg_tank>`).
+and :varlink:`usingCurvilinearGrid`. Note that the cylindrical grid is designed
+for modeling a rotating tank, so that :math:`x` is the azimuthual direction,
+:math:`y` is the radial direction, and :math:`r` is vertical coordinate
+(see tutorial :ref:`rotating tank <sec_eg_tank>`).
 
 The variable :varlink:`xgOrigin` sets the position of the western
-most gridcell face in the :math:`x` dimension (Cartesian, meters; spherical and cyclindrical, degrees).
-For a Cartesian or spherical grid, the southern boundary is
-defined through the variable :varlink:`ygOrigin` which corresponds to the
-latitude of the southern most gridcell face (Cartesian, meters; spherical, degrees).
-For a cyclindrical grid, a positive :varlink:`ygOrigin` (m) adds an inner cylindrical boundary at the center of the tank. The resolution
-along the :math:`x` and :math:`y` directions is controlled by the 1-D arrays :varlink:`delX` (meters for a Cartesian grid, degrees otherwise)
-and :varlink:`delY` (meters for Cartesian and cyclindrical grids, degrees spherical). On a spherical polar grid, you
-might decide to set the variable :varlink:`cosPower` which is set to 0
-by default and which represents :math:`n` in :math:`(\cos\varphi)^n`, the power of cosine of latitude to
+most gridcell face in the :math:`x` dimension (Cartesian, meters; spherical and
+cyclindrical, degrees). For a Cartesian or spherical grid, the southern boundary
+is defined through the variable :varlink:`ygOrigin` which corresponds to the
+latitude of the southern most gridcell face (Cartesian, meters; spherical,
+degrees). For a cyclindrical grid, a positive :varlink:`ygOrigin` (m) adds an
+inner cylindrical boundary at the center of the tank. The resolution
+along the :math:`x` and :math:`y` directions is controlled by the 1-D arrays
+:varlink:`delX` (meters for a Cartesian grid, degrees otherwise)
+and :varlink:`delY` (meters for Cartesian and cyclindrical grids, degrees
+spherical). On a spherical polar grid, you might decide to set the variable
+:varlink:`cosPower` which is set to 0 by default and which represents :math:`n`
+in :math:`(\cos\varphi)^n`, the power of cosine of latitude to
 multiply horizontal viscosity and tracer diffusivity.
 The vertical grid spacing is set through the 1-D array
-:varlink:`delR` (:math:`z`-coordinates: in meters; :math:`p`-coordinates, in Pa).
-Using a curvilinear grid requires complete specification of all horizontal MITgcm grid variables,
-either through a default filename (link to new doc section)
-or as specified by :varlink:`horizGridFile`.
+:varlink:`delR` (:math:`z`-coordinates: in meters; :math:`p`-coordinates,
+in Pa). Using a curvilinear grid requires complete specification of all
+horizontal MITgcm grid variables, either through a default filename (link to
+new doc section) or as specified by :varlink:`horizGridFile`.
 
 The variable :varlink:`seaLev_Z` represents the standard
 position of sea level, in meters. This is typically set to 0 m
-for the ocean (default value). If instead pressure is used as the vertical coordinate,
-the pressure at the top (of the atmosphere or ocean) is set through :varlink:`top_Pres`, typically 0 Pa.
-As such, these variables are analogous to  :varlink:`xgOrigin` and :varlink:`ygOrigin` to define the vertical grid axis.
-But they also are used for a second purpose: in a :math:`z`-coordinate setup, :varlink:`top_Pres` sets a reference top pressure
-(required in a non-linear equation of state computation, for example); note that 1 bar
-(i.e., typical Earth atmospheric sea-level pressure) is added already, so the default is 0 Pa.
-Similarly, for a :math:`p`-coordinate setup, :varlink:`seaLev_Z` is used to
-set a reference geopotential (after gravity scaling) at the top of the ocean or bottom of the atmosphere.
+for the ocean (default value). If instead pressure is used as the vertical
+coordinate, the pressure at the top (of the atmosphere or ocean) is set through
+:varlink:`top_Pres`, typically 0 Pa. As such, these variables are analogous to
+:varlink:`xgOrigin` and :varlink:`ygOrigin` to define the vertical grid axis.
+But they also are used for a second purpose: in a :math:`z`-coordinate setup,
+:varlink:`top_Pres` sets a reference top pressure (required in a non-linear
+equation of state computation, for example); note that 1 bar
+(i.e., typical Earth atmospheric sea-level pressure) is added already, so the
+default is 0 Pa. Similarly, for a :math:`p`-coordinate setup,
+:varlink:`seaLev_Z` is used to set a reference geopotential (after gravity
+scaling) at the top of the ocean or bottom of the atmosphere.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.1}|\Y{.125}|\Y{.525}|
 
@@ -1494,13 +1712,16 @@ set a reference geopotential (after gravity scaling) at the top of the ocean or 
 Topography - Full and Partial Cells
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For the ocean, the topography is read from a file that contains a 2-D(:math:`x,y`)
-map of bathymetry, in meters for :math:`z`-coordinates, in pascals for :math:`p`-coordinates.
-The bathymetry is specified by entering the vertical position of the ocean floor relative to the surface, so by convention in
-:math:`z`-coordinates bathymetry is specified as negative numbers (“depth” is defined as positive-definite) whereas in :math:`p`-coordinates
+For the ocean, the topography is read from a file that contains a
+2-D(:math:`x,y`) map of bathymetry, in meters for :math:`z`-coordinates, in
+pascals for :math:`p`-coordinates. The bathymetry is specified by entering the
+vertical position of the ocean floor relative to the surface, so by convention
+in :math:`z`-coordinates bathymetry is specified as negative numbers (“depth”
+is defined as positive-definite) whereas in :math:`p`-coordinates
 bathymetry data is positive. The file name is represented by the variable
-:varlink:`bathyFile`. See our introductory tutorial setup :numref:`sec_eg_baro` for additional details on the file format. Note no changes are required in the model source code
-to represent enclosed, periodic, or double periodic
+:varlink:`bathyFile`. See our introductory tutorial setup :numref:`sec_eg_baro`
+for additional details on the file format. Note no changes are required in the
+model source code to represent enclosed, periodic, or double periodic
 domains: periodicity is assumed by default and is suppressed by
 setting the depths to 0 m for the cells at the limits of the
 computational domain.
@@ -1509,13 +1730,18 @@ To use the partial cell capability, the variable :varlink:`hFacMin` needs
 to be set to a value between 0.0 and 1.0 (it is set to 1.0 by default)
 corresponding to the minimum fractional size of a gridcell. For
 example, if a gridcell is 500 m thick and :varlink:`hFacMin` is set to
-0.1, the minimum thickness for a “thin-cell” for this specific gridcell is 50 m. Thus, if the specified bathymetry depth were to fall exactly
-in the middle of this 500m thick gridcell, the initial model variable :varlink:`hFacC`\ (:math:`x,y,r`) would be set to 0.5.
-If the specified bathymetry depth
-fell within the top 50m of this gridcell (i.e., less than :varlink:`hFacMin`), the model bathymetry would snap to the nearest legal value
-(i.e., initial :varlink:`hFacC`\ (:math:`x,y,r`) would be equal to 0.0 or 0.1 depending if the depth was within 0-25 m or 25-50 m, respectively).
-Also note while specified bathymetry bottom depths (or pressures) need not coincide with
-the model's levels as deduced from :varlink:`delR`, any depth falling below the model's defined vertical axis is truncated.
+0.1, the minimum thickness for a “thin-cell” for this specific gridcell is 50 m.
+Thus, if the specified bathymetry depth were to fall exactly
+in the middle of this 500m thick gridcell, the initial model variable
+:varlink:`hFacC`\ (:math:`x,y,r`) would be set to 0.5.
+If the specified bathymetry depth fell within the top 50m of this gridcell
+(i.e., less than :varlink:`hFacMin`), the model bathymetry would snap to the
+nearest legal value (i.e., initial :varlink:`hFacC`\ (:math:`x,y,r`) would be
+equal to 0.0 or 0.1 depending if the depth was within 0-25 m or 25-50 m,
+respectively). Also note while specified bathymetry bottom depths (or
+pressures) need not coincide with the model's levels as deduced from
+:varlink:`delR`, any depth falling below the model's defined vertical axis is
+truncated.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -1575,8 +1801,10 @@ Rotation
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
 
 For a Cartesian or cylindical grid, the Coriolis parameter :math:`f` is set
-through the variables :varlink:`f0` (in s\ :sup:`--1`) and :varlink:`beta` (:math:`\frac{\partial f}{ \partial y}`; in m\ :sup:`--1`\ s\ :sup:`--1`), which corresponds to a
-Coriolis parameter  :math:`f = f_o + \beta y` (the so-called :math:`\beta`\ -plane).
+through the variables :varlink:`f0` (in s\ :sup:`--1`) and :varlink:`beta`
+(:math:`\frac{\partial f}{ \partial y}`; in m\ :sup:`--1`\ s\ :sup:`--1`),
+which corresponds to a Coriolis parameter  :math:`f = f_o + \beta y`
+(the so-called :math:`\beta`\ -plane).
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -1606,9 +1834,10 @@ Coriolis parameter  :math:`f = f_o + \beta y` (the so-called :math:`\beta`\ -pla
 Free Surface
 ~~~~~~~~~~~~
 
-The logical variables :varlink:`rigidLid` and :varlink:`implicitFreeSurface` specify
-your choice for ocean upper boundary (or lower boundary if using :math:`p`-coordinates);
-set one to ``.TRUE.`` and the other to ``.FALSE.``. These settings affect the calculations of surface pressure (for the ocean) or
+The logical variables :varlink:`rigidLid` and :varlink:`implicitFreeSurface`
+specify your choice for ocean upper boundary (or lower boundary if using
+:math:`p`-coordinates); set one to ``.TRUE.`` and the other to ``.FALSE.``.
+These settings affect the calculations of surface pressure (for the ocean) or
 surface geopotential (for the atmosphere); see :numref:`parms-main_algorithm`.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.175}|\Y{.525}|
@@ -1657,13 +1886,13 @@ Time-Discretization
 
 The time steps are set through the real variables :varlink:`deltaTMom` and
 :varlink:`deltaTtracer` (in seconds) which represent the time step for the
-momentum and tracer equations, respectively (or you
-can prescribe a single time step value for all parameters using :varlink:`deltaT`).
-The model “clock” is defined by the variable :varlink:`deltaTClock` (in seconds)
+momentum and tracer equations, respectively (or you can prescribe a single
+time step value for all parameters using :varlink:`deltaT`). The model “clock”
+is defined by the variable :varlink:`deltaTClock` (in seconds)
 which determines the I/O frequencies and is used in tagging output.
 Time in the model is thus computed as:
 
-|       model time = :varlink:`baseTime` + iteration number  * :varlink:`deltaTClock`
+|  model time = :varlink:`baseTime` + iteration number  * :varlink:`deltaTClock`
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -1694,10 +1923,10 @@ Pressure Solver
 ~~~~~~~~~~~~~~~
 
 By default, a hydrostatic
-simulation is assumed and a 2-D elliptic equation is used to invert
-the pressure field. If using a non-hydrostatic configuration, the pressure field is
-inverted through a 3-D elliptic equation (note this capability
-is not yet available for the atmosphere). The parameters controlling the behavior of the
+simulation is assumed and a 2-D elliptic equation is used to invert the
+pressure field. If using a non-hydrostatic configuration, the pressure field is
+inverted through a 3-D elliptic equation (note this capability is not yet
+available for the atmosphere). The parameters controlling the behavior of the
 elliptic solvers are the variables :varlink:`cg2dMaxIters` and
 :varlink:`cg2dTargetResidual` for the 2-D case and :varlink:`cg3dMaxIters` and
 :varlink:`cg3dTargetResidual` for the 3-D case.
@@ -1786,26 +2015,28 @@ available:
 - For a linear approximation, set :varlink:`eosType` to ``LINEAR``),
   and you will need to specify the thermal
   and haline expansion coefficients, represented by the variables
-  :varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in psu\ :sup:`--1`).
+  :varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta`
+  (in (g/kg)\ :sup:`--1`).
   Because the model equations are written in terms of
   perturbations, a reference thermodynamic state needs to be specified.
-  This is done through the 1-D arrays :varlink:`tRef` and :varlink:`sRef`. :varlink:`tRef`
-  specifies the reference potential temperature profile (in
-  :sup:`o`\ C for the ocean and K for the atmosphere)
-  starting from the level k=1. Similarly, :varlink:`sRef` specifies the reference
-  salinity profile (in psu or g/kg) for the ocean or the reference specific
+  This is done through the 1-D arrays :varlink:`tRef` and :varlink:`sRef`.
+  :varlink:`tRef` specifies the reference potential temperature profile (in
+  :sup:`o`\ C for the ocean and K for the atmosphere) starting
+  from the level k=1. Similarly, :varlink:`sRef` specifies the reference
+  salinity profile (in g/kg) for the ocean or the reference specific
   humidity profile (in g/kg) for the atmosphere.
 
 - MITgcm offers several approximations to the full (oceanic) non-linear equation
   of state that can be selected as :varlink:`eosType`:
 
    ``'POLYNOMIAL'``:
-    This approximation is based on the Knudsen formula (see Bryan and Cox 1972 :cite:`bryan:72`).
-    For this option you need to generate a file of polynomial
+    This approximation is based on the Knudsen formula (see Bryan and Cox 1972
+    :cite:`bryan:72`). For this option you need to generate a file of polynomial
     coefficients called ``POLY3.COEFFS``. To do this, use the program
-    :filelink:`utils/knudsen2/knudsen2.f` under the model tree (a ``Makefile`` is
-    available in the same directory; you will need to edit the number and
-    the values of the vertical levels in :filelink:`knudsen2.f <utils/knudsen2/knudsen2.f>`
+    :filelink:`utils/knudsen2/knudsen2.f` under the model tree (a ``Makefile``
+    is available in the same directory; you will need to edit the number and
+    the values of the vertical levels in
+    :filelink:`knudsen2.f <utils/knudsen2/knudsen2.f>`
     so that they match those of your configuration).
 
    ``’UNESCO’``:
@@ -1837,21 +2068,32 @@ available:
     restarts.
 
    ``’TEOS10’``:
-    TEOS-10 is based on a Gibbs function formulation from which all thermodynamic
-    properties of seawater (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically consistent manner;
-    see http://www.teos-10.org. See IOC et al. (2010) :cite:`ioc:10`, McDougall and Parker (2011)
-    :cite:`mcdougall:11`, and Roquet et al. (2015) :cite:`roquet:15` for implementation details.
-    It also requires lagging the pressure and therefore an additional pickup file for restarts.
-    Note at this time a full implementation of TEOS10 (i.e. ocean variables of conservative temperature and practical salinity,
+    TEOS-10 is based on a Gibbs function formulation from which all
+    thermodynamic properties of seawater (density, enthalpy, entropy sound
+    speed, etc.) can be derived in a thermodynamically consistent manner;
+    see http://www.teos-10.org. See IOC et al. (2010) :cite:`ioc:10`, McDougall
+    and Parker (2011) :cite:`mcdougall:11`, and Roquet et al. (2015)
+    :cite:`roquet:15` for implementation details.
+    It also requires lagging the pressure and therefore an additional pickup
+    file for restarts. Note at this time a full implementation of TEOS10 (i.e.,
+    ocean variables of conservative temperature and practical salinity,
     including consideration of surface forcings) has not been implemented;
-    also note the original 48-term polynomial term is used, not the newer, preferred 75-term polynomial.
+    also note the original 48-term polynomial term is used, not the newer,
+    preferred 75-term polynomial.
 
-   For these non-linear approximations, neither a reference profile of temperature or
-   salinity is required, except for a setup where :varlink:`implicitIntGravWave` is set to ``.TRUE.`` or :varlink:`selectP_inEOS_Zc`\ =1.
+   For these non-linear approximations, neither a reference profile of
+   temperature or salinity is required, except for a setup where
+   :varlink:`implicitIntGravWave` is set to ``.TRUE.`` or
+   :varlink:`selectP_inEOS_Zc`\ =1.
 
-Note that salinity can can be expressed in either practical salinity units (psu, i.e., unit-less) or g/kg,
-depending on the choice of equation of state. See Millero (2010) :cite:`millero:10` for a detailed discussion
-of salinity measurements, and why use of the latter is preferred, in the context of the ocean equation of state.
+Note that for simplicity, salinity is expressed as a ratio in g/kg (thus
+effectively unitless) regardless of the choice of equation of state,
+despite "Practical Salinity" not precisely equal to salinity expressed as a
+dissolved mass fraction. If TEOS-10 is selected, the model variable
+:varlink:`salt` can be interpreted as "Absolute Salinity". See Millero (2010)
+:cite:`millero:10` and Pawlowicz (2013) :cite:`pawlowicz:13` for detailed
+discussion of salinity measurements, and why being expressed
+as g/kg is preferred, in the context of the ocean equation of state.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
 
@@ -1871,9 +2113,9 @@ of salinity measurements, and why use of the latter is preferred, in the context
    |                                        |           |                                                  | for ocean, specify instead of :varlink:`tRef` or :varlink:`tRefFile`                                    |
    |                                        |           |                                                  | for vertically constant reference temp. (:sup:`o`\ C )                                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sRef`                        | PARM01    | 30.0 psu (ocn) or 0.0 (atm)                      | 1D vertical reference salinity profile (psu or g/kg)                                                    |
+   | :varlink:`sRef`                        | PARM01    | 30.0 (g/kg) (ocn) or 0.0 (atm)                   | 1D vertical reference salinity profile (g/kg)                                                           |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sRefFile`                    | PARM01    | :kbd:`' '`                                       | filename for reference salinity profile (psu or g/kg)                                                   |
+   | :varlink:`sRefFile`                    | PARM01    | :kbd:`' '`                                       | filename for reference salinity profile (g/kg)                                                          |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`selectP_inEOS_Zc`            | PARM01    | depends on :varlink:`eosType`                    | select which pressure to use in EOS for :math:`z`-coor.                                                 |
    |                                        |           |                                                  |                                                                                                         |
@@ -1888,7 +2130,7 @@ of salinity measurements, and why use of the latter is preferred, in the context
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`tAlpha`                      | PARM01    | 2.0E-04                                          | linear EOS thermal expansion coefficient (1/\ :sup:`o`\ C)                                              |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient (1/psu)                                                       |
+   | :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient ((g/kg)\ :sup:`-1`)                                           |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 Thermodynamic Constants
@@ -1923,11 +2165,13 @@ Configuration
 There are a few logical variables that allow you to turn on/off various
 terms in the momentum equation. These variables are called
 :varlink:`momViscosity`, :varlink:`momAdvection`,  :varlink:`useCoriolis`,
-:varlink:`momStepping`, :varlink:`metricTerms`, and :varlink:`momPressureForcing` and by default are
-set to ``.TRUE.``. Vertical diffusive fluxes of momentum can be computed implicitly
+:varlink:`momStepping`, :varlink:`metricTerms`, and
+:varlink:`momPressureForcing` and by default are set to ``.TRUE.``.
+Vertical diffusive fluxes of momentum can be computed implicitly
 by setting the logical variable :varlink:`implicitViscosity` to
-``.TRUE.``. The details relevant to both the momentum flux-form and the vector-invariant form of the
-equations and the various (momentum) advection schemes are covered in :numref:`discret_algorithm`.
+``.TRUE.``. The details relevant to both the momentum flux-form and the
+vector-invariant form of the equations and the various (momentum) advection
+schemes are covered in :numref:`discret_algorithm`.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.1}|\Y{.125}|\Y{.525}|
 
@@ -2009,8 +2253,8 @@ first vertical level (surface level). If no file names are provided,
 the velocity is initialized to zero. The initial vertical velocity
 is always derived from the horizontal velocity using the continuity
 equation. In the case of a restart (from the end of a previous simulation),
-the velocity field is read from a pickup file (see :numref:`simulation_controls`)
-and the initial velocity files are ignored.
+the velocity field is read from a pickup file
+(see :numref:`simulation_controls`) and the initial velocity files are ignored.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -2248,8 +2492,9 @@ The initial tracer data can be contained in the binary files
 :varlink:`hydrogThetaFile` and :varlink:`hydrogSaltFile`. These files should
 contain 3-D data ordered in an (:math:`x,y,r`) fashion with k=1 as the first
 vertical level. If no file names are provided, the tracers are then
-initialized with the values of :varlink:`tRef` and :varlink:`sRef` discussed in :numref:`parms-eos`.
-In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for each depth level.
+initialized with the values of :varlink:`tRef` and :varlink:`sRef` discussed in
+:numref:`parms-eos`. In this case, the initial tracer data are uniform in
+:math:`x` and :math:`y` for each depth level.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -2258,7 +2503,7 @@ In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for
 +========================================+===========+==================================================+=========================================================================================================+
 | :varlink:`hydrogThetaFile`             | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial potential temperature (:sup:`o`\ C)                            |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`hydrogSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial salinity (psu or g/kg)                                         |
+| :varlink:`hydrogSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial salinity (g/kg)                                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maskIniTemp`                 | PARM05    | TRUE                                             | apply (center-point) mask to initial hydrographic theta data on/off flag                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2275,10 +2520,11 @@ Tracer Diffusivities
 Lateral eddy diffusivities for temperature and salinity/specific
 humidity are specified through the variables :varlink:`diffKhT` and
 :varlink:`diffKhS` (in m\ :sup:`2`\ /s). Vertical eddy diffusivities are
-specified through the variables :varlink:`diffKrT` and :varlink:`diffKrS`.In addition, biharmonic
-diffusivities can be specified as well through the coefficients
-:varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s). The Gent and McWilliams
-parameterization for advection and mixing of oceanic tracers is described in :numref:`sub_phys_pkg_gmredi`.
+specified through the variables :varlink:`diffKrT` and :varlink:`diffKrS`.
+In addition, biharmonic diffusivities can be specified as well through the
+coefficients :varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s).
+The Gent and McWilliams parameterization for advection and mixing of oceanic
+tracers is described in :numref:`sub_phys_pkg_gmredi`.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.15}|\Y{.575}|
 
@@ -2338,18 +2584,18 @@ parameterization for advection and mixing of oceanic tracers is described in :nu
 Ocean Convection
 ~~~~~~~~~~~~~~~~     
 
-In addition to specific packages that parameterize ocean convection, two main model options are available.
-To use the first option, a convective adjustment scheme, you need to
-set the variable :varlink:`cadjFreq`, the frequency (in seconds)
-with which the adjustment algorithm is called, to a non-zero value
-(note, if :varlink:`cadjFreq` set to a negative value by the user, the model will set it to
-the model clock time step). The second option is to parameterize
+In addition to specific packages that parameterize ocean convection, two main
+model options are available. To use the first option, a convective adjustment
+scheme, you need to set the variable :varlink:`cadjFreq`, the frequency
+(in seconds) with which the adjustment algorithm is called, to a non-zero value
+(note, if :varlink:`cadjFreq` set to a negative value by the user, the model
+will set it to the model clock time step). The second option is to parameterize
 convection with implicit vertical diffusion. To do this, set the
 logical variable :varlink:`implicitDiffusion` to ``.TRUE.`` and the real
 variable :varlink:`ivdc_kappa` (in m\ :sup:`2`\ /s) to
 an appropriate tracer vertical diffusivity value for mixing
-due to static instabilities (typically, several orders of magnitude above the background vertical diffusivity).
-Note that :varlink:`cadjFreq` and
+due to static instabilities (typically, several orders of magnitude above the
+background vertical diffusivity). Note that :varlink:`cadjFreq` and
 :varlink:`ivdc_kappa` cannot both have non-zero value.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.125}|\Y{.6}|
@@ -2371,9 +2617,11 @@ Note that :varlink:`cadjFreq` and
 Parameters: Model Forcing
 -------------------------
 
-The forcing options that can be prescribed through runtime parameters in ``data`` are easy to use but somewhat limited in scope.
-More complex forcing setups are possible with optional packages such as :filelink:`pkg/exf` or :filelink:`pkg/rbcs`, in which case
-most or all of the parameters in this section can simply be left at their default value.
+The forcing options that can be prescribed through runtime parameters in
+``data`` are easy to use but somewhat limited in scope. More complex forcing
+setups are possible with optional packages such as :filelink:`pkg/exf` or
+:filelink:`pkg/rbcs`, in which case most or all of the parameters in this
+section can simply be left at their default value.
 
 Momentum Forcing
 ~~~~~~~~~~~~~~~~
@@ -2387,8 +2635,8 @@ you only need to generate one file). The format of the files is
 similar to the bathymetry file. The zonal (meridional) stress data
 are assumed to be in pascals and located at U-points (V-points). See the MATLAB
 program ``gendata.m`` in the ``input`` directories of
-``verification`` for several tutorial example
-(e.g. :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
+``verification`` for several tutorial example (e.g.
+:filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
 in the :ref:`barotropic gyre tutorial <sec_eg_baro>`)
 to see how simple analytical wind forcing data are generated for the
 case study experiments.
@@ -2425,7 +2673,7 @@ time scale coefficient is set through the variable
 :varlink:`tauThetaClimRelax` (in seconds). The same procedure applies for
 salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
 and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
-salinity (in psu or g/kg) data files and relaxation timescale coefficient
+salinity (in g/kg) data files and relaxation timescale coefficient
 (in seconds), respectively.
 
 .. tabularcolumns:: |\Y{.24}|\Y{.1}|\Y{.15}|\Y{.535}|
@@ -2463,26 +2711,26 @@ salinity (in psu or g/kg) data files and relaxation timescale coefficient
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`saltForcing`                 | PARM01    | TRUE                                             | external forcing of salinity forcing on/off flag                                                        |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`convertFW2Salt`              | PARM01    | 3.5E+01                                          | salinity used to convert freshwater flux to salt flux (-1: use local S) (psu or g/kg)                   |
+   | :varlink:`convertFW2Salt`              | PARM01    | 3.5E+01                                          | salinity used to convert freshwater flux to salt flux (-1: use local S) (g/kg)                          |
    |                                        |           |                                                  | (note default is -1 if :varlink:`useRealFreshWaterFlux`\ = ``.TRUE.``)                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`rhoConstFresh`               | PARM01    | :varlink:`rhoConst`                              | constant reference density for fresh water (rain) (kg/m\ :sup:`3`)                                      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`EmPmRFile`                   | PARM05    | :kbd:`' '`                                       | filename for 2D specification of net freshwater flux (m/s)                                              |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`saltFluxFile`                | PARM05    | :kbd:`' '`                                       | filename for 2D specification of salt flux (from seaice) (psu.kg/m\ :sup:`2`\/s)                        |
+   | :varlink:`saltFluxFile`                | PARM05    | :kbd:`' '`                                       | filename for 2D specification of salt flux (from seaice) ((g/kg).kg/m\ :sup:`2`\/s)                     |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`tauSaltClimRelax`            | PARM03    | 0.0                                              | salinity (surface) relaxation time scale (s)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`lambdaSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 2D specification of inverse salinity (surface) relaxation time scale (1/s)                 |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`saltClimFile`                | PARM05    | :kbd:`' '`                                       | filename for specification of (surface) salinity relaxation values (psu or g/kg)                        |
+   | :varlink:`saltClimFile`                | PARM05    | :kbd:`' '`                                       | filename for specification of (surface) salinity relaxation values (g/kg)                               |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceSaltClimRelax`        | PARM01    | FALSE                                            | subtract global mean flux due to salt relaxation every time step on/off flag                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceEmPmR`                | PARM01    | FALSE                                            | subtract global mean EmPmR every time step on/off flag; requires #define :varlink:`ALLOW_BALANCE_FLUXES`|
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (psu or g/kg)                                                     |
+   | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (g/kg)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`selectAddFluid`              | PARM01    | 0                                                | add fluid to ocean interior options (-1, 0: off, or 1); requires #define :varlink:`ALLOW_ADDFLUID`      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2510,7 +2758,8 @@ To prescribe time-dependent periodic
 forcing, concatenate successive time records into a
 single file ordered in a (:math:`x,y`,time) fashion
 and set the following variables: :varlink:`periodicExternalForcing` to
-``.TRUE.``, :varlink:`externForcingPeriod` to the period (in seconds between two records in input files) with which
+``.TRUE.``, :varlink:`externForcingPeriod` to the period (in seconds between
+two records in input files) with which
 the forcing varies (e.g., 1 month), and :varlink:`externForcingCycle`
 to the repeat time (in seconds) of the forcing (e.g., 1 year; note
 :varlink:`externForcingCycle` must be a multiple of
@@ -2541,11 +2790,12 @@ The beginning of a simulation is set by specifying a start time (in seconds)
 through the real variable :varlink:`startTime` or by specifying an
 initial iteration number through the integer variable :varlink:`nIter0`. If
 these variables are set to non-zero values, the model will look for a
-”pickup” file (by default, ``pickup.0000nIter0``) to restart the integration. The
-end of a simulation is set through the real variable :varlink:`endTime` (in seconds).
-Alternatively, one can instead specify the number of time steps
+”pickup” file (by default, ``pickup.0000nIter0``) to restart the integration.
+The end of a simulation is set through the real variable :varlink:`endTime`
+(in seconds). Alternatively, one can instead specify the number of time steps
 to execute through the integer variable :varlink:`nTimeSteps`.
-Iterations are referenced to :varlink:`deltaTClock`, i.e., each iteration is :varlink:`deltaTClock` seconds of model time.
+Iterations are referenced to :varlink:`deltaTClock`, i.e., each iteration is
+:varlink:`deltaTClock` seconds of model time.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -2568,15 +2818,21 @@ Input/Output Files
 
 The precision with which to read binary data is
 controlled by the integer variable :varlink:`readBinaryPrec`,  which can take
-the value 32 (single precision) or 64 (double precision). Similarly, the precision with which
-to write binary data is controlled by the integer variable :varlink:`writeBinaryPrec`.
-By default, MITgcm writes output (snapshots, diagnostics, and pickups) separately for individual tiles,
-leaving it to the user to reassemble these into global files, if needed (scripts are available in :filelink:`utils/`).
-There are two options however to have the model do this for you. Setting :varlink:`globalFiles` to ``.TRUE.`` should always work in a single process setup (including multi-threaded processes),
-but for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs this will depend on the platform -- it requires simultaneous write access to a common file
-(permissible in typical `Lustre <https://en.wikipedia.org/wiki/Lustre_(file_system)>`_ setups, but not on all file systems).
-Alternatively, one can set :varlink:`useSingleCpuIO`
-to ``.TRUE.`` to generate global files, which should always work, but requires additional mpi-passing of data and may result in slower execution.
+the value 32 (single precision) or 64 (double precision). Similarly, the
+precision with which to write binary data is controlled by the integer variable
+:varlink:`writeBinaryPrec`. By default, MITgcm writes output (snapshots,
+diagnostics, and pickups) separately for individual tiles, leaving it to the
+user to reassemble these into global files, if needed (scripts are available in
+:filelink:`utils/`). There are two options however to have the model do this
+for you. Setting :varlink:`globalFiles` to ``.TRUE.`` should always work in a
+single process setup (including multi-threaded processes), but for
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs this will
+depend on the platform -- it requires simultaneous write access to a common
+file (permissible in typical
+`Lustre <https://en.wikipedia.org/wiki/Lustre_(file_system)>`_ setups, but not
+on all file systems). Alternatively, one can set :varlink:`useSingleCpuIO`
+to ``.TRUE.`` to generate global files, which should always work, but requires
+additional mpi-passing of data and may result in slower execution.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -2616,9 +2872,10 @@ Frequency/Amount of Output
 
 The frequency (in seconds) with which output
 is written to disk needs to be specified. :varlink:`dumpFreq` controls the
-frequency with which the instantaneous state of the model is written. :varlink:`monitorFreq`
-controls the frequency with which monitor output is dumped to the standard output file(s).
-The frequency of output is referenced to :varlink:`deltaTClock`.
+frequency with which the instantaneous state of the model is written.
+:varlink:`monitorFreq` controls the frequency with which monitor output is
+dumped to the standard output file(s). The frequency of output is referenced
+to :varlink:`deltaTClock`.
 
 .. tabularcolumns:: |\Y{.18}|\Y{.1}|\Y{.2}|\Y{.545}|
 
@@ -2648,8 +2905,8 @@ Restart/Pickup Files
 ~~~~~~~~~~~~~~~~~~~~
 
 :varlink:`chkPtFreq` and :varlink:`pchkPtFreq` control the output frequency of
-rolling and permanent pickup (a.k.a. checkpoint) files, respectively. These frequencies are referenced
-to :varlink:`deltaTClock`.
+rolling and permanent pickup (a.k.a. checkpoint) files, respectively. These
+frequencies are referenced to :varlink:`deltaTClock`.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -2675,8 +2932,9 @@ to :varlink:`deltaTClock`.
 Parameters Used In Optional Packages
 ------------------------------------
 
-Some optional packages were not written with package-specific namelist parameters in a ``data.${pkg}`` file;
-or for historical and/or other reasons, several package-specific namelist parameters remain in ``data``.
+Some optional packages were not written with package-specific namelist
+parameters in a ``data.${pkg}`` file; or for historical and/or other reasons,
+several package-specific namelist parameters remain in ``data``.
 
 .. _c-d_scheme:
 
@@ -2728,15 +2986,22 @@ Automatic Differentiation
 Execution Environment Parameters
 --------------------------------
 
-If running multi-threaded (i.e., using shared memory/`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_), you will need to set :varlink:`nTx` and/or :varlink:`nTy`
-so that :varlink:`nTx`\ \*\ :varlink:`nTy` is the total number of threads (per process).
+If running multi-threaded (i.e., using shared
+memory/`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_), you will need to set
+:varlink:`nTx` and/or :varlink:`nTy` so that :varlink:`nTx`\ \*\ :varlink:`nTy`
+is the total number of threads (per process).
 
-The parameter :varlink:`useCubedSphereExchange` needs to be changed to ``.TRUE.`` if you are using any type of grid composed of interconnected individual faces,
-including the cubed sphere topology or a lat-lon cap grid. See (needs section to be written).
+The parameter :varlink:`useCubedSphereExchange` needs to be changed to
+``.TRUE.`` if you are using any type of grid composed of interconnected
+individual faces, including the cubed sphere topology or a lat-lon cap grid.
+See (needs section to be written).
 
-Note that setting flag :varlink:`debugMode` to ``.TRUE.`` activates a separate set of debugging print statements than parameter
-:varlink:`debugLevel` (see :numref:`freq_of_output`). The latter controls print statements that monitor model activity (such as opening files, etc.), whereas the former
-produces a more coding-oriented set of print statements (e.g., entering and exiting subroutines, etc.)
+Note that setting flag :varlink:`debugMode` to ``.TRUE.`` activates a separate
+set of debugging print statements than parameter :varlink:`debugLevel`
+(see :numref:`freq_of_output`). The latter controls print statements that
+monitor model activity (such as opening files, etc.), whereas the former
+produces a more coding-oriented set of print statements (e.g., entering and
+exiting subroutines, etc.)
 
 .. tabularcolumns:: |\Y{.25}|\Y{.125}|\Y{.125}|\Y{.525}|
 
@@ -2767,89 +3032,117 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 MITgcm Input Data File Format
 =============================
 
-MITgcm input files for grid-related data (e.g., :varlink:`delXFile`), forcing fields (e.g., :varlink:`tauThetaClimRelax`),
+MITgcm input files for grid-related data (e.g., :varlink:`delXFile`),
+forcing fields (e.g., :varlink:`tauThetaClimRelax`),
 parameter fields (e.g., :varlink:`viscAhZfile`), etc. are assumed to
-be in "flat" or "unblocked" `binary format <https://en.wikipedia.org/wiki/Binary_file>`_ .
-For historical reasons, MITgcm files use big-endian `byte ordering <https://en.wikipedia.org/wiki/Endianness>`_,
-**NOT** little-endian which is the more common default for today's computers. Thus, some care is required to create MITgcm-readable input files.
+be in "flat" or "unblocked" `binary format <https://en.wikipedia.org/wiki/Binary_file>`_.
+For historical reasons, MITgcm files use big-endian
+`byte ordering <https://en.wikipedia.org/wiki/Endianness>`_,
+**NOT** little-endian which is the more common default for today's computers.
+Thus, some care is required to create MITgcm-readable input files.
 
 
-- Using `MATLAB <https://www.mathworks.com/products/matlab.html>`_: 
-  When writing binary files, MATLAB's `fopen <https://www.mathworks.com/help/matlab/ref/fopen.html>`_ command
-  includes a MACHINEFORMAT option \\'b\\' which instructs MATLAB to read or write using big-endian byte ordering.
-  2-D arrays should be index-ordered in MATLAB as (:math:`x`, :math:`y`) and 3-D arrays as
-  (:math:`x`, :math:`y`, :math:`z`); data is ordered from low to high in each index, with :math:`x` varying most rapidly.
+- Using `MATLAB <https://www.mathworks.com/products/matlab.html>`_:
+  When writing binary files, MATLAB's `fopen <https://www.mathworks.com/help/matlab/ref/fopen.html>`_
+  command includes a MACHINEFORMAT option ``'b'`` which instructs MATLAB
+  to read or write using big-endian byte ordering. 2-D arrays should be
+  index-ordered in MATLAB as (:math:`x`, :math:`y`) and 3-D arrays as
+  (:math:`x`, :math:`y`, :math:`z`); data is ordered from low to high in
+  each index, with :math:`x` varying most rapidly.
 
-  An example to create a bathymetry file (from tutorial :ref:`sec_eg_baro`, a simple enclosed, flat-bottom domain) is as follows:
+  An example to create a bathymetry file of single-precision, floating
+  point values (from tutorial :ref:`sec_eg_baro`, a simple enclosed,
+  flat-bottom domain) is as follows:
 
   ::
 
-     ieee='b'; % big endian format
-     accuracy='real*4'; % this is single precision
+     ieee = 'b';           % big-endian format
+     accuracy = 'float32'; % this is single-precision (='real*4')
 
      Ho=5000;  % ocean depth in meters
-     nx=62; % number of gridpoints in x-direction
-     ny=62; % number of gridpoints in y-direction
+     nx=62;    % number of gridpoints in x-direction
+     ny=62;    % number of gridpoints in y-direction
 
-     % Flat bottom at z=-Ho
-     h=-Ho*ones(nx,ny);
+     % Flat bottom at z = -Ho
+     h = -Ho * ones(nx, ny);
 
-     % Walls (surrounding domain) - generate bathymetry file
-     h([1 end],:)=0;
-     h(:,[1 end])=0;
-     fid=fopen('bathy.bin','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+     % Walls (surrounding domain)
+     h([1 end], :) = 0;   % set ocean depth to zero at east and west walls
+     h(:, [1 end]) = 0;   % set ocean depth to zero at south and north walls
+
+     % save as single-precision (float32) with big-endian byte ordering
+     fid = fopen('bathy.bin', 'w', ieee);
+     fwrite(fid, h, accuracy);
+     fclose(fid);
+
+  To read this bathymetry file back into MATLAB, reshaped back to (nx, ny):
+
+  ::
+
+     fid = fopen('bathy.bin', 'r', ieee);
+     h = reshape(fread(fid, Inf, accuracy), nx, ny);
+     fclose(fid);
 
 - Using `Python <https://www.python.org/>`_:
-  Any Python script used to generate MITgcm input files must manually swap the byte ordering before writing.
-  This can be accomplished with the command:
+
+  A python version of the above script to create a bathymetry file is as follows:
 
   ::
 
-      if sys.byteorder == 'little': data.byteswap(True)
+    import numpy as np
 
-  or, convert as follows while writing an array to a file:
+    Ho = 5000  # ocean depth in meters
+    nx = 62    # number of gridpoints in x-direction
+    ny = 62    # number of gridpoints in y-direction
+
+    # Flat bottom at z = -Ho
+    h = -Ho * np.ones((ny, nx))
+
+    # Walls (surrounding domain)
+    h[:, [0,-1]] = 0   # set ocean depth to zero at east and west walls
+    h[[0,-1], :] = 0   # set ocean depth to zero at south and north walls
+
+    # save as single-precision (NumPy type float32) with big-endian byte ordering
+    h.astype('>f4').tofile('bathy.bin')
+
+  The dtype specification ``'>f4'`` above instructs Python to write the file with
+  big-endian byte ordering (specifically, due to the '>') as single-precision real
+  numbers (due to the 'f4' which is NumPy ``float32`` or equivalently,
+  Fortran ``real*4`` format).
+
+  To read this bathymetry file back into Python, reshaped back to (ny, nx):
 
   ::
 
-      data.astype('>f4').tofile('data.bin')
+    h = np.fromfile('bathy.bin', '>f4').reshape(ny, nx)
 
-  Note that 2-D and 3-D arrays should be index-ordered as (:math:`y`, :math:`x`) and (:math:`z`, :math:`y`, :math:`x`),
+  where again the dtype spec instructs Python to read a big-endian
+  file of single-precision, floating point values.
+
+  Note that 2-D and 3-D arrays should be index-ordered as
+  (:math:`y`, :math:`x`) and (:math:`z`, :math:`y`, :math:`x`),
   respectively, to be written in proper ordering for MITgcm.
 
-  The above MATLAB example translated to Python is as follows:
-
-  ::
-
-     import numpy as np
-     import sys
-     Ho=5000;  # ocean depth in meters
-     nx=62; # number of gridpoints in x-direction
-     ny=62; # number of gridpoints in y-direction
-
-     # Flat bottom at z=-Ho
-     h=-Ho*np.ones((ny,nx));
-
-     # Walls (surrounding domain) - generate bathymetry file
-     h[:,(0,-1)]=0;
-     h[(0,-1),:]=0;
-     # save as single precision with big-endian byte-ordering
-     h.astype('>f4').tofile('bathy.bin')
-
   A more complicated example of using Python to generate input date is provided in
-  :filelink:`verification/seaice_itd/input/gendata.py`.
+  :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.py`.
 
 - Using `Fortran <https://en.wikipedia.org/wiki/Fortran>`_:
   To create flat binary files in Fortran, open with
-  syntax ``OPEN(..., ACCESS='DIRECT', ...)`` (i.e., **NOT** ``ACCESS='SEQUENTIAL'`` which includes additional metadata).
-  By default Fortran will use the local computer system's native byte ordering for reading and writing binary files,
+  syntax ``OPEN(..., ACCESS='DIRECT', ...)`` (i.e., **NOT** ``ACCESS='SEQUENTIAL'``
+  which includes additional metadata). By default Fortran will use the
+  local computer system's native byte ordering for reading and writing binary files,
   which for most systems will be little-endian. One therefore has two options:
-  after creating a binary file in Fortran, use MATLAB or Python (or some other utility) to read in and swap the bytes in the process of writing a new file;
+  after creating a binary file in Fortran, use MATLAB or Python (or some
+  other utility) to read in and swap the bytes in the process of writing a new file;
   or, determine if your local Fortran has
   a compiler flag to control byte-ordering of binary files.
-  Similar to MATLAB, 2-D and 3-D arrays in Fortran should be index-ordered as (:math:`x`, :math:`y`) and (:math:`x`, :math:`y`, :math:`z`), respectively.
+  Similar to MATLAB, 2-D and 3-D arrays in Fortran should be index-ordered
+  as (:math:`x`, :math:`y`) and (:math:`x`, :math:`y`, :math:`z`), respectively.
 
 Using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format for input files is only
 partially implemented at present in MITgcm, and use is thus discouraged.
 
-Input files are by default single-precision real numbers (32-bit, ``real*4``), but can be switched to double precision by setting
-namelist parameter :varlink:`readBinaryPrec` (``PARM01`` in file ``data``) to a value of 64.
+Input files are by default single-precision real numbers (32-bit, ``real*4``),
+but can be switched to double precision by setting
+namelist parameter :varlink:`readBinaryPrec` (``PARM01`` in file ``data``)
+to a value of 64.

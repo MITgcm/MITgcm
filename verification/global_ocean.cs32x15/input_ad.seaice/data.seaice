@@ -11,7 +11,7 @@
  SEAICE_snowThick  = 0.,
 #
  SEAICE_salt0          = 4.,
- SEAICEadvScheme       = 30,
+ SEAICEadvScheme       = 33,
  SEAICE_areaLossFormula=2,
  SEAICE_mcPheePiston   = 0.0005787037037037037,
 #SEAICE_monFreq        = 2592000.,

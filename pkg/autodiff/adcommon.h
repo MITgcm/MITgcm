@@ -205,14 +205,29 @@ c     _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adhfacc(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adhfacs(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adhfacw(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+      _RL adrecip_rcol(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adrecip_hfacc(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adrecip_hfacs(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adrecip_hfacw(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
-      common /adgrid_r/ adr_low_control,
-     &                  adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
-      common /adgrid_r_c/ adhfacc
-      common /adgrid_r_s/ adhfacs
-      common /adgrid_r_w/ adhfacw
+      common /adgrid_rs/
+     &     adr_low_control, adhfacc, adhfacw, adhfacs,
+     &     adrecip_rcol, adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
 #endif /* ALLOW_DEPTH_CONTROL */
+
+#ifdef ALLOW_SHELFICE
+      _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshelficemass    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshicdragfld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshidragquadfld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      common /adshelfice_fields_rl/ adshelficemass,
+     &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
+     &  adshitranscoeffs, adshicdragfld, adshidragquadfld
+#endif
+
+
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

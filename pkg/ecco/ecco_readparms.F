@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_readparms( myThid )
 
@@ -55,6 +58,7 @@ C     iUnit       - Work variable for IO unit number
 
 Catn-- retired parameters
       character*(MAX_LEN_FNAM) topexmeanfile
+      character*(2) cost_yftype
       integer nRetired
 
 c     == external functions ==
@@ -163,8 +167,9 @@ c--   Read the namelist input.
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
-     &                   cost_iprec, cost_yftype
-     &                   ,topexmeanfile
+     &                   cost_iprec, ecco_output_sterGloH,
+     &                   ecco_keepTSeriesOutp_open,
+     &                   cost_yftype, topexmeanfile
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -494,10 +499,12 @@ catn  eccov4 will run without needing to read in these params
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
-        cost_yftype = 'RL'
+        ecco_output_sterGloH  =      .FALSE.
+        ecco_keepTSeriesOutp_open =  .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '
+        cost_yftype           =   'RL'
         nRetired              =      0
 
 c--     Next, read the data.ecco file.
@@ -689,6 +696,16 @@ catn add cost global transport using gencost framework
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
+cts moc cost function using gencost framework
+         elseif ( gencost_name(k)(1:3).EQ.'moc' ) then
+           gencost_flag(k)=-5
+           using_gencost(k)=.TRUE.
+           il=ilnblnk(gencost_name(k))
+           WRITE(msgBuf,'(A,i2,2A,L5)') 'gencost k_moc=',
+     &     k,gencost_name(k)(1:il),': ',using_gencost(k)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+
 c pre-specified generic cost terms that create their own barfile
          elseif (
      &        (gencost_name(k).EQ.'siv4-conc').OR.
@@ -727,7 +744,8 @@ C--   load masks if needed:
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
      &          (gencost_flag(k).EQ.-3 .or.
-     &           gencost_flag(k).eq.-4     ) ) then
+     &           gencost_flag(k).eq.-4 .or.
+     &           gencost_flag(k).eq.-5    ) ) then
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'

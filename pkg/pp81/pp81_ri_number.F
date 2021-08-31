@@ -4,34 +4,27 @@ CBOP
 C !ROUTINE: PP81_RI_NUMBER
 
 C !INTERFACE: ==========================================================
-      subroutine PP81_RI_NUMBER(
+      SUBROUTINE PP81_RI_NUMBER(
      I     bi, bj, K, iMin, iMax, jMin, jMax,
      O     RiNumber,
      I     myTime, myThid )
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE PP81_RI_NUMBER                                |
 C     | o Compute gradient Richardson number for Pacanowski and  |
 C     |   Philander (1981) mixing scheme                         |
-C     \==========================================================/
-      IMPLICIT NONE
-c
-c-------------------------------------------------------------------------
-
-c \ev
+C     *==========================================================*
+C \ev
 
 C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 #include "PP81.h"
-#include "GRID.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
@@ -130,8 +123,8 @@ C     average Richardson number horizontally
         RiTmp(I,J) = RiNumber(I,J)
        ENDDO
       ENDDO
-      DO J=1-Oly+1,sNy+Oly-1
-       DO I=1-Olx+1,sNx+Olx-1
+      DO J=1-OLy+1,sNy+OLy-1
+       DO I=1-OLx+1,sNx+OLx-1
         RiNumber(I,J) = p5*RiTmp(I,J)
      &       + p125*RiTmp(I-1,J) + p125*RiTmp(I+1,J)
      &       + p125*RiTmp(I,J-1) + p125*RiTmp(I,J+1)
@@ -143,4 +136,3 @@ C     average Richardson number horizontally
 
       RETURN
       END
-

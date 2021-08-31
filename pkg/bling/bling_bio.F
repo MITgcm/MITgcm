@@ -200,6 +200,9 @@ C
       _RL tmp_p_diaz_ML
       _RL tmp_ML
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -944,5 +947,4 @@ c 2d local variables
 #endif /* ALLOW_BLING */
 
       RETURN
-
       END

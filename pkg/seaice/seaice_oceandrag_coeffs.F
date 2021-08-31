@@ -2,9 +2,6 @@
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_OCEANDRAG_COEFFS
@@ -36,10 +33,6 @@ C     === Global variables ===
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime :: Simulation time
@@ -67,7 +60,11 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     dragCoeff
 CEOP
 
-      kSrf    = 1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
       tempMin = SEAICEdWatMin*SEAICEdWatMin
 
       DO bj=myByLo(myThid),myByHi(myThid)

@@ -1,9 +1,9 @@
 # Packages
  &PACKAGES
- useRBCS=.TRUE.,
  useGMRedi=.TRUE.,
- useDiagnostics=.TRUE.,
+ useRBCS=.TRUE.,
  useLayers=.TRUE.,
+ useDiagnostics=.TRUE.,
 #---------------------------------------
 #- for non-GM or eddy-permitting run, deactivate GMRedi package:
 # useGMRedi=.FALSE.,

@@ -23,6 +23,9 @@
  exactConserv=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
+#- just to test quasiHydrostatic with staggerTimeStep:
+ staggerTimeStep = .TRUE.,
+#--
  quasiHydrostatic=.TRUE.,
  useNHMTerms=.TRUE.,
 # turn on looped cells
@@ -42,6 +45,7 @@
 
 # Time stepping parameters
  &PARM03
+ pickupStrictlyMatch=.FALSE.,
  nIter0=36000,
  nTimeSteps=10,
 # 100 years of integration will yield a reasonable flow field

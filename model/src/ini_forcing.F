@@ -156,34 +156,14 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
       CALL EXCH_XY_RS( lambdaThetaClimRelax, myThid )
       CALL EXCH_XY_RS( lambdaSaltClimRelax , myThid )
 #ifdef SHORTWAVE_HEATING
-      CALL EXCH_XY_RS(Qsw  , myThid )
+      CALL EXCH_XY_RS( Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      CALL EXCH_XY_RS(pLoad  , myThid )
+      CALL EXCH_XY_RS( pLoad  , myThid )
 C     CALL PLOT_FIELD_XYRS( pLoad, 'S/R INI_FORCING pLoad',1,myThid)
 #endif
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
-
-#ifdef ATMOSPHERIC_LOADING
-      IF ( pLoadFile .NE. ' ' .AND. usingPCoords ) THEN
-C-- This is a hack used to read phi0surf from a file (pLoadFile)
-C          instead of computing it from bathymetry & density ref. profile.
-C-  Ocean: The true atmospheric P-loading is not yet implemented for P-coord
-C          (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
-C-  Atmos: sometime usefull to overwrite phi0surf with fixed-in-time field
-C          read from file (and anyway, pressure loading is meaningless here)
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
-#endif /* ATMOSPHERIC_LOADING */
 
       RETURN
       END
