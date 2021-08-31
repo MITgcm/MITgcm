@@ -53,7 +53,7 @@ C     streamice_wgt_avthick       :: cost function coefficient
 C                                    of thickness misfit term
 C     streamice_wgt_vel           :: cost function coefficient
 C                                    of vel misfit term
-C     streamice_wgt_tikh          :: cost function coefficient 
+C     streamice_wgt_tikh          :: cost function coefficient
 C                                    of sq gradient penalty
 C     streamice_addl_backstress   -- to remove
 C     streamice_smooth_gl_width   :: grounding line regularisation
