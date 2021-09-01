@@ -20,6 +20,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
 # include "ecco.h"
 #endif
 
