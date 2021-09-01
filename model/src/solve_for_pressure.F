@@ -32,6 +32,9 @@ C     == Global variables
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
@@ -270,43 +273,45 @@ C     by setting cg2dUseMinResSol=1 (<-> nIterMin=0 in input)
       nIterMin      = cg2dUseMinResSol - 1
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef DISCONNECTED_TILES
-C--   Call the not-self-adjoint version of cg2d
+C--   Call the disconnected-tile (no EXCH) version of cg2d
       CALL CG2D_EX0(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
 #else /* not DISCONNECTED_TILES = default */
-#ifdef ALLOW_CG2D_NSA
-C--   Call the not-self-adjoint version of cg2d
-      CALL CG2D_NSA(
-     U           cg2d_b, cg2d_x,
-     O           firstResidual, minResidualSq, lastResidual,
-     U           numIters, nIterMin,
-     I           myThid )
-#else /* not ALLOW_CG2D_NSA = default */
-#ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
 C--   Call the single reduce CG solver
+#ifdef ALLOW_SRCG
        CALL CG2D_SR(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
-      ELSE
-#else
-      IF (.TRUE.) THEN
-C--   Call the default CG solver
 #endif /* ALLOW_SRCG */
+#ifdef ALLOW_CG2D_NSA
+      ELSEIF ( useNSACGSolver ) THEN
+C--   Call the not-self-adjoint version of cg2d
+       CALL CG2D_NSA(
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           numIters, nIterMin,
+     I           myThid )
+#endif
+      ELSE
+C--   Call the default CG solver
        CALL CG2D(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
       ENDIF
-#endif /* ALLOW_CG2D_NSA */
 #endif /* DISCONNECTED_TILES */
       _EXCH_XY_RL( cg2d_x, myThid )
+#ifdef ALLOW_AUTODIFF
+      IF (  .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
+     &     CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
+#endif
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG

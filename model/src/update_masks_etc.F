@@ -3,6 +3,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C--  File update_masks_etc.F:
 C--   Contents
@@ -69,7 +72,8 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       CHARACTER*(MAX_LEN_MBUF) suff
 Cml(
       INTEGER Im1, Jm1
-      _RL hFacCtmp, hFacCtmp2
+      _RL hFacCtmp
+Cml   _RL hFacCtmp2
       _RL hFacMnSz
 Cml)
 CEOP

@@ -52,7 +52,8 @@ C     iUnit      :: Work variable for IO unit number
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
      &       inAdExact, SEAICEapproxLevInAd,
      &       viscFacInAd, viscFacInFw, SIregFacInAd, SIregFacInFw,
-     &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
+     &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd,
+     &       cg2dFullAdjoint
 
       IF ( .NOT.useAUTODIFF ) THEN
 C-    pkg AUTODIFF is not used
@@ -80,6 +81,7 @@ C--   default : write one file per record
       useSEAICEinAdMode  = .TRUE.
       useGGL90inAdMode   = .TRUE.
       useSALT_PLUMEinAdMode = .TRUE.
+      cg2dFullAdjoint    = .FALSE.
       inAdExact          = .TRUE.
       useApproxAdvectionInAdMode = .FALSE.
       SEAICEapproxLevInAd = 0
@@ -168,6 +170,9 @@ C--   Print out some key parameters :
      &  'inAdExact =', ' /* get an exact adjoint (no approximation) */')
        CALL WRITE_0D_L( useApproxAdvectionInAdMode, INDEX_NONE,
      & 'useApproxAdvectionInAdMode =',' /* approximate AD-advection */')
+       CALL WRITE_0D_L( cg2dFullAdjoint, INDEX_NONE,
+     &   'cg2dFullAdjoint =',
+     &   ' /* use full hand written cg2d adjoint (no approximation) */')
        CALL WRITE_0D_L( useKPPinAdMode, INDEX_NONE,
      &   'useKPPinAdMode =',      ' /* use KPP in adjoint mode */')
        CALL WRITE_0D_L( useGMRediInAdMode, INDEX_NONE,
