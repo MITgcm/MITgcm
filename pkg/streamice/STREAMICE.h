@@ -401,7 +401,9 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
      &     STREAMICEcostMaskFile,
-     &     STREAMICE_ADV_SCHEME
+     &     STREAMICE_ADV_SCHEME,
+     &     STREAMICE_uvel_ext_file,
+     &     STREAMICE_vvel_ext_file
 
 #ifdef ALLOW_PETSC
       COMMON /PETSC_PARM_C/
@@ -528,6 +530,8 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_allow_cpl, streamice_use_petsc,
      & STREAMICE_alt_driving_stress,
      & STREAMICE_allow_reg_coulomb,
+     & STREAMICE_vel_ext,
+     & STREAMICE_vel_ext_cgrid,
      & STREAMICE_use_log_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
@@ -637,7 +641,6 @@ C    REAL ARRAYS
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
      &     C_basal_friction,
-c     &     A_glen,
      &     B_glen,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
@@ -726,6 +729,7 @@ c     &     A_glen,
       _RL h_vbdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL c_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
