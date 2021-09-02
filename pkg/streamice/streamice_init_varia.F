@@ -432,6 +432,18 @@ c finish initialize SMB rates
         CALL READ_FLD_XY_RL( STREAMICE_uvel_ext_file, ' ',
      &      u_streamice_ext, 0, myThid )
 
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            U_streamice(i,j,bi,bj) = U_streamice_ext(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+
        ELSE
         WRITE(msgBuf,'(A)') 'INIT UVEL - FILENAME MISSING'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -443,6 +455,16 @@ c finish initialize SMB rates
 
         CALL READ_FLD_XY_RL( STREAMICE_vvel_ext_file, ' ',
      &      v_streamice_ext, 0, myThid )
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            V_streamice(i,j,bi,bj) = V_streamice_ext(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
        ELSE
         WRITE(msgBuf,'(A)') 'INIT VVEL - FILENAME MISSING'
