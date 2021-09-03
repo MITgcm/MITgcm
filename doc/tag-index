@@ -13,6 +13,9 @@ o pkg/streamice
   - allow (time-indep) velocities to be imposed from external file rather than 
     solved for
   - allow for optimisation of log of controls as well as sqrt
+o pkg/autodiff:
+  - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
+    in adcommon.h, common block adgrid_rs.
 o model/src:
   - fix missing initialisation of local working arrays that were previously
     in common block in CG2D.h (needed when using blank tiles).
