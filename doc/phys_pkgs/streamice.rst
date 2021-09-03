@@ -121,6 +121,8 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_calve_to_mask`        |    FALSE                     | if :varlink:`streamice_move_front` TRUE do not allow to advance beyond :varlink:`streamice_calve_mask`             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_use_log_ctrl`         |    FALSE                     | specify :math:`C` and :math:`B` via their logarithm rather than square root                                        | 
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamicecalveMaskFile`         |    :kbd:`' '`                | file to initialize :varlink:`streamice_calve_mask`                                                                 |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_diagnostic_only`      |    FALSE                     | do not update ice thickness (velocity solve only)                                                                  |
