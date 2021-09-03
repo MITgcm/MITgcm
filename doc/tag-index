@@ -1,18 +1,5 @@
     Notes on tags used in MITgcmUV
     ==============================
-
-o pkg/streamice
-  - files changed: STREAMICE.h, streamice_readparms.F, streamice_init_fixed.F,
-    streamice_init_varia.F, streamice_timestep.F, streamice_advect_thickness.F,
-    streamice_fields_load.F, tools/OAD_support/ad_template.streamice_vel_phistage.F,
-    streamice_visc_beta.F, streamice_visc_beta_hybrid.F
-  - fix regularised coulomb basal stress impl to avoid issues with adjoint
-  - cancel metric terms in stress tensor for cartesian grid
-  - allow termination of adjoint fixed point loop based on relative and 
-    absolute error
-  - allow (time-indep) velocities to be imposed from external file rather than 
-    solved for
-  - allow for optimisation of log of controls as well as sqrt
 o pkg/autodiff:
   - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
     in adcommon.h, common block adgrid_rs.
