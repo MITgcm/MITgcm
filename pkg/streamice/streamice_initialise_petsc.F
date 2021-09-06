@@ -10,11 +10,16 @@ C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
 C     \============================================================/
-      IMPLICIT NONE
 
 C     === Global variables ===
 #ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_ARCHER2
+#include "petsc/finclude/petsc.h"
+#include "petsc/finclude/petscvec.h"
+      use petscvec
+#else
 #include "finclude/petsc.h"
+#endif
 #endif
 
 

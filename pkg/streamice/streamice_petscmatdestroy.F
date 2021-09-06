@@ -12,20 +12,32 @@ C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
 C     \============================================================/
-      IMPLICIT NONE
-
 
 
 
 #ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_ARCHER2
+C assumes paths 
+C {petsc_dir}/include/petsc/finclude/ 
+C {petsc_dir}/include
+C in the include statement
+#include "petsc/finclude/petsc.h"
+#include "petsc/finclude/petscvec.h"
+      use petscvec
+#include "petsc/finclude/petscmat.h"
+      use petscmat
+#include "petsc/finclude/petscksp.h"
+      use petscksp
+#include "petsc/finclude/petscpc.h"
+      use petscpc
+      use STREAMICE_PETSC_mod
+# else
 #include "finclude/petsc.h"
 #include "STREAMICE_PETSC.h"
-! UNCOMMENT IF V3.0
-!#include "finclude/petscvec.h"
-!#include "finclude/petscmat.h"
-!#include "finclude/petscksp.h"
-!#include "finclude/petscpc.h"
 #endif
+#endif
+
+
 C     === Global variables ===
 
       

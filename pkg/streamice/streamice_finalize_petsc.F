@@ -13,13 +13,26 @@ C     \============================================================/
       IMPLICIT NONE
 
 C     === Global variables ===
-#include "SIZE.h"
-#include "GRID.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "STREAMICE.h"
 #ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_ARCHER2
+C assumes paths 
+C {petsc_dir}/include/petsc/finclude/ 
+C {petsc_dir}/include
+C in the include statement
+#include "petsc/finclude/petsc.h"
+#include "petsc/finclude/petscvec.h"
+      use petscvec
+#include "petsc/finclude/petscmat.h"
+      use petscmat
+#include "petsc/finclude/petscksp.h"
+      use petscksp
+#include "petsc/finclude/petscpc.h"
+      use petscpc
+      use STREAMICE_PETSC_mod
+# else
 #include "finclude/petsc.h"
+#include "STREAMICE_PETSC.h"
+#endif
 #endif
 
 
