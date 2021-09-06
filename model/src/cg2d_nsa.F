@@ -80,7 +80,6 @@ C     alphaSum   :: to avoid the statement: alpha = 1./alpha (for TAMC/TAF)
 C     sumRHS     :: Sum of right-hand-side. Sometimes this is a useful
 C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
-C     cg2d_min   :: used to store solution corresponding to lowest residual.
 C     msgBuf     :: Informational/error message buffer
 C--   local working array (used to be in CG2D.h common block:
 C     cg2d_q     :: Intermediate matrix-vector product term
@@ -188,13 +187,21 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        errTile(bi,bj)    = 0. _d 0
-        sumRHStile(bi,bj) = 0. _d 0
+C-    Initialise local working arrays:
         DO j=0,sNy+1
          DO i=0,sNx+1
-          cg2d_s(i,j,bi,bj) = 0.
+          cg2d_q(i,j,bi,bj) = 0. _d 0
+          cg2d_z(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          cg2d_r(i,j,bi,bj) = 0. _d 0
+          cg2d_s(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+        errTile(bi,bj)    = 0. _d 0
+        sumRHStile(bi,bj) = 0. _d 0
         DO j=1,sNy
          DO i=1,sNx
           cg2d_r(i,j,bi,bj) = cg2d_b(i,j,bi,bj) -
