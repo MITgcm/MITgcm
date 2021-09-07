@@ -65,8 +65,8 @@ C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it is the only thread that uses those flags):
 
         printMonitorHeader = ( iwhen .EQ. 3 )
-     &       .OR. ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GT. 2 )
-     &       .OR. ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GT. 1 )
+     &       .OR. ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GE. 3 )
+     &       .OR. ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GE. 2 )
 
         IF ( printMonitorHeader ) THEN
 
@@ -108,13 +108,13 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
 C--   endif printMonitorHeader
         ENDIF
 C--   endif master cpu io
-        ENDIF
+       ENDIF
 
         CALL MON_SET_PREF('ad_exf',myThid)
         CALL MON_OUT_I ('_tsnumber', myIter,mon_string_none,myThid)
         CALL MON_OUT_RL('_time_sec', myTime,mon_string_none,myThid)
 
-        IF ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GT. 2 ) THEN
+       IF ( iwhen .EQ. 1 .AND. exf_adjMonSelect .GE. 3 ) THEN
 
 C       Print some statistics about input forcing fields
         IF ( stressIsOnCgrid ) THEN
@@ -132,46 +132,52 @@ C       Print some statistics about input forcing fields
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, adsflux,   '_adsflux',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+#ifdef SHORTWAVE_HEATING
+        CALL MON_WRITESTATS_RL( 1, adswflux,  '_adswflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+#endif
         CALL MON_WRITESTATS_RL( 1, adwspeed,  '_adwspeed',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 
-        ELSEIF ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GT. 1 ) THEN
+       ELSEIF ( iwhen .EQ. 2 .AND. exf_adjMonSelect .GE. 2 ) THEN
 
-#ifdef ALLOW_ATM_WIND
-      IF ( useAtmWind ) THEN
-        CALL MON_WRITESTATS_RL( 1, aduwind,   '_aduwind',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( 1, advwind,   '_advwind',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-      ENDIF
-#endif /* ALLOW_ATM_WIND */
+        IF ( useAtmWind ) THEN
+         CALL MON_WRITESTATS_RL( 1, aduwind,  '_aduwind',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+         CALL MON_WRITESTATS_RL( 1, advwind,  '_advwind',
+     &            maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
 #ifdef ALLOW_ATM_TEMP
         CALL MON_WRITESTATS_RL( 1, adatemp,   '_adatemp',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, adaqh,     '_adaqh',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( 1, adlwflux,  '_adlwflux',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, adprecip,  '_adprecip',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-#endif /* ALLOW_ATM_TEMP */
-#if defined(ALLOW_ATM_TEMP) && defined(SHORTWAVE_HEATING)
-        CALL MON_WRITESTATS_RL( 1, adswflux,  '_adswflux',
+        IF ( lwfluxfile.NE.' ' .OR. lwdownfile.EQ.' ' ) THEN
+         CALL MON_WRITESTATS_RL( 1, adlwflux, '_adlwflux',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
+#endif /* ALLOW_ATM_TEMP */
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+        IF ( swfluxfile.NE.' ' .OR. swdownfile.EQ.' ' ) THEN
+         CALL MON_WRITESTATS_RL( 1, adswflux, '_adswflux',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
 #endif
 #ifdef ALLOW_DOWNWARD_RADIATION
+        CALL MON_WRITESTATS_RL( 1, adlwdown,  '_adlwdown',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
         CALL MON_WRITESTATS_RL( 1, adswdown,  '_adswdown',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-        CALL MON_WRITESTATS_RL( 1, adlwdown,  '_adlwdown',
+#endif
+#ifdef ALLOW_RUNOFF
+        CALL MON_WRITESTATS_RL( 1, adrunoff,  '_adrunoff',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
 cph        CALL MON_WRITESTATS_RL( 1,adapressure,'_adapressure',
 cph     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-#endif
-#ifdef ALLOW_RUNOFF
-        CALL MON_WRITESTATS_RL( 1, adrunoff,  '_adrunoff',
-     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
 #endif
 #ifdef EXF_SEAICE_FRACTION
 cph        CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
@@ -192,20 +198,24 @@ cph          CALL MON_WRITESTATS_RL( 1, climvstr, '_climvstr',
 cph     &             maskInS, maskInS, rAs, drF, dummyRL, myThid )
 #endif
 
-        ELSEIF ( iwhen .EQ. 3 ) THEN
+       ELSEIF ( iwhen .EQ. 3 ) THEN
 
           CALL MON_WRITESTATS_RS( 1, adfu, '_adfu',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
           CALL MON_WRITESTATS_RS( 1, adfv, '_adfv',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
-          CALL MON_WRITESTATS_RS( 1, adqnet,   '_adqnet',
+          CALL MON_WRITESTATS_RS( 1, adqnet, '_adqnet',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
-          CALL MON_WRITESTATS_RS( 1, adempmr,   '_adempmr',
+          CALL MON_WRITESTATS_RS( 1, adempmr, '_adempmr',
      &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+#ifdef SHORTWAVE_HEATING
+          CALL MON_WRITESTATS_RS( 1, adqsw, '_adqsw',
+     &           maskInC, maskInC, rA , drF, dummyRL, myThid )
+#endif
 
-        ENDIF
+       ENDIF
 
-        IF ( MASTER_CPU_IO(myThid) ) THEN
+       IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it is the only thread that uses those flags):
 
@@ -230,7 +240,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
 C--   endif printMonitorHeader
         ENDIF
 C--   endif master cpu io
-        ENDIF
+       ENDIF
 
 C     endif different multiple
       ENDIF
