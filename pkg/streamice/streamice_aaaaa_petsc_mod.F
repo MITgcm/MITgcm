@@ -5,6 +5,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
 #ifdef ALLOW_STREAMICE
+#ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_ARCHER2
+
 
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
@@ -30,6 +33,8 @@ C      COMMON /STREAMICE_PETSC_PC/
 C     & pc
 
 #endif /* ALLOW_STREAMICE */
+#endif
+#endif
        END MODULE
 
 CEH3 ;;; Local Variables: ***

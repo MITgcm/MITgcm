@@ -17,7 +17,9 @@ C     === Global variables ===
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
       use petscvec
+      IMPLICIT NONE
 #else
+      IMPLICIT NONE
 #include "finclude/petsc.h"
 #endif
 #endif

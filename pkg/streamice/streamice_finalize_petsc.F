@@ -10,7 +10,6 @@ C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
 C     \============================================================/
-      IMPLICIT NONE
 
 C     === Global variables ===
 #ifdef ALLOW_PETSC
@@ -34,6 +33,12 @@ C in the include statement
 #include "STREAMICE_PETSC.h"
 #endif
 #endif
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "GRID.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "STREAMICE.h"
 
 
 C     !INPUT/OUTPUT ARGUMENTS

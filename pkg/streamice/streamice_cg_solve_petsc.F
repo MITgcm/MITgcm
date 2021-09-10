@@ -23,7 +23,6 @@ C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
 C     \============================================================/
-      IMPLICIT NONE
 
 
 #ifdef ALLOW_PETSC
@@ -42,7 +41,9 @@ C in the include statement
 #include "petsc/finclude/petscpc.h"
       use petscpc
       use STREAMICE_PETSC_mod
+      IMPLICIT NONE
 # else
+      IMPLICIT NONE
 #include "finclude/petsc.h"
 #include "STREAMICE_PETSC.h"
 #endif
@@ -401,8 +402,8 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        CASE ('MUMPS')
        PRINT *, "PETSC PRECOND: SELECTED MUMPS"
        call PCSetType(pc,PCLU,ierr)
-       call PCFactorSetMatSolverPackage(pc,MATSOLVERMUMPS,ierr)
-       call PCFactorSetUpMatSolverPackage(pc,ierr)
+       call PCFactorSetMatSolverType(pc,MATSOLVERMUMPS,ierr)
+       call PCFactorSetUpMatSolverType(pc,ierr)
        call PCFactorGetMatrix(pc,mumpsFac,ierr)
        call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
        call kspsetup (ksp, ierr)
