@@ -60,7 +60,7 @@ c     == local variables ==
       integer k2,kk
       integer itr
 #endif
-      integer kLev_select
+      integer kLev
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
       _RL zontau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -83,7 +83,6 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-
 
 #ifdef ALLOW_EXF
 c rotated to EW/NS tracer point
@@ -114,7 +113,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 
       do k=1,NGENCOST
       itr=gencost_itracer(k)
-      kLev_select=gencost_kLev_select(k) 
+      kLev = MAX( 1, MIN( Nr, gencost_kLev_select(k) ) )
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
@@ -138,10 +137,10 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:11).EQ.'m_drifterUE') then
            gencost_modfld(i,j,bi,bj,k) =
-     &      m_UE(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
+     &      m_UE(i,j,kLev,bi,bj)*maskC(i,j,kLev,bi,bj)
          elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
            gencost_modfld(i,j,bi,bj,k) =
-     &      m_VN(i,j,kLev_select,bi,bj)*maskC(i,j,kLev_select,bi,bj)
+     &      m_VN(i,j,kLev,bi,bj)*maskC(i,j,kLev,bi,bj)
          elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
      &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -166,7 +165,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
            gencost_modfld(i,j,bi,bj,k) =
      &      zontau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_vstress') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      mertau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:7).EQ.'m_uwind') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -207,14 +206,14 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #ifdef ALLOW_SEAICE
          elseif ( (gencost_name(k).EQ.'siv4-conc').OR.
      &            (gencost_barfile(k)(1:8).EQ.'m_siarea') ) then
-           gencost_modfld(i,j,bi,bj,k) = 
-     &      area(i,j,bi,bj)*maskC(i,j,1,bi,bj) 
+           gencost_modfld(i,j,bi,bj,k) =
+     &      area(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_name(k).EQ.'siv4-deconc') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      theta(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif ( (gencost_name(k).EQ.'siv4-exconc').OR.
-     &            (gencost_barfile(k)(1:8).EQ.'m_siheff') ) then  
-           gencost_modfld(i,j,bi,bj,k) = 
+     &            (gencost_barfile(k)(1:8).EQ.'m_siheff') ) then
+           gencost_modfld(i,j,bi,bj,k) =
      &      heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_sihsnow') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -305,4 +304,5 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-      end
+      RETURN
+      END
