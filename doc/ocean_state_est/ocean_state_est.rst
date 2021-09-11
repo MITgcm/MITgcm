@@ -191,7 +191,7 @@ index for that cost function term.
            parameters are vectors of length ``NGENCOST`` (the # of available
            cost terms) except for ``gencost_proc*`` are arrays of size
            ``NGENPPROC``\ :math:`\times`\ ``NGENCOST`` (10 :math:`\times`\ 20
-           by default; can be changed in ``ecco.h`` at compile time). In
+           by default; can be changed in ``ECCO_SIZE.h`` at compile time). In
            addition, the ``gencost_is3d`` internal parameter is reset to true
            on the fly in all 3D cases in :numref:`gencost_ecco_barfile`.
   :name: gencost_ecco_params

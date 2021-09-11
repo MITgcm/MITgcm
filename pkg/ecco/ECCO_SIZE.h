@@ -1,16 +1,23 @@
-c     ==================================================================
-c     ECCO_SIZE.h
-c     ==================================================================
+CBOP
+C    !ROUTINE: ECCO_SIZE.h
+C    !INTERFACE:
+C #include ECCO_SIZE.h
 
-C     ecco cost term dimension
+C    !DESCRIPTION: \bv
+C     ==================================================================
+C     ECCO_SIZE.h
+C     ==================================================================
+C     Contains ECCO cost-term array dimension
+C     \ev
+CEOP
 
-c     Number of User Cost terms:
-c     =============================
+C     Number of User Cost terms:
+C     =============================
       INTEGER NUSERCOST
       PARAMETER ( NUSERCOST=10 )
 
-c     Number of Generic Cost terms:
-c     =============================
+C     Number of Generic Cost terms:
+C     =============================
       INTEGER NGENCOST
       PARAMETER ( NGENCOST=30 )
 
@@ -26,3 +33,5 @@ c     =============================
 
       INTEGER N1DDATA
       PARAMETER ( N1DDATA=300 )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
