@@ -46,7 +46,7 @@ c     == global variables ==
 # endif
 #else /* ndef ECCO_CTRL_DEPRECATED */
 # include "ECCO_SIZE.h"
-# include "ecco.h"
+# include "ECCO.h"
 #endif /* ECCO_CTRL_DEPRECATED */
 
 c     == routine arguments ==

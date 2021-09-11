@@ -18,7 +18,7 @@ C     o==========================================================o
      I var_cur,
      I itr_cur,
      I file_cur,
-     I mytime,
+     I myTime,
      I bi,
      I bj,
      I myThid
@@ -37,7 +37,7 @@ C ==================== Global Variables ===========================
 #endif
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
-# include "ecco.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
@@ -48,8 +48,8 @@ C ==================== Global Variables ===========================
 #include "PTRACERS_FIELDS.h"
 #endif
 C ==================== Routine Variables ==========================
-      _RL  mytime
-      integer mythid
+      _RL  myTime
+      integer myThid
       integer file_cur, itr_cur
       character*(8) var_cur
 #ifndef ALLOW_PROFILES

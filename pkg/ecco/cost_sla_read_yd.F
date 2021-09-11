@@ -29,7 +29,7 @@ c     == global variables ==
 
 #include "cal.h"
 #include "ECCO_SIZE.h"
-#include "ecco.h"
+#include "ECCO.h"
 
 c     == routine arguments ==
 

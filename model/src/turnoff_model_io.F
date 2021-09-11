@@ -34,7 +34,7 @@ c#endif
 #endif
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
-# include "ecco.h"
+# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

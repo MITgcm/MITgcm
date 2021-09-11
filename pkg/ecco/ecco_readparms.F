@@ -30,7 +30,7 @@ c     == global variables ==
 #  include "ecco_cost.h"
 # else
 #  include "ECCO_SIZE.h"
-#  include "ecco.h"
+#  include "ECCO.h"
 #  include "ecco_local_params.h"
 # endif
 #endif

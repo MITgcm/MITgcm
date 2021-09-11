@@ -10,7 +10,6 @@ C     !INTERFACE:
      O     fname1, fname2, localrec, obsrec, exst,
      I     mythid )
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE cost_gencal
@@ -33,7 +32,7 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
-# include "ecco.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
@@ -44,7 +43,6 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localobsfile
       character*(128) fname1, fname2
       integer localrec, obsrec
-
 
 #ifdef ALLOW_ECCO
 

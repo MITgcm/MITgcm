@@ -26,7 +26,7 @@ c     == global variables ==
 
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
-# include "ecco.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==

@@ -46,7 +46,7 @@ c     == global variables ==
 #  include "ecco_cost.h"
 # else
 #  include "ECCO_SIZE.h"
-#  include "ecco.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
