@@ -140,18 +140,22 @@ C--   Update overlaps
 C--   Initial residual calculation
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    Initialise local working arrays:
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          cg2d_q(i,j,bi,bj) = 0. _d 0
+          cg2d_r(i,j,bi,bj) = 0. _d 0
+          cg2d_s(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
         IF ( nIterMin.GE.0 ) THEN
+C-    Initialise saved solution
          DO j=1,sNy
           DO i=1,sNx
-            cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+           cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          cg2d_s(i,j,bi,bj) = 0.
-         ENDDO
-        ENDDO
         sumRHStile(bi,bj) = 0. _d 0
         errTile(bi,bj)    = 0. _d 0
 #ifdef TARGET_NEC_SX
