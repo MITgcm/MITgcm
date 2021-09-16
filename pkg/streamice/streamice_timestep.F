@@ -182,9 +182,9 @@ c**************************************
      &                           myiter )
        endif
 
-      ENDIF
+#endif // OAD_FP
 
-#endif
+      ENDIF
 
       if(.not.STREAMICE_diagnostic_only) THEN
 
