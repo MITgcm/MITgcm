@@ -564,7 +564,8 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -1023,7 +1024,7 @@ C     Print the global mean to standard output
       RETURN
       END
 
-C--- +----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_READBAR
 C     !INTERFACE:
@@ -1048,7 +1049,8 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -1152,7 +1154,8 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

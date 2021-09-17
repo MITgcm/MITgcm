@@ -24,7 +24,8 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
@@ -209,7 +210,6 @@ c gencost_mask and fname0 are dummy, get fname1 from mybarfile
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,mythid)
 
-
 c--------- PART 1.2 read data --------------------
 
 c-- ignore for now, but use doreadobs flag if needed
@@ -218,9 +218,7 @@ c            if(doreadobs) then
             call ecco_zero(myobs,Nr,zeroRL,myThid)
 c            endif
 
-
 c--------- PART 1.3 Cost calculation -------------
-
 
 c-- keep total at each irec to print out for time-series
             DO bj = jtlo,jthi

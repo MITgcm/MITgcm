@@ -28,7 +28,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==

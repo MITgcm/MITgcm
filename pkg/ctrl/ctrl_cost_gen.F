@@ -50,7 +50,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -437,7 +438,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
