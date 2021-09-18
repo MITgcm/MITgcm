@@ -241,12 +241,6 @@ c-- init
       call ecco_zero(trVol,Nr,zeroRL,myThid)
       call ecco_zero(trHeat,Nr,zeroRL,myThid)
       call ecco_zero(trSalt,Nr,zeroRL,myThid)
-      call ecco_zero(trVolW,Nr,zeroRL,myThid)
-      call ecco_zero(trHeatW,Nr,zeroRL,myThid)
-      call ecco_zero(trSaltW,Nr,zeroRL,myThid)
-      call ecco_zero(trVolS,Nr,zeroRL,myThid)
-      call ecco_zero(trHeatS,Nr,zeroRL,myThid)
-      call ecco_zero(trSaltS,Nr,zeroRL,myThid)
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
