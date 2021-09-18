@@ -29,7 +29,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #  include "ecco_local_params.h"
 # endif
 #endif
@@ -58,6 +59,7 @@ C     iUnit       - Work variable for IO unit number
 
 Catn-- retired parameters
       character*(MAX_LEN_FNAM) topexmeanfile
+      character*(2) cost_yftype
       integer nRetired
 
 c     == external functions ==
@@ -166,8 +168,9 @@ c--   Read the namelist input.
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
-     &                   cost_iprec, cost_yftype
-     &                   ,topexmeanfile
+     &                   cost_iprec, ecco_output_sterGloH,
+     &                   ecco_keepTSeriesOutp_open,
+     &                   cost_yftype, topexmeanfile
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -178,6 +181,7 @@ c--   Read the namelist input.
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_itracer,
+     &         gencost_kLev_select,
      &         gencost_preproc,
      &         gencost_preproc_c,
      &         gencost_preproc_i,
@@ -497,10 +501,12 @@ catn  eccov4 will run without needing to read in these params
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
-        cost_yftype = 'RL'
+        ecco_output_sterGloH  =      .FALSE.
+        ecco_keepTSeriesOutp_open =  .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '
+        cost_yftype           =   'RL'
         nRetired              =      0
 
 c--     Next, read the data.ecco file.
@@ -598,6 +604,7 @@ c--   Set default values.
          gencost_outputlevel(k)= 0
          gencost_errfile(k)    = ' '
          gencost_itracer(k)    = 1
+         gencost_kLev_select(k)= 1
          gencost_mask(k)       = ' '
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0

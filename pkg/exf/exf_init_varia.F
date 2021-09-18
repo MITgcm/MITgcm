@@ -27,8 +27,8 @@ C     == global variables ==
 #include "EXF_INTERP_SIZE.h"
 #include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
+#include "PARAMS.h"
 #ifdef ALLOW_BULK_OFFLINE
-# include "PARAMS.h"
 # include "DYNVARS.h"
 #endif
 
@@ -37,8 +37,11 @@ C     myThid         :: My Thread Id number
       INTEGER myThid
 
 C !LOCAL VARIABLES:
-      INTEGER i,j,bi,bj
+      INTEGER i,j,ks,bi,bj
 CEOP
+
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
 
 C--   Initialise to zero intermediate fields (in common block)
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -458,26 +461,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef ALLOW_CLIMSST_RELAXATION
            IF ( climsstfile .NE. ' ' .AND.
      &          climsstperiod .EQ. 0. )
-     &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+     &          theta(i,j,ks,bi,bj) = climsst(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
            IF ( climsssfile .NE. ' ' .AND.
      &          climsssperiod .EQ. 0. )
-     &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
+     &          salt(i,j,ks,bi,bj) = climsss(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
            IF ( climustrfile .NE. ' ' .AND.
      &          climustrperiod .EQ. 0. )
-     &          uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
+     &          uVel(i,j,ks,bi,bj) = climustr(i,j,bi,bj)
            IF ( climvstrfile .NE. ' ' .AND.
      &          climvstrperiod .EQ. 0. )
-     &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
+     &          vVel(i,j,ks,bi,bj) = climvstr(i,j,bi,bj)
 # endif
-           IF ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
-     &             theta(i,j,1,bi,bj) .EQ. 0. ) then
-                print *, 'ph-warn-exf-init ', i, j, theta(i,j,1,bi,bj)
+           IF ( maskC(i,j,ks,bi,bj) .NE. 0. .AND.
+     &             theta(i,j,ks,bi,bj) .EQ. 0. ) THEN
+                PRINT *, 'ph-warn-exf-init ', i, j, theta(i,j,ks,bi,bj)
 cph                STOP 'in exf_init'
-           endif
+           ENDIF
           ENDDO
          ENDDO
        ENDDO

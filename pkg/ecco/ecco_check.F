@@ -703,7 +703,21 @@ c print result to screen
      &                      SQUEEZE_RIGHT , myThid)
       endif
 
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+C ============ other pkg/ecco related checks
+      _BEGIN_MASTER(myThid)
+
+#ifndef ALLOW_PSBAR_STERIC
+      IF (ecco_output_sterGloH) THEN
+         WRITE(msgBuf,'(3A)') 'ECCO_CHECK:',
+     &         ' Cannot set ecco_output_sterGloH to TRUE',
+     &         ' with #undef ALLOW_PSBAR_STERIC'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
 #endif
+      _END_MASTER(myThid)
 
       RETURN
       END
@@ -726,7 +740,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif

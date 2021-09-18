@@ -41,120 +41,124 @@ C     === Local variables ===
       _RL uice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-       kSrf=1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 
 C initialize fields:
 C ==================
 
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uice_fd(i,j,bi,bj)=0. _d 0
-           vice_fd(i,j,bi,bj)=0. _d 0
-           uice_cntr(i,j,bi,bj)=0. _d 0
-           Vice_cntr(i,j,bi,bj)=0. _d 0
-          ENDDO
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          uice_fd(i,j,bi,bj)=0. _d 0
+          vice_fd(i,j,bi,bj)=0. _d 0
+          uice_cntr(i,j,bi,bj)=0. _d 0
+          Vice_cntr(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
 
 C preliminary computations:
 C =========================
 C air-ice stress at cell center
-           taux_onIce_cntr=HALF*
-     &       (FORCEX0(i,j,bi,bj)+FORCEX0(i+1,j,bi,bj))
-           tauy_onIce_cntr=HALF*
-     &       (FORCEY0(i,j,bi,bj)+FORCEY0(i,j+1,bi,bj))
+          taux_onIce_cntr=HALF*
+     &      (FORCEX0(i,j,bi,bj)+FORCEX0(i+1,j,bi,bj))
+          tauy_onIce_cntr=HALF*
+     &      (FORCEY0(i,j,bi,bj)+FORCEY0(i,j+1,bi,bj))
 C mass of ice per unit area (kg/m2) times coriolis f
-           mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(i,j,bi,bj)
+          mIceCor=SEAICE_rhoIce*HEFF(i,j,bi,bj)*_fCori(i,j,bi,bj)
 C ocean velocity at cell center
-           uvel_cntr=HALF*(uvel(i,j,kSrf,bi,bj)+uvel(i+1,j,kSrf,bi,bj))
-           vvel_cntr=HALF*(vvel(i,j,kSrf,bi,bj)+vvel(i,j+1,kSrf,bi,bj))
+          uvel_cntr=HALF*(uvel(i,j,kSrf,bi,bj)+uvel(i+1,j,kSrf,bi,bj))
+          vvel_cntr=HALF*(vvel(i,j,kSrf,bi,bj)+vvel(i,j+1,kSrf,bi,bj))
 C right hand side of free drift equation:
-           rhs_x= -taux_onIce_cntr -mIceCor*vvel_cntr
-           rhs_y= -tauy_onIce_cntr +mIceCor*uvel_cntr
+          rhs_x= -taux_onIce_cntr -mIceCor*vvel_cntr
+          rhs_y= -tauy_onIce_cntr +mIceCor*uvel_cntr
 
 C norm of angle of rhs
-           tmpscal1=rhs_x*rhs_x + rhs_y*rhs_y
-           IF ( tmpscal1.GT.ZERO ) THEN
-             rhs_n=SQRT( rhs_x*rhs_x + rhs_y*rhs_y )
-             rhs_a=ATAN2(rhs_y,rhs_x)
-           ELSE
-             rhs_n=0. _d 0
-             rhs_a=0. _d 0
-           ENDIF
+          tmpscal1=rhs_x*rhs_x + rhs_y*rhs_y
+          IF ( tmpscal1.GT.ZERO ) THEN
+           rhs_n=SQRT( rhs_x*rhs_x + rhs_y*rhs_y )
+           rhs_a=ATAN2(rhs_y,rhs_x)
+          ELSE
+           rhs_n=0. _d 0
+           rhs_a=0. _d 0
+          ENDIF
 
 C solve for norm:
 C ===============
-           IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag_south
-           ELSE
-            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag
-           ENDIF
+          IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
+           tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag_south
+          ELSE
+           tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag
+          ENDIF
 C polynomial coefficients
-           tmpscal2= tmpscal1*tmpscal1*mIceCor*mIceCor
-           tmpscal3= tmpscal1*tmpscal1*rhs_n*rhs_n
+          tmpscal2= tmpscal1*tmpscal1*mIceCor*mIceCor
+          tmpscal3= tmpscal1*tmpscal1*rhs_n*rhs_n
 C discriminant
-           tmpscal4=tmpscal2*tmpscal2+4. _d 0*tmpscal3
-           IF ( tmpscal3.GT.ZERO ) THEN
-             sol_n=SQRT(HALF*(SQRT(tmpscal4)-tmpscal2))
-           ELSE
-             sol_n=0. _d 0
-           ENDIF
+          tmpscal4=tmpscal2*tmpscal2+4. _d 0*tmpscal3
+          IF ( tmpscal3.GT.ZERO ) THEN
+           sol_n=SQRT(HALF*(SQRT(tmpscal4)-tmpscal2))
+          ELSE
+           sol_n=0. _d 0
+          ENDIF
 
 C solve for angle:
 C ================
-           IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = SEAICE_waterDrag_south*rhoConst
-           ELSE
-            tmpscal1 = SEAICE_waterDrag*rhoConst
-           ENDIF
+          IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
+           tmpscal1 = SEAICE_waterDrag_south*rhoConst
+          ELSE
+           tmpscal1 = SEAICE_waterDrag*rhoConst
+          ENDIF
 
-           tmpscal2= tmpscal1*sol_n*sol_n
-           tmpscal3= mIceCor*sol_n
+          tmpscal2= tmpscal1*sol_n*sol_n
+          tmpscal3= mIceCor*sol_n
 
-           tmpscal4=tmpscal2*tmpscal2 + tmpscal3*tmpscal3
-           IF ( tmpscal4.GT.ZERO ) THEN
-             sol_a=rhs_a-ATAN2(tmpscal3,tmpscal2)
-           ELSE
-             sol_a=0. _d 0
-           ENDIF
+          tmpscal4=tmpscal2*tmpscal2 + tmpscal3*tmpscal3
+          IF ( tmpscal4.GT.ZERO ) THEN
+           sol_a=rhs_a-ATAN2(tmpscal3,tmpscal2)
+          ELSE
+           sol_a=0. _d 0
+          ENDIF
 
 C compute uice, vice at cell center:
 C ==================================
-           uice_cntr(i,j,bi,bj)=uvel_cntr-sol_n*COS(sol_a)
-           vice_cntr(i,j,bi,bj)=vvel_cntr-sol_n*SIN(sol_a)
+          uice_cntr(i,j,bi,bj)=uvel_cntr-sol_n*COS(sol_a)
+          vice_cntr(i,j,bi,bj)=vvel_cntr-sol_n*SIN(sol_a)
 
-          ENDDO
          ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
 C interpolated to velocity points:
 C ================================
 
-       CALL EXCH_UV_AGRID_3D_RL(uice_cntr,vice_cntr,.TRUE.,1,myThid)
+      CALL EXCH_UV_AGRID_3D_RL(uice_cntr,vice_cntr,.TRUE.,1,myThid)
 
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           uice_fd(i,j,bi,bj)=HALF*
-     &       (uice_cntr(i-1,j,bi,bj)+uice_cntr(i,j,bi,bj))
-           vice_fd(i,j,bi,bj)=HALF*
-     &       (vice_cntr(i,j-1,bi,bj)+vice_cntr(i,j,bi,bj))
-          ENDDO
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          uice_fd(i,j,bi,bj)=HALF*
+     &      (uice_cntr(i-1,j,bi,bj)+uice_cntr(i,j,bi,bj))
+          vice_fd(i,j,bi,bj)=HALF*
+     &      (vice_cntr(i,j-1,bi,bj)+vice_cntr(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
-       CALL EXCH_UV_XY_RL( uice_fd, vice_fd, .TRUE., myThid )
+      CALL EXCH_UV_XY_RL( uice_fd, vice_fd, .TRUE., myThid )
 
 C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
       DO bj=myByLo(myThid),myByHi(myThid)
