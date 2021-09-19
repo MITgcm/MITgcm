@@ -36,7 +36,6 @@ c#include "GRID.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
-#include "GMREDI_TAVE.h"
 #endif
 #ifdef ALLOW_KPP
 #include "KPP.h"
@@ -247,7 +246,7 @@ c       print*,'OFFLINE READ', fn
         _EXCH_XYZ_RS(gmkz0, myThid )
         _EXCH_XYZ_RS(gmkz1, myThid )
        ENDIF
-#endif
+#endif /* ALLOW_GMREDI */
 
        IF ( ConvFile .NE. ' ' ) THEN
         I1=IFNBLNK(ConvFile)
@@ -290,7 +289,7 @@ C         even if, for convienience, it will be loaded into array KPPghat
         _EXCH_XYZ_RS(kght0, myThid )
         _EXCH_XYZ_RS(kght1, myThid )
        ENDIF
-#endif
+#endif /* ALLOW_KPP */
 
 C--   Read in 2-D fields and apply EXCH
 
