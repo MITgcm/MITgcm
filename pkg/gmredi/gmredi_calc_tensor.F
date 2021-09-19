@@ -48,7 +48,6 @@ C     == Global variables ==
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     bi, bj    :: tile indices
 C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number in simulation
@@ -67,7 +66,6 @@ CEOP
 #ifdef ALLOW_GMREDI
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i,j,k
       _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -234,10 +232,8 @@ C-    Just initialize to zero (not use anyway)
          Kwx(i,j,k,bi,bj)  = 0. _d 0
          Kwy(i,j,k,bi,bj)  = 0. _d 0
          Kwz(i,j,k,bi,bj)  = 0. _d 0
-# ifdef GM_NON_UNITY_DIAGONAL
          Kux(i,j,k,bi,bj)  = 0. _d 0
          Kvy(i,j,k,bi,bj)  = 0. _d 0
-# endif
 # ifdef GM_EXTRA_DIAGONAL
          Kuz(i,j,k,bi,bj)  = 0. _d 0
          Kvz(i,j,k,bi,bj)  = 0. _d 0
@@ -824,6 +820,12 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
+c      ELSE
+c       DO j=1-OLy+1,sNy+OLy-1
+c        DO i=1-OLx+1,sNx+OLx-1
+c         Kuz(i,j,k,bi,bj) = 0. _d 0
+c        ENDDO
+c       ENDDO
        ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
@@ -1053,6 +1055,12 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
         ENDDO
+c      ELSE
+c       DO j=1-OLy+1,sNy+OLy-1
+c        DO i=1-OLx+1,sNx+OLx-1
+c         Kvz(i,j,k,bi,bj) = 0. _d 0
+c        ENDDO
+c       ENDDO
        ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
@@ -1115,6 +1123,43 @@ C-- end 3rd  loop on vertical level index k
       ENDDO
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
+
+#ifndef GM_NON_UNITY_DIAGONAL
+      DO k=1,Nr
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+          Kux(i,j,k,bi,bj) = (
+#ifdef ALLOW_KAPREDI_CONTROL
+c#  ifdef ALLOW_KAPREDI_CONTROL_OLD
+c    &       kapRedi(i,j,k,bi,bj)
+     &       op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i-1,j,k,bi,bj))
+#else
+     &       GM_isopycK
+#endif
+#ifdef GM_VISBECK_VARIABLE_K
+     &     + op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
+#endif
+     &                       )
+        ENDDO
+       ENDDO
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+          Kvy(i,j,k,bi,bj) = (
+#ifdef ALLOW_KAPREDI_CONTROL
+c#  ifdef ALLOW_KAPREDI_CONTROL_OLD
+c    &       kapRedi(i,j,k,bi,bj)
+     &       op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i,j-1,k,bi,bj))
+#else
+     &       GM_isopycK
+#endif
+#ifdef GM_VISBECK_VARIABLE_K
+     &     + op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+#endif
+     &                       )
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ndef GM_NON_UNITY_DIAGONAL */
 
 #ifdef ALLOW_TIMEAVE
 C--   Time-average
@@ -1199,9 +1244,15 @@ C     !LOCAL VARIABLES:
       DO k=1,Nr
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         Kwx(i,j,k,bi,bj) = 0.0
-         Kwy(i,j,k,bi,bj) = 0.0
-         Kwz(i,j,k,bi,bj) = 0.0
+         Kwx(i,j,k,bi,bj) = 0. _d 0
+         Kwy(i,j,k,bi,bj) = 0. _d 0
+         Kwz(i,j,k,bi,bj) = 0. _d 0
+         Kux(i,j,k,bi,bj) = 0. _d 0
+         Kvy(i,j,k,bi,bj) = 0. _d 0
+# ifdef GM_EXTRA_DIAGONAL
+         Kuz(i,j,k,bi,bj) = 0. _d 0
+         Kvz(i,j,k,bi,bj) = 0. _d 0
+# endif
         ENDDO
        ENDDO
       ENDDO
