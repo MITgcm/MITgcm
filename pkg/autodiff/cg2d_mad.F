@@ -102,7 +102,7 @@ CEOP
 C--   mark output of cg2d as being called from here
       IF ( debugLevel .GE. debLevZero ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(standardmessageunit,'(A)')
+       WRITE(standardMessageUnit,'(A)')
      &      ' Calling cg2d from S/R CG2D_MAD'
        _END_MASTER( myThid )
       ENDIF
@@ -295,10 +295,10 @@ CEOP
 C--   mark output of cg2d as being called from here
       IF ( debugLevel .GE. debLevZero ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(standardmessageunit,'(A,L)')
+       WRITE(standardMessageUnit,'(A,L1)')
      &      ' Calling CG2D_STORE with doStore = ', doStore
-       WRITE(standardmessageunit,'(A,I4)')
-     &      ' Calling CG2D_STORE with ikey_dynamics = ', ikey_dynamics
+       WRITE(standardMessageUnit,'(A,I6)')
+     &      ' Calling CG2D_STORE with ikey_dynamics=', ikey_dynamics
        _END_MASTER( myThid )
       ENDIF
 
