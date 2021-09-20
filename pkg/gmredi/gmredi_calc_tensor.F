@@ -428,9 +428,11 @@ c            N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifndef GM_EXCLUDE_FM07_TAP
 CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
@@ -523,23 +525,19 @@ C-     Limit range that KapGM can take
         ENDDO
        ENDDO
       ENDIF
-cph( NEW
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 #endif
-cph)
 #endif /* GM_VISBECK_VARIABLE_K */
 
 C-    express the Tensor in term of Diffusivity (= m**2 / s )
       DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
+C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
        kkey = (igmkey-1)*Nr + k
-# if (defined (GM_NON_UNITY_DIAGONAL) || \
-      defined (GM_VISBECK_VARIABLE_K))
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-# endif
 #endif
        km1 = MAX(k-1,1)
        isopycK = GM_isopycK
@@ -642,7 +640,7 @@ C          If using GM_K3D PsiX and PsiY are calculated in gmredi_k3d
        ENDIF
 #endif
       ENDIF
-#endif
+#endif /* GM_BOLUS_ADVEC */
 
 #ifndef GM_EXCLUDE_SUBMESO
       IF ( GM_useSubMeso .AND. GM_AdvForm ) THEN
@@ -711,14 +709,14 @@ C     Gradient of Sigma at U points
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE locMixLayer(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifndef GM_EXCLUDE_FM07_TAP
 CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
@@ -733,7 +731,6 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             k, bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -781,7 +778,6 @@ c      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( GM_ExtraDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
@@ -948,9 +944,11 @@ C     Gradient of Sigma at V points
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+# ifndef GM_EXCLUDE_FM07_TAP
 CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
@@ -964,13 +962,9 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             kLow_S,
      I             k, bi, bj, myTime, myIter, myThid )
 
-cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-cph(
-CADJ STORE taperfct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-cph)
+CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-cph)
 
 #ifdef GM_NON_UNITY_DIAGONAL
 c      IF ( GM_nonUnitDiag ) THEN
@@ -1016,7 +1010,6 @@ c      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( GM_ExtraDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
