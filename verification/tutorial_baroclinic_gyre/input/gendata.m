@@ -49,7 +49,7 @@ fclose(fid);
 % Restoring temperature (function of y only)
 Tmax = 30;
 Tmin = 0;
-Trest = (Tmax-Tmin)/(ny-2) * (ynorth-Y); % located and computed at YC points
+Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y); % located and computed at YC points
 fid=fopen('SST_relax.bin', 'w', ieee);
 fwrite(fid, Trest, accuracy);
 fclose(fid);
