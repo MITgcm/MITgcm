@@ -740,7 +740,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif

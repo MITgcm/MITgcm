@@ -11,7 +11,8 @@ c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
 
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 #ifdef ECCO_CTRL_DEPRECATED
 
@@ -225,7 +226,6 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL sfluxmeanbar
 #endif
 
-
       common /averages_c/
      &                    tbarfile,
      &                    sbarfile,
@@ -276,8 +276,6 @@ c     ==================================================================
 c     END OF HEADER AVERAGES
 c     ==================================================================
 
-
-
 c     ==================================================================
 c     HEADER COST
 c     ==================================================================
@@ -301,7 +299,6 @@ c
 c     ==================================================================
 c     HEADER COST
 c     ==================================================================
-
 
 c     The cost function, its contributions, and multipliers:
 c     ======================================================
@@ -940,7 +937,6 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
-
 c     Arrays where the weights are stored:
 c     ====================================
 c
@@ -1243,7 +1239,6 @@ c     vdriftdat  - drifters meridional velocities
       _RL vdriftdat (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL curmtruobs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL curmtrvobs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
 
 c     Files that contain obervations:
 c     ===============================
