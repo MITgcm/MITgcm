@@ -1,6 +1,77 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - put various dimensions related to gencost out of "ecco.h" into specific
+    (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
+  - add gencost param "gencost_kLev_select" to select a vertical level (from 3-D
+    array) to form 2-D gencost ; currently only used in drifter velocity cost ;
+  - add a couple of costs based on 1) inverse barometer (IB) corrected model sea
+    level for altimetry data comparison 2) OBP excluding contribution from
+    global mean atmospheric pressure for comparisons with GRACE data.
+o pkg/autodiff:
+  - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
+    in adcommon.h, common block adgrid_rs.
+o model/src:
+  - fix missing initialisation of local working arrays that were previously
+    in common block in CG2D.h (needed when using blank tiles).
+o pkg/dic:
+  - fix calculation of carbonate saturation state (with CAR_DISS defined) when
+    #define CARBONCHEM_SOLVESAPHE ; no current test run with #define CAR_DISS.
+o pkg/autodiff:
+  - add code for Full-Adjoint of cg2d in renamed (from cg2d_sad.F) routine
+    cg2d_mad.F (cg2d manual adjoint) ;
+  - new runtime params cg2dFullAdjoint (data.autodiff), useNSACGSolver (data,
+    default to "FALSE"), cg2dMinItersNSA (data, defaults to 0) ;
+  - new sub-verification experiment bottom_ctrl_5x5.facg2d to test new
+    Full-Adjoint capability ;
+  - update primary test experiment bottom_ctrl_5x5 to always use a minimum
+    number of 10 CG2D iterations (changes results but improves accuracy) ;
+  - modify AD-experiment global_ocean.90x40x15.bottomdrag to use full nonlinear
+    free surface (nonlinFreeSurf=4) and cg2dFullAdjoint=True.
+  - move CG2D working arrays out of CG2D.h common blocks (not necessary)
+    to local arrays within each cg2d S/R.
+
+checkpoint68b (2021/08/24)
+o pkg/ecco:
+  - add time-series output of global mean steric height change at each time step
+    (variable: sterGloH, with #define ALLOW_PSBAR_STERIC) ; turned on
+    with run-time switch "ecco_output_sterGloH=T" ; add option to keep file open
+    (+ single meta file writing) with "ecco_keepTSeriesOutp_open=T" switch.
+o pkg/ggl90:
+  - fix EXCH calls in pkg/ggl90 when IDEMIX is used: no additional EXCH when
+    using zero horizontal diffusion of IDEMIX_E (IDEMIX_tau_h=0) but with
+    IDEMIX_tau_h > 0, EXCH both IDEMIX_E and GGL90TKE ; this affects results
+    of test experiment cs32.in_p and fix restart issue ;
+  - more consistent/simpler idemix code: use model parameter value for PI,
+    reduce number of IDEMIX global array, add TKE tendency from IDEMIX as output
+    of S/R GGL90_IDEMIX ; use double product of IDEMIX_E instead of power of 2
+    which affects results at machine truncation level ;
+  - update some IDEMIX default param values (following Pollmann et al., 2017)
+    but keep old default values in global_ocean.90x40x15.idemix ;
+  - apply also option calcMeanVertShear to uStarSquare calculation (wind-stress
+    magnitude) and switch on calcMeanVertShear in test experiment cs32.in_p.
+o model/src + pkgs ggl90, exf & seaice: ocean in P-coordinate
+  - read geopotential anomaly directly into phi0surf instead of via pLoad (was
+    a hack), specified with new input filename "geoPotAnomFile" in data&PARM05 ;
+  - adjust MXLDEPTH diagnostic for pressure coordinates ; make sure sigmaR is
+    computed the same way in P-coord as it is in Z-coord.
+  - for penetrating Short-wave and geothermal heating as well as for exf forcing
+    and seaice, use the correct P-coord vertical index for bottom and surface ;
+  - add a flag sIceLoadFac (in "data", default=1.) to be able to turn off
+    seaice surface pressure loading, mainly for Z-coord (since not currently
+    supported in P-coord) ;
+  - use diagnostics "phiHydLow" for seaice dynamics with P-coord ocean to get
+    surface tilt term (instead of using ETAN as in Z-coord); fix restart by
+    adding phiHydLow (only if useSEAICE and usingPCoords) to main pickup file ;
+  - in pkg/ggl90, apply simple scaling to get mixing-length in meters (from
+    pressure) so that no parameter changes are necessary ; significant code
+    changes regarding surface & bottom index + direction of vertical k loop ;
+  - add secondary test "in_p" to experiment global_ocean.cs32x15 (similar to
+    Z-coord secondary test "seaice" but using pkg/ggl90 and without pkg/gmredi).
+o tutorial_reentrant_channel:
+  - add python notebook (for analysis), add python script to generate input
+    files (+ update matlab version) and update this tutorial docs.
 o verification/vermix:
   - change ggl90 secondary test to use (pkg/ggl90) mxlMaxFlag=3 (instead of 2)
     and update reference output.

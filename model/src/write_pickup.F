@@ -331,6 +331,12 @@ C---  Write 2-D fields, starting with Eta:
         nj = -( n3D*(Nr-1) + j )
         CALL WRITE_REC_3D_RL( fn, fp, 1 , etaN,   nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'EtaN    '
+       IF ( usingPCoords .AND. useSEAICE ) THEN
+        j = j + 1
+        nj = -( n3D*(Nr-1) + j )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, phiHydLow, nj,myIter,myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Phi_rLow'
+       ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( selectNHfreeSurf.GE.1 ) THEN
         j = j + 1
