@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - put various dimensions related to gencost out of "ecco.h" into specific
+    (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
+  - add gencost param "gencost_kLev_select" to select a vertical level (from 3-D
+    array) to form 2-D gencost ; currently only used in drifter velocity cost ;
+  - add a couple of costs based on 1) inverse barometer (IB) corrected model sea
+    level for altimetry data comparison 2) OBP excluding contribution from
+    global mean atmospheric pressure for comparisons with GRACE data.
 o pkg/autodiff:
   - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
     in adcommon.h, common block adgrid_rs.
