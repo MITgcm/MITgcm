@@ -46,7 +46,8 @@ fid=fopen('windx_cosy.bin', 'w', ieee);
 fwrite(fid, tau, accuracy);
 fclose(fid);
 
-% Restoring temperature (function of y only)
+% Restoring temperature (function of y only,
+% from Tmax at southern edge to Tmin at northern edge)
 Tmax = 30;
 Tmin = 0;
 Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y) + Tmin; % located and computed at YC points
