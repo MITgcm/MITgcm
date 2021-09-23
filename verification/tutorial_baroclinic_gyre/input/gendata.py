@@ -46,5 +46,5 @@ tau.astype('>f4').tofile('windx_cosy.bin')
 # Restoring temperature (function of y only)
 Tmax = 30
 Tmin = 0
-Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y)  # located and computed at YC points
+Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y) + Tmin # located and computed at YC points
 Trest.astype('>f4').tofile('SST_relax.bin')
