@@ -7,15 +7,15 @@ C Package "mom\_fluxform" provides methods for calculating explicit terms
 C in the momentum equation cast in flux-form:
 C \begin{eqnarray*}
 C G^u & = & -\frac{1}{\rho} \partial_x \phi_h
-C           -\nabla \cdot {\bf v} u
+C           -\boldsymbol{\nabla} \cdot {\bf v} u
 C           -fv
-C           +\frac{1}{\rho} \nabla \cdot {\bf \tau}^x
+C           +\frac{1}{\rho} \boldsymbol{\nabla} \cdot {\bf \tau}^x
 C           + \mbox{metrics}
 C \\
 C G^v & = & -\frac{1}{\rho} \partial_y \phi_h
-C           -\nabla \cdot {\bf v} v
+C           -\boldsymbol{\nabla} \cdot {\bf v} v
 C           +fu
-C           +\frac{1}{\rho} \nabla \cdot {\bf \tau}^y
+C           +\frac{1}{\rho} \boldsymbol{\nabla} \cdot {\bf \tau}^y
 C           + \mbox{metrics}
 C \end{eqnarray*}
 C where ${\bf v}=(u,v,w)$ and $\tau$, the stress tensor, includes surface

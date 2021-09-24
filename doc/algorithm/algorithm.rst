@@ -48,17 +48,17 @@ Basic operators:
 | :math:`\delta_x` :
   :math:`\delta_x \Phi = \frac{1}{\Delta x} \delta_i \Phi`
 |
-| :math:`\overline{\nabla}` = horizontal gradient operator :
-  :math:`\overline{\nabla} \Phi = \{ \delta_x \Phi , \delta_y \Phi \}`
+| :math:`\overline{\boldsymbol{\nabla}}` = horizontal gradient operator :
+  :math:`\overline{\boldsymbol{\nabla}} \Phi = \{ \delta_x \Phi , \delta_y \Phi \}`
 |
-| :math:`\overline{\nabla} \cdot` = horizontal divergence operator :
-  :math:`\overline{\nabla}\cdot \vec{\mathrm{f}}  = 
+| :math:`\overline{\boldsymbol{\nabla}} \cdot` = horizontal divergence operator :
+  :math:`\overline{\boldsymbol{\nabla}}\cdot \vec{\mathrm{{\bf f}}}  = 
   \frac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
                     + \delta_j \Delta x \, \mathrm{f}_y \}`
 |
 | :math:`\overline{\nabla}^2` = horizontal Laplacian operator :
   :math:`\overline{\nabla}^2 \Phi = 
-     \overline{\nabla}\cdot \overline{\nabla}\Phi`
+     \overline{\boldsymbol{\nabla}} \cdot \overline{\boldsymbol{\nabla}} \Phi`
 |
 
 .. _time_stepping:
@@ -617,11 +617,11 @@ follow equations:
 
 .. math::
    \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
-     \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
+     \boldsymbol{\nabla} \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
 .. math::
-   \nabla \cdot g H \nabla \eta^{n+1} - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
+   \boldsymbol{\nabla} \cdot g H \boldsymbol{\nabla} \eta^{n+1} - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-sync
 
 .. math::
@@ -740,11 +740,11 @@ position in time of variables appropriately:
 
 .. math::
    \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
-     \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
+     \boldsymbol{\nabla} \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
 .. math::
-   \nabla \cdot g H \nabla \eta^{n+1/2}  -  \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
+   \boldsymbol{\nabla} \cdot g H \nabla \eta^{n+1/2}  -  \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
    ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-staggered
 
@@ -2046,17 +2046,17 @@ forcing, respectively, namely:
 
 .. math::
    G_{adv}^\tau = \partial_x u \tau + \partial_y v \tau + \partial_r w \tau
-   - \tau \nabla \cdot {\bf v}
+   - \tau \boldsymbol{\nabla} \cdot {\bf v}
    :label: g_adv-tau
 
 .. math::
-   G_{diff}^\tau = \nabla \cdot {\bf K} \nabla \tau
+   G_{diff}^\tau = \boldsymbol{\nabla} \cdot \left ( {\bf K} \boldsymbol{\nabla} \tau \right )
    :label: g_diff-tau
 
 and the forcing can be some arbitrary function of state, time and
 space.
 
-The term, :math:`\tau \nabla \cdot {\bf v}`, is required to retain local
+The term, :math:`\tau \boldsymbol{\nabla} \cdot {\bf v}`, is required to retain local
 conservation in conjunction with the linear implicit free-surface. It
 only affects the surface layer since the flow is non-divergent
 everywhere else. This term is therefore referred to as the surface
@@ -2545,8 +2545,8 @@ divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is 
 
 .. math::
     \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
-    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
-    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}}
+    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \boldsymbol{\nabla}_{h}(\boldsymbol{\nabla} \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \boldsymbol{\nabla} [\boldsymbol{\nabla} \cdot \mathbf{v}_{h}]|^{2}}
     :label: bachman2017_eq40
 
 This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
@@ -2558,8 +2558,8 @@ the Froude number, and :math:`Ro_{*}`, the Rossby number. The second of which,
 .. math::
     \begin{aligned}
     \nu_{*} = & \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \\
-    & \sqrt{min\left(|\nabla_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \nabla_{h} b |,
-    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}},
+    & \sqrt{\min \left(|\boldsymbol{\nabla}_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \boldsymbol{\nabla}_{h} b |,
+    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \boldsymbol{\nabla}[\boldsymbol{\nabla} \cdot \mathbf{v}_{h}]|^{2}},
     \end{aligned}
     :label: bachman2017_eq56
 

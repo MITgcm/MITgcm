@@ -2283,7 +2283,7 @@ The conservative flux form of the potential vorticity equation is:
 
 .. math::
    \begin{aligned}
-   \frac{\partial \rho Q}{\partial t} + \nabla \cdot \vec{J} & = 0 \end{aligned}
+   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{J} & = 0 \end{aligned}
    :label: pv_eq4
 
 where the potential vorticity :math:`Q` is given by :eq:`pv_eq2`.
