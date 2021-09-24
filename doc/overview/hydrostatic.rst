@@ -13,7 +13,7 @@ non-hydrostatic terms:
 and write :eq:`horiz-mtm` in the form:
 
 .. math::
-   \frac{\partial \vec{\mathbf{v}_{h}}}{\partial t}+\mathbf{\boldsymbol{\nabla}}_{h}\phi
+   \frac{\partial \vec{\mathbf{v}}_{h}}{\partial t}+\mathbf{\boldsymbol{\nabla}}_{h}\phi
    _{s}+\mathbf{\boldsymbol{\nabla}}_{h}\phi _{hyd}+\epsilon _{nh}\mathbf{\boldsymbol{\nabla}}_{h}\phi
    _{nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
    :label: mom-h

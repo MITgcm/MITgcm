@@ -185,8 +185,8 @@ see :numref:`zandp-vert-coord`.
     Vertical coordinates and kinematic boundary conditions for atmosphere (top) and ocean (bottom).
 
 .. math::
-   \frac{D\vec{\mathbf{v}_{h}}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
-   \right) _{h}+\mathbf{\boldsymbol{\nabla}}_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}_{h}}}\text{  horizontal momentum}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
+   \right) _{h}+\mathbf{\boldsymbol{\nabla}}_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
