@@ -1089,7 +1089,7 @@ al. 2015 :cite:`kimmritz:15`, the evolution equations of stress
 
 .. math::
    \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
-   \Big(\frac{\Delta t}{m}\boldsymbol{\nabla} \cdot{\bf \sigma}^{p+1}+
+   \Big(\frac{\Delta t}{m}\boldsymbol{\nabla} \cdot\boldsymbol{\sigma}^{p+1}+
    \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
      -\mathbf{u}^p\Big)
    :label: eq_evpstarmom
