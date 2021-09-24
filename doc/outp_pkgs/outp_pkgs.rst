@@ -2017,7 +2017,7 @@ The package then computes the potential vorticity as:
 
 .. math::
    \begin{aligned}
-   Q &= -\frac{1}{\rho} \omega\cdot\nabla\sigma_\theta\\
+   Q &= -\frac{1}{\rho} \omega\cdot \boldsymbol{\nabla}\sigma_\theta\\
     &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
    \omega_y \frac{\partial \sigma_\theta}{\partial y} +
    \left(f+\zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right)\end{aligned}
@@ -2050,7 +2050,7 @@ by:
    :label: pv_eq14a
 
 .. math::
-   J^F_z = \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot\nabla\sigma_m
+   J^F_z = \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m
   :label: pv_eq15a
 
 These components can be computed with the package. Details on the
@@ -2102,10 +2102,10 @@ mixing which reduces the stratification and the PV.
 
 .. math::
    \begin{aligned}
-    \vec{k}\times\tau\cdot\nabla\sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
+    \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
     J^F_z &> 0 \phantom{WWW}\text{(upward)} \\
      -\rho^{-1}\nabla\cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
-     PV &\searrow \phantom{WWW}\text{where } \vec{k}\times\tau\cdot\nabla\sigma>0 \end{aligned}
+     PV &\searrow \phantom{WWW}\text{where } \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma>0 \end{aligned}
 
 
 Diabatic versus frictional processes
@@ -2118,7 +2118,7 @@ processes. Taking the ratio of :eq:`pv_eq14a` and
 .. math::
 
    \begin{aligned}
-     \frac{J^F_z}{J^B_Z} &=& \frac{ \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot\nabla\sigma }
+     \frac{J^F_z}{J^B_Z} &=& \frac{ \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma }
      {-\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right)} \\
      &\simeq& \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber\end{aligned}
 
@@ -2127,9 +2127,9 @@ where appears the lateral heat flux induced by Ekman currents:
 .. math::
 
    \begin{aligned}
-     Q_{Ek} &=& -\frac{C_w}{\alpha\rho f}\vec{k}\times\tau\cdot\nabla\sigma
+     Q_{Ek} &=& -\frac{C_w}{\alpha\rho f}\vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma
      \nonumber \\
-     &=& \frac{C_w}{\alpha}\delta_e\vec{u_{Ek}}\cdot\nabla\sigma\end{aligned}
+     &=& \frac{C_w}{\alpha}\delta_e\vec{u_{Ek}}\cdot \boldsymbol{\nabla}\sigma\end{aligned}
 
 which can be computed with the package. In the aim of comparing both
 processes, it will be useful to plot surface net and lateral
@@ -2348,7 +2348,7 @@ package) and of hydrostatic and geostrophic balances, we can write:
    \begin{aligned}
      \vec{u_g} &=& \frac{1}{\rho f} \vec{k}\times\nabla p \\
      \frac{\partial p_m}{\partial z} &=& -\sigma_m g \\
-     \frac{\partial \sigma_m}{\partial t} + \vec{u}_m\cdot\nabla\sigma_m &=& -\frac{\rho_0}{g}B \end{aligned}
+     \frac{\partial \sigma_m}{\partial t} + \vec{u}_m\cdot \boldsymbol{\nabla}\sigma_m &=& -\frac{\rho_0}{g}B \end{aligned}
    :label: pv_eq7
 
 where:
@@ -2380,20 +2380,20 @@ and using :eq:`pv_eq8` and :eq:`pv_eq9`, :eq:`pv_eq7` becomes:
 
 .. math::
    \begin{aligned}
-    \frac{\partial \sigma_m}{\partial t} + \vec{u}_g\cdot\nabla\sigma_m &=& -\frac{\rho_0}{g} B_g\end{aligned}
+    \frac{\partial \sigma_m}{\partial t} + \vec{u}_g\cdot \boldsymbol{\nabla}\sigma_m &=& -\frac{\rho_0}{g} B_g\end{aligned}
 
 revealing the “wind-driven buoyancy forcing”:
 
 .. math::
    \begin{aligned}
-     B_{Ek} &=& \frac{g}{\rho_0}\frac{1}{\rho f}\left(\vec{k}\times\frac{\partial \tau}{\partial z}\right)\cdot\nabla\sigma_m\end{aligned}
+     B_{Ek} &=& \frac{g}{\rho_0}\frac{1}{\rho f}\left(\vec{k}\times\frac{\partial \tau}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
 
 Note that since:
 
 .. math::
    \begin{aligned}
-     \frac{\partial B_g}{\partial z} &=& \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0}\vec{u_g}\cdot\nabla\sigma_m\right)
-     = -\frac{g}{\rho_0}\frac{\partial \vec{u_g}}{\partial z}\cdot\nabla\sigma_m
+     \frac{\partial B_g}{\partial z} &=& \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0}\vec{u_g}\cdot \boldsymbol{\nabla}\sigma_m\right)
+     = -\frac{g}{\rho_0}\frac{\partial \vec{u_g}}{\partial z}\cdot \boldsymbol{\nabla}\sigma_m
      = 0\end{aligned}
 
 :math:`B_g` must be uniform throughout the depth of the mixed layer and
@@ -2438,7 +2438,7 @@ the vertical component of :eq:`pv_eq6` is:
      &= -\frac{\rho_0}{g}B_g\omega_z
      -\frac{\rho_0}{g}
      \left(\frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times\frac{\partial \tau}{\partial z}
-       \cdot\nabla\sigma_m\right)\omega_z
+       \cdot \boldsymbol{\nabla}\sigma_m\right)\omega_z
      + \frac{1}{\rho}
      \left( \frac{\partial \tau}{\partial z}\times\nabla\sigma_\theta \right)\cdot\vec{k}\\
      &= -\frac{\rho_0}{g}B_g\omega_z
@@ -2465,9 +2465,9 @@ integrated “wind-driven buoyancy forcing”:
      B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
      - \frac{1}{h}\int_{-h}^0
-     \frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times \frac{\partial \tau}{\partial z} \cdot\nabla\sigma_m dz \\
+     \frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times \frac{\partial \tau}{\partial z} \cdot \boldsymbol{\nabla}\sigma_m dz \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
-     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\vec{k}\times\tau\cdot\nabla\sigma_m\end{aligned}
+     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
 be written as:
@@ -2476,7 +2476,7 @@ be written as:
    \begin{aligned}
      \vec{N_Q}_z &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
-     J^F_z &= \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot\nabla\sigma_m \end{aligned}
+     J^F_z &= \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m \end{aligned}
 
 .. _sub_outp_pkg_flt:
 

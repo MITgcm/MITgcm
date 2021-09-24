@@ -40,21 +40,21 @@ The surface pressure equation can be obtained by integrating continuity,
 :eq:`continuity`, vertically from :math:`r=R_{fixed}` to :math:`r=R_{moving}`
 
 .. math::
-   \int_{R_{fixed}}^{R_{moving}}\left( \mathbf{\nabla }_{h}\cdot \vec{\mathbf{v}
+   \int_{R_{fixed}}^{R_{moving}}\left( \mathbf{\boldsymbol{\nabla}}_{h}\cdot \vec{\mathbf{v}
    }_{h}+\partial _{r}\dot{r}\right) dr=0
 
 Thus:
 
 .. math::
-   \frac{\partial \eta }{\partial t}+\vec{\mathbf{v}}.\nabla \eta
-   +\int_{R_{fixed}}^{R_{moving}}\mathbf{\nabla }_{h}\cdot \vec{\mathbf{v}}
+   \frac{\partial \eta }{\partial t}+\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} \eta
+   +\int_{R_{fixed}}^{R_{moving}}\mathbf{\boldsymbol{\nabla}}_{h}\cdot \vec{\mathbf{v}}
    _{h}dr=0
 
 where :math:`\eta =R_{moving}-R_{o}` is the free-surface
 :math:`r`-anomaly in units of :math:`r`. The above can be rearranged to yield, using Leibnitz’s theorem:
 
 .. math::
-   \frac{\partial \eta }{\partial t}+\mathbf{\nabla }_{h}\cdot
+   \frac{\partial \eta }{\partial t}+\mathbf{\boldsymbol{\nabla}}_{h}\cdot
    \int_{R_{fixed}}^{R_{moving}}\vec{\mathbf{v}}_{h}dr=\text{source}
    :label: free-surface
 
@@ -64,7 +64,7 @@ Whether :math:`\phi` is pressure (ocean model, :math:`p/\rho _{c}`) or
 geopotential (atmospheric model), in :eq:`mom-h`, the horizontal gradient term can be written
 
 .. math::
-   \mathbf{\nabla }_{h}\phi _{s}=\mathbf{\nabla }_{h}\left( b_{s}\eta \right)
+   \mathbf{\boldsymbol{\nabla}}_{h}\phi _{s}=\mathbf{\boldsymbol{\nabla}}_{h}\left( b_{s}\eta \right)
    :label: phi-surf
 
 where :math:`b_{s}` is the buoyancy at the surface.
@@ -83,7 +83,7 @@ continuity equation :eq:`continuity`, we deduce that:
 
 .. math::
    \nabla _{3}^{2}\phi _{nh}=\nabla .\vec{\mathbf{G}}_{\vec{v}}-\left( \mathbf{
-   \nabla }_{h}^{2}\phi _{s}+\mathbf{\nabla }^{2}\phi _{hyd}\right) =\nabla .
+   \nabla }_{h}^{2}\phi _{s}+\mathbf{\boldsymbol{\nabla}}^{2}\phi _{hyd}\right) =\nabla .
    \vec{\mathbf{F}}
    :label: 3d-invert
 
@@ -119,7 +119,7 @@ Eq. :eq:`nonormalflow` implies, making use of :eq:`mom-h`, that:
 where
 
 .. math::
-   \vec{\mathbf{F}}=\vec{\mathbf{G}}_{\vec{v}}-\left( \mathbf{\nabla }_{h}\phi_{s}+\mathbf{\nabla }\phi _{hyd}\right)
+   \vec{\mathbf{F}}=\vec{\mathbf{G}}_{\vec{v}}-\left( \mathbf{\boldsymbol{\nabla}}_{h}\phi_{s}+\mathbf{\boldsymbol{\nabla}}\phi _{hyd}\right)
 
 presenting inhomogeneous Neumann boundary conditions to the Elliptic
 problem :eq:`3d-invert`. As shown, for example, by Williams (1969) :cite:`williams:69`, one

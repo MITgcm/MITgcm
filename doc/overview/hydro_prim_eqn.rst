@@ -6,7 +6,7 @@ Hydrostatic Primitive Equations for the Atmosphere in Pressure Coordinates
 The hydrostatic primitive equations (**HPE**’s) in :math:`p-`\coordinates are:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}_{h}+\mathbf{\nabla }_{p}\phi = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}_{h}+\mathbf{\boldsymbol{\nabla}}_{p}\phi = \vec{\mathbf{\mathcal{F}}}
    :label: atmos-mom
  
 .. math::
@@ -14,7 +14,7 @@ The hydrostatic primitive equations (**HPE**’s) in :math:`p-`\coordinates are:
    :label: eq-p-hydro-start
 
 .. math::
-   \mathbf{\nabla }_{p}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \omega }{\partial p} = 0
+   \mathbf{\boldsymbol{\nabla}}_{p}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \omega }{\partial p} = 0
    :label: atmos-cont
 
 .. math::
@@ -26,7 +26,7 @@ The hydrostatic primitive equations (**HPE**’s) in :math:`p-`\coordinates are:
    :label: atmos-heat
 
 where :math:`\vec{\mathbf{v}}_{h}=(u,v,0)` is the ‘horizontal’ (on pressure surfaces) component of velocity,
-:math:`\frac{D}{Dt}=\frac{\partial}{\partial t}+\vec{\mathbf{v}}_{h}\cdot \mathbf{\nabla }_{p}+\omega \frac{\partial }{\partial p}`
+:math:`\frac{D}{Dt}=\frac{\partial}{\partial t}+\vec{\mathbf{v}}_{h}\cdot \mathbf{\boldsymbol{\nabla}}_{p}+\omega \frac{\partial }{\partial p}`
 is the total derivative, :math:`f=2\Omega \sin \varphi` is the Coriolis
 parameter, :math:`\phi =gz` is the geopotential, :math:`\alpha =1/\rho`
 is the specific volume, :math:`\omega =\frac{Dp }{Dt}` is the vertical
@@ -144,7 +144,7 @@ The final form of the **HPE**’s in :math:`p-`\coordinates is then:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\mathbf{\nabla }_{p}\phi ^{\prime } = \vec{\mathbf{\mathcal{F}}} 
+   _{h}+\mathbf{\boldsymbol{\nabla}}_{p}\phi ^{\prime } = \vec{\mathbf{\mathcal{F}}} 
    :label: atmos-prime
 
 .. math::
@@ -152,7 +152,7 @@ The final form of the **HPE**’s in :math:`p-`\coordinates is then:
    :label: atmos-prime2
  
 .. math::
-   \mathbf{\nabla }_{p}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \omega }{
+   \mathbf{\boldsymbol{\nabla}}_{p}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \omega }{
    \partial p} = 0
    :label: atmos-prime3
  
