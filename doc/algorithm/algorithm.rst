@@ -1739,7 +1739,7 @@ following or the conformal spherical cube system.
 The non-hydrostatic vector invariant equations read:
 
 .. math::
-   \partial_t \vec{v} + ( 2\vec{\Omega} + \vec{\zeta}) \wedge \vec{v}
+   \partial_t \vec{v} + ( 2\vec{\boldsymbol{\Omega}} + \vec{\zeta}) \wedge \vec{v}
    - b \hat{r}
    + \vec{\nabla} B = \vec{\nabla} \cdot \vec{\bf \tau}
    :label: vect_invar_nh

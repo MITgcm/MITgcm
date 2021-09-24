@@ -185,12 +185,12 @@ see :numref:`zandp-vert-coord`.
     Vertical coordinates and kinematic boundary conditions for atmosphere (top) and ocean (bottom).
 
 .. math::
-   \frac{D\vec{\mathbf{v}_{h}}}{Dt}+\left( 2\vec{\Omega}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}_{h}}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
    \right) _{h}+\mathbf{\nabla }_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}_{h}}}\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
-   \frac{D\dot{r}}{Dt}+\widehat{\boldsymbol{k}}\cdot \left( 2\vec{\Omega}\times \vec{\mathbf{
+   \frac{D\dot{r}}{Dt}+\widehat{\boldsymbol{k}}\cdot \left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{
    v}}\right) +\frac{\partial \phi }{\partial r}+b=\mathcal{F}_{\dot{r}}\text{  vertical momentum}
    :label: vert-mtm
 
@@ -237,7 +237,7 @@ with :math:`\mathbf{\nabla }_{h}` operating in the horizontal and
 
 .. math:: \phi \text{ is the ‘pressure’/‘geopotential’}
 
-.. math:: \vec{\Omega}\text{ is the Earth's rotation}
+.. math:: \vec{\boldsymbol{\Omega}}\text{ is the Earth's rotation}
 
 .. math:: b\text{ is the ‘buoyancy’}
 
