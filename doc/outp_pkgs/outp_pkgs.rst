@@ -1994,21 +1994,22 @@ Equations
 Potential vorticity
 ~~~~~~~~~~~~~~~~~~~
 
-The package computes the three components of the relative vorticity
-defined by:
+The package computes the three components of the relative vorticity,
+:math:`\boldsymbol{\omega}`, defined by:
 
 .. math::
    \begin{aligned}
-     \omega &= \nabla \times {\bf U} = \left( \begin{array}{c}
+     \boldsymbol{\omega} &= \nabla \times {\bf U} = \left( \begin{array}{c}
          \omega_x\\
          \omega_y\\
          \zeta
      \end{array}\right)
-        \simeq &\left( \begin{array}{c}
+        \simeq & \left( \begin{array}{c}
          -\frac{\partial v}{\partial z}\\
          -\frac{\partial u}{\partial z}\\
          \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y}
-     \end{array}\right)\end{aligned}
+     \end{array}\right),
+   \end{aligned}
    :label: pv_eq1
 
 where we omitted the vertical velocity component (as done throughout the package).
@@ -2017,10 +2018,11 @@ The package then computes the potential vorticity as:
 
 .. math::
    \begin{aligned}
-   Q &= -\frac{1}{\rho} \omega\cdot \boldsymbol{\nabla}\sigma_\theta\\
-    &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
+   Q &= -\frac{1}{\rho} \boldsymbol{\omega} \cdot \boldsymbol{\nabla}\sigma_\theta\\
+     &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
    \omega_y \frac{\partial \sigma_\theta}{\partial y} +
-   \left(f+\zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right)\end{aligned}
+   \left(f + \zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right),
+   \end{aligned}
    :label: pv_eq2
 
 where :math:`\rho` is the density, :math:`\sigma_\theta` is the
@@ -2031,7 +2033,8 @@ The package is also able to compute the simpler planetary vorticity as:
 
 .. math::
    \begin{aligned}
-   Q_{spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}\end{aligned}
+   Q_{spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z} .
+   \end{aligned}
    :label: pv_eq3
 
 Surface vertical potential vorticity fluxes
@@ -2079,7 +2082,7 @@ triggering mixing which reduces the stratification and then the PV.
    \begin{aligned}
      Q_{net} &< 0 \phantom{WWW}\text{(upward, cooling)} \\
      J^B_z   &> 0 \phantom{WWW}\text{(upward)} \\
-     -\rho^{-1}\nabla\cdot J^B_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
+     -\rho^{-1}\boldsymbol{\nabla} \cdot J^B_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
      PV &\searrow \phantom{WWWi}\text{where } Q_{net}<0 \end{aligned}
 
 
@@ -2102,9 +2105,9 @@ mixing which reduces the stratification and the PV.
 
 .. math::
    \begin{aligned}
-    \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
+    \vec{k} \times \tau \cdot \boldsymbol{\nabla}\sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
     J^F_z &> 0 \phantom{WWW}\text{(upward)} \\
-     -\rho^{-1}\nabla\cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
+     -\rho^{-1} \boldsymbol{\nabla} \cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
      PV &\searrow \phantom{WWW}\text{where } \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma>0 \end{aligned}
 
 
@@ -2283,7 +2286,7 @@ The conservative flux form of the potential vorticity equation is:
 
 .. math::
    \begin{aligned}
-   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{J} & = 0 \end{aligned}
+   \frac{\partial \rho Q}{\partial t} + \nabla \cdot \vec{J} & = 0 \end{aligned}
    :label: pv_eq4
 
 where the potential vorticity :math:`Q` is given by :eq:`pv_eq2`.
@@ -2298,7 +2301,7 @@ which allows to rewrite :eq:`pv_eq4` as:
 
 .. math::
    \begin{aligned}
-   \frac{DQ}{dt} & = -\frac{1}{\rho}\nabla\cdot\vec{N_Q}\end{aligned}
+   \frac{DQ}{dt} & = -\frac{1}{\rho}\boldsymbol{\nabla} \cdot\vec{N_Q}\end{aligned}
    :label: pv_eq5
 
 where the non-advective PV flux :math:`\vec{N_Q}` is given by:
@@ -2318,7 +2321,7 @@ and the second one to the non-conservative body forces per unit mass:
 
 .. math::
    \begin{aligned}
-    \vec{F} & = \frac{D \vec{u}}{dt} + 2\Omega\times\vec{u} + \nabla p \end{aligned}
+    \vec{F} & = \frac{D \vec{u}}{dt} + 2 \vec{\Omega} \times\vec{u} + \nabla p \end{aligned}
 
 Note that introducing :math:`B` into :eq:`pv_eq6` yields:
 

@@ -2497,11 +2497,11 @@ gridscale. The combined viscosity has the form:
 .. math::
    A_{hLeith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
    |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
-   |\nabla \nabla\cdot \overline {\tilde u}_h|^2}
+   |\nabla \boldsymbol{\nabla} \cdot \overline {\tilde u}_h|^2}
    :label: Ah_Leithcomb
 
 .. math::
-   |\nabla \nabla\cdot \overline {\tilde u}_h| \equiv
+   |\nabla \boldsymbol{\nabla} \cdot \overline {\tilde u}_h| \equiv
    \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
    + {\frac{\partial{\overline {\tilde v}}}{\partial{y}}}\right)\right]^2
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
@@ -2684,7 +2684,7 @@ Smagorinsky viscosities:
 .. math::
    A_{4Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
    |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
-   |\nabla \nabla\cdot \overline {\bf {\tilde u}}_h|^2}
+   |\nabla \boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h|^2}
    :label: A4_Leith
 
 However, it should be noted that unlike the harmonic forms, the
@@ -2701,7 +2701,7 @@ resulting biharmonic viscosities should be:
 .. math::
    A_{4Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
    |\nabla^2 \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^{12}
-   |\nabla^2 \nabla\cdot \overline {\bf {\tilde u}}_h|^2}
+   |\nabla^2 \boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h|^2}
    :label: A4_Leith_alt
 
 Thus, the biharmonic scaling suggested by Griffies and Hallberg (2000)
