@@ -190,7 +190,7 @@ see :numref:`zandp-vert-coord`.
    :label: horiz-mtm
 
 .. math::
-   \frac{D\dot{r}}{Dt}+\widehat{k}\cdot \left( 2\vec{\Omega}\times \vec{\mathbf{
+   \frac{D\dot{r}}{Dt}+\widehat{\boldsymbol{k}}\cdot \left( 2\vec{\Omega}\times \vec{\mathbf{
    v}}\right) +\frac{\partial \phi }{\partial r}+b=\mathcal{F}_{\dot{r}}\text{  vertical momentum}
    :label: vert-mtm
 
@@ -221,13 +221,13 @@ Here:
 
 .. math::
 
-   \mathbf{\nabla }=\mathbf{\nabla }_{h}+\widehat{k}\frac{\partial }{\partial r}
+   \mathbf{\nabla }=\mathbf{\nabla }_{h}+\widehat{\boldsymbol{k}}\frac{\partial }{\partial r}
    \text{  is the ‘grad’ operator}
 
 with :math:`\mathbf{\nabla }_{h}` operating in the horizontal and
-:math:`\widehat{k}
+:math:`\widehat{\boldsymbol{k}}
 \frac{\partial }{\partial r}` operating in the vertical, where
-:math:`\widehat{k}` is a unit vector in the vertical
+:math:`\widehat{\boldsymbol{k}}` is a unit vector in the vertical
 
 .. math:: t\text{ is time}
 
