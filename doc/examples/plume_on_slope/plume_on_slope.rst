@@ -147,12 +147,12 @@ where
 .. math::
 
    \begin{aligned}
-   Nx & = & 320 \\
-   Lx & = & 6400 \;\; \mbox{(m)} \\
-   \Delta x_1 & = & \frac{2}{3} \frac{Lx}{Nx} \;\; \mbox{(m)} \\
-   \Delta x_2 & = & \frac{Lx/2}{Nx-Lx/(2 \Delta x_1)} \;\; \mbox{(m)} \\
-   i_s & = & Lx/( 2 \Delta x_1 ) \\
-   w & = & 40\end{aligned}
+   Nx & = 320 \\
+   Lx & = 6400 \;\; \mbox{(m)} \\
+   \Delta x_1 & = \frac{2}{3} \frac{Lx}{Nx} \;\; \mbox{(m)} \\
+   \Delta x_2 & = \frac{Lx/2}{Nx-Lx/(2 \Delta x_1)} \;\; \mbox{(m)} \\
+   i_s & = Lx/( 2 \Delta x_1 ) \\
+   w & = 40\end{aligned}
 
 Here, :math:`\Delta x_1` is the resolution on the shelf,
 :math:`\Delta x_2` is the resolution in deep water and :math:`Nx` is the
@@ -167,11 +167,11 @@ where
 .. math::
 
    \begin{aligned}
-   H_o & = & 200 \;\; \mbox{(m)} \\
-   h_s & = & 40 \;\; \mbox{(m)} \\
-   x_s & = & 1500 + Lx/2 \;\; \mbox{(m)} \\
-   L_s & = & \frac{(H_o - h_s)}{2 s} \;\; \mbox{(m)} \\
-   s & = & 0.15\end{aligned}
+   H_o & = 200 \;\; \mbox{(m)} \\
+   h_s & = 40 \;\; \mbox{(m)} \\
+   x_s & = 1500 + Lx/2 \;\; \mbox{(m)} \\
+   L_s & = \frac{(H_o - h_s)}{2 s} \;\; \mbox{(m)} \\
+   s & = 0.15\end{aligned}
 
 Here, :math:`s` is the maximum slope, :math:`H_o` is the maximum depth,
 :math:`h_s` is the shelf depth, :math:`x_s` is the lateral position of
@@ -188,9 +188,9 @@ where
 .. math::
 
    \begin{aligned}
-   Q_o & = & 200 \;\; \mbox{(W m$^{-2}$)} \\
-   x_q & = & 2500 + Lx/2 \;\; \mbox{(m)} \\
-   L_q & = & 100 \;\; \mbox{(m)}\end{aligned}
+   Q_o & = 200 \;\; \mbox{(W m$^{-2}$)} \\
+   x_q & = 2500 + Lx/2 \;\; \mbox{(m)} \\
+   L_q & = 100 \;\; \mbox{(m)}\end{aligned}
 
 Here, :math:`Q_o` is the maximum heat flux, :math:`x_q` is the
 position of the cut-off, and :math:`L_q` is the width of the cut-off.

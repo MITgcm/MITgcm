@@ -18,7 +18,7 @@ Notation
 Because of the particularity of the vertical direction in stratified
 fluid context, in this chapter, the vector notations are mostly used for
 the horizontal component: the horizontal part of a vector is simply
-written :math:`\vec{\bf v}` (instead of :math:`{\bf v_h}` or
+written :math:`\vec{\bf v}` (instead of :math:`{{\bf v}_h}` or
 :math:`\vec{\mathbf{v}}_{h}` in chapter 1) and a 3D vector is simply
 written :math:`\vec{v}` (instead of :math:`\vec{\mathbf{v}}` in chapter
 1).
@@ -127,9 +127,9 @@ The horizontal momentum and continuity equations for the ocean
 .. math::
 
    \begin{aligned}
-   \partial_t u + g \partial_x \eta & = & G_u \\
-   \partial_t v + g \partial_y \eta & = & G_v \\
-   \partial_x u + \partial_y v + \partial_z w & = & 0\end{aligned}
+   \partial_t u + g \partial_x \eta & = G_u \\
+   \partial_t v + g \partial_y \eta & = G_v \\
+   \partial_x u + \partial_y v + \partial_z w & = 0\end{aligned}
 
 where we are adopting the oceanic notation for brevity. All terms in
 the momentum equations, except for surface pressure gradient, are
@@ -257,10 +257,10 @@ those implicit terms is provided in :numref:`implicit-backward-stepping`, and mo
 
    \begin{aligned}
    u^{n+1} - \Delta t \partial_z A_v \partial_z u^{n+1}
-   + \Delta t g \partial_x \eta^{n+1} & = & u^{n} + \Delta t G_u^{(n+1/2)}
+   + \Delta t g \partial_x \eta^{n+1} & = u^{n} + \Delta t G_u^{(n+1/2)}
    \\
    v^{n+1} - \Delta t \partial_z A_v \partial_z v^{n+1}
-   + \Delta t g \partial_y \eta^{n+1} & = & v^{n} + \Delta t G_v^{(n+1/2)}\end{aligned}
+   + \Delta t g \partial_y \eta^{n+1} & = v^{n} + \Delta t G_v^{(n+1/2)}\end{aligned}
 
 
 .. _press_meth_linear:
@@ -856,9 +856,9 @@ As before, the explicit predictions for momentum are consolidated as:
 .. math::
 
    \begin{aligned}
-   u^* & = & u^n + \Delta t G_u^{(n+1/2)} \\
-   v^* & = & v^n + \Delta t G_v^{(n+1/2)} \\
-   w^* & = & w^n + \Delta t G_w^{(n+1/2)}\end{aligned}
+   u^* & = u^n + \Delta t G_u^{(n+1/2)} \\
+   v^* & = v^n + \Delta t G_v^{(n+1/2)} \\
+   w^* & = w^n + \Delta t G_w^{(n+1/2)}\end{aligned}
 
 but this time we introduce an intermediate step by splitting the
 tendency of the flow as follows:
@@ -1313,8 +1313,8 @@ where the Coriolis parameters :math:`f` and :math:`f'` are defined:
 .. math::
 
    \begin{aligned}
-   f & = & 2 \Omega \sin{\varphi} \\
-   f' & = & 2 \Omega \cos{\varphi}\end{aligned}
+   f & = 2 \Omega \sin{\varphi} \\
+   f' & = 2 \Omega \cos{\varphi}\end{aligned}
 
 where :math:`\varphi` is geographic latitude when using spherical
 geometry, otherwise the :math:`\beta`-plane definition is used:
@@ -1322,8 +1322,8 @@ geometry, otherwise the :math:`\beta`-plane definition is used:
 .. math::
 
    \begin{aligned}
-   f & = & f_o + \beta y \\
-   f' & = & 0\end{aligned}
+   f & = f_o + \beta y \\
+   f' & = 0\end{aligned}
 
 This discretization globally conserves kinetic energy. It should be
 noted that despite the use of this discretization in former
@@ -1393,8 +1393,8 @@ exclusively been used to date:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = & \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
-   G_v^{metric} & = & \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
+   G_u^{metric} & = \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
+   G_v^{metric} & = \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
 
 where :math:`\tan{\varphi}` is evaluated at the :math:`u` and :math:`v`
 points respectively.
@@ -1434,11 +1434,11 @@ in the past, used a different discretization in the model which is:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = &
+   G_u^{metric} & = 
    - \frac{u}{a} \overline{w}^{ik} \\
-   G_v^{metric} & = &
+   G_v^{metric} & = 
    - \frac{v}{a} \overline{w}^{jk} \\
-   G_w^{metric} & = &
+   G_w^{metric} & = 
      \frac{1}{a} ( {\overline{u}^{ik}}^2 + {\overline{v}^{jk}}^2 )\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_NH <pkg/mom_common/mom_u_metric_nh.F>`, :filelink:`MOM_V_METRIC_NH <pkg/mom_common/mom_v_metric_nh.F>`
@@ -1586,9 +1586,9 @@ In the interior the vertical stresses are discretized:
 .. math::
 
    \begin{aligned}
-   \tau_{13} & = & A_v \frac{1}{\Delta r_c} \delta_k u \\
-   \tau_{23} & = & A_v \frac{1}{\Delta r_c} \delta_k v \\
-   \tau_{33} & = & A_v \frac{1}{\Delta r_f} \delta_k w\end{aligned}
+   \tau_{13} & = A_v \frac{1}{\Delta r_c} \delta_k u \\
+   \tau_{23} & = A_v \frac{1}{\Delta r_c} \delta_k v \\
+   \tau_{33} & = A_v \frac{1}{\Delta r_f} \delta_k w\end{aligned}
 
 It should be noted that in the non-hydrostatic form, the stress tensor
 is even less consistent than for the hydrostatic (see Wajsowicz (1993)
@@ -1967,10 +1967,10 @@ where
 .. math::
 
    \begin{aligned}
-   D^* & = & \frac{1}{{\cal A}_c h_c} (
+   D^* & = \frac{1}{{\cal A}_c h_c} (
      \delta_i \Delta y_g h_w \nabla^2 u
    + \delta_j \Delta x_g h_s \nabla^2 v ) \\
-   \zeta^* & = & \frac{1}{{\cal A}_\zeta} (
+   \zeta^* & = \frac{1}{{\cal A}_\zeta} (
      \delta_i \Delta y_c \nabla^2 v
    - \delta_j \Delta x_c \nabla^2 u )\end{aligned}
 
@@ -2003,8 +2003,8 @@ In the interior the vertical stresses are discretized:
 .. math::
 
    \begin{aligned}
-   \tau_{13} & = & A_v \frac{1}{\Delta r_c} \delta_k u \\
-   \tau_{23} & = & A_v \frac{1}{\Delta r_c} \delta_k v\end{aligned}
+   \tau_{13} & = A_v \frac{1}{\Delta r_c} \delta_k u \\
+   \tau_{23} & = A_v \frac{1}{\Delta r_c} \delta_k v\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_RVISCFLUX <pkg/mom_common/mom_u_rviscflux.F>`, :filelink:`MOM_V_RVISCFLUX <pkg/mom_common/mom_u_rviscflux.F>`
   :class: note

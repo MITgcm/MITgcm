@@ -112,8 +112,8 @@ streamfunction is specified in terms of the isoneutral slopes
 .. math::
 
    \begin{aligned}
-   F_x^\star & = & -\kappa_{GM} S_y \\
-   F_y^\star & = &  \kappa_{GM} S_x\end{aligned}
+   F_x^\star & = -\kappa_{GM} S_y \\
+   F_y^\star & =  \kappa_{GM} S_x\end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
 lower boundaries. In the end, the bolus transport in the GM
@@ -174,14 +174,14 @@ be re-written in terms of a non-divergent flux and a skew-flux:
 
    \begin{aligned}
    \bf{u}^\star \tau
-   & = &
+   & =
    \left( \begin{array}{c}
    - \partial_z ( \kappa_{GM} S_x ) \tau \\
    - \partial_z ( \kappa_{GM} S_y ) \tau \\
    (\partial_x \kappa_{GM} S_x + \partial_y \kappa_{GM} S_y)\tau
    \end{array} \right)
    \\
-   & = &
+   & =
    \left( \begin{array}{c}
    - \partial_z ( \kappa_{GM} S_x \tau) \\
    - \partial_z ( \kappa_{GM} S_y \tau) \\
@@ -348,11 +348,11 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\nabla \sigma| & = & \sqrt{ \sigma_x^2 + \sigma_y^2 } \\
-   S_{lim} & = & - \frac{|\nabla \sigma|}{ S_{max} }
+   |\nabla \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 } \\
+   S_{lim} & = - \frac{|\nabla \sigma|}{ S_{max} }
    \;\;\;\;\;\;\;\; \mbox{where $S_{max}$ is a parameter} \\
-   \sigma_z^\star & = & \min( \sigma_z , S_{lim} ) \\
-   {[s_x,s_y]} & = & - \frac{ [\sigma_x,\sigma_y] }{\sigma_z^\star}\end{aligned}
+   \sigma_z^\star & = \min( \sigma_z , S_{lim} ) \\
+   {[s_x,s_y]} & = - \frac{ [\sigma_x,\sigma_y] }{\sigma_z^\star}\end{aligned}
 
 Notice that this algorithm assumes stable stratification through the
 “min” function. In the case where the fluid is well stratified

@@ -173,11 +173,11 @@ as a function of relative humidity:
 
 where
 
-RH\ :sub:`c` & = & 1-s(1-s)(2-+2 s)r
-s & = & p/p\ :sub:`surf`
-r & = & ( )
-RH\ :sub:`min` & = & 0.75
-& = & 0.573285 .
+RH\ :sub:`c` & = 1-s(1-s)(2-+2 s)r
+s & = p/p\ :sub:`surf`
+r & = ( )
+RH\ :sub:`min` & = 0.75
+& = 0.573285 .
 
 These cloud fractions are suppressed, however, in regions where the
 convective sub-cloud layer is conditionally unstable. The functional
@@ -2106,8 +2106,8 @@ and Analysis forcing.
 .. math::
 
    \begin{aligned}
-   {\bf DTDT} & = & \pp{T}{t}_{Dynamics} + \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-              & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
+   {\bf DTDT} & = \pp{T}{t}_{Dynamics} + \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+              & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
 
 
 DQDT - Total Specific Humidity Tendency  (g/kg/day)
@@ -2359,8 +2359,8 @@ the Analysis forcing.
 .. math::
 
    \begin{aligned}
-   {\bf DIABT} & = & \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-              & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
+   {\bf DIABT} & = \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+              & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
 
 If we define the time-tendency of Temperature due to Diabatic
 processes as
@@ -2368,8 +2368,8 @@ processes as
 .. math::
 
    \begin{aligned}
-   \pp{T}{t}_{Diabatic} & = & \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-                        & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence}\end{aligned}
+   \pp{T}{t}_{Diabatic} & = \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+                        & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence}\end{aligned}
 
 then, since there are no surface pressure changes due to Diabatic
 processes, we may write
@@ -2525,8 +2525,8 @@ specific humidity, given by:
 .. math::
 
    \begin{aligned}
-   {\bf QINT} & = & \int_{surf}^{top} \rho q dz \\
-              & = & \frac{\pi}{g} \int_0^1 q dp
+   {\bf QINT} & = \int_{surf}^{top} \rho q dz \\
+              & = \frac{\pi}{g} \int_0^1 q dp
    \end{aligned}
 
 where we have used the hydrostatic relation

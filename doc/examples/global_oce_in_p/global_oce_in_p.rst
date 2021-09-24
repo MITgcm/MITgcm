@@ -91,8 +91,8 @@ variables :math:`x` and :math:`y` are initialized according to
 .. math::
 
    \begin{aligned}
-   x=r\cos(\phi),~\Delta x & = &r\cos(\Delta \phi) \\
-   y=r\lambda,~\Delta y &= &r\Delta \lambda \end{aligned}
+   x=r\cos(\phi),~\Delta x & = r\cos(\Delta \phi) \\
+   y=r\lambda,~\Delta y & = r\Delta \lambda \end{aligned}
 
 Arctic polar regions are not included in this experiment. Meridionally
 the model extends from 80\ :sup:`o`\ S to

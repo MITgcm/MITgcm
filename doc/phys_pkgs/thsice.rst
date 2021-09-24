@@ -80,8 +80,8 @@ calculated as:
 .. math::
 
    \begin{aligned}
-   q_1 & = & -c_{i}*T_f + L_i \nonumber \\
-   q_2 & = & -c_{f}T_{mlt}+ c_{i}(T_{mlt}-T{f}) + L_i(1-\frac{T_{mlt}}{T_f})
+   q_1 & = -c_{i}*T_f + L_i \nonumber \\
+   q_2 & = -c_{f}T_{mlt}+ c_{i}(T_{mlt}-T{f}) + L_i(1-\frac{T_{mlt}}{T_f})
    \nonumber\end{aligned}
 
 where :math:`c_f` is specific heat of liquid fresh water, :math:`c_i` is
@@ -191,9 +191,9 @@ a unit mass of seaice with temperature :math:`T`. For the upper layer
 .. math::
 
    \begin{aligned}
-   q_1 & = & - c_f T_f + c_i (T_f-T)+ L_{i}(1-\frac{T_f}{T})
+   q_1 & = - c_f T_f + c_i (T_f-T)+ L_{i}(1-\frac{T_f}{T})
    \nonumber \\
-   q_2 & = & -c_i T+L_i \nonumber\end{aligned}
+   q_2 & = -c_i T+L_i \nonumber\end{aligned}
 
 where :math:`c_f` is specific heat of liquid fresh water, :math:`c_i` is
 the specific heat of fresh ice, and :math:`L_i` is latent heat of

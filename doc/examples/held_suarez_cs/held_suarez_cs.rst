@@ -77,9 +77,9 @@ layer. It is defined so as to decay as pressure decreases according to
 
    \begin{aligned}
    \label{eq:eg-hs-define_kv}
-   k_\mathbf{v} & = & k_{f}~\max[0,~(p^*/P^{0}_{s}-\sigma_{b})/(1-\sigma_{b})]
+   k_\mathbf{v} & = k_{f}~\max[0,~(p^*/P^{0}_{s}-\sigma_{b})/(1-\sigma_{b})]
    \\
-   \sigma_{b} & = & 0.7 ~~{\rm and}~~
+   \sigma_{b} & = 0.7 ~~{\rm and}~~
    k_{f}  =  1/86400 ~{\rm s}^{-1}\end{aligned}
 
 where :math:`p^*` is the pressure level of the cell center and
