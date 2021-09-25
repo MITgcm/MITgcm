@@ -20,13 +20,13 @@ north-south direction. The Coriolis parameter, :math:`f`, is defined
 according to latitude :math:`\varphi`
 
 .. math::
-   f(\varphi) = 2 \Omega \sin( \varphi )
+   f(\varphi) = 2 \Omega \sin( \varphi ),
 
 with the rotation rate, :math:`\Omega` set to :math:`\frac{2 \pi}{86164} \text{s}^{-1}` (i.e., corresponding the to standard Earth rotation rate).
 The sinusoidal wind-stress variations are defined according to
 
 .. math::
-   \tau_{\lambda}(\varphi) = -\tau_{0}\cos \left(2 \pi \frac{\varphi-\varphi_o}{L_{\varphi}} \right)
+   \tau_{\lambda}(\varphi) = -\tau_{0}\cos \left(2 \pi \frac{\varphi-\varphi_o}{L_{\varphi}} \right),
 
 where :math:`L_{\varphi}` is the lateral domain extent
 (:math:`60^{\circ}`), :math:`\varphi_o` is set to :math:`15^{\circ} \text{N}` and :math:`\tau_0` is :math:`0.1 \text{ N m}^{-2}`.
@@ -42,13 +42,13 @@ in the surface layer to :math:`\theta=2 \text{ } ^{\circ}`\ C in the bottom laye
 The equation of state used in this experiment is linear:
 
 .. math::
-   \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{\prime} )
+   \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{\prime} ),
   :label: rho_lineareos
 
 which is implemented in the model as a density anomaly equation
 
 .. math::
-   \rho^{\prime} = -\rho_{0}\alpha_{\theta}\theta^{\prime}
+   \rho^{\prime} = -\rho_{0}\alpha_{\theta}\theta^{\prime},
    :label: rhoprime_lineareos
 
 with :math:`\rho_{0}=999.8\,{\rm kg\,m}^{-3}` and
@@ -71,7 +71,7 @@ Temperature is restored in the surface layer to a linear profile:
 
 .. math::
    {\cal F}_\theta = - \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW}
-   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o)
+   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o),
    :label: baroc_restore_theta
 
 where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{max}=30^{\circ}` C, :math:`\theta_{min}=0^{\circ}` C.
@@ -98,14 +98,14 @@ coordinates as follows:
 .. math::
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} +
    \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} +
-   \nabla_{h} \cdot (-A_{h}\nabla_{h} u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
+   \boldsymbol{\nabla}_h \cdot (-A_{h} \boldsymbol{\nabla}_h u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    =  \mathcal{F}_u
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
    \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} +
-   \nabla_{h} \cdot (-A_{h}\nabla_{h} v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
+   \boldsymbol{\nabla}_h \cdot (-A_{h} \boldsymbol{\nabla}_h v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    = \mathcal{F}_v
    :label: baroc_gyre_vmom
 
@@ -115,7 +115,7 @@ coordinates as follows:
    :label: baroc_gyre_cont
 
 .. math::
-   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   \frac{D\theta}{Dt} + \boldsymbol{\nabla}_h \cdot (-\kappa_{h} \boldsymbol{\nabla}_h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: barooc_gyre_theta
@@ -144,7 +144,7 @@ The forcing terms :math:`\mathcal{F}_u`, :math:`\mathcal{F}_v`, and :math:`\math
 applied as source terms in the model surface layer and are zero in the interior.
 The windstress forcing, :math:`{\mathcal F}_u` and :math:`{\mathcal F}_v`, is
 applied in the zonal and meridional momentum
-equations, respectively; in this configuration, :math:`\mathcal{F}_u = \frac{\tau_x}{\rho_c\Delta z_s}`
+equations, respectively; in this configuration, :math:`\mathcal{F}_u = \tau_x / (\rho_c\Delta z_s)`
 (where :math:`\Delta z_s` is the depth of the surface model gridcell), and
 :math:`\mathcal{F}_v = 0`. Similarly, :math:`\mathcal{F}_\theta` is applied in the temperature equation,
 as given by :eq:`baroc_restore_theta`.
@@ -157,8 +157,7 @@ MITgcm parameter :varlink:`gBaro` whereas in the seond term :math:`g` is paramet
 allowing for different gravity constants here is useful, for example, if one wanted to slow down external gravity waves.
 
 In the momentum equations, lateral and vertical boundary conditions for
-the :math:`\nabla_{h}^{2}` and
-:math:`\frac{\partial^{2}}{\partial z^{2}}` operators are specified in the
+the :math:`\nabla_{h}^{2}` and :math:`\partial_z^2` operators are specified in the
 runtime configuration - see :numref:`sec_eg_baroclinic_code_config`.
 For temperature, the boundary condition along the bottom and sidewalls is zero-flux.
 
@@ -193,8 +192,8 @@ temperature equation.
 Prognostic terms in the momentum equations are
 solved using flux form as described in :numref:`flux-form_momentum_equations`.
 The pressure forces that drive
-the fluid motions, :math:`\frac{\partial p^{'}}{\partial \lambda}`
-and :math:`\frac{\partial p^{'}}{\partial \varphi}`, are found by
+the fluid motions, :math:`\partial_{\lambda} p^\prime`
+and :math:`\partial_{\varphi} p^\prime`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The hydrostatic part of the pressure is

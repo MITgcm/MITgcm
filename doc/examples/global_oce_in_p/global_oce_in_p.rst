@@ -140,8 +140,8 @@ of equations solved in this configuration as follows:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial x} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}u -
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial u}{\partial p}
+     \boldsymbol{\nabla}_h( \cdot A_{h}\boldsymbol{\nabla}_h u )-
+     (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial u}{\partial p}\right)
     &=
    \begin{cases}
    {\cal F}_u & \text{(surface)} \\
@@ -150,8 +150,8 @@ of equations solved in this configuration as follows:
    \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial y} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}v -
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial v}{\partial p}
+     \boldsymbol{\nabla}_h (\cdot A_{h}\boldsymbol{\nabla}_h v) -
+     (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial v}{\partial p}\right)
    &=
    \begin{cases}
    {\cal F}_v & \text{(surface)} \\
@@ -159,14 +159,14 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-  \frac{\partial p_{b}}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
+  \frac{\partial p_{b}}{\partial t} + \boldsymbol{\nabla}_h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_pcoord_ts
 
    \frac{D\theta}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial\theta}{\partial p}
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h \theta)
+    - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial\theta}{\partial p}\right)
    &=
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
@@ -174,8 +174,8 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{D s}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}s
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial S}{\partial p}
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h s)
+    - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial S}{\partial p}\right)
    &=
    \begin{cases}
    {\cal F}_s & \text{(surface)} \\

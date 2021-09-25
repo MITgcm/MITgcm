@@ -18,7 +18,7 @@ sinusoidally in the north-south direction and is constant in time. Topologically
 defined according to a mid-latitude beta-plane equation
 
 .. math::
-    f(y) = f_{0}+\beta y
+    f(y) = f_{0}+\beta y,
 
 where :math:`y` is the distance along the 'north-south' axis of the simulated domain. For this experiment :math:`f_{0}` is
 set to :math:`10^{-4}\text{s}^{-1}` and :math:`\beta = 10^{-11}\text{s}^{-1}\text{m}^{-1}`.
@@ -26,7 +26,7 @@ set to :math:`10^{-4}\text{s}^{-1}` and :math:`\beta = 10^{-11}\text{s}^{-1}\tex
 The sinusoidal wind-stress variations are defined according to
 
 .. math::
-   \tau_x(y) = -\tau_{0}\cos(\pi \frac{y}{L_y})
+   \tau_x(y) = -\tau_{0} \cos\left(\pi \frac{y}{L_y}\right),
 
 where :math:`L_{y}` is the lateral domain extent and
 :math:`\tau_0` is set to :math:`0.1 \text{N m}^{-2}`.
@@ -62,7 +62,7 @@ equations for this configuration as follows:
    :label: baro_model_eq_v
 
 .. math::
-    \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot H \vec{u}
+    \frac{\partial \eta}{\partial t} + \boldsymbol{\nabla}_{h}\cdot (H \vec{\bf u})
     = 0
     :label: baro_model_eq_eta
 
@@ -742,7 +742,7 @@ line  ``# momAdvection=.FALSE.,`` in file ``data`` and re-run the model. Any exi
 For the linearized equations, the Munk layer (equilibrium) analytical solution is given by:
 
 .. math::
-   \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin(\pi \frac{y}{L_y})
+   \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin\left(\pi \frac{y}{L_y}\right)
    \left[1 - \exp({\frac{-x}{2\delta_m}}) \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
 
 where :math:`\delta_m= ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}`. :numref:`lin_anal_soln`

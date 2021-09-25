@@ -105,21 +105,21 @@ here we use standard Cartesian geometry rather than spherical polar coordinates:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial x} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}u ) +
+     \boldsymbol{\nabla}_h \cdot ( -A_{h} \boldsymbol{\nabla}_h u ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    &= \mathcal{F}_u
      \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial y} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}v ) +
+     \boldsymbol{\nabla}_h \cdot ( -A_{h} \boldsymbol{\nabla}_h v ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    &= \mathcal{F}_v
  
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \left( H \vec{\widehat{u}} \right) = 0 
+      \frac{\partial \eta}{\partial t} + \boldsymbol{\nabla}_h \cdot \left( H \vec{\widehat{\bf u}} \right) = 0 
 
 .. math::
-   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   \frac{D\theta}{Dt} + \boldsymbol{\nabla}_h \cdot (-\kappa_{h} \boldsymbol{\nabla}_h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: channel_model_theta
@@ -164,8 +164,8 @@ using its own time stepping scheme.
 The fixed flux form of the momentum equations are solved, as described in :numref:`flux-form_momentum_equations`,
 with an implicit linear free surface (:numref:`press_meth_linear`). Laplacian diffusion of tracers and momentum is employed.
 The pressure forces that drive
-the fluid motions, :math:`\frac{\partial p^{'}}{\partial x}`
-and :math:`\frac{\partial p^{'}}{\partial y}`, are found by
+the fluid motions, :math:`\partial_x p^\prime`
+and :math:`\partial_y p^\prime`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The sea-surface height is found by solving implicitly the 2-D (elliptic) surface pressure equation
@@ -218,7 +218,7 @@ With :math:`\Delta t = 1000` s, we can choose :math:`A_{h}` to be as large as or
 very viscous solution. We anticipate a boundary current along the deep ridge and sloping notch on a scale given by Munk scaling:
 
 .. math::
-    M_{w} = \frac{2\pi}{\sqrt{3}} ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}.
+    M_{w} = \frac{2\pi}{\sqrt{3}} \left( \frac { A_{h} }{ \beta } \right)^{\frac{1}{3}}.
     :label: eq_SOch__munk_layer
 
 We can set :math:`A_{h}` to as low as 100 m\ :sup:`2` s\ :sup:`--1` and still comfortably resolve the

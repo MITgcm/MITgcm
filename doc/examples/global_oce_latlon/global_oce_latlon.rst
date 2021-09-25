@@ -134,8 +134,8 @@ of equations solved in this configuration as follows:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho}\frac{\partial p'}{\partial x} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}u -
-     \frac{\partial}{\partial z}A_{z}\frac{\partial u}{\partial z}
+     \boldsymbol{\nabla}_h \cdot (A_{h}\boldsymbol{\nabla}_h u) -
+     \frac{\partial}{\partial z}\left(A_{z}\frac{\partial u}{\partial z}\right)
    &=
    \begin{cases}
      \mathcal{F}_u & \text{(surface)} \\
@@ -144,8 +144,8 @@ of equations solved in this configuration as follows:
    \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho}\frac{\partial p'}{\partial y} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}v -
-     \frac{\partial}{\partial z}A_{z}\frac{\partial v}{\partial z}
+     \boldsymbol{\nabla}_h \cdot (A_{h}\boldsymbol{\nabla}_h v) -
+     \frac{\partial}{\partial z}\left(A_{z}\frac{\partial v}{\partial z}\right)
    &=
    \begin{cases}
      \mathcal{F}_v & \text{(surface)} \\
@@ -153,14 +153,14 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
+      \frac{\partial \eta}{\partial t} + \boldsymbol{\nabla}_h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_ts
 
    \frac{D\theta}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - \frac{\partial}{\partial z}\Gamma(K_{z})\frac{\partial\theta}{\partial z}
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h \theta)
+    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial\theta}{\partial z}\right)
    &=
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
@@ -168,8 +168,8 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{D s}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}s
-    - \frac{\partial}{\partial z}\Gamma(K_{z})\frac{\partial s}{\partial z}
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h s)
+    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial s}{\partial z}\right)
    &=
    \begin{cases}
    {\cal F}_s & \text{(surface)} \\
