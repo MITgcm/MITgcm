@@ -50,13 +50,12 @@ tensor is:
 
 .. math::
 
-   {\bf K}_{\rm Redi} = \frac{1}{1 + |{\bf S}|^2} \left(
-   \begin{array}{ccc}
+   {\bf K}_{\rm Redi} = \frac{1}{1 + |{\bf S}|^2} 
+   \begin{pmatrix}
    1 + S_y^2& -S_x S_y & S_x \\
    -S_x S_y  & 1 + S_x^2 & S_y \\
    S_x & S_y & |{\bf S}|^2 \\
-   \end{array}
-   \right) .
+   \end{pmatrix} .
 
 Here, :math:`S_x = -\partial_x \sigma / \partial_z \sigma`,
 :math:`S_y =
@@ -96,11 +95,11 @@ of a streamfunction
 .. math::
 
    {\bf u}^\star = \boldsymbol{\nabla} \times {\bf F}^\star =
-   \left( \begin{array}{c}
+   \begin{pmatrix}
    - \partial_z  F_y^\star \\
    + \partial_z  F_x^\star \\
    \partial_x F_y^\star - \partial_y F_x^\star
-   \end{array} \right),
+   \end{pmatrix} ,
 
 and thus is automatically non-divergent. In the GM parameterization, the
 streamfunction is specified in terms of the isoneutral slopes
@@ -119,19 +118,17 @@ parameterization is given by:
 
 .. math::
 
-   {\bf u}^\star = \left(
-   \begin{array}{c}
+   {\bf u}^\star =
+   \begin{pmatrix}
    u^\star \\
    v^\star \\
    w^\star
-   \end{array}
-   \right) = \left(
-   \begin{array}{c}
+   \end{pmatrix} =
+   \begin{pmatrix}
    - \partial_z (\kappa_{\rm GM} S_x) \\
    - \partial_z (\kappa_{\rm GM} S_y) \\
-   \partial_x  (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
-   \end{array}
-   \right).
+   \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
+   \end{pmatrix} .
 
 This is the form of the GM parameterization as applied by Donabasaglu,
 1997, in MOM versions 1 and 2.
@@ -141,22 +138,18 @@ streamfunction are:
 
 .. math::
 
-   \left(
-   \begin{array}{c}
+   \begin{pmatrix}
    \texttt{GM_PsiX} \\
    \texttt{GM_PsiY}
-   \end{array}
-   \right) = \left(
-   \begin{array}{c}
+   \end{pmatrix} =
+   \begin{pmatrix}
    \kappa_{\rm GM} S_x \\
    \kappa_{\rm GM} S_y
-   \end{array}
-   \right)= \left(
-   \begin{array}{c}
+   \end{pmatrix} =
+   \begin{pmatrix}
    F_y^\star \\
    -F_x^\star
-   \end{array}
-   \right).
+   \end{pmatrix} .
 
 .. _sub_gmredi_skewflux:
 
@@ -173,23 +166,24 @@ be re-written in terms of a non-divergent flux and a skew-flux:
    \begin{aligned}
    {\bf u}^\star \tau
    & = 
-   \left( \begin{array}{c}
+   \begin{pmatrix}
    - \partial_z ( \kappa_{\rm GM} S_x ) \tau \\
    - \partial_z ( \kappa_{\rm GM} S_y ) \tau \\
-   (\partial_x \kappa_{\rm GM} S_x + \partial_y \kappa_{\rm GM} S_y)\tau
-   \end{array} \right)
+   \big[ \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y) \big] \tau
+   \end{pmatrix}
    \\
    & = 
-   \left( \begin{array}{c}
+   \begin{pmatrix}
    - \partial_z ( \kappa_{\rm GM} S_x \tau) \\
    - \partial_z ( \kappa_{\rm GM} S_y \tau) \\
    \partial_x ( \kappa_{\rm GM} S_x \tau) + \partial_y ( \kappa_{\rm GM} S_y \tau)
-   \end{array} \right)
-   + \left( \begin{array}{c}
+   \end{pmatrix}
+   + \begin{pmatrix}
     \kappa_{\rm GM} S_x \partial_z \tau \\
     \kappa_{\rm GM} S_y \partial_z \tau \\
    - \kappa_{\rm GM} S_x \partial_x \tau - \kappa_{\rm GM} S_y \partial_y \tau
-   \end{array} \right).\end{aligned}
+   \end{pmatrix}.
+   \end{aligned}
 
 The first vector is non-divergent and thus has no effect on the tracer
 field and can be dropped. The remaining flux can be written:
@@ -202,12 +196,11 @@ where
 
    {\bf K}_{\rm GM} =
    \left(
-   \begin{array}{ccc}
+   \begin{pmatrix}
    0 & 0 & -S_x \\
    0 & 0 & -S_y \\
    S_x & S_y & 0
-   \end{array}
-   \right) ,
+   \end{pmatrix} ,
 
 is an anti-symmetric tensor.
 
@@ -269,10 +262,10 @@ over-line). A local Richardson number is defined
 .. math::
 
    \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
-   \frac{ \left ( g \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
+   \frac{ \left ( \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 } ,
 
-where :math:`M^2 = \frac{g}{\rho_0} | \boldsymbol{\nabla} \sigma|`. Substituting into
+where :math:`M^2 = g | \boldsymbol{\nabla} \sigma| / \rho_0`. Substituting into
 the formula for :math:`\kappa_{\rm GM}` gives:
 
 .. math::
