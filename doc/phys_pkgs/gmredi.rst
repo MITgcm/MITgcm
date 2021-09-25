@@ -7,14 +7,14 @@ GMREDI: Gent-McWilliams/Redi SGS Eddy Parameterization
 There are two parts to the Redi/GM parameterization of geostrophic
 eddies. The first, the Redi scheme :cite:`redi1982`, aims to mix tracer properties along
 isentropes (neutral surfaces) by means of a diffusion operator oriented
-along the local isentropic surface. The second part, GM :cite:`gen-mcw:90,gen-eta:95` , adiabatically
+along the local isentropic surface. The second part, GM :cite:`gen-mcw:90,gen-eta:95`, adiabatically
 re-arranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
 
 The first GCM implementation of the Redi scheme was by :cite:`cox87` in the GFDL ocean
 circulation model. The original approach failed to distinguish between
 isopycnals and surfaces of locally referenced potential density (now
-called neutral surfaces) which are proper isentropes for the ocean. As
+called neutral surfaces), which are proper isentropes for the ocean. As
 will be discussed later, it also appears that the Cox implementation is
 susceptible to a computational mode. Due to this mode, the Cox scheme
 requires a background lateral diffusion to be present to conserve the
@@ -27,7 +27,7 @@ condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
 Here in lies a problem highlighted by :cite:`gretal:98`: the bolus velocities involve
 multiple derivatives on the potential density field, which can
-consequently give rise to noise. Griffies et al. point out that the GM
+consequently give rise to noise. Griffies :cite:`gr:98` points out that the GM
 bolus fluxes can be identically written as a skew flux which involves
 fewer differential operators. Further, combining the skew flux
 formulation and Redi scheme, substantial cancellations take place to the
@@ -67,19 +67,16 @@ The first point to note is that a typical slope in the ocean interior is
 small, say of the order :math:`10^{-4}`. A maximum slope might be of
 order :math:`10^{-2}` and only exceeds such in unstratified regions
 where the slope is ill-defined. It is, therefore, justifiable, and
-customary, to make the small-slope approximation, :math:`|{\bf S}| \ll 1`. The
+customary, to make the small-slope approximation, i.e., :math:`|{\bf S}| \ll 1`. Then
 Redi projection tensor then simplifies to:
 
 .. math::
-
-   {\bf K}_{\rm Redi} = \left(
-   \begin{array}{ccc}
+   {\bf K}_{\rm Redi} =
+   \begin{pmatrix}
    1 & 0 & S_x \\
    0 & 1 & S_y \\
    S_x & S_y & |{\bf S}|^2 \\
-   \end{array}
-   \right) .
-
+   \end{pmatrix}.
 .. _GM_bolus_desc:  
 
 GM parameterization
@@ -229,15 +226,13 @@ the Redi isoneutral mixing scheme:
 If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
 
 .. math::
-
    \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} =
    \kappa_\rho
-   \left( \begin{array}{ccc}
+   \begin{pmatrix}
    1 & 0 & 0 \\
    0 & 1 & 0 \\
    2 S_x & 2 S_y & |{\bf S}|^2 
-   \end{array}
-   \right),
+   \end{pmatrix},
 
 which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
@@ -274,7 +269,7 @@ over-line). A local Richardson number is defined
 .. math::
 
    \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
-   \frac{ \left ( \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
+   \frac{ \left ( g \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 } ,
 
 where :math:`M^2 = \frac{g}{\rho_0} | \boldsymbol{\nabla} \sigma|`. Substituting into
@@ -347,9 +342,9 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\boldsymbol{\nabla} \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 } ,\\
-   S_{\rm lim} & = - \frac{|\boldsymbol{\nabla} \sigma|}{ S_{\max} }, 
-   \;\;\;\;\;\;\;\; \mbox{where $S_{\max}$ is a parameter} ,\\
+   |\boldsymbol{\nabla}_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 } ,\\
+   S_{\rm lim} & = - \frac{|\boldsymbol{\nabla}_h \sigma|}{ S_{\max} }, 
+   \quad \mbox{where $S_{\max}>0$ is a parameter} ,\\
    \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) , \\
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star} .
    \end{aligned}
@@ -363,7 +358,7 @@ Notice that this algorithm assumes stable stratification through the
 while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
 become:
 
-.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\boldsymbol{\nabla} \sigma| / S_{\max}} ,
+.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\boldsymbol{\nabla}_h \sigma| / S_{\max}} ,
 
 so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
 S_{\max}`.
