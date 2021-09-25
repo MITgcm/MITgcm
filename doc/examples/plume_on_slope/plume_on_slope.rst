@@ -67,26 +67,26 @@ instability is suppressed at low Reynolds and Peclet numbers given by
 where :math:`h` is the depth of the dense fluid on the slope. Hence
 this experiment is carried out in the high Re, Pe regime. A further
 constraint is that the convective heat flux must be much greater than
-the diffusive heat flux (Nusselt number :math:`>> 1`). Then
+the diffusive heat flux (Nusselt number :math:`\gg  1`). Then
 
-.. math:: Nu = \frac{U h^* }{\kappa} >> 1
+.. math:: Nu = \frac{U h^* }{\kappa} \gg  1
 
 Finally, since we have assumed that the convective mixing on the shelf
 occurs in a much shorter time than the horizontal equilibration, this
-implies :math:`H/R << 1`.
+implies :math:`H/R \ll 1`.
 
 Hence to summarize the important non-dimensional parameters, and the
 limits we are considering:
 
 .. math::
 
-   \frac{H}{R} << 1 \mbox{ ; } Re >> 1 \mbox{  ; } Pe >> 1 \mbox{  ; } Nu >> 1
-   \mbox{  ;  } \mbox{  ; } Ri < 1/4
+   \frac{H}{R} \ll  1 \mbox{ ; } Re \gg  1 \mbox{  ; } Pe \gg  1 \mbox{  ; } Nu \gg  1
+   \mbox{  ;  } \mbox{  ; } Ri < 1/4 .
 
 In addition we are assuming that the slope is steep enough to provide
 sufficient acceleration to the gravity plume, but nonetheless much less
 that 1:1, since many Kelvin-Helmholtz billows appear on the
-slope, implying horizontal length scale of the slope :math:`>>` the depth
+slope, implying horizontal length scale of the slope :math:`\gg` the depth
 of the dense fluid.
 
 Configuration

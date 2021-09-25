@@ -8,7 +8,7 @@ incompressible) HPE’s for the ocean written in :math:`z-`\coordinates are
 obtained. The non-Boussinesq equations for oceanic motion are:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p  = \vec{\mathbf{\mathcal{F}}} 
    :label: non-boussinesq_horizmom
 
@@ -64,7 +64,7 @@ assumed adiabatic motion, dropping the :math:`\frac{D\theta }{Dt}` and
 yields a system that can be explicitly integrated forward:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-cns-hmom 
 
@@ -98,7 +98,7 @@ retains the full variation in :math:`\rho` is the gravitational
 acceleration:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+ f \hat{\boldsymbol{k}} \times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-zcb-hmom
 
@@ -157,9 +157,9 @@ from differentiating the EOS, the continuity equation then becomes:
 
 If the time- and space-scales of the motions of interest are longer
 than those of acoustic modes, then
-:math:`\frac{Dp^{\prime }}{Dt}<<(\frac{Dp_{o}}{Dt}, \mathbf{\boldsymbol{\nabla}}\cdot \vec{\mathbf{v}}_{h})`
+:math:`\frac{Dp^{\prime }}{Dt}\ll (\frac{Dp_{o}}{Dt}, \mathbf{\boldsymbol{\nabla}}\cdot \vec{\mathbf{v}}_{h})`
 in the continuity equations and :math:`\left. \frac{\partial \rho }{\partial p}\right| _{\theta ,S}\frac{
-Dp^{\prime }}{Dt}<<\left. \frac{\partial \rho }{\partial p}\right| _{\theta
+Dp^{\prime }}{Dt}\ll \left. \frac{\partial \rho }{\partial p}\right| _{\theta
 ,S}\frac{Dp_{o}}{Dt}` in the EOS :eq:`EOSexpansion`. Thus we set :math:`\epsilon_{s}=0`, removing the
 dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 :math:`\frac{Dp_{o}(z)}{Dt}=-g\rho _{o}w` then leads to the anelastic continuity equation:
@@ -172,7 +172,7 @@ dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 A slightly different route leads to the quasi-Boussinesq continuity
 equation where we use the scaling
 :math:`\frac{\partial \rho ^{\prime }}{\partial t}+
-\mathbf{\boldsymbol{\nabla}}_{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}<<\mathbf{\boldsymbol{\nabla}}
+\mathbf{\boldsymbol{\nabla}}_{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll \mathbf{\boldsymbol{\nabla}}
 _{3}\cdot \rho _{o}\vec{\mathbf{v}}` yielding:
 
 .. math::
@@ -192,7 +192,7 @@ be referred to those same profiles. The full set of ‘quasi-Boussinesq’ or �
 equations for the ocean are then:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-zab-hmom
 
@@ -227,7 +227,7 @@ and so, technically, to also remove the dependence of :math:`\rho` on
 equations:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-ztb-hmom
 
@@ -276,7 +276,7 @@ This then yields what we can call the semi-compressible Boussinesq
 equations:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p^{\prime } = \vec{\mathbf{
    \mathcal{F}}}
    :label: eq-ocean-mom

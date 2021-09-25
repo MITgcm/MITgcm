@@ -138,7 +138,7 @@ configuration:
 
 .. math::
    \frac{\partial \vec{\mathbf{v}}_h}{\partial t}
-   +(f + \zeta)\hat{\mathbf{k}} \times \vec{\mathbf{v}}_h
+   +(f + \zeta)\hat{\boldsymbol{k}} \times \vec{\mathbf{v}}_h
    +\mathbf{\boldsymbol{\nabla}}_{p} (\rm{KE})
    + \omega \frac{\partial \vec{\mathbf{v}}_h }{\partial p}
    +\mathbf{\boldsymbol{\nabla}}_p \Phi ^{\prime }
@@ -162,7 +162,7 @@ configuration:
 where :math:`\vec{\mathbf{v}}_h` and :math:`\omega = \frac{Dp}{Dt}` are
 the horizontal velocity vector and the vertical velocity in pressure
 coordinate, :math:`\zeta` is the relative vorticity and :math:`f` the
-Coriolis parameter, :math:`\hat{\mathbf{k}}` is the vertical unity
+Coriolis parameter, :math:`\hat{\boldsymbol{k}}` is the vertical unity
 vector, :math:`\rm{KE}` is the kinetic energy, :math:`\Phi` is the geopotential, and
 :math:`\Pi` the Exner function
 (:math:`\Pi = C_p (p/p_c)^\kappa` with :math:`p_c = 10^5` Pa). Primed variables

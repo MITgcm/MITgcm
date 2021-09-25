@@ -876,7 +876,7 @@ tendency of the flow as follows:
 Substituting into the depth integrated continuity
 (equation :eq:`discrete-time-backward-free-surface`) gives
 
-.. math::
+.. math:
    \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
    + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
     - \frac{\epsilon_{fs}\eta^{n+1}}{\Delta t^2}
@@ -886,7 +886,7 @@ Substituting into the depth integrated continuity
 which is approximated by equation :eq:`elliptic-backward-free-surface`
 on the basis that i) :math:`\phi_{nh}^{n+1}` is not yet known and ii)
 :math:`\nabla \widehat{\phi}_{nh}
-<< g \nabla \eta`. If :eq:`elliptic-backward-free-surface` is solved
+\ll  g \nabla \eta`. If :eq:`elliptic-backward-free-surface` is solved
 accurately then the implication is that :math:`\widehat{\phi}_{nh}
 \approx 0` so that the non-hydrostatic pressure field does not drive
 barotropic motion.

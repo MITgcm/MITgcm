@@ -67,7 +67,7 @@ The first point to note is that a typical slope in the ocean interior is
 small, say of the order :math:`10^{-4}`. A maximum slope might be of
 order :math:`10^{-2}` and only exceeds such in unstratified regions
 where the slope is ill defined. It is therefore justifiable, and
-customary, to make the small slope approximation, :math:`|S| << 1`. The
+customary, to make the small slope approximation, :math:`|S| \ll  1`. The
 Redi projection tensor then becomes:
 
 .. math::

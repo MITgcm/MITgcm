@@ -6,7 +6,7 @@ Hydrostatic Primitive Equations for the Atmosphere in Pressure Coordinates
 The hydrostatic primitive equations (**HPE**’s) in :math:`p-`\coordinates are:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}_{h}+\mathbf{\boldsymbol{\nabla}}_{p}\phi = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}_{h}+\mathbf{\boldsymbol{\nabla}}_{p}\phi = \vec{\mathbf{\mathcal{F}}}
    :label: atmos-mom
  
 .. math::
@@ -143,7 +143,7 @@ horizontally homogeneous atmosphere at rest
 The final form of the **HPE**’s in :math:`p-`\coordinates is then:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\mathbf{\boldsymbol{\nabla}}_{p}\phi ^{\prime } = \vec{\mathbf{\mathcal{F}}} 
    :label: atmos-prime
 
