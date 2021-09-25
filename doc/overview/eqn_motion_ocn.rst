@@ -144,7 +144,7 @@ continuity and EOS. A better solution is to change the dependency on
 pressure in the EOS by splitting the pressure into a reference function
 of height and a perturbation:
 
-.. math:: \rho =\rho (\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime })
+.. math:: \rho =\rho (\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime }).
 
 Remembering that the term :math:`\frac{Dp}{Dt}` in continuity comes
 from differentiating the EOS, the continuity equation then becomes:
@@ -153,7 +153,7 @@ from differentiating the EOS, the continuity equation then becomes:
 
    \frac{1}{\rho _{o}c_{s}^{2}}\left( \frac{Dp_{o}}{Dt}+\epsilon _{s}\frac{
    Dp^{\prime }}{Dt}\right) +\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+
-   \frac{\partial w}{\partial z}=0
+   \frac{\partial w}{\partial z}=0.
 
 If the time- and space-scales of the motions of interest are longer
 than those of acoustic modes, then
@@ -166,7 +166,7 @@ dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 
 .. math::
    \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
-   \frac{g}{c_{s}^{2}}w = 0
+   \frac{g}{c_{s}^{2}}w = 0.
    :label: eq-za-cont1
 
 A slightly different route leads to the quasi-Boussinesq continuity
@@ -177,13 +177,13 @@ _{3}\cdot \rho _{o}\vec{\mathbf{v}}` yielding:
 
 .. math::
    \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
-   \partial \left( \rho _{o}w\right) }{\partial z} = 0
+   \partial \left( \rho _{o}w\right) }{\partial z} = 0.
    :label: eq-za-cont2
 
 Equations :eq:`eq-za-cont1` and :eq:`eq-za-cont2` are in fact the same equation
 if:
 
-.. math:: \frac{1}{\rho _{o}}\frac{\partial \rho _{o}}{\partial z}=\frac{-g}{c_{s}^{2}}
+.. math:: \frac{1}{\rho _{o}}\frac{\partial \rho _{o}}{\partial z} = -\frac{g}{c_{s}^{2}},
 
 Again, note that if :math:`\rho _{o}` is evaluated from prescribed
 :math:`\theta _{o}` and :math:`S_{o}` profiles, then the EOS dependency
@@ -193,29 +193,29 @@ equations for the ocean are then:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}},
    :label: eq-zab-hmom
 
 .. math::
    \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w},
    :label: eq-zab-hydro
 
 .. math::
    \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
-   \partial \left( \rho _{o}w\right) }{\partial z} = 0
+   \partial \left( \rho _{o}w\right) }{\partial z} = 0,
    :label: eq-zab-cont
 
 .. math::
-   \rho = \rho (\theta ,S,p_{o}(z))
+   \rho = \rho (\theta ,S,p_{o}(z)),
    :label: eq-zab-eos
 
 .. math::
-   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta }
+   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta },
    :label: eq-zab-heat
 
 .. math::
-   \frac{DS}{Dt} = \mathcal{Q}_{s}
+   \frac{DS}{Dt} = \mathcal{Q}_{s}.
    :label: eq-zab-salt
 
 Incompressible z-coordinate equations
@@ -228,28 +228,28 @@ equations:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}},
    :label: eq-ztb-hmom
 
 .. math::
    \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{c}}+\frac{1}{\rho _{c}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w},
    :label: eq-ztb-hydro
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0,
    :label: eq-ztb-cont
 
 .. math::
-   \rho = \rho (\theta ,S)
+   \rho = \rho (\theta ,S),
    :label: eq-ztb-eos
 
 .. math::
-   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta }
+   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta },
    :label: eq-ztb-heat
 
 .. math::
-   \frac{DS}{Dt} = \mathcal{Q}_{s}
+   \frac{DS}{Dt} = \mathcal{Q}_{s},
    :label: eq-ztb-salt
 
 where :math:`\rho _{c}` is a constant reference density of water.
@@ -262,15 +262,15 @@ and the density. In many oceanic applications, however, it is important
 to retain compressibility effects in the density. To do this we must
 split the density thus:
 
-.. math:: \rho =\rho _{o}+\rho ^{\prime }
+.. math:: \rho =\rho _{o}+\rho ^{\prime },
 
 We then assert that variations with depth of :math:`\rho _{o}` are
 unimportant while the compressible effects in :math:`\rho ^{\prime }`
 are:
 
-.. math:: \rho _{o}=\rho _{c}
+.. math:: \rho _{o}=\rho _{c},
 
-.. math:: \rho ^{\prime }=\rho (\theta ,S,p_{o}(z))-\rho _{o}
+.. math:: \rho ^{\prime }=\rho (\theta ,S,p_{o}(z))-\rho _{o},
 
 This then yields what we can call the semi-compressible Boussinesq
 equations:
@@ -278,28 +278,28 @@ equations:
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
    _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p^{\prime } = \vec{\mathbf{
-   \mathcal{F}}}
+   \mathcal{F}}},
    :label: eq-ocean-mom
 
 .. math::
    \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho ^{\prime }}{\rho _{c}}+\frac{1}{\rho
-   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{nh}\mathcal{F}_{w},
    :label: eq-ocean-wmom
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0,
    :label: eq-ocean-cont
 
 .. math::
-   \rho ^{\prime } = \rho (\theta ,S,p_{o}(z))-\rho _{c}
+   \rho ^{\prime } = \rho (\theta ,S,p_{o}(z))-\rho _{c},
    :label: eq-ocean-eos
 
 .. math::
-   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta }
+   \frac{D\theta }{Dt} = \mathcal{Q}_{\theta },
    :label: eq-ocean-theta
 
 .. math::
-   \frac{DS}{Dt} = \mathcal{Q}_{s}
+   \frac{DS}{Dt} = \mathcal{Q}_{s}.
    :label: eq-ocean-salt
 
 Note that the hydrostatic pressure of the resting fluid, including that
