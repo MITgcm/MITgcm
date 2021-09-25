@@ -1999,16 +1999,18 @@ The package computes the three components of the relative vorticity,
 
 .. math::
    \begin{aligned}
-     \boldsymbol{\omega} &= \nabla \times {\bf U} = \left( \begin{array}{c}
+     \boldsymbol{\omega} &= \boldsymbol{\nabla} \times {\bf U}
+     = \begin{pmatrix}
          \omega_x\\
          \omega_y\\
          \zeta
-     \end{array}\right)
-        \simeq & \left( \begin{array}{c}
-         -\frac{\partial v}{\partial z}\\
-         -\frac{\partial u}{\partial z}\\
-         \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y}
-     \end{array}\right),
+     \end{pmatrix}
+     \simeq
+     \begin{pmatrix}
+         -\partial_z v\\
+         -\partial_z u\\
+         \partial_x v - \partial_y u
+     \end{pmatrix},
    \end{aligned}
    :label: pv_eq1
 
@@ -2053,7 +2055,7 @@ by:
    :label: pv_eq14a
 
 .. math::
-   J^F_z = \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m
+   J^F_z = \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma_m
   :label: pv_eq15a
 
 These components can be computed with the package. Details on the
@@ -2072,7 +2074,7 @@ Let’s take the PV flux due to surface buoyancy forcing from
 .. math::
 
    \begin{aligned}
-     J^B_z &\simeq& -\frac{\alpha f}{hC_w} Q_{net}\end{aligned}
+     J^B_z \simeq -\frac{\alpha f}{hC_w} Q_{net}\end{aligned}
 
 When the net surface heat flux :math:`Q_{net}` is upward, i.e., negative
 and cooling the ocean (buoyancy loss), surface density will increase,
@@ -2105,10 +2107,11 @@ mixing which reduces the stratification and the PV.
 
 .. math::
    \begin{aligned}
-    \vec{k} \times \tau \cdot \boldsymbol{\nabla}\sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
+    (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla} \sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
     J^F_z &> 0 \phantom{WWW}\text{(upward)} \\
      -\rho^{-1} \boldsymbol{\nabla} \cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
-     PV &\searrow \phantom{WWW}\text{where } \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma>0 \end{aligned}
+     PV &\searrow \phantom{WWW}\text{where } (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma>0
+   \end{aligned}
 
 
 Diabatic versus frictional processes
@@ -2121,18 +2124,19 @@ processes. Taking the ratio of :eq:`pv_eq14a` and
 .. math::
 
    \begin{aligned}
-     \frac{J^F_z}{J^B_Z} & = \frac{ \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma }
-     {-\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right)} \\
-     &\simeq& \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber\end{aligned}
+     \frac{J^F_z}{J^B_Z} & = \frac{ \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma }
+     {-\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)} \\
+     &\simeq \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber
+   \end{aligned}
 
 where appears the lateral heat flux induced by Ekman currents:
 
 .. math::
 
    \begin{aligned}
-     Q_{Ek} & = -\frac{C_w}{\alpha\rho f}\vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma
+     Q_{Ek} & = -\frac{C_w}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma
      \nonumber \\
-     & = \frac{C_w}{\alpha}\delta_e\vec{u_{Ek}}\cdot \boldsymbol{\nabla}\sigma\end{aligned}
+     & = \frac{C_w}{\alpha}\delta_e \vec{u}_{Ek} \cdot \boldsymbol{\nabla}\sigma\end{aligned}
 
 which can be computed with the package. In the aim of comparing both
 processes, it will be useful to plot surface net and lateral
@@ -2286,7 +2290,8 @@ The conservative flux form of the potential vorticity equation is:
 
 .. math::
    \begin{aligned}
-   \frac{\partial \rho Q}{\partial t} + \nabla \cdot \vec{J} & = 0 \end{aligned}
+   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{\bf J} & = 0,
+   \end{aligned}
    :label: pv_eq4
 
 where the potential vorticity :math:`Q` is given by :eq:`pv_eq2`.
@@ -2295,39 +2300,45 @@ The generalized flux vector of potential vorticity is:
 
 .. math::
    \begin{aligned}
-    \vec{J} & = \rho Q \vec{u} + \vec{N_Q}\end{aligned}
+    \vec{\bf J} & = \rho Q \vec{\bf u} + \vec{N_Q},
+   \end{aligned}
 
 which allows to rewrite :eq:`pv_eq4` as:
 
 .. math::
    \begin{aligned}
-   \frac{DQ}{dt} & = -\frac{1}{\rho}\boldsymbol{\nabla} \cdot\vec{N_Q}\end{aligned}
+   \frac{DQ}{dt} & = - \frac{1}{\rho}\boldsymbol{\nabla} \cdot \vec{\bf N}_Q,
+   \end{aligned}
    :label: pv_eq5
 
 where the non-advective PV flux :math:`\vec{N_Q}` is given by:
 
 .. math::
    \begin{aligned}
-   \vec{N_Q} & = -\frac{\rho_0}{g}B\vec{\omega_a} + \vec{F}\times\nabla\sigma_\theta \end{aligned}
+   \vec{\bf N}_Q & = -\frac{\rho_0}{g}B \vec{\boldsymbol{\omega}}_a + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta.
+   \end{aligned}
    :label: pv_eq6
 
 Its first component is linked to the buoyancy forcing:
 
 .. math::
    \begin{aligned}
-    B & = -\frac{g}{\rho_o}\frac{D \sigma_\theta}{dt} \end{aligned}
+    B & = -\frac{g}{\rho_o}\frac{D \sigma_\theta}{dt},
+   \end{aligned}
 
 and the second one to the non-conservative body forces per unit mass:
 
 .. math::
    \begin{aligned}
-    \vec{F} & = \frac{D \vec{u}}{dt} + 2 \vec{\Omega} \times\vec{u} + \nabla p \end{aligned}
+    \vec{\bf F} & = \frac{D \vec{\bf u}}{Dt} + 2 \vec{\boldsymbol{\Omega}} \times \vec{\bf u} + \boldsymbol{\nabla} p.
+   \end{aligned}
 
 Note that introducing :math:`B` into :eq:`pv_eq6` yields:
 
    .. math::
       \begin{aligned}
-        \vec{N_Q} & = \omega_a \frac{D \sigma_\theta}{dt} + \vec{F}\times\nabla\sigma_\theta\end{aligned}
+        \vec{\bf N}_Q & = \boldsymbol{\omega}_a \frac{D \sigma_\theta}{dt} + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta.
+      \end{aligned}
 
 
 Determining the PV flux at the ocean’s surface
@@ -2337,8 +2348,8 @@ In the context of mode water study, we are particularly interested in how
 the PV may be reduced by surface PV fluxes because a mode water is
 characterized by a low PV value. Considering the volume limited by two
 :math:`iso-\sigma_\theta`, PV flux is limited to surface processes and
-then vertical component of :math:`\vec{N_Q}`. It is supposed that
-:math:`B` and :math:`\vec{F}` will only be non-zero in the mixed layer
+then vertical component of :math:`\vec{\bf N}_Q`. It is supposed that
+:math:`B` and :math:`\vec{\bf F}` will only be non-zero in the mixed layer
 (of depth :math:`h` and variable density :math:`\sigma_m`) exposed to
 mechanical forcing by the wind and buoyancy fluxes through the ocean’s
 surface.
@@ -2349,55 +2360,62 @@ package) and of hydrostatic and geostrophic balances, we can write:
 
 .. math::
    \begin{aligned}
-     \vec{u_g} & = \frac{1}{\rho f} \vec{k}\times\nabla p \\
+     \vec{\bf u}_g & = \frac{1}{\rho f} \hat{\boldsymbol{k}} \times \boldsymbol{\nabla} p \\
      \frac{\partial p_m}{\partial z} & = -\sigma_m g \\
-     \frac{\partial \sigma_m}{\partial t} + \vec{u}_m\cdot \boldsymbol{\nabla}\sigma_m & = -\frac{\rho_0}{g}B \end{aligned}
+     \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_m \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g}B,
+   \end{aligned}
    :label: pv_eq7
 
 where:
 
 .. math::
    \begin{aligned}
-     \vec{u}_m & = \vec{u}_g + \vec{u}_{Ek} + o(R_o) \end{aligned}
+     \vec{\bf u}_m & = \vec{\bf u}_g + \vec{\bf u}_{Ek} + o(R_o),
+   \end{aligned}
    :label: pv_eq8
 
 is the full velocity field composed of the geostrophic current
-:math:`\vec{u}_g` and the Ekman drift:
+:math:`\vec{\bf u}_g` and the Ekman drift:
 
 .. math::
   \begin{aligned}
-     \vec{u}_{Ek} & = -\frac{1}{\rho f}\vec{k}\times\frac{\partial \tau}{\partial z}\end{aligned}
+     \vec{\bf u}_{Ek} & = -\frac{1}{\rho f} \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z},
+   \end{aligned}
   :label: pv_eq9
 
-(where :math:`\tau` is the wind stress) and last by other ageostrophic
+(where :math:`\boldsymbol{\tau}` is the wind stress) and last by other ageostrophic
 components of :math:`o(R_o)` which are neglected.
 
 Partitioning the buoyancy forcing as:
 
 .. math::
    \begin{aligned}
-     B & = B_g + B_{Ek}\end{aligned}
+     B & = B_g + B_{Ek},
+   \end{aligned}
    :label: pv_eq10
 
 and using :eq:`pv_eq8` and :eq:`pv_eq9`, :eq:`pv_eq7` becomes:
 
 .. math::
    \begin{aligned}
-    \frac{\partial \sigma_m}{\partial t} + \vec{u}_g\cdot \boldsymbol{\nabla}\sigma_m & = -\frac{\rho_0}{g} B_g\end{aligned}
+    \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_g \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g} B_g,
+   \end{aligned}
 
 revealing the “wind-driven buoyancy forcing”:
 
 .. math::
    \begin{aligned}
-     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\vec{k}\times\frac{\partial \tau}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
+     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m.
+   \end{aligned}
 
 Note that since:
 
 .. math::
    \begin{aligned}
-     \frac{\partial B_g}{\partial z} & = \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0}\vec{u_g}\cdot \boldsymbol{\nabla}\sigma_m\right)
-     = -\frac{g}{\rho_0}\frac{\partial \vec{u_g}}{\partial z}\cdot \boldsymbol{\nabla}\sigma_m
-     = 0\end{aligned}
+     \frac{\partial B_g}{\partial z} & = \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0} \vec{\bf u}_g \cdot \boldsymbol{\nabla}\sigma_m\right)
+     = -\frac{g}{\rho_0}\frac{\partial \vec{\bf u}_g}{\partial z} \cdot \boldsymbol{\nabla} \sigma_m
+     = 0.
+   \end{aligned}
 
 :math:`B_g` must be uniform throughout the depth of the mixed layer and
 then being related to the surface buoyancy flux by integrating
@@ -2405,14 +2423,16 @@ then being related to the surface buoyancy flux by integrating
 
 .. math::
    \begin{aligned}
-     \int_{-h}^0B\,dz &=\, hB_g + \int_{-h}^0B_{Ek}\,dz  \,=& \mathcal{B}_{in}\end{aligned}
+     \int_{-h}^0 B\,dz &= h B_g + \int_{-h}^0 B_{Ek}\,dz = \mathcal{B}_{in},
+   \end{aligned}
    :label: pv_eq11
 
 where :math:`\mathcal{B}_{in}` is the vertically integrated surface buoyancy (in)flux:
 
 .. math::
    \begin{aligned}
-     \mathcal{B}_{in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0\beta S_{net}\right)\end{aligned}
+     \mathcal{B}_{in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0\beta S_{net}\right),
+   \end{aligned}
    :label: pv_eq12
 
 with :math:`\alpha\simeq 2.5\times10^{-4}\, \text{K}^{-1}` the thermal
@@ -2429,31 +2449,33 @@ Introducing the body force in the Ekman layer:
 
 .. math::
    \begin{aligned}
-     F_z & = \frac{1}{\rho}\frac{\partial \tau}{\partial z}\end{aligned}
+     F_z & = \frac{1}{\rho}\frac{\partial \boldsymbol{\tau}}{\partial z}
+   \end{aligned}
 
 the vertical component of :eq:`pv_eq6` is:
 
 .. math::
    \begin{aligned}
-     \vec{N_Q}_z &= -\frac{\rho_0}{g}(B_g+B_{Ek})\omega_z
+     \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= -\frac{\rho_0}{g}(B_g+B_{Ek}) \omega_z
      + \frac{1}{\rho}
-     \left( \frac{\partial \tau}{\partial z}\times\nabla\sigma_\theta \right)\cdot\vec{k} \\
+     \left( \frac{\partial \boldsymbol{\tau}}{\partial z} \times \boldsymbol{\nabla} \sigma_\theta \right) \cdot \hat{\boldsymbol{k}} \\
      &= -\frac{\rho_0}{g}B_g\omega_z
      -\frac{\rho_0}{g}
-     \left(\frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times\frac{\partial \tau}{\partial z}
-       \cdot \boldsymbol{\nabla}\sigma_m\right)\omega_z
+     \left[ \frac{g}{\rho_0}\frac{1}{\rho f} \left( \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z} \right)
+       \cdot \boldsymbol{\nabla}\sigma_m \right]\omega_z
      + \frac{1}{\rho}
-     \left( \frac{\partial \tau}{\partial z}\times\nabla\sigma_\theta \right)\cdot\vec{k}\\
+     \left( \frac{\partial \boldsymbol{\tau}}{\partial z}\times\boldsymbol{\nabla} \sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\\
      &= -\frac{\rho_0}{g}B_g\omega_z
-     + \left(1-\frac{\omega_z}{f}\right)\left(\frac{1}{\rho}\frac{\partial \tau}{\partial z}
-                   \times\nabla\sigma_\theta \right)\cdot\vec{k}\end{aligned}
+     + \left(1-\frac{\omega_z}{f}\right)\left(\frac{1}{\rho}\frac{\partial \boldsymbol{\tau}}{\partial z}
+                   \times\boldsymbol{\nabla}\sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\end{aligned}
 
 and given the assumption that :math:`\omega_z\simeq f`, the second term
 vanishes and we obtain:
 
 .. math::
    \begin{aligned}
-     \vec{N_Q}_z & = -\frac{\rho_0}{g}f B_g\end{aligned}
+     {{\vec{\bf N}}_Q}_z & = -\frac{\rho_0}{g}f B_g .
+   \end{aligned}
    :label: pv_eq13
 
 Note that the wind-stress forcing does not appear explicitly here but
@@ -2468,18 +2490,18 @@ integrated “wind-driven buoyancy forcing”:
      B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
      - \frac{1}{h}\int_{-h}^0
-     \frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times \frac{\partial \tau}{\partial z} \cdot \boldsymbol{\nabla}\sigma_m dz \\
+     \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \tau}{\partial z} \right) \cdot \boldsymbol{\nabla}\sigma_m dz \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
-     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
+     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times\tau \right) \cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
 be written as:
 
 .. math::
    \begin{aligned}
-     \vec{N_Q}_z &= J^B_z + J^F_z  \\
+     {{\vec{\bf N}}_Q}_z &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
-     J^F_z &= \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot \boldsymbol{\nabla}\sigma_m \end{aligned}
+     J^F_z &= \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}}\times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma_m \end{aligned}
 
 .. _sub_outp_pkg_flt:
 
