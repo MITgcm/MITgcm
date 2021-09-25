@@ -37,30 +37,33 @@ capacity. :math:`f_{i}=\gamma z_{i},\gamma =0.24` is the field capapcity
 per meter soil\ :math:`,` so :math:`f_{1}=0.024m,` :math:`f_{2}=0.96m.`
 
 The land temperature is determined by total surface downward heat flux
-:math:`F,`
+:math:`F`,
 
-.. math:: z_{1}C_{1}\frac{dT_{g1}}{dt}=F-\lambda \frac{T_{g1}-T_{g2}}{(z_{1}+z_{2})/2}
+.. math::
+    \begin{aligned}
+    z_1 C_1 \frac{dT_{g1}}{dt} & = F - \lambda \frac{T_{g1}-T_{g2}}{(z_1 + z_2)/2}, \nonumber\\
+    z_2 C_2 \frac{dT_{g2}}{dt} & = \lambda \frac{T_{g1}-T_{g2}}{(z_1 + z_2)/2}, \nonumber
+    \end{aligned}
 
-.. math:: z_{2}C_{2}\frac{dT_{g2}}{dt}=\lambda \frac{T_{g1}-T_{g2}}{(z_{1}+z_{2})/2}
+here :math:`C_{1},C_{2}` are the heat capacity of each layer,
+:math:`\lambda` is the thermal conductivity, :math:`\lambda =0.42Wm^{-1}K^{-1}`.
 
-here :math:`C_{1},C_{2}` are the heat capacity of each layer ,
-:math:`\lambda ` is the thermal conductivity,
-:math:`\lambda =0.42Wm^{-1}K^{-1}.`
-
-.. math:: C_{1}=C_{w}W_{1}\gamma +C_{s}
-
-.. math:: C_{2}=C_{w}W_{2}\gamma +C_{s}
+.. math::
+    \begin{aligned}
+    C_{1} & = C_{w}W_{1}\gamma +C_{s}, \nonumber\\
+    C_{2} & = C_{w}W_{2}\gamma +C_{s}, \nonumber
+    \end{aligned}
 
 :math:`C_{w},C_{s}` are the heat capacity of water and dry soil
 respectively. :math:`%
 C_{w}=4.2\times 10^{6}Jm^{-3}K^{-1},C_{s}=1.13\times 10^{6}Jm^{-3}K^{-1}.`
 
-The soil moisture is determined by precipitation :math:`P(m/s)`,surface
-evaporation :math:`E(m/s)` and runoff :math:`R(m/s).`
+The soil moisture is determined by precipitation :math:`P(m/s)`, surface
+evaporation :math:`E(m/s)` and runoff :math:`R(m/s)`.
 
-.. math:: \frac{dW_{1}}{dt}=\frac{P-E-R}{f_{1}}+\frac{W_{2}-W_{1}}{\tau }
+.. math:: \frac{dW_{1}}{dt} = \frac{P-E-R}{f_{1}}+\frac{W_{2}-W_{1}}{\tau},
 
-:math:`\tau =2` :math:`days` is the time constant for diffusion of
+:math:`\tau=2` :math:`days` is the time constant for diffusion of
 moisture between layers.
 
 .. math:: \frac{dW_{2}}{dt}=\frac{f_{1}}{f_{2}}\frac{W_{1}-W_{2}}{\tau }

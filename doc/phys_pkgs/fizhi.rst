@@ -45,12 +45,12 @@ mass flux, is a linear function of height, expressed as:
 
 .. math::
 
-   \pp{\eta(z)}{z} = \lambda \hspace{0.4cm}or\hspace{0.4cm} \pp{\eta(P^{\kappa})}{P^{\kappa}} = 
-   -\frac{c_p}{g}\theta\lambda
+   \pp{\eta(z)}{z} = \lambda \hspace{0.4cm} \text{or} \hspace{0.4cm} \pp{\eta(P^{\kappa})}{P^{\kappa}} = 
+   -\frac{c_p}{g} \theta \lambda,
 
 where we have used the hydrostatic equation written in the form:
 
-.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g}\theta
+.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g} \theta.
 
 The entrainment parameter, :math:`\lambda`, characterizes a particular
 subensemble based on its detrainment level, and is obtained by assuming
@@ -59,7 +59,7 @@ level at which the moist static energy of the cloud, :math:`h_c`, is
 equal to the saturation moist static energy of the environment,
 :math:`h^*`. Following :cite:`moorsz:92`, :math:`\lambda` may be written as
 
-.. math:: \lambda = \frac{h_B - h^*_D}{ \frac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}},
+.. math:: \lambda = \frac{h_B - h^*_D}{\dfrac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}},
 
 where the subscript :math:`B` refers to cloud base, and the subscript
 :math:`D` refers to the detrainment level.
@@ -73,7 +73,7 @@ environment:
 .. math::
 
    A = \int_{P_D}^{P_B} \frac{\eta}{1 + \gamma}
-   \left[ \frac{h_c-h^*}{P^{\kappa}} \right] dP^{\kappa}
+   \left[ \frac{h_c-h^*}{P^{\kappa}} \right] dP^{\kappa},
 
 where :math:`\gamma` is :math:`\frac{L}{c_p}\pp{q^*}{T}` obtained from
 the Claussius Clapeyron equation, and the subscript :math:`c` refers to
@@ -85,14 +85,14 @@ balance the rate of change of :math:`A` *due to the generation by the
 large scale*. This is the quasi-equilibrium assumption, and results in
 an expression for :math:`m_B`:
 
-.. math:: m_B = \frac{- \left. \frac{dA}{dt} \right|_{ls}}{K}
+.. math:: m_B = \dfrac{- \left. \frac{dA}{dt} \right|_{ls}}{K},
 
 where :math:`K` is the cloud kernel, defined as the rate of change of
 the cloud work function per unit cloud base mass flux, and is currently
 obtained by analytically differentiating the expression for :math:`A` in
 time. The rate of change of :math:`A` due to the generation by the large
 scale can be written as the difference between the current
-:math:`A(t+\Delta t)` and its equillibrated value after the previous
+:math:`A(t+\Delta t)` and its equilibrated value after the previous
 convective time step :math:`A(t)`, divided by the time step.
 :math:`A(t)` is approximated as some critical :math:`A_{crit}`, computed
 by Lord (1982) from :math:`in situ` observations.
@@ -103,11 +103,11 @@ convection on the large scale fields of temperature (through latent
 heating and compensating subsidence) and moisture (through precipitation
 and detrainment):
 
-.. math:: \left.{\pp{\theta}{t}}\right|_{c} = \alpha \frac{ m_B}{c_p P^{\kappa}} \eta \pp{s}{p}
+.. math:: \left.{\pp{\theta}{t}}\right|_{c} = \alpha \frac{ m_B}{c_p P^{\kappa}} \eta \pp{s}{p},
 
 and
 
-.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{ m_B}{L} \eta (\pp{h}{p}-\pp{s}{p})
+.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{m_B}{L} \eta \left( \pp{h}{p}-\pp{s}{p} \right),
 
 where :math:`\theta = \frac{T}{P^{\kappa}}`, :math:`P = (p/p_0)`, and
 :math:`\alpha` is the relaxation parameter.
@@ -116,7 +116,7 @@ As an approximation to a full interaction between the different
 allowable subensembles, many clouds are simulated frequently, each
 modifying the large scale environment some fraction :math:`\alpha` of
 the total adjustment. The parameterization thereby “relaxes” the large
-scale environment towards equillibrium.
+scale environment towards equilibrium.
 
 In addition to the RAS cumulus convection scheme, the fizhi package
 employs a Kessler-type scheme for the re-evaporation of falling rain :cite:`sudm:88`,
@@ -153,23 +153,23 @@ the cumulus and large-scale parameterizations. Convective cloud
 fractions produced by RAS are proportional to the detrained liquid water
 amount given by
 
-.. math:: F_{RAS} = \min\left[ \frac{l_{RAS}}{l_c}, 1.0 \right]
+.. math:: F_{RAS} = \min\left[ \frac{l_{RAS}}{l_c}, 1.0 \right],
 
 where :math:`l_c` is an assigned critical value equal to :math:`1.25`
 g/kg. A memory is associated with convective clouds defined by:
 
-.. math:: F_{RAS}^n = \min\left[ F_{RAS} + (1-\frac{\Delta t_{RAS}}{\tau})F_{RAS}^{n-1}, 1.0 \right]
+.. math:: F_{RAS}^n = \min\left[ F_{RAS} + \left(1-\frac{\Delta t_{RAS}}{\tau}\right) F_{RAS}^{n-1} \, , \, 1 \right],
 
-where :math:`F_{RAS}` is the instantanious cloud fraction and
+where :math:`F_{RAS}` is the instantaneous cloud fraction and
 :math:`F_{RAS}^{n-1}` is the cloud fraction from the previous RAS
 timestep. The memory coefficient is computed using a RAS cloud
 timescale, :math:`\tau`, equal to 1 hour. RAS cloud fractions are
-cleared when they fall below 5 %.
+cleared when they fall below 5%.
 
 Large-scale cloudiness is defined, following Slingo and Ritter (1985),
 as a function of relative humidity:
 
-.. math:: F_{LS} = \min\left[ { \left( \frac{RH-RH_c}{1-RH_c} \right) }^2, 1.0 \right]
+.. math:: F_{LS} = \min\left[ { \left( \frac{RH-RH_c}{1-RH_c} \right) }^2 \, , \, 1 \right],
 
 where
 
@@ -198,7 +198,7 @@ form of :math:`RH_c` is shown in :numref:`rhcrit`
 The total cloud fraction in a grid box is determined by the larger of
 the two cloud fractions:
 
-.. math:: F_{CLD} = \max \left[ F_{RAS},F_{LS} \right] .
+.. math:: F_{CLD} = \max \left[ F_{RAS} \, , \, F_{LS} \right].
 
 Finally, cloud fractions are time-averaged between calls to the
 radiation packages.
@@ -213,18 +213,18 @@ divergence of the net radiative fluxes.
 
 The net flux is
 
-.. math:: F = F^\uparrow - F^\downarrow
+.. math:: F = F^\uparrow - F^\downarrow,
 
 where :math:`F` is the net flux, :math:`F^\uparrow` is the upward flux
 and :math:`F^\downarrow` is the downward flux.
 
 The heating rate due to the divergence of the radiative flux is given by
 
-.. math:: \pp{\rho c_p T}{t} = - \pp{F}{z}
+.. math:: \pp{\rho c_p T}{t} = - \pp{F}{z},
 
 or
 
-.. math:: \pp{T}{t} = \frac{g}{c_p \pi} \pp{F}{\sigma}
+.. math:: \pp{T}{t} = \frac{g}{c_p \pi} \pp{F}{\sigma},
 
 where :math:`g` is the accelation due to gravity and :math:`c_p` is the
 heat capacity of air at constant pressure.
@@ -428,9 +428,9 @@ super-saturation. Two values are used corresponding to cloud ice
 particles and water droplets. The range of optical thickness for these
 clouds is given as
 
-.. math:: 0.0002 \le \tau_{ice} (mb^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \quad\mbox{mg/kg} ,
+.. math:: 0.0002 \le \tau_{\rm ice} (mb^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \quad\mbox{mg/kg} ,
 
-.. math:: 0.02 \le \tau_{h_2o} (mb^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \quad\mbox{mg/kg} .
+.. math:: 0.02 \le \tau_{\rm H_2O} (mb^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \quad\mbox{mg/kg} .
 
 The partitioning, :math:`\alpha`, between ice particles and water
 droplets is achieved through a linear scaling in temperature:
@@ -440,12 +440,12 @@ droplets is achieved through a linear scaling in temperature:
 The resulting optical depth associated with large-scale cloudiness is
 given as
 
-.. math:: \tau_{LS} = \alpha \tau_{h_2o} + (1-\alpha)\tau_{ice} .
+.. math:: \tau_{LS} = \alpha \tau_{\rm H_2O} + (1-\alpha) \tau_{\rm ice} .
 
 The optical thickness associated with sub-grid scale convective clouds
 produced by RAS is given as
 
-.. math:: \tau_{RAS} = 0.16 \quad mb^{-1} .
+.. math:: \tau_{RAS} = 0.16 \; mb^{-1} .
 
 The total optical depth in a given model layer is computed as a weighted
 average between the large-scale and sub-grid scale optical depths,
@@ -475,25 +475,17 @@ minutes. The tendencies of atmospheric state variables due to turbulent
 diffusion are calculated using the diffusion equations:
 
 .. math::
-
-   {\pp{u}{t}}_{turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{(K_m \pp{u}{z})}
-
-.. math::
-
-   {\pp{v}{t}}_{turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{(K_m \pp{v}{z})}
-
-.. math::
-
-   {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{turb} = 
+   \begin{aligned}
+   {\pp{u}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
+    = {\pp{}{z} }{\left(K_m \pp{u}{z}\right)}, \nonumber \\
+   {\pp{v}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
+    = {\pp{}{z} }{\left(K_m \pp{v}{z}\right)}, \nonumber \\
+   {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{\rm turb} &= 
    P^{\kappa}{\pp{}{z} }{(- \overline{w^{\prime}\theta^{\prime}})}
-    = P^{\kappa}{\pp{}{z} }{(K_h \pp{\theta_v}{z})}
-
-.. math::
-
-   {\pp{q}{t}}_{turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
-    = {\pp{}{z} }{(K_h \pp{q}{z})}
+    = P^{\kappa}{\pp{}{z} }{\left(K_h \pp{\theta_v}{z}\right)}, \nonumber \\
+   {\pp{q}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
+    = {\pp{}{z} }{\left(K_h \pp{q}{z}\right)}.
+   \end{aligned}
 
 Within the atmosphere, the time evolution of second turbulent moments is
 explicitly modeled by representing the third moments in terms of the
@@ -512,8 +504,8 @@ computation of the terms linear in :math:`q^2` and is written:
 
 .. math::
 
-   {\dd{}{t} ({{\h} q^2})} - { \pp{}{z} ({ \frac{5}{3} {{\lambda}_1} q { \pp {}{z} 
-   ({\h}q^2)} })} =
+   {\dd{}{t} \left({{\h} q^2}\right)} - { \pp{}{z} \left[{ \frac{5}{3} {{\lambda}_1} q { \pp {}{z} 
+   \left({\h}q^2\right)} }\right]} =
    {- \overline{{u^{\prime}}{w^{\prime}}} { \pp{U}{z} }} - {\overline{{v^{\prime}}{w^{\prime}}} 
    { \pp{V}{z} }} + {\frac{g}{\Theta_0}{\overline{{w^{\prime}}{{{\theta}_v}^{\prime}}}}
    - \frac{ q^3}{{\Lambda}_1} }
@@ -578,11 +570,11 @@ the surface layer, which corresponds to the lowest GCM level (see *—
 missing table —*), are calculated using stability-dependant functions
 based on Monin-Obukhov theory:
 
-.. math:: {K_m} (surface) = C_u \times u_* = C_D W_s
+.. math:: {K_m} ({\rm surface}) = C_u \times u_* = C_D W_s
 
 and
 
-.. math:: {K_h} (surface) =  C_t \times u_* = C_H W_s
+.. math:: {K_h} ({\rm surface}) =  C_t \times u_* = C_H W_s
 
 where :math:`u_*=C_uW_s` is the surface friction velocity, :math:`C_D`
 is termed the surface drag coefficient, :math:`C_H` the heat transfer
@@ -630,7 +622,7 @@ moisture gradients can be quite large. Based on :cite:`yagkad:74`:
 
 .. math::
 
-   \psi_{g} = \frac{ 0.55 (Pr^{2/3} - 0.2) }{ \nu^{1/2} }
+   \psi_{g} = \frac{ 0.55 ({\rm Pr}^{2/3} - 0.2) }{ \nu^{1/2} }
    (h_{0}u_{*} - h_{0_{ref}}u_{*_{ref}})^{1/2}
 
 where Pr is the Prandtl number for air, :math:`\nu` is the molecular
@@ -694,7 +686,7 @@ Surface Energy Budget
 The ground temperature equation is solved as part of the turbulence
 package using a backward implicit time differencing scheme:
 
-.. math:: C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{ice} - H - LE
+.. math:: C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{\rm ice} - H - LE,
 
 where :math:`R_{sw}` is the net surface downward shortwave radiative
 flux and :math:`R_{lw}` is the net surface upward longwave radiative
@@ -704,8 +696,8 @@ flux.
 
 .. math::
 
-   {H} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{surface} - \theta_{NLAY})
-   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
+   {H} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{\rm NLAY})
+   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t,
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`c_{p}` is the specific heat of air at constant pressure, and
@@ -716,20 +708,20 @@ The upward latent heat flux, :math:`LE`, is given by
 
 .. math::
 
-   {LE} =  \rho \beta L C_{H} W_s (q_{surface} - q_{NLAY})
-   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
+   {LE} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q__{\rm NLAY})
+   \hspace{1cm}{\text where}: \hspace{.2cm}C_H = C_u C_t,
 
 where :math:`\beta` is the fraction of the potential evapotranspiration
 actually evaporated, L is the latent heat of evaporation, and
-:math:`q_{surface}` and :math:`q_{NLAY}` are the specific humidity of
+:math:`q_{\rm surface}` and :math:`q__{\rm NLAY}` are the specific humidity of
 the surface and of the lowest :math:`\sigma`-level, respectively.
 
-The heat conduction through sea ice, :math:`Q_{ice}`, is given by
+The heat conduction through sea ice, :math:`Q_{\rm ice}`, is given by
 
-.. math:: {Q_{ice}} = \frac{C_{ti} }{ H_i} (T_i-T_g)
+.. math:: {Q_{\rm ice}} = \frac{C_{ti} }{ H_i} (T_i-T_g)
 
 where :math:`C_{ti}` is the thermal conductivity of ice, :math:`H_i` is
-the ice thickness, assumed to be :math:`3 \hspace{.1cm} m` where sea ice
+the ice thickness, assumed to be :math:`3\; m` where sea ice
 is present, :math:`T_i` is 273 degrees Kelvin, and :math:`T_g` is the
 surface temperature of the ice.
 
@@ -740,7 +732,7 @@ cycle into the ground (), and is given by:
 .. math::
 
    C_g = \sqrt{ \frac{\lambda C_s }{ 2\omega} } = \sqrt{(0.386 + 0.536W + 0.15W^2)2\times10^{-3}
-   \frac{86400}{2\pi} } \, \, .
+   \frac{86400}{2\pi} } .
 
 Here, the thermal conductivity, :math:`\lambda`, is equal to
 :math:`2\times10^{-3}` :math:`\frac{ly}{sec}
@@ -1247,7 +1239,7 @@ eddy exchange coefficient:
 
 .. math::
 
-   {\bf HFLUX} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{surface} - \theta_{Nrphys})
+   {\bf HFLUX} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{Nrphys})
    \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
@@ -1268,7 +1260,7 @@ evapotranspiration fraction and the eddy exchange coefficient:
 
 .. math::
 
-   {\bf EFLUX} =  \rho \beta L C_{H} W_s (q_{surface} - q_{Nrphys})
+   {\bf EFLUX} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q_{Nrphys})
    \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
@@ -1279,7 +1271,7 @@ the magnitude of the surface layer wind, :math:`C_u` is the
 dimensionless surface exchange coefficient for momentum (see diagnostic
 number 10), :math:`C_t` is the dimensionless surface exchange
 coefficient for heat and moisture (see diagnostic number 9), and
-:math:`q_{surface}` and :math:`q_{Nrphys}` are the specific humidity at
+:math:`q_{\rm surface}` and :math:`q_{Nrphys}` are the specific humidity at
 the surface and at the bottom model level, respectively.
 
 Heat Conduction Through Sea Ice (:math:`Watts/m^2`)
@@ -1493,7 +1485,7 @@ The tendency of U-Momentum due to turbulence is written:
 
 .. math::
 
-   {\bf TURBU} = {\pp{u}{t}}_{turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
+   {\bf TURBU} = {\pp{u}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
     = {\pp{}{z} }{(K_m \pp{u}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1507,7 +1499,7 @@ The tendency of V-Momentum due to turbulence is written:
 
 .. math::
 
-   {\bf TURBV} = {\pp{v}{t}}_{turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
+   {\bf TURBV} = {\pp{v}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
     = {\pp{}{z} }{(K_m \pp{v}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1522,7 +1514,7 @@ The tendency of temperature due to turbulence is written:
 
 .. math::
 
-   {\bf TURBT} = {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{turb} = 
+   {\bf TURBT} = {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{\rm turb} = 
    P^{\kappa}{\pp{}{z} }{(- \overline{w^{\prime}\theta^{\prime}})}
     = P^{\kappa}{\pp{}{z} }{(K_h \pp{\theta_v}{z})}
 
@@ -1538,7 +1530,7 @@ The tendency of specific humidity due to turbulence is written:
 
 .. math::
 
-   {\bf TURBQ} = {\pp{q}{t}}_{turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
+   {\bf TURBQ} = {\pp{q}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
     = {\pp{}{z} }{(K_h \pp{q}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1813,11 +1805,11 @@ package using a backward implicit time differencing scheme:
 .. math::
 
    {\bf TG} \hspace{.1cm} is \hspace{.1cm} obtained \hspace{.1cm} from: \hspace{.1cm}
-   C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{ice} - H - LE
+   C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{\rm ice} - H - LE
 
 where :math:`R_{sw}` is the net surface downward shortwave radiative
 flux, :math:`R_{lw}` is the net surface upward longwave radiative flux,
-:math:`Q_{ice}` is the heat conduction through sea ice, :math:`H` is the
+:math:`Q_{\rm ice}` is the heat conduction through sea ice, :math:`H` is the
 upward sensible heat flux, :math:`LE` is the upward latent heat flux,
 and :math:`C_g` is the total heat capacity of the ground. :math:`C_g` is
 obtained by solving a heat diffusion equation for the penetration of the
@@ -2068,7 +2060,7 @@ EVAP - Surface Evaporation (mm/day)
 The surface evaporation is a function of the gradient of moisture, the
 potential evapotranspiration fraction and the eddy exchange coefficient:
 
-.. math:: {\bf EVAP} =  \rho \beta K_{h} (q_{surface} - q_{Nrphys})
+.. math:: {\bf EVAP} =  \rho \beta K_{h} (q_{\rm surface} - q_{Nrphys})
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`\beta` is the fraction of the potential evapotranspiration
@@ -2170,7 +2162,7 @@ The depth of the PBL is defined by the turbulence parameterization to be
 the depth at which the turbulent kinetic energy reduces to ten percent
 of its surface value.
 
-.. math:: {\bf PBL} = P_{PBL} - P_{surface}
+.. math:: {\bf PBL} = P_{PBL} - P_{\rm surface},
 
 where :math:`P_{PBL}` is the pressure in :math:`mb` at which the
 turbulent kinetic energy reaches one tenth of its surface value, and
