@@ -278,7 +278,7 @@ coefficient :math:`K_x`
 .. math::
 
    \overline{wx}(d) \, = \, -K_x \left(
-   \frac{\partial X}{\partial z} \, - \, \gamma_x \right)
+   \frac{\partial X}{\partial z} \, - \, \gamma_x \right).
 
 -  *Boundary layer mixing profile*
    It is expressed as the product of the boundary layer depth
@@ -286,10 +286,11 @@ coefficient :math:`K_x`
    :math:`w_x(\sigma)` and a non-dimensional shape function
    :math:`G(\sigma)`
 
-   .. math:: K_x(\sigma) \, = \, h \, w_x(\sigma) \, G(\sigma)
+   .. math:: K_x(\sigma) \, = \, h \, w_x(\sigma) \, G(\sigma),
 
    with dimensionless vertical coordinate :math:`\sigma = d/h`. For
-   details of :math:` w_x(\sigma)` and :math:`G(\sigma)` we refer to .
+   details of :math:`w_x(\sigma)` and :math:`G(\sigma)` we refer to
+   somewhere else.
 
 -  *Nonlocal mixing term*
    The nonlocal transport term :math:`\gamma` is nonzero only for
@@ -308,17 +309,17 @@ coefficient :math:`K_x`
       \gamma_m \, = \, 0 \\
        ~ \\
       \gamma_s \, = \, C_s 
-      \frac{\overline{w s_0}}{w_s(\sigma) h} \\
+      \dfrac{\overline{w s_0}}{w_s(\sigma) h} \\
        ~ \\
       \gamma_{\theta} \, = \, C_s
-      \frac{\overline{w \theta_0}+\overline{w \theta_R}}{w_s(\sigma) h} \\
+      \dfrac{\overline{w \theta_0}+\overline{w \theta_R}}{w_s(\sigma) h} \\
       \end{array}
       \right\} 
       &
       \zeta \, < \, 0 \\
       \end{array}\end{aligned}
 
-In practice, the routine peforms the following tasks:
+In practice, the routine performs the following tasks:
 
 #. compute velocity scales at hbl
 
