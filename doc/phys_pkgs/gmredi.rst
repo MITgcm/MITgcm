@@ -76,6 +76,7 @@ Redi projection tensor then simplifies to:
    0 & 1 & S_y \\
    S_x & S_y & |{\bf S}|^2 \\
    \end{pmatrix}.
+
 .. _GM_bolus_desc:  
 
 GM parameterization
