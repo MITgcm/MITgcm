@@ -82,9 +82,9 @@ Taking the horizontal divergence of :eq:`mom-h` and adding
 continuity equation :eq:`continuity`, we deduce that:
 
 .. math::
-   \nabla _{3}^{2}\phi _{nh}=\nabla .\vec{\mathbf{G}}_{\vec{v}}-\left( \mathbf{
-   \nabla }_{h}^{2}\phi _{s}+\mathbf{\boldsymbol{\nabla}}^{2}\phi _{hyd}\right) =\nabla .
-   \vec{\mathbf{F}}
+   \nabla_{3}^{2}\phi _{nh}= \boldsymbol{\nabla} \cdot \vec{\mathbf{G}}_{\vec{v}}-\left(
+   \nabla_{h}^{2}\phi _{s}+ \nabla^2 \phi _{hyd}\right) = 
+   \boldsymbol{\nabla} \cdot \vec{\mathbf{F}}
    :label: 3d-invert
 
 For a given rhs this 3-d elliptic equation must be inverted for
@@ -99,7 +99,7 @@ Boundary Conditions
 We apply the condition of no normal flow through all solid boundaries -
 the coasts (in the ocean) and the bottom:
 
-.. math:: \vec{\mathbf{v}}.\widehat{n}=0
+.. math:: \vec{\mathbf{v}} \cdot \hat{\boldsymbol{n}} =0
    :label: nonormalflow
 
 where :math:`\widehat{n}` is a vector of unit length normal to the
@@ -113,7 +113,7 @@ the momentum equations - see below.
 Eq. :eq:`nonormalflow` implies, making use of :eq:`mom-h`, that:
 
 .. math::
-   \widehat{n}.\nabla \phi _{nh}=\widehat{n}.\vec{\mathbf{F}}
+   \hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi _{nh}= \hat{\boldsymbol{n}} \cdot \vec{\mathbf{F}}
    :label: inhom-neumann-nh
 
 where
@@ -127,17 +127,17 @@ can exploit classical 3D potential theory and, by introducing an
 appropriately chosen :math:`\delta`-function sheet of ‘source-charge’,
 replace the inhomogeneous boundary condition on pressure by a
 homogeneous one. The source term :math:`rhs` in :eq:`3d-invert` is the
-divergence of the vector :math:`\vec{\mathbf{F}}.` By simultaneously setting :math:`\widehat{n}.\vec{\mathbf{F}}=0` 
-and :math:`\widehat{n}.\nabla \phi _{nh}=0\ `\ on the boundary the
+divergence of the vector :math:`\vec{\mathbf{F}}`. By simultaneously setting :math:`\hat{\boldsymbol{n}} \cdot \vec{\mathbf{F}}=0` 
+and :math:`\hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi_{nh}=0\ `\ on the boundary the
 following self-consistent but simpler homogenized Elliptic problem is obtained:
 
-.. math:: \nabla ^{2}\phi _{nh}=\nabla .\widetilde{\vec{\mathbf{F}}}\qquad
+.. math:: \nabla ^{2}\phi _{nh}=\boldsymbol{\nabla} \cdot \widetilde{\vec{\mathbf{F}}}\qquad
 
 where :math:`\widetilde{\vec{\mathbf{F}}}` is a modified :math:`\vec{\mathbf{F}}` 
-such that :math:`\widetilde{\vec{\mathbf{F}}}.\widehat{n}=0`. As is implied by
+such that :math:`\widetilde{\vec{\mathbf{F}}} \cdot \hat{\boldsymbol{n}} =0`. As is implied by
 :eq:`inhom-neumann-nh` the modified boundary condition becomes:
 
-.. math:: \widehat{n}.\nabla \phi _{nh}=0
+.. math:: \hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi _{nh}=0
    :label: hom-neumann-nh
 
 If the flow is ‘close’ to hydrostatic balance then the 3-d inversion
@@ -146,6 +146,6 @@ correction to the hydrostatic pressure field (see the discussion in
 Marshall et al. (1997a,b) :cite:`marshall:97a` :cite:`marshall:97b`.
 
 The solution :math:`\phi _{nh}\ `\ to :eq:`3d-invert` and
-:eq:`inhom-neumann-nh` does not vanish at :math:`r=R_{moving}`, and so
+:eq:`inhom-neumann-nh` does not vanish at :math:`r=R_{\rm moving}`, and so
 refines the pressure there.
 

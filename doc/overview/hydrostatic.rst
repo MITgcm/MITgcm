@@ -7,7 +7,7 @@ Let us separate :math:`\phi` in to surface, hydrostatic and
 non-hydrostatic terms:
 
 .. math::
-   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{hyd}(x,y,r)+\phi _{nh}(x,y,r)
+   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{hyd}(x,y,r)+\phi _{nh}(x,y,r),
    :label: phi-split
 
 and write :eq:`horiz-mtm` in the form:
@@ -37,7 +37,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gu-spherical
 
-   G_{u} = & -\vec{\mathbf{v}}.\nabla u && \qquad \text{advection} 
+   G_{u} = & -\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} u && \qquad \text{advection} 
 
    & -\left\{ \underline{\frac{u\dot{r}}{{r}}}-\frac{uv\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -48,7 +48,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gv-spherical
 
-   G_{v} = & -\vec{\mathbf{v}}.\nabla v && \qquad \text{advection}
+   G_{v} = & -\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} v && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{v\dot{r}}{{r}}}-\frac{u^{2}\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -59,7 +59,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gw-spherical
 
-   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}}.\nabla \dot{r}}} && \qquad \text{advection}
+   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} \dot{r}}} && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{u^{_{^{2}}}+v^{2}}{{r}}}\right\} && \qquad \text{metric}    
 

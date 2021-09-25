@@ -254,7 +254,7 @@ with :math:`\mathbf{\boldsymbol{\nabla}}_{h}` operating in the horizontal and
 
 .. math:: \mathcal{Q}_{S}\mathcal{\ }\text{are forcing and dissipation of }S
 
-The :math:`\mathcal{F}^{\prime }s` and :math:`\mathcal{Q}^{\prime }s`
+The terms :math:`\mathcal{F}` and :math:`\mathcal{Q}` 
 are provided by ‘physics’ and forcing packages for atmosphere and ocean.
 These are described in later chapters.
 

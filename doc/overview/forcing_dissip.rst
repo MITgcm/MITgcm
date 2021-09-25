@@ -35,8 +35,8 @@ similar form to that of momentum except that the diffusion tensor can be
 non-diagonal and have varying coefficients.
 
 .. math::
-   D_{T,S}=\nabla .[\underline{\underline{K}}\nabla (T,S)]+K_{4}\nabla
-   _{h}^{4}(T,S)
+   D_{T,S} = \boldsymbol{\nabla} \cdot \left[ \underline{\underline{K}} \boldsymbol{\nabla} (T,S) \right] + K_{4} \nabla
+   _{h}^{4}(T,S),
    :label: diffusion
 
 where :math:`\underline{\underline{K}}\ `\ is the diffusion tensor and
