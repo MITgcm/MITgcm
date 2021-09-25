@@ -92,13 +92,13 @@ the tracer tendency equation (on the rhs):
 
 .. math:: - \boldsymbol{\nabla} \cdot ( \tau {\bf u}^\star ) .
 
-The bolus velocity :math:`{\bf u}^\star` is defined as the rotational of
-a streamfunction
+The bolus velocity :math:`{\bf u}^\star` is defined as the rotational part
+of a streamfunction
 :math:`{\bf F}^\star`\ =\ :math:`(F_x^\star, F_y^\star, 0)`:
 
 .. math::
 
-   {\bf u}^\star = \nabla \times {\bf F}^\star =
+   {\bf u}^\star = \boldsymbol{\nabla} \times {\bf F}^\star =
    \left( \begin{array}{c}
    - \partial_z  F_y^\star \\
    + \partial_z  F_x^\star \\
@@ -146,8 +146,8 @@ streamfunction are:
 
    \left(
    \begin{array}{c}
-   GM\_PsiX \\
-   GM\_PsiY
+   \texttt{GM_PsiX} \\
+   \texttt{GM_PsiY}
    \end{array}
    \right) = \left(
    \begin{array}{c}
@@ -223,10 +223,10 @@ the Redi isoneutral mixing scheme:
 .. math::
 
    \kappa_\rho {\bf K}_{\rm Redi} \boldsymbol{\nabla} \tau
-   - u^\star \tau = 
+   - {\bf u}^\star \tau = 
    ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \boldsymbol{\nabla} \tau .
 
-In the instance that :math:`\kappa_{\rm GM} = \kappa_{\rho}` then
+If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
 
 .. math::
 
@@ -239,7 +239,7 @@ In the instance that :math:`\kappa_{\rm GM} = \kappa_{\rho}` then
    \end{array}
    \right),
 
-which differs from the variable Laplacian diffusion tensor by only two
+which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
 
 .. admonition:: Subroutine
@@ -274,10 +274,10 @@ over-line). A local Richardson number is defined
 .. math::
 
    \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
-   \frac{ ( \frac{g}{f \rho_o} | {\bf \nabla} \sigma | )^2 }{N^2} =
+   \frac{ \left ( \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 } ,
 
-where :math:`M^2 = \frac{g}{\rho_o} |{\bf \nabla} \sigma|`. Substituting into
+where :math:`M^2 = \frac{g}{\rho_0} | \boldsymbol{\nabla} \sigma|`. Substituting into
 the formula for :math:`\kappa_{\rm GM}` gives:
 
 .. math::
@@ -418,7 +418,7 @@ Tapering: Danabasoglu and McWilliams, J. Clim. 1995
 The tapering scheme used by followed a similar procedure but used a
 different tapering function, :math:`f_1(S)`:
 
-.. math:: f_1(S) = \frac{1}{2} \left( 1+\tanh \left[ \frac{S_c - |{\bf S}|}{S_d} \right] \right) ,
+.. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right] ,
 
 where :math:`S_c = 0.004` is a cut-off slope and :math:`S_d=0.001` is a
 scale over which the slopes are smoothly tapered. Functionally, the
