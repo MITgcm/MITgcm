@@ -743,9 +743,9 @@ For the linearized equations, the Munk layer (equilibrium) analytical solution i
 
 .. math::
    \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin\left(\pi \frac{y}{L_y}\right)
-   \left[1 - \exp({\frac{-x}{2\delta_m}}) \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
+   \left[1 - e^{-x/(2\delta_m)} \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
 
-where :math:`\delta_m= ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}`. :numref:`lin_anal_soln`
+where :math:`\delta_m = (A_{h} / \beta)^{\frac{1}{3}}`. :numref:`lin_anal_soln`
 displays the MITgcm output after switching off momentum advection vs.
 the analytical solution to the linearized equations. Success!
 

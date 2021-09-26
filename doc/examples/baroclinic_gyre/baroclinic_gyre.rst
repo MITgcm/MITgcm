@@ -484,7 +484,7 @@ PARM01 - Continuous equation parameters
   Note a list of :varlink:`Nr` (=15, from :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`)
   potential temperature values in :sup:`o`\ C is specified for parameter :varlink:`tRef`, ordered from surface to depth.
   :varlink:`tRef` is used for two purposes here.
-  First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{ref}(z)`;
+  First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{\rm ref}(z)`;
   see use in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`.
   Second, the model will use these reference temperatures for its initial state, as we are not providing a pickup file
   nor specifying an initial temperature hydrographic file (in later tutorials we will demonstrate how to do so).
@@ -939,7 +939,7 @@ Several additional files are output in standard binary format. These are:
 
 ``RhoRef.data, RhoRef.meta`` - this is a 1-D (k=1...\ :varlink:`Nr`) array of reference density, defined as:
 
-.. math:: \rho_{ref}(k) = \rho_0  \left( 1 - \alpha_{\theta} (\theta_{ref}(k) - \theta_{ref}(1)) \right)
+.. math:: \rho_{\rm ref}(k) = \rho_0  \big[ 1 - \alpha_{\theta} (\theta_{\rm ref}(k) - \theta_{\rm ref}(1)) \big]
 
 ``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1-D (k=1...\ :varlink:`Nr` for PHrefC and
 k=1...\ :varlink:`Nr`\ +1 for PHrefF) arrays containing a reference
@@ -1185,18 +1185,18 @@ depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
       Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to
       temperature restoring (W/m\ :sup:`2`), blue indicating cooling.
 
-So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{bt}, V_{bt}`
+So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{\rm bt}, V_{\rm bt}`
 (units: m\ :sup:`2` s\ :sup:`-1`) and use it calculate the barotropic transport streamfunction:
 
-.. math:: U_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} V_{bt} = \frac{\partial \Psi}{\partial x}
+.. math:: U_{\rm bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} V_{\rm bt} = \frac{\partial \Psi}{\partial x}
 
-Compute :math:`U_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
+Compute :math:`U_{\rm bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
 (``grid.nc`` variable :varlink:`drF`, i.e.,
 the separation between gridcell faces in the vertical). Now do a cumulative sum of
-:math:`-U_{bt}` times the gridcell spacing the in the :math:`y` direction (you
+:math:`-U_{\rm bt}` times the gridcell spacing the in the :math:`y` direction (you
 will need to load ``grid.nc`` variable :varlink:`dyG`, the separation between gridcell faces in :math:`y`).
 A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_psi`.
-Note one could also cumulative sum :math:`V_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
+Note one could also cumulative sum :math:`V_{\rm bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
 
  .. figure:: figs/baroc_psi.png
       :width: 80%
@@ -1214,7 +1214,7 @@ from tutorial :ref:`sec_eg_baro`, when our model grid was only a single layer in
 Is the magnitude of :math:`\Psi`
 we obtain in our solution reasonable? To check this, consider the Sverdrup transport:
 
-.. math:: \rho v_{bt} = \hat{k} \cdot \frac{\nabla \times \vec{\tau}}{\beta}
+.. math:: \rho v_{\rm bt} = \hat{\boldsymbol{k}} \cdot \frac{\boldsymbol{\nabla} \times \vec{\boldsymbol{\tau}}}{\beta}
 
 If we plug in a typical mid-latitude value for :math:`\beta` (:math:`2 \times 10^{-11}` m\ :sup:`-1` s\ :sup:`-1`)
 and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`-2` over :math:`15^{\circ}` latitude,
