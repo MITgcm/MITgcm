@@ -31,4 +31,4 @@ CADJ SUBROUTINE cg2d_store ACTIVE  =
 CADJ SUBROUTINE cg2d_store DEPEND  =   2,3
 
 CADJ COMMON cg2d_i_rs  ADNAME = adcg2d_i_rs
-CADJ COMMON cg2d_i_rl FTLNAME = g_cg2d_i_rs
+CADJ COMMON cg2d_i_rs FTLNAME = g_cg2d_i_rs
