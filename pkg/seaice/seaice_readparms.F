@@ -915,8 +915,8 @@ C-    set SEAICE_frazilFrac if not yet done
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: Cannot specify ',
      &    'both SEAICE_gamma_t_frz & SEAICE_availHeatFracFrz'
         ENDIF
-         CALL PRINT_ERROR( msgBuf , myThid)
-         nError = nError + 1
+        CALL PRINT_ERROR( msgBuf , myThid)
+        nError = nError + 1
        ENDIF
       ENDIF
 C     the default for SEAICE_gamma_t_frz use to be SEAICE_gamma_t:
@@ -1288,19 +1288,22 @@ C-    Retired parameters
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'some out of date parameters were found in the namelist'
+       WRITE(msgBuf,'(A,I3,A)') 'S/R SEAICE_READPARMS: ', nRetired,
+     &      ' out of date parameters were found in the namelist'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
       IF ( nError .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'some parameters values are inconsistent or incomplete'
+       WRITE(msgBuf,'(A,I3,A)') 'S/R SEAICE_READPARMS: ', nError,
+     &  ' parameters values are inconsistent or incomplete'
        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+      IF ( nRetired .GT. 0 .OR. nError .GT. 0 ) THEN
+       CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
