@@ -1088,27 +1088,25 @@ CEOP
      &                      irec, doglobalread,
      &                      ladinit, eccoiter, myThid,
      &                      dummy )
-      ELSEIF ( nnzbar .EQ. Nr ) THEN
+      ELSEIF ( nnzbar .EQ. Nr .AND. nz .EQ. Nr ) THEN
        CALL ACTIVE_READ_XYZ( active_var_file, active_var,
      &                       irec, doglobalread,
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
       ELSE
        WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
-       CALL ECCO_ERROR('ECCO_READBAR',
-     &      'this should not happen.', myThid)
+       CALL ECCO_ERROR('ECCO_READBAR', msgBuf, myThid)
       ENDIF
 #else
       IF ( nnzbar .EQ. 1 ) THEN
        CALL READ_REC_XY_RL( active_var_file, tmpFld2D,
      &                      iRec, 1, myThid )
-      ELSEIF ( nnzbar .EQ. Nr ) THEN
+      ELSEIF ( nnzbar .EQ. Nr .AND. nz .EQ. Nr ) THEN
        CALL READ_REC_XYZ_RL( active_var_file, active_var,
      &                        iRec, 1, myThid )
       ELSE
        WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
-       CALL ECCO_ERROR('ECCO_READBAR',
-     &      'this should not happen.', myThid)
+       CALL ECCO_ERROR('ECCO_READBAR', msgBuf, myThid)
       ENDIF
 #endif
 
