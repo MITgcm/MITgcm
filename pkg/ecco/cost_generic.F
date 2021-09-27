@@ -405,7 +405,7 @@ c--     load model average and observed average
         call cost_genread( fname1, localbar, localtmp, irec, Nr, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r,
      &       dummy, myThid )
-        call ecco_mult(localbar,Nr,nnzbar,fac,myThid)
+        call ecco_mult(localbar,fac,Nr,nnzbar,myThid)
 
         call ecco_zero(localobs,Nr,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
@@ -421,8 +421,8 @@ c--     Compute masked model-data difference
         if ( domaskmindepth ) call ecco_maskmindepth(
      &       difmask, Nr, nnzobs, topomin, mythid )
 
-        if ( doanom ) call ecco_subtract( localdifmeanIn,
-     &       localdif, Nr, nnzobs, myThid )
+        if ( doanom ) call ecco_subtract( localdif,
+     &       localdifmeanIn, Nr, nnzobs, myThid )
 
         if ( domean.OR.doanom ) call ecco_addmask(
      &       localdif, difmask, localdifsum,

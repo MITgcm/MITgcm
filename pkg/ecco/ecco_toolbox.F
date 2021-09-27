@@ -9,8 +9,6 @@ C--   o ECCO_ZERO
 C--   o ECCO_CP
 C--   o ECCO_CPRSRL
 C--   o ECCO_DIFFMSK
-C--   o ECCO_DIFFANOMMSK (currently not used)
-C--   o ECCO_OBSMSK      (currently not used)
 C--   o ECCO_ADDCOST
 C--   o ECCO_ADD         (currently not used)
 C--   o ECCO_SUBTRACT
@@ -136,158 +134,6 @@ c--   Determine the model-data difference mask
            ENDIF
            localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
      &          (localbar(i,j,k,bi,bj)-localobs(i,j,k,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-#endif /* ALLOW_ECCO */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: ECCO_DIFFANOMMSK
-C     !INTERFACE:
-      SUBROUTINE ECCO_DIFFANOMMSK(
-     I                   localbar, localbarmean, nnzbar,
-     I                   localobs, localobsmean, nnzobs,
-     I                   localmask,
-     I                   spminloc, spmaxloc, spzeroloc,
-     O                   localdif, difmask,
-     I                   myThid
-     &                   )
-
-C     !DESCRIPTION: \bv
-C     compute masked difference between time-anomaly model and observations
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == Global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-      INTEGER myThid
-      INTEGER nnzobs, nnzbar
-
-      _RL localbar    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localbarmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localobs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localobsmean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localdif    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL difmask     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-
-      _RL spminloc, spmaxloc, spzeroloc
-
-#ifdef ALLOW_ECCO
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj,i,j,k
-CEOP
-
-      IF ( nnzobs .GT. nnzbar ) CALL ECCO_ERROR('ECCO_DIFFANOMMSK',
-     &     'nnzobs > nnzbar not allowed.', myThid)
-c--   Determine the model-data difference mask
-      DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzobs
-         DO j = 1,sNy
-          DO i = 1,sNx
-#ifdef ECCO_CTRL_DEPRECATED
-           difmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
-     &                            localmask(i,j,k,bi,bj)
-#else
-           difmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
-#endif
-           IF ( localobs(i,j,k,bi,bj) .LT. spminloc .OR.
-     &          localobs(i,j,k,bi,bj) .GT. spmaxloc .OR.
-     &          localobs(i,j,k,bi,bj) .EQ. spzeroloc ) THEN
-            difmask(i,j,k,bi,bj) = 0. _d 0
-           ENDIF
-           localdif(i,j,k,bi,bj) = difmask(i,j,k,bi,bj)*
-     &          ( (localbar(i,j,k,bi,bj)-localbarmean(i,j,k,bi,bj))
-     &           -(localobs(i,j,k,bi,bj)-localobsmean(i,j,k,bi,bj)) )
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-#endif /* ALLOW_ECCO */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: ECCO_OBSMSK
-C     !INTERFACE:
-      SUBROUTINE ECCO_OBSMSK(
-     I                   localbar, nnzbar, localobs, nnzobs, localmask,
-     I                   spminloc, spmaxloc, spzeroloc,
-     O                   localout, obsmask,
-     I                   myThid
-     &                   )
-
-C     !DESCRIPTION: \bv
-C     mask (model) fieds if observation is out-of-bound or missing.
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == Global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-      INTEGER myThid
-      INTEGER nnzobs, nnzbar
-
-      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
-      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
-
-      _RL spminloc, spmaxloc, spzeroloc
-
-#ifdef ALLOW_ECCO
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER bi,bj,i,j,k
-CEOP
-
-      IF ( nnzobs .GT. nnzbar ) CALL ECCO_ERROR('ECCO_OBSMSK',
-     &     'nnzobs > nnzbar not allowed.', myThid)
-      DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO k = 1,nnzobs
-         DO j = 1,sNy
-          DO i = 1,sNx
-#ifdef ECCO_CTRL_DEPRECATED
-           obsmask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)*
-     &                            localmask(i,j,k,bi,bj)
-#else
-           obsmask(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
-#endif
-           IF ( localobs(i,j,k,bi,bj) .LT. spminloc .OR.
-     &          localobs(i,j,k,bi,bj) .GT. spmaxloc .OR.
-     &          localobs(i,j,k,bi,bj) .EQ. spzeroloc ) THEN
-            obsmask(i,j,k,bi,bj) = 0. _d 0
-           ENDIF
-           localout(i,j,k,bi,bj) = obsmask(i,j,k,bi,bj)*
-     &          localbar(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -493,9 +339,9 @@ CBOP
 C     !ROUTINE: ECCO_ADD
 C     !INTERFACE:
       SUBROUTINE ECCO_ADD(
-     I                   fldIn, fldOut, nzIn, nLev,
-     I                   myThid
-     &                   )
+     U                    fldOut,
+     I                    fldIn, nzIn, nLev, myThid
+     &                    )
 
 C     !DESCRIPTION: \bv
 C     add a field (fldIn) to another field (fldOut)
@@ -548,9 +394,9 @@ CBOP
 C     !ROUTINE: ECCO_SUBTRACT
 C     !INTERFACE:
       SUBROUTINE ECCO_SUBTRACT(
-     I                   fldIn, fldOut, nzIn, nLev,
-     I                   myThid
-     &                   )
+     U                         fldOut,
+     I                         fldIn, nzIn, nLev, myThid
+     &                         )
 
 C     !DESCRIPTION: \bv
 C     subtract a field (fldIn) from another field (fldOut)
@@ -668,7 +514,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_DIV
 C     !INTERFACE:
-      SUBROUTINE ECCO_DIV( fld, nzIn, nLev, numerloc, myThid )
+      SUBROUTINE ECCO_DIV(
+     U                    fld,
+     I                    numerloc, nzIn, nLev, myThid )
 C     !DESCRIPTION: \bv
 C     divide a field with RL constant
 C     \ev
@@ -774,7 +622,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_MULT
 C     !INTERFACE:
-      SUBROUTINE ECCO_MULT( fld, nzIn, nLev, multloc, myThid )
+      SUBROUTINE ECCO_MULT(
+     U                     fld,
+     I                     multloc, nzIn, nLev, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field with RL constant
 C     \ev
@@ -823,7 +673,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ECCO_MULTFIELD
 C     !INTERFACE:
-      SUBROUTINE ECCO_MULTFIELD( fld, fld2, nzIn, nLev, myThid )
+      SUBROUTINE ECCO_MULTFIELD(
+     O                          fld2,
+     I                          fld, nzIn, nLev, myThid )
 C     !DESCRIPTION: \bv
 C     multiply a field by another field, fld2 is updated on output
 C     \ev
@@ -1032,8 +884,8 @@ C     !INTERFACE:
      I                           active_var_file,
      O                           active_var,
      I                           iRec,
-     I                           nz,
-     I                           nnzbar,
+     I                           nzIn,
+     I                           nLev,
      I                           dummy,
      I                           myThid
      &                         )
@@ -1058,14 +910,14 @@ C     == Routine arguments ==
 C     active_var_file: filename
 C     active_var:      array
 C     iRec:            record number
-C     nz:              size of active_var
-C     nnzbar:          number vertical levels used
+C     nzIn:            size of active_var
+C     nLev:            number vertical levels used
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nz,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       INTEGER iRec
       INTEGER myThid
-      INTEGER nz
-      INTEGER nnzbar
+      INTEGER nzIn
+      INTEGER nLev
       _RL     dummy
 
 #ifdef ALLOW_ECCO
@@ -1083,34 +935,34 @@ CEOP
       ladinit      = .false.
 
 #ifdef ALLOW_AUTODIFF
-      IF ( nnzbar .EQ. 1 ) THEN
+      IF ( nLev .EQ. 1 ) THEN
        CALL ACTIVE_READ_XY( active_var_file, tmpFld2D,
      &                      irec, doglobalread,
      &                      ladinit, eccoiter, myThid,
      &                      dummy )
-      ELSEIF ( nnzbar .EQ. Nr .AND. nz .EQ. Nr ) THEN
+      ELSEIF ( nLev .EQ. Nr .AND. nzIn .EQ. Nr ) THEN
        CALL ACTIVE_READ_XYZ( active_var_file, active_var,
      &                       irec, doglobalread,
      &                       ladinit, eccoiter, myThid,
      &                       dummy )
       ELSE
-       WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
+       WRITE(msgBuf,'(A,I3,A)') 'nLev = ',nLev,' should not happen'
        CALL ECCO_ERROR('ECCO_READBAR', msgBuf, myThid)
       ENDIF
 #else
-      IF ( nnzbar .EQ. 1 ) THEN
+      IF ( nLev .EQ. 1 ) THEN
        CALL READ_REC_XY_RL( active_var_file, tmpFld2D,
      &                      iRec, 1, myThid )
-      ELSEIF ( nnzbar .EQ. Nr .AND. nz .EQ. Nr ) THEN
+      ELSEIF ( nLev .EQ. Nr .AND. nzIn .EQ. Nr ) THEN
        CALL READ_REC_XYZ_RL( active_var_file, active_var,
      &                        iRec, 1, myThid )
       ELSE
-       WRITE(msgBuf,'(A,I3,A)') 'nnzbar = ',nnzbar,' should not happen'
+       WRITE(msgBuf,'(A,I3,A)') 'nLev = ',nLev,' should not happen'
        CALL ECCO_ERROR('ECCO_READBAR', msgBuf, myThid)
       ENDIF
 #endif
 
-      IF ( nnzbar .EQ. 1 ) THEN
+      IF ( nLev .EQ. 1 ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
          DO j = 1,sNy
