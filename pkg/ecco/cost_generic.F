@@ -1,5 +1,10 @@
 #include "ECCO_OPTIONS.h"
 
+C--  File cost_generic.F: Generic cost function routines
+C--   Contents
+C--   o cost_generic
+C--   o cost_genloop
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: cost_generic

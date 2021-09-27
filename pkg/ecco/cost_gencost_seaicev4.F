@@ -41,8 +41,6 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer nnzsiv4, nnzbar
-      parameter (nnzsiv4 = 1 , nnzbar = 1)
       integer nrecloc
       integer localstartdate(4)
 
@@ -80,12 +78,12 @@ c old:heff -> model has excess of iceconc     -> new:exconc
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
-      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
-      _RL localtmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
-      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
-      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
-      _RL difmask1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzsiv4,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL localtmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL difmask1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
 
       character*(128) fname0, fname0w, fname1
 
@@ -172,10 +170,10 @@ c     that sea ice cost function contributions on open boundary points
 c     are masked out, probably something that eccov4 can live
 c     with. Alternatively, on has to copy the first level of maskC to
 c     localmask explicitly.
-      call ecco_zero(localobs,nnzsiv4,spzeroloc,myThid)
-      call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
-      call ecco_zero(localmask,nnzsiv4,zeroRL,myThid)
-      call ecco_cprsrl(maskInC,localmask,nnzsiv4,nnzsiv4,myThid)
+      call ecco_zero(localobs,1,spzeroloc,myThid)
+      call ecco_zero(localweight,1,zeroRL,myThid)
+      call ecco_zero(localmask,1,zeroRL,myThid)
+      call ecco_cprsrl(maskInC,localmask,1,1,myThid)
 
 c=============== PART 1: main loop ===================
       if ( .NOT. ( localobsfile.EQ.' ' ) ) then
@@ -192,7 +190,7 @@ c====================================================
         call cost_gencal(areabarfile,gencost_errfile(igen_conc),
      &     jrec, localstartdate, localperiod, fname1,
      &     fname0w, localrec, obsrec, exst, myThid)
-        call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
+        call ecco_zero(localweight,1,zeroRL,myThid)
 #ifdef SEAICECOST_JPL
        fname0w=gencost_errfile(igen_conc)
        call ecco_readwei(fname0w,localweight,localrec,
@@ -217,16 +215,16 @@ c====================================================
 c--------- PART 1.2 read barfiles ------------------
 c====================================================
 c-- set all bars to zeros:
-        call ecco_zero(areabar,nnzbar,zeroRL,myThid)
-        call ecco_zero(deconcbar,nnzbar,zeroRL,myThid)
-        call ecco_zero(exconcbar,nnzbar,zeroRL,myThid)
+        call ecco_zero(areabar,1,zeroRL,myThid)
+        call ecco_zero(deconcbar,1,zeroRL,myThid)
+        call ecco_zero(exconcbar,1,zeroRL,myThid)
 
 c--1.2.A sea-ice concentration barfile
         exst=.FALSE.
         call cost_gencal(areabarfile,gencost_datafile(igen_conc),
      &   irec,localstartdate,localperiod,fname1,
      &   fname0,localrec,obsrec,exst,myThid)
-        call cost_genread(fname1,areabar,localtmp,irec,nnzsiv4,nnzbar,
+        call cost_genread(fname1,areabar,localtmp,irec,1,1,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,myThid)
 
@@ -237,7 +235,7 @@ c--1.2.B sst as proxy for deconc barfile, needs igen_conc
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
          call cost_genread(fname1,deconcbar,localtmp,
-     &        irec,nnzsiv4,nnzbar,
+     &        irec,1,1,
      &        nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &        dummy,myThid)
         endif
@@ -249,7 +247,7 @@ c--1.2.C heff as proxy for exconc barfile, need igen_conc and igen_exconc
      &    irec,localstartdate,localperiod,fname1,
      &    fname0,localrec,obsrec,exst,myThid)
          call cost_genread(fname1,exconcbar,localtmp,
-     &        irec,nnzsiv4,nnzbar,
+     &        irec,1,1,
      &        nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &        dummy,myThid)
         endif
@@ -258,9 +256,9 @@ c====================================================
 c--------- PART 1.3 read data --------------------
 c====================================================
 c-- initialize to spzerloc = -9999.
-        call ecco_zero(localobs,nnzsiv4,spzeroloc,myThid)
+        call ecco_zero(localobs,1,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-         CALL READ_REC_3D_RL( fname0, cost_iprec, nnzsiv4,
+         CALL READ_REC_3D_RL( fname0, cost_iprec, 1,
      &                        localobs, localrec, 0, myThid )
         else
           il=ilnblnk( fname0 )
@@ -273,38 +271,38 @@ c====================================================
 c--------- PART 1.4 Cost calculation -------------
 c====================================================
 c compute obs minus bar (localdif) and mask (difmask)
-        call ecco_zero(localdif,nnzsiv4,zeroRL,myThid)
-        call ecco_zero(difmask,nnzsiv4,zeroRL,myThid)
+        call ecco_zero(localdif,1,zeroRL,myThid)
+        call ecco_zero(difmask,1,zeroRL,myThid)
         call ecco_diffmsk(
      I     areabar, localobs, localmask,
-     I     nnzbar, nnzsiv4, spminloc, spmaxloc, spzeroloc,
+     I     1, 1, spminloc, spmaxloc, spzeroloc,
      O     localdif, difmask,
      I     myThid )
 
 c---1.4.A area term:
         call ecco_addcost(
-     I     localdif,localweight,difmask,nnzsiv4,nnzsiv4,dosumsq,
+     I     localdif,localweight,difmask,1,1,dosumsq,
      O     objf_gencost(1,1,igen_conc),num_gencost(1,1,igen_conc),
      I     myThid)
 
 c---1.4.B defficient ice term: (old: sst term, new: deconc)
 c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
         if(igen_deconc.ne.0) then
-         call ecco_zero(difmask1,nnzsiv4,zeroRL,myThid)
-         call ecco_zero(localdif,nnzsiv4,zeroRL,myThid)
-         call ecco_zero(localtmp,nnzsiv4,zeroRL,myThid)
+         call ecco_zero(difmask1,1,zeroRL,myThid)
+         call ecco_zero(localdif,1,zeroRL,myThid)
+         call ecco_zero(localtmp,1,zeroRL,myThid)
 
          call get_exconc_deconc(
-     I    localobs,nnzsiv4,areabar,exconcbar,deconcbar,nnzbar,
+     I    localobs,1,areabar,exconcbar,deconcbar,1,
      I    difmask,'de',
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
         call ecco_cp(gencost_weight(1,1,1,1,igen_deconc),
-     O       localtmp,nnzsiv4,nnzsiv4,myThid)
+     O       localtmp,1,1,myThid)
 #endif
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,nnzsiv4,dosumsq,
+     I      localdif,localtmp,difmask1,1,1,dosumsq,
      O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
      I      myThid)
         endif
@@ -312,21 +310,21 @@ c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
 c---1.4.C excessive ice term:  (old: heff and sst term, new: exconc)
 c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
         if(igen_deconc.ne.0 .and. igen_exconc.ne.0) then
-         call ecco_zero(difmask1,nnzsiv4,zeroRL,myThid)
-         call ecco_zero(localdif,nnzsiv4,zeroRL,myThid)
-         call ecco_zero(localtmp,nnzsiv4,zeroRL,myThid)
+         call ecco_zero(difmask1,1,zeroRL,myThid)
+         call ecco_zero(localdif,1,zeroRL,myThid)
+         call ecco_zero(localtmp,1,zeroRL,myThid)
 
          call get_exconc_deconc(
-     I    localobs,nnzsiv4,areabar,exconcbar,deconcbar,nnzbar,
+     I    localobs,1,areabar,exconcbar,deconcbar,1,
      I    difmask,'ex',
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
         call ecco_cp(gencost_weight(1,1,1,1,igen_exconc),
-     O       localtmp,nnzsiv4,nnzsiv4,myThid)
+     O       localtmp,1,1,myThid)
 #endif
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,nnzsiv4,dosumsq,
+     I      localdif,localtmp,difmask1,1,1,dosumsq,
      O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
      I      myThid)
         endif
