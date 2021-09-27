@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - fix call to S/R BLING_BIO_NITROGEN when USE_SIBLING is defined.
 o pkg/ecco:
   - put various dimensions related to gencost out of "ecco.h" into specific
     (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
