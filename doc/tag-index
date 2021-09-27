@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco + other:
+  - fix few non-standard syntax (+ repeated setting of "gencost_msk_is3d").
 o pkg/bling:
   - fix call to S/R BLING_BIO_NITROGEN when USE_SIBLING is defined.
 o pkg/ecco:
