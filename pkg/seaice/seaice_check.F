@@ -165,6 +165,50 @@ C--   check concistency of turbulent flux term etc. specification
         nError = nError + 1
        ENDIF
 
+C     check albedos
+       IF ( SEAICE_dryIceAlb .GT. SEAICE_drySnowAlb ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &       'SEAICE_dryIceAlb > SEAICE_drySnowAlb makes little sense'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: and leads ',
+     &       'to albedo = SEAICE_drySnowAlb for all snow thicknesses'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICE_wetIceAlb .GT. SEAICE_wetSnowAlb ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &       'SEAICE_wetIceAlb > SEAICE_wetSnowAlb makes little sense'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: and leads ',
+     &       'to albedo = SEAICE_wetSnowAlb for all snow thicknesses'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICE_dryIceAlb_south .GT. SEAICE_drySnowAlb_south ) THEN
+        WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_CHECK: ',
+     &       'SEAICE_dryIceAlb_south > SEAICE_drySnowAlb_south ',
+     &       'makes little sense'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: and leads ',
+     &  'to albedo = SEAICE_drySnowAlb_south for all snow thicknesses'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( SEAICE_wetIceAlb_south .GT. SEAICE_wetSnowAlb_south ) THEN
+        WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_CHECK: ',
+     &       'SEAICE_wetIceAlb_south > SEAICE_wetSnowAlb_south ',
+     &       'makes little sense'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: and leads ',
+     &  'to albedo = SEAICE_wetSnowAlb_south for all snow thicknesses'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+
 C--   end if usePW79thermodynamics
       ENDIF
 C--   Checking seaice thermodynamics setting: end
