@@ -209,9 +209,10 @@ c     _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RS adrecip_hfacc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
       _RS adrecip_hfacs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
       _RS adrecip_hfacw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
-      common /adgrid_rs/
-     &     adr_low_control, adhfacc, adhfacw, adhfacs,
-     &     adrecip_rcol, adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
+      common /adgrid_var_rs/
+     &     adhfacc, adhfacw, adhfacs,
+     &     adrecip_hfacc, adrecip_hfacw, adrecip_hfacs,
+     &     adr_low_control, adrecip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_SHELFICE
