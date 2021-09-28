@@ -196,11 +196,10 @@ where
 .. math::
 
    {\bf K}_{\rm GM} =
-   \left(
    \begin{pmatrix}
-   0 & 0 & -S_x \\
-   0 & 0 & -S_y \\
-   S_x & S_y & 0
+    0  &  0  & -S_x \\
+    0  &  0  & -S_y \\
+   S_x & S_y &   0
    \end{pmatrix} ,
 
 is an anti-symmetric tensor.
@@ -388,14 +387,13 @@ direction of fluxes is unaffected as the amplitude is scaled.
 The scheme inserts a tapering function, :math:`f_1(S)`, in front of the
 GM/Redi tensor:
 
-.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right]
+.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right],
 
 where :math:`S_{\max}` is the maximum slope you want allowed. Where the
 slopes, :math:`|{\bf S}|<S_{\max}` then :math:`f_1(S) = 1` and the tensor is
 un-tapered but where :math:`|{\bf S}| \ge S_{\max}` then :math:`f_1(S)` scales
 down the tensor so that the effective vertical diffusivity term
-:math:`\kappa f_1(S) |{\bf S}|^2 =
-\kappa S_{\max}^2`.
+:math:`\kappa f_1(S) |{\bf S}|^2 = \kappa S_{\max}^2`.
 
 The GKW91 tapering scheme is activated in the model by setting
 **GM\_taper\_scheme = ’gkw91’** in *data.gmredi*.
