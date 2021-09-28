@@ -28,7 +28,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #  include "ecco_local_params.h"
 # endif
 #endif
@@ -177,6 +178,7 @@ c--   Read the namelist input.
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_itracer,
+     &         gencost_kLev_select,
      &         gencost_preproc,
      &         gencost_preproc_c,
      &         gencost_preproc_i,
@@ -599,6 +601,7 @@ c--   Set default values.
          gencost_outputlevel(k)= 0
          gencost_errfile(k)    = ' '
          gencost_itracer(k)    = 1
+         gencost_kLev_select(k)= 1
          gencost_mask(k)       = ' '
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0
