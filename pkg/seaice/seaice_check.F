@@ -47,6 +47,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     ioUnit     :: temp for writing msg unit
 C     msgBuf     :: Informational/error message buffer
+C     errCount   :: error counter
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
@@ -57,7 +58,7 @@ C     msgBuf     :: Informational/error message buffer
       _RL SEAICE_mcphee_max
       INTEGER  kSrf
       INTEGER  i
-      INTEGER  nError
+      INTEGER  errCount
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -76,14 +77,14 @@ C--   ALLOW_SEAICE
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
 
-      nError = 0
+      errCount = 0
 
 C--   SEAICE needs forcing_In_AB FALSE
       IF (tracForcingOutAB.NE.1) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' Need T,S forcing out of AB (tracForcingOutAB=1)'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
       ENDIF
 
 C-------------------------------------------------
@@ -96,14 +97,14 @@ C--   check ice cover fraction formula
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' SEAICE_areaGainFormula must be between 1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
        ENDIF
        IF ((SEAICE_areaLossFormula.LT.1).OR.
      &     (SEAICE_areaLossFormula.GT.3)) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' SEAICE_areaLossFormula must be between 1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
        ENDIF
 
        IF ( (.NOT.SEAICE_doOpenWaterGrowth)
@@ -115,7 +116,7 @@ C--   check ice cover fraction formula
         WRITE(msgBuf,'(A)')
      &   'SEAICE_areaGainFormula.EQ.2 and SEAICE_areaLossFormula.EQ.3'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 
 C--   check concistency of turbulent flux term etc. specification
@@ -131,7 +132,7 @@ C--   check concistency of turbulent flux term etc. specification
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &   ' They must lie within 0. and drF(1)/SEAICE_deltaTtherm'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 
        IF ( ( SEAICE_frazilFrac .LT. 0. _d 0 ) .OR.
@@ -142,7 +143,7 @@ C--   check concistency of turbulent flux term etc. specification
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &   ' They must lie within 0. and 1. '
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 
        IF ( ( SEAICE_mcPheeTaper .LT. 0. _d 0 ) .OR.
@@ -151,7 +152,7 @@ C--   check concistency of turbulent flux term etc. specification
      &      'SEAICE_mcPheeTaper cannot be specified  ',
      &      'outside of the [0. 1.] range'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 
        IF ( SEAICE_doOpenWaterMelt .AND.
@@ -162,7 +163,7 @@ C--   check concistency of turbulent flux term etc. specification
         WRITE(msgBuf,'(A)')
      &   'also set SEAICE_doOpenWaterGrowth to .TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 
 C     check albedos
@@ -224,7 +225,7 @@ C--   check specifications of new features for testing
         WRITE(msgBuf,'(A)')
      &   'undef SEAICE_DISABLE_HEATCONSFIX and recompile'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -236,7 +237,7 @@ C--   check specifications of new features for testing
         WRITE(msgBuf,'(A)')
      &   'define ALLOW_SITRACER and recompile'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 
       IF ( SEAICE_ageTracer ) THEN
@@ -246,7 +247,7 @@ C--   check specifications of new features for testing
         WRITE(msgBuf,'(A)')
      &   'define ALLOW_SITRACER and recompile'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -264,7 +265,7 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
      &      'SItrFromOceanFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
       ENDIF
 
       IF ( ( SItrFromFloodFrac(iTracer) .LT. 0. _d 0 ) .OR.
@@ -273,7 +274,7 @@ c to be added : if SEAICE_ageTracer we suggest that one tracer does that
      &      'SItrFromFloodFrac cannot be specified  ',
      &      'outside of the [0. 1.] range'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
       ENDIF
 
 c      IF ( (SItrName(iTracer).EQ.'salinity') .AND.
@@ -282,7 +283,7 @@ c         WRITE(msgBuf,'(2A)')
 c     &      'SItrName = "salinity" requires  ',
 c     &      'SItrMate = "HEFF" '
 c         CALL PRINT_ERROR( msgBuf, myThid )
-c         nError = nError + 1
+c         errCount = errCount + 1
 c      ENDIF
 
       IF ( (SItrName(iTracer).NE.'salinity').AND.
@@ -292,7 +293,7 @@ c      ENDIF
      &      'SItrFromOceanFrac / SItrFromFloodFrac is only  ',
      &      'available for SItrName = "salinity" (for now)'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
       ENDIF
 
       ENDDO
@@ -391,7 +392,7 @@ C--   Check advection schemes
      &       ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
         CALL PRINT_ERROR( msgBuf, myThid )
        ENDIF
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND ) THEN
 C-- for now, the code does not allow to use the default advection scheme
@@ -444,7 +445,7 @@ C    for an other ice-field. In this case, stop here.
      &        ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
       ELSEIF ( DIFF1 .NE. 0. _d 0 ) THEN
 C-- for now, the code does not allow to use DIFF1 without the default
@@ -455,7 +456,7 @@ C   advection scheme (Centered 2nd order). In this case, stop here.
         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK: ',
      &        'not available with SEAICEadvScheme=', SEAICEadvScheme
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 
 C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
@@ -471,14 +472,14 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' => Cannot use both type of diffusion'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 
       IF ( postSolvTempIter.GT.2 .OR. postSolvTempIter .LT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' => allowed values for postSolveTempIter: 0, 1, 2'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 
       IF ( SEAICEpresH0    .LE. 0. _d 0 .OR.
@@ -489,7 +490,7 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: OR SEAICEpresPow1 ',
      &      '(integer) has been specified as negative (data.seaice)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 
 C--
@@ -502,7 +503,7 @@ C--
      &  ' MPSEUDOTIMESTEPS, SEAICEnonLinIterMax = ',
      &  MPSEUDOTIMESTEPS, SEAICEnonLinIterMax
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICElinearIterMax .GT. SOLV_MAX_FIXED ) THEN
        WRITE(msgBuf,'(2A,I10,A,I10)') 'SEAICE_CHECK:',
@@ -521,12 +522,12 @@ C--
        WRITE(msgBuf,'(2A,2I4)') 'SEAICE_CHECK:',
      &  ' NMAX_TICE, MAX_TICE = ', NMAX_TICE, IMAX_TICE
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICE_maskRHS ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_maskRHS not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -536,7 +537,7 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
          WRITE(msgBuf,'(A)')
      &        'SEAICE_ALLOW_DYNAMICS needed for SEAICEuseDYNAMICS'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
       ENDIF
 #endif
 
@@ -545,7 +546,7 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
        WRITE(msgBuf,'(A)')
      &   'SEAICE_ALLOW_MOM_ADVECTION needed for SEAICEmomAdvection'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -594,7 +595,7 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          WRITE(msgBuf,'(A)')
      &     'the seaice*_IF codes are now merged into the main branch.'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_ALLOW_TD_IF */
 
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
@@ -606,7 +607,7 @@ C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
          WRITE(msgBuf,'(2A)') 'they are replaced with run time',
      &     ' parameter SEAICE_doOpenWaterGrowth / Melt'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_DO_OPEN_WATER_GROWTH */
 
 C--   SEAICE_OCN_MELT_ACT_ON_AREA is obsolete: issue warning and stop.
@@ -617,7 +618,7 @@ C--   SEAICE_OCN_MELT_ACT_ON_AREA is obsolete: issue warning and stop.
          WRITE(msgBuf,'(A)')
      &     'it is now done with SEAICE_areaLossFormula.EQ.1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_OCN_MELT_ACT_ON_AREA */
 
 C--   FENTY_AREA_EXPANSION_CONTRACTION is obsolete: issue warning and stop.
@@ -628,7 +629,7 @@ C--   FENTY_AREA_EXPANSION_CONTRACTION is obsolete: issue warning and stop.
          WRITE(msgBuf,'(A)')
      &     'it is now done with SEAICE_areaLoss(Melt)Formula.EQ.1'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_DO_OPEN_WATER_MELT */
 
 C--   SEAICE_AGE is obsolete: issue warning and stop.
@@ -639,7 +640,7 @@ C--   SEAICE_AGE is obsolete: issue warning and stop.
          WRITE(msgBuf,'(2A)') 'it now is done',
      &     ' with SEAICE_SITRACER and siTrName=age'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_AGE */
 
 C--   SEAICE_SALINITY is obsolete: issue warning and stop.
@@ -650,7 +651,7 @@ C--   SEAICE_SALINITY is obsolete: issue warning and stop.
          WRITE(msgBuf,'(A)')
      &     'use SEAICE_VARIABLE_SALINITY instead.'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_SALINITY */
 
 C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
@@ -661,7 +662,7 @@ C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
          WRITE(msgBuf,'(A)')
      &     'and has no effect.'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
 
 C--   pkg/seaice requires pkg/exf with following CPP options/
@@ -672,32 +673,32 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #else /* ALLOW_EXF */
          IF ( .NOT.useEXF ) THEN
            WRITE(msgBuf,'(A)')
      &        'S/R SEAICE_CHECK: need to set useEXF in data.pkg'
            CALL PRINT_ERROR( msgBuf, myThid )
-           nError = nError + 1
+           errCount = errCount + 1
          ENDIF
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif
 #ifndef ALLOW_DOWNWARD_RADIATION
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'need to define pkg/exf ALLOW_DOWNWARD_RADIATION'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 #endif
 #ifdef SEAICE_EXTERNAL_FLUXES
 # if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
          WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
 # endif /* !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE) */
          IF ( SEAICE_waterAlbedo .NE. UNSET_RL ) THEN
           WRITE(msgBuf,'(A)')
@@ -706,7 +707,7 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
           WRITE(msgBuf,'(A)')
      &      'Set exf_albedo in data.exf EXF_NML_01 instead'
           CALL PRINT_ERROR( msgBuf, myThid )
-          nError = nError + 1
+          errCount = errCount + 1
          ENDIF
          IF ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' ) THEN
           i = ILNBLNK(lwfluxfile)
@@ -717,7 +718,7 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
      &         'implying that lwdown = 0. For pkg/seaice to work '//
      &         'properly lwdown should be read from lwdownfile!'
           CALL PRINT_ERROR( msgBuf, myThid )
-          nError = nError + 1
+          errCount = errCount + 1
          ENDIF
          IF ( swfluxfile .NE. ' ' .AND. swdownfile .EQ. ' ' ) THEN
           i = ILNBLNK(swfluxfile)
@@ -728,7 +729,7 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
      &         'implying that swdown = 0. For pkg/seaice to work '//
      &         'properly swdown should be read from swdownfile!'
           CALL PRINT_ERROR( msgBuf, myThid )
-          nError = nError + 1
+          errCount = errCount + 1
          ENDIF
 #else /* if undef SEAICE_EXTERNAL_FLUXES */
          WRITE(msgBuf,'(3A)') 'S/R SEAICE_CHECK: ',
@@ -748,7 +749,7 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
            WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'needs pkg/exf useAtmWind to be true'
            CALL PRINT_ERROR( msgBuf, myThid )
-           nError = nError + 1
+           errCount = errCount + 1
          ENDIF
 #endif
 #ifndef EXF_SEAICE_FRACTION
@@ -756,7 +757,7 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
            WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: ',
      &        'ice-area relaxation needs #define EXF_SEAICE_FRACTION'
            CALL PRINT_ERROR( msgBuf, myThid )
-           nError = nError + 1
+           errCount = errCount + 1
          ENDIF
 #endif
 #endif /* ALLOW_EXF */
@@ -781,7 +782,7 @@ C     end if usePW79thermodynamics
      &        'SEAICE_CHECK: cannot use JFNK-solver with',
      &        ' overlap (OLx,OLy) smaller than 3'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
        ELSE
         IF ( OLx.LT.2 .OR. OLy.LT.2 ) THEN
@@ -789,7 +790,7 @@ C     end if usePW79thermodynamics
      &        'SEAICE_CHECK: cannot use dynamics solver with',
      &        ' overlap (OLx,OLy) smaller than 2'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
        ENDIF
        IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
@@ -801,7 +802,7 @@ C     end if usePW79thermodynamics
      &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
      &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
        IF ( SEAICE_2ndOrderBC ) THEN
         IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
@@ -809,7 +810,7 @@ C     end if usePW79thermodynamics
      &   'SEAICE_CHECK: SEAICE_2ndOrderBC = .TRUE. requires',
      &   ' an overlap (OLx,OLy) of at least 3'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
         IF ( SEAICE_OLx .GT. OLx-3 .OR. SEAICE_OLy .GT. OLy-3 ) THEN
          WRITE(msgBuf,'(A,I2,A,I2)')
@@ -820,7 +821,7 @@ C     end if usePW79thermodynamics
      &        'S/R SEAICE_CHECK: with SEAICE_2ndOrderBC, SEAICE_OLx/y',
      &        ' cannot be larger than OLx/y-3 = ', OLx-3, '/', OLy-3
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
        ENDIF
 
@@ -835,7 +836,7 @@ C     end if usePW79thermodynamics
          WRITE(msgBuf,'(A,I4)')
      &   'SEAICE_CHECK: SEAICEnEVPstarSteps = ', SEAICEnEVPstarSteps
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
 #  endif
         IF ( .NOT.(SEAICEuseEVPstar.OR.SEAICEuseEVPrev)
@@ -844,7 +845,7 @@ C     end if usePW79thermodynamics
          WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
      &        'set in namelist, but SEAICEuseEVPstar = .FALSE.'
          CALL PRINT_ERROR( msgBuf, myThid )
-         nError = nError + 1
+         errCount = errCount + 1
         ENDIF
        ENDIF
 # else
@@ -858,7 +859,7 @@ C     end if usePW79thermodynamics
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 # endif
 
@@ -877,7 +878,7 @@ C     end if usePW79thermodynamics
         WRITE(msgBuf,'(A)')
      &       'SEAICE_CHECK: which is not implemented for EVP.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
        IF ( SEAICEuseEVP .AND. (
 # ifdef SEAICE_ALLOW_TEARDROP
@@ -899,7 +900,7 @@ C     end if usePW79thermodynamics
         WRITE(msgBuf,'(A)')
      &       'SEAICE_CHECK: are not implemented for EVP'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
@@ -915,7 +916,7 @@ C     SEAICEuseDynamics
         WRITE(msgBuf,'(2A)') ' but CPP-flag ',
      &   'SEAICE_GLOBAL_3DIAG_SOLVER is #undef in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
 
@@ -927,7 +928,7 @@ C     SEAICEuseDynamics
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_CLIPVELS is not defined in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPVELS */
 
@@ -941,7 +942,7 @@ C     SEAICEuseDynamics
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
      &       'SEAICE_ALLOW_CLIPZETA is not defined in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
 
@@ -950,7 +951,7 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTEM requires '//
      &      'that SEAICE_ALLOW_TEM is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 #ifndef SEAICE_ALLOW_MCE
@@ -958,7 +959,7 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCE requires '//
      &      'that SEAICE_ALLOW_MCE is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 #ifndef SEAICE_ALLOW_MCS
@@ -966,7 +967,7 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCS requires '//
      &      'that SEAICE_ALLOW_MCS is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 #ifndef SEAICE_ALLOW_TEARDROP
@@ -974,13 +975,13 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTD requires  '//
      &      'that SEAICE_ALLOW_TEARDROP is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICEusePL ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEusePL requires '//
      &      'that SEAICE_ALLOW_TEARDROP is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -1000,7 +1001,7 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: non-default rheologies '//
      &      'require that SEAICE_CGRID is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 
 # ifdef SEAICE_TEST_ICE_STRESS_1
@@ -1013,19 +1014,19 @@ C     SEAICEuseDynamics
        WRITE(msgBuf,'(A)')
      &  'SEAICE_CHECK: SEAICE_BICE_STRESS (defined by default)'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
 # endif /* SEAICE_TEST_ICE_STRESS_1 */
       IF ( SEAICEuseDYNAMICS.AND.useCubedSphereExchange ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &       'B-grid dynamics not working on Cubed-Sphere grid'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICEuseDYNAMICS.AND.useOBCS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &       'Open-Boundaries not implemented in B-grid dynamics'
        CALL PRINT_ERROR( msgBuf, myThid )
-C      nError = nError + 1
+C      errCount = errCount + 1
       ENDIF
 #endif /* ndef SEAICE_CGRID */
 
@@ -1048,7 +1049,7 @@ C      nError = nError + 1
        WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: but only one can be .TRUE. at a time.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -1058,13 +1059,13 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)')
      &   'need to #define SEAICE_ALLOW_FREEDRIFT for SEAICEuseFREEDRIFT'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
       IF ( LSR_mixIniGuess.GE.0 ) THEN
         WRITE(msgBuf,'(A)')
      &   'need to #define SEAICE_ALLOW_FREEDRIFT to use LSR_mixIniGuess'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -1076,7 +1077,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &   'SEAICE_VARIABLE_SALINITY is undef in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
 
@@ -1094,12 +1095,12 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
      &       'S/R SEAICE_CHECK: For safety we stop here. ',
      &       'Please unset one of the two parameters.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ELSEIF (JFNKres_t.EQ.UNSET_RL.AND.JFNKres_tFac.EQ.UNSET_RL) THEN
         WRITE(msgBuf,'(2A)') 'S/R SEAICE_CHECK: need to specify ',
      &       'JFNKres_t or JFNKres_tFac for SEAICEuseJFNK=.TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
       ENDIF
       IF ( SEAICEuseJFNK .AND. SEAICEuseEVP ) THEN
@@ -1107,7 +1108,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
      &      'S/R SEAICE_CHECK: cannot have both SEAICEuseJFNK=.TRUE.',
      &      'and SEAICEuseEVP=.TRUE. (i.e. SEAICE_deltaTevp > 0)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #else
       IF ( SEAICEuseJFNK ) THEN
@@ -1117,7 +1118,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &   'SEAICE_ALLOW_JFNK is undef in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
 #ifndef SEAICE_ALLOW_KRYLOV
@@ -1128,7 +1129,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &   'SEAICE_ALLOW_KRYLOV is undef in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_KRYLOV */
 
@@ -1137,13 +1138,13 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseBDF2 = .TRUE. '//
      &       'only allowed with SEAICEuseJFNK = .TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
        IF ( SEAICEuseIMEX ) THEN
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseIMEX = .TRUE. '//
      &       'only allowed with SEAICEuseJFNK = .TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        nError = nError + 1
+        errCount = errCount + 1
        ENDIF
       ENDIF
       IF ( SEAICEuseIMEX ) THEN
@@ -1160,7 +1161,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &      'is no longer allowed; allowed values are 0 and 3'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 
       IF ( SEAICEpressReplFac .LT. 0. _d 0 .OR.
@@ -1171,7 +1172,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
      &      'cannot < 0 or > 1'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 
 C--   Some sanity checks for SEAICEdWatMin
@@ -1179,7 +1180,7 @@ C--   Some sanity checks for SEAICEdWatMin
        WRITE(msgBuf,'(A,A,F5.2,A)') 'SEAICE_CHECK: ',
      &      'SEAICEdWatMin (= ', SEAICEdWatMin, ') may not be < 0.'
        CALL PRINT_ERROR( msgBuf , myThid)
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
       IF ( SEAICE_waterDrag .EQ. 0. _d 0
      &     .AND. SEAICEdWatMin .GT. 0. _d 0) THEN
@@ -1203,7 +1204,7 @@ C--   Some sanity checks for SEAICEdWatMin
      &      'When SEAICE_ALLOW_FREEDRIFT is defined, ',
      &      'SEAICE_waterDrag or SEAICE_waterDragSouth may not be zero.'
        CALL PRINT_ERROR( msgBuf , myThid)
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_FREEDRIFT */
 
@@ -1215,7 +1216,7 @@ C--   Some sanity checks for SEAICEdWatMin
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: is greater than 0, '//
      &      'but SEAICE_ALLOW_BOTTOMDRAG is not defined'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
@@ -1253,16 +1254,19 @@ C
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: use a multiDimAdvection '//
      &      'scheme instead'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nError = nError + 1
+       errCount = errCount + 1
       ENDIF
 #endif
 
-      IF ( nError .GT. 0 ) THEN
-       WRITE(msgBuf,'(A,I3,A)') 'S/R SEAICE_CHECK: ', nError,
+      IF ( errCount .GE. 1 ) THEN
+       WRITE(msgBuf,'(A,I3,A)') 'S/R SEAICE_CHECK: ', errCount,
      &      ' parameter/CPP-flag combinations are '//
      &      'inconsistent or incomplete'
        CALL PRINT_ERROR( msgBuf, myThid )
-       CALL ALL_PROC_DIE( myThid )
+       WRITE(msgBuf,'(A,I3,A)')
+     &       'SEAICE_CHECK: detected', errCount,' fatal error(s)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 

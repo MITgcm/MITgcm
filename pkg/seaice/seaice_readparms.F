@@ -1303,7 +1303,7 @@ C-    Retired parameters
       ENDIF
 
       IF ( nRetired .GT. 0 .OR. nError .GT. 0 ) THEN
-       CALL ALL_PROC_DIE( myThid )
+       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
