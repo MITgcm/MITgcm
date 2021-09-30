@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk:
+  - allow to use "recglo" to specify a particular control time record for
+    gradient check (was previously inactive).
 o pkg/exf:
   - new parameters to reduce AD-exf monitor output:
     1) exf_adjMonFreq (def= adjMonitorFreq), = 0. suppresses all output
