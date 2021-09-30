@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - update some dynamics solver default so that now:
+    a) SEAICEuseEVPstar = .TRUE. ; b) SEAICEuseEVPrev = .TRUE. ;
+    c) LSR_ERROR = 1.e-5 (previously was 1.e-4) ;
+  - put back old default in exp. lab_sea (primary test);
+  - modify (simplify?) logic in seaice_readparms.F and seaice_check.F.
 o pkg/grdchk:
   - allow to use "recglo" to specify a particular control time record for
     gradient check (was previously inactive).
