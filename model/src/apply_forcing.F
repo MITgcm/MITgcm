@@ -675,8 +675,8 @@ C     where the flux at the bottom is applied as kSurfC
         ENDDO
        ENDDO
       ELSE
-       STOP 'Ooops, geothermal heat flux not implemented '//
-     &      'for .NOT.usingZCoords and .not.kSurface.EQ.Nr'
+C-    Neither Z-Coords nor kSurface=Nr : not implemented
+       STOP 'ABNORMAL END: S/R APPLY_FORCING_T (geothermal-flux)'
       ENDIF
 #endif /* ALLOW_GEOTHERMAL_FLUX */
 

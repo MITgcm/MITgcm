@@ -45,7 +45,7 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Define diagnostics Names :
-      DO iTrc=1,gchem_sepFTr_num
+      DO iTrc=1,MIN( gchem_sepFTr_num, PTRACERS_num )
 C-     Set default name & tracer Units:
        WRITE(locName,'(A,I4.4,A)') 'Tracer ',iTrc
        trcUnits  = '(kg/kg)'

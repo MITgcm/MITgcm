@@ -196,6 +196,9 @@ C  call either "BLING" or "BLING + nitrogen"
 #endif
      U                 G_DIC, G_ALK, G_O2, G_FE,
      U                 G_PO4, G_DOP, G_NO3, G_DON,
+#ifdef USE_SIBLING
+     U                 G_SI,
+#endif
      I                 bi, bj, imin, imax, jmin, jmax,
      I                 myTime, myIter, myThid)
 #else

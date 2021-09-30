@@ -5,6 +5,8 @@
  exf_iprec         = 32,
  exf_debugLev      = 3,
 #readStressOnAgrid = .TRUE.,
+ exf_adjMonSelect  = 3,
+ exf_adjMonFreq    = 864000.,
  &
 
 # *********************
