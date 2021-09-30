@@ -51,7 +51,7 @@
  gencost_preproc(3,4) = 'mindepth',
  gencost_preproc_r(3,4) = -200.,
  gencost_datafile(4) = 'labsea_TP_mean_meters',
- gencost_errfile(4) = 'ones_64b.bin'
+ gencost_errfile(4) = 'ones_64b.bin',
  gencost_name(4) = 'mdt',
  gencost_startdate1(4) = 19790101,
  gencost_startdate2(4) = 000000,

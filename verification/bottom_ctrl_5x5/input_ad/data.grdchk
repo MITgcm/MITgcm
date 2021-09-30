@@ -1,4 +1,3 @@
-
 # *******************
 # ECCO gradient check
 # *******************
@@ -8,4 +7,4 @@
  nstep            = 3,
  nend             = 25,
  grdchkvarindex   = 101,
- /
+ &
