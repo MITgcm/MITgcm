@@ -74,12 +74,12 @@ c     _RL  firstResidual, minResidualSq, lastResidual
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
 C     directly imported from TAF-generated code, make sure that they are
 C     consistent with what is found in S/R update_cg2d_ad
-      _RL aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL aS2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL aC2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aS2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS aC2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /CG2D_I_R_AD/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
 #endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
@@ -102,7 +102,7 @@ CEOP
 C--   mark output of cg2d as being called from here
       IF ( debugLevel .GE. debLevZero ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(standardmessageunit,'(A)')
+       WRITE(standardMessageUnit,'(A)')
      &      ' Calling cg2d from S/R CG2D_MAD'
        _END_MASTER( myThid )
       ENDIF
@@ -295,10 +295,10 @@ CEOP
 C--   mark output of cg2d as being called from here
       IF ( debugLevel .GE. debLevZero ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(standardmessageunit,'(A,L)')
+       WRITE(standardMessageUnit,'(A,L1)')
      &      ' Calling CG2D_STORE with doStore = ', doStore
-       WRITE(standardmessageunit,'(A,I4)')
-     &      ' Calling CG2D_STORE with ikey_dynamics = ', ikey_dynamics
+       WRITE(standardMessageUnit,'(A,I6)')
+     &      ' Calling CG2D_STORE with ikey_dynamics=', ikey_dynamics
        _END_MASTER( myThid )
       ENDIF
 
