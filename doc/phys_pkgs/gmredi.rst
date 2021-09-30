@@ -422,12 +422,12 @@ Tapering: Large, Danabasoglu and Doney, JPO 1997
 
 The tapering used in :cite:`lar-eta:97` is based on the DM95 tapering scheme, but also
 tapers the scheme with an additional function of height, :math:`f_2(z)`,
-so that the GM/Redi SGS fluxes are reduced near the surface:
+so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
-.. math:: f_2(z) = \frac{1}{2} \left[ 1 + \sin\left(\pi \frac{z}{D} - \frac{\pi}{2}\right)\right] ,
+.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) ,
 
-where :math:`D = L_\rho |{\bf S}|` is a depth-scale and :math:`L_\rho=c/f`
-with :math:`c=2` m s :math:`^{-1}`. This tapering with height was
+where :math:`D = (c / f) |{\bf S}|` is a depth-scale with :math:`f` the
+Coriolis parameter and :math:`c=2` m/s. This tapering with height was
 introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
