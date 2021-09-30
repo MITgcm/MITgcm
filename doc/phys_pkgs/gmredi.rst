@@ -426,9 +426,9 @@ so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
 .. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) ,
 
-where :math:`D = (c / f) |{\bf S}|` is a depth-scale with :math:`f` the
-Coriolis parameter and :math:`c=2` m/s. This tapering with height was
-introduced to fix some spurious interaction with the mixed-layer KPP
+where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
+Coriolis parameter and :math:`c=2` m/s. This tapering that varies with depth
+was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
