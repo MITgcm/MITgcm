@@ -59,20 +59,6 @@ C     but safer when EXCH do not fill all the overlap regions.
           pC(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO j=1-1,sNy+1
-         DO i=1-1,sNx+1
-          cg2d_q(i,j,bi,bj) = 0. _d 0
-          cg2d_r(i,j,bi,bj) = 0. _d 0
-          cg2d_s(i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_CG2D_NSA
-          cg2d_z(i,j,bi,bj) = 0. _d 0
-#endif /* ALLOW_CG2D_NSA */
-#ifdef ALLOW_SRCG
-          cg2d_y(i,j,bi,bj) = 0. _d 0
-          cg2d_v(i,j,bi,bj) = 0. _d 0
-#endif /*  ALLOW_SRCG */
-         ENDDO
-        ENDDO
        ENDDO
       ENDDO
 

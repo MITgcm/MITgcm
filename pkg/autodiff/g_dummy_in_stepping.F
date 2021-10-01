@@ -113,11 +113,6 @@ c
 cph        CALL WRITE_FLD_XY_RL( 'G_J_sst.',suff, g_sst, myIter, myThid )
 cph        CALL WRITE_FLD_XY_RL( 'G_J_sss.',suff, g_sss, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_MONITOR_PHIHYD
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jphihyd.',suff, g_totphihyd, myIter, myThid )
-#endif
-
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
 

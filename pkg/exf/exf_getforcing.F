@@ -139,7 +139,7 @@ C     == routine arguments ==
 C     !LOCAL VARIABLES:
 C     == local variables ==
       INTEGER bi,bj
-      INTEGER i,j,k
+      INTEGER i,j,ks
 C     == end of interface ==
 CEOP
 
@@ -202,11 +202,11 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
         CALL EXF_ADJOINT_SNAPSHOTS( 2, myTime, myIter, myThid )
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 C     Set radiative fluxes
@@ -241,35 +241,36 @@ CADJ STORE evap         = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_ATM_TEMP
 C     compute hflux & sflux from multiple components
-          DO j = 1,sNy
-            DO i = 1,sNx
-C             Net surface heat flux.
-              hflux(i,j,bi,bj) =
-     &              - hs(i,j,bi,bj)
-     &              - hl(i,j,bi,bj)
-     &              + lwflux(i,j,bi,bj)
+        DO j = 1,sNy
+         DO i = 1,sNx
+C     Net surface heat flux.
+          hflux(i,j,bi,bj) =
+     &         - hs(i,j,bi,bj)
+     &         - hl(i,j,bi,bj)
+     &         + lwflux(i,j,bi,bj)
 #ifndef SHORTWAVE_HEATING
-     &              + swflux(i,j,bi,bj)
+     &         + swflux(i,j,bi,bj)
 #endif
 C             fresh-water flux from Precipitation and Evaporation.
-              sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
-            ENDDO
-          ENDDO
+          sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
+         ENDDO
+        ENDDO
 #endif /* ALLOW_ATM_TEMP */
 
 C     Apply runoff, masks and exchanges
-          k = 1
-          DO j = 1,sNy
-            DO i = 1,sNx
+        ks = 1
+        IF ( usingPCoords ) ks = Nr
+        DO j = 1,sNy
+         DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
+          sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 #endif
-              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,k,bi,bj)
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,k,bi,bj)
-            ENDDO
-          ENDDO
-
+          hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+          sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,ks,bi,bj)
+         ENDDO
         ENDDO
+
+       ENDDO
       ENDDO
 
 C     Update the tile edges: needed for some EXF fields involved in horizontal
@@ -278,9 +279,9 @@ C     are exchanged in EXF_MAPFIELDS.
 c     _EXCH_XY_RL(hflux,   myThid)
 c     _EXCH_XY_RL(sflux,   myThid)
       IF ( stressIsOnCgrid ) THEN
-        CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
+       CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
       ELSE
-        CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
+       CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
       ENDIF
 #ifdef SHORTWAVE_HEATING
 c     _EXCH_XY_RL(swflux, myThid)
@@ -297,12 +298,12 @@ C     Get values of the surface flux anomalies.
 
       IF ( useExfCheckRange .AND.
      &     ( myIter.EQ.nIter0 .OR. exf_debugLev.GE.debLevC ) ) THEN
-         CALL EXF_CHECK_RANGE( myTime, myIter, myThid )
+       CALL EXF_CHECK_RANGE( myTime, myIter, myThid )
       ENDIF
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
-        CALL EXF_ADJOINT_SNAPSHOTS( 1, myTime, myIter, myThid )
+      CALL EXF_ADJOINT_SNAPSHOTS( 1, myTime, myIter, myThid )
 # endif
 #endif /* ALLOW_AUTODIFF */
 
@@ -315,8 +316,8 @@ C     applying control variables, but before exf_diagnostics_fill.
 C     Therefore, we DO it exactly here:
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-oLy,sNy+oLy
-         DO i = 1-oLx,sNx+oLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           hflux(i,j,bi,bj) = hflux(i,j,bi,bj) + swflux(i,j,bi,bj)
          ENDDO
         ENDDO
