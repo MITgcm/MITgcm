@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68c (2021/10/02)
 o pkg/seaice:
   - update some dynamics solver default so that now:
     a) SEAICEuseEVPstar = .TRUE. ; b) SEAICEuseEVPrev = .TRUE. ;
