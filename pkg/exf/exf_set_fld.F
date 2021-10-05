@@ -129,7 +129,19 @@ C-    fldPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
             CALL cal_GetMonthsRec(
      O           fac, first, changed,
-     O           count0, count1,
+     O           count0, count1, year0, year1,
+     I           myTime, myIter, myThid )
+#endif /* ALLOW_CAL */
+         ELSEIF ( useCal .AND. fldperiod .EQ. -1.) THEN
+C-    fldPeriod=-1 means fields are monthly means.
+C     With useExfYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month fldStartTime falls in.
+#ifdef ALLOW_CAL
+            CALL EXF_GetMonthsRec(
+     I           fldStartTime, useExfYearlyFields,
+     O           fac, first, changed,
+     O           count0, count1, year0, year1,
      I           myTime, myIter, myThid )
 #endif /* ALLOW_CAL */
          ELSEIF ( fldPeriod .LT. 0. ) THEN

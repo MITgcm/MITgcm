@@ -45,7 +45,7 @@ c     == external ==
 
 c     == end of interface ==
 
-      if (useYearlyFields.and.genperiod.gt.0) then
+      if (useYearlyFields.and.genperiod.ne.-12) then
 c     Complete filename with YR or _YEAR extension
        il = ilnblnk( genfile )
        if (twoDigitYear) then
