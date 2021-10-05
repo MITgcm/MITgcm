@@ -79,10 +79,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MOM_VISC.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
@@ -107,7 +106,9 @@ C     !LOCAL VARIABLES:
       _RL shiftAh, shiftA4
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER lockey_1, lockey_2
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, lockey_1, lockey_2
 #endif
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
@@ -141,26 +142,27 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_LEITH_QG
       _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sqargQG
 #endif
       _RL viscAh_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sqargAh, sqargA4, sqargAhD, sqargA4D, sqargSmag
       LOGICAL calcLeith, calcSmag, calcLeithQG
-      _RL sqargAh, sqargA4, sqargAhD, sqargA4D, sqargQG, sqargSmag
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
-          lockey_1 = (ikey-1)*Nr + k
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ikey = (act1 + 1) + act2*max1
+     &                  + act3*max1*max2
+     &                  + act4*max1*max2*max3
+      lockey_1 = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :

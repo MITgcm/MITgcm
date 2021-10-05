@@ -29,7 +29,6 @@ C     === Global variables ===
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
       INTEGER siLo, siHi, sjLo, sjHi
@@ -75,6 +74,11 @@ C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       _RL opFrac, icFrac
       LOGICAL dBugFlag
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 

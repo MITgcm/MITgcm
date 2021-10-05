@@ -103,17 +103,6 @@ C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
 # endif
 #endif /* ALLOW_AUTODIFF */
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
-     &   'OLD_THSICE_CALL_SEQUENCE code no longer maintained'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
-     &   'option and related code will be removed after chkpt-64e'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
-
       IF ( useAIM .AND. .NOT.( stepFwd_oceMxL .OR. useCoupler )
      &            .AND.  tauRelax_MxL.NE. -1. _d 0 ) THEN
 C-    with pkg/aim, usual way to use pkg/thsice is to step-forward Mixed-Layer

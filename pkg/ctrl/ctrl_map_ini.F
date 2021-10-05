@@ -51,7 +51,6 @@ c#include "PTRACERS_PARAMS.h"
 #endif
 # if (defined ALLOW_AUTODIFF_TAMC && !defined DISABLE_CTRL_THETA_LIMIT)
 #  include "tamc.h"
-#  include "tamc_keys.h"
 # endif
 #endif /* ECCO_CTRL_DEPRECATED */
 
@@ -79,7 +78,8 @@ c     == local variables ==
       character*( 80)   fnamegeneric
 
       _RL     fac
-      _RL tmptest
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 c     == external ==
       integer  ilnblnk
@@ -107,6 +107,28 @@ CEOP
       else
         fac = 0. _d 0
       endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = 1-oly,sny+oly
+              do i = 1-olx,snx+olx
+                tmpfld3d(i,j,k,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
 
 #ifdef ALLOW_THETA0_CONTROL
 c--   Temperature field.

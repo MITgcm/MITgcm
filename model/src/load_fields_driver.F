@@ -52,7 +52,9 @@ C     == Global variables ==
 #include "FFIELDS.h"
 
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"

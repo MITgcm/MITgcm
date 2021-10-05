@@ -78,11 +78,8 @@ c     == local variables ==
 
       _RL    fcloc
 
-      integer i, j, k
-      integer ii
-      integer il
-      integer irec
-      integer ig,jg
+      integer i, k
+c     integer ig,jg
       integer ivartype
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       integer iobcs
@@ -99,9 +96,54 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       character*(80) fname_local(3)
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
+      character*( 80)   fname_theta(3)
+      character*( 80)   fname_salt(3)
+      character*( 80)   fname_hflux(3)
+      character*( 80)   fname_sflux(3)
+      character*( 80)   fname_tauu(3)
+      character*( 80)   fname_tauv(3)
+      character*( 80)   fname_atemp(3)
+      character*( 80)   fname_aqh(3)
+      character*( 80)   fname_precip(3)
+      character*( 80)   fname_swflux(3)
+      character*( 80)   fname_swdown(3)
+      character*( 80)   fname_snowprecip(3)
+      character*( 80)   fname_lwflux(3)
+      character*( 80)   fname_lwdown(3)
+      character*( 80)   fname_evap(3)
+      character*( 80)   fname_apressure(3)
+      character*( 80)   fname_runoff(3)
+      character*( 80)   fname_uwind(3)
+      character*( 80)   fname_vwind(3)
+      character*( 80)   fname_diffkr(3)
+      character*( 80)   fname_kapgm(3)
+      character*( 80)   fname_kapredi(3)
+      character*( 80)   fname_tr1(3)
+      character*( 80)   fname_sst(3)
+      character*( 80)   fname_sss(3)
+      character*( 80)   fname_depth(3)
+      character*( 80)   fname_efluxy(3)
+      character*( 80)   fname_efluxp(3)
+      character*( 80)   fname_bottomdrag(3)
+      character*( 80)   fname_edtaux(3)
+      character*( 80)   fname_edtauy(3)
+      character*( 80)   fname_uvel(3)
+      character*( 80)   fname_vvel(3)
+      character*( 80)   fname_etan(3)
+      character*( 80)   fname_relaxsst(3)
+      character*( 80)   fname_relaxsss(3)
+      character*( 80)   fname_siarea(3)
+      character*( 80)   fname_siheff(3)
+      character*( 80)   fname_sihsnow(3)
+cHFLUXM_CONTROL
+      character*( 80)   fname_hfluxm(3)
+cHFLUXM_CONTROL
+      character*( 80)   fname_shifwflx(3)
+#endif /* ECCO_CTRL_DEPRECATED */
+
       logical doglobalread
       logical ladinit
-      integer cbuffindex
       logical lxxadxx
 
       integer cunit
@@ -109,6 +151,8 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
 
       character*(128) cfile
       character*( 80) weighttype
+C 9 character limit set by set_(un)pack
+      character*( 9) mskNameForSetPack
 
 c     == end of interface ==
 
@@ -242,7 +286,7 @@ C     place holder of obsolete variable jG
 #ifdef ALLOW_CTRL_WETV
           write(cunit) (nWetvGlobal(k), k=1,nr)
 #endif
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
           write(cunit) (nWetiGlobal(k), k=1,nr)
 c          write(cunit) nWetiGlobal(1)
 #endif
@@ -748,6 +792,13 @@ c          write(cunit) nWetiGlobal(1)
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
         if (xx_genarr2d_weight(iarr).NE.' ') then
+         mskNameForSetPack='maskCtrlC'
+# ifdef ALLOW_SHELFICE
+         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
+          mskNameForSetPack='maskCtrlI'
+         endif
+# endif
           call ctrl_set_fname( xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
@@ -755,7 +806,7 @@ cc          write(weighttype(1:80),'(80a)') ' '
 cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, genarr2dPrecond(iarr),
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), mskNameForSetPack,
      &         xx_genarr2d_weight(iarr),
      &         lxxadxx, mythid)
         endif
@@ -781,6 +832,11 @@ cc          write(weighttype(1:80),'(a)') "wunit"
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
         if (xx_gentim2d_weight(iarr).NE.' ') then
+         mskNameForSetPack='maskCtrlC'
+# ifdef ALLOW_SHELFICE
+         if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
+     &          mskNameForSetPack='maskCtrlI'
+# endif
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
@@ -788,7 +844,7 @@ cc          write(weighttype(1:80),'(80a)') ' '
 cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, gentim2dPrecond(iarr),
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), mskNameForSetPack,
      &         xx_gentim2d_weight(iarr),
      &         lxxadxx, mythid)
         endif

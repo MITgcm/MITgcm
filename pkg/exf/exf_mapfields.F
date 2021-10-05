@@ -63,7 +63,6 @@ C     == global variables ==
 #include "EXF_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -81,10 +80,16 @@ C     !LOCAL VARIABLES:
       INTEGER jmin, jmax
       PARAMETER ( imin = 1-OLx , imax = sNx+OLx )
       PARAMETER ( jmin = 1-OLy , jmax = sNy+OLy )
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+#endif
 CEOP
 
 C--   set surface level index:
       ks = 1
+      IF ( usingPCoords ) ks = Nr
 
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -338,7 +343,7 @@ C-    subtract "surf_pRef" to fill in atmos. pressure anomaly "pLoad"
 #ifdef ALLOW_SALTFLX
           DO j = jmin,jmax
             DO i = imin,imax
-              saltFlux(I,J,bi,bj) = saltflx(I,J,bi,bj)
+              saltFlux(i,j,bi,bj) = saltflx(i,j,bi,bj)
             ENDDO
           ENDDO
 #endif
@@ -348,8 +353,8 @@ C-    subtract "surf_pRef" to fill in atmos. pressure anomaly "pLoad"
             DO i = imin,imax
               exf_iceFraction(i,j,bi,bj) =
      &           exf_outscal_areamask*areamask(i,j,bi,bj)
-              exf_iceFraction(I,J,bi,bj) =
-     &           MIN( MAX(exf_iceFraction(I,J,bi,bj),zeroRS), oneRS )
+              exf_iceFraction(i,j,bi,bj) =
+     &           MIN( MAX(exf_iceFraction(i,j,bi,bj),zeroRS), oneRS )
             ENDDO
           ENDDO
 #endif

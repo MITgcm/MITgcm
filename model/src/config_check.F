@@ -3,6 +3,9 @@
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CONFIG_CHECK
@@ -446,6 +449,19 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
+#ifndef ALLOW_CG2D_NSA
+      IF (useNSACGSolver) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: useNSACGSolver = .TRUE., but CG2D_NSA ',
+     &  'code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: Re-compile with ALLOW_CG2D_NSA defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_CG2D_NSA */
+
 #ifndef ALLOW_SRCG
       IF (useSRCGSolver) THEN
         WRITE(msgBuf,'(A,A)')
@@ -459,10 +475,28 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif /* ALLOW_SRCG */
 
+      IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &      'CONFIG_CHECK: both useNSACGSolver and ',
+     &      'useSRCGSolver = .TRUE., this is not allowed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Check parameter consistency :
 
+      IF ( ( OLx.LT.2 .OR. OLy.LT.2 ) .AND. momStepping ) THEN
+C-    Current algorithm (solve_for_pressure, RHS) prevents to use
+C     momAdvection or viscAh > 0 with OLx,y=1 ; it should still allow us
+C     to use OLx,y=1 when momAdvection=F and viscAh=0 but some loop range
+C     in few momentum S/R are not carefully set to support this.
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: Cannot use momStepping',
+     &  ' with overlap (OLx,OLy) smaller than 2'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
       IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
      &     ( viscC4leithD.NE.0.  .OR. viscC4leith.NE.0.
      &     .OR. viscC4smag.NE.0. .OR. viscA4Grid.NE.0.

@@ -1,5 +1,3 @@
-#include "PACKAGES_CONFIG.h"
-
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -100,11 +98,8 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-#ifdef ALLOW_TAMC_SINGLEPREC_COMLEV
-      PARAMETER( isbyte      = 4 )
-#else
+C     For smaller tapes replace 8 by 4.
       PARAMETER( isbyte      = 8 )
-#endif
 
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
@@ -115,13 +110,6 @@ c     and writing data.
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
 
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, iptrkey
-
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
-
-

@@ -1,6 +1,200 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68c (2021/10/02)
+o pkg/seaice:
+  - update some dynamics solver default so that now:
+    a) SEAICEuseEVPstar = .TRUE. ; b) SEAICEuseEVPrev = .TRUE. ;
+    c) LSR_ERROR = 1.e-5 (previously was 1.e-4) ;
+  - put back old default in exp. lab_sea (primary test);
+  - modify (simplify?) logic in seaice_readparms.F and seaice_check.F.
+o pkg/grdchk:
+  - allow to use "recglo" to specify a particular control time record for
+    gradient check (was previously inactive).
+o pkg/exf:
+  - new parameters to reduce AD-exf monitor output:
+    1) exf_adjMonFreq (def= adjMonitorFreq), = 0. suppresses all output
+    2) exf_adjMonSelect: =1 (def): less output ; =3 as before, =0 : no output
+  - fix some AD-common block name + content to match TAF directives (in
+    common.flow) and TAF generated code.
+  - skip monitor of model forcing AD-variables (unless monitorSelect=4).
+o pkg/ecco + other:
+  - fix few non-standard syntax (+ repeated setting of "gencost_msk_is3d").
+o pkg/bling:
+  - fix call to S/R BLING_BIO_NITROGEN when USE_SIBLING is defined.
+o pkg/ecco:
+  - put various dimensions related to gencost out of "ecco.h" into specific
+    (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
+  - add gencost param "gencost_kLev_select" to select a vertical level (from 3-D
+    array) to form 2-D gencost ; currently only used in drifter velocity cost ;
+  - add a couple of costs based on 1) inverse barometer (IB) corrected model sea
+    level for altimetry data comparison 2) OBP excluding contribution from
+    global mean atmospheric pressure for comparisons with GRACE data.
+o pkg/autodiff:
+  - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
+    in adcommon.h, common block adgrid_rs.
+o model/src:
+  - fix missing initialisation of local working arrays that were previously
+    in common block in CG2D.h (needed when using blank tiles).
+o pkg/dic:
+  - fix calculation of carbonate saturation state (with CAR_DISS defined) when
+    #define CARBONCHEM_SOLVESAPHE ; no current test run with #define CAR_DISS.
+o pkg/autodiff:
+  - add code for Full-Adjoint of cg2d in renamed (from cg2d_sad.F) routine
+    cg2d_mad.F (cg2d manual adjoint) ;
+  - new runtime params cg2dFullAdjoint (data.autodiff), useNSACGSolver (data,
+    default to "FALSE"), cg2dMinItersNSA (data, defaults to 0) ;
+  - new sub-verification experiment bottom_ctrl_5x5.facg2d to test new
+    Full-Adjoint capability ;
+  - update primary test experiment bottom_ctrl_5x5 to always use a minimum
+    number of 10 CG2D iterations (changes results but improves accuracy) ;
+  - modify AD-experiment global_ocean.90x40x15.bottomdrag to use full nonlinear
+    free surface (nonlinFreeSurf=4) and cg2dFullAdjoint=True.
+  - move CG2D working arrays out of CG2D.h common blocks (not necessary)
+    to local arrays within each cg2d S/R.
+
+checkpoint68b (2021/08/24)
+o pkg/ecco:
+  - add time-series output of global mean steric height change at each time step
+    (variable: sterGloH, with #define ALLOW_PSBAR_STERIC) ; turned on
+    with run-time switch "ecco_output_sterGloH=T" ; add option to keep file open
+    (+ single meta file writing) with "ecco_keepTSeriesOutp_open=T" switch.
+o pkg/ggl90:
+  - fix EXCH calls in pkg/ggl90 when IDEMIX is used: no additional EXCH when
+    using zero horizontal diffusion of IDEMIX_E (IDEMIX_tau_h=0) but with
+    IDEMIX_tau_h > 0, EXCH both IDEMIX_E and GGL90TKE ; this affects results
+    of test experiment cs32.in_p and fix restart issue ;
+  - more consistent/simpler idemix code: use model parameter value for PI,
+    reduce number of IDEMIX global array, add TKE tendency from IDEMIX as output
+    of S/R GGL90_IDEMIX ; use double product of IDEMIX_E instead of power of 2
+    which affects results at machine truncation level ;
+  - update some IDEMIX default param values (following Pollmann et al., 2017)
+    but keep old default values in global_ocean.90x40x15.idemix ;
+  - apply also option calcMeanVertShear to uStarSquare calculation (wind-stress
+    magnitude) and switch on calcMeanVertShear in test experiment cs32.in_p.
+o model/src + pkgs ggl90, exf & seaice: ocean in P-coordinate
+  - read geopotential anomaly directly into phi0surf instead of via pLoad (was
+    a hack), specified with new input filename "geoPotAnomFile" in data&PARM05 ;
+  - adjust MXLDEPTH diagnostic for pressure coordinates ; make sure sigmaR is
+    computed the same way in P-coord as it is in Z-coord.
+  - for penetrating Short-wave and geothermal heating as well as for exf forcing
+    and seaice, use the correct P-coord vertical index for bottom and surface ;
+  - add a flag sIceLoadFac (in "data", default=1.) to be able to turn off
+    seaice surface pressure loading, mainly for Z-coord (since not currently
+    supported in P-coord) ;
+  - use diagnostics "phiHydLow" for seaice dynamics with P-coord ocean to get
+    surface tilt term (instead of using ETAN as in Z-coord); fix restart by
+    adding phiHydLow (only if useSEAICE and usingPCoords) to main pickup file ;
+  - in pkg/ggl90, apply simple scaling to get mixing-length in meters (from
+    pressure) so that no parameter changes are necessary ; significant code
+    changes regarding surface & bottom index + direction of vertical k loop ;
+  - add secondary test "in_p" to experiment global_ocean.cs32x15 (similar to
+    Z-coord secondary test "seaice" but using pkg/ggl90 and without pkg/gmredi).
+o tutorial_reentrant_channel:
+  - add python notebook (for analysis), add python script to generate input
+    files (+ update matlab version) and update this tutorial docs.
+o verification/vermix:
+  - change ggl90 secondary test to use (pkg/ggl90) mxlMaxFlag=3 (instead of 2)
+    and update reference output.
+o pkg/ctrl:
+  - move S/R CTRL_MAP_GENARR2D/3D out of file "ctrl_map_ini_genarr.F" into
+    a new file "ctrl_map_genarr.F" ;
+  - clean-up local versions of ctrl_map_gentim2d.F and ctrl_map_ini_genarr.F
+    from code_ad dirs (i.e., minimize diff with standard version from pkg/ctrl).
+o model/src:
+  - improve REMOVE_MEAN_RL/RS subroutines (address issues raised in issue #501)
+    including results independent of tile to proc mapping, correction extended
+    to overlap regions, improve accuracy of _RS version when RS is real*4 and
+    and enable the use 2-D mask maskInC/W/S when applied to 3-D array. Change
+    argument list (add myIter, flip order + change mask arg from 3-D to 2-D).
+o verification/global_ocean.90x40x15:
+  - increase "grdchk_eps" from 1e-7 to 10 in AD test kapgm to improve
+    accuracy of FD gradients ; update reference output.
+o verification/OpenAD:
+  - add ggl90 pkg to code_ad/packages.conf to get it tested in one TAF-AD exp.
+o doc:
+  - require sphinxcontrib-bibtex 2.0.0 or higher
+
+checkpoint68a (2021/07/16)
+o pkg/seaice:
+  - clean up and simplify TAF store directives in do_oceanic_phys.F
+    for seaice_model to avoid unnecessary recomputations ;
+  - in testreport, count and report number of times s/r seaice_model is called.
+o pkg/seaice:
+  - fix (untested) multi-threading and recomputations in seaice_solve4temp.F
+o files that include "tamc.h":
+  - add missing declaration of local keys for TAF store-dir in pkg/obcs
+    (ALLOW_OBCS_STEVENS) and pkg/bling (USE_BLING_V1, PHYTO_SELF_SHADING) ;
+  - add missing AUTODIFF_OPTIONS.h in few places (e.g., in pkg/ebm), needed to
+    get ALLOW_AUTODIFF_TAMC defined ;
+  - change few ALLOW_AUTODIFF <-> ALLOW_AUTODIFF_TAMC ;
+  - remove included "tamc.h" in few files from pkgs seaice, streamice, bling, +
+    in exf_radiation, longstep_thermodynamics, obcs_sponge & pp81_ri_number S/R.
+  - define ALLOW_OBCS_STEVENS in AD exp. obcs_ctrl (to check it compiles).
+o pkg/ecco:
+  - fix incorrect order of array indices for "objf_gencost" and "num_gencost"
+    in 2 gencost v4 S/R (bpv4 & sstv4).
+o eessup/inc & pkg/thsice:
+  - Remove 2 CPP options for deprecated code and remove corresponding code:
+    a) USE_OLD_MACROS_R4R8toRSRL (added in May 2009) and
+    b) OLD_THSICE_CALL_SEQUENCE  (added in Jan 2013).
+o pkg/shelfice:
+  - fix missing local keys declaration in shelfice_thermodynamics.F for TAF
+    storge dir. with SHI_ALLOW_GAMMAFRICT defined ;
+  - remove included PACKAGES_CONFIG.h in many verification exp. "tamc.h".
+o tools/build_options:
+  - update gfortran optfile for MacBook Pro "darwin_amd64_gfortran" to work with
+    gfortran version 10 (or higher), similar to linux version update.
+o pkg/ctrl & other:
+  - cleanup: move declarations of local variables from header files ctrl.h and
+    AUTODIFF.h to the local variables section in the respective routines ;
+  - move declaration of local keys and variables from header file tamc.h to
+    subroutines where they are used.
+  ==> IMPORTANT: This requires updating all customised versions of "tamc.h",
+    from each and every TAF-AD setup.
+  - remove tamc_keys.h + remove tamc (+tamc_keys) from all "cb2mFiles" lists ;
+  - disentangle ALLOW_AUTODIFF/ALLOW_AUTODIFF_TAMC/ALLOW_OPENAD a bit more ;
+  - remove unused variables where this is straightforward ;
+  - remove a few i/jmin/max variables.
+
+checkpoint67z (2021/06/12)
+o veritication:
+  - make testreport count and report the number calls of S/R load_fields_driver
+    and do_oceanic_phys in AD-code (similar to TAF error & warning count).
+o pkg/kpp:
+  - add CPP-flags to turn off diffusivity matching at bottom of boundary layer ;
+  - add CPP-flag to turn on taper shear mixing in the case of very small shear ;
+  - add FLAG to turn on smooth regularisation of divisions by small numbers:
+      1/(var+eps) instead of 1/MAX(var,eps) ;
+  - fix a small masking error ;
+  - fix some unfortunate loop ordering and spurious recomputations ;
+  - add new diagnostics KPPshsq, KPPdVsq ;
+  - update exp. vermix (which has KPP_ESTIMATE_UREF defined) reference output.
+o model/src:
+  - in the main code, add option and code for sound speed calculation with
+    corresponding diagnostics ; turned on in exp. global_oce_biogeo_bling.
+o model/src:
+  - fix few loop range to allow to run with OLx,y=1 when momStepping=F ;
+  - add check and stop if momStepping=T and overlap-size is smaller than 2.
+o pkg/ggl90:
+  - add 3 store directives for gg90tke in ggl90_calc.F and break some loops
+    in two to help TAF without extra storage requirements.
+o pkg/seaice:
+  - adjust store directives in seaice_growth_adx.F:
+    *) add store directives to avoid calling seaice_solve4temp in AD-mode
+    *) adjust/remove/reorganise for good balance between storing and recomputing
+    *) fix a small bug (full 4D arrays were stored instead of 2D for each bi,bj)
+    *) local option "SEAICE_GROWTH_ADX_STORE_MORE" (not recommended)
+       reduces the recomputations but increases the memory requirements.
+  - update ref. AD output of experiment offline_exf_seaice (the only one using
+    SEAICE_GROWTH_ADX): no Grad-Check changes but differences in AD-Monitor.
+o pkg/ctrl & pkg/shelfice:
+  - generalize masking procedure for control parameters, fixes procedure for
+    ice-shelf controls ;
+  - add ability to control base 10 logarithm in generic control arrays ;
+  - add shiTransCoeffT, shiTransCoeffS, and shiCDrag as control variables ;
+  - add ability to compute shelfice freshwater and heat fluxes through ecco
+    package.
 o store directives (model/src, pkg/exf, ...):
   - By adding many store directives for variables after they have been computed
     the corresponding s/r load_fields_driver, oceanic_phys, solve_for_pressure

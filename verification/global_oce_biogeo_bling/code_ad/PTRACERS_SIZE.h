@@ -16,7 +16,6 @@ C     Number of tracers
       PARAMETER(PTRACERS_num = 8 )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CMM in tamc.h      INTEGER    iptrkey
       INTEGER    maxpass
       PARAMETER( maxpass     = PTRACERS_num + 2 )
 #endif

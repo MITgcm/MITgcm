@@ -14,7 +14,7 @@ jobs:
         - exp: "offline_exf_seaice"
           precs: "16 16 16 16 16 16 16 16 16"
         - exp: "global_ocean.cs32x15"
-          precs: "16 16 16 16 16"
+          precs: "16 16 16 16 16 16"
         - exp: "tutorial_deep_convection"
           precs: "16 16"
         - exp: "aim.5l_cs"
@@ -93,7 +93,7 @@ jobs:
 
  openad-other:
    runs-on: ubuntu-latest
-   if: ${{ contains(github.event.pull_request.labels.*.name, 'adjoint') }} 
+   if: ${{ contains(github.event.pull_request.labels.*.name, 'adjoint') }}
 
    strategy:
      matrix:

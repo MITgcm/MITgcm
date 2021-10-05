@@ -40,7 +40,8 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_SMOOTH
 # include "SMOOTH.h"
@@ -346,7 +347,7 @@ c--   Read mean field and mask
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if ( (maskC(i,j,1,bi,bj) .eq. 0.).OR.
+              if ( (maskInC(i,j,bi,bj) .eq. 0.).OR.
 #ifndef ALLOW_SHALLOW_ALTIMETRY
      &             (R_low(i,j,bi,bj).GT.-200.).OR.
 #endif
@@ -465,7 +466,7 @@ c--   smooth mean_slaobs_mdt:
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_mdt,maskc,
+     &  call smooth_hetero2d(mean_slaobs_mdt,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -539,7 +540,7 @@ cgf =======================================================
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -805,7 +806,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_psMssh_all,maskc,
+     &  call smooth_hetero2d(mean_psMssh_all,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -824,7 +825,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_model,maskc,
+     &  call smooth_hetero2d(mean_slaobs_model,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -936,7 +937,7 @@ c ------------------------------------------------------
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1127,7 +1128,7 @@ c ----------------------------------------
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_psMslaobs,maskc,
+     &  call smooth_hetero2d(anom_psMslaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 #endif
@@ -1135,7 +1136,7 @@ c ----------------------------------------
       if (gencost_outputlevel(igen_lsc).GT.0) then
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_slaobs,maskc,
+     &  call smooth_hetero2d(anom_slaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 #endif
@@ -1215,7 +1216,7 @@ c time associated with this ndaysrec mean
 
         if (.NOT.useEtaMean)
      &  CALL REMOVE_MEAN_RL( 1, etaday, maskInC, maskInC, rA, drF,
-     &        'etaday', 0. _d 0, myThid )
+     &                       'etaday', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi

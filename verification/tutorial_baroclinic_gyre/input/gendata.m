@@ -46,10 +46,11 @@ fid=fopen('windx_cosy.bin', 'w', ieee);
 fwrite(fid, tau, accuracy);
 fclose(fid);
 
-% Restoring temperature (function of y only)
+% Restoring temperature (function of y only,
+% from Tmax at southern edge to Tmin at northern edge)
 Tmax = 30;
 Tmin = 0;
-Trest = (Tmax-Tmin)/(ny-2) * (ynorth-Y); % located and computed at YC points
+Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y) + Tmin; % located and computed at YC points
 fid=fopen('SST_relax.bin', 'w', ieee);
 fwrite(fid, Trest, accuracy);
 fclose(fid);

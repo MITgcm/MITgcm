@@ -11,6 +11,9 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -100,9 +103,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dumRL(1)
       LOGICAL doExch
       LOGICAL doDump
-#ifdef ALLOW_DIAGNOSTICS
-      LOGICAL modelEnd
-#endif
 CEOP
 
 C--- Do dump?
@@ -182,6 +182,14 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
+# endif
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+        CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
+        CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
+#  else
+        CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
+#  endif
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -274,8 +282,39 @@ C-----------------------------------------------------------------------
       CALL DUMP_ADJ_XYZ_UV(
      &     adEddyPsiX,dumRL,'ADJepsix','ADJeddipsix.',
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
-     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+      CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffT,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffS,
+     &                 'ADJshics','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  else
+      CALL DUMP_ADJ_XY(dumRS, adshiCDragFld,
+     &                 'ADJshicd','ADJshicd.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  endif
+# endif
+
+# ifdef ALLOW_DEPTH_CONTROL
+      CALL DUMP_ADJ_XYZ(
+     &     adhfacc,dumRL,'ADJhFacC','ADJhFacC.',
+     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     adhfacw,dumRL,'ADJhFacW','ADJhFacW.',
+     &     adhfacs,dumRL,'ADJhFacS','ADJhFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(
+     &     adrecip_hfacc,dumRL,'ADJrhFcC','ADJrecip_hFacC.',
+     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     adrecip_hfacw,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
+     &     adrecip_hfacs,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+# endif /* ALLOW_DEPTH_CONTROL */
 
 #else /* ALLOW_OPENAD */
 C========================
@@ -357,6 +396,38 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
+# ifdef ALLOW_SHELFICE
+#  ifndef SHI_ALLOW_GAMMAFRICT
+      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, shiTransCoeffS%d,
+     &                 'ADJshics','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  else
+      CALL DUMP_ADJ_XY(dumRS, shiCDragFld%d,
+     &                 'ADJshicd','ADJshicd.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  endif
+# endif
+
+# ifdef ALLOW_DEPTH_CONTROL
+      CALL DUMP_ADJ_XYZ(
+     &     hFacC%d,dumRL,'ADJhFacC','ADJhFacC.',
+     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     hFacW%d,dumRL,'ADJhFacW','ADJhFacW.',
+     &     hFacS%d,dumRL,'ADJhFacS','ADJhFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(
+     &     recip_hFacC%d,dumRL,'ADJrhFcC','ADJrecip_hFacC.',
+     &     11, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     recip_hFacW%d,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
+     &     recip_hFacS%d,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+# endif /* ALLOW_DEPTH_CONTROL */
+
 #endif /* ALLOW_OPENAD */
 
 C=======================================================================
@@ -457,6 +528,17 @@ C     dumpAdVarExch.NE.2
 #ifdef ALLOW_KAPREDI_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adkapredi, myThid)
+#endif
+#ifdef ALLOW_SHELFICE
+# ifndef SHI_ALLOW_GAMMAFRICT
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshict', adshiTransCoeffT, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshics', adshiTransCoeffS, myThid)
+# else
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshicd', adshiCDragFld, myThid)
+# endif
 #endif
          ENDIF
 C     endif mnc
