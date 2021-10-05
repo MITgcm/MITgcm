@@ -1630,12 +1630,11 @@ MITgcm ``_RS`` variables are forced to be declared as
 ``real*4`` if CPP-flag :varlink:`REAL4_IS_SLOW` to is set to ``#undef``
 in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
 (``_RS`` is a macro used in declaring real variables that, in principle,
-do not require double precision, and thus if declared as single precision
-use less memory). However, this option is not recommended
+do not require double precision). However, this option is not recommended
 except for computational benchmarking or for testing the trade-off between memory
-footprint and model precision.  **Note: there is no need to edit** 
-:filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`, since this
-option can be activated using the :filelink:`genmake2 <tools/genmake2>`
+footprint and model precision.  And even for these specialized tests, there is no need
+to edit :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
+since this feature can be activated using the :filelink:`genmake2 <tools/genmake2>`
 command line option ``-use_r4``,  as done in some regression tests
 (see testing `results <https://mitgcm.org/testing-summary>`_
 page tests with optfile suffix ``.use_r4``).
