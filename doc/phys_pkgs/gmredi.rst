@@ -25,9 +25,9 @@ non-divergent bolus velocity. The method defines two stream-functions
 expressed in terms of the isoneutral slopes subject to the boundary
 condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
-Here in lies a problem highlighted by :cite:`gretal:98`: the bolus velocities involve
-multiple derivatives on the potential density field, which can
-consequently give rise to noise. Griffies :cite:`gr:98` points out that the GM
+Here in lies a problem highlighted by Griffies et al. :cite:`gretal:98`: the
+bolus velocities involve multiple derivatives on the potential density field,
+which can consequently give rise to noise. Griffies et al. point out that the GM
 bolus fluxes can be identically written as a skew flux which involves
 fewer differential operators. Further, combining the skew flux
 formulation and Redi scheme, substantial cancellations take place to the
@@ -157,7 +157,7 @@ streamfunction are:
 Griffies Skew Flux
 ++++++++++++++++++
 
-:cite:`gr:98` notes that the discretisation of bolus velocities involves multiple
+Griffies :cite:`gr:98` notes that the discretisation of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
 fields and computational modes. He pointed out that the bolus flux can
 be re-written in terms of a non-divergent flux and a skew-flux:
