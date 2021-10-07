@@ -13,7 +13,7 @@ C     !ROUTINE: CTRL_BOUND_3D_TL
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_3D_TL(
      U                fieldCur, fieldCur_tl,
-     I                maskFld3d, boundsVec, myThid )
+     I                mask3D, boundsVec, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o tangent linear version of S/R CTRL_BOUND_3D. Call
@@ -28,13 +28,13 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL fieldCur_tl(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS maskFld3d  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fieldCur   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fieldCur_tl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask3D     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
-      CALL CTRL_BOUND_3D(fieldCur,maskFld3d,boundsVec,myThid)
+      CALL CTRL_BOUND_3D(fieldCur,mask3D,boundsVec,myThid)
 
       RETURN
       END
@@ -46,7 +46,7 @@ C     !ROUTINE: CTRL_BOUND_2D_TL
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_2D_TL(
      U                fieldCur, fieldCur_tl,
-     I                maskFld3d, boundsVec, myThid )
+     I                mask2D, boundsVec, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o tangent linear version of S/R CTRL_BOUND_2D. Call
@@ -61,13 +61,13 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
-      _RL fieldCur_tl(1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
-      _RS maskFld3d  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fieldCur   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fieldCur_tl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
-      CALL CTRL_BOUND_2D(fieldCur,maskFld3d,boundsVec,myThid)
+      CALL CTRL_BOUND_2D(fieldCur,mask2D,boundsVec,myThid)
 
       RETURN
       END
