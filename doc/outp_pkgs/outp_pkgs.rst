@@ -2474,7 +2474,7 @@ vanishes and we obtain:
 
 .. math::
    \begin{aligned}
-     {{\vec{\bf N}}_Q}_z & = -\frac{\rho_0}{g}f B_g .
+     \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} & = -\frac{\rho_0}{g}f B_g .
    \end{aligned}
    :label: pv_eq13
 
@@ -2499,7 +2499,7 @@ be written as:
 
 .. math::
    \begin{aligned}
-     {{\vec{\bf N}}_Q}_z &= J^B_z + J^F_z  \\
+     \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
      J^F_z &= \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}}\times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma_m \end{aligned}
 

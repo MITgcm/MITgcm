@@ -695,9 +695,8 @@ flux.
 :math:`H` is the upward sensible heat flux, given by:
 
 .. math::
-
-   {H} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{\rm NLAY})
-   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t,
+   {H} = P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{\rm NLAY})
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t,
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`c_{p}` is the specific heat of air at constant pressure, and
@@ -708,12 +707,12 @@ The upward latent heat flux, :math:`LE`, is given by
 
 .. math::
 
-   {LE} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q__{\rm NLAY})
-   \hspace{1cm}{\text where}: \hspace{.2cm}C_H = C_u C_t,
+   {LE} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q_{\rm NLAY})
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t,
 
 where :math:`\beta` is the fraction of the potential evapotranspiration
 actually evaporated, L is the latent heat of evaporation, and
-:math:`q_{\rm surface}` and :math:`q__{\rm NLAY}` are the specific humidity of
+:math:`q_{\rm surface}` and :math:`q_{\rm NLAY}` are the specific humidity of
 the surface and of the lowest :math:`\sigma`-level, respectively.
 
 The heat conduction through sea ice, :math:`Q_{\rm ice}`, is given by
