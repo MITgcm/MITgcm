@@ -89,6 +89,7 @@ CEOP
 
 C--   set surface level index:
       ks = 1
+      IF ( usingPCoords ) ks = Nr
 
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -342,7 +343,7 @@ C-    subtract "surf_pRef" to fill in atmos. pressure anomaly "pLoad"
 #ifdef ALLOW_SALTFLX
           DO j = jmin,jmax
             DO i = imin,imax
-              saltFlux(I,J,bi,bj) = saltflx(I,J,bi,bj)
+              saltFlux(i,j,bi,bj) = saltflx(i,j,bi,bj)
             ENDDO
           ENDDO
 #endif
@@ -352,8 +353,8 @@ C-    subtract "surf_pRef" to fill in atmos. pressure anomaly "pLoad"
             DO i = imin,imax
               exf_iceFraction(i,j,bi,bj) =
      &           exf_outscal_areamask*areamask(i,j,bi,bj)
-              exf_iceFraction(I,J,bi,bj) =
-     &           MIN( MAX(exf_iceFraction(I,J,bi,bj),zeroRS), oneRS )
+              exf_iceFraction(i,j,bi,bj) =
+     &           MIN( MAX(exf_iceFraction(i,j,bi,bj),zeroRS), oneRS )
             ENDDO
           ENDDO
 #endif

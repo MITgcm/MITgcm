@@ -154,11 +154,7 @@ c-- End of IF ( stepFwd_oceMxL ) THEN
 
 C--   Cumulate time-averaged fields and also fill-up flux diagnostics
 C     (if not done in THSICE_DO_ADVECT call)
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      IF ( .TRUE. ) THEN
-#else /* OLD_THSICE_CALL_SEQUENCE */
       IF ( thSIceAdvScheme.LE.0 ) THEN
-#endif /* OLD_THSICE_CALL_SEQUENCE */
          CALL THSICE_AVE(
      I                    bi, bj, myTime, myIter, myThid )
       ENDIF

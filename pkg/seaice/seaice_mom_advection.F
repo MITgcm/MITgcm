@@ -177,13 +177,13 @@ CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
 C--   Horizontal advection of relative (or absolute) vorticity
       vorticityFlag = SEAICEhighOrderVorticity.OR.SEAICEupwindVorticity
       IF ( vorticityFlag ) THEN
-       CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,SEAICEselectVortScheme, 
+       CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,SEAICEselectVortScheme,
      &                           SEAICEhighOrderVorticity,
      &                           SEAICEupwindVorticity,
      &                           vFld,vort3,r_hFacZ,
      &                           uCf,myThid)
       ELSE
-       CALL MOM_VI_U_CORIOLIS(bi,bj,k,SEAICEselectVortScheme, 
+       CALL MOM_VI_U_CORIOLIS(bi,bj,k,SEAICEselectVortScheme,
      &                        SEAICEuseJamartMomAdv,
      &                        vFld,vort3,hFacZ,r_hFacZ,
      &                        uCf,myThid)
@@ -194,13 +194,13 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
       ENDDO
       IF ( vorticityFlag ) THEN
-       CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,SEAICEselectVortScheme, 
+       CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,SEAICEselectVortScheme,
      &                           SEAICEhighOrderVorticity,
      &                           SEAICEupwindVorticity,
      &                           uFld,vort3,r_hFacZ,
      &                           vCf,myThid)
       ELSE
-       CALL MOM_VI_V_CORIOLIS(bi,bj,k,SEAICEselectVortScheme, 
+       CALL MOM_VI_V_CORIOLIS(bi,bj,k,SEAICEselectVortScheme,
      &                        SEAICEuseJamartMomAdv,
      &                        uFld,vort3,hFacZ,r_hFacZ,
      &                        vCf,myThid)

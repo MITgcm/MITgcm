@@ -78,6 +78,15 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
+      IF ( usingPCoords ) THEN
+C     In z-coordinates, phiHydLow is just a diagnostics and hence its
+C     overlaps are never filled properly
+C     in p-coordinates, phiHydLow is the sea level elevation that is required
+C     for the sea level tilt term in the momentum equation, so we need
+C     to fill the overlaps properly here
+C     (or elsewhere, not sure where it would be best)
+       _EXCH_XY_RL( phiHydLow, myThid )
+      ENDIF
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
 C--   Map thSice-variables to HEFF and AREA
@@ -376,8 +385,8 @@ CML   This has already been done in seaice_ocean_stress/ostres, so why repeat?
 CML   CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 
 #ifdef ALLOW_EXF
-# ifdef ALLOW_AUTODIFF_TAMC
-#  if (defined (ALLOW_AUTODIFF_MONITOR))
+# ifdef ALLOW_AUTODIFF
+#  ifdef ALLOW_AUTODIFF_MONITOR
       CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
 #  endif
 # endif

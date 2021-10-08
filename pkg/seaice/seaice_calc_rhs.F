@@ -58,7 +58,11 @@ C     fractional area at velocity points
       _RL areaS(1:sNx,1:sNy)
 CEOP
 
-      kSrf=1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)

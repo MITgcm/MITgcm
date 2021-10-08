@@ -87,11 +87,11 @@ C     balance fluxes
       tmpVar(1) = oneRS
       IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
         CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, tmpVar,
-     &                       'EmPmR', myTime, myThid )
+     &                       'EmPmR', myTime, myIter, myThid )
       ENDIF
       IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
         CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, tmpVar,
-     &                       'Qnet ', myTime, myThid )
+     &                       'Qnet ', myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_BALANCE_FLUXES */
 
@@ -361,7 +361,7 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
           DO j = jMin, jMax
            DO i = iMin, iMax
             phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
-     &                          +sIceLoad(i,j,bi,bj)*gravity
+     &                          +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
      &                            )*recip_rhoConst
            ENDDO
           ENDDO

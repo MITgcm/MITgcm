@@ -28,7 +28,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
@@ -311,9 +312,9 @@ c-- map to global cost variables
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                  junk = bpdifanom(i,j,bi,bj)
-                 objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
+                 objf_gencost(bi,bj,kgen) = objf_gencost(bi,bj,kgen)
      &               + junk*junk*locwbp(i,j,bi,bj)
-                 num_gencost(kgen,bi,bj) = num_gencost(kgen,bi,bj)
+                 num_gencost(bi,bj,kgen) = num_gencost(bi,bj,kgen)
      &               + 1. _d 0
               endif
             enddo

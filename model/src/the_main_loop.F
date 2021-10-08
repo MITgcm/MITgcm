@@ -175,7 +175,8 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_OFFLINE
 #   include "OFFLINE.h"
 #  endif
-#  if (defined ALLOW_CG2D_NSA) || (defined NONLIN_FRSURF)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 #   include "CG2D.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT
@@ -306,6 +307,10 @@ CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
 CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
 CADJ STORE shiTransCoeffT         = tapelev_init, key=1
 CADJ STORE shiTransCoeffS         = tapelev_init, key=1
+# endif
+# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE H_streamice = tapelev_init, key=1
+CADJ STORE B_glen      = tapelev_init, key=1
 # endif
 #endif
 

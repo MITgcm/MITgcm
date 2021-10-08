@@ -16,13 +16,17 @@ C                  set/unset in autodiff_inadmode_set/unset_ad.F
 C     inAdExact :: get an exact adjoint (no approximation), default = .TRUE.
 C                  if .FALSE. it implies useApproxAdvectionInAdMode = .TRUE.
 C     useApproxAdvectionInAdMode :: use different (but stable) advection in AD;
-C                  only implemented for flux limited DST3 (33); default = .FALSE.
+C                  only implemented for flux limited DST3 (33); default=.FALSE.
       LOGICAL inAdMode, inAdExact
       LOGICAL useApproxAdvectionInAdMode
 
 C-    Logical flags for turning off parts of the code in adjoint mode
-C     SEAICEuseFREEDRIFTswitchInAd :: switch on/off Free-Drift in adjoint mode (def=F)
-C     SEAICEuseDYNAMICSswitchInAd  :: switch on/off seaice Dyn in adjoint mode (def=F)
+C     SEAICEuseFREEDRIFTswitchInAd :: switch on/off Free-Drift
+C                                     in adjoint mode (def=F)
+C     SEAICEuseDYNAMICSswitchInAd  :: switch on/off seaice Dyn
+C                                     in adjoint mode (def=F)
+C     cg2dFullAdjoint :: use the full hand written adjoint of cg2d instead of
+C                        the approximate lineared form (def=F)
       LOGICAL useKPPinAdMode,    useKPPinFwdMode
       LOGICAL useGMRediInAdMode, useGMRediInFwdMode
       LOGICAL useSEAICEinAdMode, useSEAICEinFwdMode
@@ -31,6 +35,7 @@ C     SEAICEuseDYNAMICSswitchInAd  :: switch on/off seaice Dyn in adjoint mode (
       LOGICAL SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode
       LOGICAL SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode
       LOGICAL useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode
+      LOGICAL cg2dFullAdjoint
 
 C-    Logical for ad dump format (if true then write all records
 C       to one file per variable; else write one file per record)
@@ -47,6 +52,7 @@ C       to one file per variable; else write one file per record)
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode,
      &       SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode,
      &       useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode,
+     &       cg2dFullAdjoint,
      &       dumpAdByRec
 
 C--   COMMON /AUTODIFF_PARM_I/ Integer valued parameters used by the pkg.

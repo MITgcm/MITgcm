@@ -21,27 +21,27 @@ C     === Global variables ===
 #include "GGL90.h"
 
 C     !INPUT/OUTPUT PARAMETERS: ========================================
-C     == Routine arguments ==
-C  myThid               :: thread number
+C      myThid     :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_GGL90
 C !LOCAL VARIABLES: ====================================================
-C     == Local variables ==
 CEOP
 
-#ifdef ALLOW_GGL90_HORIZDIFF
-      IF (GGL90isON .AND. GGL90diffTKEh .GT. 0. _d 0) THEN
-C Exchange overlaps
-       _EXCH_XYZ_RL(GGL90TKE,myThid)
-      ENDIF
-#endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_IDEMIX
-      IF ( useIDEMIX ) THEN
-       _EXCH_XYZ_RL(IDEMIX_E,myThid)
-       _EXCH_XYZ_RL(IDEMIX_V0,myThid)
+      IF ( useIDEMIX .AND. IDEMIX_tau_h .GT. zeroRL ) THEN
+       _EXCH_XYZ_RL( GGL90TKE, myThid )
+       _EXCH_XYZ_RL( IDEMIX_E, myThid )
+      ELSEIF ( GGL90diffTKEh .GT. zeroRL ) THEN
+#else /* ALLOW_GGL90_IDEMIX */
+      IF ( GGL90diffTKEh .GT. zeroRL ) THEN
+#endif /* ALLOW_GGL90_IDEMIX */
+       _EXCH_XYZ_RL( GGL90TKE, myThid )
       ENDIF
-#endif
+
+C--   Just to check that it does not affects results:
+c      CALL EXCH_UV_3D_RL( GGL90viscArU, GGL90viscArV,
+c    I                     .FALSE., Nr, myThid )
 #endif /* ALLOW_GGL90 */
 
       RETURN

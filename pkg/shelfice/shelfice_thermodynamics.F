@@ -128,6 +128,13 @@ C     drKp1, recip_drLoc
 #if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SHI_ALLOW_GAMMAFRICT
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+# endif
+#endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
