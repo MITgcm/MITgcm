@@ -1534,7 +1534,7 @@ Preprocessor Execution Environment Options
 
 **Most MITgcm users can skip this section**; many of these flags were
 intended for very specific platform environments, and not meant to be changed
-for more general environments (an exception being if you are using a coupled 
+for more general environments (an exception being if you are using a coupled
 setup, see below).
 
 The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
