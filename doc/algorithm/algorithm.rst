@@ -876,7 +876,7 @@ tendency of the flow as follows:
 Substituting into the depth integrated continuity
 (equation :eq:`discrete-time-backward-free-surface`) gives
 
-.. math:
+.. math::
    \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
    + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
     - \frac{\epsilon_{fs}\eta^{n+1}}{\Delta t^2}
