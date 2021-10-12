@@ -9,7 +9,7 @@ obtained. The non-Boussinesq equations for oceanic motion are:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p  = \vec{\boldsymbol{\mathcal{F}}} 
+   _{h}+\frac{1}{\rho } \boldsymbol{\nabla}_{z}p  = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: non-boussinesq_horizmom
 
 .. math::
@@ -17,7 +17,7 @@ obtained. The non-Boussinesq equations for oceanic motion are:
    :label: non-boussinesq_vertmom
 
 .. math::
-   \frac{1}{\rho }\frac{D\rho }{Dt}+\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}
+   \frac{1}{\rho }\frac{D\rho }{Dt}+\boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}
    _{h}+\frac{\partial w}{\partial z}  = 0
    :label: eq-zns-cont
 
@@ -54,7 +54,7 @@ is the reciprocal of the sound speed (:math:`c_{s}`) squared.
 Substituting into :eq:`eq-zns-cont` gives:
 
 .. math::
-   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{
+   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{
    v}}+\partial _{z}w\approx 0  
    :label: eq-zns-pressure
 
@@ -65,7 +65,7 @@ yields a system that can be explicitly integrated forward:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho }\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-cns-hmom 
 
 .. math::
@@ -73,7 +73,7 @@ yields a system that can be explicitly integrated forward:
    :label: eq-cns-hydro
 
 .. math::
-   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-cns-cont
 
 .. math::
@@ -99,7 +99,7 @@ acceleration:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+ f \hat{\boldsymbol{k}} \times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-zcb-hmom
 
 .. math::
@@ -108,7 +108,7 @@ acceleration:
    :label: eq-zcb-hydro
 
 .. math::
-   \frac{1}{\rho _{o}c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{
+   \frac{1}{\rho _{o}c_{s}^{2}}\frac{Dp}{Dt}+\boldsymbol{\nabla}_{z}\cdot \vec{
    \mathbf{v}}_{h}+\frac{\partial w}{\partial z}  = 0  
    :label: eq-zcb-cont
 
@@ -152,12 +152,12 @@ from differentiating the EOS, the continuity equation then becomes:
 .. math::
 
    \frac{1}{\rho _{o}c_{s}^{2}}\left( \frac{Dp_{o}}{Dt}+\epsilon _{s}\frac{
-   Dp^{\prime }}{Dt}\right) +\mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+
+   Dp^{\prime }}{Dt}\right) +\boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+
    \frac{\partial w}{\partial z}=0
 
 If the time- and space-scales of the motions of interest are longer
 than those of acoustic modes, then
-:math:`\frac{Dp^{\prime }}{Dt}\ll (\frac{Dp_{o}}{Dt}, \mathbf{\boldsymbol{\nabla}}\cdot \vec{\mathbf{v}}_{h})`
+:math:`\frac{Dp^{\prime }}{Dt}\ll (\frac{Dp_{o}}{Dt}, \boldsymbol{\nabla}\cdot \vec{\mathbf{v}}_{h})`
 in the continuity equations and :math:`\left. \frac{\partial \rho }{\partial p}\right| _{\theta ,S}\frac{
 Dp^{\prime }}{Dt}\ll \left. \frac{\partial \rho }{\partial p}\right| _{\theta
 ,S}\frac{Dp_{o}}{Dt}` in the EOS :eq:`EOSexpansion`. Thus we set :math:`\epsilon_{s}=0`, removing the
@@ -165,18 +165,18 @@ dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 :math:`\frac{Dp_{o}(z)}{Dt}=-g\rho _{o}w` then leads to the anelastic continuity equation:
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
+   \boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
    \frac{g}{c_{s}^{2}}w = 0
    :label: eq-za-cont1
 
 A slightly different route leads to the quasi-Boussinesq continuity
 equation where we use the scaling
 :math:`\frac{\partial \rho ^{\prime }}{\partial t}+
-\mathbf{\boldsymbol{\nabla}}_{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll \mathbf{\boldsymbol{\nabla}}
+\boldsymbol{\nabla}_{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll \boldsymbol{\nabla}
 _{3}\cdot \rho _{o}\vec{\mathbf{v}}` yielding:
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
+   \boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
    \partial \left( \rho _{o}w\right) }{\partial z} = 0
    :label: eq-za-cont2
 
@@ -193,7 +193,7 @@ equations for the ocean are then:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-zab-hmom
 
 .. math::
@@ -202,7 +202,7 @@ equations for the ocean are then:
    :label: eq-zab-hydro
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
+   \boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
    \partial \left( \rho _{o}w\right) }{\partial z} = 0
    :label: eq-zab-cont
 
@@ -228,7 +228,7 @@ equations:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
    :label: eq-ztb-hmom
 
 .. math::
@@ -237,7 +237,7 @@ equations:
    :label: eq-ztb-hydro
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-ztb-cont
 
 .. math::
@@ -277,7 +277,7 @@ equations:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\mathbf{\boldsymbol{\nabla}}_{z}p^{\prime } = \vec{\mathbf{
+   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p^{\prime } = \vec{\mathbf{
    \mathcal{F}}}
    :label: eq-ocean-mom
 
@@ -287,7 +287,7 @@ equations:
    :label: eq-ocean-wmom
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \boldsymbol{\nabla}_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-ocean-cont
 
 .. math::

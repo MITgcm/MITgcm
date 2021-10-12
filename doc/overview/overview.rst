@@ -186,7 +186,7 @@ see :numref:`zandp-vert-coord`.
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
-   \right) _{h}+\mathbf{\boldsymbol{\nabla}}_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
+   \right) _{h}+\boldsymbol{\nabla}_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
@@ -195,7 +195,7 @@ see :numref:`zandp-vert-coord`.
    :label: vert-mtm
 
 .. math::
-   \mathbf{\boldsymbol{\nabla}}_{h}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \dot{r}}{
+   \boldsymbol{\nabla}_{h}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \dot{r}}{
    \partial r}=0\text{  continuity}
    :label: continuity
 
@@ -221,10 +221,10 @@ Here:
 
 .. math::
 
-   \mathbf{\boldsymbol{\nabla}}=\mathbf{\boldsymbol{\nabla}}_{h}+\widehat{\boldsymbol{k}}\frac{\partial }{\partial r}
+   \boldsymbol{\nabla}=\boldsymbol{\nabla}_{h}+\widehat{\boldsymbol{k}}\frac{\partial }{\partial r}
    \text{  is the ‘grad’ operator}
 
-with :math:`\mathbf{\boldsymbol{\nabla}}_{h}` operating in the horizontal and
+with :math:`\boldsymbol{\nabla}_{h}` operating in the horizontal and
 :math:`\widehat{\boldsymbol{k}}
 \frac{\partial }{\partial r}` operating in the vertical, where
 :math:`\widehat{\boldsymbol{k}}` is a unit vector in the vertical
