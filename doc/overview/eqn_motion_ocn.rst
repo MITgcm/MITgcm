@@ -9,7 +9,7 @@ obtained. The non-Boussinesq equations for oceanic motion are:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p  = \vec{\mathbf{\mathcal{F}}} 
+   _{h}+\frac{1}{\rho }\mathbf{\boldsymbol{\nabla}}_{z}p  = \vec{\boldsymbol{\mathcal{F}}} 
    :label: non-boussinesq_horizmom
 
 .. math::
