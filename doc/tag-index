@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tangent-linear:
+  - fix few hand-written tangent-linear src code (in autodiff & ctrl pkgs);
+  - add new target "ftlobj" to Makefile (similar to "obj" & "adobj" for forward
+    and AD built) and corresponding switch in testreport ;
+  - fix non-standard sed command (for Mac) in TLM testreport.
+
 checkpoint68c (2021/10/02)
 o pkg/seaice:
   - update some dynamics solver default so that now:
