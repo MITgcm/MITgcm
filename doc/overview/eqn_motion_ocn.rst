@@ -65,7 +65,7 @@ yields a system that can be explicitly integrated forward:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho }\boldsymbol{\nabla}_{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-cns-hmom 
 
 .. math::
@@ -99,7 +99,7 @@ acceleration:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+ f \hat{\boldsymbol{k}} \times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-zcb-hmom
 
 .. math::
@@ -144,7 +144,7 @@ continuity and EOS. A better solution is to change the dependency on
 pressure in the EOS by splitting the pressure into a reference function
 of height and a perturbation:
 
-.. math:: \rho =\rho (\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime })
+.. math:: \rho =\rho \left(\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime } \right)
 
 Remembering that the term :math:`\frac{Dp}{Dt}` in continuity comes
 from differentiating the EOS, the continuity equation then becomes:
@@ -157,7 +157,7 @@ from differentiating the EOS, the continuity equation then becomes:
 
 If the time- and space-scales of the motions of interest are longer
 than those of acoustic modes, then
-:math:`\frac{Dp^{\prime }}{Dt}\ll (\frac{Dp_{o}}{Dt}, \boldsymbol{\nabla}\cdot \vec{\mathbf{v}}_{h})`
+:math:`\frac{Dp^{\prime }}{Dt}\ll \frac{Dp_{o}}{Dt}, \boldsymbol{\nabla}\cdot \vec{\mathbf{v}}_{h}`
 in the continuity equations and :math:`\left. \frac{\partial \rho }{\partial p}\right| _{\theta ,S}\frac{
 Dp^{\prime }}{Dt}\ll \left. \frac{\partial \rho }{\partial p}\right| _{\theta
 ,S}\frac{Dp_{o}}{Dt}` in the EOS :eq:`EOSexpansion`. Thus we set :math:`\epsilon_{s}=0`, removing the
@@ -193,7 +193,7 @@ equations for the ocean are then:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{o}}\boldsymbol{\nabla}_{z}p = \vec{\boldsymbol{\mathcal{F}}}_h
    :label: eq-zab-hmom
 
 .. math::
@@ -207,7 +207,7 @@ equations for the ocean are then:
    :label: eq-zab-cont
 
 .. math::
-   \rho = \rho (\theta ,S,p_{o}(z))
+   \rho = \rho \left(\theta ,S,p_{o}(z) \right)
    :label: eq-zab-eos
 
 .. math::
@@ -228,7 +228,7 @@ equations:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p = \vec{\mathbf{\mathcal{F}}}
+   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-ztb-hmom
 
 .. math::
@@ -277,8 +277,7 @@ equations:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p^{\prime } = \vec{\mathbf{
-   \mathcal{F}}}
+   _{h}+\frac{1}{\rho _{c}}\boldsymbol{\nabla}_{z}p^{\prime } = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-ocean-mom
 
 .. math::
@@ -311,4 +310,3 @@ since we essentially assume a different EOS for the reference density
 and the perturbation density. Nevertheless, it is the hydrostatic
 (:math:`\epsilon_{nh}=0`) form of these equations that are used throughout the ocean
 modeling community and referred to as the primitive equations (**HPE**’s).
-
