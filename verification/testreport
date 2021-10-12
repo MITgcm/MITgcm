@@ -210,9 +210,9 @@ testoutput_run()
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
 	if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
 	if test $KIND = 1 ; then kd='g_';
-	  if test -r $1/$2/tr_checklist.tlm ; then listChk=`cat $1/$2/tr_checklist.tlm` ; fi
 	  #  TLM use same input_ad/tr_checklist --> convert
-	  listChk=`echo $listChk | sed 's/\<adm/tlm/g'`
+	  listChk=`echo $listChk | sed 's/^adm/tlm/' | sed 's/ adm/ tlm/g'`
+	  if test -r $1/$2/tr_checklist.tlm ; then listChk=`cat $1/$2/tr_checklist.tlm` ; fi
 	elif test $KIND = 2 ; then kd='ad';
 	  if test -r $1/$2/tr_checklist.adm ; then listChk=`cat $1/$2/tr_checklist.adm` ; fi
 	elif test $KIND = 4 ; then kd='ad';
