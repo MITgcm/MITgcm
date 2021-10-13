@@ -53,7 +53,7 @@ Basic operators:
 |
 | :math:`\overline{\boldsymbol{\nabla}} \cdot` = horizontal divergence operator :
   :math:`\overline{\boldsymbol{\nabla}}\cdot \vec{\mathrm{{\bf f}}}  = 
-  \frac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
+  \dfrac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
                     + \delta_j \Delta x \, \mathrm{f}_y \}`
 |
 | :math:`\overline{\nabla}^2` = horizontal Laplacian operator :
@@ -244,7 +244,7 @@ The calling tree for these routines is as follows:
     | :math:`\phantom{WW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxx}` :math:`H\widehat{u^*},H\widehat{v^*}` :eq:`elliptic`
     | :math:`\phantom{WW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\eta^{n+1}` :eq:`elliptic`
     | :math:`\phantom{W}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxx}` :math:`\nabla \eta^{n+1}`
+    | :math:`\phantom{WW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxx}` :math:`\boldsymbol{\nabla} \eta^{n+1}`
     | :math:`\phantom{WW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxw}` :math:`u^{n+1},v^{n+1}` :eq:`un+1-rigid-lid` , :eq:`vn+1-rigid-lid`
 
 In general, the horizontal momentum time-stepping can contain some terms
@@ -281,8 +281,8 @@ the free-surface equation which can be written:
    \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\mathcal{P-E+R}}
    :label: linear-free-surface=P-E
 
-which differs from the depth integrated continuity equation with
-rigid-lid (:eq:`rigid-lid-continuity`) by the time-dependent term and
+which differs from the depth-integrated continuity equation with
+rigid-lid :eq:`rigid-lid-continuity` by the time-dependent term and
 fresh-water source term.
 
 Equation :eq:`discrete-time-cont-rigid-lid` in the rigid-lid pressure
@@ -625,7 +625,7 @@ follow equations:
    :label: elliptic-sync
 
 .. math::
-   \vec{\bf v}^{n+1} = \vec{\bf v}^{**} - \Delta t g \nabla \eta^{n+1}
+   \vec{\bf v}^{n+1} = \vec{\bf v}^{**} - \Delta t g \boldsymbol{\nabla} \eta^{n+1}
    :label: v-n+1-sync
 
 :numref:`adams-bash-sync` illustrates the location of variables
@@ -676,7 +676,7 @@ ocean and atmospheric physics have been added, although they are mainly optional
     | :math:`\phantom{WWW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxx}` :math:`\eta^*` :eq:`nstar-sync`
     | :math:`\phantom{WWW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxi}` :math:`\eta^{n+1}` :eq:`elliptic-sync`
     | :math:`\phantom{WW}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\nabla \eta^{n+1}`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\boldsymbol{\nabla} \eta^{n+1}`
     | :math:`\phantom{WWW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxxxxxw}` :math:`u^{n+1},v^{n+1}` :eq:`v-n+1-sync`
     | :math:`\phantom{WW}` :filelink:`TRACERS\_CORRECTION\_STEP <model/src/tracers_correction_step.F>`
     | :math:`\phantom{WWW}` :filelink:`CYCLE\_TRACER <model/src/cycle_tracer.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxx}` :math:`\theta^{n+1}`
@@ -731,7 +731,7 @@ position in time of variables appropriately:
    :label: Gv-n+5-staggered
 
 .. math::
-   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} - \nabla \phi_{hyd}^{n} \right)
+   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} - \boldsymbol{\nabla} \phi_{hyd}^{n} \right)
    :label: vstar-staggered
 
 .. math::
@@ -744,12 +744,12 @@ position in time of variables appropriately:
    :label: nstar-staggered
 
 .. math::
-   \boldsymbol{\nabla} \cdot g H \nabla \eta^{n+1/2}  -  \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
-   ~ = ~ - \frac{\eta^*}{\Delta t^2}
+   \boldsymbol{\nabla} \cdot g H \boldsymbol{\nabla} \eta^{n+1/2} - \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
+   = - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-staggered
 
 .. math::
-   \vec{\bf v}^{n+1/2}  =  \vec{\bf v}^{**} - \Delta t g \nabla \eta^{n+1/2}
+   \vec{\bf v}^{n+1/2}  =  \vec{\bf v}^{**} - \Delta t g \boldsymbol{\nabla} \eta^{n+1/2}
    :label: v-n+1-staggered
 
 .. math::
@@ -789,7 +789,7 @@ parameter file ``data``, namelist ``PARM01``.
     | :math:`\phantom{WWW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxx}` :math:`\eta^*` :eq:`nstar-staggered`
     | :math:`\phantom{WWW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxi}` :math:`\eta^{n+1/2}` :eq:`elliptic-staggered`
     | :math:`\phantom{WW}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\nabla \eta^{n+1/2}`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\boldsymbol{\nabla} \eta^{n+1/2}`
     | :math:`\phantom{WWW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxxxxxw}` :math:`u^{n+1/2},v^{n+1/2}` :eq:`v-n+1-staggered`
     | :math:`\phantom{WW}` :filelink:`THERMODYNAMICS <model/src/thermodynamics.F>`
     | :math:`\phantom{WWW}` :filelink:`CALC\_GT <model/src/calc_gt.F>`
@@ -885,8 +885,8 @@ Substituting into the depth integrated continuity
 
 which is approximated by equation :eq:`elliptic-backward-free-surface`
 on the basis that i) :math:`\phi_{nh}^{n+1}` is not yet known and ii)
-:math:`\nabla \widehat{\phi}_{nh}
-\ll  g \nabla \eta`. If :eq:`elliptic-backward-free-surface` is solved
+:math:`\boldsymbol{\nabla} \widehat{\phi}_{nh}
+\ll  g \boldsymbol{\nabla} \eta`. If :eq:`elliptic-backward-free-surface` is solved
 accurately then the implication is that :math:`\widehat{\phi}_{nh}
 \approx 0` so that the non-hydrostatic pressure field does not drive
 barotropic motion.
@@ -972,7 +972,7 @@ non-hydrostatic effects (:math:`\epsilon_{nh} = 0`) is:
 
 .. math::
    \epsilon_{fs} {\eta}^{n+1} -
-   {\bf \nabla}_h \cdot \Delta t^2 (R_o-R_{fixed}) {\bf \nabla}_h b_s
+   \boldsymbol{\nabla}_h \cdot \Delta t^2 (R_o-R_{fixed}) \boldsymbol{\nabla}_h b_s
    {\eta}^{n+1} = {\eta}^*
    :label: eq-solve2D
 
@@ -980,7 +980,7 @@ where
 
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
-   \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
+   \Delta t \boldsymbol{\nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
    \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
@@ -1000,7 +1000,7 @@ Once :math:`{\eta}^{n+1}` has been found, substituting into
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{*}
-   - \Delta t {\bf \nabla}_h b_s {\eta}^{n+1}
+   - \Delta t \boldsymbol{\nabla}_h b_s {\eta}^{n+1}
 
 This is known as the correction step. However, when the model is
 non-hydrostatic (:math:`\epsilon_{nh}=1`) we need an additional step and
@@ -1009,14 +1009,14 @@ substituting :eq:`discrete-time-u-nh`, :eq:`discrete-time-v-nh` and
 :eq:`discrete-time-w-nh` into continuity:
 
 .. math::
-   [ {\bf \nabla}_h^2 + \partial_{rr} ] {\phi'_{nh}}^{n+1}
+   [ \boldsymbol{\nabla}_h^2 + \partial_{rr} ] {\phi'_{nh}}^{n+1}
    = \frac{1}{\Delta t} 
-   {\bf \nabla}_h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
+   \boldsymbol{\nabla}_h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
    :label: sub-u-v-w-in-cont 
 
 where
 
-.. math:: \vec{\bf v}^{**} = \vec{\bf v}^* - \Delta t {\bf \nabla}_h b_s {\eta}^{n+1}
+.. math:: \vec{\bf v}^{**} = \vec{\bf v}^* - \Delta t \boldsymbol{\nabla}_h b_s {\eta}^{n+1}
 
 Note that :math:`\eta^{n+1}` is also used to update the second RHS term
 :math:`\partial_r \dot{r}^*` since the vertical velocity at the surface
@@ -1027,7 +1027,7 @@ Finally, the horizontal velocities at the new time level are found by:
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{**}
-   - \epsilon_{nh} \Delta t {\bf \nabla}_h {\phi'_{nh}}^{n+1}
+   - \epsilon_{nh} \Delta t \boldsymbol{\nabla}_h {\phi'_{nh}}^{n+1}
    :label: v-new-time-lev 
 
 and the vertical velocity is found by integrating the continuity
@@ -1739,14 +1739,14 @@ following or the conformal spherical cube system.
 The non-hydrostatic vector invariant equations read:
 
 .. math::
-   \partial_t \vec{v} + ( 2\vec{\boldsymbol{\Omega}} + \vec{\zeta}) \wedge \vec{v}
-   - b \hat{r}
-   + \vec{\nabla} B = \vec{\nabla} \cdot \vec{\bf \tau}
+   \partial_t \vec{\bf v} + ( 2\vec{\boldsymbol{\Omega}} + \vec{\boldsymbol{\zeta}}) \times \vec{\bf v}
+   - b \hat{\bf r}
+   + \boldsymbol{\nabla} B = \boldsymbol{\nabla} \cdot \vec{\boldsymbol{\tau}}
    :label: vect_invar_nh
 
 which describe motions in any orthogonal curvilinear coordinate system.
-Here, :math:`B` is the Bernoulli function and :math:`\vec{\zeta}=\nabla
-\wedge \vec{v}` is the vorticity vector. We can take advantage of the
+Here, :math:`B` is the Bernoulli function and :math:`\vec{\boldsymbol{\zeta}}=\boldsymbol{\nabla}
+\times \vec{\bf v}` is the vorticity vector. We can take advantage of the
 elegance of these equations when discretizing them and use the discrete
 definitions of the grad, curl and divergence operators to satisfy
 constraints. We can also consider the analogy to forming derived
@@ -2045,7 +2045,7 @@ where :math:`G_{adv}^\tau`, :math:`G_{diff}^\tau` and
 forcing, respectively, namely:
 
 .. math::
-   G_{adv}^\tau = \partial_x u \tau + \partial_y v \tau + \partial_r w \tau
+   G_{adv}^\tau = \partial_x (u \tau) + \partial_y (v \tau) + \partial_r (w \tau)
    - \tau \boldsymbol{\nabla} \cdot {\bf v}
    :label: g_adv-tau
 
@@ -2089,7 +2089,7 @@ method:
 
 .. math::
    G^{(n+1/2)} = 
-   (\frac{3}{2} + \epsilon) G^{(n)} - (\frac{1}{2} + \epsilon) G^{(n-1)}
+   (\tfrac{3}{2} + \epsilon) G^{(n)} - (\tfrac{1}{2} + \epsilon) G^{(n-1)}
    :label: g_nponehalf
 
 where :math:`G^{(n)} = G_{adv}^\tau + G_{diff}^\tau + G_{src}^\tau` at
@@ -2454,15 +2454,15 @@ enstrophy-dissipation and the resulting eddy viscosity are
 
 .. math::
    L_\eta(A_{hLeith})\propto\pi A_{hLeith}^{1/2}\eta^{-1/6}
-   = \pi A_{hLeith}^{1/3}|\nabla \overline \omega_3|^{-1/3}
+   = \pi A_{hLeith}^{1/3}|\boldsymbol{\nabla} \overline \omega_3|^{-1/3}
    :label: L_eta
 
 .. math::
-   A_{hLeith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3|\nabla \overline\omega_3|
+   A_{hLeith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3|\boldsymbol{\nabla} \overline\omega_3|
    :label: Ah_Leith
 
 .. math::
-   |\nabla\omega_3| \equiv \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}
+   |\boldsymbol{\nabla}\omega_3| \equiv \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}
    \left({\frac{\partial{\overline {\tilde v}}}{\partial{x}}} - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde v}}}{\partial{x}}}
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
@@ -2496,12 +2496,12 @@ gridscale. The combined viscosity has the form:
 
 .. math::
    A_{hLeith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
-   |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
-   |\nabla \boldsymbol{\nabla} \cdot \overline {\tilde u}_h|^2}
+   |\boldsymbol{\nabla} \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
+   |\boldsymbol{\nabla} (\boldsymbol{\nabla} \cdot \overline {\tilde u}_h)|^2}
    :label: Ah_Leithcomb
 
 .. math::
-   |\nabla \boldsymbol{\nabla} \cdot \overline {\tilde u}_h| \equiv
+   |\boldsymbol{\nabla} (\boldsymbol{\nabla} \cdot \overline {\tilde u}_h)| \equiv
    \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
    + {\frac{\partial{\overline {\tilde v}}}{\partial{y}}}\right)\right]^2
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
@@ -2531,8 +2531,8 @@ a contribution from quasigeostrophic vortex stretching (Bachman et al. 2017 :cit
 The viscosity is given by
 
 .. math::
-    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} | \nabla_{h}(f\mathbf{\hat{z}}) + 
-    \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}} \nabla_{h} b|
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \left| \boldsymbol{\nabla}_{h}(f\mathbf{\hat{z}}) + 
+    \boldsymbol{\nabla}_{h}(\boldsymbol{\nabla} \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}} \boldsymbol{\nabla}_{h} b \right|
     :label: bachman2017_eq39
 
 where :math:`\Lambda` is a tunable parameter of :math:`\mathcal{O}(1)`,
@@ -2545,8 +2545,8 @@ divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is 
 
 .. math::
     \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
-    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \boldsymbol{\nabla}_{h}(\boldsymbol{\nabla} \times \mathbf{v}_{h*}) + 
-    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \boldsymbol{\nabla} [\boldsymbol{\nabla} \cdot \mathbf{v}_{h}]|^{2}}
+    \sqrt{\left|\boldsymbol{\nabla}_{h}(f\mathbf{\hat{z}}) + \boldsymbol{\nabla}_{h}(\boldsymbol{\nabla} \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}} \boldsymbol{\nabla}_{h} b\right|^{2} + | \boldsymbol{\nabla} (\boldsymbol{\nabla} \cdot \mathbf{v}_{h})|^{2}}
     :label: bachman2017_eq40
 
 This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
@@ -2558,8 +2558,8 @@ the Froude number, and :math:`Ro_{*}`, the Rossby number. The second of which,
 .. math::
     \begin{aligned}
     \nu_{*} = & \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \\
-    & \sqrt{\min \left(|\boldsymbol{\nabla}_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \boldsymbol{\nabla}_{h} b |,
-    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \boldsymbol{\nabla}[\boldsymbol{\nabla} \cdot \mathbf{v}_{h}]|^{2}},
+    & \sqrt{\min \left( \left|\boldsymbol{\nabla}_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \boldsymbol{\nabla}_{h} b \right|,
+    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\boldsymbol{\nabla}_{h}q_{2*}|\right)^{2} + | \boldsymbol{\nabla} (\boldsymbol{\nabla} \cdot \mathbf{v}_{h}) |^{2}}
     \end{aligned}
     :label: bachman2017_eq56
 
@@ -2683,8 +2683,8 @@ Smagorinsky viscosities:
 
 .. math::
    A_{4Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
-   |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
-   |\nabla \boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h|^2}
+   |\boldsymbol{\nabla} \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
+   |\boldsymbol{\nabla} (\boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith
 
 However, it should be noted that unlike the harmonic forms, the
@@ -2701,7 +2701,7 @@ resulting biharmonic viscosities should be:
 .. math::
    A_{4Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
    |\nabla^2 \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^{12}
-   |\nabla^2 \boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h|^2}
+   |\nabla^2 (\boldsymbol{\nabla} \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith_alt
 
 Thus, the biharmonic scaling suggested by Griffies and Hallberg (2000)
@@ -2710,7 +2710,7 @@ Thus, the biharmonic scaling suggested by Griffies and Hallberg (2000)
 .. math::
    \begin{aligned}
    |D| & \propto  L|\nabla^2\overline {\bf {\tilde u}}_h|\\
-   |\nabla \overline \omega_3| & \propto L|\nabla^2 \overline \omega_3|\end{aligned}
+   |\boldsymbol{\nabla} \overline \omega_3| & \propto L|\nabla^2 \overline \omega_3|\end{aligned}
 
 It is not at all clear that these assumptions ought to hold. Only the
 Griffies and Hallberg (2000) :cite:`griffies:00` forms are currently implemented in
