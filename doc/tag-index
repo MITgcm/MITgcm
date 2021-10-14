@@ -1,6 +1,33 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tangent-linear:
+  - fix few hand-written tangent-linear src code (in autodiff & ctrl pkgs);
+  - add new target "ftlobj" to Makefile (similar to "obj" & "adobj" for forward
+    and AD built) and corresponding switch in testreport ;
+  - fix non-standard sed command (for Mac) in TLM testreport.
+
+checkpoint68c (2021/10/02)
+o pkg/seaice:
+  - update some dynamics solver default so that now:
+    a) SEAICEuseEVPstar = .TRUE. ; b) SEAICEuseEVPrev = .TRUE. ;
+    c) LSR_ERROR = 1.e-5 (previously was 1.e-4) ;
+  - put back old default in exp. lab_sea (primary test);
+  - modify (simplify?) logic in seaice_readparms.F and seaice_check.F.
+o pkg/grdchk:
+  - allow to use "recglo" to specify a particular control time record for
+    gradient check (was previously inactive).
+o pkg/exf:
+  - new parameters to reduce AD-exf monitor output:
+    1) exf_adjMonFreq (def= adjMonitorFreq), = 0. suppresses all output
+    2) exf_adjMonSelect: =1 (def): less output ; =3 as before, =0 : no output
+  - fix some AD-common block name + content to match TAF directives (in
+    common.flow) and TAF generated code.
+  - skip monitor of model forcing AD-variables (unless monitorSelect=4).
+o pkg/ecco + other:
+  - fix few non-standard syntax (+ repeated setting of "gencost_msk_is3d").
+o pkg/bling:
+  - fix call to S/R BLING_BIO_NITROGEN when USE_SIBLING is defined.
 o pkg/ecco:
   - put various dimensions related to gencost out of "ecco.h" into specific
     (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
