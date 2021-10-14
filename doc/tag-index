@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - remove condition (ifdef GM_NON_UNITY_DIAGONAL) around 3-D arrays Kux & Kvy
+    to simplify how GMREDI is applied (e.g., gmredi_x/ytransport); fill up these
+    2 arrays with constant value (gmredi_calc_tensor.F & offline_get_diffus.F)
+    when GM_NON_UNITY_DIAGONAL is undef (to reproduce old results).
+  - also with GM_NON_UNITY_DIAGONAL undef, fix ALLOW_KAPREDI_CONTROL averaging.
 o tangent-linear:
   - fix few hand-written tangent-linear src code (in autodiff & ctrl pkgs);
   - add new target "ftlobj" to Makefile (similar to "obj" & "adobj" for forward
