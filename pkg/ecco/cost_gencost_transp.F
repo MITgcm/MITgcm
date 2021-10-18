@@ -35,17 +35,14 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer nnzobs, nnzbar
-      parameter (nnzbar = Nr, nnzobs = Nr)
       integer nrecloc, localrec
       integer localstartdate(4)
 
-      _RL myobs     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdif  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL difmask   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL myobs   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL mybar   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localdif(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL difmask (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localtmp(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       _RL dummy,facCost,facNum
 c- facNum is 1 divided by the number of tiles in SIZE dot h
@@ -57,14 +54,13 @@ c- facNum is 1 divided by the number of tiles in SIZE dot h
       _RL tmpMeanGlo,tmpNumGlo
 
       character*(MAX_LEN_FNAM) mybarfile
-      character*(MAX_LEN_FNAM) myobsfile
 
       integer kgen(NGENCOST3D)
       integer bi,bj
-      integer i,j,k
+      integer k
       integer itlo,ithi
       integer jtlo,jthi
-      integer obsrec,irec,jrec
+      integer obsrec,irec
       integer il,k2
       integer icount,icount_transp
       logical dosumsq, dovarwei, doreadobs
@@ -74,8 +70,6 @@ c- facNum is 1 divided by the number of tiles in SIZE dot h
       character*(MAX_LEN_FNAM) preproc(NGENPPROC)
       character*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
 
-      logical doglobalread
-      logical ladinit
       character*(MAX_LEN_MBUF) msgbuf
       character*(128) fname1, fname0
 
@@ -210,7 +204,7 @@ c gencost_mask and fname0 are dummy, get fname1 from mybarfile
             call cost_gencal(mybarfile,gencost_mask(kgen(icount)),
      &       irec,localstartdate,localperiod,fname1,
      &       fname0,localrec,obsrec,exst,mythid)
-            call cost_genread(fname1,mybar,localtmp,irec,nnzbar,
+            call cost_genread(fname1,mybar,localtmp,irec,nr,Nr,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,mythid)
 
@@ -234,29 +228,29 @@ c-- keep total at each irec to print out for time-series
 
 c compute obs minus bar (localdif) and mask (difmask)
 c note localtmp is set to 1.
-            call ecco_zero(localtmp,nnzobs,oneRL,mythid)
-            call ecco_zero(localdif,nnzobs,zeroRL,mythid)
-            call ecco_zero(difmask,nnzobs,zeroRL,mythid)
+            call ecco_zero(localtmp,Nr,oneRL,mythid)
+            call ecco_zero(localdif,Nr,zeroRL,mythid)
+            call ecco_zero(difmask,Nr,zeroRL,mythid)
 
 c take care to set sp[min,max,zero]loc carefully to not
 c filter out signal.  Can consider skip diffmsk step
             call ecco_diffmsk(
-     I       mybar, nnzbar, myobs, nnzobs, localtmp,
-     I       spminloc, spmaxloc, spzeroloc,
+     I       mybar, myobs, localtmp,
+     I       Nr, Nr,spminloc, spmaxloc, spzeroloc,
      O       localdif, difmask,
      I       myThid )
 
-            call ecco_zero(localtmp,nnzobs,oneRL,mythid)
+            call ecco_zero(localtmp,Nr,oneRL,mythid)
             call ecco_addcost(
-     I       localdif,localtmp,difmask,nnzobs,dosumsq,
+     I       localdif,localtmp,difmask,nr,Nr,dosumsq,
      O       tmpMeanTile,tmpNumTile,
      I       mythid)
 
 cc either use ecco_diffmsk and ecco_addcost from above or simplify
 cc to call below. For now keep syntax consistent with gencost
-c            call ecco_zero(localtmp,nnzobs,oneRL,mythid)
+c            call ecco_zero(localtmp,Nr,oneRL,mythid)
 c            call ecco_addcost(
-c     I       mybar,localtmp,localtmp,nnzobs,dosumsq,
+c     I       mybar,localtmp,localtmp,nr,Nr,dosumsq,
 c     O       tmpMeanTile,tmpNumTile,
 c     I       mythid)
 
