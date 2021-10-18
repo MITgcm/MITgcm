@@ -198,22 +198,11 @@ cc      if (n2d*length2d.EQ.length) then
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
 cc      else
-C   The other case actually does not (and should not) occur within the main loop,
-C   where we only store global arrays (i.e. with i,j,bi,bj indices) to disk.
-C     At init and final time it is always be possible to recompute or store in
-C   memory without much trouble or computational cost.
-C
-C    Presently there are three instances where non-global arrays are stored to disk:
-C   (a) the one instance when onetape is used, to store myTime, which is of no effect.
-C   In the_main_loop, we switch onetape to memory tape if ALLOW_AUTODIFF_WHTAPEIO
-C   (b) the two instances when tapelev_ini_bibj_k is used (in convective
-C   _adjustment_ini.F and cost_drifter.F) are disabled at compile time if
-C   ALLOW_AUTODIFF_WHTAPEIO. So is the definition of tapelev_ini_bibj_k,
-C   which is not supported with ALLOW_AUTODIFF_WHTAPEIO (side-note:
-C   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector)
-C
-C   The issue could be revisited if needed.
-C   But for now we stop if any otehr instance is met.
+C     The other case actually does not (and should not) occur within the
+C     main loop, where we only store global arrays (i.e. with i,j,bi,bj
+C     indices) to disk. At init and final time it is always possible to
+C     recompute or store in memory without much trouble or computational
+C     cost.
 cc         WRITE(msgBuf,'(3A)')
 cc     &        'ADWRITE: ',name,'was not saved to tape.'
 cc         CALL PRINT_ERROR( msgBuf, myThid )
