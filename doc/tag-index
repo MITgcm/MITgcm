@@ -1,6 +1,26 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification AD experiments:
+  Update TAF AD exp. so that none relies anymore on ECCO_CTRL_DEPRECATED code:
+  - remove #define ECCO_CTRL_DEPRECATED from experiments: 1D_ocean_ice_column,
+    bottom_ctrl_5x5, global_with_exf, lab_sea, OpenAD, tutorial_dic_adjoffline,
+    tutorial_global_oce_biogeo & tutorial_global_oce_optim ; use instead generic
+    control and generic cost.
+  - for now, keep experiment global_ocean.cs32x15 with both ECCO_CTRL_DEPRECATED
+    code and generic control + generic cost.
+  - also remove ECCO_CPPOPTIONS.h (use instead set of pkg specific OPTIONS
+    header files) from these experiments above.
+  - results unchanged except few digits in cost & ad-monitor for lab_sea &
+    obcs_ctrl ; and few minor recomp. warnings count changes for
+    tutorial_global_oce_biogeo (-4) and for tutorial_dic_adjoffline (+2).
+  Update pkgs as needed:
+  - pkg/ecco: fix field declarations for ecco_toolbox routines and cost_readgen,
+    new toolbox routines ecco_offset, ecco_maskmindepth, make argument lists
+    more consistent between ecco_toolbox routines and remove unused subroutines;
+  - pkg/cost: fix ALLOW_COST_DEPTH contribution;
+  - pkg/ctrl: add more "ifdef ECCO_CTRL_DEPRECATED" where necessary;
+  - pkg/exf: add xx_snowprecip as generic control, adjust CPP-flags.
 o pkg/gmredi:
   - remove condition (ifdef GM_NON_UNITY_DIAGONAL) around 3-D arrays Kux & Kvy
     to simplify how GMREDI is applied (e.g., gmredi_x/ytransport); fill up these
