@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/inc:
+  - move potentially time dependent grid variable from GRID_RS to new common
+    block GRID_VAR_RS (hFacW/S/W, etc.) and split common block CG2D_I_R into
+    a _RL and a _RS part ; adjust AD common block accordingly.
 o verification AD experiments:
   Update TAF AD exp. so that none relies anymore on ECCO_CTRL_DEPRECATED code:
   - remove #define ECCO_CTRL_DEPRECATED from experiments: 1D_ocean_ice_column,
