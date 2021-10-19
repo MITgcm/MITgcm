@@ -487,9 +487,11 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS fCoriG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C--   COMMON /GRID_VAR_RS/ potentially time-dependent RS valued grid
-C--   defining variables. These grid defining variables could be time
-C--   dependent when using Detph Control or non-linear free surface.
+C--   COMMON /GRID_VAR_RS/ potentially time-dependent or active RS
+C     valued grid defining variables. These grid defining variables are
+C     time-dependent when using a non-linear free surface, or they are
+C     active in an AD sense when using depth as a control parameter, or
+C     both.
       COMMON /GRID_VAR_RS/
      &  hFacC, hFacW, hFacS,
      &  recip_hFacC,recip_hFacW,recip_hFacS,
