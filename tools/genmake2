@@ -3436,6 +3436,8 @@ ftl_taf_output.$FS: ftl_input_code.$FS
 \$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
+ftlobj: ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+
 EOF
 
 else
@@ -3456,6 +3458,9 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 \$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+
+ftlobj: ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 
 EOF
 fi
@@ -3759,7 +3764,7 @@ if test $FC_CHECK = 5 ; then
     elif test $ad != 0 ; then
 	echo "  > make depend"
 	echo "    > make adall  (<-- adjoint executable)"
-	echo " or > make tlm    (<-- tang-lin executable)"
+	echo " or > make ftlall (<-- tang-lin executable)"
 	echo " or > make        (<-- forward executable)"
     else
 #	echo "  > make depend   (add dependencies to Makefile)"
