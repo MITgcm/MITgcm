@@ -20,8 +20,8 @@ Usage: "$0" [OPTIONS]
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
-    -oadsingularity NAME | --oadsingularity NAME
-      -oadsingularity=NAME | --oadsingularity=NAME
+    -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
+      -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
 	  Here, "NAME" specifies the singularity file
 	  that contains the OpenAD execulable.
 
@@ -1513,9 +1513,9 @@ for ac_option in "$@" ; do
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
-	-oadsingularity | --oadsingularity)
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
 	    ac_prev=SINGULARITYFILE ;;
-	-oadsingularity=* | --oadsingularity=*)
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*)
 	    SINGULARITYFILE=$ac_optarg ;;
 	-nocat4ad | -dog4ad | -ncad | -dad)
 	    CAT_SRC_FOR_TAF=0 ;;

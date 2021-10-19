@@ -11,7 +11,8 @@ usage()
     echo "  (-tlm)                   perform a Tangent Linear run"
     echo "  (-adm|-ad)               perform an adjoint run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
-    echo "  (-oadsingularity) STRING path to singularity container with OpenAD"
+    echo "  (-oadsingularity|-oadsngl) STRING"
+    echo "                           path to singularity container with OpenAD"
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
@@ -1238,8 +1239,8 @@ for ac_option ; do
 	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
 		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
 	      fi ;;
-	-oadsingularity | --oadsingularity) ac_prev=OADSINGULARITY ;;
-	-oadsingularity=* | --oadsingularity=*) OADSINGULARITY=$ac_optarg ;;
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl) ac_prev=OADSINGULARITY ;;
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*) OADSINGULARITY=$ac_optarg ;;
 
 	-ncad) NOCATAD=t ;;
 	-small_f) MKSMALLF=t ;;
