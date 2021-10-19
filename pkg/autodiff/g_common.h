@@ -167,4 +167,19 @@ C Special Care: more forward vars in FWD common block ; check TAF TL-code !
      &     g_area, g_heff, g_hsnow, g_uice, g_vice
 #endif
 
+#ifdef ALLOW_DEPTH_CONTROL
+      _RS g_hfacc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_hfacs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_hfacw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_recip_hfacc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_recip_hfacs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_recip_hfacw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nr,nSx,nSy)
+      _RS g_r_low     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS g_recip_rcol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /g_grid_var_rs/
+     &     g_hfacc, g_hfacw, g_hfacs,
+     &     g_recip_hfacc, g_recip_hfacw, g_recip_hfacs,
+     &     g_r_low, g_recip_rcol
+#endif /* ALLOW_DEPTH_CONTROL */
+
 #endif /* ALLOW_AUTODIFF_MONITOR */
