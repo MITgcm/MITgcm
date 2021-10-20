@@ -875,6 +875,8 @@ runmodel()
 		  mv -f $OUTPUTFILE ${OUTPUTFILE}.diva_${ii}
 		done
 	      fi
+	    elif test -f run_ADM_DIVA ; then
+		rm -f costf* divided.ctrl snapshot*
 	    fi
 	#- special DIVA processing ends here
 	    ( eval $COMMAND ) >> $RUNLOG 2>&1
