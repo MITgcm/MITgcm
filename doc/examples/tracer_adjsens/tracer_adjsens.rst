@@ -36,7 +36,7 @@ currents. The full equation for the time evolution
 
 also includes a source term :math:`S`. This term represents interior
 sources of :math:`C` such as would arise due to direct injection. The
-velocity term, :math:`U`, is the sum of the model Eulerian circulation
+velocity term, :math:`\boldsymbol{U}`, is the sum of the model Eulerian circulation
 and an eddy-induced velocity, the latter parameterized according to
 Gent/McWilliams (Gent and McWilliams 1990 :cite:`gen-mcw:90`; Gent et al. (1995) :cite:`gen-eta:95`). The
 convection function, :math:`\Gamma`, mixes :math:`C` vertically wherever

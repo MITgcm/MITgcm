@@ -139,8 +139,8 @@ of equations solved in this configuration as follows:
    :label: eg-global-model_equations_pcoord_uv
 
    \frac{Du}{Dt} - fv +
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial x} -
-     \boldsymbol{\nabla}_h( \cdot A_{h}\boldsymbol{\nabla}_h u )-
+     \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial x} -
+     \boldsymbol{\nabla}_h \cdot ( A_{h}\boldsymbol{\nabla}_h u )-
      (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial u}{\partial p}\right)
     &=
    \begin{cases}
@@ -149,8 +149,8 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{Dv}{Dt} + fu +
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial y} -
-     \boldsymbol{\nabla}_h (\cdot A_{h}\boldsymbol{\nabla}_h v) -
+     \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial y} -
+     \boldsymbol{\nabla}_h \cdot ( A_{h}\boldsymbol{\nabla}_h v) -
      (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial v}{\partial p}\right)
    &=
    \begin{cases}
@@ -173,21 +173,21 @@ of equations solved in this configuration as follows:
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{D s}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h s)
+   \frac{D S}{Dt} -
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h S)
     - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial S}{\partial p}\right)
    &=
    \begin{cases}
-   {\cal F}_s & \text{(surface)} \\
+   {\cal F}_S & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
 
 .. math::
    \Phi_{-H}'^{(0)} + \alpha_{0}p_{b}+ \int^{p}_{0}\alpha' dp = \Phi'
 
-where :math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
-:math:`v=\frac{Dy}{Dt}=r \frac{D \phi}{Dt}` are the zonal and meridional
-components of the flow vector, :math:`\vec{u}`, on the sphere. As
+where :math:`u = Dx/Dt = r \cos(\phi) D\lambda/Dt` and
+:math:`v = Dy/Dt = r D\phi/Dt` are the zonal and meridional
+components of the flow vector, :math:`\vec{\bf u}`, on the sphere. As
 described in :numref:`discret_algorithm`, the time evolution of potential
 temperature :math:`\theta` equation is solved prognostically. The full
 geopotential height :math:`\Phi` is diagnosed by summing the

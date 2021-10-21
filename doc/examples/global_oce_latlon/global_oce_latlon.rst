@@ -167,12 +167,12 @@ of equations solved in this configuration as follows:
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{D s}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h s)
-    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial s}{\partial z}\right)
+   \frac{D S}{Dt} -
+    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h S)
+    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial S}{\partial z}\right)
    &=
    \begin{cases}
-   {\cal F}_s & \text{(surface)} \\
+   {\cal F}_S & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
@@ -180,9 +180,9 @@ of equations solved in this configuration as follows:
 .. math::
    g\rho_{0} \eta + \int^{0}_{-z}\rho' dz = p'
 
-where :math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
-:math:`v=\frac{Dy}{Dt}=r \frac{D \phi}{Dt}` are the zonal and
-meridional components of the flow vector, :math:`\vec{u}`, on the
+where :math:`u = Dx/Dt = r \cos(\phi) D\lambda/Dt` and
+:math:`v = Dy/Dt = r D\phi/Dt` are the zonal and
+meridional components of the flow vector, :math:`\vec{\bf u}`, on the
 sphere. As described in :numref:`discret_algorithm`, the time evolution of
 potential temperature :math:`\theta` equation is solved
 prognostically. The total pressure :math:`p` is diagnosed by summing
@@ -248,10 +248,10 @@ which is below the :math:`S_{i} < 1` upper limit for stability.
 
 The advective CFL (Adcroft 1995 :cite:`adcroft:95`)
 for a extreme maximum horizontal flow
-speed of :math:`| \vec{u} |` = 2 m s\ :sup:`-1`
+speed of :math:`| \vec{\bf u} |` = 2 m s\ :sup:`-1`
 
 .. math::
-   S_{a} = \frac{| \vec{u} | \Delta t_{v}}{ \Delta x}
+   S_{a} = \frac{| \vec{\bf u} | \Delta t_{v}}{ \Delta x}
    :label: eg-global-cfl_stability
 
 evaluates to :math:`5 \times 10^{-2}`. This is

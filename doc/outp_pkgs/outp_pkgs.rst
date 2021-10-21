@@ -2124,8 +2124,8 @@ processes. Taking the ratio of :eq:`pv_eq14a` and
 .. math::
 
    \begin{aligned}
-     \frac{J^F_z}{J^B_Z} & = \frac{ \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma }
-     {-\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)} \\
+     \frac{J^F_z}{J^B_Z} & = \frac{ \dfrac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma }
+     {-\dfrac{f}{h}\left( \dfrac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)} \\
      &\simeq \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber
    \end{aligned}
 
@@ -2136,7 +2136,7 @@ where appears the lateral heat flux induced by Ekman currents:
    \begin{aligned}
      Q_{Ek} & = -\frac{C_w}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma
      \nonumber \\
-     & = \frac{C_w}{\alpha}\delta_e \vec{u}_{Ek} \cdot \boldsymbol{\nabla}\sigma\end{aligned}
+     & = \frac{C_w}{\alpha}\delta_e \vec{\bf u}_{Ek} \cdot \boldsymbol{\nabla}\sigma\end{aligned}
 
 which can be computed with the package. In the aim of comparing both
 processes, it will be useful to plot surface net and lateral
@@ -2490,9 +2490,9 @@ integrated “wind-driven buoyancy forcing”:
      B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
      - \frac{1}{h}\int_{-h}^0
-     \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \tau}{\partial z} \right) \cdot \boldsymbol{\nabla}\sigma_m dz \\
+     \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \boldsymbol{\tau}}{\partial z} \right) \cdot \boldsymbol{\nabla}\sigma_m dz \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
-     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times\tau \right) \cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
+     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times \boldsymbol{\tau} \right) \cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
 be written as:

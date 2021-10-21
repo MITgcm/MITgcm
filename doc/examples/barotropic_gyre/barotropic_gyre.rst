@@ -67,7 +67,7 @@ equations for this configuration as follows:
     :label: baro_model_eq_eta
 
 where :math:`u` and :math:`v` are the :math:`x` and :math:`y` components of the
-flow vector :math:`\vec{u}`, :math:`\eta` is the free surface height,
+flow vector :math:`\vec{\bf u}`, :math:`\eta` is the free surface height,
 :math:`A_{h}` the horizontal Laplacian viscosity, :math:`\rho_{c}` is the fluid density,
 and :math:`g` the acceleration due to gravity.
 
