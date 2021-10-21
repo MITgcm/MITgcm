@@ -17,8 +17,7 @@ C     !INTERFACE:
      I                           preproc_i,
      I                           preproc_r,
      I                           dummy,
-     I                           myThid
-     &                         )
+     I                           myThid )
 
 C     !DESCRIPTION: \bv
 C     reads and pre-processes bar file records
@@ -42,16 +41,15 @@ C     myThid:          thread number for this instance
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nz,nSx,nSy)
       _RL     active_tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nz,nSx,nSy)
       INTEGER iRec
-      INTEGER myThid
       INTEGER nz, nnzbar, nrecloc
-      _RL     dummy
       CHARACTER*(MAX_LEN_FNAM) preproc(NGENPPROC)
       CHARACTER*(MAX_LEN_FNAM) preproc_c(NGENPPROC)
       INTEGER preproc_i(NGENPPROC)
-      _RL preproc_r(NGENPPROC)
+      _RL     preproc_r(NGENPPROC)
+      _RL     dummy
+      INTEGER myThid
 
 #ifdef ALLOW_ECCO
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER nyearsINT
@@ -64,13 +62,15 @@ CEOP
 
 c--   Loop over month
        nyearsINT=int((nrecloc-irec)/preproc_i(1))+1
-       recip_nyearsRL=1. _d 0/float(nyearsINT)
+       recip_nyearsRL = nyearsINT
+       recip_nyearsRL = 1. _d 0/recip_nyearsRL
 
+       CALL ECCO_ZERO( active_var, nz, zeroRL, myThid )
        CALL ECCO_ZERO( active_tmp, nz, zeroRL, myThid )
        DO iyear=1,nyearsINT
         imon=irec+(iyear-1)*preproc_i(1)
         CALL ECCO_READBAR( active_var_file, active_var,
-     &       imon, nz, nnzbar, dummy, mythid )
+     &       imon, nz, nnzbar, dummy, myThid )
         DO bj = myByLo(myThid),myByHi(myThid)
          DO bi = myBxLo(myThid),myBxHi(myThid)
           DO k = 1,nnzbar
@@ -99,7 +99,7 @@ c--   Loop over month
        ENDDO
       ELSE
        CALL ECCO_READBAR( active_var_file, active_var,
-     &      irec, nz, nnzbar, dummy, mythid )
+     &      irec, nz, nnzbar, dummy, myThid )
       ENDIF
 
 #endif /* ALLOW_ECCO */
