@@ -165,18 +165,18 @@ dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 :math:`\frac{Dp_{o}(z)}{Dt}=-g\rho _{o}w` then leads to the anelastic continuity equation:
 
 .. math::
-    \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
+   \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
    \frac{g}{c_{s}^{2}}w = 0
    :label: eq-za-cont1
 
 A slightly different route leads to the quasi-Boussinesq continuity
 equation where we use the scaling
 :math:`\frac{\partial \rho ^{\prime }}{\partial t}+
- \nabla _{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll  \nabla 
+\nabla _{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll \nabla 
 _{3}\cdot \rho _{o}\vec{\mathbf{v}}` yielding:
 
 .. math::
-    \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
+   \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
    \partial \left( \rho _{o}w\right) }{\partial z} = 0
    :label: eq-za-cont2
 
