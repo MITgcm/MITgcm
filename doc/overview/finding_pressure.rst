@@ -40,21 +40,21 @@ The surface pressure equation can be obtained by integrating continuity,
 :eq:`continuity`, vertically from :math:`r=R_{\rm fixed}` to :math:`r=R_{\rm moving}`
 
 .. math::
-   \int_{R_{\rm fixed}}^{R_{\rm moving}}\left( \boldsymbol{\nabla}_{h}\cdot \vec{\mathbf{v}
+   \int_{R_{\rm fixed}}^{R_{\rm moving}}\left(  \nabla _{h}\cdot \vec{\mathbf{v}
    }_{h}+\partial _{r}\dot{r}\right) dr=0
 
 Thus:
 
 .. math::
-   \frac{\partial \eta }{\partial t}+\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} \eta
-   +\int_{R_{\rm fixed}}^{R_{\rm moving}}\boldsymbol{\nabla}_{h}\cdot \vec{\mathbf{v}}
+   \frac{\partial \eta }{\partial t}+\vec{\mathbf{v}} \cdot  \nabla  \eta
+   +\int_{R_{\rm fixed}}^{R_{\rm moving}} \nabla _{h}\cdot \vec{\mathbf{v}}
    _{h}dr=0
 
 where :math:`\eta =R_{\rm moving}-R_{o}` is the free-surface
 :math:`r`-anomaly in units of :math:`r`. The above can be rearranged to yield, using Leibnitz’s theorem:
 
 .. math::
-   \frac{\partial \eta }{\partial t}+\boldsymbol{\nabla}_{h}\cdot
+   \frac{\partial \eta }{\partial t}+ \nabla _{h}\cdot
    \int_{R_{\rm fixed}}^{R_{\rm moving}}\vec{\mathbf{v}}_{h}dr=\text{source}
    :label: free-surface
 
@@ -64,7 +64,7 @@ Whether :math:`\phi` is pressure (ocean model, :math:`p/\rho _{c}`) or
 geopotential (atmospheric model), in :eq:`mom-h`, the horizontal gradient term can be written
 
 .. math::
-   \boldsymbol{\nabla}_{h}\phi _{s}=\boldsymbol{\nabla}_{h}\left( b_{s}\eta \right)
+    \nabla _{h}\phi _{s}= \nabla _{h}\left( b_{s}\eta \right)
    :label: phi-surf
 
 where :math:`b_{s}` is the buoyancy at the surface.
@@ -82,9 +82,9 @@ Taking the horizontal divergence of :eq:`mom-h` and adding
 continuity equation :eq:`continuity`, we deduce that:
 
 .. math::
-   \nabla_{3}^{2}\phi _{\rm nh}= \boldsymbol{\nabla} \cdot \vec{\mathbf{G}}_{\vec{v}}-\left(
+   \nabla_{3}^{2}\phi _{\rm nh}=  \nabla  \cdot \vec{\mathbf{G}}_{\vec{v}}-\left(
    \nabla_{h}^{2}\phi _{s}+ \nabla^2 \phi _{\rm hyd}\right) = 
-   \boldsymbol{\nabla} \cdot \vec{\mathbf{F}}
+    \nabla  \cdot \vec{\mathbf{F}}
    :label: 3d-invert
 
 For a given rhs this 3-d elliptic equation must be inverted for
@@ -113,13 +113,13 @@ the momentum equations - see below.
 Eq. :eq:`nonormalflow` implies, making use of :eq:`mom-h`, that:
 
 .. math::
-   \hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi _{\rm nh}= \hat{\boldsymbol{n}} \cdot \vec{\mathbf{F}}
+   \hat{\boldsymbol{n}} \cdot  \nabla  \phi _{\rm nh}= \hat{\boldsymbol{n}} \cdot \vec{\mathbf{F}}
    :label: inhom-neumann-nh
 
 where
 
 .. math::
-   \vec{\mathbf{F}}=\vec{\mathbf{G}}_{\vec{v}}-\left( \boldsymbol{\nabla}_{h}\phi_{s}+\boldsymbol{\nabla}\phi _{\rm hyd}\right)
+   \vec{\mathbf{F}}=\vec{\mathbf{G}}_{\vec{v}}-\left(  \nabla _{h}\phi_{s}+ \nabla \phi _{\rm hyd}\right)
 
 presenting inhomogeneous Neumann boundary conditions to the Elliptic
 problem :eq:`3d-invert`. As shown, for example, by Williams (1969) :cite:`williams:69`, one
@@ -128,16 +128,16 @@ appropriately chosen :math:`\delta`-function sheet of ‘source-charge’,
 replace the inhomogeneous boundary condition on pressure by a
 homogeneous one. The source term :math:`rhs` in :eq:`3d-invert` is the
 divergence of the vector :math:`\vec{\mathbf{F}}`. By simultaneously setting :math:`\hat{\boldsymbol{n}} \cdot \vec{\mathbf{F}}=0` 
-and :math:`\hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi_{\rm nh}=0\ `\ on the boundary the
+and :math:`\hat{\boldsymbol{n}} \cdot  \nabla  \phi_{\rm nh}=0\ `\ on the boundary the
 following self-consistent but simpler homogenized Elliptic problem is obtained:
 
-.. math:: \nabla ^{2}\phi _{\rm nh}=\boldsymbol{\nabla} \cdot \widetilde{\vec{\mathbf{F}}}\qquad
+.. math:: \nabla ^{2}\phi _{\rm nh}= \nabla  \cdot \widetilde{\vec{\mathbf{F}}}\qquad
 
 where :math:`\widetilde{\vec{\mathbf{F}}}` is a modified :math:`\vec{\mathbf{F}}` 
 such that :math:`\widetilde{\vec{\mathbf{F}}} \cdot \hat{\boldsymbol{n}} =0`. As is implied by
 :eq:`inhom-neumann-nh` the modified boundary condition becomes:
 
-.. math:: \hat{\boldsymbol{n}} \cdot \boldsymbol{\nabla} \phi _{\rm nh}=0
+.. math:: \hat{\boldsymbol{n}} \cdot  \nabla  \phi _{\rm nh}=0
    :label: hom-neumann-nh
 
 If the flow is ‘close’ to hydrostatic balance then the 3-d inversion

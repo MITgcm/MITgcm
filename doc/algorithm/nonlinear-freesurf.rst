@@ -217,13 +217,13 @@ the barotropic part (to find :math:`\eta`) and baroclinic part (to find
 To illustrate this, consider the shallow water model, with a source of
 fresh water (:math:`\mathcal{P}`):
 
-.. math:: \partial_t h + \boldsymbol{\nabla} \cdot h \vec{\bf v} = \mathcal{P}
+.. math:: \partial_t h +  \nabla  \cdot h \vec{\bf v} = \mathcal{P}
 
 where :math:`h` is the total thickness of the water column. To conserve
 the tracer :math:`\theta` we have to discretize:
 
 .. math::
-   \partial_t (h \theta) + \boldsymbol{\nabla} \cdot ( h \theta \vec{\bf v})
+   \partial_t (h \theta) +  \nabla  \cdot ( h \theta \vec{\bf v})
      = \mathcal{P} \theta_{\mathrm{rain}}
 
 Using the implicit (non-linear) free surface described above
@@ -231,7 +231,7 @@ Using the implicit (non-linear) free surface described above
 
 .. math::
    \begin{aligned}
-   h^{n+1} = h^{n} - \Delta t \boldsymbol{\nabla} \cdot (h^n \, \vec{\bf v}^{n+1} ) + \Delta t \mathcal{P} \\\end{aligned}
+   h^{n+1} = h^{n} - \Delta t  \nabla  \cdot (h^n \, \vec{\bf v}^{n+1} ) + \Delta t \mathcal{P} \\\end{aligned}
 
 The discretized form of the tracer equation must adopt the same “form”
 in the computation of tracer fluxes, that is, the same value of
@@ -240,7 +240,7 @@ in the computation of tracer fluxes, that is, the same value of
 .. math::
    \begin{aligned}
    h^{n+1} \, \theta^{n+1} = h^n \, \theta^n
-           - \Delta t \boldsymbol{\nabla} \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
+           - \Delta t  \nabla  \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
            + \Delta t \mathcal{P} \theta_{rain}\end{aligned}
 
 The use of a 3 time-levels time-stepping scheme such as the
@@ -256,7 +256,7 @@ formulation (with the “*surface correction*” turned “on”, see tracer
 section):
 
 .. math::
-   G_\theta^n = \left(- \boldsymbol{\nabla} \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
+   G_\theta^n = \left(-  \nabla  \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
             - \dot{r}_{surf}^{n+1} \theta^n \right) / h^n
 
 Then, in a second step, the thickness variation (expansion/reduction)
@@ -268,7 +268,7 @@ is taken into account:
 
 Note that with a simple forward time step (no Adams-Bashforth), these
 two formulations are equivalent, since
-:math:`(h^{n+1} - h^{n})/ \Delta t = \mathcal{P} - \boldsymbol{\nabla} \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{surf}^{n+1}`
+:math:`(h^{n+1} - h^{n})/ \Delta t = \mathcal{P} -  \nabla  \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{surf}^{n+1}`
 
 .. _nonlin-freesurf-timestepping:
 
@@ -319,9 +319,9 @@ r-coordinate.
      \begin{aligned}
      \eta^{n+1/2} \hspace{-1mm} & =
      \eta^{n-1/2} + \Delta t P^{n+1/2} - \Delta t
-     \boldsymbol{\nabla} \cdot \int \vec{\bf v}^{n+1/2} dh^{n} \\
+      \nabla  \cdot \int \vec{\bf v}^{n+1/2} dh^{n} \\
      & = \eta^{n-1/2} + \Delta t P^{n+1/2} - \Delta t
-     \boldsymbol{\nabla} \cdot \int \!\!\! \left( \vec{\bf v}^* - g \Delta t \nabla \eta^{n+1/2} \right) dh^{n}\end{aligned}
+      \nabla  \cdot \int \!\!\! \left( \vec{\bf v}^* - g \Delta t \nabla \eta^{n+1/2} \right) dh^{n}\end{aligned}
      :label: nstar-nlfs
 
   .. math::
@@ -331,7 +331,7 @@ r-coordinate.
 
   .. math::
      h^{n+1} = h^{n} + \Delta t P^{n+1/2} - \Delta t
-       \boldsymbol{\nabla} \cdot \int \vec{\bf v}^{n+1/2} dh^{n}
+        \nabla  \cdot \int \vec{\bf v}^{n+1/2} dh^{n}
      :label: h-n+1-nlfs
 
   .. math::

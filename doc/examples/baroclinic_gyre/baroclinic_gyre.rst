@@ -98,14 +98,14 @@ coordinates as follows:
 .. math::
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} +
    \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} +
-   \boldsymbol{\nabla}_h \cdot (-A_{h} \boldsymbol{\nabla}_h u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
+    \nabla _h \cdot (-A_{h}  \nabla _h u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    =  \mathcal{F}_u
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
    \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} +
-   \boldsymbol{\nabla}_h \cdot (-A_{h} \boldsymbol{\nabla}_h v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
+    \nabla _h \cdot (-A_{h}  \nabla _h v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    = \mathcal{F}_v
    :label: baroc_gyre_vmom
 
@@ -115,7 +115,7 @@ coordinates as follows:
    :label: baroc_gyre_cont
 
 .. math::
-   \frac{D\theta}{Dt} + \boldsymbol{\nabla}_h \cdot (-\kappa_{h} \boldsymbol{\nabla}_h \theta)
+   \frac{D\theta}{Dt} +  \nabla _h \cdot (-\kappa_{h}  \nabla _h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: barooc_gyre_theta
@@ -1214,7 +1214,7 @@ from tutorial :ref:`sec_eg_baro`, when our model grid was only a single layer in
 Is the magnitude of :math:`\Psi`
 we obtain in our solution reasonable? To check this, consider the Sverdrup transport:
 
-.. math:: \rho v_{\rm bt} = \hat{\boldsymbol{k}} \cdot \frac{\boldsymbol{\nabla} \times \vec{\boldsymbol{\tau}}}{\beta}
+.. math:: \rho v_{\rm bt} = \hat{\boldsymbol{k}} \cdot \frac{ \nabla  \times \vec{\boldsymbol{\tau}}}{\beta}
 
 If we plug in a typical mid-latitude value for :math:`\beta` (:math:`2 \times 10^{-11}` m\ :sup:`-1` s\ :sup:`-1`)
 and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`-2` over :math:`15^{\circ}` latitude,

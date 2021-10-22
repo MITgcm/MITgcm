@@ -139,9 +139,9 @@ configuration:
 .. math::
    \frac{\partial \vec{\mathbf{v}}_h}{\partial t}
    +(f + \zeta)\hat{\boldsymbol{k}} \times \vec{\mathbf{v}}_h
-   +\boldsymbol{\nabla}_{p} (\rm{KE})
+   + \nabla _{p} (\rm{KE})
    + \omega \frac{\partial \vec{\mathbf{v}}_h }{\partial p}
-   +\boldsymbol{\nabla}_p \Phi ^{\prime }
+   + \nabla _p \Phi ^{\prime }
    = -k_\mathbf{v}\vec{\mathbf{v}}_h
    :label: eg-hs-model_equations
 
@@ -150,12 +150,12 @@ configuration:
    +\frac{\partial \Pi }{\partial p}\theta ^{\prime } =0
 
 .. math::
-   \boldsymbol{\nabla}_{p}\cdot \vec{\mathbf{v}}_h+\frac{\partial \omega }{
+    \nabla _{p}\cdot \vec{\mathbf{v}}_h+\frac{\partial \omega }{
    \partial p} =0
 
 .. math::
    \frac{\partial \theta }{\partial t}
-   + \boldsymbol{\nabla}_{p}\cdot (\theta \vec{\mathbf{v}}_h)
+   +  \nabla _{p}\cdot (\theta \vec{\mathbf{v}}_h)
    + \frac{\partial (\theta \omega)}{\partial p}
    = -k_{\theta}[\theta-\theta_{eq}]
 

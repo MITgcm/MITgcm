@@ -43,7 +43,7 @@ Advection and tracer transport
 In general, the tracer problem we want to solve can be written
 
 .. math::
-   \frac{\partial C}{\partial t} = -\boldsymbol{U} \cdot \boldsymbol{\nabla} C + S
+   \frac{\partial C}{\partial t} = -\boldsymbol{U} \cdot  \nabla  C + S
    :label: eg-adv-gyre-generic-tracer
 
 where :math:`C` is the tracer concentration in a model cell, :math:`\boldsymbol{U}=(u,v,w)`
@@ -57,7 +57,7 @@ of mixing. In this section we are primarily concerned with
 
 #. how to introduce the tracer term, :math:`C`, into an integration
 
-#. the different discretized forms of the :math:`-\boldsymbol{U} \cdot \boldsymbol{\nabla} C` term
+#. the different discretized forms of the :math:`-\boldsymbol{U} \cdot  \nabla  C` term
    that are available
 
 Introducing a tracer into the flow

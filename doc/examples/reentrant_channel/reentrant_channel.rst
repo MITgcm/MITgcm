@@ -105,21 +105,21 @@ here we use standard Cartesian geometry rather than spherical polar coordinates:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial x} +
-     \boldsymbol{\nabla}_h \cdot ( -A_{h} \boldsymbol{\nabla}_h u ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h u ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    &= \mathcal{F}_u
      \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial y} +
-     \boldsymbol{\nabla}_h \cdot ( -A_{h} \boldsymbol{\nabla}_h v ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h v ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    &= \mathcal{F}_v
  
 .. math::
-      \frac{\partial \eta}{\partial t} + \boldsymbol{\nabla}_h \cdot \left( H \vec{\widehat{\bf u}} \right) = 0 
+      \frac{\partial \eta}{\partial t} +  \nabla _h \cdot \left( H \vec{\widehat{\bf u}} \right) = 0 
 
 .. math::
-   \frac{D\theta}{Dt} + \boldsymbol{\nabla}_h \cdot (-\kappa_{h} \boldsymbol{\nabla}_h \theta)
+   \frac{D\theta}{Dt} +  \nabla _h \cdot (-\kappa_{h}  \nabla _h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: channel_model_theta

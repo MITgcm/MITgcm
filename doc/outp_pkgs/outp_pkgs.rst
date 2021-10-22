@@ -1999,7 +1999,7 @@ The package computes the three components of the relative vorticity,
 
 .. math::
    \begin{aligned}
-     \boldsymbol{\omega} &= \boldsymbol{\nabla} \times {\bf U}
+     \boldsymbol{\omega} &=  \nabla  \times {\bf U}
      = \begin{pmatrix}
          \omega_x\\
          \omega_y\\
@@ -2020,7 +2020,7 @@ The package then computes the potential vorticity as:
 
 .. math::
    \begin{aligned}
-   Q &= -\frac{1}{\rho} \boldsymbol{\omega} \cdot \boldsymbol{\nabla}\sigma_\theta\\
+   Q &= -\frac{1}{\rho} \boldsymbol{\omega} \cdot  \nabla \sigma_\theta\\
      &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
    \omega_y \frac{\partial \sigma_\theta}{\partial y} +
    \left(f + \zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right)
@@ -2055,7 +2055,7 @@ by:
    :label: pv_eq14a
 
 .. math::
-   J^F_z = \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma_m
+   J^F_z = \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma_m
   :label: pv_eq15a
 
 These components can be computed with the package. Details on the
@@ -2084,7 +2084,7 @@ triggering mixing which reduces the stratification and then the PV.
    \begin{aligned}
      Q_{net} &< 0 \phantom{WWW}\text{(upward, cooling)} \\
      J^B_z   &> 0 \phantom{WWW}\text{(upward)} \\
-     -\rho^{-1}\boldsymbol{\nabla} \cdot J^B_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
+     -\rho^{-1} \nabla  \cdot J^B_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
      PV &\searrow \phantom{WWWi}\text{where } Q_{net}<0 \end{aligned}
 
 
@@ -2107,10 +2107,10 @@ mixing which reduces the stratification and the PV.
 
 .. math::
    \begin{aligned}
-    (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla} \sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
+    (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla  \sigma &> 0 \phantom{WWW}\text{("Down-front" wind)} \\
     J^F_z &> 0 \phantom{WWW}\text{(upward)} \\
-     -\rho^{-1} \boldsymbol{\nabla} \cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
-     PV &\searrow \phantom{WWW}\text{where } (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma>0
+     -\rho^{-1}  \nabla  \cdot J^F_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
+     PV &\searrow \phantom{WWW}\text{where } (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma>0
    \end{aligned}
 
 
@@ -2124,7 +2124,7 @@ processes. Taking the ratio of :eq:`pv_eq14a` and
 .. math::
 
    \begin{aligned}
-     \frac{J^F_z}{J^B_Z} & = \frac{ \dfrac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma }
+     \frac{J^F_z}{J^B_Z} & = \frac{ \dfrac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma }
      {-\dfrac{f}{h}\left( \dfrac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)} \\
      &\simeq \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber
    \end{aligned}
@@ -2134,9 +2134,9 @@ where appears the lateral heat flux induced by Ekman currents:
 .. math::
 
    \begin{aligned}
-     Q_{Ek} & = -\frac{C_w}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma
+     Q_{Ek} & = -\frac{C_w}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma
      \nonumber \\
-     & = \frac{C_w}{\alpha}\delta_e \vec{\bf u}_{Ek} \cdot \boldsymbol{\nabla}\sigma\end{aligned}
+     & = \frac{C_w}{\alpha}\delta_e \vec{\bf u}_{Ek} \cdot  \nabla \sigma\end{aligned}
 
 which can be computed with the package. In the aim of comparing both
 processes, it will be useful to plot surface net and lateral
@@ -2290,7 +2290,7 @@ The conservative flux form of the potential vorticity equation is:
 
 .. math::
    \begin{aligned}
-   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{\bf J} & = 0
+   \frac{\partial \rho Q}{\partial t} +  \nabla  \cdot \vec{\bf J} & = 0
    \end{aligned}
    :label: pv_eq4
 
@@ -2307,7 +2307,7 @@ which allows to rewrite :eq:`pv_eq4` as:
 
 .. math::
    \begin{aligned}
-   \frac{DQ}{dt} & = - \frac{1}{\rho}\boldsymbol{\nabla} \cdot \vec{\bf N}_Q
+   \frac{DQ}{dt} & = - \frac{1}{\rho} \nabla  \cdot \vec{\bf N}_Q
    \end{aligned}
    :label: pv_eq5
 
@@ -2315,7 +2315,7 @@ where the non-advective PV flux :math:`\vec{N_Q}` is given by:
 
 .. math::
    \begin{aligned}
-   \vec{\bf N}_Q & = -\frac{\rho_0}{g}B \vec{\boldsymbol{\omega}}_a + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta
+   \vec{\bf N}_Q & = -\frac{\rho_0}{g}B \vec{\boldsymbol{\omega}}_a + \vec{\bf F} \times  \nabla  \sigma_\theta
    \end{aligned}
    :label: pv_eq6
 
@@ -2330,14 +2330,14 @@ and the second one to the non-conservative body forces per unit mass:
 
 .. math::
    \begin{aligned}
-    \vec{\bf F} & = \frac{D \vec{\bf u}}{Dt} + 2 \vec{\boldsymbol{\Omega}} \times \vec{\bf u} + \boldsymbol{\nabla} p
+    \vec{\bf F} & = \frac{D \vec{\bf u}}{Dt} + 2 \vec{\boldsymbol{\Omega}} \times \vec{\bf u} +  \nabla  p
    \end{aligned}
 
 Note that introducing :math:`B` into :eq:`pv_eq6` yields:
 
    .. math::
       \begin{aligned}
-        \vec{\bf N}_Q & = \boldsymbol{\omega}_a \frac{D \sigma_\theta}{dt} + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta
+        \vec{\bf N}_Q & = \boldsymbol{\omega}_a \frac{D \sigma_\theta}{dt} + \vec{\bf F} \times  \nabla  \sigma_\theta
       \end{aligned}
 
 
@@ -2360,9 +2360,9 @@ package) and of hydrostatic and geostrophic balances, we can write:
 
 .. math::
    \begin{aligned}
-     \vec{\bf u}_g & = \frac{1}{\rho f} \hat{\boldsymbol{k}} \times \boldsymbol{\nabla} p \\
+     \vec{\bf u}_g & = \frac{1}{\rho f} \hat{\boldsymbol{k}} \times  \nabla  p \\
      \frac{\partial p_m}{\partial z} & = -\sigma_m g \\
-     \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_m \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g}B
+     \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_m \cdot  \nabla  \sigma_m & = -\frac{\rho_0}{g}B
    \end{aligned}
    :label: pv_eq7
 
@@ -2398,22 +2398,22 @@ and using :eq:`pv_eq8` and :eq:`pv_eq9`, :eq:`pv_eq7` becomes:
 
 .. math::
    \begin{aligned}
-    \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_g \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g} B_g
+    \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_g \cdot  \nabla  \sigma_m & = -\frac{\rho_0}{g} B_g
    \end{aligned}
 
 revealing the “wind-driven buoyancy forcing”:
 
 .. math::
    \begin{aligned}
-     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m
+     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot  \nabla \sigma_m
    \end{aligned}
 
 Note that since:
 
 .. math::
    \begin{aligned}
-     \frac{\partial B_g}{\partial z} & = \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0} \vec{\bf u}_g \cdot \boldsymbol{\nabla}\sigma_m\right)
-     = -\frac{g}{\rho_0}\frac{\partial \vec{\bf u}_g}{\partial z} \cdot \boldsymbol{\nabla} \sigma_m
+     \frac{\partial B_g}{\partial z} & = \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0} \vec{\bf u}_g \cdot  \nabla \sigma_m\right)
+     = -\frac{g}{\rho_0}\frac{\partial \vec{\bf u}_g}{\partial z} \cdot  \nabla  \sigma_m
      = 0
    \end{aligned}
 
@@ -2458,16 +2458,16 @@ the vertical component of :eq:`pv_eq6` is:
    \begin{aligned}
      \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= -\frac{\rho_0}{g}(B_g+B_{Ek}) \omega_z
      + \frac{1}{\rho}
-     \left( \frac{\partial \boldsymbol{\tau}}{\partial z} \times \boldsymbol{\nabla} \sigma_\theta \right) \cdot \hat{\boldsymbol{k}} \\
+     \left( \frac{\partial \boldsymbol{\tau}}{\partial z} \times  \nabla  \sigma_\theta \right) \cdot \hat{\boldsymbol{k}} \\
      &= -\frac{\rho_0}{g}B_g\omega_z
      -\frac{\rho_0}{g}
      \left[ \frac{g}{\rho_0}\frac{1}{\rho f} \left( \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z} \right)
-       \cdot \boldsymbol{\nabla}\sigma_m \right]\omega_z
+       \cdot  \nabla \sigma_m \right]\omega_z
      + \frac{1}{\rho}
-     \left( \frac{\partial \boldsymbol{\tau}}{\partial z}\times\boldsymbol{\nabla} \sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\\
+     \left( \frac{\partial \boldsymbol{\tau}}{\partial z}\times \nabla  \sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\\
      &= -\frac{\rho_0}{g}B_g\omega_z
      + \left(1-\frac{\omega_z}{f}\right)\left(\frac{1}{\rho}\frac{\partial \boldsymbol{\tau}}{\partial z}
-                   \times\boldsymbol{\nabla}\sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\end{aligned}
+                   \times \nabla \sigma_\theta \right)\cdot\hat{\boldsymbol{k}}\end{aligned}
 
 and given the assumption that :math:`\omega_z\simeq f`, the second term
 vanishes and we obtain:
@@ -2490,9 +2490,9 @@ integrated “wind-driven buoyancy forcing”:
      B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
      - \frac{1}{h}\int_{-h}^0
-     \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \boldsymbol{\tau}}{\partial z} \right) \cdot \boldsymbol{\nabla}\sigma_m dz \\
+     \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \boldsymbol{\tau}}{\partial z} \right) \cdot  \nabla \sigma_m dz \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
-     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times \boldsymbol{\tau} \right) \cdot \boldsymbol{\nabla}\sigma_m\end{aligned}
+     - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times \boldsymbol{\tau} \right) \cdot  \nabla \sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
 be written as:
@@ -2501,7 +2501,7 @@ be written as:
    \begin{aligned}
      \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
-     J^F_z &= \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}}\times \boldsymbol{\tau}) \cdot \boldsymbol{\nabla}\sigma_m \end{aligned}
+     J^F_z &= \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}}\times \boldsymbol{\tau}) \cdot  \nabla \sigma_m \end{aligned}
 
 .. _sub_outp_pkg_flt:
 

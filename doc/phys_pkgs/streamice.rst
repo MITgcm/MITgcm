@@ -365,7 +365,7 @@ From the velocity field, thickness evolves according to the continuity
 equation:
 
 .. math::
-   h_t + \boldsymbol{\nabla} \cdot(h\vec{u}) = \dot{a}-\dot{b}
+   h_t +  \nabla  \cdot(h\vec{u}) = \dot{a}-\dot{b}
    :label: adv_eqn
 
 Where :math:`\dot{b}` is a basal mass balance (e.g., melting due to

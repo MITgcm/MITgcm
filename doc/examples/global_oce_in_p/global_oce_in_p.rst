@@ -140,7 +140,7 @@ of equations solved in this configuration as follows:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial x} -
-     \boldsymbol{\nabla}_h \cdot ( A_{h}\boldsymbol{\nabla}_h u )-
+      \nabla _h \cdot ( A_{h} \nabla _h u )-
      (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial u}{\partial p}\right)
     &=
    \begin{cases}
@@ -150,7 +150,7 @@ of equations solved in this configuration as follows:
    \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial y} -
-     \boldsymbol{\nabla}_h \cdot ( A_{h}\boldsymbol{\nabla}_h v) -
+      \nabla _h \cdot ( A_{h} \nabla _h v) -
      (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial v}{\partial p}\right)
    &=
    \begin{cases}
@@ -159,13 +159,13 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-  \frac{\partial p_{b}}{\partial t} + \boldsymbol{\nabla}_h \cdot \vec{\bf u} = 0
+  \frac{\partial p_{b}}{\partial t} +  \nabla _h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_pcoord_ts
 
    \frac{D\theta}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h \theta)
+     \nabla _h \cdot (K_{h} \nabla _h \theta)
     - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial\theta}{\partial p}\right)
    &=
    \begin{cases}
@@ -174,7 +174,7 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{D S}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h S)
+     \nabla _h \cdot (K_{h} \nabla _h S)
     - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial S}{\partial p}\right)
    &=
    \begin{cases}

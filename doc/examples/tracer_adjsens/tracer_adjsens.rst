@@ -31,7 +31,7 @@ currents. The full equation for the time evolution
 
 .. math::
    \frac{\partial C}{\partial t} \, = \,
-   -\boldsymbol{U} \cdot \boldsymbol{\nabla} C \, - \, \mu C \, + \, \Gamma(C) \,+ \, S
+   -\boldsymbol{U} \cdot  \nabla  C \, - \, \mu C \, + \, \Gamma(C) \,+ \, S
    :label: carbon_ddt
 
 also includes a source term :math:`S`. This term represents interior

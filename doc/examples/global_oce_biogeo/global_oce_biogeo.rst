@@ -63,7 +63,7 @@ comes from chemical and biological sources and sinks. For any tracer
 
 .. math::
 
-   \frac{\partial A}{\partial t}=-\boldsymbol{\nabla} \cdot (\vec{u^{*}} A)+\boldsymbol{\nabla} \cdot
+   \frac{\partial A}{\partial t}=- \nabla  \cdot (\vec{u^{*}} A)+ \nabla  \cdot
      (\mathbf{K}\nabla A)+S_A \nonumber
 
 where :math:`\vec{u^{*}}` is the transformed Eulerian mean circulation

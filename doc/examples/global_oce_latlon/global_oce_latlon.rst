@@ -134,7 +134,7 @@ of equations solved in this configuration as follows:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho}\frac{\partial p'}{\partial x} -
-     \boldsymbol{\nabla}_h \cdot (A_{h}\boldsymbol{\nabla}_h u) -
+      \nabla _h \cdot (A_{h} \nabla _h u) -
      \frac{\partial}{\partial z}\left(A_{z}\frac{\partial u}{\partial z}\right)
    &=
    \begin{cases}
@@ -144,7 +144,7 @@ of equations solved in this configuration as follows:
    \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho}\frac{\partial p'}{\partial y} -
-     \boldsymbol{\nabla}_h \cdot (A_{h}\boldsymbol{\nabla}_h v) -
+      \nabla _h \cdot (A_{h} \nabla _h v) -
      \frac{\partial}{\partial z}\left(A_{z}\frac{\partial v}{\partial z}\right)
    &=
    \begin{cases}
@@ -153,13 +153,13 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-      \frac{\partial \eta}{\partial t} + \boldsymbol{\nabla}_h \cdot \vec{\bf u} = 0
+      \frac{\partial \eta}{\partial t} +  \nabla _h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_ts
 
    \frac{D\theta}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h \theta)
+     \nabla _h \cdot (K_{h} \nabla _h \theta)
     - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial\theta}{\partial z}\right)
    &=
    \begin{cases}
@@ -168,7 +168,7 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{D S}{Dt} -
-    \boldsymbol{\nabla}_h \cdot (K_{h}\boldsymbol{\nabla}_h S)
+     \nabla _h \cdot (K_{h} \nabla _h S)
     - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial S}{\partial z}\right)
    &=
    \begin{cases}

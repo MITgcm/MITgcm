@@ -486,7 +486,7 @@ gradient (or tilt) of the sea surface height; :math:`\phi(0) = g\eta +
 p_{a}/\rho_{0} + mg/\rho_{0}` is the sea surface height potential in response
 to ocean dynamics (:math:`g\eta`), to atmospheric pressure loading
 (:math:`p_{a}/\rho_{0}`, where :math:`\rho_{0}` is a reference density) and a
-term due to snow and ice loading ; and :math:`\mathbf{F}=\boldsymbol{\nabla} \cdot\sigma` is
+term due to snow and ice loading ; and :math:`\mathbf{F}= \nabla  \cdot\sigma` is
 the divergence of the internal ice stress tensor :math:`\sigma_{ij}`.
 Advection of sea-ice momentum is neglected. The wind and ice-ocean stress terms
 are given by
@@ -1089,7 +1089,7 @@ al. 2015 :cite:`kimmritz:15`, the evolution equations of stress
 
 .. math::
    \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
-   \Big(\frac{\Delta t}{m}\boldsymbol{\nabla} \cdot\boldsymbol{\sigma}^{p+1}+
+   \Big(\frac{\Delta t}{m} \nabla  \cdot\boldsymbol{\sigma}^{p+1}+
    \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
      -\mathbf{u}^p\Big)
    :label: eq_evpstarmom
@@ -1471,7 +1471,7 @@ are advected by ice velocities:
 
 .. math::
    \frac{\partial{X}}{\partial{t}} =
-	 - \boldsymbol{\nabla} \cdot\left(\mathbf{u}\,X\right) + \Gamma_{X} + D_{X}
+	 -  \nabla  \cdot\left(\mathbf{u}\,X\right) + \Gamma_{X} + D_{X}
    :label: eq_advection
 
 where :math:`\Gamma_X` are the thermodynamic source terms and :math:`D_{X}` the
@@ -1535,7 +1535,7 @@ thickness :math:`h` following the evolution equation
 
 
 .. math::
-   \frac{\partial g}{\partial t} = - \boldsymbol{\nabla} \cdot (\mathbf{u} g) - \frac{\partial}{\partial h}(fg) + \Psi.
+   \frac{\partial g}{\partial t} = -  \nabla  \cdot (\mathbf{u} g) - \frac{\partial}{\partial h}(fg) + \Psi.
    :label: eq_itd
 
 

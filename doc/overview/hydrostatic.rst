@@ -13,8 +13,8 @@ non-hydrostatic terms:
 and write :eq:`horiz-mtm` in the form:
 
 .. math::
-   \frac{\partial \vec{\mathbf{v}}_{h}}{\partial t}+\boldsymbol{\nabla}_{h}\phi
-   _{s}+\boldsymbol{\nabla}_{h}\phi _{\rm hyd}+\epsilon _{\rm nh}\boldsymbol{\nabla}_{h}\phi
+   \frac{\partial \vec{\mathbf{v}}_{h}}{\partial t}+ \nabla _{h}\phi
+   _{s}+ \nabla _{h}\phi _{\rm hyd}+\epsilon _{\rm nh} \nabla _{h}\phi
    _{\rm nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
    :label: mom-h
 
@@ -37,7 +37,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gu-spherical
 
-   G_{u} = & -\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} u && \qquad \text{advection} 
+   G_{u} = & -\vec{\mathbf{v}} \cdot  \nabla  u && \qquad \text{advection} 
 
    & -\left\{ \underline{\frac{u\dot{r}}{{r}}}-\frac{uv\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -48,7 +48,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gv-spherical
 
-   G_{v} = & -\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} v && \qquad \text{advection}
+   G_{v} = & -\vec{\mathbf{v}} \cdot  \nabla  v && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{v\dot{r}}{{r}}}-\frac{u^{2}\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -59,7 +59,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gw-spherical
 
-   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}} \cdot \boldsymbol{\nabla} \dot{r}}} && \qquad \text{advection}
+   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}} \cdot  \nabla  \dot{r}}} && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{u^{_{^{2}}}+v^{2}}{{r}}}\right\} && \qquad \text{metric}    
 
