@@ -46,11 +46,11 @@ mass flux, is a linear function of height, expressed as:
 .. math::
 
    \pp{\eta(z)}{z} = \lambda \hspace{0.4cm} \text{or} \hspace{0.4cm} \pp{\eta(P^{\kappa})}{P^{\kappa}} = 
-   -\frac{c_p}{g} \theta \lambda,
+   -\frac{c_p}{g} \theta \lambda
 
 where we have used the hydrostatic equation written in the form:
 
-.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g} \theta.
+.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g} \theta
 
 The entrainment parameter, :math:`\lambda`, characterizes a particular
 subensemble based on its detrainment level, and is obtained by assuming
@@ -59,7 +59,7 @@ level at which the moist static energy of the cloud, :math:`h_c`, is
 equal to the saturation moist static energy of the environment,
 :math:`h^*`. Following :cite:`moorsz:92`, :math:`\lambda` may be written as
 
-.. math:: \lambda = \frac{h_B - h^*_D}{\dfrac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}},
+.. math:: \lambda = \frac{h_B - h^*_D}{\frac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}}
 
 where the subscript :math:`B` refers to cloud base, and the subscript
 :math:`D` refers to the detrainment level.
@@ -73,7 +73,7 @@ environment:
 .. math::
 
    A = \int_{P_D}^{P_B} \frac{\eta}{1 + \gamma}
-   \left[ \frac{h_c-h^*}{P^{\kappa}} \right] dP^{\kappa},
+   \left[ \frac{h_c-h^*}{P^{\kappa}} \right] dP^{\kappa}
 
 where :math:`\gamma` is :math:`\frac{L}{c_p}\pp{q^*}{T}` obtained from
 the Claussius Clapeyron equation, and the subscript :math:`c` refers to
@@ -85,7 +85,7 @@ balance the rate of change of :math:`A` *due to the generation by the
 large scale*. This is the quasi-equilibrium assumption, and results in
 an expression for :math:`m_B`:
 
-.. math:: m_B = \dfrac{- \left. \frac{dA}{dt} \right|_{ls}}{K},
+.. math:: m_B = \dfrac{- \left. \frac{dA}{dt} \right|_{ls}}{K}
 
 where :math:`K` is the cloud kernel, defined as the rate of change of
 the cloud work function per unit cloud base mass flux, and is currently
@@ -103,11 +103,11 @@ convection on the large scale fields of temperature (through latent
 heating and compensating subsidence) and moisture (through precipitation
 and detrainment):
 
-.. math:: \left.{\pp{\theta}{t}}\right|_{c} = \alpha \frac{ m_B}{c_p P^{\kappa}} \eta \pp{s}{p},
+.. math:: \left.{\pp{\theta}{t}}\right|_{c} = \alpha \frac{ m_B}{c_p P^{\kappa}} \eta \pp{s}{p}
 
 and
 
-.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{m_B}{L} \eta \left( \pp{h}{p}-\pp{s}{p} \right),
+.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{m_B}{L} \eta \left( \pp{h}{p}-\pp{s}{p} \right)
 
 where :math:`\theta = \frac{T}{P^{\kappa}}`, :math:`P = (p/p_0)`, and
 :math:`\alpha` is the relaxation parameter.
@@ -153,7 +153,7 @@ the cumulus and large-scale parameterizations. Convective cloud
 fractions produced by RAS are proportional to the detrained liquid water
 amount given by
 
-.. math:: F_{RAS} = \min\left[ \frac{l_{RAS}}{l_c}, 1.0 \right],
+.. math:: F_{RAS} = \min\left[ \frac{l_{RAS}}{l_c}, 1.0 \right]
 
 where :math:`l_c` is an assigned critical value equal to :math:`1.25`
 g/kg. A memory is associated with convective clouds defined by:
@@ -169,7 +169,7 @@ cleared when they fall below 5%.
 Large-scale cloudiness is defined, following Slingo and Ritter (1985),
 as a function of relative humidity:
 
-.. math:: F_{LS} = \min\left[ { \left( \frac{RH-RH_c}{1-RH_c} \right) }^2 \, , \, 1 \right],
+.. math:: F_{LS} = \min\left[ { \left( \frac{RH-RH_c}{1-RH_c} \right) }^2 \, , \, 1 \right]
 
 where
 
@@ -198,7 +198,7 @@ form of :math:`RH_c` is shown in :numref:`rhcrit`
 The total cloud fraction in a grid box is determined by the larger of
 the two cloud fractions:
 
-.. math:: F_{CLD} = \max \left[ F_{RAS} \, , \, F_{LS} \right].
+.. math:: F_{CLD} = \max \left[ F_{RAS} \, , \, F_{LS} \right]
 
 Finally, cloud fractions are time-averaged between calls to the
 radiation packages.
@@ -220,11 +220,11 @@ and :math:`F^\downarrow` is the downward flux.
 
 The heating rate due to the divergence of the radiative flux is given by
 
-.. math:: \pp{\rho c_p T}{t} = - \pp{F}{z},
+.. math:: \pp{\rho c_p T}{t} = - \pp{F}{z}
 
 or
 
-.. math:: \pp{T}{t} = \frac{g}{c_p \pi} \pp{F}{\sigma},
+.. math:: \pp{T}{t} = \frac{g}{c_p \pi} \pp{F}{\sigma}
 
 where :math:`g` is the accelation due to gravity and :math:`c_p` is the
 heat capacity of air at constant pressure.
@@ -404,12 +404,12 @@ clear line-of-site probability :math:`(P)` between any two levels,
 overlapped cloud groups, is simply the product of the probabilities
 within each group:
 
-.. math:: P_{net} = P_{low} \times P_{mid} \times P_{hi} .
+.. math:: P_{net} = P_{low} \times P_{mid} \times P_{hi}
 
 Since all clouds within a group are assumed maximally overlapped, the
 clear line-of-site probability within a group is given by:
 
-.. math:: P_{group} = 1 - F_{max} ,
+.. math:: P_{group} = 1 - F_{max}
 
 where :math:`F_{max}` is the maximum cloud fraction encountered between
 :math:`p_1` and :math:`p_2` within that group. For groups and/or levels
@@ -428,30 +428,30 @@ super-saturation. Two values are used corresponding to cloud ice
 particles and water droplets. The range of optical thickness for these
 clouds is given as
 
-.. math:: 0.0002 \le \tau_{\rm ice} (mb^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \quad\mbox{mg/kg} ,
+.. math:: 0.0002 \le \tau_{\rm ice} (mb^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \quad\mbox{mg/kg}
 
-.. math:: 0.02 \le \tau_{\rm H_2O} (mb^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \quad\mbox{mg/kg} .
+.. math:: 0.02 \le \tau_{\rm H_2O} (mb^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \quad\mbox{mg/kg}
 
 The partitioning, :math:`\alpha`, between ice particles and water
 droplets is achieved through a linear scaling in temperature:
 
-.. math:: 0 \le \alpha \le 1 \quad\mbox{for}\quad  233.15 \le T \le 253.15 .
+.. math:: 0 \le \alpha \le 1 \quad\mbox{for}\quad  233.15 \le T \le 253.15
 
 The resulting optical depth associated with large-scale cloudiness is
 given as
 
-.. math:: \tau_{LS} = \alpha \tau_{\rm H_2O} + (1-\alpha) \tau_{\rm ice} .
+.. math:: \tau_{LS} = \alpha \tau_{\rm H_2O} + (1-\alpha) \tau_{\rm ice}
 
 The optical thickness associated with sub-grid scale convective clouds
 produced by RAS is given as
 
-.. math:: \tau_{RAS} = 0.16 \; mb^{-1} .
+.. math:: \tau_{RAS} = 0.16 \; mb^{-1}
 
 The total optical depth in a given model layer is computed as a weighted
 average between the large-scale and sub-grid scale optical depths,
 normalized by the total cloud fraction in the layer:
 
-.. math:: \tau = \left( \frac{F_{RAS} \,\,\, \tau_{RAS} + F_{LS} \,\,\, \tau_{LS} }{ F_{RAS}+F_{LS} } \right) \Delta p,
+.. math:: \tau = \left( \frac{F_{RAS} \,\,\, \tau_{RAS} + F_{LS} \,\,\, \tau_{LS} }{ F_{RAS}+F_{LS} } \right) \Delta p
 
 where :math:`F_{RAS}` and :math:`F_{LS}` are the time-averaged cloud
 fractions associated with RAS and large-scale processes described in
@@ -477,14 +477,14 @@ diffusion are calculated using the diffusion equations:
 .. math::
    \begin{aligned}
    {\pp{u}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{\left(K_m \pp{u}{z}\right)}, \nonumber \\
+    = {\pp{}{z} }{\left(K_m \pp{u}{z}\right)} \nonumber \\
    {\pp{v}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{\left(K_m \pp{v}{z}\right)}, \nonumber \\
+    = {\pp{}{z} }{\left(K_m \pp{v}{z}\right)} \nonumber \\
    {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{\rm turb} &= 
    P^{\kappa}{\pp{}{z} }{(- \overline{w^{\prime}\theta^{\prime}})}
-    = P^{\kappa}{\pp{}{z} }{\left(K_h \pp{\theta_v}{z}\right)}, \nonumber \\
+    = P^{\kappa}{\pp{}{z} }{\left(K_h \pp{\theta_v}{z}\right)} \nonumber \\
    {\pp{q}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
-    = {\pp{}{z} }{\left(K_h \pp{q}{z}\right)}.
+    = {\pp{}{z} }{\left(K_h \pp{q}{z}\right)}
    \end{aligned}
 
 Within the atmosphere, the time evolution of second turbulent moments is
@@ -494,7 +494,7 @@ closure modeling. To simplify and streamline the computation of the
 second moments, the level 2.5 assumption of Mellor and Yamada (1974) and :cite:`yam:77`
 is employed, in which only the turbulent kinetic energy (TKE),
 
-.. math:: {\h}{q^2}={\overline{{u^{\prime}}^2}}+{\overline{{v^{\prime}}^2}}+{\overline{{w^{\prime}}^2}},
+.. math:: {\h}{q^2}={\overline{{u^{\prime}}^2}}+{\overline{{v^{\prime}}^2}}+{\overline{{w^{\prime}}^2}}
 
 is solved prognostically and the other second moments are solved
 diagnostically. The prognostic equation for TKE allows the scheme to
@@ -559,7 +559,7 @@ Richardson number:
 .. math::
 
    {\bf RI} = \frac{ \frac{g}{\theta_v} \pp{\theta_v}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 }
-    =  \frac{c_p \pp{\theta_v}{z} \pp{P^ \kappa}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 } .
+    =  \frac{c_p \pp{\theta_v}{z} \pp{P^ \kappa}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 }
 
 Negative values indicate unstable buoyancy and shear, small positive
 values (:math:`<0.2`) indicate dominantly unstable shear, and large
@@ -588,7 +588,7 @@ the surface layer similarity functions:
 where k is the Von Karman constant and :math:`\psi_m` is the surface
 layer non-dimensional wind shear given by
 
-.. math:: \psi_{m} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{m} }{ \zeta} d \zeta} .
+.. math:: \psi_{m} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{m} }{ \zeta} d \zeta}
 
 Here :math:`\zeta` is the non-dimensional stability parameter, and
 :math:`\phi_m` is the similarity function of :math:`\zeta` which
@@ -608,7 +608,7 @@ moisture from the surface layer similarity functions:
 where :math:`\psi_h` is the surface layer non-dimensional temperature
 gradient given by
 
-.. math:: \psi_{h} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{h} }{ \zeta} d \zeta} .
+.. math:: \psi_{h} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{h} }{ \zeta} d \zeta}
 
 Here :math:`\phi_h` is the similarity function of :math:`\zeta`, which
 expresses the stability dependance of the temperature and moisture
@@ -648,7 +648,7 @@ generalization for heat and moisture:
 .. math::
 
    {\phi_m}^4 - 18 \zeta {\phi_m}^3 = 1 \hspace{1cm} ; \hspace{1cm} 
-   {\phi_h}^2 - 18 \zeta {\phi_h}^3 = 1 \hspace{1cm} .
+   {\phi_h}^2 - 18 \zeta {\phi_h}^3 = 1 \hspace{1cm}
 
 The function for heat and moisture assures non-vanishing heat and
 moisture fluxes as the wind speed approaches zero.
@@ -662,7 +662,7 @@ flux:
    {\phi_m} = \frac{ 1 + 5 {{\zeta}_1} }{ 1 + 0.00794 {\zeta}_1
    (1+ 5 {\zeta}_1) } \hspace{1cm} ; \hspace{1cm}
    {\phi_h} = \frac{ 1 + 5 {{\zeta}_1} }{ 1 + 0.00794 {\zeta}
-   (1+ 5 {{\zeta}_1}) } .
+   (1+ 5 {{\zeta}_1}) }
 
 The moisture flux also depends on a specified evapotranspiration
 coefficient, set to unity over oceans and dependant on the
@@ -686,7 +686,7 @@ Surface Energy Budget
 The ground temperature equation is solved as part of the turbulence
 package using a backward implicit time differencing scheme:
 
-.. math:: C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{\rm ice} - H - LE,
+.. math:: C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{\rm ice} - H - LE
 
 where :math:`R_{sw}` is the net surface downward shortwave radiative
 flux and :math:`R_{lw}` is the net surface upward longwave radiative
@@ -696,7 +696,7 @@ flux.
 
 .. math::
    {H} = P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{\rm NLAY})
-   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t,
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`c_{p}` is the specific heat of air at constant pressure, and
@@ -708,7 +708,7 @@ The upward latent heat flux, :math:`LE`, is given by
 .. math::
 
    {LE} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q_{\rm NLAY})
-   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t,
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\beta` is the fraction of the potential evapotranspiration
 actually evaporated, L is the latent heat of evaporation, and
@@ -731,7 +731,7 @@ cycle into the ground (), and is given by:
 .. math::
 
    C_g = \sqrt{ \frac{\lambda C_s }{ 2\omega} } = \sqrt{(0.386 + 0.536W + 0.15W^2)2\times10^{-3}
-   \frac{86400}{2\pi} } .
+   \frac{86400}{2\pi} }
 
 Here, the thermal conductivity, :math:`\lambda`, is equal to
 :math:`2\times10^{-3}` :math:`\frac{ly}{sec}
@@ -836,7 +836,7 @@ gravity wave stress at the surface is based on that derived by
 Pierrehumbert (1986) and is given by:
 
 .. math:: 
-  |\vec{\tau}_{sfc}| = \frac{\rho U^3}{N \ell^*} \left( \frac{F_r^2}{1+F_r^2}\right) \, \, ,
+  |\vec{\tau}_{sfc}| = \frac{\rho U^3}{N \ell^*} \left( \frac{F_r^2}{1+F_r^2}\right)
 
 
 where :math:`F_r = N h /U` is the Froude number, :math:`N` is the *Brunt
@@ -1608,16 +1608,16 @@ the model surface pressure, :math:`p^{\prime} = p_{surf}`, for the
 upward and downward radiative fluxes. (see Section
 [sec:fizhi:radcloud]). The cloudy-sky flux is then obtained as:
 
-.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW},
+.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW}
 
 Finally, the net longwave heating rate is calculated as the vertical
 divergence of the net terrestrial radiative fluxes:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F_{LW}^{NET} ,
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F_{LW}^{NET}
 
 or
 
-.. math:: {\bf RADLW} = \frac{g}{c_p \pi} \p{\sigma} F_{LW}^{NET} .
+.. math:: {\bf RADLW} = \frac{g}{c_p \pi} \p{\sigma} F_{LW}^{NET}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, and
@@ -1642,11 +1642,11 @@ atmosphere.
 The heating rate due to Shortwave Radiation under cloudy skies is
 defined as:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F(cloudy)_{SW}^{NET} \cdot {\rm RADSWT},
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F(cloudy)_{SW}^{NET} \cdot {\rm RADSWT}
 
 or
 
-.. math:: {\bf RADSW} = \frac{g}{c_p \pi} \p{\sigma} F(cloudy)_{SW}^{NET}\cdot {\rm RADSWT} .
+.. math:: {\bf RADSW} = \frac{g}{c_p \pi} \p{\sigma} F(cloudy)_{SW}^{NET}\cdot {\rm RADSWT}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, RADSWT is the true incident
@@ -1757,7 +1757,7 @@ CN - Neutral Drag Coefficient (dimensionless)
 The drag coefficient for momentum obtained by assuming a neutrally
 stable surface layer:
 
-.. math:: {\bf CN} = \frac{ k }{ \ln(\frac{h }{z_0}) }
+.. math:: {\bf CN} = \frac{ k }{ \log(\frac{h }{z_0}) }
 
 where :math:`k` is the Von Karman constant, :math:`h` is the height of
 the surface layer, and :math:`z_0` is the surface roughness.
@@ -1817,7 +1817,7 @@ diurnal cycle into the ground (), and is given by:
 .. math::
 
    C_g = \sqrt{ \frac{\lambda C_s }{ 2 \omega } } = \sqrt{(0.386 + 0.536W + 0.15W^2)2x10^{-3}
-   \frac{86400.}{2\pi} } \, \, .
+   \frac{86400.}{2\pi} }
 
 Here, the thermal conductivity, :math:`\lambda`, is equal to
 :math:`2x10^{-3}` :math:`\frac{ly}{sec} 
@@ -1940,16 +1940,16 @@ the model surface pressure, :math:`p^{\prime} = p_{surf}`, for the
 upward and downward radiative fluxes. (see Section
 [sec:fizhi:radcloud]). The cloudy-sky flux is then obtained as:
 
-.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW},
+.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW}
 
 Thus, **LWCLR** is defined as the net longwave heating rate due to the
 vertical divergence of the clear-sky longwave radiative flux:
 
-.. math:: \pp{\rho c_p T}{t}_{clearsky} = - \p{z} F(clearsky)_{LW}^{NET} ,
+.. math:: \pp{\rho c_p T}{t}_{clearsky} = - \p{z} F(clearsky)_{LW}^{NET}
 
 or
 
-.. math:: {\bf LWCLR} = \frac{g}{c_p \pi} \p{\sigma} F(clearsky)_{LW}^{NET} .
+.. math:: {\bf LWCLR} = \frac{g}{c_p \pi} \p{\sigma} F(clearsky)_{LW}^{NET}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, and
@@ -2161,7 +2161,7 @@ The depth of the PBL is defined by the turbulence parameterization to be
 the depth at which the turbulent kinetic energy reduces to ten percent
 of its surface value.
 
-.. math:: {\bf PBL} = P_{PBL} - P_{\rm surface},
+.. math:: {\bf PBL} = P_{PBL} - P_{\rm surface}
 
 where :math:`P_{PBL}` is the pressure in :math:`mb` at which the
 turbulent kinetic energy reaches one tenth of its surface value, and
@@ -2185,11 +2185,11 @@ atmosphere.
 The heating rate due to Shortwave Radiation under clear skies is defined
 as:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F(clear)_{SW}^{NET} \cdot {\rm RADSWT},
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F(clear)_{SW}^{NET} \cdot {\rm RADSWT}
 
 or
 
-.. math:: {\bf SWCLR} = \frac{g}{c_p } \p{p} F(clear)_{SW}^{NET}\cdot {\rm RADSWT} .
+.. math:: {\bf SWCLR} = \frac{g}{c_p } \p{p} F(clear)_{SW}^{NET}\cdot {\rm RADSWT}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, RADSWT is the true incident

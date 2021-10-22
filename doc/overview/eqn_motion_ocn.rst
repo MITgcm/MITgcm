@@ -13,7 +13,7 @@ obtained. The non-Boussinesq equations for oceanic motion are:
    :label: non-boussinesq_horizmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: non-boussinesq_vertmom
 
 .. math::
@@ -69,7 +69,7 @@ yields a system that can be explicitly integrated forward:
    :label: eq-cns-hmom 
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-cns-hydro
 
 .. math::
@@ -103,8 +103,8 @@ acceleration:
    :label: eq-zcb-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
-   \frac{\partial p}{\partial z}  = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
+   \frac{\partial p}{\partial z}  = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-zcb-hydro
 
 .. math::
@@ -197,8 +197,8 @@ equations for the ocean are then:
    :label: eq-zab-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
+   \frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-zab-hydro
 
 .. math::
@@ -232,8 +232,8 @@ equations:
    :label: eq-ztb-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{c}}+\frac{1}{\rho _{c}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{c}}+\frac{1}{\rho _{c}}
+   \frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-ztb-hydro
 
 .. math::
@@ -281,8 +281,8 @@ equations:
    :label: eq-ocean-mom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho ^{\prime }}{\rho _{c}}+\frac{1}{\rho
-   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho ^{\prime }}{\rho _{c}}+\frac{1}{\rho
+   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-ocean-wmom
 
 .. math::
@@ -308,5 +308,5 @@ effect on the dynamics.
 Though necessary, the assumptions that go into these equations are messy
 since we essentially assume a different EOS for the reference density
 and the perturbation density. Nevertheless, it is the hydrostatic
-(:math:`\epsilon_{nh}=0`) form of these equations that are used throughout the ocean
+(:math:`\epsilon_{\rm nh}=0`) form of these equations that are used throughout the ocean
 modeling community and referred to as the primitive equations (**HPE**’s).

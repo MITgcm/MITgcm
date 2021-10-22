@@ -278,7 +278,7 @@ coefficient :math:`K_x`
 .. math::
 
    \overline{wx}(d) \, = \, -K_x \left(
-   \frac{\partial X}{\partial z} \, - \, \gamma_x \right).
+   \frac{\partial X}{\partial z} \, - \, \gamma_x \right)
 
 -  *Boundary layer mixing profile*
    It is expressed as the product of the boundary layer depth
@@ -286,7 +286,7 @@ coefficient :math:`K_x`
    :math:`w_x(\sigma)` and a non-dimensional shape function
    :math:`G(\sigma)`
 
-   .. math:: K_x(\sigma) \, = \, h \, w_x(\sigma) \, G(\sigma),
+   .. math:: K_x(\sigma) \, = \, h \, w_x(\sigma) \, G(\sigma)
 
    with dimensionless vertical coordinate :math:`\sigma = d/h`. For
    details of :math:`w_x(\sigma)` and :math:`G(\sigma)` we refer to

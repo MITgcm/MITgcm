@@ -6,7 +6,7 @@ Hydrostatic Primitive Equations for the Atmosphere in Pressure Coordinates
 The hydrostatic primitive equations (**HPE**’s) in :math:`p-`\coordinates are:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}_{h}+\boldsymbol{\nabla}_{p}\phi = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}_{h}+\boldsymbol{\nabla}_{p}\phi = \vec{\boldsymbol{\mathcal{F}}}
    :label: atmos-mom
  
 .. math::
@@ -99,7 +99,7 @@ The upper and lower boundary conditions are:
    :label: boundary-condition-atmosphere-top
 
 .. math::
-   \begin{aligned}\mbox{at the surface:}\;\;p=p_{s} &\text{,  }\phi =\phi _{topo}=g~Z_{topo}\end{aligned}
+   \begin{aligned}\mbox{at the surface:}\;\;p=p_{s} &\text{,  }\phi =\phi _{\rm topo}=g~Z_{\rm topo}\end{aligned}
    :label: boundary-condition-atmosphere-bot
 
 In :math:`p-`\coordinates, the upper boundary acts like a solid boundary
@@ -134,17 +134,17 @@ model equations:
 The reference state (indicated by subscript ‘*o*’) corresponds to
 horizontally homogeneous atmosphere at rest
 (:math:`\theta _{o},\alpha _{o},\phi_{o}`) with surface pressure :math:`p_{o}(x,y)` that satisfies
-:math:`\phi_{o}(p_{o})=g~Z_{topo}`, defined:
+:math:`\phi_{o}(p_{o})=g~Z_{\rm topo}`, defined:
 
 .. math:: \theta _{o}(p) = f^{n}(p) \\
 .. math:: \alpha _{o}(p)  = \Pi _{p}\theta _{o} \\
-.. math:: \phi _{o}(p)  = \phi _{topo}-\int_{p_{0}}^{p}\alpha _{o}dp
+.. math:: \phi _{o}(p)  = \phi _{\rm topo}-\int_{p_{0}}^{p}\alpha _{o}dp
 
 The final form of the **HPE**’s in :math:`p-`\coordinates is then:
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
-   _{h}+\boldsymbol{\nabla}_{p}\phi ^{\prime } = \vec{\mathbf{\mathcal{F}}} 
+   _{h}+\boldsymbol{\nabla}_{p}\phi ^{\prime } = \vec{\boldsymbol{\mathcal{F}}} 
    :label: atmos-prime
 
 .. math::

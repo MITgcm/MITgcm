@@ -155,10 +155,10 @@ the bottom of the fluid for atmospheric and oceanic models in pressure
 coordinates. The total pressure :math:`p_{tot}` in the ocean can be
 divided into the pressure at the top of the water column
 :math:`p_{top}`, the hydrostatic pressure and the non-hydrostatic
-pressure contribution :math:`p_{NH}`:
+pressure contribution :math:`p_{\rm NH}`:
 
 .. math::
-   p_{tot} = p_{top} + \int_z^{\eta-h} g\,\rho\,dz + p_{NH}
+   p_{tot} = p_{top} + \int_z^{\eta-h} g\,\rho\,dz + p_{\rm NH}
    :label: pressureocean
 
 
@@ -192,17 +192,17 @@ reference density :math:`\rho_c` from :math:`p_{tot}`.
 :eq:`pressureocean` becomes
 
 .. math::
-     p_{tot} = p_{top} - g \rho_c (z+h)  + g \rho_c \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_c) \, dz} + \, p_{NH}
+     p_{tot} = p_{top} - g \rho_c (z+h)  + g \rho_c \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_c) \, dz} + \, p_{\rm NH}
      :label: pressure
 
 and after rearranging
 
 .. math::
-   p'_{tot} = p'_{top} + g \rho_c \eta + \, \int_z^{\eta-h}{g (\rho-\rho_c) \, dz} + \, p_{NH}
+   p'_{tot} = p'_{top} + g \rho_c \eta + \, \int_z^{\eta-h}{g (\rho-\rho_c) \, dz} + \, p_{\rm NH}
 
 with :math:`p'_{tot} = p_{tot} + g\,\rho_c\,z` and
 :math:`p'_{top} = p_{top} -
-g\,\rho_c\,h`. The non-hydrostatic pressure contribution :math:`p_{NH}`
+g\,\rho_c\,h`. The non-hydrostatic pressure contribution :math:`p_{\rm NH}`
 is neglected in the following.
 
 In practice, the ice shelf contribution to :math:`p_{top}` is computed

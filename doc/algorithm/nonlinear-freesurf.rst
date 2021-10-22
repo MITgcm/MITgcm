@@ -8,13 +8,13 @@ Options have been added to the model that concern the free surface formulation.
 Pressure/geo-potential and free surface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For the atmosphere, since :math:`\phi = \phi_{topo} - \int^p_{p_s} \alpha dp`, subtracting the
+For the atmosphere, since :math:`\phi = \phi_{\rm topo} - \int^p_{p_s} \alpha dp`, subtracting the
 reference state defined in section :numref:`hpe-p-geo-potential-split` :
 
 
 .. math::
-     \phi_o = \phi_{topo} - \int^p_{p_o} \alpha_o dp
-     \hspace{5mm}\mathrm{with}\hspace{3mm} \phi_o(p_o)=\phi_{topo}
+     \phi_o = \phi_{\rm topo} - \int^p_{p_o} \alpha_o dp
+     \hspace{5mm}\mathrm{with}\hspace{3mm} \phi_o(p_o)=\phi_{\rm topo}
 
 we get:
 
@@ -43,8 +43,8 @@ or:
 In section :numref:`finding_the_pressure_field`, following
 eq. :eq:`split-phi-Ro`, the pressure/geo-potential :math:`\phi'` has been
 separated into surface (:math:`\phi_s`), and hydrostatic anomaly
-(:math:`\phi'_{hyd}`). In this section, the split between :math:`\phi_s`
-and :math:`\phi'_{hyd}` is made according to equation :eq:`split-phi-bo`.
+(:math:`\phi'_{\rm hyd}`). In this section, the split between :math:`\phi_s`
+and :math:`\phi'_{\rm hyd}` is made according to equation :eq:`split-phi-bo`.
 This slightly different definition reflects the actual implementation in
 the code and is valid for both linear and non-linear free-surface
 formulation, in both r-coordinate and r\*-coordinate.
@@ -52,18 +52,18 @@ formulation, in both r-coordinate and r\*-coordinate.
 Because the linear free-surface approximation ignores the tracer
 content of the fluid parcel between :math:`R_o` and
 :math:`r_{surf}=R_o+\eta`, for consistency reasons, this part is also
-neglected in :math:`\phi'_{hyd}` :
+neglected in :math:`\phi'_{\rm hyd}` :
 
-.. math:: \phi'_{hyd} = \int^{r_{surf}}_r (b - b_o) dr \simeq \int^{R_o}_r (b - b_o) dr
+.. math:: \phi'_{\rm hyd} = \int^{r_{surf}}_r (b - b_o) dr \simeq \int^{R_o}_r (b - b_o) dr
 
 Note that in this case, the two definitions of :math:`\phi_s` and
-:math:`\phi'_{hyd}` from equations :eq:`split-phi-Ro` and
+:math:`\phi'_{\rm hyd}` from equations :eq:`split-phi-Ro` and
 :eq:`split-phi-bo` converge toward the same (approximated) expressions:
 :math:`\phi_s = \int^{r_{surf}}_{R_o} b_o dr` and
-:math:`\phi'_{hyd}=\int^{R_o}_r b' dr`.
+:math:`\phi'_{\rm hyd}=\int^{R_o}_r b' dr`.
 On the contrary, the unapproximated formulation
 (see :numref:`free_surf_effect_col_thick`) retains the full expression:
-:math:`\phi'_{hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
+:math:`\phi'_{\rm hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
 obtained by selecting :varlink:`nonlinFreeSurf` =4 in parameter file ``data``.
 Regarding the surface potential:
 
@@ -178,29 +178,29 @@ involved in the solver matrix update is negligible.
 .. table:: Non-linear free-surface flags
    :name: nonlinFreeSurf-flags
 
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | Parameter                 | Value   | Description                                                                            |
-   +===========================+=========+========================================================================================+
-   | :varlink:`nonlinFreeSurf` | -1      | linear free-surface, restart from a pickup file                                        |
-   |                           |         | produced with #undef :varlink:`EXACT_CONSERV` code                                     |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 0       | linear free-surface (= default)                                                        |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 4       | full non-linear free-surface                                                           |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 3       | same as 4 but neglecting :math:`\int_{R_o}^{R_o+\eta} b' dr` in :math:`\Phi'_{hyd}`    |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 2       | same as 3 but do not update cg2d solver matrix                                         |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 1       | same as 2 but treat momentum as in linear free-surface                                 |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | :varlink:`select_rStar`   | 0       | do not use :math:`r^*` vertical coordinate (= default)                                 |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 2       | use :math:`r^*` vertical coordinate                                                    |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 1       | same as 2 but without the contribution of the                                          |
-   |                           |         | slope of the coordinate in :math:`\nabla \Phi`                                         |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   | Parameter                 | Value   | Description                                                                             |
+   +===========================+=========+=========================================================================================+
+   | :varlink:`nonlinFreeSurf` | -1      | linear free-surface, restart from a pickup file                                         |
+   |                           |         | produced with #undef :varlink:`EXACT_CONSERV` code                                      |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 0       | linear free-surface (= default)                                                         |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 4       | full non-linear free-surface                                                            |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 3       | same as 4 but neglecting :math:`\int_{R_o}^{R_o+\eta} b' dr` in :math:`\Phi'_{\rm hyd}` |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 2       | same as 3 but do not update cg2d solver matrix                                          |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 1       | same as 2 but treat momentum as in linear free-surface                                  |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   | :varlink:`select_rStar`   | 0       | do not use :math:`r^*` vertical coordinate (= default)                                  |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 2       | use :math:`r^*` vertical coordinate                                                     |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
+   |                           | 1       | same as 2 but without the contribution of the                                           |
+   |                           |         | slope of the coordinate in :math:`\nabla \Phi`                                          |
+   +---------------------------+---------+-----------------------------------------------------------------------------------------+
 
 
 .. _tracer-cons-nonlinear-freesurface:
@@ -294,7 +294,7 @@ and :math:`dh^n` are the column and grid box thickness in
 r-coordinate.
 
   .. math::
-     \phi^{n}_{hyd} = \int b(\theta^{n},S^{n},r) dr
+     \phi^{n}_{\rm hyd} = \int b(\theta^{n},S^{n},r) dr
      :label: phi-hyd-nlfs
 
   .. math::
@@ -309,7 +309,7 @@ r-coordinate.
   .. math::
      \vec{\bf v}^{*} = \vec{\bf v}^{n-1/2} + \Delta t \frac{dh^{n-1}}{dh^{n}} \left(
      \vec{\bf G}_{\vec{\bf v}}^{(n)} + F_{\vec{\bf v}}^{n}/dh^{n-1} \right)
-     - \Delta t \nabla \phi_{hyd}^{n}
+     - \Delta t \nabla \phi_{\rm hyd}^{n}
      :label: vstar-nlfs
 
   .. math::

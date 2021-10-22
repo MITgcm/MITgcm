@@ -2010,7 +2010,7 @@ The package computes the three components of the relative vorticity,
          -\partial_z v\\
          -\partial_z u\\
          \partial_x v - \partial_y u
-     \end{pmatrix},
+     \end{pmatrix}
    \end{aligned}
    :label: pv_eq1
 
@@ -2023,7 +2023,7 @@ The package then computes the potential vorticity as:
    Q &= -\frac{1}{\rho} \boldsymbol{\omega} \cdot \boldsymbol{\nabla}\sigma_\theta\\
      &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
    \omega_y \frac{\partial \sigma_\theta}{\partial y} +
-   \left(f + \zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right),
+   \left(f + \zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right)
    \end{aligned}
    :label: pv_eq2
 
@@ -2035,7 +2035,7 @@ The package is also able to compute the simpler planetary vorticity as:
 
 .. math::
    \begin{aligned}
-   Q_{spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z} .
+   Q_{spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}
    \end{aligned}
    :label: pv_eq3
 
@@ -2290,7 +2290,7 @@ The conservative flux form of the potential vorticity equation is:
 
 .. math::
    \begin{aligned}
-   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{\bf J} & = 0,
+   \frac{\partial \rho Q}{\partial t} + \boldsymbol{\nabla} \cdot \vec{\bf J} & = 0
    \end{aligned}
    :label: pv_eq4
 
@@ -2300,14 +2300,14 @@ The generalized flux vector of potential vorticity is:
 
 .. math::
    \begin{aligned}
-    \vec{\bf J} & = \rho Q \vec{\bf u} + \vec{N_Q},
+    \vec{\bf J} & = \rho Q \vec{\bf u} + \vec{N_Q}
    \end{aligned}
 
 which allows to rewrite :eq:`pv_eq4` as:
 
 .. math::
    \begin{aligned}
-   \frac{DQ}{dt} & = - \frac{1}{\rho}\boldsymbol{\nabla} \cdot \vec{\bf N}_Q,
+   \frac{DQ}{dt} & = - \frac{1}{\rho}\boldsymbol{\nabla} \cdot \vec{\bf N}_Q
    \end{aligned}
    :label: pv_eq5
 
@@ -2315,7 +2315,7 @@ where the non-advective PV flux :math:`\vec{N_Q}` is given by:
 
 .. math::
    \begin{aligned}
-   \vec{\bf N}_Q & = -\frac{\rho_0}{g}B \vec{\boldsymbol{\omega}}_a + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta.
+   \vec{\bf N}_Q & = -\frac{\rho_0}{g}B \vec{\boldsymbol{\omega}}_a + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta
    \end{aligned}
    :label: pv_eq6
 
@@ -2323,21 +2323,21 @@ Its first component is linked to the buoyancy forcing:
 
 .. math::
    \begin{aligned}
-    B & = -\frac{g}{\rho_o}\frac{D \sigma_\theta}{dt},
+    B & = -\frac{g}{\rho_o}\frac{D \sigma_\theta}{dt}
    \end{aligned}
 
 and the second one to the non-conservative body forces per unit mass:
 
 .. math::
    \begin{aligned}
-    \vec{\bf F} & = \frac{D \vec{\bf u}}{Dt} + 2 \vec{\boldsymbol{\Omega}} \times \vec{\bf u} + \boldsymbol{\nabla} p.
+    \vec{\bf F} & = \frac{D \vec{\bf u}}{Dt} + 2 \vec{\boldsymbol{\Omega}} \times \vec{\bf u} + \boldsymbol{\nabla} p
    \end{aligned}
 
 Note that introducing :math:`B` into :eq:`pv_eq6` yields:
 
    .. math::
       \begin{aligned}
-        \vec{\bf N}_Q & = \boldsymbol{\omega}_a \frac{D \sigma_\theta}{dt} + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta.
+        \vec{\bf N}_Q & = \boldsymbol{\omega}_a \frac{D \sigma_\theta}{dt} + \vec{\bf F} \times \boldsymbol{\nabla} \sigma_\theta
       \end{aligned}
 
 
@@ -2362,7 +2362,7 @@ package) and of hydrostatic and geostrophic balances, we can write:
    \begin{aligned}
      \vec{\bf u}_g & = \frac{1}{\rho f} \hat{\boldsymbol{k}} \times \boldsymbol{\nabla} p \\
      \frac{\partial p_m}{\partial z} & = -\sigma_m g \\
-     \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_m \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g}B,
+     \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_m \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g}B
    \end{aligned}
    :label: pv_eq7
 
@@ -2370,7 +2370,7 @@ where:
 
 .. math::
    \begin{aligned}
-     \vec{\bf u}_m & = \vec{\bf u}_g + \vec{\bf u}_{Ek} + o(R_o),
+     \vec{\bf u}_m & = \vec{\bf u}_g + \vec{\bf u}_{Ek} + o(R_o)
    \end{aligned}
    :label: pv_eq8
 
@@ -2379,7 +2379,7 @@ is the full velocity field composed of the geostrophic current
 
 .. math::
   \begin{aligned}
-     \vec{\bf u}_{Ek} & = -\frac{1}{\rho f} \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z},
+     \vec{\bf u}_{Ek} & = -\frac{1}{\rho f} \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}
    \end{aligned}
   :label: pv_eq9
 
@@ -2390,7 +2390,7 @@ Partitioning the buoyancy forcing as:
 
 .. math::
    \begin{aligned}
-     B & = B_g + B_{Ek},
+     B & = B_g + B_{Ek}
    \end{aligned}
    :label: pv_eq10
 
@@ -2398,14 +2398,14 @@ and using :eq:`pv_eq8` and :eq:`pv_eq9`, :eq:`pv_eq7` becomes:
 
 .. math::
    \begin{aligned}
-    \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_g \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g} B_g,
+    \frac{\partial \sigma_m}{\partial t} + \vec{\bf u}_g \cdot \boldsymbol{\nabla} \sigma_m & = -\frac{\rho_0}{g} B_g
    \end{aligned}
 
 revealing the “wind-driven buoyancy forcing”:
 
 .. math::
    \begin{aligned}
-     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m.
+     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot \boldsymbol{\nabla}\sigma_m
    \end{aligned}
 
 Note that since:
@@ -2414,7 +2414,7 @@ Note that since:
    \begin{aligned}
      \frac{\partial B_g}{\partial z} & = \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0} \vec{\bf u}_g \cdot \boldsymbol{\nabla}\sigma_m\right)
      = -\frac{g}{\rho_0}\frac{\partial \vec{\bf u}_g}{\partial z} \cdot \boldsymbol{\nabla} \sigma_m
-     = 0.
+     = 0
    \end{aligned}
 
 :math:`B_g` must be uniform throughout the depth of the mixed layer and
@@ -2423,7 +2423,7 @@ then being related to the surface buoyancy flux by integrating
 
 .. math::
    \begin{aligned}
-     \int_{-h}^0 B\,dz &= h B_g + \int_{-h}^0 B_{Ek}\,dz = \mathcal{B}_{in},
+     \int_{-h}^0 B\,dz &= h B_g + \int_{-h}^0 B_{Ek}\,dz = \mathcal{B}_{in}
    \end{aligned}
    :label: pv_eq11
 
@@ -2431,7 +2431,7 @@ where :math:`\mathcal{B}_{in}` is the vertically integrated surface buoyancy (in
 
 .. math::
    \begin{aligned}
-     \mathcal{B}_{in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0\beta S_{net}\right),
+     \mathcal{B}_{in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0\beta S_{net}\right)
    \end{aligned}
    :label: pv_eq12
 

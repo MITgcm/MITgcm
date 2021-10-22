@@ -20,13 +20,13 @@ north-south direction. The Coriolis parameter, :math:`f`, is defined
 according to latitude :math:`\varphi`
 
 .. math::
-   f(\varphi) = 2 \Omega \sin( \varphi ),
+   f(\varphi) = 2 \Omega \sin( \varphi )
 
 with the rotation rate, :math:`\Omega` set to :math:`\frac{2 \pi}{86164} \text{s}^{-1}` (i.e., corresponding the to standard Earth rotation rate).
 The sinusoidal wind-stress variations are defined according to
 
 .. math::
-   \tau_{\lambda}(\varphi) = -\tau_{0}\cos \left(2 \pi \frac{\varphi-\varphi_o}{L_{\varphi}} \right),
+   \tau_{\lambda}(\varphi) = -\tau_{0}\cos \left(2 \pi \frac{\varphi-\varphi_o}{L_{\varphi}} \right)
 
 where :math:`L_{\varphi}` is the lateral domain extent
 (:math:`60^{\circ}`), :math:`\varphi_o` is set to :math:`15^{\circ} \text{N}` and :math:`\tau_0` is :math:`0.1 \text{ N m}^{-2}`.
@@ -42,13 +42,13 @@ in the surface layer to :math:`\theta=2 \text{ } ^{\circ}`\ C in the bottom laye
 The equation of state used in this experiment is linear:
 
 .. math::
-   \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{\prime} ),
+   \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{\prime} )
   :label: rho_lineareos
 
 which is implemented in the model as a density anomaly equation
 
 .. math::
-   \rho^{\prime} = -\rho_{0}\alpha_{\theta}\theta^{\prime},
+   \rho^{\prime} = -\rho_{0}\alpha_{\theta}\theta^{\prime}
    :label: rhoprime_lineareos
 
 with :math:`\rho_{0}=999.8\,{\rm kg\,m}^{-3}` and
@@ -71,7 +71,7 @@ Temperature is restored in the surface layer to a linear profile:
 
 .. math::
    {\cal F}_\theta = - \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW}
-   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o),
+   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o)
    :label: baroc_restore_theta
 
 where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{max}=30^{\circ}` C, :math:`\theta_{min}=0^{\circ}` C.

@@ -186,11 +186,11 @@ see :numref:`zandp-vert-coord`.
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
-   \right) _{h}+\boldsymbol{\nabla}_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
+   \right) _{h}+\boldsymbol{\nabla}_{h}\phi = \boldsymbol{\mathcal{F}}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
-   \frac{D\dot{r}}{Dt}+\widehat{\boldsymbol{k}}\cdot \left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{
+   \frac{D\dot{r}}{Dt}+\hat{\boldsymbol{k}}\cdot \left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{
    v}}\right) +\frac{\partial \phi }{\partial r}+b=\mathcal{F}_{\dot{r}}\text{  vertical momentum}
    :label: vert-mtm
 
@@ -221,13 +221,13 @@ Here:
 
 .. math::
 
-   \boldsymbol{\nabla}=\boldsymbol{\nabla}_{h}+\widehat{\boldsymbol{k}}\frac{\partial }{\partial r}
+   \boldsymbol{\nabla}=\boldsymbol{\nabla}_{h}+\hat{\boldsymbol{k}}\frac{\partial }{\partial r}
    \text{  is the ‘grad’ operator}
 
 with :math:`\boldsymbol{\nabla}_{h}` operating in the horizontal and
-:math:`\widehat{\boldsymbol{k}}
+:math:`\hat{\boldsymbol{k}}
 \frac{\partial }{\partial r}` operating in the vertical, where
-:math:`\widehat{\boldsymbol{k}}` is a unit vector in the vertical
+:math:`\hat{\boldsymbol{k}}` is a unit vector in the vertical
 
 .. math:: t\text{ is time}
 
@@ -247,7 +247,7 @@ with :math:`\boldsymbol{\nabla}_{h}` operating in the horizontal and
 
 .. math::
 
-   \mathcal{F}_{\vec{\mathbf{v}}}\text{ are forcing and dissipation of }\vec{
+   \boldsymbol{\mathcal{F}}_{\vec{\mathbf{v}}}\text{ are forcing and dissipation of }\vec{
    \mathbf{v}}
 
 .. math:: \mathcal{Q}_{\theta }\mathcal{\ }\text{ are forcing and dissipation of }\theta

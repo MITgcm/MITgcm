@@ -18,7 +18,7 @@ sinusoidally in the north-south direction and is constant in time. Topologically
 defined according to a mid-latitude beta-plane equation
 
 .. math::
-    f(y) = f_{0}+\beta y,
+    f(y) = f_{0}+\beta y
 
 where :math:`y` is the distance along the 'north-south' axis of the simulated domain. For this experiment :math:`f_{0}` is
 set to :math:`10^{-4}\text{s}^{-1}` and :math:`\beta = 10^{-11}\text{s}^{-1}\text{m}^{-1}`.
@@ -26,7 +26,7 @@ set to :math:`10^{-4}\text{s}^{-1}` and :math:`\beta = 10^{-11}\text{s}^{-1}\tex
 The sinusoidal wind-stress variations are defined according to
 
 .. math::
-   \tau_x(y) = -\tau_{0} \cos\left(\pi \frac{y}{L_y}\right),
+   \tau_x(y) = -\tau_{0} \cos\left(\pi \frac{y}{L_y}\right)
 
 where :math:`L_{y}` is the lateral domain extent and
 :math:`\tau_0` is set to :math:`0.1 \text{N m}^{-2}`.

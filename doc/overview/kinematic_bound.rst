@@ -16,7 +16,7 @@ at fixed and moving :math:`r` surfaces we set (see :numref:`zandp-vert-coord`):
 
 Here
 
-.. math:: R_{moving}=R_{o} + \eta,
+.. math:: R_{\rm moving}=R_{o} + \eta,
 
 where :math:`R_{o}(x,y)` is the ‘:math:`r-`\ value’ (height or pressure,
 depending on whether we are in the atmosphere or ocean) of the ‘moving

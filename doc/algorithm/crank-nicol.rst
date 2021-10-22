@@ -25,10 +25,10 @@ Equations :eq:`ustar-backward-free-surface` –
 .. math::
    \frac{ \vec{\bf v}^{n+1} }{ \Delta t }
    + {\bf \nabla}_h b_s [ \gamma {\eta}^{n+1} + (1-\gamma) {\eta}^{n} ]
-   + \epsilon_{nh} {\bf \nabla}_h {\phi'_{nh}}^{n+1}
+   + \epsilon_{\rm nh} {\bf \nabla}_h {\phi'_{\rm nh}}^{n+1}
    = \frac{ \vec{\bf v}^{n} }{ \Delta t }
    + \vec{\bf G}_{\vec{\bf v}} ^{(n+1/2)}
-   + {\bf \nabla}_h {\phi'_{hyd}}^{(n+1/2)}
+   + {\bf \nabla}_h {\phi'_{\rm hyd}}^{(n+1/2)}
 
 .. math::
    \epsilon_{fs} \frac{ {\eta}^{n+1} - {\eta}^{n} }{ \Delta t}
@@ -44,14 +44,14 @@ We set
      \vec{\bf v}^* & = &
      \vec{\bf v} ^{n} + \Delta t \vec{\bf G}_{\vec{\bf v}} ^{(n+1/2)}
      + (\gamma-1) \Delta t {\bf \nabla}_h b_s {\eta}^{n}
-     + \Delta t {\bf \nabla}_h {\phi'_{hyd}}^{(n+1/2)}
+     + \Delta t {\bf \nabla}_h {\phi'_{\rm hyd}}^{(n+1/2)}
      \\
      {\eta}^* & = &
      \epsilon_{fs} {\eta}^{n} + \epsilon_{fw} \Delta t ({\mathcal{P-E}})
      - \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o}
      [ \beta \vec{\bf v}^* + (1-\beta) \vec{\bf v}^{n}] dr\end{aligned}
 
-In the hydrostatic case :math:`\epsilon_{nh}=0`, allowing us to find
+In the hydrostatic case :math:`\epsilon_{\rm nh}=0`, allowing us to find
 :math:`{\eta}^{n+1}`, thus:
 
 .. math::
@@ -89,13 +89,13 @@ Notes:
 
 
 #. A similar mixed forward/backward time-stepping is also available for
-   the non-hydrostatic algorithm, with a fraction :math:`\gamma_{nh}`
-   (:math:`0 < \gamma_{nh} \leq 1`) of the non-hydrostatic pressure
+   the non-hydrostatic algorithm, with a fraction :math:`\gamma_{\rm nh}`
+   (:math:`0 < \gamma_{\rm nh} \leq 1`) of the non-hydrostatic pressure
    gradient being evaluated at time step :math:`n+1` (backward in time)
-   and the remaining part (:math:`1 - \gamma_{nh}`) being evaluated at
+   and the remaining part (:math:`1 - \gamma_{\rm nh}`) being evaluated at
    time step :math:`n` (forward in time). The run-time parameter
    :varlink:`implicitNHPress` corresponding to the implicit fraction
-   :math:`\gamma_{nh}` of the non-hydrostatic pressure is set by default
+   :math:`\gamma_{\rm nh}` of the non-hydrostatic pressure is set by default
    to the implicit fraction :math:`\gamma` of surface pressure
    (:varlink:`implicSurfPress`), but can also be specified independently (in
    main parameter file ``data``, namelist ``PARM01``).

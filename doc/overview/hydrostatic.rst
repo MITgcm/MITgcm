@@ -7,27 +7,27 @@ Let us separate :math:`\phi` in to surface, hydrostatic and
 non-hydrostatic terms:
 
 .. math::
-   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{hyd}(x,y,r)+\phi _{nh}(x,y,r),
+   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{\rm hyd}(x,y,r)+\phi _{\rm nh}(x,y,r)
    :label: phi-split
 
 and write :eq:`horiz-mtm` in the form:
 
 .. math::
    \frac{\partial \vec{\mathbf{v}}_{h}}{\partial t}+\boldsymbol{\nabla}_{h}\phi
-   _{s}+\boldsymbol{\nabla}_{h}\phi _{hyd}+\epsilon _{nh}\boldsymbol{\nabla}_{h}\phi
-   _{nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
+   _{s}+\boldsymbol{\nabla}_{h}\phi _{\rm hyd}+\epsilon _{\rm nh}\boldsymbol{\nabla}_{h}\phi
+   _{\rm nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
    :label: mom-h
 
 .. math:: 
-   \frac{\partial \phi _{hyd}}{\partial r}=-b
+   \frac{\partial \phi _{\rm hyd}}{\partial r}=-b
    :label: hydrostatic
 
 .. math::
-   \epsilon _{nh}\frac{\partial \dot{r}}{\partial t}+\frac{\partial \phi _{nh}}{
+   \epsilon _{\rm nh}\frac{\partial \dot{r}}{\partial t}+\frac{\partial \phi _{\rm nh}}{
    \partial r}=G_{\dot{r}}
    :label: mom-w
 
-Here :math:`\epsilon _{nh}` is a non-hydrostatic parameter.
+Here :math:`\epsilon _{\rm nh}` is a non-hydrostatic parameter.
 
 The :math:`\left( \vec{\mathbf{G}}_{\vec{v}},G_{\dot{r}}\right)` in
 :eq:`mom-h` and :eq:`mom-w` represent advective, metric and Coriolis
@@ -99,7 +99,7 @@ terms in Eqs. :eq:`gu-spherical`
 :math:`\rightarrow` :eq:`gw-spherical` are neglected and ‘:math:`{r}`’
 is replaced by ‘:math:`a`’, the mean radius of the earth. Once the
 pressure is found at one level - e.g. by inverting a 2-d Elliptic
-equation for :math:`\phi _{s}` at :math:`r=R_{moving}` - the pressure
+equation for :math:`\phi _{s}` at :math:`r=R_{\rm moving}` - the pressure
 can be computed at all other levels by integration of the hydrostatic
 relation, eq :eq:`hydrostatic`.
 
@@ -113,7 +113,7 @@ relaxed. In **QH** *all* the metric terms are retained and the full
 variation of the radial position of a particle monitored. The **QH** 
 vertical momentum equation :eq:`mom-w` becomes:
 
-.. math:: \frac{\partial \phi _{nh}}{\partial r}=2\Omega u\cos \varphi
+.. math:: \frac{\partial \phi _{\rm nh}}{\partial r}=2\Omega u\cos \varphi
 
 making a small correction to the hydrostatic pressure.
 

@@ -70,7 +70,7 @@ The equations of motion integrated by the model involve four prognostic
 equations for flow, :math:`u` and :math:`v`, temperature,
 :math:`\theta`, and salt/moisture, :math:`S`, and three diagnostic
 equations for vertical flow, :math:`w`, density/buoyancy,
-:math:`\rho`/:math:`b`, and pressure/geo-potential, :math:`\phi_{hyd}`.
+:math:`\rho`/:math:`b`, and pressure/geo-potential, :math:`\phi_{\rm hyd}`.
 In addition, the surface pressure or height may by described by either a
 prognostic or diagnostic equation and if non-hydrostatics terms are
 included then a diagnostic equation for non-hydrostatic pressure is also
@@ -596,11 +596,11 @@ follow equations:
    :label: t-n+1-sync
 
 .. math::
-   \phi^n_{hyd} = \int b(\theta^n,S^n) dr
+   \phi^n_{\rm hyd} = \int b(\theta^n,S^n) dr
    :label: phi-hyd-sync
 
 .. math::
-   \vec{\bf G}_{\vec{\bf v}}^{n} = \vec{\bf G}_{\vec{\bf v}} ( \vec{\bf v}^n, \phi^n_{hyd} )
+   \vec{\bf G}_{\vec{\bf v}}^{n} = \vec{\bf G}_{\vec{\bf v}} ( \vec{\bf v}^n, \phi^n_{\rm hyd} )
    :label: Gv-n-sync
 
 .. math::
@@ -667,7 +667,7 @@ ocean and atmospheric physics have been added, although they are mainly optional
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP\_TRACER <model/src/timestep_tracer.F>` :math:`\phantom{xxxxxxxxxxxxxxxww}` :math:`\theta^*` :eq:`tstar-sync`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxvwww}` :math:`\theta^{(n+1)}` :eq:`t-n+1-sync`
     | :math:`\phantom{WW}` :filelink:`DYNAMICS <model/src/dynamics.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{hyd}^n` :eq:`phi-hyd-sync`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{\rm hyd}^n` :eq:`phi-hyd-sync`
     | :math:`\phantom{WWW}` :filelink:`MOM\_FLUXFORM <pkg/mom_fluxform/mom_fluxform.F>` or :filelink:`MOM\_VECINV <pkg/mom_vecinv/mom_vecinv.F>` :math:`\phantom{xxi}` :math:`G_{\vec{\bf v}}^n` :eq:`Gv-n-sync`
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP <model/src/timestep.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\vec{\bf v}^*` :eq:`Gv-n+5-sync`, :eq:`vstar-sync`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxlw}` :math:`\vec{\bf v}^{**}` :eq:`vstarstar-sync`
@@ -695,7 +695,7 @@ Staggered baroclinic time-stepping
     :alt: adams-bash-staggered
     :name: adams-bash-staggered
 
-    A schematic of the explicit Adams-Bashforth and implicit time-stepping phases of the algorithm but with staggering in time of thermodynamic variables with the flow. Explicit momentum tendencies are evaluated at time level :math:`n-1/2` as a function of the flow field at that time level :math:`n-1/2`. The explicit tendency from the previous time level, :math:`n-3/2`, is used to extrapolate tendencies to :math:`n` (dashed arrow). The hydrostatic pressure/geo-potential  :math:`\phi _{hyd}` is evaluated directly at time level :math:`n` (vertical arrows) and used with the extrapolated tendencies to step forward the flow variables from :math:`n-1/2` to :math:`n+1/2` (solid arc-arrow). The implicit-in-time operator  :math:`{\cal L}_{\bf u,v}` (vertical arrows) is then applied to the previous estimation of the the flow field (:math:`*` -variables) and yields to the two velocity components :math:`u,v` at time level :math:`n+1/2`. These are then used to calculate the advection term (dashed arc-arrow) of the thermo-dynamics tendencies at time step :math:`n`. The extrapolated thermodynamics tendency, from time level :math:`n-1` and :math:`n` to :math:`n+1/2`, allows thermodynamic variables to be stably integrated forward-in-time (solid arc-arrow) up to time level :math:`n+1`.
+    A schematic of the explicit Adams-Bashforth and implicit time-stepping phases of the algorithm but with staggering in time of thermodynamic variables with the flow. Explicit momentum tendencies are evaluated at time level :math:`n-1/2` as a function of the flow field at that time level :math:`n-1/2`. The explicit tendency from the previous time level, :math:`n-3/2`, is used to extrapolate tendencies to :math:`n` (dashed arrow). The hydrostatic pressure/geo-potential  :math:`\phi _{\rm hyd}` is evaluated directly at time level :math:`n` (vertical arrows) and used with the extrapolated tendencies to step forward the flow variables from :math:`n-1/2` to :math:`n+1/2` (solid arc-arrow). The implicit-in-time operator  :math:`{\cal L}_{\bf u,v}` (vertical arrows) is then applied to the previous estimation of the the flow field (:math:`*` -variables) and yields to the two velocity components :math:`u,v` at time level :math:`n+1/2`. These are then used to calculate the advection term (dashed arc-arrow) of the thermo-dynamics tendencies at time step :math:`n`. The extrapolated thermodynamics tendency, from time level :math:`n-1` and :math:`n` to :math:`n+1/2`, allows thermodynamic variables to be stably integrated forward-in-time (solid arc-arrow) up to time level :math:`n+1`.
 
 For well-stratified problems, internal gravity waves may be the limiting
 process for determining a stable time-step. In the circumstance, it is
@@ -719,7 +719,7 @@ entire algorithm, :eq:`Gt-n-sync` to :eq:`v-n+1-sync`, annotating the
 position in time of variables appropriately:
 
 .. math::
-   \phi^{n}_{hyd} =  \int b(\theta^{n},S^{n}) dr
+   \phi^{n}_{\rm hyd} =  \int b(\theta^{n},S^{n}) dr
    :label: phi-hyd-staggered
 
 .. math::
@@ -731,7 +731,7 @@ position in time of variables appropriately:
    :label: Gv-n+5-staggered
 
 .. math::
-   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} - \boldsymbol{\nabla} \phi_{hyd}^{n} \right)
+   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} - \boldsymbol{\nabla} \phi_{\rm hyd}^{n} \right)
    :label: vstar-staggered
 
 .. math::
@@ -780,7 +780,7 @@ parameter file ``data``, namelist ``PARM01``.
     | :math:`\phantom{WWW}` :filelink:`DO\_ATMOSPHERIC\_PHYS <model/src/do_atmospheric_phys.F>`
     | :math:`\phantom{WWW}` :filelink:`DO\_OCEANIC\_PHYS <model/src/do_oceanic_phys.F>`
     | :math:`\phantom{WW}` :filelink:`DYNAMICS <model/src/dynamics.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{hyd}^n` :eq:`phi-hyd-staggered`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{\rm hyd}^n` :eq:`phi-hyd-staggered`
     | :math:`\phantom{WWW}` :filelink:`MOM\_FLUXFORM <pkg/mom_fluxform/mom_fluxform.F>` or :filelink:`MOM\_VECINV <pkg/mom_vecinv/mom_vecinv.F>` :math:`\phantom{xxi}` :math:`G_{\vec{\bf v}}^{n-1/2}` :eq:`Gv-n-staggered`
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP <model/src/timestep.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\vec{\bf v}^*` :eq:`Gv-n+5-staggered`, :eq:`vstar-staggered`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxlw}` :math:`\vec{\bf v}^{**}` :eq:`vstarstar-staggered`
@@ -829,17 +829,17 @@ solve for the non-hydrostatic pressure.
 The momentum equations are discretized in time as follows:
 
 .. math::
-   \frac{1}{\Delta t} u^{n+1} + g \partial_x \eta^{n+1} + \partial_x \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} u^{n+1} + g \partial_x \eta^{n+1} + \partial_x \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} u^{n} + G_u^{(n+1/2)}
    :label: discrete-time-u-nh
 
 .. math::
-   \frac{1}{\Delta t} v^{n+1} + g \partial_y \eta^{n+1} + \partial_y \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} v^{n+1} + g \partial_y \eta^{n+1} + \partial_y \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} v^{n} + G_v^{(n+1/2)}
    :label: discrete-time-v-nh
 
 .. math::
-   \frac{1}{\Delta t} w^{n+1} + \partial_r \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} w^{n+1} + \partial_r \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} w^{n} + G_w^{(n+1/2)}
    :label: discrete-time-w-nh
 
@@ -866,10 +866,10 @@ tendency of the flow as follows:
 .. math::
 
    \begin{aligned}
-   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{nh}^{n+1}
+   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{\rm nh}^{n+1}
    & &
    u^{**} = u^{*} - \Delta t g \partial_x \eta^{n+1} \\
-   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{nh}^{n+1}
+   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{\rm nh}^{n+1}
    & &
    v^{**} = v^{*} - \Delta t g \partial_y \eta^{n+1}\end{aligned}
 
@@ -877,27 +877,27 @@ Substituting into the depth integrated continuity
 (equation :eq:`discrete-time-backward-free-surface`) gives
 
 .. math::
-   \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
-   + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
+   \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
+   + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
     - \frac{\epsilon_{fs}\eta^{n+1}}{\Delta t^2}
    = - \frac{\eta^*}{\Delta t^2}
    :label: substituting-in-cont
 
 which is approximated by equation :eq:`elliptic-backward-free-surface`
-on the basis that i) :math:`\phi_{nh}^{n+1}` is not yet known and ii)
-:math:`\boldsymbol{\nabla} \widehat{\phi}_{nh}
+on the basis that i) :math:`\phi_{\rm nh}^{n+1}` is not yet known and ii)
+:math:`\boldsymbol{\nabla} \widehat{\phi}_{\rm nh}
 \ll  g \boldsymbol{\nabla} \eta`. If :eq:`elliptic-backward-free-surface` is solved
-accurately then the implication is that :math:`\widehat{\phi}_{nh}
+accurately then the implication is that :math:`\widehat{\phi}_{\rm nh}
 \approx 0` so that the non-hydrostatic pressure field does not drive
 barotropic motion.
 
 The flow must satisfy non-divergence (equation :eq:`non-divergence-nh`)
 locally, as well as depth integrated, and this constraint is used to
-form a 3-D elliptic equations for :math:`\phi_{nh}^{n+1}`:
+form a 3-D elliptic equations for :math:`\phi_{\rm nh}^{n+1}`:
 
 .. math::
-   \partial_{xx} \phi_{nh}^{n+1} + \partial_{yy} \phi_{nh}^{n+1} +
-   \partial_{rr} \phi_{nh}^{n+1} =
+   \partial_{xx} \phi_{\rm nh}^{n+1} + \partial_{yy} \phi_{\rm nh}^{n+1} +
+   \partial_{rr} \phi_{\rm nh}^{n+1} =
    \partial_x u^{**} + \partial_y v^{**} + \partial_r w^{*}
    :label: elliptic-pnh
 
@@ -938,17 +938,17 @@ following equations:
    :label: vnx-nh
 
 .. math::
-   \partial_{xx} \phi_{nh}^{n+1} + \partial_{yy} \phi_{nh}^{n+1} +
-   \partial_{rr} \phi_{nh}^{n+1} =
+   \partial_{xx} \phi_{\rm nh}^{n+1} + \partial_{yy} \phi_{\rm nh}^{n+1} +
+   \partial_{rr} \phi_{\rm nh}^{n+1} =
    \partial_x u^{**} + \partial_y v^{**} + \partial_r w^{*}
    :label: phi-nh
 
 .. math::
-   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{nh}^{n+1}
+   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{\rm nh}^{n+1}
    :label: un+1-nh
 
 .. math::
-   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{nh}^{n+1}
+   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{\rm nh}^{n+1}
    :label: vn+1-nh
 
 .. math::
@@ -968,7 +968,7 @@ underlying algorithm but this time using the notation consistent with
 the more general vertical coordinate :math:`r`. The elliptic equation
 for free-surface coordinate (units of :math:`r`), corresponding to
 :eq:`discrete-time-backward-free-surface`, and assuming no
-non-hydrostatic effects (:math:`\epsilon_{nh} = 0`) is:
+non-hydrostatic effects (:math:`\epsilon_{\rm nh} = 0`) is:
 
 .. math::
    \epsilon_{fs} {\eta}^{n+1} -
@@ -996,20 +996,20 @@ where
 Once :math:`{\eta}^{n+1}` has been found, substituting into
 :eq:`discrete-time-u`, :eq:`discrete-time-v` yields
 :math:`\vec{\bf v}^{n+1}` if the model is hydrostatic
-(:math:`\epsilon_{nh}=0`):
+(:math:`\epsilon_{\rm nh}=0`):
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{*}
    - \Delta t \boldsymbol{\nabla}_h b_s {\eta}^{n+1}
 
 This is known as the correction step. However, when the model is
-non-hydrostatic (:math:`\epsilon_{nh}=1`) we need an additional step and
-an additional equation for :math:`\phi'_{nh}`. This is obtained by
+non-hydrostatic (:math:`\epsilon_{\rm nh}=1`) we need an additional step and
+an additional equation for :math:`\phi'_{\rm nh}`. This is obtained by
 substituting :eq:`discrete-time-u-nh`, :eq:`discrete-time-v-nh` and
 :eq:`discrete-time-w-nh` into continuity:
 
 .. math::
-   [ \boldsymbol{\nabla}_h^2 + \partial_{rr} ] {\phi'_{nh}}^{n+1}
+   [ \boldsymbol{\nabla}_h^2 + \partial_{rr} ] {\phi'_{\rm nh}}^{n+1}
    = \frac{1}{\Delta t} 
    \boldsymbol{\nabla}_h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
    :label: sub-u-v-w-in-cont 
@@ -1027,7 +1027,7 @@ Finally, the horizontal velocities at the new time level are found by:
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{**}
-   - \epsilon_{nh} \Delta t \boldsymbol{\nabla}_h {\phi'_{nh}}^{n+1}
+   - \epsilon_{\rm nh} \Delta t \boldsymbol{\nabla}_h {\phi'_{\rm nh}}^{n+1}
    :label: v-new-time-lev 
 
 and the vertical velocity is found by integrating the continuity
@@ -1042,7 +1042,7 @@ any consequence on the solution.
   :class: note
 
     | :math:`{\eta}^{n+1}` : :varlink:`etaN` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
-    | :math:`{\phi}^{n+1}_{nh}` : :varlink:`phi_nh` ( :filelink:`NH_VARS.h <model/inc/NH_VARS.h>` )
+    | :math:`{\phi}^{n+1}_{\rm nh}` : :varlink:`phi_nh` ( :filelink:`NH_VARS.h <model/inc/NH_VARS.h>` )
     | :math:`u^*` : :varlink:`gU` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`v^*` : :varlink:`gV` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`u^{n+1}` : :varlink:`uVel` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
@@ -1096,15 +1096,15 @@ The core algorithm is based on the “C grid” discretization of the
 continuity equation which can be summarized as:
 
 .. math::
-   \partial_t u + \frac{1}{\Delta x_c} \delta_i \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{nh}}{\Delta x_c} \delta_i \Phi_{nh}' = G_u - \frac{1}{\Delta x_c} \delta_i \Phi_h'
+   \partial_t u + \frac{1}{\Delta x_c} \delta_i \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{\rm nh}}{\Delta x_c} \delta_i \Phi_{\rm nh}' = G_u - \frac{1}{\Delta x_c} \delta_i \Phi_h'
    :label: discrete-momu
 
 .. math::
-   \partial_t v + \frac{1}{\Delta y_c} \delta_j \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{nh}}{\Delta y_c} \delta_j \Phi_{nh}' = G_v - \frac{1}{\Delta y_c} \delta_j \Phi_h'
+   \partial_t v + \frac{1}{\Delta y_c} \delta_j \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{\rm nh}}{\Delta y_c} \delta_j \Phi_{\rm nh}' = G_v - \frac{1}{\Delta y_c} \delta_j \Phi_h'
    :label: discrete-momv
 
 .. math::
-   \epsilon_{nh} \left( \partial_t w + \frac{1}{\Delta r_c} \delta_k \Phi_{nh}' \right) = \epsilon_{nh} G_w + \overline{b}^k - \frac{1}{\Delta r_c} \delta_k \Phi_{h}'
+   \epsilon_{\rm nh} \left( \partial_t w + \frac{1}{\Delta r_c} \delta_k \Phi_{\rm nh}' \right) = \epsilon_{\rm nh} G_w + \overline{b}^k - \frac{1}{\Delta r_c} \delta_k \Phi_{h}'
    :label: discrete-momw
 
 .. math::
@@ -1152,7 +1152,7 @@ In the ocean, using z-coordinates, the hydrostatic balance terms are
 discretized:
 
 .. math::
-   \epsilon_{nh} \partial_t w
+   \epsilon_{\rm nh} \partial_t w
    + g \overline{\rho'}^k + \frac{1}{\Delta z} \delta_k \Phi_h' = \ldots
    :label: discrete_hydro_ocean
 
@@ -1211,7 +1211,7 @@ dissipation and metric forces:
    G_w^{metric} + G_w^{nh-metric}
    :label: gsplit_momw
 
-In the hydrostatic limit, :math:`G_w=0` and :math:`\epsilon_{nh}=0`,
+In the hydrostatic limit, :math:`G_w=0` and :math:`\epsilon_{\rm nh}=0`,
 reducing the vertical momentum to hydrostatic balance.
 
 These terms are calculated in routines called from subroutine
@@ -1295,7 +1295,7 @@ discretized:
 .. math::
    {\cal A}_w \Delta r_f h_w G_u^{Cor} =
      \overline{ f {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
-   - \epsilon_{nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ w }^k }^i
+   - \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ w }^k }^i
    :label: cdscheme_gu
 
 .. math::
@@ -1305,7 +1305,7 @@ discretized:
 
 .. math::
    {\cal A}_c \Delta r_c G_w^{Cor} =
-    \epsilon_{nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ u }^i }^k
+    \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ u }^i }^k
    :label: cdscheme_gw
 
 where the Coriolis parameters :math:`f` and :math:`f'` are defined:
@@ -1332,7 +1332,7 @@ discretization:
 
 .. math::
    G_u^{Cor} = f_u \overline{ v }^{ji}
-   - \epsilon_{nh} f_u' \overline{ w }^{ik}
+   - \epsilon_{\rm nh} f_u' \overline{ w }^{ik}
    :label: gu_cor
 
 .. math::
@@ -1340,7 +1340,7 @@ discretization:
    :label: gv_cor
 
 .. math::
-   G_w^{Cor} = \epsilon_{nh} f_w' \overline{ u }^{ik}
+   G_w^{Cor} = \epsilon_{\rm nh} f_w' \overline{ u }^{ik}
    :label: gw_cor
 
 where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
@@ -1575,7 +1575,7 @@ and quadratic bottom drag.
    :label: gv_v-diss
 
 .. math::
-   G_w^{v-diss} = \epsilon_{nh}
+   G_w^{v-diss} = \epsilon_{\rm nh}
    \frac{1}{\Delta r_f h_d} \delta_k \tau_{33}
    :label: gw_w-diss
 
@@ -1647,7 +1647,7 @@ the following definitions:
 
 .. math::
    KE = \frac{1}{2} \left( \overline{ u^2 }^i + \overline{ v^2 }^j +
-   \epsilon_{nh} \overline{ w^2 }^k \right)
+   \epsilon_{\rm nh} \overline{ w^2 }^k \right)
    :label: KE_discrete
 
 .. _mom_diagnostics:
@@ -1812,7 +1812,7 @@ The kinetic energy, denoted :math:`KE`, is defined:
 
 .. math::
    KE = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
-   + \epsilon_{nh} \overline{ w^2 }^k )
+   + \epsilon_{\rm nh} \overline{ w^2 }^k )
    :label: KE_vecinv
 
 .. admonition:: S/R  :filelink:`MOM_CALC_KE <pkg/mom_common/mom_calc_KE.F>`
@@ -1890,12 +1890,12 @@ consistent with the vertical advection of shear:
 
 .. math::
    G_u^{\zeta_2 w} = \frac{1}{ {\cal A}_w \Delta r_f h_w } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_i w ) }^k
+   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{\rm nh} \delta_i w ) }^k
    :label: gu_zeta2w
 
 .. math::
    G_v^{\zeta_1 w} = \frac{1}{ {\cal A}_s \Delta r_f h_s } \overline{
-   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{\rm nh} \delta_j w ) }^k
    :label: gv_zeta1w
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_VERTSHEAR <pkg/mom_vecinv/mom_vi_u_vertshear.F>`, :filelink:`MOM_VI_V_VERTSHEAR <pkg/mom_vecinv/mom_vi_v_vertshear.F>`
