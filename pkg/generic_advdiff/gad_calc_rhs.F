@@ -31,7 +31,7 @@ C \end{equation*}
 C
 C The tendency is the divergence of the fluxes:
 C \begin{equation*}
-C G_\theta = G_\theta + \boldsymbol{\nabla} \cdot {\bf F}
+C G_\theta = G_\theta + \nabla \cdot {\bf F}
 C \end{equation*}
 C
 C The tendency is assumed to contain data on entry.
