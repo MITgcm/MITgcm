@@ -170,7 +170,7 @@ be re-written in terms of a non-divergent flux and a skew-flux:
    \begin{pmatrix}
    - \partial_z ( \kappa_{\rm GM} S_x ) \tau \\
    - \partial_z ( \kappa_{\rm GM} S_y ) \tau \\
-   \big[ \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y) \big] \tau
+   \Big[ \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y) \Big] \tau
    \end{pmatrix}
    \\
    & = 
@@ -179,10 +179,10 @@ be re-written in terms of a non-divergent flux and a skew-flux:
    - \partial_z ( \kappa_{\rm GM} S_y \tau) \\
    \partial_x ( \kappa_{\rm GM} S_x \tau) + \partial_y ( \kappa_{\rm GM} S_y \tau)
    \end{pmatrix}
-   + \begin{pmatrix}
-    \kappa_{\rm GM} S_x \partial_z \tau \\
-    \kappa_{\rm GM} S_y \partial_z \tau \\
-   - \kappa_{\rm GM} S_x \partial_x \tau - \kappa_{\rm GM} S_y \partial_y \tau
+   + \kappa_{\rm GM} \begin{pmatrix}
+     S_x \partial_z \tau \\
+     S_y \partial_z \tau \\
+   -  S_x \partial_x \tau - S_y \partial_y \tau
    \end{pmatrix}
    \end{aligned}
 
