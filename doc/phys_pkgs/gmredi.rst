@@ -41,7 +41,7 @@ Redi scheme: Isopycnal diffusion
 The Redi scheme diffuses tracers along isopycnals and introduces a term
 in the tendency (rhs) of such a tracer (here :math:`\tau`) of the form:
 
-.. math:: \boldsymbol{\nabla} \cdot ( \kappa_\rho {\bf K}_{\rm Redi}  \boldsymbol{\nabla} \tau ) ,
+.. math:: \boldsymbol{\nabla} \cdot ( \kappa_\rho {\bf K}_{\rm Redi}  \boldsymbol{\nabla} \tau )
 
 where :math:`\kappa_\rho` is the along isopycnal diffusivity and
 :math:`{\bf K}_{\rm Redi}` is a rank 2 tensor that projects the gradient of
@@ -55,7 +55,7 @@ tensor is:
    1 + S_y^2& -S_x S_y & S_x \\
    -S_x S_y  & 1 + S_x^2 & S_y \\
    S_x & S_y & |{\bf S}|^2 \\
-   \end{pmatrix} .
+   \end{pmatrix}
 
 Here, :math:`S_x = -\partial_x \sigma / \partial_z \sigma`,
 :math:`S_y =
@@ -75,7 +75,7 @@ Redi projection tensor then simplifies to:
    1 & 0 & S_x \\
    0 & 1 & S_y \\
    S_x & S_y & |{\bf S}|^2 \\
-   \end{pmatrix}.
+   \end{pmatrix}
 
 .. _GM_bolus_desc:  
 
@@ -87,7 +87,7 @@ effect of geostrophic eddies by means of a “bolus” velocity,
 :math:`{\bf u}^\star`. The divergence of this advective flux is added to
 the tracer tendency equation (on the rhs):
 
-.. math:: - \boldsymbol{\nabla} \cdot ( \tau {\bf u}^\star ) .
+.. math:: - \boldsymbol{\nabla} \cdot ( \tau {\bf u}^\star )
 
 The bolus velocity :math:`{\bf u}^\star` is defined as the rotational part
 of a streamfunction
@@ -100,7 +100,7 @@ of a streamfunction
    - \partial_z  F_y^\star \\
    + \partial_z  F_x^\star \\
    \partial_x F_y^\star - \partial_y F_x^\star
-   \end{pmatrix} ,
+   \end{pmatrix}
 
 and thus is automatically non-divergent. In the GM parameterization, the
 streamfunction is specified in terms of the isoneutral slopes
@@ -109,8 +109,8 @@ streamfunction is specified in terms of the isoneutral slopes
 .. math::
 
    \begin{aligned}
-   F_x^\star & = -\kappa_{\rm GM} S_y ,\\
-   F_y^\star & =  \kappa_{\rm GM} S_x ,
+   F_x^\star & = -\kappa_{\rm GM} S_y\\
+   F_y^\star & =  \kappa_{\rm GM} S_x
    \end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
@@ -129,7 +129,7 @@ parameterization is given by:
    - \partial_z (\kappa_{\rm GM} S_x) \\
    - \partial_z (\kappa_{\rm GM} S_y) \\
    \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
-   \end{pmatrix} .
+   \end{pmatrix}
 
 This is the form of the GM parameterization as applied by Donabasaglu,
 1997, in MOM versions 1 and 2.
@@ -150,7 +150,7 @@ streamfunction are:
    \begin{pmatrix}
    F_y^\star \\
    -F_x^\star
-   \end{pmatrix} .
+   \end{pmatrix}
 
 .. _sub_gmredi_skewflux:
 
@@ -183,13 +183,13 @@ be re-written in terms of a non-divergent flux and a skew-flux:
     \kappa_{\rm GM} S_x \partial_z \tau \\
     \kappa_{\rm GM} S_y \partial_z \tau \\
    - \kappa_{\rm GM} S_x \partial_x \tau - \kappa_{\rm GM} S_y \partial_y \tau
-   \end{pmatrix}.
+   \end{pmatrix}
    \end{aligned}
 
 The first vector is non-divergent and thus has no effect on the tracer
 field and can be dropped. The remaining flux can be written:
 
-.. math:: {\bf u}^\star \tau = - \kappa_{\rm GM} {\bf K}_{\rm GM} \boldsymbol{\nabla} \tau ,
+.. math:: {\bf u}^\star \tau = - \kappa_{\rm GM} {\bf K}_{\rm GM} \boldsymbol{\nabla} \tau
 
 where
 
@@ -200,7 +200,7 @@ where
     0  &  0  & -S_x \\
     0  &  0  & -S_y \\
    S_x & S_y &   0
-   \end{pmatrix} ,
+   \end{pmatrix}
 
 is an anti-symmetric tensor.
 
@@ -214,7 +214,7 @@ the Redi isoneutral mixing scheme:
 
    \kappa_\rho {\bf K}_{\rm Redi} \boldsymbol{\nabla} \tau
    - {\bf u}^\star \tau = 
-   ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \boldsymbol{\nabla} \tau .
+   ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \boldsymbol{\nabla} \tau
 
 If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
 
@@ -225,7 +225,7 @@ If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\r
    1 & 0 & 0 \\
    0 & 1 & 0 \\
    2 S_x & 2 S_y & |{\bf S}|^2 
-   \end{pmatrix},
+   \end{pmatrix}
 
 which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
@@ -253,7 +253,7 @@ Variable GM diffusivity
 the Eady growth rate, :math:`|f|/\sqrt{{\rm Ri}}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
-.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{{\rm Ri}}} }^z ,
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{{\rm Ri}}} }^z
 
 where the Eady growth rate has been depth averaged (indicated by the
 over-line). A local Richardson number is defined
@@ -263,7 +263,7 @@ over-line). A local Richardson number is defined
 
    \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
    \frac{ \left ( \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
-   \frac{ M^4 }{ |f|^2 N^2 } ,
+   \frac{ M^4 }{ |f|^2 N^2 }
 
 where :math:`M^2 = g | \boldsymbol{\nabla} \sigma| / \rho_0`. Substituting into
 the formula for :math:`\kappa_{\rm GM}` gives:
@@ -272,7 +272,7 @@ the formula for :math:`\kappa_{\rm GM}` gives:
 
    \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
-   \alpha L^2 \overline{ |{\bf S}| N }^z .
+   \alpha L^2 \overline{ |{\bf S}| N }^z
 
 .. _sub_gmredi_tapering_stability:
 
@@ -335,23 +335,23 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\boldsymbol{\nabla}_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 } ,\\
+   |\boldsymbol{\nabla}_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
    S_{\rm lim} & = - \frac{|\boldsymbol{\nabla}_h \sigma|}{ S_{\max} }, 
-   \quad \mbox{where $S_{\max}>0$ is a parameter} ,\\
-   \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) , \\
-   {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star} .
+   \quad \mbox{where $S_{\max}>0$ is a parameter} \\
+   \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) \\
+   {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
    \end{aligned}
 
 Notice that this algorithm assumes stable stratification through the
 “min” function. In the case where the fluid is well stratified
 (:math:`\sigma_z < S_{\rm lim}`) then the slopes evaluate to:
 
-.. math:: {[s_x, s_y]} = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z} ,
+.. math:: {[s_x, s_y]} = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z}
 
 while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
 become:
 
-.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\boldsymbol{\nabla}_h \sigma| / S_{\max}} ,
+.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\boldsymbol{\nabla}_h \sigma| / S_{\max}}
 
 so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
 S_{\max}`.
@@ -387,7 +387,7 @@ direction of fluxes is unaffected as the amplitude is scaled.
 The scheme inserts a tapering function, :math:`f_1(S)`, in front of the
 GM/Redi tensor:
 
-.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right],
+.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right]
 
 where :math:`S_{\max}` is the maximum slope you want allowed. Where the
 slopes, :math:`|{\bf S}|<S_{\max}` then :math:`f_1(S) = 1` and the tensor is
@@ -405,7 +405,7 @@ Tapering: Danabasoglu and McWilliams, J. Clim. 1995
 The tapering scheme used by followed a similar procedure but used a
 different tapering function, :math:`f_1(S)`:
 
-.. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right] ,
+.. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right]
 
 where :math:`S_c = 0.004` is a cut-off slope and :math:`S_d=0.001` is a
 scale over which the slopes are smoothly tapered. Functionally, the
@@ -424,7 +424,7 @@ The tapering used in :cite:`lar-eta:97` is based on the DM95 tapering scheme, bu
 tapers the scheme with an additional function of height, :math:`f_2(z)`,
 so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
-.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) ,
+.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right)
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
 Coriolis parameter and :math:`c=2` m/s. This tapering that varies with depth
