@@ -41,7 +41,7 @@ Redi scheme: Isopycnal diffusion
 The Redi scheme diffuses tracers along isopycnals and introduces a term
 in the tendency (rhs) of such a tracer (here :math:`\tau`) of the form:
 
-.. math:: \boldsymbol{\nabla} \cdot ( \kappa_\rho {\bf K}_{\rm Redi}  \boldsymbol{\nabla} \tau )
+.. math:: \nabla \cdot ( \kappa_\rho {\bf K}_{\rm Redi} \nabla \tau )
 
 where :math:`\kappa_\rho` is the along isopycnal diffusivity and
 :math:`{\bf K}_{\rm Redi}` is a rank 2 tensor that projects the gradient of
@@ -87,7 +87,7 @@ effect of geostrophic eddies by means of a “bolus” velocity,
 :math:`{\bf u}^\star`. The divergence of this advective flux is added to
 the tracer tendency equation (on the rhs):
 
-.. math:: - \boldsymbol{\nabla} \cdot ( \tau {\bf u}^\star )
+.. math:: - \nabla \cdot ( \tau {\bf u}^\star )
 
 The bolus velocity :math:`{\bf u}^\star` is defined as the rotational part
 of a streamfunction
@@ -95,7 +95,7 @@ of a streamfunction
 
 .. math::
 
-   {\bf u}^\star = \boldsymbol{\nabla} \times {\bf F}^\star =
+   {\bf u}^\star = \nabla \times {\bf F}^\star =
    \begin{pmatrix}
    - \partial_z  F_y^\star \\
    + \partial_z  F_x^\star \\
@@ -189,7 +189,7 @@ be re-written in terms of a non-divergent flux and a skew-flux:
 The first vector is non-divergent and thus has no effect on the tracer
 field and can be dropped. The remaining flux can be written:
 
-.. math:: {\bf u}^\star \tau = - \kappa_{\rm GM} {\bf K}_{\rm GM} \boldsymbol{\nabla} \tau
+.. math:: {\bf u}^\star \tau = - \kappa_{\rm GM} {\bf K}_{\rm GM} \nabla \tau
 
 where
 
@@ -212,9 +212,9 @@ the Redi isoneutral mixing scheme:
 
 .. math::
 
-   \kappa_\rho {\bf K}_{\rm Redi} \boldsymbol{\nabla} \tau
+   \kappa_\rho {\bf K}_{\rm Redi} \nabla \tau
    - {\bf u}^\star \tau = 
-   ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \boldsymbol{\nabla} \tau
+   ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \nabla \tau
 
 If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
 
@@ -262,10 +262,10 @@ over-line). A local Richardson number is defined
 .. math::
 
    \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
-   \frac{ \left ( \dfrac{g}{f \rho_0} | \boldsymbol{\nabla} \sigma | \right )^2 }{N^2} =
+   \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 }
 
-where :math:`M^2 = g | \boldsymbol{\nabla} \sigma| / \rho_0`. Substituting into
+where :math:`M^2 = g | \nabla \sigma| / \rho_0`. Substituting into
 the formula for :math:`\kappa_{\rm GM}` gives:
 
 .. math::
@@ -335,8 +335,8 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\boldsymbol{\nabla}_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
-   S_{\rm lim} & = - \frac{|\boldsymbol{\nabla}_h \sigma|}{ S_{\max} }, 
+   |\nabla_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
+   S_{\rm lim} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }, 
    \quad \mbox{where $S_{\max}>0$ is a parameter} \\
    \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) \\
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
@@ -351,7 +351,7 @@ Notice that this algorithm assumes stable stratification through the
 while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
 become:
 
-.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\boldsymbol{\nabla}_h \sigma| / S_{\max}}
+.. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\nabla_h \sigma| / S_{\max}}
 
 so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
 S_{\max}`.
