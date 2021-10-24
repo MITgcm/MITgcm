@@ -196,10 +196,10 @@ c====================================================
        call ecco_readwei(fname0w,localweight,localrec,
      &      1,1,dosumsq,myThid)
        call ecco_readwei(gencost_errfile(igen_deconc),
-     &      gencost_weight(1,1,1,1,igen_deconc),localrec,
+     &      gencost_weight(1-OLx,1-OLy,1,1,igen_deconc),localrec,
      &      1,1,dosumsq,myThid)
        call ecco_readwei(gencost_errfile(igen_exconc),
-     &      gencost_weight(1,1,1,1,igen_exconc),localrec,
+     &      gencost_weight(1-OLx,1-OLy,1,1,igen_exconc),localrec,
      &      1,1,dosumsq,myThid)
 #else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
@@ -298,7 +298,7 @@ c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
-        call ecco_cp(gencost_weight(1,1,1,1,igen_deconc),
+        call ecco_cp( gencost_weight(1-OLx,1-OLy,1,1,igen_deconc),
      O       localtmp,1,1,myThid)
 #endif
         call ecco_addcost(
@@ -320,7 +320,7 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
 #ifdef SEAICECOST_JPL
-        call ecco_cp(gencost_weight(1,1,1,1,igen_exconc),
+        call ecco_cp( gencost_weight(1-OLx,1-OLy,1,1,igen_exconc),
      O       localtmp,1,1,myThid)
 #endif
         call ecco_addcost(
