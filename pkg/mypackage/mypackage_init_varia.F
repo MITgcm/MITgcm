@@ -35,8 +35,8 @@ C     === Local variables ===
 C     Initialize arrays in common blocks :
 C     3-dim.
         DO k=1,Nr
-         DO j=1-Oly,sNy+OLy
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 #ifdef MYPACKAGE_3D_STATE
            myPa_StatScal1(i,j,k,bi,bj) = 0. _d 0
            myPa_StatScal2(i,j,k,bi,bj) = 0. _d 0
@@ -55,8 +55,8 @@ C     3-dim.
 
 C     2-dim.
 #ifdef MYPACKAGE_2D_STATE
-        DO j=1-Oly,sNy+OLy
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           myPa_Surf1(i,j,bi,bj) = 0. _d 0
           myPa_Surf2(i,j,bi,bj) = 0. _d 0
          ENDDO
