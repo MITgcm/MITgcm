@@ -1,4 +1,16 @@
 #ifdef ALLOW_MYPACKAGE
+CBOP
+C     !ROUTINE: MYPACKAGE.h
+C     !INTERFACE:
+C     #include "MYPACKAGE.h"
+
+C     !DESCRIPTION: \bv
+C     *================================================================*
+C     | MYPACKAGE.h
+C     | o Header file defining "mypackage" parameters and variables
+C     *================================================================*
+C     \ev
+CEOP
 
 C     Package flag
       LOGICAL myPa_MNC
@@ -73,7 +85,3 @@ C     MYPA 2-dim. fields
 #endif /* MYPACKAGE_TENDENCY */
 
 #endif /* ALLOW_MYPACKAGE */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
