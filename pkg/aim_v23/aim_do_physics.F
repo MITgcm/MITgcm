@@ -101,16 +101,6 @@ C      ==> move water wapor from the stratos to the surface level.
          ENDDO
         ENDDO
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-#ifdef ALLOW_THSICE
-        IF ( useThSIce ) THEN
-C-    do sea-ice advection before setting any surface BC.
-          CALL THSICE_DO_ADVECT(
-     I                           bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* ALLOW_THSICE */
-#endif /* OLD_THSICE_CALL_SEQUENCE */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Physics package needs to know time of year as a fraction
@@ -196,15 +186,11 @@ C--   end bi,bj loops.
 
 #ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
-
-#ifndef OLD_THSICE_CALL_SEQUENCE
 C--   Exchange fields that are advected by seaice dynamics
         CALL THSICE_DO_EXCH( myThid )
 C-    do sea-ice advection after sea-ice thermodynamics
         CALL THSICE_DO_ADVECT(
      I                         0, 0, myTime, myIter, myThid )
-#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
-
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
@@ -214,21 +200,11 @@ C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
      I                        bi, bj, myTime, myIter, myThid )
          ENDDO
         ENDDO
-
       ENDIF
 #endif /* ALLOW_THSICE */
 
 C--   do exchanges for AIM related quantities:
       _EXCH_XY_RL( aim_drag, myThid )
-
-#ifdef OLD_THSICE_CALL_SEQUENCE
-#ifdef ALLOW_THSICE
-      IF (useThSIce) THEN
-C--   Exchange fields that are advected by seaice dynamics
-        CALL THSICE_DO_EXCH( myThid )
-      ENDIF
-#endif
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
