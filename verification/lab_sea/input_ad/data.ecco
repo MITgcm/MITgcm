@@ -1,13 +1,10 @@
-#
-#
 # ******************
 # ECCO cost function
 # ******************
  &ECCO_COST_NML
  cost_iprec  = 64,
- cost_yftype = 'RL',
  &
-#
+
  &ECCO_GENCOST_NML
  gencost_avgperiod(1) = 'month',
  gencost_barfile(1) = 'm_theta_month',
