@@ -200,17 +200,18 @@ c    &      , adGGL90viscArU, adGGL90viscArV, adGGL90diffKr
 
 #ifdef ALLOW_DEPTH_CONTROL
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
-      _RS adr_low_control(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS adhfacc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS adhfacs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS adhfacw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS adrecip_rcol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS adrecip_hfacc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS adrecip_hfacs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS adrecip_hfacw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      COMMON /adGRID_RS/
-     &     adr_low_control, adhfacc, adhfacw, adhfacs,
-     &     adrecip_rcol, adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
+      _RS adr_low     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS adrecip_rcol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /adGRID_VAR_RS/
+     &     adhfacc, adhfacw, adhfacs,
+     &     adrecip_hfacc, adrecip_hfacw, adrecip_hfacs,
+     &     adr_low, adrecip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_SHELFICE

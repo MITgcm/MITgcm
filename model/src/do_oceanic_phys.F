@@ -614,10 +614,8 @@ cph although some of these are re-initialised later.
            Kwx(i,j,k,bi,bj)  = 0. _d 0
            Kwy(i,j,k,bi,bj)  = 0. _d 0
            Kwz(i,j,k,bi,bj)  = 0. _d 0
-#  ifdef GM_NON_UNITY_DIAGONAL
            Kux(i,j,k,bi,bj)  = 0. _d 0
            Kvy(i,j,k,bi,bj)  = 0. _d 0
-#  endif
 #  ifdef GM_EXTRA_DIAGONAL
            Kuz(i,j,k,bi,bj)  = 0. _d 0
            Kvz(i,j,k,bi,bj)  = 0. _d 0
