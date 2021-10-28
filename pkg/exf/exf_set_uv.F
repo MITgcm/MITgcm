@@ -188,7 +188,7 @@ C-    get record numbers and interpolation factor
      &       ' myIter, count0, count1:', myIter, count0, count1
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') 'EXF_SET_UV:  ',
+           WRITE(msgBuf,'(2A,2(L2,2X),F19.15)') 'EXF_SET_UV:  ',
      &       ' first, changed, fac:  ', first, changed, fac
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
