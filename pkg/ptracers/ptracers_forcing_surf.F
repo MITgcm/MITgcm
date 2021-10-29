@@ -63,7 +63,10 @@ C Example of how to add forcing at the surface
 c       IF ( PTRACERS_StepFwd(iTrc) ) THEN
           DO j = jMin, jMax
            DO i = iMin, iMax
+C     add positive saltflux only (record only ice formation)
              surfaceForcingPTr(i,j,bi,bj,iTrc) = 0. _d 0
+     &             + MAX(saltFlux(i,j,bi,bj),0.D0)*mass2rUnit
+     &               * ptrSurfMask(i,j,bi,bj,iTrc)
 c    &                        + surfaceForcingS(i,j,bi,bj)
            ENDDO
           ENDDO
