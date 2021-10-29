@@ -80,7 +80,7 @@ C     consistent with what is found in S/R update_cg2d_ad
       _RS pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /CG2D_I_R_AD/
+      COMMON /ADCG2D_I_RS/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
 #endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 

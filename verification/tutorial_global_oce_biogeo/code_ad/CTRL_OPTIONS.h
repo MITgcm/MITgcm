@@ -26,20 +26,23 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+#undef ECCO_CTRL_DEPRECATED
 
 #define EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#define ALLOW_SALT0_CONTROL
-#define ALLOW_TR10_CONTROL
-#define ALLOW_TAUU0_CONTROL
-#define ALLOW_TAUV0_CONTROL
-#define ALLOW_SFLUX0_CONTROL
-#define ALLOW_HFLUX0_CONTROL
+#undef ALLOW_THETA0_CONTROL
+#undef ALLOW_SALT0_CONTROL
+#undef ALLOW_UVEL0_CONTROL
+#undef ALLOW_VVEL0_CONTROL
+#undef ALLOW_TR10_CONTROL
+#undef ALLOW_TAUU0_CONTROL
+#undef ALLOW_TAUV0_CONTROL
+#undef ALLOW_SFLUX0_CONTROL
+#undef ALLOW_HFLUX0_CONTROL
 #undef ALLOW_SSS0_CONTROL
 #undef ALLOW_SST0_CONTROL
 
@@ -64,14 +67,24 @@ C       >>> Other Control.
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
 
+C       >>> Backward compatibility option (before checkpoint 65p)
+#undef ALLOW_KAPGM_CONTROL_OLD
+#undef ALLOW_KAPREDI_CONTROL_OLD
+
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
 #undef ALLOW_ROTATE_UV_CONTROLS
+
+C  o Originally the first two time-reccords of control
+C    variable tau u and tau v were skipped.
+C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
+C    to the other the time variable atmospheric controls.
+#undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
 C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
 C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
