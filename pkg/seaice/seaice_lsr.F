@@ -349,7 +349,7 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
-      CALL SEAICE_SIDEDRAG_STRESS(
+      IF ( SEAICESideDrag .GT. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
      I     uIceC, vIceC,
      I     NcoastX, NcoastY, AREA,
      O     SideDragX,SideDragY,
@@ -513,6 +513,7 @@ C
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICESideDrag .GT. 0. _d 0 ) THEN
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=jMin,jMax
@@ -525,6 +526,7 @@ C
          ENDDO
         ENDDO
        ENDDO
+       ENDIF
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifndef OBCS_UVICE_OLD
