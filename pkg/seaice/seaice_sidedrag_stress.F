@@ -40,8 +40,9 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     u/vIceLoc :: local copies of the current ice velocity
-C     NcoastX/V :: local copy of normalized coast length
+C     u/vIceLoc   :: local copies of the current ice velocity
+C     NcoastXloc  :: local copy of normalized coast length
+C     NcoastYloc  :: local copy of normalized coast length
 C     SideDraXloc :: side drag in x direction
 C     SideDraYloc :: side drag in y direction
 C     iStep     :: current sub-time step iterate
@@ -89,6 +90,7 @@ C     initialize fields
          ENDDO
         ENDDO
 C calculate the sidedrag coeff
+       IF (SEAICESideDRag .GT. 0.) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
@@ -114,7 +116,34 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
           ENDIF
          ENDDO
         ENDDO
-       ENDDO
+      ELSEIF ( SEAICESideDrag .LT. 0. ) THEN
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
+           tmpx = 0.5 _d 0 * ( uSpd(i,j) + uSpd(i-1,j) )
+           tmpy = 0.5 _d 0 * ( uSpd(i,j) + uSpd(i,j-1) )
+c Another way to get |u|, |v|
+c        tmpx = sqrt(uIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
+c     &           (vIceLoc(i,  j,  bi,bj)+vIceLoc(i-1,j,bi,bj)+
+c     &            vIceLoc(i-1,j+1,bi,bj)+vIceLoc(i,  j+1,bi,bj)))**2)
+c        tmpy = sqrt(vIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
+c     &           (uIceLoc(i,  j,  bi,bj)+uIceLoc(i,  j-1,bi,bj)+
+c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
+
+
+           SideDragXloc(i,j,bi,bj) =  SEAICESideDrag
+     &                              * tmpx
+     &                              * NcoastXloc(i,j,bi,bj)
+     &                              * seaiceMassU(i,j,bi,bj)
+           SideDragYloc(i,j,bi,bj) =  SEAICESideDrag
+     &                              * tmpy
+     &                              * NcoastYloc(i,j,bi,bj)
+     &                              * seaiceMassV(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+      ENDIF     
+      ENDDO
       ENDDO
 
 #endif /* SEAICE_ALLOW_SIDEDRAG */
