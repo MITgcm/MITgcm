@@ -21,6 +21,9 @@ if test -d $fromDir ; then
       fi
     fi
   done
+  xx=lev_sst
+  dd if=$xx.bin bs=14400 count=1 skip=11 of=${xx}_dec.bin
+  cat ${xx}_dec.bin $xx.bin >${xx}_startdec.bin
   echo ' link' $lnkList "from dir:" $fromDir
 else
   echo " Error:" $fromDir "not a directory"
