@@ -172,7 +172,7 @@ describing the pressure method it suffices to say that the hydrostatic
 pressure gradient is explicit and so can be included in the vector
 :math:`G`.
 
-Substituting the two momentum equations into the depth integrated
+Substituting the two momentum equations into the depth-integrated
 continuity equation eliminates :math:`u^{n+1}` and :math:`v^{n+1}`
 yielding an elliptic equation for :math:`\eta^{n+1}`. Equations
 :eq:`discrete-time-u`, :eq:`discrete-time-v` and
@@ -972,7 +972,7 @@ non-hydrostatic effects (:math:`\epsilon_{\rm nh} = 0`) is:
 
 .. math::
    \epsilon_{fs} {\eta}^{n+1} -
-    \nabla _h \cdot \Delta t^2 (R_o-R_{fixed})  \nabla _h b_s
+    \nabla _h \cdot \Delta t^2 (R_o-R_{\rm fixed})  \nabla _h b_s
    {\eta}^{n+1} = {\eta}^*
    :label: eq-solve2D
 
@@ -980,7 +980,7 @@ where
 
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
-   \Delta t  \nabla _h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
+   \Delta t  \nabla _h \cdot \int_{R_{\rm fixed}}^{R_o} \vec{\bf v}^* dr
    \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
@@ -1197,18 +1197,18 @@ the various advective, Coriolis, horizontal dissipation, vertical
 dissipation and metric forces:
 
 .. math::
-   G_u = G_u^{adv} + G_u^{cor} + G_u^{h-diss} + G_u^{v-diss} +
-   G_u^{metric} + G_u^{nh-metric}
+   G_u = G_u^{\rm adv} + G_u^{\rm Cor} + G_u^{h- \rm diss} + G_u^{v- \rm diss} +
+   G_u^{\rm metric} + G_u^{\rm nh-metric}
    :label: gsplit_momu
 
 .. math::
-   G_v = G_v^{adv} + G_v^{cor} + G_v^{h-diss} + G_v^{v-diss} +
-   G_v^{metric} + G_v^{nh-metric}
+   G_v = G_v^{\rm adv} + G_v^{\rm Cor} + G_v^{h- \rm diss} + G_v^{v- \rm diss} +
+   G_v^{\rm metric} + G_v^{\rm nh-metric}
    :label: gsplit_momv
 
 .. math::
-   G_w = G_w^{adv} + G_w^{cor} + G_w^{h-diss} + G_w^{v-diss} +
-   G_w^{metric} + G_w^{nh-metric}
+   G_w = G_w^{\rm adv} + G_w^{\rm Cor} + G_w^{h- \rm diss} + G_w^{v- \rm diss} +
+   G_w^{\rm metric} + G_w^{\rm nh-metric}
    :label: gsplit_momw
 
 In the hydrostatic limit, :math:`G_w=0` and :math:`\epsilon_{\rm nh}=0`,
@@ -1232,21 +1232,21 @@ Advection of momentum
 The advective operator is second order accurate in space:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{adv} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm adv} =
      \delta_i \overline{ U }^i \overline{ u }^i
    + \delta_j \overline{ V }^i \overline{ u }^j
    + \delta_k \overline{ W }^i \overline{ u }^k
    :label: discrete-momadvu
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{adv} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm adv} =
      \delta_i \overline{ U }^j \overline{ v }^i
    + \delta_j \overline{ V }^j \overline{ v }^j
    + \delta_k \overline{ W }^j \overline{ v }^k 
    :label: discrete-momadvv
 
 .. math::
-   {\cal A}_c \Delta r_c G_w^{adv} =
+   {\cal A}_c \Delta r_c G_w^{\rm adv} =
      \delta_i \overline{ U }^k \overline{ w }^i
    + \delta_j \overline{ V }^k \overline{ w }^j
    + \delta_k \overline{ W }^k \overline{ w }^k
@@ -1293,18 +1293,18 @@ The “pure C grid” Coriolis terms (i.e. in absence of C-D scheme) are
 discretized:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{Cor} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm Cor} =
      \overline{ f {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
    - \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ w }^k }^i
    :label: cdscheme_gu
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{Cor} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm Cor} =
    - \overline{ f {\cal A}_c \Delta r_f h_c \overline{ u }^i }^j
    :label: cdscheme_gv
 
 .. math::
-   {\cal A}_c \Delta r_c G_w^{Cor} =
+   {\cal A}_c \Delta r_c G_w^{\rm Cor} =
     \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ u }^i }^k
    :label: cdscheme_gw
 
@@ -1331,16 +1331,16 @@ publications, all calculations to date have used the following different
 discretization:
 
 .. math::
-   G_u^{Cor} = f_u \overline{ v }^{ji}
+   G_u^{\rm Cor} = f_u \overline{ v }^{ji}
    - \epsilon_{\rm nh} f_u' \overline{ w }^{ik}
    :label: gu_cor
 
 .. math::
-   G_v^{Cor} = - f_v \overline{ u }^{ij}
+   G_v^{\rm Cor} = - f_v \overline{ u }^{ij}
    :label: gv_cor
 
 .. math::
-   G_w^{Cor} = \epsilon_{\rm nh} f_w' \overline{ u }^{ik}
+   G_w^{\rm Cor} = \epsilon_{\rm nh} f_w' \overline{ u }^{ik}
    :label: gw_cor
 
 where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
@@ -1355,7 +1355,7 @@ to select the energy-conserving conserving form :eq:`cdscheme_gu`, :eq:`cdscheme
 .. admonition:: S/R  :filelink:`CD_CODE_SCHEME <pkg/cd_code/cd_code_scheme.F>`, :filelink:`MOM_U_CORIOLIS <pkg/mom_fluxform/mom_u_coriolis.F>`, :filelink:`MOM_V_CORIOLIS <pkg/mom_fluxform/mom_v_coriolis.F>`
   :class: note
 
-    | :math:`G_u^{Cor}, G_v^{Cor}` : :varlink:`cF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm Cor}, G_v^{\rm Cor}` : :varlink:`cF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Curvature metric terms
 ----------------------
@@ -1367,17 +1367,17 @@ momentum equations. Under the thin-atmosphere and hydrostatic
 approximations these terms are discretized:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{metric} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
    :label: gu_metric
   
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{metric} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ u }^i }^j \\
    :label: gv_metric
   
 .. math::
-   G_w^{metric} = 0
+   G_w^{\rm metric} = 0
    :label: gw_metric
   
 where :math:`a` is the radius of the planet (sphericity is assumed) or
@@ -1393,8 +1393,8 @@ exclusively been used to date:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
-   G_v^{metric} & = \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
+   G_u^{\rm metric} & = \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
+   G_v^{\rm metric} & = \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
 
 where :math:`\tan{\varphi}` is evaluated at the :math:`u` and :math:`v`
 points respectively.
@@ -1402,7 +1402,7 @@ points respectively.
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_SPHERE <pkg/mom_fluxform/mom_u_metric_sphere.F>`, :filelink:`MOM_V_METRIC_SPHERE <pkg/mom_fluxform/mom_v_metric_sphere.F>`
   :class: note
 
-    | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm metric}, G_v^{\rm metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 .. _non_hyd_metric_terms:
 
@@ -1414,17 +1414,17 @@ approximation re-introduces metric terms involving :math:`w` which are
 required to conserve angular momentum:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{metric} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c }^i
    :label: gu_metricnh
   
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{metric} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{v}^j \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c}^j
    :label: gv_metricnh
   
 .. math::
-   {\cal A}_c \Delta r_c G_w^{metric} =
+   {\cal A}_c \Delta r_c G_w^{\rm metric} =
      \overline{ \frac{ {\overline{u}^i}^2 + {\overline{v}^j}^2}{a} {\cal A}_c \Delta r_f h_c }^k
    :label: wv_metricnh
 
@@ -1434,17 +1434,17 @@ in the past, used a different discretization in the model which is:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = 
+   G_u^{\rm metric} & = 
    - \frac{u}{a} \overline{w}^{ik} \\
-   G_v^{metric} & = 
+   G_v^{\rm metric} & = 
    - \frac{v}{a} \overline{w}^{jk} \\
-   G_w^{metric} & = 
+   G_w^{\rm metric} & = 
      \frac{1}{a} ( {\overline{u}^{ik}}^2 + {\overline{v}^{jk}}^2 )\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_NH <pkg/mom_common/mom_u_metric_nh.F>`, :filelink:`MOM_V_METRIC_NH <pkg/mom_common/mom_v_metric_nh.F>`
   :class: note
 
-    | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm metric}, G_v^{\rm metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 .. _fluxform_lat_dissip:
 
@@ -1456,13 +1456,13 @@ down gradient momentum fluxes, ignoring constraints on the stress tensor
 such as symmetry.
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{h-diss} =
+   {\cal A}_w \Delta r_f h_w G_u^{h- \rm diss} =
      \delta_i  \Delta y_f \Delta r_f h_c \tau_{11}
    + \delta_j  \Delta x_v \Delta r_f h_\zeta \tau_{12}
    :label: gu_h-diss
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{h-diss} =
+   {\cal A}_s \Delta r_f h_s G_v^{h- \rm diss} =
      \delta_i  \Delta y_u \Delta r_f h_\zeta \tau_{21}
    + \delta_j  \Delta x_f \Delta r_f h_c \tau_{22}
    :label: gv_h-diss
@@ -1535,13 +1535,13 @@ interior stress calculation (code) independent of the boundary
 conditions. The “body” force takes the form:
 
 .. math::
-   G_u^{side-drag} =
+   G_u^{\rm side-drag} =
    \frac{4}{\Delta z_f} \overline{ (1-h_\zeta) \frac{\Delta x_v}{\Delta y_u} }^j
    \left( A_h c_{12\Delta}(\varphi) u - A_4 c_{12\Delta^2}(\varphi) \nabla^2 u \right)
    :label: gu_sidedrag
 
 .. math::
-   G_v^{side-drag} =
+   G_v^{\rm side-drag} =
    \frac{4}{\Delta z_f} \overline{ (1-h_\zeta) \frac{\Delta y_u}{\Delta x_v} }^i
    \left( A_h c_{21\Delta}(\varphi) v - A_4 c_{21\Delta^2}(\varphi) \nabla^2 v \right)
    :label: gv_sidedrag
@@ -1553,7 +1553,7 @@ neighboring vorticity points, e.g. :math:`1-h_w < 1-h_\zeta`
 .. admonition:: S/R  :filelink:`MOM_U_SIDEDRAG <pkg/mom_common/mom_u_sidedrag.F>`, :filelink:`MOM_V_SIDEDRAG <pkg/mom_common/mom_v_sidedrag.F>`
   :class: note
 
-    | :math:`G_u^{side-drag}, G_v^{side-drag}` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm side-drag}, G_v^{\rm side-drag}` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Vertical dissipation
 --------------------
@@ -1565,17 +1565,17 @@ only next to boundaries; exactly where other terms appear such as linear
 and quadratic bottom drag.
 
 .. math::
-   G_u^{v-diss} =
+   G_u^{v- \rm diss} =
    \frac{1}{\Delta r_f h_w} \delta_k \tau_{13}
    :label: gu_u-diss
 
 .. math::
-   G_v^{v-diss} =
+   G_v^{v- \rm diss} =
    \frac{1}{\Delta r_f h_s} \delta_k \tau_{23}
    :label: gv_v-diss
 
 .. math::
-   G_w^{v-diss} = \epsilon_{\rm nh}
+   G_w^{v- \rm diss} = \epsilon_{\rm nh}
    \frac{1}{\Delta r_f h_d} \delta_k \tau_{33}
    :label: gw_w-diss
 
@@ -1611,7 +1611,7 @@ bottom. The drag is cast as a stress expressed as a linear or quadratic
 function of the mean flow in the layer above the topography:
 
 .. math::
-   \tau_{13}^{bottom-drag} =
+   \tau_{13}^{\rm bottom-drag} =
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
@@ -1620,7 +1620,7 @@ function of the mean flow in the layer above the topography:
    :label: tau13
 
 .. math::
-   \tau_{23}^{bottom-drag} =
+   \tau_{23}^{\rm bottom-drag} =
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
@@ -1637,7 +1637,7 @@ range 0.001–0.003.
 .. admonition:: S/R  :filelink:`MOM_U_BOTTOMDRAG <pkg/mom_common/mom_u_bottomdrag.F>`, :filelink:`MOM_V_BOTTOMDRAG <pkg/mom_common/mom_v_bottomdrag.F>`
   :class: note
 
-    | :math:`\tau_{13}^{bottom-drag} / \Delta r_f , \tau_{23}^{bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`\tau_{13}^{\rm bottom-drag} / \Delta r_f , \tau_{23}^{\rm bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Derivation of discrete energy conservation
 ------------------------------------------
@@ -1761,17 +1761,17 @@ where non-hydrostatic contributions will enter:
 
 .. math::
    G_u = G_u^{fv} + G_u^{\zeta_3 v} + G_u^{\zeta_2 w} + G_u^{\partial_x B}
-   + G_u^{\partial_z \tau^x} + G_u^{h-dissip} + G_u^{v-dissip}
+   + G_u^{\partial_z \tau^x} + G_u^{h- \rm diss} + G_u^{v- \rm diss}
    :label: gu_vecinv
 
 .. math::
    G_v = G_v^{fu} + G_v^{\zeta_3 u} + G_v^{\zeta_1 w} + G_v^{\partial_y B}
-   + G_v^{\partial_z \tau^y} + G_v^{h-dissip} + G_v^{v-dissip}
+   + G_v^{\partial_z \tau^y} + G_v^{h- \rm diss} + G_v^{v- \rm diss}
    :label: gv_vecinv
 
 .. math::
    G_w = G_w^{fu} + G_w^{\zeta_1 v} + G_w^{\zeta_2 u} + G_w^{\partial_z B}
-   + G_w^{h-dissip} + G_w^{v-dissip}
+   + G_w^{h- \rm diss} + G_w^{v- \rm diss}
    :label: gw_vecinv
 
 .. admonition:: S/R  :filelink:`MOM_VECINV <pkg/mom_vecinv/mom_vecinv.F>`
@@ -1951,13 +1951,13 @@ potential vorticity (thickness weighted relative vorticity) and
 divergence and dissipates energy, enstrophy and divergence squared:
 
 .. math::
-   G_u^{h-dissip} =
+   G_u^{h- \rm diss} =
      \frac{1}{\Delta x_c} \delta_i ( A_D D - A_{D4} D^*)
    - \frac{1}{\Delta y_u h_w} \delta_j h_\zeta ( A_\zeta \zeta - A_{\zeta4} \zeta^* )
    :label: gu_h-dissip
 
 .. math::
-   G_v^{h-dissip} =
+   G_v^{h- \rm diss} =
      \frac{1}{\Delta x_v h_s} \delta_i h_\zeta ( A_\zeta \zeta - A_\zeta \zeta^* )
    + \frac{1}{\Delta y_c} \delta_j ( A_D D - A_{D4} D^* )
    :label: gv_h-dissip
@@ -1987,12 +1987,12 @@ Vertical dissipation
 Currently, this is exactly the same code as the flux form equations.
 
 .. math::
-   G_u^{v-diss} =
+   G_u^{v- \rm diss} =
    \frac{1}{\Delta r_f h_w} \delta_k \tau_{13}
    :label: gu_v-dissip
 
 .. math::
-   G_v^{v-diss} =
+   G_v^{v- \rm diss} =
    \frac{1}{\Delta r_f h_s} \delta_k \tau_{23}
    :label: gv_v-dissip
 
@@ -2037,20 +2037,20 @@ stable. Historically this has been the quasi-second order
 Adams-Bashforth method (ABII) and applied to all terms. For an arbitrary
 tracer, :math:`\tau`, the forced advection-diffusion equation reads:
 
-.. math:: \partial_t \tau + G_{adv}^\tau = G_{diff}^\tau + G_{forc}^\tau
+.. math:: \partial_t \tau + G_{\rm adv}^\tau = G_{\rm diff}^\tau + G_{\rm forc}^\tau
    :label: trac_forced_advdiff
 
-where :math:`G_{adv}^\tau`, :math:`G_{diff}^\tau` and
-:math:`G_{forc}^\tau` are the tendencies due to advection, diffusion and
+where :math:`G_{\rm adv}^\tau`, :math:`G_{\rm diff}^\tau` and
+:math:`G_{\rm forc}^\tau` are the tendencies due to advection, diffusion and
 forcing, respectively, namely:
 
 .. math::
-   G_{adv}^\tau = \partial_x (u \tau) + \partial_y (v \tau) + \partial_r (w \tau)
+   G_{\rm adv}^\tau = \partial_x (u \tau) + \partial_y (v \tau) + \partial_r (w \tau)
    - \tau  \nabla  \cdot {\bf v}
    :label: g_adv-tau
 
 .. math::
-   G_{diff}^\tau =  \nabla  \cdot \left ( {\bf K}  \nabla  \tau \right )
+   G_{\rm diff}^\tau =  \nabla  \cdot \left ( {\bf K}  \nabla  \tau \right )
    :label: g_diff-tau
 
 and the forcing can be some arbitrary function of state, time and
@@ -2065,7 +2065,7 @@ correction term. Global conservation is not possible using the flux-form
 (Griffies and Hallberg (2000) :cite:`griffies:00` , Campin et al. (2004) :cite:`cam:04`).
 
 The continuity equation can be recovered by setting
-:math:`G_{diff}=G_{forc}=0` and :math:`\tau=1`.
+:math:`G_{\rm diff}=G_{\rm forc}=0` and :math:`\tau=1`.
 
 The driver routine that calls the routines to calculate tendencies are
 :filelink:`CALC_GT <model/src/calc_gt.F>` and :filelink:`CALC_GS <model/src/calc_gs.F>` for temperature and salt (moisture),
@@ -2092,7 +2092,7 @@ method:
    (\tfrac{3}{2} + \epsilon) G^{(n)} - (\tfrac{1}{2} + \epsilon) G^{(n-1)}
    :label: g_nponehalf
 
-where :math:`G^{(n)} = G_{adv}^\tau + G_{diff}^\tau + G_{src}^\tau` at
+where :math:`G^{(n)} = G_{\rm adv}^\tau + G_{\rm diff}^\tau + G_{\rm src}^\tau` at
 time step :math:`n`. The tendency at :math:`n-1` is not re-calculated
 but rather the tendency at :math:`n` is stored in a global array for
 later re-use.
@@ -2158,23 +2158,17 @@ the filter damping.
 The three computational filter operators are :
 
 .. math::
-
-   \mathrm{S1c:}\hspace{2cm}
-   [1 - 1/2 \frac{\Delta t}{\tau_{shap}}
+   \begin{aligned}
+   & \mathrm{S1c:}\hspace{2cm}
+   [1 - 1/2 \frac{\Delta t}{\tau_{\rm Shap}}
       \{ (\frac{1}{4}\delta_{ii})^n 
-       + (\frac{1}{4}\delta_{jj})^n \} ]
-
-.. math::
-
-   \mathrm{S2c:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} 
-   \{ \frac{1}{8} (\delta_{ii} + \delta_{jj}) \}^n]
-
-.. math::
-
-   \mathrm{S4c:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} (\frac{1}{4}\delta_{ii})^n]
-   [1 - \frac{\Delta t}{\tau_{shap}} (\frac{1}{4}\delta_{jj})^n]
+       + (\frac{1}{4}\delta_{jj})^n \} ]\\
+   & \mathrm{S2c:}\hspace{2cm}
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} 
+   \{ \frac{1}{8} (\delta_{ii} + \delta_{jj}) \}^n]\\
+   & \mathrm{S4c:}\hspace{2cm}
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{ii})^n]
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{jj})^n]\end{aligned} 
 
 In addition, the S2 operator can easily be extended to a physical space
 filter:
@@ -2182,12 +2176,12 @@ filter:
 .. math::
 
    \mathrm{S2g:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} 
-   \{ \frac{L_{shap}^2}{8} \overline{\nabla}^2 \}^n]
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}}
+   \{ \frac{L_{\rm Shap}^2}{8} \overline{\nabla}^2 \}^n]
 
 with the Laplacian operator :math:`\overline{\nabla}^2` and a length
-scale parameter :math:`L_{shap}`. The stability of this S2g filter
-requires :math:`L_{shap} < \mathrm{Min}^{(Global)}(\Delta x,\Delta y)`.
+scale parameter :math:`L_{\rm Shap}`. The stability of this S2g filter
+requires :math:`L_{\rm Shap} < \mathrm{Min}^{(\rm Global)}(\Delta x,\Delta y)`.
 
 .. _shapiro_diagnostics:
 
@@ -2394,17 +2388,17 @@ exceeds the molecular value :math:`\nu` should ensure that the energy
 flux through viscous scale set by the eddy viscosity is the same as it
 would have been had we resolved all the way to the true viscous scale.
 That is, :math:`\epsilon\approx
-A_{hSmag} \overline D^2`. If we use this approximation to estimate the
+A_{h \rm Smag} \overline D^2`. If we use this approximation to estimate the
 Kolmogorov viscous length, then
 
 .. math::
-   L_\epsilon(A_{hSmag})\propto\pi\epsilon^{-1/4}A_{hSmag}^{3/4}\approx\pi(A_{hSmag}
-   \overline D^2)^{-1/4}A_{hSmag}^{3/4} = \pi A_{hSmag}^{1/2}\overline D^{-1/2}
+   L_\epsilon(A_{h \rm Smag})\propto\pi\epsilon^{-1/4}A_{h \rm Smag}^{3/4}\approx\pi(A_{h \rm Smag}
+   \overline D^2)^{-1/4}A_{h\rm Smag}^{3/4} = \pi A_{h\rm Smag}^{1/2}\overline D^{-1/2}
    :label: kolm_visc_len
 
-To make :math:`L_\epsilon(A_{hSmag})` scale with the gridscale, then
+To make :math:`L_\epsilon(A_{h\rm Smag})` scale with the gridscale, then
 
-.. math:: A_{hSmag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2L^2|\overline D|
+.. math:: A_{h\rm Smag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2L^2|\overline D|
    :label: AhSmag
 
 Where the deformation rate appropriate for hydrostatic flows with
@@ -2425,7 +2419,7 @@ Smagorinsky (1993) :cite:`smag:93` shows that a corresponding
 vertical viscosity should be used:
 
 .. math::
-   A_{vSmag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2H^2
+   A_{v \rm Smag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2H^2
    \sqrt{\left({\frac{\partial{\overline {\tilde u}}}{\partial{z}}}\right)^2
    + \left({\frac{\partial{\overline {\tilde v}}}{\partial{z}}}\right)^2}
    :label: A_vsmag
@@ -2446,19 +2440,19 @@ and it cascades to smaller scales where it is dissipated.
 
 Following a similar argument to that above about energy flux, the
 enstrophy flux is estimated to be equal to the positive-definite
-gridscale dissipation rate of enstrophy :math:`\eta\approx A_{hLeith}
+gridscale dissipation rate of enstrophy :math:`\eta\approx A_{h \rm Leith}
 |\nabla\overline \omega_3|^2`. By dimensional analysis, the
-enstrophy-dissipation scale is :math:`L_\eta(A_{hLeith})\propto\pi
-A_{hLeith}^{1/2}\eta^{-1/6}`. Thus, the Leith-estimated length scale of
+enstrophy-dissipation scale is :math:`L_\eta(A_{h \rm Leith})\propto\pi
+A_{h \rm Leith}^{1/2}\eta^{-1/6}`. Thus, the Leith-estimated length scale of
 enstrophy-dissipation and the resulting eddy viscosity are
 
 .. math::
-   L_\eta(A_{hLeith})\propto\pi A_{hLeith}^{1/2}\eta^{-1/6}
-   = \pi A_{hLeith}^{1/3}| \nabla  \overline \omega_3|^{-1/3}
+   L_\eta(A_{h \rm Leith})\propto\pi A_{h \rm Leith}^{1/2}\eta^{-1/6}
+   = \pi A_{h \rm Leith}^{1/3}| \nabla  \overline \omega_3|^{-1/3}
    :label: L_eta
 
 .. math::
-   A_{hLeith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3| \nabla  \overline\omega_3|
+   A_{h \rm Leith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3| \nabla  \overline\omega_3|
    :label: Ah_Leith
 
 .. math::
@@ -2495,7 +2489,7 @@ specifically targeting purely divergent instabilities near the
 gridscale. The combined viscosity has the form:
 
 .. math::
-   A_{hLeith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
+   A_{h \rm Leith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
    | \nabla  \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
    | \nabla  ( \nabla  \cdot \overline {\tilde u}_h)|^2}
    :label: Ah_Leithcomb
@@ -2678,11 +2672,11 @@ h :math:`\rightarrow 4` in the MITgcm parameter name. MITgcm also supports bihar
 Smagorinsky viscosities:
 
 .. math::
-   A_{4Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^2\frac{L^4}{8}|D|
+   A_{4 \rm Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^2\frac{L^4}{8}|D|
    :label: A4_Smag
 
 .. math::
-   A_{4Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
+   A_{4 \rm Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
    | \nabla  \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
    | \nabla  ( \nabla  \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith
@@ -2694,12 +2688,12 @@ used to estimate these scales and scale them to the gridscale, the
 resulting biharmonic viscosities should be:
 
 .. math::
-   A_{4Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^5L^5
+   A_{4 \rm Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^5L^5
    |\nabla^2\overline {\bf {\tilde u}}_h|
    :label: A4_Smag_alt
 
 .. math::
-   A_{4Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
+   A_{4 \rm Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
    |\nabla^2 \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^{12}
    |\nabla^2 ( \nabla  \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith_alt
