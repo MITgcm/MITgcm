@@ -11,6 +11,8 @@ C     Package-specific Options & Macros go here
 
 C To use file units between 9 and 999 (seems to conflict
 C with NF_OPEN some times, but is needed when using g77)
+C Note: comment out the #define below (instead of having an #undef) to
+C       enable to set this Option in CPP command line (from the optfile)
 c#define PROFILES_USE_MDSFINDUNITS
 
 #endif /* ALLOW_PROFILES */
