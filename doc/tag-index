@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - add "-DAUTODIFF_USE_MDSFINDUNITS -DPROFILES_USE_MDSFINDUNITS" to DEFINES
+    in g77 optfile ; this allows to run set-up with AUTODIFF_WHTAPEIO and/or
+    with pkg/profiles using g77 (with S/R MDSFINDUNITS) while other compilers
+    continue to use local version with extended range of I/O units number.
 o pkg/ecco:
   - fix halo initialisation for argument "active_var" in cost_genread.F ;
   - change "facNum" expression in cost_gencost_transp.F, to be consistent with
