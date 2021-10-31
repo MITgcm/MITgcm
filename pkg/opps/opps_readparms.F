@@ -44,7 +44,6 @@ CEOP
      &     useGCMwVel
 C     &     , OPPSwriteState, OPPSdumpFreq
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.useOPPS ) THEN
