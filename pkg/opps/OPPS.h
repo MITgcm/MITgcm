@@ -4,42 +4,39 @@ CBOP
 C !ROUTINE: OPPS.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | OPPS.h                                                   |
 C     | o Basic header for Paluszkiewicz and Romea (1997)        |
 C     |   Ocean Penetrative Plume Scheme (OPPS)                  |
 C     |   Contains all OPPS field declarations.                  |
-C     \==========================================================/
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
-C
 C Parameters that can be set in data.opps
 C
-C     MAX_ABE_ITERATIONS  - maximum for iteration on fractional size
-C                           (default=1)
-C                           In the present implementation, there is no
-C                           iteration and max_abe_iterations should
-C                           always be 1
-C     OPPSdebugLevel      - sets internal debug level (default = 0) to
-C                           produce some output for debugging
-C     PlumeRadius         - default = 100 m
-C     STABILITY_THRESHOLD - threshold of vertical density difference,
-C                           beyond which convection starts
-C                           (default = -1.e-4 kg/m^3)
-C     FRACTIONAL_AREA     - (initial) fractional area that plume(s)
-C                           occupies (default = 0.1)
-C     MAX_FRACTIONAL_AREA - maximum of above (default = 0.8), not used
-C     VERTICAL_VELOCITY   - initial (positive=downward) vertical
-C                           velocity of plume (default=0.03m/s)
-C     ENTRAINMENT_RATE    - default = - 0.05
-C     e2                  - 2*ENTRAINMENT_RATE (cannot be set)
-C     useGCMwVel          - flag to replace VERTICAL_VELOCITY with
-C                           actual vertical velocity of GCM, probably
-C                           useless (default = .false.)
-C     OPPSdumpFreq        - default = dumpFreq (currently there is no
-C                           snap-shot output)
-C
-C     OPPSconvectCount    - counter for freqency of convection events
+C     MAX_ABE_ITERATIONS  :: maximum for iteration on fractional size
+C                            (default=1)
+C                            In the present implementation, there is no
+C                            iteration and max_abe_iterations should
+C                            always be 1
+C     OPPSdebugLevel      :: sets internal debug level (default = 0) to
+C                            produce some output for debugging
+C     PlumeRadius         :: default = 100 m
+C     STABILITY_THRESHOLD :: threshold of vertical density difference,
+C                            beyond which convection starts
+C                            (default = -1.e-4 kg/m^3)
+C     FRACTIONAL_AREA     :: (initial) fractional area that plume(s)
+C                            occupies (default = 0.1)
+C     MAX_FRACTIONAL_AREA :: maximum of above (default = 0.8), not used
+C     VERTICAL_VELOCITY   :: initial (positive=downward) vertical
+C                            velocity of plume (default=0.03m/s)
+C     ENTRAINMENT_RATE    :: default = - 0.05
+C     e2                  :: 2*ENTRAINMENT_RATE (cannot be set)
+C     useGCMwVel          :: flag to replace VERTICAL_VELOCITY with
+C                            actual vertical velocity of GCM, probably
+C                            useless (default = .false.)
+C     OPPSdumpFreq        :: default = dumpFreq (currently there is no
+C                            snap-shot output)
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -76,10 +73,6 @@ CML      PARAMETER ( e2    =   2.E0*ENTRAINMENT_RATE  )
      &     ENTRAINMENT_RATE,
      &     e2
 C     &     , OPPSdumpFreq
-
-      _RL OPPSconvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &                        Nr,nSx,nSy)
-      COMMON /OPPS_FIELDS/ OPPSconvectCount
 
       LOGICAL OPPSisOn, useGCMwVel
 C     LOGICAL OPPSwriteState
