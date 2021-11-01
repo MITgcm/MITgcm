@@ -40,7 +40,7 @@
 #sfluxfile    = 'ncep_emp.bin',
  ustressfile  = 'trenberth_taux.bin',
  vstressfile  = 'trenberth_tauy.bin',
- climsstfile  = 'lev_sst_startdec.bin',
+ climsstfile  = 'lev_sst_startdec.tmp',
  climsssfile  = 'lev_sss.bin',
 #
  &
