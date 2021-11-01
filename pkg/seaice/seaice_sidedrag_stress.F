@@ -90,7 +90,7 @@ C     initialize fields
          ENDDO
         ENDDO
 C calculate the sidedrag coeff
-       IF (SEAICESideDRag .GT. 0.) THEN
+       IF (SEAICESideDRag .GT. 0. _d 0 ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
@@ -116,7 +116,7 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
           ENDIF
          ENDDO
         ENDDO
-      ELSEIF ( SEAICESideDrag .LT. 0. ) THEN
+      ELSEIF ( SEAICESideDrag .LT. 0. _d 0 ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
