@@ -1765,8 +1765,8 @@ Building the MITgcm adjoint using an OpenAD Singularity container
 -----------------------------------------------------------------
 
 The MITgcm adjoint can also be built using a Singularity container.  You will
-need `Singularity <https://singularity.hpcng.org/>`_.  A container with OpenAD
-can be downloaded from the Sylabs Cloud: [#thanks-Dan]_
+need `Singularity <https://singularity.hpcng.org/>`_, version 3.X.  A container
+with OpenAD can be downloaded from the Sylabs Cloud: [#thanks-Dan]_
 
 ::
 
