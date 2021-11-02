@@ -43,7 +43,6 @@ C                     - Olbers, D. and Eden, C. (2013), J. Phys. Oceano.
 C                       doi:10.1175/JPO-D-12-0207.1
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
-C     GGL90taveFreq   - analogue of taveFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
 C     GGL90writeState - output to files        (default = .FALSE.)
 C
@@ -71,7 +70,7 @@ CEOP
       _RL    GGL90mixingLengthMin
       _RL    GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom
       _RL    GGL90viscMax, GGL90diffMax
-      _RL    GGL90dumpFreq, GGL90taveFreq
+      _RL    GGL90dumpFreq
       INTEGER mxlMaxFlag
       COMMON /GGL90_PARMS_R/
      &     GGL90ck, GGL90ceps,
@@ -80,7 +79,7 @@ CEOP
      &     GGL90mixingLengthMin,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90viscMax, GGL90diffMax,
-     &     GGL90dumpFreq, GGL90taveFreq, mxlMaxFlag
+     &     GGL90dumpFreq, mxlMaxFlag
 
       _RL GGL90TKE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
