@@ -19,8 +19,8 @@ C
 C--------------------------------------------------------------------
 
 C global parameters updated by pp_calc
-C     PPviscAz   - PP eddy viscosity coefficient              (m^2/s)
-C     PPdiffKzT  - PP diffusion coefficient for temperature   (m^2/s)
+C     MYviscAz  :: MY82 eddy viscosity coefficient              (m^2/s)
+C     MYdiffKzT :: MY82 diffusion coefficient for temperature   (m^2/s)
 C
 C \ev
 

@@ -4,12 +4,12 @@ CBOP
 C !ROUTINE: PP81.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | PP81.h                                                   |
 C     | o Basic header for Pacanowski and Philander (1981)       |
 C     |   vertical mixing parameterization.                      |
 C     |   Contains all PP81 field declarations.                  |
-C     \==========================================================/
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C
@@ -22,8 +22,7 @@ C     PPviscMax              - maximum allowed viscosity
 C     PPnu0, PPalpha         - further parameters
 C     RiLimit                - minimum Richardson number,
 C                              follows from PPviscMax
-C     PPdumpFreq, PPtaveFreq - analogue to dumpFreq and taveFreq
-C                              (=default)
+C     PPdumpFreq             - analogue to dumpFreq (=default)
 C     PPmixingMaps - if true, include PP diagnostic maps in STDOUT
 C     PPwriteState - if true, write PP state to file
 C

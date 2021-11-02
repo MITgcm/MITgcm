@@ -13,8 +13,8 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "MY82.h"
 #include "PARAMS.h"
+#include "MY82.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid       :: thread number
@@ -95,12 +95,12 @@ C Everyone else must wait for the parameters to be loaded
 C Now set-up any remaining parameters that result from the input parameters
       IF ( MYviscMax .LE. 0. ) THEN
        WRITE(msgBuf,'(A)') 'MYviscMax must be greater than zero'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R MY82_READPARMS'
       ENDIF
       IF ( MYdiffMax .LE. 0. ) THEN
        WRITE(msgBuf,'(A)') 'MYdiffMax must be greater than zero'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R MY82_READPARMS'
       ENDIF
 #endif /* ALLOW_MY82 */

@@ -4,12 +4,12 @@ CBOP
 C !ROUTINE: MY82.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
-C     | MY82.h                                                     |
-C     | o Basic header for Pacanowski and Philander (1981)       |
+C     *==========================================================*
+C     | MY82.h                                                   |
+C     | o Basic header for Mellor & Yamada (1982), level 2.0     |
 C     |   vertical mixing parameterization.                      |
-C     |   Contains all MY82 field declarations.                    |
-C     \==========================================================/
+C     |   Contains all MY82 field declarations.                  |
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C

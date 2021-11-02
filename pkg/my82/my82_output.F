@@ -41,9 +41,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "MY82.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -74,7 +71,7 @@ C----------------------------------------------------------------
      &     DIFFERENT_MULTIPLE( MYdumpFreq, myTime, deltaTClock )
      &   ) THEN
 
-       IF (MYwriteState .AND. snapshot_mdsio) THEN
+       IF ( MYwriteState ) THEN
 C       Write each snap-shot as a new file
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
