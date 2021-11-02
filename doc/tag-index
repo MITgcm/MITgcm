@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkgs pp81, my82, opps & ggl90:
+  - remove pkg/timeave and pkg/mnc output from these mixing packages (since
+    this functionality is available with pkg diagnostics); add 1 diagnostics
+    to pkg/opps (to replave TAVE output).
 o tools/build_options:
   - add "-DAUTODIFF_USE_MDSFINDUNITS -DPROFILES_USE_MDSFINDUNITS" to DEFINES
     in g77 optfile ; this allows to run set-up with AUTODIFF_WHTAPEIO and/or
