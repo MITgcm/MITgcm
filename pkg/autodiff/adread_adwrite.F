@@ -5,8 +5,8 @@
 
 C     ==================================================================
 C
-C     ad_read_write.F: routines to handle the I/O of the TAMC generated
-C                      code. All files are direct access files.
+C     ad_read_write.F: routines to handle the I/O of the TAF/TAMC
+C                       generated code. All files are direct access files.
 C     Routines:
 C     o  ADREAD  - Read  data from file.
 C     o  ADWRITE - Write data to   file.
@@ -42,9 +42,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAMC does not provide the two leading arguments myThid and myIter
+C     TAF/TAMC does not provide the two leading arguments myThid and myIter
 C     when compiling the MITgcmUV code. Instead the is a sed script avail-
-C     able that does change the TAMC-generated adjoint code.
+C     able that changes the TAMC-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.
@@ -180,30 +180,33 @@ C-    only use "WHTAPEIO" when type and length match
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       IF ( useWHTapeIO ) THEN
 
-cc      if (n2d*length2d.EQ.length) then
+cc      IF (n2d*length2d.EQ.length) THEN
         DO i2d=1,n2d
-          if (tapeFileUnit.EQ.0) THEN
+          IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
-          else
+          ELSE
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) stop
-          endif
+            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
+              WRITE(msgBuf,'(A,2I5)')
+     &              'ADREAD: tapeFileCounter > tapeMaxCounter ',
+     &              tapeFileCounter, tapeMaxCounter
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'in S/R ADREAD'
+            ENDIF
+          ENDIF
           j2d=(i2d-1)*length2d+1
-          call mds_read_whalos(fname,lenLoc,filePrec,tapeFileUnit,
+          CALL MDS_READ_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
-cc      else
+cc      ELSE
 C     The other case actually does not (and should not) occur within the
 C     main loop, where we only store global arrays (i.e. with i,j,bi,bj
 C     indices) to disk. At init and final time it is always be possible
 C     to recompute or store in memory without much trouble or
 C     computational cost.
-C
-C     Presently there is only one instance where non-global arrays are
-C     stored to disk when tapelev_ini_bibj_k is used in
-C     convective_adjustment_ini.F. (side-note: tapelev_ini_bibj_k is
-C     likely unsafe with mdsreadvector/mdsreadvector)
 C
 C     The issue could be revisited if needed.
 C     But for now we stop if any otehr instance is met.
@@ -211,7 +214,7 @@ cc         WRITE(msgBuf,'(3A)')
 cc     &        'ADWRITE: ',name,'was not saved to tape.'
 cc         CALL PRINT_ERROR( msgBuf, myThid )
 cc         STOP 'ABNORMAL END: S/R ADWRITE'
-cc      endif
+cc      ENDIF
 
       ELSE
 #else
@@ -376,35 +379,33 @@ C-    only use "WHTAPEIO" when type and length match
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       IF ( useWHTapeIO ) THEN
 
-cc      if (n2d*length2d.EQ.length) then
+cc      IF (n2d*length2d.EQ.length) THEN
         DO i2d=1,n2d
-          if (tapeFileUnit.EQ.0) THEN
+          IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
-          else
+          ELSE
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) then
-               write(msgBuf,'(A,2I5)')
+            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
+              WRITE(msgBuf,'(A,2I5)')
      &              'ADWRITE: tapeFileCounter > tapeMaxCounter ',
      &              tapeFileCounter, tapeMaxCounter
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               write(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               STOP 'in S/R ADWRITE'
-            endif
-          endif
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'in S/R ADWRITE'
+            ENDIF
+          ENDIF
           j2d=(i2d-1)*length2d+1
-          call mds_write_whalos(fname,lenLoc,filePrec,tapeFileUnit,
+          CALL MDS_WRITE_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
-cc      else
-cc       write(msgBuf,'(3A)')
+cc      ELSE
+cc       WRITE(msgBuf,'(3A)')
 cc     &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
-cc       call print_message( msgBuf, errorMessageUnit,
+cc       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
 cc     &                     SQUEEZE_RIGHT , myThid)
-cc      endif
+cc      ENDIF
 
       ELSE
 #else
