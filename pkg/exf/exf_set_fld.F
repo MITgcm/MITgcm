@@ -167,7 +167,7 @@ C-    get record numbers and interpolation factor for this field
      &       '  myIter, count0, count1:', myIter, count0, count1
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A,2(L2,2X),F19.15)') 'EXF_SET_FLD: ',
+           WRITE(msgBuf,'(2A,2(L2,2X),F21.17)') 'EXF_SET_FLD: ',
      &       '  first, changed, fac:  ', first, changed, fac
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
