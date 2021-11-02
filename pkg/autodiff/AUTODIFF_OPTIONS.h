@@ -49,7 +49,9 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 #undef ALLOW_AUTODIFF_WHTAPEIO
-#undef AUTODIFF_USE_MDSFINDUNITS
+C Note: comment out the #define below (instead of having an #undef) to
+C       enable to set this Option in CPP command line (from the optfile)
+c#define AUTODIFF_USE_MDSFINDUNITS
 #undef ALLOW_PACKUNPACK_METHOD2
 #undef AUTODIFF_USE_OLDSTORE_3D
 #undef AUTODIFF_USE_OLDSTORE_2D
