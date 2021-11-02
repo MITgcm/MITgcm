@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.90x40x15:
+  - no longer use old bug (fixed in Oct 2015) in KAPGM_CONTROL & KAPREDI_CONTROL
+    code and update AD & TL ref. output for kapgm & kapredi tests ;
+  - other small cleaning: finish removing OLD_THSICE_CALL_SEQUENCE code ; remove
+    "cost_yftype" from experiments "data.ecco" ; move ALLOW_ECCO_OPTIMIZATION
+    to the right header file.
 o pkgs pp81, my82, opps & ggl90:
   - remove pkg/timeave and pkg/mnc output from these mixing packages (since
     this functionality is available with pkg diagnostics); add 1 diagnostics
