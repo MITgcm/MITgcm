@@ -244,7 +244,7 @@ The calling tree for these routines is as follows:
     | :math:`\phantom{WW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxx}` :math:`H\widehat{u^*},H\widehat{v^*}` :eq:`elliptic`
     | :math:`\phantom{WW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\eta^{n+1}` :eq:`elliptic`
     | :math:`\phantom{W}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxx}` :math:` \nabla  \eta^{n+1}`
+    | :math:`\phantom{WW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxx}` :math:`\nabla \eta^{n+1}`
     | :math:`\phantom{WW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxw}` :math:`u^{n+1},v^{n+1}` :eq:`un+1-rigid-lid` , :eq:`vn+1-rigid-lid`
 
 In general, the horizontal momentum time-stepping can contain some terms
@@ -676,7 +676,7 @@ ocean and atmospheric physics have been added, although they are mainly optional
     | :math:`\phantom{WWW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxx}` :math:`\eta^*` :eq:`nstar-sync`
     | :math:`\phantom{WWW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxi}` :math:`\eta^{n+1}` :eq:`elliptic-sync`
     | :math:`\phantom{WW}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:` \nabla  \eta^{n+1}`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\nabla \eta^{n+1}`
     | :math:`\phantom{WWW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxxxxxw}` :math:`u^{n+1},v^{n+1}` :eq:`v-n+1-sync`
     | :math:`\phantom{WW}` :filelink:`TRACERS\_CORRECTION\_STEP <model/src/tracers_correction_step.F>`
     | :math:`\phantom{WWW}` :filelink:`CYCLE\_TRACER <model/src/cycle_tracer.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxx}` :math:`\theta^{n+1}`
@@ -789,7 +789,7 @@ parameter file ``data``, namelist ``PARM01``.
     | :math:`\phantom{WWW}` :filelink:`CALC\_DIV\_GHAT <model/src/calc_div_ghat.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxx}` :math:`\eta^*` :eq:`nstar-staggered`
     | :math:`\phantom{WWW}` :filelink:`CG2D <model/src/cg2d.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxi}` :math:`\eta^{n+1/2}` :eq:`elliptic-staggered`
     | :math:`\phantom{WW}` :filelink:`MOMENTUM\_CORRECTION\_STEP <model/src/momentum_correction_step.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:` \nabla  \eta^{n+1/2}`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_GRAD\_PHI\_SURF <model/src/calc_grad_phi_surf.F>` :math:`\phantom{xxxxxxxxxxxxxx}` :math:`\nabla \eta^{n+1/2}`
     | :math:`\phantom{WWW}` :filelink:`CORRECTION\_STEP  <model/src/correction_step.F>` :math:`\phantom{xxxxxxxxxxxxxxxxw}` :math:`u^{n+1/2},v^{n+1/2}` :eq:`v-n+1-staggered`
     | :math:`\phantom{WW}` :filelink:`THERMODYNAMICS <model/src/thermodynamics.F>`
     | :math:`\phantom{WWW}` :filelink:`CALC\_GT <model/src/calc_gt.F>`
@@ -1615,7 +1615,7 @@ function of the mean flow in the layer above the topography:
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
-   + C_d \sqrt{ \overline{2 KE}^i }
+   + C_d \sqrt{ \overline{2 \mathrm{KE}}^i }
    \right) u
    :label: tau13
 
@@ -1624,7 +1624,7 @@ function of the mean flow in the layer above the topography:
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
-   + C_d \sqrt{ \overline{2 KE}^j }
+   + C_d \sqrt{ \overline{2 \mathrm{KE}}^j }
    \right) v
    :label: tau23
 
@@ -1646,7 +1646,7 @@ These discrete equations conserve kinetic plus potential energy using
 the following definitions:
 
 .. math::
-   KE = \frac{1}{2} \left( \overline{ u^2 }^i + \overline{ v^2 }^j +
+   \mathrm{KE} = \frac{1}{2} \left( \overline{ u^2 }^i + \overline{ v^2 }^j +
    \epsilon_{\rm nh} \overline{ w^2 }^k \right)
    :label: KE_discrete
 
@@ -1808,17 +1808,17 @@ that cell.
 Kinetic energy
 --------------
 
-The kinetic energy, denoted :math:`KE`, is defined:
+The kinetic energy, denoted :math:`\mathrm{KE}`, is defined:
 
 .. math::
-   KE = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
+   \mathrm{KE} = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
    + \epsilon_{\rm nh} \overline{ w^2 }^k )
    :label: KE_vecinv
 
 .. admonition:: S/R  :filelink:`MOM_CALC_KE <pkg/mom_common/mom_calc_KE.F>`
   :class: note
 
-    | :math:`KE` : :varlink:`KE` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`\mathrm{KE}` : :varlink:`KE` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
 
 Coriolis terms
 --------------
@@ -1910,19 +1910,19 @@ Gradient of Bernoulli function
 
 .. math::
    G_u^{\partial_x B} =
-   \frac{1}{\Delta x_c} \delta_i ( \phi' + KE )
+   \frac{1}{\Delta x_c} \delta_i ( \phi' + \mathrm{KE} )
    :label: gu_dBdx
 
 .. math::
    G_v^{\partial_y B} =
-   \frac{1}{\Delta x_y} \delta_j ( \phi' + KE )
+   \frac{1}{\Delta x_y} \delta_j ( \phi' + \mathrm{KE} )
    :label: gv_dBdy
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_GRAD_KE <pkg/mom_vecinv/mom_vi_u_grad_ke.F>`, :filelink:`MOM_VI_V_GRAD_KE <pkg/mom_vecinv/mom_vi_v_grad_ke.F>`
   :class: note
 
-    | :math:`G_u^{\partial_x KE}` : :varlink:`uCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
-    | :math:`G_v^{\partial_y KE}` : :varlink:`vCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`G_u^{\partial_x \mathrm{KE}}` : :varlink:`uCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`G_v^{\partial_y \mathrm{KE}}` : :varlink:`vCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
 
 
 Horizontal divergence

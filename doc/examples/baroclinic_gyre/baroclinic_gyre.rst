@@ -71,10 +71,10 @@ Temperature is restored in the surface layer to a linear profile:
 
 .. math::
    {\cal F}_\theta = - \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW}
-   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o)
+   \theta^* = \frac{\theta_{\rm max} - \theta_{\rm min}}{L_\varphi} (\varphi - \varphi_o)
    :label: baroc_restore_theta
 
-where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{max}=30^{\circ}` C, :math:`\theta_{min}=0^{\circ}` C.
+where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{\rm max}=30^{\circ}` C, :math:`\theta_{\rm min}=0^{\circ}` C.
 
 .. _baroc_eq_solved:
 
@@ -213,25 +213,25 @@ in the grid :math:`\Delta x` spacing.
 In order to choose an appropriate time step, note that our smallest gridcells (i.e., in the far north)
 have :math:`\Delta x \approx 29` km, which
 is similar to our grid spacing in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`. Thus, using the advective
-CFL condition, first assuming our solution will achieve maximum horizontal advection :math:`|c_{max}|` ~ 1 ms\ :sup:`-1`)
+CFL condition, first assuming our solution will achieve maximum horizontal advection :math:`|c_{\rm max}|` ~ 1 ms\ :sup:`-1`)
 
 .. math::
-   S_{a} = 2 \left( \frac{ |c_{max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+   S_{\rm adv} = 2 \left( \frac{ |c_{\rm max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
    :label: eq_baroc_cfl_stability
 
 we choose the same time step as in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
-:math:`\Delta t` = 1200 s (= 20 minutes), resulting in :math:`S_{a} = 0.08`.
+:math:`\Delta t` = 1200 s (= 20 minutes), resulting in :math:`S_{\rm adv} = 0.08`.
 Also note this time step is stable for propagation of internal gravity waves:
 approximating the propagation speed as :math:`\sqrt{g' h}` where :math:`g'` is reduced gravity (our maximum
 :math:`\Delta \rho` using our linear equation of state is
 :math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`h` is the upper layer depth
-(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`|c_{max}| = 3` ms\ :sup:`--1`
+(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`|c_{\rm max}| = 3` ms\ :sup:`--1`
 (see Adcroft 1995 :cite:`adcroft:95` or Gill 1982 :cite:`gill:82`), thus still comfortably below the threshold.
 
 Using our chosen value of :math:`\Delta t`, numerical stability for inertial oscillations using Adams-Bashforth II
 
 .. math::
-   S_{i} = f {\Delta t} < 0.5 \text{ for stability}
+   S_{\rm inert} = f {\Delta t} < 0.5 \text{ for stability}
    :label: eq_baroc_inertial_stability
 
 evaluates to 0.17 for the largest :math:`f` value in our domain (:math:`1.4\times10^{-4}` s\ :sup:`--1`),
@@ -241,7 +241,7 @@ To choose a horizontal Laplacian eddy viscosity :math:`A_{h}`, note that the lar
 value in our domain (i.e., in the south) is :math:`\approx 110` km. With the Munk boundary width as follows,
 
 .. math::
-   M_{w} = \frac{2\pi}{\sqrt{3}}  \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
+   M = \frac{2\pi}{\sqrt{3}}  \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
    :label: baroc_munk_layer
 
 in order to to have a well resolved boundary current in the subtropical gyre we will set
@@ -253,7 +253,7 @@ tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
 let's re-examine the stability of horizontal Laplacian friction:
 
 .. math::
-   S_{lh} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
+   S_{\rm Lh} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
    :label: baroc_laplacian_stability
 
 evaluates to 0.057 for our smallest :math:`\Delta x`, which is below the stability threshold.
@@ -263,7 +263,7 @@ Note this same stability test also applies to horizontal Laplacian diffusion of 
 Finally, stability of vertical diffusion of momentum:
 
 .. math::
-   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
+   S_{\rm Lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
    :label: baroc_laplacian_v_stability
 
 Here we will choose :math:`A_{v} = 1\times10^{-2}` m\ :sup:`2` s\ :sup:`--1`,
@@ -1217,7 +1217,7 @@ we obtain in our solution reasonable? To check this, consider the Sverdrup trans
 .. math:: \rho v_{\rm bt} = \hat{\boldsymbol{k}} \cdot \frac{ \nabla  \times \vec{\boldsymbol{\tau}}}{\beta}
 
 If we plug in a typical mid-latitude value for :math:`\beta` (:math:`2 \times 10^{-11}` m\ :sup:`-1` s\ :sup:`-1`)
-and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`-2` over :math:`15^{\circ}` latitude,
+and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`—2` over :math:`15^{\circ}` latitude,
 and multiply by the width of our ocean sector, we obtain an estimate of approximately 20 Sv.
 This estimate agrees reasonably well with the strength of the circulation in :numref:`baroclinic_gyre_psi`.
 
@@ -1246,9 +1246,9 @@ What sets the penetration depth of the subtropical gyre? Following a simple adve
 this scaling is obtained via thermal wind and the linearized barotropic vorticity equation),
 the depth of the thermocline :math:`h` should scale as:
 
-.. math:: h = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
+.. math:: h = \left( \frac{w_{\rm Ek} f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
 
-where :math:`w_e` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
+where :math:`w_{\rm Ek}` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
 is the variation in buoyancy across the gyre,
 and :math:`L_x` and :math:`L_y` are length scales in the
 :math:`x` and :math:`y` directions, respectively.

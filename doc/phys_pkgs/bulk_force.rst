@@ -130,7 +130,7 @@ al (1996) and the numerical scheme of Hunke and Lipscombe (1998). We
 estimate initial values for the exchange coefficients, :math:`c_u`,
 :math:`c_T` and :math:`c_q` as
 
-.. math:: \frac{\kappa}{\log\left(z_{\rm ref}/z_{\rm rou}\right)},
+.. math:: \frac{\kappa}{\ln\left(z_{\rm ref}/z_{\rm rou}\right)},
 
 where :math:`\kappa` is the Von Karman constant, :math:`z_{\rm ref}` is a
 reference height and :math:`z_{\rm rou}` is a roughness length scale which
@@ -155,9 +155,9 @@ and for unstable QQ conditions (:math:`\Upsilon<0`):
 .. math::
 
    \begin{aligned}
-   \psi_m & = 2 \log\left[\frac1{2}(1+\chi)\right] + \log\left[\frac1{2}(1+\chi^2)\right] - 2 \tan^{-1} \chi + \pi/2
+   \psi_m & = 2 \ln\left[\frac1{2}(1+\chi)\right] + \ln\left[\frac1{2}(1+\chi^2)\right] - 2 \tan^{-1} \chi + \pi/2
    \nonumber \\
-   \psi_s & = 2 \log\left[\frac1{2}(1+\chi^2)\right] \nonumber\end{aligned}
+   \psi_s & = 2 \ln\left[\frac1{2}(1+\chi^2)\right] \nonumber\end{aligned}
 
 where
 
@@ -176,21 +176,21 @@ The coefficients are updated through 5 iterations as:
    c_T & = \frac {\hat{c_T}}{1+\hat{c_T}(\lambda - \psi_s)/\kappa} \nonumber \\
    c_q & = c'_T\end{aligned}
 
-where :math:`\lambda = \log\left(h_T/z_{\rm ref}\right)`.
+where :math:`\lambda = \ln\left(h_T/z_{\rm ref}\right)`.
 
 We can then find the bulk formula heat fluxes:
 
 Sensible heat flux:
 
-.. math:: Q_s = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T \Delta T
+.. math:: Q_{\rm sh} = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T \Delta T
 
 Latent heat flux:
 
-.. math:: Q_l = \rho_{\rm air} L u_s c_u c_q \Delta q
+.. math:: Q_{\rm lh} = \rho_{\rm air} L u_s c_u c_q \Delta q
 
 Up long wave radiation
 
-.. math:: Q_{lw}^{up}=\epsilon \sigma T_{srf}^4
+.. math:: Q_{\rm lw \uparrow}=\epsilon \sigma T_{\rm srf}^4
 
 where :math:`\epsilon` is emissivity (which can be different for open
 ocean, ice and snow), :math:`\sigma` is Stefan-Boltzman constant.
@@ -201,12 +201,12 @@ to surface temperature
 .. math::
 
    \begin{aligned}
-   \frac{dQ_s}{d_T} & = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T, \nonumber \\
-   \frac{dQ_l}{d_T} & = \frac{\rho_{\rm air} L^2 u_s c_u c_q c}{T_{\rm srf}^2}, \nonumber \\
-   \frac{dQ_{lw}^{up}}{d_T} & =  4 \epsilon \sigma t_{\rm srf}^3, \nonumber
+   \frac{dQ_{\rm sh}}{d_T} & = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T, \nonumber \\
+   \frac{dQ_{\rm lh}}{d_T} & = \frac{\rho_{\rm air} L^2 u_s c_u c_q c}{T_{\rm srf}^2}, \nonumber \\
+   \frac{dQ_{\rm lw \uparrow}}{d_T} & =  4 \epsilon \sigma T_{\rm srf}^3, \nonumber
    \end{aligned}
 
-and total derivative :math:`dQ_o/dT = dQ_s/dT + dQ_l/dT + dQ_{lw}^{up}/dT`.
+and total derivative :math:`dQ_o/dT = dQ_{\rm sh}/dT + dQ_{\rm lh}/dT + dQ_{\rm lw \uparrow}/dT`.
 
 If we do not read in the wind stress, it is calculated here.
 

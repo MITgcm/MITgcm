@@ -185,7 +185,7 @@ of equations solved in this configuration as follows:
 .. math::
    \Phi_{-H}'^{(0)} + \alpha_{0}p_{b}+ \int^{p}_{0}\alpha' dp = \Phi'
 
-where :math::math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
+where :math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
 :math:`v=\frac{Dy}{Dt}=r \frac{D \phi}{Dt}` are the zonal and meridional
 components of the flow vector, :math:`\vec{\bf u}`, on the sphere. As
 described in :numref:`discret_algorithm`, the time evolution of potential

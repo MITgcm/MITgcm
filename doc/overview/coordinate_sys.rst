@@ -20,7 +20,7 @@ meridional and vertical direction respectively, are given by:
 earth, :math:`\Omega` is the angular speed of rotation of the Earth and
 :math:`D/Dt` is the total derivative.
 
-The ‘grad’ (:math:` \nabla `) and ‘div’ (:math:` \nabla  \cdot`) operators
+The ‘grad’ (:math:`\nabla`) and ‘div’ (:math:`\nabla  \cdot`) operators
 are defined by, in spherical coordinates:
 
 .. math::

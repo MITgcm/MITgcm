@@ -98,7 +98,7 @@ In the ‘hydrostatic primitive equations’ (**HPE**) all the underlined
 terms in Eqs. :eq:`gu-spherical`
 :math:`\rightarrow` :eq:`gw-spherical` are neglected and ‘:math:`{r}`’
 is replaced by ‘:math:`a`’, the mean radius of the earth. Once the
-pressure is found at one level - e.g. by inverting a 2-d Elliptic
+pressure is found at one level - e.g. by inverting a 2-D Elliptic
 equation for :math:`\phi _{s}` at :math:`r=R_{\rm moving}` - the pressure
 can be computed at all other levels by integration of the hydrostatic
 relation, eq :eq:`hydrostatic`.
@@ -120,7 +120,7 @@ making a small correction to the hydrostatic pressure.
 **QH** has good energetic credentials - they are the same as for
 **HPE**. Importantly, however, it has the same angular momentum
 principle as the full non-hydrostatic model (**NH**) - see Marshall
-et.al. (1997a) :cite:`marshall:97a`. As in **HPE** only a 2-d elliptic problem need be solved.
+et.al. (1997a) :cite:`marshall:97a`. As in **HPE** only a 2-D elliptic problem need be solved.
 
 Non-hydrostatic and quasi-nonhydrostatic forms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -151,7 +151,7 @@ In the non-hydrostatic version of our atmospheric model we approximate
 .. math:: \dot{r}=\frac{Dp}{Dt}=\frac{1}{g}\frac{D\phi }{Dt}
    :label: quasi-nh-w
 
-where :math:`p_{hy}` is the hydrostatic pressure.
+where :math:`p_{\rm hy}` is the hydrostatic pressure.
 
 Summary of equation sets supported by model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

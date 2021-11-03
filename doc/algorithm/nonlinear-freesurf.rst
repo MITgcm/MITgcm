@@ -26,18 +26,18 @@ reference position is uniformly :math:`z=0` (:math:`R_o=0`), and the
 same subtraction leads to a similar relation. For both fluids, using
 the isomorphic notations, we can write:
 
-.. math:: \phi' = \int^{r_{surf}}_r b~ dr - \int^{R_o}_r b_o dr
+.. math:: \phi' = \int^{r_{\rm surf}}_r b~ dr - \int^{R_o}_r b_o dr
 
 and re-write as:
 
 .. math::
-     \phi' = \int^{r_{surf}}_{R_o} b~ dr + \int^{R_o}_r (b - b_o) dr
+     \phi' = \int^{r_{\rm surf}}_{R_o} b~ dr + \int^{R_o}_r (b - b_o) dr
      :label: split-phi-Ro
 
 or:
 
 .. math::
-    \phi' = \int^{r_{surf}}_{R_o} b_o dr + \int^{r_{surf}}_r (b - b_o) dr
+    \phi' = \int^{r_{surf}}_{R_o} b_o dr + \int^{r_{\rm surf}}_r (b - b_o) dr
     :label: split-phi-bo
 
 In section :numref:`finding_the_pressure_field`, following
@@ -51,19 +51,19 @@ formulation, in both r-coordinate and r\*-coordinate.
 
 Because the linear free-surface approximation ignores the tracer
 content of the fluid parcel between :math:`R_o` and
-:math:`r_{surf}=R_o+\eta`, for consistency reasons, this part is also
+:math:`r_{\rm surf}=R_o+\eta`, for consistency reasons, this part is also
 neglected in :math:`\phi'_{\rm hyd}` :
 
-.. math:: \phi'_{\rm hyd} = \int^{r_{surf}}_r (b - b_o) dr \simeq \int^{R_o}_r (b - b_o) dr
+.. math:: \phi'_{\rm hyd} = \int^{r_{\rm surf}}_r (b - b_o) dr \simeq \int^{R_o}_r (b - b_o) dr
 
 Note that in this case, the two definitions of :math:`\phi_s` and
 :math:`\phi'_{\rm hyd}` from equations :eq:`split-phi-Ro` and
 :eq:`split-phi-bo` converge toward the same (approximated) expressions:
-:math:`\phi_s = \int^{r_{surf}}_{R_o} b_o dr` and
+:math:`\phi_s = \int^{r_{\rm surf}}_{R_o} b_o dr` and
 :math:`\phi'_{\rm hyd}=\int^{R_o}_r b' dr`.
 On the contrary, the unapproximated formulation
 (see :numref:`free_surf_effect_col_thick`) retains the full expression:
-:math:`\phi'_{\rm hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
+:math:`\phi'_{\rm hyd} = \int^{r_{\rm surf}}_r (b - b_o) dr` . This is
 obtained by selecting :varlink:`nonlinFreeSurf` =4 in parameter file ``data``.
 Regarding the surface potential:
 
@@ -80,24 +80,24 @@ For the ocean, :math:`\phi_s = g \eta` and :math:`b_s = g` is uniform.
 For the atmosphere, however, because of topographic effects, the
 reference surface pressure :math:`R_o=p_o` has large spatial variations
 that are responsible for significant :math:`b_s` variations (from 0.8 to
-1.2 :math:`[m^3/kg]`). For this reason, when :varlink:`uniformLin_PhiSurf`
+1.2 :math:`\rm [m^3/kg]`). For this reason, when :varlink:`uniformLin_PhiSurf`
 =.FALSE. (parameter file ``data``, namelist ``PARAM01``) a non-uniform
 linear coefficient :math:`b_s` is used and computed (:filelink:`INI_LINEAR_PHISURF <model/src/ini_linear_phisurf.F>`)
 according to the reference surface pressure :math:`p_o`:
-:math:`b_s = b_o(R_o) = c_p \kappa (p_o / P^o_{SL})^{(\kappa - 1)} \theta_{ref}(p_o)`,
-with :math:`P^o_{SL}` the mean sea-level pressure.
+:math:`b_s = b_o(R_o) = c_p \kappa (p_o / P^o_{\rm SLP})^{(\kappa - 1)} \theta_{ref}(p_o)`,
+with :math:`P^o_{\rm SLP}` the mean sea-level pressure.
 
 .. _free_surf_effect_col_thick:
 
 Free surface effect on column total thickness (Non-linear free-surface)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The total thickness of the fluid column is :math:`r_{surf} - R_{fixed} =
-\eta + R_o - R_{fixed}`. In most applications, the free surface
+The total thickness of the fluid column is :math:`r_{\rm surf} - R_{\rm fixed} =
+\eta + R_o - R_{\rm fixed}`. In most applications, the free surface
 displacements are small compared to the total thickness
-:math:`\eta \ll H_o = R_o - R_{fixed}`. In the previous sections and in
+:math:`\eta \ll H_o = R_o - R_{\rm fixed}`. In the previous sections and in
 older version of the model, the linearized free-surface approximation
-was made, assuming :math:`r_{surf} - R_{fixed} \simeq H_o` when
+was made, assuming :math:`r_{\rm surf} - R_{\rm fixed} \simeq H_o` when
 computing horizontal transports, either in the continuity equation or in
 tracer and momentum advection terms. This approximation is dropped when
 using the non-linear free-surface formulation and the total thickness,
@@ -113,16 +113,16 @@ with some limitations regarding the vertical resolution in section
 In the non-linear formulation, the continuous form of the model
 equations remains unchanged, except for the 2D continuity equation
 :eq:`discrete-time-backward-free-surface` which is now integrated from
-:math:`R_{fixed}(x,y)` up to :math:`r_{surf}=R_o+\eta` :
+:math:`R_{\rm fixed}(x,y)` up to :math:`r_{\rm surf}=R_o+\eta` :
 
 .. math::
-   \epsilon_{fs} \partial_t \eta =
-   \left. \dot{r} \right|_{r=r_{surf}} + \epsilon_{fw} ({\mathcal{P-E}}) =
-   - {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o+\eta} \vec{\bf v} dr
+   \epsilon_{\rm fs} \partial_t \eta =
+   \left. \dot{r} \right|_{r=r_{\rm surf}} + \epsilon_{\rm fw} ({\mathcal{P-E}}) =
+   - {\bf \nabla}_h \cdot \int_{R_{\rm fixed}}^{R_o+\eta} \vec{\bf v} dr
    + \epsilon_{fw} ({\mathcal{P-E}})
 
 Since :math:`\eta` has a direct effect on the horizontal velocity
-(through :math:`\nabla_h \Phi_{surf}`), this adds a non-linear term to
+(through :math:`\nabla_h \Phi_{\rm surf}`), this adds a non-linear term to
 the free surface equation. Several options for the time discretization
 of this non-linear part can be considered, as detailed below.
 
@@ -133,8 +133,8 @@ implicit treatment of the surface potential gradient, equations
 .. math::
 
    \begin{aligned}
-   \epsilon_{fs} {\eta}^{n+1} -
-   {\bf \nabla}_h \cdot \Delta t^2 (\eta^{n}+R_o-R_{fixed})
+   \epsilon_{\rm fs} {\eta}^{n+1} -
+   {\bf \nabla}_h \cdot \Delta t^2 (\eta^{n}+R_o-R_{\rm fixed})
    {\bf \nabla}_h b_s {\eta}^{n+1}
    = {\eta}^*\end{aligned}
 
@@ -143,9 +143,9 @@ where
 .. math::
 
    \begin{aligned}
-   {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
-   \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o+\eta^n} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta_t ({\mathcal{P-E}})^{n}\end{aligned}
+   {\eta}^* = \epsilon_{\rm fs} \: {\eta}^{n} -
+   \Delta t {\bf \nabla}_h \cdot \int_{R_{\rm fixed}}^{R_o+\eta^n} \vec{\bf v}^* dr
+   \: + \: \epsilon_{\rm fw} \Delta_t ({\mathcal{P-E}})^{n}\end{aligned}
 
 This method requires us to update the solver matrix at each time step.
 
@@ -155,8 +155,8 @@ explicitly:
 .. math::
 
    \begin{aligned}
-   \epsilon_{fs} {\eta}^{n+1} -
-   {\bf \nabla}_h \cdot \Delta t^2 (R_o-R_{fixed})
+   \epsilon_{\rm fs} {\eta}^{n+1} -
+   {\bf \nabla}_h \cdot \Delta t^2 (R_o-R_{\rm fixed})
    {\bf \nabla}_h b_s {\eta}^{n+1}
    = {\eta}^*
    +{\bf \nabla}_h \cdot \Delta t^2 (\eta^{n})
@@ -224,7 +224,7 @@ the tracer :math:`\theta` we have to discretize:
 
 .. math::
    \partial_t (h \theta) +  \nabla  \cdot ( h \theta \vec{\bf v})
-     = \mathcal{P} \theta_{\mathrm{rain}}
+     = \mathcal{P} \theta_{\rm rain}
 
 Using the implicit (non-linear) free surface described above
 (:numref:`press_meth_linear`) we have:
@@ -241,7 +241,7 @@ in the computation of tracer fluxes, that is, the same value of
    \begin{aligned}
    h^{n+1} \, \theta^{n+1} = h^n \, \theta^n
            - \Delta t  \nabla  \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
-           + \Delta t \mathcal{P} \theta_{rain}\end{aligned}
+           + \Delta t \mathcal{P} \theta_{\rm rain}\end{aligned}
 
 The use of a 3 time-levels time-stepping scheme such as the
 Adams-Bashforth make the conservation sightly tricky. The current
@@ -268,7 +268,7 @@ is taken into account:
 
 Note that with a simple forward time step (no Adams-Bashforth), these
 two formulations are equivalent, since
-:math:`(h^{n+1} - h^{n})/ \Delta t = \mathcal{P} -  \nabla  \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{surf}^{n+1}`
+:math:`(h^{n+1} - h^{n})/ \Delta t = \mathcal{P} -  \nabla  \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{\rm surf}^{n+1}`
 
 .. _nonlin-freesurf-timestepping:
 
@@ -313,7 +313,7 @@ r-coordinate.
      :label: vstar-nlfs
 
   .. math::
-     \longrightarrow update \phantom{x} model \phantom{x} geometry : {\bf hFac}(dh^n)
+     \longrightarrow \rm update \phantom{x} \rm model \phantom{x} \rm geometry : {\bf hFac}(dh^n)
 
   .. math::
      \begin{aligned}

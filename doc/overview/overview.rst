@@ -186,7 +186,7 @@ see :numref:`zandp-vert-coord`.
 
 .. math::
    \frac{D\vec{\mathbf{v}}_{h}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
-   \right) _{h}+ \nabla _{h}\phi = \boldsymbol{\mathcal{F}}_{\vec{\mathbf{v}}_{h}}\text{  horizontal momentum}
+   \right) _{h}+ \nabla _{h}\phi = \vec{\boldsymbol{\mathcal{F}}}_h\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
@@ -224,7 +224,7 @@ Here:
     \nabla = \nabla _{h}+\hat{\boldsymbol{k}}\frac{\partial }{\partial r}
    \text{  is the ‘grad’ operator}
 
-with :math:` \nabla _{h}` operating in the horizontal and
+with :math:`\nabla _{h}` operating in the horizontal and
 :math:`\hat{\boldsymbol{k}}
 \frac{\partial }{\partial r}` operating in the vertical, where
 :math:`\hat{\boldsymbol{k}}` is a unit vector in the vertical
@@ -247,14 +247,14 @@ with :math:` \nabla _{h}` operating in the horizontal and
 
 .. math::
 
-   \boldsymbol{\mathcal{F}}_{\vec{\mathbf{v}}}\text{ are forcing and dissipation of }\vec{
+   \vec{\boldsymbol{\mathcal{F}}}\text{ are forcing and dissipation of }\vec{
    \mathbf{v}}
 
 .. math:: \mathcal{Q}_{\theta }\mathcal{\ }\text{ are forcing and dissipation of }\theta
 
 .. math:: \mathcal{Q}_{S}\mathcal{\ }\text{are forcing and dissipation of }S
 
-The terms :math:`\mathcal{F}` and :math:`\mathcal{Q}` 
+The terms :math:`\vec{\boldsymbol{\mathcal{F}}}` and :math:`\mathcal{Q}` 
 are provided by ‘physics’ and forcing packages for atmosphere and ocean.
 These are described in later chapters.
 

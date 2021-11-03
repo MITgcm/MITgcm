@@ -197,7 +197,7 @@ The Laplacian dissipation coefficient, :math:`A_{h}`, is set to
 layer width (see Adcroft 1995 :cite:`adcroft:95`),
 
 .. math::
-   M_{w} = \pi ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}
+   M = \pi ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}
    :label: eq:eg-global-munk_layer
 
 of ~600 km. This is greater than
@@ -213,7 +213,7 @@ stability parameter to the horizontal Laplacian friction
 (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
-   S_{l} = 4 \frac{A_{h} \Delta t_{v}}{{\Delta x}^2}
+   S_{\rm Lh} = 4 \frac{A_{h} \Delta t_{v}}{{\Delta x}^2}
    :label: eq:eg-global-laplacian_stability
 
 evaluates to 0.6 at a latitude of
@@ -228,7 +228,7 @@ The vertical dissipation coefficient,
 The associated stability limit
 
 .. math::
-   S_{l} = 4 \frac{A_{z} \Delta t_{v}}{{\Delta z}^2}
+   S_{\rm Lv} = 4 \frac{A_{z} \Delta t_{v}}{{\Delta z}^2}
    :label: eg-global-laplacian_stability_z
 
 evaluates to 0.0029 for the smallest
@@ -239,7 +239,7 @@ The numerical stability for inertial
 oscillations (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
-   S_{i} = f^{2} {\Delta t_v}^2
+   S_{\rm inert} = f^{2} {\Delta t_v}^2
    :label: eg-global-inertial_stability
 
 evaluates to 0.07 for
@@ -251,7 +251,7 @@ for a extreme maximum horizontal flow
 speed of :math:`| \vec{\bf u} |` = 2 m s\ :sup:`-1`
 
 .. math::
-   S_{a} = \frac{| \vec{\bf u} | \Delta t_{v}}{ \Delta x}
+   S_{\rm adv} = \frac{| \vec{\bf u} | \Delta t_{v}}{ \Delta x}
    :label: eg-global-cfl_stability
 
 evaluates to :math:`5 \times 10^{-2}`. This is

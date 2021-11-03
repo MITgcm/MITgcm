@@ -2035,7 +2035,7 @@ The package is also able to compute the simpler planetary vorticity as:
 
 .. math::
    \begin{aligned}
-   Q_{spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}
+   Q_{\rm spl} & = -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}
    \end{aligned}
    :label: pv_eq3
 
@@ -2047,11 +2047,10 @@ impermeability theorem which states that for a given potential density
 layer (embedding a mode water), the integrated PV only changes through
 surface input/output.
 
-Vertical PV fluxes due to frictional and diabatic processes are given
-by:
+Vertical PV fluxes due to diabatic and frictional processes are given by:
 
 .. math::
-   J^B_z = -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right)
+   J^B_z = -\frac{f}{h}\left( \frac{\alpha Q_{\rm net}}{\text{C}_p}-\rho_0 \beta S_{\rm net}\right)
    :label: pv_eq14a
 
 .. math::
@@ -2074,18 +2073,18 @@ Let’s take the PV flux due to surface buoyancy forcing from
 .. math::
 
    \begin{aligned}
-     J^B_z \simeq -\frac{\alpha f}{hC_w} Q_{net}\end{aligned}
+     J^B_z \simeq -\frac{\alpha f}{h \text{C}_p} Q_{\rm net}\end{aligned}
 
-When the net surface heat flux :math:`Q_{net}` is upward, i.e., negative
+When the net surface heat flux :math:`Q_{\rm net}` is upward, i.e., negative
 and cooling the ocean (buoyancy loss), surface density will increase,
 triggering mixing which reduces the stratification and then the PV.
 
 .. math::
    \begin{aligned}
-     Q_{net} &< 0 \phantom{WWW}\text{(upward, cooling)} \\
+     Q_{\rm net} &< 0 \phantom{WWW}\text{(upward, cooling)} \\
      J^B_z   &> 0 \phantom{WWW}\text{(upward)} \\
      -\rho^{-1} \nabla  \cdot J^B_z &< 0 \phantom{WWW}\text{(PV flux divergence)} \\
-     PV &\searrow \phantom{WWWi}\text{where } Q_{net}<0 \end{aligned}
+     PV &\searrow \phantom{WWWi}\text{where } Q_{\rm net}<0 \end{aligned}
 
 
 Frictional process: “Down-front” wind-stress
@@ -2101,7 +2100,7 @@ Now let’s take the PV flux due to the “wind-driven buoyancy flux” from
 
 When the wind is blowing from the east above the Gulf Stream (a region
 of high meridional density gradient), it induces an advection of dense
-water from the northern side of the GS to the southern side through
+water from the northern side of the Gulf Stream to the southern side through
 Ekman currents. Then, it induces a “wind-driven” buoyancy lost and
 mixing which reduces the stratification and the PV.
 
@@ -2124,9 +2123,9 @@ processes. Taking the ratio of :eq:`pv_eq14a` and
 .. math::
 
    \begin{aligned}
-     \frac{J^F_z}{J^B_Z} & = \frac{ \dfrac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma }
-     {-\dfrac{f}{h}\left( \dfrac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)} \\
-     &\simeq \frac{Q_{Ek}/\delta_e}{Q_{net}/h} \nonumber
+     \frac{J^F_z}{J^B_z} & = \frac{ \dfrac{1}{\rho\delta_e} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma }
+     {-\dfrac{f}{h}\left( \dfrac{\alpha Q_{\rm net}}{\text{C}_p} - \rho_0 \beta S_{\rm net}\right)} \\
+     &\simeq \frac{Q_{\rm Ek}/\delta_e}{Q_{\rm net}/h} \nonumber
    \end{aligned}
 
 where appears the lateral heat flux induced by Ekman currents:
@@ -2134,9 +2133,9 @@ where appears the lateral heat flux induced by Ekman currents:
 .. math::
 
    \begin{aligned}
-     Q_{Ek} & = -\frac{C_w}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma
+     Q_{\rm Ek} & = -\frac{\text{C}_p}{\alpha\rho f} (\hat{\boldsymbol{k}} \times \boldsymbol{\tau}) \cdot  \nabla \sigma
      \nonumber \\
-     & = \frac{C_w}{\alpha}\delta_e \vec{\bf u}_{Ek} \cdot  \nabla \sigma\end{aligned}
+     & = \frac{\text{C}_p}{\alpha}\delta_e \vec{\bf u}_{\rm Ek} \cdot  \nabla \sigma\end{aligned}
 
 which can be computed with the package. In the aim of comparing both
 processes, it will be useful to plot surface net and lateral
@@ -2187,7 +2186,7 @@ Key routines
 
    .. math::
       \begin{aligned}
-        J^B_z & = -\frac{f}{h}\frac{\alpha Q_{net}}{C_w} \end{aligned}
+        J^B_z & = -\frac{f}{h}\frac{\alpha Q_{\rm net}}{\text{C}_p} \end{aligned}
 
    which is a simplified version of the full expression given in
    :eq:`pv_eq14a`. Requires the net surface heat flux and the
@@ -2200,7 +2199,7 @@ Key routines
 
    .. math::
       \begin{aligned}
-       Q_{Ek} & = - \frac{C_w \delta_e}{\alpha f}J^F_z\end{aligned}
+       Q_{\rm Ek} & = - \frac{\text{C}_p \delta_e}{\alpha f}J^F_z\end{aligned}
 
    Requires the PV flux due to frictional forces and the Ekman layer
    depth, and produces one output with the heat flux and with QEk as a
@@ -2300,7 +2299,7 @@ The generalized flux vector of potential vorticity is:
 
 .. math::
    \begin{aligned}
-    \vec{\bf J} & = \rho Q \vec{\bf u} + \vec{N_Q}
+    \vec{\bf J} & = \rho Q \vec{\bf u} + \vec{\bf N}_Q
    \end{aligned}
 
 which allows to rewrite :eq:`pv_eq4` as:
@@ -2311,7 +2310,7 @@ which allows to rewrite :eq:`pv_eq4` as:
    \end{aligned}
    :label: pv_eq5
 
-where the non-advective PV flux :math:`\vec{N_Q}` is given by:
+where the non-advective PV flux :math:`\vec{\bf N}_Q` is given by:
 
 .. math::
    \begin{aligned}
@@ -2370,7 +2369,7 @@ where:
 
 .. math::
    \begin{aligned}
-     \vec{\bf u}_m & = \vec{\bf u}_g + \vec{\bf u}_{Ek} + o(R_o)
+     \vec{\bf u}_m & = \vec{\bf u}_g + \vec{\bf u}_{\rm Ek} + o(R_o)
    \end{aligned}
    :label: pv_eq8
 
@@ -2379,7 +2378,7 @@ is the full velocity field composed of the geostrophic current
 
 .. math::
   \begin{aligned}
-     \vec{\bf u}_{Ek} & = -\frac{1}{\rho f} \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}
+     \vec{\bf u}_{\rm Ek} & = -\frac{1}{\rho f} \hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}
    \end{aligned}
   :label: pv_eq9
 
@@ -2390,7 +2389,7 @@ Partitioning the buoyancy forcing as:
 
 .. math::
    \begin{aligned}
-     B & = B_g + B_{Ek}
+     B & = B_g + B_{\rm Ek}
    \end{aligned}
    :label: pv_eq10
 
@@ -2405,7 +2404,7 @@ revealing the “wind-driven buoyancy forcing”:
 
 .. math::
    \begin{aligned}
-     B_{Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot  \nabla \sigma_m
+     B_{\rm Ek} & = \frac{g}{\rho_0}\frac{1}{\rho f}\left(\hat{\boldsymbol{k}} \times \frac{\partial \boldsymbol{\tau}}{\partial z}\right)\cdot  \nabla \sigma_m
    \end{aligned}
 
 Note that since:
@@ -2423,25 +2422,25 @@ then being related to the surface buoyancy flux by integrating
 
 .. math::
    \begin{aligned}
-     \int_{-h}^0 B\,dz &= h B_g + \int_{-h}^0 B_{Ek}\,dz = \mathcal{B}_{in}
+     \int_{-h}^0 B\,dz &= h B_g + \int_{-h}^0 B_{\rm Ek}\,dz = \mathcal{B}_{\rm in}
    \end{aligned}
    :label: pv_eq11
 
-where :math:`\mathcal{B}_{in}` is the vertically integrated surface buoyancy (in)flux:
+where :math:`\mathcal{B}_{\rm in}` is the vertically integrated surface buoyancy (in)flux:
 
 .. math::
    \begin{aligned}
-     \mathcal{B}_{in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0\beta S_{net}\right)
+     \mathcal{B}_{\rm in} & = \frac{g}{\rho_o}\left( \frac{\alpha Q_{\rm net}}{\text{C}_p} - \rho_0\beta S_{\rm net}\right)
    \end{aligned}
    :label: pv_eq12
 
 with :math:`\alpha\simeq 2.5\times10^{-4}\, \text{K}^{-1}` the thermal
 expansion coefficient (computed by the package otherwise),
-:math:`C_w=4187 \text{ J kg}^{-1}\text{K}^{-1}` the specific heat of
-seawater, :math:`Q_{net}\text{ (W m$^{-2}$)}` the net heat surface
+:math:`\text{C}_p=4187 \text{ J kg}^{-1}\text{K}^{-1}` the specific heat of
+seawater, :math:`Q_{\rm net}\text{ (W m$^{-2}$)}` the net heat surface
 flux (positive downward, warming the ocean), :math:`\beta\text{
 ((g/kg)$^{-1}$)}` the saline contraction coefficient, and
-:math:`S_{net}=S*(E-P)\text{ ((g/kg) m s$^{-1}$)}` the net freshwater
+:math:`S_{\rm net}=S*(E-P)\text{ ((g/kg) m s$^{-1}$)}` the net freshwater
 surface flux with :math:`S\text{ (g/kg)}` the surface salinity and
 :math:`(E-P)\text{ (m s$^{-1}$)}` the fresh water flux.
 
@@ -2456,7 +2455,7 @@ the vertical component of :eq:`pv_eq6` is:
 
 .. math::
    \begin{aligned}
-     \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= -\frac{\rho_0}{g}(B_g+B_{Ek}) \omega_z
+     \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= -\frac{\rho_0}{g}(B_g+B_{\rm Ek}) \omega_z
      + \frac{1}{\rho}
      \left( \frac{\partial \boldsymbol{\tau}}{\partial z} \times  \nabla  \sigma_\theta \right) \cdot \hat{\boldsymbol{k}} \\
      &= -\frac{\rho_0}{g}B_g\omega_z
@@ -2481,17 +2480,17 @@ vanishes and we obtain:
 Note that the wind-stress forcing does not appear explicitly here but
 is implicit in :math:`B_g` through :eq:`pv_eq11`: the buoyancy
 forcing :math:`B_g` is determined by the difference between the
-integrated surface buoyancy flux :math:`\mathcal{B}_{in}` and the
+integrated surface buoyancy flux :math:`\mathcal{B}_{\rm in}` and the
 integrated “wind-driven buoyancy forcing”:
 
 .. math::
 
    \begin{aligned}
-     B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
-     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
+     B_g &= \frac{1}{h}\left( \mathcal{B}_{\rm in} - \int_{-h}^0B_{\rm Ek}dz \right)  \\
+     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{\rm net}}{\text{C}_p} - \rho_0 \beta S_{\rm net}\right)
      - \frac{1}{h}\int_{-h}^0
      \frac{g}{\rho_0}\frac{1}{\rho f}\left (\hat{\boldsymbol{k}}\times \frac{\partial \boldsymbol{\tau}}{\partial z} \right) \cdot  \nabla \sigma_m dz \\
-     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
+     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{\rm net}}{\text{C}_p} - \rho_0 \beta S_{\rm net}\right)
      - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\left (\hat{\boldsymbol{k}}\times \boldsymbol{\tau} \right) \cdot  \nabla \sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
@@ -2500,7 +2499,7 @@ be written as:
 .. math::
    \begin{aligned}
      \vec{\bf N}_Q \cdot \hat{\boldsymbol{k}} &= J^B_z + J^F_z  \\
-     J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
+     J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{\rm net}}{\text{C}_p}-\rho_0 \beta S_{\rm net}\right) \\
      J^F_z &= \frac{1}{\rho\delta_e} (\hat{\boldsymbol{k}}\times \boldsymbol{\tau}) \cdot  \nabla \sigma_m \end{aligned}
 
 .. _sub_outp_pkg_flt:
