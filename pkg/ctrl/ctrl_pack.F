@@ -76,8 +76,6 @@ c     == external ==
 
 c     == local variables ==
 
-      _RL    fcloc
-
       integer i, k
 c     integer ig,jg
       integer ivartype
@@ -150,15 +148,13 @@ cHFLUXM_CONTROL
       integer ictrlgrad
 
       character*(128) cfile
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
       character*( 80) weighttype
+#endif
 C 9 character limit set by set_(un)pack
       character*( 9) mskNameForSetPack
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Tiled files are used.
       doglobalread = .false.
@@ -231,7 +227,6 @@ c--   Only the master thread will do I/O.
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
-          fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -240,15 +235,6 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
-#ifdef ALLOW_COST
-# ifdef ALLOW_OPENAD
-          fcloc     = fc%v
-# else
-          fcloc     = fc
-# endif
-#else
-          fcloc     = zeroRL
-#endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
