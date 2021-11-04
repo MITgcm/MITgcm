@@ -76,6 +76,8 @@ c     == external ==
 
 c     == local variables ==
 
+      _RL    fcloc
+
       integer i, k
 c     integer ig,jg
       integer ivartype
@@ -165,6 +167,9 @@ c--   Initialise adjoint variables on active files.
 c--   Initialise global buffer index
       nbuffglobal = 0
 
+c--   Initialise local cost function value
+      fcloc     = zeroRL
+
 c--   Assign file names.
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
@@ -227,6 +232,7 @@ c--   Only the master thread will do I/O.
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
+          fcloc     = zeroRL
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -235,6 +241,13 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
+#ifdef ALLOW_COST
+# ifdef ALLOW_OPENAD
+          fcloc     = fc%v
+# else
+          fcloc     = fc
+# endif
+#endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -255,11 +268,7 @@ c--       Header information.
           write(cunit) nvarlength
           write(cunit) yctrlid
           write(cunit) optimCycle
-#ifdef ALLOW_COST
-          write(cunit) fc
-#else
-          write(cunit) zeroRL
-#endif
+          write(cunit) fcloc
 C     place holder of obsolete variable iG
           write(cunit) 1
 C     place holder of obsolete variable jG
