@@ -505,6 +505,15 @@ C     both.
       _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_Rcol     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+C--   bottom drag coefficents as a function of grid cell thickness
+C     and roughness length
+      COMMON /GRID_DRAGCOEFFS_RS/
+     &     bottomDragCoeffW, bottomDragCoeffS
+      _RS bottomDragCoeffW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS bottomDragCoeffS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
 #ifdef ALLOW_DEPTH_CONTROL
 C--   COMMON /GRID_DEPTH_CTRL/ grid defining variables for Depth Control code.
 C     xx_r_low  :: in TAF-sense active replacement of R_low

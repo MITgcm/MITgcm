@@ -792,6 +792,7 @@ C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
 C     bottomDragQuadratic :: Quadratic bottom-drag coefficient (units of [r]/m)
 C               (if using zcoordinate, units becomes linear: m/s, quadratic: [-])
+C     zRoughBot :: roughness length for quadratic bottom friction coefficient (m)
 C     smoothAbsFuncRange :: 1/2 of interval around zero, for which FORTRAN ABS
 C                           is to be replace by a smoother function
 C                           (affects myabs, mymin, mymax)
@@ -844,7 +845,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
-     & smoothAbsFuncRange, sIceLoadFac,
+     & smoothAbsFuncRange, sIceLoadFac, zRoughBot,
      & tCylIn, tCylOut,
      & phiEuler, thetaEuler, psiEuler
 
@@ -984,6 +985,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic
+      _RL zRoughBot
       _RL smoothAbsFuncRange
       _RL sIceLoadFac
       _RL nh_Am2

@@ -132,6 +132,7 @@ C-    viscosity and diffusivity default value:
       viscFacAdj          = 1. _d 0
       no_slip_sides       = .TRUE.
       no_slip_bottom      = .TRUE.
+      zRoughBot           = 0. _d 0
       bottomVisc_pCell    = .FALSE.
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.

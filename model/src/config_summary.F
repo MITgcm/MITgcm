@@ -204,6 +204,8 @@ C-    Vertical viscosity parameters:
       CALL WRITE_0D_RL( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
      & ' /* quadratic bottom-drag coefficient (-) */')
+      CALL WRITE_0D_RL( zRoughBot, INDEX_NONE, 'zRoughBot =',
+     & ' /* roughness length for bottom friction (m) */')
       CALL WRITE_0D_I( selectBotDragQuadr, INDEX_NONE,
      & 'selectBotDragQuadr =',
      & ' /* select quadratic bottom drag options */')

@@ -207,7 +207,7 @@ C--   Continuous equation parameters
      & bottomDragLinear, bottomDragQuadratic, selectBotDragQuadr,
      & momViscosity,  momAdvection, momForcing, momTidalForcing,
      & useCoriolis, useConstantF, useBetaPlaneF, useSphereF,
-     & use3dCoriolis, momPressureForcing,
+     & use3dCoriolis, momPressureForcing, zRoughBot,
      & metricTerms, vectorInvariantMomentum, addFrictionHeating,
      & tempDiffusion, tempAdvection, tempForcing, temp_stayPositive,
      & saltDiffusion, saltAdvection, saltForcing, salt_stayPositive,
@@ -351,7 +351,7 @@ C--   Initialise retired parameters to unlikely value
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
       useOldFreezing  = .FALSE.
-      cg2dChkResFreq  = UNSET_I 
+      cg2dChkResFreq  = UNSET_I
       cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
@@ -527,6 +527,10 @@ C--   z,p,r coord input switching.
 C-    set default scheme for quadratic bottom-drag
       IF ( selectBotDragQuadr.EQ.-1 .AND. bottomDragQuadratic.NE.0. )
      &  selectBotDragQuadr = 0
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+      IF ( selectBotDragQuadr.EQ.-1 .AND. zRoughBot.NE.0. )
+     &  selectBotDragQuadr = 0
+#endif
 #endif /* ALLOW_MOM_COMMON */
 
       IF ( smag3D_diffCoeff.NE.zeroRL .AND. .NOT.useSmag3D ) THEN
