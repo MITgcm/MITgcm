@@ -1787,7 +1787,8 @@ If your build directory is on a remotely mounted file system (mounted at
    ../../../tools/genmake2 -oad -oadsngl "-B /mountpoint /path/to/openad_latest.sif" ...
 
 The ``-oadsingularity`` option is also supported by testreport,
-:numref:`testreport_utility`.
+:numref:`testreport_utility`.  Note that the path to the container has to be
+either absolute or relative to the build directory.
 
 .. rubric:: Footnotes
 
