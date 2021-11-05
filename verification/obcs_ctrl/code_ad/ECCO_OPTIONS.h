@@ -69,8 +69,6 @@ cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 c#define SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 
-#undef  ALLOW_ECCO_OPTIMIZATION
-
 C generate more text in STDOUT.0000
 #undef ECCO_VERBOSE
 
