@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/*/results:
+  - update few adm and tlm refence output to get closer agreement.
 o verification/global_ocean.90x40x15:
   - no longer use old bug (fixed in Oct 2015) in KAPGM_CONTROL & KAPREDI_CONTROL
     code and update AD & TL ref. output for kapgm & kapredi tests ;
