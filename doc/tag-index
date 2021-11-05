@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68d (2021/11/05)
 o verification/*/results:
   - update few adm and tlm refence output to get closer agreement.
 o verification/global_ocean.90x40x15:
