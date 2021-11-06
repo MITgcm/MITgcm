@@ -34,24 +34,28 @@ C     == Routine arguments ==
 #ifdef ALLOW_CTRL
 cph#ifdef DIC_BIOTIC
 C     == Local arguments ==
+#if (defined ALLOW_DIC_CONTROL) || \
+    (defined ALLOW_GEN2D_CONTROL && defined ECCO_CTRL_DEPRECATED)
       INTEGER bi, bj
       INTEGER i, j
+#endif
+#if (defined ALLOW_GEN2D_CONTROL && defined ECCO_CTRL_DEPRECATED)
       INTEGER il
       LOGICAL doglobalread
       LOGICAL ladinit
       LOGICAL equal
       CHARACTER*( 80)   fnamegen2d
       _RL     fac
-#ifdef ALLOW_GEN2D_CONTROL
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
 c     == external ==
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+#endif
 
 c     == end of interface ==
 CEOP
 
+#if (defined ALLOW_GEN2D_CONTROL && defined ECCO_CTRL_DEPRECATED)
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
@@ -65,7 +69,6 @@ CEOP
 
       print*,'QQ alpha before', alpha(20,10,1,1)
 
-#ifdef ALLOW_GEN2D_CONTROL
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy

@@ -33,7 +33,8 @@ c#endif
 # include "OBCS_PARAMS.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

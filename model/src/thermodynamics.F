@@ -304,10 +304,8 @@ CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 # endif
 # if (defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL) \
         && defined ALLOW_GMREDI
-#  ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
 #  ifdef GM_EXTRA_DIAGONAL
 CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte

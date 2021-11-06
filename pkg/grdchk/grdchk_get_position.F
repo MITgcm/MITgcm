@@ -133,8 +133,6 @@ cph-print               print *, 'ph-grd get_pos irec, bj, bi, k ',
 cph-print     &              irec, bj, bi, k
 cph)
              if ( ierr .ne. 0 ) then
-               icvrec = irec
-
                do j = jwrk, ncvarymax(grdchkvarindex)
                 do i = iwrk, ncvarxmax(grdchkvarindex)
                  if (ierr .ne. 0) then
