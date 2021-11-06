@@ -101,6 +101,10 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
+#ifdef ALLOW_COST_DEPTH
+      CALL COST_DEPTH( myThid )
+#endif
+
       write(msgBuf,'(A,D22.15)') '  early fc = ', fc
       call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
@@ -112,21 +116,21 @@ c--   Sum up all contributions.
 
 #ifdef ALLOW_COST_TEST
           write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
+     &       ' --> objf_test(bi,bj)        = ', objf_test(bi,bj)
 #endif
 #ifdef ALLOW_COST_TRACER
           write(standardmessageunit,'(A,D22.15)')
-     &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
+     &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
 #endif
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
 # ifdef ALLOW_COST_ATLANTIC_HEAT
           write(standardmessageunit,'(A,D22.15)')
-     &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
+     &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
 # endif
 #endif
 #ifdef ALLOW_COST_TEMP
           write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_temp_tut(bi,bj)   = ', objf_temp_tut(bi,bj)
+     &         ' --> objf_temp_tut(bi,bj)  = ', objf_temp_tut(bi,bj)
 #endif
 #ifdef ALLOW_COST_HFLUXM
           write(standardmessageunit,'(A,D22.15)')
@@ -135,6 +139,10 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_TRANSPORT
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
+#endif
+#ifdef ALLOW_COST_DEPTH
+          write(standardmessageunit,'(A,D22.15)')
+     &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
 #endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -157,6 +165,9 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
+#endif
+#ifdef ALLOW_COST_DEPTH
+     &            + mult_depth     * objf_depth(bi,bj)
 #endif
 
 #ifdef ALLOW_PROFILES

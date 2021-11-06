@@ -31,7 +31,6 @@ c we may need these for the checkpointing
       use GLOBAL_SUM_mod
 #ifdef ALLOW_GGL90
       use GGL90_mod
-      use GGL90_TAVE_mod
 #endif
 #ifdef ALLOW_GMREDI
       use GMREDI_mod
@@ -95,7 +94,7 @@ c we may need these for the checkpointing
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
       if (our_rev_mode%arg_store) then
-	call cp_write_open()
+        call cp_write_open()
 #ifdef OAD_DEBUG_JOINT
          write(standardmessageunit,'(A,A,A)')
      +'OAD:',indentation(1:our_indent),
@@ -110,9 +109,9 @@ c we may need these for the checkpointing
      +'OAD:',indentation(1:our_indent),
      +' __SRNAME__: entering arg restore'
 #endif
-	call cp_read_open()
+        call cp_read_open()
 !$PLACEHOLDER_PRAGMA$ id=9
-	call cp_close()
+        call cp_close()
       end if
       if (our_rev_mode%plain) then
 #ifdef OAD_DEBUG_JOINT
@@ -208,7 +207,7 @@ c we may need these for the checkpointing
                 do currIter=currIter,theAction%iteration-1
 #ifdef ALLOW_OPENAD_DIVA
                    PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
-                   print *, 'DIVA Revolve Adjoint rvForward PROD = ', PROD 
+                   print *, 'DIVA Revolve Adjoint rvForward PROD = ', PROD
                    CALL OpenAD_forward_step( PROD, mytime, myiter,
      + mythid )
 #else
@@ -223,7 +222,7 @@ c we may need these for the checkpointing
 #endif
                 call OAD_revTape
 #ifdef ALLOW_OPENAD_DIVA
-                print *, 'DIVA Revolve Adjoint rvUTurn tp PROD = ', PROD 
+                print *, 'DIVA Revolve Adjoint rvUTurn tp PROD = ', PROD
                 CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else
@@ -232,7 +231,7 @@ c we may need these for the checkpointing
 #endif
                 call OAD_revAdjoint
 #ifdef ALLOW_OPENAD_DIVA
-                print *, 'DIVA Revolve Adjoint rvUTurn ad PROD = ', PROD 
+                print *, 'DIVA Revolve Adjoint rvUTurn ad PROD = ', PROD
                 CALL OpenAD_forward_step( PROD, mytime, myiter,
      +mythid )
 #else

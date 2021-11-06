@@ -31,7 +31,8 @@ c     ==================================================================
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 #ifdef ALLOW_CTRL
 # include "optim.h"
@@ -846,6 +847,9 @@ c
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
          write(msgbuf,'(a,i2)') ' gencost_outputlevel = ',
      &         gencost_outputlevel(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         write(msgbuf,'(a,i2)') ' gencost_kLev_select = ',
+     &         gencost_kLev_select(k)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
 c
          if (gencost_is3d(k)) then

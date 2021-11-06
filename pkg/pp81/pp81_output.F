@@ -42,7 +42,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PP81.h"
-#include "PP81_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -62,10 +61,6 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(10) suff
-#ifdef ALLOW_TIMEAVE
-      INTEGER bi, bj
-      _RL DDTT
-#endif
 CEOP
 
 C----------------------------------------------------------------
@@ -90,89 +85,6 @@ C       Write each snap-shot as a new file
        ENDIF
 
       ENDIF
-
-C----------------------------------------------------------------
-C     Do PP time averaging.
-C----------------------------------------------------------------
-
-#ifdef ALLOW_TIMEAVE
-      IF ( PPtaveFreq.GT.0. _d 0 ) THEN
-
-       IF ( myIter.EQ.nIter0 ) THEN
-C     Initialize averages to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( PPviscArtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( PPdiffKrtave, Nr, bi, bj, myThid )
-          PP_timeAve(bi,bj) = 0.
-         ENDDO
-        ENDDO
-
-       ELSE
-C     Cumulate PP fields (for Time Average)
-        DDTT = deltaTClock
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_CUMULATE( PPviscArtave, PPviscAr,
-     &                           Nr, DDTT, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( PPdiffKrtave, PPdiffKr,
-     &                           Nr, DDTT, bi, bj, myThid )
-C     Keep record of how much time has been integrated over
-          PP_timeAve(bi,bj) = PP_timeAve(bi,bj)+DDTT
-         ENDDO
-        ENDDO
-       ENDIF
-
-C     Dump files and restart average computation if needed
-       IF ( myIter.NE.nIter0 .AND.
-     &      DIFFERENT_MULTIPLE( PPtaveFreq, myTime, deltaTClock )
-     &    ) THEN
-
-C     Normalize by integrated time
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_NORMALIZE( PPviscArtave,
-     &                            PP_timeAve, Nr, bi, bj, myThid )
-          CALL TIMEAVE_NORMALIZE( PPdiffKrtave,
-     &                            PP_timeAve, Nr, bi, bj, myThid )
-         ENDDO
-        ENDDO
-
-C     Write each snap-shot as a new file
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-        CALL WRITE_FLD_XYZ_RL( 'PPviscAr-T.', suff,
-     &                          PPviscArTave, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL( 'PPdiffKr-T.', suff,
-     &                          PPdiffKrTave, myIter, myThid )
-
-C     Reset averages to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( PPviscArtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( PPdiffKrtave, Nr, bi, bj, myThid )
-          PP_timeAve(bi,bj) = 0.
-         ENDDO
-        ENDDO
-
-C-    end dump-files block
-       ENDIF
-
-C-    end if PPtaveFreq > 0
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
-
-#ifdef ALLOW_DIAGNOSTICS
-C- note: should move this part to S/R MY82_CALC (like we do in pkg/ggl90)
-C     do not fill during call from INITIALISE_VARIA
-      IF ( useDiagnostics .AND. myIter.NE.nIter0 ) THEN
-       CALL DIAGNOSTICS_FILL(PPviscAr,'PPviscAr',0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(PPdiffKr,'PPdiffKr',0,Nr,0,1,1,myThid)
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_PP81 */
 
