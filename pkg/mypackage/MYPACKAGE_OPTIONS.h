@@ -3,12 +3,11 @@ C !ROUTINE: MYPACKAGE_OPTIONS.h
 C !INTERFACE:
 C #include "MYPACKAGE_OPTIONS.h"
 
-C !DESCRIPTION: \bv
+C !DESCRIPTION:
 C *==================================================================*
 C | CPP options file for pkg "mypackage":
 C | Control which optional features to compile in this package code.
 C *==================================================================*
-C \ev
 CEOP
 
 #ifndef MYPACKAGE_OPTIONS_H

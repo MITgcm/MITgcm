@@ -4,12 +4,11 @@ C     !ROUTINE: MYPACKAGE.h
 C     !INTERFACE:
 C     #include "MYPACKAGE.h"
 
-C     !DESCRIPTION: \bv
+C     !DESCRIPTION:
 C     *================================================================*
 C     | MYPACKAGE.h
 C     | o Header file defining "mypackage" parameters and variables
 C     *================================================================*
-C     \ev
 CEOP
 
 C     Package flag
