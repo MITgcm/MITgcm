@@ -22,7 +22,6 @@ C     !INPUT PARAMETERS:
 CEOP
 
 #ifdef ALLOW_MYPACKAGE
-
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
@@ -81,7 +80,7 @@ C-    file names for initial conditions:
 
       WRITE(msgBuf,'(A)') 'MYPACKAGE_READPARMS: opening data.mypackage'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       CALL OPEN_COPY_DATA_FILE(
      I                     'data.mypackage', 'MYPACKAGE_READPARMS',
      O                     iUnit,
@@ -92,7 +91,7 @@ C     Read parameters from open data file
       WRITE(msgBuf,'(A)')
      &    'MYPACKAGE_READPARMS: finished reading data.mypackage'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 C     Close the open data file
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)

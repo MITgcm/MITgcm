@@ -31,7 +31,7 @@ C     msgBuf   :: Informational/error message buffer
 
        WRITE(msgBuf,'(A)') 'MYPACKAGE_CHECK: #define MYPACKAGE'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , 1)
+     &                     SQUEEZE_RIGHT, myThid )
 
 C--  Print out some kee parameters :
        CALL WRITE_0D_L( myPa_StaV_Cgrid, INDEX_NONE,
@@ -64,9 +64,9 @@ C-     Put stops here if some flags are wrongly chosen.
 C-     For example, require this package to use tempStepping
        IF ( .NOT.tempStepping .AND. myPa_applyTendT ) THEN
         WRITE(msgBuf,'(A)') 'An example requirement is:'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)') 'myPa_applyTendT needs tempStepping=.true.'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R MYPACKAGE_CHECK'
        ENDIF
