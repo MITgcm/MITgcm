@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68d (2021/11/05)
+o verification/*/results:
+  - update few adm and tlm refence output to get closer agreement.
+o verification/global_ocean.90x40x15:
+  - no longer use old bug (fixed in Oct 2015) in KAPGM_CONTROL & KAPREDI_CONTROL
+    code and update AD & TL ref. output for kapgm & kapredi tests ;
+  - other small cleaning: finish removing OLD_THSICE_CALL_SEQUENCE code ; remove
+    "cost_yftype" from experiments "data.ecco" ; move ALLOW_ECCO_OPTIMIZATION
+    to the right header file.
+o pkgs pp81, my82, opps & ggl90:
+  - remove pkg/timeave and pkg/mnc output from these mixing packages (since
+    this functionality is available with pkg diagnostics); add 1 diagnostics
+    to pkg/opps (to replave TAVE output).
+o tools/build_options:
+  - add "-DAUTODIFF_USE_MDSFINDUNITS -DPROFILES_USE_MDSFINDUNITS" to DEFINES
+    in g77 optfile ; this allows to run set-up with AUTODIFF_WHTAPEIO and/or
+    with pkg/profiles using g77 (with S/R MDSFINDUNITS) while other compilers
+    continue to use local version with extended range of I/O units number.
 o pkg/ecco:
   - fix halo initialisation for argument "active_var" in cost_genread.F ;
   - change "facNum" expression in cost_gencost_transp.F, to be consistent with

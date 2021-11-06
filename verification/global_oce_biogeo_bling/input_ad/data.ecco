@@ -3,14 +3,10 @@
 # ******************
 #
  &ECCO_COST_NML
-#
  using_cost_seaice = .FALSE.,
  using_cost_sst = .FALSE.,
  using_cost_altim = .FALSE.,
-#
  cost_iprec  = 32,
- cost_yftype = 'RL',
-#
  &
 
  &ECCO_GENCOST_NML
