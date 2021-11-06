@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - new option to call OpenAD compiler in a singularity container (if provided);
+    add option to testreport too and update OpenAD doc (in section 7.5).
+
 checkpoint68d (2021/11/05)
 o verification/*/results:
   - update few adm and tlm refence output to get closer agreement.
