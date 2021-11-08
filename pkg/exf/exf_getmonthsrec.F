@@ -7,8 +7,7 @@ C     !INTERFACE:
      I                             fldStartTime, useFldYearlyFields,
      O                             fac, first, changed,
      O                             count0, count1, year0, year1,
-     I                             mytime, myiter, mythid
-     &                           )
+     I                             myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -21,8 +20,8 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ==
+
 C     !INPUT PARAMETERS:
 C     fldStartTime       :: time in seconds of first fld record from the
 C                           beginning of the model integration or, if
@@ -51,7 +50,6 @@ C     year1   :: year of forcing file for record following myTime
 
 #ifdef ALLOW_EXF
 #ifdef ALLOW_CAL
-
 C     !LOCAL VARIABLES:
       INTEGER startDate(4)
       INTEGER yy, mm, dd, ss, lp, wd
@@ -60,11 +58,10 @@ CEOP
       CALL cal_GetMonthsRec(
      O                       fac, first, changed,
      O                       count0, count1, year0, year1,
-     I                       mytime, myiter, mythid
-     &                     )
+     I                       myTime, myIter, myThid )
       IF (.NOT.useFldYearlyFields) THEN
-        CALL CAL_GETDATE( 0, fldStartTime, startDate, mythid )
-        CALL CAL_CONVDATE( startDate,yy,mm,dd,ss,lp,wd,mythid )
+        CALL CAL_GETDATE( 0, fldStartTime, startDate, myThid )
+        CALL CAL_CONVDATE( startDate, yy, mm, dd, ss, lp, wd, myThid )
         count0 = (year0-yy)*12 + count0 - mm + 1
         count1 = (year1-yy)*12 + count1 - mm + 1
         year0 = 0
@@ -76,4 +73,3 @@ CEOP
 
       RETURN
       END
-
