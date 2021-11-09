@@ -497,6 +497,7 @@ run_clean()
 	# part of what is done after "make clean" when doing "make CLEAN"
 	find . -name "*.meta" -exec rm {} \;
 	find . -name "*.data" -exec rm {} \;
+	find . -name "*.tmp"  -exec rm {} \;
 	find . -name "fort.*" -exec rm {} \;
 	find . -type l -exec rm {} \;
 	#- should remove executable only if sym-link (already done above)
