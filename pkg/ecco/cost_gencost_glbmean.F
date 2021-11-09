@@ -1,6 +1,5 @@
 #include "ECCO_OPTIONS.h"
 
-
       subroutine cost_gencost_glbmean(
      I                     mythid
      &                   )
@@ -9,7 +8,7 @@ c     ==================================================================
 c     SUBROUTINE cost_gencost_glbmean
 c     ==================================================================
 c
-c     o Evaluate cost function contribution of global mean time series 
+c     o Evaluate cost function contribution of global mean time series
 c        of OBP and SSH
 c
 c     started: Ou Wang Nov-2015
@@ -29,7 +28,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
@@ -94,8 +94,8 @@ c     == end of interface ==
       do k=1,NGENCOST
       kgen=0
       if (((gencost_name(k).EQ.'gmbp') .OR.
-     &     (gencost_name(k).EQ.'gmsl')) 
-     &   .AND.( gencost_is1d(k) )  
+     &     (gencost_name(k).EQ.'gmsl'))
+     &   .AND.( gencost_is1d(k) )
      &   .AND.(using_gencost(k)) ) kgen=k
 
       if (kgen.GT.0) then
@@ -149,8 +149,8 @@ c-- map global variable to local variables
 
 C now remove the time-mean from the data
       do irec = 1, locnrec
-         if(locmask(irec).EQ.1. _d 0) then 
-           dataglbmean(irec) = dataglbmean(irec) 
+         if(locmask(irec).EQ.1. _d 0) then
+           dataglbmean(irec) = dataglbmean(irec)
      &      - meandataglbmean
          endif
       enddo
@@ -242,7 +242,7 @@ c--    Remove global mean value
           do j = 1,sny
             do i = 1,snx
               if ( maskc(i,j,1,bi,bj).NE. 0. _d 0) then
-                locbarglbmean  = locbarglbmean + 
+                locbarglbmean  = locbarglbmean +
      &           RA(i,j,bi,bj)*locbaranom(i,j,bi,bj)
                 locbarglbmean_sum = locbarglbmean_sum + RA(i,j,bi,bj)
               endif
@@ -263,8 +263,8 @@ c--    Remove global mean value
      &        + junk*junk*junkweight
           num_gencost(1,1,kgen) = num_gencost(1,1,kgen)
      &        + 1. _d 0
-        
-        WRITE(msgBuf,'(A,i6,2e16.5)') gencost_name(kgen)(1:10),irec, 
+
+        WRITE(msgBuf,'(A,i6,2e16.5)') gencost_name(kgen)(1:10),irec,
      &   locbarglbmean/locbarglbmean_sum, dataglbmean(irec)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)

@@ -176,6 +176,7 @@ C-    viscosity and diffusivity default value:
       buoyancyRelation    = 'OCEANIC'
       selectP_inEOS_Zc    = UNSET_I
       smoothAbsFuncRange  = 0. _d 0
+      sIceLoadFac         = 1. _d 0
       hFacMin             = 1. _d 0
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
@@ -281,15 +282,15 @@ C--   Atmospheric physical parameters (e.g.: EOS)
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
+      cg2dMinItersNSA    = 0
       cg2dTargetResidual = 1. _d -7
       cg2dTargetResWunit = -1.
-      cg2dChkResFreq     = 1
       cg2dUseMinResSol   = UNSET_I
       cg2dpcOffDFac      = 0.51 _d 0
       cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
-      cg3dChkResFreq     = 1
+      useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
 
 C--   Time stepping parameters
@@ -385,6 +386,7 @@ C--   Input files
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
       pLoadFile       = ' '
+      geoPotAnomFile  = ' '
       addMassFile     = ' '
       eddyPsiXFile    = ' '
       eddyPsiYFile    = ' '

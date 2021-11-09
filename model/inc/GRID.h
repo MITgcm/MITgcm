@@ -370,27 +370,27 @@ C     recip_drF   :: Reciprocal of drF
 C     recip_Rcol  :: Inverse of cell center column thickness (1/r_unit)
 C     recip_hFacC :: Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
 C     recip_hFacW    rhFacC center, rhFacW west, rhFacS south.
-C     recip_hFacS    Note: This is precomputed here because it involves division.
-C     xC        :: X-coordinate of cell center f[X,Y]. The units of xc, yc
-C                  depend on the grid. They are not used in differencing or
-C                  averaging but are just a convient quantity for I/O,
-C                  diagnostics etc.. As such xc is in m for cartesian
-C                  coordinates but degrees for spherical polar.
-C     yC        :: Y-coordinate of center of cell f[X,Y].
-C     yG        :: Y-coordinate of corner of cell ( c-grid vorticity point) f[X,Y].
-C     rA        :: R-face are f[X,Y] ( m^2 ).
-C                  Note: In a cartesian framework rA is simply dx*dy,
-C                      however we use rA to allow for non-globally
-C                      orthogonal coordinate frames (with appropriate
-C                      metric terms).
-C     rC        :: R-coordinate of center of cell f[Z] (units of r).
-C     rF        :: R-coordinate of face of cell f[Z] (units of r).
+C     recip_hFacS   Note: This is precomputed here because it involves division.
+C     xC     :: X-coordinate of cell center f[X,Y]. The units of xc, yc
+C               depend on the grid. They are not used in differencing or
+C               averaging but are just a convient quantity for I/O,
+C               diagnostics etc.. As such xc is in m for cartesian
+C               coordinates but degrees for spherical polar.
+C     yC     :: Y-coordinate of center of cell f[X,Y].
+C     yG     :: Y-coordinate of corner of cell (c-grid vorticity point) f[X,Y].
+C     rA     :: R-face are f[X,Y] ( m^2 ).
+C               Note: In a cartesian framework rA is simply dx*dy,
+C                   however we use rA to allow for non-globally
+C                   orthogonal coordinate frames (with appropriate
+C                   metric terms).
+C     rC     :: R-coordinate of center of cell f[Z] (units of r).
+C     rF     :: R-coordinate of face of cell f[Z] (units of r).
 C - *HybSigm* - :: Hybrid-Sigma vert. Coord coefficients
 C     aHybSigmF    at level-interface (*HybSigmF) and level-center (*HybSigmC)
 C     aHybSigmC    aHybSigm* = constant r part, bHybSigm* = sigma part, such as
 C     bHybSigmF    r(ij,k,t) = rLow(ij) + aHybSigm(k)*[rF(1)-rF(Nr+1)]
 C     bHybSigmC              + bHybSigm(k)*[eta(ij,t)+Ro_surf(ij) - rLow(ij)]
-C     dAHybSigF :: vertical increment of Hybrid-Sigma coefficient: constant r part,
+C     dAHybSigF :: vertical increment of Hybrid-Sigma coeff.: constant r part,
 C     dAHybSigC    between interface (dAHybSigF) and between center (dAHybSigC)
 C     dBHybSigF :: vertical increment of Hybrid-Sigma coefficient: sigma part,
 C     dBHybSigC    between interface (dBHybSigF) and between center (dBHybSigC)
@@ -398,10 +398,10 @@ C     tanPhiAtU :: tan of the latitude at U point. Used for spherical polar
 C                  metric term in U equation.
 C     tanPhiAtV :: tan of the latitude at V point. Used for spherical polar
 C                  metric term in V equation.
-C     angleCosC :: cosine of grid orientation angle relative to Geographic direction
-C               at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
-C     angleSinC :: sine   of grid orientation angle relative to Geographic direction
-C               at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
+C     angleCosC :: cosine of grid orientation angle relative to Geographic
+C direction at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
+C     angleSinC :: sine   of grid orientation angle relative to Geographic
+C direction at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,vVel_d)
 C     u2zonDir  :: cosine of grid orientation angle at U point location
 C     v2zonDir  :: minus sine of  orientation angle at V point location
 C     fCori     :: Coriolis parameter at grid Center point
@@ -410,13 +410,10 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
 
       COMMON /GRID_RS/
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
-     &  R_low, rLowW, rLowS,
+     &  rLowW, rLowS,
      &  Ro_surf, rSurfW, rSurfS,
-     &  hFacC, hFacW, hFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
-     &  recip_Rcol,
-     &  recip_hFacC,recip_hFacW,recip_hFacS,
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
      &  maskInC, maskInW, maskInS,
      &  maskC, maskW, maskS,
@@ -435,15 +432,11 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS dyF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rLowW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rLowS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS Ro_surf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rSurfW         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rSurfS         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS hFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS hFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS hFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS recip_dxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -452,10 +445,6 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS recip_dyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS recip_Rcol     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS xC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xG             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -497,6 +486,24 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS fCori          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C--   COMMON /GRID_VAR_RS/ potentially time-dependent or active RS
+C     valued grid defining variables. These grid defining variables are
+C     time-dependent when using a non-linear free surface, or they are
+C     active in an AD sense when using depth as a control parameter, or
+C     both.
+      COMMON /GRID_VAR_RS/
+     &  hFacC, hFacW, hFacS,
+     &  recip_hFacC,recip_hFacW,recip_hFacS,
+     &  R_low, recip_Rcol
+      _RS hFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS hFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS hFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_Rcol     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_DEPTH_CONTROL
 C--   COMMON /GRID_DEPTH_CTRL/ grid defining variables for Depth Control code.

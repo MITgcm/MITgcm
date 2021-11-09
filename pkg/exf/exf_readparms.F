@@ -70,7 +70,8 @@ C     Surface flux data.
      &          exf_iceCd,          exf_iceCe,     exf_iceCh,
      &   exf_scal_BulkCdn,     climtempfreeze, useExfCheckRange,
      &      exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
-     &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
+     &     exf_verbose  ,   exf_debugLev    , exf_monFreq,
+     &     exf_adjMonFreq, exf_adjMonSelect,
      & useExfYearlyFields,  twoDigitYear,
      & readStressOnAgrid, rotateStressOnAgrid, readStressOnCgrid,
      & useAtmWind,          useRelativeWind  , noNegativeEvap,
@@ -300,6 +301,8 @@ c     exf_verbose        = debugMode
       exf_verbose        = .FALSE.
       exf_debugLev       = debugLevel
       exf_monFreq        = monitorFreq
+      exf_adjMonFreq     = adjMonitorFreq
+      exf_adjMonSelect   = 1
       useExfCheckRange   = .TRUE.
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.

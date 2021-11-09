@@ -28,14 +28,6 @@ C     msgBuf      - Informational/error meesage buffer
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-C     So far, GGL90 works only with oceanic z-coordinates
-      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'GGL90 works only with buoyancyRelation = ''OCEANIC'''
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R GGL90_CHECK'
-      ENDIF
-
 C     convective adjustment might be needed even with ggl90
       IF ( cAdjFreq.NE.0. .OR. ivdc_kappa.NE.0. ) THEN
          WRITE(msgBuf,'(A)')

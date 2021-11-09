@@ -4,26 +4,26 @@ CBOP
 C !ROUTINE: MY82.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
-C     | MY82.h                                                     |
-C     | o Basic header for Pacanowski and Philander (1981)       |
+C     *==========================================================*
+C     | MY82.h                                                   |
+C     | o Basic header for Mellor & Yamada (1982), level 2.0     |
 C     |   vertical mixing parameterization.                      |
-C     |   Contains all MY82 field declarations.                    |
-C     \==========================================================/
+C     |   Contains all MY82 field declarations.                  |
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C
-C Constants that can be set in data.pp
+C Constants that can be set in data.my82
 C     MYviscMax, MYdiffMax   - maximum allowed viscosity, diffusivity
 C     MYhblScale             - scale the boundary length scale
 C     RiMax                  - Maximum of Richardson number
-C     MYdumpFreq, MYtaveFreq - analogue to dumpFreq and taveFreq (=default)
+C     MYdumpFreq       - analogue to dumpFreq (=default)
 C     MYmixingMaps     - if true, include MY diagnostic maps in STDOUT
 C     MYwriteState     - if true, write MY state to file
 C
 C Time varying parameters computed by subroutine pp_calc
 C     MYviscAr - Vertical eddy viscosity coefficient                (m^2/s)
-C     MYdiffKr - Vertical diffusion coefficient for heat, 
+C     MYdiffKr - Vertical diffusion coefficient for heat,
 C                salt and tracers                                   (m^2/s)
 C
 C-----------------------------------------------------------------------
@@ -44,12 +44,12 @@ C     (M. Satoh, p.315)
       _RL    RiMax
       _RL    MYhblScale
       _RL    MYviscMax, MYdiffMax
-      _RL    MYdumpFreq, MYtaveFreq
-      COMMON /MY_PARMS_R/     
+      _RL    MYdumpFreq
+      COMMON /MY_PARMS_R/
      &     alpha1, alpha2, beta1, beta2, beta3, beta4,
      &     RiMax, MYhblScale,
      &     MYviscMax, MYdiffMax,
-     &     MYdumpFreq, MYtaveFreq
+     &     MYdumpFreq
 
       _RL MYhbl    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL MYviscAr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

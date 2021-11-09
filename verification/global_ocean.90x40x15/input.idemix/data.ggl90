@@ -1,24 +1,23 @@
-# Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme  |
+# =====================================================================
+# | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme  |
+# =====================================================================
  &GGL90_PARM01
- GGL90dumpFreq=,
- GGL90taveFreq=,
- GGL90diffTKEh=0.e3,
- GGL90mixingMaps=.FALSE,
- GGL90writeState=.FALSE.,
- GGL90ck=0.1,
+ GGL90diffTKEh=0.E3,
+ GGL90ck = 0.1,
  GGL90ceps = 0.7,
  GGL90alpha=30.,
  GGL90m2 = 3.0,
- GGL90TKEmin = 0.e-6,
- GGL90TKEbottom=4.e-6,
- GGL90TKEsurfMin=1.e-4,
- GGL90mixingLengthMin=,
+ GGL90TKEmin = 0.E-6,
+ GGL90TKEbottom=4.E-6,
+ GGL90TKEsurfMin=1.E-4,
  mxlMaxFlag=2,
- GGL90viscMax=1.e2,
- GGL90diffMax=1.e2,
- GGL90TKEFile=,
+ GGL90viscMax=1.E2,
+ GGL90diffMax=1.E2,
  GGL90_dirichlet=.FALSE.,
  useIDEMIX  = .TRUE.,
+#-- IO related params:
+ GGL90mixingMaps=.FALSE.,
+ GGL90writeState=.FALSE.,
  &
 
  &GGL90_PARM02
@@ -26,5 +25,9 @@
  IDEMIX_include_GM        = .FALSE.,
  IDEMIX_tidal_file  = 'tidal_energy.bin',
  IDEMIX_wind_file   = 'wind_energy.bin',
+# these are old defaults that are not recommended
+ IDEMIX_tau_v =  86400.0,
+ IDEMIX_jstar = 10.0,
+#IDEMIX_mu0   = 4.0/3.0
+ IDEMIX_mu0   = 1.3333333333333333,
  &
-

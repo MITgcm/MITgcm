@@ -237,10 +237,10 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-      COMMON /exf_rad_down_r/
-     &     swdown, lwdown, swdown0, swdown1, lwdown0, lwdown1
+      COMMON /exf_rad_down_r/ swdown, lwdown
       _RL swdown    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /exfl_rad_down_r/ swdown0, swdown1, lwdown0, lwdown1
       _RL swdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL swdown1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

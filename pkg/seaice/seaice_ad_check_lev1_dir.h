@@ -62,27 +62,27 @@ CADJ STORE icevolMeanCell  = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_OBCS
 # ifdef ALLOW_OBCS_EAST
-CADJ STORE obeuice,obeuice0,obeuice1 = comlev1, 
+CADJ STORE obeuice,obeuice0,obeuice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE obevice,obevice0,obevice1 = comlev1, 
+CADJ STORE obevice,obevice0,obevice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_OBCS_NORTH
-CADJ STORE obnuice,obnuice0,obnuice1 = comlev1, 
+CADJ STORE obnuice,obnuice0,obnuice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE obnvice,obnvice0,obnvice1 = comlev1, 
+CADJ STORE obnvice,obnvice0,obnvice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_OBCS_SOUTH
-CADJ STORE obsuice,obsuice0,obsuice1 = comlev1, 
+CADJ STORE obsuice,obsuice0,obsuice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE obsvice,obsvice0,obsvice1 = comlev1, 
+CADJ STORE obsvice,obsvice0,obsvice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_OBCS_WEST
-CADJ STORE obwuice,obwuice0,obwuice1 = comlev1, 
+CADJ STORE obwuice,obwuice0,obwuice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE obwvice,obwvice0,obwvice1 = comlev1, 
+CADJ STORE obwvice,obwvice0,obwvice1 = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 # endif
 #endif

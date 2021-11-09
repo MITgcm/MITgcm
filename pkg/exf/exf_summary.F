@@ -113,6 +113,9 @@ C--   Print general parameters:
      &  ' /* select EXF-debug printing level */')
       CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq  =',
      &  ' /* EXF monitor frequency [ s ] */')
+      CALL WRITE_0D_I( exf_adjMonSelect, INDEX_NONE,
+     &  'exf_adjMonSelect =',
+     &  ' /* select group of exf AD-variables to monitor */')
       CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
      &  ' /* period for cycling forcing dataset [ s ] */')
       CALL WRITE_0D_RL( climtempfreeze, INDEX_NONE,'climTempFreeze=',
@@ -876,7 +879,8 @@ CEOP
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      IF ( fld_period.GT.0. ) THEN
+      IF ( fld_period.GT.0. .OR.
+     &     (fld_period.EQ.-1. .AND. .NOT.useYearlyFields) ) THEN
        WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' starts at'
        WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_start_time
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
