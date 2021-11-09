@@ -193,12 +193,10 @@ C     set of flag values.
 
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
-#ifndef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL( 'THSICE_DO_ADVECT', myThid )
 #endif
        CALL THSICE_DO_ADVECT( 0, 0, myTime, myIter, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
       ELSE
 #endif /* ALLOW_THSICE */
 C--   Only call advection of heff, area, snow, and salt and
