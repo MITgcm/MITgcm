@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add option for interannual monthly forcing with pkg/cal by setting
+    ${fld}_period=-1. (like -12. indicates climatological monthly forcing),
+    available with or without useExfYearlyFields ; update exp. global_with_exf
+    SST forcing to test this new option with and without useExfYearlyFields.
 o model/src:
   - define local arrays cg2d_q/v/z without overlaps in all 4 cg2d*.F
     and skip initialisation of cg2d_q in cg2d.F
