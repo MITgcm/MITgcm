@@ -12,6 +12,7 @@ C     Reads current state of MYPACKAGE from a pickup file
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

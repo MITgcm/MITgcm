@@ -12,6 +12,7 @@ C Calculate custom tendency terms outside k-loop in DO_OCEANIC_PHYS
 
 C !USES: ===============================================================
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 c#include "PARAMS.h"

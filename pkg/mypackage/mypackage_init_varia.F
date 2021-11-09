@@ -1,7 +1,7 @@
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_INIT_VARIA
 
 C !INTERFACE:
@@ -12,6 +12,7 @@ C     Initialize MYPACKAGE variables
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

@@ -1,7 +1,7 @@
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_DIAGNOSTICS_INIT
 
 C !INTERFACE:
@@ -12,6 +12,7 @@ C     Initialize list of all available diagnostics
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "MYPACKAGE.h"

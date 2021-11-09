@@ -12,6 +12,7 @@ C     Writes current state of passive tracers to a pickup file
 
 C !USES: ===============================================================
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
