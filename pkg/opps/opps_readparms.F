@@ -41,10 +41,8 @@ CEOP
      &     MAX_FRACTIONAL_AREA,
      &     VERTICAL_VELOCITY,
      &     ENTRAINMENT_RATE,
-     &     useGCMwVel,
-     &     OPPSdumpFreq,
-     &     OPPStaveFreq,
-     &     OPPSwriteState
+     &     useGCMwVel
+C     &     , OPPSwriteState, OPPSdumpFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -72,10 +70,9 @@ C Set defaults values for parameters in OPPS.h
       MAX_FRACTIONAL_AREA  =    .8  _d 0
       VERTICAL_VELOCITY    =    .03 _d 0
       ENTRAINMENT_RATE     =   -.05 _d 0
-      OPPSdumpFreq         = dumpFreq
-      OPPStaveFreq         = taveFreq
-      OPPSwriteState       = .FALSE.
       useGCMwVel           = .FALSE.
+C     OPPSdumpFreq         = dumpFreq
+C     OPPSwriteState       = .FALSE.
 
 C Open and read the data.opps file
       _BEGIN_MASTER(myThid)

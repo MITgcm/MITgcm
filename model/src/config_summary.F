@@ -681,8 +681,8 @@ C---
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
-      CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
-     &'   /* 2d con. grad convergence test frequency */')
+      CALL WRITE_0D_I( cg2dMinItersNSA, INDEX_NONE,'cg2dMinItersNSA =',
+     &'   /* Minimum number of iterations of 2d con. grad solver  */')
       CALL WRITE_0D_I( cg2dUseMinResSol, INDEX_NONE,
      &  'cg2dUseMinResSol=',
      &  ' /* use cg2d last-iter(=0) / min-resid.(=1) solution */')
@@ -696,6 +696,8 @@ C---
      &'   /* Freq. for updating cg2d preconditioner */')
       CALL WRITE_0D_L( useSRCGSolver, INDEX_NONE,
      & 'useSRCGSolver =', '  /* use single reduction CG solver(s) */')
+      CALL WRITE_0D_L( useNSACGSolver, INDEX_NONE,
+     & 'useNSACGSolver =', '  /* use not-self-adjoint CG solver */')
       CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
      & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
 

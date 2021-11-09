@@ -24,7 +24,6 @@ C     === Global variables ===
 #include "GMREDI_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
@@ -32,7 +31,6 @@ CEOP
 #ifdef ALLOW_GMREDI
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
       INTEGER i,j,k,bi,bj
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -40,18 +38,16 @@ C     === Local variables ===
 
 C     Initialize arrays in common blocks :
         DO k=1,Nr
-         DO j=1-Oly,sNy+OLy
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            Kwx(i,j,k,bi,bj) = 0. _d 0
            Kwy(i,j,k,bi,bj) = 0. _d 0
            Kwz(i,j,k,bi,bj) = 0. _d 0
+           Kux(i,j,k,bi,bj) = 0. _d 0
+           Kvy(i,j,k,bi,bj) = 0. _d 0
 #ifdef GM_EXTRA_DIAGONAL
            Kuz(i,j,k,bi,bj) = 0. _d 0
            Kvz(i,j,k,bi,bj) = 0. _d 0
-#endif
-#ifdef GM_NON_UNITY_DIAGONAL
-           Kux(i,j,k,bi,bj) = 0. _d 0
-           Kvy(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_BOLUS_ADVEC
            GM_PsiX(i,j,k,bi,bj) = 0. _d 0
@@ -106,7 +102,6 @@ C--   write GM scaling factors to file:
       ENDIF
 #endif /* ALLOW_GMREDI */
 
-
 #ifdef GM_K3D
       IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
      &     .AND. pickupSuff.EQ.' ' )) THEN
@@ -121,8 +116,8 @@ C     Computing beta = df/dy
       IF ( selectCoriMap.EQ.1 ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            gradf(i,j,bi,bj) =  beta
           ENDDO
          ENDDO
@@ -131,8 +126,8 @@ C     Computing beta = df/dy
       ELSEIF ( selectCoriMap.EQ.2 ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            gradf(i,j,bi,bj) = recip_rSphere*fCoriCos(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -141,8 +136,8 @@ C     Computing beta = df/dy
       ELSE
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly+1,sNy+Oly-1
-          DO i=1-Olx+1,sNx+Olx-1
+         DO j=1-OLy+1,sNy+OLy-1
+          DO i=1-OLx+1,sNx+OLx-1
            gradf(i,j,bi,bj)  =  .5 _d 0*angleSinC(i,j,bi,bj)*(
      &    (fCori(i+1,j,bi,bj)-fCori(i  ,j,bi,bj))*recip_dxC(i+1,j,bi,bj)
      &   +(fCori(i  ,j,bi,bj)-fCori(i-1,j,bi,bj))*recip_dxC(i,j,bi,bj) )

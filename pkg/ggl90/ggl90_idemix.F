@@ -16,7 +16,9 @@ CBOP
 C     !ROUTINE: GGL90_IDEMIX
 C     !INTERFACE: ======================================================
       SUBROUTINE GGL90_IDEMIX(
-     I     bi, bj, hFacI, recip_hFacI, sigmaR, myTime, myIter, myThid )
+     I     bi, bj, hFacI, recip_hFacI, sigmaR,
+     O     gTKE,
+     I     myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -50,13 +52,15 @@ C     bi, bj :: Current tile indices
 C     hFacI  :: thickness factors for w-cells (interface)
 C               with reciprocal of hFacI = recip_hFacI
 C     sigmaR :: Vertical gradient of iso-neutral density
+C     gTKE   :: TKE tendency due to internal waves (output of S/R GGL90_IDEMIX)
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
       INTEGER bi, bj
       _RL       hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL recip_hFacI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL        gTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     sigmaR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -64,6 +68,10 @@ C     myThid :: My Thread Id number
 #ifdef ALLOW_GGL90_IDEMIX
 C     !FUNCTIONS:
       _RL  IDEMIX_gofx2, IDEMIX_hofx1
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -72,20 +80,29 @@ C     === Local variables ===
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL  deltaTloc
-      _RL  fxa,fxb,fxc,cstar
+C     cstar :: vertical integral over N, eq (13) in Olbers+Eden (2013)
+      _RL  fxa,fxb,fxc,cstar,twoOverPi
       _RL  coordFac, recip_coordFac
-      _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  dfx        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dfy        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  delta      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     bN0  :: vertically integrated N
       _RL  bN0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  delta      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  Nsquare    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  a3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  b3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  c3d        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  osborn_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     v0 :: mean lateral group velocity
+      _RL  v0         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     c0 ::  mean vertical group velocity, defined at interfaces (wVel-like)
       _RL  c0         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     tau_d :: dissipation parameter (see Olbers and Eden 2013, eq.12)
+      _RL  tau_d      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  forc       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  gm_forc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      _RL  osborn_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
 CEOP
 
       iMin = 2-OLx
@@ -106,18 +123,25 @@ CEOP
       IF ( usingPCoords) coordFac = gravity * rhoConst
       recip_coordFac = 1./coordFac
 
+      twoOverPi = 2. _d 0/PI
+
 C     Initialize local fields
       DO k = 1, Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
+         gTKE(i,j,k)    = 0. _d 0
          Nsquare(i,j,k) = 0. _d 0
          delta(i,j,k)   = 0. _d 0
          a3d(i,j,k)     = 0. _d 0
          b3d(i,j,k)     = 1. _d 0
          c3d(i,j,k)     = 0. _d 0
-         osborn_diff(i,j,k) = 0. _d 0
          c0(i,j,k)      = 0. _d 0
+         v0(i,j,k)      = 0. _d 0
+         tau_d(i,j,k)   = 0. _d 0
          forc(i,j,k)    = 0. _d 0
+#ifdef ALLOW_DIAGNOSTICS
+         osborn_diff(i,j,k) = 0. _d 0
+#endif
         ENDDO
        ENDDO
       ENDDO
@@ -165,12 +189,12 @@ c-----------------------------------------------------------------------
           fxa = SQRT(Nsquare(i,j,k))/fxb
           cstar = bN0(i,j)/(PI*IDEMIX_jstar)
           c0(i,j,k)=MAX(0. _d 0,
-     &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
-          IDEMIX_V0(i,j,k,bi,bj)=MAX(0. _d 0,
-     &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
+     &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa,twoOverPI))
+          v0(i,j,k)=MAX(0. _d 0,
+     &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa,twoOverPI))
           fxc = MAX( 1. _d 0 , fxa )
           fxc = LOG( fxc + SQRT( fxc*fxc -1.))
-          IDEMIX_tau_d(i,j,k,bi,bj) = IDEMIX_mu0*fxb*fxc*
+          tau_d(i,j,k) = IDEMIX_mu0*fxb*fxc*
      &         (IDEMIX_jstar*PI/(GGL90eps+bN0(i,j)) )**2
         ENDDO
        ENDDO
@@ -185,7 +209,7 @@ C     tau_h V0**2 *dt/dx**2 < 0.25 <=> V0 < sqrt( 0.25 * dx**2/(dt*tau_h) )
          DO i=1-OLx,sNx+OLx
           fxa = SQRT( 1. _d 0/( deltaTloc * IDEMIX_tau_h ) )
           fxb = 0.5*MIN( _dxF(i,j,bi,bj), _dyF(i,j,bi,bj) )*fxa
-          IDEMIX_V0(i,j,k,bi,bj) = MIN( IDEMIX_V0(i,j,k,bi,bj), fxb )
+          v0(i,j,k) = MIN( v0(i,j,k), fxb )
          ENDDO
         ENDDO
        ENDDO
@@ -271,14 +295,14 @@ c-----------------------------------------------------------------------
          dfx(1-OLx,j)=0. _d 0
          DO i=1-OLx+1,sNx+OLx
           fxa = IDEMIX_tau_h*0.5 _d 0*(
-     &        IDEMIX_V0(i-1,j,k,bi,bj)*maskC(i-1,j,kl,bi,bj)
-     &       +IDEMIX_V0(i  ,j,k,bi,bj)*maskC(i  ,j,kl,bi,bj))
+     &        v0(i-1,j,k)*maskC(i-1,j,kl,bi,bj)
+     &       +v0(i  ,j,k)*maskC(i  ,j,kl,bi,bj))
           dfx(i,j) = -fxa*_dyG(i,j,bi,bj)*drC(k)
      &                *(MIN(.5 _d 0,_hFacW(i,j,k-1,bi,bj) ) +
      &                  MIN(.5 _d 0,_hFacW(i,j,k  ,bi,bj) ) )
      &      *_recip_dxC(i,j,bi,bj)
-     &      *(IDEMIX_V0(i  ,j,k,bi,bj)*IDEMIX_E(i  ,j,k,bi,bj)
-     &       -IDEMIX_V0(i-1,j,k,bi,bj)*IDEMIX_E(i-1,j,k,bi,bj))
+     &      *(v0(i  ,j,k)*IDEMIX_E(i  ,j,k,bi,bj)
+     &       -v0(i-1,j,k)*IDEMIX_E(i-1,j,k,bi,bj))
      &         *maskW(i,j,kl,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
@@ -288,14 +312,14 @@ c-----------------------------------------------------------------------
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           fxa = IDEMIX_tau_h*0.5 _d 0*(
-     &        IDEMIX_V0(i,j  ,k,bi,bj)*maskC(i,j  ,kl,bi,bj)
-     &       +IDEMIX_V0(i,j-1,k,bi,bj)*maskC(i,j-1,kl,bi,bj) )
+     &        v0(i,j  ,k)*maskC(i,j  ,kl,bi,bj)
+     &       +v0(i,j-1,k)*maskC(i,j-1,kl,bi,bj) )
           dfy(i,j) = -fxa*_dxG(i,j,bi,bj)*drC(k)
      &                *(MIN(.5 _d 0,_hFacS(i,j,k-1,bi,bj) ) +
      &                  MIN(.5 _d 0,_hFacS(i,j,k  ,bi,bj) ) )
      &      *_recip_dyC(i,j,bi,bj)
-     &      *(IDEMIX_V0(i,j  ,k,bi,bj)*IDEMIX_E(i,j  ,k,bi,bj)
-     &       -IDEMIX_V0(i,j-1,k,bi,bj)*IDEMIX_E(i,j-1,k,bi,bj))
+     &      *(v0(i,j  ,k)*IDEMIX_E(i,j  ,k,bi,bj)
+     &       -v0(i,j-1,k)*IDEMIX_E(i,j-1,k,bi,bj))
      &         *maskS(i,j,kl,bi,bj) ! paranoia setting
          ENDDO
         ENDDO
@@ -418,7 +442,7 @@ C--   Center diagonal
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         b3d(i,j,k) = 1. _d 0+deltaTloc*IDEMIX_tau_d(i,j,k,bi,bj)
+         b3d(i,j,k) = 1. _d 0+deltaTloc*tau_d(i,j,k)
      &         *IDEMIX_E(i,j,k,bi,bj)
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &        - ( a3d(i,j,k) + c3d(i,j,k) ) * c0(i,j,k)
@@ -480,6 +504,18 @@ C     solve tri-diagonal system
      O                        errCode,
      I                        bi, bj, myThid )
 
+C     generate TKE tendency due to internal waves (output)
+      DO k=2,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gTKE(i,j,k) =
+     &        tau_d(i,j,k)*IDEMIX_E(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)
+C-    to reproduce older results (before adding output arguement gTKE)
+c    &        tau_d(i,j,k)*IDEMIX_E(i,j,k,bi,bj)**2
+        ENDDO
+       ENDDO
+      ENDDO
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 c-----------------------------------------------------------------------
@@ -487,33 +523,31 @@ c     compute diffusivity due to internal wave breaking
 c     assuming local Osborn-Cox balance model
 c     kept for diagnostics only
 c-----------------------------------------------------------------------
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          osborn_diff(i,j,k) = IDEMIX_mixing_efficiency
-     &     *IDEMIX_tau_d(i,j,k,bi,bj)
-     &         *IDEMIX_E(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)
-     &     /MAX(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
-          osborn_diff(i,j,k) = MIN(IDEMIX_diff_max,osborn_diff(i,j,k))
+       IF ( DIAGNOSTICS_IS_ON('IDEMIX_K',myThid) ) THEN
+        DO k=2,Nr
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           osborn_diff(i,j,k) = IDEMIX_mixing_efficiency * gTKE(i,j,k)
+     &          /MAX(1. _d -12,Nsquare(i,j,k))*maskC(i,j,k,bi,bj)
+           osborn_diff(i,j,k) = MIN(IDEMIX_diff_max,osborn_diff(i,j,k))
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       CALL DIAGNOSTICS_FILL( IDEMIX_E ,'IDEMIX_E',
-     &                          0,Nr, 1, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( IDEMIX_V0 ,'IDEMIX_v',
-     &                          0,Nr, 1, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( IDEMIX_tau_d ,'IDEMIX_t',
-     &                          0,Nr, 1, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( c0 ,'IDEMIX_c',
-     &                          0,Nr, 2, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( osborn_diff ,'IDEMIX_K',
-     &                          0,Nr, 2, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( forc ,'IDEMIX_F',
-     &                          0,Nr, 2, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL(IDEMIX_F_b,'IDEM_F_b',0,1,1,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(IDEMIX_F_s,'IDEM_F_s',0,1,1,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(gm_forc,'IDEM_F_g',
-     &                          0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL( osborn_diff ,'IDEMIX_K',
+     &                          0, Nr, 2, bi, bj, myThid )
+       ENDIF
+       CALL DIAGNOSTICS_FILL( IDEMIX_E ,'IDEMIX_E',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( tau_d,    'IDEMIX_t',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( v0,       'IDEMIX_v',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( c0 ,      'IDEMIX_c',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( forc,     'IDEMIX_F',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(IDEMIX_F_b,'IDEM_F_b',0, 1,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(IDEMIX_F_s,'IDEM_F_s',0, 1,1,bi,bj,myThid)
+# ifdef ALLOW_GMREDI
+       IF (useGmredi) THEN
+        CALL DIAGNOSTICS_FILL( gm_forc, 'IDEM_F_g',0, 1,2,bi,bj,myThid)
+       ENDIF
+# endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -524,22 +558,21 @@ c-----------------------------------------------------------------------
 #ifdef ALLOW_GGL90_IDEMIX
 C     helper functions
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      _RL FUNCTION IDEMIX_gofx2(xx)
+      _RL FUNCTION IDEMIX_gofx2(xx,toPI)
       IMPLICIT NONE
-      _RL x,c,xx
-      _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
+      _RL xx
+      _RL toPI                  ! 2.d0/PI
+      _RL x,c
       x=MAX(3.d0,xx)
-      c= 1.d0-(2.d0/pi)*ASIN(1.d0/x)
-      IDEMIX_gofx2 = 2.d0/pi/c*0.9d0*x**(-2.d0/3.d0)*(1.-EXP(-x/4.3d0))
+      c= 1.d0-toPI*ASIN(1.d0/x)
+      IDEMIX_gofx2 = toPI/c*0.9d0*x**(-2.d0/3.d0)*(1.-EXP(-x/4.3d0))
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      _RL FUNCTION IDEMIX_hofx1(x)
+      _RL FUNCTION IDEMIX_hofx1(x,toPI)
       IMPLICIT NONE
       _RL x
-      _RL pi
-      PARAMETER( pi = 3.14159265358979323846264338327950588d0 )
-      IDEMIX_hofx1 = (2.d0/pi)/(1.d0-(2.d0/pi)*
-     &              ASIN(1.d0/MAX(1.01d0,x)))*(x-1.d0)/(x+1.d0)
+      _RL toPI                  ! 2.d0/PI
+      IDEMIX_hofx1 = toPI/(1.d0-toPI*ASIN(1.d0/MAX(1.01d0,x)))
+     &     *(x-1.d0)/(x+1.d0)
       END
 #endif /* ALLOW_GGL90_IDEMIX */

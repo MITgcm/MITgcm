@@ -43,8 +43,9 @@ Y, X = np.meshgrid(y, x, indexing='ij')     # zonal wind-stress on (XG,YC) point
 tau = -tauMax * cos(2*pi*((Y-yo)/(ny-2)/dy))  # ny-2 accounts for walls at N,S boundaries
 tau.astype('>f4').tofile('windx_cosy.bin')
 
-# Restoring temperature (function of y only)
+# Restoring temperature (function of y only,
+# from Tmax at southern edge to Tmin at northern edge)
 Tmax = 30
 Tmin = 0
-Trest = (Tmax-Tmin)/(ny-2) * (ynorth-Y)  # located and computed at YC points
+Trest = (Tmax-Tmin)/(ny-2)/dy * (ynorth-Y) + Tmin # located and computed at YC points
 Trest.astype('>f4').tofile('SST_relax.bin')

@@ -1,0 +1,116 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef = 15*20.,
+ sRef = 15*35.,
+ viscAr=1.E-3,
+ diffKhT=0.,
+#- diffKrT unused when compiled with ALLOW_3D_DIFFKR
+#diffKrT=3.E-5,
+ diffKhS=0.,
+ diffKrS=3.E-5,
+#ph(
+#ph Many of the following params. are just for AD testing;
+#ph not necesarily meaningful in a 4x4 deg. setting.
+ viscC4Leith=1.5,
+ viscC4Leithd=1.5,
+ viscA4GridMax=0.5,
+ useAreaViscLength=.TRUE.,
+ bottomDragQuadratic = 0.0021,
+#ph)
+ rhoConst=1035.,
+ gravity=9.81,
+ eosType = 'JMD95Z',
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ allowFreezing=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
+ useCDscheme=.TRUE.,
+ exactConserv=.TRUE.,
+# turn on looped cells
+ hFacMin=.05,
+ hFacMinDr=50.,
+#ph(
+ vectorInvariantMomentum=.TRUE.,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ nonlinFreeSurf=4,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=30,
+ saltAdvScheme=30,
+ tempVertAdvScheme=20,
+ saltVertAdvScheme=20,
+ tempImplVertAdv=.TRUE.,
+ saltImplVertAdv=.TRUE.,
+#ph)
+# set precision of data files
+ readBinaryPrec=32,
+ useSingleCpuIO=.TRUE.,
+#debugLevel=3,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0 =      0,
+ nTimeSteps = 10,
+# 100 years of integration will yield a reasonable flow field
+# startTime  =          0.,
+# endTime    = 3110400000.,
+ deltaTmom = 1200.0,
+ tauCD =     321428.,
+ deltaTtracer= 43200.0,
+ deltaTClock = 43200.0,
+#deltaTfreesurf= 43200.,
+ abEps = 0.1,
+ pChkptFreq= 311040000.,
+ dumpFreq=   311040000.,
+ dumpFreq=   864000.,
+ adjDumpFreq= 432000.,
+ adjMonitorFreq=1.,
+# taveFreq=   311040000.,
+# taveFreq=   864000.,
+#monitorFreq=31104000.,
+ monitorFreq=1.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax =  5184000.0,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.0,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
+ ygOrigin=-80.,
+ dySpacing=4.,
+ dxSpacing=4.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile=      'bathymetry.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQnetFile=   'ncep_qnet.bin',
+# fresh water flux is turned off, uncomment next line to turn on
+# (not recommened together with surface salinity restoring)
+# EmPmRFile=      'ncep_emp.bin',
+ &

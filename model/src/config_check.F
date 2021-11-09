@@ -3,6 +3,9 @@
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CONFIG_CHECK
@@ -446,6 +449,19 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
+#ifndef ALLOW_CG2D_NSA
+      IF (useNSACGSolver) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: useNSACGSolver = .TRUE., but CG2D_NSA ',
+     &  'code is not compiled.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: Re-compile with ALLOW_CG2D_NSA defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_CG2D_NSA */
+
 #ifndef ALLOW_SRCG
       IF (useSRCGSolver) THEN
         WRITE(msgBuf,'(A,A)')
@@ -458,6 +474,14 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
         errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_SRCG */
+
+      IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &      'CONFIG_CHECK: both useNSACGSolver and ',
+     &      'useSRCGSolver = .TRUE., this is not allowed.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

@@ -41,6 +41,7 @@
 
 # Elliptic solver parameters
  &PARM02
+ useNSACGSolver=.TRUE.,
  cg2dMaxIters=200,
 #cg2dTargetResidual=1.E-17,
  cg2dTargetResWunit=1.E-24,
@@ -63,6 +64,7 @@
  dumpFreq          = 86400.,
  monitorFreq       = 43200.,
  adjMonitorFreq    = 43200.,
+ monitorSelect     = 4,
 #
  tauThetaClimRelax = 2592000.,
  tauSaltClimRelax  = 2592000.,
