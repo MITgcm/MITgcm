@@ -138,6 +138,31 @@ c    &diagTitle = 'Sea Surface Elevation'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'SSH     '
+      diagTitle =
+     I 'Dynamic Sea Surface Height Anomaly'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SSHIBC  '
+      diagTitle =
+     I 'Inverted Barometer (IB) Correction to Sea Surface Height'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SSHNOIBC'
+      diagTitle =
+     I 'Sea Surface Height Anomaly without IB '
+     I //'Correction (=SSH+SSHIBC)'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'ETANSQ  '
       diagTitle = DIAGS_MK_TITLE( 'Square of '//eTitle//rTitle
      I                          //' Anomaly', myThid )
@@ -543,6 +568,21 @@ c     diagTitle = 'ocean bottom pressure / top. atmos geo-Potential'
       diagTitle = DIAGS_MK_TITLE( fTitle
      I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'OBP     '
+      diagTitle = 'Ocean Bottom Pressure'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'OBPGMAP '
+      diagTitle =
+     I'Ocean Bottom Pressure Including Global Mean Atmospheric Pressure'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

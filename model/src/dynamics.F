@@ -12,6 +12,9 @@
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
+#ifdef ALLOW_ECCO
+#include "ECCO_OPTIONS.h"
+#endif
 
 #undef DYNAMICS_GUGV_EXCH_CHECK
 
@@ -64,6 +67,10 @@ C     == Global variables ===
 #  include "MOM_FLUXFORM.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+#endif
 
 C     !CALLING SEQUENCE:
 C     DYNAMICS()
@@ -696,6 +703,16 @@ Cml)
 
        CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0, 1,0,1,1,myThid)
+#ifdef ALLOW_ECCO
+       CALL DIAGNOSTICS_SCALE_FILL(m_bp,recip_gravity,1,
+     &                             'OBPGMAP ',0, 1,0,1,1,myThid)
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+       CALL DIAGNOSTICS_SCALE_FILL(m_bp_nopabar,recip_gravity,1,
+     &                             'OBP     ',0, 1,0,1,1,myThid)
+#endif
+#endif
+#endif
        tmpFac = 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(totPhihyd,tmpFac,2,
      &                                 'PHIHYDSQ',0,Nr,0,1,1,myThid)
