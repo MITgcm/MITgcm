@@ -163,6 +163,15 @@ c    &diagTitle = 'Sea Surface Elevation'
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'STERICHT'
+      diagTitle =
+     I 'Steric Sea Surface Height Anomaly '
+     I //'(=SSH-OBP)'
+      diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'ETANSQ  '
       diagTitle = DIAGS_MK_TITLE( 'Square of '//eTitle//rTitle
      I                          //' Anomaly', myThid )

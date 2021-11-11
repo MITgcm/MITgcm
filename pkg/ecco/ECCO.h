@@ -136,7 +136,7 @@ C                 the current model integration.
      &                    ploadbar,
      &                    AREAsumGlob, PLOADsumGlob,
      &                    m_bp_nopabar,
-     &                    m_eta_dyn, m_eta_ib,
+     &                    m_eta_dyn, m_eta_ib, sterht,
 #endif
 #endif
      &                    trVol, trHeat, trSalt,
@@ -157,6 +157,7 @@ C                 the current model integration.
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_dyn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_ib(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL sterht(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
 #endif
       _RL m_UE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)

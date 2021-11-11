@@ -77,6 +77,8 @@ C--   fill momentum state-var diagnostics:
      &                        0, 1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(m_eta_dyn,'SSH     ',
      &                        0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(sterht,'STERICHT',
+     &                        0, 1,0,1,1,myThid)
 #endif
 #endif
 #endif

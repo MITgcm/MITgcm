@@ -199,14 +199,18 @@ C calculte dynamic sea level for comparison with altimetry data (in m)
 
 C calculate GRACE-equvivalent ocean bottom pressure (in m2/s2)
                 m_bp_nopabar(i,j,bi,bj)=
-     &                (phiHydLow(i,j,bi,bj)
+     &           (phiHydLow(i,j,bi,bj)
 #ifdef ALLOW_PSBAR_STERIC
 C add back the correction due to the global mean steric ssh change,
 C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &                 +sterGloH * gravity
-     &                 - ploadbar * recip_rhoConst
+     &            + sterGloH * gravity
+     &            - ploadbar * recip_rhoConst
 #endif
-     &                ) * maskC(i,j,1,bi,bj)
+     &           ) * maskC(i,j,1,bi,bj)
+C calculate steric height (in m; = m_eta_dyn - m_bp_nopabr * recip_gravity)  
+                sterht(i,j,bi,bj)=
+     &           m_eta_dyn(i,j,bi,bj)
+     &           - m_bp_nopabar(i,j,bi,bj) * recip_gravity
 #endif
 #endif
               enddo
