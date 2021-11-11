@@ -1,63 +1,62 @@
 #include "EXF_OPTIONS.h"
-      subroutine exf_GetYearlyFieldName(
+
+CBOP
+C !ROUTINE: exf_GetYearlyFieldName
+
+C !INTERFACE:
+      SUBROUTINE exf_GetYearlyFieldName(
      I     useYearlyFields, twoDigitYear, genperiod, year, genfile,
      O     genfileout,
-     I     mytime, myiter, mythid )
+     I     myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_GetYearlyFieldName
-c     ==================================================================
-c
-c     o Determine actual name of forcing file including year extension
-c
-c     started: Martin Losch  24-Jan-2008
-c
-c     ==================================================================
+C     !DESCRIPTION:
+C     ==================================================================
+C     o Determine actual name of forcing file including year extension
+C
+C     started: Martin Losch  24-Jan-2008
+C     ==================================================================
 
-      implicit none
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
 
-c     == global variables ==
-
-c     == routine arguments ==
-
-c     input
+C     !INPUT PARAMETERS:
+      LOGICAL useYearlyFields
+      LOGICAL twoDigitYear
       _RL     genperiod
-      logical useYearlyFields
-      logical twoDigitYear
-      character*(128) genfile
-      integer year
-      _RL     mytime
-      integer myiter
-      integer mythid
-c     output
-      character*(128) genfileout
+      INTEGER year
+      CHARACTER*(128) genfile
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+
+C     !OUTPUT PARAMETERS:
+      CHARACTER*(128) genfileout
 
 #ifdef ALLOW_EXF
-c     == local variables ==
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-      integer yearLoc
-      integer il
+C     !LOCAL VARIABLES:
+      INTEGER yearLoc
+      INTEGER il
+CEOP
 
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-c     == end of interface ==
-
-      if (useYearlyFields.and.genperiod.gt.0) then
-c     Complete filename with YR or _YEAR extension
-       il = ilnblnk( genfile )
-       if (twoDigitYear) then
+      IF ( useYearlyFields .AND. genperiod.NE.-12 ) THEN
+C     Complete filename with YR or _YEAR extension
+       il = ILNBLNK( genfile )
+       IF ( twoDigitYear) THEN
         yearLoc = year-1900
-        if (year.ge.2000) yearLoc = year-2000
-        write(genfileout(1:128),'( a,i2.2)') genfile(1:il),yearLoc
-       else
-        write(genfileout(1:128),'(2a,i4.4)') genfile(1:il),'_',year
-       endif
-      else
+        IF ( year.GE.2000 ) yearLoc = year - 2000
+        WRITE(genfileout(1:128),'(A,I2.2)') genfile(1:il), yearLoc
+       ELSE
+        WRITE(genfileout(1:128),'(2A,I4.4)') genfile(1:il), '_', year
+       ENDIF
+      ELSE
        genfileout = genfile
-      endif
-#endif /* ALLOW_EXF */      
-      return
-      end
+      ENDIF
+
+#endif /* ALLOW_EXF */
+      RETURN
+      END
