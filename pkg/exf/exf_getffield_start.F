@@ -77,8 +77,8 @@ c       WRITE(msgBuf,'(5A)') 'S/R EXF_GETFFIELD_START: ',
       ENDIF
 
 C--   Convert start-date to start_time (case using Calendar)
-      IF ( useCAL .AND. .NOT.(fld_period.EQ.-12. .OR.
-     &     (fld_period.EQ.-1 .AND. useYearlyFields)) ) THEN
+      IF ( useCAL .AND. (fld_period.GT.0. .OR.
+     &     (fld_period.EQ.-1 .AND. .NOT.useYearlyFields)) ) THEN
 #ifdef ALLOW_CAL
         CALL CAL_FULLDATE( fld_startdate1, fld_startdate2,
      &                     date_array, myThid )
