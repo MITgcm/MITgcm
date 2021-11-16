@@ -6,7 +6,7 @@
 C     ==================================================================
 C
 C     ad_read_write.F: routines to handle the I/O of the TAF/TAMC
-C                       generated code. All files are direct access files.
+C                      generated code. All files are direct access files.
 C     Routines:
 C     o  ADREAD  - Read  data from file.
 C     o  ADWRITE - Write data to   file.
@@ -42,9 +42,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAF/TAMC does not provide the two leading arguments myThid and myIter
-C     when compiling the MITgcmUV code. Instead the is a sed script avail-
-C     able that changes the TAMC-generated adjoint code.
+C     TAF does not provide the leading argument myThid when compiling
+C     the MITgcmUV code. Instead there is a sed script available that
+C     changes the TAF-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.
@@ -55,7 +55,7 @@ C
 C     ==================================================================
 
 CBOP
-C     !ROUTINE: adread
+C     !ROUTINE: ADREAD
 C     !INTERFACE:
       SUBROUTINE ADREAD(
      I                   myThid,
@@ -75,7 +75,7 @@ C     SUBROUTINE adread
 C     ==================================================================
 C     o Read direct access file.
 C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     since it uses the MITgcmUV i/o routine MDS_READ_TAPE. Only
 C     the master thread reads the data. Otherwise each thread would
 C     read from file.
 C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
@@ -91,9 +91,11 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
 #include "AUTODIFF.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -194,7 +196,7 @@ cc      IF (n2d*length2d.EQ.length) THEN
               CALL PRINT_ERROR( msgBuf, myThid )
               WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
               CALL PRINT_ERROR( msgBuf, myThid )
-              STOP 'in S/R ADREAD'
+              STOP 'ABNORMAL END: S/R ADREAD'
             ENDIF
           ENDIF
           j2d=(i2d-1)*length2d+1
@@ -209,7 +211,7 @@ C     to recompute or store in memory without much trouble or
 C     computational cost.
 C
 C     The issue could be revisited if needed.
-C     But for now we stop if any otehr instance is met.
+C     But for now we stop if any other instance is met.
 cc         WRITE(msgBuf,'(3A)')
 cc     &        'ADWRITE: ',name,'was not saved to tape.'
 cc         CALL PRINT_ERROR( msgBuf, myThid )
@@ -252,7 +254,7 @@ c     _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: adwrite
+C     !ROUTINE: ADWRITE
 C     !INTERFACE:
       SUBROUTINE ADWRITE(
      I                    myThid,
@@ -272,7 +274,7 @@ C     SUBROUTINE adwrite
 C     ==================================================================
 C     o Write to direct access file.
 C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     since it uses the MITgcmUV i/o routine MDS_WRITE_TAPE. Only
 C     the master thread writes the data. Otherwise each thread would
 C     write to file. This would result in an excessive waste of
 C     disk space.
@@ -289,9 +291,11 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
 #include "AUTODIFF.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -393,7 +397,7 @@ cc      IF (n2d*length2d.EQ.length) THEN
               CALL PRINT_ERROR( msgBuf, myThid )
               WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
               CALL PRINT_ERROR( msgBuf, myThid )
-              STOP 'in S/R ADWRITE'
+              STOP 'ABNORMAL END: S/R ADWRITE'
             ENDIF
           ENDIF
           j2d=(i2d-1)*length2d+1
