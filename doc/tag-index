@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - fix issue in interannual monthly forcing addition (case ${fld}period=0)
 o model/src:
   - skip reading kapGM and kapRedi from ini_mixing.F when useGMRedi is .FALSE.
 o pkg/exf:
