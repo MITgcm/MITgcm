@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - skip reading kapGM and kapRedi from ini_mixing.F when useGMRedi is .FALSE.
 o pkg/exf:
   - add option for interannual monthly forcing with pkg/cal by setting
     ${fld}_period=-1. (like -12. indicates climatological monthly forcing),
