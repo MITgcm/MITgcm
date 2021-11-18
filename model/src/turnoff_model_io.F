@@ -87,7 +87,10 @@ C-    should call a S/R OBCS_TURNOFF_IO (like SEAICE) to reset this flag
 
 #ifdef ALLOW_ECCO
 C-    should call a S/R ECCO_TURNOFF_IO (like SEAICE) to reset this flag
-      IF ( useECCO ) ecco_output_sterGloH = .FALSE.
+      IF ( useECCO ) THEN 
+        ecco_output_sterGloH = .FALSE.
+        ecco_output_ploadbar = .FALSE.
+      ENDIF
 #endif
 
 C--   Disable SBO output

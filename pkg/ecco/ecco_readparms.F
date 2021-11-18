@@ -166,6 +166,7 @@ c--   Read the namelist input.
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
      &                   cost_iprec, ecco_output_sterGloH,
+     &                   ecco_output_ploadbar,
      &                   ecco_keepTSeriesOutp_open,
      &                   cost_yftype, topexmeanfile
 
@@ -499,6 +500,7 @@ catn  eccov4 will run without needing to read in these params
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
         ecco_output_sterGloH  =      .FALSE.
+        ecco_output_ploadbar  =      .FALSE.
         ecco_keepTSeriesOutp_open =  .FALSE.
 
 Catn-- retired parameters

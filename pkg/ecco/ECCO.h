@@ -166,12 +166,15 @@ C                 the current model integration.
       _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-C     Two runtime parameters related to outputting sterGloH
+C     Three runtime parameters related to outputting sterGloH & ploadbar
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
+C     ecco_output_ploadbar :: output ploadbar at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
       COMMON /ECCO_L/
-     &                ecco_output_sterGloH, ecco_keepTSeriesOutp_open
-      LOGICAL ecco_output_sterGloH, ecco_keepTSeriesOutp_open
+     &                ecco_output_sterGloH, ecco_output_ploadbar,
+     &                ecco_keepTSeriesOutp_open
+      LOGICAL ecco_output_sterGloH, ecco_output_ploadbar, 
+     &        ecco_keepTSeriesOutp_open
 
 C     file precision
       COMMON /PREC_TYPE_COST/
@@ -294,7 +297,7 @@ C                            Note: currently only used in drifter velocity cost
       INTEGER gencost_enddate2(NGENCOST)
       INTEGER gencost_enddate(4,NGENCOST)
       INTEGER gencost_pointer3d(NGENCOST)
-      INTEGER  gencost_smooth2Ddiffnbt(NGENCOST)
+      INTEGER gencost_smooth2Ddiffnbt(NGENCOST)
       INTEGER gencost_preproc_i(NGENPPROC,NGENCOST)
       INTEGER gencost_posproc_i(NGENPPROC,NGENCOST)
       INTEGER gencost_msk_pointer3d(NGENCOST)

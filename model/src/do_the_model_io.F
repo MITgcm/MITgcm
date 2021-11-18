@@ -57,6 +57,8 @@ C       |-- SBO_OUTPUT
 C       |
 C       |-- STERGLOH_OUTPUT
 C       |
+C       |-- PLOADBAR_OUTPUT
+C       |
 C       |-- SEAICE_OUTPUT
 C       |
 C       |-- SHELFICE_OUTPUT
@@ -207,6 +209,7 @@ C     Do SBO diagnostics.
 #ifdef ALLOW_ECCO
       IF ( useECCO ) THEN
         CALL STERGLOH_OUTPUT( myTime, myIter, myThid )
+        CALL PLOADBAR_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif
 

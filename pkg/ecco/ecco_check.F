@@ -719,6 +719,16 @@ C ============ other pkg/ecco related checks
          STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 #endif
+#if !defined(ATMOSPHERIC_LOADING) || !defined(ALLOW_IB_CORR)
+      IF (ecco_output_ploadbar) THEN
+         WRITE(msgBuf,'(3A)') 'ECCO_CHECK:',
+     &         ' Cannot set ecco_output_ploadbar to TRUE',
+     &         ' with #undef ATMOSPHERIC_LOADING or '
+     &         ' #undef ALLOW_IB_CORR'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
+#endif
       _END_MASTER(myThid)
 
       RETURN
