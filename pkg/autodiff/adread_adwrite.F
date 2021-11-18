@@ -91,11 +91,12 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "AUTODIFF.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
 #endif
+C- OpenAD: this header is not converted to a module --> go after the others
+#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -291,11 +292,12 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "AUTODIFF.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
 #endif
+C- OpenAD: this header is not converted to a module --> go after the others
+#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
