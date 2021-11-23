@@ -102,8 +102,6 @@ CADJ &     = tapelev4, key = ilev_4
 
 #if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
       defined ALLOW_DEPTH_CONTROL)
-CADJ STORE aW2d, aS2d, aC2d = tapelvs4, key = ilev_4
-CADJ STORE pc, ps, pw       = tapelvs4, key = ilev_4
 CADJ STORE aW2d, aS2d, aC2d = tapelev4, key = ilev_4
 CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 #endif

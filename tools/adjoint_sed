@@ -10,7 +10,7 @@ s/call adiopen(/call adopen ( mythid,\
      \&           /g
 s/call adiclose(/call adclose( mythid,\
      \&           /g
-s/call adiread(/call adread ( mythid,\
+s/call adiread(/call adiread ( mythid,\
      \&           /g
-s/call adiwrite(/call adwrite( mythid,\
+s/call adiwrite(/call adiwrite( mythid,\
      \&           /g

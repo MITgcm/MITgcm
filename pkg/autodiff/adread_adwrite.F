@@ -5,14 +5,25 @@
 
 C     ==================================================================
 C
-C     ad_read_write.F: routines to handle the I/O of the TAMC generated
-C                      code. All files are direct access files.
+C     adread_adwrite.F: routines to handle the I/O of the TAMC generated
+C                       code. All files are direct access files.
 C     Routines:
-C     o  ADREAD  - Read  data from file.
-C     o  ADWRITE - Write data to   file.
+C     o  ADREAD   - Read  RL/RS data from file.
+C     o  ADWRITE  - Write RL/RS data to   file.
+C     o  ADIREAD  - Read  INT data from file.
+C     o  ADIWRITE - Write INT data to   file.
 C
+C     Note on short real variables (when _RS expands to real*4):
+C     ADREAD/ADWRITE handles this case properly as in F77 only addresses
+C     are passed to the subroutine. The size-parameter determines
+C     correctly how the passed array var is passed to
+C     MDS_READ/WRITE_TAPE. Some compiler/flag combinations that check
+C     for subroutine argument consistency will complain about a real*4
+C     array being passed to a real*8 array, but this can be avoided by
+C     adding this file to the list of NOOPTFILES with appropriate
+C     NOOPTFLAGS in the build-options file.
 C
-C     The following input veriables are used throughout in the argument
+C     The following input variables are used throughout in the argument
 C     lists:
 C
 C     name   -  character
@@ -42,9 +53,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAMC does not provide the two leading arguments myThid and myIter
-C     when compiling the MITgcmUV code. Instead the is a sed script avail-
-C     able that does change the TAMC-generated adjoint code.
+C     TAF/TAMC does not provide the two leading arguments myThid and
+C     myIter when compiling the MITgcmUV code. Instead there is a sed
+C     script available that does change the TAMC-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.
@@ -454,12 +465,9 @@ C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adiread
 C     ==================================================================
-C     o Read direct access file.
-C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
-C     the master thread reads the data. Otherwise each thread would
-C     read from file.
-C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+C     o read from direct access file, INTEGER version.
+C     The strategy is to read an RL field with RL-version ADREAD
+C     and convert to INTEGER
 C     ==================================================================
 C     SUBROUTINE adiread
 C     ==================================================================
@@ -504,14 +512,25 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      INTEGER k
-      real*8  var(length)
+      INTEGER k, lsize, length2d
+C     2D fields only
+      PARAMETER ( length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
+      real*8  var(length2d)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_ENTER('ADIREAD',myThid)
 #endif
 
+      IF ( length .NE. length2d ) THEN
+       WRITE(msgBuf,'(A,I9,A,I9)')
+     &      'ADIREAD: length = ', length,' .NE. length2d = ', length2d
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R ADIREAD'
+      ENDIF
+      lsize = 8
       CALL ADREAD(
      I            myThid,
      I            name,
@@ -519,13 +538,13 @@ CEOP
      I            tid,
      I            vid,
      O            var,
-     I            size,
+     I            lsize,
      I            length,
      I            irec
      &            )
 
       DO k = 1,length
-       ivar(k) = INT(var(k))
+       ivar(k) = NINT(var(k))
       ENDDO
 
 #ifdef ALLOW_DEBUG
@@ -553,17 +572,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
-C     SUBROUTINE adwrite
+C     SUBROUTINE adiwrite
 C     ==================================================================
-C     o Write to direct access file.
-C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
-C     the master thread writes the data. Otherwise each thread would
-C     write to file. This would result in an excessive waste of
-C     disk space.
-C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+C     o Write to direct access file, INTEGER version.
+C     The strategy is to convert field to RL and use the
+C     RL-version ADREAD.
 C     ==================================================================
-C     SUBROUTINE adwrite
+C     SUBROUTINE adiwrite
 C     ==================================================================
 C     \ev
 
@@ -606,18 +621,30 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      INTEGER k
-      real*8  var(length)
+      INTEGER k, lsize, length2d
+      PARAMETER ( length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
+      real*8  var(length2d)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_ENTER('ADIWRITE',myThid)
 #endif
 
+      IF ( length .NE. length2d ) THEN
+       WRITE(msgBuf,'(A,I9,A,I9)')
+     &      'ADIREAD: length = ', length,' .NE. length2d = ', length2d
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R ADIREAD'
+      ENDIF
+
       DO k = 1,length
+C     no automatic conversion
        var(k) = FLOAT(ivar(k))
       ENDDO
 
+      lsize = 8
       CALL ADWRITE(
      I             myThid,
      I             name,
@@ -625,13 +652,13 @@ CEOP
      I             tid,
      I             vid,
      I             var,
-     I             size,
+     I             lsize,
      I             length,
      I             irec
      &             )
 
 #ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADIWRITE',myThid)
 #endif
 
       RETURN
