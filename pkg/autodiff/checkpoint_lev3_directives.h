@@ -7,31 +7,31 @@ c
 c
 CADJ STORE etan  = tapelev3, key = ilev_3
 #ifndef EXCLUDE_FFIELDS_LOAD
-CADJ STORE taux0 = tapelvs3, key = ilev_3
-CADJ STORE taux1 = tapelvs3, key = ilev_3
-CADJ STORE tauy0 = tapelvs3, key = ilev_3
-CADJ STORE tauy1 = tapelvs3, key = ilev_3
-CADJ STORE qnet0 = tapelvs3, key = ilev_3
-CADJ STORE qnet1 = tapelvs3, key = ilev_3
-CADJ STORE empmr0 = tapelvs3, key = ilev_3
-CADJ STORE empmr1 = tapelvs3, key = ilev_3
-CADJ STORE sst0 = tapelvs3, key = ilev_3
-CADJ STORE sst1 = tapelvs3, key = ilev_3
-CADJ STORE sss0 = tapelvs3, key = ilev_3
-CADJ STORE sss1 = tapelvs3, key = ilev_3
-CADJ STORE saltflux0 = tapelvs3, key = ilev_3
-CADJ STORE saltflux1 = tapelvs3, key = ilev_3
+CADJ STORE taux0 = tapelev3, key = ilev_3
+CADJ STORE taux1 = tapelev3, key = ilev_3
+CADJ STORE tauy0 = tapelev3, key = ilev_3
+CADJ STORE tauy1 = tapelev3, key = ilev_3
+CADJ STORE qnet0 = tapelev3, key = ilev_3
+CADJ STORE qnet1 = tapelev3, key = ilev_3
+CADJ STORE empmr0 = tapelev3, key = ilev_3
+CADJ STORE empmr1 = tapelev3, key = ilev_3
+CADJ STORE sst0 = tapelev3, key = ilev_3
+CADJ STORE sst1 = tapelev3, key = ilev_3
+CADJ STORE sss0 = tapelev3, key = ilev_3
+CADJ STORE sss1 = tapelev3, key = ilev_3
+CADJ STORE saltflux0 = tapelev3, key = ilev_3
+CADJ STORE saltflux1 = tapelev3, key = ilev_3
 # ifdef SHORTWAVE_HEATING
-CADJ STORE qsw0 = tapelvs3, key = ilev_3
-CADJ STORE qsw1 = tapelvs3, key = ilev_3
+CADJ STORE qsw0 = tapelev3, key = ilev_3
+CADJ STORE qsw1 = tapelev3, key = ilev_3
 # endif
 # ifdef ALLOW_GEOTHERMAL_FLUX
-CADJ STORE geothFlux0 = tapelvs3, key = ilev_3
-CADJ STORE geothFlux1 = tapelvs3, key = ilev_3
+CADJ STORE geothFlux0 = tapelev3, key = ilev_3
+CADJ STORE geothFlux1 = tapelev3, key = ilev_3
 # endif
 # ifdef ATMOSPHERIC_LOADING
-CADJ STORE pload0 = tapelvs3, key = ilev_3
-CADJ STORE pload1 = tapelvs3, key = ilev_3
+CADJ STORE pload0 = tapelev3, key = ilev_3
+CADJ STORE pload1 = tapelev3, key = ilev_3
 # endif
 #endif /* ndef EXCLUDE_FFIELDS_LOAD */
 #ifdef EXACT_CONSERV
@@ -72,7 +72,7 @@ CADJ STORE StoreDynVars3D     = tapelev3, key = ilev_3
 c
 #endif /* AUTODIFF_USE_OLDSTORE_3D */
 
-CADJ STORE phi0surf     = tapelvs3, key = ilev_3
+CADJ STORE phi0surf     = tapelev3, key = ilev_3
 CADJ STORE saltflux     = tapelev3, key = ilev_3
 
 #ifdef EXACT_CONSERV
@@ -80,12 +80,12 @@ cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif /* EXACT_CONSERV */
 
 #ifdef NONLIN_FRSURF
-CADJ STORE hfac_surfc    = tapelvs3, key = ilev_3
-CADJ STORE hfac_surfs    = tapelvs3, key = ilev_3
-CADJ STORE hfac_surfw    = tapelvs3, key = ilev_3
-CADJ STORE hFac_surfNm1C= tapelvs3, key = ilev_3
-CADJ STORE hFac_surfNm1S= tapelvs3, key = ilev_3
-CADJ STORE hFac_surfNm1W= tapelvs3, key = ilev_3
+CADJ STORE hfac_surfc    = tapelev3, key = ilev_3
+CADJ STORE hfac_surfs    = tapelev3, key = ilev_3
+CADJ STORE hfac_surfw    = tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1C= tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1S= tapelev3, key = ilev_3
+CADJ STORE hFac_surfNm1W= tapelev3, key = ilev_3
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarexpc,rstarexps,rstarexpw
@@ -102,8 +102,8 @@ CADJ &     = tapelev3, key = ilev_3
 
 #if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
       defined ALLOW_DEPTH_CONTROL)
-CADJ STORE aW2d, aS2d, aC2d = tapelvs3, key = ilev_3
-CADJ STORE pc, ps, pw       = tapelvs3, key = ilev_3
+CADJ STORE aW2d, aS2d, aC2d = tapelev3, key = ilev_3
+CADJ STORE pc, ps, pw       = tapelev3, key = ilev_3
 #endif
 
 #ifdef ALLOW_CD_CODE
@@ -180,12 +180,12 @@ CADJ STORE phiHydLow  = tapelev3, key = ilev_3
 #endif
 
 #ifdef ALLOW_EBM
-CADJ STORE fu    = tapelvs3, key = ilev_3
-CADJ STORE fv    = tapelvs3, key = ilev_3
-CADJ STORE qnet  = tapelvs3, key = ilev_3
-CADJ STORE qsw   = tapelvs3, key = ilev_3
-CADJ STORE sss   = tapelvs3, key = ilev_3
-CADJ STORE empmr = tapelvs3, key = ilev_3
+CADJ STORE fu    = tapelev3, key = ilev_3
+CADJ STORE fv    = tapelev3, key = ilev_3
+CADJ STORE qnet  = tapelev3, key = ilev_3
+CADJ STORE qsw   = tapelev3, key = ilev_3
+CADJ STORE sss   = tapelev3, key = ilev_3
+CADJ STORE empmr = tapelev3, key = ilev_3
 # include "ebm_ad_check_lev3_dir.h"
 #endif /* ALLOW_EBM */
 

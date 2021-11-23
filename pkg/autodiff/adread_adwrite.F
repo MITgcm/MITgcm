@@ -5,15 +5,11 @@
 
 C     ==================================================================
 C
-C     adread_adwrite.F: routines to handle the I/O of the TAMC generated
-C                       code. All files are direct access files.
+C     ad_read_write.F: routines to handle the I/O of the TAMC generated
+C                      code. All files are direct access files.
 C     Routines:
-C     o  ADREAD   - Read  _RL data from file.
-C     o  ADWRITE  - Write _RL data to   file.
-C     o  ADSREAD  - Read  _RS data from file.
-C     o  ADSWRITE - Write _RS data to   file.
-C     o  ADIREAD  - Read  INT data from file.
-C     o  ADIWRITE - Write INT data to   file.
+C     o  ADREAD  - Read  data from file.
+C     o  ADWRITE - Write data to   file.
 C
 C
 C     The following input veriables are used throughout in the argument
@@ -439,207 +435,6 @@ c     _BARRIER
       RETURN
       END
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: adsread
-C     !INTERFACE:
-      SUBROUTINE ADSREAD(
-     I                   myThid,
-     I                   name,
-     I                   len,
-     I                   tid,
-     I                   vid,
-     O                   svar,
-     I                   size,
-     I                   length,
-     I                   irec
-     &                 )
-
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE adsread
-C     ==================================================================
-C     o Read direct access file, RS-version
-C     The strategy is to use the RL version ADREAD and convert the
-C     the field to RS
-C     ==================================================================
-C     SUBROUTINE adsread
-C     ==================================================================
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "AUTODIFF.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
-C     name   :: extended tape name.
-C     len    :: number of characters in name.
-C     tid    :: tape identifier.
-C     vid    :: identifies the variable to be stored on tape.
-C     var    :: values to be stored.
-C     size   :: size in bytes of the type of variable var.
-C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
-C     irec   :: record number to be written.
-
-      INTEGER myThid
-      CHARACTER*(*) name
-      INTEGER len
-      INTEGER tid
-      INTEGER vid
-      INTEGER size
-      INTEGER length
-      INTEGER irec
-      _RS     svar(*)
-
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-C     == local variables ==
-      INTEGER k, lsize
-      real*8  var(length)
-CEOP
-
-#ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_ENTER('ADSREAD',myThid)
-#endif
-
-      lsize = 8
-      CALL ADREAD(
-     I            myThid,
-     I            name,
-     I            len,
-     I            tid,
-     I            vid,
-     O            var,
-     I            lsize,
-     I            length,
-     I            irec
-     &            )
-
-      DO k = 1,length
-C     use automatic conversion
-       svar(k) = var(k)
-      ENDDO
-
-#ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_LEAVE('ADSREAD',myThid)
-#endif
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: adswrite
-C     !INTERFACE:
-      SUBROUTINE ADSWRITE(
-     I                    myThid,
-     I                    name,
-     I                    len,
-     I                    tid,
-     I                    vid,
-     I                    svar,
-     I                    size,
-     I                    length,
-     I                    irec
-     &                  )
-
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE adswrite
-C     ==================================================================
-C     o Write to direct access file, RS-version.
-C     The strategy is to convert field to RL and use the
-C     RL-version ADREAD.
-C     ==================================================================
-C     SUBROUTINE adswrite
-C     ==================================================================
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == global variables ==
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "AUTODIFF.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
-C     name   :: extended tape name.
-C     len    :: number of characters in name.
-C     tid    :: tape identifier.
-C     vid    :: identifies the variable to be stored on tape.
-C     var    :: values to be stored.
-C     size   :: size in bytes of the type of variable var.
-C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
-C     irec   :: record number to be written.
-
-      INTEGER myThid
-      CHARACTER*(*) name
-      INTEGER len
-      INTEGER tid
-      INTEGER vid
-      INTEGER size
-      INTEGER length
-      INTEGER irec
-      _RS     svar(*)
-
-C     !FUNCTIONS:
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-C     == local variables ==
-      INTEGER k, lsize
-      real*8  var(length)
-CEOP
-
-#ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_ENTER('ADSWRITE',myThid)
-#endif
-
-      DO k = 1,length
-C     use automatic conversion
-       var(k) = svar(k)
-      ENDDO
-
-      lsize = 8
-      CALL ADWRITE(
-     I             myThid,
-     I             name,
-     I             len,
-     I             tid,
-     I             vid,
-     I             var,
-     I             lsize,
-     I             length,
-     I             irec
-     &             )
-
-#ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_LEAVE('ADSWRITE',myThid)
-#endif
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: adiread
 C     !INTERFACE:
@@ -659,9 +454,12 @@ C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adiread
 C     ==================================================================
-C     o Read direct access file, INTEGER version.
-C     The strategy is tof use the RL version ADREAD and convert the
-C     the field to INTEGER.
+C     o Read direct access file.
+C     A call to this routine implies an open-read-close sequence
+C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     the master thread reads the data. Otherwise each thread would
+C     read from file.
+C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 C     ==================================================================
 C     SUBROUTINE adiread
 C     ==================================================================
@@ -706,7 +504,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      INTEGER k, lsize
+      INTEGER k
       real*8  var(length)
 CEOP
 
@@ -714,7 +512,6 @@ CEOP
       IF ( debugMode ) CALL DEBUG_ENTER('ADIREAD',myThid)
 #endif
 
-      lsize = 8
       CALL ADREAD(
      I            myThid,
      I            name,
@@ -722,13 +519,13 @@ CEOP
      I            tid,
      I            vid,
      O            var,
-     I            lsize,
+     I            size,
      I            length,
      I            irec
      &            )
 
       DO k = 1,length
-       ivar(k) = NINT(var(k))
+       ivar(k) = INT(var(k))
       ENDDO
 
 #ifdef ALLOW_DEBUG
@@ -756,13 +553,17 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
-C     SUBROUTINE adiwrite
+C     SUBROUTINE adwrite
 C     ==================================================================
-C     o Write to direct access file, INTEGER version.
-C     The strategy is to convert field to RL and use the
-C     RL-version ADREAD.
+C     o Write to direct access file.
+C     A call to this routine implies an open-read-close sequence
+C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     the master thread writes the data. Otherwise each thread would
+C     write to file. This would result in an excessive waste of
+C     disk space.
+C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 C     ==================================================================
-C     SUBROUTINE adiwrite
+C     SUBROUTINE adwrite
 C     ==================================================================
 C     \ev
 
@@ -805,7 +606,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      INTEGER k, lsize
+      INTEGER k
       real*8  var(length)
 CEOP
 
@@ -814,11 +615,9 @@ CEOP
 #endif
 
       DO k = 1,length
-C     no automatic conversion
        var(k) = FLOAT(ivar(k))
       ENDDO
 
-      lsize = 8
       CALL ADWRITE(
      I             myThid,
      I             name,
@@ -826,13 +625,13 @@ C     no automatic conversion
      I             tid,
      I             vid,
      I             var,
-     I             lsize,
+     I             size,
      I             length,
      I             irec
      &             )
 
 #ifdef ALLOW_DEBUG
-      IF ( debugMode ) CALL DEBUG_LEAVE('ADIWRITE',myThid)
+      IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE',myThid)
 #endif
 
       RETURN
