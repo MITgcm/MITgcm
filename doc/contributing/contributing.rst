@@ -38,6 +38,8 @@ contributions to the source code are expected to conform with the
 :ref:`sec_code_style_guide`. Contributions to the manual should follow
 the same procedure and conform with :numref:`contrib_manual`.
 
+The URLs in the following sections assume ssh based authentication. If you are behind a particularly troublesome firewall, you may need to use https and personal access tokens to login to GitHub. See the detailed instructions for more information.
+
 Quickstart Guide
 ----------------
 
@@ -50,14 +52,14 @@ repository for development work):
 
 ::
 
-    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
+    % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
 
 **4.** Move into your local clone directory (cd MITgcm) and and set
 up a remote that points to the original:
 
 ::
 
-    % git remote add upstream https://github.com/MITgcm/MITgcm.git
+    % git remote add upstream git@github.com:MITgcm/MITgcm.git
 
 **5.** Make a new branch from ``upstream/master`` (name it something
 appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on this branch:
@@ -210,7 +212,7 @@ disk location, for your development work (keeping your research work separate). 
 
 ::
 
-    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
+    % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
 
 from your terminal (technically, here you are copying the forked “origin”
 version from the cloud, not the “upstream” version, but these will be identical at this point).
@@ -225,7 +227,7 @@ We need to set up a remote that points to the main repository:
 
 ::
 
-    % git remote add upstream https://github.com/MITgcm/MITgcm.git
+    % git remote add upstream git@github.com:MITgcm/MITgcm.git
 
 This means that we now have two "remotes" of the project. A remote is
 just a pointer to a repository not on your computer, i.e., in the GitHub
