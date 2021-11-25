@@ -41,23 +41,25 @@ the same procedure and conform with :numref:`contrib_manual`.
 Quickstart Guide
 ----------------
 
-**1.** Fork the project on GitHub (using the fork button).
+**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
 
-**2.** Create a local clone (we strongly suggest keeping a separate
+**2.** Fork the project on GitHub (using the fork button).
+
+**3.** Create a local clone (we strongly suggest keeping a separate
 repository for development work):
 
 ::
 
     % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
 
-**3.** Move into your local clone directory (cd MITgcm) and and set
+**4.** Move into your local clone directory (cd MITgcm) and and set
 up a remote that points to the original:
 
 ::
 
     % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
-**4.** Make a new branch from ``upstream/master`` (name it something
+**5.** Make a new branch from ``upstream/master`` (name it something
 appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on this branch:
 
 ::
@@ -65,19 +67,19 @@ appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on th
    % git fetch upstream
    % git checkout -b «YOUR_NEWBRANCH_NAME» upstream/master
 
-**5.** When edits are done, do all git add’s and git commit’s. In the commit message,
+**6.** When edits are done, do all git add’s and git commit’s. In the commit message,
 make a succinct (<70 char) summary of your changes. If you need more space to
 describe your changes, you can leave a blank line and type a longer description,
 or break your commit into multiple smaller commits. Reference any outstanding
 issues addressed using the syntax ``#«ISSUE_NUMBER»``.
 
-**6.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
+**7.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
 
 ::
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-**7.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
+**8.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
 provide the requested information about your PR (in particular, a non-trivial change to the model
 requires a suggested addition to :filelink:`doc/tag-index`)
 and wait for the MITgcm head developers to review your proposed changes.
@@ -192,13 +194,15 @@ Prior to this, the file will appear in the current folder independently, i.e., r
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
-**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
+**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
+
+**2.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
 from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
 As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative
 development process -- you need to create a place for your edits in the GitHub cloud,
 for developers to peruse.
 
-**2.** Download the code onto your local computer using the git clone command.
+**3.** Download the code onto your local computer using the git clone command.
 Even if you previously downloaded the code through a “git-aware” method
 (i.e., a git clone command, see :numref:`git-aware_download`),
 we **STRONGLY SUGGEST** you download a fresh repository, to a separate
@@ -211,7 +215,7 @@ disk location, for your development work (keeping your research work separate). 
 from your terminal (technically, here you are copying the forked “origin”
 version from the cloud, not the “upstream” version, but these will be identical at this point).
 
-**3.** Move into the local clone directory on your computer:
+**4.** Move into the local clone directory on your computer:
 
 ::
 
@@ -233,7 +237,7 @@ remote, which is needed in step #4 -- no actual file manipulation
 is done at this point. If in doubt, the command ``git remote -v``
 will list what remotes have been set up.
 
-**4.**  Next make a new branch.
+**5.**  Next make a new branch.
 
 ::
 
@@ -243,7 +247,7 @@ will list what remotes have been set up.
 You will make edits on this new branch, to keep these new edits completely
 separate from all files on the master branch. The first command
 ``git fetch upstream`` makes sure your new branch is the latest code
-from the main repository; as such, you can redo step 4 at any time to
+from the main repository; as such, you can redo step 5 at any time to
 start additional, separate development projects (on a separate, new branch).
 Note that this second command above not only creates this new branch,
 from the ``upstream/master`` branch, it also switches you onto this newly
@@ -252,7 +256,7 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
 
 .. _doing_stuff_in_git:
 
-**5.** Doing stuff! This usually comes in one of three flavors:
+**6.** Doing stuff! This usually comes in one of three flavors:
 
 |   i) cosmetic changes, formatting, documentation, etc.;
 |   ii) fixing bug(s), or any change to the code which results in different numerical output; or
@@ -280,20 +284,20 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
       each commit should encompass a single conceptual change to the code base, regardless of how many files it touches.
       This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process.
 
-When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding;
-you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
+When your changes are tested and documented, continue on to step #7, but read all of step #7 and #8 before proceeding;
+you might want to do an optional “bring my development branch up to date” sequence of steps before step #7.
 
-**6.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud.
+**7.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud.
 This effectively updates your GitHub cloud copy of the MITgcm repo to reflect the wonderful changes you are contributing.
 
 ::
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository.
+Some time might elapse during step #6, as you make and test your edits, during which continuing development occurs in the main MITgcm repository.
 In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development.
 It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not
-know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below,
+know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #8 below,
 when one of three things will occur:
 
    - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time,
@@ -304,10 +308,10 @@ when one of three things will occur:
    - during the elapsed time, the files you have modified have also been edited/updated in the main repo,
      but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
 
-One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and
+One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #7 and #8 and
 let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’
-that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely.
-However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
+that is checked by default when you do step #8). If very little time elapsed during step #6, such conflict is less likely.
+However, if step #6 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
 And/or during the development process, you might have reasons to bring the latest changes in the main repo into your
 development branch, and thus might opt to follow these same steps.
 
@@ -324,7 +328,7 @@ Development branch code update recipe:
 This first command switches you from your development branch to the master branch. The second command above will synchronize
 your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred
 in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch;
-in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #1 above.
+in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #2 above.
 The ``git push`` command does the opposite of pull, so in the third step you are synchronizing your GitHub cloud copy (“origin”)
 master branch to your local clone’s master branch (which you just updated). Then, switch back to your development branch via
 the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch.
@@ -343,7 +347,7 @@ is ``git diff master``. Similarly, to see a combined list of both your changes a
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax.
 If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
-**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
+**8.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
 In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git).
 There is a button for "Compare and Pull" in your newly created branch. Click the button!
 Now you can add a final succinct summary description of what you've done in your commit(s),
@@ -351,8 +355,8 @@ flag up any issues, and respond to the remaining questions on the PR template fo
 the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your
 changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified
 and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
-a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
-git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7.
+a week. While the PR remains open, you can go back to step #6 and make additional edits, git adds,
+git commits, and then redo step #7; such changes will be added to the PR (and maintainers re-notified), no need to redo step #8.
 
 Your pull request remains open until either the maintainers fully accept and
 merge your code changes into the main repository, or decide to reject your changes.
