@@ -161,9 +161,9 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #ifdef USE_PDAF
 #define FMT_PROCTSK_ID 'I6.6,a1,I6.6'
       CALL GET_TASKID_PDAF(mpi_task_id)
-      WRITE(scratchFile1,'(A,'//FMT_PROCTSK_ID//')') 'scratch1.',
+      WRITE(scratchFile1,'(A,I6.6,a1,I6.6)') 'scratch1.',
      &     procId,".",mpi_task_id
-      WRITE(scratchFile2,'(A,'//FMT_PROCTSK_ID//')') 'scratch2.',
+      WRITE(scratchFile2,'(A,I6.6,a1,I6.6)') 'scratch2.',
      &     procId,".",mpi_task_id
 #else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
