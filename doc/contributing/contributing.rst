@@ -249,7 +249,7 @@ will list what remotes have been set up.
 You will make edits on this new branch, to keep these new edits completely
 separate from all files on the master branch. The first command
 ``git fetch upstream`` makes sure your new branch is the latest code
-from the main repository; as such, you can redo step 5 at any time to
+from the main repository; as such, you can redo step #5 at any time to
 start additional, separate development projects (on a separate, new branch).
 Note that this second command above not only creates this new branch,
 from the ``upstream/master`` branch, it also switches you onto this newly
