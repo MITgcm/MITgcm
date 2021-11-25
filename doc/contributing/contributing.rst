@@ -194,7 +194,7 @@ Prior to this, the file will appear in the current folder independently, i.e., r
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
-**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
+**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_. GitHub requires ssh keys or a personal access token for authentication. The development team find ssh keys to be the easiest method, but you may prefer to use a `personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_.
 
 **2.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
 from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
