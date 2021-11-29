@@ -95,10 +95,10 @@ C     multi-node/multi-processor systems
 C     After opening regular files here, they are closed with STATUS='DELETE'
 #ifdef USE_PDAF
       CALL GET_TASKID_PDAF(mpi_task_id)
-      WRITE(scratchFile1,'(A,I6.6,a1,I6.6)') 'scratch1.',
-     &     myProcId,".",mpi_task_id
-      WRITE(scratchFile2,'(A,I6.6,a1,I6.6)') 'scratch2.',
-     &     myProcId,".",mpi_task_id
+      WRITE(scratchFile1,'('//FMT_PROCTSK_ID//')') 'scratch1.',
+     &     myprocId,".",mpi_task_id
+      WRITE(scratchFile2,'('//FMT_PROCTSK_ID//')') 'scratch2.',
+     &     myprocId,".",mpi_task_id
 #else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', myProcId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', myProcId
