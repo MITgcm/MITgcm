@@ -160,10 +160,10 @@ C     properly established
 C     After opening regular files here, they are closed with STATUS='DELETE'
 #ifdef USE_PDAF
       CALL GET_TASKID_PDAF(mpi_task_id)
-      WRITE(scratchFile1,'('//FMT_PROCTSK_ID//')') 'scratch1.',
-     &     procId,".",mpi_task_id
-      WRITE(scratchFile2,'('//FMT_PROCTSK_ID//')') 'scratch2.',
-     &     procId,".",mpi_task_id
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')') 
+     &     'scratch1.', procId,'.', mpi_task_id
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')') 
+     &     'scratch2.', procId,'.', mpi_task_id
 #else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
