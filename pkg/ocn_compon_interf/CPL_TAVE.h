@@ -25,11 +25,11 @@ C     QSWtave     :: Net shortwave heat flux [W/m2, +=upward]
 C     TXtave      :: Surface stress [Pa=N/m2], zonal compon.
 C     TYtave      :: Surface stress [Pa=N/m2], merid compon.
 C     FWtave      :: Net fresh water flux (=E-P-R) [kg/m2/s, +=upward]
-C     SFxtave     :: Salt flux (from sea-ice)  [psu.kg/m2/s, +=upward]
+C     SFxtave     :: Salt flux (from sea-ice)       [g/m2/s, +=upward]
 C     SICtave     :: Sea-ice mass [kg/m2]
 C     MXLtave     :: Ocean mixed-layer depth   [m]
 C     SSTtave     :: Ocean surface temperature [oC]
-C     SSStave     :: Ocean surface salinity    [psu]
+C     SSStave     :: Ocean surface salinity    [g/kg]
 C     vSqtave     :: Ocean surface velocity square [m2/s2]
 C     aC02tave    :: CO2 level in atm [parts by volume]
 C     sWSpdtave   :: Surface wind speed [m/s]

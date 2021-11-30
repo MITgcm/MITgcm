@@ -34,7 +34,7 @@ C     uVeltave     :: zonal velocity (m/s, i=1 held at western face)
 C     vVeltave     :: meridional velocity (m/s, j=1 held at southern face)
 C     wVeltave     :: vertical velocity ([r]/s, i.e.: ocean:m/s atmos:Pa/s)
 C     thetatave    :: potential temperature (oC, held at pressure/tracer point)
-C     salttave     :: salinity (ppt, held at pressure/tracer point)
+C     salttave     :: salinity (g/kg, held at pressure/tracer point)
 C     Eta2tave     :: eta * eta
 C     TTtave       :: theta * theta
 C     UUtave       :: uVel * uVel (used to compute the averaged KE)

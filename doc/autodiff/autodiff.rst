@@ -522,6 +522,8 @@ by the model vs. data misfit:
     \nabla_u {\cal J}^T \, = \, 2 \, M^T \cdot 
      H \cdot \left( {\cal H}(\vec{v}) - \vec{d} \, \right)
 
+.. _sec_autodiff_storage_v_recompute:
+
 Storing vs. recomputation in reverse mode
 -----------------------------------------
 
@@ -608,6 +610,8 @@ integrations of the model (one for each checkpointing level). The
 optimal balance of storage vs. recomputation certainly depends on the
 computing resources available and may be adjusted by adjusting the
 partitioning among the :math:`n^{lev3}, \,\, n^{lev2}, \,\, n^{lev1}`.
+
+.. _sec_ad_tlm_and_adm:
 
 TLM and ADM generation in general
 =================================
@@ -908,6 +912,8 @@ Changing the default AD tool flags: ad_options files
 Hand-written adjoint code
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. _pkg_cost_description:
+
 The cost function (dependent variable)
 --------------------------------------
 
@@ -997,6 +1003,8 @@ step. Within this ’driver’ routine, S/R are called for each of the
 chosen cost function contributions. In the present example
 (:varlink:`ALLOW_COST_TRACER`), S/R :filelink:`cost_tracer.F </pkg/cost/cost_tracer.F>` is called. It accumulates
 :varlink:`objf_tracer` according to eqn. (ref:ask-the-author).
+
+.. _sec_ad_finalize_contribtuions:
 
 Finalize all contributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1250,6 +1258,8 @@ considered:
   parameters :varlink:`diffkr` and :varlink:`kapgm` are currently added as controls
   in :filelink:`ctrl_map_ini.F </pkg/ctrl/ctrl_map_ini.F>`.
 
+.. _sec_autodiff_output_adj_vars:  
+
 Output of adjoint variables and gradient
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1476,6 +1486,7 @@ The relevant runtime flags are set in the files:
                |
                |-- grdchk_print       - print results
 
+.. _sec_autodiff_diva:
 
 Adjoint dump & restart – divided adjoint (DIVA)
 ===============================================
@@ -1749,4 +1760,38 @@ for following system:
 Head of MITgcm branch (``checkpoint59m`` with some modifications) was used for
 building adjoint code. Following routing needed special care (revert
 to revision 1.1): http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/heimbach/OpenAD/OAD_support/active_module.f90?hideattic=0&view=markup.
+
+Building the MITgcm adjoint using an OpenAD Singularity container
+-----------------------------------------------------------------
+
+The MITgcm adjoint can also be built using a Singularity container.  You will
+need `Singularity <https://singularity.hpcng.org/>`_, version 3.X.  A container
+with OpenAD can be downloaded from the Sylabs Cloud: [#thanks-Dan]_
+
+::
+
+   singularity pull library://jahn/default/openad:latest
+
+To use it, supply the path to the downloaded container to genmake2,
+
+::
+
+   ../../../tools/genmake2 -oad -oadsingularity /path/to/openad_latest.sif ...
+   make adAll
+
+If your build directory is on a remotely mounted file system (mounted at
+/mountpoint), you may have to add an option for mounting it in the container:
+
+::
+
+   ../../../tools/genmake2 -oad -oadsngl "-B /mountpoint /path/to/openad_latest.sif" ...
+
+The ``-oadsingularity`` option is also supported by testreport,
+:numref:`testreport_utility`.  Note that the path to the container has to be
+either absolute or relative to the build directory.
+
+.. rubric:: Footnotes
+
+.. [#thanks-Dan] A big thank you to Dan Goldberg for supplying the definition
+   file for the Singularity container!
 

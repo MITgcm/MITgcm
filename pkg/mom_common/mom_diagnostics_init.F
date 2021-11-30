@@ -195,6 +195,7 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef ALLOW_LEITH_QG
       diagName  = 'VAHZLTHQ'
       diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
@@ -208,6 +209,7 @@ C--   add diagnostics for viscosity coefficients:
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
       diagName  = 'VAHZSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'
@@ -285,18 +287,6 @@ C--   add diagnostics of simple derivative quantities:
 C--   add diagnostics of tendencies from each terms
       diagUnits = 'm/s^2           '
 
-      diagName  = 'UBotDrag'
-      diagTitle = 'U momentum tendency from Bottom Drag'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'VBotDrag'
-      diagTitle = 'V momentum tendency from Bottom Drag'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       diagName  = 'USidDrag'
       diagTitle = 'U momentum tendency from Side Drag'
       diagCode  = 'UUR     MR      '
@@ -312,12 +302,29 @@ C--   add diagnostics of tendencies from each terms
 
       diagName  = 'Um_Diss '
       diagTitle = 'U momentum tendency from Dissipation'
+     &          //' (Explicit part)'
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
       diagName  = 'Vm_Diss '
       diagTitle = 'V momentum tendency from Dissipation'
+     &          //' (Explicit part)'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_ImplD'
+      diagTitle = 'U momentum tendency from Dissipation'
+     &          //' (Implicit part)'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_ImplD'
+      diagTitle = 'V momentum tendency from Dissipation'
+     &          //' (Implicit part)'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -349,14 +356,14 @@ C--   add diagnostics of tendencies from each terms
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'Um_dPHdx'
-      diagTitle = 'U momentum tendency from Hydrostatic Pressure grad'
+      diagName  = 'Um_dPhiX'
+      diagTitle = 'U momentum tendency from Pressure/Potential grad'
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_dPHdy'
-      diagTitle = 'V momentum tendency from Hydrostatic Pressure grad'
+      diagName  = 'Vm_dPhiY'
+      diagTitle = 'V momentum tendency from Pressure/Potential grad'
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -433,6 +440,22 @@ C-    vertical momentum tendencies
 #endif /* ALLOW_NONHYDROSTATIC */
 
 C--   add diagnostics of advective & viscous flux :
+C-    bottom fluxes:
+      diagName  = 'botTauX '
+      diagTitle = 'zonal bottom stress, >0 increases uVel'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'UU      U1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'botTauY '
+      diagTitle = 'meridional bottom stress, >0 increases vVel'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'VV      U1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
       IF ( usingPCoords ) THEN
         diagUnits = 'Pa.m^3/s^2      '
       ELSE

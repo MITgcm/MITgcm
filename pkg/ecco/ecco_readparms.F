@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_readparms( myThid )
 
@@ -13,10 +16,9 @@ c     ==================================================================
 c     SUBROUTINE ecco_readparms
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -26,7 +28,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #  include "ecco_local_params.h"
 # endif
 #endif
@@ -38,8 +41,11 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
+
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
 C     msgBuf      - Informational/error message buffer
@@ -54,13 +60,9 @@ C     iUnit       - Work variable for IO unit number
 #endif
 
 Catn-- retired parameters
-      character*(MAX_LEN_FNAM) topexmeanfile
+      CHARACTER*(MAX_LEN_FNAM) topexmeanfile
+      CHARACTER*(2) cost_yftype
       integer nRetired
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -163,8 +165,9 @@ c--   Read the namelist input.
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
-     &                   cost_iprec, cost_yftype
-     &                   ,topexmeanfile
+     &                   cost_iprec, ecco_output_sterGloH,
+     &                   ecco_keepTSeriesOutp_open,
+     &                   cost_yftype, topexmeanfile
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
@@ -175,6 +178,7 @@ c--   Read the namelist input.
      &         gencost_scalefile,
      &         gencost_errfile,
      &         gencost_itracer,
+     &         gencost_kLev_select,
      &         gencost_preproc,
      &         gencost_preproc_c,
      &         gencost_preproc_i,
@@ -494,16 +498,18 @@ catn  eccov4 will run without needing to read in these params
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
         cost_iprec  = precFloat32
-        cost_yftype = 'RL'
+        ecco_output_sterGloH  =      .FALSE.
+        ecco_keepTSeriesOutp_open =  .FALSE.
 
 Catn-- retired parameters
         topexmeanfile         =    ' '
+        cost_yftype           =   'RL'
         nRetired              =      0
 
 c--     Next, read the data.ecco file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                      SQUEEZE_RIGHT, myThid )
 
         CALL OPEN_COPY_DATA_FILE(
      I                          'data.ecco', 'ECCO_READPARMS',
@@ -515,7 +521,7 @@ c--     Next, read the data.ecco file.
         WRITE(msgBuf,'(A)')
      &       'ECCO_READPARMS: finished reading #1: ecco_cost_nml'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , 1)
+     &                      SQUEEZE_RIGHT, myThid )
 
 C--   Check parameters:
         IF ( cost_yftype.NE.'RL' ) THEN
@@ -595,6 +601,7 @@ c--   Set default values.
          gencost_outputlevel(k)= 0
          gencost_errfile(k)    = ' '
          gencost_itracer(k)    = 1
+         gencost_kLev_select(k)= 1
          gencost_mask(k)       = ' '
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0
@@ -605,7 +612,7 @@ c--   Set default values.
          gencost_is1d(k)       = .FALSE.
          gencost_is3d(k)       = .FALSE.
          gencost_pointer3d(k)  = 0
-         gencost_msk_is3d      = .FALSE.
+         gencost_msk_is3d(k)   = .FALSE.
          gencost_msk_pointer3d(k)  = 0
 c boxmean/horflux masks
          call ecco_zero(gencost_mskCsurf(1-OLx,1-OLy,1,1,k),
@@ -641,7 +648,7 @@ c boxmean/horflux masks
       WRITE(msgBuf,'(A)')
      &     'ECCO_READPARMS: finished reading #2: ecco_gencost_nml'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       gencost_k3d=1
       gencost_msk_k3d=1
@@ -672,7 +679,7 @@ catn with and without requirements of datafile or errfile
            WRITE(msgBuf,'(A,I3,3A,L5)') 'gencost k_boxmean/horflux=',
      &     k,' ',gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                         SQUEEZE_RIGHT, myThid )
 
            if ( gencost_msk_is3d(k) ) then
              gencost_msk_pointer3d(k)=gencost_msk_k3d
@@ -687,7 +694,17 @@ catn add cost global transport using gencost framework
            WRITE(msgBuf,'(A,i3,3A,L5)') 'gencost k_transp=',
      &     k,' ',gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                         SQUEEZE_RIGHT, myThid )
+
+cts moc cost function using gencost framework
+         elseif ( gencost_name(k)(1:3).EQ.'moc' ) then
+           gencost_flag(k)=-5
+           using_gencost(k)=.TRUE.
+           il=ilnblnk(gencost_name(k))
+           WRITE(msgBuf,'(A,i2,2A,L5)') 'gencost k_moc=',
+     &     k,gencost_name(k)(1:il),': ',using_gencost(k)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
 
 c pre-specified generic cost terms that create their own barfile
          elseif (
@@ -709,8 +726,8 @@ c identified three dimensional variables
      &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
      &        (gencost_barfile(k)(1:9).EQ.'m_kapredi').OR.
      &        (gencost_barfile(k)(1:7).EQ.'m_trVol').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trHeat').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trSalt')
+     &        (gencost_barfile(k)(1:8).EQ.'m_trHeat').OR.
+     &        (gencost_barfile(k)(1:8).EQ.'m_trSalt')
      &       )
      &        gencost_is3d(k)=.TRUE.
 
@@ -726,8 +743,9 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3 .or. 
-     &           gencost_flag(k).eq.-4     ) ) then
+     &          (gencost_flag(k).EQ.-3 .or.
+     &           gencost_flag(k).eq.-4 .or.
+     &           gencost_flag(k).eq.-5    ) ) then
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
@@ -828,10 +846,10 @@ catn separate out blocks of gencost_flag so that each block is checked
      &          'ERROR in ECCO_READPARMS: for gencost',k,
      &          '  ',gencost_name(k)(1:il)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &                          SQUEEZE_RIGHT, myThid )
             STOP
      &           'ECCO_READPARMS: gencost_avgperiod not properly set'
-          end if
+          endif
 
           if ( gencost_spmin(k) .EQ. 0. _d 0 .AND.
      &        gencost_spmax(k) .EQ. 0. _d 0 ) then
@@ -840,7 +858,7 @@ catn separate out blocks of gencost_flag so that each block is checked
      &          'ERROR in ECCO_READPARMS: for gencost',k,
      &          '  ',gencost_name(k)(1:il)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &                          SQUEEZE_RIGHT, myThid )
             STOP
      &       'ECCO_READPARMS: gencost_spmin, gencost_spmax not set'
           endif
@@ -851,7 +869,7 @@ catn separate out blocks of gencost_flag so that each block is checked
      &          'ERROR in ECCO_READPARMS: for gencost',k,
      &          '  ',gencost_name(k)(1:il)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &                          SQUEEZE_RIGHT, myThid )
             STOP
      &       'ECCO_READPARMS: gencost_spzero not set'
           endif
@@ -876,7 +894,7 @@ catn -- checking boxmean and transp
      &          'ERROR in ECCO_READPARMS: for gencost',k,
      &          '  ',gencost_name(k)(1:il)
               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &          SQUEEZE_RIGHT , 1)
+     &                            SQUEEZE_RIGHT, myThid )
             STOP
      &           'ECCO_READPARMS: gencost_avgperiod not properly set'
             endif
@@ -902,7 +920,7 @@ catn -- checking boxmean and transp
       WRITE(msgBuf,'(A)')
      &     'ECCO_READPARMS: done'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       _BARRIER
 

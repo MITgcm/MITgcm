@@ -77,7 +77,9 @@ C     == Global variables ===
 #include "GRID.h"
 #include "cost.h"
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS_FIELDS.h"

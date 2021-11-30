@@ -6,6 +6,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INITIALISE_VARIA
@@ -88,6 +91,9 @@ C     == Global variables ==
 # include "GRID.h"
 # include "FFIELDS.h"
 # include "CTRL_FIELDS.h"
+# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
+#  include "SHELFICE.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -107,8 +113,7 @@ CEOP
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 #endif /* ALLOW_AUTODIFF */
 
-#ifdef ALLOW_CTRL
-# ifdef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
 C--   Intialize the depth for TAF/TAMC
       CALL INI_DEPTHS( myThid )
 C--   Get control parameter depth
@@ -117,8 +122,7 @@ C--   Re-calculate hFacS/W and some other parameters from hFacC
       CALL UPDATE_MASKS_ETC( myThid )
 C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
-# endif /* ALLOW_DEPTH_CONTROL */
-#endif /* ALLOW_CTRL */
+#endif /* ALLOW_DEPTH_CONTROL */
 
 C--   Initialise Non-Lin FreeSurf variables:
       CALL INI_NLFS_VARS( myThid )
@@ -143,6 +147,9 @@ C     are set here. Fields are either set to default or read from
 C     stored files.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phi0surf = tapelev_init, key = 1
 #endif
       CALL INI_FIELDS( myThid )
 
@@ -175,6 +182,16 @@ C--   Initialize variable data for packages
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
+# endif
+# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
+CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
+#  ifndef SHI_ALLOW_GAMMAFRICT
+CADJ STORE shiTransCoeffT = tapelev_init, key = 1
+CADJ STORE shiTransCoeffS = tapelev_init, key = 1
+#  else
+CADJ STORE shiCDragFld = tapelev_init, key = 1
+#  endif
 # endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
@@ -229,6 +246,12 @@ C     and modify hFac(C,W,S) accordingly :
 # endif /* DISABLE_SIGMA_CODE */
        ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These fields are only updated in the surface layer and TAF gets
+C     confused about it so that their contribution is not always added
+C     to the hfac*_ad lateron. This directive fixes that.
+CADJ INCOMPLETE recip_hFacC, recip_hFacW, recip_hFacS
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
        ENDIF
       ENDIF

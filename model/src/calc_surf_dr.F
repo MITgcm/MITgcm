@@ -82,7 +82,9 @@ C-- Compute the new fractional thickness of surface level (kSurfC):
           IF (ks.LE.Nr) THEN
            IF ( rSurftmp(i,j).LT.Rmin_surf(i,j,bi,bj) ) THEN
 C-- Needs to do something :
-            IF (numbWrite.LE.numbWrMax) THEN
+            IF ( numbWrite.LE.numbWrMax .AND.
+     &           ( i.GE.1.AND.i.LE.sNx .AND.
+     &             j.GE.1.AND.j.LE.sNy ) ) THEN
              numbWrite = numbWrite + 1
              hFactmp = h0FacC(i,j,ks,bi,bj)
      &         + ( rSurftmp(i,j) - Ro_surf(i,j,bi,bj) )*recip_drF(ks)
@@ -96,7 +98,7 @@ C-- Needs to do something :
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ENDIF
              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
-     &         'hFac_n-1,hFac_n,eta =',
+     &         ' hFac_n-1,hFac_n,eta =',
      &          hfacC(i,j,ks,bi,bj), hFactmp, etaFld(i,j,bi,bj)
             ENDIF
 C-- Decide to STOP :
@@ -127,7 +129,7 @@ C-- Usefull warning when hFac becomes very large:
      &         'WARNING: hFacC > hFacSup at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
               WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
-     &         'hFac_n-1,hFac_n,eta =', hfacC(i,j,ks,bi,bj),
+     &         ' hFac_n-1,hFac_n,eta =', hfacC(i,j,ks,bi,bj),
      &          hFac_surfC(i,j,bi,bj), etaFld(i,j,bi,bj)
            ENDIF
 C----------
@@ -153,8 +155,7 @@ c           IF(ks.EQ.kSurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
 c           hhp = rF(ks)
 c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfW(i,j,bi,bj) = h0FacW(i,j,ks,bi,bj)
-     &            + ( MIN(hhm,hhp)
-     &              - MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+     &            + ( MIN(hhm,hhp) - rSurfW(i,j,bi,bj)
      &              )*recip_drF(ks)*maskW(i,j,ks,bi,bj)
           ENDIF
          ENDDO
@@ -174,8 +175,7 @@ c           IF(ks.EQ.kSurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
 c           hhp = rF(ks)
 c           IF(ks.EQ.kSurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
             hFac_surfS(i,j,bi,bj) = h0FacS(i,j,ks,bi,bj)
-     &            + ( MIN(hhm,hhp)
-     &              - MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+     &            + ( MIN(hhm,hhp) - rSurfS(i,j,bi,bj)
      &              )*recip_drF(ks)*maskS(i,j,ks,bi,bj)
           ENDIF
          ENDDO

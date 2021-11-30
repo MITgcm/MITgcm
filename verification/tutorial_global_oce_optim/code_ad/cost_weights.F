@@ -3,74 +3,63 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
+CBOP
+C     !ROUTINE: COST_WEIGHTS
+C     !INTERFACE:
       SUBROUTINE COST_WEIGHTS( myThid )
-
-C     ==================================================================
-C     SUBROUTINE COST_WEIGHTS
-C     ==================================================================
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE COST_WEIGHTS
+C     | o Set weights used in the cost function
+C     *==========================================================*
 C
-C     o Set weights used in the cost function and in the
-C       normalization of the sensitivities when ALLOW_NON_DIMENSIONAL
-
+C     \ev
+C     !USES:
       IMPLICIT NONE
-
-C     == global variables ==
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_CTRL
+# include "ctrl_weights.h"
+#endif
 
-#include "ctrl.h"
-#include "ctrl_weights.h"
-#include "cost.h"
-
-C     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER  myThid
 
-C     == Functions ==
+C     !FUNCTIONS:
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
 
-C     == local variables ==
+C     !LOCAL VARIABLES:
+C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
-      INTEGER itlo,ithi,jtlo,jthi
-      INTEGER jMin,jMax,iMin,iMax
       INTEGER iUnit, length_of_rec
 
       _RL dummy
       _RL wti(Nr)
       REAL*8 tmpwti(Nr)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C     == end of interface ==
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      iMin = 1-OLx
-      iMax = sNx+OLx
-      jMin = 1-OLy
-      jMax = sNy+OLy
+CEOP
 
 C--   Initialize variance (weight) fields.
       DO k = 1,Nr
-         wti(k) = 0. _d 0
+       wti(k) = 0. _d 0
       ENDDO
-      DO bj = jtlo,jthi
-        DO bi = itlo,ithi
-          DO j = jMin,jMax
-            DO i = iMin,iMax
-              whfluxm(i,j,bi,bj)= 0. _d 0
-            ENDDO
-          ENDDO
-          DO k = 1,Nr
-             wunit(k,bi,bj)  = 1. _d 0
-             wtheta(k,bi,bj) = 0. _d 0
-             wsalt(k,bi,bj)  = 0. _d 0
-          ENDDO
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          whfluxm(i,j,bi,bj)= 0. _d 0
+         ENDDO
         ENDDO
+        DO k = 1,Nr
+         wtheta(k,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
       ENDDO
 
 C--   Read error information and set up weight matrices.
@@ -100,8 +89,8 @@ C  Temperature weights for cost function
 
 c     print*,'Weights for temperature: wti', (wti(k),k=1,nr)
 
-      DO bj = jtlo,jthi
-        DO bi = itlo,ithi
+      DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
           DO k = 1, Nr
                wtheta(k,bi,bj) = 1. _d 0/wti(k)/wti(k)
           ENDDO
@@ -111,14 +100,14 @@ c     print*,'Weights for temperature: wti', (wti(k),k=1,nr)
 
 C--   Then the hflux weights :
 
-#if (defined (ALLOW_COST_HFLUXM) || defined (ALLOW_HFLUXM_CONTROL))
+#ifdef ALLOW_COST_HFLUXM
       CALL READ_REC_3D_RL( 'Err_hflux.bin', precFloat64, 1,
      &                      whfluxm, 1, 0, myThid )
       _EXCH_XY_RL(whfluxm   , myThid )
-      DO bj = jtlo,jthi
-        DO bi = itlo,ithi
-          DO j = jMin,jMax
-            DO i = iMin,iMax
+      DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
 c            print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
              IF (whfluxm(i,j,bi,bj) .NE. 0. _d 0) THEN
                  whfluxm(i,j,bi,bj) = 1. _d 0 /whfluxm(i,j,bi,bj)
@@ -133,6 +122,6 @@ c            print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       CALL ACTIVE_WRITE_XY('whfluxm',whfluxm,1,0,myThid,dummy)
 #endif
-#endif /* ALLOW_COST_HFLUXM or ALLOW_HFLUXM_CONTROL */
+#endif /* ALLOW_COST_HFLUXM */
       RETURN
       END

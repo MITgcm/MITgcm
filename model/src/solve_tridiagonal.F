@@ -222,36 +222,38 @@ CADJ loop = sequential
 C--   Forward sweep
       DO k=1,Nr
 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-         IF ( k.EQ.1 ) THEN
-           IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
-             recVar = 1. _d 0 / b3d(i,j,1)
-             c3d_prime(i,j,1) = c3d(i,j,1)*recVar
-             y3d_prime(i,j,1) = y3d_m1(i,j,1)*recVar
-           ELSE
-             c3d_prime(i,j,1) = 0. _d 0
-             y3d_prime(i,j,1) = 0. _d 0
-             errCode = 1
-           ENDIF
-         ELSE
-           tmpVar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(i,j,k-1)
-           IF ( tmpVar .NE. 0. _d 0 ) THEN
-             recVar = 1. _d 0 / tmpVar
-             c3d_prime(i,j,k) = c3d(i,j,k)*recVar
-             y3d_prime(i,j,k) = ( y3d_m1(i,j,k)
-     &                          - a3d(i,j,k)*y3d_prime(i,j,k-1)
-     &                          )*recVar
-           ELSE
-             c3d_prime(i,j,k) = 0. _d 0
-             y3d_prime(i,j,k) = 0. _d 0
-             errCode = 1
-           ENDIF
-         ENDIF
+       IF ( k .EQ. 1 ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( b3d(i,j,1).NE.0. _d 0 ) THEN
+           recVar = 1. _d 0 / b3d(i,j,1)
+           c3d_prime(i,j,1) = c3d(i,j,1)*recVar
+           y3d_prime(i,j,1) = y3d_m1(i,j,1)*recVar
+          ELSE
+           c3d_prime(i,j,1) = 0. _d 0
+           y3d_prime(i,j,1) = 0. _d 0
+           errCode = 1
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          tmpVar = b3d(i,j,k) - a3d(i,j,k)*c3d_prime(i,j,k-1)
+          IF ( tmpVar .NE. 0. _d 0 ) THEN
+           recVar = 1. _d 0 / tmpVar
+           c3d_prime(i,j,k) = c3d(i,j,k)*recVar
+           y3d_prime(i,j,k) = ( y3d_m1(i,j,k)
+     &                        - a3d(i,j,k)*y3d_prime(i,j,k-1)
+     &                        )*recVar
+          ELSE
+           c3d_prime(i,j,k) = 0. _d 0
+           y3d_prime(i,j,k) = 0. _d 0
+           errCode = 1
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
 
 C-    end k-loop
       ENDDO
@@ -259,18 +261,20 @@ C-    end k-loop
 CADJ loop = sequential
 C--   Backward sweep
       DO k=Nr,1,-1
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-         IF ( k.EQ.Nr ) THEN
+       IF ( k.EQ.Nr ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           y3d(i,j,k) = y3d_prime(i,j,k)
-         ELSE
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           y3d(i,j,k) = y3d_prime(i,j,k)
      &               - c3d_prime(i,j,k)*y3d(i,j,k+1)
-         ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 C-    end k-loop
       ENDDO
 

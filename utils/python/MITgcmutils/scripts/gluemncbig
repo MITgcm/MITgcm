@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Usage: gluemncbig [-2] [-q] [--verbose] [--many] [-v <vars>] -o <outfile> <files>
+"""Usage: gluemncbig [-2] [-q] [--verbose] [--help] [--many] [-v <vars>] -o <outfile> <files>
 
  -v <vars>  comma-separated list of variable names or glob patterns
  -2         write a NetCDF version 2 (64-Bit Offset) file allowing for large records
@@ -9,6 +9,7 @@
             uses less memory
  -q         suppress progress messages
  --verbose  report variables
+ --help     show this help text
 
 All files must have the same variables.
 Each variable (or 1 record of it) must fit in memory.
@@ -126,7 +127,7 @@ except ImportError:
 from mmap import mmap, ACCESS_READ
 
 import numpy as np
-from numpy import fromstring, ndarray, dtype, empty, array, asarray
+from numpy import frombuffer, ndarray, dtype, empty, array, asarray
 from numpy import little_endian as LITTLE_ENDIAN
 
 import sys
@@ -399,7 +400,7 @@ class netcdf_file(object):
         sync : Identical function
 
         """
-        if getattr(self, 'mode', None) is 'w':
+        if getattr(self, 'mode', None) == 'w':
             if self.delay:
                 if not self._mapped:
                     self._map()
@@ -418,7 +419,7 @@ class netcdf_file(object):
     def _map(self):
         self.fp.seek(0)
         self.fp.write(b'CDF')
-        self.fp.write(array(self.version_byte, '>b').tostring())
+        self.fp.write(array(self.version_byte, '>b').tobytes())
 
         # Write headers
         self._write_numrecs()
@@ -582,7 +583,7 @@ class netcdf_file(object):
     def _write(self):
         self.fp.seek(0)
         self.fp.write(b'CDF')
-        self.fp.write(array(self.version_byte, '>b').tostring())
+        self.fp.write(array(self.version_byte, '>b').tobytes())
 
         # Write headers and data.
         self._write_numrecs()
@@ -703,7 +704,7 @@ class netcdf_file(object):
             if (var.data.dtype.byteorder == '<' or 
                     (var.data.dtype.byteorder == '=' and LITTLE_ENDIAN)):
                 var.data = var.data.byteswap()
-            self.fp.write(var.data.tostring())
+            self.fp.write(var.data.tobytes())
             count = var.data.size * var.data.itemsize
             self.fp.write(b'\x00' * (var._vsize - count))
         else:  # record variable
@@ -717,7 +718,7 @@ class netcdf_file(object):
                 if (rec.dtype.byteorder == '<' or 
                         (rec.dtype.byteorder == '=' and LITTLE_ENDIAN)):
                     rec = rec.byteswap()
-                self.fp.write(rec.tostring())
+                self.fp.write(rec.tobytes())
                 # Padding
                 count = rec.size * rec.itemsize
                 self.fp.write(b'\x00' * (var._vsize - count))
@@ -770,7 +771,7 @@ class netcdf_file(object):
         if not values.shape and (values.dtype.byteorder == '<' or
                 (values.dtype.byteorder == '=' and LITTLE_ENDIAN)):
             values = values.byteswap()
-        self.fp.write(values.tostring())
+        self.fp.write(values.tobytes())
         count = values.size * values.itemsize
         self.fp.write(b'\x00' * (-count % 4))  # pad
 
@@ -780,7 +781,7 @@ class netcdf_file(object):
         if not magic == b'CDF':
             raise TypeError("Error: %s is not a valid NetCDF 3 file" %
                             self.filename)
-        self.__dict__['version_byte'] = fromstring(self.fp.read(1), '>b')[0]
+        self.__dict__['version_byte'] = frombuffer(self.fp.read(1), '>b')[0]
 
         # Read file headers and set data.
         self._read_numrecs()
@@ -882,7 +883,7 @@ class netcdf_file(object):
                     data = unmapped_array(shape, type)
                 else:
                     self.fp.seek(begin_)
-                    data = fromstring(self.fp.read(a_size), type)
+                    data = frombuffer(self.fp.read(a_size), type)
                     data.shape = shape
                 self.fp.seek(pos)
 
@@ -919,7 +920,7 @@ class netcdf_file(object):
                     rec_arrays = [ rec_array ]
             else:
                 self.fp.seek(begin)
-                rec_array = fromstring(self.fp.read(self._recs*self._recsize), dtype=dtypes)
+                rec_array = frombuffer(self.fp.read(self._recs*self._recsize), dtype=dtypes)
                 rec_array.shape = (self._recs,)
                 rec_arrays = [ rec_array ]
             self.fp.seek(pos)
@@ -932,7 +933,7 @@ class netcdf_file(object):
         var = self.variables[name]
         pos = self._begins[name]
         self.fp.seek(pos)
-        data = fromstring(self.fp.read(var.data.nbytes), dtype=var.data.dtype)
+        data = frombuffer(self.fp.read(var.data.nbytes), dtype=var.data.dtype)
         data.shape = var.data.shape
         return data
 
@@ -941,7 +942,7 @@ class netcdf_file(object):
         pos = self._begins[name] + rec*self._recsize
         self.fp.seek(pos)
         count = reduce(mul, var.data.shape[1:], 1) * var.data.itemsize
-        data = fromstring(self.fp.read(count), dtype=var.data.dtype)
+        data = frombuffer(self.fp.read(count), dtype=var.data.dtype)
         data.shape = var.data.shape[1:]
         return data
 
@@ -978,8 +979,8 @@ class netcdf_file(object):
         values = self.fp.read(int(count))
         self.fp.read(-count % 4)  # read padding
 
-        if type.char is not 'c':
-            values = fromstring(values, type)
+        if type.char != 'c':
+            values = frombuffer(values, type)
             if values.shape == (1,): values = values[0]
         else:
             ## text values are encoded via UTF-8, per NetCDF standard
@@ -993,18 +994,18 @@ class netcdf_file(object):
             self._pack_int64(begin)
 
     def _pack_int(self, value):
-        self.fp.write(array(value, '>i').tostring())
+        self.fp.write(array(value, '>i').tobytes())
     _pack_int32 = _pack_int
 
     def _unpack_int(self):
-        return int(fromstring(self.fp.read(4), '>i')[0])
+        return int(frombuffer(self.fp.read(4), '>i')[0])
     _unpack_int32 = _unpack_int
 
     def _pack_int64(self, value):
-        self.fp.write(array(value, '>q').tostring())
+        self.fp.write(array(value, '>q').tobytes())
 
     def _unpack_int64(self):
-        return fromstring(self.fp.read(8), '>q')[0]
+        return frombuffer(self.fp.read(8), '>q')[0]
 
     def _pack_string(self, s):
         count = len(s)
@@ -1221,14 +1222,19 @@ if __name__ == '__main__':
 
     # parse command-line arguments
     try:
-        optlist,fnames = getopt(sys.argv[1:], '2qo:v:', ['many', 'verbose'])
+        optlist,fnames = getopt(sys.argv[1:], '2qho:v:', ['many', 'verbose', 'help'])
     except GetoptError as e:
         sys.exit('Error: ' + str(e) + '\n\n' + __doc__)
+
+    opts = dict(optlist)
+
+    if '--help' in opts or '-h' in opts:
+        print(__doc__)
+        sys.exit()
 
     if not fnames:
         sys.exit('You need to specify at least one input file.')
 
-    opts = dict(optlist)
     outname = opts.get('-o')
     version = '-2' in opts and 2 or 1
     progress = '-q' not in opts

@@ -12,32 +12,21 @@ C     !INTERFACE:
      I                 cornerMode, myThid )
 
 C     !DESCRIPTION:
-C     *==========================================================*
+C     *==============================================================*
 C     | SUBROUTINE EXCH1_UV_RX_CUBE
 C     | o Forward-mode edge exchanges for RX vector on CS config.
-C     *==========================================================*
+C     *==============================================================*
 C     | Controlling routine for exchange of XY edges of an array
-C     | distributed in X and Y. The routine interfaces to
-C     | communication routines that can use messages passing
-C     | exchanges, put type exchanges or get type exchanges.
-C     |  This allows anything from MPI to raw memory channel to
-C     | memmap segments to be used as a inter-process and/or
-C     | inter-thread communiation and synchronisation
-C     | mechanism.
-C     | Notes --
-C     | 1. Some low-level mechanisms such as raw memory-channel
-C     | or SGI/CRAY shmem put do not have direct Fortran bindings
-C     | and are invoked through C stub routines.
-C     | 2. Although this routine is fairly general but it does
-C     | require nSx and nSy are the same for all innvocations.
-C     | There are many common data structures ( myByLo,
-C     | westCommunicationMode, mpiIdW etc... ) tied in with
-C     | (nSx,nSy). To support arbitray nSx and nSy would require
-C     | general forms of these.
-C     | 3. Exchanges on the cube of vector quantities need to be
-C     | paired to allow rotations and sign reversal to be applied
-C     | consistently between vector components as they rotate.
-C     *==========================================================*
+C     | distributed in X and Y.
+C     | This is a preliminary (exch1), simpler version with few
+C     | limitations (no MPI, 1 tile per face, regular 6 squared faces,
+C     | multi-threads only on shared arrays, i.e., in commom block)
+C     | that are fixed in generalised pkg/exch2 implementation.
+C     | Notes:
+C     |  Exchanges on the cube of vector quantities need to be
+C     |  paired to allow rotations and sign reversal to be applied
+C     |  consistently between vector components as they rotate.
+C     *==============================================================*
 
 C     !USES:
       IMPLICIT NONE
@@ -185,6 +174,7 @@ C        Tile Odd:Odd-2 [get] [West<-North]
           ENDDO
          ENDDO
 
+C--    end "K" loop
         ENDDO
 
         bt = bl+1
@@ -240,14 +230,17 @@ C        Tile Even:Even-1 [get] [West<-East]
           ENDDO
          ENDDO
 
+C--    end "K" loop
         ENDDO
 
+C--    end "bl" loop
        ENDDO
 
+       IF ( OLx.GE.2 .AND. OLy.GE.2 ) THEN
 C-     Add one valid uVel,vVel value next to the corner, that allows
-C       to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
-       DO bt = 1,6
-        DO K = 1,myNz
+C      to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
+        DO bt = 1,6
+         DO K = 1,myNz
 C      SW corner:
           Uarray(0,0,K,bt,1)=Varray(1,0,K,bt,1)
           Varray(0,0,K,bt,1)=Uarray(0,1,K,bt,1)
@@ -260,8 +253,9 @@ C      SE corner:
 C      NE corner:
           Uarray(sNx+2,sNy+1,K,bt,1)=Varray(sNx,sNy+2,K,bt,1)
           Varray(sNx+1,sNy+2,K,bt,1)=Uarray(sNx+2,sNy,K,bt,1)
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
 C      Fix degeneracy at corners
        IF (.FALSE.) THEN
@@ -300,6 +294,7 @@ C         Top right
         ENDDO
        ENDIF
 
+C--    end "repeat" loop
        ENDDO
 
       ENDIF

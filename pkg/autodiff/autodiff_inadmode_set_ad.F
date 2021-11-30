@@ -3,11 +3,12 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      SUBROUTINE ADAUTODIFF_INADMODE_SET( myThid )
+      SUBROUTINE ADAUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE ADAUTODIFF_INADMODE_SET
 C     *==========================================================*
 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -21,13 +22,33 @@ C     == Global variables ===
 #ifdef ALLOW_CTRL
 #include "ctrl.h"
 #endif
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
-C     == Routine arguments ==
-C     myThid :: my Thread Id number
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
+
+C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      inAdMode  = inAdTrue
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+      ENDIF
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
+      inAdMode  = .TRUE.
 
       useKPP    = useKPPinAdMode
       useGMRedi = useGMRediInAdMode
@@ -46,7 +67,8 @@ C     myThid :: my Thread Id number
         SEAICEuseDYNAMICS  = .NOT.SEAICEuseDYNAMICSinFwdMode
       ENDIF
       SEAICEadjMODE=SEAICEapproxLevInAd
-      SINegFac = SIregFacInAd
+C     SIregFacInAd = UNSET_RL by default, so we need to check this here
+      IF ( SIregFacInAd .NE. UNSET_RL ) SINegFac = SIregFacInAd
 #endif /* ALLOW_SEAICE */
       viscFacAdj=viscFacInAd
 

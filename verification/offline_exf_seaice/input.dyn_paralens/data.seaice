@@ -1,0 +1,26 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ usePW79thermodynamics=.FALSE.,
+ SEAICEpressReplFac = 0.,
+ SEAICEusePL = .TRUE.,
+ SEAICE_tensilFac = 0.05,
+ SEAICE_no_Slip   = .TRUE.,
+# Krylov solver setinng
+ SEAICEuseKrylov     = .TRUE.,
+ SEAICEpreconLinIter = 10,
+ SEAICEnonLinIterMax =  2,
+ SEAICElinearIterMax = 50,
+# this is a hack, because no proper tolerance has been implemented yet
+ JFNKgamma_lin_max   = 1.e-4,
+# end of Krylov solver parameters
+#- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
+#SEAICEadvScheme    = 77, # this is the new default
+#AreaFile  = 'const100.bin',
+#HeffFile  = 'const+20.bin',
+#HsnowFile = 'const_00.bin',
+ SEAICEwriteState   = .TRUE.,
+ SEAICE_monFreq = 1800.,
+ &
+
+ &SEAICE_PARM03
+ &

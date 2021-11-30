@@ -14,6 +14,9 @@ C     *==========================================================*
 #ifdef ALLOW_OPPS
 C Package-specific Options & Macros go here
 
+C allow snap-shot OPPS output
+#undef ALLOW_OPPS_SNAPSHOT
+
 C allow debugging OPPS_CALC
 #define ALLOW_OPPS_DEBUG
 

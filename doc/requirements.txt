@@ -1,2 +1,5 @@
-sphinx>=1.7.0b1
-sphinxcontrib-bibtex
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-bibtex>=2
+sphinxcontrib-programoutput
+numpy

@@ -278,7 +278,7 @@ The rigid-lid approximation can be easily replaced by a linearization of
 the free-surface equation which can be written:
 
 .. math::
-   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = P-E+R
+   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\mathcal{P-E+R}}
    :label: linear-free-surface=P-E
 
 which differs from the depth integrated continuity equation with
@@ -293,7 +293,7 @@ method is then replaced by the time discretization of
    \eta^{n+1}
    + \Delta t \partial_x H \widehat{u^{n+1}}
    + \Delta t \partial_y H \widehat{v^{n+1}}
-   = \eta^{n} + \Delta t ( P - E )
+   = \eta^{n} + \Delta t ( {\mathcal{P-E}})
    :label: discrete-time-backward-free-surface
 
 where the use of flow at time level :math:`n+1` makes the method
@@ -316,7 +316,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t (P-E) )
+   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -359,10 +359,11 @@ Explicit time-stepping: Adams-Bashforth
 
 In describing the the pressure method above we deferred describing the
 time discretization of the explicit terms. We have historically used the
-quasi-second order Adams-Bashforth method for all explicit terms in both
+quasi-second order Adams-Bashforth method (AB-II) for all explicit terms in both
 the momentum and tracer equations. This is still the default mode of
 operation but it is now possible to use alternate schemes for tracers
-(see :numref:`tracer_eqns`). In the previous sections, we summarized an explicit scheme as:
+(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III). 
+In the previous sections, we summarized an explicit scheme as:
 
 .. math::
    \tau^{*} = \tau^{n} + \Delta t G_\tau^{(n+1/2)}
@@ -372,8 +373,13 @@ where :math:`\tau` could be any prognostic variable (:math:`u`,
 :math:`v`, :math:`\theta` or :math:`S`) and :math:`\tau^*` is an
 explicit estimate of :math:`\tau^{n+1}` and would be exact if not for
 implicit-in-time terms. The parenthesis about :math:`n+1/2` indicates
-that the term is explicit and extrapolated forward in time and for this
-we use the quasi-second order Adams-Bashforth method:
+that the term is explicit and extrapolated forward in time. Below we describe
+in more detail the AB-II and AB-III schemes.
+
+Adams-Bashforth II
+------------------
+
+The quasi-second order Adams-Bashforth scheme is formulated as follows:
 
 .. math::
    G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{AB}) G_\tau^n
@@ -404,7 +410,6 @@ point.
 A stability analysis for a relaxation equation should be given at this
 point.
 
-
   .. figure:: figs/oscil+damp_AB2.*
     :width: 80%
     :align: center
@@ -412,6 +417,84 @@ point.
     :name: oscil+damp_AB2
 
     Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{AB}` parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
+
+Adams-Bashforth III
+-------------------
+
+The 3rd order Adams-Bashforth time stepping (AB-III) provides several
+advantages (see, e.g., Durran 1991 :cite:`durran:91`) compared to the
+default quasi-second order Adams-Bashforth method:
+
+-  higher accuracy;
+
+-  stable with a longer time-step;
+
+-  no additional computation (just requires the storage of one
+   additional time level).
+
+The 3rd order Adams-Bashforth can be used to extrapolate
+forward in time the tendency (replacing :eq:`adams-bashforth2`)
+as:
+
+.. math::
+   G_\tau^{(n+1/2)} = ( 1 + \alpha_{AB} + \beta_{AB}) G_\tau^n
+   - ( \alpha_{AB} + 2 \beta_{AB}) G_\tau^{n-1}
+   + \beta_{AB} G_\tau^{n-2}
+   :label: adams-bashforth3
+
+3rd order accuracy is obtained with
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2,\,5/12)`. Note that selecting
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2+\epsilon_{AB},\,0)` one
+recovers AB-II. The AB-III time stepping improves the
+stability limit for an oscillatory problem like advection or Coriolis.
+As seen from :numref:`ab3_oscill_response`, it remains stable up to a
+CFL of 0.72, compared to only 0.50 with AB-II and
+:math:`\epsilon_{AB} = 0.1`. It is interesting to note that the
+stability limit can be further extended up to a CFL of 0.786 for an
+oscillatory problem (see :numref:`ab3_oscill_response`) using
+:math:`(\alpha_{AB},\,\beta_{AB}) = (0.5,\,0.2811)` but then the scheme
+is only second order accurate.
+
+However, the behavior of the AB-III for a damping problem (like diffusion)
+is less favorable, since the stability limit is reduced to 0.54 only
+(and 0.64 with :math:`\beta_{AB} = 0.2811`) compared to 1.0 (and 0.9 with
+:math:`\epsilon_{AB} = 0.1`) with the AB-II (see
+:numref:`ab3_damp_response`).
+
+A way to enable the use of a longer time step is to keep the dissipation
+terms outside the AB extrapolation (setting :varlink:`momDissip_In_AB` to ``.FALSE.``
+in main parameter file ``data``, namelist ``PARM03``, thus returning to
+a simple forward time-stepping for dissipation, and to use AB-III only for
+advection and Coriolis terms.
+
+The AB-III time stepping is activated by defining the option ``#define``
+:varlink:`ALLOW_ADAMSBASHFORTH_3` in :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. The parameters
+:math:`\alpha_{AB},\beta_{AB}` can be set from the main parameter file
+``data`` (namelist ``PARM03``) and their default values correspond to
+the 3rd order Adams-Bashforth. A simple example is provided in
+:filelink:`verification/advect_xy/input.ab3_c4`.
+
+AB-III is not yet available for the vertical momentum equation
+(non-hydrostatic) nor for passive tracers.
+
+  .. figure:: figs/stab_AB3_oscil.*
+    :width: 80%
+    :align: center
+    :alt: ab3_stability_analysis
+    :name: ab3_oscill_response
+
+    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
+  .. figure:: figs/stab_AB3_dampR.*
+    :width: 80%
+    :align: center
+    :alt: ab3_damping_analysis
+    :name: ab3_damp_response
+
+    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
 
 .. _implicit-backward-stepping:
 
@@ -533,7 +616,7 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)- \Delta t
+   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
@@ -656,7 +739,7 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t (P-E)^n \right)- \Delta t
+   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
@@ -834,7 +917,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)
+   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -898,7 +981,7 @@ where
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
    \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t (P-E)^{n}
+   \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -1027,7 +1110,7 @@ continuity equation which can be summarized as:
 .. math::
    \delta_i \Delta y_g \Delta r_f h_w u +
    \delta_j \Delta x_g \Delta r_f h_s v +
-   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (P-E)_{r=0}
+   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (\mathcal{P-E})_{r=0}
    :label: discrete-continuity
 
 where the continuity equation has been most naturally discretized by
@@ -1049,10 +1132,10 @@ the vertical to yield the free-surface equation:
 .. math::
   {\cal A}_c \partial_t \eta + \delta_i \sum_k \Delta y_g \Delta r_f h_w
    u + \delta_j \sum_k \Delta x_g \Delta r_f h_s v = {\cal
-   A}_c(P-E)_{r=0}
+   A}_c(\mathcal{P-E})_{r=0}
   :label: discrete-freesurface
 
-The source term :math:`P-E` on the rhs of continuity accounts for the
+The source term :math:`\mathcal{P-E}` on the rhs of continuity accounts for the
 local addition of volume due to excess precipitation and run-off over
 evaporation and only enters the top-level of the ocean model.
 
@@ -1201,6 +1284,8 @@ momentum correctly conserves kinetic energy.
 
     | :math:`uv, vv, wv` : :varlink:`fZon`, :varlink:`fMer`, :varlink:`fVerVkp` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_cor_terms:
+
 Coriolis terms
 --------------
 
@@ -1262,8 +1347,10 @@ where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
 the Coriolis parameters at the appropriate points in space. The above
 discretization does *not* conserve anything, especially energy, but for
 historical reasons is the default for the code. A flag controls this
-discretization: set run-time logical :varlink:`useEnergyConservingCoriolis` to
-.TRUE. which otherwise defaults to .FALSE..
+discretization: set run-time integer :varlink:`selectCoriScheme` to two (=2)
+(which otherwise defaults to zero)
+to select the energy-conserving conserving form :eq:`cdscheme_gu`, :eq:`cdscheme_gv`, and :eq:`cdscheme_gw` above.
+
 
 .. admonition:: S/R  :filelink:`CD_CODE_SCHEME <pkg/cd_code/cd_code_scheme.F>`, :filelink:`MOM_U_CORIOLIS <pkg/mom_fluxform/mom_u_coriolis.F>`, :filelink:`MOM_V_CORIOLIS <pkg/mom_fluxform/mom_v_coriolis.F>`
   :class: note
@@ -1359,6 +1446,7 @@ in the past, used a different discretization in the model which is:
 
     | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_lat_dissip:
 
 Lateral dissipation
 -------------------
@@ -1633,6 +1721,7 @@ Mom Diagnostics
     VISrE_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
     VISrI_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
+.. _vec_invar_mom_eqs:
 
 Vector invariant momentum equations
 ===================================
@@ -1801,12 +1890,12 @@ consistent with the vertical advection of shear:
 
 .. math::
    G_u^{\zeta_2 w} = \frac{1}{ {\cal A}_w \Delta r_f h_w } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_i w ) }^k
    :label: gu_zeta2w
 
 .. math::
    G_v^{\zeta_1 w} = \frac{1}{ {\cal A}_s \Delta r_f h_s } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{nh} \delta_j w ) }^k
    :label: gv_zeta1w
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_VERTSHEAR <pkg/mom_vecinv/mom_vi_u_vertshear.F>`, :filelink:`MOM_VI_V_VERTSHEAR <pkg/mom_vecinv/mom_vi_v_vertshear.F>`
@@ -2115,6 +2204,7 @@ SHAP Diagnostics
     SHAP_dU |  5 |UU   148MR  |m/s^2    |Zonal Wind Tendency due to Shapiro Filter
     SHAP_dV |  5 |VV   147MR  |m/s^2    |Meridional Wind Tendency due to Shapiro Filter
 
+.. _nonlinear_vis_schemes:
 
 Nonlinear Viscosities for Large Eddy Simulation
 ===============================================
@@ -2342,14 +2432,16 @@ vertical viscosity should be used:
 
 This vertical viscosity is currently not implemented in MITgcm.
 
+.. _leith_viscosity:
+
 Leith Viscosity
 ~~~~~~~~~~~~~~~
 
-Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-d turbulence is
-quite different from 3-d. In two-dimensional turbulence, energy cascades
+Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-D turbulence is
+quite different from 3-D. In 2-D turbulence, energy cascades
 to larger scales, so there is no concern about resolving the scales of
 energy dissipation. Instead, another quantity, enstrophy, (which is the
-vertical component of vorticity squared) is conserved in 2-d turbulence,
+vertical component of vorticity squared) is conserved in 2-D turbulence,
 and it cascades to smaller scales where it is dissipated.
 
 Following a similar argument to that above about energy flux, the
@@ -2376,7 +2468,9 @@ enstrophy-dissipation and the resulting eddy viscosity are
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
    :label: Leith3
 
-The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.) or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when computing the gradients. This can occur when using the cubed sphere and other complex grids.
+The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.)
+or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when
+computing the gradients. This can occur when using the cubed sphere and other complex grids.
 
 Modified Leith Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2495,6 +2589,7 @@ must also be defined in a (``-mods``) copy of :filelink:`GMREDI_OPTIONS.h<pkg/gm
 when the model is compiled, and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in ``data.gmredi``.
 This will use the value of :varlink:`viscC2LeithQG` specified in the ``data`` input file to compute the coefficient.
 
+.. _CFL_constraint_visc:
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

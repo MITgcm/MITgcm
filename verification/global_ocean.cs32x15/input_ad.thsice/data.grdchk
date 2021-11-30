@@ -9,5 +9,7 @@
  nbeg             = 1,
  nstep            = 1,
  nend             = 4,
+# this is xx_theta
  grdchkvarindex   = 1,
+#grdchkvarindex   =201,
  &

@@ -2,7 +2,6 @@
  &PACKAGES
   useGMRedi=.TRUE.,
   useKPP=.TRUE.,
-  useECCO=.FALSE.,
   useDiagnostics=.TRUE.,
   usePTRACERS=.TRUE.,
  &

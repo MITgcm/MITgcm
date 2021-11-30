@@ -34,8 +34,20 @@ C                          solver instead of LSR (default: false)
 C     SEAICEuseJFNK     :: If true, use Jacobi-free Newton-Krylov solver
 C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
-C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
+C     SEAICEuseTEM      :: to use the truncated ellipse method (see Geiger et al.
 C                          1998) set this parameter to true, default is false
+C     SEAICEuseMCS      :: to use the Mohr-Coulomb yield curve with a shear
+C                          only flow rule (Ip et al 1991), set this parameter to
+C                          true, default is false
+C     SEAICEuseMCE      :: to use the Mohr-Coulomb yield curve with elliptical
+C                          plastic potential (similarly to Hibler and Schulson
+C                          2000 without the elliptical cap) set this parameter
+C                          to true, default is false
+C     SEAICEuseTD       :: to use the teardrop yield curve (Zhang and Rothrock,
+C                          2005) set this parameter to true, default is false
+C     SEAICEusePL       :: to use the parabolic lens yield curve (Zhang and
+C                          Rothrock, 2005) set this parameter to true,
+C                          default is false
 C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
@@ -124,8 +136,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
-     &     SEAICEuseLinRemapITD,
+     &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, SEAICEaddSnowMass,
@@ -153,8 +166,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
-     &     SEAICEuseLinRemapITD,
+     &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
+     &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, SEAICEaddSnowMass,
@@ -354,11 +368,14 @@ C     SEAICE_rhoAir      :: density of air                              (kg/m^3)
 C     SEAICE_rhoIce      :: density of sea ice                          (kg/m^3)
 C     SEAICE_rhoSnow     :: density of snow                             (kg/m^3)
 C     ICE2WATR           :: ratio of sea ice density to water density
-C     OCEAN_drag         :: air-ocean drag coefficient
 C     SEAICE_cpAir       :: specific heat of air                        (J/kg/K)
 C
-C     SEAICE_drag        :: air-ice drag coefficient (default 0.001)
-C     SEAICE_waterDrag   :: water-ice drag coefficient * water density (default 5.5)
+C     OCEAN_drag         :: unitless air-ocean drag coefficient (default 0.001)
+C     SEAICE_drag        :: unitless air-ice drag coefficient   (default 0.001)
+C     SEAICE_waterDrag   :: unitless water-ice drag coefficient (default 0.0055)
+C     SEAICEdWatMin      :: minimum linear water-ice drag applied to DWATN
+C                           (default 0.25 m/s)
+C
 C     SEAICE_dryIceAlb   :: winter albedo
 C     SEAICE_wetIceAlb   :: summer albedo
 C     SEAICE_drySnowAlb  :: dry snow albedo
@@ -401,6 +418,7 @@ C     SEAICEpressReplFac :: interpolator between PRESS0 and regularized PRESS
 C                           1. (default): pure pressure replace method (PRESS)
 C                           0.          : pure Hibler (1979) method (PRESS0)
 C     SEAICE_eccen       :: sea-ice eccentricity of the elliptical yield curve
+C     SEAICE_eccfr       :: sea-ice eccentricity of the elliptical flow rule
 C     SEAICE_lhFusion    :: latent heat of fusion for ice and snow (J/kg)
 C     SEAICE_lhEvap      :: latent heat of evaporation for water (J/kg)
 C     SEAICE_dalton      :: Dalton number (= sensible heat transfer coefficient)
@@ -432,6 +450,8 @@ C     SEAICE_PDF         :: prescribed sea-ice distribution within grid box
 C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
+C     SEAICEtdMU         :: slope parameter for the teardrop and parabolic lens
+C                           yield curves
 C     SEAICE_deltaMin    :: small number used to reduce singularities of Delta
 C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1 specifies
 C                           the minimun amount of leads (1-areaMax) in the
@@ -463,6 +483,8 @@ C                        (2007)-scheme
 C     SEAICEmaxRaft   :: regularization parameter (default=1)
 C     SEAICEsnowFracRidge :: fraction of snow that remains on ridged
 C     SINegFac        :: SIADV over/undershoot factor in FW/Adjoint
+C     SEAICEmcMu      :: parameter for MC yield curve for useMCE, useMCS and
+C                        useTEM options, default is one
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
@@ -470,8 +492,9 @@ C
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_cpAir
-      _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb
-      _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
+      _RL SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin
+      _RL SEAICE_dryIceAlb, SEAICE_wetIceAlb
+      _RL SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
@@ -479,7 +502,9 @@ C
       _RL SEAICEbasalDragK1, SEAICEbasalDragK2
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
-      _RL SEAICE_tensilFac, SEAICE_tensilDepth, SEAICE_eccen
+      _RL SEAICE_tensilFac, SEAICE_tensilDepth
+      _RL SEAICE_eccen, SEAICE_eccfr
+      _RL SEAICEmcMu, SEAICEtdMU
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
       _RL SEAICE_iceConduct, SEAICE_snowConduct
@@ -524,15 +549,17 @@ C
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
-     &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
-     &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
+     &    SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin,
+     &    SEAICE_dryIceAlb, SEAICE_wetIceAlb,
+     &    SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      &    SEAICE_drag_south, SEAICE_waterDrag_south,
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_cBasalStar, SEAICEbasalDragU0,
      &    SEAICEbasalDragK1, SEAICEbasalDragK2,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
-     &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
+     &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen, SEAICE_eccfr,
+     &    SEAICEtdMU, SEAICEmcMu,
      &    SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
@@ -556,8 +583,8 @@ C
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      &    SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
      &    SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf,
-     &    SEAICEsnowFracRidge,
-     &    SINegFac
+     &    SINegFac,
+     &    SEAICEsnowFracRidge
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MIN_ATEMP         :: minimum air temperature   (deg C)

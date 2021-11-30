@@ -112,7 +112,7 @@ C     i, k   :: Loop counters.
       CALL WRITE_1D_RL( tRef, Nr, INDEX_K, 'tRef =',
      & '   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
-     & '   /* Reference salinity profile ( psu ) */')
+     & '   /* Reference salinity profile ( g/kg ) */')
 C-    Horizontal viscosity parameters:
 #ifdef ALLOW_MOM_COMMON
       CALL WRITE_0D_L( useStrainTensionVisc, INDEX_NONE,
@@ -129,6 +129,10 @@ C-    Horizontal viscosity parameters:
       IF ( useSmag3D )
      & CALL WRITE_0D_RL( smag3D_coeff, INDEX_NONE, 'smag3D_coeff =',
      & ' /* Smagorinsky 3-D coefficient (Cs^2) (-) */')
+      IF ( smag3D_diffCoeff.GT.zeroRL )
+     & CALL WRITE_0D_RL( smag3D_diffCoeff, INDEX_NONE,
+     & 'smag3D_diffCoeff =',
+     & ' /* Smagorinsky 3-D diffusion coefficient (-) */')
       CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
      & ' /* Lateral harmonic viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh )
@@ -243,18 +247,17 @@ C-    Vertical viscosity parameters:
      & '  /* Parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_RL( hMixSmooth, INDEX_NONE,'hMixSmooth=',
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
-C------------
+C-----
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
       IF ( eosType .EQ. 'LINEAR' ) THEN
         CALL WRITE_0D_RL( tAlpha,  INDEX_NONE,'tAlpha =',
      &  ' /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
         CALL WRITE_0D_RL( sBeta,   INDEX_NONE,'sBeta  =',
-     &  ' /* Linear EOS haline contraction coefficient ( 1/psu ) */')
+     & ' /* Linear EOS haline contraction coefficient ( 1/(g/kg) ) */')
         CALL WRITE_0D_RL( rhoNil,  INDEX_NONE, 'rhoNil    =',
      &  ' /* Reference density for Linear EOS ( kg/m^3 ) */')
-      ENDIF
-      IF ( eosType .EQ. 'POLY3 ' ) THEN
+      ELSEIF ( eosType .EQ. 'POLY3 ' ) THEN
         WRITE(msgBuf,'(A)')
      &   'Polynomial EQS parameters ( from POLY3.COEFFS ):'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -265,6 +268,9 @@ C------------
         ENDDO
         WRITE(msgBuf,'(A)') '    ;'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ELSEIF ( eosType .NE. 'IDEALG' ) THEN
+        CALL WRITE_0D_RL( eosRefP0, INDEX_NONE, 'eosRefP0 =',
+     &  ' /* Reference atmospheric pressure for EOS ( Pa ) */')
       ENDIF
       IF ( usingZCoords ) THEN
        WRITE(msgBuf,'(2A)') 'selectP_inEOS_Zc =',
@@ -278,7 +284,9 @@ C------------
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
-C------------
+C-----
+      CALL WRITE_0D_RL( surf_pRef, INDEX_NONE, 'surf_pRef =',
+     &  ' /* Surface reference pressure ( Pa ) */')
       IF ( fluidIsWater ) THEN
        CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
      &   'HeatCapacity_Cp =',
@@ -340,26 +348,28 @@ C------------
      &'   /* Implicit free surface factor */')
       CALL WRITE_0D_RL( implicSurfPress, INDEX_NONE,
      & 'implicSurfPress =',
-     & '  /* Surface Pressure implicit factor (0-1)*/')
+     & '  /* Surface Pressure implicit factor (0-1) */')
       CALL WRITE_0D_RL( implicDiv2DFlow, INDEX_NONE,
      & 'implicDiv2DFlow =',
-     & '  /* Barot. Flow Div. implicit factor (0-1)*/')
+     & '  /* Barot. Flow Div. implicit factor (0-1) */')
       CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
      & 'uniformLin_PhiSurf =',
-     &  ' /* use uniform Bo_surf on/off flag*/')
+     & ' /* use uniform Bo_surf on/off flag */')
       CALL WRITE_0D_L( uniformFreeSurfLev, INDEX_NONE,
      & 'uniformFreeSurfLev =',
-     &  ' /* free-surface level-index is uniform */')
+     & ' /* free-surface level-index is uniform */')
+      CALL WRITE_0D_RL( sIceLoadFac, INDEX_NONE, 'sIceLoadFac =',
+     & '  /* scale factor for sIceLoad (0-1) */')
       CALL WRITE_0D_RL( hFacMin, INDEX_NONE, 'hFacMin = ',
      & '  /* minimum partial cell factor (hFac) */')
       CALL WRITE_0D_RL( hFacMinDr, INDEX_NONE, 'hFacMinDr =',
      &  ' /* minimum partial cell thickness ('//rUnits//') */')
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
      & 'exactConserv =',
-     & '  /* Exact Volume Conservation on/off flag*/')
+     & '  /* Exact Volume Conservation on/off flag */')
       CALL WRITE_0D_L( linFSConserveTr, INDEX_NONE,
      & 'linFSConserveTr =',
-     &  ' /* Tracer correction for Lin Free Surface on/off flag*/')
+     &  ' /* Tracer correction for Lin Free Surface on/off flag */')
       WRITE(msgBuf,'(2A)') 'nonlinFreeSurf =',
      &  ' /* Non-linear Free Surf. options (-1,0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -385,7 +395,7 @@ C------------
      &  ' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
      &  'salt_EvPrRn =',
-     &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/')
+     &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(g/kg)*/')
       CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
      & 'selectAddFluid =',
      &  ' /* option for mass source/sink of fluid (=0: off) */')
@@ -394,12 +404,12 @@ C------------
      &  ' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_addMass, INDEX_NONE,
      & 'salt_addMass =',
-     &  ' /* Salin. of addMass array (UNSET=use local S)(psu)*/')
+     &  ' /* Salin. of addMass array (UNSET=use local S)(g/kg)*/')
       IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
      &                                .OR. nonlinFreeSurf.LE.0 ) THEN
       CALL WRITE_0D_RL( convertFW2Salt, INDEX_NONE,
      & 'convertFW2Salt =',
-     & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(psu)*/')
+     & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(g/kg)*/')
       ENDIF
 
       CALL WRITE_0D_L( use3Dsolver, INDEX_NONE,
@@ -431,7 +441,7 @@ C------------
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
-C------------
+C-----
       WRITE(msgBuf,'(2A)')
      & 'selectImplicitDrag=', ' /* Implicit bot Drag options (0,1,2)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -442,12 +452,11 @@ C------------
      &  ' 2= Fully Impl (with surf.P)'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-C------------
+C-----
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
-C------------
       WRITE(msgBuf,'(2A)')
      & 'selectCoriMap =', ' /* Coriolis Map options (0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -458,56 +467,80 @@ C------------
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-C------------
       CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
      & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
      & 'useCDscheme =', '  /* CD scheme on/off flag */')
-      CALL WRITE_0D_L( useEnergyConservingCoriolis,  INDEX_NONE,
-     & 'useEnergyConservingCoriolis=',
-     & ' /* Flx-Form Coriolis scheme flag */')
-      CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
-     & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
-      CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
-     & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
-      CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
+C-----
+      WRITE(msgBuf,'(2A)') 'selectCoriScheme=',
+     &              ' /* Scheme selector for Coriolis-Term */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = selectCoriScheme
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)')  '   = 0 : original discretization',
+     &                      ' (simple averaging, no hFac)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')  '   = 1 : Wet-point averaging',
+     &                      ' (Jamar & Ozer 1986)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      IF ( vectorInvariantMomentum ) THEN
+       WRITE(msgBuf,'(2A)') '   = 2 : hFac weighted average',
+     &                      ' (Angular Mom. conserving)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy conserving scheme',
+     &                      ' using hFac weighted average'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ELSE
+       WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
+     &                      ' (no hFac weight)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy conserving scheme',
+     &                      ' using Wet-point averaging'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
+      CALL PRINT_MESSAGE( endList, ioUnit, SQUEEZE_RIGHT, myThid )
+      IF ( vectorInvariantMomentum ) THEN
+C---  report here some vector-invariant parameters
+       CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
      & 'useAbsVorticity=',' /* V.I Works with f+zeta in Coriolis */')
       WRITE(msgBuf,'(2A)') 'selectVortScheme=',
      &              ' /* V.I Scheme selector for Vorticity-Term */'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      buffI(1) = selectVortScheme
-      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
-     &                   .FALSE., .TRUE., ioUnit )
-      WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       buffI(1) = selectVortScheme
+       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                    .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
      &                  ' conserving scheme by Sadourny, JAS 75'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 1 : same as 0 with modified hFac'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 1 : same as 0 with modified hFac'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
      &         ' (used by Sadourny in JAS 75 paper)'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 3 : energy (general)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy (general)',
      &             ' and enstrophy (2D, nonDiv.) conserving scheme'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '         from Sadourny',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '         from Sadourny',
      &                     ' (Burridge & Haseler, ECMWF Rep.4, 1977)'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-c     WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c      WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
 c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
-c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-c     WRITE(msgBuf,'(2A)') '         from Arakawa & Lamb, 77'
-c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
+       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+       CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
+     & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
+       CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
      & 'upwindVorticity=',' /* V.I Upwind bias vorticity flag */')
-      CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
+       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
      & 'highOrderVorticity=',' /* V.I High order vort. advect. flag */')
-      CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
+       CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
      & 'upwindShear=',' /* V.I Upwind vertical Shear advection flag */')
-      CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
+       CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
      & 'selectKEscheme=',' /* V.I Kinetic Energy scheme selector */')
+C---  report of some vector-invariant parameters ends here
+      ENDIF
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       IF ( momForcing )
@@ -648,8 +681,8 @@ C---
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
-      CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
-     &'   /* 2d con. grad convergence test frequency */')
+      CALL WRITE_0D_I( cg2dMinItersNSA, INDEX_NONE,'cg2dMinItersNSA =',
+     &'   /* Minimum number of iterations of 2d con. grad solver  */')
       CALL WRITE_0D_I( cg2dUseMinResSol, INDEX_NONE,
      &  'cg2dUseMinResSol=',
      &  ' /* use cg2d last-iter(=0) / min-resid.(=1) solution */')
@@ -663,6 +696,8 @@ C---
      &'   /* Freq. for updating cg2d preconditioner */')
       CALL WRITE_0D_L( useSRCGSolver, INDEX_NONE,
      & 'useSRCGSolver =', '  /* use single reduction CG solver(s) */')
+      CALL WRITE_0D_L( useNSACGSolver, INDEX_NONE,
+     & 'useNSACGSolver =', '  /* use not-self-adjoint CG solver */')
       CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
      & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
 

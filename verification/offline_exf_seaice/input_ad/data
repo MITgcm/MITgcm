@@ -46,16 +46,15 @@
  &PARM03
  startTime=0.0,
 #endTime=864000.,
+ nTimeSteps=120,
  deltaT=3600.0,
  abEps=0.1,
  forcing_In_AB = .FALSE.,
- pChkptFreq=3600000.,
- monitorFreq=432000.,
- monitorSelect=2,
-#dumpFreq = 86400.,
- nTimeSteps=120,
-#monitorFreq=1.,
-#dumpFreq = 1.,
+ pChkptFreq=5184000.,
+#dumpFreq = 864000.,
+ monitorSelect = 2,
+ monitorFreq =  216000.,
+ adjMonitorFreq= 86400.,
  &
 
 # Gridding parameters

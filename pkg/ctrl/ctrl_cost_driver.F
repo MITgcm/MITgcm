@@ -43,6 +43,8 @@ c     == local variables ==
       integer iarr
       logical dodimensionalcost
       integer k2
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 #endif
 
 c     == end of interface ==
@@ -70,6 +72,10 @@ c--   Evaluate the individual cost function contributions.
          endif
        endif
       enddo
+
+C --- Get appropriate mask for field
+      call ctrl_get_mask2D(xx_gentim2d_file(iarr),mask2D,myThid)
+
       call ctrl_cost_gen2d (
      &     startrec, endrec,
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
@@ -82,7 +88,7 @@ c--   Evaluate the individual cost function contributions.
      &     zeroRL, num_gentim2dm(1,1,iarr), objf_gentim2dm(1,1,iarr),
      &     objf_gentim2dsmoo(1,1,iarr), zeroRL, zeroRL,
 #endif /* ECCO_CTRL_DEPRECATED */
-     &     maskC, myThid )
+     &     mask2D, myThid )
       endif
 
       enddo
@@ -98,6 +104,9 @@ c--   Evaluate the individual cost function contributions.
        endif
       enddo
 
+C --- Get appropriate mask for field
+      call ctrl_get_mask2D(xx_genarr2d_file(iarr),mask2D,myThid)
+
       if (xx_genarr2d_weight(iarr).NE.' ') then
       call ctrl_cost_gen2d (
      &     1,1,
@@ -109,7 +118,8 @@ c--   Evaluate the individual cost function contributions.
      &     zeroRL, num_zero_mean, objf_zero_mean,
      &     objf_zero_smoo, zeroRL, zeroRL,
 #endif /* ECCO_CTRL_DEPRECATED */
-     &     maskC, myThid )
+     &     mask2D, myThid )
+
       endif
 
       enddo
@@ -126,13 +136,16 @@ c--   Evaluate the individual cost function contributions.
        endif
       enddo
 
+C --- Get appropriate mask for field
+      call ctrl_get_mask3D(xx_genarr3d_file(iarr),mask3D,myThid)
+
       if (xx_genarr3d_weight(iarr).NE.' ') then
       call ctrl_cost_gen3d (
      &     xx_genarr3d_file(iarr),xx_genarr3d_dummy(iarr),
      &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),
      &     dodimensionalcost,
      &     num_genarr3d(1,1,iarr), objf_genarr3d(1,1,iarr),
-     &     maskC, myThid )
+     &     mask3D, myThid )
       endif
 
       enddo
@@ -141,5 +154,5 @@ c--   Evaluate the individual cost function contributions.
 #endif
 
 
-      return 
+      return
       end
