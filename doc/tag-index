@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp:
+  - fix scratch file names when using PDAF.
 o pkg/exf:
   - fix issue in interannual monthly forcing addition (case ${fld}period=0)
 o model/src:
