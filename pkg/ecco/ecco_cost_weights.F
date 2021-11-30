@@ -913,10 +913,10 @@ c--   Read zonal wind stress variance.
 #if (defined (ALLOW_STRESS_MEAN_COST_CONTRIBUTION))
       nnz   =   1
       irec  =   1
-cph      CALL READ_REC_3D_RL( tauum_errfile, cost_iprec,
-cph     &                   nnz, wtauum, irec, 1, myThid )
-cph      CALL READ_REC_3D_RL( tauvm_errfile, cost_iprec,
-cph     &                   nnz, wtauvm, irec, 1, myThid )
+cph      call mdsreadfield( tauum_errfile, cost_iprec, cost_yftype,
+cph     &                   nnz, wtauum, irec, myThid )
+cph      call mdsreadfield( tauvm_errfile, cost_iprec, cost_yftype,
+cph     &                   nnz, wtauvm, irec, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
