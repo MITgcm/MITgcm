@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tape related code (adjoint):
+  - clean-up tape code in the init-phase, mainly in the_main_loop.F and in
+    ctrl_map_ini_gentim2d.F ;
+  - remove unused (ecco) cost_averages_bar_directives.h ;
+  - adjust comments in (autodiff) adread_adwrite.F & in main_do_loop.F
 o eesupp:
   - fix scratch file names when using PDAF.
 o pkg/exf:
