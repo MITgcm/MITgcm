@@ -59,7 +59,7 @@ up a remote that points to the original:
 
 ::
 
-    % git remote add upstream git@github.com:MITgcm/MITgcm.git
+    % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
 **5.** Make a new branch from ``upstream/master`` (name it something
 appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on this branch:
@@ -227,7 +227,7 @@ We need to set up a remote that points to the main repository:
 
 ::
 
-    % git remote add upstream git@github.com:MITgcm/MITgcm.git
+    % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
 This means that we now have two "remotes" of the project. A remote is
 just a pointer to a repository not on your computer, i.e., in the GitHub
