@@ -54,6 +54,9 @@ C     msgBuf    :: Informational/error message buffer
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif
+#ifdef USE_PDAF
+      INTEGER mpi_task_id
+#endif
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -90,8 +93,16 @@ C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
 #else
 C     After opening regular files here, they are closed with STATUS='DELETE'
+#ifdef USE_PDAF
+      CALL GET_TASKID_PDAF(mpi_task_id)
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch1.', myProcId, '.', mpi_task_id
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch2.', myProcId, '.', mpi_task_id
+#else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', myProcId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', myProcId
+#endif
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 #endif /* USE_FORTRAN_SCRATCH_FILES */

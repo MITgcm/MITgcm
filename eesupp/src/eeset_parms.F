@@ -59,6 +59,9 @@ C     record :: Temp. for textual I/O
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif
+#ifdef USE_PDAF
+      INTEGER mpi_task_id
+#endif
 CEOP
 
       NAMELIST /EEPARMS/
@@ -155,8 +158,16 @@ C     multi-node/multi-processor systems
 C     this definition will go into CPP_EEMACROS.h, once this method is
 C     properly established
 C     After opening regular files here, they are closed with STATUS='DELETE'
+#ifdef USE_PDAF
+      CALL GET_TASKID_PDAF(mpi_task_id)
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch1.', procId, '.', mpi_task_id
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch2.', procId, '.', mpi_task_id
+#else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
+#endif
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 # endif
@@ -216,7 +227,6 @@ C--   Report contents of parameter file
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
         GOTO 2000
  2001  CONTINUE
-
        WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
       ENDIF
