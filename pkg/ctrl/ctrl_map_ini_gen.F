@@ -31,14 +31,9 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
-# include "CTRL_GENARR.h"
-# include "ctrl_dummy.h"
 # include "optim.h"
 #endif
 
@@ -78,8 +73,8 @@ CEOP
         DO k = 1,Nr
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-           xxFld3d(i,j,k,bi,bj)=0. _d 0
-           wFld3d(i,j,k,bi,bj)=0. _d 0
+           xxFld3d(i,j,k,bi,bj) = 0. _d 0
+           wFld3d(i,j,k,bi,bj)  = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -104,7 +99,37 @@ CEOP
       CALL READ_REC_XYZ_RL( fnamegeneric, xxFld3d, 1, 1, myThid )
 #endif
 
-      IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+      IF ( ctrlSmoothCorrel3D ) THEN
+
+#ifdef ALLOW_SMOOTH
+C-    apply Weaver And Courtier correlation operator
+        IF ( paramSmooth.NE.0 .AND. useSMOOTH ) THEN
+         CALL SMOOTH_CORREL3D( xxFld3d, paramSmooth, myThid )
+        ENDIF
+#endif
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = jMin,jMax
+            DO i = iMin,iMax
+C-    scale param adjustment
+             IF ( ( maskFld3d(i,j,k,bi,bj).NE.zeroRS )
+     &          .AND. ( wFld3d(i,j,k,bi,bj).GT.zeroRL ) ) THEN
+              xxFld3d(i,j,k,bi,bj) = xxFld3d(i,j,k,bi,bj)
+     &                             / SQRT( wFld3d(i,j,k,bi,bj) )
+             ELSE
+              xxFld3d(i,j,k,bi,bj) = 0. _d 0
+             ENDIF
+             paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj)
+     &                               + xxFld3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+      ELSE
 
 C-    avoid xx larger than boundsVec(5) X uncertainty
         IF ( boundsVec(5).GT.0. ) THEN
@@ -113,8 +138,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
            DO k = 1,Nr
             DO j = jMin,jMax
              DO i = iMin,iMax
-              IF ( ( maskFld3d(i,j,k,bi,bj).NE.0. )
-     &           .AND. ( wFld3d(i,j,k,bi,bj).GT.0. ) ) THEN
+              IF ( ( maskFld3d(i,j,k,bi,bj).NE.zeroRS )
+     &           .AND. ( wFld3d(i,j,k,bi,bj).GT.zeroRL ) ) THEN
                tmpMax = boundsVec(5)/SQRT(wFld3d(i,j,k,bi,bj))
                IF ( ABS(xxFld3d(i,j,k,bi,bj)).GT.tmpMax ) THEN
                 xxFld3d(i,j,k,bi,bj) = SIGN(tmpMax,xxFld3d(i,j,k,bi,bj))
@@ -152,37 +177,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
          ENDDO
         ENDDO
 
-      ELSE !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
-
-#ifdef ALLOW_SMOOTH
-C-    apply Weaver And Courtier correlation operator
-        IF ( paramSmooth.NE.0 .AND. useSMOOTH ) THEN
-         CALL SMOOTH_CORREL3D( xxFld3d, paramSmooth, myThid )
-        ENDIF
-#endif
-
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO k = 1,Nr
-           DO j = jMin,jMax
-            DO i = iMin,iMax
-C-    scale param adjustment
-             IF ( ( maskFld3d(i,j,k,bi,bj).NE.0. )
-     &          .AND. ( wFld3d(i,j,k,bi,bj).GT.0. ) ) THEN
-              xxFld3d(i,j,k,bi,bj) = xxFld3d(i,j,k,bi,bj)
-     &                             / SQRT( wFld3d(i,j,k,bi,bj) )
-             ELSE
-              xxFld3d(i,j,k,bi,bj) = 0.
-             ENDIF
-             paramFld3d(i,j,k,bi,bj) = paramFld3d(i,j,k,bi,bj)
-     &                               + xxFld3d(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-
-      ENDIF !IF ( .NOT.ctrlSmoothCorrel3D ) THEN
+C-    end if ctrlSmoothCorrel3D / else
+      ENDIF
 
 C-    avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D( paramFld3d, maskFld3d, boundsVec, myThid )
@@ -203,7 +199,7 @@ C !ROUTINE: CTRL_MAP_INI_GEN2D
 
 C !INTERFACE:
       SUBROUTINE CTRL_MAP_INI_GEN2D(xxFileCur, wFileCur, xxDummyCur,
-     &           boundsVec, paramFld2d, mask2D, paramSmooth, myThid )
+     &        boundsVec, paramFld2d, maskFld2d, paramSmooth, myThid )
 
 C     !DESCRIPTION:
 C     ==================================================================
@@ -220,13 +216,9 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
-# include "ctrl_dummy.h"
 # include "optim.h"
 #endif
 
@@ -234,7 +226,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(*) xxFileCur, wFileCur
       _RL xxDummyCur, boundsVec(5)
       _RL paramFld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS mask2D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS maskFld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER paramSmooth
       INTEGER myThid
 
@@ -290,7 +282,36 @@ CEOP
       CALL READ_REC_XY_RL( fnamegeneric, xxFld2d, 1, 1, myThid )
 #endif
 
-      IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+      IF ( ctrlSmoothCorrel2D ) THEN
+
+#ifdef ALLOW_SMOOTH
+C-    apply Weaver And Courtier correlation operator
+        IF ( paramSmooth.NE.0 .AND. useSMOOTH ) THEN
+         CALL SMOOTH_CORREL2D( xxFld2d, maskFld2d,
+     &                         paramSmooth, myThid )
+        ENDIF
+#endif
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = jMin,jMax
+            DO i = iMin,iMax
+C-    scale param adjustment
+             IF ( ( maskFld2d(i,j,bi,bj).NE.zeroRS )
+     &          .AND. ( wFld2d(i,j,bi,bj).GT.zeroRL ) ) THEN
+              xxFld2d(i,j,bi,bj) = xxFld2d(i,j,bi,bj)
+     &                           / SQRT( wFld2d(i,j,bi,bj) )
+             ELSE
+              xxFld2d(i,j,bi,bj) = 0. _d 0
+             ENDIF
+             paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj)
+     &                             + xxFld2d(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+
+      ELSE
 
 C-    avoid xx larger than boundsVec(5) X uncertainty
         IF ( boundsVec(5).GT.0.) THEN
@@ -298,8 +319,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j = jMin,jMax
              DO i = iMin,iMax
-              IF ( ( mask2D(i,j,bi,bj).NE.0. )
-     &           .AND. ( wFld2d(i,j,bi,bj).GT.0. ) ) THEN
+              IF ( ( maskFld2d(i,j,bi,bj).NE.zeroRS )
+     &           .AND. ( wFld2d(i,j,bi,bj).GT.zeroRL ) ) THEN
                tmpMax = boundsVec(5)/SQRT(wFld2d(i,j,bi,bj))
                IF ( ABS(xxFld2d(i,j,bi,bj)).GT.tmpMax ) THEN
                 xxFld2d(i,j,bi,bj) = SIGN(tmpMax,xxFld2d(i,j,bi,bj))
@@ -315,7 +336,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
 
 #ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL2D
-        IF (useSMOOTH) CALL SMOOTH2D(xxFld2d,mask2D,paramSmooth,myThid)
+        IF (useSMOOTH) CALL SMOOTH2D( xxFld2d, maskFld2d,
+     &                                paramSmooth, myThid )
         WRITE(fnamegeneric(1:80),'(2A,I10.10)')
      &        xxFileCur(1:il), '.smooth.', optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
@@ -334,37 +356,10 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
          ENDDO
         ENDDO
 
-      ELSE !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
+C-    end if ctrlSmoothCorrel2D / else
+      ENDIF
 
-#ifdef ALLOW_SMOOTH
-C-    apply Weaver And Courtier correlation operator
-        IF ( paramSmooth.NE.0 .AND. useSMOOTH ) THEN
-         CALL SMOOTH_CORREL2D( xxFld2d, mask2D, paramSmooth, myThid )
-        ENDIF
-#endif
-
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j = jMin,jMax
-            DO i = iMin,iMax
-C-    scale param adjustment
-             IF ( ( mask2D(i,j,bi,bj).NE.0. )
-     &          .AND. ( wFld2d(i,j,bi,bj).GT.0. ) ) THEN
-              xxFld2d(i,j,bi,bj) = xxFld2d(i,j,bi,bj)
-     &                           / SQRT( wFld2d(i,j,bi,bj) )
-             ELSE
-              xxFld2d(i,j,bi,bj) = 0.
-             ENDIF
-             paramFld2d(i,j,bi,bj) = paramFld2d(i,j,bi,bj)
-     &                             + xxFld2d(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDDO
-        ENDDO
-
-      ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
-
-      CALL CTRL_BOUND_2D( paramFld2d, mask2D, boundsVec, myThid )
+      CALL CTRL_BOUND_2D( paramFld2d, maskFld2d, boundsVec, myThid )
 
       IF ( ctrlSmoothCorrel2D ) THEN
         WRITE(fnamegeneric(1:80),'(2A,I10.10)')
