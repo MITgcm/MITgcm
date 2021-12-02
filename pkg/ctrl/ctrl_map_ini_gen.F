@@ -69,6 +69,9 @@ c     == local variables ==
       logical ladinit
 
       character*( 80) fnamegeneric
+#ifdef ALLOW_OPENAD
+      _RS dummyRS(1)
+#endif
 
 c     == external ==
 
@@ -103,7 +106,12 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
+#ifdef ALLOW_OPENAD
+      CALL MDS_READ_FIELD( wFileCur, ctrlprec, .FALSE., 'RL',
+     &                     Nr, 1, Nr, wFld3d, dummyRS, 1, myThid )
+#else
       CALL READ_REC_3D_RL( wFileCur,ctrlprec,Nr, wFld3d, 1,1,myThid )
+#endif
       _EXCH_XYZ_RL( wFld3d, mythid )
 
       il=ilnblnk( xxFileCur )
@@ -269,7 +277,9 @@ c     == local variables ==
       logical ladinit
 
       character*( 80) fnamegeneric
-
+#ifdef ALLOW_OPENAD
+      _RS dummyRS(1)
+#endif
 
 c     == external ==
 
@@ -302,7 +312,12 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
+#ifdef ALLOW_OPENAD
+      CALL MDS_READ_FIELD( wFileCur, ctrlprec, .FALSE., 'RL',
+     &                     1, 1, 1, wFld2d, dummyRS, 1, myThid )
+#else
       CALL READ_REC_3D_RL( wFileCur, ctrlprec, 1, wFld2d, 1,1,myThid )
+#endif
       _EXCH_XY_RL( wFld2d, mythid )
 
       il=ilnblnk( xxFileCur )
