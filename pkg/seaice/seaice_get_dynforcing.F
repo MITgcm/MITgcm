@@ -159,10 +159,8 @@ C     undo subtraction of ocean velocities and subtract ice velocities
           DO j=1-OLy,sNy+OLy-1
            DO i=1-OLx,sNx+OLx-1
             uTmp(i,j)=uwind(i,j,bi,bj)
-     &          + 0.5 _d 0 * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
      &          - 0.5 _d 0 * (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj))
             vTmp(i,j)=vwind(i,j,bi,bj)
-     &          + 0.5 _d 0 * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
      &          - 0.5 _d 0 * (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj))
            ENDDO
           ENDDO

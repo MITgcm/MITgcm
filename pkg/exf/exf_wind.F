@@ -29,6 +29,7 @@ C     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -51,7 +52,9 @@ C     == external functions ==
 C     == local variables ==
 
       INTEGER bi,bj
-      INTEGER i,j
+      INTEGER i,j,ks
+      _RL     urelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     vrelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     wsLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     wsSq
 #ifdef ALLOW_BULKFORMULAE
@@ -75,6 +78,9 @@ C     == end of interface ==
 
 C--   Use atmospheric state to compute surface fluxes.
 
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
+
 C     Loop over tiles.
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -96,12 +102,26 @@ C--   Initialise
         DO j = 1,sNy
          DO i = 1,sNx
           wsLoc(i,j) = 0. _d 0
+          urelw(i,j) = uwind(i,j,bi,bj)
+          vrelw(i,j) = uwind(i,j,bi,bj)
           cw(i,j,bi,bj) = 0. _d 0
           sw(i,j,bi,bj) = 0. _d 0
           sh(i,j,bi,bj) = 0. _d 0
           wStress(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+
+        IF (useRelativeWind) THEN
+C     Subtract uVel and vVel from uwind and vwind.
+         DO j = 1,sNy
+          DO i = 1,sNx
+           urelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
+     &          * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
+           vrelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
+     &          * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uwind (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
@@ -114,12 +134,12 @@ CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 C--   Wind speed and direction.
          DO j = 1,sNy
           DO i = 1,sNx
-           wsSq = uwind(i,j,bi,bj)*uwind(i,j,bi,bj)
-     &          + vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
+           wsSq = urelw(i,j)*urelw(i,j)
+     &          + vrelw(i,j)*vrelw(i,j)
            IF ( wsSq .NE. 0. _d 0 ) THEN
              wsLoc(i,j) = SQRT(wsSq)
-             cw(i,j,bi,bj) = uwind(i,j,bi,bj)/wsLoc(i,j)
-             sw(i,j,bi,bj) = vwind(i,j,bi,bj)/wsLoc(i,j)
+             cw(i,j,bi,bj) = urelw(i,j)/wsLoc(i,j)
+             sw(i,j,bi,bj) = vrelw(i,j)/wsLoc(i,j)
            ELSE
              wsLoc(i,j) = 0. _d 0
              cw(i,j,bi,bj) = 0. _d 0
@@ -266,9 +286,9 @@ C--   Computes wind-stress:
            tmpbulk = exf_scal_BulkCdn
      &             * ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
            ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
-     &                        * uwind(i,j,bi,bj)
+     &                        * urelw(i,j)
            vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
-     &                        * vwind(i,j,bi,bj)
+     &                        * vrelw(i,j)
           ENDDO
          ENDDO
 c#else /* ALLOW_ATM_WIND */
