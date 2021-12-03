@@ -62,6 +62,7 @@ C     == routine arguments ==
 
 C     == local variables ==
       INTEGER i, j, bi, bj
+      INTEGER ks
 #ifdef ALLOW_CTRL
 # if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -80,6 +81,8 @@ C     == local variables ==
 
 C     == end of interface ==
 
+      ks = 1
+      IF (usingPcoords) ks = Nr
 C--   read forcing fields from files and temporal interpolation
 
 C-    Zonal and meridional wind stress.
@@ -158,9 +161,9 @@ C     Subtract UVEL and VVEL from UWIND and VWIND.
           DO j = 1,sNy
            DO i = 1,sNx
             uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+     &         * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
             vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+     &         * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
            ENDDO
           ENDDO
          ENDDO
