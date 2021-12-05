@@ -74,6 +74,14 @@ c     == local variables ==
       integer bi,bj
       integer i,j,kk,k2
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER       diagNum
+      INTEGER       diagMate
+      CHARACTER*8   diagName
+      CHARACTER*16  diagCode
+      CHARACTER*16  diagUnits
+      CHARACTER*(80) diagTitle
+#endif /* ALLOW_DIAGNOSTICS */
 
 c     == external functions ==
 
@@ -295,6 +303,60 @@ cph!!!
          call ecco_cost_init_barfiles( myThid )
       endif
 #endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       diagName  = 'SSH     '
+       diagTitle =
+     I  'Dynamic Sea Surface Height Anomaly'
+       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+ 
+       diagName  = 'SSHIBC  '
+       diagTitle =
+     I  'Inverted Barometer (IB) Correction to Sea Surface Height'
+       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SSHNOIBC'
+       diagTitle =
+     I  'Sea Surface Height Anomaly without IB '
+     I  //'Correction (=SSH+SSHIBC)'
+       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'STERICHT'
+       diagTitle =
+     I  'Steric Sea Surface Height Anomaly '
+     I  //'(=SSH-OBP)'
+       diagUnits = DIAGS_MK_UNITS( rUnit2c, myThid )
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'OBP     '
+       diagTitle = 'Ocean Bottom Pressure'
+       diagUnits = 'm               '
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'OBPGMAP '
+       diagTitle =
+     I 'Ocean Bottom Pressure '
+     I //'Including Global Mean Atmospheric Pressure'
+       diagUnits = 'm               '
+       diagCode  = 'SM      M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ECCO_CTRL_DEPRECATED
 

@@ -218,16 +218,37 @@ C  by removing global ocean mean atmospheric pressure variations
      &           (m_bp(i,j,bi,bj)
      &            - ploadbar * recip_rhoConst
      &           ) * maskC(i,j,1,bi,bj)
-C calculate steric height (in m; = m_eta_dyn - m_bp_nopabr * recip_gravity)  
+C calculate steric height 
+C (in m; = m_eta_dyn - (m_bp_nopabr * recip_gravity + R_low))  
+C R_low (<0) is Depth in m.
                 sterht(i,j,bi,bj)=
      &           m_eta_dyn(i,j,bi,bj)
-     &           - m_bp_nopabar(i,j,bi,bj) * recip_gravity
+     &           - (m_bp_nopabar(i,j,bi,bj) * recip_gravity 
+     &              + R_low(i,j,bi,bj))
 #endif
 #endif
               enddo
             enddo
         enddo
       enddo
+
+#ifdef ALLOW_ECCO
+        CALL DIAGNOSTICS_FILL(m_eta,'SSHNOIBC',0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_SCALE_FILL(m_bp,recip_gravity,1,
+     & i                            'OBPGMAP ',0, 1,0,1,1,myThid)
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+        CALL DIAGNOSTICS_FILL(m_eta_ib,'SSHIBC  ',
+     &                        0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(m_eta_dyn,'SSH     ',
+     &                        0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(sterht,'STERICHT',
+     &                        0, 1,0,1,1,myThid)
+        CALL DIAGNOSTICS_SCALE_FILL(m_bp_nopabar,recip_gravity,1,
+     &                              'OBP     ',0, 1,0,1,1,myThid)
+#endif
+#endif
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

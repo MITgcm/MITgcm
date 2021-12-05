@@ -1,7 +1,4 @@
 #include "DIAG_OPTIONS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL_STATE
@@ -27,10 +24,6 @@ C     == Global variables ===
 #include "NH_VARS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
-#endif
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ECCO.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -69,19 +62,7 @@ C     == Local variables ==
 C--   fill momentum state-var diagnostics:
 
         CALL DIAGNOSTICS_FILL(etaN, 'ETAN    ',0, 1,0,1,1,myThid)
-#ifdef ALLOW_ECCO
-        CALL DIAGNOSTICS_FILL(m_eta,'SSHNOIBC',0, 1,0,1,1,myThid)
-#ifdef ATMOSPHERIC_LOADING
-#ifdef ALLOW_IB_CORR
-        CALL DIAGNOSTICS_FILL(m_eta_ib,'SSHIBC  ',
-     &                        0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(m_eta_dyn,'SSH     ',
-     &                        0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(sterht,'STERICHT',
-     &                        0, 1,0,1,1,myThid)
-#endif
-#endif
-#endif
+
         IF ( DIAGNOSTICS_IS_ON('RSURF   ',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
