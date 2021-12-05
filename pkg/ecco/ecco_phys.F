@@ -59,18 +59,20 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trSaltW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
+      _RL tmpfac
+      _RL sIceLoadFacLoc
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
       _RL AREAsumTile(nSx,nSy),PLOADsumTile(nSx,nSy)
-      _RL tmpfac
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-      _RL sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
 #endif
+C     Mload     :: total mass load (kg/m**2)
+      _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 c need to include halos for find_rho_2d
       iMin = 1-OLx
@@ -78,8 +80,11 @@ c need to include halos for find_rho_2d
       jMin = 1-OLy
       jMax = sNy+OLy
 
-#ifdef ALLOW_PSBAR_STERIC
+      tmpfac = recip_rhoConst*recip_gravity
+      sIceLoadFacLoc=zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 
+#ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
           do k = 1,nr
@@ -131,7 +136,6 @@ c    &                       SQUEEZE_RIGHT, myThid )
 
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-      tmpfac = recip_rhoConst*recip_gravity
       ploadbar = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -155,8 +159,6 @@ c    &                       SQUEEZE_RIGHT, myThid )
       CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
       ploadbar=PLOADsumGlob/AREAsumGlob
 #endif
-      sIceLoadFacLoc=zeroRL
-      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -167,24 +169,37 @@ C calculte total sea level including inverse barometer (IB) effect if
 C  there is air pressure forcing
                 m_eta(i,j,bi,bj)=
      &                (etan(i,j,bi,bj)
-#ifdef ATMOSPHERIC_LOADING
      &                +sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
-#endif
 #ifdef ALLOW_PSBAR_STERIC
+C apply Greatbatch correction
      &                +sterGloH
 #endif
      &                ) * maskC(i,j,1,bi,bj)
 
-C calculte total ocean bottom pressure including air pressure if
-C  there is any.
-                m_bp(i,j,bi,bj)=
-     &                (phiHydLow(i,j,bi,bj)
+C Model equivalent of ocean bottom pressure gauge data (in m^2/s^2) 
+C  that are NOT corrected for global ocean mean atmospheric pressure variations
+C  = Ocean mass + sea-ice & snow load + air-pressure load + Greatbatch corr.
+C  (all terms on RHS are converted to m^2/s^2). It is 
+C  essentially Mload (as in pkg/sbo/sbo_calc.F) plus air-pressure load
+                m_bp(i,j,bi,bj) =  gravity * (etaN(i,j,bi,bj) 
+     &           - R_low(i,j,bi,bj) 
 #ifdef ALLOW_PSBAR_STERIC
 C add back the correction due to the global mean steric ssh change,
-C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &                 +sterGloH * gravity
+C     i.e. sterGloH computed above (units converted from m to m2/s2)
+     &           + sterGloH 
 #endif
-     &                ) * maskC(i,j,1,bi,bj)
+     &           )
+C sIceLoad in kg/m^2
+     &           + sIceLoad(i,j,bi,bj) * gravity * sIceLoadFacLoc 
+C pLoad in N/m^2
+     &           + pLoad(i,j,bi,bj) * recip_rhoConst
+C integrate rho_anomaly through water column
+                DO k = 1, Nr
+                   m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) +
+     &               RHOInSituLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+     &               * gravity * recip_rhoConst 
+                ENDDO
+                m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) * maskC(i,j,1,bi,bj)
 
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
@@ -198,14 +213,10 @@ C calculte dynamic sea level for comparison with altimetry data (in m)
      &           * maskC(i,j,1,bi,bj)
 
 C calculate GRACE-equvivalent ocean bottom pressure (in m2/s2)
+C  by removing global ocean mean atmospheric pressure variations
                 m_bp_nopabar(i,j,bi,bj)=
-     &           (phiHydLow(i,j,bi,bj)
-#ifdef ALLOW_PSBAR_STERIC
-C add back the correction due to the global mean steric ssh change,
-C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &            + sterGloH * gravity
+     &           (m_bp(i,j,bi,bj)
      &            - ploadbar * recip_rhoConst
-#endif
      &           ) * maskC(i,j,1,bi,bj)
 C calculate steric height (in m; = m_eta_dyn - m_bp_nopabr * recip_gravity)  
                 sterht(i,j,bi,bj)=
