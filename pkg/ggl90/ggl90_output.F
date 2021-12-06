@@ -42,7 +42,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GGL90.h"
-#include "GGL90_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -62,10 +61,6 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(10) suff
-#ifdef ALLOW_TIMEAVE
-      INTEGER bi, bj
-      _RL DDTT
-#endif
 CEOP
 
 C----------------------------------------------------------------
@@ -96,96 +91,6 @@ C       Write each snap-shot as a new file
        ENDIF
 
       ENDIF
-
-C----------------------------------------------------------------
-C     Do GGL90 time averaging.
-C----------------------------------------------------------------
-
-#ifdef ALLOW_TIMEAVE
-      IF ( GGL90taveFreq .GT. 0. _d 0 ) THEN
-
-       IF ( myIter.EQ.nIter0 ) THEN
-C     Initialize averages to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( GGL90viscArUtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90viscArVtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
-          GGL90_timeAve(bi,bj) = 0.
-         ENDDO
-        ENDDO
-
-       ELSE
-C     Cumulate GGL90 fields (for Time Average)
-        DDTT = deltaTClock
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_CUMULATE( GGL90viscArUtave, GGL90viscArU,
-     &                           Nr, DDTT, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( GGL90viscArVtave, GGL90viscArV,
-     &                           Nr, DDTT, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( GGL90diffKrtave, GGL90diffKr,
-     &                           Nr, DDTT, bi, bj, myThid )
-          CALL TIMEAVE_CUMULATE( GGL90TKEtave,    GGL90TKE,
-     &                           Nr, DDTT, bi, bj, myThid )
-C     Keep record of how much time has been integrated over
-          GGL90_timeAve(bi,bj) = GGL90_timeAve(bi,bj)+DDTT
-         ENDDO
-        ENDDO
-       ENDIF
-
-C     Dump files and restart average computation if needed
-       IF ( myIter.NE.nIter0 .AND.
-     &      DIFFERENT_MULTIPLE(GGL90taveFreq,myTime,deltaTClock)
-     &    ) THEN
-
-C     Normalize by integrated time
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_NORMALIZE( GGL90viscArUtave,
-     &                            GGL90_timeAve, Nr, bi, bj, myThid )
-          CALL TIMEAVE_NORMALIZE( GGL90viscArVtave,
-     &                            GGL90_timeAve, Nr, bi, bj, myThid )
-          CALL TIMEAVE_NORMALIZE( GGL90diffKrtave,
-     &                            GGL90_timeAve, Nr, bi, bj, myThid )
-          CALL TIMEAVE_NORMALIZE( GGL90TKEtave,
-     &                            GGL90_timeAve, Nr, bi, bj, myThid )
-         ENDDO
-        ENDDO
-
-C     Write each snap-shot as a new file
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-        CALL WRITE_FLD_XYZ_RL( 'GGL90viscArU-T.', suff,
-     &                          GGL90viscArUtave, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL( 'GGL90viscArV-T.', suff,
-     &                          GGL90viscArVtave, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL( 'GGL90diffKr-T.', suff,
-     &                          GGL90diffKrTave, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL( 'GGL90TKE-T.',    suff,
-     &                          GGL90TKETave,    myIter, myThid )
-
-C     Reset averages to zero
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          CALL TIMEAVE_RESET( GGL90viscArUtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90viscArVtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90diffKrtave, Nr, bi, bj, myThid )
-          CALL TIMEAVE_RESET( GGL90TKEtave,    Nr, bi, bj, myThid )
-          GGL90_timeAve(bi,bj) = 0.
-         ENDDO
-        ENDDO
-
-C-    end dump-files block
-       ENDIF
-
-C-    end if GGL90taveFreq > 0
-      ENDIF
-#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_GGL90 */
 

@@ -1,5 +1,3 @@
-#
-#
 # *********************
 # ECCO controlvariables
 # *********************
@@ -25,4 +23,34 @@
  maskname = 'ecco_mask',
  metaname = 'ecco_meta',
  &
-
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr3d_file(1)       = 'xx_theta',
+ xx_genarr3d_weight(1)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,1) = -2.,-1.9,39.,40.,5.,
+#
+ xx_genarr3d_file(2)       = 'xx_salt',
+ xx_genarr3d_weight(2)     = 'ones_64b.bin',
+#
+ xx_genarr3d_file(3)       = 'xx_diffkr',
+ xx_genarr3d_weight(3)     = 'ones_64b.bin',
+#
+ xx_genarr3d_file(4)       = 'xx_ptr1',
+ xx_genarr3d_weight(4)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(1)       = 'xx_qnet',
+ xx_gentim2d_weight(1)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(2)       = 'xx_empmr',
+ xx_gentim2d_weight(2)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(3)       = 'xx_fu',
+ xx_gentim2d_weight(3)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(4)       = 'xx_fv',
+ xx_gentim2d_weight(4)     = 'ones_64b.bin',
+#
+ &

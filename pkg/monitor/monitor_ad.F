@@ -60,7 +60,7 @@ C     !LOCAL VARIABLES:
       _RS dumRS(1)
       _RL dumRL(1)
 
-      IF ( DIFFERENT_MULTIPLE(adjmonitorFreq,myTime,deltaTClock) ) THEN
+      IF ( DIFFERENT_MULTIPLE(adjMonitorFreq,myTime,deltaTClock) ) THEN
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
@@ -178,7 +178,7 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
         ENDIF
 
 C       Print the basic statistics of external forcing
-        IF ( monitorSelect.GE.3 ) THEN
+        IF ( monitorSelect.GE.4 ) THEN
           CALL MON_SET_PREF('ad_forcing',myThid)
           IF ( mon_AdVarExch.NE.2 ) THEN
            CALL MON_WRITESTATS_RS( 1, adQnet, '_adqnet',
