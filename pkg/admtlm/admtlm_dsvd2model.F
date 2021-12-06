@@ -104,10 +104,6 @@ c     == external ==
 
 c     == end of interface ==
 
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
-
 c--   Initialise
       nbuffGlobal = 0
 

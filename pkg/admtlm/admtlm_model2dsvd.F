@@ -62,8 +62,6 @@ c     == routine arguments ==
 #ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
 
-      _RL    fcloc
-
       integer i, j, k
       integer ii
       integer il
@@ -89,10 +87,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Tiled files are used.
       doglobalread = .false.
@@ -155,7 +149,6 @@ c--   Only the master thread will do I/O.
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
-          fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -164,7 +157,6 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
-          fcloc     = fc
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
