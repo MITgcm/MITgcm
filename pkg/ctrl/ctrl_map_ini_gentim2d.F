@@ -170,7 +170,7 @@ c--   docycle
         DO jrec = 1,replicated_ntimes+1
          DO irec = 1,replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
           krec=replicated_nrec*(jrec-1)+irec
           IF (krec.LE.endrec) THEN
@@ -234,7 +234,7 @@ c     print*,'nyearsINT',nyearsINT,nyearsRL
 
           DO jrec=1,nyearsINT
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
 #ifdef ALLOW_AUTODIFF
@@ -269,7 +269,7 @@ C     end jrec
           ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -285,7 +285,7 @@ c     subtract cyclic average
          DO jrec = 1, replicated_ntimes+1
           DO irec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=replicated_nrec*(jrec-1)+irec
            IF (krec.LE.endrec) THEN
@@ -332,7 +332,7 @@ c--   scaling and smoothing
 
         DO irec = 1, diffrec
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF
