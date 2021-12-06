@@ -879,7 +879,8 @@ CEOP
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      IF ( fld_period.GT.0. ) THEN
+      IF ( fld_period.GT.0. .OR.
+     &     (fld_period.EQ.-1. .AND. .NOT.useYearlyFields) ) THEN
        WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' starts at'
        WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_start_time
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

@@ -259,32 +259,30 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the cost function evaluation.
-CADJ  INIT dummytape = common, 1
-c--
-#  ifdef ALLOW_GENTIM2D_CONTROL
-CADJ INIT ctrltape       = COMMON,1
-#  endif
-c--   Initialize storage for the outermost loop.
+c---------------------------------------------------------
+c--   Initialize storage for the initialisation phase.
 # ifdef ALLOW_AUTODIFF_WHTAPEIO
-CADJ  INIT tapelev_init   = common, 1
+CADJ INIT tapelev_init       = COMMON, 1
 # else
-CADJ  INIT tapelev_init       = USER
-CADJ  INIT tapelev_ini_bibj   = USER
-CADJ  INIT tapelev_ini_bibj_k = USER
+CADJ INIT tapelev_init       = USER
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ECCO_CTRL_DEPRECATED
-CADJ  INIT onetape = USER
-#  endif
+c--   this tape is never used
+cCADJ INIT tapelev_ini_bibj   = USER
+c--   currently only used in convective_adjustement_ini.F
+CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr*nthreads_chkpt
+# if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
+c--   exclusive tape for variables with suffix "_dummy"
+CADJ INIT dummytape          = COMMON, 1
 # endif
 
+c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
-CADJ  INIT tapelev2 = USER
+CADJ INIT tapelev2 = USER
 #  elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
-CADJ  INIT tapelev4 = USER
+CADJ INIT tapelev4 = USER
 #  else
-CADJ  INIT tapelev3 = USER
+CADJ INIT tapelev3 = USER
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -300,7 +298,7 @@ CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
@@ -375,7 +373,7 @@ C--   Set initial conditions (variable arrays)
 #  ifdef ECCO_CTRL_DEPRECATED
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
-CADJ STORE sbar_gen,tbar_gen  = onetape
+CADJ STORE sbar_gen,tbar_gen  = tapelev_init, key = 1
 #  endif
 # endif
 #endif
