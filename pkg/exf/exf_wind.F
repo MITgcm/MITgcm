@@ -103,7 +103,7 @@ C--   Initialise
          DO i = 1,sNx
           wsLoc(i,j) = 0. _d 0
           urelw(i,j) = uwind(i,j,bi,bj)
-          vrelw(i,j) = uwind(i,j,bi,bj)
+          vrelw(i,j) = vwind(i,j,bi,bj)
           cw(i,j,bi,bj) = 0. _d 0
           sw(i,j,bi,bj) = 0. _d 0
           sh(i,j,bi,bj) = 0. _d 0
@@ -115,9 +115,9 @@ C--   Initialise
 C     Subtract uVel and vVel from uwind and vwind.
          DO j = 1,sNy
           DO i = 1,sNx
-           urelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
+           uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
      &          * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
-           vrelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
+           vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
      &          * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
           ENDDO
          ENDDO
