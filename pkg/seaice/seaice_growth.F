@@ -762,12 +762,8 @@ C     Compute relative wind speed over sea ice.
           DO I=1,sNx
            SPEED_SQ =
      &          (uWind(I,J,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j,kSurface,bi,bj)
-     &                    +uVel(i+1,j,kSurface,bi,bj))
      &          -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj)))**2
      &          +(vWind(I,J,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j,kSurface,bi,bj)
-     &                    +vVel(i,j+1,kSurface,bi,bj))
      &          -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj)))**2
            IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
              UG(I,J)=SEAICE_EPS
@@ -1152,13 +1148,14 @@ C          computing compaction force acting on grease
 C           (= air and water stress acting on ice)
 C          wind stress (using calculation of SPEED_SQ & UG as template)
 C          u_a**2 + v_a**2:
-           tmpscal1 = uWind(I,J,bi,bj)*uWind(I,J,bi,bj)
-     &              + vWind(I,J,bi,bj)*vWind(I,J,bi,bj)
-           IF ( tmpscal1 .LE. SEAICE_EPS_SQ ) THEN
-             tmpscal1=SEAICE_EPS
-           ELSE
-             tmpscal1=SQRT(tmpscal2)
-           ENDIF
+CML           tmpscal1 = uWind(I,J,bi,bj)*uWind(I,J,bi,bj)
+CML     &              + vWind(I,J,bi,bj)*vWind(I,J,bi,bj)
+CML           IF ( tmpscal1 .LE. SEAICE_EPS_SQ ) THEN
+CML             tmpscal1=SEAICE_EPS
+CML           ELSE
+CML             tmpscal1=SQRT(tmpscal2)
+CML           ENDIF
+           tmpscal1 = MAX(wSpeed(I,J,bi,bj),SEAICE_EPS)
            tmpscal1 = 1.4 _d 0 * 1.3 _d -3 * tmpscal1
 C          water stress
 C          u_w - u_i:
@@ -1180,9 +1177,21 @@ C          (u_w - u_i)**2 + (v_w - v_i)**2:
            ENDIF
            tmpscal4 = 1027.0 _d 0 * 6.0 _d -3 * tmpscal4
 C          magnitude of compined stresses:
-           tmpscal0 =
+           IF ( useRelativeWind ) THEN
+            tmpscal0 =
+     &         ( tmpscal1 * ( uWind(I,J,bi,bj) -
+     &           0.5 _d 0*( uVel(i,j,kSurface,bi,bj)
+     &                    + uVel(i+1,j,kSurface,bi,bj)) )
+     &           + tmpscal4 * tmpscal2 )**2
+     &       + ( tmpscal1 * ( vWind(I,J,bi,bj) -
+     &           0.5 _d 0*( vVel(i,j,kSurface,bi,bj)
+     &                    + vVel(i,j+1,kSurface,bi,bj)) )
+     &           + tmpscal4 * tmpscal3 )**2
+           ELSE
+            tmpscal0 =
      &         ( tmpscal1 * uWind(I,J,bi,bj) + tmpscal4 * tmpscal2 )**2
      &       + ( tmpscal1 * vWind(I,J,bi,bj) + tmpscal4 * tmpscal3 )**2
+           ENDIF
            IF ( tmpscal0 .LE. SEAICE_EPS_SQ ) THEN
              tmpscal0=SEAICE_EPS
            ELSE
