@@ -129,6 +129,20 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'EXFurelw'
+      diagTitle = 'zonal relative 10-m wind speed, >0 eastward'
+      diagUnits = 'm/s             '
+      diagCode  = 'UM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EXFvrelw'
+      diagTitle = 'meridional relative 10-m wind speed, >0 northward'
+      diagUnits = 'm/s             '
+      diagCode  = 'VM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'EXFwspee'
       diagTitle = '10-m wind speed modulus ( >= 0 )'
       diagUnits = 'm/s             '

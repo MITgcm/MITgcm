@@ -115,12 +115,18 @@ C--   Initialise
 C     Subtract uVel and vVel from uwind and vwind.
          DO j = 1,sNy
           DO i = 1,sNx
-           uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
+           urelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
      &          * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
-           vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
+           vrelw(i,j) = vwind(i,j,bi,bj) - 0.5 _d 0
      &          * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
           ENDDO
          ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL( urelw,'EXFurelw',0,1,0,1,1,myThid )
+          CALL DIAGNOSTICS_FILL( vrelw,'EXFvrelw',0,1,0,1,1,myThid )
+         ENDIF
+#endif
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
