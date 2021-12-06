@@ -53,9 +53,9 @@ C     == local variables ==
 
       INTEGER bi,bj
       INTEGER i,j,ks
-      _RL     urelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     vrelw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL     wsLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     urelw(1:sNx,1:sNy)
+      _RL     vrelw(1:sNx,1:sNy)
+      _RL     wsLoc(1:sNx,1:sNy)
       _RL     wsSq
 #ifdef ALLOW_BULKFORMULAE
       _RL     usSq, recip_sqrtRhoA, ustar
@@ -123,8 +123,8 @@ C     Subtract uVel and vVel from uwind and vwind.
          ENDDO
 #ifdef ALLOW_DIAGNOSTICS
          IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL( urelw,'EXFurelw',0,1,0,1,1,myThid )
-          CALL DIAGNOSTICS_FILL( vrelw,'EXFvrelw',0,1,0,1,1,myThid )
+          CALL DIAGNOSTICS_FILL( urelw,'EXFurelw',0,1,3,bi,bj,myThid )
+          CALL DIAGNOSTICS_FILL( vrelw,'EXFvrelw',0,1,3,bi,bj,myThid )
          ENDIF
 #endif
         ENDIF
