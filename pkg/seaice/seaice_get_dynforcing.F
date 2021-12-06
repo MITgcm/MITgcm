@@ -186,20 +186,20 @@ C--   Now compute ice surface stress
 C     interpolate to U points
            taux(i,j,bi,bj)=0.5 _d 0 *
      &         (  CDAIR(i  ,j)*(
-     &          COSWIN                            *uWind(i  ,j,bi,bj)
-     &          -SIGN(SINWIN, _fCori(i  ,j,bi,bj))*vWind(i  ,j,bi,bj) )
+     &          COSWIN                            *uTmp(i  ,j)
+     &          -SIGN(SINWIN, _fCori(i  ,j,bi,bj))*vTmp(i  ,j) )
      &          + CDAIR(i-1,j)*(
-     &          COSWIN                            *uWind(i-1,j,bi,bj)
-     &          -SIGN(SINWIN, _fCori(i-1,j,bi,bj))*vWind(i-1,j,bi,bj) )
+     &          COSWIN                            *uTmp(i-1,j)
+     &          -SIGN(SINWIN, _fCori(i-1,j,bi,bj))*vTmp(i-1,j) )
      &         )*SIMaskU(i,j,bi,bj)
 C     interpolate to V points
            tauy(i,j,bi,bj)=0.5 _d 0 *
      &         (  CDAIR(i,j  )*(
-     &          SIGN(SINWIN, _fCori(i,j  ,bi,bj))*uWind(i,j  ,bi,bj)
-     &          +COSWIN*vWind(i,j  ,bi,bj) )
+     &          SIGN(SINWIN, _fCori(i,j  ,bi,bj))*uTmp(i,j  )
+     &          +COSWIN                          *vTmp(i,j  ) )
      &          + CDAIR(i,j-1)*(
-     &          SIGN(SINWIN, _fCori(i,j-1,bi,bj))*uWind(i,j-1,bi,bj)
-     &          +COSWIN*vWind(i,j-1,bi,bj) )
+     &          SIGN(SINWIN, _fCori(i,j-1,bi,bj))*uTmp(i,j-1)
+     &          +COSWIN                          *vTmp(i,j-1) )
      &         )*SIMaskV(i,j,bi,bj)
           ENDDO
          ENDDO
