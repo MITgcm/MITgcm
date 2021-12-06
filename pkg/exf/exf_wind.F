@@ -130,8 +130,8 @@ C     Subtract uVel and vVel from uwind and vwind.
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uwind (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vwind (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE urelw (:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vrelw (:,:)       = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
