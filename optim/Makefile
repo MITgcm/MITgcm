@@ -52,6 +52,7 @@ CPPFLAGS = -DREAL_BYTE=4		\
 # FORTRAN compiler and its flags.
 # default is (Linux)
 FC              = f77
+FFLAGS          = -fconvert=big-endian -fimplicit-none
 
 # ifort compilers
 #FC              = ifort
@@ -64,7 +65,6 @@ FC              = f77
 # AER cluster
 #FC		= /opt/mpich/bin/mpif77
 #FFLAGS		= -byteswapio -r8 -Mnodclchk -Mextend
-FFLAGS          = -fconvert=big-endian -fimplicit-none
 
 # File removal.
 RM		= rm -f
