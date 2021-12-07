@@ -443,7 +443,7 @@ C     and roughness length, assuming von Karman constant = 0.4
         ENDDO
         IF ( zRoughBot .GT. 0. _d 0 ) THEN
          DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
+          DO i=1-OLx,sNx+OLx
            kLow = 0
            DO k=1,Nr
             IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) kLow = k
@@ -458,7 +458,7 @@ C     and roughness length, assuming von Karman constant = 0.4
            ENDIF
           ENDDO
          ENDDO
-         DO j=1-OLy+1,sNy+OLy
+         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            kLow = 0
            DO k=1,Nr

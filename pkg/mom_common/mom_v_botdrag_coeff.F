@@ -136,9 +136,11 @@ C-    average grid-cell-center KE to get velocity norm @ V.pt
          DO i=1-OLx,sNx+OLx-1
           IF ( (KE(i,j)+KE(i,j-1)).GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + ( bottomDragQuadratic
+     &      + (
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
-     &      +   bottomDragCoeffS(i,j,bi,bj)
+     &          bottomDragCoeffS(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
 #endif
      &          )*SQRT(KE(i,j)+KE(i,j-1))*dragFac
           ENDIF
@@ -156,9 +158,11 @@ C-    calculate locally velocity norm @ V.pt (local V & 4 U averaged)
      &       )*recip_hFacS(i,j,k,bi,bj)*0.25 _d 0
           IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + ( bottomDragQuadratic
+     &      + (
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
-     &      +   bottomDragCoeffS(i,j,bi,bj)
+     &          bottomDragCoeffS(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
 #endif
      &          )*SQRT(vSq)*dragFac
           ENDIF
@@ -182,9 +186,11 @@ C-    same as above but using wet-point method to average 4 U
           ENDIF
           IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + ( bottomDragQuadratic
+     &      + (
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
-     &      +   bottomDragCoeffS(i,j,bi,bj)
+     &          bottomDragCoeffS(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
 #endif
      &          )*SQRT(vSq)*dragFac
           ENDIF
