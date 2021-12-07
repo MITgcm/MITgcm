@@ -20,6 +20,11 @@ Usage: "$0" [OPTIONS]
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
+    -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
+      -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
+	  Here, "NAME" specifies the singularity file
+	  that contains the OpenAD execulable.
+
     -nocat4ad | -dog4ad | -ncad | -dad
 	  do not concatenate (cat) source code sent to TAF
 	  resulting in compilation of multiple files
@@ -1384,6 +1389,7 @@ TOOLSDIR=
 SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
+SINGULARITYFILE=
 
 #- local config file
 gm_local="genmake_local"
@@ -1507,6 +1513,10 @@ for ac_option in "$@" ; do
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
+	    ac_prev=SINGULARITYFILE ;;
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*)
+	    SINGULARITYFILE=$ac_optarg ;;
 	-nocat4ad | -dog4ad | -ncad | -dad)
 	    CAT_SRC_FOR_TAF=0 ;;
 	-adoptfile | --adoptfile | -adof | --adof)
@@ -3518,6 +3528,30 @@ ALL_LINKED_FILES= \
 \$(F90_SRC_FILES) \
 \$(SPECIAL_FILES)
 
+EOF
+
+if test "x$SINGULARITYFILE" != x ; then
+# run OpenAD commands in singularity container with standard paths
+cat >>$MAKEFILE <<EOF
+SINGULARITYCMD = singularity exec ${SINGULARITYFILE}
+export SINGULARITYENV_LD_LIBRARY_PATH=/OpenAD//Open64/osprey1.0/targ_ia64_ia64_linux/whirl2f/
+export OPENADROOT=/OpenAD
+export XAIFBOOSTERROOT=/OpenAD/xaifBooster/..
+export XAIFSCHEMAROOT=/OpenAD/xaif
+export OPENADFORTTK_BASE=/OpenAD/OpenADFortTk
+export OPEN64ROOT=/OpenAD/Open64/osprey1.0/targ_ia64_ia64_linux
+export OPENADFORTTK=/OpenAD/OpenADFortTk/OpenADFortTk-x86_64-Linux
+
+EOF
+else
+# run OpenAD directly
+cat >>$MAKEFILE <<EOF
+SINGULARITYCMD =
+
+EOF
+fi
+
+cat >>$MAKEFILE <<EOF
 ifndef OPENADROOT
   \$(error "Error:  environment variable OPENADROOT not defined!")
 endif
@@ -3635,7 +3669,7 @@ ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 
 # canonicalizer
 ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
+	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
 
 # replace stop statements (to avoid the implied unstructured control flow)  with print statements
 ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
@@ -3643,23 +3677,23 @@ ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
 
 # F -> WHIRL
 ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
-	\${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
+	\${SINGULARITYCMD} \${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
 
 # WHIRL -> XAIF
 ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B
-	\${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
 ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd
-	\${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
+	\${SINGULARITYCMD} \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif
-	\${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
 
 # WHIRL' -> F'
 ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
-	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
+	\${SINGULARITYCMD} \${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
 ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \$(OADTOOLS)/insertTemplateDir.bash
@@ -3668,7 +3702,7 @@ ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w
 PPEXTRAS=\$(notdir \$(wildcard \$(OADTOOLS)/ad_template.*.F)) ad_inline.F
 # postprocess F'
 postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
 	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
 # put this so make knows about the postprocessing output
