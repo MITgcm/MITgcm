@@ -49,8 +49,8 @@ suffix indicates that the lengths are along the defining grid boundaries. The
 staggered in space and the indexing is such that **dxG(i,j)** is positioned to
 the south of **rA(i,j)** and **dyG(i,j)** positioned to the west.
 
-:numref:`hgrid-abcd` (b) shows the vorticity cell. The length of the southern
-edge, :math:`\Delta x_c`, western edge, :math:`\Delta y_c` and surface area,
+:numref:`hgrid-abcd` (b) shows the vorticity cell. The length of the northern
+edge, :math:`\Delta x_c`, eastern edge, :math:`\Delta y_c` and surface area,
 :math:`A_\zeta`, presented in the vertical are stored in arrays :varlink:`dxC`,
 :varlink:`dyC` and :varlink:`rAz`. The “c” suffix indicates that the lengths
 are measured between the cell centers and the “:math:`\zeta`” suffix associates
