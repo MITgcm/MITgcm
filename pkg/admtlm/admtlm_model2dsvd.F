@@ -7,29 +7,14 @@
      &     first, preprocev, mythid )
 
 c     ==================================================================
-c     SUBROUTINE ctrl_pack
+c     SUBROUTINE admtlm_model2dsvd
 c     ==================================================================
 c
 c     o Compress the control vector such that only ocean points are
 c       written to file.
 c
-c     started: Christian Eckert eckert@mit.edu  10-Mar=2000
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
-c
-c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
-c              - single file name convention with or without
-c                ALLOW_ECCO_OPTIMIZATION
-c
-c              G. Gebbie, added open boundary control packing,
-c                  gebbie@mit.edu  18 -Mar- 2003
-c
-c              heimbach@mit.edu totally restructured 28-Oct-2003
-c
 c     ==================================================================
-c     SUBROUTINE ctrl_pack
+c     SUBROUTINE admtlm_model2dsvd
 c     ==================================================================
 
       implicit none
