@@ -59,20 +59,6 @@ C     but safer when EXCH do not fill all the overlap regions.
           pC(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO j=1-1,sNy+1
-         DO i=1-1,sNx+1
-          cg2d_q(i,j,bi,bj) = 0. _d 0
-          cg2d_r(i,j,bi,bj) = 0. _d 0
-          cg2d_s(i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_CG2D_NSA
-          cg2d_z(i,j,bi,bj) = 0. _d 0
-#endif /* ALLOW_CG2D_NSA */
-#ifdef ALLOW_SRCG
-          cg2d_y(i,j,bi,bj) = 0. _d 0
-          cg2d_v(i,j,bi,bj) = 0. _d 0
-#endif /*  ALLOW_SRCG */
-         ENDDO
-        ENDDO
        ENDDO
       ENDDO
 
@@ -163,7 +149,7 @@ C-  when using a normalisation of RHS, tolerance has no unit => no conversion
       ELSE
 C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
-     &                           * globalArea / deltaTmom
+     &                           * globalArea / deltaTMom
       ENDIF
       _END_MASTER(myThid)
 
@@ -199,14 +185,14 @@ C           defaults to 0.51 but can be set at runtime.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    calculate and store solver main diagonal :
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-           ks = ksurfC(i,j,bi,bj)
+        DO j=0,sNy
+         DO i=0,sNx
+           ks = kSurfC(i,j,bi,bj)
            aC2d(i,j,bi,bj) = -(
      &       aW2d(i,j,bi,bj) + aW2d(i+1,j, bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i,j+1,bi,bj)
      &      +freeSurfFac*myNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
-     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
      &                        )
          ENDDO
         ENDDO

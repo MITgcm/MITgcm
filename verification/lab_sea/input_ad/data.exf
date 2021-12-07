@@ -8,6 +8,8 @@
  repeatPeriod      = 31622400.0,
  exf_iprec         = 32,
 #
+ exf_adjMonSelect  = 3,
+ exf_adjMonFreq    = 10800.,
  &
 
 # *********************

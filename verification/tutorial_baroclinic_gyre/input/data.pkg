@@ -1,3 +1,5 @@
-# Packages
+# Packages (lines beginning "#" are comments)
  &PACKAGES
+ useMNC=.TRUE.,
+ useDiagnostics=.TRUE.,
  &

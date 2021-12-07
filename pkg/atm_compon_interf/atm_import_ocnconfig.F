@@ -38,7 +38,7 @@ C     i,j,bi,bj :: Loop counters
 
 C-    Initialise mixed-layer depth
       DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myByLo(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           ocMxlD (i,j,bi,bj) = 0.

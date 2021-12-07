@@ -1,5 +1,7 @@
 #include "ECCO_OPTIONS.h"
-
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine cost_forcing( mythid )
 
@@ -82,7 +84,7 @@ c--   Heat flux contribution to the cost function.
      &     xx_hflux_file, xx_hflux_dummy, xx_hfluxperiod,
      &     whflux, dodimensionalcost2D,
      &     num_hflux,
-     &     objf_hflux, 
+     &     objf_hflux,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_hflux, num_hfluxm,
      &     objf_hfluxm, objf_hfluxsmoo,
@@ -100,7 +102,7 @@ c--   Atmos. temp. contribution to the cost function.
      &     xx_atemp_file, xx_atemp_dummy, xx_atempperiod,
      &     watemp, dodimensionalcost2D,
      &     num_atemp,
-     &     objf_atemp, 
+     &     objf_atemp,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_atemp, num_atempm,
      &     objf_atempm, objf_atempsmoo,
@@ -120,7 +122,7 @@ c--   Salt flux contribution to the cost function.
      &     xx_sflux_file, xx_sflux_dummy, xx_sfluxperiod,
      &     wsflux, dodimensionalcost2D,
      &     num_sflux,
-     &     objf_sflux, 
+     &     objf_sflux,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_sflux, num_sfluxm,
      &     objf_sfluxm, objf_sfluxsmoo,
@@ -138,7 +140,7 @@ c--   Specific humidity contribution to the cost function.
      &     xx_aqh_file, xx_aqh_dummy, xx_aqhperiod,
      &     waqh, dodimensionalcost2D,
      &     num_aqh,
-     &     objf_aqh, 
+     &     objf_aqh,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_aqh, num_aqhm,
      &     objf_aqhm, objf_aqhsmoo,
@@ -159,7 +161,7 @@ c--   Zonal wind stress contribution to the cost function.
      &     xx_tauu_file, xx_tauu_dummy, xx_tauuperiod,
      &     wtauu, dodimensionalcost2D,
      &     num_tauu,
-     &     objf_tauu, 
+     &     objf_tauu,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_tau, num_tauum,
      &     objf_tauum, objf_tauusmoo,
@@ -180,7 +182,7 @@ c--   Zonal wind speed contribution to the cost function.
      &     xx_uwind_file, xx_uwind_dummy, xx_uwindperiod,
      &     wuwind, dodimensionalcost2D,
      &     num_uwind,
-     &     objf_uwind, 
+     &     objf_uwind,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_wind, num_uwindm,
      &     objf_uwindm, objf_uwindsmoo,
@@ -201,7 +203,7 @@ c--   Meridional wind stress contribution to the cost function.
      &     xx_tauv_file, xx_tauv_dummy, xx_tauvperiod,
      &     wtauv, dodimensionalcost2D,
      &     num_tauv,
-     &     objf_tauv, 
+     &     objf_tauv,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_tau, num_tauvm,
      &     objf_tauvm, objf_tauvsmoo,
@@ -222,7 +224,7 @@ c--   Meridional wind speed contribution to the cost function.
      &     xx_vwind_file, xx_vwind_dummy, xx_vwindperiod,
      &     wvwind, dodimensionalcost2D,
      &     num_vwind,
-     &     objf_vwind, 
+     &     objf_vwind,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_wind, num_vwindm,
      &     objf_vwindm, objf_vwindsmoo,
@@ -243,7 +245,7 @@ c--   Atmos. precip. contribution to the cost function.
      &     xx_precip_file, xx_precip_dummy, xx_precipperiod,
      &     wprecip, dodimensionalcost2D,
      &     num_precip,
-     &     objf_precip, 
+     &     objf_precip,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_precip, num_precipm,
      &     objf_precipm, objf_precipsmoo,
@@ -263,7 +265,7 @@ c--   Atmos. swflux. contribution to the cost function.
      &     xx_swflux_file, xx_swflux_dummy, xx_swfluxperiod,
      &     wswflux, dodimensionalcost2D,
      &     num_swflux,
-     &     objf_swflux, 
+     &     objf_swflux,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_swflux, num_swfluxm,
      &     objf_swfluxm, objf_swfluxsmoo,
@@ -283,7 +285,7 @@ c--   Atmos. swdown. contribution to the cost function.
      &     xx_swdown_file, xx_swdown_dummy, xx_swdownperiod,
      &     wswdown, dodimensionalcost2D,
      &     num_swdown,
-     &     objf_swdown, 
+     &     objf_swdown,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_swdown, num_swdownm,
      &     objf_swdownm, objf_swdownsmoo,
@@ -303,7 +305,7 @@ c--   Atmos. lwflux. contribution to the cost function.
      &     xx_lwflux_file, xx_lwflux_dummy, xx_lwfluxperiod,
      &     wlwflux, dodimensionalcost2D,
      &     num_lwflux,
-     &     objf_lwflux, 
+     &     objf_lwflux,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_lwflux, num_lwfluxm,
      &     objf_lwfluxm, objf_lwfluxsmoo,
@@ -323,7 +325,7 @@ c--   Atmos. lwdown. contribution to the cost function.
      &     xx_lwdown_file, xx_lwdown_dummy, xx_lwdownperiod,
      &     wlwdown, dodimensionalcost2D,
      &     num_lwdown,
-     &     objf_lwdown, 
+     &     objf_lwdown,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_lwdown, num_lwdownm,
      &     objf_lwdownm, objf_lwdownsmoo,
@@ -343,7 +345,7 @@ c--   Atmos. evap. contribution to the cost function.
      &     xx_evap_file, xx_evap_dummy, xx_evapperiod,
      &     wevap, dodimensionalcost2D,
      &     num_evap,
-     &     objf_evap, 
+     &     objf_evap,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_evap, num_evapm,
      &     objf_evapm, objf_evapsmoo,
@@ -362,7 +364,7 @@ c--   Atmos. snowprecip. contribution to the cost function.
      &     xx_snowprecip_file, xx_snowprecip_dummy, xx_snowprecipperiod,
      &     wsnowprecip, dodimensionalcost2D,
      &     num_snowprecip,
-     &     objf_snowprecip, 
+     &     objf_snowprecip,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_snowprecip, num_snowprecipm,
      &     objf_snowprecipm, objf_snowprecipsmoo,
@@ -381,7 +383,7 @@ c--   Atmos. apressure. contribution to the cost function.
      &     xx_apressure_file, xx_apressure_dummy, xx_apressureperiod,
      &     wapressure, dodimensionalcost2D,
      &     num_apressure,
-     &     objf_apressure, 
+     &     objf_apressure,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_apressure, num_apressurem,
      &     objf_apressurem, objf_apressuresmoo,
@@ -400,7 +402,7 @@ c--   Atmos. runoff. contribution to the cost function.
      &     xx_runoff_file, xx_runoff_dummy, xx_runoffperiod,
      &     wrunoff, dodimensionalcost2D,
      &     num_runoff,
-     &     objf_runoff, 
+     &     objf_runoff,
 #ifdef ECCO_CTRL_DEPRECATED
      &     wmean_runoff, num_runoffm,
      &     objf_runoffm, objf_runoffsmoo,
@@ -411,5 +413,5 @@ c--   Atmos. runoff. contribution to the cost function.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-      return
-      end
+      RETURN
+      END

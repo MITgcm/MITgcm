@@ -14,6 +14,11 @@ C     *==========================================================*
 #ifdef ALLOW_SEAICE
 C     Package-specific Options & Macros go here
 
+C     Moved here from obsolete ECCO_CPPOPTIONS.h
+cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
+#define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
+cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
+
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
 

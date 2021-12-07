@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+
+<!-- Page 2 -->
+<svg x="0" y="0" width="1123" height="474" viewBox="0 0 1123 474" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+style="display: block;margin-left: auto;margin-right: auto;">
+<defs>
+
+<style type="text/css"><![CDATA[
+text { white-space: pre; }
+path, image { pointer-events: none; }
+
+.s1_2{
+font-size: 36.67px;
+font-family: Calibri_w;
+fill: #000000;
+}
+.s2_2{
+font-size: 24.38px;
+font-family: Calibri_w;
+fill: #000000;
+}
+.s3_2{
+font-size: 36.67px;
+font-family: Calibri_14;
+fill: #000000;
+}
+.s4_2{
+font-size: 24.38px;
+font-family: Calibri_14;
+fill: #000000;
+}
+
+.g0_2{
+fill: none;
+stroke: #5B9BD5;
+stroke-width: 0.73333335;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g1_2{
+fill: #E7E6E6;
+}
+.g2_2{
+fill: none;
+stroke: #000000;
+stroke-width: 3.1166666;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g3_2{
+fill: none;
+stroke: #000000;
+stroke-width: 3.1166666;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+stroke-dasharray: 4,4;
+}
+.g4_2{
+fill: none;
+stroke: #000000;
+stroke-width: 1.4666667;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g5_2{
+fill: none;
+stroke: #000000;
+stroke-width: 4.5833335;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g6_2{
+}
+.g7_2{
+fill: none;
+stroke: #C00000;
+stroke-width: 4.5833335;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g8_2{
+fill: #C00000;
+}
+.g9_2{
+fill: none;
+stroke: #0070C0;
+stroke-width: 4.5833335;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g10_2{
+fill: #0070C0;
+}
+
+]]></style>
+
+</defs>
+<path d="M0,0
+L0,474
+L1123,474
+L1123,0 Z " 
+fill="#FFFFFF" stroke="none" />
+<path d="M13.4,13.2V273M346.3,14.5v61" class="g0_2" />
+<path fill-rule="evenodd" d="M11.7,75.4H358.2L11.7,295.5Z" class="g1_2" />
+<path d="M91.8,426.3H265M94.7,185.6V426.4" class="g2_2" />
+<path fill-rule="evenodd" d="M11.7,12.5h350V75.9H11.7V12.5Z" class="g1_2" />
+<path d="M94.7,253.1H267.9" class="g3_2" />
+<path d="M13.2,296.9L360.8,74.2" class="g4_2" />
+<path d="M13.5,11.3H360V449.6H13.5V11.3Z" class="g2_2" />
+<text x="26" y="49" dx="0,0.1,0" class="s1_2">(a)</text>
+<path d="M375.6,13.2V273M708.6,14.5v61" class="g0_2" />
+<path fill-rule="evenodd" d="M374.2,75.4H720.7L374.2,295.5Z" class="g1_2" />
+<path d="M405.6,200.7h86.6" class="g3_2" />
+<path d="M578.9,200.7h86.6M493.8,287.4h86.6m-.1,86.5H667M578.9,287.4h86.6m-258.4,0h86.6m.1,86.5h86.6m-173.3,0h86.6M667.1,133V373.9M580.7,133V373.9M405.6,241.5V375.1M493.8,200.7v86.6m0,.1V374" class="g2_2" />
+<path fill-rule="evenodd" d="M374.2,12.5H724V75.9H374.2V12.5Z" class="g1_2" />
+<path d="M580.3,114.1H667M496,200.7h86.6" class="g3_2" />
+<path d="M580.3,133H667M405.6,241.5h86.6m1.6,-55h86.6" class="g2_2" />
+<path d="M667.1,114.7v86.6M580.3,114.7v86.6M493.8,186.4V273M405.6,200.7v86.6" class="g3_2" />
+<path d="M373.1,296.9L720.7,74.2" class="g4_2" />
+<path d="M375.7,11.3H722.2V449.6H375.7V11.3Z" class="g2_2" />
+<text x="389" y="49" dx="0,0.1,0" class="s1_2">(b)</text>
+<path d="M265,185.6v239M94.7,186.4H265" class="g2_2" />
+<path d="M188.6,253.1H361.8M16,253.1H189.3m-1.7,173.2H360.9m-347.4,0H186.7M265,276.4V449.6M94.7,276.4V449.6M265,11.3V248.8M94.7,12.6V253.2M11.8,74.3H359.9" class="g3_2" />
+<text x="273" y="248" class="s1_2">d</text>
+<path d="M239.3,198.2V414.9" class="g5_2" />
+<path fill-rule="evenodd" d="M246.2,412.6l-6.9,13.8l-6.8,-13.8Z" class="g6_2" />
+<path fill-rule="evenodd" d="M232.5,200.5l6.8,-13.8l6.9,13.8Z" class="g6_2" />
+<text x="269" y="180" class="s1_2">z</text>
+<text x="283" y="189" dx="0,0,0,-0.1" class="s2_2">surf</text>
+<path d="M129.2,196.4v45.2" class="g5_2" />
+<path fill-rule="evenodd" d="M136,239.3l-6.8,13.8l-6.9,-13.8Z" class="g6_2" />
+<path fill-rule="evenodd" d="M122.3,198.6l6.9,-13.7l6.8,13.7Z" class="g6_2" />
+<text x="212" y="326" class="s1_2">R</text>
+<text x="150" y="233" class="s3_2">ƞ</text>
+<text x="115" y="113" dx="0,-0.1,0.1,0.1,-0.2,0,0,0.1,0" class="s1_2">Ice shelf</text>
+<text x="110" y="405" dx="0,-0.1,0.1,0.1,0" class="s1_2">Ocean</text>
+<path d="M488.9,254.3v63.2" class="g7_2" />
+<path fill-rule="evenodd" d="M495.8,315.2L488.9,329L482,315.2Z" class="g8_2" />
+<path fill-rule="evenodd" d="M482,256.6l6.9,-13.8l6.8,13.8Z" class="g8_2" />
+<path d="M574.9,198.2v63.2" class="g7_2" />
+<path fill-rule="evenodd" d="M581.8,259.1l-6.9,13.8L568,259.1Z" class="g8_2" />
+<path fill-rule="evenodd" d="M568,200.5l6.8,-13.8l6.9,13.8Z" class="g8_2" />
+<path d="M520.6,196.4v63.2" class="g9_2" />
+<path fill-rule="evenodd" d="M527.5,257.3L520.7,271l-6.9,-13.7Z" class="g10_2" />
+<path fill-rule="evenodd" d="M513.7,198.6l6.9,-13.7l6.9,13.7Z" class="g10_2" />
+<text x="584" y="257" class="s1_2">B</text>
+<text x="603" y="266" class="s2_2">v2</text>
+<text x="496" y="324" class="s1_2">B</text>
+<text x="515" y="333" class="s2_2">v1</text>
+<text x="525" y="236" class="s1_2">B</text>
+<text x="545" y="245" class="s4_2">χ</text>
+
+
+<!-- Any embedded fonts defined here -->
+<style type="text/css" ><![CDATA[
+
+@font-face {
+	font-family: Calibri_14;
+	src: url("fonts/Calibri_14.woff") format("woff");
+}
+
+@font-face {
+	font-family: Calibri_w;
+	src: url("fonts/Calibri_w.woff") format("woff");
+}
+
+]]></style>
+
+</svg>

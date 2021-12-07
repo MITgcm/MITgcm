@@ -53,7 +53,11 @@ C     kSrf      :: vertical index of surface layer
 CEOP
 
 C     surrface level
-      kSrf = 1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 C     introduce turning angle (default is zero)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)

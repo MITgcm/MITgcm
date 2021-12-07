@@ -29,14 +29,14 @@ C     === Local variables ===
 #ifdef SEAICE_ITD
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*15 HlimitMsgFormat
 C     k - loop counter for ITD categories
       INTEGER k
       _RL tmpVar
+      LOGICAL computeHlimit
 #endif
 C     i,j, bi,bj  :: Loop counters
       INTEGER i, j, bi, bj
-      INTEGER kSurface
+      INTEGER kSrf
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
@@ -47,11 +47,16 @@ cif   penetrating the model shallowest layer
       _RL swfracba(2)
       _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
+C     local copy of surface layer thickness in meters
+      _RL dzSurf
+#ifndef SEAICE_CGRID
+      _RL mask_uice
+#endif
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface        = Nr
+      IF ( usingPCoords ) THEN
+       kSrf        = Nr
       ELSE
-       kSurface        = 1
+       kSrf        = 1
       ENDIF
 
 C     Initialize MNC variable information for SEAICE
@@ -83,16 +88,20 @@ C     restart parameter
 #endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
+       dzSurf = drF(kSrf)
+       IF ( usingPCoords )
+     &      dzSurf = drF(kSrf) * recip_rhoConst * recip_gravity
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
           SEAICE_mcPheePiston = SEAICE_availHeatFrac
-     &                        * drF(kSurface)/SEAICE_deltaTtherm
+     &                        * dzSurf/SEAICE_deltaTtherm
         ELSE
           SEAICE_mcPheePiston = MCPHEE_TAPER_FAC
      &                        * STANTON_NUMBER * USTAR_BASE
           SEAICE_mcPheePiston = MIN( SEAICE_mcPheePiston,
-     &                          drF(kSurface)/SEAICE_deltaTtherm )
+     &                          dzSurf/SEAICE_deltaTtherm )
         ENDIF
+
       ENDIF
 
 C--   SItracer specifications for basic tracers
@@ -148,6 +157,30 @@ c     (Smedrud and Martin, 2014, Ann. Glac.)
 #endif /* ALLOW_SITRACER */
 
 #ifdef SEAICE_ITD
+C     zeroth category needs to be zero
+      Hlimit(0)    = 0. _d 0
+C     thickest category is unlimited
+      Hlimit(nITD) = 999.9 _d 0
+      computeHlimit=.FALSE.
+C     check if Hlimit contains useful values
+      DO k = 1, nITD
+       IF ( Hlimit(k).EQ.UNSET_RL )    computeHlimit=.TRUE.
+       IF ( Hlimit(k).LE.Hlimit(k-1) ) computeHlimit=.TRUE.
+      ENDDO
+      IF ( computeHlimit ) THEN
+       WRITE(msgBuf,'(A,I2,A)') 'SEAICE_INIT_FIXED: Computing ',
+     &      nITD, ' thickness category limits with'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       CALL WRITE_0D_RL( Hlimit_c1  ,INDEX_NONE,
+     &      'Hlimit_c1  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c2  ,INDEX_NONE,
+     &      'Hlimit_c2  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c3  ,INDEX_NONE,
+     &      'Hlimit_c3  =', ' /* ITD bin parameter */')
+       WRITE(msgBuf,'(A)') ' '
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
 C     thickness category limits:
 C     - dependends on given number of categories nITD
@@ -156,32 +189,22 @@ C       c1=3.0/N, c2=15*c1, c3=3.0
 C       or emphasize thin end of ITD (in order to enhance ice growth):
 C       c1=1.5/N, c2=42*c1, c3=3.3
 C       -> HINT: set parameters c1, c2 and c3 in seaice_readparms.F
-      Hlimit(0) = 0. _d 0
-      IF ( nITD.GT.1 ) THEN
-       tmpVar = nITD
-       tmpVar = oneRL / tmpVar
-       Hlimit_c1 = Hlimit_c1*tmpVar
-       Hlimit_c2 = Hlimit_c2*Hlimit_c1
-       DO k=1,nITD-1
-        Hlimit(k) = Hlimit(k-1)
-     &            + Hlimit_c1
-     &            + Hlimit_c2
-     &  *( oneRL + TANH( Hlimit_c3 *( FLOAT(k-1)*tmpVar - oneRL ) ) )
-       ENDDO
+       IF ( nITD.GT.1 ) THEN
+        tmpVar = nITD
+        tmpVar = oneRL / tmpVar
+        Hlimit_c1 = Hlimit_c1*tmpVar
+        Hlimit_c2 = Hlimit_c2*Hlimit_c1
+        DO k=1,nITD-1
+         Hlimit(k) = Hlimit(k-1)
+     &             + Hlimit_c1
+     &             + Hlimit_c2
+     &    *( oneRL + TANH( Hlimit_c3 *( FLOAT(k-1)*tmpVar - oneRL ) ) )
+        ENDDO
+       ENDIF
       ENDIF
 C     thickest category is unlimited
       Hlimit(nITD) = 999.9 _d 0
 
-      WRITE(msgBuf,'(A,I2,A)')
-     &     ' SEAICE_INIT_FIXED: ', nITD,
-     &     ' sea ice thickness categories'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
-      WRITE(msgBuf,HlimitMsgFormat)
-     &     ' SEAICE_INIT_FIXED: Hlimit = ', (Hlimit(k),k=0,nITD)
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_ITD */
 
 C     Only Master Thread updates parameter in common block:
@@ -224,11 +247,6 @@ C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
 
 C--   Initialise grid parameters that do no change during the integration
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface = Nr
-      ELSE
-       kSurface = 1
-      ENDIF
 
 C--   Initialise grid info
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -243,9 +261,9 @@ C-    loops on tile indices bi,bj:
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFM  (i,j,bi,bj) = maskC(i,j,kSurface,bi,bj)
-          SIMaskU(i,j,bi,bj) = maskW(i,j,kSurface,bi,bj)
-          SIMaskV(i,j,bi,bj) = maskS(i,j,kSurface,bi,bj)
+          HEFFM  (i,j,bi,bj) = maskC(i,j,kSrf,bi,bj)
+          SIMaskU(i,j,bi,bj) = maskW(i,j,kSrf,bi,bj)
+          SIMaskV(i,j,bi,bj) = maskS(i,j,kSrf,bi,bj)
          ENDDO
         ENDDO
 #ifndef SEAICE_CGRID
@@ -263,10 +281,10 @@ C     coefficients for metric terms
 #ifdef SEAICE_CGRID
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtZ(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtZ(I,J,bi,bj) = 0.0 _d 0
+          k1AtC(i,j,bi,bj) = 0.0 _d 0
+          k1AtZ(i,j,bi,bj) = 0.0 _d 0
+          k2AtC(i,j,bi,bj) = 0.0 _d 0
+          k2AtZ(i,j,bi,bj) = 0.0 _d 0
          ENDDO
         ENDDO
         IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -278,8 +296,8 @@ C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtZ(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtZ(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
           ENDDO
          ENDDO
         ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -287,42 +305,42 @@ C     compute metric term coefficients from finite difference
 C     approximation
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
+           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
+     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
+     &          * _recip_dxF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj)
-     &          * ( _dyC(I,J,bi,bj) - _dyC(I-1,J,bi,bj) )
-     &          * _recip_dxV(I,J,bi,bj)
+           k1AtZ(i,j,bi,bj) = _recip_dyU(i,j,bi,bj)
+     &          * ( _dyC(i,j,bi,bj) - _dyC(i-1,j,bi,bj) )
+     &          * _recip_dxV(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
+           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
+     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
+     &          * _recip_dyF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtZ(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
-     &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
-     &          * _recip_dyU(I,J,bi,bj)
+           k2AtZ(i,j,bi,bj) = _recip_dxV(i,j,bi,bj)
+     &          * ( _dxC(i,j,bi,bj) - _dxC(i,j-1,bi,bj) )
+     &          * _recip_dyU(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
 #else /* not SEAICE_CGRID */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtU(I,J,bi,bj) = 0.0 _d 0
-          k1AtV(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtU(I,J,bi,bj) = 0.0 _d 0
-          k2AtV(I,J,bi,bj) = 0.0 _d 0
+          k1AtC(i,j,bi,bj) = 0.0 _d 0
+          k1AtU(i,j,bi,bj) = 0.0 _d 0
+          k1AtV(i,j,bi,bj) = 0.0 _d 0
+          k2AtC(i,j,bi,bj) = 0.0 _d 0
+          k2AtU(i,j,bi,bj) = 0.0 _d 0
+          k2AtV(i,j,bi,bj) = 0.0 _d 0
          ENDDO
         ENDDO
         IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -334,9 +352,9 @@ C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtU(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtV(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtU(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtV(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
           ENDDO
          ENDDO
         ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -344,44 +362,44 @@ C     compute metric term coefficients from finite difference
 C     approximation
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
+           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
+     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
+     &          * _recip_dxF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           k1AtU(I,J,bi,bj) = _recip_dyG(I,J,bi,bj)
-     &          * ( _dyF(I,J,bi,bj) - _dyF(I-1,J,bi,bj) )
-     &          * _recip_dxC(I,J,bi,bj)
+           k1AtU(i,j,bi,bj) = _recip_dyG(i,j,bi,bj)
+     &          * ( _dyF(i,j,bi,bj) - _dyF(i-1,j,bi,bj) )
+     &          * _recip_dxC(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtV(I,J,bi,bj) = _recip_dyC(I,J,bi,bj)
-     &          * ( _dyU(I+1,J,bi,bj) - _dyU(I,J,bi,bj) )
-     &          * _recip_dxG(I,J,bi,bj)
+           k1AtV(i,j,bi,bj) = _recip_dyC(i,j,bi,bj)
+     &          * ( _dyU(i+1,j,bi,bj) - _dyU(i,j,bi,bj) )
+     &          * _recip_dxG(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
+           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
+     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
+     &          * _recip_dyF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtU(I,J,bi,bj) = _recip_dxC(I,J,bi,bj)
-     &          * ( _dxV(I,J+1,bi,bj) - _dxV(I,J,bi,bj) )
-     &          * _recip_dyG(I,J,bi,bj)
+           k2AtU(i,j,bi,bj) = _recip_dxC(i,j,bi,bj)
+     &          * ( _dxV(i,j+1,bi,bj) - _dxV(i,j,bi,bj) )
+     &          * _recip_dyG(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtV(I,J,bi,bj) = _recip_dxG(I,J,bi,bj)
-     &          * ( _dxF(I,J,bi,bj) - _dxF(I,J-1,bi,bj) )
-     &          * _recip_dyC(I,J,bi,bj)
+           k2AtV(i,j,bi,bj) = _recip_dxG(i,j,bi,bj)
+     &          * ( _dxF(i,j,bi,bj) - _dxF(i,j-1,bi,bj) )
+     &          * _recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF

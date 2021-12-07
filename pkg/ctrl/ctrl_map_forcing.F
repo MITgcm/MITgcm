@@ -46,10 +46,6 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer bi,bj
       integer i,j
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
       integer iarr
@@ -60,13 +56,19 @@ C     == Local variables ==
 #endif
 #endif
 
+#ifdef ECCO_CTRL_DEPRECATED
 #if (defined ALLOW_TAUU0_CONTROL) || (defined ALLOW_TAUV0_CONTROL) ||\
     (defined ALLOW_SFLUX0_CONTROL) || (defined ALLOW_HFLUX0_CONTROL) ||\
     (defined ALLOW_SSS_CONTROL) || (defined ALLOW_SST_CONTROL) ||\
     (defined ALLOW_HFLUXM_CONTROL)
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
       integer il
       logical doglobalread
       logical ladinit
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       character*( 80)   fnametauu
       character*( 80)   fnametauv
@@ -82,9 +84,16 @@ c     == external ==
       integer  ilnblnk
       external ilnblnk
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c     == end of interface ==
 CEOP
+
+#ifdef ECCO_CTRL_DEPRECATED
+#if (defined ALLOW_TAUU0_CONTROL) || (defined ALLOW_TAUV0_CONTROL) ||\
+    (defined ALLOW_SFLUX0_CONTROL) || (defined ALLOW_HFLUX0_CONTROL) ||\
+    (defined ALLOW_SSS_CONTROL) || (defined ALLOW_SST_CONTROL) ||\
+    (defined ALLOW_HFLUXM_CONTROL)
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -95,13 +104,18 @@ CEOP
       imin = 1
       imax = snx
 
-#if (defined ALLOW_TAUU0_CONTROL) || (defined ALLOW_TAUV0_CONTROL) ||\
-    (defined ALLOW_SFLUX0_CONTROL) || (defined ALLOW_HFLUX0_CONTROL) ||\
-    (defined ALLOW_SSS_CONTROL) || (defined ALLOW_SST_CONTROL) ||\
-    (defined ALLOW_HFLUXM_CONTROL)
-
       doglobalread = .false.
       ladinit      = .false.
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
 
       IF ( myIter .EQ. nIter0 ) THEN
 
@@ -290,6 +304,7 @@ c--   hfluxm.
       ENDIF !IF ( myIter .EQ. nIter0 ) THEN
 
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -369,8 +384,8 @@ c--   hfluxm.
       CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
       ENDIF !IF (ctrlUseGen) then
-#endif
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
+#endif /* ndef ALLOW_OPENAD */
 
       RETURN
       END

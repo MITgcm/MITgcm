@@ -1,5 +1,8 @@
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_cost_init_varia( mythid )
 
@@ -31,7 +34,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
@@ -360,6 +364,5 @@ c--   Initialise the "global" parts of the cost function.
 
       _BARRIER
 
-      return
-      end
-
+      RETURN
+      END

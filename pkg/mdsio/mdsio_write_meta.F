@@ -154,7 +154,7 @@ C-    Record the precision of the file
 C-    Record the current record number
 C     This is a proxy for the actual number of records in the file.
 C     If we could read the file then we could do this properly.
-      WRITE(mUnit,'(1X,A,I5,A)') 'nrecords = [ ',nrecords,' ];'
+      WRITE(mUnit,'(1X,A,I10,A)') 'nrecords = [ ',nrecords,' ];'
 
 C-    Record the file-name for the binary data
 Cveto ii=ILNBLNK( dFileName )

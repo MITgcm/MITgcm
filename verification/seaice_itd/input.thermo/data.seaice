@@ -19,6 +19,10 @@
  SEAICE_cf        = 2.,
  SEAICEredistFunc = 0,
  SEAICEpartFunc   = 0,
+# test parameter Hlimit with the default values
+ Hlimit =       0., 0.46036229772816128, 0.96359590632446723,
+ 1.5667276956011804, 2.3991981802927964, 3.7406269979459270,
+ 6.1313098316368961, 999.9,
 # old defaults
  SEAICEscaleSurfStress = .FALSE.,
  SEAICEetaZmethod = 0,

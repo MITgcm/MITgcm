@@ -29,6 +29,8 @@ C     == Global variables ===
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: my Thread Id number
@@ -88,7 +90,9 @@ C- Note: should check all obcs{N,S,E,W}repCycle (not just default repeatPeriod)
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( repeatPeriod.NE.0. ) THEN
+       IF ( repeatPeriod.NE.0. .AND. (OBCSNperiod.GE.0 .OR.
+     &      OBCSSperiod.GE.0 .OR. OBCSWperiod.GE.0 .OR.
+     &      OBCSEperiod.GE.0)) THEN
 C- Note: should check all siob{N,S,E,W}repCycle (not just default repeatPeriod)
         WRITE(msgBuf,'(2A)') 'EXF_CHECK: ',
      &       'useOBCSYearlyFields not implemented for repeatPeriod <> 0'
@@ -684,7 +688,6 @@ C     !USES:
 C     == Global variables ===
 #include "EEPARAMS.h"
 #include "EXF_INTERP_SIZE.h"
-#include "EXF_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     fldName          :: field short name (to print mesg)

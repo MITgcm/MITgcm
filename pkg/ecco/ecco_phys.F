@@ -1,6 +1,9 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
-      subroutine ecco_phys( mythid )
+      subroutine ecco_phys( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_phys
@@ -21,16 +24,20 @@ c     == global variables ==
 #include "FFIELDS.h"
 #include "GRID.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_SHELFICE)
+# include "SHELFICE.h"
+#endif
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -53,7 +60,12 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ATMOSPHERIC_LOADING
-      _RL sIceLoadFac
+#ifdef ALLOW_IB_CORR
+      _RL AREAsumTile(nSx,nSy),PLOADsumTile(nSx,nSy)
+      _RL tmpfac
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+      _RL sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -118,21 +130,84 @@ c    &                       SQUEEZE_RIGHT, myThid )
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
-      sIceLoadFac=zeroRL
-      IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
+#ifdef ALLOW_IB_CORR
+      tmpfac = recip_rhoConst*recip_gravity
+      ploadbar = 0. _d 0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          PLOADsumTile(bi,bj)=0. _d 0
+          AREAsumTile(bi,bj)=0. _d 0
+          AREAsumGlob=0. _d 0
+          PLOADsumGlob=0. _d 0
+          ploadbar = 0. _d 0
+          do j = 1,sNy
+            do i =  1,sNx
+              PLOADsumTile(bi,bj)=PLOADsumTile(bi,bj)+
+     &          pload(i,j,bi,bj)*
+     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+              AREAsumTile(bi,bj)=AREAsumTile(bi,bj)+
+     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+      CALL GLOBAL_SUM_TILE_RL( AREAsumTile, AREAsumGlob, myThid )
+      CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
+      ploadbar=PLOADsumGlob/AREAsumGlob
+#endif
+      sIceLoadFacLoc=zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
             do j = jmin,jmax
               do i =  imin,imax
+C calculte total sea level including inverse barometer (IB) effect if
+C  there is air pressure forcing
                 m_eta(i,j,bi,bj)=
-     &                 etan(i,j,bi,bj)
+     &                (etan(i,j,bi,bj)
 #ifdef ATMOSPHERIC_LOADING
-     &                +sIceLoad(i,j,bi,bj)*sIceLoadFac
+     &                +sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
 #endif
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+
+C calculte total ocean bottom pressure including air pressure if
+C  there is any.
+                m_bp(i,j,bi,bj)=
+     &                (phiHydLow(i,j,bi,bj)
+#ifdef ALLOW_PSBAR_STERIC
+C add back the correction due to the global mean steric ssh change,
+C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
+     &                 +sterGloH * gravity
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+C calculate IB correction m_eta_ib (in m)
+                m_eta_ib(i,j,bi,bj)=
+     &           (ploadbar-pload(i,j,bi,bj))*tmpfac
+     &           * maskC(i,j,1,bi,bj)
+C calculte dynamic sea level for comparison with altimetry data (in m)
+                m_eta_dyn(i,j,bi,bj)=
+     &           (m_eta(i,j,bi,bj) - m_eta_ib(i,j,bi,bj))
+     &           * maskC(i,j,1,bi,bj)
+
+C calculate GRACE-equvivalent ocean bottom pressure (in m2/s2)
+                m_bp_nopabar(i,j,bi,bj)=
+     &                (phiHydLow(i,j,bi,bj)
+#ifdef ALLOW_PSBAR_STERIC
+C add back the correction due to the global mean steric ssh change,
+C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
+     &                 +sterGloH * gravity
+     &                 - ploadbar * recip_rhoConst
+#endif
+     &                ) * maskC(i,j,1,bi,bj)
+#endif
 #endif
               enddo
             enddo
@@ -154,8 +229,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
 
       CALL ROTATE_UV2EN_RL(
      U          uVel, vVel, m_UE, m_VN,
-     I          .TRUE., .TRUE., .FALSE., Nr, mythid )
-
+     I          .TRUE., .TRUE., .FALSE., Nr, myThid )
 
 c--   trVol : volume flux    --- [m^3/sec] (order of 10^6 = 1 Sv)
 c--   trHeat: heat transport --- [Watt] (order of 1.E15 = PW)
@@ -170,6 +244,15 @@ c-- init
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
+cts ---
+c First: Fill the following SCALAR masks & weights for each (i,j,k,bi,bj) grid cell
+c   tmpvol - 3D cell volume
+c   tmpmsk - mask for the gencost_barfile field (e.g. theta)
+c            Either: expand from 2D mask gencost_mskCsurf across nonzero
+c            entries of gencost_mskVertical (Nr x NGENCOST array)
+c            or
+c            copy from 3D mask gencost_mskC
+cts ---
       do kgen=1,NGENCOST
 
       itr = gencost_itracer(kgen)
@@ -203,6 +286,14 @@ c
 #endif
             endif
 c
+cts ---
+c Now: at each (i,j,k,bi,bj) fill the SCALAR variables
+c   tmpfld - from 3D field theta, salt, ptracer
+c            or
+c            from 2D field with eta, shelfice
+c
+c   tmpmsk2 - 1 or 0 weighting for areavolTile
+cts ---
             tmpfld=0. _d 0
             tmpmsk2=0. _d 0
             if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
@@ -220,22 +311,73 @@ c
 #endif
             endif
 c
+cts ---
+c Fill 3D field
+c       gencost_store - masked field of interest * grid cell volume
+c                       note: this accumulates along z dim
+c
+c Fill tile field (1 val per tile)
+c       areavolTile - volume of each tile, this gets summed to a global
+c                     value
+cts ---
             gencost_storefld(i,j,bi,bj,kgen) =
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
 c
-          enddo
-c---------
-          tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-          tmpfld=0. _d 0
-          tmpmsk2=0. _d 0
+          enddo ! Ends do k=1,nr
+
+          tmpmsk  = 0. _d 0
+          tmpfld  = 0. _d 0
+          tmpmsk2 = 0. _d 0
           if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
-            tmpfld=m_eta(i,j,bi,bj)
+            tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+            tmpfld = m_eta(i,j,bi,bj)
+#if (defined ATMOSPHERIC_LOADING) && (defined ALLOW_IB_CORR)
+            if (gencost_barfile(kgen)(1:17).EQ.'m_boxmean_eta_dyn') then
+              tmpfld = m_eta_dyn(i,j,bi,bj)
+            endif
+#endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
+#ifdef ALLOW_SHELFICE
+cts ---
+c Shelfice:
+c   Simply accumulate shelfice FWF or HF into tmpfld here
+c   This will fill gencost_storefld with this value *rA
+c   For FreshWaterFlux
+c           gencost_storefld = shelficefreshwaterflux / rho * rA
+c                            = [kg/m^2/s] / [kg/m^3] * [m^2]
+c                            = [m^3/s]
 c
+c   For heatflux
+c           gencost_storefld = shelficeheatflux * rA
+c                            = [W/m^2] *[m^2]
+c                            = [W]
+cts ---
+          if((gencost_barfile(kgen)(1:16).EQ.'m_boxmean_shifwf').or.
+     &       (gencost_barfile(kgen)(1:16).EQ.'m_boxmean_shihtf')) then
+
+            tmpmsk=maskSHI(i,j,1,bi,bj)*
+     &             gencost_mskCsurf(i,j,bi,bj,kgen)
+
+            if (gencost_barfile(kgen)(11:16).EQ.'shifwf') then
+              tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh
+            elseif (gencost_barfile(kgen)(11:16).EQ.'shihtf') then
+              tmpfld=shelficeHeatFlux(i,j,bi,bj)
+            endif
+            if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+          endif
+#endif /* ALLOW_SHELFICE */
+
+cts ---
+c Fill 2D field
+c   gencost_store - masked field of interest * rA
+c
+c Fill tile field (1 val per tile)
+c       areavolTile - total rA on each tile for mskC != 0
+cts ---
           gencost_storefld(i,j,bi,bj,kgen) =
      &        gencost_storefld(i,j,bi,bj,kgen)
      &        +tmpmsk*tmpfld*rA(i,j,bi,bj)
@@ -268,8 +410,8 @@ c
      &          +vVel(i,j,k,bi,bj)*tmpmskS
 
             ! Only compute tr[Vol,Heat,Salt] if necessary, use
-            ! gencost_mask[W/S] rather than old msktrVol  
-            elseif ( gencost_barfile(kgen)(1:7).eq.'m_trVol' .or. 
+            ! gencost_mask[W/S] rather than old msktrVol
+            elseif ( gencost_barfile(kgen)(1:7).eq.'m_trVol' .or.
      &               gencost_barfile(kgen)(1:8).eq.'m_trHeat'.or.
      &               gencost_barfile(kgen)(1:8).eq.'m_trSalt'    ) then
 
@@ -306,16 +448,24 @@ c---------
        enddo
       enddo
 
-      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean') then
+cts ---
+c Divide all values in gencost_storefld by
+c   areavolGlob: scalar representing global volume of
+c                quantity of interest.
+c
+c Note: for shelfice, do not take this final average to make
+c       comparable to shelfice_cost_final.
+cts ---
+      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .and.
+     &    gencost_barfile(kgen)(11:13).NE.'shi') then
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
-     &                 1, areavolGlob, myThid )
+     &                 areavolGlob, 1, 1, myThid )
       endif
 
       enddo
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
-
 
       return
       end

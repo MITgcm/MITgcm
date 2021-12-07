@@ -29,7 +29,7 @@
  hFacMin=.1,
  hFacMinDr=20.,
  readBinaryPrec=64,
- useSingleCpuIO=.TRUE.,
+#useSingleCpuIO=.TRUE.,
  plotLevel=0,
  &
 

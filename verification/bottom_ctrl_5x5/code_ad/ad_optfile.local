@@ -4,7 +4,7 @@
 #  tangent-linear compilers to use for this particular setup.
 #  It is similar to the default AD-optfile except:
 #  a) this set-up requires the extended source flag "-e" for TAF
-#  b) different list of controls (DIFF_FLAGS)
+#  b) different list of controls, only generic controls (DIFF_FLAGS)
 
 # TAMC=/data43/ralf/tamc/tamc
 # TAF=~fastopt/bin/taf
@@ -13,13 +13,13 @@
 TAF=staf
 TAMC=tamc
 
-AD_TAMC_FLAGS="-reverse -i4 -r4 -l tamc_ad.log $AD_TAMC_FLAGS"
-FTL_TAMC_FLAGS="-forward -i4 -r4 -l tamc_ftl.log $FTL_TAMC_FLAGS"
+AD_TAMC_FLAGS="-reverse -admark ad -i4 -r4 -l tamc_ad.log $AD_TAMC_FLAGS"
+FTL_TAMC_FLAGS="-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log $FTL_TAMC_FLAGS"
 SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
 
-AD_TAF_FLAGS="-e -reverse -i4 -r4 -l taf_ad.log $AD_TAF_FLAGS"
-FTL_TAF_FLAGS="-e -forward -i4 -r4 -l taf_ftl.log $FTL_TAF_FLAGS"
-SVD_TAF_FLAGS="-reverse -forward -pure -i4 -r4 -l taf_svd.log $SVD_TAF_FLAGS"
+AD_TAF_FLAGS="-e -reverse -i4 -r4 -intrinsic system,flush -l taf_ad.log $AD_TAF_FLAGS"
+FTL_TAF_FLAGS="-e -forward -i4 -r4 -intrinsic system,flush -l taf_ftl.log $FTL_TAF_FLAGS"
+SVD_TAF_FLAGS="-e -reverse -forward -pure -i4 -r4 -intrinsic system,flush -l taf_svd.log $SVD_TAF_FLAGS"
 
 #- after Jan 14, 2016, TAF default is "-f95"
 if test "x$ALWAYS_USE_F90" = "x1" ; then
@@ -32,39 +32,15 @@ else
   SVD_TAF_FLAGS="-f77 $SVD_TAF_FLAGS"
 fi
 
+#- switch to fastopt.net TAF server (instead of default fastopt.de):
+AD_TAF_FLAGS="-server fastopt.net $AD_TAF_FLAGS"
+FTL_TAF_FLAGS="-server fastopt.net $FTL_TAF_FLAGS"
+SVD_TAF_FLAGS="-server fastopt.net $SVD_TAF_FLAGS"
+
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
-            -input 'xx_theta_dummy       \
-                    xx_salt_dummy        \
-                    xx_tr1_dummy         \
-                    xx_hflux_dummy       \
-                    xx_sflux_dummy       \
-                    xx_tauu_dummy        \
-                    xx_tauv_dummy        \
-                    xx_atemp_dummy       \
-                    xx_aqh_dummy         \
-                    xx_precip_dummy      \
-                    xx_swflux_dummy      \
-                    xx_swdown_dummy      \
-                    xx_uwind_dummy       \
-                    xx_vwind_dummy       \
-                    xx_obcsn_dummy       \
-                    xx_obcss_dummy       \
-                    xx_obcsw_dummy       \
-                    xx_obcse_dummy       \
-                    xx_sst_dummy         \
-                    xx_sss_dummy         \
-                    xx_depth_dummy       \
-                    xx_diffkr_dummy      \
-                    xx_kapgm_dummy       \
-                    xx_efluxy_dummy      \
-                    xx_efluxp_dummy      \
-                    xx_edtaux_dummy      \
-                    xx_edtauy_dummy      \
-                    xx_uvel_dummy        \
-                    xx_vvel_dummy        \
-                    xx_etan_dummy        \
-                    xx_relaxsst_dummy    \
-                    xx_relaxsss_dummy'   \
+            -input 'xx_genarr2d_dummy    \
+                    xx_genarr3d_dummy    \
+                    xx_gentim2d_dummy'   \
             -output 'fc'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"

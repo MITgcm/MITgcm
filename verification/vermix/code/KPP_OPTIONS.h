@@ -36,7 +36,7 @@ C o When set, smooth vertical diffusivity horizontally
 C o Get rid of vertical resolution dependence of dVsq term by
 C   estimating a surface velocity that is independent of first
 C   level thickness in the model.
-#undef KPP_ESTIMATE_UREF
+#define KPP_ESTIMATE_UREF
 
 C o Include/exclude KPP non/local transport terms
 #define KPP_GHAT

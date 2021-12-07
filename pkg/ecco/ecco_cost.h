@@ -11,7 +11,8 @@ c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
 
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 #ifdef ECCO_CTRL_DEPRECATED
 
@@ -79,7 +80,6 @@ c             intantaneous field.
      &                    sbar,
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
      &                    sigmaRbar,
-     &                    sigmaRfield,
 #endif
      &                    sstbar,
      &                    psbar,
@@ -105,7 +105,6 @@ c             intantaneous field.
      &                    wfmean
 
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      _RL sigmaRfield    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL sigmaRbar      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL sigmaRbar_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
@@ -227,7 +226,6 @@ cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL sfluxmeanbar
 #endif
 
-
       common /averages_c/
      &                    tbarfile,
      &                    sbarfile,
@@ -278,8 +276,6 @@ c     ==================================================================
 c     END OF HEADER AVERAGES
 c     ==================================================================
 
-
-
 c     ==================================================================
 c     HEADER COST
 c     ==================================================================
@@ -303,7 +299,6 @@ c
 c     ==================================================================
 c     HEADER COST
 c     ==================================================================
-
 
 c     The cost function, its contributions, and multipliers:
 c     ======================================================
@@ -609,7 +604,7 @@ c                  function contributions.
       _RL  num_salt (nsx,nsy)
       _RL  num_temp0(nsx,nsy)
       _RL  num_salt0(nsx,nsy)
-      _RL  num_etan0(nsx,nsy) 
+      _RL  num_etan0(nsx,nsy)
       _RL  num_uvel0(nsx,nsy)
       _RL  num_vvel0(nsx,nsy)
       _RL  num_sst  (nsx,nsy)
@@ -855,7 +850,7 @@ c     velerrfile            - representation error
      &                velerrfile,
      &                salt0errfile,
      &                temp0errfile,
-     &                etan0errfile, 
+     &                etan0errfile,
      &                uvel0errfile,
      &                vvel0errfile,
      &                vel0errfile,
@@ -942,7 +937,6 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
-
 c     Arrays where the weights are stored:
 c     ====================================
 c
@@ -995,7 +989,7 @@ c     wetan      - weight for etan0
      &                      wudrift,wvdrift,
      &                      whfluxmm,wsfluxmm,
      &                      wcurrent,wcurrent2,
-     &                      wcurrentLev,wbaro,wetan,
+     &                      wcurrentLev,wetan,
      &                      wuvel,wvvel
 
       _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1053,7 +1047,6 @@ c     wetan      - weight for etan0
       _RL wcurrent(                              nr,nsx,nsy)
       _RL wcurrent2   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wcurrentLev (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL wbaro
       _RL wdiffkr (                            nr,nsx,nsy)
       _RL wdiffkr2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wdiffkrFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -1077,7 +1070,7 @@ c     wuvel3d      - weight for uvel0
 c     wvvel3d      - weight for vvel0
 c
       common /ecco_cost_weights_vel_r/
-     &                      wuvel3d, wvvel3d  
+     &                      wuvel3d, wvvel3d
 c
       _RL wuvel3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wvvel3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -1246,7 +1239,6 @@ c     vdriftdat  - drifters meridional velocities
       _RL vdriftdat (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL curmtruobs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL curmtrvobs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
 
 c     Files that contain obervations:
 c     ===============================
@@ -1474,5 +1466,3 @@ cgf factor to convert sshv4cost_errfile in m
 c     ==================================================================
 c     END OF HEADER COST
 c     ==================================================================
-
-

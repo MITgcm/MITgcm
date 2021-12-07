@@ -84,18 +84,18 @@ C      Setup MPI stuff here
        sProc = W2_tileProc(thisTile)-1
        theType = _MPI_TYPE_RX
 #ifdef W2_E2_DEBUG_ON
-       WRITE(msgBuf,'(A,I5,A,I5,A)')
+       WRITE(msgBuf,'(A,I8,A,I8,A)')
      &  ' SEND FROM TILE=', thisTile, ' (proc =',sProc,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid)
-       WRITE(msgBuf,'(A,I5,A,I5,A)')
-     &  '        TO TILE=', tgT ' (proc =',tProc,')'
+       WRITE(msgBuf,'(A,I8,A,I8,A)')
+     &  '        TO TILE=', tgT, ' (proc =',tProc,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid)
        WRITE(msgBuf,'(A,I10)') '            TAG=', theTag
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid)
-       WRITE(msgBuf,'(A,I4)')  '            NEL=', iBufr
+       WRITE(msgBuf,'(A,I8)')  '            NEL=', iBufr
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid)
 #endif /* W2_E2_DEBUG_ON */

@@ -1,6 +1,9 @@
-The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrient and Gas version two (BLINGv2) model developed at GFDL by Eric Galbraith and collaborators. Several subroutines, such as air-sea exchange and carbonate chemistry, are adapted from the "DIC" package. It is compatible with the MITgcm adjoint.
+The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrient and Gas model developed at GFDL by Eric Galbraith and collaborators. Several subroutines, such as air-sea exchange and carbonate chemistry, are adapted from the "DIC" package. It is compatible with the MITgcm adjoint.
 
-The original BLING model, described in Galbraith et al (2010), simulates a simplified ecosystem and the cycling of phosphorus, iron, carbon, and oxygen. Version two adds nitrogen cycling and more complexity to the ecosystem. It includes 3 phytoplankton classes.
+N-BLING, with nitrogen cycling, is the default code. It includes 8 tracers: DIC, ALK, O2, NO3, PO4, Fe, DON, DOP (in that order in data.ptracers). Prognostic tracers for silica and phytoplankton biomass are optional. 
+
+The original 6-tracer BLING code (Galbraith et al., 2010) can be compiled by defining the flag USE_BLING_V1. The tracers in data.ptracers must then be specified in the following order: DIC, ALK, O2, PO4, Fe, DOP.
+
 
 
 For more information see:
@@ -14,8 +17,8 @@ https://sites.google.com/site/blingmodel/
 
 
 
-Below are the notes from the original file generic_BLING.v2.F90:
-----------------------------------------------------------------
+Below are the notes from the file generic_BLING.v2.F90:
+-------------------------------------------------------
 
 Biogeochemistry with Light, Iron, Nutrient and Gas version two (BLINGv2) includes an implicit ecological model of growth limitation by light, temperature, nitrogen, phosphorus and iron, and simulates organic and O2 pools.
 
@@ -85,20 +88,13 @@ ML_MEAN_PHYTO
 Assume that phytoplankton are homogenized in the mixed layer
 
 ADVECT_PHYTO
-Adds a tracer for total phytoplankton biomass
+Adds a prognostic tracer for total phytoplankton biomass
 
 BLING_ADJOINT_SAFE
 Simplify some parts of the code that are problematic when using the adjoint
 
-USE_EXFQSW
-Determine PAR from shortwave radiation from EXF package (instead of from an input file or from location & time)
-
-USE_EXF_ATMPRES
-Atmospheric pressure from EXF package (in N/m2, convert to bars)
-
-*** to be specified in EXF_OPTIONS.h ***
-USE_EXFCO2
-Read atmospheric pCO2 values from EXF package
+USE_QSW
+Determine PAR from shortwave radiation Qsw (instead of based on location & time)
 
 
 
@@ -110,152 +106,6 @@ Notes on BLING_ADJOINT SAFE:
 - using fixed wsink0 rather than variable wsink in organic Fe adsorption calculation
 - no benthic denitrification
 - no DVM 
-
-
-
-
-
-
-List of BLING subroutines with short description:
--------------------------------------------------
-
-C     =================================================================
-C     | subroutine bling_airseaflux
-C     | o Calculate the carbon and oxygen air-sea flux terms
-C     |   Adapted from pkg/dic/dic_surfforcing.F
-C     | - Get atmospheric pCO2 value
-C     |   Option 1: constant value, default 268.d-6, can be changed in 
-C     |             data.bling
-C     |   Option 2: read 2D field using EXF pkg
-C     | - Update pCO2 and pH
-C     =================================================================
-
-C     ==========================================================
-C     | subroutine bling_carbonate_init
-C     | o Calculate first guess of pH
-C     |   Adapted from pkg/dic/dic_surfforcing_init.F
-C     ==========================================================
-
-C     =================================================================
-C     | subroutine bling_carbonate_sys
-C     | o Calculate carbonate fluxes
-C     |   Also update pH (3d field)
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_carbon_chem
-C     | o Calculates ocean inorganic carbon chemistry
-C     |   Adapted from pkg/dic/carbon_chem.F
-C     |   from OCMIP2 code
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_cost
-C     | o Define cost contribution from bling variables
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_diagnostics_init
-C     | o Define diagnostics for bling pkg
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_dvm
-C     | o Diel Vertical Migration
-C     | {note: implemented precariously. Has not been tested.}
-C     =================================================================
-
-C     ==========================================================
-C     | subroutine bling_fields_load
-C     | o Read in fields needed for CO2, O2 flux terms, silica 
-C     |   for pH calculation
-C     ==========================================================
-
-C     ==========================================================
-C     | subroutine bling_ini_forcing
-C     | o Initialize forcing fields
-C     ==========================================================
-
-C     ==========================================================
-C     | subroutine bling_init_fixed
-C     | o Initialize fixed parameters
-C     ==========================================================
-
-C     ==========================================================
-C     | subroutine bling_init_varia
-C     | o Initialize variable parameters
-C     ==========================================================
-
-C     =================================================================
-C     | subroutine bling_light
-C     | o calculate effective light for phytoplankton growth
-C     |   There are multiple types of light.
-C     | - irr_inst is the instantaneous irradiance field.
-C     | - irr_mix is the same, but with irradiance averaged over   
-C     |   the mixed layer. This quantity is intended to represent the 
-C     |   light to which phytoplankton subject to turbulent transport in 
-C     |   the mixed-layer would be exposed.
-C     | - irr_mem is a temporally smoothed field carried between 
-C     |   timesteps, to represent photoadaptation.
-C     | - irr_eff is the effective irradiance for photosynthesis, 
-C     |   given either by irr_inst or irr_mix, depending on model
-C     |   options and location.
-C     =================================================================
-
-C     ==================================================================
-C     | subroutine bling_main
-C     | o Updates all the tracers for the effects of air-sea exchange,
-C     |   biological production, and remineralization.
-C     | - The basic model includes 8 tracers
-C     | - There is an optional tracer for phytoplankton biomass 
-C     | - River runoff is included here
-C     ==================================================================
-
-C     =================================================================
-C     | subroutine bling_mixedlayer
-C     | o Calculate mixed layer depth based on density criterion 
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_prod
-C     | o Nutrient uptake and partitioning between organic pools.
-C     | - Phytoplankton specific growth rate is calculated 
-C     |   as a function of light, nutrient limitation, and  
-C     |   temperature. 
-C     | - Population growth is calculated as a function of the local 
-C     |   phytoplankton biomass.
-C     =================================================================
-
-C     ==========================================================
-C     | subroutine bling_readparms
-C     | o Initialise and read parameters for BLING model
-C     ==========================================================
-
-C     ==========================================================
-C     | subroutine bling_read_pickup
-C     | o Read BLING arrays from a pickup file   
-C     ==========================================================
-
-C     =================================================================
-C     | subroutine bling_remin
-C     | o Organic matter export and remineralization.
-C     | - Sinking particulate flux and diel migration contribute to
-C     |   export.
-C     | - Benthic denitrification
-C     | - Iron source from sediments
-C     | - Iron scavenging
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_write_pickup
-C     | o Writes BLING arrays (needed for a restart) to a pickup file
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_min_val
-C     | o replaces tracer values that are too small or negative
-C     |   (in a separate routine so can be hidden from adjoint) 
-C     =================================================================
 
 
 

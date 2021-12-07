@@ -1,0 +1,18 @@
+# Open-boundaries
+ &OBCS_PARM01
+# This flag turns off checking and fixing problematic topography across 
+# open boundaries.
+ OBCSfixTopo=.FALSE.,
+ OB_Jnorth= 50*-1,
+ useOBCSprescribe = .TRUE.,
+# not prescribing any velocity defaults to zero flow
+#OBNuFile = ' ',
+ OBCS_monitorFreq= 1800.,
+ OBCS_monSelect = 1,
+ useOBCSbalance = .TRUE.,
+# this flag tests balancing the surface flux
+ OBCSbalanceSurf = .TRUE.,
+# all adjustments are made through the northern boundary
+ OBCS_balanceFacN = 1.,
+ &
+

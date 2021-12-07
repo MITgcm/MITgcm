@@ -35,6 +35,7 @@ C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
+      INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -200,11 +201,116 @@ C--   surface fluxes:
 
       diagName  = 'EXFsalfx'
       diagTitle = 'upward salt flux, > 0 decreases salinity'
-      diagUnits = 'psu.kg/m^2/s    '
+      diagUnits = 'g/m^2/s         '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef ALLOW_AUTODIFF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Adjoint state variables
+      diagName  = 'ADJustrs'
+      diagTitle = 'dJ/dustress: Senstivity to zonal surface wind stress'
+      diagUnits = 'dJ/(N/m^2)      '
+      IF ( stressIsOnCgrid ) THEN
+       diagCode = 'UU A    U1      '
+      ELSE
+       diagCode = 'UM A    U1      '
+      ENDIF
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJvstrs'
+      diagTitle = 'dJ/dvstrs: Sensitivity to merid. surface wind stress'
+      diagUnits = 'dJ/(N/m^2)      '
+      IF ( stressIsOnCgrid ) THEN
+       diagCode = 'VV A    U1      '
+      ELSE
+       diagCode = 'VM A    U1      '
+      ENDIF
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJhflux'
+      diagTitle = 'dJ/dhflux: Sensitivity to upward heat flux'
+      diagUnits = 'dJ/(W/m^2)      '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJsflux'
+      diagTitle = 'dJ/dhflux: Sensitivity to upward fresh water flux'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJatemp'
+      diagTitle = 'dJ/datemp: Sensitivity to atmos. surface temperature'
+      diagUnits = 'dJ/K            '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJpreci'
+      diagTitle = 'dJ/daqh: Sensitivity to precipitation'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJroff '
+      diagTitle = 'dJ/daqh: Sensitivity to river runoff'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJswdn '
+      diagTitle = 'dJ/dswdown: Sensitivity to downward SW radiation'
+      diagUnits = 'dJ/(W/m^2)      '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJlwdn '
+      diagTitle = 'dJ/dlwdown: Sensitivity to downward LW radiation'
+      diagUnits = 'dJ/(W/m^2)      '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJuwind'
+      diagTitle = 'dJ/duwind: Senstivity to zonal 10-m wind speed'
+      diagUnits = 'dJ/d(m/s)       '
+      diagCode  = 'UM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJvwind'
+      diagTitle = 'dJ/dvwind: Senstivity to meridional 10-m wind speed'
+      diagUnits = 'dJ/d(m/s)       '
+      diagCode  = 'VM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJclsst'
+      diagTitle = 'dJ/dclimsst: Sensitivity to restoring SST'
+      diagUnits = 'dJ/K            '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJclsss'
+      diagTitle = 'dJ/dclimsss: Sensitivity to restoring SSS'
+      diagUnits = 'dJ/(g/kg)       '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

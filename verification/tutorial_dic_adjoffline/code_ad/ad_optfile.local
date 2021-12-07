@@ -33,7 +33,7 @@ fi
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_dic               \
-                    xx_gen2d_dummy'      \
+                    xx_genarr2d_dummy'   \
             -output 'fc' "
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"

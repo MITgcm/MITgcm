@@ -26,12 +26,18 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+#undef ECCO_CTRL_DEPRECATED
+
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
 #undef ALLOW_THETA0_CONTROL
 #undef ALLOW_SALT0_CONTROL
+#undef ALLOW_UVEL0_CONTROL
+#undef ALLOW_VVEL0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
@@ -69,6 +75,12 @@ C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
+
+C  o  store and read value of fmin in control vector file
+C     This flag does not have a good name, because it is only used in
+C     ctrl_pack/unpack.F (and unnecessarily in the_main_loop.F).
+C     Because of this it must be defined in this header file.
+#undef ALLOW_ECCO_OPTIMIZATION
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions

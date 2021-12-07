@@ -287,7 +287,19 @@ C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
-     O              count0, count1,
+     O              count0, count1, year0, year1,
+     I              myTime, myIter, myThid )
+# endif /* ALLOW_CAL */
+      ELSEIF ( useCal .AND. obcsPeriod .EQ. -1. _d 0 ) THEN
+C-    obcsPeriod=-1 means fields are monthly means.
+C     With useYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month obcsStartTime falls in.
+# ifdef ALLOW_CAL
+        CALL EXF_GetMonthsRec(
+     I              obcsStartTime, useYearlyFields,
+     O              fac, first, changed,
+     O              count0, count1, year0, year1,
      I              myTime, myIter, myThid )
 # endif /* ALLOW_CAL */
       ELSEIF ( obcsPeriod .LT. 0. _d 0 ) THEN
@@ -367,9 +379,21 @@ C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
-     O              count0, count1,
+     O              count0, count1, year0, year1,
      I              myTime, myIter, myThid )
 #  endif /* ALLOW_CAL */
+       ELSEIF ( useCal .AND. siobPeriod .EQ. -1. _d 0 ) THEN
+C-    siobPeriod=-1 means fields are monthly means.
+C     With useYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month siobStartTime falls in.
+# ifdef ALLOW_CAL
+        CALL EXF_GetMonthsRec(
+     I              siobStartTime, useYearlyFields,
+     O              fac, first, changed,
+     O              count0, count1, year0, year1,
+     I              myTime, myIter, myThid )
+# endif /* ALLOW_CAL */
        ELSEIF ( siobPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,3A)')
      &     'OBCS_EXF_READ_XZ: Invalid siobPeriod=', siobPeriod,
@@ -562,7 +586,19 @@ C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
-     O              count0, count1,
+     O              count0, count1, year0, year1,
+     I              myTime, myIter, myThid )
+# endif /* ALLOW_CAL */
+      ELSEIF ( useCal .AND. obcsPeriod .EQ. -1. _d 0 ) THEN
+C-    obcsPeriod=-1 means fields are monthly means.
+C     With useYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month obcsStartTime falls in.
+# ifdef ALLOW_CAL
+        CALL EXF_GetMonthsRec(
+     I              obcsStartTime, useYearlyFields,
+     O              fac, first, changed,
+     O              count0, count1, year0, year1,
      I              myTime, myIter, myThid )
 # endif /* ALLOW_CAL */
       ELSEIF ( obcsPeriod .LT. 0. _d 0 ) THEN
@@ -642,9 +678,21 @@ C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
-     O              count0, count1,
+     O              count0, count1, year0, year1,
      I              myTime, myIter, myThid )
 #  endif /* ALLOW_CAL */
+       ELSEIF ( useCal .AND. siobPeriod .EQ. -1. _d 0 ) THEN
+C-    siobPeriod=-1 means fields are monthly means.
+C     With useYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month siobStartTime falls in.
+# ifdef ALLOW_CAL
+        CALL EXF_GetMonthsRec(
+     I              siobStartTime, useYearlyFields,
+     O              fac, first, changed,
+     O              count0, count1, year0, year1,
+     I              myTime, myIter, myThid )
+# endif /* ALLOW_CAL */
        ELSEIF ( siobPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,3A)')
      &     'OBCS_EXF_READ_YZ: Invalid siobPeriod=', siobPeriod,

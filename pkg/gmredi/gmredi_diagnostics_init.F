@@ -554,7 +554,31 @@ c     IF ( useDiagnotics ) THEN
 #endif
 #endif
 
+#ifdef ALLOW_GM_LEITH_QG
+        diagName  = 'GM_LTHQG'
+        diagTitle = 'QGLeith viscosity used as kappa_GM in GMRedi'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM      MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
 c     ENDIF
+# ifdef ALLOW_AUTODIFF
+      diagName  = 'ADJkapgm'
+      diagTitle = 'dJ/dKgm: Sensitivity to GM Intensity'
+      diagUnits = 'dJ/d[m^2/s]'
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJkapre'
+      diagTitle = 'dJ/dKredi: Sensitivity to Redi Coefficient'
+      diagUnits = 'dJ/d[m^2/s]'
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+# endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 

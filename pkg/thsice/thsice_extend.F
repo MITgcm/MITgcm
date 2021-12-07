@@ -1,4 +1,7 @@
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_EXTEND
@@ -31,7 +34,6 @@ C     == Global variables ==
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -109,6 +111,11 @@ C     qicAv     :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
       _RL qicAv
       INTEGER  i,j     ! loop indices
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
@@ -118,7 +125,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       deltaTice = thSIce_deltaT
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
          flx2oc(i,j) = 0. _d 0
@@ -126,7 +133,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          fsalt (i,j) = 0. _d 0
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
