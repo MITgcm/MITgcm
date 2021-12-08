@@ -4,7 +4,7 @@
 #
 # started: Patrick Heimbach heimbach@mit.edu 19-Jun-2000
 #
-# changed: 
+# changed:
 #
 #***********************************************************************
 

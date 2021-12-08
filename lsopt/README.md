@@ -3,8 +3,8 @@ for the optimization routine "optim.x" in `../optim`. Please refer to
 rudimentary instructions in `../optim/README.md`.
 
 The following are instruction how the different precompiled
-BLAS-libraries in the directory have been optained. If your compiling
-enviroment includes the BLAS-library, you do not need to worry about
+BLAS-libraries in the directory have been obtained. If your compiling
+environment includes the BLAS-library, you do not need to worry about
 this.
 
 > Obtaining optimized BLAS routines for HPC platforms

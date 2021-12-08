@@ -54,7 +54,7 @@ c     expid           - experiment name
 c     optimcycle      - optimization no.
 c     missing value   - missing value identifier (usually -9999.)
 c     ig              - global start index x (zonal)
-c     jg              - global start index y (medid.)
+c     jg              - global start index y (merid.)
 c     nsx             - no. of x-subgrids
 c     nsy             - no. of y-subgrids
 
@@ -77,7 +77,7 @@ c                       * 102: initial sali.
 c                       * 103: heat flux
 c                       * 104: freshwater flux
 c                       * 105: u stress (zonal)
-c                       * 106: v stress (meri.)
+c                       * 106: v stress (merid.)
       integer ncvarindex    ( maxcvars )
 
 c     ncvarrecs       - no. of records in control vector
@@ -99,7 +99,7 @@ c     ncvarxmax       - no. of x-points in subgrid (zonal)
 c                       = snx
       integer ncvarxmax     ( maxcvars )
 
-c     ncvarymax       - no. of y-points in subgrid (meri.)
+c     ncvarymax       - no. of y-points in subgrid (merid.)
 c                       = sny
       integer ncvarymax     ( maxcvars )
 
