@@ -22,7 +22,7 @@ cd ../optim
 make
 ```
 
-The default setting in ``lsopt/Makefile`` and ``optim/Makefile` can be
+The default setting in `lsopt/Makefile` and `optim/Makefile` can be
 used on an Ubuntu systemt to compile `lsopt` and `optim` after running
 the `tutorial_global_oce_optim` like this:
 
@@ -44,7 +44,7 @@ This is the content of the old README. It describes some sort of
 interface, i.e. the header of the control and gradient vectors written
 and read by the `mitgcmuv_ad` (and "optim.x"), see `optim_readdata.F`
 and `optim_writedata.F`. More details can be found in the [online
-manuals](https://mitgcm.org).
+manual](https://mitgcm.org/documentation) (Chapter 10).
 ```
 c     expid           - experiment name
 c     optimcycle      - optimization no.

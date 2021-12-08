@@ -1,7 +1,6 @@
 This directory contains code to generate the libary `lsopt_ecco` need
 for the optimization routine "optim.x" in `../optim`. Please refer to
-rudimentary instructions in
-[`../optim/README.md`](https://github.com/MITgcm/MITgcm/optim/README.md).
+rudimentary instructions in `../optim/README.md`.
 
 The following are instruction how the different precompiled
 BLAS-libraries in the directory have been optained. If your compiling
@@ -48,8 +47,10 @@ this.
 >
 > That works.
 
+```
 Some BLAS    libraries provided in lsopt/ are
 SGI O3K:     libblas1.a_IRIX64.gz
 SUN:         libblas1.a_SUN.gz
 SGI Altix:   libgoto_it2-r0.95.so.gz
 PC Pentium4: libgoto_p4_512-r0.94.so.gz
+```
