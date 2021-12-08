@@ -2,6 +2,10 @@
     ==============================
 
 o pkg/ctrl:
+  - remove unused flag ALLOW_ECCO_OPTIMIZATION and associated code, always save
+    "fcloc" to gradient vector file and save fcloc=0 to initial ctrl vector file
+    (which is never used); also remove it from any code*/CTRL_OPTIONS.h.
+o pkg/ctrl:
   - replace few calls to MDS_READ/WRITE_FIELD with corresponding call to
     pkg/rw READ/WRITE_REC_3D_RL ; also clean-up: ctrl_map_ini_gen.F
 o tape related code (adjoint):
