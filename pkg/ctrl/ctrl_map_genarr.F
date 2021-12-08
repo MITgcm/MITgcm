@@ -56,7 +56,6 @@ C     !LOCAL VARIABLES:
       LOGICAL dolog10ctrl
       _RL log10initval
       _RL xx_gen  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dummyRS(1)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
@@ -110,8 +109,8 @@ c               passed to data.ctrl, (default = 0.0)
       WRITE(fnamegenOut(1:80),'(2A,I10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      CALL MDS_READ_FIELD(xx_genarr2d_weight(iarr),ctrlprec,.FALSE.,
-     &     'RL',1,1,1,wgenarr2d(1-OLx,1-OLy,1,1,iarr),dummyRS,1,myThid)
+      CALL READ_REC_3D_RL( xx_genarr2d_weight(iarr), ctrlprec, 1,
+     &          wgenarr2d(1-OLx,1-OLy,1,1,iarr), 1, 1, myThid )
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, 1, doglobalread,
@@ -166,8 +165,8 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, myThid )
 
-      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
-     &         'RL', 1, 1, 1, fld, dummyRS, 1, optimcycle, myThid )
+      CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
+     &                      fld, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -229,7 +228,6 @@ C     !LOCAL VARIABLES:
       _RL log10initval
       _RL ln10
       _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS dummyRS(1)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
@@ -284,8 +282,8 @@ c               passed to data.ctrl, (default = 0.0)
       WRITE(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',Nr,1,Nr,wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),dummyRS,1,myThid)
+      CALL READ_REC_3D_RL( xx_genarr3d_weight(iarr), ctrlprec, Nr,
+     &          wgenarr3d(1-OLx,1-OLy,1,1,1,iarr), 1, 1, myThid )
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XYZ( fnamegenIn, xx_gen, 1, doglobalread,
@@ -360,8 +358,8 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, myThid )
 
-      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
-     &         'RL', Nr, 1, Nr, fld, dummyRS, 1, optimcycle, myThid )
+      CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
+     &                      fld, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
