@@ -1,6 +1,13 @@
 This directory contains code to compile the optimization routine
-`optim.x`. `optim.x` requires the library `lsopt_ecco` and the BLAS
-library `blas`. The build procedure is a two step process (first build
+`optim.x`.
+
+Note, that there is an alternative optimization package [optim_m1qn3](
+https://github.com/mjlosch/optim_m1qn3) that is based on the latest
+(and last) version of
+[m1qn3](https://who.rocq.inria.fr/Jean-Charles.Gilbert/modulopt/optimization-routines/m1qn3/m1qn3.html).
+
+`optim.x` requires the library `lsopt_ecco` and the BLAS library
+`blas`. The build procedure is a two step process (first build
 `lsopt_ecco` and then `optim.x` ) and by no means foolproof. It
 requires that you modify the sample Makefile in this directory and in
 `../lsopt`:
@@ -23,8 +30,9 @@ make
 ```
 
 The default setting in `lsopt/Makefile` and `optim/Makefile` can be
-used on an Ubuntu systemt to compile `lsopt` and `optim` after running
-the `tutorial_global_oce_optim` like this:
+used on an Ubuntu system (last tested on Ubuntu 20.04.3 LTS with gcc
+9.3.0) to compile `lsopt` and `optim` after running the
+`tutorial_global_oce_optim` like this:
 
 ```
 cd MITgcm/verification
@@ -35,10 +43,6 @@ cd ../optim
 make
 ```
 because `INCLUDEDIRS` points to `../verification/tutorial_global_oce_optim/build/`.
-
-Note, that there is an alternative optimization package [optim_m1qn3](
-https://github.com/mjlosch/optim_m1qn3) that is based on the latest
-(and last) version of [m1qn3](https://who.rocq.inria.fr/Jean-Charles.Gilbert/modulopt/optimization-routines/m1qn3/m1qn3.html).
 
 This is the content of the old README. It describes some sort of
 interface, i.e. the header of the control and gradient vectors written
