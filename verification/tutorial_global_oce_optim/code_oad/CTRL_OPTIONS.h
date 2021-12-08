@@ -65,7 +65,6 @@ C       >>> Other Control.
 #undef ALLOW_BOTTOMDRAG_CONTROL
 
 #define ALLOW_HFLUXM_CONTROL
-c#define ALLOW_ECCO_OPTIMIZATION
 
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL

@@ -160,18 +160,6 @@ c--   =======================================================
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_ECCO_OPTIMIZATION
-      write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:              defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#else
-      write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:          NOT defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
 #ifdef ALLOW_NO_DYNAMICS
 c--   Just do a "dry" run ( useful for testing ).
       write(msgbuf,'(a)')
