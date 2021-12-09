@@ -150,15 +150,13 @@ cHFLUXM_CONTROL
       integer ictrlgrad
 
       character*(128) cfile
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
       character*( 80) weighttype
+#endif
 C 9 character limit set by set_(un)pack
       character*( 9) mskNameForSetPack
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Tiled files are used.
       doglobalread = .false.
@@ -168,6 +166,9 @@ c--   Initialise adjoint variables on active files.
 
 c--   Initialise global buffer index
       nbuffglobal = 0
+
+c--   Initialise local cost function value
+      fcloc     = zeroRL
 
 c--   Assign file names.
 
@@ -231,7 +232,7 @@ c--   Only the master thread will do I/O.
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
-          fcloc     = fmin
+          fcloc     = zeroRL
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -246,8 +247,6 @@ c     >>> Write gradient vector <<<
 # else
           fcloc     = fc
 # endif
-#else
-          fcloc     = zeroRL
 #endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
@@ -269,11 +268,7 @@ c--       Header information.
           write(cunit) nvarlength
           write(cunit) yctrlid
           write(cunit) optimCycle
-#ifdef ALLOW_COST
-          write(cunit) fc
-#else
-          write(cunit) zeroRL
-#endif
+          write(cunit) fcloc
 C     place holder of obsolete variable iG
           write(cunit) 1
 C     place holder of obsolete variable jG
