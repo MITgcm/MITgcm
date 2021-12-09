@@ -44,11 +44,19 @@ Quickstart Guide
 **1.** Fork the project on GitHub (using the fork button).
 
 **2.** Create a local clone (we strongly suggest keeping a separate
-repository for development work):
+repository for development work). If you are using ssh keys
+for command line authentication:
+
+::
+
+    % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
+
+Alternatively, if you are using a personal access token for authentication:
 
 ::
 
     % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
+
 
 **3.** Move into your local clone directory (cd MITgcm) and and set
 up a remote that points to the original:
@@ -87,8 +95,8 @@ changes. Occasionally the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure. The
 review team is always happy to discuss their decisions, but wants to
 avoid people investing extensive effort in code that has a fundamental
-design flaw. The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill, Oliver Jahn, and Jeff Scott.
+design flaw. The current review team is Jean-Michel Campin, Oliver Jahn,
+Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
 
 If you want to update your code branch before submitting a PR (or any point
 in development), follow the recipe below. It will ensure that your GitHub
@@ -145,8 +153,18 @@ changes to the primary MITgcm maintainers; 3) the “Cloud”: GitHub functions 
 The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might envision making a big tarball of edited files and
 emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
 much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are
-typically invoked by hitting a button on the web interface, or clicking on a webpage link etc. To contribute edits to MITgcm,
-you need to obtain a github account. It’s free; do this first if you don’t have one already.
+typically invoked by hitting a button on the web interface, or clicking on a webpage link etc.
+
+To contribute edits to MITgcm,
+the first step is to obtain a GitHub account, if you have not done so already; it’s free. Second, as a 'developer' you will need to
+`authenticate <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
+your terminal command line sessions in GitHub. There are two ways this can be done, either using
+`ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
+or via a `personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_.
+A personal access token functions similar to a password; ssh keys require some upfront configuration
+(`generating the key <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>`_
+and then `adding to your Github account <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_),
+but most developers prefer the ease of this approach once it is set up.
 
 Before you start working with git, make sure you identify yourself. From your terminal, type:
 
@@ -196,19 +214,28 @@ A detailed explanation of steps for contributing MITgcm repository edits:
 from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
 As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative
 development process -- you need to create a place for your edits in the GitHub cloud,
-for developers to peruse.
+for developers to peruse. (Note: this step is only necessary the first time you contribute a pull request,
+as this forked copy will remain permanently in your Github space.)
 
 **2.** Download the code onto your local computer using the git clone command.
 Even if you previously downloaded the code through a “git-aware” method
 (i.e., a git clone command, see :numref:`git-aware_download`),
 we **STRONGLY SUGGEST** you download a fresh repository, to a separate
-disk location, for your development work (keeping your research work separate). Type:
+disk location, for your development work (keeping your research work separate). 
+If you are using ssh keys for command line authentication (see above), in your terminal window type:
+
+::
+
+    % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
+
+Alternatively, if you are using a personal access token for authentication:
 
 ::
 
     % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
 
-from your terminal (technically, here you are copying the forked “origin”
+
+(technically, here you are copying the forked “origin”
 version from the cloud, not the “upstream” version, but these will be identical at this point).
 
 **3.** Move into the local clone directory on your computer:
@@ -370,8 +397,8 @@ more typically you will be asked to undertake the majority of the necessary chan
 It is possible for other users (besides the maintainers) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
-The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill, Oliver Jahn, and Jeff Scott.
+The current review team is Jean-Michel Campin, Chris
+Hill, Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
 
 .. _sec_code_style_guide:
 
@@ -1487,14 +1514,21 @@ pull request (as labeled by the pull request number), then click on "View docs"
 on the right side).
 
 Finally, if you want to test pull requests locally (i.e., to compile or run the code),
-you should download the pull request branch. You can do this either by cloning the branch from the pull request:
+you should download the pull request branch. You can do this either by cloning the branch from the pull request.
+If you are using ssh keys for command line authentication:
+
+::
+
+    git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» git@github.com:«THEIR_GITHUB_USERNAME»/MITgcm.git
+
+If you are using a personal access token for authentication:
 
 ::
 
     git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
 
 where «THEIR_GITHUB_USERNAME» is replaced by the username of the person proposing the pull request,
-and «THEIR_DEVELOPMENT_BRANCHNAME» is the branch from the pull request.
+and «THEIR_DEVELOPMENT_BRANCHNAME» is the branch from their pull request.
 
 Alternatively, you can add the repository of the user proposing the pull request as a remote to
 your existing local repository. Navigate to your local repository and type
