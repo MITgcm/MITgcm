@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o lsopt & optim:
+  - update Makefiles and README.
 o pkg/ctrl:
   - remove unused flag ALLOW_ECCO_OPTIMIZATION and associated code, always save
     "fcloc" to gradient vector file and save fcloc=0 to initial ctrl vector file
