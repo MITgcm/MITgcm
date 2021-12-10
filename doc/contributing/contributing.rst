@@ -41,6 +41,12 @@ the same procedure and conform with :numref:`contrib_manual`.
 Quickstart Guide
 ----------------
 
+**0.** As a precursor, if you have not done so already, set up
+`ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_ for GitHub
+`command line authentication <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
+(or alteratively, authenticate using a 
+`personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_).
+
 **1.** Fork the project on GitHub (using the fork button).
 
 **2.** Create a local clone (we strongly suggest keeping a separate
@@ -156,7 +162,7 @@ much more elegant way.  Note unlike using (linux terminal command) git, GitHub c
 typically invoked by hitting a button on the web interface, or clicking on a webpage link etc.
 
 To contribute edits to MITgcm,
-the first step is to obtain a GitHub account, if you have not done so already; it’s free. Second, as a 'developer' you will need to
+**the first step is to obtain a GitHub account**, if you have not done so already; it’s free. Second, as a 'developer' you will need to
 `authenticate <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
 your terminal command line sessions in GitHub. There are two ways this can be done, either using
 `ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
