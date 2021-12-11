@@ -59,8 +59,8 @@ C-    file names for initial conditions:
 C     MYPA 3-dim. fields
       _RL myPa_StatScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_StatScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_StatVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_StatVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /MYPA_STATE_3D/
      &    myPa_StatScal1, myPa_StatScal2,
      &    myPa_StatVelU,  myPa_StatVelV
@@ -76,8 +76,8 @@ C     MYPA 2-dim. fields
 #ifdef MYPACKAGE_TENDENCY
       _RL myPa_TendScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_TendScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_TendVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_TendVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /MYPA_TENDENCY/
      &    myPa_TendScal1, mypa_TendScal2,
      &    myPa_TendVelU,  mypa_TendVelV
