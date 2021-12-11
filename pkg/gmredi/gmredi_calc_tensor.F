@@ -272,16 +272,14 @@ C--   Initialise Mixed Layer related array:
 
 #ifdef GM_K3D
       IF (GM_useK3D) THEN
-C     Calculate the 3D diffusivity as per Bates et al. (2013)
-        CALL TIMER_START('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
+C     Calculate the 3D diffusivity as per Bates et al. (JPO, 2014)
+        CALL TIMER_START('GMREDI_CALC_BATES_K [GMREDI_CALC_TENSOR]',
      &                    myThid)
-
-        CALL GMREDI_K3D(
+        CALL GMREDI_CALC_BATES_K(
      I       iMin, iMax, jMin, jMax,
      I       sigmaX, sigmaY, sigmaR,
-     I       bi, bj, myTime, myThid)
-
-        CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
+     I       bi, bj, myTime, myIter, myThid )
+        CALL TIMER_STOP('GMREDI_CALC_BATES_K [GMREDI_CALC_TENSOR]',
      &                  myThid)
       ENDIF
 #endif

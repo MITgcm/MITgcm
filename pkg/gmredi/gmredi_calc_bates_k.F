@@ -1,16 +1,16 @@
 #include "GMREDI_OPTIONS.h"
 
-C     !ROUTINE: GMREDI_K3D
+C     !ROUTINE: GMREDI_CALC_BATES_K
 C     !INTERFACE:
-      SUBROUTINE GMREDI_K3D(
-     I     iMin, iMax, jMin, jMax,
-     I     sigmaX, sigmaY, sigmaR,
-     I     bi, bj, myTime, myThid )
+      SUBROUTINE GMREDI_CALC_BATES_K(
+     I                  iMin, iMax, jMin, jMax,
+     I                  sigmaX, sigmaY, sigmaR,
+     I                  bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_K3D
-C     | o Calculates the 3D diffusivity as per Bates et al. (2013)
+C     | SUBROUTINE GMREDI_CALC_BATES_K
+C     | o Calculates the 3D diffusivity as per Bates et al. (2014)
 C     *==========================================================*
 C     \ev
 
@@ -28,6 +28,8 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj    :: tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number in simulation
 C     myThid    :: My Thread Id. number
 
       INTEGER iMin,iMax,jMin,jMax
@@ -36,6 +38,7 @@ C     myThid    :: My Thread Id. number
       _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER bi, bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef GM_K3D
