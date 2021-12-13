@@ -1,6 +1,39 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68e (2021/12/10)
+o lsopt & optim:
+  - update Makefiles and README.
+o pkg/ctrl:
+  - remove unused flag ALLOW_ECCO_OPTIMIZATION and associated code, always save
+    "fcloc" to gradient vector file and save fcloc=0 to initial ctrl vector file
+    (which is never used); also remove it from any code*/CTRL_OPTIONS.h.
+o pkg/ctrl:
+  - replace few calls to MDS_READ/WRITE_FIELD with corresponding call to
+    pkg/rw READ/WRITE_REC_3D_RL ; also clean-up: ctrl_map_ini_gen.F
+o tape related code (adjoint):
+  - clean-up tape code in the init-phase, mainly in the_main_loop.F and in
+    ctrl_map_ini_gentim2d.F ;
+  - remove unused (ecco) cost_averages_bar_directives.h ;
+  - adjust comments in (autodiff) adread_adwrite.F & in main_do_loop.F
+o eesupp:
+  - fix scratch file names when using PDAF.
+o pkg/exf:
+  - fix issue in interannual monthly forcing addition (case ${fld}period=0)
+o model/src:
+  - skip reading kapGM and kapRedi from ini_mixing.F when useGMRedi is .FALSE.
+o pkg/exf:
+  - add option for interannual monthly forcing with pkg/cal by setting
+    ${fld}_period=-1. (like -12. indicates climatological monthly forcing),
+    available with or without useExfYearlyFields ; update exp. global_with_exf
+    SST forcing to test this new option with and without useExfYearlyFields.
+o model/src:
+  - define local arrays cg2d_q/v/z without overlaps in all 4 cg2d*.F
+    and skip initialisation of cg2d_q in cg2d.F
+o tools/genmake2:
+  - new option to call OpenAD compiler in a singularity container (if provided);
+    add option to testreport too and update OpenAD doc (in section 7.5).
+
 checkpoint68d (2021/11/05)
 o verification/*/results:
   - update few adm and tlm refence output to get closer agreement.

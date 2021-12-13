@@ -5,8 +5,8 @@
 
 C     ==================================================================
 C
-C     ad_read_write.F: routines to handle the I/O of the TAMC generated
-C                      code. All files are direct access files.
+C     ad_read_write.F: routines to handle the I/O of the TAF/TAMC
+C                      generated code. All files are direct access files.
 C     Routines:
 C     o  ADREAD  - Read  data from file.
 C     o  ADWRITE - Write data to   file.
@@ -42,9 +42,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAMC does not provide the two leading arguments myThid and myIter
-C     when compiling the MITgcmUV code. Instead the is a sed script avail-
-C     able that does change the TAMC-generated adjoint code.
+C     TAF does not provide the leading argument myThid when compiling
+C     the MITgcmUV code. Instead there is a sed script available that
+C     changes the TAF-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.
@@ -55,7 +55,7 @@ C
 C     ==================================================================
 
 CBOP
-C     !ROUTINE: adread
+C     !ROUTINE: ADREAD
 C     !INTERFACE:
       SUBROUTINE ADREAD(
      I                   myThid,
@@ -75,7 +75,7 @@ C     SUBROUTINE adread
 C     ==================================================================
 C     o Read direct access file.
 C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     since it uses the MITgcmUV i/o routine MDS_READ_TAPE. Only
 C     the master thread reads the data. Otherwise each thread would
 C     read from file.
 C     started: Christian Eckert eckert@mit.edu 30-Jun-1999
@@ -91,8 +91,11 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
+C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -180,41 +183,41 @@ C-    only use "WHTAPEIO" when type and length match
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       IF ( useWHTapeIO ) THEN
 
-cc      if (n2d*length2d.EQ.length) then
+cc      IF (n2d*length2d.EQ.length) THEN
         DO i2d=1,n2d
-          if (tapeFileUnit.EQ.0) THEN
+          IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
-          else
+          ELSE
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) stop
-          endif
+            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
+              WRITE(msgBuf,'(A,2I5)')
+     &              'ADREAD: tapeFileCounter > tapeMaxCounter ',
+     &              tapeFileCounter, tapeMaxCounter
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R ADREAD'
+            ENDIF
+          ENDIF
           j2d=(i2d-1)*length2d+1
-          call mds_read_whalos(fname,lenLoc,filePrec,tapeFileUnit,
+          CALL MDS_READ_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
-cc      else
-C   The other case actually does not (and should not) occur within the main loop,
-C   where we only store global arrays (i.e. with i,j,bi,bj indices) to disk.
-C     At init and final time it is always be possible to recompute or store in
-C   memory without much trouble or computational cost.
+cc      ELSE
+C     The other case actually does not (and should not) occur within the
+C     main loop, where we only store global arrays (i.e. with i,j,bi,bj
+C     indices) to disk. At init and final time it is always be possible
+C     to recompute or store in memory without much trouble or
+C     computational cost.
 C
-C    Presently there are three instances where non-global arrays are stored to disk:
-C   (a) the one instance when onetape is used, to store myTime, which is of no effect.
-C   In the_main_loop, we switch onetape to memory tape if ALLOW_AUTODIFF_WHTAPEIO
-C   (b) the two instances when tapelev_ini_bibj_k is used (in convective
-C   _adjustment_ini.F and cost_drifter.F) are disabled at compile time if
-C   ALLOW_AUTODIFF_WHTAPEIO. So is the definition of tapelev_ini_bibj_k,
-C   which is not supported with ALLOW_AUTODIFF_WHTAPEIO (side-note:
-C   tapelev_ini_bibj_k is likely unsafe with mdsreadvector/mdsreadvector)
-C
-C   The issue could be revisited if needed.
-C   But for now we stop if any otehr instance is met.
+C     The issue could be revisited if needed.
+C     But for now we stop if any other instance is met.
 cc         WRITE(msgBuf,'(3A)')
 cc     &        'ADWRITE: ',name,'was not saved to tape.'
 cc         CALL PRINT_ERROR( msgBuf, myThid )
 cc         STOP 'ABNORMAL END: S/R ADWRITE'
-cc      endif
+cc      ENDIF
 
       ELSE
 #else
@@ -252,7 +255,7 @@ c     _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: adwrite
+C     !ROUTINE: ADWRITE
 C     !INTERFACE:
       SUBROUTINE ADWRITE(
      I                    myThid,
@@ -272,7 +275,7 @@ C     SUBROUTINE adwrite
 C     ==================================================================
 C     o Write to direct access file.
 C     A call to this routine implies an open-read-close sequence
-C     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
+C     since it uses the MITgcmUV i/o routine MDS_WRITE_TAPE. Only
 C     the master thread writes the data. Otherwise each thread would
 C     write to file. This would result in an excessive waste of
 C     disk space.
@@ -289,8 +292,11 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "optim.h"
+#endif
+C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -379,35 +385,33 @@ C-    only use "WHTAPEIO" when type and length match
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       IF ( useWHTapeIO ) THEN
 
-cc      if (n2d*length2d.EQ.length) then
+cc      IF (n2d*length2d.EQ.length) THEN
         DO i2d=1,n2d
-          if (tapeFileUnit.EQ.0) THEN
+          IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
-          else
+          ELSE
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) then
-               write(msgBuf,'(A,2I5)')
+            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
+              WRITE(msgBuf,'(A,2I5)')
      &              'ADWRITE: tapeFileCounter > tapeMaxCounter ',
      &              tapeFileCounter, tapeMaxCounter
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               write(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               STOP 'in S/R ADWRITE'
-            endif
-          endif
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R ADWRITE'
+            ENDIF
+          ENDIF
           j2d=(i2d-1)*length2d+1
-          call mds_write_whalos(fname,lenLoc,filePrec,tapeFileUnit,
+          CALL MDS_WRITE_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
-cc      else
-cc       write(msgBuf,'(3A)')
+cc      ELSE
+cc       WRITE(msgBuf,'(3A)')
 cc     &      'ADWRITE: ',fname(1:lenLoc),'was not read from tape.'
-cc       call print_message( msgBuf, errorMessageUnit,
+cc       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
 cc     &                     SQUEEZE_RIGHT , myThid)
-cc      endif
+cc      ENDIF
 
       ELSE
 #else

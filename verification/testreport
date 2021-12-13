@@ -11,6 +11,8 @@ usage()
     echo "  (-tlm)                   perform a Tangent Linear run"
     echo "  (-adm|-ad)               perform an adjoint run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
+    echo "  (-oadsingularity|-oadsngl) STRING"
+    echo "                           path to singularity container with OpenAD"
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
@@ -433,6 +435,9 @@ genmakemodel()
 	    if test "x$PCLS" = xt ; then
 		command="$command -pcls"
 	    fi
+	    if test "x$OADSINGULARITY" != x ; then
+		command="$command -oadsingularity \"$OADSINGULARITY\""
+	    fi
 	    fi
 	    printf 'genmake ... '
 	    eval $command > genmake.tr_log 2>&1
@@ -492,6 +497,7 @@ run_clean()
 	# part of what is done after "make clean" when doing "make CLEAN"
 	find . -name "*.meta" -exec rm {} \;
 	find . -name "*.data" -exec rm {} \;
+	find . -name "*.tmp"  -exec rm {} \;
 	find . -name "fort.*" -exec rm {} \;
 	find . -type l -exec rm {} \;
 	#- should remove executable only if sym-link (already done above)
@@ -1126,6 +1132,7 @@ USE_R4=
 EXTRFLG=
 NOCATAD=
 MKSMALLF=
+OADSINGULARITY=
 
 #- type of testing (KIND):
 #   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
@@ -1235,6 +1242,9 @@ for ac_option ; do
 	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
 		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
 	      fi ;;
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl) ac_prev=OADSINGULARITY ;;
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*) OADSINGULARITY=$ac_optarg ;;
+
 	-ncad) NOCATAD=t ;;
 	-small_f) MKSMALLF=t ;;
 
