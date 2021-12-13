@@ -33,9 +33,9 @@ C     myIter    :: Current iteration number in simulation
 C     myThid    :: My Thread Id. number
 
       INTEGER iMin,iMax,jMin,jMax
-      _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter
@@ -58,10 +58,10 @@ C     surfk  :: index of the depth of the surface layer
 C     kLow_C :: Local version of the index of deepest wet grid cell on tracer grid
 C     kLow_U :: Local version of the index of deepest wet grid cell on U grid
 C     kLow_V :: Local version of the index of deepest wet grid cell on V grid
-      INTEGER surfk(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER kLow_C(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER kLow_U(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER kLow_V(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER surfk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER kLow_C(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER kLow_U(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER kLow_V(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     N2loc  :: local N**2
 C     slope  :: local slope
@@ -75,14 +75,14 @@ C     sigy   :: local d(rho)/dy
 C     sigz   :: local d(rho)/dz
 C     hsurf  :: local surface layer depth
 C     small  :: a small number (to avoid floating point exceptions)
-      _RL N2loc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL N2loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL slope
-      _RL slopeC(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL slopeC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Req
-      _RL deltaH(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL deltaH(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL g_reciprho_sq
-      _RL M4loc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL M4onN2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL M4loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL M4onN2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL maxDRhoDz
       _RL sigx, sigy, sigz
       _RL hsurf, mskp1
@@ -100,24 +100,24 @@ C     N       :: Buoyancy frequency, SQRT(N2)
 C     BVint   :: The vertical integral of N (m/s)
 C     ubar    :: Zonal velocity on a tracer point (m/s)
 C     Ubaro   :: Barotropic velocity (m/s)
-      _RL dfdy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dfdx(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dummy(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Rurms(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL RRhines(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Rmix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL N2(     1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL N2W(    1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL N2S(    1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL N(      1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL BVint(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Ubaro(  1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL ubar(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL dfdy(   1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfdx(   1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dummy(  1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Rurms(  1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL RRhines(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Rmix(   1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL N2(     1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL N2W(    1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL N2S(    1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL N(      1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL BVint(  1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Ubaro(  1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ubar(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-      _RL tmpU(  1-Olx:sNx+Olx,1-Oly:sNy+Oly )
-      _RL tmpV(  1-Olx:sNx+Olx,1-Oly:sNy+Oly )
-      _RL uFldX( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr )
-      _RL vFldY( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr )
+      _RL tmpU(  1-OLx:sNx+OLx,1-OLy:sNy+OLy )
+      _RL tmpV(  1-OLx:sNx+OLx,1-OLy:sNy+OLy )
+      _RL uFldX( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr )
+      _RL vFldY( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr )
 
 C     Rmid     :: Rossby radius (m)
 C     KPV      :: Diffusivity (m**2/s)
@@ -134,21 +134,21 @@ C     fCoriV   :: Coriolis parameter averaged to V points
 C     coriU    :: As fCoriU, but limited
 C     coriV    :: As fCoriV, but limited
 C     surfkz   :: Depth of surface layer (in r units)
-      _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL KPV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Kdqdy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Kdqdx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL tfluxX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL tfluxY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL coriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL coriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fCoriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fCoriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL surfkz(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL Rmid(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KPV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Kdqdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Kdqdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dSigmaDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL dSigmaDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tfluxX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tfluxY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL coriU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL coriV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fCoriU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fCoriV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfkz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     centreX,centreY :: used for calculating averages at centre of cell
 C     numerator,denominator :: of the renormalisation factor
@@ -165,17 +165,17 @@ C     RenormU   :: renormalisation factor at the western face of a cell
 C     RenormV   :: renormalisation factor at the southern face of a cell
       _RL centreX, centreY
       _RL numerator, denominator
-      _RL uInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL KdqdxInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL KdqdyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL uKdqdyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vKdqdxInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL uXiyInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vXixInt(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Renorm(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL RenormU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL RenormV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KdqdxInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KdqdyInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uKdqdyInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vKdqdxInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uXiyInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vXixInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Renorm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL RenormU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL RenormV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     gradqx   :: Potential vorticity gradient in x direction
 C     gradqy   :: Potential vorticity gradient in y direction
@@ -190,22 +190,22 @@ C     ustar    :: The eddy induced velocity in the x direction
 C     vstar    :: The eddy induced velocity in the y direction
 C     Xix      :: Xi in the x direction (m/s**2)
 C     Xiy      :: Xi in the y direction (m/s**2)
-      _RL gradqx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL gradqy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL XimX(GM_Bates_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL XimY(GM_Bates_NModes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL cDopp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL umc(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL eady( 1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL urms( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL supp( 1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL ustar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL vstar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
-      _RL Xix(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Xiy(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL gradqx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gradqy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL XimX(GM_Bates_NModes,1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL XimY(GM_Bates_NModes,1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDopp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL umc(  1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
+      _RL eady( 1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL urms( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
+      _RL supp( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
+      _RL ustar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
+      _RL vstar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
+      _RL Xix(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Xiy(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef GM_BATES_PASSIVE
 C     psistar :: eddy induced streamfunction in the y direction
-      _RL psistar(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr)
+      _RL psistar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr)
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -218,37 +218,37 @@ C     ======================================
       IF ( DIFFERENT_MULTIPLE(GM_Bates_vecFreq,myTime,deltaTClock) )
      &     update_modes=.TRUE.
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         kLow_C(i,j) = kLowC(i,j,bi,bj)
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
         kLow_U(i,j) = MIN( kLow_C(i,j), kLow_C(i-1,j) )
        ENDDO
       ENDDO
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         kLow_V(i,j) = MIN( kLow_C(i,j), kLow_C(i,j-1) )
        ENDDO
       ENDDO
 
 C     Dummy values for the edges. This does not affect the results
 C     but avoids problems when solving for the eigenvalues.
-      i=1-Olx
-      DO j=1-Oly,sNy+Oly
+      i=1-OLx
+      DO j=1-OLy,sNy+OLy
        kLow_U(i,j) = 0
       ENDDO
-      j=1-Oly
-      DO i=1-Olx,sNx+Olx
+      j=1-OLy
+      DO i=1-OLx,sNx+OLx
        kLow_V(i,j) = 0
       ENDDO
 
       g_reciprho_sq = (gravity*recip_rhoConst)**2
 C     Gradient of Coriolis
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
         dfdx(i,j) = ( fCori(i,j,bi,bj)-fCori(i-1,j,bi,bj) )
      &              *recip_dxC(i,j,bi,bj)
         dfdy(i,j) = ( fCori(i,j,bi,bj)-fCori(i,j-1,bi,bj) )
@@ -258,8 +258,8 @@ C     Gradient of Coriolis
 
 C     Coriolis at U and V points enforcing a minimum value so
 C     that it is defined at the equator
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
 C       Not limited
         fCoriU(i,j)= op5*( fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj) )
 C       Limited so that the inverse is defined at the equator
@@ -267,8 +267,8 @@ C       Limited so that the inverse is defined at the equator
      &                              fCoriU(i,j) )
        ENDDO
       ENDDO
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 C       Not limited
         fCoriV(i,j)= op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
 C       Limited so that the inverse is defined at the equator
@@ -277,22 +277,22 @@ C       Limited so that the inverse is defined at the equator
        ENDDO
       ENDDO
 C     Some dummy values at the edges
-      i=1-Olx
-      DO j=1-Oly,sNy+Oly
+      i=1-OLx
+      DO j=1-OLy,sNy+OLy
        fCoriU(i,j)= fCori(i,j,bi,bj)
        coriU(i,j) = SIGN( MAX( ABS(fCori(i,j,bi,bj)),GM_Bates_minCori ),
      &                             fCori(i,j,bi,bj) )
       ENDDO
-      j=1-Oly
-      DO i=1-Olx,sNx+Olx
+      j=1-OLy
+      DO i=1-OLx,sNx+OLx
        fCoriV(i,j)= fCori(i,j,bi,bj)
        coriV(i,j) = SIGN( MAX( ABS(fCori(i,j,bi,bj)),GM_Bates_minCori ),
      &                             fCori(i,j,bi,bj) )
       ENDDO
 
 C     Zeroing some cumulative fields
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         eady(i,j)   = zeroRL
         BVint(i,j)  = zeroRL
         Ubaro(i,j)  = zeroRL
@@ -300,16 +300,16 @@ C     Zeroing some cumulative fields
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          slopeC(i,j,k)=zeroRL
         ENDDO
        ENDDO
       ENDDO
 
 C     initialise remaining 2d variables
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         Rurms(i,j)=zeroRL
         RRhines(i,j)=zeroRL
         Rmix(i,j)=zeroRL
@@ -317,8 +317,8 @@ C     initialise remaining 2d variables
       ENDDO
 C     initialise remaining 3d variables
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          N2loc(i,j,k)=GM_Bates_minN2
          N2W(i,j,k) = GM_Bates_minN2
          N2S(i,j,k) = GM_Bates_minN2
@@ -339,8 +339,8 @@ C     Find the zonal velocity at the cell centre
 #ifdef ALLOW_EDDYPSI
       IF (GM_InMomAsStress) THEN
         DO k=1,Nr
-         DO i = 1-olx,snx+olx
-          DO j = 1-oly,sny+oly
+         DO i = 1-OLx,sNx+OLx
+          DO j = 1-OLy,sNy+OLy
            uFldX(i,j,k) = uEulerMean(i,j,k,bi,bj)
            vFldY(i,j,k) = vEulerMean(i,j,k,bi,bj)
           ENDDO
@@ -349,8 +349,8 @@ C     Find the zonal velocity at the cell centre
       ELSE
 #endif
         DO k=1,Nr
-         DO i = 1-olx,snx+olx
-          DO j = 1-oly,sny+oly
+         DO i = 1-OLx,sNx+OLx
+          DO j = 1-OLy,sNy+OLy
            uFldX(i,j,k) = uVel(i,j,k,bi,bj)
            vFldY(i,j,k) = vVel(i,j,k,bi,bj)
           ENDDO
@@ -365,16 +365,16 @@ C     This code does two things:
 C     1) go from C grid velocity points to A grid velocity points
 C     2) go from model grid directions to east/west directions
       DO k = 1,Nr
-       DO i = 1-Olx,sNx+Olx
-        j=sNy+Oly
+       DO i = 1-OLx,sNx+OLx
+        j=sNy+OLy
         tmpU(i,j)=zeroRL
         tmpV(i,j)=zeroRL
        ENDDO
-       DO j = 1-Oly,sNy+Oly-1
-        i=sNx+Olx
+       DO j = 1-OLy,sNy+OLy-1
+        i=sNx+OLx
         tmpU(i,j)=zeroRL
         tmpV(i,j)=zeroRL
-        DO i = 1-Olx,sNx+Olx-1
+        DO i = 1-OLx,sNx+OLx-1
          tmpU(i,j) = 0.5 _d 0
      &        *( uFldX(i+1,j,k) + uFldX(i,j,k) )
          tmpV(i,j) = 0.5 _d 0
@@ -385,8 +385,8 @@ C     2) go from model grid directions to east/west directions
         ENDDO
        ENDDO
 C     Rotation
-       DO j = 1-oly,sny+oly
-        DO i = 1-olx,snx+olx
+       DO j = 1-OLy,sNy+OLy
+        DO i = 1-OLx,sNx+OLx
          ubar(i,j,k) =
      &        angleCosC(i,j,bi,bj)*tmpU(i,j)
      &        -angleSinC(i,j,bi,bj)*tmpV(i,j)
@@ -398,15 +398,15 @@ C     Calculate the barotropic velocity by vertically integrating
 C     and the dividing by the depth of the water column
 C     Note that Ubaro is at the C-point.
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          Ubaro(i,j) = Ubaro(i,j) +
      &        drF(k)*hfacC(i,j,k,bi,bj)*ubar(i,j,k)
         ENDDO
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         IF (kLow_C(i,j).GT.0) THEN
 C         The minus sign is because r_Low<0
           Ubaro(i,j) = -Ubaro(i,j)/r_Low(i,j,bi,bj)
@@ -418,8 +418,8 @@ C     Square of the buoyancy frequency at the top of a grid cell
 C     Enforce a minimum N2
 C     Mask N2, so it is zero at bottom
       DO k=2,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          N2(i,j,k) = -gravity*recip_rhoConst*sigmaR(i,j,k)
          N2(i,j,k) = MAX(N2(i,j,k),GM_Bates_minN2)*maskC(i,j,k,bi,bj)
          N(i,j,k)  = SQRT(N2(i,j,k))
@@ -427,8 +427,8 @@ C     Mask N2, so it is zero at bottom
        ENDDO
       ENDDO
 C     N2(k=1) is always zero
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         N2(i,j,1) = zeroRL
         N(i,j,1)  = zeroRL
        ENDDO
@@ -442,8 +442,8 @@ C     Assume that N(z=-H)=0
        kp1 = min(k+1,Nr)
        mskp1 = oneRL
        IF ( k.EQ.Nr ) mskp1 = zeroRL
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
            BVint(i,j) = BVint(i,j) + hFacC(i,j,k,bi,bj)*drF(k)
      &                         *op5*(N(i,j,k)+mskp1*N(i,j,kp1))
         ENDDO
@@ -460,8 +460,8 @@ C     Calculate the eigenvalues and eigenvectors
      O       Rmid, modesC(:,:,:,:,bi,bj))
 
 C       Calculate the Rossby Radius
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           Req  = SQRT(BVint(i,j)/(2. _d 0*pi*gradf(i,j,bi,bj)))
           Rdef(i,j,bi,bj) = MIN(Rmid(i,j),Req)
          ENDDO
@@ -470,8 +470,8 @@ C       Calculate the Rossby Radius
 
 C     Average dsigma/dx and dsigma/dy onto the centre points
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          dSigmaDx(i,j,k) = op5*(sigmaX(i,j,k)+sigmaX(i+1,j,k))
          dSigmaDy(i,j,k) = op5*(sigmaY(i,j,k)+sigmaY(i,j+1,k))
         ENDDO
@@ -487,8 +487,8 @@ C     ===============================
        mskp1 = oneRL
        IF ( k.EQ.Nr ) mskp1 = zeroRL
 
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          M4loc(i,j,k) = g_reciprho_sq*( dSigmaDx(i,j,k)**2
      &                                 +dSigmaDy(i,j,k)**2 )
          N2loc(i,j,k) = op5*(N2(i,j,k)+mskp1*N2(i,j,kp1))
@@ -503,8 +503,8 @@ C      cell is deeper than the bottom integration level
        IF (-rF(k).GE.GM_Bates_EadyMaxDepth) EXIT
 
 C      We are in the integration depth range
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          IF ( (kLow_C(i,j).GE.k) .AND.
      &        (-hMixLayer(i,j,bi,bj).LE.-rC(k)) ) THEN
 
@@ -524,8 +524,8 @@ C          Limit the slope.  Note, this is not all the Eady calculations.
        ENDDO
       ENDDO
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 C       If the minimum depth for the integration is deeper than the ocean
 C       bottom OR the mixed layer is deeper than the maximum depth of
 C       integration, we set the Eady growth rate to something small
@@ -547,8 +547,8 @@ C       to actually find the Eady growth rate.
 C     ======================================
 C     Calculate the diffusivity
 C     ======================================
-      DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx-1
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx-1
 C       Calculate the Visbeck velocity
         Rurms(i,j) = MIN(Rdef(i,j,bi,bj),GM_Bates_Rmax)
         urms(i,j,1) = GM_Bates_Lambda*eady(i,j)*Rurms(i,j)
@@ -582,8 +582,8 @@ C     Project the surface urms to the subsurface using the first baroclinic mode
 
 C     Calculate the diffusivity (on the mass grid)
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          IF (k.LE.kLow_C(i,j)) THEN
            IF (deltaH(i,j).EQ.zeroRL) THEN
              GM_BatesK3d(i,j,k,bi,bj) = GM_Bates_smallK
@@ -618,8 +618,8 @@ C     Use hMixLayer (calculated in model/src/calc_oce_mxlayer)
 C     for the mixed layer depth.
 
 C     Enforce a minimum surface layer depth
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         surfkz(i,j) = MIN(-GM_Bates_surfMinDepth,-hMixLayer(i,j,bi,bj))
         surfkz(i,j) = MAX(surfkz(i,j),R_low(i,j,bi,bj))
         IF(maskC(i,j,1,bi,bj).EQ.0.0) surfkz(i,j)=0.0
@@ -627,8 +627,8 @@ C     Enforce a minimum surface layer depth
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          IF (rF(k).GT.surfkz(i,j) .AND. surfkz(i,j).GE.rF(k+1))
      &        surfk(i,j) = k
         ENDDO
@@ -636,15 +636,15 @@ C     Enforce a minimum surface layer depth
       ENDDO
 
 C     Calculate the isopycnal slope
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
         SlopeX(i,j,1) = zeroRL
         SlopeY(i,j,1) = zeroRL
        ENDDO
       ENDDO
       DO k=2,Nr
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          IF(surfk(i,j).GE.kLowC(i,j,bi,bj)) THEN
 C          If the surface layer is thinner than the water column
 C          the set the slope to zero to avoid problems.
@@ -676,8 +676,8 @@ C     Calculate gradients of PV stretching term and PV diffusivity.
 C     These may be altered later depending on namelist options.
 C     Enforce a zero slope bottom boundary condition for the bottom most cells (k=Nr)
       k=Nr
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 C          Zonal gradient of PV stretching term: at the western cell face
            tfluxX(i,j,k) = -fCoriU(i,j)*SlopeX(i,j,k)
      &                      *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
@@ -694,8 +694,8 @@ C          constant diffusivity KPV is overwritten later
 
 C     Calculate gradients of PV stretching term and PV diffusivity: for other cells (k<Nr)
       DO k=Nr-1,1,-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
 C          Zonal gradient of PV stretching term: at the western cell face
          tfluxX(i,j,k)=-fCoriU(i,j)*(SlopeX(i,j,k)-SlopeX(i,j,k+1))
      &        *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
@@ -716,8 +716,8 @@ C     Special treatment for the surface layer (if necessary), which overwrites
 C     values in the previous loops.
       IF (GM_Bates_ThickSheet .OR. GM_Bates_surfK) THEN
         DO k=Nr-1,1,-1
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF(k.LE.surfk(i,j)) THEN
 C            We are in the surface layer.  Change the thickness flux
 C            and diffusivity as necessary.
@@ -781,8 +781,8 @@ C     Calculate gradq
       IF (GM_Bates_beta_eq_0) THEN
 C       Ignore beta in the calculation of grad(q)
         DO k=1,Nr
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
            gradqx(i,j,k) = maskW(i,j,k,bi,bj)*tfluxX(i,j,k)
            gradqy(i,j,k) = maskS(i,j,k,bi,bj)*tfluxY(i,j,k)
           ENDDO
@@ -792,8 +792,8 @@ C       Ignore beta in the calculation of grad(q)
       ELSE
 C       Do not ignore beta
         DO k=1,Nr
-         DO j=1-Oly+1,sNy+Oly
-          DO i=1-Olx+1,sNx+Olx
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
            gradqx(i,j,k) = maskW(i,j,k,bi,bj)*(dfdx(i,j)+tfluxX(i,j,k))
            gradqy(i,j,k) = maskS(i,j,k,bi,bj)*(dfdy(i,j)+tfluxY(i,j,k))
           ENDDO
@@ -807,8 +807,8 @@ C     ======================================
 C     Find the buoyancy frequency at the west and south faces of a cell
 C     This is necessary to find the eigenvectors at those points
       DO k=1,Nr
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          N2W(i,j,k) = maskW(i,j,k,bi,bj)
      &                *( N2(i,j,k)+N2(i-1,j,k) )
          N2S(i,j,k) = maskS(i,j,k,bi,bj)
@@ -823,8 +823,8 @@ C     If the diffusivity is constant the method here is the same as GM.
 C     If GM_Bates_constRedi=T, BatesK3d will be set to GM_Bates_constK later.
       IF(GM_Bates_use_constK) THEN
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            KPV(i,j,k) = GM_Bates_constK
           ENDDO
          ENDDO
@@ -836,8 +836,8 @@ C       Do not expand K grad(q) => no smoothing
 C       May only be done with a constant K, otherwise the
 C       integral constraint is violated.
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            Xix(i,j,k) = -maskW(i,j,k,bi,bj)*KPV(i,j,k)*gradqx(i,j,k)
            Xiy(i,j,k) = -maskS(i,j,k,bi,bj)*KPV(i,j,k)*gradqy(i,j,k)
           ENDDO
@@ -861,16 +861,16 @@ C       Calculate the eigenvectors at the West face of a cell
         ENDIF
 
 C       Calculate Xi_m at the west face of a cell
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           DO m=1,GM_Bates_NModes
            XimX(m,i,j) = zeroRL
           ENDDO
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            DO m=1,GM_Bates_NModes
             Kdqdx(i,j,k) = KPV(i,j,k)*gradqx(i,j,k)
             XimX(m,i,j) = XimX(m,i,j)
@@ -883,15 +883,15 @@ C       Calculate Xi_m at the west face of a cell
 
 C     Calculate Xi in the X direction at the west face
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            Xix(i,j,k) = zeroRL
           ENDDO
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            DO m=1,GM_Bates_NModes
             Xix(i,j,k) = Xix(i,j,k)
      &           + maskW(i,j,k,bi,bj)*XimX(m,i,j)*modesW(m,i,j,k,bi,bj)
@@ -912,16 +912,16 @@ C     Calculate the eigenvectors at the West face of a cell
      O         dummy, modesS(:,:,:,:,bi,bj) )
         ENDIF
 
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           DO m=1,GM_Bates_NModes
            XimY(m,i,j) = zeroRL
           ENDDO
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            DO m=1,GM_Bates_NModes
             Kdqdy(i,j,k) = KPV(i,j,k)*gradqy(i,j,k)
             XimY(m,i,j) = XimY(m,i,j)
@@ -934,15 +934,15 @@ C     Calculate the eigenvectors at the West face of a cell
 
 C     Calculate Xi for Y direction at the south face
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            Xiy(i,j,k) = zeroRL
           ENDDO
          ENDDO
         ENDDO
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            DO m=1,GM_Bates_NModes
             Xiy(i,j,k) = Xiy(i,j,k)
      &           + maskS(i,j,k,bi,bj)*XimY(m,i,j)*modesS(m,i,j,k,bi,bj)
@@ -955,8 +955,8 @@ C     ENDIF (.NOT. GM_Bates_smooth)
       ENDIF
 
 C     Calculate the renormalisation factor
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         uInt(i,j)=zeroRL
         vInt(i,j)=zeroRL
         KdqdyInt(i,j)=zeroRL
@@ -971,8 +971,8 @@ C     Calculate the renormalisation factor
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
          centreX = op5*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
          centreY = op5*(Kdqdy(i,j,k)     +Kdqdy(i,j+1,k)     )
 C        For the numerator
@@ -1005,8 +1005,8 @@ C        For the denominator
        ENDDO
       ENDDO
 
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx-1
+      DO j=1-OLy,sNy+OLy-1
+       DO i=1-OLx,sNx+OLx-1
         IF (kLowC(i,j,bi,bj).GT.0) THEN
           numerator =
      &         (uKdqdyInt(i,j)-uInt(i,j)*KdqdyInt(i,j)/R_low(i,j,bi,bj))
@@ -1028,8 +1028,8 @@ C         We also enforce a maximum renormalisation factor.
        ENDDO
       ENDDO
 C     Now put it back on to the velocity grids
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
+      DO j=1-OLy+1,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
         RenormU(i,j) = op5*(Renorm(i-1,j)+Renorm(i,j))
         RenormV(i,j) = op5*(Renorm(i,j-1)+Renorm(i,j))
        ENDDO
@@ -1037,8 +1037,8 @@ C     Now put it back on to the velocity grids
 
 C     Calculate the eddy induced velocity in the X direction at the west face
       DO k=1,Nr
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          ustar(i,j,k) = -RenormU(i,j)*Xix(i,j,k)/coriU(i,j)
         ENDDO
        ENDDO
@@ -1046,8 +1046,8 @@ C     Calculate the eddy induced velocity in the X direction at the west face
 
 C     Calculate the eddy induced velocity in the Y direction at the south face
       DO k=1,Nr
-       DO j=1-Oly+1,sNy+Oly
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          vstar(i,j,k) = -RenormV(i,j)*Xiy(i,j,k)/coriV(i,j)
         ENDDO
        ENDDO
@@ -1058,14 +1058,14 @@ C     Calculate the eddy induced overturning streamfunction
 C     ======================================
 #ifdef GM_BATES_PASSIVE
       k=Nr
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         psistar(i,j,Nr) = -hfacS(i,j,k,bi,bj)*drF(k)*vstar(i,j,k)
        ENDDO
       ENDDO
       DO k=Nr-1,1,-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
            psistar(i,j,k) = psistar(i,j,k+1)
      &          - hfacS(i,j,k,bi,bj)*drF(k)*vstar(i,j,k)
         ENDDO
@@ -1076,15 +1076,15 @@ C     ======================================
 
       IF (GM_AdvForm) THEN
         k=Nr
-        DO j=1-Oly+1,sNy+1
-         DO i=1-Olx+1,sNx+1
+        DO j=1-OLy+1,sNy+1
+         DO i=1-OLx+1,sNx+1
           GM_PsiX(i,j,k,bi,bj) = -hfacW(i,j,k,bi,bj)*drF(k)*ustar(i,j,k)
           GM_PsiY(i,j,k,bi,bj) = -hfacS(i,j,k,bi,bj)*drF(k)*vstar(i,j,k)
          ENDDO
         ENDDO
         DO k=Nr-1,1,-1
-         DO j=1-Oly+1,sNy+1
-          DO i=1-Olx+1,sNx+1
+         DO j=1-OLy+1,sNy+1
+          DO i=1-OLx+1,sNx+1
            GM_PsiX(i,j,k,bi,bj) = GM_PsiX(i,j,k+1,bi,bj)
      &          - hfacW(i,j,k,bi,bj)*drF(k)*ustar(i,j,k)
            GM_PsiY(i,j,k,bi,bj) = GM_PsiY(i,j,k+1,bi,bj)
@@ -1142,8 +1142,8 @@ C     For the Redi diffusivity, we set GM_BatesK3d to a constant if
 C     GM_Bates_constRedi=.TRUE.
       IF (GM_Bates_constRedi) THEN
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            GM_BatesK3d(i,j,k,bi,bj) = GM_Bates_constK
           ENDDO
          ENDDO

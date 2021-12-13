@@ -151,20 +151,20 @@ C--   Default values for BatesK3d
       GM_Bates_gamma     = 1.0
       GM_Bates_b1        = 4.0
       GM_Bates_EadyMinDepth = 50.0
-      GM_Bates_EadyMaxDepth = 1000.0
+      GM_Bates_EadyMaxDepth = 1000.
       GM_Bates_Lambda    = 1.0
-      GM_Bates_smallK    = 100.0
-      GM_Bates_maxK      = 20.e3
-      GM_Bates_constK    = 1000.0
-      GM_Bates_maxC      = 0.15
-      GM_Bates_Rmax      = 75.e3
-      GM_Bates_Rmin      = 30.e3
+      GM_Bates_smallK    = 100.
+      GM_Bates_maxK      = 20. _d 3
+      GM_Bates_constK    = 1000.
+      GM_Bates_maxC      = 0.15 _d 0
+      GM_Bates_Rmax      = 75. _d 3
+      GM_Bates_Rmin      = 30. _d 3
       GM_Bates_minCori   = zeroRL
-      GM_Bates_minN2     = 1.0e-8
-      GM_Bates_surfMinDepth = 100.0
-      GM_Bates_vecFreq   = 2592000.0
+      GM_Bates_minN2     = 1. _d -8
+      GM_Bates_surfMinDepth = 100.
+      GM_Bates_vecFreq   = 2592000.
       GM_Bates_minRenorm = oneRL
-      GM_Bates_maxRenorm = 20.0
+      GM_Bates_maxRenorm = 20.
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
