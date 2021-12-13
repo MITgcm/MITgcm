@@ -1046,23 +1046,23 @@ pull request branch (after you have run :filelink:`testreport <verification/test
 Verify that the output ``tst_2+2_out.txt`` file is identical between branches, similar to the above procedure for the file ``tr_out.txt``.
 If the files differ, attempt to identify and fix what is causing the problem.
 
-Automatic testing with Travis-CI
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Automatic testing with GitHub Actions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once your PR is submitted onto GitHub, the continuous integration service
-`Travis-CI <https://travis-ci.org>`_ runs additional tests on your PR submission.
+`GitHub Actions <https://docs.github.com/en/actions>`_ runs additional tests on your PR submission.
 On the ‘Pull request’ tab in GitHub (https://github.com/MITgcm/MITgcm/pulls), find your pull request; initially you will see a yellow circle
 to the right of your PR title, indicating testing in progress. Eventually this will change to a green checkmark (pass) or a red X (fail).
 If you get a red X, click the X and then click on ‘Details’ to list specifics tests that failed; these can be clicked to produce a screenshot
 with error messages.
 
-Note that `Travis-CI <https://travis-ci.org>`_ builds documentation (both html and latex) in addition to code testing, so if you have
+Note that `GitHub Actions <https://docs.github.com/en/actions>`_ builds documentation (both html and latex) in addition to code testing, so if you have
 introduced syntax errors into the documentation files,
 these will be flagged at this stage. Follow the same procedure as above to identify the error messages so the problem(s) can be fixed. Make any
 appropriate edits to your pull request, re-``git add`` and re-``git commit`` any newly modified files, re-``git push``. Anytime changes are pushed to the PR,
-`Travis-CI <https://travis-ci.org>`_ will re-run its tests.
+`GitHub Actions <https://docs.github.com/en/actions>`_ will re-run its tests.
 
-The maintainers will not review your PR until all `Travis-CI <https://travis-ci.org>`_ tests pass.
+The maintainers will not review your PR until all `GitHub Actions <https://docs.github.com/en/actions>`_ tests pass.
 
 .. _contrib_manual:
 

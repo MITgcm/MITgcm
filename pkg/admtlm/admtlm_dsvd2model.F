@@ -7,33 +7,13 @@
      &     first, postprocev, mythid )
 
 c     ==================================================================
-c     SUBROUTINE ctrl_unpack
+c     SUBROUTINE admtlm_dsvd2model
 c     ==================================================================
 c
-c     o Unpack the control vector such that the land points are filled
-c       in.
-c
-c     started: Christian Eckert eckert@mit.edu  10-Mar-2000
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
-c
-c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
-c              - single file name convention with or without
-c                ALLOW_ECCO_OPTIMIZATION
-C
-c              Armin Koehl akoehl@ucsd.edu 05-Dec-2000
-c              - single processor reads global parameter file
-c               and writes multiple xx* and adxx* files
-c
-c              G Gebbie gebbie@mit.edu 18-Mar-2003
-c              - open boundary packing
-c
-c              heimbach@mit.edu totally restructured 28-Oct-2003
+c     o Unpack the control vector such that the land points are filled in.
 c
 c     ==================================================================
-c     SUBROUTINE ctrl_unpack
+c     SUBROUTINE admtlm_dsvd2model
 c     ==================================================================
 
       implicit none
@@ -103,10 +83,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Initialise
       nbuffGlobal = 0
