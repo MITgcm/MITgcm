@@ -132,7 +132,9 @@ C--   supply imported fields to Atm_Phys pkg:
        IF ( useImportSST ) THEN
         DO j=1,sNy
          DO i=1,sNx
+          IF ( ocMxlD(i,j,bi,bj) .GT. 0. ) THEN
             atmSST(i,j) = SSTocn(i,j,bi,bj)+celsius2K
+          ENDIF
          ENDDO
         ENDDO
        ENDIF
