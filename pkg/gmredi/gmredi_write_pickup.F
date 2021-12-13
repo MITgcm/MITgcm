@@ -32,7 +32,7 @@ C     myThid          :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -53,14 +53,14 @@ C     msgBuf      :: Informational/error message buffer
       _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 2+2*GM_K3D_NModes )
+      PARAMETER( listDim = 2+2*GM_Bates_NModes )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL vec(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
 CEOP
 
-      IF (.NOT. GM_useK3D) RETURN
+      IF ( .NOT.GM_useBatesK3d ) RETURN
 
       lChar = ILNBLNK(suff)
       IF ( lChar.EQ.0 ) THEN
@@ -92,7 +92,7 @@ C     Centre mode
       IF (m.LE.listDim) wrFldList(m) = fieldname
 
 C     Western Mode
-      DO n=1,GM_K3D_NModes
+      DO n=1,GM_Bates_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
@@ -112,7 +112,7 @@ C     Western Mode
       ENDDO
 
 C     Southern Mode
-      DO n=1,GM_K3D_NModes
+      DO n=1,GM_Bates_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
@@ -172,7 +172,7 @@ C     uses this specific S/R to write (with more informations) only meta files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END

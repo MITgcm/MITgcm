@@ -43,7 +43,7 @@ C     bi, bj    :: tile indices
       _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vec(nmodes,1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,kk,m
@@ -396,7 +396,7 @@ C     Diagnostics
       ENDIF
 # endif
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END

@@ -33,7 +33,7 @@ C     bi, bj    :: tile indices
       _RL N2(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL urms(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -85,7 +85,7 @@ C     Land, so, we fill with zeros
       ENDDO
 
       
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END

@@ -164,50 +164,53 @@ C     Make sure we are not trying to use some arrays that are unavailable
       ENDIF
 #endif
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 # ifndef HAVE_LAPACK
-      WRITE(msgBuf, '(A)')
-     &     'Must use CPP option HAVE_LAPACK when using GM_K3D'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
+c     IF ( GM_useBatesK3d ) THEN
+        WRITE(msgBuf, '(A)')
+     &     'Must use CPP option HAVE_LAPACK when using BatesK3d'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+c     ENDIF
 # endif
 
-      IF ( GM_useK3D) THEN
-        CALL WRITE_0D_L( GM_useK3D, INDEX_NONE,
-     &   'GM_useK3D =', '     /* if TRUE => use K3D for diffusivity */')
-        IF ( GM_K3D_use_constK ) THEN
-          CALL WRITE_0D_L( GM_K3D_use_constK, INDEX_NONE,
-     &         'GM_K3D_use_constK =',
-     &         '     /* if TRUE => Uses a constant K for'//
+      IF ( GM_useBatesK3d ) THEN
+        CALL WRITE_0D_L( GM_useBatesK3d, INDEX_NONE,
+     &   'GM_useBatesK3d =',
+     &   ' /* if TRUE => use BatesK3d for GM diffusivity */')
+        IF ( GM_Bates_use_constK ) THEN
+          CALL WRITE_0D_L( GM_Bates_use_constK, INDEX_NONE,
+     &         'GM_Bates_use_constK =',
+     &         ' /* if TRUE => Uses a constant K for'//
      &         ' the eddy transport closure */')
-          CALL WRITE_0D_L( GM_K3D_smooth, INDEX_NONE,
-     &         'GM_K3D_smooth =',
+          CALL WRITE_0D_L( GM_Bates_smooth, INDEX_NONE,
+     &         'GM_Bates_smooth =',
      &         ' /* if TRUE => Expands in terms of baroclinic modes */')
-          IF ( GM_K3D_smooth ) THEN
-            CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
-     &           'GM_K3D_NModes =',
+          IF ( GM_Bates_smooth ) THEN
+            CALL WRITE_0D_I( GM_Bates_NModes, INDEX_NONE,
+     &           'GM_Bates_NModes =',
      &           ' /* Number of modes for expansion */')
           ENDIF
         ELSE
-          CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
-     &         'GM_K3D_NModes =',
+          CALL WRITE_0D_I( GM_Bates_NModes, INDEX_NONE,
+     &         'GM_Bates_NModes =',
      &         ' /* Number of modes for expansion */')
         ENDIF
       ENDIF
 
-C     Make sure that we use K3D with the advective form only.
+C     Make sure that we use BatesK3d with the advective form only.
 C     The skew form is not presently supported.
-      IF ( GM_useK3D .AND. .NOT. GM_AdvForm) THEN
-        WRITE(msgBuf,'(A)')
-     &       'GMREDI_CHECK: GM_useK3D=.TRUE. but GM_AdvForm=.FALSE.'
+      IF ( GM_useBatesK3d .AND. .NOT.GM_AdvForm ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
+     &       'GM_useBatesK3d=.TRUE. but GM_AdvForm=.FALSE.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &       'GMREDI_CHECK: To use GM_useK3D set GM_AdvForm=.TRUE.'
+     &       'GMREDI_CHECK: To use BatesK3d set GM_AdvForm=.TRUE.'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
 #ifndef GM_EXTRA_DIAGONAL
 C     Make sure we are not trying to use some arrays that are unavailable
@@ -283,17 +286,18 @@ C     Make sure we are not trying to use some arrays that are unavailable
 
       IF ( GM_InMomAsStress ) THEN
 #ifdef ALLOW_EDDYPSI
-        IF (.NOT. GM_AdvForm) THEN
+        IF ( .NOT.GM_AdvForm ) THEN
           WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
      &         'GM_InMomAsStress=.TRUE. but GM_AdvForm=.FALSE.'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
         ENDIF
-        IF (.NOT. GM_useK3D) THEN
-          WRITE(msgBuf,'(3A)')
-     &         'GMREDI_CHECK: Using GM_InMomAsStress and not',
-     &         ' GM_useK3D. GM_InMomAsStress=.true. has only been',
-     &         ' tested with GM_K3D=.true.'
+        IF ( .NOT.GM_useBatesK3d ) THEN
+          WRITE(msgBuf,'(3A)') 'GMREDI_CHECK: ',
+     &         'Using GM_InMomAsStress and not GM_useBatesK3d. ',
+     &         'GM_InMomAsStress=T has only been tested with BatesK3d'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
         ENDIF
 #else /* ALLOW_EDDYPSI */
        WRITE(msgBuf,'(2A)')
