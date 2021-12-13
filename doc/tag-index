@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_compon_interf:
+  - only with Atm-Phys pkg, allow "regional coupling", i.e. coupled only where
+    there is ocean, keeping Atm-Phys basic mixed-layer elsewhere.
+
 checkpoint68e (2021/12/10)
 o lsopt & optim:
   - update Makefiles and README.
