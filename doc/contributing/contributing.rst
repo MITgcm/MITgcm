@@ -101,8 +101,8 @@ changes. Occasionally the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure. The
 review team is always happy to discuss their decisions, but wants to
 avoid people investing extensive effort in code that has a fundamental
-design flaw. The current review team is Jean-Michel Campin, Oliver Jahn,
-Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
+design flaw. The current review team is Jean-Michel Campin, Chris Hill,
+Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
 
 If you want to update your code branch before submitting a PR (or any point
 in development), follow the recipe below. It will ensure that your GitHub
