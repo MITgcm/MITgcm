@@ -5,8 +5,8 @@
 
 C     ==================================================================
 C
-C     adread_adwrite.F: routines to handle the I/O of the TAMC generated
-C                       code. All files are direct access files.
+C     adread_adwrite.F: routines to handle the I/O of the TAF/TAMC
+C                       generated code. All files are direct access files.
 C     Routines:
 C     o  ADREAD    - Read  RL/RS data from file.
 C     o  ADWRITE   - Write RL/RS data to   file.
@@ -51,9 +51,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAF/TAMC does not provide the two leading arguments myThid and
-C     myIter when compiling the MITgcmUV code. Instead there is a sed
-C     script available that does change the TAMC-generated adjoint code.
+C     TAF does not provide the leading argument myThid when compiling
+C     the MITgcmUV code. Instead there is a sed script available that
+C     changes the TAF-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.

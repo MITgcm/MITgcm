@@ -5,9 +5,10 @@
 
 C     ==================================================================
 C
-C     adread_adwrite_i.F: routines to handle the I/O of the TAMC generated
+C     adread_adwrite_i.F: routines to handle the I/O of the TAF/TAMC
 C                         code for integer fields. All files are direct
-C                         access files.
+C                         generated code or integer fields. All files
+C                         are direct access files.
 C     Routines:
 C     o  ADREAD_I  - Read  INT data from file.
 C     o  ADWRITE_I - Write INT data to   file.
@@ -44,9 +45,9 @@ C
 C     For further details on this see the TAMC Users Manual, Appendix B,
 C     User defined Storage Subroutines.
 C
-C     TAF/TAMC does not provide the two leading arguments myThid and
-C     myIter when compiling the MITgcmUV code. Instead there is a sed
-C     script available that does change the TAMC-generated adjoint code.
+C     TAF does not provide the leading argument myThid when compiling
+C     the MITgcmUV code. Instead there is a sed script available that
+C     changes the TAF-generated adjoint code.
 C
 C     Only the master thread is allowed to write data and only gobal
 C     model arrays are allowed to be written be the subsequent routines.
@@ -57,7 +58,7 @@ C
 C     ==================================================================
 
 CBOP
-C     !ROUTINE: adread_i
+C     !ROUTINE: ADREAD_I
 C     !INTERFACE:
       SUBROUTINE ADREAD_I(
      I                   myThid,
@@ -73,13 +74,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
-C     SUBROUTINE adread_i
+C     SUBROUTINE ADREAD_I
 C     ==================================================================
 C     o read from direct access file, INTEGER version.
-C     The strategy is to read an RL field with RL-version ADREAD
+C     The strategy is to read an real*8 field with ADREAD resl*8 version
 C     and convert to INTEGER
 C     ==================================================================
-C     SUBROUTINE adread_i
+C     SUBROUTINE ADREAD_I
 C     ==================================================================
 C     \ev
 
@@ -166,7 +167,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: adwrite_i
+C     !ROUTINE: ADWRITE_I
 C     !INTERFACE:
       SUBROUTINE ADWRITE_I(
      I                    myThid,
@@ -182,13 +183,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
-C     SUBROUTINE adwrite_i
+C     SUBROUTINE ADWRITE_I
 C     ==================================================================
 C     o Write to direct access file, INTEGER version.
-C     The strategy is to convert field to RL and use the
-C     RL-version ADWRITE.
+C     The strategy is to convert field to real*8 and use the
+C     ADWRITE real*8 version.
 C     ==================================================================
-C     SUBROUTINE adwrite_i
+C     SUBROUTINE ADWRITE_I
 C     ==================================================================
 C     \ev
 
