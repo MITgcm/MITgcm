@@ -1,7 +1,4 @@
 #include "AUTODIFF_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 C     ==================================================================
 C
@@ -69,8 +66,7 @@ C     !INTERFACE:
      O                   ivar,
      I                   size,
      I                   length,
-     I                   irec
-     &                 )
+     I                   irec )
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
@@ -90,39 +86,28 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
+C     myThid :: number of the thread or instance of the program.
 C     name   :: extended tape name.
 C     len    :: number of characters in name.
 C     tid    :: tape identifier.
 C     vid    :: identifies the variable to be stored on tape.
-C     var    :: values to be stored.
+C     ivar   :: values to be stored.
 C     size   :: size in bytes of the type of variable var.
 C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
 C     irec   :: record number to be written.
-
       INTEGER myThid
       CHARACTER*(*) name
       INTEGER len
       INTEGER tid
       INTEGER vid
+      INTEGER ivar(*)
       INTEGER size
       INTEGER length
       INTEGER irec
-      INTEGER ivar(*)
-
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
       INTEGER k, lsize, length2d
 C     2D fields only
       PARAMETER ( length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
@@ -134,9 +119,9 @@ CEOP
       IF ( debugMode ) CALL DEBUG_ENTER('ADREAD_I',myThid)
 #endif
 
-      IF ( length .NE. length2d ) THEN
+      IF ( length .GT. length2d ) THEN
        WRITE(msgBuf,'(A,I9,A,I9)')
-     &      'ADREAD_I: length = ', length,' .NE. length2d = ', length2d
+     &      'ADREAD_I: length = ', length,' > length2d = ', length2d
        CALL PRINT_ERROR( msgBuf, myThid )
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R ADREAD_I'
@@ -151,8 +136,7 @@ CEOP
      O            var,
      I            lsize,
      I            length,
-     I            irec
-     &            )
+     I            irec )
 
       DO k = 1,length
        ivar(k) = NINT(var(k))
@@ -178,8 +162,7 @@ C     !INTERFACE:
      I                    ivar,
      I                    size,
      I                    length,
-     I                    irec
-     &                  )
+     I                    irec )
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
@@ -199,39 +182,28 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
+C     myThid :: number of the thread or instance of the program.
 C     name   :: extended tape name.
 C     len    :: number of characters in name.
 C     tid    :: tape identifier.
 C     vid    :: identifies the variable to be stored on tape.
-C     var    :: values to be stored.
+C     ivar   :: values to be stored.
 C     size   :: size in bytes of the type of variable var.
 C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
 C     irec   :: record number to be written.
-
       INTEGER myThid
       CHARACTER*(*) name
       INTEGER len
       INTEGER tid
       INTEGER vid
+      INTEGER ivar(*)
       INTEGER size
       INTEGER length
       INTEGER irec
-      INTEGER ivar(*)
-
-C     !FUNCTIONS:
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
       INTEGER k, lsize, length2d
       PARAMETER ( length2d = (sNx+2*OLx)*(sNy+2*OLy)*nSx*nSy )
       real*8  var(length2d)
@@ -242,9 +214,9 @@ CEOP
       IF ( debugMode ) CALL DEBUG_ENTER('ADWRITE_I',myThid)
 #endif
 
-      IF ( length .NE. length2d ) THEN
+      IF ( length .GT. length2d ) THEN
        WRITE(msgBuf,'(A,I9,A,I9)')
-     &      'ADWRITE_I: length = ',length,' .NE. length2d = ',length2d
+     &      'ADWRITE_I: length = ',length,' > length2d = ',length2d
        CALL PRINT_ERROR( msgBuf, myThid )
        CALL ALL_PROC_DIE( myThid )
        STOP 'ABNORMAL END: S/R ADWRITE_I'
@@ -252,7 +224,9 @@ CEOP
 
       DO k = 1,length
 C     no automatic conversion
-       var(k) = FLOAT(ivar(k))
+c      var(k) = DFLOAT(ivar(k))
+C     let compiler do the type conversion
+       var(k) = ivar(k)
       ENDDO
 
       lsize = 8
@@ -265,8 +239,7 @@ C     no automatic conversion
      I             var,
      I             lsize,
      I             length,
-     I             irec
-     &             )
+     I             irec )
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_LEAVE('ADWRITE_I',myThid)
