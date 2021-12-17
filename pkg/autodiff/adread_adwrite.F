@@ -75,8 +75,7 @@ C     !INTERFACE:
      O                   var,
      I                   size,
      I                   length,
-     I                   irec
-     &                 )
+     I                   irec )
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
@@ -108,7 +107,7 @@ C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
+C     myThid :: number of the thread or instance of the program.
 C     name   :: extended tape name.
 C     len    :: number of characters in name.
 C     tid    :: tape identifier.
@@ -116,25 +115,22 @@ C     vid    :: identifies the variable to be stored on tape.
 C     var    :: values to be stored.
 C     size   :: size in bytes of the type of variable var.
 C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
 C     irec   :: record number to be written.
-
       INTEGER myThid
       CHARACTER*(*) name
       INTEGER len
       INTEGER tid
       INTEGER vid
+      real*8  var(*)
       INTEGER size
       INTEGER length
       INTEGER irec
-      real*8  var(*)
 
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
       CHARACTER*(MAX_LEN_FNAM) fname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER filePrec
@@ -272,8 +268,7 @@ C     !INTERFACE:
      I                    var,
      I                    size,
      I                    length,
-     I                    irec
-     &                  )
+     I                    irec )
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
@@ -306,7 +301,7 @@ C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
+C     myThid :: number of the thread or instance of the program.
 C     name   :: extended tape name.
 C     len    :: number of characters in name.
 C     tid    :: tape identifier.
@@ -314,25 +309,22 @@ C     vid    :: identifies the variable to be stored on tape.
 C     var    :: values to be stored.
 C     size   :: size in bytes of the type of variable var.
 C     length :: dimension of the variable stored on the tape.
-C     myThid :: number of the thread or instance of the program.
 C     irec   :: record number to be written.
-
       INTEGER myThid
       CHARACTER*(*) name
       INTEGER len
       INTEGER tid
       INTEGER vid
+      real*8  var(*)
       INTEGER size
       INTEGER length
       INTEGER irec
-      real*8  var(*)
 
 C     !FUNCTIONS:
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
       CHARACTER*(MAX_LEN_FNAM) fname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER filePrec
