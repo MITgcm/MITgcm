@@ -75,21 +75,26 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
-c     == external ==
-      integer  ilnblnk
-      external ilnblnk
-
 c     == local variables ==
 
       integer i, k
       integer ivartype
       integer ictrlgrad
+      integer cunit
+      logical lxxadxx
+      character*(128) cfile
+      character*( 80) weighttype
+
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_unpack,
 C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
       character*(80) fname_local(3)
+#endif
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
+      integer nwettmp(Nr)
+      character*( 9) mskNameForSetUnpack
 #endif
 
 #ifdef ECCO_CTRL_DEPRECATED
@@ -137,15 +142,6 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
-
-      integer cunit
-      integer nwettmp(Nr)
-
-      character*(128) cfile
-      character*( 80) weighttype
-      character*( 9) mskNameForSetUnpack
-
-      logical lxxadxx
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       character*(80) fname_obcsn(3)
@@ -901,7 +897,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         nwettmp, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
@@ -917,7 +913,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         wunit, nwetcglobal, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
@@ -946,7 +942,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         nwettmp, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )
