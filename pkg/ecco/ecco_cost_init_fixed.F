@@ -81,6 +81,9 @@ c     == local variables ==
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
+      CHARACTER*2    rUnit2c
+      CHARACTER*(16) DIAGS_MK_UNITS
+      EXTERNAL DIAGS_MK_UNITS
 #endif /* ALLOW_DIAGNOSTICS */
 
 c     == external functions ==
@@ -306,6 +309,11 @@ cph!!!
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+       IF ( usingPCoords ) THEN
+        rUnit2c= 'Pa'
+       ELSE
+        rUnit2c= 'm '
+       ENDIF
        diagName  = 'SSH     '
        diagTitle =
      I  'Dynamic Sea Surface Height Anomaly'
