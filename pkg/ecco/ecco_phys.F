@@ -13,7 +13,7 @@ c     ==================================================================
 c     SUBROUTINE ecco_phys
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -67,8 +67,8 @@ c- note defined with overlap here, not needed, but more efficient
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 #endif
-#ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_PSBAR_STERIC
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
 #endif
 C     Mload     :: total mass load (kg/m**2)
@@ -84,10 +84,10 @@ c need to include halos for find_rho_2d
       sIceLoadFacLoc=zeroRL
       IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 
-#ifdef ALLOW_PSBAR_STERIC
+c#ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,nr
+          do k = 1,Nr
             CALL FIND_RHO_2D(
      I                iMin, iMax, jMin, jMax, k,
      I                theta(1-OLx,1-OLy,k,bi,bj),
@@ -97,14 +97,16 @@ c need to include halos for find_rho_2d
           enddo
         enddo
       enddo
+c#endif /* ALLOW_PSBAR_STERIC */
 
+#ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
           RHOsumTile(bi,bj)=0. _d 0
           VOLsumTile(bi,bj)=0. _d 0
           VOLsumGlob=0. _d 0
           RHOsumGlob=0. _d 0
-          do k = 1,nr
+          do k = 1,Nr
             do j = 1,sNy
               do i =  1,sNx
                 RHOsumTile(bi,bj)=RHOsumTile(bi,bj)+
@@ -132,7 +134,7 @@ c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
 c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 c    &                       SQUEEZE_RIGHT, myThid )
 
-#endif
+#endif /* ALLOW_PSBAR_STERIC */
 
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
@@ -158,8 +160,8 @@ c    &                       SQUEEZE_RIGHT, myThid )
       CALL GLOBAL_SUM_TILE_RL( AREAsumTile, AREAsumGlob, myThid )
       CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
       ploadbar=PLOADsumGlob/AREAsumGlob
-#endif
-#endif
+#endif /* ALLOW_IB_CORR */
+#endif /* ATMOSPHERIC_LOADING */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -173,31 +175,31 @@ C  there is air pressure forcing
 #ifdef ALLOW_PSBAR_STERIC
 C apply Greatbatch correction
      &                +sterGloH
-#endif
+#endif /* ALLOW_PSBAR_STERIC */
      &                ) * maskC(i,j,1,bi,bj)
 
-C Model equivalent of ocean bottom pressure gauge data (in m^2/s^2) 
+C Model equivalent of ocean bottom pressure gauge data (in m^2/s^2)
 C  that are NOT corrected for global ocean mean atmospheric pressure variations
 C  = Ocean mass + sea-ice & snow load + air-pressure load + Greatbatch corr.
-C  (all terms on RHS are converted to m^2/s^2). It is 
+C  (all terms on RHS are converted to m^2/s^2). It is
 C  essentially Mload (as in pkg/sbo/sbo_calc.F) plus air-pressure load
-                m_bp(i,j,bi,bj) =  gravity * (etaN(i,j,bi,bj) 
-     &           - R_low(i,j,bi,bj) 
+                m_bp(i,j,bi,bj) =  gravity * (etaN(i,j,bi,bj)
+     &           - R_low(i,j,bi,bj)
 #ifdef ALLOW_PSBAR_STERIC
 C add back the correction due to the global mean steric ssh change,
 C     i.e. sterGloH computed above (units converted from m to m2/s2)
-     &           + sterGloH 
-#endif
+     &           + sterGloH
+#endif /* ALLOW_PSBAR_STERIC */
      &           )
 C sIceLoad in kg/m^2
-     &           + sIceLoad(i,j,bi,bj) * gravity * sIceLoadFacLoc 
+     &           + sIceLoad(i,j,bi,bj) * gravity * sIceLoadFacLoc
 C pLoad in N/m^2
      &           + pLoad(i,j,bi,bj) * recip_rhoConst
 C integrate rho_anomaly through water column
                 DO k = 1, Nr
                    m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) +
      &               RHOInSituLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
-     &               * gravity * recip_rhoConst 
+     &               * gravity * recip_rhoConst
                 ENDDO
                 m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) * maskC(i,j,1,bi,bj)
 
@@ -218,41 +220,43 @@ C  by removing global ocean mean atmospheric pressure variations
      &           (m_bp(i,j,bi,bj)
      &            - ploadbar * recip_rhoConst
      &           ) * maskC(i,j,1,bi,bj)
-C calculate steric height 
-C (in m; = m_eta_dyn - (m_bp_nopabr * recip_gravity + R_low))  
+C calculate steric height
+C (in m; = m_eta_dyn - (m_bp_nopabr * recip_gravity + R_low))
 C R_low (<0) is Depth in m.
                 sterht(i,j,bi,bj)=
      &           m_eta_dyn(i,j,bi,bj)
-     &           - (m_bp_nopabar(i,j,bi,bj) * recip_gravity 
+     &           - (m_bp_nopabar(i,j,bi,bj) * recip_gravity
      &              + R_low(i,j,bi,bj))
-#endif
-#endif
+#endif /* ALLOW_IB_CORR */
+#endif /* ATMOSPHERIC_LOADING */
               enddo
             enddo
         enddo
       enddo
 
-#ifdef ALLOW_ECCO
-        CALL DIAGNOSTICS_FILL(m_eta,'SSHNOIBC',0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_SCALE_FILL(m_bp,recip_gravity,1,
-     & i                            'OBPGMAP ',0, 1,0,1,1,myThid)
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( m_eta, 'SSHNOIBC', 0,1, 0,1,1, myThid )
+        CALL DIAGNOSTICS_SCALE_FILL( m_bp, recip_gravity, 1,
+     &                         'OBPGMAP ', 0,1, 0,1,1, myThid )
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-        CALL DIAGNOSTICS_FILL(m_eta_ib,'SSHIBC  ',
-     &                        0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(m_eta_dyn,'SSH     ',
-     &                        0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(sterht,'STERICHT',
-     &                        0, 1,0,1,1,myThid)
-        CALL DIAGNOSTICS_SCALE_FILL(m_bp_nopabar,recip_gravity,1,
-     &                              'OBP     ',0, 1,0,1,1,myThid)
-#endif
-#endif
-#endif
+        CALL DIAGNOSTICS_FILL( m_eta_ib,
+     &                         'SSHIBC  ', 0,1, 0,1,1, myThid )
+        CALL DIAGNOSTICS_FILL( m_eta_dyn,
+     &                         'SSH     ', 0,1, 0,1,1, myThid )
+        CALL DIAGNOSTICS_FILL( sterht,
+     &                         'STERICHT', 0,1, 0,1,1, myThid )
+        CALL DIAGNOSTICS_SCALE_FILL( m_bp_nopabar, recip_gravity, 1,
+     &                         'OBP     ', 0,1, 0,1,1, myThid )
+#endif /* ALLOW_IB_CORR */
+#endif /* ATMOSPHERIC_LOADING */
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,nr
+          do k = 1,Nr
             do j = 1,sNy
               do i =  1,sNx
                 m_UE(i,j,k,bi,bj)=0. _d 0
@@ -308,7 +312,7 @@ cts ---
         do j = 1,sNy
          do i =  1,sNx
 c---------
-          do k = 1,nr
+          do k = 1,Nr
             tmpvol=hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
 c
             tmpmsk=0. _d 0
@@ -319,7 +323,7 @@ c
             else
               kgen3d=gencost_msk_pointer3d(kgen)
               tmpmsk=gencost_mskC(i,j,k,bi,bj,kgen3d)
-#endif
+#endif /* ALLOW_GENCOST3D */
             endif
 c
 cts ---
@@ -344,7 +348,7 @@ cts ---
      &        then
               tmpfld=pTracer(i,j,k,bi,bj,itr)
               if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
-#endif
+#endif /* ALLOW_PTRACERS */
             endif
 c
 cts ---
@@ -362,7 +366,7 @@ cts ---
             areavolTile(bi,bj)=areavolTile(bi,bj)
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
 c
-          enddo ! Ends do k=1,nr
+          enddo ! Ends do k=1,Nr
 
           tmpmsk  = 0. _d 0
           tmpfld  = 0. _d 0
@@ -420,7 +424,7 @@ cts ---
           areavolTile(bi,bj)=areavolTile(bi,bj)
      &        +tmpmsk2*rA(i,j,bi,bj)
 c---------
-          do k = 1,nr
+          do k = 1,Nr
 c
             tmpmskW=0. _d 0
             tmpmskS=0. _d 0
@@ -434,7 +438,7 @@ c
               kgen3d=gencost_msk_pointer3d(kgen)
               tmpmskW=gencost_mskW(i,j,k,bi,bj,kgen3d)
               tmpmskS=gencost_mskS(i,j,k,bi,bj,kgen3d)
-#endif
+#endif /* ALLOW_GENCOST3D */
             endif
             tmpmskW=tmpmskW*hFacW(i,j,k,bi,bj)*dyG(i,j,bi,bj)*drF(k)
             tmpmskS=tmpmskS*hFacS(i,j,k,bi,bj)*dxG(i,j,bi,bj)*drF(k)
@@ -503,5 +507,5 @@ cts ---
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-      return
-      end
+      RETURN
+      END
