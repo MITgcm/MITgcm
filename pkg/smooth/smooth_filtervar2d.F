@@ -3,8 +3,7 @@
 # include "SHELFICE_OPTIONS.h"
 #endif
 
-
-      SUBROUTINE SMOOTH_FILTERVAR2D ( smoothOpNb, mythid )
+      SUBROUTINE SMOOTH_FILTERVAR2D( smoothOpNb, myThid )
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_filtervar2D
@@ -34,29 +33,23 @@ c     == external functions ==
       EXTERNAL PORT_RAND, PORT_RAND_NORM
 
 c     == local variables ==
-      INTEGER i,j,k, bi, bj, ii, jj, kk
-      INTEGER itlo,ithi,jtlo,jthi
-      INTEGER diLoc,djLoc,dkLoc
+      INTEGER i,j,bi, bj, ii, jj
+      INTEGER diLoc,djLoc
       INTEGER nbRand, nbt_in
-      CHARACTER*( 80) fnamegeneric
+      CHARACTER*(80) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS smooth2Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
 c --- allow a different mask other than maskC
 c     Note: this is essentially a copy of ctrl_get_mask
 c     but is repeated here for package independence
 c     since this subroutine is typically used simply to get
 c     filter variance without actually running the model
-      DO bj = jtlo,jthi
-       DO bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
          DO i = 1-OLx,sNx+OLx
           IF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskC') THEN
@@ -84,18 +77,18 @@ c so this routine does not do anything
       nbt_in=smooth2Dnbt(smoothOpNb)/2
 
 c read smoothing [i.e diffusion] operator:
-      write(fnamegeneric(1:80),'(1a,i3.3)')
+      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
      &    'smooth2Doperator',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
-     &           1,smooth2D_Kux,1,1,mythid)
+     &           1,smooth2D_Kux,1,1,myThid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
-     &           1,smooth2D_Kvy,2,1,mythid)
+     &           1,smooth2D_Kvy,2,1,myThid)
       CALL EXCH_XY_RL ( smooth2D_Kux, myThid )
       CALL EXCH_XY_RL ( smooth2D_Kvy, myThid )
 
 c initialize filter variance field:
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smooth2Dnorm(i,j,bi,bj)=0.
@@ -120,8 +113,8 @@ c note: the exact method requires the adjoint of smooth_diff2D.F (see below)
       DO ii=1,diLoc
       DO jj=1,djLoc
 
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smoothTmpFld(i,j,bi,bj)=0.
@@ -145,11 +138,11 @@ c adjoint:
      & "uncomment the line below and comment the stop"
       CALL ALL_PROC_DIE( myThid )
       STOP 'ABNORMAL END: S/R smooth_filtervar2D'
-c      call adsmooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
+c      call adsmooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,myThid)
 
 c division by sqrt(area)*sqrt(area) [1 to end adj, 1 to begin fwd]
-      DO bj = jtlo,jthi
-       DO bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy
          DO i = 1,sNx
 c division by ~volume:
@@ -165,11 +158,11 @@ c going in fwd part: we need to fill them up
       CALL EXCH_XY_RL ( smoothTmpFld,myThid )
 
 c fwd:
-      CALL smooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
+      CALL smooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,myThid)
 
 c convert variance to normalization factor:
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=jj,sNy,djLoc
           DO i=ii,sNx,diLoc
            if (smooth2dmask(i,j,bi,bj).NE.0) then
@@ -187,8 +180,8 @@ c convert variance to normalization factor:
       ELSEIF (smooth2Dfilter(smoothOpNb).EQ.1) then
 c compute the normalization matrix using the approximate method
 
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smoothTmpMean(i,j,bi,bj)   = 0. _d 0
@@ -207,8 +200,8 @@ c initialize random number generator
      & 'smooth_filtervar2D: ',ii,' members done out of',nbRand
 
 c fill smoothTmpFld with random numbers:
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smoothTmpFld(i,j,bi,bj)   = 0. _d 0
@@ -226,11 +219,11 @@ c division by sqrt(area):
       CALL EXCH_XY_RL ( smoothTmpFld, myThid )
 
 c smooth random number field
-      call smooth_diff2D(smoothTmpFld,smooth2dmask,nbt_in,mythid)
+      CALL SMOOTH_DIFF2D(smoothTmpFld,smooth2dmask,nbt_in,myThid)
 
 c accumulate statistics (to compute the variance later)
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
       smoothTmpVar(i,j,bi,bj)=smoothTmpVar(i,j,bi,bj)
@@ -245,8 +238,8 @@ c accumulate statistics (to compute the variance later)
       ENDDO
 
 c compute variance and convert it to normalization factor:
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            if (smooth2dmask(i,j,bi,bj).NE.0) then
@@ -263,12 +256,13 @@ c compute variance and convert it to normalization factor:
       ENDIF
 
 c write smooth2Dnorm to file:
-      write(fnamegeneric(1:80),'(1a,i3.3)')
+      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
      &    'smooth2Dnorm',smoothOpNb
       CALL WRITE_REC_3D_RL(fnamegeneric,smoothprec,
-     &            1,smooth2Dnorm,1,1,mythid)
+     &            1,smooth2Dnorm,1,1,myThid)
       CALL EXCH_XY_RL ( smooth2Dnorm,  myThid )
 
       ENDIF
 
+      RETURN
       END
