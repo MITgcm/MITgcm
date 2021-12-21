@@ -197,6 +197,10 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_JFNK_lsIter`      | (off)                        | start line search after “lsIter” Newton iterations                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_JFNK_lsNiter`     | 4                            | maximum number of line search steps                                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_JFNK_lsGamma`     | 0.5                          | line search step size                                                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEnonLinTol`         | 1.0E-05                      | non-linear tolerance parameter for JFNK solver                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`JFNKgamma_lin_min`       | 0.10                         | minimum tolerance parameter for linear JFNK solver                      |
@@ -874,12 +878,15 @@ with the Jacobian :math:`\mathbf{J}\equiv\mathbf{F}'`.  The root
    :label: eq_jfnklin
 
 for :math:`\delta\mathbf{x}^{k}`. The next (:math:`k`-th) estimate is given by
-:math:`\mathbf{x}^{k}=\mathbf{x}^{k-1}+a\,\delta\mathbf{x}^{k}`.  In order to
-avoid overshoots the factor :math:`a` is iteratively reduced in a line search
-(:math:`a=1, \frac{1}{2}, \frac{1}{4}, \frac{1}{8}, \ldots`) until
+:math:`\mathbf{x}^{k}=\mathbf{x}^{k-1}+(1-\gamma_{\mathrm{LS}})^{l}
+\,\delta\mathbf{x}^{k}`. In order to avoid overshoots, the step size factor
+:math:`(1-\gamma_{\mathrm{LS}})^{l}` with :math:`\gamma_{\mathrm{LS}}<1` is
+iteratively reduced in a line search with :math:`l=0,1,2,\ldots` until
 :math:`\|\mathbf{F}(\mathbf{x}^k)\| < \|\mathbf{F}(\mathbf{x}^{k-1})\|`, where
-:math:`\|\cdot\|=\int\cdot\,dx^2` is the :math:`L_2`-norm. In practice, the
-line search is stopped at :math:`a=\frac{1}{8}`. The line search starts after
+:math:`\|\cdot\|=\int\cdot\,dx^2` is the :math:`L_2`-norm. By default, the line
+search with :math:`\gamma_\mathrm{LS}=\frac{1}{2}` (runtime parameter
+:varlink:`SEAICE_JFNK_lsGamma`) is stopped after :math:`L_\max=4` (runtime
+parameter :varlink:`SEAICE_JFNK_lsNiter`). The line search starts after
 :varlink:`SEAICE_JFNK_lsIter` nonlinear Newton iterations (off by default).
 
 Forming the Jacobian :math:`\mathbf{J}` explicitly is often avoided as “too
