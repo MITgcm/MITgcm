@@ -252,6 +252,10 @@ C--  Seaice-Dynamics parameters
        IF ( SEAICEuseJFNK ) THEN
         CALL WRITE_0D_I ( SEAICE_JFNK_lsIter,  INDEX_NONE,
      & 'SEAICE_JFNK_lsIter =', ' /* start of line search */')
+        CALL WRITE_0D_I ( SEAICE_JFNK_lsNiter,  INDEX_NONE,
+     & 'SEAICE_JFNK_lsNiter =', ' /* number line search iterations */')
+        CALL WRITE_0D_RL( SEAICE_JFNK_lsGamma,  INDEX_NONE,
+     & 'SEAICE_JFNK_lsGamma =', ' /* line search reduction factor */')
         CALL WRITE_0D_I ( SEAICE_JFNK_tolIter,  INDEX_NONE,
      & 'SEAICE_JFNK_tolIter =', ' /* tol. is relaxed after this */')
         CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
