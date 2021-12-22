@@ -3,7 +3,7 @@
 # include "SHELFICE_OPTIONS.h"
 #endif
 
-      subroutine ecco_phys( myThid )
+      SUBROUTINE ECCO_PHYS( myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_phys
@@ -35,9 +35,12 @@ c     == global variables ==
 # include "SHELFICE.h"
 #endif
 
-c     == routine arguments ==
-
-      integer myThid
+C     == routine arguments ==
+C     myTime    :: Current time in simulation
+C     myIter    :: Current time-step number
+C     myThid    :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter, myThid
 
 c     == local variables ==
 
@@ -235,7 +238,7 @@ C R_low (<0) is Depth in m.
       enddo
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+      IF ( useDiagnostics .AND. myIter.GE.0 ) THEN
         CALL DIAGNOSTICS_FILL( m_eta, 'SSHNOIBC', 0,1, 0,1,1, myThid )
         CALL DIAGNOSTICS_SCALE_FILL( m_bp, recip_gravity, 1,
      &                         'OBPGMAP ', 0,1, 0,1,1, myThid )
