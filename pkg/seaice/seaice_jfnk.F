@@ -571,15 +571,13 @@ C     Determine, if we need more iterations
        doLineSearch = resLoc .GE. JFNKresidual
 C     Limit the maximum number of iterations arbitrarily to
 C     SEAICE_JFNK_lsLmax (default is 4)
-       doLineSearch = doLineSearch .AND. l .LT. SEAICE_JFNK_lsLmax
+       doLineSearch = doLineSearch .AND. l .LE. SEAICE_JFNK_lsLmax
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
 C     iteration
        IF ( newtonIter .EQ. 1 ) doLineSearch = .FALSE.
 C     Only start a linesearch after some Newton iterations
        IF ( newtonIter .LE. SEAICE_JFNK_lsIter ) doLineSearch = .FALSE.
-C     Increment counter
-       l = l + 1
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
@@ -591,6 +589,8 @@ C     some output diagnostics
      &       SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
        ENDIF
+C     Increment counter
+       l = l + 1
       ENDDO
 C     This is the new residual
       JFNKresidual = resLoc
