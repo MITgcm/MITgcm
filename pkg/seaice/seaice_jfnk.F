@@ -570,8 +570,8 @@ C     product that SEAICE_FGMRES does
 C     Determine, if we need more iterations
        doLineSearch = resLoc .GE. JFNKresidual
 C     Limit the maximum number of iterations arbitrarily to
-C     SEAICE_JFNK_lsNiter (default is 4)
-       doLineSearch = doLineSearch .AND. l .LT. SEAICE_JFNK_lsNiter
+C     SEAICE_JFNK_lsLmax (default is 4)
+       doLineSearch = doLineSearch .AND. l .LT. SEAICE_JFNK_lsLmax
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
 C     iteration
