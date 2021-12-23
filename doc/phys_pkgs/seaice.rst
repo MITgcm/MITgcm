@@ -891,7 +891,7 @@ default) to allow for full Newton steps at the beginning of the iteration. If
 the line search is turned on by setting :varlink:`SEAICE_JFNK_lsIter` to a
 non-negative value in ``data.seaice``, by default, the line search with
 :math:`\gamma_\mathrm{LS}=\frac{1}{2}` (runtime parameter
-:varlink:`SEAICE_JFNK_lsGamma`) is stopped after :math:`L_\max=4` (runtime
+:varlink:`SEAICE_JFNK_lsGamma`) is stopped after :math:`L_{\max}=4` (runtime
 parameter :varlink:`SEAICE_JFNK_lsLmax`) steps.
 
 Forming the Jacobian :math:`\mathbf{J}` explicitly is often avoided as “too
