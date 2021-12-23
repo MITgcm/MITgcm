@@ -242,14 +242,14 @@ attribute, e.g. for attribute ``period`` this yields ``uwindperiod``:
     | *field* ``const``           | 0.0                       | constant that will be used if no file is read                                |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | *field* ``startdate1``      | 0.0                       | format: ``YYYYMMDD``; start year (YYYY), month (MM), day (YY)                |
-    +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     |                             |                           | of field to determine record number                                          |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | *field* ``startdate2``      | 0.0                       | format: ``HHMMSS``; start hour (HH), minute (MM), second(SS)                 |
-    +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     |                             |                           | of field to determine record number                                          |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
-    | *field* ``period``          | 0.0                       | interval in seconds between two records                                      |
+    | *field* ``period``          | 0.0                       | interval in seconds between two records; the special value -12 means         |
+    |                             |                           | 12 repeating (calendar) monthly records; the special value -1 means          |
+    |                             |                           | non-repeating (calendar) monthly records (see below)                         |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | ``exf_inscal_``\ *field*    |                           | optional rescaling of input fields to comply with EXF units                  |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
@@ -270,6 +270,12 @@ attribute, e.g. for attribute ``period`` this yields ``uwindperiod``:
     | *field* ``_nlat``           | :code:`Ny`                | number of grid points in longitude of input                                  |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
 
+
+For *field*\ ``period``\ =-1, the records in the forcing file represent
+averages over calendar months.  If ``useExfYearlyFields = .TRUE.``, each yearly
+file must have 12 records, starting with January.  For ``useExfYearlyFields =
+.FALSE.``, a single file starting with the month given by
+*field*\ ``startdate1`` is required.
 
 
 Example configuration

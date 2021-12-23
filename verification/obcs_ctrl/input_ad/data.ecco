@@ -9,7 +9,6 @@
  temperrfile     = 'errorTtot.err',
  tdatfile        = 'FinalThetaObs.bin',
 #
-#
  mult_temp0  = 1.0,
  mult_temp   = 1.0,
  mult_obcsn  = 1.0,
@@ -18,7 +17,6 @@
  mult_obcse  = 1.0,
 #
  cost_iprec  = 32,
- cost_yftype = 'RL',
  &
 
  &ECCO_GENCOST_NML

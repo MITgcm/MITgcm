@@ -171,10 +171,6 @@ cgg)
 
 c     == end of interface ==
 
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
-
 c--   Initialise
       nbuffGlobal = 0
 
@@ -881,12 +877,16 @@ c----------------------------------------------------------------------
        do iarr = 1, maxCtrlArr2D
         if (xx_genarr2d_weight(iarr).NE.' ') then
          mskNameForSetUnpack='maskCtrlC'
-         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+         DO k=1,Nr
+           nwettmp(k) = nwetcglobal(k)
+         ENDDO
 # ifdef ALLOW_SHELFICE
          if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
      &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetUnpack='maskCtrlI'
-          nwettmp(1:Nr) = nwetiglobal(1:Nr)
+          DO k=1,Nr
+           nwettmp(k) = nwetiglobal(k)
+          ENDDO
          endif
 # endif
           call ctrl_set_fname( xx_genarr2d_file(iarr),
@@ -923,11 +923,15 @@ cc          write(weighttype(1:80),'(a)') "wunit"
        do iarr = 1, maxCtrlTim2D
         if (xx_gentim2d_weight(iarr).NE.' ') then
          mskNameForSetUnpack='maskCtrlC'
-         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+         DO k=1,Nr
+           nwettmp(k) = nwetcglobal(k)
+         ENDDO
 # ifdef ALLOW_SHELFICE
          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
-            mskNameForSetUnpack='maskCtrlI'
-            nwettmp(1:Nr) = nwetiglobal(1:Nr)
+           mskNameForSetUnpack='maskCtrlI'
+           DO k=1,Nr
+             nwettmp(k) = nwetiglobal(k)
+           ENDDO
          endif
 # endif
           call ctrl_set_fname( xx_gentim2d_file(iarr),

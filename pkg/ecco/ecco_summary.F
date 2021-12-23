@@ -31,7 +31,8 @@ c     ==================================================================
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 #ifdef ALLOW_CTRL
 # include "optim.h"
@@ -155,18 +156,6 @@ c--   =======================================================
 #else
       write(msgbuf,'(a)')
      &'// ALLOW_GRADIENT_CHECK:             NOT defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
-      write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:              defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#else
-      write(msgbuf,'(a)')
-     &'// ALLOW_ECCO_OPTIMIZATION:          NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -846,6 +835,9 @@ c
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
          write(msgbuf,'(a,i2)') ' gencost_outputlevel = ',
      &         gencost_outputlevel(k)
+         call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+         write(msgbuf,'(a,i2)') ' gencost_kLev_select = ',
+     &         gencost_kLev_select(k)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
 c
          if (gencost_is3d(k)) then

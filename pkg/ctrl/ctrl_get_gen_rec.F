@@ -69,6 +69,9 @@ C     == local variables ==
 
 c     integer startrec
 
+      integer year0
+      integer year1
+
       logical lArgErr
 #else
 C     Declarations for code, adapted from external_fields_load,
@@ -109,7 +112,7 @@ C     record numbers are assumed 1 to 12 corresponding to
 C     Jan. through Dec.
        call cal_GetMonthsRec(
      O      fac, first, changed,
-     O      count0, count1,
+     O      count0, count1, year0, year1,
      I      mytime, myiter, mythid
      &      )
       elseif ( fldperiod .eq. 0. _d 0 ) then

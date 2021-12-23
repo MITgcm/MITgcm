@@ -42,7 +42,8 @@ c     == global variables ==
 #  include "ctrl.h"
 # endif
 #else
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 # include "ecco_local_params.h"
 #endif /* ECCO_CTRL_DEPRECATED */
 #ifdef ALLOW_CTRL
@@ -55,28 +56,38 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
+      integer k
+      integer gwUnit
+      integer ilo,ihi
+      integer iobcs
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer gwUnit
       integer irec,nnz
-      integer ilo,ihi
-      integer iobcs
       integer num_var
+#endif
 
-      _RL factor
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
+      _RL ratio
       _RL wti(nr)
       _RL wsi(nr)
       _RL wui(nr)
       _RL wvi(nr)
+      _RL dummy
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
+      _RL factor
       _RL whflux0m
       _RL wsflux0m
       _RL wtau0m
-      _RL ratio
-      _RL dummy
       _RS dummyRS
       _RL wsshv4tmp ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
 
@@ -84,8 +95,12 @@ c     == local variables ==
       logical lwsalt2InUse
       logical lwthetaLevInUse
       logical lwsaltLevInUse
+#endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
       logical  exst
+#endif
 
 c     == external ==
 
@@ -96,6 +111,7 @@ c     == external ==
 
 c     == end of interface ==
 
+#ifdef ECCO_CTRL_DEPRECATED
       lwtheta2InUse   = .false.
       lwsalt2InUse    = .false.
       lwthetaLevInUse = .false.
@@ -110,7 +126,6 @@ c     == end of interface ==
       imin = 1-OLx
       imax = sNx+OLx
 
-#ifdef ECCO_CTRL_DEPRECATED
 c--   Initialize background weights
       whflux0m = whflux0
       wsflux0m = wsflux0
@@ -118,12 +133,15 @@ c--   Initialize background weights
 #endif /* ECCO_CTRL_DEPRECATED */
 
 c--   Initialize variance (weight) fields.
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
       do k = 1,nr
          wti(k) = 0. _d 0
          wsi(k) = 0. _d 0
          wui(k) = 0. _d 0
          wvi(k) = 0. _d 0
       enddo
+#endif
 #ifdef ECCO_CTRL_DEPRECATED
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -279,8 +297,10 @@ cds     &                            frame(i,j)
           enddo
         enddo
       enddo
-
 #endif /* ECCO_CTRL_DEPRECATED */
+
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
 c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
       ilo = ifnblnk(data_errfile)
@@ -314,7 +334,9 @@ c--   Read error information and set up weight matrices.
       _END_MASTER(myThid)
 
       _BARRIER
+#endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       jmin = 1
       jmax = sNy
       imin = 1
@@ -322,8 +344,6 @@ c--   Read error information and set up weight matrices.
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-
-#ifdef ECCO_CTRL_DEPRECATED
 c indices are inconsistent with ecco_cost.h declaration
 c          wsfluxmm(bi,bj) = 1.
 c          whfluxmm(bi,bj) = 1.
@@ -347,39 +367,76 @@ c--
               wsalt(k,bi,bj) = 0.0 _d 0
             endif
           enddo
+        enddo
+      enddo
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-          do k = 1,nr
-#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
-            wobcsn(k,1) = wti(k)
-            wobcsn(k,2) = wsi(k)
-            wobcsn(k,3) = wvi(k)
-            wobcsn(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-            wobcss(k,1) = wti(k)
-            wobcss(k,2) = wsi(k)
-            wobcss(k,3) = wvi(k)
-            wobcss(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-            wobcsw(k,1) = wti(k)
-            wobcsw(k,2) = wsi(k)
-            wobcsw(k,3) = wvi(k)
-            wobcsw(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
-            wobcse(k,1) = wti(k)
-            wobcse(k,2) = wsi(k)
-            wobcse(k,3) = wvi(k)
-            wobcse(k,4) = wvi(k)
-#endif
-          enddo
-#endif /* ALLOW_CTRL and OBCS */
-
-        enddo
+      do k = 1,nr
+# ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+       wobcsn(k,1) = wti(k)
+       wobcsn(k,2) = wsi(k)
+       wobcsn(k,3) = wvi(k)
+       wobcsn(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+       wobcss(k,1) = wti(k)
+       wobcss(k,2) = wsi(k)
+       wobcss(k,3) = wvi(k)
+       wobcss(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+       wobcsw(k,1) = wti(k)
+       wobcsw(k,2) = wsi(k)
+       wobcsw(k,3) = wvi(k)
+       wobcsw(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+       wobcse(k,1) = wti(k)
+       wobcse(k,2) = wsi(k)
+       wobcse(k,3) = wvi(k)
+       wobcse(k,4) = wvi(k)
+# endif
       enddo
+# ifdef ALLOW_OBCS_COST_CONTRIBUTION
+      do iobcs = 1,nobcs
+       do k = 1,nr
+#  ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+        if (wobcsn(k,iobcs) .ne. 0.) then
+         wobcsn(k,iobcs) =
+     &        ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
+        else
+         wobcsn(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+        if (wobcss(k,iobcs) .ne. 0.) then
+         wobcss(k,iobcs) =
+     &        ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
+        else
+         wobcss(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+        if (wobcsw(k,iobcs) .ne. 0.) then
+         wobcsw(k,iobcs) =
+     &        ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
+        else
+         wobcsw(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+        if (wobcse(k,iobcs) .ne. 0.) then
+         wobcse(k,iobcs) =
+     &        ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
+        else
+         wobcse(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+       enddo
+      enddo
+# endif /* ALLOW_OBCS_COST_CONTRIBUTION */
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 #ifdef ECCO_CTRL_DEPRECATED
 #if (defined (ALLOW_SALT0_COST_CONTRIBUTION) || \
@@ -677,7 +734,7 @@ cph-indonesian)
         enddo
       enddo
 #endif
-#endif
+#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 c--   Read SSH anomaly rms field. Data in units of centimeters.
@@ -1905,47 +1962,6 @@ cph(
 cph)
             enddo
           enddo
-
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-#ifdef ALLOW_OBCS_COST_CONTRIBUTION
-          do iobcs = 1,nobcs
-            do k = 1,nr
-#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
-              if (wobcsn(k,iobcs) .ne. 0.) then
-                 wobcsn(k,iobcs) =
-     &                ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
-              else
-                 wobcsn(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-              if (wobcss(k,iobcs) .ne. 0.) then
-                 wobcss(k,iobcs) =
-     &                ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
-              else
-                 wobcss(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-              if (wobcsw(k,iobcs) .ne. 0.) then
-                 wobcsw(k,iobcs) =
-     &                ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
-              else
-                 wobcsw(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
-              if (wobcse(k,iobcs) .ne. 0.) then
-                 wobcse(k,iobcs) =
-     &                ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
-              else
-                 wobcse(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-            enddo
-          enddo
-#endif /* ALLOW_OBCS_COST_CONTRIBUTION */
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
 
         enddo
       enddo

@@ -151,7 +151,19 @@ C-    genperiod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
           CALL cal_GetMonthsRec(
      O             fac, first, changed,
-     O             count0, count1,
+     O             count0, count1, year0, year1,
+     I             myTime, myIter, myThid )
+#endif /* ALLOW_CAL */
+        ELSEIF ( useCAL .AND. uVecPeriod .EQ. -1.) THEN
+#ifdef ALLOW_CAL
+C-    uVecPeriod=-1 means fields are monthly means.
+C     With useExfYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month uVecStartTime falls in.
+          CALL EXF_GetMonthsRec(
+     I             uVecStartTime, useExfYearlyFields,
+     O             fac, first, changed,
+     O             count0, count1, year0, year1,
      I             myTime, myIter, myThid )
 #endif /* ALLOW_CAL */
         ELSEIF ( uVecPeriod .LT. 0. ) THEN
@@ -176,7 +188,7 @@ C-    get record numbers and interpolation factor
      &       ' myIter, count0, count1:', myIter, count0, count1
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') 'EXF_SET_UV:  ',
+           WRITE(msgBuf,'(2A,2(L2,2X),F21.17)') 'EXF_SET_UV:  ',
      &       ' first, changed, fac:  ', first, changed, fac
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )

@@ -64,6 +64,7 @@
  dumpFreq          = 86400.,
  monitorFreq       = 43200.,
  adjMonitorFreq    = 43200.,
+ monitorSelect     = 4,
 #
  tauThetaClimRelax = 2592000.,
  tauSaltClimRelax  = 2592000.,

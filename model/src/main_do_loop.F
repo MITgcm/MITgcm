@@ -48,23 +48,17 @@ C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
       SUBROUTINE MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
 
-C     !DESCRIPTION: \bv
+C     !DESCRIPTION:
 C     *================================================================*
-C     | SUBROUTINE the_loop_body
-C     | o Run the ocean model and evaluate the specified cost function.
+C     | SUBROUTINE MAIN_DO_LOOP
+C     | o Interface S/R that calls FORWARD_STEP
 C     *================================================================*
-C     |
-C     | MAIN_DO_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC).
-C     | For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
-C     | This routine is to be used in conjuction with the MITgcmuv
-C     | checkpoint 37.
+C     | This S/R contains the model main "do-loop" for OpenAD built
+C     | (i.e., ALLOW_OPENAD defined), with a call to FORWARD_STEP
+C     | inside the loop.
+C     | But without OpenAD, this S/R just calls directly FORWARD_STEP
+C     | (in this case the main do-loop is done in S/R THE_MAIN_LOOP).
 C     *================================================================*
-C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -129,25 +123,15 @@ c**************************************
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     note: under the multi-threaded model myIter and
-C           myTime are local variables passed around as routine
-C           arguments. Although this is fiddly it saves the need to
-C           impose additional synchronisation points when they are
-C           updated.
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
+      INTEGER iloop
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
-C     !FUNCTIONS:
-C     == Functions ==
-
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER iloop
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -162,11 +146,10 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # else
       DO iloop = 1, nTimeSteps
 # endif
-
 #endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
+        IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
 #ifndef ALLOW_OPENAD
@@ -179,19 +162,19 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 # endif
-#else
+#else /* ALLOW_OPENAD */
 # ifdef ALLOW_OPENAD_DIVA
-       CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
+        nTimeSteps_l2 = 2
+        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
 # else
-       CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        nTimeSteps_l2 = 2
+        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 # endif
-#endif /* ndef ALLOW_OPENAD */
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_OPENAD
       ENDDO
