@@ -96,13 +96,11 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
           IF (STREAMICE_ufacemask(i,j,bi,bj).eq.3.0) THEN
            BCMASKX(i,j,bi,bj) = 3.0
            BCVALX(i,j,bi,bj) = h_ubdry_values_SI(i,j,bi,bj)
-           IF (STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid) THEN
-            IF (STREAMICE_vel_ext_cgrid) THEN
-             utrans(i,j,bi,bj) = u_streamice_ext(i,j,bi,bj)
-            ELSE
-             utrans(i,j,bi,bj) = .5 * (
-     &        u_streamice_ext(i,j,bi,bj)+u_streamice_ext(i,j+1,bi,bj))
-            ENDIF
+           IF (STREAMICE_vel_ext_cgrid) THEN
+            utrans(i,j,bi,bj) = u_streamice_ext(i,j,bi,bj)
+           ELSEIF (STREAMICE_vel_ext) THEN
+            utrans(i,j,bi,bj) = .5 * (
+     &       u_streamice_ext(i,j,bi,bj)+u_streamice_ext(i,j+1,bi,bj))
            ELSE
             utrans(i,j,bi,bj) = .5 * (
      &       u_streamice(i,j,bi,bj)+u_streamice(i,j+1,bi,bj))
@@ -128,13 +126,11 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
           ELSE
            BCMASKX(i,j,bi,bj) = 0.0
            BCVALX(i,j,bi,bj) = 0. _d 0
-           IF (STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid) THEN
-            IF (STREAMICE_vel_ext_cgrid) THEN
-             utrans(i,j,bi,bj) = u_streamice_ext(i,j,bi,bj)
-            ELSE
-             utrans(i,j,bi,bj) = .5 * (
-     &        u_streamice_ext(i,j,bi,bj)+u_streamice_ext(i,j+1,bi,bj))
-            ENDIF
+           IF (STREAMICE_vel_ext_cgrid) THEN
+            utrans(i,j,bi,bj) = u_streamice_ext(i,j,bi,bj)
+           ELSEIF (STREAMICE_vel_ext) THEN
+            utrans(i,j,bi,bj) = .5 * (
+     &       u_streamice_ext(i,j,bi,bj)+u_streamice_ext(i,j+1,bi,bj))
            ELSE
             utrans(i,j,bi,bj) = .5 * (
      &       u_streamice(i,j,bi,bj)+u_streamice(i,j+1,bi,bj))
@@ -144,13 +140,11 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
           IF (STREAMICE_vfacemask(i,j,bi,bj).eq.3.0) THEN
            BCMASKy(i,j,bi,bj) = 3.0
            BCVALy(i,j,bi,bj) = h_vbdry_values_SI(i,j,bi,bj)
-           IF (STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid) THEN
-            IF (STREAMICE_vel_ext_cgrid) THEN
-             vtrans(i,j,bi,bj) = v_streamice_ext(i,j,bi,bj)
-            ELSE
-             vtrans(i,j,bi,bj) = .5 * (
-     &        v_streamice_ext(i,j,bi,bj)+v_streamice_ext(i+1,j,bi,bj))
-            ENDIF
+           IF (STREAMICE_vel_ext_cgrid) THEN
+            vtrans(i,j,bi,bj) = v_streamice_ext(i,j,bi,bj)
+           ELSEIF (STREAMICE_vel_ext) THEN
+            vtrans(i,j,bi,bj) = .5 * (
+     &       v_streamice_ext(i,j,bi,bj)+v_streamice_ext(i+1,j,bi,bj))
            ELSE
             vtrans(i,j,bi,bj) = .5 * (
      &       v_streamice(i,j,bi,bj)+v_streamice(i+1,j,bi,bj))
@@ -176,13 +170,11 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
           ELSE
            BCMASKy(i,j,bi,bj) = 0.0
            BCVALy(i,j,bi,bj) = 0. _d 0
-           IF (STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid) THEN
-            IF (STREAMICE_vel_ext_cgrid) THEN
-             vtrans(i,j,bi,bj) = v_streamice_ext(i,j,bi,bj)
-            ELSE
-             vtrans(i,j,bi,bj) = .5 * (
-     &        v_streamice_ext(i,j,bi,bj)+v_streamice_ext(i+1,j,bi,bj))
-            ENDIF
+           IF (STREAMICE_vel_ext_cgrid) THEN
+            vtrans(i,j,bi,bj) = v_streamice_ext(i,j,bi,bj)
+           ELSEIF (STREAMICE_vel_ext) THEN
+            vtrans(i,j,bi,bj) = .5 * (
+     &       v_streamice_ext(i,j,bi,bj)+v_streamice_ext(i+1,j,bi,bj))
            ELSE
             vtrans(i,j,bi,bj) = .5 * (
      &       v_streamice(i,j,bi,bj)+v_streamice(i+1,j,bi,bj))

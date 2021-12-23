@@ -111,11 +111,11 @@ c**************************************
       do_vel = DIFFERENT_MULTIPLE( streamice_vel_update,
      &                             myTime, deltaT )
 
-      if (myIter.eq.0) then
+      IF (myIter.eq.0) THEN
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
       CALL WRITE_FLD_XY_RL
      & ("surf_el_init","",surf_el_streamice,0,myThid)
-      endif
+      ENDIF
 
       CALL STREAMICE_VELMASK_UPD (myThid)
 
@@ -138,7 +138,7 @@ c**************************************
 
 #else
 
-       if (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) then
+       IF (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) THEN
 
 
         CALL STREAMICE_VEL_SOLVE( myThid,
@@ -153,12 +153,12 @@ c**************************************
           sum_square_vel_tile (bi,bj) = 0. _d 0
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            if (streamice_hmask(i,j,bi,bj).eq.1) then
+            IF (streamice_hmask(i,j,bi,bj).eq.1) THEN
              sum_square_vel_tile (bi,bj) = 
      &        sum_square_vel_tile (bi,bj) + 
      &        U_streamice(i,j,bi,bj)**2 + 
      &        V_streamice(i,j,bi,bj)**2
-            endif
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
@@ -174,23 +174,23 @@ c**************************************
 #endif
 
 
-       elseif (do_vel) then
+       ELSEIF (do_vel) THEN
  
         CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_maxnliter_cpl,
      &                           streamice_maxcgiter_cpl,
      &                           myiter )
-       endif
+       ENDIF
 
-#endif // OAD_FP
+#endif /* OAD_FP */
 
       ENDIF
 
-      if(.not.STREAMICE_diagnostic_only) THEN
+      IF (.not.STREAMICE_diagnostic_only) THEN
 
        CALL STREAMICE_ADVECT_THICKNESS ( myThid, myIter, deltaT )
 
-      endif
+      ENDIF
 
 ! CALL AT END INSTEAD OF BEGINNING - DNG
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
