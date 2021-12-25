@@ -154,7 +154,9 @@ C     dt           :: timestep
       LOGICAL iterate4Tsf
       INTEGER i, j, k, iterMax
       INTEGER ii, jj, icount, stdUnit
+#if ( defined ALLOW_DBUG_THSICE || !defined ALLOW_AUTODIFF )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
       _RL  frsnow
       _RL  fswpen
       _RL  fswdn
