@@ -44,7 +44,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          err_sum_tile(bi,bj) = 0. _d 0  
+          err_sum_tile(bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -82,7 +82,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 !!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
 !#endif
 
-       IF (streamice_err_norm .LT. 1.0) then 
+       IF (streamice_err_norm .LT. 1.0) then
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -121,16 +121,16 @@ C     !INPUT/OUTPUT ARGUMENTS
            DO i=1,sNx
 
             IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
-             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
      &        (ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
      &            taudx_SI(i,j,bi,bj))) ** streamice_err_norm
             ENDIF
             IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
-             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
      &        (ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
      &            taudy_SI(i,j,bi,bj))) ** streamice_err_norm
             ENDIF
-            
+
            ENDDO
           ENDDO
          ENDDO
