@@ -165,6 +165,10 @@ C                                          cholesky preconditioner
 C                                          for use with PETSC and
 C                                          BLOCKJACOBI precond ONLY
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER streamice_max_nl
+      PARAMETER ( streamice_max_nl = 100 )
+#endif
 
       COMMON /STREAMICE_PARMS_I/
      &     streamice_max_cg_iter, streamice_max_nl_iter,
