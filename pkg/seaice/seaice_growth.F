@@ -125,6 +125,8 @@ C     Regularization values squared
       _RL area_reg_sq, hice_reg_sq
 C     pathological cases thresholds
       _RL heffTooHeavy
+C     local copy of surface layer thickness in meters
+      _RL dzSurf
 
 C     Helper variables: reciprocal of some constants
       _RL recip_multDim
@@ -158,7 +160,9 @@ C     temporary variables available for the various computations
 #endif
 #endif /* ALLOW_SITRACER */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER iicekey
 #endif
 
 C==   local arrays ==
@@ -323,10 +327,12 @@ C ===================================================================
 C =================PART 0: constants and initializations=============
 C ===================================================================
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface        = Nr
+      IF ( usingPCoords ) THEN
+       kSurface = Nr
+       dzSurf   = drF(kSurface)*recip_rhoConst*recip_gravity
       ELSE
-       kSurface        = 1
+       kSurface = 1
+       dzSurf   = drF(kSurface)
       ENDIF
 
 C     avoid unnecessary divisions in loops
@@ -338,8 +344,7 @@ c     recip_multDim        = 1./float(SEAICE_multDim)
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
 C     Cutoff for iceload
-      heffTooHeavy=drF(kSurface) / 5. _d 0
-
+      heffTooHeavy = dzSurf * 0.2 _d 0
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
       SNOW2ICE     = ONE / ICE2SNOW
@@ -1041,7 +1046,7 @@ C efficiency of turbulent fluxes : dependency to sign of THETA-TBC
           IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
            tmpscal1 = SEAICE_mcPheePiston
           ELSE
-           tmpscal1 =SEAICE_frazilFrac*drF(kSurface)/SEAICE_deltaTtherm
+           tmpscal1 =SEAICE_frazilFrac*dzSurf/SEAICE_deltaTtherm
           ENDIF
 C efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
           IF ( (AREApreTH(I,J) .GT. 0. _d 0).AND.
@@ -2660,8 +2665,8 @@ C           no qnet or tflux adjustement is needed
        ENDDO
        IF ( balancePrintMean ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &       'SIatmFW = ', tmpscal0
+        WRITE(msgBuf,'(2A,1PE21.14,A,I10)') 'rm Global mean of',
+     &               ' SIatmFW = ', tmpscal0, '  @ it=', myIter
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
@@ -2681,8 +2686,8 @@ C           no qnet or tflux adjustement is needed
        ENDDO
        IF ( balancePrintMean ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &       'SItflux = ', tmpscal2
+        WRITE(msgBuf,'(2A,1PE21.14,A,I10)') 'rm Global mean of',
+     &               ' SItflux = ', tmpscal2, '  @ it=', myIter
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )

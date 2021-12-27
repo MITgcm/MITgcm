@@ -15,6 +15,9 @@
 #  include "KPP_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THERMODYNAMICS
@@ -49,8 +52,9 @@ C     == Global variables ===
 #endif
 
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
-# include "tamc_keys.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -101,6 +105,11 @@ C     i, j, k        :: loop indices
       _RL wrTime
       _RL trAdvCFL(3,nSx,nSy)
 # endif /* ALLOW_MONITOR */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -293,11 +302,10 @@ CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
 CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
 # endif
-# if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
-#  ifdef GM_NON_UNITY_DIAGONAL
+# if (defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL) \
+        && defined ALLOW_GMREDI
 CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#  endif
 #  ifdef GM_EXTRA_DIAGONAL
 CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte

@@ -99,7 +99,7 @@ C     subMeso_Ceff   :: efficiency coefficient of Mixed-Layer Eddies [-]
 C     subMeso_invTau :: inverse of mixing time-scale in sub-meso parameteriz. [s^-1]
 C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
 C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
-C     Variable K with PV diffusion parameters:
+C-    Variable K with PV diffusion parameters:
 C     GM_K3D_gamma   :: mixing efficiency for 3D eddy diffusivity [-]
 C     GM_K3D_b1      :: an empirically determined constant of O(1)
 C     GM_K3D_EadyMinDepth :: upper depth for Eady calculation
@@ -213,19 +213,14 @@ C     Kwz :: K_33 element of GM/Redi tensor, Z direction at W point
       _RL Kwx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kwy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kwz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /GM_Wtensor/ Kwx,Kwy,Kwz
+      COMMON /GM_Wtensor/ Kwx, Kwy, Kwz
 
-#ifdef GM_NON_UNITY_DIAGONAL
 C     Horizontal part of the tensor
 C     Kux :: K_11 element of GM/Redi tensor, X direction at U point
 C     Kvy :: K_22 element of GM/Redi tensor, Y direction at V point
       _RL Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /GM_HorTensor/ Kux,Kvy
-#else
-      _RL Kux,Kvy
-      PARAMETER(Kux=1.,Kvy=1.)
-#endif
+      COMMON /GM_HorTensor/ Kux, Kvy
 
 #ifdef GM_EXTRA_DIAGONAL
 C     First/second rows of tensor corresponds to U/V points
@@ -233,10 +228,10 @@ C     Kuz :: K_13 element of GM/Redi tensor, Z direction at U point
 C     Kvz :: K_23 element of GM/Redi tensor, Z direction at V point
       _RL Kuz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kvz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /GM_UVtensor/ Kuz,Kvz
+      COMMON /GM_UVtensor/ Kuz, Kvz
 #else
-      _RL Kuz,Kvz
-      PARAMETER(Kuz=1.,Kvz=1.)
+      _RL Kuz, Kvz
+      PARAMETER( Kuz=1., Kvz=1. )
 #endif
 
 #ifdef GM_BOLUS_ADVEC
@@ -244,7 +239,7 @@ C     GM advection formulation: bolus velocities are derived from 2
 C        streamfunctions PsiX and PsiY :
       _RL GM_PsiX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GM_PsiY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /GM_BOLUS/ GM_PsiX,GM_PsiY
+      COMMON /GM_BOLUS/ GM_PsiX, GM_PsiY
 #endif
 
 #ifdef GM_VISBECK_VARIABLE_K
@@ -262,14 +257,14 @@ C     modesS       :: First N baroclinic mode at the southern face of a tracer c
 C     Rdef         :: Deformation radius [m]
 C     gradf        :: gradient of the Coriolis paramater at a cell centre, 1/(m*s)
 
-      _RL K3D(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
-      _RL modesC(1,1-Olx:sNx+Olx,1-Oly:sNy+Oly,1:Nr,nSx,nSy)
-      _RL modesW(GM_K3D_NModes,1-Olx:sNx+Olx,
-     &     1-Oly:sNy+Oly,1:Nr,nSx,nSy)
-      _RL modesS(GM_K3D_NModes,1-Olx:sNx+Olx,
-     &     1-Oly:sNy+Oly,1:Nr,nSx,nSy)
-      _RL Rdef(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL gradf(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL K3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL modesC(1,1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL modesW(GM_K3D_NModes,1-OLx:sNx+OLx,
+     &     1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL modesS(GM_K3D_NModes,1-OLx:sNx+OLx,
+     &     1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL Rdef(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gradf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GM_K3D/ K3D, modesC, modesW, modesS, Rdef, gradf
 #endif

@@ -165,6 +165,7 @@ C-    Absolutely needed fields:
 
 C-    fields needed for restart (alternative not presently implemented)
          ELSEIF ( missFldList(j).EQ.'PhiHyd  ' .OR.
+     &            missFldList(j).EQ.'Phi_rLow' .OR.
      &            missFldList(j).EQ.'AddMass ' .OR.
      &            missFldList(j).EQ.'dEtaHdt ' .OR.
      &            missFldList(j).EQ.'EtaH    ' ) THEN

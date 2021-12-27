@@ -296,6 +296,7 @@ C-      2D arrays
        ENDDO
       ENDDO
 
+#ifdef ECCO_CTRL_DEPRECATED
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -376,6 +377,7 @@ C-      2D arrays
         ENDDO
        ENDDO
       ENDDO
+#endif /* ECCO_CTRL_DEPRECATED */
 #endif /* ALLOW_EXF */
 
 #if ( defined ALLOW_OBCS && !defined AUTODIFF_USE_OLDSTORE_OBCS )

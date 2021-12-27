@@ -1,12 +1,10 @@
 #include "CTRL_OPTIONS.h"
-
-C--   File ctrl_map_ini_genarr.F: Generic arrays control vector
-C--    Contents:
-C--    o CTRL_MAP_INI_GENARR
-C--    o CTRL_MAP_GENARR2D
-C--    o CTRL_MAP_GENARR3D
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -43,8 +41,15 @@ C     == global variables ==
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+# include "DIC_VARS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     == routine arguments ==
       INTEGER myThid
 
 #if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
@@ -54,11 +59,20 @@ C     !FUNCTIONS:
 #endif
 
 C     !LOCAL VARIABLES:
+C     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined(ALLOW_GENARR3D_CONTROL))
       INTEGER iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
       INTEGER igen_etan,igen_bdrag,igen_geoth
+# ifdef ALLOW_SHELFICE
+      INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
+      INTEGER i, j, bi, bj, k2
+      LOGICAL dragThermoEqualMom
+# endif
+# if (defined ALLOW_DIC && defined DIC_BIOTIC)
+      INTEGER igen_alpha
+# endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
       INTEGER igen_theta0, igen_salt0
@@ -79,6 +93,11 @@ C--   generic 2D control variables
       igen_etan=0
       igen_bdrag=0
       igen_geoth=0
+#ifdef ALLOW_SHELFICE
+      igen_shiCoeffT=0
+      igen_shiCoeffS=0
+      igen_shiCDrag=0
+#endif
       DO iarr = 1, maxCtrlArr2D
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
         IF (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
@@ -87,6 +106,21 @@ C--   generic 2D control variables
      &     igen_bdrag=iarr
         IF (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
+#ifdef ALLOW_SHELFICE
+# ifndef SHI_ALLOW_GAMMAFRICT
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
+     &     igen_shiCoeffT=iarr
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
+     &     igen_shiCoeffS=iarr
+# else
+        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
+     &     igen_shiCDrag=iarr
+# endif
+#endif
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_alpha')
+     &     igen_alpha=iarr
+#endif
        ENDIF
       ENDDO
 
@@ -100,6 +134,67 @@ C--   generic 2D control variables
 #ifdef ALLOW_GEOTHERMAL_FLUX
       IF (igen_geoth.GT.0)
      &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
+#endif
+#ifdef ALLOW_SHELFICE
+# ifndef SHI_ALLOW_GAMMAFRICT
+      IF (igen_shiCoeffT.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
+
+      IF (igen_shiCoeffS.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffS,igen_shiCoeffS,myThid)
+
+C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
+      IF ((igen_shiCoeffS.EQ.0).AND.(igen_shiCoeffT.GT.0)) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiTransCoeffS(i,j,bi,bj) =
+     &       SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
+      ELSEIF ((igen_shiCoeffT.EQ.0).AND.(igen_shiCoeffS.GT.0)) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiTransCoeffT(i,j,bi,bj) =
+     &       shiTransCoeffS(i,j,bi,bj)/SHELFICEsaltToHeatRatio
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# else
+      dragThermoEqualMom = .FALSE.
+      IF (igen_shiCDrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
+C--     Set drag coefficient used in momentum equal to thermodynamic,
+C--      u* drag coefficient
+      DO k2 = 1, maxCtrlProc
+
+       IF (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).EQ.'mom')
+     &    dragThermoEqualMom = .TRUE.
+      ENDDO
+      IF (dragThermoEqualMom) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+# endif /* SHI_ALLOW_GAMMAFRICT */
+#endif /* ALLOW_SHELFICE */
+#if (defined ALLOW_DIC && defined DIC_BIOTIC)
+      IF (igen_alpha.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
 #endif
 
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -187,345 +282,6 @@ CADJ loop = parallel
         CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
       ENDIF
 # endif
-
-#endif /* ALLOW_GENARR3D_CONTROL */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP
-C     !ROUTINE: CTRL_MAP_GENARR2D
-C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, myThid )
-
-C     !DESCRIPTION: \bv
-C     *=================================================================
-C     | SUBROUTINE CTRL_MAP_GENARR2D
-C     | Add the generic arrays of the
-C     | control vector to the model state and update the tile halos.
-C     | The control vector is defined in the header file "ctrl.h".
-C     *=================================================================
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == global variables ==
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-      _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER iarr
-      INTEGER myThid
-
-#ifdef ALLOW_GENARR2D_CONTROL
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-      INTEGER bi,bj
-      INTEGER i,j
-      INTEGER numsmo, k2
-      LOGICAL dowc01
-      LOGICAL dosmooth
-      LOGICAL doscaling
-      _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dummyRS(1)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
-      CHARACTER*(80) fnamebase
-      INTEGER ilgen
-      LOGICAL doglobalread
-      LOGICAL ladinit
-CEOP
-
-c--   Now, read the control vector.
-      doglobalread = .FALSE.
-      ladinit      = .FALSE.
-
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          xx_gen(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-      dosmooth=.FALSE.
-      dowc01  = .FALSE.
-      doscaling=.TRUE.
-
-      numsmo = 1
-      DO k2 = 1, maxCtrlProc
-        IF ( xx_genarr2d_preproc(k2,iarr).EQ.'WC01' ) THEN
-          dowc01 = .TRUE.
-          IF (xx_genarr2d_preproc_i(k2,iarr).NE.0)
-     &      numsmo = xx_genarr2d_preproc_i(k2,iarr)
-        ENDIF
-        IF ( (.NOT.dowc01).AND.
-     &       (xx_genarr2d_preproc(k2,iarr).EQ.'smooth') ) THEN
-          dosmooth = .TRUE.
-          IF (xx_genarr2d_preproc_i(k2,iarr).NE.0)
-     &      numsmo = xx_genarr2d_preproc_i(k2,iarr)
-        ENDIF
-        IF ( xx_genarr2d_preproc(k2,iarr).EQ.'noscaling' ) THEN
-             doscaling = .FALSE.
-        ENDIF
-      ENDDO
-
-      fnamebase = xx_genarr2d_file(iarr)
-      ilgen = ILNBLNK( fnamebase )
-      WRITE(fnamegenIn(1:80),'(2A,I10.10)')
-     &       fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2A,I10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
-
-      CALL MDS_READ_FIELD(xx_genarr2d_weight(iarr),ctrlprec,.FALSE.,
-     &     'RL',1,1,1,wgenarr2d(1-OLx,1-OLy,1,1,iarr),dummyRS,1,myThid)
-
-#ifdef ALLOW_AUTODIFF
-      CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, 1, doglobalread,
-     &     ladinit, optimcycle, myThid, xx_genarr2d_dummy(iarr) )
-#else
-      CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
-#endif
-
-#ifdef ALLOW_SMOOTH
-      IF (useSMOOTH) THEN
-       IF (dowc01) CALL SMOOTH_CORREL2D( xx_gen,maskC,numsmo,myThid )
-       IF (dosmooth) CALL SMOOTH2D( xx_gen, maskC, numsmo, myThid )
-      ENDIF
-#endif
-
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
-c scale param adjustment
-            IF ( (maskC(i,j,1,bi,bj).NE.0.).AND.
-     &           (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
-              IF (doscaling) THEN
-                  xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
-     &                     /SQRT( wgenarr2d(i,j,bi,bj,iarr) )
-              ENDIF
-            ELSE
-              xx_gen(i,j,bi,bj) = 0.
-            ENDIF
-c add to model parameter
-            fld(i,j,bi,bj) = fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-
-c avoid param out of [boundsVec(1) boundsVec(4)]
-      CALL CTRL_BOUND_2D( fld, maskC,
-     &                    xx_genarr2d_bounds(1,iarr), myThid )
-
-      CALL EXCH_XY_RL( fld, myThid )
-
-      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
-     &         'RL', 1, 1, 1, fld, dummyRS, 1, optimcycle, myThid )
-
-#endif /* ALLOW_GENARR2D_CONTROL */
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP
-C     !ROUTINE: CTRL_MAP_GENARR3D
-C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_GENARR3D( fld, iarr, myThid )
-
-C     !DESCRIPTION: \bv
-C     *=================================================================
-C     | SUBROUTINE CTRL_MAP_GENARR3D
-C     | Add the generic arrays of the
-C     | control vector to the model state and update the tile halos.
-C     | The control vector is defined in the header file "ctrl.h".
-C     *=================================================================
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     == global variables ==
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-
-#include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-      _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER iarr
-      INTEGER myThid
-
-#ifdef ALLOW_GENARR3D_CONTROL
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-      INTEGER bi,bj
-      INTEGER i,j,k
-      INTEGER numsmo,k2
-      LOGICAL dowc01
-      LOGICAL dosmooth
-      LOGICAL doscaling
-      _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS dummyRS(1)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
-      CHARACTER*(80) fnamebase
-      INTEGER ilgen
-      LOGICAL doglobalread
-      LOGICAL ladinit
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      _RL localmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-CEOP
-
-c--   Now, read the control vector.
-      doglobalread = .FALSE.
-      ladinit      = .FALSE.
-
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,Nr
-         DO j = 1-OLy,sNy+OLy
-          DO i = 1-OLx,sNx+OLx
-           xx_gen(i,j,k,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-      dosmooth=.FALSE.
-      dowc01  = .FALSE.
-      doscaling=.TRUE.
-
-      numsmo = 1
-      DO k2 = 1, maxCtrlProc
-        IF ( xx_genarr3d_preproc(k2,iarr).EQ.'WC01' ) THEN
-          dowc01 = .TRUE.
-          IF (xx_genarr3d_preproc_i(k2,iarr).NE.0)
-     &      numsmo = xx_genarr3d_preproc_i(k2,iarr)
-        ENDIF
-        IF ( (.NOT.dowc01).AND.
-     &       (xx_genarr3d_preproc(k2,iarr).EQ.'smooth') ) THEN
-          dosmooth = .TRUE.
-          IF (xx_genarr3d_preproc_i(k2,iarr).NE.0)
-     &      numsmo = xx_genarr3d_preproc_i(k2,iarr)
-        ENDIF
-        IF (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') THEN
-          doscaling = .FALSE.
-        ENDIF
-      ENDDO
-
-      fnamebase = xx_genarr3d_file(iarr)
-      ilgen = ILNBLNK( fnamebase )
-      WRITE(fnamegenIn(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
-
-      CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',nR,1,nR,wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),dummyRS,1,myThid)
-
-#ifdef ALLOW_AUTODIFF
-      CALL ACTIVE_READ_XYZ( fnamegenIn, xx_gen, 1, doglobalread,
-     & ladinit, optimcycle, myThid, xx_genarr3d_dummy(iarr) )
-#else
-      CALL READ_REC_XYZ_RL( fnamegenIn, xx_gen, 1, 1, myThid)
-#endif
-
-#ifdef ALLOW_SMOOTH
-      IF (useSMOOTH) THEN
-       IF (dowc01) CALL SMOOTH_CORREL3D( xx_gen, numsmo, myThid )
-       IF (dosmooth) CALL SMOOTH3D( xx_gen, numsmo, myThid )
-      ENDIF
-#endif
-
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-c--   set local mask
-      CALL ECCO_ZERO( localmask, Nr, zeroRL, myThid )
-      IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') THEN
-        CALL ECCO_CPRSRL( maskW, Nr, localmask, Nr, myThid )
-      ELSE if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') THEN
-        CALL ECCO_CPRSRL( maskS, Nr, localmask, Nr, myThid )
-      ELSE
-        CALL ECCO_CPRSRL( maskC, Nr, localmask, Nr, myThid )
-      ENDIF
-#endif
-
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-         DO k = 1,Nr
-          DO j = 1,sNy
-           DO i = 1,sNx
-c scale param adjustment
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-             IF ( (localmask(i,j,k,bi,bj).NE.0.).AND.
-#else
-             IF ( (maskC(i,j,k,bi,bj).NE.0.).AND.
-#endif
-     &            (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) THEN
-               IF (doscaling) THEN
-                 xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj)
-     &                     /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
-               ENDIF
-             ELSE
-               xx_gen(i,j,k,bi,bj) = 0.
-             ENDIF
-c add to model parameter
-             fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-
-c avoid param out of [boundsVec(1) boundsVec(4)]
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      CALL CTRL_BOUND_3D( fld, localmask,
-     &                    xx_genarr3d_bounds(1,iarr), myThid )
-#else
-      CALL CTRL_BOUND_3D( fld, maskC,
-     &                    xx_genarr3d_bounds(1,iarr), myThid )
-#endif
-
-C The tile exchange for xx_uvel and xx_vvel will be
-C  done in CTRL_MAP_INI_GENARR.F when both
-C  xx_uvel and xx_vvel are read in.
-      IF (xx_genarr3d_file(iarr)(1:7).NE.'xx_uvel'.AND.
-     &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
-     &    CALL EXCH_XYZ_RL( fld, myThid )
-
-      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
-     &         'RL', Nr, 1, Nr, fld, dummyRS, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 

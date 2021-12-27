@@ -53,6 +53,10 @@ C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
+C o Include/exclude sound speed calculation code
+C o (Note that this is a diagnostic from Del Grasso algorithm, not derived from EOS)
+#undef INCLUDE_SOUNDSPEED_CALC_CODE
+
 C-- Vertical mixing code options:
 
 C o Include/exclude call to S/R CONVECT
@@ -100,6 +104,9 @@ C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
 #undef NONLIN_FRSURF
+C o Disable code for rStar coordinate and/or code for Sigma coordinate
+c#define DISABLE_RSTAR_CODE
+c#define DISABLE_SIGMA_CODE
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
@@ -109,7 +116,7 @@ C o Include/exclude GM-like eddy stress in momentum code
 
 C-- Algorithm options:
 
-C o Use Non Self-Adjoint (NSA) conjugate-gradient solver
+C o Include/exclude code for Non Self-Adjoint (NSA) conjugate-gradient solver
 #undef ALLOW_CG2D_NSA
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver
@@ -134,7 +141,7 @@ C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
 C   in data which is then automatically scaled by the grid size;
 C   the old method of specifying viscAh/viscA4 and this flag is provided
 C   for completeness only (and for use with the adjoint).
-C#define ISOTROPIC_COS_SCALING
+c#define ISOTROPIC_COS_SCALING
 
 C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
 C *only for use on a lat-lon grid*
@@ -144,7 +151,7 @@ C   Setting this flag here affects both momentum and tracer equation unless
 C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
 C   The definition of the flag is commented to avoid interference with
 C   such other header files.
-C#define COSINEMETH_III
+c#define COSINEMETH_III
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
@@ -155,10 +162,6 @@ C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
-
-C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
-C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
-#undef OLD_THSICE_CALL_SEQUENCE
 
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
 #undef USE_OLD_EXTERNAL_FORCING

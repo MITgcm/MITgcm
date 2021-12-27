@@ -48,15 +48,17 @@ C     === Local variables ===
 C     bi, bj    :: Tile indices
 C     uIce/vIce :: ice velocity on C-grid [m/s]
       INTEGER bi, bj
-#ifndef OLD_THSICE_CALL_SEQUENCE
       INTEGER i, j
       INTEGER iMin, iMax, jMin, jMax
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
 #endif
       _RL  uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( thSIceAdvScheme.GT.0 .AND. biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
-#ifndef OLD_THSICE_CALL_SEQUENCE
 c      iMin = 1
 c      iMax = sNx
 c      jMin = 1
@@ -68,16 +70,16 @@ c      jMax = sNy
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ticekey = (act1 + 1) + act2*max1
-     &                         + act3*max1*max2
-     &                         + act4*max1*max2*max3
+         act1 = bi - myBxLo(myThid)
+         max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+         act2 = bj - myByLo(myThid)
+         max2 = myByHi(myThid) - myByLo(myThid) + 1
+         act3 = myThid - 1
+         max3 = nTx*nTy
+         act4 = ikey_dynamics - 1
+         ticekey = (act1 + 1) + act2*max1
+     &                        + act3*max1*max2
+     &                        + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
          CALL THSICE_GET_VELOCITY(
@@ -129,21 +131,9 @@ C--     cumulate time-averaged fields and also fill-up flux diagnostics
      &   _EXCH_XY_RL( iceMask, myThid )
        IF ( useRealFreshWaterFlux )
      &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      ELSEIF ( thSIceAdvScheme.GT.0 ) THEN
-         bi = biArg
-         bj = bjArg
-         CALL THSICE_GET_VELOCITY(
-     O                        uIce, vIce,
-     I                        bi,bj, myTime, myIter, myThid )
-         CALL THSICE_ADVDIFF(
-     U                        uIce, vIce,
-     I                        bi,bj, myTime, myIter, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
       ENDIF
 
       RETURN

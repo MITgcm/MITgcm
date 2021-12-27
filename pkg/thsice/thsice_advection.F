@@ -60,7 +60,6 @@ C !USES: ===============================================================
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -139,6 +138,11 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       LOGICAL N_edge, S_edge, E_edge, W_edge
 #ifdef ALLOW_EXCH2
       INTEGER myTile
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey, ikey_4
 #endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag

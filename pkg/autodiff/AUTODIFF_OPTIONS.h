@@ -36,6 +36,8 @@ C       >>> Checkpointing as handled by TAMC
 
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
+C       >>> and DYNVARS_DIAG adjoint state
+#define ALLOW_AUTODIFF_MONITOR_DIAG
 
 C       >>> DO 2-level checkpointing instead of 3-level
 c#undef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -52,7 +54,9 @@ C   tape-files on the disc. Maybe it should even be the default.
 #define ALLOW_AUTODIFF_WHTAPEIO
 C o use MDSFINDUINTS instead of AUTODIFF_MDSFINDUNITS to find unique and
 C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
-#define AUTODIFF_USE_MDSFINDUNITS
+C   Note: comment out the #define below (instead of having an #undef) to
+C   enable to set this Option in CPP command line (from the optfile)
+c#define AUTODIFF_USE_MDSFINDUNITS
 C o This is a set of flags that, if defined at the same time, will get
 C   rid of the autodiff_store/restore scheme. That is why we define a
 C   "macro" flag to set them all at the same time, but they can also be

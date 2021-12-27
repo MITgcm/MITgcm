@@ -1,0 +1,108 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh = 3.E5,
+# background dissipation will be taken care of by IDEMIX
+# so we turn it off here
+#viscAr = 1.030905162225000e+05,
+#viscAr = 1.E-3,
+#diffKrT= 3.092715486675000e+03,
+#diffKrT= 3.E-5,
+#diffKrS= 3.092715486675000e+03,
+#diffKrS= 3.E-5,
+# should use this with ggl90 for avoiding local instabilities
+ ivdc_kappa= 1.030905162225000e+08,
+#ivdc_kappa= 1.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ gravity=9.81,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+ buoyancyRelation='OCEANICP',
+ integr_GeoPot=1,
+ eosType='JMD95P',
+ staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ useRealFreshWaterFlux=.TRUE.,
+ hFacMin=.1,
+# 20 m
+ hFacMinDr=203067.0,
+#- to check that it has no impact:
+ doResetHFactors=.TRUE.,
+#tempAdvScheme=77,
+#saltAdvScheme=77,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+ debugLevel = 2,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+ cg2dTargetResidual=1.E-9,
+#cg2dTargetResWunit=1.E-14,
+ &
+
+# Time stepping parameters
+ &PARM03
+#nIter0=72000,
+ nIter0=0,
+ nTimeSteps=10,
+#endTime=31104000.,
+ deltaTMom   =1200.,
+ deltaTtracer=86400.,
+ deltaTFreeSurf=86400.,
+ deltaTClock =86400.,
+ abEps = 0.1,
+ forcing_In_AB=.FALSE.,
+#pickupStrictlyMatch=.FALSE.,
+ pChkptFreq   =3110400000.,
+ chkptFreq    = 155520000.,
+#tave_lastIter=0.,
+#taveFreq     = 2592000.,
+#dumpFreq     =  864000.,
+ monitorFreq  = 15552000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+# 6 months restoring timescale for temperature
+#tauThetaClimRelax = 15552000.,
+# 2 months restoring timescale for tsalinity
+#tauSaltClimRelax = 5184000.,
+#latBandClimRelax=60.,
+ monitorFreq =1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
+# radius_fromHorizGrid=64676839500.,
+ radius_fromHorizGrid=6370.E3,
+ delR = 7105181.631178, 6571679.735642, 6042512.265968,
+        5517067.241693, 4995190.435925, 4476390.802366,
+        3960087.645808, 3446365.011284, 2934956.237702,
+        2425564.880893, 1917984.297155, 1411815.607161,
+        1007433.323163,  704400.618506,  502655.686646,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='bathy_in_P.bin',
+ geoPotAnomFile ='geopotanom.bin',
+ hydrogThetaFile='lev_T_cs_flip15.bin',
+ hydrogSaltFile ='lev_S_cs_flip15.bin',
+ &

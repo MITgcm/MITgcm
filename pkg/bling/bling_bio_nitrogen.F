@@ -332,6 +332,9 @@ C
       _RL mu_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC

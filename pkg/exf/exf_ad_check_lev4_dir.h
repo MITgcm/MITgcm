@@ -5,6 +5,7 @@ CADJ STORE areamask0    = tapelev4, key = ilev_4
 CADJ STORE areamask1    = tapelev4, key = ilev_4
 # endif
 
+# ifdef ECCO_CTRL_DEPRECATED
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = tapelev4, key = ilev_4
 CADJ STORE xx_hflux1     = tapelev4, key = ilev_4
@@ -29,6 +30,7 @@ CADJ STORE xx_sst1      = tapelev4, key = ilev_4
 CADJ STORE xx_sss0      = tapelev4, key = ilev_4
 CADJ STORE xx_sss1      = tapelev4, key = ilev_4
 # endif
+# endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef AUTODIFF_USE_OLDSTORE_EXF
 CADJ STORE hflux0   = tapelev4, key = ilev_4

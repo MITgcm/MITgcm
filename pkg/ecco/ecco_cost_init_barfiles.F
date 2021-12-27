@@ -34,7 +34,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
@@ -67,10 +68,17 @@ c     == local variables ==
       character*(128) adfname_gencostbar
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-#ifndef ALLOW_CTRL
-      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#if (defined ALLOW_SEAICE) && (defined ALLOW_SEAICE_COST_SMR_AREA)
+      character*(128) fnamesmrareabar
+      character*(128) fnamesmrsstbar
+      character*(128) fnamesmrsssbar
+      character*(128) adfnamesmrareabar
+      character*(128) adfnamesmrsstbar
+      character*(128) adfnamesmrsssbar
 #endif
+
+      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ECCO_CTRL_DEPRECATED
       character*(128) fnamepsbar
@@ -85,9 +93,6 @@ c     == local variables ==
       character*(128) fnamehfluxmeanbar
       character*(128) fnamesfluxmeanbar
       character*(128) fnamebpbar
-      character*(128) fnamesmrareabar
-      character*(128) fnamesmrsstbar
-      character*(128) fnamesmrsssbar
       character*(128) fnameiestaubar
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) fnamesigmaRbar
@@ -104,15 +109,11 @@ c     == local variables ==
       character*(128) adfnamehfluxmeanbar
       character*(128) adfnamesfluxmeanbar
       character*(128) adfnamebpbar
-      character*(128) adfnamesmrareabar
-      character*(128) adfnamesmrsstbar
-      character*(128) adfnamesmrsssbar
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) adfnamesigmaRbar
 #endif
       character*(128) adfnameiestaubar
 #endif /* ECCO_CTRL_DEPRECATED */
-
 c     == external functions ==
 
       integer  ilnblnk
@@ -486,4 +487,3 @@ c--   Save gencost_barfile on file.
 
       return
       end
-

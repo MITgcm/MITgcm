@@ -419,11 +419,11 @@ C     geographical north when they have not been read from a file
 C--   Exchange Angle (either loaded from file or computed)
       CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
 
-c     CALL WRITE_FULLARRAY_RL('dxV',dxV,1,0,0,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('dyU',dyU,1,0,0,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('rAz',rAz,1,0,0,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('xG' ,xG ,1,0,0,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('yG' ,yG ,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RS('dxV',dxV,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RS('dyU',dyU,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RS('rAz',rAz,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RS('xG' ,xG ,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RS('yG' ,yG ,1,0,0,1,0,myThid)
 
 C--   Now let us look at all these beasts
       IF ( plotLevel.GE.debLevC ) THEN

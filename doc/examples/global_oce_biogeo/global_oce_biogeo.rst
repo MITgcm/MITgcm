@@ -170,7 +170,7 @@ The input fields needed for this run (in
    many tracers are used, and :varlink:`PTRACERS_Iter0` which states at which
    timestep the biogeochemistry model tracers were initialized.
 
--  ``depth_g77.bin``: bathymetry data file
+-  ``bathy.bin``: bathymetry data file
 
 -  :filelink:`input/eedata <verification/tutorial_global_oce_biogeo/input/eedata>`: This file uses standard default values and does not
    contain customizations for this experiment.

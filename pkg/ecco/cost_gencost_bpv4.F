@@ -28,7 +28,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
@@ -94,10 +95,12 @@ c     == end of interface ==
       if (kgen.GT.0) then
 
        dosumsq=.TRUE.
-       call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(kgen) .NE. ' ' )
-     &   call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
+     &   call ecco_readwei( gencost_errfile(kgen),
+     &     gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &     1, 1, 1, dosumsq, myThid )
 
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
@@ -284,13 +287,13 @@ c--    Smooth field of anomalies
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
          if ( useSMOOTH )
-     &   call smooth_basic2D(bpdatanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
@@ -311,9 +314,9 @@ c-- map to global cost variables
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                  junk = bpdifanom(i,j,bi,bj)
-                 objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
+                 objf_gencost(bi,bj,kgen) = objf_gencost(bi,bj,kgen)
      &               + junk*junk*locwbp(i,j,bi,bj)
-                 num_gencost(kgen,bi,bj) = num_gencost(kgen,bi,bj)
+                 num_gencost(bi,bj,kgen) = num_gencost(bi,bj,kgen)
      &               + 1. _d 0
               endif
             enddo

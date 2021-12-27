@@ -266,10 +266,10 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
 
 
 
-As an example, consider a diagnostic whose associated :varlink:`gdiag` parameter is
-equal to “UURMR”. From :varlink:`gdiag` we can determine that this diagnostic is a
-U-vector component located at the C-grid U-point, model mid-level (M)
-with Nr levels (last R).
+As an example, consider a diagnostic whose associated :varlink:`gdiag`
+parameter is equal to ``UUR     MR``. From :varlink:`gdiag` we can determine
+that this diagnostic is a U-vector component located at the C-grid U-point,
+model mid-level (M) with Nr levels (last R).
 
 In this way, each diagnostic in the model has its attributes (i.e., vector
 or scalar, C-grid location, etc.) defined internally. The output
@@ -404,14 +404,14 @@ Currently, the available adjoint state variables are:
    111 |ADJvvel | 15 |   110 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
    112 |ADJwvel | 15 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
    113 |ADJtheta| 15 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
-   114 |ADJsalt | 15 |       |SMRA    MR|dJ/(psu)        |dJ/dSalt: Sensitivity to salinity
+   114 |ADJsalt | 15 |       |SMRA    MR|dJ/(g/kg)       |dJ/dSalt: Sensitivity to salinity
    115 |ADJtaux |  1 |   116 |UU A    U1|dJ/(N/m^2)      |dJ/dTaux: Senstivity to zonal surface wind stress
    116 |ADJtauy |  1 |   115 |VV A    U1|dJ/(N/m^2)      |dJ/dTauy: Sensitivity to merid. surface wind stress
    117 |ADJempmr|  1 |       |SM A    U1|dJ/(kg/m^2/s)   |dJ/dEmPmR: Sensitivity to net surface Fresh-Water flux into the ocean
    118 |ADJqnet |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQnet: Sensitivity to net surface heat fluxinto the ocean
    119 |ADJqsw  |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQsw: Sensitivitiy to net Short-Wave radiation
    120 |ADJsst  |  1 |       |SM A    M1|dJ/K            |dJ/dSST: Sensitivity to Sea Surface Temperature
-   121 |ADJsss  |  1 |       |SM A    M1|dJ/(psu)        |dJ/dSSS: Sensitivity to Sea Surface Salinity
+   121 |ADJsss  |  1 |       |SM A    M1|dJ/(g/kg)       |dJ/dSSS: Sensitivity to Sea Surface Salinity
    122 |ADJbtdrg|  1 |       |SM A    M1|dJ/d()          |dJ/dCd: Sensitivity to bottom drag coefficient
    123 |ADJdifkr| 15 |       |SMRA    MR|dJ/d(m^2/s))    |dJ/dKr: Sensitivity to vertical diffusivity
    124 |ADJepsix| 15 |   125 |UURA    UR|dJ/(m^2/s)      |dJ/dEddyPsiX: Sensitivity to zonal eddystreamfunction
@@ -597,207 +597,242 @@ MITgcm kernel available diagnostics list:
 
 ::
 
-  ----------------------------------------------------------------------------
-  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)
-  -------------------------------------------------------------------------------------
-  SDIAG1  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #1
-  SDIAG2  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #2
-  SDIAG3  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #3
-  SDIAG4  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #4
-  SDIAG5  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #5
-  SDIAG6  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #6
-  SDIAG7  |  1 |       |SU      L1|user-defined    |User-Defined U.pt Surface Diagnostic #7
-  SDIAG8  |  1 |       |SV      L1|user-defined    |User-Defined V.pt Surface Diagnostic #8
-  SDIAG9  |  1 |    10 |UU      L1|user-defined    |User-Defined U.vector Surface Diag.  #9
-  SDIAG10 |  1 |     9 |VV      L1|user-defined    |User-Defined V.vector Surface Diag. #10
-  UDIAG1  | 50 |       |SM      MR|user-defined    |User-Defined Model-Level Diagnostic  #1
-  UDIAG2  | 50 |       |SM      MR|user-defined    |User-Defined Model-Level Diagnostic  #2
-  UDIAG3  | 50 |       |SMR     MR|user-defined    |User-Defined Model-Level Diagnostic  #3
-  UDIAG4  | 50 |       |SMR     MR|user-defined    |User-Defined Model-Level Diagnostic  #4
-  UDIAG5  | 50 |       |SU      MR|user-defined    |User-Defined U.pt Model-Level Diag.  #5
-  UDIAG6  | 50 |       |SV      MR|user-defined    |User-Defined V.pt Model-Level Diag.  #6
-  UDIAG7  | 50 |    18 |UUR     MR|user-defined    |User-Defined U.vector Model-Lev Diag.#7
-  UDIAG8  | 50 |    17 |VVR     MR|user-defined    |User-Defined V.vector Model-Lev Diag.#8
-  UDIAG9  | 50 |       |SM      ML|user-defined    |User-Defined Phys-Level  Diagnostic  #9
-  UDIAG10 | 50 |       |SM      ML|user-defined    |User-Defined Phys-Level  Diagnostic #10
-  SDIAGC  |  1 |    22 |SM  C   L1|user-defined    |User-Defined Counted Surface Diagnostic
-  SDIAGCC |  1 |       |SM      L1|count           |User-Defined Surface Diagnostic Counter
-  ETAN    |  1 |       |SM      M1|m               |Surface Height Anomaly
-  ETANSQ  |  1 |       |SM P    M1|m^2             |Square of Surface Height Anomaly
-  DETADT2 |  1 |       |SM      M1|m^2/s^2         |Square of Surface Height Anomaly Tendency
-  THETA   | 50 |       |SMR     MR|degC            |Potential Temperature
-  SALT    | 50 |       |SMR     MR|psu             |Salinity
-  RELHUM  | 50 |       |SMR     MR|percent         |Relative Humidity
-  SALTanom| 50 |       |SMR     MR|psu             |Salt anomaly (=SALT-35; g/kg)
-  UVEL    | 50 |    31 |UUR     MR|m/s             |Zonal Component of Velocity (m/s)
-  VVEL    | 50 |    30 |VVR     MR|m/s             |Meridional Component of Velocity (m/s)
-  WVEL    | 50 |       |WM      LR|m/s             |Vertical Component of Velocity (r_units/s)
-  THETASQ | 50 |       |SMRP    MR|degC^2          |Square of Potential Temperature
-  SALTSQ  | 50 |       |SMRP    MR|(psu)^2         |Square of Salinity
-  SALTSQan| 50 |       |SMRP    MR|(psu)^2         |Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)
-  UVELSQ  | 50 |    37 |UURP    MR|m^2/s^2         |Square of Zonal Comp of Velocity (m^2/s^2)
-  VVELSQ  | 50 |    36 |VVRP    MR|m^2/s^2         |Square of Meridional Comp of Velocity (m^2/s^2)
-  WVELSQ  | 50 |       |WM P    LR|m^2/s^2         |Square of Vertical Comp of Velocity
-  UE_VEL_C| 50 |    40 |UMR     MR|m/s             |Eastward Velocity (m/s) (cell center)
-  VN_VEL_C| 50 |    39 |VMR     MR|m/s             |Northward Velocity (m/s) (cell center)
-  UV_VEL_C| 50 |    41 |UMR     MR|m^2/s^2         |Product of horizontal Comp of velocity (cell center)
-  UV_VEL_Z| 50 |    42 |UZR     MR|m^2/s^2         |Meridional Transport of Zonal Momentum (m^2/s^2)
-  WU_VEL  | 50 |       |WU      LR|m.m/s^2         |Vertical Transport of Zonal Momentum
-  WV_VEL  | 50 |       |WV      LR|m.m/s^2         |Vertical Transport of Meridional Momentum
-  UVELMASS| 50 |    46 |UUr     MR|m/s             |Zonal Mass-Weighted Comp of Velocity (m/s)
-  VVELMASS| 50 |    45 |VVr     MR|m/s             |Meridional Mass-Weighted Comp of Velocity (m/s)
-  WVELMASS| 50 |       |WM      LR|m/s             |Vertical Mass-Weighted Comp of Velocity
-  PhiVEL  | 50 |    45 |SMR P   MR|m^2/s           |Horizontal Velocity Potential (m^2/s)
-  PsiVEL  | 50 |    48 |SZ  P   MR|m.m^2/s         |Horizontal Velocity Stream-Function
-  UTHMASS | 50 |    51 |UUr     MR|degC.m/s        |Zonal Mass-Weight Transp of Pot Temp
-  VTHMASS | 50 |    50 |VVr     MR|degC.m/s        |Meridional Mass-Weight Transp of Pot Temp
-  WTHMASS | 50 |       |WM      LR|degC.m/s        |Vertical Mass-Weight Transp of Pot Temp (K.m/s)
-  USLTMASS| 50 |    54 |UUr     MR|psu.m/s         |Zonal Mass-Weight Transp of Salinity
-  VSLTMASS| 50 |    53 |VVr     MR|psu.m/s         |Meridional Mass-Weight Transp of Salinity
-  WSLTMASS| 50 |       |WM      LR|psu.m/s         |Vertical Mass-Weight Transp of Salinity
-  UVELTH  | 50 |    57 |UUR     MR|degC.m/s        |Zonal Transport of Pot Temp
-  VVELTH  | 50 |    56 |VVR     MR|degC.m/s        |Meridional Transport of Pot Temp
-  WVELTH  | 50 |       |WM      LR|degC.m/s        |Vertical Transport of Pot Temp
-  UVELSLT | 50 |    60 |UUR     MR|psu.m/s         |Zonal Transport of Salinity
-  VVELSLT | 50 |    59 |VVR     MR|psu.m/s         |Meridional Transport of Salinity
-  WVELSLT | 50 |       |WM      LR|psu.m/s         |Vertical Transport of Salinity
-  UVELPHI | 50 |    63 |UUr     MR|m^3/s^3         |Zonal Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
-  VVELPHI | 50 |    62 |VVr     MR|m^3/s^3         |Merid. Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
-  RHOAnoma| 50 |       |SMR     MR|kg/m^3          |Density Anomaly (=Rho-rhoConst)
-  RHOANOSQ| 50 |       |SMRP    MR|kg^2/m^6        |Square of Density Anomaly (=(Rho-rhoConst)^2)
-  URHOMASS| 50 |    67 |UUr     MR|kg/m^2/s        |Zonal Transport of Density
-  VRHOMASS| 50 |    66 |VVr     MR|kg/m^2/s        |Meridional Transport of Density
-  WRHOMASS| 50 |       |WM      LR|kg/m^2/s        |Vertical Transport of Density
-  WdRHO_P | 50 |       |WM      LR|kg/m^2/s        |Vertical velocity times delta^k(Rho)_at-const-P
-  WdRHOdP | 50 |       |WM      LR|kg/m^2/s        |Vertical velocity times delta^k(Rho)_at-const-T,S
-  PHIHYD  | 50 |       |SMR     MR|m^2/s^2         |Hydrostatic Pressure Pot.(p/rho) Anomaly
-  PHIHYDSQ| 50 |       |SMRP    MR|m^4/s^4         |Square of Hyd. Pressure Pot.(p/rho) Anomaly
-  PHIBOT  |  1 |       |SM      M1|m^2/s^2         |Bottom Pressure Pot.(p/rho) Anomaly
-  PHIBOTSQ|  1 |       |SM P    M1|m^4/s^4         |Square of Bottom Pressure Pot.(p/rho) Anomaly
-  PHIHYDcR| 50 |       |SMR     MR|m^2/s^2         |Hydrostatic Pressure Pot.(p/rho) Anomaly @ const r
-  MXLDEPTH|  1 |       |SM      M1|m               |Mixed-Layer Depth (>0)
-  DRHODR  | 50 |       |SM      LR|kg/m^4          |Stratification: d.Sigma/dr (kg/m3/r_unit)
-  CONVADJ | 50 |       |SMR     LR|fraction        |Convective Adjustment Index [0-1]
-  oceTAUX |  1 |    80 |UU      U1|N/m^2           |zonal surface wind stress, >0 increases uVel
-  oceTAUY |  1 |    79 |VV      U1|N/m^2           |meridional surf. wind stress, >0 increases vVel
-  atmPload|  1 |       |SM      U1|Pa              |Atmospheric pressure loading
-  sIceLoad|  1 |       |SM      U1|kg/m^2          |sea-ice loading (in Mass of ice+snow / area unit)
-  oceFWflx|  1 |       |SM      U1|kg/m^2/s        |net surface Fresh-Water flux into the ocean (+=down), >0 decreases salinity
-  oceSflux|  1 |       |SM      U1|g/m^2/s         |net surface Salt flux into the ocean (+=down), >0 increases salinity
-  oceQnet |  1 |       |SM      U1|W/m^2           |net surface heat flux into the ocean (+=down), >0 increases theta
-  oceQsw  |  1 |       |SM      U1|W/m^2           |net Short-Wave radiation (+=down), >0 increases theta
-  oceFreez|  1 |       |SM      U1|W/m^2           |heating from freezing of sea-water (allowFreezing=T)
-  TRELAX  |  1 |       |SM      U1|W/m^2           |surface temperature relaxation, >0 increases theta
-  SRELAX  |  1 |       |SM      U1|g/m^2/s         |surface salinity relaxation, >0 increases salt
-  surForcT|  1 |       |SM      U1|W/m^2           |model surface forcing for Temperature, >0 increases theta
-  surForcS|  1 |       |SM      U1|g/m^2/s         |model surface forcing for Salinity, >0 increases salinity
-  TFLUX   |  1 |       |SM      U1|W/m^2           |total heat flux (match heat-content variations), >0 increases theta
-  SFLUX   |  1 |       |SM      U1|g/m^2/s         |total salt flux (match salt-content variations), >0 increases salt
-  RCENTER | 50 |       |SM      MR|m               |Cell-Center Height
-  RSURF   |  1 |       |SM      M1|m               |Surface Height
-  TOTUTEND| 50 |    97 |UUR     MR|m/s/day         |Tendency of Zonal Component of Velocity
-  TOTVTEND| 50 |    96 |VVR     MR|m/s/day         |Tendency of Meridional Component of Velocity
-  TOTTTEND| 50 |       |SMR     MR|degC/day        |Tendency of Potential Temperature
-  TOTSTEND| 50 |       |SMR     MR|psu/day         |Tendency of Salinity
-  ----------------------------------------------------------------------------
-  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)
-  ----------------------------------------------------------------------------
-  MoistCor| 50 |       |SM      MR|W/m^2           |Heating correction due to moist thermodynamics
-  gT_Forc | 50 |       |SMR     MR|degC/s          |Potential Temp. forcing tendency
-  gS_Forc | 50 |       |SMR     MR|psu/s           |Salinity forcing tendency
-  AB_gT   | 50 |       |SMR     MR|degC/s          |Potential Temp. tendency from Adams-Bashforth
-  AB_gS   | 50 |       |SMR     MR|psu/s           |Salinity tendency from Adams-Bashforth
-  gTinAB  | 50 |       |SMR     MR|degC/s          |Potential Temp. tendency going in Adams-Bashforth
-  gSinAB  | 50 |       |SMR     MR|psu/s           |Salinity tendency going in Adams-Bashforth
-  AB_gU   | 50 |   108 |UUR     MR|m/s^2           |U momentum tendency from Adams-Bashforth
-  AB_gV   | 50 |   107 |VVR     MR|m/s^2           |V momentum tendency from Adams-Bashforth
-  ADVr_TH | 50 |       |WM      LR|degC.m^3/s      |Vertical   Advective Flux of Pot.Temperature
-  ADVx_TH | 50 |   111 |UU      MR|degC.m^3/s      |Zonal      Advective Flux of Pot.Temperature
-  ADVy_TH | 50 |   110 |VV      MR|degC.m^3/s      |Meridional Advective Flux of Pot.Temperature
-  DFrE_TH | 50 |       |WM      LR|degC.m^3/s      |Vertical Diffusive Flux of Pot.Temperature (Explicit part)
-  DFxE_TH | 50 |   114 |UU      MR|degC.m^3/s      |Zonal      Diffusive Flux of Pot.Temperature
-  DFyE_TH | 50 |   113 |VV      MR|degC.m^3/s      |Meridional Diffusive Flux of Pot.Temperature
-  DFrI_TH | 50 |       |WM      LR|degC.m^3/s      |Vertical Diffusive Flux of Pot.Temperature (Implicit part)
-  SM_x_TH | 50 |   117 |UM      MR|degC            |Pot.Temp.   1rst Order Moment Sx
-  SM_y_TH | 50 |   116 |VM      MR|degC            |Pot.Temp.   1rst Order Moment Sy
-  SM_z_TH | 50 |       |SM      MR|degC            |Pot.Temp.   1rst Order Moment Sz
-  SMxx_TH | 50 |   120 |UM      MR|degC            |Pot.Temp.   2nd Order Moment Sxx
-  SMyy_TH | 50 |   119 |VM      MR|degC            |Pot.Temp.   2nd Order Moment Syy
-  SMzz_TH | 50 |       |SM      MR|degC            |Pot.Temp.   2nd Order Moment Szz
-  SMxy_TH | 50 |       |SM      MR|degC            |Pot.Temp.   2nd Order Moment Sxy
-  SMxz_TH | 50 |   124 |UM      MR|degC            |Pot.Temp.   2nd Order Moment Sxz
-  SMyz_TH | 50 |   123 |VM      MR|degC            |Pot.Temp.   2nd Order Moment Syz
-  SM_v_TH | 50 |       |SM P    MR|(degC)^2        |Pot.Temp.   sub-grid variance
-  ADVr_SLT| 50 |       |WM      LR|psu.m^3/s       |Vertical   Advective Flux of Salinity
-  ADVx_SLT| 50 |   128 |UU      MR|psu.m^3/s       |Zonal      Advective Flux of Salinity
-  ADVy_SLT| 50 |   127 |VV      MR|psu.m^3/s       |Meridional Advective Flux of Salinity
-  DFrE_SLT| 50 |       |WM      LR|psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Explicit part)
-  DFxE_SLT| 50 |   131 |UU      MR|psu.m^3/s       |Zonal      Diffusive Flux of Salinity
-  DFyE_SLT| 50 |   130 |VV      MR|psu.m^3/s       |Meridional Diffusive Flux of Salinity
-  DFrI_SLT| 50 |       |WM      LR|psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Implicit part)
-  SALTFILL| 50 |       |SM      MR|psu.m^3/s       |Filling of Negative Values of Salinity
-  SM_x_SLT| 50 |   135 |UM      MR|psu             |Salinity    1rst Order Moment Sx
-  SM_y_SLT| 50 |   134 |VM      MR|psu             |Salinity    1rst Order Moment Sy
-  SM_z_SLT| 50 |       |SM      MR|psu             |Salinity    1rst Order Moment Sz
-  SMxx_SLT| 50 |   138 |UM      MR|psu             |Salinity    2nd Order Moment Sxx
-  SMyy_SLT| 50 |   137 |VM      MR|psu             |Salinity    2nd Order Moment Syy
-  SMzz_SLT| 50 |       |SM      MR|psu             |Salinity    2nd Order Moment Szz
-  SMxy_SLT| 50 |       |SM      MR|psu             |Salinity    2nd Order Moment Sxy
-  SMxz_SLT| 50 |   142 |UM      MR|psu             |Salinity    2nd Order Moment Sxz
-  SMyz_SLT| 50 |   141 |VM      MR|psu             |Salinity    2nd Order Moment Syz
-  SM_v_SLT| 50 |       |SM P    MR|(psu)^2         |Salinity    sub-grid variance
-  VISCAHZ | 50 |       |SZ      MR|m^2/s           |Harmonic Visc Coefficient (m2/s) (Zeta Pt)
-  VISCA4Z | 50 |       |SZ      MR|m^4/s           |Biharmonic Visc Coefficient (m4/s) (Zeta Pt)
-  VISCAHD | 50 |       |SM      MR|m^2/s           |Harmonic Viscosity Coefficient (m2/s) (Div Pt)
-  VISCA4D | 50 |       |SM      MR|m^4/s           |Biharmonic Viscosity Coefficient (m4/s) (Div Pt)
-  VISCAHW | 50 |       |WM      LR|m^2/s           |Harmonic Viscosity Coefficient (m2/s) (W Pt)
-  VISCA4W | 50 |       |WM      LR|m^4/s           |Biharmonic Viscosity Coefficient (m4/s) (W Pt)
-  VAHZMAX | 50 |       |SZ      MR|m^2/s           |CFL-MAX Harm Visc Coefficient (m2/s) (Zeta Pt)
-  VA4ZMAX | 50 |       |SZ      MR|m^4/s           |CFL-MAX Biharm Visc Coefficient (m4/s) (Zeta Pt)
-  VAHDMAX | 50 |       |SM      MR|m^2/s           |CFL-MAX Harm Visc Coefficient (m2/s) (Div Pt)
-  VA4DMAX | 50 |       |SM      MR|m^4/s           |CFL-MAX Biharm Visc Coefficient (m4/s) (Div Pt)
-  VAHZMIN | 50 |       |SZ      MR|m^2/s           |RE-MIN Harm Visc Coefficient (m2/s) (Zeta Pt)
-  VA4ZMIN | 50 |       |SZ      MR|m^4/s           |RE-MIN Biharm Visc Coefficient (m4/s) (Zeta Pt)
-  VAHDMIN | 50 |       |SM      MR|m^2/s           |RE-MIN Harm Visc Coefficient (m2/s) (Div Pt)
-  VA4DMIN | 50 |       |SM      MR|m^4/s           |RE-MIN Biharm Visc Coefficient (m4/s) (Div Pt)
-  VAHZLTH | 50 |       |SZ      MR|m^2/s           |Leith Harm Visc Coefficient (m2/s) (Zeta Pt)
-  VA4ZLTH | 50 |       |SZ      MR|m^4/s           |Leith Biharm Visc Coefficient (m4/s) (Zeta Pt)
-  VAHDLTH | 50 |       |SM      MR|m^2/s           |Leith Harm Visc Coefficient (m2/s) (Div Pt)
-  VA4DLTH | 50 |       |SM      MR|m^4/s           |Leith Biharm Visc Coefficient (m4/s) (Div Pt)
-  VAHZLTHD| 50 |       |SZ      MR|m^2/s           |LeithD Harm Visc Coefficient (m2/s) (Zeta Pt)
-  VA4ZLTHD| 50 |       |SZ      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Zeta Pt)
-  VAHDLTHD| 50 |       |SM      MR|m^2/s           |LeithD Harm Visc Coefficient (m2/s) (Div Pt)
-  VA4DLTHD| 50 |       |SM      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Div Pt)
-  VAHZSMAG| 50 |       |SZ      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)
-  VA4ZSMAG| 50 |       |SZ      MR|m^4/s           |Smagorinsky Biharm Visc Coeff. (m4/s) (Zeta Pt)
-  VAHDSMAG| 50 |       |SM      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Div Pt)
-  VA4DSMAG| 50 |       |SM      MR|m^4/s           |Smagorinsky Biharm Visc Coeff. (m4/s) (Div Pt)
-  momKE   | 50 |       |SMR     MR|m^2/s^2         |Kinetic Energy (in momentum Eq.)
-  momHDiv | 50 |       |SMR     MR|s^-1            |Horizontal Divergence (in momentum Eq.)
-  momVort3| 50 |       |SZR     MR|s^-1            |3rd component (vertical) of Vorticity
-  Strain  | 50 |       |SZR     MR|s^-1            |Horizontal Strain of Horizontal Velocities
-  Tension | 50 |       |SMR     MR|s^-1            |Horizontal Tension of Horizontal Velocities
-  UBotDrag| 50 |   176 |UUR     MR|m/s^2           |U momentum tendency from Bottom Drag
-  VBotDrag| 50 |   175 |VVR     MR|m/s^2           |V momentum tendency from Bottom Drag
-  USidDrag| 50 |   178 |UUR     MR|m/s^2           |U momentum tendency from Side Drag
-  VSidDrag| 50 |   177 |VVR     MR|m/s^2           |V momentum tendency from Side Drag
-  Um_Diss | 50 |   180 |UUR     MR|m/s^2           |U momentum tendency from Dissipation
-  Vm_Diss | 50 |   179 |VVR     MR|m/s^2           |V momentum tendency from Dissipation
-  Um_Advec| 50 |   182 |UUR     MR|m/s^2           |U momentum tendency from Advection terms
-  Vm_Advec| 50 |   181 |VVR     MR|m/s^2           |V momentum tendency from Advection terms
-  Um_Cori | 50 |   184 |UUR     MR|m/s^2           |U momentum tendency from Coriolis term
-  Vm_Cori | 50 |   183 |VVR     MR|m/s^2           |V momentum tendency from Coriolis term
-  Um_dPHdx| 50 |   186 |UUR     MR|m/s^2           |U momentum tendency from Hydrostatic Pressure grad
-  Vm_dPHdy| 50 |   185 |VVR     MR|m/s^2           |V momentum tendency from Hydrostatic Pressure grad
-  Um_Ext  | 50 |   188 |UUR     MR|m/s^2           |U momentum tendency from external forcing
-  Vm_Ext  | 50 |   187 |VVR     MR|m/s^2           |V momentum tendency from external forcing
-  Um_AdvZ3| 50 |   190 |UUR     MR|m/s^2           |U momentum tendency from Vorticity Advection
-  Vm_AdvZ3| 50 |   189 |VVR     MR|m/s^2           |V momentum tendency from Vorticity Advection
-  Um_AdvRe| 50 |   192 |UUR     MR|m/s^2           |U momentum tendency from vertical Advection (Explicit part)
-  Vm_AdvRe| 50 |   191 |VVR     MR|m/s^2           |V momentum tendency from vertical Advection (Explicit part)
-  VISrI_Um| 50 |       |WU      LR|m^4/s^2         |Vertical   Viscous Flux of U momentum (Implicit part)
-  VISrI_Vm| 50 |       |WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
+  ---------------------------------------------------------------
+  <-Name->|<- code ->|<--  Units   -->|<- Tile (max=80c)
+  ------------------------------------------------------------------------
+  SDIAG1  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #1
+  SDIAG2  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #2
+  SDIAG3  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #3
+  SDIAG4  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #4
+  SDIAG5  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #5
+  SDIAG6  |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #6
+  SDIAG7  |SU      L1|user-defined    |User-Defined U.pt Surface Diagnostic #7
+  SDIAG8  |SV      L1|user-defined    |User-Defined V.pt Surface Diagnostic #8
+  SDIAG9  |UU      L1|user-defined    |User-Defined U.vector Surface Diag.  #9
+  SDIAG10 |VV      L1|user-defined    |User-Defined V.vector Surface Diag. #10
+  UDIAG1  |SM      MR|user-defined    |User-Defined Model-Level Diagnostic  #1
+  UDIAG2  |SM      MR|user-defined    |User-Defined Model-Level Diagnostic  #2
+  UDIAG3  |SMR     MR|user-defined    |User-Defined Model-Level Diagnostic  #3
+  UDIAG4  |SMR     MR|user-defined    |User-Defined Model-Level Diagnostic  #4
+  UDIAG5  |SU      MR|user-defined    |User-Defined U.pt Model-Level Diag.  #5
+  UDIAG6  |SV      MR|user-defined    |User-Defined V.pt Model-Level Diag.  #6
+  UDIAG7  |UUR     MR|user-defined    |User-Defined U.vector Model-Lev Diag.#7
+  UDIAG8  |VVR     MR|user-defined    |User-Defined V.vector Model-Lev Diag.#8
+  UDIAG9  |SM      ML|user-defined    |User-Defined Phys-Level  Diagnostic  #9
+  UDIAG10 |SM      ML|user-defined    |User-Defined Phys-Level  Diagnostic #10
+  SDIAGC  |SM  C   L1|user-defined    |User-Defined Counted Surface Diagnostic
+  SDIAGCC |SM      L1|count           |User-Defined Surface Diagnostic Counter
+  ETAN    |SM      M1|m               |Surface Height Anomaly
+  ETANSQ  |SM P    M1|m^2             |Square of Surface Height Anomaly
+  DETADT2 |SM      M1|m^2/s^2         |Square of Surface Height Anomaly Tendency
+  THETA   |SMR     MR|degC            |Potential Temperature
+  SALT    |SMR     MR|g/kg            |Salinity
+  RELHUM  |SMR     MR|percent         |Relative Humidity
+  SALTanom|SMR     MR|g/kg            |Salt anomaly (=SALT-35; g/kg)
+  UVEL    |UUR     MR|m/s             |Zonal Component of Velocity (m/s)
+  VVEL    |VVR     MR|m/s             |Meridional Component of Velocity (m/s)
+  WVEL    |WM      LR|m/s             |Vertical Component of Velocity (r_units/s)
+  THETASQ |SMRP    MR|degC^2          |Square of Potential Temperature
+  SALTSQ  |SMRP    MR|(g/kg)^2        |Square of Salinity
+  SALTSQan|SMRP    MR|(g/kg)^2        |Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)
+  UVELSQ  |UURP    MR|m^2/s^2         |Square of Zonal Comp of Velocity (m^2/s^2)
+  VVELSQ  |VVRP    MR|m^2/s^2         |Square of Meridional Comp of Velocity (m^2/s^2)
+  WVELSQ  |WM P    LR|m^2/s^2         |Square of Vertical Comp of Velocity
+  UE_VEL_C|UMR     MR|m/s             |Eastward Velocity (m/s) (cell center)
+  VN_VEL_C|VMR     MR|m/s             |Northward Velocity (m/s) (cell center)
+  UV_VEL_C|UMR     MR|m^2/s^2         |Product of horizontal Comp of velocity (cell center)
+  UV_VEL_Z|UZR     MR|m^2/s^2         |Meridional Transport of Zonal Momentum (m^2/s^2)
+  WU_VEL  |WU      LR|m.m/s^2         |Vertical Transport of Zonal Momentum
+  WV_VEL  |WV      LR|m.m/s^2         |Vertical Transport of Meridional Momentum
+  UVELMASS|UUr     MR|m/s             |Zonal Mass-Weighted Comp of Velocity (m/s)
+  VVELMASS|VVr     MR|m/s             |Meridional Mass-Weighted Comp of Velocity (m/s)
+  WVELMASS|WM      LR|m/s             |Vertical Mass-Weighted Comp of Velocity
+  PhiVEL  |SMR P   MR|m^2/s           |Horizontal Velocity Potential (m^2/s)
+  PsiVEL  |SZ  P   MR|m.m^2/s         |Horizontal Velocity Stream-Function
+  UTHMASS |UUr     MR|degC.m/s        |Zonal Mass-Weight Transp of Pot Temp
+  VTHMASS |VVr     MR|degC.m/s        |Meridional Mass-Weight Transp of Pot Temp
+  WTHMASS |WM      LR|degC.m/s        |Vertical Mass-Weight Transp of Pot Temp (K.m/s)
+  USLTMASS|UUr     MR|g/kg.m/s        |Zonal Mass-Weight Transp of Salinity
+  VSLTMASS|VVr     MR|g/kg.m/s        |Meridional Mass-Weight Transp of Salinity
+  WSLTMASS|WM      LR|g/kg.m/s        |Vertical Mass-Weight Transp of Salinity
+  UVELTH  |UUR     MR|degC.m/s        |Zonal Transport of Pot Temp
+  VVELTH  |VVR     MR|degC.m/s        |Meridional Transport of Pot Temp
+  WVELTH  |WM      LR|degC.m/s        |Vertical Transport of Pot Temp
+  UVELSLT |UUR     MR|g/kg.m/s        |Zonal Transport of Salinity
+  VVELSLT |VVR     MR|g/kg.m/s        |Meridional Transport of Salinity
+  WVELSLT |WM      LR|g/kg.m/s        |Vertical Transport of Salinity
+  UVELPHI |UUr     MR|m^3/s^3         |Zonal Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
+  VVELPHI |VVr     MR|m^3/s^3         |Merid. Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
+  RHOAnoma|SMR     MR|kg/m^3          |Density Anomaly (=Rho-rhoConst)
+  RHOANOSQ|SMRP    MR|kg^2/m^6        |Square of Density Anomaly (=(Rho-rhoConst)^2)
+  URHOMASS|UUr     MR|kg/m^2/s        |Zonal Transport of Density
+  VRHOMASS|VVr     MR|kg/m^2/s        |Meridional Transport of Density
+  WRHOMASS|WM      LR|kg/m^2/s        |Vertical Transport of Density
+  WdRHO_P |WM      LR|kg/m^2/s        |Vertical velocity times delta^k(Rho)_at-const-P
+  WdRHOdP |WM      LR|kg/m^2/s        |Vertical velocity times delta^k(Rho)_at-const-T,S
+  PHIHYD  |SMR     MR|m^2/s^2         |Hydrostatic Pressure Pot.(p/rho) Anomaly
+  PHIHYDSQ|SMRP    MR|m^4/s^4         |Square of Hyd. Pressure Pot.(p/rho) Anomaly
+  PHIBOT  |SM      M1|m^2/s^2         |Bottom Pressure Pot.(p/rho) Anomaly
+  PHIBOTSQ|SM P    M1|m^4/s^4         |Square of Bottom Pressure Pot.(p/rho) Anomaly
+  PHI_SURF|SM      M1|m^2/s^2         |Surface Dynamical Pressure Pot.(p/rho)
+  PHIHYDcR|SMR     MR|m^2/s^2         |Hydrostatic Pressure Pot.(p/rho) Anomaly @ const r
+  PHI_NH  |SMR     MR|m^2/s^2         |Non-Hydrostatic Pressure Pot.(p/rho)
+  MXLDEPTH|SM      M1|m               |Mixed-Layer Depth (>0)
+  DRHODR  |SM      LR|kg/m^4          |Stratification: d.Sigma/dr (kg/m3/r_unit)
+  CONVADJ |SMR     LR|fraction        |Convective Adjustment Index [0-1]
+  oceTAUX |UU      U1|N/m^2           |zonal surface wind stress, >0 increases uVel
+  oceTAUY |VV      U1|N/m^2           |meridional surf. wind stress, >0 increases vVel
+  atmPload|SM      U1|Pa              |Atmospheric pressure loading anomaly (vs surf_pRef)
+  sIceLoad|SM      U1|kg/m^2          |sea-ice loading (in Mass of ice+snow / area unit)
+  oceFWflx|SM      U1|kg/m^2/s        |net surface Fresh-Water flux into the ocean (+=down), >0 decreases salinity
+  oceSflux|SM      U1|g/m^2/s         |net surface Salt flux into the ocean (+=down), >0 increases salinity
+  oceQnet |SM      U1|W/m^2           |net surface heat flux into the ocean (+=down), >0 increases theta
+  oceQsw  |SM      U1|W/m^2           |net Short-Wave radiation (+=down), >0 increases theta
+  oceFreez|SM      U1|W/m^2           |heating from freezing of sea-water (allowFreezing=T)
+  TRELAX  |SM      U1|W/m^2           |surface temperature relaxation, >0 increases theta
+  SRELAX  |SM      U1|g/m^2/s         |surface salinity relaxation, >0 increases salt
+  surForcT|SM      U1|W/m^2           |model surface forcing for Temperature, >0 increases theta
+  surForcS|SM      U1|g/m^2/s         |model surface forcing for Salinity, >0 increases salinity
+  TFLUX   |SM      U1|W/m^2           |total heat flux (match heat-content variations), >0 increases theta
+  SFLUX   |SM      U1|g/m^2/s         |total salt flux (match salt-content variations), >0 increases salt
+  RCENTER |SM      MR|m               |Cell-Center Height
+  RSURF   |SM      M1|m               |Surface Height
+  hFactorC|SMr     MR|1               |Center cell-thickness fraction [-]
+  hFactorW|SUr     MR|1               |Western-Edge cell-thickness fraction [-]
+  hFactorS|SVr     MR|1               |Southern-Edge cell-thickness fraction [-]
+  TOTUTEND|UUR     MR|m/s/day         |Tendency of Zonal Component of Velocity
+  TOTVTEND|VVR     MR|m/s/day         |Tendency of Meridional Component of Velocity
+  TOTTTEND|SMR     MR|degC/day        |Tendency of Potential Temperature
+  TOTSTEND|SMR     MR|g/kg/day        |Tendency of Salinity
+  ---------------------------------------------------------------
+  <-Name->|<- code ->|<--  Units   -->|<- Tile (max=80c)
+  ---------------------------------------------------------------
+  MoistCor|SM      MR|W/m^2           |Heating correction due to moist thermodynamics
+  HeatDiss|SM      MR|W/m^2           |Heating from frictional dissipation
+  gT_Forc |SMR     MR|degC/s          |Potential Temp. forcing tendency
+  gS_Forc |SMR     MR|g/kg/s          |Salinity forcing tendency
+  AB_gT   |SMR     MR|degC/s          |Potential Temp. tendency from Adams-Bashforth
+  AB_gS   |SMR     MR|g/kg/s          |Salinity tendency from Adams-Bashforth
+  gTinAB  |SMR     MR|degC/s          |Potential Temp. tendency going in Adams-Bashforth
+  gSinAB  |SMR     MR|g/kg/s          |Salinity tendency going in Adams-Bashforth
+  AB_gU   |UUR     MR|m/s^2           |U momentum tendency from Adams-Bashforth
+  AB_gV   |VVR     MR|m/s^2           |V momentum tendency from Adams-Bashforth
+  AB_gW   |WM      LR|m/s^2           |W momentum tendency from Adams-Bashforth
+  TAUXEDDY|UU      LR|N/m^2           |Zonal Eddy Stress
+  TAUYEDDY|VV      LR|N/m^2           |Meridional Eddy Stress
+  U_EulerM|UUR     MR|m/s             |Zonal Eulerian-Mean Velocity (m/s)
+  V_EulerM|VVR     MR|m/s             |Meridional Eulerian-Mean Velocity (m/s)
+  ADVr_TH |WM      LR|degC.m^3/s      |Vertical   Advective Flux of Pot.Temperature
+  ADVx_TH |UU      MR|degC.m^3/s      |Zonal      Advective Flux of Pot.Temperature
+  ADVy_TH |VV      MR|degC.m^3/s      |Meridional Advective Flux of Pot.Temperature
+  DFrE_TH |WM      LR|degC.m^3/s      |Vertical Diffusive Flux of Pot.Temperature (Explicit part)
+  DFxE_TH |UU      MR|degC.m^3/s      |Zonal      Diffusive Flux of Pot.Temperature
+  DFyE_TH |VV      MR|degC.m^3/s      |Meridional Diffusive Flux of Pot.Temperature
+  DFrI_TH |WM      LR|degC.m^3/s      |Vertical Diffusive Flux of Pot.Temperature (Implicit part)
+  SM_x_TH |UM      MR|degC            |Pot.Temp.   1rst Order Moment Sx
+  SM_y_TH |VM      MR|degC            |Pot.Temp.   1rst Order Moment Sy
+  SM_z_TH |SM      MR|degC            |Pot.Temp.   1rst Order Moment Sz
+  SMxx_TH |UM      MR|degC            |Pot.Temp.   2nd Order Moment Sxx
+  SMyy_TH |VM      MR|degC            |Pot.Temp.   2nd Order Moment Syy
+  SMzz_TH |SM      MR|degC            |Pot.Temp.   2nd Order Moment Szz
+  SMxy_TH |SM      MR|degC            |Pot.Temp.   2nd Order Moment Sxy
+  SMxz_TH |UM      MR|degC            |Pot.Temp.   2nd Order Moment Sxz
+  SMyz_TH |VM      MR|degC            |Pot.Temp.   2nd Order Moment Syz
+  SM_v_TH |SM P    MR|(degC)^2        |Pot.Temp.   sub-grid variance
+  ADVr_SLT|WM      LR|g/kg.m^3/s      |Vertical   Advective Flux of Salinity
+  ADVx_SLT|UU      MR|g/kg.m^3/s      |Zonal      Advective Flux of Salinity
+  ADVy_SLT|VV      MR|g/kg.m^3/s      |Meridional Advective Flux of Salinity
+  DFrE_SLT|WM      LR|g/kg.m^3/s      |Vertical Diffusive Flux of Salinity    (Explicit part)
+  DFxE_SLT|UU      MR|g/kg.m^3/s      |Zonal      Diffusive Flux of Salinity
+  DFyE_SLT|VV      MR|g/kg.m^3/s      |Meridional Diffusive Flux of Salinity
+  DFrI_SLT|WM      LR|g/kg.m^3/s      |Vertical Diffusive Flux of Salinity    (Implicit part)
+  SALTFILL|SM      MR|g/kg.m^3/s      |Filling of Negative Values of Salinity
+  SM_x_SLT|UM      MR|g/kg            |Salinity    1rst Order Moment Sx
+  SM_y_SLT|VM      MR|g/kg            |Salinity    1rst Order Moment Sy
+  SM_z_SLT|SM      MR|g/kg            |Salinity    1rst Order Moment Sz
+  SMxx_SLT|UM      MR|g/kg            |Salinity    2nd Order Moment Sxx
+  SMyy_SLT|VM      MR|g/kg            |Salinity    2nd Order Moment Syy
+  SMzz_SLT|SM      MR|g/kg            |Salinity    2nd Order Moment Szz
+  SMxy_SLT|SM      MR|g/kg            |Salinity    2nd Order Moment Sxy
+  SMxz_SLT|UM      MR|g/kg            |Salinity    2nd Order Moment Sxz
+  SMyz_SLT|VM      MR|g/kg            |Salinity    2nd Order Moment Syz
+  SM_v_SLT|SM P    MR|(g/kg)^2        |Salinity    sub-grid variance
+  VISCAHZ |SZ      MR|m^2/s           |Harmonic Visc Coefficient (m2/s) (Zeta Pt)
+  VISCA4Z |SZ      MR|m^4/s           |Biharmonic Visc Coefficient (m4/s) (Zeta Pt)
+  VISCAHD |SM      MR|m^2/s           |Harmonic Viscosity Coefficient (m2/s) (Div Pt)
+  VISCA4D |SM      MR|m^4/s           |Biharmonic Viscosity Coefficient (m4/s) (Div Pt)
+  VISCAHW |WM      LR|m^2/s           |Harmonic Viscosity Coefficient (m2/s) (W Pt)
+  VISCA4W |WM      LR|m^4/s           |Biharmonic Viscosity Coefficient (m4/s) (W Pt)
+  VAHZMAX |SZ      MR|m^2/s           |CFL-MAX Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VA4ZMAX |SZ      MR|m^4/s           |CFL-MAX Biharm Visc Coefficient (m4/s) (Zeta Pt)
+  VAHDMAX |SM      MR|m^2/s           |CFL-MAX Harm Visc Coefficient (m2/s) (Div Pt)
+  VA4DMAX |SM      MR|m^4/s           |CFL-MAX Biharm Visc Coefficient (m4/s) (Div Pt)
+  VAHZMIN |SZ      MR|m^2/s           |RE-MIN Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VA4ZMIN |SZ      MR|m^4/s           |RE-MIN Biharm Visc Coefficient (m4/s) (Zeta Pt)
+  VAHDMIN |SM      MR|m^2/s           |RE-MIN Harm Visc Coefficient (m2/s) (Div Pt)
+  VA4DMIN |SM      MR|m^4/s           |RE-MIN Biharm Visc Coefficient (m4/s) (Div Pt)
+  VAHZLTH |SZ      MR|m^2/s           |Leith Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VA4ZLTH |SZ      MR|m^4/s           |Leith Biharm Visc Coefficient (m4/s) (Zeta Pt)
+  VAHDLTH |SM      MR|m^2/s           |Leith Harm Visc Coefficient (m2/s) (Div Pt)
+  VA4DLTH |SM      MR|m^4/s           |Leith Biharm Visc Coefficient (m4/s) (Div Pt)
+  VAHZLTHD|SZ      MR|m^2/s           |LeithD Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VA4ZLTHD|SZ      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Zeta Pt)
+  VAHDLTHD|SM      MR|m^2/s           |LeithD Harm Visc Coefficient (m2/s) (Div Pt)
+  VA4DLTHD|SM      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Div Pt)
+  VAHZLTHQ|SZ      MR|m^2/s           |LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VAHDLTHQ|SM      MR|m^2/s           |LeithQG Harm Visc Coefficient (m2/s) (Div Pt)
+  VAHZSMAG|SZ      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VA4ZSMAG|SZ      MR|m^4/s           |Smagorinsky Biharm Visc Coeff. (m4/s) (Zeta Pt)
+  VAHDSMAG|SM      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Div Pt)
+  VA4DSMAG|SM      MR|m^4/s           |Smagorinsky Biharm Visc Coeff. (m4/s) (Div Pt)
+  momKE   |SMR     MR|m^2/s^2         |Kinetic Energy (in momentum Eq.)
+  momHDiv |SMR     MR|s^-1            |Horizontal Divergence (in momentum Eq.)
+  momVort3|SZR     MR|s^-1            |3rd component (vertical) of Vorticity
+  Strain  |SZR     MR|s^-1            |Horizontal Strain of Horizontal Velocities
+  Tension |SMR     MR|s^-1            |Horizontal Tension of Horizontal Velocities
+  Stretch |SM      MR|s^-1            |Vortex stretching from QG Leith dynamic viscosity
+  USidDrag|UUR     MR|m/s^2           |U momentum tendency from Side Drag
+  VSidDrag|VVR     MR|m/s^2           |V momentum tendency from Side Drag
+  Um_Diss |UUR     MR|m/s^2           |U momentum tendency from Dissipation (Explicit part)
+  Vm_Diss |VVR     MR|m/s^2           |V momentum tendency from Dissipation (Explicit part)
+  Um_ImplD|UUR     MR|m/s^2           |U momentum tendency from Dissipation (Implicit part)
+  Vm_ImplD|VVR     MR|m/s^2           |V momentum tendency from Dissipation (Implicit part)
+  Um_Advec|UUR     MR|m/s^2           |U momentum tendency from Advection terms
+  Vm_Advec|VVR     MR|m/s^2           |V momentum tendency from Advection terms
+  Um_Cori |UUR     MR|m/s^2           |U momentum tendency from Coriolis term
+  Vm_Cori |VVR     MR|m/s^2           |V momentum tendency from Coriolis term
+  Um_dPhiX|UUR     MR|m/s^2           |U momentum tendency from Pressure/Potential grad
+  Vm_dPhiY|VVR     MR|m/s^2           |V momentum tendency from Pressure/Potential grad
+  Um_Ext  |UUR     MR|m/s^2           |U momentum tendency from external forcing
+  Vm_Ext  |VVR     MR|m/s^2           |V momentum tendency from external forcing
+  Um_AdvZ3|UUR     MR|m/s^2           |U momentum tendency from Vorticity Advection
+  Vm_AdvZ3|VVR     MR|m/s^2           |V momentum tendency from Vorticity Advection
+  Um_AdvRe|UUR     MR|m/s^2           |U momentum tendency from vertical Advection (Explicit part)
+  Vm_AdvRe|VVR     MR|m/s^2           |V momentum tendency from vertical Advection (Explicit part)
+  Wm_Diss |WMr     LR|m/s^2           |W momentum tendency from Dissipation
+  Wm_Advec|WMr     LR|m/s^2           |W momentum tendency from Advection terms
+  WSidDrag|WMr     LR|m/s^2           |Vertical momentum tendency from Side Drag
+  botTauX |UU      U1|N/m^2           |zonal bottom stress, >0 increases uVel
+  botTauY |VV      U1|N/m^2           |meridional bottom stress, >0 increases vVel
+  ADVx_Um |UM      MR|m^4/s^2         |Zonal      Advective Flux of U momentum
+  ADVy_Um |VZ      MR|m^4/s^2         |Meridional Advective Flux of U momentum
+  ADVrE_Um|WU      LR|m^4/s^2         |Vertical   Advective Flux of U momentum (Explicit part)
+  ADVx_Vm |UZ      MR|m^4/s^2         |Zonal      Advective Flux of V momentum
+  ADVy_Vm |VM      MR|m^4/s^2         |Meridional Advective Flux of V momentum
+  ADVrE_Vm|WV      LR|m^4/s^2         |Vertical   Advective Flux of V momentum (Explicit part)
+  VISCx_Um|UM      MR|m^4/s^2         |Zonal      Viscous Flux of U momentum
+  VISCy_Um|VZ      MR|m^4/s^2         |Meridional Viscous Flux of U momentum
+  VISrE_Um|WU      LR|m^4/s^2         |Vertical   Viscous Flux of U momentum (Explicit part)
+  VISrI_Um|WU      LR|m^4/s^2         |Vertical   Viscous Flux of U momentum (Implicit part)
+  VISCx_Vm|UZ      MR|m^4/s^2         |Zonal      Viscous Flux of V momentum
+  VISCy_Vm|VM      MR|m^4/s^2         |Meridional Viscous Flux of V momentum
+  VISrE_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
+  VISrI_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
+The meaning of the “code” column is explained in
+:numref:`diagnostic_parsing_array`. The last character of the code, in particular,
+determines the number of vertical levels in the diagnostic (of the commonly used codes,
+"1" represents a 2-D diagnostic, "R" and "L" are multi-level diagnostics).
 
 MITgcm packages: available diagnostics lists
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

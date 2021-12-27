@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: SEAICE_PREPARE_RIDGING
@@ -16,12 +13,12 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION: \bv
 C     *===========================================================*
 C     | SUBROUTINE SEAICE_PREPARE_RIDGING
-C     | o compute ridging parameters according to Thorndyke et al 
+C     | o compute ridging parameters according to Thorndyke et al
 C     |   (1975), Hibler (1980), Bitz et al (2001) or
 C     |   Lipscomb et al (2007)
-C     | o this routine is called from s/r seaice_do_ridging and 
+C     | o this routine is called from s/r seaice_do_ridging and
 C     |   from s/r seaice_calc_ice_strength
-C     | 
+C     |
 C     | Martin Losch, Apr. 2014, Martin.Losch@awi.de
 C     *===========================================================*
 C \ev
@@ -36,10 +33,6 @@ C !USES: ===============================================================
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
@@ -67,7 +60,7 @@ C     hActual    :: HEFFITD/AREAITD, regularized
       _RL hrMax           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL hrExp           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
       _RL ridgeRatio      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
-      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD) 
+      _RL hActual         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:nITD)
 CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
@@ -97,7 +90,7 @@ CML         IF ( AREAITD(i,j,k,bi,bj) .GT. SEAICE_area_reg ) THEN
 CML          hActual(i,j,k) = HEFFITD(i,j,k,bi,bj)/AREAITD(i,j,k,bi,bj)
 CML         ENDIF
          IF ( HEFFITD(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
-C     regularize as in seaice_growth: compute hActual with regularized 
+C     regularize as in seaice_growth: compute hActual with regularized
 C     AREA and regularize from below with a minimum thickness
           tmp = HEFFITD(i,j,k,bi,bj)
      &         /SQRT( AREAITD(i,j,k,bi,bj)**2 + area_reg_sq )
@@ -106,7 +99,7 @@ C     AREA and regularize from below with a minimum thickness
         ENDDO
        ENDDO
       ENDDO
-      
+
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     compute the cumulative thickness distribution function gSum
@@ -114,7 +107,7 @@ C     compute the cumulative thickness distribution function gSum
        DO i=iMin,iMax
         gSum(i,j,-1) = 0. _d 0
         gSum(i,j,0)  = 0. _d 0
-        IF ( opnWtrFrac(i,j,bi,bj) .GT. SEAICE_area_floor ) 
+        IF ( opnWtrFrac(i,j,bi,bj) .GT. SEAICE_area_floor )
      &       gSum(i,j,0) = opnWtrFrac(i,j,bi,bj)
        ENDDO
       ENDDO
@@ -131,7 +124,7 @@ C     normalize
       DO k = 0, nITD
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( gSum(i,j,nITD).NE.0. _d 0 ) 
+         IF ( gSum(i,j,nITD).NE.0. _d 0 )
      &        gSum(i,j,k) = gSum(i,j,k) / gSum(i,j,nITD)
         ENDDO
        ENDDO
@@ -152,12 +145,12 @@ C     integrating b(h)g(h) between the category boundaries.
          DO i=iMin,iMax
           partFunc(i,j,k) = 0. _d 0
           IF ( gSum(i,j,k) .LT. SEAICEgStar ) THEN
-           partFunc(i,j,k) = 
+           partFunc(i,j,k) =
      &          (gSum(i,j,k)-gSum(i,j,k-1)) * recip_gStar
      &          *( 2. _d 0 - (gSum(i,j,k-1)+gSum(i,j,k))*recip_gStar)
-          ELSEIF (  gSum(i,j,k-1) .LT. SEAICEgStar 
+          ELSEIF (  gSum(i,j,k-1) .LT. SEAICEgStar
      &          .AND. gSum(i,j,k) .GE. SEAICEgStar ) THEN
-           partFunc(i,j,k) = 
+           partFunc(i,j,k) =
      &          (SEAICEgStar-gSum(i,j,k-1)) * recip_gStar
      &          *( 2. _d 0 - (gSum(i,j,k-1)+SEAICEgStar)*recip_gStar)
           ENDIF
@@ -166,8 +159,8 @@ C     integrating b(h)g(h) between the category boundaries.
        ENDDO
       ELSEIF  ( SEAICEpartFunc .EQ. 1 ) THEN
 C     Lipscomb et al. (2007) discretize b(h) = exp(-G(h)/astar) into
-C     partFunc(n) = [exp(-G(n-1)/astar - exp(-G(n)/astar] / [1-exp(-1/astar)]. 
-C     The expression is found by integrating b(h)g(h) between the category 
+C     partFunc(n) = [exp(-G(n-1)/astar - exp(-G(n)/astar] / [1-exp(-1/astar)].
+C     The expression is found by integrating b(h)g(h) between the category
 C     boundaries.
        recip_astar = 1. _d 0 / SEAICEaStar
        tmp = 1. _d 0 / ( 1. _d 0 - EXP( -recip_astar ) )
@@ -217,7 +210,7 @@ C     This is the original Hibler (1980) scheme:
            hrMin(i,j,k) = 2. _d 0 * hActual(i,j,k)
            hrMax(i,j,k) = 2. _d 0 * SQRT(hActual(i,j,k)*SEAICEhStar)
 C     CICE does this in addition, so that thick ridging ice is not required
-C     to raft: 
+C     to raft:
            hrMin(i,j,k) = MIN(hrMin(i,j,k),hActual(i,j,k)+SEAICEmaxRaft)
            hrMax(i,j,k) = MAX(hrMax(i,j,k),hrMin(i,j,k)+SEAICE_hice_reg)
 C
@@ -246,11 +239,11 @@ C     arent we missing a factor 0.5 here?
         ENDDO
        ENDDO
       ELSE
-       STOP 'Ooops: SEAICEredistFunc > 1 not implemented'       
+       STOP 'Ooops: SEAICEredistFunc > 1 not implemented'
       ENDIF
 
-C     Compute the norm of the ridging mode N (in Lipscomp et al 2007) 
-C     or omega (in Bitz et al 2001): 
+C     Compute the norm of the ridging mode N (in Lipscomp et al 2007)
+C     or omega (in Bitz et al 2001):
 C     rigdingModeNorm = net ice area removed / total area participating.
 C     For instance, if a unit area of ice with thickness = 1 participates in
 C     ridging to form a ridge with a = 1/3 and thickness = 3, then

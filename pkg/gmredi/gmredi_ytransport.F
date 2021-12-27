@@ -2,10 +2,8 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
+CBOP
 C     !ROUTINE: GMREDI_YTRANSPORT
 C     !INTERFACE:
       SUBROUTINE GMREDI_YTRANSPORT(
@@ -31,13 +29,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_FIELDS.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
@@ -82,36 +76,38 @@ C     i, j    ::  Loop counters
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #endif /* GM_BOLUS_ADVEC */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER igadkey, kkey
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = trIdentity - 1
-          max0 = maxpass
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          kkey = (igadkey-1)*Nr + k
-          if (trIdentity.GT.maxpass) then
-             print *, 'ph-pass gmredi_ytrans ', maxpass, trIdentity
-             STOP 'maxpass seems smaller than trIdentity'
-          endif
+      act0 = trIdentity - 1
+      max0 = maxpass
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      igadkey = (act0 + 1) + act1*max0
+     &                     + act2*max0*max1
+     &                     + act3*max0*max1*max2
+     &                     + act4*max0*max1*max2*max3
+      kkey = (igadkey-1)*Nr + k
+      IF (trIdentity.GT.maxpass) THEN
+       PRINT *, 'ph-pass gmredi_ytrans ', maxpass, trIdentity
+       STOP 'maxpass seems smaller than trIdentity'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (useGMRedi) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE Kvy(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
-# endif
 # ifdef GM_EXTRA_DIAGONAL
 CADJ STORE Kvz(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
@@ -123,64 +119,50 @@ C--   Area integrated meridional flux
        DO i=iMin,iMax
         df(i,j) = df(i,j)
      &   -yA(i,j)
-#ifdef GM_NON_UNITY_DIAGONAL
      &    *Kvy(i,j,k,bi,bj)
-#else
-#ifdef ALLOW_KAPREDI_CONTROL
-     &    *(kapRedi(i,j,k,bi,bj)
-#else
-     &    *(GM_isopycK
-#endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
-#endif
-     &     )
-#endif /* GM_NON_UNITY_DIAGONAL */
      &    *_recip_dyC(i,j,bi,bj)
      &    *(Tracer(i,j,k)-Tracer(i,j-1,k))
        ENDDO
       ENDDO
 
 #ifdef GM_EXTRA_DIAGONAL
-      IF (GM_ExtraDiag) THEN
+      IF ( GM_ExtraDiag ) THEN
        km1 = MAX(k-1,1)
        kp1 = MIN(k+1,Nr)
-
 C-    Vertical gradients interpolated to V points
        DO j=jMin,jMax
         DO i=iMin,iMax
-        dTdz(i,j) =  op5*(
-     &   +op5*recip_drC(k)*
-     &       ( maskC(i,j-1,k,bi,bj)*
-     &           (Tracer(i,j-1,km1)-Tracer(i,j-1,k))
-     &        +maskC(i, j ,k,bi,bj)*
-     &           (Tracer(i, j ,km1)-Tracer(i, j ,k))
-     &       )
-     &   +op5*recip_drC(kp1)*
-     &       ( maskC(i,j-1,kp1,bi,bj)*
-     &           (Tracer(i,j-1,k)-Tracer(i,j-1,kp1))
-     &        +maskC(i, j ,kp1,bi,bj)*
-     &           (Tracer(i, j ,k)-Tracer(i, j ,kp1))
-     &       )      )
+         dTdz(i,j) =  op5*(
+     &    +op5*recip_drC(k)*
+     &        ( maskC(i,j-1,k,bi,bj)*
+     &            (Tracer(i,j-1,km1)-Tracer(i,j-1,k))
+     &         +maskC(i, j ,k,bi,bj)*
+     &            (Tracer(i, j ,km1)-Tracer(i, j ,k))
+     &        )
+     &    +op5*recip_drC(kp1)*
+     &        ( maskC(i,j-1,kp1,bi,bj)*
+     &            (Tracer(i,j-1,k)-Tracer(i,j-1,kp1))
+     &         +maskC(i, j ,kp1,bi,bj)*
+     &            (Tracer(i, j ,k)-Tracer(i, j ,kp1))
+     &        )      )
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dtdz(:,:) =
+CADJ STORE dTdz(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
 C-    Off-diagonal components of horizontal flux
        DO j=jMin,jMax
         DO i=iMin,iMax
-          df(i,j) = df(i,j) - yA(i,j)*Kvz(i,j,k,bi,bj)*dTdz(i,j)
-
+         df(i,j) = df(i,j) - yA(i,j)*Kvz(i,j,k,bi,bj)*dTdz(i,j)
         ENDDO
        ENDDO
       ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
 #ifdef GM_BOLUS_ADVEC
-      IF (GM_AdvForm .AND. GM_AdvSeparate
-     & .AND. .NOT.GM_InMomAsStress) THEN
+      IF ( GM_AdvForm .AND. GM_AdvSeparate
+     &                .AND. .NOT.GM_InMomAsStress ) THEN
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.
        IF (k.GE.Nr) maskp1 = 0.
@@ -192,7 +174,7 @@ C-    Off-diagonal components of horizontal flux
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE vtrans(:,:) =
+CADJ STORE vTrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
@@ -203,8 +185,9 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
        ENDDO
       ENDIF
 
-#ifdef ALLOW_DIAGNOSTICS
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics
      &     .AND. DIAGNOSTICS_IS_ON('GM_vbT  ', myThid )
      &     .AND. trIdentity.EQ.1 ) THEN

@@ -92,13 +92,16 @@ C-      3D arrays
            dU_psFacX(i,j,k,bi,bj)    = 0. _d 0
            dV_psFacY(i,j,k,bi,bj)    = 0. _d 0
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+           cSound(i,j,k,bi,bj)       = 0. _d 0
+#endif /* INCLUDE_SOUNDSPEED_CALC_CODE */
           ENDDO
          ENDDO
         ENDDO
 
 C-      2D arrays
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           etaN(i,j,bi,bj) = 0. _d 0
           etaH(i,j,bi,bj) = 0. _d 0
           phiHydLow(i,j,bi,bj) = 0. _d 0

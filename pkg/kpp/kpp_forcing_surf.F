@@ -173,15 +173,15 @@ C initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         ustar(i,j) = p0
-        bo   (I,J) = p0
-        bosol(I,J) = p0
+        bo   (i,j) = p0
+        bosol(i,j) = p0
        ENDDO
       ENDDO
 #ifdef ALLOW_SALT_PLUME
       DO k = 1, Nrp1
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
-         boplume(I,J,k) = p0
+         boplume(i,j,k) = p0
         ENDDO
        ENDDO
       ENDDO
@@ -222,22 +222,22 @@ C     seaice_obcs, so maybe later
 CML      DO j = jmin, jmax
 CML       DO i = imin, imax
 CMLC     rhoSurf = dRho + rhoConst > 0 always, so we are safe here
-CML        work3(i,j) = 1. _d 0 / rhoSurf(I,J)
+CML        work3(i,j) = 1. _d 0 / rhoSurf(i,j)
 CML       ENDDO
 CML      ENDDO
 
       DO j = jmin, jmax
        DO i = imin, imax
-        bo(I,J) = - gravity *
-     &       ( TTALPHA(I,J,1) * (surfForcT(i,j,bi,bj)+
+        bo(i,j) = - gravity *
+     &       ( TTALPHA(i,j,1) * (surfForcT(i,j,bi,bj)+
      &       surfForcTice(i,j,bi,bj)) +
-     &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
-     &       / rhoSurf(I,J)
-CML  &       * work3(I,J)
-        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
+     &       SSBETA(i,j,1) * surfForcS(i,j,bi,bj) )
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
+        bosol(i,j) = gravity * TTALPHA(i,j,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
-     &       / rhoSurf(I,J)
-CML  &       * work3(I,J)
+     &       / rhoSurf(i,j)
+CML  &       * work3(i,j)
        ENDDO
       ENDDO
 
@@ -250,12 +250,12 @@ Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
         kp1 = k+1
         DO j = jmin, jmax
          DO i = imin, imax
-          temparray(I,J) = - gravity *
-     &            ( SSBETA(I,J,k) * SPforcS(i,j,k) +
-     &              TTALPHA(I,J,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
-     &              * recip_rhoConst / rhoSurf(I,J)
-CML  &              * recip_rhoConst * work3(I,J)
-          boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
+          temparray(i,j) = - gravity *
+     &            ( SSBETA(i,j,k) * SPforcS(i,j,k) +
+     &              TTALPHA(i,j,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
+     &              * recip_rhoConst / rhoSurf(i,j)
+CML  &              * recip_rhoConst * work3(i,j)
+          boplume(i,j,kp1) = boplume(i,j,k)+temparray(i,j)
          ENDDO
         ENDDO
        ENDDO
@@ -265,12 +265,12 @@ CML  &              * recip_rhoConst * work3(I,J)
 C     initialization has been done already and does not have to be
 C     repeated here (and definitely not inside the i/j loops)
 CML         DO k = 2, Nrp1
-CML          boplume(I,J,k) = 0. _d 0
+CML          boplume(i,j,k) = 0. _d 0
 CML         ENDDO
-         boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+         boplume(i,j,1) = - gravity * SSBETA(i,j,1)
      &              * SPforcS(i,j,1)
-     &              * recip_rhoConst / rhoSurf(I,J)
-CML  &              * recip_rhoConst * work3(I,J)
+     &              * recip_rhoConst / rhoSurf(i,j)
+CML  &              * recip_rhoConst * work3(i,j)
         ENDDO
        ENDDO
 #endif /* SALT_PLUME_VOLUME */
@@ -332,7 +332,7 @@ C     dB/dz exceeds 5.2e-5 s^-2.
         kTmp = nzmax(i,j,bi,bj)
         DO k = Nr, 1, -1
          IF ( k .LT. nzmax(i,j,bi,bj) .AND.
-     &        maskC(I,J,k,bi,bj) .GT. 0. .AND.
+     &        maskC(i,j,k,bi,bj) .GT. 0. .AND.
      &        dbloc(i,j,k) * recip_drC(k+1) .GT. dB_dz )
      &        kTmp = k
         ENDDO
@@ -377,8 +377,9 @@ CML     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
         zRef(i,j) = MAX ( epsilon * zRef(i,j), z0(i,j) )
-CML   with this statement the high resolution case zRef > drF(1) is ruled out
-        zRef(i,j) = MIN ( zRef(i,j), drF(1) )
+C     with this statement the high resolution case zRef > drF(1) is ruled out
+C     so we comment it out
+CML        zRef(i,j) = MIN ( zRef(i,j), drF(1) )
 
 C     Estimate reference velocity uRef and vRef.
         uRef(i,j) = p5 * ( uVel(i,j,1,bi,bj) + uVel(ip1,j,1,bi,bj) )
@@ -400,6 +401,25 @@ C     Estimate reference velocity uRef and vRef.
      &        vonK / tempVar2
          uRef(i,j) = uRef(i,j) + ustarX * tempVar2
          vRef(i,j) = vRef(i,j) + ustarY * tempVar2
+        ELSEIF ( zRef(i,j) .GE. drF(1) ) THEN
+C     if zref > drF(1), average over zref
+         uRef(i,j) = uRef(i,j)*drF(1)
+         vRef(i,j) = vRef(i,j)*drF(1)
+         k = 2
+         DO WHILE ( ABS(rF(k+1)) .LE. zRef(i,j) )
+          uRef(i,j) = uRef(i,j) + drF(k) * p5
+     &         * ( uVel(i,j,k,bi,bj) + uVel(ip1,j,k,bi,bj) )
+          vRef(i,j) = vRef(i,j) + drF(k) * p5
+     &         * ( vVel(i,j,k,bi,bj) + vVel(i,jp1,k,bi,bj) )
+          k = k+1
+         ENDDO
+C     now k should be the index of the layer into which zref reaches
+         uRef(i,j) = uRef(i,j) + MAX(0.,zref(i,j)-ABS(rF(k))) * p5
+     &        * ( uVel(i,j,k,bi,bj) + uVel(ip1,j,k,bi,bj) )
+         vRef(i,j) = vRef(i,j) + MAX(0.,zref(i,j)-ABS(rF(k))) * p5
+     &        * ( vVel(i,j,k,bi,bj) + vVel(i,jp1,k,bi,bj) )
+         uRef(i,j) = uRef(i,j)/zRef(i,j)
+         vRef(i,j) = vRef(i,j)/zRef(i,j)
         ENDIF
 
        ENDDO
@@ -486,6 +506,12 @@ C     Estimate reference velocity uRef and vRef.
       ENDDO
 
 #endif /* KPP_ESTIMATE_UREF */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(dVsq,  'KPPdVsq ',0,Nr,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
