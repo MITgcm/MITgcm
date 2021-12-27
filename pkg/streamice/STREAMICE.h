@@ -11,7 +11,7 @@ C     streamice_density_ocean_avg :: average ocean density
 C                                    determining ice floatation
 C     B_glen_isothermal           :: (sqrt of) uniform ice stiffness
 C                                    coefficient (Pa 1/2 yr 1/6)
-C     n_glen                      :: Glen's law exponent
+C     n_glen                      :: Glen s law exponent
 C     eps_glen_min                :: min strain rate in ice viscosity
 C     eps_u_min                   :: min velocity in nonlinear sliding
 C                                    law
@@ -220,7 +220,7 @@ C                                     C_basal_fric_const
 C                                    2DPERIODIC - varies in x- and
 C                                     y-dirs via streamice_kx_b_init
 C                                     and streamice_ky_b_init
-C     STREAMICEGlenConstConfig    :: mode of Glen's const init
+C     STREAMICEGlenConstConfig    :: mode of Glen s const init
 C                                    FILE - via STREAMICEGlenConstFile
 C                                    UNIFORM - B_glen_isothermal
 C     STREAMICEBdotConfig         :: mode of ice-shelf melt rate init
@@ -258,9 +258,9 @@ C                                    see EXPLANATION OF MASKS below
 C
 C     following give \gamma_sig and \gamma_tau factors as described
 C     in appendix of
-C     Goldberg et al, 2015 -- "Committed retreat of Smith, Pope, and
-C                              Kohler Glaciers over the next 30 years
-C                              inferred by transient model calibration"
+C     Goldberg et al, 2015 -- Committed retreat of Smith, Pope, and
+C                             Kohler Glaciers over the next 30 years
+C                             inferred by transient model calibration
 C     applied only where stress boundary condition applies
 C
 C     STREAMICEuNormalStressFile
@@ -460,8 +460,8 @@ C                                        sliding, implements
 C                                        "regularised coulomb"
 C                                        sliding law
 C        Asay-Davis et al (2016), Geosci. Model Dev.,
-C        "Experimental design for three interrelated marine ice
-C        sheet..." (eqn 11)
+C     "Experimental design for three interrelated marine ice sheet..."
+C     (eqn 11)
 C     STREAMICE_use_log_ctrl          :: fields C_basal_friction
 C                                        and Bglen (and initialisation
 C                                        values) given as the
@@ -491,7 +491,7 @@ C                                 ::  (over-rides STREAMICE_vel_ext)
       LOGICAL STREAMICE_alt_driving_stress
       LOGICAL STREAMICE_allow_reg_coulomb
       LOGICAL STREAMICE_use_log_ctrl
-      LOGICAL STREAMICE_vel_ext 
+      LOGICAL STREAMICE_vel_ext
       LOGICAL STREAMICE_vel_ext_cgrid
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
