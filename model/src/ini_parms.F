@@ -243,7 +243,7 @@ C--   Continuous equation parameters
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
      & smoothAbsFuncRange, sIceLoadFac,
-     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & selectBalanceEmPmR, balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax
 
 C--   Elliptic solver parameters
@@ -298,11 +298,11 @@ C--   Input files
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
-     & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile, geoPotAnomFile, addMassFile,
      & tCylIn, tCylOut,
      & eddyPsiXFile, eddyPsiYFile, geothermalFile,
+     & lambdaThetaFile, lambdaSaltFile, wghtBalanceFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name
 CEOP
@@ -326,6 +326,7 @@ C     Defaults values for input parameters
       useJamartWetPoints  = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       SadournyCoriolis = .FALSE.
+      balanceEmPmR    = .FALSE.
 
 C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
@@ -351,7 +352,7 @@ C--   Initialise retired parameters to unlikely value
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
       useOldFreezing  = .FALSE.
-      cg2dChkResFreq  = UNSET_I 
+      cg2dChkResFreq  = UNSET_I
       cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
@@ -672,6 +673,18 @@ C--   for backward compatibility :
           errCount = errCount + 1
         ENDIF
       ENDIF
+      IF ( selectBalanceEmPmR.EQ.UNSET_I ) THEN
+        selectBalanceEmPmR = 0
+        IF ( balanceEmPmR ) selectBalanceEmPmR = 1
+      ELSEIF ( selectBalanceEmPmR.EQ.0 .AND. balanceEmPmR ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectBalanceEmPmR=', selectBalanceEmPmR,
+     &     ' conflicts with "balanceEmPmR"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+C-    keep this until balanceEmPmR is removed from all pkgs:
+      balanceEmPmR = selectBalanceEmPmR.GT.0
 
       IF ( ivdc_kappa.NE.zeroRL .AND. .NOT.implicitDiffusion ) THEN
         WRITE(msgBuf,'(A,A)')

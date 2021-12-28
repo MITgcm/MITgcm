@@ -423,8 +423,15 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif
 
-#ifndef ALLOW_BALANCE_FLUXES
-      IF (balanceEmPmR .OR. balanceQnet) THEN
+#ifdef ALLOW_BALANCE_FLUXES
+      IF ( selectBalanceEmPmR.LT.0 .OR. selectBalanceEmPmR.GT.2 ) THEN
+        WRITE(msgBuf,'(2A,I6,A)') 'CONFIG_CHECK: ',
+     &   'selectBalanceEmPmR=', selectBalanceEmPmR,' : invalid value'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#else /* ALLOW_BALANCE_FLUXES */
+      IF ( selectBalanceEmPmR.NE.0 .OR. balanceQnet ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: balanceEmPmR/Qnet is set but balance code ',
      &  'is not compiled.'
@@ -434,7 +441,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-#endif
+#endif /* ALLOW_BALANCE_FLUXES */
 
 #ifndef ALLOW_BALANCE_RELAX
       IF (balanceThetaClimRelax .OR. balanceSaltClimRelax) THEN
