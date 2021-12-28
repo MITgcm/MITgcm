@@ -126,6 +126,7 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myNr
@@ -142,8 +143,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       INTEGER bi, bj, i, j, k
       _RL volTile(nSx,nSy), sumTile(nSx,nSy)
-      _RL tmpVol, volGlob, sumGlob
-      _RS theMean
+      _RL tmpVol, volGlob, sumGlob, theMean
+      _RS meanCorr
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -151,16 +152,33 @@ CEOP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         volTile(bi,bj) = 0. _d 0
         sumTile(bi,bj) = 0. _d 0
-        DO k=1,myNr
-         DO j=1,sNy
-          DO i=1,sNx
-           tmpVol = arrArea(i,j,bi,bj)*arrMask(i,j,bi,bj)
-     &            * arrhFac(i,j,k,bi,bj)*arrDr(k)
-           volTile(bi,bj) = volTile(bi,bj) + tmpVol
-           sumTile(bi,bj) = sumTile(bi,bj) + tmpVol*arrFld(i,j,k,bi,bj)
+        IF ( arrDr(1).GE.zeroRS ) THEN
+C--   do (arrhFac) weighted average to apply uniform correction
+         DO k=1,myNr
+          DO j=1,sNy
+           DO i=1,sNx
+            tmpVol = arrArea(i,j,bi,bj)*arrMask(i,j,bi,bj)
+     &             * arrhFac(i,j,k,bi,bj)*arrDr(k)
+            volTile(bi,bj) = volTile(bi,bj) + tmpVol
+            sumTile(bi,bj) = sumTile(bi,bj) + tmpVol*arrFld(i,j,k,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        ELSE
+C-    do simple average to apply (arrhFac) weighted correction
+         DO k=1,myNr
+          DO j=1,sNy
+           DO i=1,sNx
+            tmpVol = arrArea(i,j,bi,bj)*arrMask(i,j,bi,bj)
+     &             * ABS(arrDr(k))
+            volTile(bi,bj) = volTile(bi,bj)
+     &                     + tmpVol*arrhFac(i,j,k,bi,bj)
+            sumTile(bi,bj) = sumTile(bi,bj)
+     &                     + tmpVol*arrFld(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
@@ -168,33 +186,60 @@ CEOP
       CALL GLOBAL_SUM_TILE_RL( sumTile, sumGlob, myThid )
 
       IF ( volGlob.GT.zeroRL ) THEN
-       theMean = sumGlob/volGlob
+       meanCorr = sumGlob/volGlob
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,myNr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            IF ( arrhFac(i,j,k,bi,bj).NE.zeroRS ) THEN
-             arrFld(i,j,k,bi,bj) = arrFld(i,j,k,bi,bj) - theMean
-            ENDIF
+         IF ( arrDr(1).GE.zeroRS ) THEN
+C--   apply uniform correction
+          DO k=1,myNr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( arrhFac(i,j,k,bi,bj).NE.zeroRS ) THEN
+              arrFld(i,j,k,bi,bj) = arrFld(i,j,k,bi,bj) - meanCorr
+             ENDIF
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ELSE
+C-    apply (arrhFac) weighted correction
+          DO k=1,myNr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( arrMask(i,j,bi,bj).NE.zeroRS ) THEN
+              arrFld(i,j,k,bi,bj) = arrFld(i,j,k,bi,bj)
+     &                            - meanCorr*arrhFac(i,j,k,bi,bj)
+             ENDIF
+            ENDDO
+           ENDDO
+          ENDDO
+C-    end type correction selection
+         ENDIF
         ENDDO
        ENDDO
       ELSE
-       theMean = 0. _d 0
+       meanCorr = 0. _d 0
       ENDIF
 
 C     Print the global mean to standard output, this is a measure
 C     of the magnitude of the correction to array arrFld
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(3A,1PE21.14,A,I10)')
-     &      'REMOVE_MEAN_RS: Global mean of ',
-     &      arrName, ' = ', theMean, '  @ it=', myIter
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT, myThid )
+       theMean = 0. _d 0
+       IF ( arrDr(1).GE.zeroRS ) THEN
+        IF ( volGlob.GT.zeroRL ) theMean = sumGlob/volGlob
+        WRITE(msgBuf,'(3A,1PE21.14,A,I10)')
+     &        'REMOVE_MEAN_RS: Global mean of ', arrName, ' = ',
+     &        theMean, '  @ it=', myIter
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ELSE
+        IF ( globalArea.GT.zeroRL ) theMean = sumGlob/globalArea
+        WRITE(msgBuf,'(3A,2(1PE21.14,A),I10)')
+     &        'REMOVE_MEAN_RS: ', arrName, ' Global mean= ',
+     &        theMean, ', remove: ', meanCorr, ' @ it=', myIter
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
        _END_MASTER( myThid )
       ENDIF
 
