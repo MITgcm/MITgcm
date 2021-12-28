@@ -146,6 +146,25 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 # endif
       ENDIF
 #endif /* ALLOW_GEOTHERMAL_FLUX */
+#ifdef ALLOW_BALANCE_FLUXES
+      IF ( selectBalanceEmPmR.EQ.2 ) THEN
+C-    set default weight to 1 (i.e., same correction as selectBalanceEmPmR=1 )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            weight2BalanceFlx(i,j,bi,bj) = oneRS
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      IF ( wghtBalanceFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RS( wghtBalanceFile, ' ',
+     &                      weight2BalanceFlx, 0, myThid )
+       CALL EXCH_XY_RS( weight2BalanceFlx, myThid )
+      ENDIF
+#endif /* ALLOW_GEOTHERMAL_FLUX */
 
       CALL EXCH_UV_XY_RS( fu,fv, .TRUE., myThid )
       CALL EXCH_XY_RS( Qnet , myThid )
