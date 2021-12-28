@@ -84,6 +84,9 @@ C     to oceanic surface forcing
 
 #ifdef ALLOW_BALANCE_FLUXES
 C     balance fluxes
+# ifdef ALLOW_AUTODIFF
+      tmpVar(1) = oneRS
+# endif
       IF ( selectBalanceEmPmR.GE.1 .AND.
      &     (.NOT.useSeaice .OR. useThSIce) ) THEN
        IF ( selectBalanceEmPmR.EQ.1 ) THEN
