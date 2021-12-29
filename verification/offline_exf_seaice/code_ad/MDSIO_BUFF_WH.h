@@ -16,7 +16,7 @@ C     Those buffers have be in common block to be shared by all threads
 C fld2d_procbuff_rx :: Heap storage buffer to which master thread
 C                   read-in/write-from data which all threads copy from
 C                   (during read) or copy to (during write).
-      COMMON /MDS_WH_BUFFERS/ 
+      COMMON /MDS_WH_BUFFERS/
 #ifndef EXCLUDE_WHIO_GLOBUFF_2D
      &                        fld2d_globuff_r8, fld2d_globuff_r4,
 #endif
@@ -33,8 +33,8 @@ C                   (during read) or copy to (during write).
       logical writeWh
       COMMON /MDS_WH_BUFFERS_3D_I/ iWh, jWh
       integer nWh, iWh, jWh
-      PARAMETER (nWh=91)
-      COMMON /MDS_WH_BUFFERS_3D_RL/ 
+      PARAMETER (nWh=92)
+      COMMON /MDS_WH_BUFFERS_3D_RL/
 #  ifdef INCLUDE_WHIO_GLOBUFF_3D
      &                        fld3d_globuff_r8, fld3d_globuff_r4,
 #  endif
