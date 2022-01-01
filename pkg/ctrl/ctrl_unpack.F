@@ -83,7 +83,6 @@ c     == local variables ==
       integer cunit
       logical lxxadxx
       character*(128) cfile
-      character*( 80) weighttype
 
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_unpack,
@@ -143,6 +142,9 @@ cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
+      character*(80) weighttype
+#endif
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       character*(80) fname_obcsn(3)
       character*(80) fname_obcss(3)
@@ -318,9 +320,9 @@ c
              print *, 'WARNING: wrong nvarlength ',
      &            filenvarlength, nvarlength
              STOP 'in S/R ctrl_unpack'
-          else if ( filensx .NE. nsx .OR. filensy .NE. nsy ) then
-             print *, 'WARNING: wrong nsx or nsy ',
-     &            filensx, nsx, filensy, nsy
+          else if ( filensx .NE. nSx .OR. filensy .NE. nSy ) then
+             print *, 'WARNING: wrong nSx or nSy ',
+     &            filensx, nSx, filensy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
           do k = 1, nr
