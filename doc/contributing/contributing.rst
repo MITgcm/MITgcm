@@ -38,30 +38,40 @@ contributions to the source code are expected to conform with the
 :ref:`sec_code_style_guide`. Contributions to the manual should follow
 the same procedure and conform with :numref:`contrib_manual`.
 
-The URLs in the following sections assume ssh based authentication. If you are behind a particularly troublesome firewall, you may need to use https and personal access tokens to login to GitHub. See the detailed instructions for more information.
-
 Quickstart Guide
 ----------------
 
-**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
+**0.** As a precursor, if you have not done so already, set up
+`ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_ for GitHub
+`command line authentication <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
+(or alteratively, authenticate using a 
+`personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_).
 
-**2.** Fork the project on GitHub (using the fork button).
+**1.** Fork the project on GitHub (using the fork button).
 
-**3.** Create a local clone (we strongly suggest keeping a separate
-repository for development work):
+**2.** Create a local clone (we strongly suggest keeping a separate
+repository for development work). If you are using ssh keys
+for command line authentication:
 
 ::
 
     % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
 
-**4.** Move into your local clone directory (cd MITgcm) and and set
+Alternatively, if you are using a personal access token for authentication:
+
+::
+
+    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
+
+
+**3.** Move into your local clone directory (cd MITgcm) and and set
 up a remote that points to the original:
 
 ::
 
     % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
-**5.** Make a new branch from ``upstream/master`` (name it something
+**4.** Make a new branch from ``upstream/master`` (name it something
 appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on this branch:
 
 ::
@@ -69,19 +79,19 @@ appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on th
    % git fetch upstream
    % git checkout -b «YOUR_NEWBRANCH_NAME» upstream/master
 
-**6.** When edits are done, do all git add’s and git commit’s. In the commit message,
+**5.** When edits are done, do all git add’s and git commit’s. In the commit message,
 make a succinct (<70 char) summary of your changes. If you need more space to
 describe your changes, you can leave a blank line and type a longer description,
 or break your commit into multiple smaller commits. Reference any outstanding
 issues addressed using the syntax ``#«ISSUE_NUMBER»``.
 
-**7.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
+**6.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
 
 ::
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-**8.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
+**7.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
 provide the requested information about your PR (in particular, a non-trivial change to the model
 requires a suggested addition to :filelink:`doc/tag-index`)
 and wait for the MITgcm head developers to review your proposed changes.
@@ -91,8 +101,8 @@ changes. Occasionally the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure. The
 review team is always happy to discuss their decisions, but wants to
 avoid people investing extensive effort in code that has a fundamental
-design flaw. The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill, Oliver Jahn, and Jeff Scott.
+design flaw. The current review team is Jean-Michel Campin, Chris Hill,
+Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
 
 If you want to update your code branch before submitting a PR (or any point
 in development), follow the recipe below. It will ensure that your GitHub
@@ -149,8 +159,18 @@ changes to the primary MITgcm maintainers; 3) the “Cloud”: GitHub functions 
 The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might envision making a big tarball of edited files and
 emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
 much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are
-typically invoked by hitting a button on the web interface, or clicking on a webpage link etc. To contribute edits to MITgcm,
-you need to obtain a github account. It’s free; do this first if you don’t have one already.
+typically invoked by hitting a button on the web interface, or clicking on a webpage link etc.
+
+To contribute edits to MITgcm,
+**the first step is to obtain a GitHub account**, if you have not done so already; it’s free. Second, as a 'developer' you will need to
+`authenticate <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github#authenticating-with-the-command-line>`_
+your terminal command line sessions in GitHub. There are two ways this can be done, either using
+`ssh keys <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_
+or via a `personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_.
+A personal access token functions similar to a password; ssh keys require some upfront configuration
+(`generating the key <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>`_
+and then `adding to your Github account <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_),
+but most developers prefer the ease of this approach once it is set up.
 
 Before you start working with git, make sure you identify yourself. From your terminal, type:
 
@@ -196,28 +216,35 @@ Prior to this, the file will appear in the current folder independently, i.e., r
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
-**1.** Setup ssh keys on `GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh>`_. GitHub requires ssh keys or a personal access token for authentication. The development team find ssh keys to be the easiest method, but you may prefer to use a `personal access token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_.
-
-**2.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
+**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
 from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
 As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative
 development process -- you need to create a place for your edits in the GitHub cloud,
-for developers to peruse.
+for developers to peruse. (Note: this step is only necessary the first time you contribute a pull request,
+as this forked copy will remain permanently in your Github space.)
 
-**3.** Download the code onto your local computer using the git clone command.
+**2.** Download the code onto your local computer using the git clone command.
 Even if you previously downloaded the code through a “git-aware” method
 (i.e., a git clone command, see :numref:`git-aware_download`),
 we **STRONGLY SUGGEST** you download a fresh repository, to a separate
-disk location, for your development work (keeping your research work separate). Type:
+disk location, for your development work (keeping your research work separate). 
+If you are using ssh keys for command line authentication (see above), in your terminal window type:
 
 ::
 
     % git clone git@github.com:«GITHUB_USERNAME»/MITgcm.git
 
-from your terminal (technically, here you are copying the forked “origin”
+Alternatively, if you are using a personal access token for authentication:
+
+::
+
+    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
+
+
+(technically, here you are copying the forked “origin”
 version from the cloud, not the “upstream” version, but these will be identical at this point).
 
-**4.** Move into the local clone directory on your computer:
+**3.** Move into the local clone directory on your computer:
 
 ::
 
@@ -239,7 +266,7 @@ remote, which is needed in step #4 -- no actual file manipulation
 is done at this point. If in doubt, the command ``git remote -v``
 will list what remotes have been set up.
 
-**5.**  Next make a new branch.
+**4.**  Next make a new branch.
 
 ::
 
@@ -249,7 +276,7 @@ will list what remotes have been set up.
 You will make edits on this new branch, to keep these new edits completely
 separate from all files on the master branch. The first command
 ``git fetch upstream`` makes sure your new branch is the latest code
-from the main repository; as such, you can redo step #5 at any time to
+from the main repository; as such, you can redo step 4 at any time to
 start additional, separate development projects (on a separate, new branch).
 Note that this second command above not only creates this new branch,
 from the ``upstream/master`` branch, it also switches you onto this newly
@@ -258,7 +285,7 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
 
 .. _doing_stuff_in_git:
 
-**6.** Doing stuff! This usually comes in one of three flavors:
+**5.** Doing stuff! This usually comes in one of three flavors:
 
 |   i) cosmetic changes, formatting, documentation, etc.;
 |   ii) fixing bug(s), or any change to the code which results in different numerical output; or
@@ -286,20 +313,20 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
       each commit should encompass a single conceptual change to the code base, regardless of how many files it touches.
       This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process.
 
-When your changes are tested and documented, continue on to step #7, but read all of step #7 and #8 before proceeding;
-you might want to do an optional “bring my development branch up to date” sequence of steps before step #7.
+When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding;
+you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
 
-**7.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud.
+**6.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud.
 This effectively updates your GitHub cloud copy of the MITgcm repo to reflect the wonderful changes you are contributing.
 
 ::
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-Some time might elapse during step #6, as you make and test your edits, during which continuing development occurs in the main MITgcm repository.
+Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository.
 In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development.
 It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not
-know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #8 below,
+know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below,
 when one of three things will occur:
 
    - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time,
@@ -310,10 +337,10 @@ when one of three things will occur:
    - during the elapsed time, the files you have modified have also been edited/updated in the main repo,
      but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
 
-One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #7 and #8 and
+One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and
 let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’
-that is checked by default when you do step #8). If very little time elapsed during step #6, such conflict is less likely.
-However, if step #6 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
+that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely.
+However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
 And/or during the development process, you might have reasons to bring the latest changes in the main repo into your
 development branch, and thus might opt to follow these same steps.
 
@@ -330,7 +357,7 @@ Development branch code update recipe:
 This first command switches you from your development branch to the master branch. The second command above will synchronize
 your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred
 in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch;
-in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #2 above.
+in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #1 above.
 The ``git push`` command does the opposite of pull, so in the third step you are synchronizing your GitHub cloud copy (“origin”)
 master branch to your local clone’s master branch (which you just updated). Then, switch back to your development branch via
 the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch.
@@ -349,7 +376,7 @@ is ``git diff master``. Similarly, to see a combined list of both your changes a
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax.
 If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
-**8.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
+**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
 In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git).
 There is a button for "Compare and Pull" in your newly created branch. Click the button!
 Now you can add a final succinct summary description of what you've done in your commit(s),
@@ -357,8 +384,8 @@ flag up any issues, and respond to the remaining questions on the PR template fo
 the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your
 changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified
 and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
-a week. While the PR remains open, you can go back to step #6 and make additional edits, git adds,
-git commits, and then redo step #7; such changes will be added to the PR (and maintainers re-notified), no need to redo step #8.
+a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
+git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7.
 
 Your pull request remains open until either the maintainers fully accept and
 merge your code changes into the main repository, or decide to reject your changes.
@@ -376,8 +403,8 @@ more typically you will be asked to undertake the majority of the necessary chan
 It is possible for other users (besides the maintainers) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
-The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill, Oliver Jahn, and Jeff Scott.
+The current review team is Jean-Michel Campin, Chris
+Hill, Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
 
 .. _sec_code_style_guide:
 
@@ -1052,23 +1079,23 @@ pull request branch (after you have run :filelink:`testreport <verification/test
 Verify that the output ``tst_2+2_out.txt`` file is identical between branches, similar to the above procedure for the file ``tr_out.txt``.
 If the files differ, attempt to identify and fix what is causing the problem.
 
-Automatic testing with Travis-CI
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Automatic testing with GitHub Actions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Once your PR is submitted onto GitHub, the continuous integration service
-`Travis-CI <https://travis-ci.org>`_ runs additional tests on your PR submission.
+`GitHub Actions <https://docs.github.com/en/actions>`_ runs additional tests on your PR submission.
 On the ‘Pull request’ tab in GitHub (https://github.com/MITgcm/MITgcm/pulls), find your pull request; initially you will see a yellow circle
 to the right of your PR title, indicating testing in progress. Eventually this will change to a green checkmark (pass) or a red X (fail).
 If you get a red X, click the X and then click on ‘Details’ to list specifics tests that failed; these can be clicked to produce a screenshot
 with error messages.
 
-Note that `Travis-CI <https://travis-ci.org>`_ builds documentation (both html and latex) in addition to code testing, so if you have
+Note that `GitHub Actions <https://docs.github.com/en/actions>`_ builds documentation (both html and latex) in addition to code testing, so if you have
 introduced syntax errors into the documentation files,
 these will be flagged at this stage. Follow the same procedure as above to identify the error messages so the problem(s) can be fixed. Make any
 appropriate edits to your pull request, re-``git add`` and re-``git commit`` any newly modified files, re-``git push``. Anytime changes are pushed to the PR,
-`Travis-CI <https://travis-ci.org>`_ will re-run its tests.
+`GitHub Actions <https://docs.github.com/en/actions>`_ will re-run its tests.
 
-The maintainers will not review your PR until all `Travis-CI <https://travis-ci.org>`_ tests pass.
+The maintainers will not review your PR until all `GitHub Actions <https://docs.github.com/en/actions>`_ tests pass.
 
 .. _contrib_manual:
 
@@ -1493,14 +1520,21 @@ pull request (as labeled by the pull request number), then click on "View docs"
 on the right side).
 
 Finally, if you want to test pull requests locally (i.e., to compile or run the code),
-you should download the pull request branch. You can do this either by cloning the branch from the pull request:
+you should download the pull request branch. You can do this either by cloning the branch from the pull request.
+If you are using ssh keys for command line authentication:
+
+::
+
+    git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» git@github.com:«THEIR_GITHUB_USERNAME»/MITgcm.git
+
+If you are using a personal access token for authentication:
 
 ::
 
     git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
 
 where «THEIR_GITHUB_USERNAME» is replaced by the username of the person proposing the pull request,
-and «THEIR_DEVELOPMENT_BRANCHNAME» is the branch from the pull request.
+and «THEIR_DEVELOPMENT_BRANCHNAME» is the branch from their pull request.
 
 Alternatively, you can add the repository of the user proposing the pull request as a remote to
 your existing local repository. Navigate to your local repository and type
