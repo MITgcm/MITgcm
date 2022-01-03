@@ -1,15 +1,20 @@
 #! /usr/bin/env bash
 
 # Used to run testreport on pleiades after OS changed from SLES to TOSS (v.3), using:
-# > module load comp-intel/2016.2.181 mpi-hpe/mpt.2.25
-# > module load hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
-# works on all types of nodes
+#- with MPI:
+#  > module load comp-intel/2016.2.181 mpi-hpe/mpt.2.25
+#  > module load hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
+#- without:
+#  > module load comp-intel/2016.2.181
+#  > module load hdf4/4.2.12 hdf5/1.8.18_serial netcdf/4.4.1.1_serial
+#- Note: in both cases, the second line of (3) module setting is for NetCDF
+#        (could be skipped if not using at all this type of I/O).
 
 FC=ifort
 CC=icc
 
 CPP='/lib/cpp -traditional -P'
-DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4 -DINTEL_COMMITQQ'
+DEFINES='-DWORDLENGTH=4 -DINTEL_COMMITQQ'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
