@@ -94,15 +94,22 @@ issues addressed using the syntax ``#«ISSUE_NUMBER»``.
 **7.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
 provide the requested information about your PR (in particular, a non-trivial change to the model
 requires a suggested addition to :filelink:`doc/tag-index`)
-and wait for the MITgcm head developers to review your proposed changes.
-In general the MITgcm code reviewers try to respond to a new PR within
-a week. The reviewers may accept the PR as is, or may request edits and
+and wait for the MITgcm head developers with merge privileges to review your proposed changes.
+In addition to the MITgcm head developers, a broader group of reviewers
+and developers will peruse and try to respond to a new PR within
+a week or two. The reviewers may accept the PR as is, or more typically, may request edits and
 changes. Occasionally the review team will reject changes that are not
-sufficiently aligned with and do not fit with the code structure. The
-review team is always happy to discuss their decisions, but wants to
+sufficiently aligned with and do not fit with the code structure.
+The review team is always happy to discuss their decision, but want to
 avoid people investing extensive effort in code that has a fundamental
-design flaw. The current review team is Jean-Michel Campin, Chris Hill,
-Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
+design flaw. As such, we **strongly** suggest opening an
+`issue <https://github.com/MITgcm/MITgcm/issues>`_
+on GitHub to discuss any proposed contributions beforehand.  
+
+The current pull request discussion and review team is Jean-Michel Campin, 
+Ed Doddridge, Chris Hill, Oliver Jahn, Jon Lauderdale,
+Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang. Please
+contact anyone on this team with questions about a proposed pull request.
 
 If you want to update your code branch before submitting a PR (or any point
 in development), follow the recipe below. It will ensure that your GitHub
@@ -142,7 +149,7 @@ your local computer’s terminal session. All Git-related terminal commands
 are of the form ``git «arguments»``.  Important functions include syncing
 or updating your code library, adding files to a collection of files
 with edits, and commands to “finalize” these changes for sending back to
-the MITgcm maintainers. There are numerous other Git command-line
+the MITgcm head developers. There are numerous other Git command-line
 tools to help along the way (see man pages via ``man git``).
 
 The most common git commands are:
@@ -155,9 +162,9 @@ The most common git commands are:
 
 What is GitHub then? GitHub is a website that has three major purposes: 1) Code Viewer: through your browser, you can view
 all source code and all changes to such over time; 2) “Pull Requests”: facilitates the process whereby code developers submit
-changes to the primary MITgcm maintainers; 3) the “Cloud”: GitHub functions as a cloud server to store different copies of the code.
+changes to the primary MITgcm head developers; 3) the “Cloud”: GitHub functions as a cloud server to store different copies of the code.
 The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might envision making a big tarball of edited files and
-emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
+emailing the head developers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
 much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are
 typically invoked by hitting a button on the web interface, or clicking on a webpage link etc.
 
@@ -188,7 +195,7 @@ advanced features of Git will likely pay off in the long run, and not just for M
 as you are likely to encounter it in all sorts of different projects.
 
 To better understand this process, :numref:`git_setup` shows a conceptual map of the Git setup. Note three copies of the code:
-the main MITgcm repository sourcecode “upstream” (i.e., owned by the MITgcm maintainers) in the GitHub cloud, a copy of the
+the main MITgcm repository sourcecode “upstream” (i.e., owned by the MITgcm head developers) in the GitHub cloud, a copy of the
 repository “origin” owned by you, also residing in the GitHub cloud, and a local copy on your personal computer or compute cluster
 (where you intend to compile and run). The Git and GitHub commands to create this setup are explained more fully below.
 
@@ -301,17 +308,17 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
       only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue
       to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
     - use ``git commit`` to commit the files. This is the first step in bundling a collection of files together to be sent
-      off to the MITgcm maintainers. When you enter this command, an editor window will pop up. On the top line, type a succinct
+      off to the MITgcm head developers. When you enter this command, an editor window will pop up. On the top line, type a succinct
       (<70 character) summary of what these changes accomplished. If your commit is non-trivial and additional explanation is required,
       leave a blank line and then type a longer description of why the action in this commit was appropriate etc.
       It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment.
       Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit,
       than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does
-      not (yet) submit anything to maintainers.
+      not (yet) submit anything to head developers.
     - if you are fixing a more involved bug or adding a new feature, such that many changes are required,
       it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit;
       each commit should encompass a single conceptual change to the code base, regardless of how many files it touches.
-      This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process.
+      This will allow the MITgcm head developers to more easily understand your proposed changes and will expedite the review process.
 
 When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding;
 you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
@@ -338,7 +345,8 @@ when one of three things will occur:
      but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
 
 One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and
-let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’
+let the maintainers (i.e., the MITgcm head developers with merge priviledges) assess and resolve any conflict(s),
+should such occur (there is a checkbox ‘Allow edits by maintainers’
 that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely.
 However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
 And/or during the development process, you might have reasons to bring the latest changes in the main repo into your
@@ -376,35 +384,41 @@ is ``git diff master``. Similarly, to see a combined list of both your changes a
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax.
 If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
-**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
+**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the
+MITgcm head developers with merge privileges pull your changes into the main code repository).
 In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git).
 There is a button for "Compare and Pull" in your newly created branch. Click the button!
 Now you can add a final succinct summary description of what you've done in your commit(s),
 flag up any issues, and respond to the remaining questions on the PR template form. If you have made non-trivial changes to
 the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your
-changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified
-and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
-a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
-git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7.
+changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank.
+The MITgcm PR discussion team (in addition to the MITgcm head developers, a broader group of reviewers) will now be notified
+and be able to peruse your changes! In general, the PR review team will try to respond to a new PR within a week or two.
+While the PR remains open, you can go back to step #5 and make additional edits, git adds,
+git commits, and then redo step #6; such changes will be added to the PR (and head developers re-notified), no need to redo step #7.
 
-Your pull request remains open until either the maintainers fully accept and
+Your pull request remains open until either the MITgcm head developers with merge privileges fully accept and
 merge your code changes into the main repository, or decide to reject your changes.
 Occasionally, the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure;
-the review team is always happy to discuss their decisions, but wants to
+the review team is always happy to discuss their decision, but want to
 avoid people investing extensive additional effort in code that has a fundamental design flaw.
 But much more likely than outright rejection, you will instead be asked to respond to feedback,
 modify your code changes in some way, and/or clean up your code to better satisfy our style requirements, etc.,
 and the pull request will remain open.
-In some cases, the maintainers might take initiative to make some changes to your pull request
+In some cases, the head developers might take initiative to make some changes to your pull request
 (such changes can then be incorporated back into your local branch simply by typing ``git pull`` from your branch), but
 more typically you will be asked to undertake the majority of the necessary changes.
+Note we **strongly** suggest opening an `issue <https://github.com/MITgcm/MITgcm/issues>`_
+on GitHub to discuss any proposed contributions beforehand.
 
-It is possible for other users (besides the maintainers) to examine
+It is possible for other users (besides the PR review team) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
-The current review team is Jean-Michel Campin, Chris
-Hill, Oliver Jahn, Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang.
+The current pull request discussion and review team is Jean-Michel Campin, 
+Ed Doddridge, Chris Hill, Oliver Jahn, Jon Lauderdale,
+Martin Losch, Jeff Scott, Timothy Smith, and Ou Wang. Please feel free
+to contact anyone on this team with questions about a proposed pull request.
 
 .. _sec_code_style_guide:
 
@@ -1014,7 +1028,7 @@ On a daily basis, MITgcm runs a full suite of :filelink:`testreport <verificatio
 clusters, running using different operating systems, testing several different Fortran compilers.
 The reference machine ``villon.mit.edu`` is one of such daily test machines.
 When changes in output occur from previous runs, even if as minor as changes
-in numeric output to machine precision, MITgcm maintainers are automatically notified.
+in numeric output to machine precision, MITgcm head developers are automatically notified.
 
 Links to summary results from the daily testing are posted at http://mitgcm.org/public/testing.html.
 
@@ -1059,11 +1073,11 @@ Differences might occur due to one or more of the following reasons:
 - You have made changes which require changes to input parameters
   (e.g., renaming a namelist parameter, changing the units or function of an input parameter, etc.)
   This by definition is a “breaking change”, which must be noted when completing the PR template -- but should not deter you from
-  submitting your PR. Ultimately, you and the maintainers will likely have to make changes to one or more verification experiments, but as a first
+  submitting your PR. Ultimately, you and the MITgcm head developers will likely have to make changes to one or more verification experiments, but as a first
   step we will want to review your PR.
 
 - You have made algorithmic changes which change model output in some or all setups; this too is a “breaking change” that should be noted in
-  the PR template. As usual recourse, if the PR is accepted, the maintainers will re-generate reference output and push to the affected
+  the PR template. As usual recourse, if the PR is accepted, the head developers will re-generate reference output and push to the affected
   ``«TESTDIR»/results/`` directories when the PR is merged.
 
 Most typically, running testreport using a single process is a sufficient test. However, any code changes which call MITgcm
@@ -1095,7 +1109,7 @@ these will be flagged at this stage. Follow the same procedure as above to ident
 appropriate edits to your pull request, re-``git add`` and re-``git commit`` any newly modified files, re-``git push``. Anytime changes are pushed to the PR,
 `GitHub Actions <https://docs.github.com/en/actions>`_ will re-run its tests.
 
-The maintainers will not review your PR until all `GitHub Actions <https://docs.github.com/en/actions>`_ tests pass.
+The MITgcm head developers will not review your PR until all `GitHub Actions <https://docs.github.com/en/actions>`_ tests pass.
 
 .. _contrib_manual:
 
