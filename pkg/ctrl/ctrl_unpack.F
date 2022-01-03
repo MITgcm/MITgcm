@@ -907,8 +907,8 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_fname( xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype(1:80),'(80a)') ' '
+c          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_local(ictrlgrad), "maskCtrlC",
      &         xx_genarr3d_weight(iarr),
@@ -935,8 +935,8 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype(1:80),'(80a)') ' '
+c          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
