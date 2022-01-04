@@ -73,9 +73,7 @@ C   addummy_in_stepping.F
 # define AUTODIFF_USE_OLDSTORE_3D
 # define AUTODIFF_USE_OLDSTORE_2D
 # define AUTODIFF_USE_OLDSTORE_EXF
-C     this is necessary as long as tices is not stored by TAF in
-C     checkpoint level 2 and 3
-# undef AUTODIFF_USE_OLDSTORE_SEAICE
+# define AUTODIFF_USE_OLDSTORE_SEAICE
 # define AUTODIFF_USE_OLDSTORE_OBCS
 #endif
 
