@@ -171,10 +171,6 @@ cgg)
 
 c     == end of interface ==
 
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
-
 c--   Initialise
       nbuffGlobal = 0
 
@@ -889,7 +885,7 @@ c----------------------------------------------------------------------
      &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetUnpack='maskCtrlI'
           DO k=1,Nr
-           nwettmp(k) = nwetiglobal(k) 
+           nwettmp(k) = nwetiglobal(k)
           ENDDO
          endif
 # endif
