@@ -1,6 +1,6 @@
 #include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_init_obcs_variables( mythid )
+      subroutine ctrl_init_obcs_variables( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_init_obcs_variables
@@ -23,44 +23,26 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 c#include "GRID.h"
-
 #include "ctrl.h"
 #include "CTRL_OBCS.h"
 
 c     == routine arguments ==
-
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_OBCS
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer ntmp
-      integer ivarindex
       integer iobcs
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
-
 #ifdef ALLOW_OBCSN_CONTROL
       do iobcs = 1, nobcs
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do i = imin,imax
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
+            do k = 1,Nr
+              do i = 1-OLx, sNx+OLx 
                 xx_obcsn0(i,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcsn1(i,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -72,10 +54,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_OBCSS_CONTROL
       do iobcs = 1, nobcs
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do i = imin,imax
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
+            do k = 1,Nr
+              do i = 1-OLx, sNx+OLx 
                 xx_obcss0(i,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcss1(i,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -87,10 +69,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_OBCSW_CONTROL
       do iobcs = 1, nobcs
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
+            do k = 1,Nr
+              do j = 1-OLy, sNy+OLy 
                 xx_obcsw0(j,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcsw1(j,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -102,10 +84,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_OBCSE_CONTROL
       do iobcs = 1, nobcs
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
+        do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
+            do k = 1,Nr
+              do j = 1-OLy, sNy+OLy 
                 xx_obcse0(j,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcse1(j,k,bi,bj,iobcs) = 0. _d 0
               enddo

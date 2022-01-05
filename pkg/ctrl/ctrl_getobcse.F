@@ -4,10 +4,7 @@
 #endif
 
       subroutine ctrl_getobcse(
-     I                             mytime,
-     I                             myiter,
-     I                             mythid
-     &                           )
+     I                          myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_getobcse
@@ -41,60 +38,48 @@ c#include "OBCS_PARAMS.h"
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c     == routine arguments ==
-      _RL     mytime
-      integer myiter
-      integer mythid
+      _RL     myTime
+      integer myIter
+      integer myThid
 
 #ifdef ALLOW_OBCSE_CONTROL
-c     == local variables ==
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
-      integer imin,imax
       integer ilobcse
       integer iobcs
-
-      _RL     dummy
       _RL     obcsefac
       logical obcsefirst
       logical obcsechanged
       integer obcsecount0
       integer obcsecount1
       integer ip1
-
-cgg      _RL maskyz   (1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
-
+cgg      _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-
       character*(80) fnameobcse
-
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
-      _RL     tmpz (nr,nsx,nsy)
+      _RL     tmpz (Nr,nSx,nSy)
       _RL     stmp
 #endif
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
       ip1  = 0
 
 c--   Now, read the control vector.
@@ -112,7 +97,7 @@ c--   Get the counters, flags, and the interpolation factor.
      I                   xx_obcsestartdate, xx_obcseperiod,
      O                   obcsefac, obcsefirst, obcsechanged,
      O                   obcsecount0,obcsecount1,
-     I                   mytime, myiter, mythid )
+     I                   myTime, myIter, myThid )
 
       do iobcs = 1,nobcs
 
@@ -163,7 +148,7 @@ cih    Compute absolute velocities from the barotropic-baroclinic modes.
            enddo
           endif
 #endif
-          do k = 1,nr
+          do k = 1,Nr
            do j = jmin,jmax
             xx_obcse1(j,k,bi,bj,iobcs)  = tmpfldyz (j,k,bi,bj)
 cgg   &                                        *   maskyz (j,k,bi,bj)
@@ -178,7 +163,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
-           do k = 1,nr
+           do k = 1,Nr
             xx_obcse0(j,k,bi,bj,iobcs) = xx_obcse1(j,k,bi,bj,iobcs)
             tmpfldyz (j,k,bi,bj)       = 0. _d 0
            enddo
@@ -232,7 +217,7 @@ cih    Compute absolute velocities from the barotropic-baroclinic modes.
            enddo
           endif
 #endif
-          do k = 1,nr
+          do k = 1,Nr
            do j = jmin,jmax
             xx_obcse1 (j,k,bi,bj,iobcs) = tmpfldyz (j,k,bi,bj)
 cgg   &                                        *   maskyz (j,k,bi,bj)
@@ -246,8 +231,8 @@ c--   Add control to model variable.
        do bj = jtlo,jthi
         do bi = itlo,ithi
 c--   Calculate mask for tracer cells (0 => land, 1 => water).
-         do k = 1,nr
-          do j = 1,sny
+         do k = 1,Nr
+          do j = 1,sNy
            i = OB_Ie(j,bi,bj)
            IF ( i.EQ.OB_indexNone ) i = 1
            if (iobcs .EQ. 1) then
