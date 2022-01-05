@@ -67,8 +67,11 @@ C     == local variables ==
       INTEGER igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-      INTEGER i, j, bi, bj, k2
+      INTEGER i, j, bi, bj
+#  ifdef SHI_ALLOW_GAMMAFRICT
+      INTEGER k2
       LOGICAL dragThermoEqualMom
+#  endif
 # endif
 # if (defined ALLOW_DIC && defined DIC_BIOTIC)
       INTEGER igen_alpha
@@ -168,7 +171,7 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
         ENDDO
        ENDDO
       ENDIF
-# else
+# else /* SHI_ALLOW_GAMMAFRICT */
       dragThermoEqualMom = .FALSE.
       IF (igen_shiCDrag.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)

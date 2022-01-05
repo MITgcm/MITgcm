@@ -31,23 +31,16 @@ c     == global variables ==
 #include "grdchk.h"
 
 c     == routine arguments ==
-
       integer       mythid
 
 #ifdef ALLOW_GRDCHK
 c     == local variables ==
-
       integer bi,bj
-      integer i,j,k
-      integer irec
+      integer k, iobcs
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-
-      integer itest,iobcs
-      integer icomptest
-
 c     == end of interface ==
 
       jtlo = 1
