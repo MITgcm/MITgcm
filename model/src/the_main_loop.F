@@ -278,11 +278,14 @@ CADJ INIT dummytape          = COMMON, 1
 c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
-CADJ INIT tapelev2 = USER
+CADJ  INIT tapelev2 = USER
+CADJ  INIT tapelvi2 = USER,'adi'
 #  elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
-CADJ INIT tapelev4 = USER
+CADJ  INIT tapelev4 = USER
+CADJ  INIT tapelvi4 = USER,'adi'
 #  else
-CADJ INIT tapelev3 = USER
+CADJ  INIT tapelev3 = USER
+CADJ  INIT tapelvi3 = USER,'adi'
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -429,6 +432,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
+CADJ    INIT tapelvi3 = USER,'adi'
 #   endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
 
 #   ifndef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -447,6 +451,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
+CADJ    INIT tapelvi2 = USER,'adi'
 #   endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2
