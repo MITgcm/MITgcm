@@ -43,7 +43,7 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k
       _RL  lig, FeL
       _RL  tmpfe
-#ifdef AD_SAFE
+#if ( defined MINFE && defined AD_SAFE )
       _RL thx, thy, theps
 #endif
 

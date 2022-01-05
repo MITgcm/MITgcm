@@ -41,17 +41,17 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-      integer myThid
+      INTEGER myThid
 
 c     == external functions ==
-      integer  ilnblnk
-      external ilnblnk
+      INTEGER  ilnblnk
+      EXTERNAL ilnblnk
 
 c     == local variables ==
 C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER k, k2, iUnit, num_file, num_var
+      INTEGER k, k2, iUnit
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER IL, kk, gencost_k3d, gencost_msk_k3d, ioUnit
       CHARACTER*(128) tempfile
@@ -62,7 +62,7 @@ C     iUnit       - Work variable for IO unit number
 Catn-- retired parameters
       CHARACTER*(MAX_LEN_FNAM) topexmeanfile
       CHARACTER*(2) cost_yftype
-      integer nRetired
+      INTEGER nRetired
 
 c     == end of interface ==
 
@@ -621,7 +621,7 @@ c boxmean/horflux masks
      &          1,zeroRL,myThid)
          call ecco_zero(gencost_mskSsurf(1-OLx,1-OLy,1,1,k),
      &          1,zeroRL,myThid)
-         do k2 = 1,nr
+         do k2 = 1,Nr
           gencost_mskVertical(k2,k)= 1. _d 0
          enddo
 c deprecated:
