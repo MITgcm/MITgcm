@@ -66,11 +66,10 @@ C     == local variables ==
       logical dowc01
       logical dosmooth
       logical doscaling
-      _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS dummyRS(1)
+      _RL     xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS     mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_ECCO
-      _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     xx_gen_tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer nyearsINT
       _RL     recip_nyearsRL
 #endif
@@ -177,13 +176,13 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, irec,
      &          doglobalread, ladinit, optimcycle,
-     &          mythid, xx_gentim2d_dummy(iarr) )
+     &          myThid, xx_gentim2d_dummy(iarr) )
 #else
            CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
 #endif
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
-     &          mythid, xx_gentim2d_dummy(iarr) )
+     &          myThid, xx_gentim2d_dummy(iarr) )
 #else
            CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
@@ -240,7 +239,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_AUTODIFF
            call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
      &          doglobalread, ladinit, optimcycle,
-     &          mythid, xx_gentim2d_dummy(iarr) )
+     &          myThid, xx_gentim2d_dummy(iarr) )
 #else
            CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
      &          1, myThid )
@@ -274,7 +273,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 #ifdef ALLOW_AUTODIFF
           call active_write_xy( fnamegenTmp, xx_gen, iRec, optimcycle,
-     &         mythid, xx_gentim2d_dummy(iarr) )
+     &         myThid, xx_gentim2d_dummy(iarr) )
 #else
           CALL WRITE_REC_XY_RL( fnamegenTmp, xx_gen, iRec, 1, myThid )
 #endif
@@ -292,14 +291,14 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenOut, xx_gen, kRec,
      &           doglobalread, ladinit, optimcycle,
-     &           mythid, xx_gentim2d_dummy(iarr) )
+     &           myThid, xx_gentim2d_dummy(iarr) )
 #else
             CALL READ_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
 #endif
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenTmp, xx_gen_tmp, iRec,
      &           doglobalread, ladinit, optimcycle,
-     &           mythid, xx_gentim2d_dummy(iarr) )
+     &           myThid, xx_gentim2d_dummy(iarr) )
 #else
             CALL READ_REC_XY_RL( fnamegenTmp, xx_gen_tmp, iRec, 1,
      &           myThid )
@@ -316,7 +315,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
             ENDDO
 #ifdef ALLOW_AUTODIFF
             CALL active_write_xy( fnamegenOut, xx_gen, kRec,
-     &           optimcycle, mythid, xx_gentim2d_dummy(iarr) )
+     &           optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
             CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1,
      &           myThid )
@@ -338,7 +337,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenOut, xx_gen, irec,
      &        doglobalread, ladinit, optimcycle,
-     &        mythid, xx_gentim2d_dummy(iarr) )
+     &        myThid, xx_gentim2d_dummy(iarr) )
 #else
          CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
@@ -349,15 +348,15 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
          enddo
          CALL READ_REC_3D_RL( xx_gentim2d_weight(iarr), ctrlprec, 1,
-     &             wgentim2d(1-Olx,1-Oly,1,1,iarr), jrec, 1, myThid )
+     &             wgentim2d(1-OLx,1-OLy,1,1,iarr), jrec, 1, myThid )
 
 C--   Get appropriate mask
          call ctrl_get_mask2D(xx_gentim2d_file(iarr), mask2D, myThid)
 
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN
-          IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
-          IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
+          IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,myThid)
+          IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,myThid)
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
@@ -387,7 +386,7 @@ C--   Get appropriate mask
 
 #ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
-     &        mythid, xx_gentim2d_dummy(iarr) )
+     &        myThid, xx_gentim2d_dummy(iarr) )
 #else
          CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif

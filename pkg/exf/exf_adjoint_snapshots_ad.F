@@ -73,10 +73,6 @@ C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
 c     CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
-      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
       _RS dumRS(1)
       _RL dumRL(1)
       INTEGER dumpAdRecEx
