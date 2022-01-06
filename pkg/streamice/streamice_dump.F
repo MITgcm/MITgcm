@@ -2,6 +2,7 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: streamice_dump
