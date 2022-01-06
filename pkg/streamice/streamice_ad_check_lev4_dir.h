@@ -30,7 +30,6 @@ CADJ STORE visc_streamice_full
 CADJ &     = tapelev4, key = ilev_4
 # endif
 
-# ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE bdot_streamice
 #ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
 CADJ &     = tapelev4, key = ilev_4
@@ -51,7 +50,6 @@ CADJ &     = tapelev4, key = ilev_4
 CADJ STORE streamice_v_shear_pert
 CADJ &     = tapelev4, key = ilev_4
 #endif
-# endif
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
 CADJ STORE bdot_streamice0
