@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - rename/update optfile for UK HPC Archer2.
 o pkgs:
   - remove/avoid unused variables from AD verification exp. built except from
     halfpipe_streamice (pkg/streamice); also clean-up a bit pkg/smooth.
