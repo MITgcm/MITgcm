@@ -29,17 +29,16 @@ C     == Global variables ==
 #include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_PRESSURE
+C     myThid     :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     dPhiHydX,Y :: Gradient (X & Y directions) of Hyd. Potential
 C     bi,bj      :: tile indices
 C     i,j,k      :: Loop counters
       INTEGER bi, bj
       INTEGER  i,  j, k
+#ifndef ALLOW_AUTODIFF
       INTEGER  iMin, iMax, jMin, jMax, npiter
       _RL PhiHydF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL PhiHydC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -48,13 +47,10 @@ C     i,j,k      :: Loop counters
       _RL oldPhi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL count, rmspp, rmsppold
       _RL sumTile, rmsTile
+#endif
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-      iMin = 1-OLx
-      iMax = sNx+OLx
-      jMin = 1-OLy
-      jMax = sNy+OLy
 
       _BEGIN_MASTER( myThid )
       WRITE(msgBuf,'(a)')
@@ -81,6 +77,11 @@ CEOP
 cph-- deal with this iterative loop for AD once it will
 cph-- really be needed;
 cph-- would need storing of totPhiHyd for each npiter
+
+       iMin = 1-OLx
+       iMax = sNx+OLx
+       jMin = 1-OLy
+       jMax = sNy+OLy
 
        rmspp    = 1. _d 0
        rmsppold = 0. _d 0

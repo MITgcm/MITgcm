@@ -95,25 +95,26 @@ C     dSigmaDr    :: vertical gradient of density
 CEOP
 
 #ifdef ALLOW_GMREDI
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-#ifdef GMREDI_WITH_STABLE_ADJOINT
-      _RL slopeSqTmp,slopeTmp,slopeMax
-#endif
-      _RL dSigmMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL SlopeMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL f1,Smod,f2,Rnondim
-      _RL maxSlopeSqr
       _RL fpi
       PARAMETER( fpi = PI )
-      INTEGER i,j
+      INTEGER i, j
+      _RL f1, Smod, f2, Rnondim
+      _RL maxSlopeSqr
+      _RL dSigmMod   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifndef GM_EXCLUDE_FM07_TAP
       _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
       _RL minTransLay
+      _RL SlopeMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL locVar  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#ifdef GMREDI_WITH_STABLE_ADJOINT
+      _RL slopeSqTmp, slopeTmp, slopeMax
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3

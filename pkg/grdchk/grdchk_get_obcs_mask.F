@@ -29,35 +29,25 @@ c     == global variables ==
 #include "grdchk.h"
 
 c     == routine arguments ==
-
       integer mythid
 
 #if (defined (ALLOW_GRDCHK) && defined (ALLOW_OBCS_CONTROL))
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
-      integer irec,iobcs
+      integer iobcs
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-
       _RL dummy
-
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
-
       character*( 80) fname
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
