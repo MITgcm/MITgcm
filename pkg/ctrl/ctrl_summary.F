@@ -35,15 +35,16 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer mythid
 
-c     == local variables ==
+c     == external ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
-      integer i,k
+      integer k
       integer il
-      integer timeint(4)
       integer nwetcenter
       integer nwetsouth
       integer nwetwest
@@ -53,11 +54,9 @@ c     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr, jarr
 #endif
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
+#if ( ( defined ALLOW_GENTIM2D_CONTROL && defined ALLOW_CAL ) || defined ECCO_CTRL_DEPRECATED )
+      integer i, timeint(4)
+#endif
 
 c     == end of interface ==
 
@@ -321,7 +320,6 @@ c     == end of interface ==
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-
 #ifdef ALLOW_SMOOTH
 #ifdef ECCO_CTRL_DEPRECATED
 
@@ -364,7 +362,6 @@ c allow for switching off correl2d in adjoint
 #endif /* ECCO_CTRL_DEPRECATED */
 #endif /* ALLOW_SMOOTH */
 
-
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
 
       write(msgbuf,'(a)') ' '
@@ -386,7 +383,6 @@ c allow for switching off correl2d in adjoint
      &' /* use generic controls */'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-
 
 #ifdef ALLOW_GENARR2D_CONTROL
       do iarr = 1, maxCtrlArr2D
@@ -431,7 +427,6 @@ c allow for switching off correl2d in adjoint
       enddo
 #endif
 
-
 #ifdef ALLOW_GENARR3D_CONTROL
       do iarr = 1, maxCtrlArr3D
        if (xx_genarr3d_weight(iarr).NE.' ') then
@@ -460,7 +455,6 @@ c allow for switching off correl2d in adjoint
      &'      ncvarindex = ', ncvarindex(200+iarr)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-
 
         do jarr=1,maxCtrlProc
          if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then

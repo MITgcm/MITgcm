@@ -1,6 +1,6 @@
 #include "SMOOTH_OPTIONS.h"
 
-      subroutine smooth_init_fixed (mythid)
+      SUBROUTINE SMOOTH_INIT_FIXED( myThid )
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_init_fixed
@@ -14,27 +14,19 @@ C     *==========================================================*
 #include "GRID.h"
 #include "SMOOTH.h"
 
-      integer myThid
-      integer ikey_bak
-      integer smoothOpNb
+      INTEGER myThid
 
-      integer i,j,k, bi, bj, imin, imax, jmin, jmax
-      integer itlo,ithi
-      integer jtlo,jthi
+      INTEGER smoothOpNb
+      INTEGER i, j, k, bi, bj
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
-      DO bj=jtlo,jthi
-       DO bi=itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-          smooth_recip_hFacC(i,j,k,bi,bj)=_recip_hFacC(i,j,k,bi,bj)
-          smooth_hFacW(i,j,k,bi,bj)=_hFacW(i,j,k,bi,bj)
-          smooth_hFacS(i,j,k,bi,bj)=_hFacS(i,j,k,bi,bj)
+           smooth_recip_hFacC(i,j,k,bi,bj) = _recip_hFacC(i,j,k,bi,bj)
+           smooth_hFacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
+           smooth_hFacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -42,31 +34,30 @@ C     *==========================================================*
       ENDDO
 
       DO smoothOpNb=1,smoothOpNbMax
-      if (smooth2Dtype(smoothOpNb).NE.0) then
-      call smooth_init2D(smoothOpNb,mythid)
-      endif
-      ENDDO 
-
-      DO smoothOpNb=1,smoothOpNbMax
-      if (smooth2Dtype(smoothOpNb).NE.0) then
-      call smooth_filtervar2D(smoothOpNb,mythid)
-      endif
+       IF (smooth2Dtype(smoothOpNb).NE.0) THEN
+        CALL smooth_init2D( smoothOpNb, myThid )
+       ENDIF
       ENDDO
 
       DO smoothOpNb=1,smoothOpNbMax
-      if ((smooth3DtypeZ(smoothOpNb).NE.0).OR.
-     & (smooth3DtypeH(smoothOpNb).NE.0)) then
-      call smooth_init3D(smoothOpNb,mythid)
-      endif
+       IF (smooth2Dtype(smoothOpNb).NE.0) THEN
+        CALL smooth_filtervar2D( smoothOpNb, myThid )
+       ENDIF
       ENDDO
 
       DO smoothOpNb=1,smoothOpNbMax
-      if ((smooth3DtypeZ(smoothOpNb).NE.0).OR.
-     & (smooth3DtypeH(smoothOpNb).NE.0)) then
-      call smooth_filtervar3D(smoothOpNb,mythid)
-      endif
+       IF ( (smooth3DtypeZ(smoothOpNb).NE.0).OR.
+     &      (smooth3DtypeH(smoothOpNb).NE.0) ) THEN
+        CALL smooth_init3D( smoothOpNb, myThid )
+       ENDIF
       ENDDO
 
-        END 
+      DO smoothOpNb=1,smoothOpNbMax
+       IF ( (smooth3DtypeZ(smoothOpNb).NE.0).OR.
+     &      (smooth3DtypeH(smoothOpNb).NE.0) ) THEN
+        CALL smooth_filtervar3D( smoothOpNb, myThid )
+       ENDIF
+      ENDDO
 
-
+      RETURN
+      END

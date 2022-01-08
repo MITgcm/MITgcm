@@ -1317,7 +1317,6 @@ c     driftfile     - reference data file for drifter mean velocities
       character*(MAX_LEN_FNAM) xbtfile
       character*(MAX_LEN_FNAM) argotfile
       character*(MAX_LEN_FNAM) argosfile
-      character*(MAX_LEN_FNAM) argofile
       character*(MAX_LEN_FNAM) usercost_datafile(NUSERCOST)
       character*(MAX_LEN_FNAM) udriftfile
       character*(MAX_LEN_FNAM) vdriftfile

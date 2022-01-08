@@ -1,38 +1,35 @@
 #include "SMOOTH_OPTIONS.h"
 
-      subroutine smooth_readparms( myThid )
+      SUBROUTINE SMOOTH_READPARMS( myThid )
 
 C     *==========================================================*
-C     | SUBROUTINE smooth_readparms
+C     | SUBROUTINE SMOOTH_READPARMS
 C     | o Routine that reads the pkg/smooth namelist from data.smooth
 C     *==========================================================*
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "PARAMS.h"
-
 #include "SMOOTH.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
+      INTEGER myThid
 
-      integer myThid
-
-c     == local variables ==
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
+C     == local variables ==
+C     msgBuf     :: Informational/error message buffer
+C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, num_file, num_var
-      integer smoothOpNb
+      INTEGER iUnit
+      INTEGER smoothOpNb
 
-c     == end of interface ==
+C     == end of interface ==
 
-c--   Read the namelist input.
-      namelist /smooth_nml/
+C--   Read the namelist input.
+      NAMELIST /smooth_nml/
      &                   smooth2Dnbt,
      &                   smooth2Dtype,
      &                   smooth2Dsize,
@@ -65,7 +62,7 @@ C     print a (weak) warning if data.smooth is found
 
       _BEGIN_MASTER( myThid )
 
-c--   Set default values.
+C--   Set default values.
       DO smoothOpNb=1,smoothOpNbMax
         smooth2Dnbt(smoothOpNb)=0
         smooth2D_Lx0(smoothOpNb)=0. _d 0
@@ -90,7 +87,7 @@ c--   Set default values.
 C--   Read settings from model parameter file "data.smooth".
       WRITE(msgBuf,'(A)') 'SMOOTH_READPARMS: opening data.smooth'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.smooth', 'SMOOTH_READPARMS',
@@ -102,7 +99,7 @@ C--   Read settings from model parameter file "data.smooth".
       WRITE(msgBuf,'(2A)') 'SMOOTH_READPARMS: ',
      &       'finished reading data.smooth'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
@@ -114,53 +111,53 @@ C--   Print pkg/smooth settings to standard output:
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// pkg/smooth configuration'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       DO smoothOpNb=1,smoothOpNbMax
         IF (smooth2Dtype(smoothOpNb).NE.0) THEN
-          WRITE(msgBuf,'(A,I2,I6,2f6.0,A)') 'smooth 2D parameters: ',
+          WRITE(msgBuf,'(A,I2,I6,2F6.0,A)') 'smooth 2D parameters: ',
      &       smoothOpNb,smooth2Dnbt(smoothOpNb),
      &       smooth2D_Lx0(smoothOpNb),smooth2D_Ly0(smoothOpNb),
      &       smooth2DmaskName(smoothOpNb)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , 1)
+     &                        SQUEEZE_RIGHT, myThid )
         ENDIF
       ENDDO
 
       DO smoothOpNb=1,smoothOpNbMax
         IF ((smooth3DtypeZ(smoothOpNb).NE.0).OR.
      &      (smooth3DtypeH(smoothOpNb).NE.0)) then
-          WRITE(msgBuf,'(A,I2,I6,3f6.0,A)') 'smooth 3D parameters: ',
+          WRITE(msgBuf,'(A,I2,I6,3F6.0,A)') 'smooth 3D parameters: ',
      &       smoothOpNb,smooth3Dnbt(smoothOpNb),
      &       smooth3D_Lx0(smoothOpNb),smooth3D_Ly0(smoothOpNb),
      &       smooth3D_Lz0(smoothOpNb),
      &       smooth3DmaskName(smoothOpNb)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , 1)
+     &                        SQUEEZE_RIGHT, myThid )
         ENDIF
       ENDDO
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// End of pkg/smooth config. summary'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 

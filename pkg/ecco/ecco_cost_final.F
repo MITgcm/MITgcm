@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine ecco_cost_final( mythid )
+      subroutine ecco_cost_final( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -50,20 +50,19 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 C     === Functions ====
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == local variables ==
 
       integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
       integer ifc
-      integer totnum
-      integer num_file,num_var
+      integer num_var
 
 #ifndef ALLOW_PROFILES
       integer NFILESPROFMAX
@@ -159,6 +158,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
 #endif
 #ifdef ALLOW_PROFILES
+      integer num_file
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
 #endif
@@ -176,15 +176,8 @@ c the adjoint, pkg/autodiff most likely require cost though.
       character*(MAX_LEN_MBUF) msgBuf
 
       INTEGER IL
-C Functions
-      INTEGER ILNBLNK
 
 c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
 
       ifc = 30
 
@@ -425,8 +418,8 @@ c     == end of interface ==
 #endif
 
 c--   Sum up all contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 
           tile_fc(bi,bj) = tile_fc(bi,bj)
 #ifdef ECCO_CTRL_DEPRECATED
@@ -800,8 +793,9 @@ c--   Sum up all contributions.
        enddo
 #endif
 
-        enddo
-      enddo
+C-   end bi,bj loops
+       ENDDO
+      ENDDO
 
 c local copy used in print statements, for
 c which we always want to do the global sum.
@@ -1229,7 +1223,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
      &      num_file, num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
       enddo
@@ -1239,7 +1233,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_profiles_mean =',f_profiles_mean(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
       enddo
       endif
@@ -1251,7 +1245,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_gencost =',f_gencost(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1262,7 +1256,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1273,7 +1267,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1284,7 +1278,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1339,7 +1333,7 @@ C     only master thread of master CPU open and write to file
         write(msgBuf,'(A,D22.15)')
      &           ' --> fc               =', locfc
         call print_message( msgBuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT, myThid )
 
         write(cfname,'(A,i4.4)') 'costfunction',eccoiter
         open(unit=ifc,file=cfname)
@@ -1631,17 +1625,17 @@ c#endif /* ECCO_CTRL_DEPRECATED */
       write(msgBuf,'(a,D22.15)')
      &  ' cost_Final: final cost function = ',locfc
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)') ' '
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)')
      &  '             cost function evaluation finished.'
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)') ' '
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
       return
