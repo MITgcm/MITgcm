@@ -187,7 +187,7 @@ c**************************************
       ELSE
 
         WRITE(msgBuf,'(A)') 
-     & 'STREAMICE_TIMESTEP: bypassing velocity solve'
+     &   'STREAMICE_TIMESTEP: bypassing velocity solve'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
