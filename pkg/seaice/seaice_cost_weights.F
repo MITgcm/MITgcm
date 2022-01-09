@@ -19,12 +19,10 @@ c     ==================================================================
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 #endif
@@ -35,30 +33,18 @@ c     == global variables ==
 #include "SEAICE_COST.h"
 
 c     == routine arguments ==
-
       integer  myThid
 
 #ifdef ALLOW_ECCO
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer gwunit
       integer irec,nnz
-      integer ilo,ihi
-
-      _RL dummy
-
-c     == external ==
-
-      integer  ifnblnk
-      external ifnblnk
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -83,8 +69,6 @@ c--       North/South and West/East edges set to zero.
           endif
         enddo
       enddo
-
-#ifdef ALLOW_SEAICE_COST_SMR_AREA
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

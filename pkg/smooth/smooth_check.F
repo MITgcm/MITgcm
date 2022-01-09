@@ -16,8 +16,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#include "GRID.h"
 #include "SMOOTH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

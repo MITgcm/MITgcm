@@ -5,8 +5,7 @@
      I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          genweight,
-     I          mytime, myiter, mythid
-     &                     )
+     I          myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_get_gen
@@ -36,32 +35,28 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
-#ifdef ALLOW_SMOOTH
-      character*(80) fnamegeneric
-#endif
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
-      _RS     genmask(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS     genmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     genfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     xx_gen0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     xx_gen1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     xx_gen_dummy
       _RL     xx_gen_remo_intercept
       _RL     xx_gen_remo_slope
-      _RL     genweight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     genweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     myTime
+      integer myIter
+      integer myThid
 
-      _RL     mytime
-      integer myiter
-      integer mythid
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
-
       integer bi,bj
       integer i,j
-      integer itlo,ithi
-      integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
       integer ilgen
@@ -78,10 +73,8 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
-#ifdef ALLOW_SMOOTH
-#ifdef ALLOW_SMOOTH_CTRL2D
-      _RS dummyRS(1)
-#endif
+#if ( defined ALLOW_SMOOTH && defined ALLOW_SMOOTH_CTRL2D )
+      character*(80) fnamegeneric
 #endif
 #ifndef ECCO_CTRL_DEPRECATED
       character*(MAX_LEN_FNAM) xx_tauu_file
@@ -93,21 +86,12 @@ c     == local variables ==
       character*(MAX_LEN_FNAM) xx_swdown_file
 #endif
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
 c--   Now, read the control vector.
       doglobalread = .false.
@@ -130,7 +114,7 @@ c--   Get the counters, flags, and the interpolation factor.
      I                       xx_genstartdate, xx_genperiod,
      O                       genfac, genfirst, genchanged,
      O                       gencount0,gencount1,
-     I                       mytime, myiter, mythid )
+     I                       myTime, myIter, mythid )
 
       if ( genfirst ) then
 cc#ifdef ALLOW_OPENAD
@@ -165,8 +149,8 @@ cc#endif /* ALLOW_OPENAD */
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
-        CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     &   'RL',1,1,1,xx_gen1,dummyRS,gencount1,optimcycle,mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount1, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
@@ -201,8 +185,8 @@ cc#endif /* ALLOW_OPENAD */
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
-        CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     &   'RL',1,1,1,xx_gen1,dummyRS,gencount0,optimcycle,mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount0, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
@@ -249,22 +233,22 @@ cph since the above is ECCO specific, we undo it here:
 cph      doCtrlUpdate = .TRUE.
       if ( doCtrlUpdate ) then
 cph)
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+       do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
 c--       Calculate mask for tracer cells (0 => land, 1 => water).
-          do j = 1,sny
-            do i = 1,snx
+          do j = 1,sNy
+            do i = 1,sNx
               genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
      &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
      &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
               genfld(i,j,bi,bj) =
      &             genmask(i,j,bi,bj)*( genfld (i,j,bi,bj) -
      &             ( xx_gen_remo_intercept +
-     &               xx_gen_remo_slope*(mytime-starttime) ) )
+     &               xx_gen_remo_slope*(myTime-starttime) ) )
             enddo
           enddo
         enddo
-      enddo
+       enddo
 cph(
       endif
 cph)

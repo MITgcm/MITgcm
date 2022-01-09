@@ -1,3 +1,12 @@
+This directory contains code to generate the libary `lsopt_ecco` need
+for the optimization routine "optim.x" in `../optim`. Please refer to
+rudimentary instructions in `../optim/README.md`.
+
+The following are instruction how the different precompiled
+BLAS-libraries in the directory have been obtained. If your compiling
+environment includes the BLAS-library, you do not need to worry about
+this.
+
 > Obtaining optimized BLAS routines for HPC platforms
 > (e.g. O3K, Altix, Opteron, ...)
 > heimbach@mit.edu, 9-Sep-2004
@@ -38,9 +47,10 @@
 >
 > That works.
 
+```
 Some BLAS    libraries provided in lsopt/ are
 SGI O3K:     libblas1.a_IRIX64.gz
 SUN:         libblas1.a_SUN.gz
 SGI Altix:   libgoto_it2-r0.95.so.gz
 PC Pentium4: libgoto_p4_512-r0.94.so.gz
-
+```
