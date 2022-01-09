@@ -184,6 +184,13 @@ c**************************************
 
 #endif /* OAD_FP */
 
+      ELSE
+
+        WRITE(msgBuf,'(A)') 
+     & 'STREAMICE_TIMESTEP: bypassing velocity solve'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
       ENDIF
 
       IF (.not.STREAMICE_diagnostic_only) THEN
