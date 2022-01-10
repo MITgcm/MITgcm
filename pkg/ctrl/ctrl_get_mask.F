@@ -44,7 +44,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-      INTEGER i, j, bi, bj
 CEOP
 
 C --- Initial velocity
@@ -106,7 +105,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-      INTEGER i, j, bi, bj
       LOGICAL iAmDone
 CEOP
 

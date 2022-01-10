@@ -53,7 +53,10 @@ C     msgBuf     :: Informational/error message buffer
 #endif
 
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
-      INTEGER iarr, k2
+      INTEGER iarr
+#endif
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL )
+      INTEGER k2
 #endif
 #if ( defined ALLOW_GENARR3D_CONTROL && defined ALLOW_PTRACERS )
       INTEGER iLen, iPtr, ascii_1
