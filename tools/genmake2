@@ -1115,7 +1115,7 @@ EOF
 	    >> genmake_tnc.log
     fi
     echo "$FC $FFLAGS $FOPTIM -c genmake_tnc.$FS  \ " >> genmake_tnc.log
-    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc.o $LIBS" >> genmake_tnc.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS" >> genmake_tnc.log
     $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
