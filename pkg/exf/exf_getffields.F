@@ -62,7 +62,6 @@ C     == routine arguments ==
 
 C     == local variables ==
       INTEGER i, j, bi, bj
-      INTEGER ks
 #ifdef ALLOW_CTRL
 # if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -81,8 +80,6 @@ C     == local variables ==
 
 C     == end of interface ==
 
-      ks = 1
-      IF (usingPcoords) ks = Nr
 C--   read forcing fields from files and temporal interpolation
 
 C-    Zonal and meridional wind stress.
