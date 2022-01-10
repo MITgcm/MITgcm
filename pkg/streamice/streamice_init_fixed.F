@@ -30,16 +30,20 @@ CEOP
 #ifdef ALLOW_STREAMICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-      INTEGER bi, bj, i, j, Gi, Gj, m, k
-      INTEGER maskFlag, hmaskFlag
+      INTEGER bi, bj, i, j, Gi, Gj, m
       _RL x, y
-      _RS dummyRS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef STREAMICE_GEOM_FILE_SETUP
+      INTEGER maskFlag, hmaskFlag
       _RS temp_ufacemask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS temp_vfacemask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS temp_hmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
+#ifdef ALLOW_CTRL
+      _RS dummyRS
+      INTEGER k
 #endif
 
 #ifdef ALLOW_PETSC
@@ -531,7 +535,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 
           ENDIF ! hmask==1 or hmask==0
 
-#endif
+#endif /* ifndef STREAMICE_GEOM_FILE_SETUP */
 
          ENDDO
         ENDDO
@@ -539,7 +543,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
       ENDDO
 
 #ifdef ALLOW_CTRL
-!      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlL', STREAMICE_ctrl_mask,
      &  'XY', Nr, 1, .FALSE., 0, myThid, dummyRS )
 #endif
