@@ -28,7 +28,6 @@ C     === Global variables ===
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid :: my Thread Id number
       INTEGER myThid
 
@@ -37,11 +36,12 @@ C     topoHloc had to be in common for multi threading but no longer
 C     needed since MDSIO now allows (2009/06/07) to write local arrays
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     topoHloc  :: Temporary array used to write surface topography
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
+#ifndef ALLOW_AUTODIFF
       _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       INTEGER bi, bj
       INTEGER i, j, k
       _RL     pLoc, rhoLoc

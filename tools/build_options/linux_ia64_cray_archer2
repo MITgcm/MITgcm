@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# To be used with the (default) suite of cray compilers:
+#
+# On 27/12/2021:
+# >> module list
+#Currently Loaded Modules:
+#  1) cce/11.0.4        4) libfabric/1.11.0.4.71    7) xpmem/2.2.40-7.0.1.0_2.7__g1d7a24d.shasta  10) PrgEnv-cray/8.0.0  13) load-epcc-module
+#  2) craype/2.7.6      5) craype-network-ofi       8) cray-mpich/8.1.4                           11) bolt/0.7
+#  3) craype-x86-rome   6) perftools-base/21.02.0   9) cray-libsci/21.04.1.1                      12) epcc-setup-env
+
+CC='cc'
+FC='ftn'
+F90C='ftn'
+
+DEFINES='-DWORDLENGTH=4 -D_BYTESWAPIO -DHAVE_LAPACK -DNML_TERMINATOR'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="--version"
+CHECK_FOR_LAPACK=t
+FC_CHECK=f
+
+INCLUDES='-I/opt/cray/pe/netcdf-hdf5parallel/4.7.4.3/crayclang/9.1/include -I/opt/cray/pe/mpich/8.1.4/ofi/cray/9.1/include'
+LIBS='-L/opt/cray/pe/netcdf-hdf5parallel/4.7.4.3/crayclang/9.1/lib -L/opt/cray/pe/mpich/8.1.4/ofi/cray/9.1/lib'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+#FFLAGS='-fallow-argument-mismatch'
+
+if test "x$IEEE" = x ; then   #- with optimisation:
+#   FOPTIM='-O3 -funroll-loops'
+    FOPTIM='-O3 -hfp3 -Oipa5'
+else
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+      FOPTIM='-O0 -hfp0'
+    else                          #- development/check options:
+      FOPTIM='-O0 -hfp0 -g -Rbc -rm -hmsgs -hnegmsgs'
+    fi
+fi
