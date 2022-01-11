@@ -39,6 +39,9 @@ C !USES: ============================================================
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "GGL90.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -304,6 +307,12 @@ C- ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MAX(2,kTopC(i,j,bi,bj))
+         ENDIF
+#endif
          GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
         ENDDO
        ENDDO
@@ -908,6 +917,12 @@ C     Dirichlet surface boundary condition for TKE
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MAX(2,kTopC(i,j,bi,bj))
+         ENDIF
+#endif
          GGL90TKE(i,j,kSrf,bi,bj) = maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
          GGL90TKE(i,j,kTop,bi,bj) = GGL90TKE(i,j,kTop,bi,bj)
@@ -1100,6 +1115,12 @@ C     diagnose surface flux of TKE
         ELSE
          DO j=jMin,jMax
           DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MAX(2,kTopC(i,j,bi,bj))
+         ENDIF
+#endif
            surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
      &                         GGL90TKE(i,j,kTop,bi,bj))
      &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
@@ -1113,6 +1134,9 @@ C     diagnose surface flux of TKE
         k=kSrf
         DO j=jMin,jMax
          DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+          IF ( useShelfIce ) k = MAX(1,kTopC(i,j,bi,bj))
+#endif
 C     diagnose work done by the wind
           surf_flx_tke(i,j) =
      &      halfRL*( surfaceForcingU(i,  j,bi,bj)*uVel(i  ,j,k,bi,bj)
