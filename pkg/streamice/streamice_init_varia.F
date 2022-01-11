@@ -432,7 +432,6 @@ c finish initialize SMB rates
         CALL READ_FLD_XY_RL( STREAMICE_uvel_ext_file, ' ',
      &      u_streamice_ext, 0, myThid )
 
-
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -442,7 +441,6 @@ c finish initialize SMB rates
           ENDDO
          ENDDO
         ENDDO
-
 
        ELSE
         WRITE(msgBuf,'(A)') 'INIT UVEL - FILENAME MISSING'

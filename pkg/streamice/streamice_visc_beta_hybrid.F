@@ -160,8 +160,6 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
      &            0.25 * streamice_vert_shear_uz(m)**2 +
      &            0.25 * streamice_vert_shear_vz(m)**2)
 
-
-
 #ifdef STREAMICE_3D_GLEN_CONST
             IF (.not.STREAMICE_use_log_ctrl) THEN
              Bglen_val = B_glen(i,j,m,bi,bj)**2

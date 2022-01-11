@@ -306,9 +306,9 @@ C         INIT VALUES FOR METRIC TERMS
      &      (dxG(i+1,j,bi,bj)-dxG(i,j,bi,bj))
            k2AtC_str(i,j,bi,bj) = recip_rA(i,j,bi,bj) *
      &      (dyG(i,j+1,bi,bj)-dyG(i,j,bi,bj))
-         
+
           ELSE
-           
+
            k1AtC_str(i,j,bi,bj) = 0. _d 0
            k2AtC_str(i,j,bi,bj) = 0. _d 0
 
@@ -566,7 +566,6 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
       Xquad (2) = .5 * (1.+1./sqrt(3.))
 
       CALL STREAMICE_INIT_PHI( myThid )
-
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC

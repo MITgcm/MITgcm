@@ -103,7 +103,7 @@ c     INTEGER iarr, tarr
      &     STREAMICE_vel_ext,
      &     STREAMICE_vel_ext_cgrid,
      &     STREAMICE_uvel_ext_file,
-     &     STREAMICE_vvel_ext_file,     
+     &     STREAMICE_vvel_ext_file,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -129,7 +129,7 @@ c     INTEGER iarr, tarr
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       NAMELIST /STREAMICE_PARMOAD/
-     &     streamice_nonlin_tol_adjoint, 
+     &     streamice_nonlin_tol_adjoint,
      &     streamice_nonlin_tol_adjoint_rl
 #ifdef ALLOW_PETSC
      &     ,STREAMICE_OAD_petsc_reuse,

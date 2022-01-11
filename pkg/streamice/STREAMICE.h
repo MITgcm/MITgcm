@@ -4,7 +4,6 @@ C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     -------------------------- REAL PARAMS ---------------------------------------------------
 
-
 C--   COMMON /STREAMICE_PARMS_R/ real valued parameters.
 C     streamice_density           :: average ice density
 C     streamice_density_ocean_avg :: average ocean density
@@ -98,8 +97,6 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_cg_tol, streamice_nonlin_tol
       _RL streamice_nonlin_tol_fp
       _RL streamice_err_norm
-
-
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       _RL streamice_nonlin_tol_adjoint
@@ -296,7 +293,6 @@ C                                     (will not work in parallel)
 C       see https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/PC/
 C     STREAMICE_uvel_ext_file     :: x-velocity file to replace velocity calc
 C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
-
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickInit

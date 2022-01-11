@@ -40,9 +40,9 @@ C     === Global variables ===
 #ifdef ALLOW_STREAMICE
 
       INTEGER i, j, bi, bj, ki, kj
-!       _RL Iratio, Imin_ratio, time_step_remain, local_u_max
-!       _RL ratio, min_ratio
-!       _RL local_v_max, time_step_int, min_time_step
+c       _RL Iratio, Imin_ratio, time_step_remain, local_u_max
+c       _RL ratio, min_ratio
+c       _RL local_v_max, time_step_int, min_time_step
       CHARACTER*(MAX_LEN_MBUF) msgBuf
        LOGICAL do_vel, tmp_residcheck, tmp_fpcheck
        _RL sum_square_vel_tile (nSx,nSy)
@@ -54,9 +54,9 @@ c**************************************
 c**************************************
 #endif
 
-!       time_step_remain = deltaT
-!       min_time_step = 1000.0
-!       n_interm = 0
+c       time_step_remain = deltaT
+c       min_time_step = 1000.0
+c       n_interm = 0
 
       do_vel = .false.
 
@@ -72,7 +72,7 @@ c**************************************
           rv_old_si(i,j,bi,bj) = 0. _d 0
           zu_old_si(i,j,bi,bj) = 0. _d 0
           zv_old_si(i,j,bi,bj) = 0. _d 0
-!          h_after_uflux_si(i,j,bi,bj) = 0. _d 0
+c          h_after_uflux_si(i,j,bi,bj) = 0. _d 0
 #ifdef STREAMICE_HYBRID_STRESS
           streamice_taubx (i,j,bi,bj) = 0. _d 0
           streamice_tauby (i,j,bi,bj) = 0. _d 0
@@ -93,20 +93,18 @@ c**************************************
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
 
-      CALL STREAMICE_DUMP( mytime, myiter, myThid )
+      CALL STREAMICE_DUMP( myTime, myIter, myThid )
 
-! NEW DIRECTIVES - DNG
-!#ifdef ALLOW_AUTODIFF_TAMC
-!CADJ STORE float_frac_streamice  = comlev1, key = ikey_dynamics,
-!CADJ &     kind = isbyte
-!CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-!CADJ &     kind = isbyte
-!CADJ STORE base_el_streamice  = comlev1, key = ikey_dynamics,
-!CADJ &     kind = isbyte
-!#endif
-! NEW DIRECTIVES - DNG
-
-
+c NEW DIRECTIVES - DNG
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE float_frac_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE base_el_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+c#endif
+c NEW DIRECTIVES - DNG
 
       do_vel = DIFFERENT_MULTIPLE( streamice_vel_update,
      &                             myTime, deltaT )
@@ -119,32 +117,27 @@ c**************************************
 
       CALL STREAMICE_VELMASK_UPD (myThid)
 
-
-
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       CALL STREAMICE_FIELDS_LOAD( myTime, myIter, myThid )
 #endif
 
-
       IF (.not.(STREAMICE_vel_ext.OR.STREAMICE_vel_ext_cgrid)) THEN
-
 
 #if (defined (ALLOW_STREAMICE_OAD_FP))
 
        CALL STREAMICE_VEL_SOLVE_OPENAD ( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
-     &                           myiter )
+     &                           myIter )
 
 #else
 
        IF (streamice_maxnliter_cpl.eq.0 .OR. myIter.eq.0) THEN
 
-
         CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_max_nl_iter,
      &                           streamice_max_cg_iter,
-     &                           myiter )
+     &                           myIter )
 
 #ifdef STREAMICE_ECSECRYO_DOSUM
 
@@ -154,9 +147,9 @@ c**************************************
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             IF (streamice_hmask(i,j,bi,bj).eq.1) THEN
-             sum_square_vel_tile (bi,bj) = 
-     &        sum_square_vel_tile (bi,bj) + 
-     &        U_streamice(i,j,bi,bj)**2 + 
+             sum_square_vel_tile (bi,bj) =
+     &        sum_square_vel_tile (bi,bj) +
+     &        U_streamice(i,j,bi,bj)**2 +
      &        V_streamice(i,j,bi,bj)**2
             ENDIF
            ENDDO
@@ -164,8 +157,8 @@ c**************************************
          ENDDO
         ENDDO
 
-        CALL GLOBAL_SUM_TILE_RL( 
-     &                sum_square_vel_tile, sum_square_vel, myThid ) 
+        CALL GLOBAL_SUM_TILE_RL(
+     &                sum_square_vel_tile, sum_square_vel, myThid )
         WRITE(msgBuf,'(A,I3,A,1PE22.14)') 'ECSE_CRYO_SUM ', myIter, ', '
      &                       ,sum_square_vel
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -173,20 +166,19 @@ c**************************************
 
 #endif
 
-
        ELSEIF (do_vel) THEN
- 
+
         CALL STREAMICE_VEL_SOLVE( myThid,
      &                           streamice_maxnliter_cpl,
      &                           streamice_maxcgiter_cpl,
-     &                           myiter )
+     &                           myIter )
        ENDIF
 
 #endif /* OAD_FP */
 
       ELSE
 
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'STREAMICE_TIMESTEP: bypassing velocity solve'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -199,12 +191,12 @@ c**************************************
 
       ENDIF
 
-! CALL AT END INSTEAD OF BEGINNING - DNG
+c CALL AT END INSTEAD OF BEGINNING - DNG
       CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
-!      print *, "GOT HERE TIMESTEP ", H_streamice(1,50,1,1)
-!      call write_fld_xy_rl("h_got_here","",H_streamice,0,mythid)
-!      call write_fld_xy_rl("u_got_here","",U_streamice,0,mythid)
-!      call write_fld_xy_rl("v_got_here","",V_streamice,0,mythid)
+c      print *, "GOT HERE TIMESTEP ", H_streamice(1,50,1,1)
+c      call write_fld_xy_rl("h_got_here","",H_streamice,0,myThid)
+c      call write_fld_xy_rl("u_got_here","",U_streamice,0,myThid)
+c      call write_fld_xy_rl("v_got_here","",V_streamice,0,myThid)
 
       CALL TIMER_STOP('STREAMICE_TIMESTEP [FORWARD_STEP]',
      &       myThid)
