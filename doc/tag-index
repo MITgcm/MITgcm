@@ -2,6 +2,7 @@
     ==============================
 
 o tools/build_options:
+  - update pleiades optfile "linux_amd64_ifort+mpi_ice_nas"
   - rename/update optfile for UK HPC Archer2.
 o pkgs:
   - remove/avoid unused variables from AD verification exp. built except from
