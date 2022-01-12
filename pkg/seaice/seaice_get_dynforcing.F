@@ -75,19 +75,20 @@ C     ks        :: vertical index of surface layer
       INTEGER ks
       _RL  COSWIN
       _RS  SINWIN
-#ifdef ALLOW_EXF
-      _RL  U1, V1, AAA
-#endif
 C     CDAIR   :: local wind stress coefficient (used twice)
 C     oceTauX :: wind-stress over open-ocean (on Arakawa A-grid), X direction
 C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
       _RL CDAIR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_EXF
+      _RL AAA
       _RL uTmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifndef SEAICE_EXTERNAL_FLUXES
+# ifndef SEAICE_EXTERNAL_FLUXES
+      _RL U1, V1
       _RL oceTauX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL oceTauY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+# endif
+#endif /* ALLOW_EXF */
 #ifdef ALLOW_DIAGNOSTICS
       _RL locVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL locFrac
