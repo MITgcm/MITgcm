@@ -123,7 +123,8 @@ C--   SEAICE parameters
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
-     & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
+     & SEAICE_JFNK_lsIter, SEAICE_JFNK_lsLmax, SEAICE_JFNK_lsGamma,
+     & SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
      & JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
      & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
@@ -319,6 +320,8 @@ C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
       SEAICE_JFNK_lsIter  = UNSET_I
+      SEAICE_JFNK_lsLmax  = 4
+      SEAICE_JFNK_lsGamma = 0.5 _d 0
       SEAICE_JFNK_tolIter = 100
 C     This should be the default for both JFNK and for LSR but in order
 C     to not jeopardize any existing results, and because it does not yet

@@ -209,6 +209,7 @@ C     SEAICEmomStartBDF   :: number of previous u/vIce time levels available
 C                          to start (or restart) BDF2 scheme.
 C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
 C                            line search is started
+C     SEAICE_JFNK_lsLmax  :: max. number line search iterations (default = 4)
 C     SEAICE_JFNK_tolIter :: number of Newton iterations after which the
 C                            the tolerance is relaxed again (default = 100)
 C     SEAICE_OLx/y      :: overlaps for LSR-solver and for the
@@ -268,6 +269,7 @@ C
       INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEmomStartBDF
       INTEGER SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter
+      INTEGER SEAICE_JFNK_lsLmax
       INTEGER SEAICE_OLx, SEAICE_OLy
       INTEGER SEAICEselectKEscheme, SEAICEselectVortScheme
       INTEGER SEAICEadvScheme
@@ -293,7 +295,7 @@ C
      &     SEAICEnEVPstarSteps,
      &     SEAICEmomStartBDF,
      &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
-     &     SEAICE_JFNK_tolIter,
+     &     SEAICE_JFNK_lsLmax, SEAICE_JFNK_tolIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEpartFunc, SEAICEredistFunc, SEAICEridgingIterMax,
      &     SEAICEselectKEscheme, SEAICEselectVortScheme,
@@ -354,6 +356,7 @@ C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
 C     JFNKres_tFac       :: if set, JFNKres_t=JFNKres_tFac*(initial residual)
 C     SEAICE_JFNKepsilon :: step size for the FD-gradient in s/r seaice_jacvec
+C     SEAICE_JFNK_lsGamma:: reduction factor for line search (default 0.5)
 C     SEAICE_JFNKphi     :: [0,1] parameter for inexact Newton Method (def = 1)
 C     SEAICE_JFNKalpha   :: (1,2] parameter for inexact Newton Method (def = 1)
 C     SEAICE_zetaMaxFac  :: factor determining the maximum viscosity    (s)
@@ -520,6 +523,7 @@ C
       _RL OCEAN_drag, LSR_ERROR, DIFF1
       _RL SEAICEnonLinTol, JFNKres_t, JFNKres_tFac
       _RL JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon
+      _RL SEAICE_JFNK_lsGamma
       _RL SEAICE_JFNKphi, SEAICE_JFNKalpha
       _RL SEAICE_deltaMin
       _RL SEAICE_area_reg, SEAICE_hice_reg
@@ -575,7 +579,7 @@ C
      &    OCEAN_drag, LSR_ERROR, DIFF1,
      &    SEAICEnonLinTol, JFNKres_t, JFNKres_tFac,
      &    JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon,
-     &    SEAICE_JFNKphi, SEAICE_JFNKalpha,
+     &    SEAICE_JFNK_lsGamma, SEAICE_JFNKphi, SEAICE_JFNKalpha,
      &    SEAICE_deltaMin, SEAICE_area_reg, SEAICE_hice_reg,
      &    SEAICE_area_floor, SEAICE_area_max,
      &    SEAICEdiffKhArea, SEAICEdiffKhHeff, SEAICEdiffKhSnow,

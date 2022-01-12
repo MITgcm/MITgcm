@@ -61,7 +61,7 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
 
-      integer ilps, ils, ilt, irec
+      integer ilt, irec
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       character*(128) fname_gencostbar
@@ -69,18 +69,22 @@ c     == local variables ==
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 #if (defined ALLOW_SEAICE) && (defined ALLOW_SEAICE_COST_SMR_AREA)
+      integer ilps
       character*(128) fnamesmrareabar
       character*(128) fnamesmrsstbar
       character*(128) fnamesmrsssbar
       character*(128) adfnamesmrareabar
       character*(128) adfnamesmrsstbar
       character*(128) adfnamesmrsssbar
+#elif ( defined ECCO_CTRL_DEPRECATED )
+      integer ilps
 #endif
 
       _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ECCO_CTRL_DEPRECATED
+      integer ils
       character*(128) fnamepsbar
       character*(128) fnametbar
       character*(128) fnamesbar
@@ -152,7 +156,7 @@ c     == end of interface ==
       enddo
 
 #ifdef ECCO_CTRL_DEPRECATED
-#
+
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF (using_cost_altim) THEN
 c--   Save psbar on file.

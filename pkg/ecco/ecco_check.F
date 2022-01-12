@@ -44,9 +44,9 @@ C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il, k2, ioUnit
+      INTEGER igen_etaday, il
       LOGICAL exst
-      CHARACTER*(128) tempfile,tempfile1
+      CHARACTER*(128) tempfile
       INTEGER icount_transp
 #endif
 

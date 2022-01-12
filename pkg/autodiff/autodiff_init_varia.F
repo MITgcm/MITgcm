@@ -35,7 +35,10 @@ C     == Local variables ==
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
       INTEGER bi, bj
+#if ( ( defined ALLOW_AUTODIFF_INIT_OLD && defined ECCO_CTRL_DEPRECATED ) \
+     || defined ALLOW_EP_FLUX )
       INTEGER i, j, k
+#endif
 CEOP
 
 C--   Scalar fields

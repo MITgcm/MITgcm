@@ -4,7 +4,7 @@
 #
 # started: Patrick Heimbach heimbach@mit.edu 19-Jun-2000
 #
-# changed: 
+# changed:
 #
 #***********************************************************************
 
@@ -28,13 +28,13 @@ CPP             = cat $< | /lib/cpp -P -traditional
 # CPP		= cat $< | /usr/ccs/lib/cpp
 
 INCLUDEDIRS     = -I.				\
-		  -I../verification/natl_box_adjoint/build/
+		  -I../verification/tutorial_global_oce_optim/build/
 
 LIBDIRS         = -L.				\
                   -L../lsopt/
 
 LIBS            = -llsopt_ecco			\
-		  -lblas1
+		  -lblas
 
 # OPTMODE is either equal to OFFLINE or ONLINE
 OPTMODE         = OFFLINE
@@ -52,6 +52,7 @@ CPPFLAGS = -DREAL_BYTE=4		\
 # FORTRAN compiler and its flags.
 # default is (Linux)
 FC              = f77
+FFLAGS          = -fconvert=big-endian -fimplicit-none
 
 # ifort compilers
 #FC              = ifort
