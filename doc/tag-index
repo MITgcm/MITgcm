@@ -1,6 +1,17 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - fix regularised coulomb basal stress impl to avoid issues with adjoint ;
+  - cancel metric terms in stress tensor for cartesian grid ;
+  - allow (time-indep) velocities to be imposed from external file rather than
+    solved for ;
+  - allow for specification of log of controls as well as sqrt ;
+  - allow termination of adjoint fixed point loop based on relative and absolute
+    error ;
+  - terminate adjoint fixed point loop when change between most recent iterates
+    begins to increase (a sign of unstable growth from linear solve errors ?);
+    update OAD output of exp. halfpipe_streamice (affected by this modif).
 o pkg/seaice:
   - replace hard-coded parameters for JNKF line search by new runtime parameters
     SEAICE_JFNK_lsGamma and SEAICE_JFNK_lsLmax ;
