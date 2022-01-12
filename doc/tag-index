@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - replace hard-coded parameters for JNKF line search by new runtime parameters
+    SEAICE_JFNK_lsGamma and SEAICE_JFNK_lsLmax ;
+  - increment line search counter after reporting and fix an if statement, so
+    that zeroth step is not counted for more consistent debugging output.
 o tools/build_options:
   - update pleiades optfile "linux_amd64_ifort+mpi_ice_nas"
   - rename/update optfile for UK HPC Archer2.
