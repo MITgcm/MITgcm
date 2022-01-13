@@ -42,6 +42,9 @@ C !USES: ============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+#ifdef ALLOW_SHELFICE
+#include "SHELFICE.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
@@ -90,6 +93,10 @@ C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER kp1, km1, kl
       INTEGER kSrf, kTop, kBot, delK
       INTEGER errCode
+#ifdef ALLOW_SHELFICE
+      INTEGER ktmp, kSrftmp, kToptmp
+      _RL     explDissFacSI, implDissFacSI
+#endif
       _RL deltaTloc
       _RL explDissFac, implDissFac
       _RL totalDepth   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -192,6 +199,11 @@ CEOP
 C     explicit/implicit timestepping weights for dissipation
       explDissFac = 0. _d 0
       implDissFac = 1. _d 0 - explDissFac
+
+#ifdef ALLOW_SHELFICE
+      explDissFacSI = 0.5 _d 0
+      implDissFacSI = 1. _d 0 - explDissFacSI
+#endif
 
 C     For nonlinear free surface and especially with r*-coordinates, the
 C     hFacs change every timestep, so we need to update them here in the
@@ -296,6 +308,14 @@ C     mixing length
          GGL90mixingLength(i,j,k) = SQRTTWO *
      &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+
+#ifdef ALLOW_SHELFICE
+        if (k .LT. kTopC(i,j,bi,bj)) THEN
+         SQRTTKE(i,j,k) = 0.0 _d 0
+         Nsquare(i,j,k) = 0.0 _d 0
+         GGL90mixingLength(i,j,k) = 0.0 _d 0
+        endif
+#endif
         ENDDO
        ENDDO
       ENDDO
@@ -304,7 +324,16 @@ C- ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         ktmp = kTopC(i,j,bi,bj)
+         if (ktmp .EQ. 0) THEN
+           GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
+         ELSE
+           GGL90mixingLength(i,j,ktmp+1)=drF(ktmp)*recip_coordFac
+         ENDIF
+#else
          GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
+#endif
         ENDDO
        ENDDO
       ENDIF
@@ -666,6 +695,31 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
         ENDDO
        ENDIF
 
+#ifdef ALLOW_SHELFICE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           IF (k .EQ. kTopC(i,j,bi,bj)) THEN
+            IF ( debugLevel.GE.debLevE )
+     &        print '(A,3i4,3(1x,1P3E15.6))',
+     &              'GGLVS0 i j k vS ', i,j,k,
+     &                verticalShear(i,j)
+
+             verticalShear(i,j) = 0.0 _d 0
+            IF ( debugLevel.GE.debLevE )
+     &        print '(A,3i4,3(1x,1P3E15.6))',
+     &              'GGLVS1 i j k vS ', i,j,k,
+     &                verticalShear(i,j)
+           ELSEIF ((kTopC(i,j,bi,bj) .GT. 0) .AND.
+     &             (maskC(i,j,k,bi,bj) .GT. 0)) THEN
+            IF ( debugLevel.GE.debLevE )
+     &        print '(A,3i4,3(1x,1P3E15.6))',
+     &              'GGLVSS i j k vS ', i,j,k,
+     &                verticalShear(i,j)
+           ENDIF
+         ENDDO
+        ENDDO
+#endif
+
 C     compute Prandtl number (always greater than 0)
 #ifdef ALLOW_GGL90_IDEMIX
        IF ( useIDEMIX ) THEN
@@ -710,13 +764,55 @@ C     dissipation term
          TKEdissipation = explDissFac*GGL90ceps
      &        *SQRTTKE(i,j,k)*rMixingLength(i,j,k)
      &        *GGL90TKE(i,j,k,bi,bj)
+
+CIGF use explDissFacSI under shelfice
+#ifdef ALLOW_SHELFICE
+         IF (kTopC(i,j,bi,bj) .GT. 0) THEN
+          TKEdissipation = explDissFacSI*GGL90ceps
+     &        *SQRTTKE(i,j,k)*rMixingLength(i,j,k)
+     &        *GGL90TKE(i,j,k,bi,bj)
+         ENDIF
+#endif
+
 C     partial update with sum of explicit contributions
+#ifdef ALLOW_SHELFICE
+        IF ((kTopC(i,j,bi,bj) .GT. 0) .AND.
+     &      (maskC(i,j,k, bi,bj) .GT. 0)) THEN
+         IF ( debugLevel.GE.debLevE )
+     &   print  '(A,4i4,1(1x,1P3E15.6))',
+     &   'GGLT i,j,k,kTopC GGL90TKE PRE  ',i,j,k,
+     &    kTopC(i,j,bi,bj),
+     &    GGL90TKE(i,j,k,bi,bj)
+        ENDIF
+#endif
          GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
      &        + deltaTloc*(
      &        + KappaM(i,j)*verticalShear(i,j)
      &        - KappaH*Nsquare(i,j,k)
      &        - TKEdissipation
      &        )
+
+#ifdef ALLOW_SHELFICE
+        IF ( debugLevel.GE.debLevE ) THEN
+         IF ((kTopC(i,j,bi,bj) .GT. 0) .AND.
+     &       (maskC(i,j,k, bi,bj) .GT. 0)) THEN
+         print  '(A,4i4,1(1x,1P3E15.6))',
+     &   'GGLT i,j,k,kTopC GGL90TKE POST ', i,j,k,
+     &    kTopC(i,j,bi,bj),
+     &    GGL90TKE(i,j,k,bi,bj)
+
+         print  '(A,4i4,3(1x,1P3E10.1))',
+     &    'GGLT i,j,k,kTopC A+B ', i,j,k, kTopC(i,j,bi,bj),
+     &     KappaM(i,j)*verticalShear(i,j),
+     &     - KappaH*Nsquare(i,j,k)
+
+         print  '(A,4i4,3(1x,1P3E10.1))',
+     &    'GGLT i,j,k,kTopC +C ', i,j,k, kTopC(i,j,bi,bj),
+     &     - TKEdissipation
+         ENDIF
+        ENDIF
+#endif
+
         ENDDO
        ENDDO
 
@@ -848,6 +944,16 @@ C--   Center diagonal
      &        + implDissFac*deltaTloc*GGL90ceps*SQRTTKE(i,j,k)
      &        * rMixingLength(i,j,k)
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+CIGF use implDissFacSI under shelf ice
+#ifdef ALLOW_SHELFICE
+         IF (kTopC(i,j,bi,bj) .GT. 0) THEN
+          b3d(i,j,k) = 1. _d 0 - c3d(i,j,k) - a3d(i,j,k)
+     &        + implDissFacSI*deltaTloc*GGL90ceps*SQRTTKE(i,j,k)
+     &        * rMixingLength(i,j,k)
+     &        * maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+         ENDIF
+#endif
+
         ENDDO
        ENDDO
       ENDDO
@@ -892,6 +998,13 @@ C     estimate friction velocity uStar from surface forcing
      &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
      &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
      &                          )*recip_coordFac
+CIGF SET KSURF TO KTOPC WHERE KTOPC IS NONZERO
+CIGF and also set uStarSquare to zero (no influence of surface forcing)
+#ifdef ALLOW_SHELFICE
+        IF (kTopC(i,j,bi,bj) .GT. 0) THEN
+          uStarSquare(i,j) = 0.0 _d 0
+        ENDIF
+#endif
         ENDDO
        ENDDO
       ENDIF
@@ -908,11 +1021,26 @@ C     Dirichlet surface boundary condition for TKE
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
+CIGF SET KSURF TO KTOPC WHERE KTOPC IS NONZERO
+#ifdef ALLOW_SHELFICE
+         IF (kTopC(i,j,bi,bj) .GT. 0) THEN
+          kSrftmp = kTopC(i,j,bi,bj)
+         ELSE
+          kSrftmp = 1
+         ENDIF
+         kToptmp = MIN(Nr,kSrftmp+1)
+         GGL90TKE(i,j,kSrftmp,bi,bj) = maskC(i,j,kSrftmp,bi,bj)
+     &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
+         GGL90TKE(i,j,kToptmp,bi,bj) = GGL90TKE(i,j,kToptmp,bi,bj)
+     &        - a3d(i,j,kToptmp)*GGL90TKE(i,j,kSrftmp,bi,bj)
+         a3d(i,j,kToptmp) = 0. _d 0
+#else
          GGL90TKE(i,j,kSrf,bi,bj) = maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
          GGL90TKE(i,j,kTop,bi,bj) = GGL90TKE(i,j,kTop,bi,bj)
      &        - a3d(i,j,kTop)*GGL90TKE(i,j,kSrf,bi,bj)
          a3d(i,j,kTop) = 0. _d 0
+#endif
         ENDDO
        ENDDO
       ENDIF

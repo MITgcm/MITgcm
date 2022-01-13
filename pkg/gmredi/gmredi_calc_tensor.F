@@ -113,6 +113,7 @@ C     !LOCAL VARIABLES:
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #endif /* ALLOW_DIAGNOSTICS */
+
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
@@ -133,6 +134,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                    + act3*max1*max2
      &                    + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 
 #ifdef ALLOW_DIAGNOSTICS
       doDiagRediFlx = .FALSE.
@@ -328,10 +330,10 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
 C      Gradient of Sigma at rVel points
          dSigmaDx(i,j)=op25*( sigmaX(i+1,j,k-1)+sigmaX(i,j,k-1)
      &                       +sigmaX(i+1,j, k )+sigmaX(i,j, k )
-     &                      )*maskC(i,j,k,bi,bj)
+     &                      )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
          dSigmaDy(i,j)=op25*( sigmaY(i,j+1,k-1)+sigmaY(i,j,k-1)
      &                       +sigmaY(i,j+1, k )+sigmaY(i,j, k )
-     &                      )*maskC(i,j,k,bi,bj)
+     &                      )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
 c        dSigmaDr(i,j)=sigmaR(i,j,k)
         ENDDO
        ENDDO
