@@ -151,22 +151,6 @@ C-    Zonal and meridional wind.
 #endif /* USE_EXF_INTERPOLATION */
      I     myTime, myIter, myThid )
 
-       IF (useRelativeWind) THEN
-C     Subtract UVEL and VVEL from UWIND and VWIND.
-        DO bj = myByLo(myThid),myByHi(myThid)
-         DO bi = myBxLo(myThid),myBxHi(myThid)
-          DO j = 1,sNy
-           DO i = 1,sNx
-            uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-            vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-
       ELSE
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
