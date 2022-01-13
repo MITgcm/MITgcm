@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+  - avoid updating input argument "kmtj" in S/R BLDEPTH (in: kpp_routines.F);
+    this also remove/avoid 3 recomputation warnings for kmtj in adm (TAF) built.
 o pkg/streamice:
   - fix regularised coulomb basal stress impl to avoid issues with adjoint ;
   - cancel metric terms in stress tensor for cartesian grid ;
