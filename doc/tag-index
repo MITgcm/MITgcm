@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: 
+  - clean-up relative wind implementation so that uwind and vwind are kept
+    unchanged (always vanilla atmospheric winds after interpolation) while
+    relative wind is computed locally; add diagnostics for relative wind.
+  - adjust pkg/seaice relative-wind code (+ clean-up SEAICE_GREASE code).
 o pkg/kpp:
   - avoid updating input argument "kmtj" in S/R BLDEPTH (in: kpp_routines.F);
     this also remove/avoid 3 recomputation warnings for kmtj in adm (TAF) built.
