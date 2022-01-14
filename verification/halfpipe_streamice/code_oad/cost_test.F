@@ -1,4 +1,6 @@
+#include "COST_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
+
 
       subroutine cost_test( myThid )
 C     /==========================================================\
