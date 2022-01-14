@@ -904,6 +904,20 @@ C     estimate friction velocity uStar from surface forcing
         ENDDO
        ENDDO
       ENDIF
+#ifdef ALLOW_SHELFICE
+C     uStarSquare should not have any effect undernath iceshelves, but
+C     masking uStarSquare underneath ice shelf is not necessary because
+C     surfaceForcingU/V=0 in this case (see shelfice_forcing_surf.F)
+C     A better solution would be to compute uStarSquare as a
+C     friction velocity based on the sub-glacial drag.
+CML      IF ( useSHELFICE ) THEN
+CML       DO j=jMin,jMax
+CML        DO i=iMin,iMax
+CML         IF ( kTopC(i,j,bi,bj) .GT. 0 ) uStarSquare(i,j) = 0. _d 0
+CML        ENDDO
+CML       ENDDO
+CML      ENDIF
+#endif
 C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
