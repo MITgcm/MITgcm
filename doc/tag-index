@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68f (2022/01/14)
 o pkg/exf: 
   - clean-up relative wind implementation so that uwind and vwind are kept
     unchanged (always vanilla atmospheric winds after interpolation) while
