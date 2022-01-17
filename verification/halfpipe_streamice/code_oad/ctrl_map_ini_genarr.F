@@ -193,12 +193,18 @@ C--   begin customized code for experiment halfpipe_streamice
 C--   An example of connecting specific fields
 C--   to 3 generic 2D control arrays
       iarr = 1
+cdg need to force openad to recognise fields as active
+cdg as cannot seem to trace dependency thru CTRL_MAP_GENARR
+#ifdef ALLOW_OPENAD
        B_glen(1,1,1,1) = B_glen(1,1,1,1) +
      &  0.0 * xx_genarr2d_dummy(iarr)
+#endif
       CALL CTRL_MAP_GENARR2D( B_glen, iarr, myThid )
       iarr = 2
+#ifdef ALLOW_OPENAD
        H_streamice(1,1,1,1) = H_streamice(1,1,1,1) + 
      &  0.0 * xx_genarr2d_dummy(iarr)
+#endif
       CALL CTRL_MAP_GENARR2D( H_streamice, iarr, myThid )
 C     iarr = 5
 C     CALL CTRL_MAP_GENARR2D( BDOT_streamice, iarr, myThid )
