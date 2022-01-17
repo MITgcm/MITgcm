@@ -57,14 +57,19 @@ C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
 C   Note: comment out the #define below (instead of having an #undef) to
 C   enable to set this Option in CPP command line (from the optfile)
 c#define AUTODIFF_USE_MDSFINDUNITS
+
 C o This is a set of flags that, if defined at the same time, will get
 C   rid of the autodiff_store/restore scheme. That is why we define a
 C   "macro" flag to set them all at the same time, but they can also be
-C   defined individually. This cannot (and should not) be the default,
-C   because in some verificaation experiment cases (OpenAd, obcs_ctrl)
-C   defining these flags leads TAF to not generate some
+C   defined individually. This is the recommend default, even though in
+C   some cases this leads TAF to not generate some
 C   adexch_xy_rs/adexch_uv_xy_rs routines that are needed in
-C   addummy_in_stepping.F
+C   addummy_in_stepping.F. In these for practical purposes rare cases
+C   AUTODIFF_EXCLUDE_ADEXCH_RS needs to be defined (see below).
+C
+C   OBCS variable cannot be stored with the WHTAPIO method currently, so
+C   that for these fields only it makes sense to undefine the
+C   corresponding AUTODIFF_USE_OLDSTORE_OBCS
 #define AUTODIFF_USE_OLDSTORE
 #ifdef AUTODIFF_USE_OLDSTORE
 # define AUTODIFF_USE_OLDSTORE_3D
