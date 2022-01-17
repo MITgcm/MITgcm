@@ -9,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_XTRANSPORT(
      I     trIdentity, bi, bj, k,
      I     iMin, iMax, jMin, jMax,
-     I     xA, Tracer,
+     I     xA, maskFk, Tracer,
      U     df,
      I     myThid )
 
@@ -38,19 +38,21 @@ C     == GLobal variables ==
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     trIdentity   :: tracer Id number
-C     bi, bj       :: current tile indices
-C     k            :: current level index
-C     iMin,iMax    :: Range of 1rst index where results will be set
-C     jMin,jMax    :: Range of 2nd  index where results will be set
-C     xA           :: Area of X face
-C     Tracer       :: 3D Tracer field
-C     df           :: Diffusive flux component work array.
-C     myThid       :: my Thread Id number
+C     trIdentity :: tracer Id number
+C     bi, bj     :: current tile indices
+C     k          :: current level index
+C     iMin,iMax  :: Range of 1rst index where results will be set
+C     jMin,jMax  :: Range of 2nd  index where results will be set
+C     xA         :: Area of X face
+C     maskFk     :: 2-D mask for vertical interface k (between level k-1 & k)
+C     Tracer     :: 3D Tracer field
+C     df         :: Diffusive flux component work array.
+C     myThid     :: my Thread Id number
       INTEGER trIdentity
       INTEGER bi, bj, k
       INTEGER iMin, iMax, jMin, jMax
-      _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskFk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -58,7 +60,7 @@ CEOP
 
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
-C     i, j    ::  Loop counters
+C     i, j       :: Loop counters
       INTEGER i, j
 #if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
       INTEGER kp1
@@ -130,21 +132,23 @@ C--   Area integrated zonal flux
        km1 = MAX(k-1,1)
        kp1 = MIN(k+1,Nr)
 C-    Vertical gradients interpolated to U points
+C     Note: no needs for masking out with maskm1 or maskp1 when k= 1 or Nr
+C           since the Tracer difference is already zero (k=km1 or k=kp1)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         dTdz(i,j) =  op5*(
+         dTdz(i,j) = op5*(
      &    +op5*recip_drC(k)*
-     &        ( maskC(i-1,j,k,bi,bj)*
-     &            (Tracer(i-1,j,km1)-Tracer(i-1,j,k))
-     &         +maskC( i ,j,k,bi,bj)*
-     &            (Tracer( i ,j,km1)-Tracer( i ,j,k))
+     &        ( maskFk(i-1,j)*
+     &            ( Tracer(i-1,j,km1)-Tracer(i-1,j,k) )
+     &         +maskFk( i ,j)*
+     &            ( Tracer( i ,j,km1)-Tracer( i ,j,k) )
      &        )
      &    +op5*recip_drC(kp1)*
-     &        ( maskC(i-1,j,kp1,bi,bj)*
-     &            (Tracer(i-1,j,k)-Tracer(i-1,j,kp1))
-     &         +maskC( i ,j,kp1,bi,bj)*
-     &            (Tracer( i ,j,k)-Tracer( i ,j,kp1))
-     &        )      )
+     &        ( maskC(i-1,j,k,bi,bj)*maskC(i-1,j,kp1,bi,bj)*
+     &            ( Tracer(i-1,j,k)-Tracer(i-1,j,kp1) )
+     &         +maskC( i ,j,k,bi,bj)*maskC( i ,j,kp1,bi,bj)*
+     &            ( Tracer( i ,j,k)-Tracer( i ,j,kp1) )
+     &        )          )
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
