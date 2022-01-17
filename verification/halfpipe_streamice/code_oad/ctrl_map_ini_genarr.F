@@ -101,24 +101,23 @@ C--   generic 2D control variables
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
 cdg temp_genarr_fnam used below instead of xx_genarr2d_file(iarr)
         temp_genarr_fnam = xx_genarr2d_file(iarr)
-        IF (temp_genarr_fnam(1:7).EQ.'xx_etan') THEN
-          igen_etan=iarr
-        ENDIF
+        IF (temp_genarr_fnam(1:7).EQ.'xx_etan') 
+     &     igen_etan=iarr
         IF (temp_genarr_fnam(1:13).EQ.'xx_bottomdrag')
      &     igen_bdrag=iarr
         IF (temp_genarr_fnam(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
-!#ifdef ALLOW_SHELFICE
-!# ifndef SHI_ALLOW_GAMMAFRICT
-!        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
-!     &     igen_shiCoeffT=iarr
-!        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
-!     &     igen_shiCoeffS=iarr
-!# else
-!        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
-!     &     igen_shiCDrag=iarr
-!# endif
-!#endif
+#ifdef ALLOW_SHELFICE
+# ifndef SHI_ALLOW_GAMMAFRICT
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
+     &     igen_shiCoeffT=iarr
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
+     &     igen_shiCoeffS=iarr
+# else
+        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
+     &     igen_shiCDrag=iarr
+# endif
+#endif
        ENDIF
       ENDDO
 
