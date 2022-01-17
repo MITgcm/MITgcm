@@ -36,9 +36,6 @@ C     == GLobal variables ==
 #  include "PTRACERS_SIZE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     trIdentity   :: tracer Id number
@@ -135,28 +132,19 @@ C--   Area integrated meridional flux
 C-    Vertical gradients interpolated to V points
        DO j=jMin,jMax
         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-           if (k-1 .ge. kTopC(i,j,bi,bj).and.
-     &         k-1 .ge. kTopC(i,j-1,bi,bj)) then
-#endif /* ALLOW_SHELFICE */
          dTdz(i,j) =  op5*(
      &    +op5*recip_drC(k)*
-     &        ( maskC(i,j-1,k,bi,bj)*
+     &        ( maskC(i,j-1,k,bi,bj)*maskC(i,j-1,km1,bi,bj)*
      &            (Tracer(i,j-1,km1)-Tracer(i,j-1,k))
-     &         +maskC(i, j ,k,bi,bj)*
+     &         +maskC(i, j ,k,bi,bj)*maskC(i, j ,km1,bi,bj)*
      &            (Tracer(i, j ,km1)-Tracer(i, j ,k))
      &        )
      &    +op5*recip_drC(kp1)*
-     &        ( maskC(i,j-1,kp1,bi,bj)*
+     &        ( maskC(i,j-1,kp1,bi,bj)*maskC(i,j-1,k,bi,bj)*
      &            (Tracer(i,j-1,k)-Tracer(i,j-1,kp1))
-     &         +maskC(i, j ,kp1,bi,bj)*
+     &         +maskC(i, j ,kp1,bi,bj)*maskC(i, j ,k,bi,bj)*
      &            (Tracer(i, j ,k)-Tracer(i, j ,kp1))
      &        )      )
-#ifdef ALLOW_SHELFICE
-           else
-       dTdz(i,j) =0.
-           endif
-#endif /* ALLOW_SHELFICE */
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
