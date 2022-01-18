@@ -165,10 +165,10 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
       IF (tracerIdentity.GT.maxpass) THEN
        WRITE(msgBuf,'(A,2I3)')
-     &      'GAD_ADVECTION: maxpass < tracerIdentity ',
+     &      'GAD_SOM_ADVECT: maxpass < tracerIdentity ',
      &      maxpass, tracerIdentity
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GAD_ADVECTION'
+       STOP 'ABNORMAL END: S/R GAD_SOM_ADVECT'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -262,6 +262,9 @@ C--   Set tile-specific parameters for horizontal fluxes
       limiter = MOD(advectionScheme, 10)
 
 #ifdef ALLOW_AUTODIFF_TAMC
+      IF (npass .GT. maxpass) THEN
+       STOP 'GAD_SOM_ADVECT: npass > maxcube. check tamc.h'
+      ENDIF
 CADJ INIT somtape = COMMON, 1
 CADJ INIT somtape_k = COMMON, Nr
 CADJ INIT somtape_k_pass = COMMON, maxpass*Nr
@@ -310,10 +313,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
        DO ipass=1,npass
 #ifdef ALLOW_AUTODIFF_TAMC
-        ipasskey = ipass + (k-1)     * maxpass
-        IF (npass .GT. maxpass) THEN
-         STOP 'GAD_ADVECTION: npass > maxcube. check tamc.h'
-        ENDIF
+        ipasskey = ipass + (k-1) * maxpass
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         interiorOnly = .FALSE.
@@ -350,14 +350,6 @@ CADJ STORE smcorners           =somtape_k_pass,key=ipasskey,kind=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   X direction
-#ifdef ALLOW_AUTODIFF
-C-     Always reset advective flux in X
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          afx(i,j) = 0.
-         ENDDO
-        ENDDO
-#endif
 C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
@@ -405,18 +397,6 @@ C--   End of X direction
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Y direction
-#ifdef ALLOW_AUTODIFF
-C-     Always reset advective flux in Y
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          afy(i,j) = 0.
-         ENDDO
-        ENDDO
-CMLCADJ STORE smtr(:,:,k,bi,bj,:) =somtape_k_pass,key=ipasskey,kind=isbyte
-CMLCADJ STORE smtr0(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
-CMLCADJ STORE smVol(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
-CMLCADJ STORE smcorners           =somtape_k_pass,key=ipasskey,kind=isbyte
-#endif /* ALLOW_AUTODIFF */
 C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
