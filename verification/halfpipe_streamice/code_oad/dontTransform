@@ -1,8 +1,3 @@
-ctrl_init_rec
 different_multiple
-streamice_cg_solve
-calc_oce_mxlayer
-streamice_invert_surf_forthick
-streamice_smooth_adjoint_field
-eta_gl_prime_streamice
-
+ggl90_init_fixed
+ggl90_write_pickup
