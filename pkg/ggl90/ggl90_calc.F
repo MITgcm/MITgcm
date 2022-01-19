@@ -908,16 +908,39 @@ C     estimate friction velocity uStar from surface forcing
 C     uStarSquare should not have any effect undernath iceshelves, but
 C     masking uStarSquare underneath ice shelf is not necessary because
 C     surfaceForcingU/V=0 in this case (see shelfice_forcing_surf.F)
-C     A better solution would be to compute uStarSquare as a
-C     friction velocity based on the sub-glacial drag.
-CML      IF ( useSHELFICE ) THEN
-CML       DO j=jMin,jMax
-CML        DO i=iMin,iMax
-CML         IF ( kTopC(i,j,bi,bj) .GT. 0 ) uStarSquare(i,j) = 0. _d 0
-CML        ENDDO
-CML       ENDDO
-CML      ENDIF
+C     Instead, uStarSquare is computed from the sub-glacial drag.
+      IF ( useSHELFICE .AND.
+     &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
+     &                        .OR. SHELFICEselectDragQuadr.GE.0 )
+     &   ) THEN
+       DO j=jMin,jMax
+        DO i=jMin,jMax
+         IF ( kTopC(i,j,bi,bj) .GT. 0 ) THEN
+          IF ( selectImplicitDrag.EQ.0 ) THEN
+C-     Explicit case: diagnose directly the Ice-Shelf stress
+           tempU  = shelficeDragU( i ,j,bi,bj)
+           tempUp = shelficeDragU(i+1,j,bi,bj)
+           tempV  = shelficeDragV(i, j ,bi,bj)
+           tempVp = shelficeDragV(i,j+1,bi,bj)
+          ELSE
+C-     Implicit case: use drag-coeff to diagnose the Ice-Shelf stress
+           k = MAX( 1, kTopC(i-1,j,bi,bj), kTopC(i,j,bi,bj) )
+           tempU  = -shelficeDragU( i ,j,bi,bj) * uVel( i ,j,k,bi,bj)
+           tempUp = -shelficeDragU(i+1,j,bi,bj) * uVel(i+1,j,k,bi,bj)
+           k = MAX( 1, kTopC(i,j-1,bi,bj), kTopC(i,j,bi,bj) )
+           tempV  = -shelficeDragV(i, j ,bi,bj) * vVel(i, j ,k,bi,bj)
+           tempVp = -shelficeDragV(i,j+1,bi,bj) * vVel(i,j+1,k,bi,bj)
+          ENDIF
+          uStarSquare(i,j) = SQRT(
+     &         ( tempU*tempU + tempUp*tempUp
+     &         + tempV*tempV + tempVp*tempVp
+     &         )*halfRL          )*recip_coordFac
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
 #endif
+
 C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
