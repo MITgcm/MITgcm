@@ -267,7 +267,7 @@ c--   initial forcing only
 
 #if (defined (ALLOW_UWIND_CONTROL))
 #ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN
+      IF ( useAtmWind ) THEN 
 #endif
 c--   Zonal wind speed.
       call ctrl_init_rec ( xx_uwind_file,
@@ -872,11 +872,11 @@ C       Under iceshelf, use maskSHI for these
      &       ncvargrdtmp='s'
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     I       xx_gentim2d_startdate1(iarr),
-     I       xx_gentim2d_startdate2(iarr),
-     I       xx_gentim2d_period(iarr),
+     I       xx_gentim2d_startdate1(iarr), 
+     I       xx_gentim2d_startdate2(iarr), 
+     I       xx_gentim2d_period(iarr), 
      I       1,
-     O       xx_gentim2d_startdate(1,iarr),
+     O       xx_gentim2d_startdate(1,iarr), 
      O       diffrec, startrec, endrec,
      I       myThid )
 C

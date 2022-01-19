@@ -47,6 +47,7 @@ c     == local variables ==
       _RL     gg       (1-olx:snx+olx,nr,nsx,nsy)
 
       character*( 80)   fname
+      character*(  5)   slice
 
 c     == external ==
 
@@ -108,6 +109,8 @@ c--               West mask for U
       il=ilnblnk( ymaskobcs )
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') ymaskobcs
+      if (jp1.eq.1) slice = 'south'
+      if (jp1.eq.0) slice = 'north'
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
@@ -119,7 +122,7 @@ c--               West mask for U
             enddo
           enddo
         enddo
-        call active_write_xz( fname, gg, iobcs, 0, mythid, dummy )
+        call active_write_xz( fname, gg, iobcs, slice, 0, mythid, dummy)
       enddo
 #endif
 

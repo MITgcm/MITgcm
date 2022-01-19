@@ -66,9 +66,11 @@ c     == local variables ==
       logical ladinit
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      character*(5) sliceXZ
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      character*(5) sliceYZ
 #endif
       _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -500,8 +502,10 @@ c--   == end of interface ==
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       elseif ( grdchkvarindex.EQ.11 .OR. grdchkvarindex.EQ.12) then
+         sliceXZ = 'south'
+         if (grdchkvarindex.EQ.11) sliceXZ='north'
          call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
+     &                        doglobalread, ladinit, sliceXZ,optimcycle,
      &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfldxz( itilepos,layer,itile,jtile )
@@ -509,8 +513,10 @@ c--   == end of interface ==
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
+         sliceYZ = 'west '
+         if (grdchkvarindex.EQ.14) sliceYZ='east '
          call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
+     &                        doglobalread, ladinit, sliceYZ,optimcycle,
      &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfldyz( jtilepos,layer,itile,jtile )

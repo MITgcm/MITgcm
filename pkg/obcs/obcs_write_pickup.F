@@ -132,34 +132,60 @@ C     Write E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
       IF ( useOrlanskiEast ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiE.',suff(1:iL)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_3, 3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_4, 4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_1, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_2, 6,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_3, 7,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_4, 8,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_1, 9,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_2,10,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_3,11,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_4,12,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_1,13,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_2,14,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_3,15,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_4,16,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_UE , 17,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_VE , 18,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_3, 3,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_4, 4,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_1, 5,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_2, 6,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_3, 7,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VE_STORE_4, 8,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_1, 9,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_2,10,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_3,11,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TE_STORE_4,12,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_1,13,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_2,14,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_3,15,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SE_STORE_4,16,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_UE , 17,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_VE , 18,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,
+     &          'east ',myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, OBEw    , 26,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, OBEw    , 26,
+     &          'east ',myIter,myThid)
        ENDIF
 #endif
       ENDIF
@@ -168,34 +194,60 @@ C     Write E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_WEST
       IF ( useOrlanskiWest ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiW.',suff(1:iL)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_3, 3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_4, 4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_1, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_2, 6,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_3, 7,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_4, 8,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_1, 9,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_2,10,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_3,11,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_4,12,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_1,13,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_2,14,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_3,15,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_4,16,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_UW , 17,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_VW , 18,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_3, 3,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_4, 4,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_1, 5,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_2, 6,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_3, 7,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,VW_STORE_4, 8,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_1, 9,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_2,10,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_3,11,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,TW_STORE_4,12,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_1,13,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_2,14,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_3,15,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,SW_STORE_4,16,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_UW , 17,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_VW , 18,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,
+     &          'west ',myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr, OBWw    , 26,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr, OBWw    , 26,
+     &          'west ',myIter,myThid)
        ENDIF
 #endif
       ENDIF
@@ -224,18 +276,24 @@ C     Write E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
       IF ( useStevensEast ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensE.',suff(1:iL)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEuStevens, 1,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEtStevens, 2,
+     &          'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEsStevens, 3,
+     &          'east ',myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
       IF ( useStevensWest ) THEN
         WRITE(fn,'(2A)') 'pickup_stevensW.',suff(1:iL)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWuStevens, 1,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWtStevens, 2,
+     &          'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWsStevens, 3,
+     &          'west ',myIter,myThid)
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS_STEVENS */

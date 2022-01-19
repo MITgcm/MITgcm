@@ -42,6 +42,7 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  writeStatePrec=64,
+ useSingleCPUIO=.TRUE.,
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
  &

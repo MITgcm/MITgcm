@@ -2053,11 +2053,11 @@ c    &     1, 0, myThid, dummy)
 c     call active_write_xyz_loc( 'maskCtrlS', maskS,
 c    &     1, 0, myThid, dummy)
 c#else
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY ', Nr,
      I                          1, .TRUE., 0, myThid, dummyRS )
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY ', Nr,
      I                          1, .TRUE., 0, myThid, dummyRS )
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY ', Nr,
      I                          1, .TRUE., 0, myThid, dummyRS )
 c#endif
 

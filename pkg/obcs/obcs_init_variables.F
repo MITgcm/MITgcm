@@ -383,27 +383,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _BARRIER
 # ifdef ALLOW_OBCS_NORTH
       IF ( OBNamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBNamFile,fp,tidalComponents,OBNam,1,nIter0,myThid )
+     &     (OBNamFile,fp,tidalComponents,OBNam,1,'north',nIter0,myThid )
       IF ( OBNphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBNphFile,fp,tidalComponents,OBNph,1,nIter0,myThid )
+     &     (OBNphFile,fp,tidalComponents,OBNph,1,'north',nIter0,myThid )
 # endif
 # ifdef ALLOW_OBCS_SOUTH
       IF ( OBSamFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBSamFile,fp,tidalComponents,OBSam,1,nIter0,myThid )
+     &     (OBSamFile,fp,tidalComponents,OBSam,1,'south',nIter0,myThid )
       IF ( OBSphFile .NE. ' '  ) CALL READ_REC_XZ_RL
-     &     (OBSphFile,fp,tidalComponents,OBSph,1,nIter0,myThid )
+     &     (OBSphFile,fp,tidalComponents,OBSph,1,'south',nIter0,myThid )
 # endif
 # ifdef ALLOW_OBCS_EAST
       IF ( OBEamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBEamFile,fp,tidalComponents,OBEam,1,nIter0,myThid )
+     &     (OBEamFile,fp,tidalComponents,OBEam,1,'east ',nIter0,myThid )
       IF ( OBEphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBEphFile,fp,tidalComponents,OBEph,1,nIter0,myThid )
+     &     (OBEphFile,fp,tidalComponents,OBEph,1,'east ',nIter0,myThid )
 # endif
 # ifdef ALLOW_OBCS_WEST
       IF ( OBWamFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBWamFile,fp,tidalComponents,OBWam,1,nIter0,myThid )
+     &     (OBWamFile,fp,tidalComponents,OBWam,1,'west ',nIter0,myThid )
       IF ( OBWphFile .NE. ' '  ) CALL READ_REC_YZ_RL
-     &     (OBWphFile,fp,tidalComponents,OBWph,1,nIter0,myThid )
+     &     (OBWphFile,fp,tidalComponents,OBWph,1,'west ',nIter0,myThid )
 # endif
       _BARRIER
 #endif /* ALLOW_OBCS_TIDES */

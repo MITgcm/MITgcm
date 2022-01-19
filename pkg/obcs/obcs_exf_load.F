@@ -335,24 +335,24 @@ C-    get record numbers and interpolation factor
          _END_MASTER( myThid )
       ENDIF
 
-      CALL EXF_SET_OBCS_XZ( OBu, OBu0, OBu1, OBufile, 'u', Nr,
+      CALL EXF_SET_OBCS_XZ( OBu, OBu0, OBu1, OBufile, 'u', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_XZ( OBv, OBv0, OBv1, OBvfile, 'v', Nr,
+      CALL EXF_SET_OBCS_XZ( OBv, OBv0, OBv1, OBvfile, 'v', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_XZ( OBt, OBt0, OBt1, OBtfile, 's', Nr,
+      CALL EXF_SET_OBCS_XZ( OBt, OBt0, OBt1, OBtfile, 's', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_XZ( OBs, OBs0, OBs1, OBsfile, 's', Nr,
+      CALL EXF_SET_OBCS_XZ( OBs, OBs0, OBs1, OBsfile, 's', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
 # ifdef NONLIN_FRSURF
-       CALL EXF_SET_OBCS_XZ( OBeta, OBeta0, OBeta1, OBetaFile, 's', 1,
+       CALL EXF_SET_OBCS_XZ( OBeta,OBeta0,OBeta1,OBetaFile,'s',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       obcsPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
@@ -363,7 +363,7 @@ C-    get record numbers and interpolation factor
         CALL EXF_SET_OBCS_XZ( OBptr (1-OLx,1,1,1,iTracer),
      I                        OBptr0(1-OLx,1,1,1,iTracer),
      I                        OBptr1(1-OLx,1,1,1,iTracer),
-     I                        OBptrFile(iTracer), 's', Nr,
+     I                        OBptrFile(iTracer), 's', obName, Nr,
      I                        fac, first, changed, useYearlyFields,
      I                        obcsPeriod, count0, count1, year0, year1,
      I                        myTime, myIter, myThid )
@@ -427,28 +427,28 @@ C-    get record numbers and interpolation factor
          _END_MASTER( myThid )
        ENDIF
 
-       CALL EXF_SET_OBCS_XZ( OBa, OBa0, OBa1, OBafile, 's', 1,
+       CALL EXF_SET_OBCS_XZ( OBa, OBa0, OBa1, OBafile, 's', obName, 1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBh, OBh0, OBh1, OBhfile, 's', 1,
+       CALL EXF_SET_OBCS_XZ( OBh, OBh0, OBh1, OBhfile, 's', obName, 1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBsl, OBsl0, OBsl1, OBslfile, 's', 1,
+       CALL EXF_SET_OBCS_XZ( OBsl, OBsl0, OBsl1, OBslfile, 's',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBsn, OBsn0, OBsn1, OBsnfile, 's', 1,
+       CALL EXF_SET_OBCS_XZ( OBsn, OBsn0, OBsn1, OBsnfile, 's',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBuice,OBuice0,OBuice1,OBuicefile,'u', 1,
-     I                       fac, first, changed, useYearlyFields,
+       CALL EXF_SET_OBCS_XZ( OBuice,OBuice0,OBuice1,OBuicefile,'u',
+     I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBvice,OBvice0,OBvice1,OBvicefile,'v', 1,
-     I                       fac, first, changed, useYearlyFields,
+       CALL EXF_SET_OBCS_XZ( OBvice,OBvice0,OBvice1,OBvicefile,'v',
+     I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
       ENDIF
@@ -619,7 +619,7 @@ C-    get record numbers and interpolation factor
       ENDIF
       IF ( exf_debugLev.GE.debLevD ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_XZ: ',
+         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_YZ: ',
      &     'processing ', obName, '-OBCS files'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
@@ -634,24 +634,24 @@ C-    get record numbers and interpolation factor
          _END_MASTER( myThid )
       ENDIF
 
-      CALL EXF_SET_OBCS_YZ( OBu, OBu0, OBu1, OBufile, 'u', Nr,
+      CALL EXF_SET_OBCS_YZ( OBu, OBu0, OBu1, OBufile, 'u', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_YZ( OBv, OBv0, OBv1, OBvfile, 'v', Nr,
+      CALL EXF_SET_OBCS_YZ( OBv, OBv0, OBv1, OBvfile, 'v', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_YZ( OBt, OBt0, OBt1, OBtfile, 's', Nr,
+      CALL EXF_SET_OBCS_YZ( OBt, OBt0, OBt1, OBtfile, 's', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
-      CALL EXF_SET_OBCS_YZ( OBs, OBs0, OBs1, OBsfile, 's', Nr,
+      CALL EXF_SET_OBCS_YZ( OBs, OBs0, OBs1, OBsfile, 's', obName, Nr,
      I                      fac, first, changed, useYearlyFields,
      I                      obcsPeriod, count0, count1, year0, year1,
      I                      myTime, myIter, myThid )
 # ifdef NONLIN_FRSURF
-       CALL EXF_SET_OBCS_YZ( OBeta, OBeta0, OBeta1, OBetaFile, 's', 1,
+       CALL EXF_SET_OBCS_YZ( OBeta,OBeta0,OBeta1,OBetaFile,'s',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       obcsPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
@@ -662,7 +662,7 @@ C-    get record numbers and interpolation factor
         CALL EXF_SET_OBCS_YZ( OBptr (1-OLx,1,1,1,iTracer),
      I                        OBptr0(1-OLx,1,1,1,iTracer),
      I                        OBptr1(1-OLx,1,1,1,iTracer),
-     I                        OBptrFile(iTracer), 's', Nr,
+     I                        OBptrFile(iTracer), 's', obName, Nr,
      I                        fac, first, changed, useYearlyFields,
      I                        obcsPeriod, count0, count1, year0, year1,
      I                        myTime, myIter, myThid )
@@ -711,7 +711,7 @@ C-    get record numbers and interpolation factor
        ENDIF
        IF ( exf_debugLev.GE.debLevD ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_XZ: ',
+         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_YZ: ',
      &     'processing SEAICE ', obName, '-OBCS files'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
@@ -726,28 +726,28 @@ C-    get record numbers and interpolation factor
          _END_MASTER( myThid )
        ENDIF
 
-       CALL EXF_SET_OBCS_YZ( OBa, OBa0, OBa1, OBafile, 's', 1,
+       CALL EXF_SET_OBCS_YZ( OBa, OBa0, OBa1, OBafile, 's', obName, 1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_YZ( OBh, OBh0, OBh1, OBhfile, 's', 1,
+       CALL EXF_SET_OBCS_YZ( OBh, OBh0, OBh1, OBhfile, 's', obName, 1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_YZ( OBsl, OBsl0, OBsl1, OBslfile, 's', 1,
+       CALL EXF_SET_OBCS_YZ( OBsl, OBsl0, OBsl1, OBslfile, 's',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_YZ( OBsn, OBsn0, OBsn1, OBsnfile, 's', 1,
+       CALL EXF_SET_OBCS_YZ( OBsn, OBsn0, OBsn1, OBsnfile, 's',obName,1,
      I                       fac, first, changed, useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_YZ( OBuice,OBuice0,OBuice1,OBuicefile,'u', 1,
-     I                       fac, first, changed, useYearlyFields,
+       CALL EXF_SET_OBCS_YZ( OBuice,OBuice0,OBuice1,OBuicefile,'u',
+     I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_YZ( OBvice,OBvice0,OBvice1,OBvicefile,'v', 1,
-     I                       fac, first, changed, useYearlyFields,
+       CALL EXF_SET_OBCS_YZ( OBvice,OBvice0,OBvice1,OBvicefile,'v',
+     I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
       ENDIF

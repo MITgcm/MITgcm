@@ -69,7 +69,7 @@ c     == end of interface ==
 c
       do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
+     &        .false., .false., 'north', 0, mythid, dummy)
 c
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -92,7 +92,7 @@ c
 c
       do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
+     &        .false., .false., 'south', 0, mythid, dummy)
 c
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -115,7 +115,7 @@ c
 c
       do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
+     &        .false., .false., 'west ', 0, mythid, dummy)
 c
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -138,7 +138,7 @@ c
 c
       do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
+     &        .false., .false., 'east ', 0, mythid, dummy)
 c
          do bj = jtlo,jthi
             do bi = itlo,ithi
