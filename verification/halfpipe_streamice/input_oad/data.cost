@@ -1,11 +1,8 @@
-#
-#
 # ******************
-# ECCO cost function
+# cost function
 # ******************
  &COST_NML
-#
- mult_tracer  = 1.,
- mult_test    = 1.,
- mult_atl     = 1.,
+#revert to default 1 month
+ lastinterval=320000000.,
+ mult_test=1.,
  &
