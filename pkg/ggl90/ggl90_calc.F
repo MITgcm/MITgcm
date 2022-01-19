@@ -1130,10 +1130,10 @@ C     diagnose surface flux of TKE
          DO j=jMin,jMax
           DO i=iMin,iMax
 #ifdef ALLOW_SHELFICE
-         IF ( useShelfIce ) THEN
-          kSrf = MAX(1,kTopC(i,j,bi,bj))
-          kTop = MAX(2,kTopC(i,j,bi,bj))
-         ENDIF
+           IF ( useShelfIce ) THEN
+            kSrf = MAX(1,kTopC(i,j,bi,bj))
+            kTop = MAX(2,kTopC(i,j,bi,bj))
+           ENDIF
 #endif
            surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
      &                         GGL90TKE(i,j,kTop,bi,bj))
