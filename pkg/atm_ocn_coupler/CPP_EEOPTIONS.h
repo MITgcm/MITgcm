@@ -91,6 +91,10 @@ C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
 
+C--   Explicitly specify action='read' when open read-only files. 
+C     On NASA Ames' Pleiades it improves performance.
+#undef SPECIFY_FILE_PERMISSION 
+
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0

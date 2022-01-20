@@ -67,6 +67,9 @@ C--   First check if pickup file exist
         CALL MDSFINDUNIT( ioUnit, myThid )
         length_of_rec = MDS_RECLEN( fp, 2, myThid )
         OPEN( ioUnit, file=filNam, status='old',
+#ifdef SPECIFY_FILE_PERMISSION
+     &        action='read',
+#endif
      &        access='direct', recl=length_of_rec )
         READ(ioUnit,rec=1) tmpFld
 #ifdef _BYTESWAPIO

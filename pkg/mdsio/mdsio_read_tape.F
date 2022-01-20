@@ -129,6 +129,9 @@ C-    If global file is visible to process 0, then open it here.
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, vec_size, myThid )
           OPEN( dUnit, file=dataFName, status='old',
+#ifdef SPECIFY_FILE_PERMISSION
+     &          action='read',
+#endif
      &          access='direct', recl=length_of_rec )
          ELSE
 C     Otherwise stop program.
@@ -194,6 +197,9 @@ C-    Check first for global file with with MDS name (ie. fName.data)
 C-    And open it here
           length_of_rec = MDS_RECLEN( filePrec, nSize, myThid )
           OPEN( dUnit, file=dataFName, status='old',
+#ifdef SPECIFY_FILE_PERMISSION
+     &          action='read',
+#endif
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
         ENDIF
@@ -214,6 +220,9 @@ C-    If we are reading from a tiled MDS file then we open each one here
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, nSize, myThid )
           OPEN( dUnit, file=dataFName, status='old',
+#ifdef SPECIFY_FILE_PERMISSION
+     &          action='read',
+#endif
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          ELSE

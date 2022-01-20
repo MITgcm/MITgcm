@@ -64,7 +64,11 @@ C read in CFC atmospheric timeseries data
 
 C assign a free unit number as the I/O channel for this subroutine
       CALL MDSFINDUNIT( iUnit, myThid )
-      OPEN(iUnit,FILE=atmCFC_inpFile(1:iL),STATUS='old')
+      OPEN(iUnit,FILE=atmCFC_inpFile(1:iL),
+#ifdef SPECIFY_FILE_PERMISSION
+     &     ACTION='read',
+#endif
+     &     STATUS='old')
 C skip 6 descriptor lines
       DO i =1,6
         READ(iUnit,*)

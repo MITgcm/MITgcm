@@ -45,7 +45,11 @@ cph      IF (myProcId .eq. 0) THEN
 c
            inquire(file='divided.ctrl',exist=exst)
            if (exst) then
-              open(unit=76,file='divided.ctrl',form='formatted')
+              open(unit=76,file='divided.ctrl',
+#ifdef SPECIFY_FILE_PERMISSION
+     &             action='read',
+#endif
+     &             form='formatted')
               read(unit=76,fmt=*) idivbeg,idivend
               close(unit=76)
            else
@@ -54,7 +58,11 @@ c
 c
            if ( idivbeg .EQ. 0 ) then
               lastdiva = .TRUE.
+#ifndef SPECIFY_FILE_PERMISSION
               open(unit=76,file='costfinal')
+#else 
+              open(unit=76,file='costfinal',action='read')
+#endif
               read(76,*) fc
               close(76)
            else

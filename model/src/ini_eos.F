@@ -85,7 +85,11 @@ C     relative to reference atmospheric pressure of 1.atm = 101325 Pa
          IF ( tAlpha .EQ. UNSET_RL ) tAlpha = 2.  _d -4
          IF ( sBeta  .EQ. UNSET_RL ) sBeta  = 7.4 _d -4
       ELSEIF ( equationOfState .EQ. 'POLY3' ) THEN
-         OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
+         OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',
+#ifdef SPECIFY_FILE_PERMISSION
+     &        ACTION='read',
+#endif
+     &        FORM='FORMATTED')
          READ(37,*) k
          IF (k.NE.Nr) THEN
             WRITE(msgBuf,'(A)')

@@ -139,7 +139,11 @@ C         locate the points that belong to this tile
               STOP ' stopped in REGRID_INIT_VARIA()'
             ENDIF
 
-            open(unit=iUnit, file=fname, status='old', iostat=errIO)
+            open(unit=iUnit, file=fname, status='old', 
+#ifdef SPECIFY_FILE_PERMISSION
+     &           action='read',
+#endif
+     &           iostat=errIO)
 
             IF (errIO .LT. 0) THEN
               WRITE(msgBuf,'(A)')  'S/R REGRID_INIT_VARIA()'

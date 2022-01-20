@@ -207,6 +207,9 @@ c
       IF ( atmosTauuFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosTauuFile,STATUS='old',
      &        ACCESS='direct', RECL=8*jm0*nForcingPer,
+#ifdef SPECIFY_FILE_PERMISSION
+     &        ACTION='read',
+#endif
      &        FORM='unformatted')
          READ(dUnit,REC=1), atau
          CLOSE(dUnit)
@@ -215,6 +218,9 @@ c
       IF ( atmosTauvFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosTauvFile, STATUS='old',
      &        ACCESS='direct', RECL=8*jm0*nForcingPer,
+#ifdef SPECIFY_FILE_PERMISSION
+     &        ACTION='read',
+#endif
      &        FORM='unformatted')
          READ(dUnit, REC=1), atav
          CLOSE(dUnit)
@@ -223,6 +229,9 @@ c
       IF ( atmosWindFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosWindFile, STATUS='old',
      &        ACCESS='direct', RECL=8*jm0*nForcingPer,
+#ifdef SPECIFY_FILE_PERMISSION
+     &        ACTION='read',
+#endif
      &        FORM='unformatted')
          READ(dUnit, REC=1), awind
          CLOSE(dUnit)

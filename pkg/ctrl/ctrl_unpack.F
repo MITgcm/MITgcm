@@ -261,6 +261,9 @@ c--   Only Proc 0 will do I/O.
 
           open( cunit, file   = cfile,
      &         status = 'old',
+#ifdef SPECIFY_FILE_PERMISSION
+     &         action='read',
+#endif
      &         form   = 'unformatted',
      &         access  = 'sequential'   )
 

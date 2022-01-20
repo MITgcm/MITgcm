@@ -70,6 +70,9 @@ c    &       ACCESS='direct', RECL=lengthRec )
 c       READ(88,rec=1) tmpfld
         lengthRec=3*WORDLENGTH*2
         OPEN(88, FILE=runOffMapFile(1:lengthName), STATUS='OLD',
+#ifdef SPECIFY_FILE_PERMISSION
+     &       ACTION='read',
+#endif
      &       ACCESS='direct', RECL=lengthRec )
         DO n=1,nROmap
          iRec = n
@@ -90,6 +93,9 @@ C-    Read (ocean) grid cell area from file ;
       WRITE(msgUnit,'(2A)') 'SET_RUNOFFMAP: ','reading OCN grid area'
         lengthRec=Nx_ocn*Ny_ocn*WORDLENGTH*2
         OPEN(88, FILE='RA.bin', STATUS='OLD',
+#ifdef SPECIFY_FILE_PERMISSION
+     &       ACTION='read',
+#endif
      &       ACCESS='direct', RECL=lengthRec )
         iRec = 1
         READ(88,rec=iRec) rAc

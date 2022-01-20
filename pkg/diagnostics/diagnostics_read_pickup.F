@@ -144,7 +144,11 @@ C         Read ndiag()
 C--    jmc: should really write 1 file per tile
           WRITE(fn,'(A,I10.10)') 'pickup_ndiag.', nIter0
           CALL MDSFINDUNIT( dUnit, myThid )
+#ifndef SPECIFY_FILE_PERMISSION
           OPEN( dUnit, file=fn )
+#else
+          OPEN( dUnit, file=fn, action='read')
+#endif
           DO n = 1,nlists
             DO m = 1,nfields(n)
               ndId = ABS(jdiag(m,n))
