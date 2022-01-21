@@ -64,13 +64,13 @@ C     i, j       :: Loop counters
       INTEGER i, j
 #if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
       INTEGER kp1
+      _RL maskp1
 #endif
 #ifdef GM_EXTRA_DIAGONAL
       INTEGER km1
       _RL dTdz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef GM_BOLUS_ADVEC
-      _RL maskp1
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -132,8 +132,11 @@ C--   Area integrated zonal flux
        km1 = MAX(k-1,1)
        kp1 = MIN(k+1,Nr)
 C-    Vertical gradients interpolated to U points
-C     Note: no needs for masking out with maskm1 or maskp1 when k= 1 or Nr
-C           since the Tracer difference is already zero (k=km1 or k=kp1)
+C     Note: no real needs for masking out with maskp1 when k=Nr since the Tracer
+C           difference is already zero (k=kp1 in this case); but cleaner for
+C           AD-code to ensure exactly zero contribution to Tracer AD var.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
          dTdz(i,j) = op5*(
@@ -144,9 +147,9 @@ C           since the Tracer difference is already zero (k=km1 or k=kp1)
      &            ( Tracer( i ,j,km1)-Tracer( i ,j,k) )
      &        )
      &    +op5*recip_drC(kp1)*
-     &        ( maskC(i-1,j,k,bi,bj)*maskC(i-1,j,kp1,bi,bj)*
+     &        ( maskC(i-1,j,k,bi,bj)*maskC(i-1,j,kp1,bi,bj)*maskp1*
      &            ( Tracer(i-1,j,k)-Tracer(i-1,j,kp1) )
-     &         +maskC( i ,j,k,bi,bj)*maskC( i ,j,kp1,bi,bj)*
+     &         +maskC( i ,j,k,bi,bj)*maskC( i ,j,kp1,bi,bj)*maskp1*
      &            ( Tracer( i ,j,k)-Tracer( i ,j,kp1) )
      &        )          )
         ENDDO
@@ -168,8 +171,8 @@ C-    Off-diagonal components of horizontal flux
       IF ( GM_AdvForm .AND. GM_AdvSeparate
      &                .AND. .NOT.GM_InMomAsStress ) THEN
        kp1 = MIN(k+1,Nr)
-       maskp1 = 1.
-       IF (k.GE.Nr) maskp1 = 0.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
          uTrans(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
@@ -196,8 +199,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     .AND. DIAGNOSTICS_IS_ON('GM_ubT  ', myThid )
      &     .AND. trIdentity.EQ.1 ) THEN
        kp1 = MIN(k+1,Nr)
-       maskp1 = 1.
-       IF (k.GE.Nr) maskp1 = 0.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
          tmp1k(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
