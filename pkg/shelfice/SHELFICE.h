@@ -186,11 +186,11 @@ CEOP
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_CTRL */
 
-#ifdef ALLOW_DIAGNOSTICS
+c#ifdef ALLOW_DIAGNOSTICS
       COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
       _RS shelficeDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* ALLOW_DIAGNOSTICS */
+c#endif /* ALLOW_DIAGNOSTICS */
 
       LOGICAL SHELFICEisOn
       LOGICAL useISOMIPTD
