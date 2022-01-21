@@ -28,8 +28,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "STREAMICE.h"
 
-
-
 C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
@@ -60,7 +58,7 @@ C--   for use with useMMsurfFc:
 
       INTEGER nm0, nm1, nmP
       _RL myRelTime, fac, tmpFac
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   find which month to use for surface BC
@@ -84,15 +82,15 @@ C--   Now calculate whether it is time to update the forcing arrays
         CALL GET_PERIODIC_INTERVAL(
      O                   nmP, nm0, nm1, tmpFac, fac,
      I                   externForcingCycle, streamice_forcing_period,
-     I                   deltaTclock, 
-     I                   myTime+0.5*streamice_forcing_period, 
+     I                   deltaTClock,
+     I                   myTime+0.5*streamice_forcing_period,
      I                   myThid )
         fac = 1.D0 - fac
        else
         CALL GET_PERIODIC_INTERVAL(
      O                   nmP, nm0, nm1, tmpFac, fac,
      I                   externForcingCycle, streamice_forcing_period,
-     I                   deltaTclock, myTime, 
+     I                   deltaTClock, myTime,
      I                   myThid )
        endif
 
@@ -103,14 +101,11 @@ C--   Now calculate whether it is time to update the forcing arrays
        ENDIF
        IF ( first ) changed = .false.
       endif
- 
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-     Load new data:
 
-         
 C-    Only one thread updates parameter in common block
 C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
         _BARRIER
@@ -124,25 +119,25 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
 
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
-     &                        streamice_u_normal_stress1, 
+     &                        streamice_u_normal_stress1,
      &                        nm0,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEvNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEvNormalTimeDepFile,
-     &                        streamice_v_normal_stress1, 
+     &                        streamice_v_normal_stress1,
      &                        nm0,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEuShearTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuShearTimeDepFile,
-     &                        streamice_u_shear_stress1, 
+     &                        streamice_u_shear_stress1,
      &                        nm0,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEvShearTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEvShearTimeDepFile,
-     &                        streamice_v_shear_stress1, 
+     &                        streamice_v_shear_stress1,
      &                        nm0,myIter,myThid)
          ENDIF
 !         PRINT *, "GOT HERE FIELDS LOAD 2"
@@ -164,7 +159,7 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
 !         PRINT *, "GOT HERE FIELDS LOAD 3",  STREAMICEBdotTimeDepFile
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
-     &                        bdot_streamice1, 
+     &                        bdot_streamice1,
      &                        nm0,myIter,myThid)
          ENDIF
 
@@ -179,42 +174,42 @@ C-      endif 1rst iter.
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             
-             streamice_u_normal_stress0(i,j,bi,bj) = 
+
+             streamice_u_normal_stress0(i,j,bi,bj) =
      &        streamice_u_normal_stress1(i,j,bi,bj)
-             streamice_v_normal_stress0(i,j,bi,bj) = 
+             streamice_v_normal_stress0(i,j,bi,bj) =
      &        streamice_v_normal_stress1(i,j,bi,bj)
-             streamice_u_shear_stress0(i,j,bi,bj) = 
+             streamice_u_shear_stress0(i,j,bi,bj) =
      &        streamice_u_shear_stress1(i,j,bi,bj)
-             streamice_v_shear_stress0(i,j,bi,bj) = 
+             streamice_v_shear_stress0(i,j,bi,bj) =
      &        streamice_v_shear_stress1(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO
 !         PRINT *, "GOT HERE FIELDS LOAD 4"
- 
+
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
-     &                        streamice_u_normal_stress1, 
+     &                        streamice_u_normal_stress1,
      &                        nm1,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEvNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEvNormalTimeDepFile,
-     &                        streamice_v_normal_stress1, 
+     &                        streamice_v_normal_stress1,
      &                        nm1,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEuShearTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuShearTimeDepFile,
-     &                        streamice_u_shear_stress1, 
+     &                        streamice_u_shear_stress1,
      &                        nm1,myIter,myThid)
          ENDIF
 
          IF ( STREAMICEvShearTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEvShearTimeDepFile,
-     &                        streamice_v_shear_stress1, 
+     &                        streamice_v_shear_stress1,
      &                        nm1,myIter,myThid)
          ENDIF
 
@@ -237,7 +232,6 @@ C-      endif 1rst iter.
          ENDDO
 !         PRINT *, "GOT HERE FIELDS LOAD 4"
 
-
          IF ( STREAMICEuFluxTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuFluxTimeDepFile,
      &                        u_flux_bdry_SI_1,
@@ -252,12 +246,11 @@ C-      endif 1rst iter.
 
 #endif
 
-
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             bdot_streamice0(i,j,bi,bj) = 
+             bdot_streamice0(i,j,bi,bj) =
      &        bdot_streamice1(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -266,7 +259,7 @@ C-      endif 1rst iter.
 
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
-     &                        bdot_streamice1, 
+     &                        bdot_streamice1,
      &                        nm1,myIter,myThid)
          ENDIF
 
@@ -278,16 +271,16 @@ C-      endif 1rst iter.
           DO j=1,sNy
            DO i=1,sNx
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
-             streamice_u_normal_stress(i,j,bi,bj) = 
+             streamice_u_normal_stress(i,j,bi,bj) =
      &        fac    * streamice_u_normal_stress0(i,j,bi,bj)
      &     + (1-fac) * streamice_u_normal_stress1(i,j,bi,bj)
-             streamice_v_normal_stress(i,j,bi,bj) = 
+             streamice_v_normal_stress(i,j,bi,bj) =
      &        fac    * streamice_v_normal_stress0(i,j,bi,bj)
      &     + (1-fac) * streamice_v_normal_stress1(i,j,bi,bj)
-             streamice_u_shear_stress(i,j,bi,bj) = 
+             streamice_u_shear_stress(i,j,bi,bj) =
      &        fac    * streamice_u_shear_stress0(i,j,bi,bj)
      &     + (1-fac) * streamice_u_shear_stress1(i,j,bi,bj)
-             streamice_v_shear_stress(i,j,bi,bj) = 
+             streamice_v_shear_stress(i,j,bi,bj) =
      &        fac    * streamice_v_shear_stress0(i,j,bi,bj)
      &     + (1-fac) * streamice_v_shear_stress1(i,j,bi,bj)
 #endif
@@ -300,7 +293,7 @@ C-      endif 1rst iter.
      &     + (1-fac) * v_flux_bdry_SI_1(i,j,bi,bj)
 #endif
 
-             bdot_streamice (i,j,bi,bj) = 
+             bdot_streamice (i,j,bi,bj) =
      &        fac    * bdot_streamice0(i,j,bi,bj)
      &     + (1-fac) * bdot_streamice1(i,j,bi,bj)
            ENDDO
@@ -308,16 +301,18 @@ C-      endif 1rst iter.
          ENDDO
         ENDDO
 
-      CALL EXCH_XY_RL 
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
+      CALL EXCH_XY_RL
      & (streamice_v_shear_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_u_shear_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_v_normal_stress, myThid)
-      CALL EXCH_XY_RL 
+      CALL EXCH_XY_RL
      & (streamice_u_normal_stress, myThid)
+#endif
 
-       _EXCH_XY_RL(bdot_streamice, mythid )
+       _EXCH_XY_RL(bdot_streamice, myThid )
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       CALL EXCH_XY_RL
      & (u_flux_bdry_pert, myThid)
