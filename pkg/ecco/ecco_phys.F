@@ -281,8 +281,8 @@ c
 
 c
 c ---- If density mask is enabled, use it here ----
-            IF (salt(i,j,k,bi,bj).GT.0.0) THEN
-             IF (gencost_useDensityMask(kgen)) THEN
+            IF (hFacC(i,j,k,bi,bj).GT.0.0 .AND. 
+     &           gencost_useDensityMask(kgen)) THEN
 c            - first, calculate the scalar density
               CALL FIND_RHO_SCALAR(
      I              theta(i,j,k,bi,bj),
@@ -291,16 +291,16 @@ c            - first, calculate the scalar density
      O              tmpsig,
      I              mythid)
 c            - subtract 1000 to get sigma
-              tmpsig = tmpsig - 1000
+              tmpsig = tmpsig - 1000. _d 0
 c            - now, tmpmsk is sigmoid times this value
-              tmpsig_lower = (1.0 + tanh(gencost_tanhScale(kgen)
-     &           *(tmpsig-gencost_sigmaLow(kgen))))/2.0
-              tmpsig_upper = 1.0 - ((1.0 + tanh(gencost_tanhScale(kgen)
-     &           *(tmpsig-gencost_sigmaHigh(kgen))))/2.0)
+              tmpsig_lower = 0.5 + 0.5*tanh(gencost_tanhScale(kgen)
+     &           *(tmpsig-gencost_sigmaLow(kgen)))
+              tmpsig_upper = 0.5 - 0.5*tanh(gencost_tanhScale(kgen)
+     &           *(tmpsig-gencost_sigmaHigh(kgen)))
 c             - update mask value based on the sigmoid function
               tmp_sigmsk = tmpsig_lower*tmpsig_upper
               tmpmsk = tmpmsk*tmp_sigmsk
-             ENDIF
+              
             ENDIF
 c ---- end of density mask (but tmpmsk is used below)
 
