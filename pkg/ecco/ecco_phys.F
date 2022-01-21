@@ -480,8 +480,8 @@ cts ---
      &    gencost_barfile(kgen)(11:13).NE.'shi') THEN
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
-     &                 1, areavolGlob, myThid )
-       ENDIF
+     &                 areavolGlob, 1, 1, myThid )
+      endif
 
 C     end kgen-loop
       ENDDO

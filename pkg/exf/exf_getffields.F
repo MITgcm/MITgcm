@@ -63,7 +63,9 @@ C     == routine arguments ==
 C     == local variables ==
       INTEGER i, j, bi, bj
 #ifdef ALLOW_CTRL
+# if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif
 #endif
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -148,22 +150,6 @@ C-    Zonal and meridional wind.
      I     vwind_nlon, vwind_nlat, vwind_interpMethod, uvInterp_wind,
 #endif /* USE_EXF_INTERPOLATION */
      I     myTime, myIter, myThid )
-
-       IF (useRelativeWind) THEN
-C     Subtract UVEL and VVEL from UWIND and VWIND.
-        DO bj = myByLo(myThid),myByHi(myThid)
-         DO bi = myBxLo(myThid),myBxHi(myThid)
-          DO j = 1,sNy
-           DO i = 1,sNx
-            uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-            vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
-     &         * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
 
       ELSE
        DO bj = myByLo(myThid),myByHi(myThid)
@@ -721,6 +707,9 @@ cdm #endif
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           IF (xx_gentim2d_file(iarr)(1:13).EQ.'xx_snowprecip')
+     &       snowprecip(i,j,bi,bj)=snowprecip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwflux')
      &       lwflux(i,j,bi,bj)=lwflux(i,j,bi,bj)+

@@ -393,6 +393,11 @@ index for that cost function term.
   |                       | :math:`\vec{m}_i` by  | factor                |
   |                       | a scaling factor      |                       |
   +-----------------------+-----------------------+-----------------------+
+  | ``offset``            | subtract mean misfit  | —                     |
+  +-----------------------+-----------------------+-----------------------+
+  | ``mindepth``          | mask (ignore) misfit  | real: minimum water   |
+  |                       | above minimum depth   | depth (:math:`< 0`)   |
+  +-----------------------+-----------------------+-----------------------+
   | ``gencost_posproc``   |                       |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``smooth``            | Smooth misfits        | character: smoothing  |
@@ -795,88 +800,82 @@ the resulting new control vector to the model grid unless CPP-flag
 .. table:: Generic control prefixes implemented as of checkpoint 67x.
   :name: gencost_ctrl_files
 
-  +-----------------------+-----------------------+-----------------------+
-  |                       | name                  | description           |
-  +=======================+=======================+=======================+
-  | 2D, time-invariant    | ``genarr2d``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_etan``           | initial sea surface   |
-  |                       |                       | height                |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_bottomdrag``     | bottom drag           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_geothermal``     | geothermal heat flux  |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_shicoefft``      | shelfice thermal      |
-  |                       |                       | transfer coefficient  |
-  |                       |                       | (see                  |
-  |                       |                       | :numref:`shi_ctrl`)   |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_shicoeffs``      | shelfice salinity     |
-  |                       |                       | transfer coefficient  |
-  |                       |                       | (see                  |
-  |                       |                       | :numref:`shi_ctrl`)   |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_shicdrag``       | shelfice drag         |
-  |                       |                       | coefficient (see      |
-  |                       |                       | :numref:`shi_ctrl`)   |
-  +-----------------------+-----------------------+-----------------------+
-  | 3D, time-invariant    | ``genarr3d``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_theta``          | initial potential     |
-  |                       |                       | temperature           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_salt``           | initial salinity      |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_uvel``           | initial zonal         |
-  |                       |                       | velocity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_vvel``           | initial meridional    |
-  |                       |                       | velocity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_kapgm``          | GM coefficient        |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_kapredi``        | isopycnal diffusivity |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_diffkr``         | diapycnal diffusivity |
-  +-----------------------+-----------------------+-----------------------+
-  | 2D, time-varying      | ``gentim2D``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_atemp``          | atmospheric           |
-  |                       |                       | temperature           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_aqh``            | atmospheric specific  |
-  |                       |                       | humidity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_swdown``         | downward shortwave    |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_lwdown``         | downward longwave     |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_precip``         | precipitation         |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_runoff``         | river runoff          |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_uwind``          | zonal wind            |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_vwind``          | meridional wind       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_tauu``           | zonal wind stress     |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_tauv``           | meridional wind       |
-  |                       |                       | stress                |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_gen_precip``     | globally averaged     |
-  |                       |                       | precipitation?        |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_hflux``          | net heat flux         |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_sflux``          | net salt (EmPmR) flux |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_shifwflx``       | shelfice melt rate    |
-  +-----------------------+-----------------------+-----------------------+
+  +--------------------+-----------------------+--------------------------------+
+  |                    | name                  | description                    |
+  +====================+=======================+================================+
+  | 2D, time-invariant | ``genarr2d``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_etan``           | initial sea surface height     |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_bottomdrag``     | bottom drag                    |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_geothermal``     | geothermal heat flux           |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicoefft``      | shelfice thermal transfer      |
+  |                    |                       | coefficient                    |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicoeffs``      | shelfice salinity transfer     |
+  |                    |                       | coefficient                    |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicdrag``       | shelfice drag coefficient      |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_depth``          | bottom topography              |
+  |                    |                       | requires to define             |
+  |                    |                       | :varlink:`ALLOW_DEPTH_CONTROL` |
+  +--------------------+-----------------------+--------------------------------+
+  | 3D, time-invariant | ``genarr3d``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_theta``          | initial potential temperature  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_salt``           | initial salinity               |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_uvel``           | initial zonal velocity         |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_vvel``           | initial meridional velocity    |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_kapgm``          | GM coefficient                 |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_kapredi``        | isopycnal diffusivity          |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_diffkr``         | diapycnal diffusivity          |
+  +--------------------+-----------------------+--------------------------------+
+  | 2D, time-varying   | ``gentim2D``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_atemp``          | atmospheric temperature        |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_aqh``            | atmospheric specific humidity  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_swdown``         | downward shortwave             |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_lwdown``         | downward longwave              |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_precip``         | precipitation                  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_runoff``         | river runoff                   |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_uwind``          | zonal wind                     |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_vwind``          | meridional wind                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_tauu``           | zonal wind stress              |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_tauv``           | meridional wind stres          |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_gen_precip``     | globally averaged              |
+  |                    |                       | precipitation?                 |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_hflux``          | net heat flux                  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_sflux``          | net salt (EmPmR) flux          |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shifwflx``       | shelfice melt rate             |
+  +--------------------+-----------------------+--------------------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
            67x. Notes: :math:`^a`: If ``noscaling`` is false, the control
@@ -1488,41 +1487,41 @@ very similar to the :filelink:`optim` package.
 Test Cases For Estimation Package Capabilities
 ----------------------------------------------
 
-First, download the model as explained in :ref:`chap_getting_started` via the
-MITgcm git server ::
+First, if you have not done so already, download the model as explained
+in :ref:`chap_getting_started` via the `MITgcm git repository <https://github.com/MITgcm/MITgcm>`_: ::
 
-    % git clone https://github.com/user_name/MITgcm.git
+    % git clone https://github.com/MITgcm/MITgcm.git
 
-Then, download the setup from the `MITgcm_contrib/` area by logging into the
-cvs server ::
+Then, download the setup from the `MITgcm
+verification_other git repository <https://github.com/MITgcm/verification_other>`_: ::
 
-    % setenv CVSROOT ':pserver:cvsanon@mitgcm.org:/u/gcmpack'
-    % cvs login
-    %     ( enter the CVS password: "cvsanon" )
+    % cd MITgcm
+    % git clone https://github.com/MITgcm/verification_other
 
-and following the directions provided `here for global_oce_cs32
-<https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`__
-or `here for global_oce_llc90
-<https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`__.
+and follow the additional directions provided for `global_oce_cs32
+<https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`_
+or for `global_oce_llc90
+<https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_.
 These model configurations are used for daily regression tests to ensure
 continued availability of the tested estimation package features discussed in
 :ref:`chap_state_estimation`.  Daily results of these tests, which currently
-run on the `glacier` cluster, are reported `on this site
-<http://mitgcm.org/public/testing.html>`__.  To this end, one sets a `crontab
+run on the `glacier` cluster, are reported on https://mitgcm.org/testing-summary.
+To this end, one sets a `crontab
 job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes
 the script reported below.  The various commands can also be used to run these
-examples outside of crontab, directly at the command line via the `testreport
-capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/>`__.
+examples outside of crontab, directly at the command line via the :ref:`testreport
+capability <testreport_utility>`.
 
 .. note::
 
-   Users are advised against running `global_oce_llc90/` tests with fewer than
-   12 cores (96 for adjoint tests) to avoid potential memory
-   overloads. `global_oce_llc90/
-   <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/>`__
+   Users are advised against running `global_oce_llc90
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_
+   tests with fewer than 12 cores (96 for adjoint tests) to avoid potential memory
+   overloads. `global_oce_llc90
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_
    (595M) uses the same LLC90 grid as the production `ECCO version 4` setup
-   does :cite:`for-eta:15`. The much coarser resolution `global_oce_cs32/
-   <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/>`__
+   :cite:`for-eta:15`. The much coarser resolution `global_oce_cs32
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`_
    (614M) uses the CS32 grid and can run on any modern laptop.
 
 ::

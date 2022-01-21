@@ -88,7 +88,7 @@ C     cg2d_s     ::   *same*
       _RL    rhsMax
       _RL    rhsNorm
       _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
-      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    cg2d_q  (1:sNx,1:sNy,nSx,nSy)
       _RL    cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
 #ifdef CG2D_SINGLECPU_SUM
@@ -143,7 +143,6 @@ C--   Initial residual calculation
 C-    Initialise local working arrays:
         DO j=0,sNy+1
          DO i=0,sNx+1
-          cg2d_q(i,j,bi,bj) = 0. _d 0
           cg2d_r(i,j,bi,bj) = 0. _d 0
           cg2d_s(i,j,bi,bj) = 0. _d 0
          ENDDO
@@ -175,8 +174,8 @@ C-    Initialise saved solution
 #else
           errTile(bi,bj)    = errTile(bi,bj)
      &                      + cg2d_r(i,j,bi,bj)*cg2d_r(i,j,bi,bj)
-          sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(i,j,bi,bj)
 #endif
+          sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -184,11 +183,10 @@ C-    Initialise saved solution
       CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
 #ifdef CG2D_SINGLECPU_SUM
       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err_sq, 0, 0, myThid)
-      CALL GLOBAL_SUM_SINGLECPU_RL(cg2d_b, sumRHS, OLx, OLy, myThid)
 #else
       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
-      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
 #endif
+      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
       actualIts = 0
       firstResidual = SQRT(err_sq)
       IF ( nIterMin.GE.0 ) THEN

@@ -1761,3 +1761,37 @@ Head of MITgcm branch (``checkpoint59m`` with some modifications) was used for
 building adjoint code. Following routing needed special care (revert
 to revision 1.1): http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/heimbach/OpenAD/OAD_support/active_module.f90?hideattic=0&view=markup.
 
+Building the MITgcm adjoint using an OpenAD Singularity container
+-----------------------------------------------------------------
+
+The MITgcm adjoint can also be built using a Singularity container.  You will
+need `Singularity <https://singularity.hpcng.org/>`_, version 3.X.  A container
+with OpenAD can be downloaded from the Sylabs Cloud: [#thanks-Dan]_
+
+::
+
+   singularity pull library://jahn/default/openad:latest
+
+To use it, supply the path to the downloaded container to genmake2,
+
+::
+
+   ../../../tools/genmake2 -oad -oadsingularity /path/to/openad_latest.sif ...
+   make adAll
+
+If your build directory is on a remotely mounted file system (mounted at
+/mountpoint), you may have to add an option for mounting it in the container:
+
+::
+
+   ../../../tools/genmake2 -oad -oadsngl "-B /mountpoint /path/to/openad_latest.sif" ...
+
+The ``-oadsingularity`` option is also supported by testreport,
+:numref:`testreport_utility`.  Note that the path to the container has to be
+either absolute or relative to the build directory.
+
+.. rubric:: Footnotes
+
+.. [#thanks-Dan] A big thank you to Dan Goldberg for supplying the definition
+   file for the Singularity container!
+

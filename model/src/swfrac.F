@@ -62,7 +62,7 @@ C     max number of different water types
 #ifdef ALLOW_CAL
 c     _RL     fac
 c     LOGICAL first, changed
-c     INTEGER count0, count1
+c     INTEGER count0, count1, year0, year1
 c     INTEGER jerl(12)
 c     DATA jerl / 2 , 2 , 2 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 3 , 2 /
 #endif /* ALLOW_CAL */
@@ -85,7 +85,7 @@ C     include time dependent water types. However, it would probably
 C     make more sense to first think about a regionally varying
 C     water type before implementing a time dependence.
 CML      CALL  cal_GetMonthsRec(
-CML     O     fac, first, changed, count0, count1,
+CML     O     fac, first, changed, count0, count1, year0, year1,
 CML     I     myTime, myIter, myThid )
 CML      jwtype=jerl(count0)
 CML)

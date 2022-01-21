@@ -28,7 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
 C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
-#define ECCO_CTRL_DEPRECATED
+#undef ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
@@ -72,13 +72,17 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
 C       >>> only topography as a control vector
+C     Note that this is special and we keep this flag even for the
+C     generic control variable code, because using depth as a control
+C     variable incurs many new dependencies that we would like to avoid
+C     in general.
 #define ALLOW_DEPTH_CONTROL
 #ifdef ALLOW_DEPTH_CONTROL
 # define USE_SMOOTH_MIN
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
 

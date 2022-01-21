@@ -40,6 +40,9 @@ C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errIO, iUnit, iL
+C     retired variables
+      INTEGER nRetired
+      _RL GGL90taveFreq
 
 C--   GGL90 vertical mixing parameters
       NAMELIST /GGL90_PARM01/
@@ -89,7 +92,7 @@ C     print a (weak) warning if data.ggl90 is found
 
 C--   set default TKE vertical mixing parameters
       GGL90dumpFreq        = dumpFreq
-      GGL90taveFreq        = taveFreq
+      GGL90taveFreq        = UNSET_RL
       GGL90mixingMaps      = .FALSE.
       GGL90writeState      = .FALSE.
       GGL90ck              = 0.1 _d 0
@@ -254,6 +257,28 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( GGL90diffMax .LE. 0. ) THEN
        WRITE(msgBuf,'(A)') 'GGL90diffMax must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
+       STOP 'ABNORMAL END: S/R GGL90_READPARMS'
+      ENDIF
+
+C-    Retired parameters
+      nRetired = 0
+      IF ( GGL90taveFreq .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R GGL90_READPARMS: "GGL90taveFreq" ',
+     &  'is no longer allowed in file "data.ggl90"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R GGL90_READPARMS: use diagnostics variables instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R GGL90_READPARMS: ',
+     &  'Error reading parameter file "data.ggl90"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'some out of date parameters were found in the namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
 
