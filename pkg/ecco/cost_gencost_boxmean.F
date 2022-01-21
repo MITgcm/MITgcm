@@ -1,6 +1,6 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine cost_gencost_boxmean(mythid)
+      subroutine cost_gencost_boxmean( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_boxmean
@@ -24,18 +24,18 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-
 c     == local variables ==
 
       integer kgen
-      _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL mybar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL mySumTile(nSx,nSy),myVolTile(nSx,nSy)
       _RL mySumGlo,myVolGlo
@@ -44,7 +44,7 @@ c     == local variables ==
       _RL tmpSumGlo
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer nrecloc,irec,il,ioUnit
       character*(80) myfname
       _RL mydummy
@@ -59,10 +59,8 @@ c     == local variables ==
       _RL     tmpVar(1)
 
 c     == external functions ==
-
       integer  ilnblnk
       external ilnblnk
-
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
 
@@ -103,7 +101,7 @@ c read bar field
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( myfname, mybar, irec,
      &                        doglobalread, ladinit,
-     &                        eccoiter, mythid,
+     &                        eccoiter, myThid,
      &                        mydummy )
 #else
         CALL READ_REC_XY_RL( myfname, mybar,
@@ -177,4 +175,5 @@ c ========
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
+      return
       end

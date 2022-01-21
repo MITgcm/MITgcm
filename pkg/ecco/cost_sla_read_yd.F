@@ -1,10 +1,11 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine cost_sla_read_yd( sla_file, sla_startdate,
+      subroutine cost_sla_read_yd(
+     I                sla_file, sla_startdate,
 c     I                sla_startdate, sla_period,
 c     I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
-     I                year,day, myThid )
+     I                year, day, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
@@ -28,55 +29,40 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "cal.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 c     == routine arguments ==
-
-      integer year,day
+      character*(MAX_LEN_FNAM) sla_file
+      integer sla_startdate(4)
+c     _RL sla_period
+c     _RL sla_intercept
+c     _RL sla_slope
+      _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      integer year, day
       integer myThid
 
-      integer sla_startdate(4)
-      _RL sla_period
-      _RL sla_intercept
-      _RL sla_slope
-      _RL sla_obs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL sla_mask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      character*(MAX_LEN_FNAM) sla_file
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
+      integer  cal_IsLeap
+      external cal_IsLeap
 
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer sshrec
-      integer difftime(4)
-      integer middate(4)
-      integer noffset
-      _RL diffsecs
       _RL spval
       _RL factor
-
 cnew(
       integer  il
-      _RL daytime
-      integer dayiter
-      integer daydate(4)
-      integer yday, ymod
-      integer md, dd, sd, ld, wd
       character*(80) fnametmp
       logical exst
 cnew)
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-      integer  cal_IsLeap
-      external cal_IsLeap
 
 c     == end of interface ==
 

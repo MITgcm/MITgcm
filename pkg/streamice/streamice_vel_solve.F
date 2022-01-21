@@ -128,7 +128,11 @@ c to stop ifort complaining
       if (STREAMICE_chkresidconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-        CALL STREAMICE_GET_VEL_RESID_ERR ( err_init, myThid )
+       CALL STREAMICE_GET_VEL_RESID_ERR ( err_init,
+#ifdef ALLOW_AUTODIFF_TAMC
+     I      ikey_dynamics,
+#endif
+     I      myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c$TAF STORE err_init = comlev1, key=ikey_dynamics
@@ -270,7 +274,11 @@ c----------------------CONVERGENCE TESTS-------------------------------
       if (STREAMICE_chkresidconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-        CALL STREAMICE_GET_VEL_RESID_ERR ( err_max, myThid )
+        CALL STREAMICE_GET_VEL_RESID_ERR ( err_max,
+#ifdef ALLOW_AUTODIFF_TAMC
+     I     ikey_nl,
+#endif
+     I     myThid )
 
        WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
      &                       err_max/err_init
@@ -286,7 +294,11 @@ c----------------------CONVERGENCE TESTS-------------------------------
       if (STREAMICE_chkfixedptconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-        CALL STREAMICE_GET_VEL_FP_ERR ( err_max_fp, myThid )
+        CALL STREAMICE_GET_VEL_FP_ERR ( err_max_fp,
+#ifdef ALLOW_AUTODIFF_TAMC
+     I     ikey_nl,
+#endif
+     I     myThid )
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

@@ -33,31 +33,24 @@ C     myThid - Thread number for this instance of the routine.
       integer myThid
 
 #ifdef ALLOW_COST_TRACER
+#ifdef ALLOW_PTRACERS
 C     == Local variables
-      _RL thetaRef
       _RL locfc
-
       integer i, j, k
-      integer ig, jg
-
-ce    some reference temperature
-      thetaRef = 24.0D0
 
       locfc = 0. _d 0
-
       k=1
       DO j=1,sNy
          DO i=1,sNx
-#ifdef ALLOW_PTRACERS
             locfc = locfc + hFacC(i,j,k,bi,bj)*
      &           lambdaTr1ClimRelax*ptracer(i,j,k,bi,bj,1)*
      &           rA(i,j,bi,bj)*drF(k)*dTtracerLev(k)
-#endif
          ENDDO
       ENDDO
 
       objf_tracer(bi,bj) = objf_tracer(bi,bj) + locfc
 
+#endif /* ALLOW_PTRACERS */
 #endif /* ALLOW_COST_TRACER */
 
       RETURN

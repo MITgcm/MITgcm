@@ -1,6 +1,166 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68f (2022/01/14)
+o pkg/exf: 
+  - clean-up relative wind implementation so that uwind and vwind are kept
+    unchanged (always vanilla atmospheric winds after interpolation) while
+    relative wind is computed locally; add diagnostics for relative wind.
+  - adjust pkg/seaice relative-wind code (+ clean-up SEAICE_GREASE code).
+o pkg/kpp:
+  - avoid updating input argument "kmtj" in S/R BLDEPTH (in: kpp_routines.F);
+    this also remove/avoid 3 recomputation warnings for kmtj in adm (TAF) built.
+o pkg/streamice:
+  - fix regularised coulomb basal stress impl to avoid issues with adjoint ;
+  - cancel metric terms in stress tensor for cartesian grid ;
+  - allow (time-indep) velocities to be imposed from external file rather than
+    solved for ;
+  - allow for specification of log of controls as well as sqrt ;
+  - allow termination of adjoint fixed point loop based on relative and absolute
+    error ;
+  - terminate adjoint fixed point loop when change between most recent iterates
+    begins to increase (a sign of unstable growth from linear solve errors ?);
+    update OAD output of exp. halfpipe_streamice (affected by this modif).
+o pkg/seaice:
+  - replace hard-coded parameters for JNKF line search by new runtime parameters
+    SEAICE_JFNK_lsGamma and SEAICE_JFNK_lsLmax ;
+  - increment line search counter after reporting and fix an if statement, so
+    that zeroth step is not counted for more consistent debugging output.
+o tools/build_options:
+  - update pleiades optfile "linux_amd64_ifort+mpi_ice_nas"
+  - rename/update optfile for UK HPC Archer2.
+o pkgs:
+  - remove/avoid unused variables from AD verification exp. built except from
+    halfpipe_streamice (pkg/streamice); also clean-up a bit pkg/smooth.
+o pkg/autodiff:
+  - introduce separate tapes for integer arrays: the corresponding routines
+    just convert between integer and double precision arrays and call the
+    original adread/adwrite routines.
+o pkg/atm_compon_interf:
+  - only with Atm-Phys pkg, allow "regional coupling", i.e. coupled only where
+    there is ocean, keeping Atm-Phys basic mixed-layer elsewhere.
+
+checkpoint68e (2021/12/10)
+o lsopt & optim:
+  - update Makefiles and README.
+o pkg/ctrl:
+  - remove unused flag ALLOW_ECCO_OPTIMIZATION and associated code, always save
+    "fcloc" to gradient vector file and save fcloc=0 to initial ctrl vector file
+    (which is never used); also remove it from any code*/CTRL_OPTIONS.h.
+o pkg/ctrl:
+  - replace few calls to MDS_READ/WRITE_FIELD with corresponding call to
+    pkg/rw READ/WRITE_REC_3D_RL ; also clean-up: ctrl_map_ini_gen.F
+o tape related code (adjoint):
+  - clean-up tape code in the init-phase, mainly in the_main_loop.F and in
+    ctrl_map_ini_gentim2d.F ;
+  - remove unused (ecco) cost_averages_bar_directives.h ;
+  - adjust comments in (autodiff) adread_adwrite.F & in main_do_loop.F
+o eesupp:
+  - fix scratch file names when using PDAF.
+o pkg/exf:
+  - fix issue in interannual monthly forcing addition (case ${fld}period=0)
+o model/src:
+  - skip reading kapGM and kapRedi from ini_mixing.F when useGMRedi is .FALSE.
+o pkg/exf:
+  - add option for interannual monthly forcing with pkg/cal by setting
+    ${fld}_period=-1. (like -12. indicates climatological monthly forcing),
+    available with or without useExfYearlyFields ; update exp. global_with_exf
+    SST forcing to test this new option with and without useExfYearlyFields.
+o model/src:
+  - define local arrays cg2d_q/v/z without overlaps in all 4 cg2d*.F
+    and skip initialisation of cg2d_q in cg2d.F
+o tools/genmake2:
+  - new option to call OpenAD compiler in a singularity container (if provided);
+    add option to testreport too and update OpenAD doc (in section 7.5).
+
+checkpoint68d (2021/11/05)
+o verification/*/results:
+  - update few adm and tlm refence output to get closer agreement.
+o verification/global_ocean.90x40x15:
+  - no longer use old bug (fixed in Oct 2015) in KAPGM_CONTROL & KAPREDI_CONTROL
+    code and update AD & TL ref. output for kapgm & kapredi tests ;
+  - other small cleaning: finish removing OLD_THSICE_CALL_SEQUENCE code ; remove
+    "cost_yftype" from experiments "data.ecco" ; move ALLOW_ECCO_OPTIMIZATION
+    to the right header file.
+o pkgs pp81, my82, opps & ggl90:
+  - remove pkg/timeave and pkg/mnc output from these mixing packages (since
+    this functionality is available with pkg diagnostics); add 1 diagnostics
+    to pkg/opps (to replave TAVE output).
+o tools/build_options:
+  - add "-DAUTODIFF_USE_MDSFINDUNITS -DPROFILES_USE_MDSFINDUNITS" to DEFINES
+    in g77 optfile ; this allows to run set-up with AUTODIFF_WHTAPEIO and/or
+    with pkg/profiles using g77 (with S/R MDSFINDUNITS) while other compilers
+    continue to use local version with extended range of I/O units number.
+o pkg/ecco:
+  - fix halo initialisation for argument "active_var" in cost_genread.F ;
+  - change "facNum" expression in cost_gencost_transp.F, to be consistent with
+    comment in src code, by adding missing factor "nSx"; also avoid division
+    in PARAMETER statement.
+o model/inc:
+  - move potentially time dependent grid variable from GRID_RS to new common
+    block GRID_VAR_RS (hFacW/S/W, etc.) and split common block CG2D_I_R into
+    a _RL and a _RS part ; adjust AD common block accordingly.
+o verification AD experiments:
+  Update TAF AD exp. so that none relies anymore on ECCO_CTRL_DEPRECATED code:
+  - remove #define ECCO_CTRL_DEPRECATED from experiments: 1D_ocean_ice_column,
+    bottom_ctrl_5x5, global_with_exf, lab_sea, OpenAD, tutorial_dic_adjoffline,
+    tutorial_global_oce_biogeo & tutorial_global_oce_optim ; use instead generic
+    control and generic cost.
+  - for now, keep experiment global_ocean.cs32x15 with both ECCO_CTRL_DEPRECATED
+    code and generic control + generic cost.
+  - also remove ECCO_CPPOPTIONS.h (use instead set of pkg specific OPTIONS
+    header files) from these experiments above.
+  - results unchanged except few digits in cost & ad-monitor for lab_sea &
+    obcs_ctrl ; and few minor recomp. warnings count changes for
+    tutorial_global_oce_biogeo (-4) and for tutorial_dic_adjoffline (+2).
+  Update pkgs as needed:
+  - pkg/ecco: fix field declarations for ecco_toolbox routines and cost_readgen,
+    new toolbox routines ecco_offset, ecco_maskmindepth, make argument lists
+    more consistent between ecco_toolbox routines and remove unused subroutines;
+  - pkg/cost: fix ALLOW_COST_DEPTH contribution;
+  - pkg/ctrl: add more "ifdef ECCO_CTRL_DEPRECATED" where necessary;
+  - pkg/exf: add xx_snowprecip as generic control, adjust CPP-flags.
+o pkg/gmredi:
+  - remove condition (ifdef GM_NON_UNITY_DIAGONAL) around 3-D arrays Kux & Kvy
+    to simplify how GMREDI is applied (e.g., gmredi_x/ytransport); fill up these
+    2 arrays with constant value (gmredi_calc_tensor.F & offline_get_diffus.F)
+    when GM_NON_UNITY_DIAGONAL is undef (to reproduce old results).
+  - also with GM_NON_UNITY_DIAGONAL undef, fix ALLOW_KAPREDI_CONTROL averaging.
+o tangent-linear:
+  - fix few hand-written tangent-linear src code (in autodiff & ctrl pkgs);
+  - add new target "ftlobj" to Makefile (similar to "obj" & "adobj" for forward
+    and AD built) and corresponding switch in testreport ;
+  - fix non-standard sed command (for Mac) in TLM testreport.
+
+checkpoint68c (2021/10/02)
+o pkg/seaice:
+  - update some dynamics solver default so that now:
+    a) SEAICEuseEVPstar = .TRUE. ; b) SEAICEuseEVPrev = .TRUE. ;
+    c) LSR_ERROR = 1.e-5 (previously was 1.e-4) ;
+  - put back old default in exp. lab_sea (primary test);
+  - modify (simplify?) logic in seaice_readparms.F and seaice_check.F.
+o pkg/grdchk:
+  - allow to use "recglo" to specify a particular control time record for
+    gradient check (was previously inactive).
+o pkg/exf:
+  - new parameters to reduce AD-exf monitor output:
+    1) exf_adjMonFreq (def= adjMonitorFreq), = 0. suppresses all output
+    2) exf_adjMonSelect: =1 (def): less output ; =3 as before, =0 : no output
+  - fix some AD-common block name + content to match TAF directives (in
+    common.flow) and TAF generated code.
+  - skip monitor of model forcing AD-variables (unless monitorSelect=4).
+o pkg/ecco + other:
+  - fix few non-standard syntax (+ repeated setting of "gencost_msk_is3d").
+o pkg/bling:
+  - fix call to S/R BLING_BIO_NITROGEN when USE_SIBLING is defined.
+o pkg/ecco:
+  - put various dimensions related to gencost out of "ecco.h" into specific
+    (new) header file "ECCO_SIZE.h" and rename "ecco.h" to "ECCO.h" ;
+  - add gencost param "gencost_kLev_select" to select a vertical level (from 3-D
+    array) to form 2-D gencost ; currently only used in drifter velocity cost ;
+  - add a couple of costs based on 1) inverse barometer (IB) corrected model sea
+    level for altimetry data comparison 2) OBP excluding contribution from
+    global mean atmospheric pressure for comparisons with GRACE data.
 o pkg/autodiff:
   - fix type (_RS vs_RL) of AD-vars in hand-written AD routine cg2d_mad.F and
     in adcommon.h, common block adgrid_rs.

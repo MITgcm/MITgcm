@@ -1,6 +1,6 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine cost_gencost_moc(mythid)
+      subroutine cost_gencost_moc(myThid)
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_moc
@@ -26,27 +26,26 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
 c     == local variables ==
 
-c      integer nnzobs, nnzbar
-      integer nrecloc, localrec, ioUnit
+      integer nrecloc, ioUnit
 
-      _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL mybar     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL gencost_mskTemporal
       _RL tmpVar(1), dummyRL
       _RS dummyRS(1)
-      _RL tmpCumSumTile(nr,nSx,nSy)
+      _RL tmpCumSumTile(Nr,nSx,nSy)
       _RL tmpNumTile(nSx,nSy)
-      _RL tmpCumSumGlo(nr)
-      _RL tmpNumGlo
+      _RL tmpCumSumGlo(Nr)
       _RL tmpTile(nSx,nSy)
       _RL myTempMax
 
@@ -75,10 +74,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       imin = 1
       imax = sNx
       jmin = 1
@@ -134,11 +133,11 @@ c-- Read barfile
 #ifdef ALLOW_AUTODIFF
           call active_read_xyz( mybarfile, mybar, irec,
      &                       doglobalread, ladinit,
-     &                       eccoiter, mythid,
+     &                       eccoiter, myThid,
      &                       dummyRL )
 #else
           call READ_REC_XYZ_RL( mybarfile, mybar, irec,
-     &                       1, mythid )
+     &                       1, myThid )
 #endif /* ALLOW_AUTODIFF */
 
 c-- Initialize after read
@@ -220,7 +219,7 @@ c-- Compute global sum at each level
               ENDDO
             ENDDO
             tmpCumSumGlo(k) = 0. _d 0
-            CALL GLOBAL_SUM_TILE_RL(tmpTile, tmpCumSumGlo(k),  myThid )
+            CALL GLOBAL_SUM_TILE_RL(tmpTile, tmpCumSumGlo(k), myThid )
           enddo
 
 c=============== PART 2.2: Get max val ===================

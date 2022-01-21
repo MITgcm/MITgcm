@@ -71,7 +71,10 @@ c     myThid - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      INTEGER bi, bj, i, j, ks
+      INTEGER ks
+#if (defined ALLOW_CLIMSST_RELAXATION || defined ALLOW_BULK_OFFLINE )
+      INTEGER i, j, bi, bj
+#endif
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
@@ -110,10 +113,9 @@ CADJ STORE climsst      = comlev1, key=ikey_dynamics, kind=isbyte
         ENDDO
        ENDDO
       ENDDO
-
 c--   Update the tile edges.
       _EXCH_XY_RL(climsst, myThid)
-#endif
+#endif /* ALLOW_CLIMSST_RELAXATION */
 
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # ifdef ALLOW_SST_CONTROL
@@ -139,7 +141,6 @@ c     Get values of climatological sss fields.
      I     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
 #endif
      I     myTime, myIter, myThid )
-
 c--   Update the tile edges.
       _EXCH_XY_RL(climsss, myThid)
 #endif
