@@ -79,7 +79,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'GGL90Kr'
+        diagName  = 'GGL90Kr '
         diagTitle = 'GGL90 diffusion coefficient for temperature'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM      LR      '
