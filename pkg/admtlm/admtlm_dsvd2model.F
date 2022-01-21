@@ -181,9 +181,6 @@ cph     &      access  = 'sequential'   )
           open( cunit, file   = cfile,
      &         status = 'old',
      &         form   = 'unformatted',
-#ifdef SPECIFY_FILE_PERMISSION
-     &         action='read',
-#endif
      &         access  = 'sequential'   )
 
 c--       Header information.

@@ -396,9 +396,6 @@ c     run-time option and also define filename=baro_invmodes.bin
         CALL MDSFINDUNIT( dUnit, myThid )
         length_of_rec = MDS_RECLEN( 64, NR*NR, myThid )
         open(dUnit, file='baro_invmodes.bin', status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &         action='read',
-#endif
      &         access='direct', recl=length_of_rec )
         do j = 1,Nr
            read(dUnit,rec=j) ((modesv(k,i,j), k=1,Nr), i=1,Nr)

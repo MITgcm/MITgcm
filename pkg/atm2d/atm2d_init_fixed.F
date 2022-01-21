@@ -53,11 +53,7 @@ C     set default values for these parms in couple.nml
 
 C     Next lines done in stand-alone ML model, so don't use any
 C     MITGCM helper routines; hopefully no unit conflict...
-      OPEN(514,file='couple.nml',
-#ifdef SPECIFY_FILE_PERMISSION
-     &     action='read',
-#endif
-           status='old')
+      OPEN(514,file='couple.nml',status='old')
       READ(514,COUPLE_PARM)
       CLOSE(514)
 

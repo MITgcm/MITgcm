@@ -154,9 +154,7 @@ C If we are reading from a global file then we open it here
       IF (globalFile) THEN
        length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
        OPEN( dUnit, file=dataFName, status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &       action='read',
-#endif
+     &       action=_READ_ACTION,
      &       access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       ENDIF
@@ -182,9 +180,7 @@ C (This is a place-holder for the active/passive mechanism
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
           OPEN( dUnit, file=dataFName, status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &          action='read',
-#endif
+     &          action=_READ_ACTION,
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          ELSE
@@ -438,9 +434,7 @@ C If we are reading from a global file then we open it here
       IF (globalFile) THEN
        length_of_rec = MDS_RECLEN( filePrec, sNy, myThid )
        OPEN( dUnit, file=dataFName, status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &       action='read',
-#endif
+     &       action=_READ_ACTION,
      &       access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       ENDIF
@@ -466,9 +460,7 @@ C (This is a place-holder for the active/passive mechanism
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, sNy, myThid )
           OPEN( dUnit, file=dataFName, status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &          action='read',
-#endif
+     &          action=_READ_ACTION,
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          ELSE

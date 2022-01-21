@@ -101,23 +101,17 @@ C    &             idyear,iyr,inyr,monid,inday,dayid
          OPEN(6007,
      &     FILE='ncep_taux_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
-#ifdef SPECIFY_FILE_PERMISSION
-     &     ACTION='read',
-#endif
+     &     ACTION=_READ_ACTION,
      &     FORM='unformatted')
          OPEN(6008,
      &     FILE='ncep_tauy_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
-#ifdef SPECIFY_FILE_PERMISSION
-     &     ACTION='read',
-#endif
+     &     ACTION=_READ_ACTION,
      &     FORM='unformatted')
          OPEN(6009,
      &     FILE='ncep_speed_variations_'//ncep_yr//'.bin',STATUS='old',
      &     ACCESS='direct', RECL=4*sNx*sNy,
-#ifdef SPECIFY_FILE_PERMISSION
-     &     ACTION='read',
-#endif
+     &     ACTION=_READ_ACTION,
      &     FORM='unformatted')
          ncep_counter = 1
 #endif

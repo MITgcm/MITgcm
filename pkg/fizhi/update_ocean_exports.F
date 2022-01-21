@@ -231,9 +231,7 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,file=sicedata,form='unformatted',access='direct',
-#ifdef SPECIFY_FILE_PERMISSION
-     .                                         action='read',
-#endif
+     .                                         action=_READ_ACTION,
      .                                         recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
@@ -494,9 +492,7 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,file=sstdata,form='unformatted',access='direct',
-#ifdef SPECIFY_FILE_PERMISSION
-     .                                        action='read',
-#endif
+     .                                        action=_READ_ACTION,
      .                                        recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,

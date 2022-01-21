@@ -76,9 +76,7 @@ C     Figure out offset of tile within face
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (dNx+1), myThid )
       OPEN( dUnit, file=fName(1:iLen), status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &             action='read',
-#endif
+     &             action=_READ_ACTION,
      &             access='direct', recl=length_of_rec )
       j = 0
       jBase=(irec-1)*(dNy+1)
@@ -117,9 +115,7 @@ C     Figure out offset of tile within face
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (sNx+1)*(sNy+1), myThid )
       OPEN( dUnit, file=fName(1:iLen), status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &             action='read',
-#endif
+     &             action=_READ_ACTION,
      &             access='direct', recl=length_of_rec )
       IF ( fPrec.EQ.precFloat32 ) THEN
         READ(dUnit, rec=irec) ioBuf4

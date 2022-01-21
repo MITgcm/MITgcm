@@ -377,9 +377,6 @@ C       fizhi_land_coms.h
      &              fn(1:ilst),'.',iG,'.',jG,'.data'
        print *,' Opening ',dataFName
        open( iUnit, file=dataFName, status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &       action='read',
-#endif
      &       access='direct', recl=length_of_rec )
 
        irec = 0

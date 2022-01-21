@@ -67,11 +67,7 @@ C     !LOCAL VARIABLES:
 C Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
 
-      open(iUnit,file=fn,status='old',
-#ifdef SPECIFY_FILE_PERMISSION
-     &     action='read',
-#endif
-           access='direct',recl=recl)
+      open(iUnit,file=fn,status='old',access='direct',recl=recl)
       read(iunit,rec=1) globalarr
       close( iunit )
       _END_MASTER( myThid )

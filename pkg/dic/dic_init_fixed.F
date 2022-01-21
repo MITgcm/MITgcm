@@ -63,11 +63,7 @@ C     Set other constant/flag
 
       IF ( dic_int1.EQ.2 ) THEN
         CALL MDSFINDUNIT( iUnit, mythid )
-        OPEN(UNIT=iUnit,FILE='co2atmos.dat',
-#ifdef SPECIFY_FILE_PERMISSION
-     &       ACTION='read',
-#endif
-     &       STATUS='old')
+        OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
         DO k=1,dic_int2
           READ(iUnit,*) co2atmos(k)
           WRITE(standardMessageUnit,*) 'co2atmos',co2atmos(k)

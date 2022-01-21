@@ -131,9 +131,7 @@ C--   master thread of process 0, only, opens a global file
         CALL MDSFINDUNIT( ioUnit, myThid )
         length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, myThid )
         OPEN( ioUnit, file=infile, status='old', access='direct',
-#ifdef SPECIFY_FILE_PERMISSION
-     &       action='read',
-#endif
+     &       action=_READ_ACTION,
      &       recl=length_of_rec )
         IF ( filePrec .EQ. 32 ) THEN
 #ifdef EXF_INTERP_USE_DYNALLOC

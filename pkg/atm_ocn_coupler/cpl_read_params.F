@@ -54,11 +54,7 @@ C--   Read-in parameter file:
         WRITE(msgUnit,'(2A)') 'CPL_READ_PARAMS: ',
      &                        'Reading parameter file "data.cpl"'
         ioUnit = 88
-        OPEN( ioUnit, FILE='data.cpl',
-#ifdef SPECIFY_FILE_PERMISSION
-     &        ACTION='read',
-#endif
-     &        STATUS='old')
+        OPEN( ioUnit, FILE='data.cpl',STATUS='old')
         READ( ioUnit, COUPLER_PARAMS )
         CLOSE(ioUnit )
       ELSE
