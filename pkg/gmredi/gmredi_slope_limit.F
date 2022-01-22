@@ -595,8 +595,8 @@ C (~ strong clipping, reducing non linearity of kw=f(K))
 CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           slopeSqTmp = SlopeX(i,j)*SlopeX(i,j)
      &               + SlopeY(i,j)*SlopeY(i,j)
 
@@ -611,8 +611,8 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
 C block above to reduce TAF recomputations. The assignment of taperFct is
 C also moved to keep the original order of operations.
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                  + SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
