@@ -1042,7 +1042,7 @@ C     ===============================
      &          + maskC(i+1,j  ,kl,bi,bj)*mskCor(i+1,j  ,bi,bj) )
      &         +( maskC(i  ,j-1,kl,bi,bj)*mskCor(i  ,j-1,bi,bj)
      &          + maskC(i  ,j+1,kl,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &    +p16*(( maskC(i+1,j+1,kl,bi,bj)* mskCor(i+1,j+1,bi,bj)
+     &    +p16*(( maskC(i+1,j+1,kl,bi,bj)*mskCor(i+1,j+1,bi,bj)
      &          + maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj) )
      &         +( maskC(i+1,j-1,kl,bi,bj)*mskCor(i+1,j-1,bi,bj)
      &          + maskC(i-1,j+1,kl,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
