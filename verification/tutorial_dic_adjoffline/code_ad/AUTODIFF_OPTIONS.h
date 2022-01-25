@@ -57,25 +57,15 @@ C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
 C   Note: comment out the #define below (instead of having an #undef) to
 C   enable to set this Option in CPP command line (from the optfile)
 #undef AUTODIFF_USE_MDSFINDUNITS
-C o This is a set of flags that, if defined at the same time, will get
-C   rid of the autodiff_store/restore scheme. That is why we define a
-C   "macro" flag to set them all at the same time, but they can also be
-C   defined individually. This cannot (and should not) be the default,
-C   because in some verificaation experiment cases (OpenAd, obcs_ctrl)
-C   defining these flags leads TAF to not generate some
-C   adexch_xy_rs/adexch_uv_xy_rs routines that are needed in
-C   addummy_in_stepping.F
-#undef AUTODIFF_USE_OLDSTORE
-#ifdef AUTODIFF_USE_OLDSTORE
-# define AUTODIFF_USE_OLDSTORE_3D
-# define AUTODIFF_USE_OLDSTORE_2D
-# define AUTODIFF_USE_OLDSTORE_EXF
-# define AUTODIFF_USE_OLDSTORE_SEAICE
-# define AUTODIFF_USE_OLDSTORE_OBCS
-#endif
 
-C o write separate tape files for each ptracer
-#undef AUTODIFF_PTRACERS_SPLIT_FILES
+C o use the deprecated autodiff_store/restore scheme where multiple
+C   fields a collected in a single buffer field array before storing
+C   to tape. This functionality has been replaced by
+C   ALLOW_AUTODIFF_WHTAPEIO. Only for obcs it makes sense to still use
+C   it because obcs fields cannot be used with the
+C   ALLOW_AUTODIFF_WHTAPEIO scheme.
+#define AUTODIFF_USE_STORE_RESTORE
+#undef AUTODIFF_USE_STORE_RESTORE_OBCS
 
 C o allow using viscFacInAd to recompute viscosities in AD
 #define AUTODIFF_ALLOW_VISCFACADJ

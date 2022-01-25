@@ -1,4 +1,6 @@
-#ifdef AUTODIFF_USE_OLDSTORE_SEAICE
+#ifdef AUTODIFF_USE_STORE_RESTORE
+CADJ STORE StoreSEAICE       = tapelev2, key = ilev_2
+#else
 CADJ STORE AREA              = tapelev2, key = ilev_2
 CADJ STORE HEFF              = tapelev2, key = ilev_2
 CADJ STORE HSNOW             = tapelev2, key = ilev_2
@@ -24,9 +26,7 @@ CADJ STORE seaice_sigma12    = tapelev2, key = ilev_2
 # ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE HSALT             = tapelev2, key = ilev_2
 # endif
-#else
-CADJ STORE StoreSEAICE       = tapelev2, key = ilev_2
-#endif /* AUTODIFF_USE_OLDSTORE_SEAICE */
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
 CADJ STORE area  = tapelev2, key = ilev_2

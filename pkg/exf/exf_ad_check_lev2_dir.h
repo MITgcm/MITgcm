@@ -32,7 +32,11 @@ CADJ STORE xx_sss1      = tapelev2, key = ilev_2
 # endif
 # endif /* ECCO_CTRL_DEPRECATED */
 
-#ifdef AUTODIFF_USE_OLDSTORE_EXF
+#ifdef AUTODIFF_USE_STORE_RESTORE
+CADJ STORE StoreEXF1   = tapelev2, key = ilev_2
+CADJ STORE StoreEXF2   = tapelev2, key = ilev_2
+CADJ STORE StoreCTRLS1 = tapelev2, key = ilev_2
+#else
 CADJ STORE hflux0   = tapelev2, key = ilev_2
 CADJ STORE hflux1   = tapelev2, key = ilev_2
 CADJ STORE sflux0   = tapelev2, key = ilev_2
@@ -100,9 +104,5 @@ CADJ STORE uwind0      = tapelev2, key = ilev_2
 CADJ STORE uwind1      = tapelev2, key = ilev_2
 CADJ STORE vwind0      = tapelev2, key = ilev_2
 CADJ STORE vwind1      = tapelev2, key = ilev_2
-#else
-CADJ STORE StoreEXF1   = tapelev2, key = ilev_2
-CADJ STORE StoreEXF2   = tapelev2, key = ilev_2
-CADJ STORE StoreCTRLS1 = tapelev2, key = ilev_2
-#endif /* AUTODIFF_USE_OLDSTORE_EXF */
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 #endif /* ALLOW_EXF */

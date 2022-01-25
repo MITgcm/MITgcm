@@ -1,6 +1,6 @@
 C---  Fields need in autodiff_store.F and autodiff_restore.F
 
-#ifndef AUTODIFF_USE_OLDSTORE_3D
+#ifdef AUTODIFF_USE_STORE_RESTORE
       INTEGER NDV3D
 # ifdef ALLOW_ADAMSBASHFORTH_3
       PARAMETER (NDV3D  = 14)
@@ -10,17 +10,14 @@ C---  Fields need in autodiff_store.F and autodiff_restore.F
       _RL StoreDynVars3D
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,NDV3D)
       COMMON /AUTODIFF_STORE_DYN3D/ StoreDynVars3D
-#endif
 
-#ifndef AUTODIFF_USE_OLDSTORE_2D
       INTEGER NDV2D
       PARAMETER (NDV2D  = 22)
       _RL StoreDynVars2D
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NDV2D)
       COMMON /AUTODIFF_STORE_DYN2D/ StoreDynVars2D
-#endif
 
-#if ( defined ALLOW_EXF && !defined AUTODIFF_USE_OLDSTORE_EXF )
+# ifdef ALLOW_EXF
       INTEGER NEXF1, NEXF2
       PARAMETER (NEXF1  = 23)
       PARAMETER (NEXF2  = 24)
@@ -36,9 +33,18 @@ C---  Fields need in autodiff_store.F and autodiff_restore.F
       _RL StoreCTRLS1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NCTRL1)
       COMMON /AUTODIFF_STORE_CTRL/
      &       StoreCTRLS1
-#endif
+# endif
 
-#if ( defined ALLOW_OBCS && !defined AUTODIFF_USE_OLDSTORE_OBCS )
+# ifdef ALLOW_SEAICE
+      INTEGER NSI
+      PARAMETER (NSI = 16+nITD)
+      _RL StoreSEAICE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NSI)
+      COMMON /AUTODIFF_STORE_SEAICE/
+     &       StoreSEAICE
+# endif
+#endif /* AUTODIFF_USE_STORE_RESTORE */
+
+#if ( defined ALLOW_OBCS && defined AUTODIFF_USE_STORE_RESTORE_OBCS )
       INTEGER NOB
       PARAMETER (NOB = 20)
       _RL StoreOBCSN(1-OLx:sNx+OLx,Nr,nSx,nSy,NOB)
@@ -53,12 +59,4 @@ C---  Fields need in autodiff_store.F and autodiff_restore.F
       _RL StoreOBCSW(1-OLy:sNy+OLy,Nr,nSx,nSy,NOB)
       COMMON /AUTODIFF_STORE_OBCSW/
      &       StoreOBCSW
-#endif
-
-#if ( defined ALLOW_SEAICE && !defined AUTODIFF_USE_OLDSTORE_SEAICE )
-      INTEGER NSI
-      PARAMETER (NSI = 16+nITD)
-      _RL StoreSEAICE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NSI)
-      COMMON /AUTODIFF_STORE_SEAICE/
-     &       StoreSEAICE
 #endif
