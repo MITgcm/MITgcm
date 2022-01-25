@@ -65,7 +65,7 @@ C   because in some verificaation experiment cases (OpenAd, obcs_ctrl)
 C   defining these flags leads TAF to not generate some
 C   adexch_xy_rs/adexch_uv_xy_rs routines that are needed in
 C   addummy_in_stepping.F
-#undef AUTODIFF_USE_OLDSTORE
+#define AUTODIFF_USE_OLDSTORE
 #ifdef AUTODIFF_USE_OLDSTORE
 # define AUTODIFF_USE_OLDSTORE_3D
 # define AUTODIFF_USE_OLDSTORE_2D

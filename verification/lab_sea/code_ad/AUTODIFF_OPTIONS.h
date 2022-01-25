@@ -51,7 +51,7 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_PACKUNPACK_METHOD2
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
-#undef ALLOW_AUTODIFF_WHTAPEIO
+#define ALLOW_AUTODIFF_WHTAPEIO
 C o use MDSFINDUINTS instead of AUTODIFF_MDSFINDUNITS to find unique and
 C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
 C   Note: comment out the #define below (instead of having an #undef) to
@@ -65,7 +65,7 @@ C   because in some verificaation experiment cases (OpenAd, obcs_ctrl)
 C   defining these flags leads TAF to not generate some
 C   adexch_xy_rs/adexch_uv_xy_rs routines that are needed in
 C   addummy_in_stepping.F
-#undef AUTODIFF_USE_OLDSTORE
+#define AUTODIFF_USE_OLDSTORE
 #ifdef AUTODIFF_USE_OLDSTORE
 # define AUTODIFF_USE_OLDSTORE_3D
 # define AUTODIFF_USE_OLDSTORE_2D
