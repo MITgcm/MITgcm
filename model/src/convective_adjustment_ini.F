@@ -43,7 +43,7 @@ C     myThid :: My Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef INCLUDE_CONVECT_CALL
+#if (defined INCLUDE_CONVECT_CALL && defined INCLUDE_CONVECT_INI_CALL)
 
 C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
