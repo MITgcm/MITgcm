@@ -19,7 +19,7 @@ C-- Forcing code options:
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
-#define SHORTWAVE_HEATING
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 #undef ALLOW_GEOTHERMAL_FLUX
@@ -71,7 +71,7 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
 C o Allow full 3D specification of vertical diffusivity
-#define ALLOW_3D_DIFFKR
+#undef ALLOW_3D_DIFFKR
 
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
@@ -80,7 +80,7 @@ C o Exclude/allow partial-cell effect (physical or enhanced) in vertical mixing
 C   this allows to account for partial-cell in vertical viscosity and diffusion,
 C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
-#define EXCLUDE_PCELL_MIX_CODE
+#undef EXCLUDE_PCELL_MIX_CODE
 
 C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
 C   for tracers (after scaling by constant Prandtl number)
@@ -92,7 +92,7 @@ C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
 #undef ALLOW_SOLVE4_PS_AND_DRAG
 
 C o Include/exclude Implicit vertical advection code
-#undef INCLUDE_IMPLVERTADV_CODE
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
@@ -108,10 +108,10 @@ C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
-#define NONLIN_FRSURF
+#undef NONLIN_FRSURF
 C o Disable code for rStar coordinate and/or code for Sigma coordinate
-#undef  DISABLE_RSTAR_CODE
-#define DISABLE_SIGMA_CODE
+c#define DISABLE_RSTAR_CODE
+c#define DISABLE_SIGMA_CODE
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
@@ -125,7 +125,7 @@ C o Include/exclude code for Non Self-Adjoint (NSA) conjugate-gradient solver
 #undef ALLOW_CG2D_NSA
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver
-#undef ALLOW_SRCG
+#define ALLOW_SRCG
 
 C o Choices for implicit solver routines solve_*diagonal.F
 C   The following has low memory footprint, but not suitable for AD
@@ -135,10 +135,41 @@ C   The following one suitable for AD but does not vectorize
 
 C-- Retired code options:
 
+C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
+C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
+C *only for use on a lat-lon grid*
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
+C   in data which is then automatically scaled by the grid size;
+C   the old method of specifying viscAh/viscA4 and this flag is provided
+C   for completeness only (and for use with the adjoint).
+c#define ISOTROPIC_COS_SCALING
+
+C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
+C *only for use on a lat-lon grid*
+C   Has no effect if ISOTROPIC_COS_SCALING is undefined.
+C   Has no effect on vector invariant momentum equations.
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+c#define COSINEMETH_III
+
+C o Use "OLD" UV discretisation near boundaries (*not* recommended)
+C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
+C          because the old code did not have no-slip BCs
+#undef OLD_ADV_BCS
+
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
+
+C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
+#undef USE_OLD_EXTERNAL_FORCING
 
 C-- Other option files:
 
