@@ -63,7 +63,7 @@ C     when open read-only files.
 C     When defined, ACTION='read'.
 C     On Pleiades machines at NASA Ames it improves performance.
 C     Otherwise, ACTION='readwrite'.
-#undef OPEN_AS_READONLY
+#define OPEN_AS_READONLY
 
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16

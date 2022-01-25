@@ -196,9 +196,9 @@ C     and S/R open_copy_data_file.
 #define FMT_TSK_ID 'I6.6'
 
 C--   Set OPEN specifier ACTION when opening read-only files.
-C     If SPECIFY_READ_PERMISSION is defined, action='read'.
+C     If OPEN_AS_READONLY is defined, action='read'.
 C     Otherwise, action='readwrite'.
-#ifdef SPECIFY_READ_PERMISSION
+#ifdef OPEN_AS_READONLY
 #define _READ_ACTION 'read'
 #else
 #define _READ_ACTION 'readwrite'
