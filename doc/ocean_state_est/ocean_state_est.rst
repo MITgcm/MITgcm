@@ -196,96 +196,111 @@ index for that cost function term.
            on the fly in all 3D cases in :numref:`gencost_ecco_barfile`.
   :name: gencost_ecco_params
 
-  +-----------------------+-----------------------+-----------------------------------+
-  | parameter             | type                  | function                          |
-  +=======================+=======================+===================================+
-  | ``gencost_name``      | character(*)          | Name of cost term                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_barfile``   | character(*)          | File to receive model counterpart |
-  |                       |                       | :math:`\vec{m}_i` (See            |
-  |                       |                       | :numref:`gencost_ecco_barfile`)   |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_datafile``  | character(*)          | File containing                   |
-  |                       |                       | observational data                |
-  |                       |                       | :math:`\vec{o}_i`                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_avgperiod`` | character(5)          | Averaging period for              |
-  |                       |                       | :math:`\vec{o}_i` and             |
-  |                       |                       | :math:`\vec{m}_i`                 |
-  |                       |                       | (see text)                        |
-  +-----------------------+-----------------------+-----------------------------------+
-  |``gencost_outputlevel``| integer               | Greater than 0 will               |
-  |                       |                       | output misfit fields              |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_errfile``   | character(*)          | Uncertainty field                 |
-  |                       |                       | name (not used in                 |
-  |                       |                       | :numref:`intgen`)                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_mask``      | character(*)          | Mask file name root               |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`intgen`)                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``mult_gencost``      | real                  | Multiplier                        |
-  |                       |                       | :math:`\alpha_i`                  |
-  |                       |                       | (default: 1)                      |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc``   | character(*)          | Preprocessor names                |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_c`` | character(*)          | Preprocessor                      |
-  |                       |                       | character arguments               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_i`` | integer(*)            | Preprocessor integer              |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_r`` | real(*)               | Preprocessor real                 |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc``   | character(*)          | Post-processor names              |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_c`` | character(*)          | Post-processor                    |
-  |                       |                       | character arguments               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_i`` | integer(*)            | Post-processor                    |
-  |                       |                       | integer arguments                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_r`` | real(*)               | Post-processor real               |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spmin``     | real                  | Data less than this               |
-  |                       |                       | value will be omitted             |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spmax``     | real                  | Data greater than                 |
-  |                       |                       | this value will be                |
-  |                       |                       | omitted                           |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spzero``    | real                  | Data points equal to              |
-  |                       |                       | this value will be                |
-  |                       |                       | omitted                           |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_startdate1``| integer               | Start date of                     |
-  |                       |                       | observations                      |
-  |                       |                       | (YYYMMDD)                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_startdate2``| integer               | Start date of                     |
-  |                       |                       | observations (HHMMSS)             |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_is3d``      | logical               | Needs to be true for              |
-  |                       |                       | 3D fields                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_enddate1``  | integer               | Not fully implemented             |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`v4custom`)               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_enddate2``  | integer               | Not fully implemented             |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`v4custom`)               |
-  +-----------------------+-----------------------+-----------------------------------+
-  |``gencost_kLev_select``| integer               | Vertical level of a 3D field to   |
-  |                       |                       | create a 2D field for cost        |
-  |                       |                       | computation                       |
-  +-----------------------+-----------------------+-----------------------------------+
-
-.. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
+  +---------------------------+-------------------+-----------------------------------+
+  | parameter                 | type              | function                          |
+  +===========================+===================+===================================+
+  | ``gencost_name``          | character(*)      | Name of cost term                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_barfile``       | character(*)      | File to receive model counterpart |
+  |                           |                   | :math:`\vec{m}_i` (See            |
+  |                           |                   | :numref:`gencost_ecco_barfile`)   |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_datafile``      | character(*)      | File containing                   |
+  |                           |                   | observational data                |
+  |                           |                   | :math:`\vec{o}_i`                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_avgperiod``     | character(5)      | Averaging period for              |
+  |                           |                   | :math:`\vec{o}_i` and             |
+  |                           |                   | :math:`\vec{m}_i`                 |
+  |                           |                   | (see text)                        |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_outputlevel``   | integer           | Greater than 0 will               |
+  |                           |                   | output misfit fields              |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_errfile``       | character(*)      | Uncertainty field                 |
+  |                           |                   | name (not used in                 |
+  |                           |                   | :numref:`intgen`)                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_mask``          | character(*)      | Mask file name root               |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`intgen`)                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``mult_gencost``          | real              | Multiplier                        |
+  |                           |                   | :math:`\alpha_i`                  |
+  |                           |                   | (default: 1)                      |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc``       | character(*)      | Preprocessor names                |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_c``     | character(*)      | Preprocessor                      |
+  |                           |                   | character arguments               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_i``     | integer(*)        | Preprocessor integer              |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_r``     | real(*)           | Preprocessor real                 |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc``       | character(*)      | Post-processor names              |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_c``     | character(*)      | Post-processor                    |
+  |                           |                   | character arguments               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_i``     | integer(*)        | Post-processor                    |
+  |                           |                   | integer arguments                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_r``     | real(*)           | Post-processor real               |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spmin``         | real              | Data less than this               |
+  |                           |                   | value will be omitted             |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spmax``         | real              | Data greater than                 |
+  |                           |                   | this value will be                |
+  |                           |                   | omitted                           |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spzero``        | real              | Data points equal to              |
+  |                           |                   | this value will be                |
+  |                           |                   | omitted                           |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_startdate1``    | integer           | Start date of                     |
+  |                           |                   | observations                      |
+  |                           |                   | (YYYMMDD)                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_startdate2``    | integer           | Start date of                     |
+  |                           |                   | observations (HHMMSS)             |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_is3d``          | logical           | Needs to be true for              |
+  |                           |                   | 3D fields                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_enddate1``      | integer           | Not fully implemented             |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`v4custom`)               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_enddate2``      | integer           | Not fully implemented             |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`v4custom`)               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_kLev_select``   | integer           | Vertical level of a 3D field to   |
+  |                           |                   | create a 2D field for cost        |
+  |                           |                   | computation                       |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_useDensityMask``| logical           | Needs to be true if density       |
+  |                           |                   | following feature is used         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_sigmaLow``      | integer           | Use to define minimum density     |
+  |                           |                   | surface chosen                    |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_sigmaHigh``     | integer           | Used to define maximum density    |
+  |                           |                   | surface chosen                    |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_refPressure``   | integer           | Defines reference pressure used   |
+  |                           |                   | in density following feature      |
+  +---------------------------+-------------------+-----------------------------------+ 
+  | ``gencost_tanhScale``     | integer           | Used in defining density levels   |
+  |                           |                   | in density following feature      |
+  +---------------------------+-------------------+-----------------------------------+
+  
+  .. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
            can be used via :filelink:`cost_generic.F
            <pkg/ecco/cost_generic.F>` (:numref:`costgen`). An extension
            starting with ‘\_’ can be appended at the end of the variable name
@@ -445,6 +460,17 @@ masks should consists of +1 and 0 values and a volume average will be
 computed accordingly. In case #2 (‘m_horflux\*’) the ‘W’, ‘S’, and ‘K’
 masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
+
+In order to define a control volume using both a depth range and a 
+density range, use a ‘K’ mask and also set 
+:varlink: `gencost_useDensityMask==.TRUE.`. When the density range 
+feature is active, the control volume is defined at each timestep by 
+the bounds set in the ‘K’ mask and also by the density range specified 
+by the parameters :varlink: `gencost_sigmaLow` (the minimum density to
+be included in the control volume) and :varlink: `gencost_sigmaHigh` 
+(the maximum density to be included in the control volume). As a default
+:varlink:`gencost_refPressure` should be set to 0, but other values can 
+be used (e.g. 1000 dbar, 2000 dbar).
 
 .. table:: Implemented :varlink:`gencost_barfile` options (as of checkpoint
            67x) that can be used via :filelink:`cost_gencost_boxmean.F
