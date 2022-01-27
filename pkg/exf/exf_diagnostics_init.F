@@ -35,7 +35,9 @@ C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
+#ifdef ALLOW_AUTODIFF
       INTEGER       diagMate
+#endif
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -124,6 +126,20 @@ C--   surface fluxes:
 
       diagName  = 'EXFvwind'
       diagTitle = 'meridional 10-m wind speed, >0 northward'
+      diagUnits = 'm/s             '
+      diagCode  = 'VM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EXFurelw'
+      diagTitle = 'zonal relative 10-m wind speed, >0 eastward'
+      diagUnits = 'm/s             '
+      diagCode  = 'UM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EXFvrelw'
+      diagTitle = 'meridional relative 10-m wind speed, >0 northward'
       diagUnits = 'm/s             '
       diagCode  = 'VM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

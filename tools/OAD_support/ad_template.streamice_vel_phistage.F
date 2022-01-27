@@ -9,14 +9,16 @@
 
       integer myi
 ! Temporaries to hold the stack pointers
-      integer temp_double_tape_pointer, temp_integer_tape_pointer, temp_logical_tape_pointer, temp_character_tape_pointer, temp_string_tape_pointer 
+      integer temp_double_tape_pointer, temp_integer_tape_pointer, temp_logical_tape_pointer, temp_character_tape_pointer, temp_string_tape_pointer
       type(modeType) :: our_orig_mode
 
       integer iaddr
       external iaddr
 !<------------------Begin user declarations ---------------------->!
-! Insert declarations of dummy variables for calling adjoint computation 
+! Insert declarations of dummy variables for calling adjoint computation
 ! without side effects, and storing adjoint variable iterates
+
+      real*8 adj_fp_err_change
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
 
@@ -68,7 +70,6 @@
 
           if (STREAMICE_chkresidconvergence) then
 
-
            WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
      &                       err_max/err_init
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -103,9 +104,7 @@
             CONVERGED = .true.
            ENDIF
 
-
           endif
-
 
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -117,7 +116,7 @@
               streamice_taubx(i,j,bi,bj)=taubx_new_si(i,j,bi,bj)
               streamice_tauby(i,j,bi,bj)=tauby_new_si(i,j,bi,bj)
               DO m=Nr,1,-1
-               visc_streamice_full(i,j,m,bi,bj)= 
+               visc_streamice_full(i,j,m,bi,bj)=
      &          visc_full_new_si(i,j,m,bi,bj)
               ENDDO
 #endif
@@ -128,19 +127,13 @@
 
 !!!!!!!!!!!! end conv check
 
-
-        end if        
+        end if
       end if
-      
+
       our_rev_mode=our_orig_mode
       end if
 
-
 !!!!!!!!!!!! TAPE MODE !!!!!!!!!!!!!!
-
-
-
-
 
       if (our_rev_mode%tape) then
       our_orig_mode=our_rev_mode
@@ -170,9 +163,8 @@
           CALL print_message(MSGBUF,STANDARDMESSAGEUNIT,'R',1)
 
 !---- conv check
-          
-          if (STREAMICE_chkresidconvergence) then
 
+          if (STREAMICE_chkresidconvergence) then
 
            WRITE(msgBuf,'(A,E15.7)') 'err/err_init',
      &                       err_max/err_init
@@ -222,7 +214,7 @@
                   streamice_tauby(i,j,bi,bj)%v=
      &             tauby_new_si(i,j,bi,bj)%v
                   DO m=Nr,1,-1
-                   visc_streamice_full(i,j,m,bi,bj)%v= 
+                   visc_streamice_full(i,j,m,bi,bj)%v=
      &              visc_full_new_si(i,j,m,bi,bj)%v
                   ENDDO
 #endif
@@ -231,23 +223,19 @@
             ENDDO
           ENDDO
 
-
-
-
-
 !--------conv check done
 
           if (converged .OR. nl_iter.eq.MAXNLITER) then
-            !Run once in tape mode if this is the last time 
+            !Run once in tape mode if this is the last time
             our_rev_mode%plain=.false.
             our_rev_mode%tape=.true.
             our_rev_mode%adjoint=.false.
             CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CG
      +TOL,CG_ITERS,err_max)
-          end if 
+          end if
         end if
         CALL TIMER_STOP('STREAMICE TAPE FIXED POINT LOOP',myThid)
-      end if 
+      end if
       if(isinloop.eq.2 ) then
 
         CALL OpenAD_streamice_vel_phi(MYTHID,MAXNLITER,MAXCGITER,CGTOL
@@ -258,14 +246,14 @@
             DO j=1-OLy,sNy+OLy
               DO i=1-OLx,sNx+OLx
                 U_streamice (i,j,bi,bj)%v=u_new_SI (i,j,bi,bj)%v
-                V_streamice (i,j,bi,bj)%v=v_new_SI (i,j,bi,bj)%v 
+                V_streamice (i,j,bi,bj)%v=v_new_SI (i,j,bi,bj)%v
 #ifdef STREAMICE_HYBRID_STRESS
                   streamice_taubx(i,j,bi,bj)%v=
      &             taubx_new_si(i,j,bi,bj)%v
                   streamice_tauby(i,j,bi,bj)%v=
      &             tauby_new_si(i,j,bi,bj)%v
                   DO m=Nr,1,-1
-                   visc_streamice_full(i,j,m,bi,bj)%v= 
+                   visc_streamice_full(i,j,m,bi,bj)%v=
      &              visc_full_new_si(i,j,m,bi,bj)%v
                   ENDDO
 #endif
@@ -273,16 +261,13 @@
             ENDDO
           ENDDO
         ENDDO
-      end if 
+      end if
       our_rev_mode=our_orig_mode
       end if
 
-
 !!!!!!!!!!!! ADJOINT MODE !!!!!!!!!!!!!!
 
-
-
-      if (our_rev_mode%adjoint) then  
+      if (our_rev_mode%adjoint) then
       our_orig_mode=our_rev_mode
 
       if(isinloop.eq.2) then
@@ -294,9 +279,9 @@
           DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1-OLy,sNy+OLy
               DO i=1-OLx,sNx+OLx
-                v_new_SI (i,j,bi,bj)%d= V_streamice(i,j,bi,bj)%d 
+                v_new_SI (i,j,bi,bj)%d= V_streamice(i,j,bi,bj)%d
                 V_streamice  (i,j,bi,bj)%d = 0.0
-                u_new_SI (i,j,bi,bj)%d= U_streamice(i,j,bi,bj)%d 
+                u_new_SI (i,j,bi,bj)%d= U_streamice(i,j,bi,bj)%d
                 U_streamice  (i,j,bi,bj)%d = 0.0
 #ifdef STREAMICE_HYBRID_STRESS
                 taubx_new_si(i,j,bi,bj)%d=
@@ -306,7 +291,7 @@
      &           streamice_tauby(i,j,bi,bj)%d
                 streamice_tauby(i,j,bi,bj)%d = 0.0
                 DO m=Nr,1,-1
-                 visc_full_new_si(i,j,m,bi,bj)%d= 
+                 visc_full_new_si(i,j,m,bi,bj)%d=
      &            visc_streamice_full(i,j,m,bi,bj)%d
                  visc_streamice_full(i,j,m,bi,bj)%d = 0.0
                 ENDDO
@@ -324,9 +309,9 @@
             DO J = 1-OLy,sNy+OLy
               DO I = 1-OLx,sNx+OLx
 
-                U_streamice_dvals(I,J,BI,BJ) = 
+                U_streamice_dvals(I,J,BI,BJ) =
      +U_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d
-                V_streamice_dvals(I,J,BI,BJ) = 
+                V_streamice_dvals(I,J,BI,BJ) =
      +V_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d
 #ifdef STREAMICE_HYBRID_STRESS
                 taubx_dvals(I,J,BI,BJ) =
@@ -339,9 +324,9 @@
                 ENDDO
 #endif
 
-                U_new_si(I,J,BI,BJ)%d = 
+                U_new_si(I,J,BI,BJ)%d =
      +U_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d
-                V_new_si(I,J,BI,BJ)%d = 
+                V_new_si(I,J,BI,BJ)%d =
      +V_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d
 #ifdef STREAMICE_HYBRID_STRESS
                 taubx_new_si(I,J,BI,BJ)%d =
@@ -361,8 +346,6 @@
 
       end if
 
-
-
       if(isinloop.eq.1) then
         if((.NOT.ADJ_CONVERGED).AND.(adj_iter.lt.MAXNLITER)) then
 
@@ -377,8 +360,6 @@
             DO BI = MYBXLO(MYTHID), MYBXHI(MYTHID), 1
               DO J = 1-OLy,sNy+OLy
                 DO I = 1-OLx,sNx+OLx
-
-
 
                   U_DUMMY_D(INT(I),INT(J),INT(BI),INT(BJ)) =
      +U_streamice(INT(I),INT(J),INT(BI),INT(BJ))%d
@@ -395,7 +376,6 @@
                   ENDDO
 #endif
 
-
                   U_NEW_DUMMY_D(INT(I),INT(J),INT(BI),INT(BJ)) =
      +U_NEW_SI(INT(I),INT(J),INT(BI),INT(BJ))%d
                   V_NEW_DUMMY_D(INT(I),INT(J),INT(BI),INT(BJ)) =
@@ -411,24 +391,20 @@
                   ENDDO
 #endif
 
-
-       
                   U_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +U_streamice_dvals(I,J,BI,BJ)
-                  V_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d = 
+                  V_STREAMICE(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +V_STREAMICE_dvals(I,J,BI,BJ)
 #ifdef STREAMICE_HYBRID_STRESS
                   streamice_taubx(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +taubx_dvals(I,J,BI,BJ)
-                  streamice_tauby(INT(I),INT(J),INT(BI),INT(BJ))%d = 
+                  streamice_tauby(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +tauby_dvals(I,J,BI,BJ)
                   DO m=Nr,1,-1
               VISC_STREAMICE_FULL(INT(I),INT(J),m,INT(BI),INT(BJ))%d
-     +=visc_full_dvals(I,J,m,BI,BJ)                  
+     +=visc_full_dvals(I,J,m,BI,BJ)
                   ENDDO
 #endif
-
-
 
 #ifdef STREAMICE_ALLOW_FRIC_CONTROL
                   C_basal_dummy_d(INT(I),INT(J),INT(BI),INT(BJ)) =
@@ -455,11 +431,10 @@
           END DO
 
           !Store the stack pointers
-          temp_double_tape_pointer = oad_dt_ptr   
-          temp_integer_tape_pointer = oad_it_ptr     
-          temp_logical_tape_pointer = oad_lt_ptr  
+          temp_double_tape_pointer = oad_dt_ptr
+          temp_integer_tape_pointer = oad_it_ptr
+          temp_logical_tape_pointer = oad_lt_ptr
           temp_string_tape_pointer = oad_st_ptr
-
 
 #ifdef ALLOW_PETSC
           IF (STREAMICE_OAD_petsc_reuse) then
@@ -483,7 +458,7 @@
            if (adj_iter.eq.MAXNLITER) then
             STREAMICE_need2createmat=.true.
             STREAMICE_need2destroymat=.true.
-            CALL streamice_petscmatdestroy(mythid)             
+            CALL streamice_petscmatdestroy(myThid)
             PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
            endif
           ENDIF
@@ -508,7 +483,7 @@
      +VISC_new_DUMMY(INT(I),INT(J),m,INT(BI),INT(BJ))
                   ENDDO
 #endif
-       
+
                 END DO
               END DO
             END DO
@@ -536,18 +511,31 @@
 
            IF(adj_iter.eq.1) then
             err_init = err_max_fp
-           ELSEIF (err_max_fp .LE. 
-     &             streamice_nonlin_tol_adjoint*err_init) THEN
-            ADJ_CONVERGED = .true.
+           ELSE
+            IF (err_max_fp .LE.
+     &             streamice_nonlin_tol_adjoint_rl*err_init) THEN
+             ADJ_CONVERGED = .true.
+            ELSEIF (err_max_fp .LE.
+     &             streamice_nonlin_tol_adjoint) THEN
+             ADJ_CONVERGED = .true.
+            ELSEIF (err_max_fp > err_last_change) THEN
+             ADJ_CONVERGED = .true.
+             WRITE(msgBuf,'(A)') 'STOP: ADJOINT FP ERROR INCREASING'
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+            ENDIF
 #ifdef ALLOW_PETSC
-           IF (STREAMICE_OAD_petsc_reuse) THEN
-            STREAMICE_need2createmat=.true.
-            STREAMICE_need2destroymat=.true.
-            CALL streamice_petscmatdestroy(mythid)             
-            PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
-           ENDIF
+            IF (STREAMICE_OAD_petsc_reuse.AND.ADJ_CONVERGED) THEN
+              STREAMICE_need2createmat=.true.
+              STREAMICE_need2destroymat=.true.
+              CALL streamice_petscmatdestroy(myThid)
+              PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
+            ENDIF
 #endif
+
            ENDIF
+
+           err_last_change = err_max_fp
 
           endif
 
@@ -568,7 +556,7 @@
                   TAUBY_NEW_SI(INT(I),INT(J),INT(BI),INT(BJ))%d = STREAMIC
      +E_TAUBY(I,J,BI,BJ)%d
                   DO m=Nr,1,-1
-                  VISC_FULL_NEW_SI(INT(I),INT(J),m,INT(BI),INT(BJ))%d = 
+                  VISC_FULL_NEW_SI(INT(I),INT(J),m,INT(BI),INT(BJ))%d =
      +VISC_STREAMICE_FULL(I,J,m,BI,BJ)%d
                   ENDDO
 #endif
@@ -586,7 +574,7 @@
                   visc_streamice_full(I,J,m,BI,BJ)%d =
      +visc_full_dummy_d(I,J,m,BI,BJ)
                   ENDDO
-#endif       
+#endif
 
 #ifdef STREAMICE_ALLOW_FRIC_CONTROL
                   C_basal_friction(INT(I),INT(J),INT(BI),INT(BJ))%d =
@@ -612,9 +600,9 @@
             END DO
           END DO
 
-          oad_dt_ptr = temp_double_tape_pointer   
-          oad_it_ptr = temp_integer_tape_pointer     
-          oad_lt_ptr = temp_logical_tape_pointer   
+          oad_dt_ptr = temp_double_tape_pointer
+          oad_it_ptr = temp_integer_tape_pointer
+          oad_lt_ptr = temp_logical_tape_pointer
           oad_st_ptr = temp_string_tape_pointer
 
           if (adj_iter.eq.1) then
@@ -652,9 +640,8 @@
 
       end if
 
-
       our_rev_mode=our_orig_mode
-      end if 
+      end if
 
 #endif
 
