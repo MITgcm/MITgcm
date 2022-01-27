@@ -180,13 +180,14 @@ C     dt           :: timestep
       _RL  a1, b1, c1
       _RL  dt
       _RL  recip_dhSnowLin
+      _RL  TsfTmp, tIc2Tmp
 #ifdef ALLOW_DBUG_THSICE
       _RL  netSW
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER ticekey, ikey_1, kkey
+      INTEGER ticekey, kkey
 #endif
 
 C-    Define grid-point location where to print debugging values
@@ -208,8 +209,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
       ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
-
-CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flxsw  = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF
@@ -245,19 +246,6 @@ C     but some arrays are stored and storage includes overlap.
 
       DO j = jMin, jMax
        DO i = iMin, iMax
-#ifdef ALLOW_AUTODIFF_TAMC
-         ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
-C--
-CADJ STORE  hSnow1(i,j)        = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  flxsw(i,j)   = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  qic1(i,j)    = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  qic2(i,j)    = comlev1_thsice_1, key=ikey_1
-#endif
         IF ( icMask(i,j).GT.0. _d 0) THEN
           iterate4Tsf  = .TRUE.
           iceFlag(i,j) = 1. _d 0
@@ -363,10 +351,10 @@ C--   Compute coefficients used in quadratic formula.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE hsnow1(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE sh(:,:,:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE devdt         = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE tsf           = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE hsnow1        = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE sh(:,:,bi,bj) = comlev1_bibj, key = ticekey, byte = isbyte
 #endif
 
 C--   Get surface fluxes over melting surface
@@ -417,12 +405,12 @@ C     Tsfc converges.
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flx0exsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE evap00(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE evapt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE devdt    = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE flx0exsw = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE flxtexsw = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE evap00   = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE evapt    = comlev1_bibj, key = ticekey, byte = isbyte
 #endif
 
 C ----- begin iteration  -----
@@ -474,11 +462,14 @@ C--- end if: IF ( useBlkFlx ) THEN
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt(:,:)    = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE dflxdt(:,:)   = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flxtexsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceflag(:,:)  = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
+C     I do not understand why we need to save the same state over and
+C     over again, but this gives clearly a more accuare gradient than
+C     the more intuitive choice of comlev1_thsice_s4t, key = kkey
+CADJ STORE devdt    = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE flxtexsw = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE iceflag  = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE tsf      = comlev1_bibj, key = ticekey, byte = isbyte
 #endif
 
 C--   Compute new top layer and surface temperatures.
@@ -501,12 +492,17 @@ C     with different coefficients.
            tIc1(i,j)  = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
            dTsrf1(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-Tsf(i,j)))
      &                   /(k12(i,j)-dFlxdT(i,j))
-           Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
+C     this line causes 3 recomputation warings for TAF because Tsf is
+C     updated and the updated value is used to update Tsf (and other
+C     variables) again; with this intermediate variable, the warning go
+C     away.
+C          Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
+           TsfTmp = Tsf(i,j) + dTsrf1(i,j)
 C
-           IF ( Tsf(i,j) .GT. 0. _d 0 ) THEN
+           IF ( TsfTmp .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DBUG_THSICE
             IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
-     &     'ThSI_SOLVE4T: k,ts,t1,dTs=',k,Tsf(i,j),tIc1(i,j),dTsrf1(i,j)
+     &     'ThSI_SOLVE4T: k,ts,t1,dTs=',k,TsfTmp,tIc1(i,j),dTsrf1(i,j)
 #endif
             a1 = a10(i,j) + k12(i,j)
 C      note: b1 = b10 - k12*Tf0
@@ -526,6 +522,8 @@ C      note: b1 = b10 - k12*Tf0
              dFlxdT(i,j) = 0.
             ENDIF
 #endif /* ALLOW_AUTODIFF */
+           ELSE
+            Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
            ENDIF
 
 C--   Check for convergence.  If no convergence, then repeat.
@@ -575,14 +573,19 @@ C ------ end iteration ------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
+#ifdef ALLOW_AUTODIFF
+CADJ STORE tIc2 = comlev1_bibj,key=ticekey,byte=isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
+C     this intermediate variable avoids a recomputation warning
+        tIc2Tmp = tIc2(i,j)
         IF ( icMask(i,j).GT.0. _d 0 ) THEN
 
 C--   Compute new bottom layer temperature.
           k32       = 2. _d 0*kIce  / hIce(i,j)
           tIc2(i,j) = ( 2. _d 0*dt*k32*(tIc1(i,j)+2. _d 0*tFrz(i,j))
-     &                 + rhoi*cpIce*hIce(i,j)*tIc2(i,j))
+     &                 + rhoi*cpIce*hIce(i,j)*tIc2Tmp)
      &               /(6. _d 0*dt*k32 + rhoi*cpIce*hIce(i,j))
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
