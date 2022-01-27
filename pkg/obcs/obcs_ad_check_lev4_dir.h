@@ -1,9 +1,19 @@
-#ifdef ALLOW_OBCS
 #
-# ifdef ALLOW_OBCS_NORTH
-#  ifdef AUTODIFF_USE_STORE_RESTORE_OBCS
+# ifdef AUTODIFF_USE_STORE_RESTORE_OBCS
+#  ifdef ALLOW_OBCS_NORTH
 CADJ STORE StoreOBCSN     = tapelev4, key = ilev_4
-#  else
+#  endif
+#  ifdef ALLOW_OBCS_SOUTH
+CADJ STORE StoreOBCSS     = tapelev4, key = ilev_4
+#  endif
+#  ifdef ALLOW_OBCS_EAST
+CADJ STORE StoreOBCSE     = tapelev4, key = ilev_4
+#  endif
+#  ifdef ALLOW_OBCS_WEST
+CADJ STORE StoreOBCSW     = tapelev4, key = ilev_4
+#  endif
+# else
+#  ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNu           = tapelev4, key = ilev_4
 CADJ STORE OBNv           = tapelev4, key = ilev_4
 CADJ STORE OBNt           = tapelev4, key = ilev_4
@@ -18,18 +28,9 @@ CADJ STORE OBNs0, OBNs1   = tapelev4, key = ilev_4
 CADJ STORE xx_obcsn0      = tapelev4, key = ilev_4
 CADJ STORE xx_obcsn1      = tapelev4, key = ilev_4
 #   endif
-#  endif /* AUTODIFF_USE_STORE_RESTORE_OBCS */
-# ifdef ALLOW_OBCS_STEVENS
-CADJ STORE OBNtStevens    = tapelev4, key = ilev_4
-CADJ STORE OBNsStevens    = tapelev4, key = ilev_4
-CADJ STORE OBNvStevens    = tapelev4, key = ilev_4
-# endif /* ALLOW_OBCS_STEVENS */
-# endif /* ALLOW_OBCS_NORTH */
+#  endif /* ALLOW_OBCS_NORTH */
 #
-# ifdef ALLOW_OBCS_SOUTH
-#  ifdef AUTODIFF_USE_STORE_RESTORE_OBCS
-CADJ STORE StoreOBCSS     = tapelev4, key = ilev_4
-#  else
+#  ifdef ALLOW_OBCS_SOUTH
 CADJ STORE OBSu           = tapelev4, key = ilev_4
 CADJ STORE OBSv           = tapelev4, key = ilev_4
 CADJ STORE OBSt           = tapelev4, key = ilev_4
@@ -44,18 +45,9 @@ CADJ STORE OBSs0, OBSs1   = tapelev4, key = ilev_4
 CADJ STORE xx_obcss0      = tapelev4, key = ilev_4
 CADJ STORE xx_obcss1      = tapelev4, key = ilev_4
 #   endif
-#  endif /* AUTODIFF_USE_STORE_RESTORE_OBCS */
-# ifdef ALLOW_OBCS_STEVENS
-CADJ STORE OBStStevens    = tapelev4, key = ilev_4
-CADJ STORE OBSsStevens    = tapelev4, key = ilev_4
-CADJ STORE OBSvStevens    = tapelev4, key = ilev_4
-# endif /* ALLOW_OBCS_STEVENS */
-# endif /* ALLOW_OBCS_SOUTH */
+#  endif /* ALLOW_OBCS_SOUTH */
 #
-# ifdef ALLOW_OBCS_EAST
-#  ifdef AUTODIFF_USE_STORE_RESTORE_OBCS
-CADJ STORE StoreOBCSE     = tapelev4, key = ilev_4
-#  else
+#  ifdef ALLOW_OBCS_EAST
 CADJ STORE OBEu           = tapelev4, key = ilev_4
 CADJ STORE OBEv           = tapelev4, key = ilev_4
 CADJ STORE OBEt           = tapelev4, key = ilev_4
@@ -70,18 +62,9 @@ CADJ STORE OBEs0, OBEs1   = tapelev4, key = ilev_4
 CADJ STORE xx_obcse0      = tapelev4, key = ilev_4
 CADJ STORE xx_obcse1      = tapelev4, key = ilev_4
 #   endif
-#  endif /* AUTODIFF_USE_STORE_RESTORE_OBCS */
-# ifdef ALLOW_OBCS_STEVENS
-CADJ STORE OBEtStevens    = tapelev4, key = ilev_4
-CADJ STORE OBEsStevens    = tapelev4, key = ilev_4
-CADJ STORE OBEuStevens    = tapelev4, key = ilev_4
-# endif /* ALLOW_OBCS_STEVENS */
-# endif /* ALLOW_OBCS_EAST */
+#  endif /* ALLOW_OBCS_EAST */
 #
-# ifdef ALLOW_OBCS_WEST
-#  ifdef AUTODIFF_USE_STORE_RESTORE_OBCS
-CADJ STORE StoreOBCSW     = tapelev4, key = ilev_4
-#  else
+#  ifdef ALLOW_OBCS_WEST
 CADJ STORE OBWu           = tapelev4, key = ilev_4
 CADJ STORE OBWv           = tapelev4, key = ilev_4
 CADJ STORE OBWt           = tapelev4, key = ilev_4
@@ -96,13 +79,31 @@ CADJ STORE OBWs0, OBWs1   = tapelev4, key = ilev_4
 CADJ STORE xx_obcsw0      = tapelev4, key = ilev_4
 CADJ STORE xx_obcsw1      = tapelev4, key = ilev_4
 #   endif
-#  endif /* AUTODIFF_USE_STORE_RESTORE_OBCS */
+#  endif /* ALLOW_OBCS_WEST */
+# endif /* AUTODIFF_USE_STORE_RESTORE_OBCS */
+#
 # ifdef ALLOW_OBCS_STEVENS
+#  ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNtStevens    = tapelev4, key = ilev_4
+CADJ STORE OBNsStevens    = tapelev4, key = ilev_4
+CADJ STORE OBNvStevens    = tapelev4, key = ilev_4
+#  endif
+#  ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBStStevens    = tapelev4, key = ilev_4
+CADJ STORE OBSsStevens    = tapelev4, key = ilev_4
+CADJ STORE OBSvStevens    = tapelev4, key = ilev_4
+#  endif
+#  ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEtStevens    = tapelev4, key = ilev_4
+CADJ STORE OBEsStevens    = tapelev4, key = ilev_4
+CADJ STORE OBEuStevens    = tapelev4, key = ilev_4
+#  endif
+#  ifdef ALLOW_OBCS_WEST
 CADJ STORE OBWtStevens    = tapelev4, key = ilev_4
 CADJ STORE OBWsStevens    = tapelev4, key = ilev_4
-CADJ STORE OBWsStevens    = tapelev4, key = ilev_4
+CADJ STORE OBWuStevens    = tapelev4, key = ilev_4
+#  endif
 # endif /* ALLOW_OBCS_STEVENS */
-# endif /* ALLOW_OBCS_WEST */
 #
 # ifdef ALLOW_PTRACERS
 #
@@ -144,7 +145,7 @@ CADJ STORE OBNh   = tapelev4, key = ilev_4
 CADJ STORE OBNa   = tapelev4, key = ilev_4
 CADJ STORE OBNsn  = tapelev4, key = ilev_4
 #ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE OBNsl = tapelev4, key = ilev_4
+CADJ STORE OBNsl  = tapelev4, key = ilev_4
 CADJ STORE OBNsl0 = tapelev4, key = ilev_4
 CADJ STORE OBNsl1 = tapelev4, key = ilev_4
 #endif
@@ -162,7 +163,7 @@ CADJ STORE OBSh   = tapelev4, key = ilev_4
 CADJ STORE OBSa   = tapelev4, key = ilev_4
 CADJ STORE OBSsn  = tapelev4, key = ilev_4
 #ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE OBSsl = tapelev4, key = ilev_4
+CADJ STORE OBSsl  = tapelev4, key = ilev_4
 CADJ STORE OBSsl0 = tapelev4, key = ilev_4
 CADJ STORE OBSsl1 = tapelev4, key = ilev_4
 #endif
@@ -180,7 +181,7 @@ CADJ STORE OBEh   = tapelev4, key = ilev_4
 CADJ STORE OBEa   = tapelev4, key = ilev_4
 CADJ STORE OBEsn  = tapelev4, key = ilev_4
 #ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE OBEsl = tapelev4, key = ilev_4
+CADJ STORE OBEsl  = tapelev4, key = ilev_4
 CADJ STORE OBEsl0 = tapelev4, key = ilev_4
 CADJ STORE OBEsl1 = tapelev4, key = ilev_4
 #endif
@@ -198,7 +199,7 @@ CADJ STORE OBWh   = tapelev4, key = ilev_4
 CADJ STORE OBWa   = tapelev4, key = ilev_4
 CADJ STORE OBWsn  = tapelev4, key = ilev_4
 #ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE OBWsl = tapelev4, key = ilev_4
+CADJ STORE OBWsl  = tapelev4, key = ilev_4
 CADJ STORE OBWsl0 = tapelev4, key = ilev_4
 CADJ STORE OBWsl1 = tapelev4, key = ilev_4
 #endif
@@ -222,5 +223,3 @@ CADJ STORE obeeta0,obeeta1 = tapelev4, key = ilev_4
 CADJ STORE obweta0,obweta1 = tapelev4, key = ilev_4
 #  endif
 # endif
-
-#endif  /* ALLOW_OBCS */
