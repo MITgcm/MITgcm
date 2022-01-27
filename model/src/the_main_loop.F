@@ -551,12 +551,14 @@ c--
 #   ifdef ALLOW_THSICE
 CADJ INIT comlev1_thsice_1 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
-CADJ INIT comlev1_thsice_2 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
+CMLCADJ INIT comlev1_thsice_2 = COMMON,
+CMLCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
 CADJ INIT comlev1_thsice_3 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
+CADJ INIT comlev1_thsice_nlyr = COMMON,
+CADJ &    nchklev_1*nSx*nSy*nlyr*nthreads_chkpt
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_thsice_5 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
