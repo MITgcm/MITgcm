@@ -70,7 +70,7 @@ c- note defined with overlap here, not needed, but more efficient
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 #endif
-      _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_PSBAR_STERIC
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
 #endif
@@ -87,20 +87,28 @@ c need to include halos for find_rho_2d
       sIceLoadFacLoc=zeroRL
       IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
 
-c#ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,Nr
+        IF ( myIter .EQ. -1 ) THEN
+          DO k = 1,Nr
             CALL FIND_RHO_2D(
      I                iMin, iMax, jMin, jMax, k,
      I                theta(1-OLx,1-OLy,k,bi,bj),
      I                salt (1-OLx,1-OLy,k,bi,bj),
-     O                RHOInSituLoc(1-OLx,1-OLy,k,bi,bj),
+     O                rhoLoc(1-OLx,1-OLy,k,bi,bj),
      I                k, bi, bj, myThid )
-          enddo
-        enddo
-      enddo
-c#endif /* ALLOW_PSBAR_STERIC */
+          ENDDO
+        ELSE
+          DO k = 1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              rhoLoc(i,j,k,bi,bj) = rhoInSitu(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -113,7 +121,7 @@ c#endif /* ALLOW_PSBAR_STERIC */
             do j = 1,sNy
               do i =  1,sNx
                 RHOsumTile(bi,bj)=RHOsumTile(bi,bj)+
-     &            (rhoConst+RHOInSituLoc(i,j,k,bi,bj))*
+     &            (rhoConst+rhoLoc(i,j,k,bi,bj))*
      &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
                 VOLsumTile(bi,bj)=VOLsumTile(bi,bj)+
      &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
@@ -201,7 +209,7 @@ C pLoad in N/m^2
 C integrate rho_anomaly through water column
                 DO k = 1, Nr
                    m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) +
-     &               RHOInSituLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+     &               rhoLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
      &               * gravity * recip_rhoConst
                 ENDDO
                 m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) * maskC(i,j,1,bi,bj)
