@@ -300,7 +300,7 @@ index for that cost function term.
   |                           |                   | in density following feature      |
   +---------------------------+-------------------+-----------------------------------+
   
-  .. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
+.. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
            can be used via :filelink:`cost_generic.F
            <pkg/ecco/cost_generic.F>` (:numref:`costgen`). An extension
            starting with ‘\_’ can be appended at the end of the variable name
@@ -463,11 +463,11 @@ horizontal transport (or overturn) will be computed accordingly.
 
 In order to define a control volume using both a depth range and a 
 density range, use a ‘K’ mask and also set 
-:varlink: `gencost_useDensityMask==.TRUE.`. When the density range 
+:varlink:`gencost_useDensityMask==.TRUE.`. When the density range 
 feature is active, the control volume is defined at each timestep by 
 the bounds set in the ‘K’ mask and also by the density range specified 
-by the parameters :varlink: `gencost_sigmaLow` (the minimum density to
-be included in the control volume) and :varlink: `gencost_sigmaHigh` 
+by the parameters :varlink:`gencost_sigmaLow` (the minimum density to
+be included in the control volume) and :varlink:`gencost_sigmaHigh` 
 (the maximum density to be included in the control volume). As a default
 :varlink:`gencost_refPressure` should be set to 0, but other values can 
 be used (e.g. 1000 dbar, 2000 dbar).
