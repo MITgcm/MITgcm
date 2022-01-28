@@ -573,8 +573,8 @@ C ------ end iteration ------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
-#ifdef ALLOW_AUTODIFF
-CADJ STORE tIc2 = comlev1_bibj,key=ticekey,byte=isbyte
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tIc2 = comlev1_bibj, key = ticekey, byte = isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
