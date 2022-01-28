@@ -340,9 +340,9 @@ C     to just stop here if it is the case.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( GM_useK3D ) THEN
+       IF ( GM_useBatesK3d ) THEN
         WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
-     &    'GM_useK3D potentially unsafe with dry cell @ top'
+     &    'GM_useBatesK3d potentially unsafe with dry cell @ top'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
