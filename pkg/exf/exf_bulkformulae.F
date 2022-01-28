@@ -504,7 +504,13 @@ c          evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 C   but older version was using rhonil instead:
 c           evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 #endif
-           IF ( useAtmWind ) THEN
+           IF ( useAtmWind .AND. useRelativeWind ) THEN
+            tmpbulk =  tau(i,j)*rd(i,j)
+            ustress(i,j,bi,bj) = tmpbulk* ( uwind(i,j,bi,bj) -
+     &           0.5 _d 0 * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj)) )
+            vstress(i,j,bi,bj) = tmpbulk* ( vwind(i,j,bi,bj) -
+     &           0.5 _d 0 * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj)) )
+           ELSEIF ( useAtmWind ) THEN
 c           ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
 c           vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
 C- jmc: below is how it should be written ; different from above when

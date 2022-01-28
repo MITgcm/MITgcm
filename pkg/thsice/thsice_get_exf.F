@@ -151,7 +151,7 @@ C     latent heat of evaporation or sublimation [J/kg]
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER ticekey, ikey_1, ikey_2
+      INTEGER ikey_1, ikey_2
 #endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag

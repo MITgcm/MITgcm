@@ -4,10 +4,7 @@
 #endif
 
       subroutine ctrl_getobcss(
-     I                             mytime,
-     I                             myiter,
-     I                             mythid
-     &                           )
+     I                          myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_getobcss
@@ -17,7 +14,6 @@ c     o Get southern obc of the control vector and add it
 c       to dyn. fields
 c
 c     started: heimbach@mit.edu, 29-Aug-2001
-c
 c     new flags: gebbie@mit.edu, 25 Jan 2003.
 c
 c     ==================================================================
@@ -43,60 +39,48 @@ c#include "OBCS_PARAMS.h"
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c     == routine arguments ==
-      _RL     mytime
-      integer myiter
-      integer mythid
+      _RL     myTime
+      integer myIter
+      integer myThid
 
 #ifdef ALLOW_OBCSS_CONTROL
-c     == local variables ==
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
-      integer jmin,jmax
       integer imin,imax
       integer ilobcss
       integer iobcs
-
-      _RL     dummy
       _RL     obcssfac
       logical obcssfirst
       logical obcsschanged
       integer obcsscount0
       integer obcsscount1
       integer jp1
-
-cgg      _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
-      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
-
+cgg      _RL maskxz   (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-
       character*(80) fnameobcss
-
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
-      _RL     tmpz (nr,nsx,nsy)
+      _RL     tmpz (Nr,nSx,nSy)
       _RL     stmp
 #endif
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      imin = 1-OLx
+      imax = sNx+OLx
       jp1  = 1
 
 c--   Now, read the control vector.
@@ -114,9 +98,10 @@ c--   Get the counters, flags, and the interpolation factor.
      I                   xx_obcssstartdate, xx_obcssperiod,
      O                   obcssfac, obcssfirst, obcsschanged,
      O                   obcsscount0,obcsscount1,
-     I                   mytime, myiter, mythid )
+     I                   myTime, myIter, myThid )
 
       do iobcs = 1,nobcs
+
        if ( obcssfirst ) then
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount0-1)*nobcs+iobcs,
@@ -164,7 +149,7 @@ cih    Compute absolute velocities from the barotropic-baroclinic modes.
            enddo
           endif
 #endif
-          do k = 1,nr
+          do k = 1,Nr
            do i = imin,imax
             xx_obcss1(i,k,bi,bj,iobcs)  = tmpfldxz (i,k,bi,bj)
 cgg   &                                        *   maskxz (i,k,bi,bj)
@@ -178,7 +163,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
-          do k = 1,nr
+          do k = 1,Nr
            do i = imin,imax
             xx_obcss0(i,k,bi,bj,iobcs) = xx_obcss1(i,k,bi,bj,iobcs)
             tmpfldxz (i,k,bi,bj)       = 0. _d 0
@@ -233,7 +218,7 @@ cih    Compute absolute velocities from the barotropic-baroclinic modes.
            enddo
           endif
 #endif
-          do k = 1,nr
+          do k = 1,Nr
            do i = imin,imax
             xx_obcss1 (i,k,bi,bj,iobcs) = tmpfldxz (i,k,bi,bj)
 cgg   &                                    *   maskxz (i,k,bi,bj)
@@ -247,9 +232,9 @@ c--   Add control to model variable.
        do bj = jtlo,jthi
         do bi = itlo,ithi
 c--   Calculate mask for tracer cells (0 => land, 1 => water).
-         do k = 1,nr
-          do i = 1,snx
-           j = OB_Js(I,bi,bj)
+         do k = 1,Nr
+          do i = 1,sNx
+           j = OB_Js(i,bi,bj)
            IF ( j.EQ.OB_indexNone ) j = 1
            if (iobcs .EQ. 1) then
             OBSt(i,k,bi,bj) = OBSt (i,k,bi,bj)

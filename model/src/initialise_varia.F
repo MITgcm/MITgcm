@@ -97,12 +97,12 @@ C     == Global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
+#ifndef ALLOW_AUTODIFF_WHTAPEIO
       INTEGER bi,bj
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG

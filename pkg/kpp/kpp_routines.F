@@ -430,8 +430,8 @@ c     initialize hbl and kbl to bottomed out values
 
       DO i = 1, imt
          Rib(i,1) = 0. _d 0
-         IF (kmtj(i).LT.1) kmtj(i) = 1
          kbl(i) = kmtj(i)
+         IF (kmtj(i).LT.1) kbl(i) = 1
          kl     = kbl(i)
          hbl(i) = -zgrid(kl)
       ENDDO
