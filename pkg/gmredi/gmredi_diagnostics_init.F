@@ -251,8 +251,8 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 #endif
 
-#ifdef GM_K3D
-        diagName  = 'GM_K3D  '
+#ifdef GM_BATES_K3D
+        diagName  = 'GM_BaK  '
         diagTitle = '3D diffusivity'
         diagUnits = 'm**2/s          '
         diagCode  = 'SM P    MR      '
@@ -268,7 +268,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-        diagName  = 'GM_K3D_T'
+        diagName  = 'GM_BaK_T'
         diagTitle = '3D Redi diffusivity'
         diagUnits = 'm**2/s          '
         diagCode  = 'SM P    MR      '
@@ -360,7 +360,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_RURMS'
         diagTitle =
-     I      'Mixing length for calculating u_rms: MIN(Rdef,GM_K3D_Rmax)'
+     I      'Mixing length for calculating u_rms: MIN(Rdef,Bates_Rmax)'
         diagUnits = 'm               '
         diagCode  = 'SM P    M1      '
         diagMate  = diagNum
@@ -384,7 +384,7 @@ c     IF ( useDiagnotics ) THEN
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'GM_SUPP'
-        diagTitle = 'Suppression Factor for K3D'
+        diagTitle = 'Suppression Factor for BatesK3d'
         diagUnits = 'none            '
         diagCode  = 'SM P    MR      '
         diagMate  = diagNum
@@ -457,7 +457,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'GM_TFLXX'
         diagTitle = 'Zonal thickness flux'
-        diagUnits = '1/(m*s)           '
+        diagUnits = '1/(m*s)         '
         diagCode  = 'UU      MR      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -543,7 +543,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-#ifdef GM_K3D_PASSIVE
+#ifdef GM_BATES_PASSIVE
         diagName  = 'GM_PSTAR'
         diagTitle = 'Diagnosed bolus streamfunction: V component'
         diagUnits = 'm**2/s          '
