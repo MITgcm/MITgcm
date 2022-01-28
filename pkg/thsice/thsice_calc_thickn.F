@@ -214,7 +214,7 @@ C     help TAF with these variables
       _RL xxMlt
       _RL enFrcFrz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL xxFrz
-# if ( !defined TARGET_NEC_SX && !defined ALLOW_AUTODIFF_TAMC )
+# if ( !defined TARGET_NEC_SX && !defined ALLOW_AUTODIFF )
       _RL tmpMlt, tmpFrz
 # endif
 #endif
@@ -336,7 +336,7 @@ C------------------------------------------------------------------------
          xxFrz = aFrz*(hIce(i,j)-hFrz)
 c--
          IF ( powerLawExp2 .GE. 1 ) THEN
-#if ( defined TARGET_NEC_SX || defined ALLOW_AUTODIFF_TAMC )
+#if ( defined TARGET_NEC_SX || defined ALLOW_AUTODIFF )
 C     avoid the short inner loop that cannot be vectorized
           xxMlt = xxMlt**powerLaw
           xxFrz = xxFrz**powerLaw
@@ -825,8 +825,10 @@ CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
 
       DO j = jMin, jMax
        DO i = iMin, iMax
+C     These helper variables avoid TAF recomputation warnings
         hIceTmp = hIce(i,j)
         hSnwTmp = hSnow1(i,j)
+        hnewTmp = hnew(i,j,1)
         IF (iceMask(i,j).GT.0. _d 0) THEN
 
          IF ( hIceTmp .GT. 0. _d 0 ) THEN
@@ -837,45 +839,57 @@ C to sea-level OR if snow height is larger than hsMax, snow is
 C converted to ice to bring hSnow1 down to hsMax. Largest change is
 C applied and enthalpy of top ice layer adjusted accordingly.
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        ikey_1 = i
-     &       + sNx*(j-1)
-     &       + sNx*sNy*act1
-     &       + sNx*sNy*max1*act2
-     &       + sNx*sNy*max1*max2*act3
-     &       + sNx*sNy*max1*max2*max3*act4
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hIce(i,j)    = comlev1_thsice_1, key=ikey_1, kind = isbyte
-CADJ STORE hSnow1(i,j)  = comlev1_thsice_1, key=ikey_1, kind = isbyte
-CADJ STORE hnew(i,j,:)  = comlev1_thsice_1, key=ikey_1, kind = isbyte
-CADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1, kind = isbyte
-#endif
           IF ( hSnwTmp .GT. hIceTmp*floodFac
      &         .OR. hSnwTmp .GT. hsMax ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
 c          dhi = (hSnwTmp * rhos - hIceTmp * rhoiw) / rhosw
 c          dhs = dhi * rhoi / rhos
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1, kind = isbyte
-#endif
            dhs = (hSnwTmp - hIceTmp*floodFac) * rhoi / rhosw
            dhs = MAX( hSnwTmp - hsMax, dhs )
            dhi = dhs * rhos / rhoi
-           rqh = rhoi*qicen(i,j,1)*hnew(i,j,1) + rhos*qsnow*dhs
-           hnew(i,j,1)    = hnew(i,j,1) + dhi
-           qicen(i,j,1)   = rqh / (rhoi*hnew(i,j,1))
-           hIce(i,j)  = hIceTmp + dhi
-           hSnow1(i,j) = hSnwTmp - dhs
+           rqh = rhoi*qicen(i,j,1)*hnewTmp + rhos*qsnow*dhs
+           hnew(i,j,1)  = hnewTmp + dhi
+           qicen(i,j,1) = rqh / (rhoi*hnew(i,j,1))
+           hIce(i,j)    = hIceTmp + dhi
+           hSnow1(i,j)  = hSnwTmp - dhs
           ENDIF
+#ifdef ALLOW_AUTODIFF
+C     This is awkward, but makes storing a few variables (hIce, hSnow1,
+C     qicen) unnecessary. Splitting the loop also changes the condition
+C     hIce>0 because hIce has been modified above. This could be handled
+C     more cleanly, but because hIce>0 is required for the previous
+C     block to be executed where snow is turned into ice hIce>0 is still
+C     unchanged, so splitting this loop with the if conditions should be
+C     safe. If this turns out to be robust, we can use this code also
+C     for non-AD simulation.
 
+C-    if hIce > 0 : end
+         ENDIF
+C     endif iceMask > 0
+        ENDIF
+C     end i/j-loops
+       ENDDO
+      ENDDO
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+C     This helper variable avoids TAF recomputation warnings
+        hIceTmp = hIce(i,j)
+        IF (iceMask(i,j).GT.0. _d 0) THEN
+         IF ( hIceTmp .GT. 0. _d 0 ) THEN
+C limit ice height
+C- NOTE: this part does not conserve Energy ;
+C        but surplus of fresh water and salt are taken into account.
+          IF (hIceTmp.GT.hiMax) THEN
+cBB      print*,'BBerr, hIce>hiMax',i,j,hIce(i,j)
+           chi=hIceTmp-hiMax
+#else /* ndef ALLOW_AUTODIFF */
 C limit ice height
 C- NOTE: this part does not conserve Energy ;
 C        but surplus of fresh water and salt are taken into account.
           IF (hIce(i,j).GT.hiMax) THEN
 cBB      print*,'BBerr, hIce>hiMax',i,j,hIce(i,j)
            chi=hIce(i,j)-hiMax
+#endif /* ALLOW_AUTODIFF */
            hnew(i,j,1)=hnew(i,j,1)-chi/2. _d 0
            hnew(i,j,2)=hnew(i,j,2)-chi/2. _d 0
            frw2oc(i,j) = frw2oc(i,j) + chi*rhoi/dt

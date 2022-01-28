@@ -549,10 +549,13 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxpass
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
-CADJ INIT comlev1_thsice_1 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
-CMLCADJ INIT comlev1_thsice_2 = COMMON,
-CMLCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
+C     Commented store directives with these two tapes can still be found
+C     in the code, so we do the same here, but eventually they should be
+C     removed.
+cCADJ INIT comlev1_thsice_1 = COMMON,
+cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
+cCADJ INIT comlev1_thsice_2 = COMMON,
+cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
 CADJ INIT comlev1_thsice_3 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
