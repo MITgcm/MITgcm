@@ -1,8 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - rename S/R, CPP option (GM_BATES_K3D), on/off switch (GM_useBatesK3d),
+    parameters (GM_Bates_*) and 3-D var (GM_BatesK3d) of Bates etal (JPO, 2014)
+    scheme that computes 3-D field GM/Redi diffusivity (analog to Visbeck etal
+    variable/option naming example).
+
 checkpoint68f (2022/01/14)
-o pkg/exf: 
+o pkg/exf:
   - clean-up relative wind implementation so that uwind and vwind are kept
     unchanged (always vanilla atmospheric winds after interpolation) while
     relative wind is computed locally; add diagnostics for relative wind.
