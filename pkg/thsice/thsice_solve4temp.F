@@ -409,8 +409,6 @@ CADJ STORE devdt    = comlev1_bibj, key = ticekey, byte = isbyte
 CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, byte = isbyte
 CADJ STORE flx0exsw = comlev1_bibj, key = ticekey, byte = isbyte
 CADJ STORE flxtexsw = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE evap00   = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE evapt    = comlev1_bibj, key = ticekey, byte = isbyte
 #endif
 
 C ----- begin iteration  -----
@@ -423,10 +421,12 @@ C
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (ticekey-1)*MaxTsf + k
-CADJ STORE iceflag = comlev1_thsice_s4t, key=kkey, byte=isbyte
-CADJ STORE hSnow1  = comlev1_thsice_s4t, key=kkey, byte=isbyte
-CADJ STORE tsf     = comlev1_thsice_s4t, key=kkey, byte=isbyte
-CADJ STORE dEvdT   = comlev1_thsice_s4t, key=kkey, byte=isbyte
+CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE hSnow1   = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE tsf      = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE flxtexsw = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE dflxdt   = comlev1_thsice_s4t, key = kkey, byte = isbyte
 #endif
 
 C--   Compute top surface flux.
@@ -460,17 +460,6 @@ C--- end if: IF ( useEXF ) THEN
 C--- end if: IF ( useBlkFlx ) THEN
         ENDIF
 #endif /* ALLOW_AUTODIFF */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-C     I do not understand why we need to save the same state over and
-C     over again, but this gives clearly a more accuare gradient than
-C     the more intuitive choice of comlev1_thsice_s4t, key = kkey
-CADJ STORE devdt    = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE flxtexsw = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE iceflag  = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE tsf      = comlev1_bibj, key = ticekey, byte = isbyte
-#endif
 
 C--   Compute new top layer and surface temperatures.
 C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
@@ -573,9 +562,6 @@ C ------ end iteration ------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tIc2 = comlev1_bibj, key = ticekey, byte = isbyte
-#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
 C     this intermediate variable avoids a recomputation warning
