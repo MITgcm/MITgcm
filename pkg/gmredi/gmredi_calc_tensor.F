@@ -98,7 +98,8 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
 #ifdef OLD_VISBECK_CALC
       _RL Ssq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #else
-      _RL dSigmaH, dSigmaR, Sloc
+      INTEGER ks
+      _RL dSigmaH, dSigmaR, Sloc, rTop
 c     _RL M2loc
 #endif
       _RL recipMaxSlope
@@ -356,22 +357,28 @@ C       in the "variable K" parameterisaton:
 C       compute depth average from surface down to the bottom or
 C       GM_Visbeck_depth, whatever is the shallower.
 
+        rTop = rF(1)
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( maskFk(i,j).NE.zeroRS ) THEN
-           integrDepth = -rC( kLowC(i,j,bi,bj) )
+           ks = kSurfC(i,j,bi,bj)
+C-      If dry-cell @ top (e.g., under ice-shelf), integrate over Visbeck_depth
+C       as relative to top solid BC (as below) or stop integral if deeper (in
+C       absolute sense) than Visbeck_depth (comment line below):
+           rTop = Ro_surf(i,j,bi,bj)
+           integrDepth = rTop - rC( kLowC(i,j,bi,bj) )
 C-      in 2 steps to avoid mix of RS & RL type in min fct. arguments
            integrDepth = MIN( integrDepth, GM_Visbeck_depth )
 C-      to recover "old-visbeck" form with Visbeck_minDepth = Visbeck_depth
            integrDepth = MAX( integrDepth, GM_Visbeck_minDepth )
 C       Distance between level center above and the integration depth
-           deltaH = integrDepth + rC(k-1)
+           deltaH = integrDepth - rTop + rC(k-1)
 C       If negative then we are below the integration level
 C       (cannot be the case with 2 conditions on maskC & -rC(k-1))
 C       If positive we limit this to the distance from center above
            deltaH = MIN( deltaH, drC(k) )
 C       Now we convert deltaH to a non-dimensional fraction
-           deltaH = deltaH/( integrDepth+rC(1) )
+           deltaH = deltaH/( integrDepth - rTop + rC(ks) )
 
 C--      compute: ( M^2 * S )^1/2   (= S*N since S=M^2/N^2 )
 C        a 5 points average gives a more "homogeneous" formulation

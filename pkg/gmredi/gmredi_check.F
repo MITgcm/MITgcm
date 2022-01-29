@@ -334,21 +334,21 @@ C     to just stop here if it is the case.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( GM_Visbeck_alpha.NE.zeroRL ) THEN
-        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: Visbeck scheme',
-     &   ' not yet fixed for dry cell @ top'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
        IF ( GM_useBatesK3d ) THEN
         WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
      &    'GM_useBatesK3d potentially unsafe with dry cell @ top'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
+       IF ( GM_Visbeck_alpha.NE.zeroRL ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** Warning ** GMREDI_CHECK: ',
+     &    'Visbeck scheme not fully tested with dry cell @ top'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
        IF ( GM_useLeithQG ) THEN
-        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
-     &    'GM_useLeithQG potentially unsafe with dry cell @ top'
+        WRITE(msgBuf,'(2A,I3)') '** Warning ** GMREDI_CHECK: ',
+     &    'GM_useLeithQG not fully tested with dry cell @ top'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
