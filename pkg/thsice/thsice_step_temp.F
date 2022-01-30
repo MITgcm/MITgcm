@@ -120,7 +120,7 @@ C-    Initialise flxAtm,evpAtm
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
 c     IF ( fluidIsWater ) THEN
        CALL THSICE_ALBEDO(
@@ -138,7 +138,10 @@ C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icflxsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+C     avoid calling s/r thsice_albedosolve4temp in adjoint routine again
+CADJ STORE siceAlb (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icAlbNIR(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -169,12 +172,10 @@ C-      surface net SW flux:
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tsrf(:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj,
@@ -189,6 +190,10 @@ CADJ STORE tsrf(:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid calling s/r thsice_solve4temp in adjoint routine again
+CADJ STORE icFlxSW(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
