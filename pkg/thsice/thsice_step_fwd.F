@@ -87,7 +87,9 @@ C     tFrzOce   :: sea-water freezing temperature [oC] (function of S)
 C     isIceFree :: true for ice-free grid-cell that remains ice-free
 C     ageFac    :: snow aging factor [1]
 C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
+#ifdef ALLOW_BULK_FORCE
       LOGICAL isIceFree(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL     iceFrac  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flx2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     frw2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -131,7 +133,9 @@ C-    Initialise
       dBugFlag = debugLevel.GE.debLevC
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
+#ifdef ALLOW_BULK_FORCE
           isIceFree(i,j) = .FALSE.
+#endif
 #ifdef ALLOW_ATM2D
           sFluxFromIce(i,j) = 0. _d 0
 #else
@@ -155,7 +159,7 @@ c         frzmltMxL(i,j) = 0. _d 0
       snowFac = thSIce_deltaT/(rhos*hNewSnowAge)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -242,10 +246,13 @@ C-------
      I          myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing s/r thsice_calc_thickn
-CADJ STORE fsalt     = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE flx2oc    = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE frw2oc    = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE frzmltMxL = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE icFrwAtm(:,:,bi,bj)
+CADJ &               = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frzSeaWat = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE fsalt     = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE flx2oc    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frw2oc    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frzmltMxL = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 
 C--   Net fluxes :
@@ -269,10 +276,12 @@ C-     weighted average net fluxes:
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
 #endif
+#if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
 C-    All seawater freezing (no reduction by surf. melting) from CALC_THICKN
 c         frzSeaWat(i,j) = icFrac*frzSeaWat(i,j)
 C-    Net seawater freezing (underestimated if there is surf. melting or rain)
           frzSeaWat(i,j) = MAX( -icFrac*frw2oc(i,j), 0. _d 0 )
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -316,10 +325,10 @@ C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing s/r thsice_extend
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -333,7 +342,9 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
 #endif
+#if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
           frzSeaWat(i,j) = frzSeaWat(i,j) + MAX(-frw2oc(i,j), 0. _d 0 )
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
         IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -342,9 +353,11 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
      &           snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
 #endif
 
+#ifdef ALLOW_BULK_FORCE
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
      &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
      &                  .AND.   iceFrac(i,j) .LE.0. _d 0
+#endif
         IF ( iceFrac(i,j) .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=iceFrac(i,j)
           IF ( snowHeight(i,j,bi,bj).EQ.0. _d 0 )
