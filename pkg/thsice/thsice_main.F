@@ -114,9 +114,9 @@ C     (excluding overlap) and apply exchanges when needed
         ticekey = (act1 + 1) + act2*max1
      &                       + act3*max1*max2
      &                       + act4*max1*max2*max3
-CADJ STORE qsw   (:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE qsw   (:,:,bi,bj)  = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
 
         DO j=1-OLy,sNy+OLy
@@ -134,14 +134,14 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
      I                          bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowAge   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE hOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE tOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE sOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE v2ocMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowAge   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE hOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE tOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE sOceMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE v2ocMxL   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef ALLOW_AUTODIFF
@@ -168,10 +168,6 @@ C-   end if not useCheapAML
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE snowPr = comlev1_bibj, key=ticekey, byte=isbyte
-#endif
-
 #ifndef ALLOW_AUTODIFF
         IF ( .NOT.( useCheapAML .OR. thSIce_skipThermo ) ) THEN
 #endif
@@ -180,20 +176,12 @@ CADJ STORE snowPr = comlev1_bibj, key=ticekey, byte=isbyte
      I                     myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE Qice1     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE Qice2     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flxCndBt  (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE empmr     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE qnet      (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowAge   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE sHeating  (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE icFrwAtm  (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowPr                = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE qPrcRn                = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE prcAtm    (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE icFlxSw   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE flxCndBt  (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE EmPmR     (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE Qnet      (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowAge   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE sHeating  (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowPr                = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
 
 #ifndef ALLOW_AUTODIFF
@@ -226,9 +214,6 @@ C--  end bi,bj loop
 #ifdef ALLOW_BALANCE_FLUXES
 C--   Balance net Fresh-Water flux from Atm+Land
       IF ( thSIceBalanceAtmFW.NE.0 ) THEN
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icFrwAtm = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
         CALL THSICE_BALANCE_FRW(
      I                      iMin, iMax, jMin, jMax,
      I                      prcAtm, myTime, myIter, myThid )
@@ -265,9 +250,9 @@ C     otherwise, call it from here, after thsice-thermodynamics is done
         ticekey = (act1 + 1) + act2*max1
      &                       + act3*max1*max2
      &                       + act4*max1*max2*max3
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE fu     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE fv     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE fu     (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE fv     (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Cumulate time-averaged fields and also fill-up flux diagnostics
