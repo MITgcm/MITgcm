@@ -209,8 +209,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
       ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
-CADJ STORE flxsw  = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE flxsw  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF
@@ -351,10 +351,10 @@ C--   Compute coefficients used in quadratic formula.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt         = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE tsf           = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE hsnow1        = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE sh(:,:,bi,bj) = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE devdt         = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE tsf           = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hsnow1        = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE sh(:,:,bi,bj) = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 
 C--   Get surface fluxes over melting surface
@@ -405,10 +405,12 @@ C     Tsfc converges.
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt    = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE flx0exsw = comlev1_bibj, key = ticekey, byte = isbyte
-CADJ STORE flxtexsw = comlev1_bibj, key = ticekey, byte = isbyte
+CADJ STORE iceFlag  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE evap00   = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE devdt    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE flx0exSW = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE flxTexSW = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 
 C ----- begin iteration  -----
@@ -421,12 +423,10 @@ C
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (ticekey-1)*MaxTsf + k
-CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, byte = isbyte
-CADJ STORE hSnow1   = comlev1_thsice_s4t, key = kkey, byte = isbyte
-CADJ STORE tsf      = comlev1_thsice_s4t, key = kkey, byte = isbyte
-CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, byte = isbyte
-CADJ STORE flxtexsw = comlev1_thsice_s4t, key = kkey, byte = isbyte
-CADJ STORE dflxdt   = comlev1_thsice_s4t, key = kkey, byte = isbyte
+CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE hSnow1   = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, kind = isbyte
 #endif
 
 C--   Compute top surface flux.
@@ -461,6 +461,12 @@ C--- end if: IF ( useBlkFlx ) THEN
         ENDIF
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFlag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE Tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
+#endif
 C--   Compute new top layer and surface temperatures.
 C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
 C     with different coefficients.
