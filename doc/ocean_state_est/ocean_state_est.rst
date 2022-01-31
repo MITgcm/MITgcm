@@ -199,13 +199,13 @@ index for that cost function term.
   +---------------------------+-------------------+-----------------------------------+
   | parameter                 | type              | function                          |
   +===========================+===================+===================================+
-  | ``gencost_name``          | character(*)      | Name of cost term                 |
+  | ``gencost_name``          | character(\*)     | Name of cost term                 |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_barfile``       | character(*)      | File to receive model counterpart |
+  | ``gencost_barfile``       | character(\*)     | File to receive model counterpart |
   |                           |                   | :math:`\vec{m}_i` (See            |
   |                           |                   | :numref:`gencost_ecco_barfile`)   |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_datafile``      | character(*)      | File containing                   |
+  | ``gencost_datafile``      | character(\*)     | File containing                   |
   |                           |                   | observational data                |
   |                           |                   | :math:`\vec{o}_i`                 |
   +---------------------------+-------------------+-----------------------------------+
@@ -217,11 +217,11 @@ index for that cost function term.
   | ``gencost_outputlevel``   | integer           | Greater than 0 will               |
   |                           |                   | output misfit fields              |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_errfile``       | character(*)      | Uncertainty field                 |
+  | ``gencost_errfile``       | character(\*)     | Uncertainty field                 |
   |                           |                   | name (not used in                 |
   |                           |                   | :numref:`intgen`)                 |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_mask``          | character(*)      | Mask file name root               |
+  | ``gencost_mask``          | character(\*)     | Mask file name root               |
   |                           |                   | (used only in                     |
   |                           |                   | :numref:`intgen`)                 |
   +---------------------------+-------------------+-----------------------------------+
@@ -229,26 +229,26 @@ index for that cost function term.
   |                           |                   | :math:`\alpha_i`                  |
   |                           |                   | (default: 1)                      |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_preproc``       | character(*)      | Preprocessor names                |
+  | ``gencost_preproc``       | character(\*)     | Preprocessor names                |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_preproc_c``     | character(*)      | Preprocessor                      |
+  | ``gencost_preproc_c``     | character(\*)     | Preprocessor                      |
   |                           |                   | character arguments               |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_preproc_i``     | integer(*)        | Preprocessor integer              |
+  | ``gencost_preproc_i``     | integer(\*)       | Preprocessor integer              |
   |                           |                   | arguments                         |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_preproc_r``     | real(*)           | Preprocessor real                 |
+  | ``gencost_preproc_r``     | real(\*)          | Preprocessor real                 |
   |                           |                   | arguments                         |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_posproc``       | character(*)      | Post-processor names              |
+  | ``gencost_posproc``       | character(\*)     | Post-processor names              |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_posproc_c``     | character(*)      | Post-processor                    |
+  | ``gencost_posproc_c``     | character(\*)     | Post-processor                    |
   |                           |                   | character arguments               |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_posproc_i``     | integer(*)        | Post-processor                    |
+  | ``gencost_posproc_i``     | integer(\*)       | Post-processor                    |
   |                           |                   | integer arguments                 |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_posproc_r``     | real(*)           | Post-processor real               |
+  | ``gencost_posproc_r``     | real(\*)          | Post-processor real               |
   |                           |                   | arguments                         |
   +---------------------------+-------------------+-----------------------------------+
   | ``gencost_spmin``         | real              | Data less than this               |
@@ -295,11 +295,11 @@ index for that cost function term.
   +---------------------------+-------------------+-----------------------------------+
   | ``gencost_refPressure``   | integer           | Defines reference pressure used   |
   |                           |                   | in density following feature      |
-  +---------------------------+-------------------+-----------------------------------+ 
+  +---------------------------+-------------------+-----------------------------------+
   | ``gencost_tanhScale``     | integer           | Used in defining density levels   |
   |                           |                   | in density following feature      |
   +---------------------------+-------------------+-----------------------------------+
-  
+
 .. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
            can be used via :filelink:`cost_generic.F
            <pkg/ecco/cost_generic.F>` (:numref:`costgen`). An extension
@@ -461,15 +461,15 @@ computed accordingly. In case #2 (‘m_horflux\*’) the ‘W’, ‘S’, and �
 masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
-In order to define a control volume using both a depth range and a 
-density range, use a ‘K’ mask and also set 
-:varlink:`gencost_useDensityMask==.TRUE.`. When the density range 
-feature is active, the control volume is defined at each timestep by 
-the bounds set in the ‘K’ mask and also by the density range specified 
+In order to define a control volume using both a depth range and a
+density range, use a ‘K’ mask and also set
+:varlink:`gencost_useDensityMask==.TRUE.`. When the density range
+feature is active, the control volume is defined at each timestep by
+the bounds set in the ‘K’ mask and also by the density range specified
 by the parameters :varlink:`gencost_sigmaLow` (the minimum density to
-be included in the control volume) and :varlink:`gencost_sigmaHigh` 
+be included in the control volume) and :varlink:`gencost_sigmaHigh`
 (the maximum density to be included in the control volume). As a default
-:varlink:`gencost_refPressure` should be set to 0, but other values can 
+:varlink:`gencost_refPressure` should be set to 0, but other values can
 be used (e.g. 1000 dbar, 2000 dbar).
 
 .. table:: Implemented :varlink:`gencost_barfile` options (as of checkpoint
@@ -769,30 +769,30 @@ the resulting new control vector to the model grid unless CPP-flag
   +-----------------------+-----------------------+--------------------------------+
   | parameter             | type                  | function                       |
   +=======================+=======================+================================+
-  | ``xx_gen*_file``      | character(*)          | Control Name: prefix from      |
+  | ``xx_gen*_file``      | character(\*)         | Control Name: prefix from      |
   |                       |                       | :numref:`gencost_ctrl_files`   |
   |                       |                       | + suffix.                      |
   +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_weight``    | character(*)          | Weights in the form            |
+  | ``xx_gen*_weight``    | character(\*)         | Weights in the form            |
   |                       |                       | of                             |
   |                       |                       | :math:`\sigma_{\vec{u          |
   |                       |                       | }_j}^{-2}`                     |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_bounds``    | real(5)               | Apply bounds                   |
   +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc``   | character(*)          | Control                        |
+  | ``xx_gen*_preproc``   | character(\*)         | Control                        |
   |                       |                       | preprocessor(s) (see           |
   |                       |                       | :numref:`gencost_ctrl_preproc` |
   |                       |                       | )                              |
   +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_c`` | character(*)          | Preprocessor                   |
+  | ``xx_gen*_preproc_c`` | character(\*)         | Preprocessor                   |
   |                       |                       | character arguments (see       |
   |                       |                       | :numref:`genarr_preproc_c`)    |
   +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_i`` | integer(*)            | Preprocessor integer           |
+  | ``xx_gen*_preproc_i`` | integer(\*)           | Preprocessor integer           |
   |                       |                       | arguments                      |
   +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_r`` | real(*)               | Preprocessor real              |
+  | ``xx_gen*_preproc_r`` | real(\*)              | Preprocessor real              |
   |                       |                       | arguments                      |
   +-----------------------+-----------------------+--------------------------------+
   | ``gen*Precond``       | real                  | Preconditioning                |
