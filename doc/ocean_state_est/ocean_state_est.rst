@@ -287,16 +287,16 @@ index for that cost function term.
   | ``gencost_useDensityMask``| logical           | Needs to be true if density       |
   |                           |                   | following feature is used         |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_sigmaLow``      | integer           | Use to define minimum density     |
+  | ``gencost_sigmaLow``      | real              | Use to define minimum density     |
   |                           |                   | surface chosen                    |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_sigmaHigh``     | integer           | Used to define maximum density    |
+  | ``gencost_sigmaHigh``     | real              | Used to define maximum density    |
   |                           |                   | surface chosen                    |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_refPressure``   | integer           | Defines reference pressure used   |
+  | ``gencost_refPressure``   | real              | Defines reference pressure used   |
   |                           |                   | in density following feature      |
   +---------------------------+-------------------+-----------------------------------+
-  | ``gencost_tanhScale``     | integer           | Used in defining density levels   |
+  | ``gencost_tanhScale``     | real              | Used in defining density levels   |
   |                           |                   | in density following feature      |
   +---------------------------+-------------------+-----------------------------------+
 
