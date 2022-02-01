@@ -556,8 +556,8 @@ cCADJ INIT comlev1_thsice_1 = COMMON,
 cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 cCADJ INIT comlev1_thsice_2 = COMMON,
 cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
-CADJ INIT comlev1_thsice_3 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
+cCADJ INIT comlev1_thsice_3 = COMMON,
+cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
 CADJ INIT comlev1_thsice_nlyr = COMMON,
@@ -565,6 +565,10 @@ CADJ &    nchklev_1*nSx*nSy*nlyr*nthreads_chkpt
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_thsice_5 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+CADJ INIT comlev1_thsice_exf = COMMON,
+CADJ &    nchklev_1*nSx*nSy*MaxTsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_exf_niter = COMMON,
+CADJ &    nchklev_1*nSx*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
 #   endif
 CADJ INIT comlev1_thsice_s4t = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxtsf*nthreads_chkpt
