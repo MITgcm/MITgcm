@@ -4,6 +4,7 @@
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
+# define ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -102,7 +103,7 @@ C     myThid      :: my Thread Id number
       LOGICAL dBugFlag
       LOGICAL useBulkForce
       LOGICAL useEXF
-      _RL icMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL icMask (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hSnow1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFrz   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -116,8 +117,8 @@ C     myThid      :: my Thread Id number
       _RL flxCnB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL evpAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxExSW(iMin:iMax,jMin:jMax,0:2)
-      _RL dTsrf1 (iMin:iMax,jMin:jMax)
+      _RL flxExSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
+      _RL dTsrf1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -190,12 +191,12 @@ C     dt           :: timestep
       INTEGER ticekey, kkey
 #endif
 
+#ifdef ALLOW_DBUG_THSICE
 C-    Define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
-
  1010 FORMAT(A,I3,3F11.6)
  1020 FORMAT(A,1P4E14.6)
-
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -350,13 +351,6 @@ C--   Compute coefficients used in quadratic formula.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE devdt         = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE tsf           = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE hsnow1        = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE sh(:,:,bi,bj) = comlev1_bibj, key = ticekey, kind = isbyte
-#endif
-
 C--   Get surface fluxes over melting surface
 #ifndef ALLOW_AUTODIFF
       IF ( useBlkFlx .AND. iterate4Tsf  ) THEN
@@ -404,15 +398,6 @@ C     Tsfc converges.
         iterMax = 1
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFlag  = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE evap00   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE devdt    = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE dflxdt   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE flx0exSW = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE flxTexSW = comlev1_bibj, key = ticekey, kind = isbyte
-#endif
-
 C ----- begin iteration  -----
       DO k = 1,iterMax
 #ifndef ALLOW_AUTODIFF
@@ -424,8 +409,9 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (ticekey-1)*MaxTsf + k
 CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE hSnow1   = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE Tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, kind = isbyte
 #endif
 
@@ -461,11 +447,10 @@ C--- end if: IF ( useBlkFlx ) THEN
         ENDIF
 #endif /* ALLOW_AUTODIFF */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFlag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE Tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     avoid calling thsice_get_exf in ad-code
 CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
 #endif
 C--   Compute new top layer and surface temperatures.
 C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
@@ -527,7 +512,9 @@ C--   Check for convergence.  If no convergence, then repeat.
            ELSE
             iceFlag(i,j) = 0. _d 0
            ENDIF
+#ifndef ALLOW_AUTODIFF
            iterate4Tsf = iterate4Tsf .OR. (iceFlag(i,j).GT.0. _d 0)
+#endif
 
 C     Convergence test: Make sure Tsfc has converged, within prescribed error.
 C     (Energy conservation is guaranteed within machine roundoff, even
@@ -565,6 +552,14 @@ C--- end if: IF ( iterate4Tsf ) THEN
 C--- end loop DO k = 1,iterMax
       ENDDO
 C ------ end iteration ------------
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     avoid calling thsice_get_exf in ad-code
+CADJ STORE tIc1   = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE dTsrf1 = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE Tsf    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE dFlxdT = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE dEvdT  = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
 
