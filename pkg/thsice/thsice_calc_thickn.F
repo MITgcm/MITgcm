@@ -1,7 +1,7 @@
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
-# define ALLOW_AUTODIFF_TAMC_MORE
+# undef ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -413,10 +413,6 @@ C     end i/j-loops
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE evapLoc  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE Fbot     = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE enFrcMlt = comlev1_bibj, key = ticekey, kind = isbyte
-CMLcCADJ STORE enFrcFrz = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE icFrac = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -491,12 +487,6 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE ebote = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE etop  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE etope = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
 
 C     Initialize layer thicknesses. Divide total thickness equally between
 C     layers
@@ -509,9 +499,15 @@ C     layers
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etop   = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE etop   = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
+C     not necessary - remove
+CML#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CMLCADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
+CMLCADJ STORE ebote = comlev1_bibj, key = ticekey, kind = isbyte
+CMLCADJ STORE etope = comlev1_bibj, key = ticekey, kind = isbyte
+CML#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
@@ -536,9 +532,9 @@ C     endif iceMask > 0, etc.
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 C     two layers of ice
       DO k = 1, nlyr
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -577,11 +573,11 @@ C     end i/j-loops
        ENDDO
 C     end k-loop
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
 C Bottom growth:
       DO j = jMin, jMax
@@ -603,12 +599,12 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLcCADJ STORE etop  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLcCADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     these change the results (increase gradient error sligthly)
+C     and do not do too much, so we leave commented
+cCADJ STORE hnew (:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
+cCADJ STORE qicen(:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
 C Bottom melt:
       DO k = nlyr, 1, -1
@@ -637,10 +633,10 @@ C     end i/j-loops
        ENDDO
 C     end k-loop
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE ebot = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE ebot = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 C     If ice melts completely and snow is left, remove the snow with
 C     energy from the mixed layer
       DO j = jMin, jMax
@@ -668,10 +664,9 @@ C     endif iceMask > 0, etc.
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
-CMLcCADJ STORE ebot   = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
@@ -706,10 +701,6 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hIce   = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -758,17 +749,11 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hice = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
-
 C-    else: hIce > 0
       DO k = 1, nlyr
 #ifdef ALLOW_AUTODIFF_TAMC
        ikey_1 = k + (ticekey-1)*nlyr
 CADJ STORE evaploc      = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
-CMLCADJ STORE hnew(:,:,k)  = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
-CMLCADJ STORE qicen(:,:,k) = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
 #endif
        DO j = jMin, jMax
         DO i = iMin, iMax
@@ -815,11 +800,13 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hice  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE evapLoc = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hSnow1  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hIce    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE qicen   = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
 C     still else: hice > 0
       DO j = jMin, jMax
@@ -856,13 +843,6 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE qicen  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hice   = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hnew   = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -911,11 +891,13 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE qicen       = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hice        = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hnew(:,:,1) = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     changes results a little (admonitor output in offline_exf_seaice),
+C     but avoids quite a few recomputations, so we keep it
+CADJ STORE qicen       = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hice        = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew(:,:,1) = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
 C     This helper variable avoids TAF recomputation warnings
@@ -1002,10 +984,10 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hice = comlev1_bibj, key = ticekey, kind = isbyte
-CMLcCADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -1060,12 +1042,6 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
-
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE icfrac = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE qicen  = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
 
       DO j = jMin, jMax
        DO i = iMin, iMax
