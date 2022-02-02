@@ -4,6 +4,7 @@
 #endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+# define ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -231,6 +232,15 @@ C-------
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE icFrwAtm  (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE tFrzOce               = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE frzMltMxl             = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
+#endif
       CALL THSICE_CALC_THICKN(
      I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag,
@@ -244,7 +254,7 @@ C-------
      U          icFrwAtm(siLo,sjLo,bi,bj), frzmltMxL, flx2oc,
      O          frw2oc, fsalt, frzSeaWat,
      I          myTime, myIter, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
 C     these stores avoid recomputing s/r thsice_calc_thickn
 CADJ STORE icFrwAtm(:,:,bi,bj)
 CADJ &               = comlev1_bibj, key = ticekey, kind = isbyte
@@ -323,7 +333,7 @@ C-------
      O          flx2oc, frw2oc, fsalt,
      I          myTime, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
 C     these stores avoid recomputing s/r thsice_extend
 CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
 CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
