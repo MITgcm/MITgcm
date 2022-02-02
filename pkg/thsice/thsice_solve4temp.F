@@ -388,7 +388,6 @@ C---  Compute new surface and internal temperatures; iterate until
 C     Tsfc converges.
       DO j = jMin, jMax
         DO i = iMin, iMax
-          Tsf(i,j)  = tSrf1(i,j)
           dTsrf1(i,j) = Terrmax
         ENDDO
       ENDDO
@@ -409,7 +408,7 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (ticekey-1)*MaxTsf + k
 CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE Tsf      = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE tSrf1    = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, kind = isbyte
@@ -421,7 +420,7 @@ C--   Compute top surface flux.
 #endif
            CALL THSICE_GET_EXF(   bi, bj, k+1,
      I                            iMin, iMax, jMin, jMax,
-     I                            iceFlag, hSnow1, Tsf,
+     I                            iceFlag, hSnow1, tSrf1,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
 C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
@@ -429,7 +428,7 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
          ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
-     I                            iceFlag, hSnow1, Tsf,
+     I                            iceFlag, hSnow1, tSrf1,
      O                            flxTexSW, dFlxdT, evapT, dEvdT,
      I                            myTime, myIter, myThid )
 C--- end if: IF ( useEXF ) THEN
@@ -466,18 +465,18 @@ C     with different coefficients.
 #endif
 
            a1 = a10(i,j) - k12(i,j)*dFlxdT(i,j) / (k12(i,j)-dFlxdT(i,j))
-           b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*Tsf(i,j))
+           b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*tSrf1(i,j))
      &                   /(k12(i,j)-dFlxdT(i,j))
            c1 = c10(i,j)
            tIc1(i,j)  = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-           dTsrf1(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-Tsf(i,j)))
+           dTsrf1(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-tSrf1(i,j)))
      &                   /(k12(i,j)-dFlxdT(i,j))
-C     this line causes 3 recomputation warings for TAF because Tsf is
-C     updated and the updated value is used to update Tsf (and other
+C     this line causes 3 recomputation warings for TAF because tSrf1 is
+C     updated and the updated value is used to update tSrf1 (and other
 C     variables) again; with this intermediate variable, the warning go
 C     away.
-C          Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
-           TsfTmp = Tsf(i,j) + dTsrf1(i,j)
+C          tSrf1(i,j) = tSrf1(i,j) + dTsrf1(i,j)
+           TsfTmp = tSrf1(i,j) + dTsrf1(i,j)
 C
            IF ( TsfTmp .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DBUG_THSICE
@@ -488,7 +487,7 @@ C
 C      note: b1 = b10 - k12*Tf0
             b1 = b10(i,j)
             tIc1(i,j) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-            Tsf(i,j) = 0. _d 0
+            tSrf1(i,j) = 0. _d 0
 #ifndef ALLOW_AUTODIFF
             IF ( useBlkFlx ) THEN
 #endif /* ALLOW_AUTODIFF */
@@ -503,7 +502,7 @@ C      note: b1 = b10 - k12*Tf0
             ENDIF
 #endif /* ALLOW_AUTODIFF */
            ELSE
-            Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
+            tSrf1(i,j) = tSrf1(i,j) + dTsrf1(i,j)
            ENDIF
 
 C--   Check for convergence.  If no convergence, then repeat.
@@ -523,19 +522,19 @@ C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
            IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
-     &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf1(i,j)
+     &  'ThSI_SOLVE4T: k,ts,t1,dTs=', k,tSrf1(i,j),tIc1(i,j),dTsrf1(i,j)
            IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND.
      &                     (iceFlag(i,j).GT.0. _d 0) ) THEN
             WRITE(stdUnit,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
             WRITE(stdUnit,*)
-     &        'BB: not converge: Tsf, dTsf=', Tsf(i,j), dTsrf1(i,j)
+     &        'BB: not converge: Tsf, dTsf=', tSrf1(i,j), dTsrf1(i,j)
             WRITE(stdUnit,*)
      &        'BB: not converge: flxNet,dFlxT=', flxNet, dFlxdT(i,j)
-            IF ( Tsf(i,j).LT.-70. _d 0 ) THEN
+            IF ( tSrf1(i,j).LT.-70. _d 0 ) THEN
              WRITE( msgBuf, '(A,2I4,2I3,I10,F12.3)')
      &        'THSICE_SOLVE4TEMP: Too low Tsf in', i, j, bi, bj,
-     &                            myIter, Tsf(i,j)
+     &                            myIter, tSrf1(i,j)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
             ENDIF
@@ -556,7 +555,7 @@ C ------ end iteration ------------
 C     avoid calling thsice_get_exf in ad-code
 CADJ STORE tIc1   = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE dTsrf1 = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE Tsf    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE tSrf1  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE dFlxdT = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE dEvdT  = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
@@ -576,20 +575,20 @@ C--   Compute new bottom layer temperature.
      &               /(6. _d 0*dt*k32 + rhoi*cpIce*hIce(i,j))
 #ifdef ALLOW_DBUG_THSICE
           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
-     &  'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf(i,j),tIc1(i,j),tIc2(i,j)
+     &  'ThSI_SOLVE4T: k, Ts, Tice=',k,tSrf1(i,j),tIc1(i,j),tIc2(i,j)
           netSW   = flxAtm(i,j)
 #endif
 
 C--   Compute final flux values at surfaces.
-          tSrf1(i,j)  = Tsf(i,j)
-          fct    = k12(i,j)*(Tsf(i,j)-tIc1(i,j))
+          fct    = k12(i,j)*(tSrf1(i,j)-tIc1(i,j))
           flxCnB(i,j) = 4. _d 0*kIce *(tIc2(i,j)-tFrz(i,j))/hIce(i,j)
           flxNet = sHeat(i,j) + flxTexSW(i,j)
           flxNet = flxNet + dFlxdT(i,j)*dTsrf1(i,j)
 #ifndef ALLOW_AUTODIFF
           IF ( useBlkFlx ) THEN
 #endif
-C-    needs to update also Evap (Tsf changes) since Latent heat has been updated
+C--   need to update also Evap (tSrf1 changes) since Latent heat has
+C     been updated
             evpAtm(i,j) = evapT(i,j) + dEvdT(i,j)*dTsrf1(i,j)
 #ifndef ALLOW_AUTODIFF
           ELSE
@@ -629,7 +628,7 @@ C     (This should not happen for reasonable values of i0swFrac)
 
           IF ( dBug(i,j,bi,bj) ) THEN
            WRITE(stdUnit,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
-     &           Tsf(i,j), tIc1(i,j), tIc2(i,j), dTsrf1(i,j)
+     &           tSrf1(i,j), tIc1(i,j), tIc2(i,j), dTsrf1(i,j)
            WRITE(stdUnit,1020) 'ThSI_SOLV_4T: sHeat, flxCndBt, Qice =',
      &           sHeat(i,j), flxCnB(i,j), qIc1(i,j), qIc2(i,j)
            WRITE(stdUnit,1020) 'ThSI_SOLV_4T: flxA, evpA, fxSW_bf,af=',
