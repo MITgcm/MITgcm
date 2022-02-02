@@ -502,12 +502,6 @@ C     layers
 CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE etop   = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
-C     not necessary - remove
-CML#ifdef ALLOW_AUTODIFF_TAMC_MORE
-CMLCADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE ebote = comlev1_bibj, key = ticekey, kind = isbyte
-CMLCADJ STORE etope = comlev1_bibj, key = ticekey, kind = isbyte
-CML#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
@@ -574,6 +568,7 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     these change the AD-monitor output a little (11-14 digits of agreement)
 CADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
@@ -634,6 +629,7 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     these change the AD-monitor output a little (10-11 digits of agreement)
 CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE ebot = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
@@ -801,6 +797,7 @@ C     end k-loop
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     these change the AD-monitor output a little (8-10 digits of agreement)
 CADJ STORE evapLoc = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hSnow1  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hIce    = comlev1_bibj, key = ticekey, kind = isbyte
@@ -892,7 +889,7 @@ C     end i/j-loops
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     changes results a little (admonitor output in offline_exf_seaice),
+C     these change the AD-monitor output a little (8-10 digits of agreement)
 C     but avoids quite a few recomputations, so we keep it
 CADJ STORE qicen       = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hice        = comlev1_bibj, key = ticekey, kind = isbyte
