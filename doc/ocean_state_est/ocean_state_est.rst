@@ -463,7 +463,7 @@ horizontal transport (or overturn) will be computed accordingly.
 
 In order to define a control volume using both a depth range and a
 density range, use a ‘K’ mask and also set
-:varlink:`gencost_useDensityMask==.TRUE.`. When the density range
+:varlink:`gencost_useDensityMask` ``=.TRUE.``. When the density range
 feature is active, the control volume is defined at each timestep by
 the bounds set in the ‘K’ mask and also by the density range specified
 by the parameters :varlink:`gencost_sigmaLow` (the minimum density to
