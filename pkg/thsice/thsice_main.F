@@ -4,7 +4,6 @@
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
-# define ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -115,9 +114,9 @@ C     (excluding overlap) and apply exchanges when needed
         ticekey = (act1 + 1) + act2*max1
      &                       + act3*max1*max2
      &                       + act4*max1*max2*max3
-CADJ STORE qsw    (:,:,bi,bj)  = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE uvel  (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE vvel  (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE qsw     (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
@@ -180,7 +179,7 @@ C-   end if not useCheapAML
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC_MORE
+#ifdef ALLOW_AUTODIFF_TAMC
 C     this store directives avoid recomputation of this routine in ad-code
 CADJ STORE flxCndBt(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 CADJ STORE EmPmR   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
