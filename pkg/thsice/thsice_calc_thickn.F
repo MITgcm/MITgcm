@@ -1,7 +1,7 @@
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
-# undef ALLOW_AUTODIFF_TAMC_MORE
+# define ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -568,7 +568,8 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     these change the AD-monitor output a little (11-14 digits of agreement)
+C     if isbyte=4, these change the AD-monitor output a little (11-14
+C     digits of agreement)
 CADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
@@ -629,7 +630,8 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     these change the AD-monitor output a little (10-11 digits of agreement)
+C     if isbyte=4, these change the AD-monitor output a little (10-11
+C     digits of agreement)
 CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE ebot = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
@@ -797,7 +799,8 @@ C     end k-loop
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     these change the AD-monitor output a little (8-10 digits of agreement)
+C     if isbyte=4, these change the AD-monitor output a little (8-10
+C     digits of agreement)
 CADJ STORE evapLoc = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hSnow1  = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hIce    = comlev1_bibj, key = ticekey, kind = isbyte
@@ -889,8 +892,8 @@ C     end i/j-loops
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     these change the AD-monitor output a little (8-10 digits of agreement)
-C     but avoids quite a few recomputations, so we keep it
+C     if isbyte=4, these change the AD-monitor output a little (8-10
+C     digits of agreement), but avoid quite a few recomputations
 CADJ STORE qicen       = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hice        = comlev1_bibj, key = ticekey, kind = isbyte
 CADJ STORE hnew(:,:,1) = comlev1_bibj, key = ticekey, kind = isbyte
