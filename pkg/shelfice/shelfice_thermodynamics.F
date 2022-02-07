@@ -121,8 +121,6 @@ C     drKp1, recip_drLoc
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
-#endif
-#ifdef ALLOW_GENTIM2D_CONTROL
       _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -164,18 +162,6 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
        etastar = 1. _d 0
        gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar)
      &      - recip_shiKarman
-#ifdef ALLOW_AUTODIFF
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy,sNy+OLy
-          DO I = 1-OLx,sNx+OLx
-           shiTransCoeffT(i,j,bi,bj) = 0. _d 0
-           shiTransCoeffS(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif /* ALLOW_AUTODIFF */
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
