@@ -1,6 +1,40 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - rename S/R, CPP option (GM_BATES_K3D), on/off switch (GM_useBatesK3d),
+    parameters (GM_Bates_*) and 3-D var (GM_BatesK3d) of Bates etal (JPO, 2014)
+    scheme that computes 3-D field GM/Redi diffusivity (analog to Visbeck etal
+    variable/option naming example).
+
+checkpoint68f (2022/01/14)
+o pkg/exf:
+  - clean-up relative wind implementation so that uwind and vwind are kept
+    unchanged (always vanilla atmospheric winds after interpolation) while
+    relative wind is computed locally; add diagnostics for relative wind.
+  - adjust pkg/seaice relative-wind code (+ clean-up SEAICE_GREASE code).
+o pkg/kpp:
+  - avoid updating input argument "kmtj" in S/R BLDEPTH (in: kpp_routines.F);
+    this also remove/avoid 3 recomputation warnings for kmtj in adm (TAF) built.
+o pkg/streamice:
+  - fix regularised coulomb basal stress impl to avoid issues with adjoint ;
+  - cancel metric terms in stress tensor for cartesian grid ;
+  - allow (time-indep) velocities to be imposed from external file rather than
+    solved for ;
+  - allow for specification of log of controls as well as sqrt ;
+  - allow termination of adjoint fixed point loop based on relative and absolute
+    error ;
+  - terminate adjoint fixed point loop when change between most recent iterates
+    begins to increase (a sign of unstable growth from linear solve errors ?);
+    update OAD output of exp. halfpipe_streamice (affected by this modif).
+o pkg/seaice:
+  - replace hard-coded parameters for JNKF line search by new runtime parameters
+    SEAICE_JFNK_lsGamma and SEAICE_JFNK_lsLmax ;
+  - increment line search counter after reporting and fix an if statement, so
+    that zeroth step is not counted for more consistent debugging output.
+o tools/build_options:
+  - update pleiades optfile "linux_amd64_ifort+mpi_ice_nas"
+  - rename/update optfile for UK HPC Archer2.
 o pkgs:
   - remove/avoid unused variables from AD verification exp. built except from
     halfpipe_streamice (pkg/streamice); also clean-up a bit pkg/smooth.

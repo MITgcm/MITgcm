@@ -270,18 +270,16 @@ C--   Initialise Mixed Layer related array:
        ENDDO
       ENDIF
 
-#ifdef GM_K3D
-      IF (GM_useK3D) THEN
-C     Calculate the 3D diffusivity as per Bates et al. (2013)
-        CALL TIMER_START('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
+#ifdef GM_BATES_K3D
+      IF (GM_useBatesK3d) THEN
+C     Calculate the 3D diffusivity as per Bates et al. (JPO, 2014)
+        CALL TIMER_START('GMREDI_CALC_BATES_K [GMREDI_CALC_TENSOR]',
      &                    myThid)
-
-        CALL GMREDI_K3D(
+        CALL GMREDI_CALC_BATES_K(
      I       iMin, iMax, jMin, jMax,
      I       sigmaX, sigmaY, sigmaR,
-     I       bi, bj, myTime, myThid)
-
-        CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
+     I       bi, bj, myTime, myIter, myThid )
+        CALL TIMER_STOP('GMREDI_CALC_BATES_K [GMREDI_CALC_TENSOR]',
      &                  myThid)
       ENDIF
 #endif
@@ -572,9 +570,10 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &                 + GM_LeithQG_K(i,j,km1,bi,bj) )
      &                *(1. _d 0 + GM_skewflx)
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &           + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
-     &             *(1. _d 0 + GM_skewflx)
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &           + op5*( GM_BatesK3d(i,j,k,bi,bj)
+     &                 + GM_BatesK3d(i,j,km1,bi,bj) )
+     &                *(1. _d 0 + GM_skewflx)
 #endif
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
@@ -595,8 +594,9 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &                     + op5*( GM_LeithQG_K(i,j,k,bi,bj)
      &                           + GM_LeithQG_K(i,j,km1,bi,bj) )
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &                     + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &                     + op5*( GM_BatesK3d(i,j,k,bi,bj)
+     &                           + GM_BatesK3d(i,j,km1,bi,bj) )
 #endif
      &                     )*Kwz(i,j,k,bi,bj)
         ENDDO
@@ -624,16 +624,16 @@ C--   Calculate Stream-Functions used in Advective Form:
      I             myThid )
        ELSE
 #endif
-#ifndef GM_K3D_PASSIVE
-         IF (.NOT. GM_useK3D) THEN
+#ifndef GM_BATES_PASSIVE
+         IF ( .NOT.GM_useBatesK3d ) THEN
 #endif
-C          If using GM_K3D PsiX and PsiY are calculated in gmredi_k3d
+C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
            CALL GMREDI_CALC_PSI_B(
      I              bi, bj, iMin, iMax, jMin, jMax,
      I              sigmaX, sigmaY, sigmaR,
      I              ldd97_LrhoW, ldd97_LrhoS,
      I              myThid )
-#ifndef GM_K3D_PASSIVE
+#ifndef GM_BATES_PASSIVE
          ENDIF
 #endif
 #ifdef GM_BOLUS_BVP
@@ -755,8 +755,8 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef ALLOW_GM_LEITH_QG
      &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)+GM_LeithQG_K(i-1,j,k,bi,bj))
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*(GM_BatesK3d(i,j,k,bi,bj)+GM_BatesK3d(i-1,j,k,bi,bj))
 #endif
      &     )*taperFct(i,j)
          ENDDO
@@ -810,8 +810,9 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
      &          + GM_LeithQG_K(i-1,j,k,bi,bj) )*GM_advect
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))*GM_advect
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*( GM_BatesK3d(i,j,k,bi,bj)
+     &          + GM_BatesK3d(i-1,j,k,bi,bj) )*GM_advect
 #endif
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -849,8 +850,8 @@ C         store in tmp1k Kuz_Redi
      &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
      &          + GM_LeithQG_K(i-1,j,k,bi,bj) )
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*(GM_BatesK3d(i,j,k,bi,bj)+GM_BatesK3d(i-1,j,k,bi,bj))
 #endif
      &                 )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -987,8 +988,8 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef ALLOW_GM_LEITH_QG
      &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)+GM_LeithQG_K(i,j-1,k,bi,bj))
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*(GM_BatesK3d(i,j,k,bi,bj)+GM_BatesK3d(i,j-1,k,bi,bj))
 #endif
      &     )*taperFct(i,j)
          ENDDO
@@ -1042,8 +1043,9 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
      &          + GM_LeithQG_K(i,j-1,k,bi,bj) )*GM_advect
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))*GM_advect
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*( GM_BatesK3d(i,j,k,bi,bj)
+     &          + GM_BatesK3d(i,j-1,k,bi,bj) )*GM_advect
 #endif
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
@@ -1081,8 +1083,8 @@ C         store in tmp1k Kvz_Redi
      &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
      &          + GM_LeithQG_K(i,j-1,k,bi,bj) )
 #endif
-#if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
-     &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &     +op5*(GM_BatesK3d(i,j,k,bi,bj)+GM_BatesK3d(i,j-1,k,bi,bj))
 #endif
      &                 )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
