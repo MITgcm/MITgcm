@@ -302,6 +302,9 @@ CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+#  ifdef ALLOW_SHELFICE
+CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
+#   endif
 # endif
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
