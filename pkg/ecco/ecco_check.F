@@ -44,9 +44,9 @@ C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il, k2, ioUnit
+      INTEGER igen_etaday, il
       LOGICAL exst
-      CHARACTER*(128) tempfile,tempfile1
+      CHARACTER*(128) tempfile
       INTEGER icount_transp
 #endif
 
@@ -277,6 +277,7 @@ c ============ backward compatibility checks
 
 c ============ check for missing data files
 
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
      & bpdatfile, bpstartdate(1), myThid )
@@ -296,6 +297,7 @@ c ============ check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c ============ deprecated codes related checks
 
@@ -692,7 +694,7 @@ c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
      &    '** WARNING ** S/R ECCO_CHECK: missing file: ',
-     &    ' for altimeter data so cost gets switched off'
+     &    'for altimeter data so cost gets switched off'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       else
@@ -703,7 +705,21 @@ c print result to screen
      &                      SQUEEZE_RIGHT , myThid)
       endif
 
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+C ============ other pkg/ecco related checks
+      _BEGIN_MASTER(myThid)
+
+#ifndef ALLOW_PSBAR_STERIC
+      IF (ecco_output_sterGloH) THEN
+         WRITE(msgBuf,'(3A)') 'ECCO_CHECK:',
+     &         ' Cannot set ecco_output_sterGloH to TRUE',
+     &         ' with #undef ALLOW_PSBAR_STERIC'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
 #endif
+      _END_MASTER(myThid)
 
       RETURN
       END
@@ -726,7 +742,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -793,7 +810,7 @@ c switch off cost function term
            IF ( (.NOT.exst).AND.(yday.GE.locy) ) THEN
 c warn user as we override using_cost_local
              WRITE(msgBuf,'(5A)')
-     &       '** WARNING ** ECCO_CHECK_FILES: missing',fname,
+     &       '** WARNING ** ECCO_CHECK_FILES: missing ',fname,
      &       ' so ',localname,' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)

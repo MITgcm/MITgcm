@@ -100,7 +100,6 @@ c find global surface averages
        CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,1), gsm_dic, myThid )
-       print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,2), gsm_alk, myThid )
 # ifndef ALLOW_AUTODIFF
@@ -116,7 +115,6 @@ c find global surface averages
        CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iDIC), gsm_dic, myThid )
-       print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iALK), gsm_alk, myThid )
 c     ENDIF

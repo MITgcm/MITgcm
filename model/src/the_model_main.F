@@ -658,7 +658,7 @@ C--   Set model configuration (fixed arrays)
       CALL COST_DEPENDENT_INIT ( myThid )
 # endif
 
-# if ( defined (ALLOW_TANGENTLINEAR_RUN) )
+# if defined( ALLOW_TANGENTLINEAR_RUN )
 
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
@@ -667,8 +667,7 @@ C--   Set model configuration (fixed arrays)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
 
-# elif ( defined (ALLOW_ADJOINT_RUN) || \
-         defined (ALLOW_ECCO_OPTIMIZATION) )
+# elif defined( ALLOW_ADJOINT_RUN )
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'

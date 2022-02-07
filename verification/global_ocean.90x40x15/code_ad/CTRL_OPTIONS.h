@@ -32,9 +32,7 @@ C-- Package-specific Options & Macros go here
 C       >>> Other Control.
 #define ALLOW_DIFFKR_CONTROL
 #define ALLOW_KAPGM_CONTROL
-#define ALLOW_KAPGM_CONTROL_OLD
 #define ALLOW_KAPREDI_CONTROL
-#define ALLOW_KAPREDI_CONTROL_OLD
 #define ALLOW_BOTTOMDRAG_CONTROL
 
 C       >>> Generic Control.

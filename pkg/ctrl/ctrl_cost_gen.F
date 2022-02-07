@@ -33,8 +33,7 @@ C     !INTERFACE:
      I                       xx_gen_remo_slope,
 #endif /* ECCO_CTRL_DEPRECATED */
      I                       xx_gen_mask2D,
-     I                       myThid
-     &                         )
+     I                       myThid )
 
 C     !DESCRIPTION: \bv
 C     Generic routine for all 2D control penalty terms
@@ -50,7 +49,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -64,20 +64,20 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
       _RL xx_gen_period
-      _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_gen_weight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       logical dodimensionalcost
-      _RL num_gen_anom(nsx,nsy)
-      _RL objf_gen_anom(nsx,nsy)
+      _RL num_gen_anom(nSx,nSy)
+      _RL objf_gen_anom(nSx,nSy)
 #ifdef ECCO_CTRL_DEPRECATED
       _RL xx_gen_wmean
-      _RL num_gen_mean(nsx,nsy)
-      _RL num_gen_smoo(nsx,nsy)
-      _RL objf_gen_mean(nsx,nsy)
-      _RL objf_gen_smoo(nsx,nsy)
+      _RL num_gen_mean(nSx,nSy)
+      _RL num_gen_smoo(nSx,nSy)
+      _RL objf_gen_mean(nSx,nSy)
+      _RL objf_gen_smoo(nSx,nSy)
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
 #endif /* ECCO_CTRL_DEPRECATED */
-      _RS xx_gen_mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS xx_gen_mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer myThid
 
 #ifdef ALLOW_CTRL
@@ -85,7 +85,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,kk
+      integer i, j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -95,14 +95,17 @@ c     == local variables ==
       integer ilfld
 
       _RL fctile
-      _RL fctilem
       _RL tmpx
       _RL lengthscale
 
 #ifdef ECCO_CTRL_DEPRECATED
-      _RL xx_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#ifdef ALLOW_SMOOTH_BC_COST_CONTRIBUTION
+      integer kk
+#endif
+      _RL fctilem
+      _RL xx_mean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ECCO_CTRL_DEPRECATED */
-      _RL tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 
       logical doglobalread
       logical ladinit
@@ -116,14 +119,14 @@ c     == external functions ==
 
 CEOP
 
-      jtlo = mybylo(myThid)
-      jthi = mybyhi(myThid)
-      itlo = mybxlo(myThid)
-      ithi = mybxhi(myThid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       lengthscale = 1. _d 0
 
@@ -136,8 +139,8 @@ c     Number of records to be used.
 
       do bj = jtlo,jthi
        do bi = itlo,ithi
-        do j = 1-oly,sny+oly
-         do i = 1-olx,snx+olx
+        do j = 1-OLy,sNy+OLy
+         do i = 1-OLx,sNx+OLx
           tmpfld2d(i,j,bi,bj) = 0. _d 0
          enddo
         enddo
@@ -420,8 +423,7 @@ C     !INTERFACE:
      O                       num_gen,
      O                       objf_gen,
      I                       xx_gen_mask,
-     I                       myThid
-     &                         )
+     I                       myThid )
 
 C     !DESCRIPTION: \bv
 C     Generic routine for all 3D control penalty terms
@@ -437,7 +439,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_ECCO
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
@@ -448,11 +451,11 @@ c     == routine arguments ==
 
       character*(MAX_LEN_FNAM) xx_gen_file
       _RL xx_gen_dummy
-      _RL xx_gen_weight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_gen_weight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       logical dodimensionalcost
-      _RL num_gen(nsx,nsy)
-      _RL objf_gen(nsx,nsy)
-      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL num_gen(nSx,nSy)
+      _RL objf_gen(nSx,nSy)
+      _RS xx_gen_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
 #ifdef ALLOW_CTRL
@@ -472,7 +475,7 @@ c     == local variables ==
 
       logical doglobalread
       logical ladinit
-      _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       character*(80) fnamefld
 
@@ -483,14 +486,14 @@ c     == external functions ==
 
 CEOP
 
-      jtlo = mybylo(myThid)
-      jthi = mybyhi(myThid)
-      itlo = mybxlo(myThid)
-      ithi = mybxhi(myThid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
 c--   Read state record from global file.
       doglobalread = .false.
@@ -498,9 +501,9 @@ c--   Read state record from global file.
 
       do bj = jtlo,jthi
        do bi = itlo,ithi
-        do k = 1,nr
-         do j = 1-oly,sny+oly
-          do i = 1-olx,snx+olx
+        do k = 1,Nr
+         do j = 1-OLy,sNy+OLy
+          do i = 1-OLx,sNx+OLx
            tmpfld3d(i,j,k,bi,bj) = 0. _d 0
           enddo
          enddo
@@ -539,7 +542,7 @@ c--     Loop over this thread tiles.
             num_gen(bi,bj)  = 0. _d 0
             objf_gen(bi,bj) = 0. _d 0
 
-            do k = 1,nr
+            do k = 1,Nr
             do j = jmin,jmax
               do i = imin,imax
                 if (xx_gen_mask(i,j,k,bi,bj) .ne. 0. _d 0) then

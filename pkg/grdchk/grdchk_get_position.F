@@ -37,7 +37,10 @@ c     == global variables ==
 #include "grdchk.h"
 
 c     == routine arguments ==
+      integer       mythid
 
+#ifdef ALLOW_GRDCHK
+c     == local variables ==
       integer       icvrec
       integer       jtile
       integer       itile
@@ -47,17 +50,9 @@ c     == routine arguments ==
       integer       jtilepos
       integer       itest
       integer       ierr
-      integer       mythid
-
-#ifdef ALLOW_GRDCHK
-c     == local variables ==
-
-      integer iG,jG
       integer bi,bj
       integer i,j,k
       integer iobcs
-c     integer biwrk,bjwrk
-      integer iproc, jproc
       integer iwrk, jwrk, kwrk
       integer iobcswrk
       integer irec, irecwrk
@@ -68,10 +63,8 @@ c     integer biwrk,bjwrk
       integer icomptest
       integer nobcsmax
       integer pastit
-
       _RL wetlocal
 
-      logical ltmp
 c     == end of interface ==
 
       jtlo = 1
@@ -133,8 +126,6 @@ cph-print               print *, 'ph-grd get_pos irec, bj, bi, k ',
 cph-print     &              irec, bj, bi, k
 cph)
              if ( ierr .ne. 0 ) then
-               icvrec = irec
-
                do j = jwrk, ncvarymax(grdchkvarindex)
                 do i = iwrk, ncvarxmax(grdchkvarindex)
                  if (ierr .ne. 0) then

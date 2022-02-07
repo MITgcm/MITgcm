@@ -29,7 +29,8 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_SMOOTH
 # include "SMOOTH.h"
@@ -133,14 +134,18 @@ c-- detect the relevant gencost indices
 c ------
 
       dosumsq=.TRUE.
-      call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
-      call ecco_zero(gencost_weight(:,:,1,1,kgen_lsc),1,zeroRL,myThid)
+      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &                1, zeroRL, myThid )
+      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen_lsc),
+     &                1, zeroRL, myThid )
       if ( gencost_errfile(kgen) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
+     &   call ecco_readwei( gencost_errfile(kgen),
+     &     gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &     1, 1, 1, dosumsq, myThid )
       if ( gencost_errfile(kgen_lsc) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen_lsc),
-     &     gencost_weight(:,:,1,1,kgen_lsc),1,1,dosumsq,myThid)
+     &   call ecco_readwei( gencost_errfile(kgen_lsc),
+     &     gencost_weight(1-OLx,1-OLy,1,1,kgen_lsc),
+     &     1, 1, 1, dosumsq, myThid )
 
       call cal_FullDate(19920101,0,locstartdate,myThid)
 

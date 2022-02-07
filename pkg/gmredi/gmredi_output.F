@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "GMREDI_TAVE.h"
 
 C     !INPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: Current time of simulation ( s )
 C     myIter :: Iteration number
 C     myThid :: my Thread Id number
@@ -41,19 +40,13 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-#if ( defined (ALLOW_TIMEAVE) || \
-      defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
       CHARACTER*(10) suff
-#endif
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
 #endif
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif
-
-#if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 
       IF ( DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
      &   ) THEN
@@ -64,10 +57,8 @@ C     == Local variables ==
           ELSE
             CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
           ENDIF
-#ifdef GM_NON_UNITY_DIAGONAL
           CALL WRITE_FLD_XYZ_RL( 'GM_Kux.',suff,Kux,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'GM_Kvy.',suff,Kvy,myIter,myThid)
-#endif
 #ifdef GM_EXTRA_DIAGONAL
           IF (GM_ExtraDiag) THEN
             CALL WRITE_FLD_XYZ_RL( 'GM_Kuz.',suff,Kuz,myIter,myThid)
@@ -87,10 +78,8 @@ C     == Local variables ==
           CALL MNC_CW_RL_W_S('D','gm_inst',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('gm_inst', 0, myThid)
           CALL MNC_CW_I_W_S('I','gm_inst',0,0,'iter',myIter,myThid)
-#ifdef GM_NON_UNITY_DIAGONAL
           CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kux',Kux,myThid)
           CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kvy',Kvy,myThid)
-#endif
 #ifdef GM_EXTRA_DIAGONAL
           IF (GM_ExtraDiag) THEN
             CALL MNC_CW_RL_W(pf,'gm_inst',0,0,'Kuz',Kuz,myThid)
@@ -98,11 +87,9 @@ C     == Local variables ==
           ENDIF
 #endif
         ENDIF
-#endif
+#endif /* ALLOW_MNC */
 
       ENDIF
-
-#endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
 
 #ifdef ALLOW_TIMEAVE
 C     Dump files and restart average computation if needed

@@ -1,18 +1,7 @@
-#
-#
 # *********************
 # ECCO controlvariables
 # *********************
  &CTRL_NML
- xx_theta_file      = 'xx_theta',
- xx_salt_file       = 'xx_salt',
- xx_tr1_file        = 'xx_tr1',
- xx_hflux_file      = 'xx_hflux',
- xx_sflux_file      = 'xx_sflux',
- xx_tauu_file       = 'xx_tauu',
- xx_tauv_file       = 'xx_tauv',
- xx_diffkr_file     = 'xx_diffkr',
- xx_kapgm_file      = 'xx_kapgm',
  &
 #
 # *********************
@@ -20,4 +9,26 @@
 # *********************
  &CTRL_PACKNAMES
  &
-
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+# the bounds are commented out to reproduce old results with
+# the CPP-flag DISABLE_CTRL_THETA_LIMIT defined
+ xx_genarr3d_file(1)       = 'xx_theta',
+ xx_genarr3d_weight(1)     = 'ones_64b.bin',
+#xx_genarr3d_bounds(1:5,1) = -2.,-1.9,39.,40.,5.,
+#
+ xx_genarr3d_file(2)       = 'xx_salt',
+ xx_genarr3d_weight(2)     = 'ones_64b.bin',
+#xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
+#
+ xx_genarr3d_file(3)       = 'xx_diffkr',
+ xx_genarr3d_weight(3)     = 'ones_64b.bin',
+#xx_genarr3d_bounds(1:5,3) = 1.E-6,2.E-6,4.E-4,5.E-4,0.,
+#
+ xx_genarr3d_file(4)       = 'xx_kapgm',
+ xx_genarr3d_weight(4)     = 'ones_64b.bin',
+#xx_genarr3d_bounds(1:5,4) = 1.E-6,2.E-6,4.E-4,5.E-4,0.,
+ &

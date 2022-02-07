@@ -175,7 +175,8 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_OFFLINE
 #   include "OFFLINE.h"
 #  endif
-#  if (defined ALLOW_CG2D_NSA) || (defined NONLIN_FRSURF)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 #   include "CG2D.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT
@@ -258,32 +259,33 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the cost function evaluation.
-CADJ  INIT dummytape = common, 1
-c--
-#  ifdef ALLOW_GENTIM2D_CONTROL
-CADJ INIT ctrltape       = COMMON,1
-#  endif
-c--   Initialize storage for the outermost loop.
+c---------------------------------------------------------
+c--   Initialize storage for the initialisation phase.
 # ifdef ALLOW_AUTODIFF_WHTAPEIO
-CADJ  INIT tapelev_init   = common, 1
+CADJ INIT tapelev_init       = COMMON, 1
 # else
-CADJ  INIT tapelev_init       = USER
-CADJ  INIT tapelev_ini_bibj   = USER
-CADJ  INIT tapelev_ini_bibj_k = USER
+CADJ INIT tapelev_init       = USER
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ECCO_CTRL_DEPRECATED
-CADJ  INIT onetape = USER
-#  endif
+c--   this tape is never used
+cCADJ INIT tapelev_ini_bibj   = USER
+c--   currently only used in convective_adjustement_ini.F
+CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr*nthreads_chkpt
+# if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
+c--   exclusive tape for variables with suffix "_dummy"
+CADJ INIT dummytape          = COMMON, 1
 # endif
 
+c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
+CADJ  INIT tapelvi2 = USER,'adi'
 #  elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev4 = USER
+CADJ  INIT tapelvi4 = USER,'adi'
 #  else
 CADJ  INIT tapelev3 = USER
+CADJ  INIT tapelvi3 = USER,'adi'
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -299,13 +301,21 @@ CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
-CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
 CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
 CADJ STORE shiTransCoeffT         = tapelev_init, key=1
 CADJ STORE shiTransCoeffS         = tapelev_init, key=1
+# endif
+# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+CADJ STORE H_streamice = tapelev_init, key=1
+CADJ STORE B_glen      = tapelev_init, key=1
+# endif
+# ifdef ALLOW_DIC
+CADJ STORE co2atmos = tapelev_init, key = 1
+CADJ STORE alpha    = tapelev_init, key = 1
 # endif
 #endif
 
@@ -366,7 +376,7 @@ C--   Set initial conditions (variable arrays)
 #  ifdef ECCO_CTRL_DEPRECATED
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
-CADJ STORE sbar_gen,tbar_gen  = onetape
+CADJ STORE sbar_gen,tbar_gen  = tapelev_init, key = 1
 #  endif
 # endif
 #endif
@@ -422,6 +432,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
+CADJ    INIT tapelvi3 = USER,'adi'
 #   endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
 
 #   ifndef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -440,6 +451,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
+CADJ    INIT tapelvi2 = USER,'adi'
 #   endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2

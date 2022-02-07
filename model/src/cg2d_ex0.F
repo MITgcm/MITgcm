@@ -16,20 +16,20 @@ C     !INTERFACE:
      U                numIters, nIterMin,
      I                myThid )
 C     !DESCRIPTION: \bv
-C     *==========================================================*
+C     *================================================================*
 C     | SUBROUTINE CG2D_EX0
-C     | o Two-dimensional grid problem conjugate-gradient
-C     |   inverter (with preconditioner).
+C     | o Two-dimensional grid problem conjugate-gradient inverter
+C     |   (with preconditioner).
 C     | This is the disconnected-tile version (each tile treated
 C     |   independently as a small domain, with locally periodic
 C     |   BC at the edges.
-C     *==========================================================*
+C     *================================================================*
 C     | Con. grad is an iterative procedure for solving Ax = b.
 C     | It requires the A be symmetric.
 C     | This implementation assumes A is a five-diagonal matrix
 C     | of the form that arises in the discrete representation of
 C     | the del^2 operator in a two-dimensional space.
-C     *==========================================================*
+C     *================================================================*
 C     \ev
 
 C     !USES:
@@ -41,7 +41,6 @@ C     === Global data ===
 #include "CG2D.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     cg2d_b    :: The source term or "right hand side" (output: normalised RHS)
 C     cg2d_x    :: The solution (input: first guess)
 C     firstResidual :: the initial residual before any iterations
@@ -62,7 +61,6 @@ C     myThid    :: Thread on which I am working.
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     === Local variables ====
 C     bi, bj     :: tile index in X and Y.
 C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
 C     actualIts  :: actual CG iteration number
@@ -76,6 +74,10 @@ C                   debugging/trouble shooting diagnostic. For neumann problems
 C                   sumRHS needs to be ~0 or it converge at a non-zero residual.
 C     cg2d_min   :: used to store solution corresponding to lowest residual.
 C     msgBuf     :: Informational/error message buffer
+C--   local working array (used to be in CG2D.h common block:
+C     cg2d_q     :: Intermediate matrix-vector product term
+C     cg2d_r     ::   *same*
+C     cg2d_s     ::   *same*
       INTEGER bi, bj
       INTEGER i, j, it2d
       INTEGER actualIts(nSx,nSy)
@@ -91,6 +93,9 @@ C     msgBuf     :: Informational/error message buffer
       _RL    rhsNorm(nSx,nSy)
       _RL    minResTile(nSx,nSy)
       _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_q  (1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
@@ -138,18 +143,21 @@ C--   Initial residual calculation
       sumRHS = 0.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    Initialise local working arrays:
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          cg2d_r(i,j,bi,bj) = 0. _d 0
+          cg2d_s(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
         IF ( nIterMin.GE.0 ) THEN
+C-    Initialise saved solution
          DO j=1,sNy
           DO i=1,sNx
-            cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+           cg2d_min(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
-        DO j=0,sNy+1
-         DO i=0,sNx+1
-          cg2d_s(i,j,bi,bj) = 0.
-         ENDDO
-        ENDDO
         sumRHStile(bi,bj) = 0. _d 0
         errTile(bi,bj)    = 0. _d 0
 #ifdef TARGET_NEC_SX

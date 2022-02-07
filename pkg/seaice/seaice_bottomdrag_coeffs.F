@@ -79,7 +79,11 @@ CEOP
 
       IF (SEAICEbasalDragK2.GT.0. _d 0) THEN
 C     avoid this computation for a non-zero coefficient
-      kSrf=1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 C     some abbreviations
       u0sq     = SEAICEbasalDragU0*SEAICEbasalDragU0
       recip_k1 = 0. _d 0
