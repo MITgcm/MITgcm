@@ -296,23 +296,21 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# ifdef ALLOW_GENTIM2D_CONTROL
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+# endif
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
-# ifdef ALLOW_GENTIM2D_CONTROL
-CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
-#  ifdef ALLOW_SHELFICE
-CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
-#   endif
+# ifdef ALLOW_SHELFICE
+CADJ STORE shelficeLoadAnomaly    = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeHeatFlux       = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffT         = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffS         = tapelev_init, key=1, kind=isbyte
 # endif
-# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
-CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
-CADJ STORE shiTransCoeffT         = tapelev_init, key=1
-CADJ STORE shiTransCoeffS         = tapelev_init, key=1
-# endif
-# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+# ifdef ALLOW_STREAMICE
 CADJ STORE H_streamice = tapelev_init, key=1
 CADJ STORE B_glen      = tapelev_init, key=1
 # endif
