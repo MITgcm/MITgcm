@@ -558,8 +558,10 @@ cCADJ INIT comlev1_thsice_2 = COMMON,
 cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
 cCADJ INIT comlev1_thsice_3 = COMMON,
 cCADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
-CADJ INIT comlev1_thsice_4 = COMMON,
-CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
+C     this tape is for thsice_advection, which is called for five
+C     different variables, hence the factor 5
+CADJ INIT comlev1_thsice_adv = COMMON,
+CADJ &    nchklev_1*nSx*nSy*maxpass*5*nthreads_chkpt
 CADJ INIT comlev1_thsice_nlyr = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nlyr*nthreads_chkpt
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
