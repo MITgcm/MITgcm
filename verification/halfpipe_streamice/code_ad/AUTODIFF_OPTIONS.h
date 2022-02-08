@@ -67,9 +67,6 @@ C   Might still be used for OBCS since WHTAPEIO does not support OBCS fields.
 #undef AUTODIFF_USE_STORE_RESTORE
 #undef AUTODIFF_USE_STORE_RESTORE_OBCS
 
-C o write separate tape files for each ptracer (has no effect, to be removed)
-#undef AUTODIFF_PTRACERS_SPLIT_FILES
-
 C o allow using viscFacInAd to recompute viscosities in AD
 #undef AUTODIFF_ALLOW_VISCFACADJ
 
