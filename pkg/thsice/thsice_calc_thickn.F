@@ -225,6 +225,10 @@ C     help TAF with these variables
       INTEGER max1, max2, max3
       INTEGER ticekey, ikey_1
 #endif
+#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+      _RL kScal
+      PARAMETER ( kScal=1. )
+#endif
 #ifdef ALLOW_DBUG_THSICE
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -250,6 +254,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       rec_nlyr = nlyr
       rec_nlyr = 1. _d 0 / rec_nlyr
       dt  = thSIce_deltaT
+      cpchr = cpWater*rhosw*bMeltCoef
 
 C     for now, use hard coded threshold (iceMaskMin +1.% and +10.%)
       lowIcFrac1 = iceMaskMin*1.01 _d 0
@@ -385,16 +390,32 @@ C between hThinIce & hThickIce, use partition factor fracEnFreez
 C     !-----------------------------------------------------------------
 C     ! melting conditions
 C     !-----------------------------------------------------------------
+#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+C     smooth regulatization
+          ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -4)
+          ustar=max(5. _d -3,ustar)
+#else
 C     for no currents:
           ustar = 5. _d -2
 C frictional velocity between ice and water
           IF (v2oc(i,j) .NE. 0.)
      &     ustar = SQRT(0.00536 _d 0*v2oc(i,j))
           ustar=max(5. _d -3,ustar)
-          cpchr =cpWater*rhosw*bMeltCoef
+#endif
+c         cpchr =cpWater*rhosw*bMeltCoef
           Fbot(i,j) = cpchr*(tFrz(i,j)-tOce(i,j))*ustar
 C     fzMlOc < Fbot < 0
+#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+C     smooth regulatization
+C     we want to have some soft maximum for better differentiability:
+C     max(a,b;k) = (a*exp(k*a)+b*exp(k*b))/(exp(k*a)+exp(k*b))
+          Fbot(i,j) = (
+     &             Fbot(i,j) * exp(kScal*  Fbot(i,j))
+     &         + fzMlOc(i,j) * exp(kScal*fzMlOc(i,j))
+     &         )/( exp(kScal*Fbot(i,j)) + exp(kScal*fzMlOc(i,j)) )
+#else
           Fbot(i,j) = max(Fbot(i,j),fzMlOc(i,j))
+#endif
           Fbot(i,j) = min(Fbot(i,j),0. _d 0)
          ENDIF
 
@@ -779,7 +800,11 @@ C-- modified scheme. taking into account Ice enthalpy
              ELSE
               hq = hnewTmp*qicen(i,j,k)-dhi*Lfresh
               hnew(i,j,k) = hnewTmp - dhi
+#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+              qicen(i,j,k)=hq/SQRT(hnew(i,j,k)**2 + 1. _d 4)
+#else
               qicen(i,j,k)=hq/hnew(i,j,k)
+#endif
               evapLoc(i,j)=0. _d 0
              ENDIF
 C-------
@@ -875,7 +900,7 @@ c          dhs = dhi * rhoi / rhos
            hSnow1(i,j)  = hSnwTmp - dhs
           ENDIF
 #ifdef ALLOW_AUTODIFF
-C     This is awkward, but makes storing a few variables (hIce, hSnow1,
+C     This is awkward, but makes storing a few variables (hIce, hnew,
 C     qicen) unnecessary. Splitting the loop also changes the condition
 C     hIce>0 because hIce has been modified above. This could be handled
 C     more cleanly, but because hIce>0 is required for the previous
@@ -940,6 +965,9 @@ C Compute new total ice thickness.
 #endif
 
           hlyr = hIce(i,j) * rec_nlyr
+#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+          hlyr = SQRT( hlyr**2 + 1. _d -04 )
+#endif
 CML          CALL THSICE_RESHAPE_LAYERS(
 CML     U         qicen(i,j,:),
 CML     I         hlyr, hnew(i,j,:), myThid )
