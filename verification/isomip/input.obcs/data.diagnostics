@@ -20,24 +20,28 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 #--
-  fields(1:14,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
-                   'SHIuStar','SHIgammT','SHIgammS',
-                   'SHIfwFlx','SHIhtFlx','SHIForcT','SHIForcS',
-                   'TFLUX   ','SFLUX   ',
-                   'SHI_TauX','SHI_TauY',
+ fields(1:14,1)= 'ETAN    ','ETANSQ  ','DETADT2 ',
+                 'SHIuStar','SHIgammT','SHIgammS',
+                 'SHIfwFlx','SHIhtFlx','SHIForcT','SHIForcS',
+                 'TFLUX   ','SFLUX   ',
+                 'SHI_TauX','SHI_TauY',
 #  fileName(1) = 'surfDiag',
   frequency(1) =  86400.,
 
-  fields(1:9,2)  = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
-                   'VVELMASS','UVELMASS','WVELSQ  ',
-                   'THETA   ','SALT    ',
+ fields(1:9,2) = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
+                 'VVELMASS','UVELMASS','WVELSQ  ',
+                 'THETA   ','SALT    ',
 # do not specify levels => all levels are selected
    fileName(2) = 'dynDiag',
   frequency(2) =  5184000.,
 
-  fields(1:7,4) =  'ADVx_TH ','ADVy_TH ','ADVr_TH ',
-                   'DFxE_TH ','DFyE_TH ','DFrE_TH ',
-                   'DFrI_TH ',
+ fields(1:4,3) = 'GGL90TKE','GGL90Lmx','GGL90Prl','GGL90Kr ',
+#  fileName(3) = 'ggl90Diag',
+  frequency(3) = 1728000.,
+
+ fields(1:7,4) = 'ADVx_TH ','ADVy_TH ','ADVr_TH ',
+                 'DFxE_TH ','DFyE_TH ','DFrE_TH ',
+                 'DFrI_TH ',
 #  fileName(4) = 'flxDiag',
   frequency(4) = 1728000.,
  &
@@ -77,4 +81,3 @@
 # stat_phase(1) = 0.,
  stat_region(1:3,1) = 0, 1, 2,
  &
-
