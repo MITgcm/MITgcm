@@ -364,7 +364,7 @@ C       GM_Visbeck_depth, whatever is the shallower.
            ks = kSurfC(i,j,bi,bj)
 C-      If dry-cell @ top (e.g., under ice-shelf), integrate over Visbeck_depth
 C       as relative to top solid BC (as below) or stop integral if deeper (in
-C       absolute sense) than Visbeck_depth (comment line below):
+C       absolute sense) than Visbeck_depth (just comment "rTop =" line below):
            rTop = Ro_surf(i,j,bi,bj)
            integrDepth = rTop - rC( kLowC(i,j,bi,bj) )
 C-      in 2 steps to avoid mix of RS & RL type in min fct. arguments
