@@ -58,7 +58,7 @@ C o use standard MDSFINDUINTS instead of local pkg/autodiff version for
 C   WHTAPEIO code I/O.
 C   Note: comment out the #define below (instead of having an #undef) to
 C   enable to set this Option in CPP command line (from the optfile)
-#undef AUTODIFF_USE_MDSFINDUNITS
+c#define AUTODIFF_USE_MDSFINDUNITS
 
 C o use the deprecated autodiff_store/restore method where multiple fields
 C   are collected in a single buffer field array before storing to tape.

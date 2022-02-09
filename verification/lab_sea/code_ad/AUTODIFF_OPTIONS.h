@@ -53,11 +53,12 @@ C o use divided adjoint to split adjoint computations
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
 #define ALLOW_AUTODIFF_WHTAPEIO
-C o use MDSFINDUINTS instead of AUTODIFF_MDSFINDUNITS to find unique and
-C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
+
+C o use standard MDSFINDUINTS instead of local pkg/autodiff version for
+C   WHTAPEIO code I/O.
 C   Note: comment out the #define below (instead of having an #undef) to
 C   enable to set this Option in CPP command line (from the optfile)
-#undef AUTODIFF_USE_MDSFINDUNITS
+c#define AUTODIFF_USE_MDSFINDUNITS
 
 C o use the deprecated autodiff_store/restore method where multiple fields
 C   are collected in a single buffer field array before storing to tape.
