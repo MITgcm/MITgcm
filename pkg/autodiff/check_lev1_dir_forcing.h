@@ -61,7 +61,7 @@ CADJ STORE runoftemp  = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE saltflx    = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 #  ifdef EXF_SEAICE_FRACTION
-CADJ STORE areamask   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE exf_iceFraction=comlev1,key=ikey_dynamics, kind = isbyte
 #  endif
 #  ifdef EXF_ALLOW_TIDES
 CADJ STORE tidePot    = comlev1, key = ikey_dynamics, kind = isbyte
