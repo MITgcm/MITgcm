@@ -103,9 +103,9 @@ c
      &   0,Nr,1,bi,bj,myThid)
        ENDIF
 #endif /* ALLOW_EDDYPSI */
-#ifdef GM_K3D
-       IF (GM_useK3D) THEN
-         CALL DIAGNOSTICS_FILL(K3D, 'GM_K3D  ',0,Nr,0,1,1,myThid)
+#ifdef GM_BATES_K3D
+       IF (GM_useBatesK3d) THEN
+         CALL DIAGNOSTICS_FILL(GM_BatesK3d,'GM_BaK  ',0,Nr,0,1,1,myThid)
        ENDIF
 #endif
 
