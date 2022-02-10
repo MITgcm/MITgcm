@@ -1,6 +1,25 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - new CPP-flags allow to turnoff (default) autodiff_store/restore entirely:
+    * New flags AUTODIFF_USE_STORE_RESTORE, AUTODIFF_USE_STORE_RESTORE_OBCS to
+      turn on autodiff_store/restore, undefined by default ;
+    * AUTODIFF_EXCLUDE_ADEXCH_RS to skip calls to some AD-exch (if missing).
+  - improve comments in AUTODIFF_OPTIONS.h, fix some store directives for new
+    default, which are:
+       #define ALLOW_AUTODIFF_WHTAPEIO
+       c#define AUTODIFF_USE_MDSFINDUNITS
+       #undef AUTODIFF_USE_STORE_STORE_RESTORE
+       #undef AUTODIFF_USE_STORE_STORE_RESTORE_OBCS
+    and update local AUTODIFF_OPTIONS.h files from verification experiments.
+  - experiment specific setting:
+    * define AUTODIFF_EXCLUDE_ADEXCH_RS in exp.: hs94.1x64x5, obcs_ctrl & OpenAD
+    * increase "nWH" value in local MDSIO_BUFF_WH.h for exp.:
+      global_oce_biogeo_bling, offline_exf_seaice & tutorial_dic_adjoffline
+  - add a TAF "INCOMPLETE" directive for TICES and wVel to avoid a TAF bug.
+  - fix a TAF store directive to avoid extra call of "load_fields_driver"
+    with EXF_SEAICE_FRACTION defined.
 o pkg/gmredi:
   - rename S/R, CPP option (GM_BATES_K3D), on/off switch (GM_useBatesK3d),
     parameters (GM_Bates_*) and 3-D var (GM_BatesK3d) of Bates etal (JPO, 2014)

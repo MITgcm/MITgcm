@@ -592,6 +592,16 @@ c**************************************
           ENDDO
 #endif /* STORE_LOADEDREC_TEST */
 
+#if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_OFFLINE )
+C     The following statement forces TAF to store wVel correctly in some
+C     outer checkpoint levels in some cases when it does not do it
+C     automatically (similar to TICES in seaice_reg_ridge.F). This is a
+C     TAF bug and this statement can probably be removed again, once
+C     this bug is fixed (but it does not hurt, either).
+# ifndef AUTODIFF_USE_STORE_RESTORE
+CADJ INCOMPLETE wVel
+# endif
+#endif
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
           do ilev_1 = 1,nchklev_1
