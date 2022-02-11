@@ -202,11 +202,11 @@ CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
         CALL EXF_ADJOINT_SNAPSHOTS( 2, myTime, myIter, myThid )
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 C     Set radiative fluxes

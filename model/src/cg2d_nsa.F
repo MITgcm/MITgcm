@@ -55,7 +55,7 @@ C     numIters  :: Inp: the maximum number of iterations allowed
 C                  Out: the actual number of iterations used
 C     nIterMin  :: Inp: decide to store (if >=0) or not (if <0) lowest res. sol.
 C                  Out: iteration number corresponding to lowest residual
-C     myThid    :: Thread on which I am working.
+C     myThid    :: my Thread Id number
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  firstResidual
@@ -95,6 +95,8 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       INTEGER act1, act2
       INTEGER max1
       INTEGER icg2dkey, ikey
+#else
+      _RL    rhsNorm
 #endif
       _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
@@ -103,12 +105,12 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       _RL    cgBeta,  alpha
       _RL    alphaSum,alphaTile(nSx,nSy)
       _RL    sumRHS,  sumRHStile(nSx,nSy)
-      _RL    rhsMax,  rhsNorm
+      _RL    rhsMax
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
-      _RL    cg2d_z(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-C     Fields cg2d_r and ct2d_s are exchanged and since there is no AD-exchanges
+      _RL    cg2d_z(1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_q(1:sNx,1:sNy,nSx,nSy)
+C     Fields cg2d_r and ct2d_s are exchanged and since there are no AD-exchanges
 C     for fields with smaller overlap, they are defined with full overlap size
       _RL    cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -188,8 +190,8 @@ CADJ STORE cg2d_x = comlev1_cg2d, key = ikey, byte = isbyte
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Initialise local working arrays:
-        DO j=0,sNy+1
-         DO i=0,sNx+1
+        DO j=1,sNy
+         DO i=1,sNx
           cg2d_q(i,j,bi,bj) = 0. _d 0
           cg2d_z(i,j,bi,bj) = 0. _d 0
          ENDDO

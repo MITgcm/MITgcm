@@ -1,29 +1,32 @@
 #include "EXF_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
-C     !ROUTINE: g_exf_adjoint_snapshots
+C     !ROUTINE: G_EXF_ADJOINT_SNAPSHOTS
 C     !INTERFACE:
-      SUBROUTINE g_exf_adjoint_snapshots(
-     &     iwhen, myTime, myIter, myThid )
+      SUBROUTINE G_EXF_ADJOINT_SNAPSHOTS(
+     I                 iwhen, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE g_exf_adjoint_snapshots                       |
+C     | SUBROUTINE G_EXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
-C     Extract tangent linear variable from TAMC/TAF-generated
+C     Tangent-Linear version of EXF Adjoint-variable output S/R:
+C     extract tangent linear variable from TAMC/TAF-generated
 C     tangent linear common blocks, contained in g_common.h
 C     and write fields to file;
 C     Make sure common blocks in g_common.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE g_exf_adjoint_snapshots                       |
+C     | SUBROUTINE G_EXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
 C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -34,9 +37,9 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myIter :: iteration counter for this thread
-C     myTime :: time counter for this thread
+C     iwhen  :: indicates where this S/R is called from
+C     myIter :: Iteration counter for this thread
+C     myTime :: Time counter for this thread
 C     myThid :: Thread number for this instance of the routine.
       INTEGER iwhen
       _RL     myTime
@@ -51,7 +54,6 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
       CHARACTER*(10) suff

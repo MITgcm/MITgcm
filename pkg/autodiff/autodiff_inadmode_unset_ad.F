@@ -8,6 +8,7 @@ C     *==========================================================*
 C     | SUBROUTINE ADAUTODIFF_INADMODE_UNSET
 C     *==========================================================*
 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -28,11 +29,15 @@ C     == Global variables ===
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
-C     == Routine arguments ==
-C     myThid :: my Thread Id number
-      INTEGER myThid
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
-      _RL myTime
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_AUTODIFF_MONITOR

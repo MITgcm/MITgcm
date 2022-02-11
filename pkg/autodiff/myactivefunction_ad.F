@@ -3,8 +3,8 @@
 
 CBOP
 C     !INTERFACE:
-      SUBROUTINE admyActiveFunction ( 
-     &     mytmp3d, mythid, admytmp3d,admyactivetmp )
+      SUBROUTINE admyActiveFunction(
+     &     mytmp3d, myThid, admytmp3d, admyactivetmp )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     *==========================================================*
@@ -18,7 +18,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
 C     myTime - Current time of simulation ( s )
@@ -26,12 +25,8 @@ C     myTime - Current time of simulation ( s )
       _RL     admytmp3d(sNx,sNy,Nr,nSx,nSy)
       _RL     admyactivetmp
       INTEGER myThid
-      INTEGER myIter
 
 C     !LOCAL VARIABLES:
-
-c     == external ==
-
 CEOP
 
 cph   Do nothing and nothing will be done

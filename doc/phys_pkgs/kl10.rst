@@ -101,7 +101,7 @@ There are straightforward caveats to this approach, covered in :cite:`klymaklegg
 
 .. _ssub_phys_pkg_kl10_comp:
 
-KL10 configuration and compiling 
+KL10 configuration and compiling
 ++++++++++++++++++++++++++++++++
 
 As with all MITgcm packages, KL10 can be turned on or off at compile
@@ -226,4 +226,3 @@ Experiments and tutorials that use KL10
 
 -  Modified Internal Wave experiment, in internal_wave verification
    directory
-
