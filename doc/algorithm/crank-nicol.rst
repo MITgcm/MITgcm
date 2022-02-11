@@ -70,7 +70,7 @@ Notes:
 
 #. The RHS term of equation :eq:`eta-n+1-CrankNick` corresponds the
    contribution of fresh water flux ({\mathcal{P-E}}) to the free-surface variations
-   (:math:`\epsilon_{fw}=1`, :varlink:`useRealFreshWaterFlux` =.TRUE. in parameter
+   (:math:`\epsilon_{fw}=1`, :varlink:`useRealFreshWaterFlux` ``=.TRUE.`` in parameter
    file ``data``). In order to remain consistent with the tracer equation,
    specially in the non-linear free-surface formulation, this term is
    also affected by the Crank-Nicolson time stepping. The RHS reads:

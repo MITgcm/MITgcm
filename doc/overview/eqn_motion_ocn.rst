@@ -136,7 +136,7 @@ have the same pressure dependency as the linearized pressure term, ie.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The anelastic approximation filters the acoustic mode by removing the
-time-dependency in the continuity (now pressure-) equation
+time-dependency in the continuity (now pressure) equation
 :eq:`eq-zcb-cont`. This could be done simply by noting that
 :math:`\frac{Dp}{Dt}\approx -g\rho _{o} \frac{Dz}{Dt}=-g\rho _{o}w`, 
 but this leads to an inconsistency between

@@ -257,7 +257,7 @@ section):
 
 .. math::
    G_\theta^n = \left(-  \nabla  \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
-            - \dot{r}_{surf}^{n+1} \theta^n \right) / h^n
+            - \dot{r}_{\rm surf}^{n+1} \theta^n \right) / h^n
 
 Then, in a second step, the thickness variation (expansion/reduction)
 is taken into account:
@@ -344,7 +344,6 @@ r-coordinate.
      \theta^{n+1} =\theta^{n} + \Delta t \frac{dh^n}{dh^{n+1}} \left(
      G_{\theta}^{(n+1/2)}
      +( P^{n+1/2} (\theta_{\mathrm{rain}}-\theta^n) + \mathcal{Q}^{n+1/2})/dh^n \right)
-     \nonumber
      :label: t-n+1-nlfs
 
 Two steps have been added to linear free-surface algorithm (eq.

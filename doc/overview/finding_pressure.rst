@@ -71,7 +71,7 @@ where :math:`b_{s}` is the buoyancy at the surface.
 
 In the hydrostatic limit (:math:`\epsilon _{\rm nh}=0`), equations
 :eq:`mom-h`, :eq:`free-surface` and :eq:`phi-surf` can be solved by
-inverting a 2-d elliptic equation for :math:`\phi _{s}` as described in
+inverting a 2-D elliptic equation for :math:`\phi _{s}` as described in
 Chapter 2. Both ‘free surface’ and ‘rigid lid’ approaches are available.
 
 Non-hydrostatic pressure
@@ -87,11 +87,11 @@ continuity equation :eq:`continuity`, we deduce that:
     \nabla  \cdot \vec{\mathbf{F}}
    :label: 3d-invert
 
-For a given rhs this 3-d elliptic equation must be inverted for
+For a given rhs this 3-D elliptic equation must be inverted for
 :math:`\phi _{\rm nh}` subject to appropriate choice of boundary conditions.
 This method is usually called *The Pressure Method* [Harlow and Welch
 (1965) :cite:`harlow:65`; Williams (1969) :cite:`williams:69`; Potter (1973) :cite:`potter:73`. In the hydrostatic primitive
-equations case (**HPE**), the 3-d problem does not need to be solved.
+equations case (**HPE**), the 3-D problem does not need to be solved.
 
 Boundary Conditions
 ^^^^^^^^^^^^^^^^^^^

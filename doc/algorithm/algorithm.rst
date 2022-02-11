@@ -249,7 +249,7 @@ The calling tree for these routines is as follows:
 
 In general, the horizontal momentum time-stepping can contain some terms
 that are treated implicitly in time, such as the vertical viscosity when
-using the backward time-stepping scheme (:varlink:`implicitViscosity` =.TRUE.). The method used to solve
+using the backward time-stepping scheme (:varlink:`implicitViscosity` ``=.TRUE.``). The method used to solve
 those implicit terms is provided in :numref:`implicit-backward-stepping`, and modifies equations
 :eq:`discrete-time-u` and :eq:`discrete-time-v` to give:
 
@@ -316,7 +316,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
+   \eta^* = \epsilon_{\rm fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -324,7 +324,7 @@ re-arranged as follows:
 .. math::
    \partial_x g H \partial_x \eta^{n+1}
    + \partial_y g H \partial_y \eta^{n+1}
-   - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} =
+   - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2} =
    - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-backward-free-surface
 
@@ -345,9 +345,9 @@ However, the implicit treatment of the free-surface allows the flow to
 be divergent and for the surface pressure/elevation to respond on a
 finite time-scale (as opposed to instantly). To recover the rigid-lid
 formulation, we use a switch-like variable,
-:math:`\epsilon_{fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
-rigid-lid; :math:`\epsilon_{fs}=1` allows the free-surface to evolve;
-:math:`\epsilon_{fs}=0` imposes the rigid-lid. The evolution in time and
+:math:`\epsilon_{\rm fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
+rigid-lid; :math:`\epsilon_{\rm fs}=1` allows the free-surface to evolve;
+:math:`\epsilon_{\rm fs}=0` imposes the rigid-lid. The evolution in time and
 location of variables is exactly as it was for the rigid-lid model so
 that :numref:`pressure-method-rigid-lid` is still applicable.
 Similarly, the calling sequence, given :ref:`here <call-tree-press-meth>`, is as for the pressure-method.
@@ -382,16 +382,16 @@ Adams-Bashforth II
 The quasi-second order Adams-Bashforth scheme is formulated as follows:
 
 .. math::
-   G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{AB}) G_\tau^n
-   - ( 1/2 + \epsilon_{AB}) G_\tau^{n-1}
+   G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{\rm AB}) G_\tau^n
+   - ( 1/2 + \epsilon_{\rm AB}) G_\tau^{n-1}
    :label: adams-bashforth2
 
 This is a linear extrapolation, forward in time, to
-:math:`t=(n+1/2+{\epsilon_{AB}})\Delta t`. An extrapolation to the
+:math:`t=(n+1/2+{\epsilon_{\rm AB}})\Delta t`. An extrapolation to the
 mid-point in time, :math:`t=(n+1/2)\Delta t`, corresponding to
-:math:`\epsilon_{AB}=0`, would be second order accurate but is weakly
+:math:`\epsilon_{\rm AB}=0`, would be second order accurate but is weakly
 unstable for oscillatory terms. A small but finite value for
-:math:`\epsilon_{AB}` stabilizes the method. Strictly speaking, damping
+:math:`\epsilon_{\rm AB}` stabilizes the method. Strictly speaking, damping
 terms such as diffusion and dissipation, and fixed terms (forcing), do
 not need to be inside the Adams-Bashforth extrapolation. However, in the
 current code, it is simpler to include these terms and this can be
@@ -400,7 +400,7 @@ do, arise when forcing or motions are high frequency and this
 corresponds to a reduced stability compared to a simple forward
 time-stepping of such terms. The model offers the possibility to leave
 terms outside the Adams-Bashforth extrapolation, by turning off the logical flag :varlink:`forcing_In_AB`
-(parameter file ``data``, namelist ``PARM01``, default value = TRUE) and then setting :varlink:`tracForcingOutAB`
+(parameter file ``data``, namelist ``PARM01``, default value = ``.TRUE.``) and then setting :varlink:`tracForcingOutAB`
 (default=0), :varlink:`momForcingOutAB` (default=0), and :varlink:`momDissip_In_AB` (parameter file ``data``, namelist ``PARM01``,
 default value = TRUE), respectively for the tracer terms, momentum forcing terms, and the dissipation terms.
 
@@ -416,7 +416,10 @@ point.
     :alt: stability_analysis
     :name: oscil+damp_AB2
 
-    Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{AB}` parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
+    Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{\rm AB}`
+    parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical
+    mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane
+    for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
 
 Adams-Bashforth III
 -------------------
@@ -437,28 +440,28 @@ forward in time the tendency (replacing :eq:`adams-bashforth2`)
 as:
 
 .. math::
-   G_\tau^{(n+1/2)} = ( 1 + \alpha_{AB} + \beta_{AB}) G_\tau^n
-   - ( \alpha_{AB} + 2 \beta_{AB}) G_\tau^{n-1}
-   + \beta_{AB} G_\tau^{n-2}
+   G_\tau^{(n+1/2)} = ( 1 + \alpha_{\rm AB} + \beta_{\rm AB}) G_\tau^n
+   - ( \alpha_{\rm AB} + 2 \beta_{\rm AB}) G_\tau^{n-1}
+   + \beta_{\rm AB} G_\tau^{n-2}
    :label: adams-bashforth3
 
 3rd order accuracy is obtained with
-:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2,\,5/12)`. Note that selecting
-:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2+\epsilon_{AB},\,0)` one
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (1/2,\,5/12)`. Note that selecting
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (1/2+\epsilon_{AB},\,0)` one
 recovers AB-II. The AB-III time stepping improves the
 stability limit for an oscillatory problem like advection or Coriolis.
 As seen from :numref:`ab3_oscill_response`, it remains stable up to a
 CFL of 0.72, compared to only 0.50 with AB-II and
-:math:`\epsilon_{AB} = 0.1`. It is interesting to note that the
+:math:`\epsilon_{\rm AB} = 0.1`. It is interesting to note that the
 stability limit can be further extended up to a CFL of 0.786 for an
 oscillatory problem (see :numref:`ab3_oscill_response`) using
-:math:`(\alpha_{AB},\,\beta_{AB}) = (0.5,\,0.2811)` but then the scheme
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (0.5,\,0.2811)` but then the scheme
 is only second order accurate.
 
 However, the behavior of the AB-III for a damping problem (like diffusion)
 is less favorable, since the stability limit is reduced to 0.54 only
-(and 0.64 with :math:`\beta_{AB} = 0.2811`) compared to 1.0 (and 0.9 with
-:math:`\epsilon_{AB} = 0.1`) with the AB-II (see
+(and 0.64 with :math:`\beta_{\rm AB} = 0.2811`) compared to 1.0 (and 0.9 with
+:math:`\epsilon_{\rm AB} = 0.1`) with the AB-II (see
 :numref:`ab3_damp_response`).
 
 A way to enable the use of a longer time step is to keep the dissipation
@@ -469,7 +472,7 @@ advection and Coriolis terms.
 
 The AB-III time stepping is activated by defining the option ``#define``
 :varlink:`ALLOW_ADAMSBASHFORTH_3` in :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. The parameters
-:math:`\alpha_{AB},\beta_{AB}` can be set from the main parameter file
+:math:`\alpha_{\rm AB},\beta_{\rm AB}` can be set from the main parameter file
 ``data`` (namelist ``PARM03``) and their default values correspond to
 the 3rd order Adams-Bashforth. A simple example is provided in
 :filelink:`verification/advect_xy/input.ab3_c4`.
@@ -483,7 +486,7 @@ AB-III is not yet available for the vertical momentum equation
     :alt: ab3_stability_analysis
     :name: ab3_oscill_response
 
-    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{\rm AB},\,\beta_{\rm AB})` parameters.
     The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
 
   .. figure:: figs/stab_AB3_dampR.*
@@ -492,7 +495,7 @@ AB-III is not yet available for the vertical momentum equation
     :alt: ab3_damping_analysis
     :name: ab3_damp_response
 
-    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{\rm AB},\,\beta_{\rm AB})` parameters.
     The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
 
 
@@ -616,12 +619,12 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
+   \eta^* = \epsilon_{\rm fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
       \nabla  \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
 .. math::
-    \nabla  \cdot g H  \nabla  \eta^{n+1} - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
+    \nabla  \cdot g H  \nabla  \eta^{n+1} - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-sync
 
 .. math::
@@ -739,12 +742,12 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
+   \eta^*  = \epsilon_{\rm fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
       \nabla  \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
 .. math::
-    \nabla  \cdot g H  \nabla  \eta^{n+1/2} - \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
+    \nabla  \cdot g H  \nabla  \eta^{n+1/2} - \frac{\epsilon_{\rm fs} \eta^{n+1/2}}{\Delta t^2}
    = - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-staggered
 
@@ -769,7 +772,7 @@ position in time of variables appropriately:
    :label: t-n+1-staggered
 
 The corresponding calling tree is given below. The staggered algorithm is
-activated with the run-time flag :varlink:`staggerTimeStep` =.TRUE. in
+activated with the run-time flag :varlink:`staggerTimeStep` ``=.TRUE.`` in
 parameter file ``data``, namelist ``PARM01``.
 
 .. admonition:: Staggered Adams-Bashforth calling tree
@@ -874,19 +877,19 @@ tendency of the flow as follows:
    v^{**} = v^{*} - \Delta t g \partial_y \eta^{n+1}\end{aligned}
 
 Substituting into the depth integrated continuity
-(equation :eq:`discrete-time-backward-free-surface`) gives
+:eq:`discrete-time-backward-free-surface` gives
 
 .. math::
    \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
    + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
-    - \frac{\epsilon_{fs}\eta^{n+1}}{\Delta t^2}
+    - \frac{\epsilon_{\rm fs}\eta^{n+1}}{\Delta t^2}
    = - \frac{\eta^*}{\Delta t^2}
    :label: substituting-in-cont
 
 which is approximated by equation :eq:`elliptic-backward-free-surface`
 on the basis that i) :math:`\phi_{\rm nh}^{n+1}` is not yet known and ii)
-:math:` \nabla  \widehat{\phi}_{\rm nh}
-\ll  g  \nabla  \eta`. If :eq:`elliptic-backward-free-surface` is solved
+:math:`\nabla  \widehat{\phi}_{\rm nh} \ll  g  \nabla  \eta`.
+If :eq:`elliptic-backward-free-surface` is solved
 accurately then the implication is that :math:`\widehat{\phi}_{\rm nh}
 \approx 0` so that the non-hydrostatic pressure field does not drive
 barotropic motion.
@@ -917,7 +920,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
+   \eta^* ~ = ~ \epsilon_{\rm fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -925,7 +928,7 @@ following equations:
 .. math::
     \partial_x g H \partial_x \eta^{n+1}
    + \partial_y g H \partial_y \eta^{n+1}
-   - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2}
+   - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2}
    ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-nh
 
@@ -971,7 +974,7 @@ for free-surface coordinate (units of :math:`r`), corresponding to
 non-hydrostatic effects (:math:`\epsilon_{\rm nh} = 0`) is:
 
 .. math::
-   \epsilon_{fs} {\eta}^{n+1} -
+   \epsilon_{\rm fs} {\eta}^{n+1} -
     \nabla _h \cdot \Delta t^2 (R_o-R_{\rm fixed})  \nabla _h b_s
    {\eta}^{n+1} = {\eta}^*
    :label: eq-solve2D
@@ -979,9 +982,9 @@ non-hydrostatic effects (:math:`\epsilon_{\rm nh} = 0`) is:
 where
 
 .. math::
-   {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
+   {\eta}^* = \epsilon_{\rm fs} \: {\eta}^{n} -
    \Delta t  \nabla _h \cdot \int_{R_{\rm fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
+   \: + \: \epsilon_{\rm fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -1020,7 +1023,7 @@ where
 
 Note that :math:`\eta^{n+1}` is also used to update the second RHS term
 :math:`\partial_r \dot{r}^*` since the vertical velocity at the surface
-(:math:`\dot{r}_{surf}`) is evaluated as
+(:math:`\dot{r}_{\rm surf}`) is evaluated as
 :math:`(\eta^{n+1} - \eta^n) / \Delta t`.
 
 Finally, the horizontal velocities at the new time level are found by:
@@ -2240,13 +2243,13 @@ and details of approximation) are:
 .. math::
    \frac{{\overline{D} \overline w}}{{\overline{Dt}}} + \frac{ \frac{\partial{\overline{\pi}}}{\partial{z}} - \overline b}{{\rm Fr}^2\lambda^2}
    = -\left(\overline{\frac{D{w}}{Dt}} - \frac{{\overline{D} \overline w}}{{\overline{Dt}}}\right)
-   +\frac{\nabla^2 \overline w}{{\rm Re}}\nonumber
+   +\frac{\nabla^2 \overline w}{{\rm Re}}
    :label: mercat_w
 
 .. math::
    \frac{{\overline{D} \bar b}}{{\overline{Dt}}} + \overline w =
     -\left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
-   +\frac{\nabla^2 \overline b}{\Pr{\rm Re}}\nonumber
+   +\frac{\nabla^2 \overline b}{\Pr{\rm Re}}
    :label: mercat_b
 
 .. math::
@@ -2293,7 +2296,7 @@ scales are resolved. That is, we approximate :eq:`mercat` - :eq:`mercat_b`:
 .. math::
    \left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
    \approx\frac{\nabla^2_h \overline b}{\Pr{\rm Re}_h}
-   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}\nonumber
+   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}
    :label: eddyvisc_b
 
 Reynolds-Number Limited Eddy Viscosity
@@ -2628,19 +2631,19 @@ suggested a biharmonic eddy viscosity instead of a harmonic (or Laplacian) visco
 .. math::
    \left({\overline{\frac{D{\tilde v}}{Dt} }} - {\frac{{\overline{D} {{\tilde {\overline{v}}}}}}{{\overline{Dt}}} }\right)
    \approx \frac{-\nabla^4_h{{\tilde {\overline{v}}}}}{{\rm Re}_4}
-   + \frac{{\frac{\partial^2{{\tilde {\overline{v}}}}}{{\partial{z}}^2}}}{{\rm Re}_v}\nonumber
+   + \frac{{\frac{\partial^2{{\tilde {\overline{v}}}}}{{\partial{z}}^2}}}{{\rm Re}_v}
    :label: bieddyvisc_v
 
 
 .. math::
    \left(\overline{\frac{D{w}}{Dt}} - \frac{{\overline{D} \overline w}}{{\overline{Dt}}}\right)
-   \approx\frac{-\nabla^4_h\overline w}{{\rm Re}_4} + \frac{{\frac{\partial^2{\overline w}}{{\partial{z}}^2}}}{{\rm Re}_v}\nonumber
+   \approx\frac{-\nabla^4_h\overline w}{{\rm Re}_4} + \frac{{\frac{\partial^2{\overline w}}{{\partial{z}}^2}}}{{\rm Re}_v}
    :label: bieddyvisc_w
 
 .. math::
    \left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
    \approx \frac{-\nabla^4_h \overline b}{\Pr{\rm Re}_4}
-   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}\nonumber
+   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}
    :label: bieddyvisc_b
 
 
