@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - fix basic code to also work with dry grid cells near the top (e.g., under
+    ice-shelf) and in this case, for now, stop if unsafe features are used ;
+  - fix tapering 'ac02' and 'stableGmAdjTap' ;
+  - add a secondary test, "input.top", in verification exp. front_relax to test
+    GM with dry cells at the top (+ also 'ac02' tapering) ;
+  - update few adm & tlm & oad ref. output from exp. global_ocean.90x40x15
+    since adding better masking in gmredi_s{x,y}rtransport.F does affect AD &
+    TLM gradient (@ machine truncation level).
 o pkg/autodiff:
   - new CPP-flags allow to turnoff (default) autodiff_store/restore entirely:
     * New flags AUTODIFF_USE_STORE_RESTORE, AUTODIFF_USE_STORE_RESTORE_OBCS to
