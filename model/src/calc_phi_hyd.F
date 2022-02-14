@@ -9,7 +9,6 @@ C     !ROUTINE: CALC_PHI_HYD
 C     !INTERFACE:
       SUBROUTINE CALC_PHI_HYD(
      I                         bi, bj, iMin, iMax, jMin, jMax, k,
-     I                         tFld, sFld,
      U                         phiHydF,
      O                         phiHydC, dPhiHydX, dPhiHydY,
      I                         myTime, myIter, myThid )
@@ -20,8 +19,6 @@ C     | o Integrate the hydrostatic relation to find the Hydros. |
 C     *==========================================================*
 C     |    Potential (ocean: Pressure/rho ; atmos = geopotential)
 C     | On entry:
-C     |   tFld,sFld     are the current thermodynamics quantities
-C     |                 (unchanged on exit)
 C     |   phiHydF(i,j) is the hydrostatic Potential anomaly
 C     |                at middle between tracer points k-1,k
 C     | On exit:
@@ -42,10 +39,9 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 #include "SURFACE.h"
 #include "DYNVARS.h"
 
@@ -53,8 +49,6 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj, k  :: tile and level indices
 C     iMin,iMax,jMin,jMax :: computational domain
-C     tFld       :: potential temperature
-C     sFld       :: salinity
 C     phiHydF    :: hydrostatic potential anomaly at middle between
 C                   2 centers (entry: Interf_k ; output: Interf_k+1)
 C     phiHydC    :: hydrostatic potential anomaly at cell center
@@ -63,8 +57,6 @@ C     myTime     :: current time
 C     myIter     :: current iteration number
 C     myThid     :: thread number for this instance of the routine.
       INTEGER bi,bj,iMin,iMax,jMin,jMax,k
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -81,6 +73,11 @@ C     pKappaF    :: (p/Po)^kappa at interface k
 C     pKappaU    :: (p/Po)^kappa at interface k+1 (Upper k)
 C     pKappaC    :: (p/Po)^kappa at cell center k
       INTEGER i,j
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, kkey
+#endif
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef DISABLE_SIGMA_CODE
       _RL phiHydU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -114,20 +111,20 @@ C                          and InterFace_W at the middle of Tracer lev;
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
 
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
 
-          act3 = myThid - 1
-          max3 = nTx*nTy
+      act3 = myThid - 1
+      max3 = nTx*nTy
 
-          act4 = ikey_dynamics - 1
+      act4 = ikey_dynamics - 1
 
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+      ikey = (act1 + 1) + act2*max1
+     &                  + act3*max1*max2
+     &                  + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialize phiHydF to zero :
@@ -154,15 +151,15 @@ CADJ GENERAL
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
-     I              tFld(1-OLx,1-OLy,k,bi,bj),
-     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     I              theta(1-OLx,1-OLy,k,bi,bj),
+     I              salt(1-OLx,1-OLy,k,bi,bj),
      O              alphaRho,
      I              k, bi, bj, myThid )
         ELSE
@@ -196,8 +193,10 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -316,15 +315,15 @@ CADJ GENERAL
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
-     I              tFld(1-OLx,1-OLy,k,bi,bj),
-     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     I              theta(1-OLx,1-OLy,k,bi,bj),
+     I              salt(1-OLx,1-OLy,k,bi,bj),
      O              alphaRho,
      I              k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -350,8 +349,10 @@ C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added as if they modify the specific-volume
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -441,8 +442,8 @@ C-      horizontally uniform (tRef) reference state
           ENDIF
           DO j=jMin,jMax
            DO i=iMin,iMax
-            alphaRho(i,j) = ( tFld(i,j,k,bi,bj)
-     &                        *( sFld(i,j,k,bi,bj)*atm_Rq + oneRL )
+            alphaRho(i,j) = ( theta(i,j,k,bi,bj)
+     &                        *( salt(i,j,k,bi,bj)*atm_Rq + oneRL )
      &                      - thetaRef )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -456,8 +457,10 @@ C-      horizontally uniform (tRef) reference state
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -621,7 +624,7 @@ C--   r-coordinate and r*-coordinate cases:
        IF ( momPressureForcing ) THEN
         CALL CALC_GRAD_PHI_HYD(
      I                         k, bi, bj, iMin,iMax, jMin,jMax,
-     I                         phiHydC, alphaRho, tFld, sFld,
+     I                         phiHydC, alphaRho,
      O                         dPhiHydX, dPhiHydY,
      I                         myTime, myIter, myThid)
        ENDIF
@@ -657,7 +660,7 @@ C       = Top atmosphere height (Atmos, P-coord.)
       IF (useDiagPhiRlow) THEN
         CALL DIAGS_PHI_RLOW(
      I                      k, bi, bj, iMin,iMax, jMin,jMax,
-     I                      phiHydF, phiHydC, alphaRho, tFld, sFld,
+     I                      phiHydF, phiHydC, alphaRho,
      I                      myTime, myIter, myThid)
       ENDIF
 

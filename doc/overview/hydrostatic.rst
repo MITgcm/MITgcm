@@ -1,3 +1,5 @@
+.. _hydrostatic_quasihydrostatic_forms:
+
 Hydrostatic, Quasi-hydrostatic, Quasi-nonhydrostatic and Non-hydrostatic forms
 ------------------------------------------------------------------------------
 
@@ -50,7 +52,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
  
    & -\left\{ \underline{\frac{v\dot{r}}{{r}}}-\frac{u^{2}\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
-   & -\left\{ -2\Omega u\sin \varphi\right\} && \qquad \text{Coriolis}  
+   & -\left\{ 2\Omega u\sin \varphi\right\} && \qquad \text{Coriolis}  
 
    & +\mathcal{F}_{v} && \qquad \text{forcing/dissipation}
 
@@ -85,6 +87,7 @@ the shallow atmosphere approximation can be relaxed - when dividing
 through by :math:`r` in, for example, :eq:`gu-spherical`, we do not
 replace :math:`r` by :math:`a`, the radius of the earth.
 
+.. _hydro_and_quasihydro:
 
 Hydrostatic and quasi-hydrostatic forms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

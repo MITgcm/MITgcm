@@ -1,5 +1,5 @@
 #include "PTRACERS_OPTIONS.h"
-c#include "GAD_OPTIONS.h"
+#include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -31,12 +31,13 @@ C     iTracer    :: tracer index
 C     iUnit      :: unit number for I/O
 C     msgBuf     :: Informational/error message buffer
       INTEGER iTracer
-      INTEGER iUnit
+      INTEGER iUnit, errCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
       WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: #define ALLOW_PTRACERS'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -134,6 +135,11 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_useDWNSLP =', ' /* apply DOWN-SLOPE Flow */')
         CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
      &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
+#ifdef GAD_SMOLARKIEWICZ_HACK
+        CALL WRITE_0D_L( PTRACERS_stayPositive(iTracer), INDEX_NONE,
+     &     'PTRACERS_stayPositive =',
+     &     ' /* use Smolarkiewicz Hack for this tracer */')
+#endif
         CALL WRITE_1D_RL( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
      &     'PTRACERS_ref =', ' /* Reference vertical profile */')
         CALL WRITE_0D_RL( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
@@ -155,13 +161,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ELSEIF ( PTRACERS_Iter0.GT.nIter0 ) THEN
-        WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
      &       ' wrong setting of PTRACERS_Iter0 :'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
      &       ' nIter0 < PTRACERS_Iter0 < nEndIter not supported'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 #ifndef INCLUDE_IMPLVERTADV_CODE
@@ -170,10 +176,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         WRITE(msgBuf,'(A)')
      &   'PTRACERS_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
      &   ' but pTracers_ImplVertAdv(',iTracer,' ) is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
+        errCount = errCount + 1
        ENDIF
       ENDDO
       IF ( PTRACERS_dTLev(1).NE.PTRACERS_dTLev(Nr)
@@ -184,38 +190,60 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK: ',
      &   'but implicitDiffusion=T with non-uniform PTRACERS_dTLev'
         CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif
       DO iTracer=1,PTRACERS_numInUse
-        IF ( PTRACERS_useGMRedi(iTracer) .AND. .NOT.useGMRedi ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
-     &     ' pTracers_useGMRedi(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,L5,A)')
-     &     'PTRACERS_CHECK: But not useGMRedi (=',useGMRedi,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
-        ENDIF
-        IF ( PTRACERS_useDWNSLP(iTracer) .AND. .NOT.useDOWN_SLOPE ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
-     &     ' pTracers_useDWNSLP(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(2A,L5,A)') 'PTRACERS_CHECK:',
-     &     ' But not useDOWN_SLOPE (=', useDOWN_SLOPE, ')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
-        ENDIF
-        IF ( PTRACERS_useKPP(iTracer) .AND. .NOT.useKPP ) THEN
-          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_CHECK:',
-     &     ' pTracers_useKPP(',iTracer,' ) is TRUE'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,L5,A)')
-     &     'PTRACERS_CHECK: But not useKPP (=',useKPP,')'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
-        ENDIF
+       IF ( PTRACERS_useGMRedi(iTracer) .AND. .NOT.useGMRedi ) THEN
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' pTracers_useGMRedi(',iTracer,' ) is TRUE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,L5,A)')
+     &    'PTRACERS_CHECK: But not useGMRedi (=',useGMRedi,')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( PTRACERS_useDWNSLP(iTracer) .AND. .NOT.useDOWN_SLOPE ) THEN
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' pTracers_useDWNSLP(',iTracer,' ) is TRUE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,L5,A)') 'PTRACERS_CHECK:',
+     &    ' But not useDOWN_SLOPE (=', useDOWN_SLOPE, ')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( PTRACERS_useKPP(iTracer) .AND. .NOT.useKPP ) THEN
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' pTracers_useKPP(',iTracer,' ) is TRUE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,L5,A)')
+     &    'PTRACERS_CHECK: But not useKPP (=',useKPP,')'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+#ifndef GAD_SMOLARKIEWICZ_HACK
+       IF ( PTRACERS_stayPositive(iTracer) ) THEN
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
+     &    ' Smolarkiewicz Hack code is not compiled'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' but needed to keep pTracer(', iTracer, ' ) positive.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK: Re-compile with: ',
+     &    ' #define GAD_SMOLARKIEWICZ_HACK in GAD_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        errCount = errCount + 1
+       ENDIF
+#endif /* ndef GAD_SMOLARKIEWICZ_HACK */
       ENDDO
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &       'PTRACERS_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
+      ENDIF
 
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded

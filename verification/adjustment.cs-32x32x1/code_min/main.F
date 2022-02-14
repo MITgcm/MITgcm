@@ -109,6 +109,7 @@ C     myThid       :: thread Id number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
       INTEGER I
+      INTEGER dummyComm
 
 #ifdef USE_OMP_THREADING
       INTEGER OMP_GET_THREAD_NUM
@@ -123,9 +124,9 @@ CEOP
 
 C--   Set up the execution environment
 C     EEBOOT loads a execution environment parameter file
-C     ( called "eedata" by default ) and sets variables
-C     accordingly.
-      CALL EEBOOT
+C     ( called "eedata" by default ) and sets variables accordingly.
+      dummyComm = -1
+      CALL EEBOOT( dummyComm )
 
 C--   Trap errors
       IF ( eeBootError ) THEN
@@ -180,8 +181,9 @@ C--      Invoke nThreads instances of the numerical model
 #elif (defined (ALLOW_HESSIAN_CODE))
           CALL HESSIAN_MAIN(myThid)
 #else
-          WRITE(0,'(3(A,I4))') '-- PId=', myProcId, ' , TId=', myThid,
-     &                         ' : ===> Skip THE_MODEL_MAIN call <==='
+          WRITE(0,'(A,I8,A,I4,A)')
+     &         '-- PId=', myProcId, ' , TId=', myThid,
+     &         ' : ===> Skip THE_MODEL_MAIN call <==='
 c         CALL THE_MODEL_MAIN(myThid)
 #endif
          ENDIF

@@ -80,6 +80,8 @@ Redi projection tensor then becomes:
    \end{array}
    \right)
 
+.. _GM_bolus_desc:  
+
 GM parameterization
 +++++++++++++++++++
 
@@ -157,6 +159,8 @@ streamfunction are:
    -F_x^\star
    \end{array}
    \right).
+
+.. _sub_gmredi_skewflux:
 
 Griffies Skew Flux
 ++++++++++++++++++
@@ -253,7 +257,6 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-
 Variable :math:`\kappa_{GM}`
 ++++++++++++++++++++++++++++
 
@@ -283,6 +286,8 @@ the formula for :math:`\kappa_{GM}` gives:
    \kappa_{GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |S| N }^z
+
+.. _sub_gmredi_tapering_stability:
 
 Tapering and stability
 ++++++++++++++++++++++
@@ -441,16 +446,6 @@ parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
 **GM\_taper\_scheme = ’ldd97’** in *data.gmredi*.
-
-
-.. figure::
-    :width: 70%
-    :align: center
-    :alt: Mixed layer depth with GM
-    :name: mixed_layer
-
-    **Figure missing** Mixed layer depth using GM parameterization with a) Cox slope clipping and for comparison b) using horizontal constant diffusion.
-
 
 
 .. _ssub_phys_pkg_gmredi_diagnostics:

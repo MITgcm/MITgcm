@@ -34,7 +34,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
@@ -60,19 +61,30 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
 
-      integer ilps, ils, ilt, irec
+      integer ilt, irec
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      character*(128) fname_gencostbar(NGENCOST)
-      character*(128) adfname_gencostbar(NGENCOST)
+      character*(128) fname_gencostbar
+      character*(128) adfname_gencostbar
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-#ifndef ALLOW_CTRL
-      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#if (defined ALLOW_SEAICE) && (defined ALLOW_SEAICE_COST_SMR_AREA)
+      integer ilps
+      character*(128) fnamesmrareabar
+      character*(128) fnamesmrsstbar
+      character*(128) fnamesmrsssbar
+      character*(128) adfnamesmrareabar
+      character*(128) adfnamesmrsstbar
+      character*(128) adfnamesmrsssbar
+#elif ( defined ECCO_CTRL_DEPRECATED )
+      integer ilps
 #endif
 
+      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+
 #ifdef ECCO_CTRL_DEPRECATED
+      integer ils
       character*(128) fnamepsbar
       character*(128) fnametbar
       character*(128) fnamesbar
@@ -85,13 +97,10 @@ c     == local variables ==
       character*(128) fnamehfluxmeanbar
       character*(128) fnamesfluxmeanbar
       character*(128) fnamebpbar
-      character*(128) fnamesmrareabar
-      character*(128) fnamesmrsstbar
-      character*(128) fnamesmrsssbar
       character*(128) fnameiestaubar
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) fnamesigmaRbar
-#endif 
+#endif
       character*(128) adfnamepsbar
       character*(128) adfnametbar
       character*(128) adfnamesbar
@@ -104,15 +113,11 @@ c     == local variables ==
       character*(128) adfnamehfluxmeanbar
       character*(128) adfnamesfluxmeanbar
       character*(128) adfnamebpbar
-      character*(128) adfnamesmrareabar
-      character*(128) adfnamesmrsstbar
-      character*(128) adfnamesmrsssbar
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
       character*(128) adfnamesigmaRbar
-#endif 
+#endif
       character*(128) adfnameiestaubar
 #endif /* ECCO_CTRL_DEPRECATED */
-
 c     == external functions ==
 
       integer  ilnblnk
@@ -151,7 +156,7 @@ c     == end of interface ==
       enddo
 
 #ifdef ECCO_CTRL_DEPRECATED
-#
+
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       IF (using_cost_altim) THEN
 c--   Save psbar on file.
@@ -417,8 +422,6 @@ c--   Save sfluxmeanbar on file.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-
-
 #ifdef ALLOW_SEAICE
       if (useSEAICE) then
 
@@ -457,7 +460,6 @@ c initialize smr sss bar
       endif
 #endif /* ALLOW_SEAICE */
 
-
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 c--   Save gencost_barfile on file.
       do k=1,NGENCOST
@@ -487,7 +489,5 @@ c--   Save gencost_barfile on file.
       enddo
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-
       return
       end
-

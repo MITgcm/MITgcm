@@ -36,6 +36,28 @@ More pkg/seaice test experiments, configured for low and
 high-resolution global cube-sphere domains are described
 in MITgcm_contrib/high_res_cube/README_ice.
 
+Lab Sea adjoint
+=====================================
+The code_ad directory provides files required to compile the adjoint
+version of this verification experiment.  This verification
+experiment uses the 'divided adjoint'.
+
+To compile the adjoint, one must use a special AD_OPTFILE,
+the location of which is specified in the file 'build/genmake_local'.
+To wit,
+AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'
+
+To compile the adjoint without the divided adjoint, the compile-time
+flag ALLOW_DIVIDED_ADJOINT in 'code_ad/ECCO_CPPOPTIONS.h' should
+be changed from
+#define ALLOW_DIVIDED_ADJOINT
+to
+#undef ALLOW_DIVIDED_ADJOINT
+
+Note: testreport builds in the 'lab_sea/build' directory which contains
+this 'genmake_local' file and so it knows to use the 'adjoint_diva'
+AD_OPTFILE
+
 Using testscript to test sea-ice code
 =====================================
 

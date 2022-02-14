@@ -226,6 +226,11 @@ C-- Print out GAD parameters :
       CALL WRITE_0D_L( AdamsBashforth_T, INDEX_NONE,
      & 'AdamsBashforth_T =',
      & ' /* apply Adams-Bashforth extrapolation on Temp */')
+#ifdef GAD_SMOLARKIEWICZ_HACK
+      CALL WRITE_0D_L( temp_stayPositive, INDEX_NONE,
+     & 'temp_stayPositive =',
+     & ' /* use Smolarkiewicz Hack for Temperature */')
+#endif
 
       CALL WRITE_0D_I( saltAdvScheme, INDEX_NONE,
      & 'saltAdvScheme =',
@@ -246,11 +251,16 @@ C-- Print out GAD parameters :
      & 'AdamsBashforth_S =',
      & ' /* apply Adams-Bashforth extrapolation on Salt */')
 #ifdef GAD_SMOLARKIEWICZ_HACK
+      CALL WRITE_0D_L( salt_stayPositive, INDEX_NONE,
+     & 'salt_stayPositive =',
+     & ' /* use Smolarkiewicz Hack for Salinity */')
+#endif
+
+#ifdef GAD_SMOLARKIEWICZ_HACK
       CALL WRITE_0D_RL( SmolarkiewiczMaxFrac, INDEX_NONE,
      & 'SmolarkiewiczMaxFrac =',
      & ' /* maximal fraction of tracer to flow out of a cell */')
 #endif
-
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 

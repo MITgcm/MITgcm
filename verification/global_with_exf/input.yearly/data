@@ -12,7 +12,7 @@
  diffKrT=3.E-5,
  diffKhS=0.0,
  diffKrS=3.E-5,
- rhonil=1035.,
+ rhoConst=1035.,
  rotationPeriod=86400.,
  gravity=9.81,
  eosType = 'POLY3',

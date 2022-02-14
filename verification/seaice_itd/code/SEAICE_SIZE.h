@@ -29,7 +29,6 @@ C-    Maximum Number of tracers
       PARAMETER(SItrMaxNum = 3 )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER iicekey
       INTEGER nEVPstepMax
       PARAMETER ( nEVPstepMax=180 )
       INTEGER NMAX_TICE

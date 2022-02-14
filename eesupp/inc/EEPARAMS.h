@@ -174,13 +174,16 @@ C     useCubedSphereExchange :: use Cubed-Sphere topology domain.
 C     useCoupler     :: use Coupler for a multi-components set-up.
 C     useNEST_PARENT :: use Parent Nesting interface (pkg/nest_parent)
 C     useNEST_CHILD  :: use Child  Nesting interface (pkg/nest_child)
+C     useNest2W_parent :: use Parent 2-W Nesting interface (pkg/nest2w_parent)
+C     useNest2W_child  :: use Child  2-W Nesting interface (pkg/nest2w_child)
 C     useOASIS       :: use OASIS-coupler for a multi-components set-up.
       COMMON /EEPARAMS_L/
 c    &  eeBootError, fatalError, eeEndError,
      &  eeBootError, eeEndError, fatalError, debugMode,
      &  useSingleCpuIO, useSingleCpuInput, printMapIncludesZeros,
      &  useCubedSphereExchange, useCoupler,
-     &  useNEST_PARENT, useNEST_CHILD, useOASIS,
+     &  useNEST_PARENT, useNEST_CHILD,
+     &  useNest2W_parent, useNest2W_child, useOASIS,
      &  useSETRLSTK, useSIGREG
       LOGICAL eeBootError
       LOGICAL eeEndError
@@ -193,6 +196,8 @@ c    &  eeBootError, fatalError, eeEndError,
       LOGICAL useCoupler
       LOGICAL useNEST_PARENT
       LOGICAL useNEST_CHILD
+      LOGICAL useNest2W_parent
+      LOGICAL useNest2W_child
       LOGICAL useOASIS
       LOGICAL useSETRLSTK
       LOGICAL useSIGREG

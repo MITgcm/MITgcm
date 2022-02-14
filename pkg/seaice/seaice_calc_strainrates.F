@@ -4,9 +4,6 @@
 #else
 # define OBCS_UVICE_OLD
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_CALC_STRAINRATES
@@ -37,10 +34,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     uFld   :: ice velocity, u-component
@@ -70,7 +63,6 @@ C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
 C     hFacU, hFacV :: determine the no-slip boundary condition
-      INTEGER k
       _RS hFacU, hFacV, noSlipFac
       _RL third
       PARAMETER ( third = 0.333333333333333333333333333 _d 0 )
@@ -83,7 +75,6 @@ C     vectorizes even after TAFization
       _RL uave (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vave (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      k = 1
       noSlipFac = 0. _d 0
       IF ( SEAICE_no_slip ) noSlipFac = 1. _d 0
 C     in order repoduce results before fixing a bug in r1.20 comment out
@@ -144,15 +135,15 @@ C     for vectorization
 C     evaluate strain rates at Z-points
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
-          hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
+          hFacU = SIMaskU(i,j,bi,bj) - SIMaskU(i,j-1,bi,bj)
+          hFacV = SIMaskV(i,j,bi,bj) - SIMaskV(i-1,j,bi,bj)
           e12Loc(i,j,bi,bj) = 0.5 _d 0 * (
      &         dudy(i,j) + dvdx(i,j)
      &         - k1AtZ(i,j,bi,bj) * vave(i,j)
      &         - k2AtZ(i,j,bi,bj) * uave(i,j)
      &         )
-     &         *maskC(i  ,j  ,k,bi,bj)*maskC(i-1,j  ,k,bi,bj)
-     &         *maskC(i  ,j-1,k,bi,bj)*maskC(i-1,j-1,k,bi,bj)
+     &         *HEFFM(i  ,j  ,bi,bj)*HEFFM(i-1,j  ,bi,bj)
+     &         *HEFFM(i  ,j-1,bi,bj)*HEFFM(i-1,j-1,bi,bj)
      &         + noSlipFac * (
      &           2.0 _d 0 * uave(i,j) * _recip_dyU(i,j,bi,bj) * hFacU
      &         + 2.0 _d 0 * vave(i,j) * _recip_dxV(i,j,bi,bj) * hFacV
@@ -167,31 +158,31 @@ c$$$     &         - hFacU * k2AtZ(i,j,bi,bj) * uave(i,j)
         IF ( SEAICE_no_slip .AND. SEAICE_2ndOrderBC ) THEN
          DO j=1-OLy+2,sNy+OLy-1
           DO i=1-OLx+2,sNx+OLx-1
-           hFacU = (_maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj))*third
-           hFacV = (_maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj))*third
-           hFacU = hFacU*( _maskW(i,j-2,k,bi,bj)*_maskW(i,j-1,k,bi,bj)
-     &                   + _maskW(i,j+1,k,bi,bj)*_maskW(i,j,  k,bi,bj) )
-           hFacV = hFacV*( _maskS(i-2,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
-     &                   + _maskS(i+1,j,k,bi,bj)*_maskS(i  ,j,k,bi,bj) )
+           hFacU = (SIMaskU(i,j,bi,bj) - SIMaskU(i,j-1,bi,bj))*third
+           hFacV = (SIMaskV(i,j,bi,bj) - SIMaskV(i-1,j,bi,bj))*third
+           hFacU = hFacU*( SIMaskU(i,j-2,bi,bj)*SIMaskU(i,j-1,bi,bj)
+     &                   + SIMaskU(i,j+1,bi,bj)*SIMaskU(i,j,  bi,bj) )
+           hFacV = hFacV*( SIMaskV(i-2,j,bi,bj)*SIMaskV(i-1,j,bi,bj)
+     &                   + SIMaskV(i+1,j,bi,bj)*SIMaskV(i  ,j,bi,bj) )
 C     right hand sided dv/dx = (9*v(i,j)-v(i+1,j))/(4*dxv(i,j)-dxv(i+1,j))
-C     according to a Taylor expansion to 2nd order. We assume that dxv 
+C     according to a Taylor expansion to 2nd order. We assume that dxv
 C     varies very slowly, so that the denominator simplifies to 3*dxv(i,j),
 C     then dv/dx = (6*v(i,j)+3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
 C                = 2*v(i,j)/dxv(i,j) + (3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
 C     the left hand sided dv/dx is analogously
 C                = - 2*v(i-1,j)/dxv(i,j) - (3*v(i-1,j)-v(i-2,j))/(3*dxv(i,j))
 C     the first term is the first order part, which is already added.
-C     For e12 we only need 0.5 of this gradient and vave = is either 
+C     For e12 we only need 0.5 of this gradient and vave = is either
 C     0.5*v(i,j) or 0.5*v(i-1,j) near the boundary so that we need an
 C     extra factor of 2. This explains the six. du/dy is analogous.
 C     The masking is ugly, but hopefully effective.
            e12Loc(i,j,bi,bj) = e12Loc(i,j,bi,bj) + 0.5 _d 0 * (
-     &            _recip_dyU(i,j,bi,bj) * ( 6.0 _d 0 * uave(i,j) 
-     &          - uFld(i,j-2,bi,bj)*_maskW(i,j-1,k,bi,bj)
-     &          - uFld(i,j+1,bi,bj)*_maskW(i,j  ,k,bi,bj) ) * hFacU
+     &            _recip_dyU(i,j,bi,bj) * ( 6.0 _d 0 * uave(i,j)
+     &          - uFld(i,j-2,bi,bj)*SIMaskU(i,j-1,bi,bj)
+     &          - uFld(i,j+1,bi,bj)*SIMaskU(i,j  ,bi,bj) ) * hFacU
      &          + _recip_dxV(i,j,bi,bj) * ( 6.0 _d 0 * vave(i,j)
-     &          - vFld(i-2,j,bi,bj)*_maskS(i-1,j,k,bi,bj)
-     &          - vFld(i+1,j,bi,bj)*_maskS(i  ,j,k,bi,bj) ) * hFacV
+     &          - vFld(i-2,j,bi,bj)*SIMaskV(i-1,j,bi,bj)
+     &          - vFld(i+1,j,bi,bj)*SIMaskV(i  ,j,bi,bj) ) * hFacV
      &          )
           ENDDO
          ENDDO
@@ -199,14 +190,14 @@ C     The masking is ugly, but hopefully effective.
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 #ifdef SEAICE_DYN_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
       CALL ZERO_ADJ( 1, e11Loc, myThid)
       CALL ZERO_ADJ( 1, e12Loc, myThid)
       CALL ZERO_ADJ( 1, e22Loc, myThid)
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */

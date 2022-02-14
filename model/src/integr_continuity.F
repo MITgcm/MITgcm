@@ -1,5 +1,11 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
@@ -13,6 +19,8 @@ C     | SUBROUTINE INTEGR_CONTINUITY
 C     | o Integrate the continuity Eq : compute vertical velocity
 C     |   and free surface "r-anomaly" (etaN,etaH) to satisfy
 C     |   exactly the conservation of the Total Volume
+C     | o Routine dummy_for_etan located here in order to print the
+C     |   correct adjoint variable for etaN
 C     *==========================================================*
 C     \ev
 
@@ -26,6 +34,9 @@ C     == Global variables
 #include "GRID.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -67,6 +78,11 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
 #endif /* ndef ALLOW_ADDFLUID */
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+# if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER idynkey
+# endif
 #else
       _RL rStarDhDt(1)
 #endif
@@ -229,6 +245,21 @@ C-- end if exactConserv and not myIter=nIter0 block
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 # ifdef NONLIN_FRSURF
+#  if (defined ALLOW_AUTODIFF_TAMC) && \
+      (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      idynkey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+CADJ STORE dEtaHdt(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key = idynkey, kind = isbyte
+#  endif
       IF (select_rStar .NE. 0) THEN
 #  ifndef DISABLE_RSTAR_CODE
 C-- note: rStarDhDt is similar to rStarDhCDt from S/R CALC_R_STAR
@@ -243,6 +274,10 @@ C         except for deep-factor and rho factor.
         ENDDO
 #  endif /* DISABLE_RSTAR_CODE */
       ENDIF
+#  if (defined ALLOW_AUTODIFF_TAMC) && \
+      (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
+CADJ STORE rStarDhDt = comlev1_bibj, key = idynkey, kind = isbyte
+#  endif
 # endif /* NONLIN_FRSURF */
 
 #endif /* EXACT_CONSERV */
@@ -295,9 +330,16 @@ C--   End bi,bj loops
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_MONITOR
+C     In reverse, print adjoint variable for etaN
+      CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
+      _EXCH_XY_RL( etaN , myThid )
+#else /* ALLOW_AUTODIFF_MONITOR */
       IF ( exactConserv .AND. myIter.NE.nIter0
      &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
      &    _EXCH_XY_RL( etaN , myThid )
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
       IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
      &    _EXCH_XYZ_RL( wVel , myThid )
 

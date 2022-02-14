@@ -39,9 +39,11 @@ C       |-- PTRACERS_WRITE_PICKUP
 C       |
 C       |-- GCHEM_WRITE_PICKUP
 C       |
-C       |-- SEAICE_WRITE_PICKUP
-C       |
 C       |-- STREAMICE_WRITE_PICKUP
+C       |
+C       |-- SHELFICE_WRITE_PICKUP
+C       |
+C       |-- SEAICE_WRITE_PICKUP
 C       |
 C       |-- THSICE_WRITE_PICKUP
 C       |
@@ -155,13 +157,6 @@ C     Write restart file for GCHEM pkg & GCHEM sub-packages
       ENDIF
 #endif
 
-#ifdef  ALLOW_SEAICE
-      IF ( useSEAICE ) THEN
-        CALL SEAICE_WRITE_PICKUP( permPickup,
-     I                    suffix, myTime, myIter, myThid )
-      ENDIF
-#endif  /* ALLOW_SEAICE */
-
 #ifdef ALLOW_STREAMICE
       IF (useStreamIce) THEN
         CALL STREAMICE_WRITE_PICKUP( permPickup,
@@ -175,6 +170,13 @@ C     Write restart file for GCHEM pkg & GCHEM sub-packages
      I                    suffix, myTime, myIter, myThid )
       ENDIF
 #endif
+
+#ifdef  ALLOW_SEAICE
+      IF ( useSEAICE ) THEN
+        CALL SEAICE_WRITE_PICKUP( permPickup,
+     I                    suffix, myTime, myIter, myThid )
+      ENDIF
+#endif  /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN

@@ -12,7 +12,7 @@
  diffKrT=3.E-5,
  diffKhS=0.,
  diffKrS=3.E-5,
- rhonil=1035.,
+ rhoConst=1035.,
  rhoConstFresh=1000.,
  eosType = 'JMD95Z',
  ivdc_kappa=100.,
@@ -78,7 +78,7 @@
  meridWindFile=  'trenberth_tauy.bin',
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
- surfQFile=      'ncep_qnet.bin',
+ surfQnetFile=   'ncep_qnet.bin',
 # fresh water flux is turned off, uncomment next line to turn on
 # (not recommened together with surface salinity restoring)
 # EmPmRFile=      'ncep_emp.bin',

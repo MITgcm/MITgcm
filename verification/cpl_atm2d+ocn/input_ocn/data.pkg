@@ -1,9 +1,0 @@
-# Packages
- &PACKAGES
-# useATM2D=.TRUE.,
- useGMRedi=.TRUE.,
- useZONAL_FILT=.TRUE.,
- usePTRACERS=.FALSE.,
-# useThSIce=.TRUE.,
- &
-

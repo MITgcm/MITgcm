@@ -85,13 +85,13 @@
 # Input datasets
  &PARM05
  bathyFile      ='topog.bin',
- pLoadFile      ='deltageopotjmd95.bin',
+ geoPotAnomFile ='deltageopotjmd95.bin',
  hydrogThetaFile='lev_t.bin',
  hydrogSaltFile ='lev_s.bin',
  zonalWindFile  ='trenberth_taux.bin',
  meridWindFile  ='trenberth_tauy.bin',
  thetaClimFile  ='lev_sst.bin',
 #saltClimFile   ='lev_sss.bin',
- surfQFile      ='shi_qnet.bin',
+ surfQnetFile   ='shi_qnet.bin',
  EmPmRFile      ='shi_empmr.bin',
  &

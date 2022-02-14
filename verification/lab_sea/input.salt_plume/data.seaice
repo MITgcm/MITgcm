@@ -25,12 +25,21 @@
   SEAICE_drySnowAlb  = 0.9656,
   SEAICE_wetSnowAlb  = 0.8256,
   SEAICE_strength    = 2.6780e+04,
-  SEAICE_waterDrag   = 5.3508,
+# SEAICE_waterDrag   = 5.3508,
+  SEAICE_waterDrag   = 0.0052101265822784805,
 # use the new standard way of specifying ocean-ice turb. flux coeff:
   SEAICE_mcPheePiston= 0.00004,
   SEAICE_frazilFrac  = 0.3,
 #- seaice I/O params:
   SEAICEwriteState   = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICEetaZmethod = 0,
+ SEAICE_drag = 0.002,
+ SEAICE_Olx = 0,
+ SEAICE_Oly = 0,
  &
 
  &SEAICE_PARM03

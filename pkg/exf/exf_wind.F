@@ -29,10 +29,10 @@ C     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
 # include "ctrl.h"
@@ -52,8 +52,10 @@ C     == external functions ==
 C     == local variables ==
 
       INTEGER bi,bj
-      INTEGER i,j
-      _RL     wsLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER i,j,ks
+      _RL     urelw(1:sNx,1:sNy)
+      _RL     vrelw(1:sNx,1:sNy)
+      _RL     wsLoc(1:sNx,1:sNy)
       _RL     wsSq
 #ifdef ALLOW_BULKFORMULAE
       _RL     usSq, recip_sqrtRhoA, ustar
@@ -67,31 +69,41 @@ C     == local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+#endif
 C     == end of interface ==
 
 C--   Use atmospheric state to compute surface fluxes.
+
+      ks = 1
+      IF ( usingPCoords ) ks = Nr
 
 C     Loop over tiles.
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+        act1 = bi - myBxLo(myThid)
+        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+        act2 = bj - myByLo(myThid)
+        max2 = myByHi(myThid) - myByLo(myThid) + 1
+        act3 = myThid - 1
+        max3 = nTx*nTy
+        act4 = ikey_dynamics - 1
+        ikey = (act1 + 1) + act2*max1
+     &                    + act3*max1*max2
+     &                    + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialise
         DO j = 1,sNy
          DO i = 1,sNx
           wsLoc(i,j) = 0. _d 0
+          urelw(i,j) = uwind(i,j,bi,bj)
+          vrelw(i,j) = vwind(i,j,bi,bj)
           cw(i,j,bi,bj) = 0. _d 0
           sw(i,j,bi,bj) = 0. _d 0
           sh(i,j,bi,bj) = 0. _d 0
@@ -99,9 +111,27 @@ C--   Initialise
          ENDDO
         ENDDO
 
+        IF (useRelativeWind) THEN
+C     Subtract uVel and vVel from uwind and vwind.
+         DO j = 1,sNy
+          DO i = 1,sNx
+           urelw(i,j) = uwind(i,j,bi,bj) - 0.5 _d 0
+     &          * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj))
+           vrelw(i,j) = vwind(i,j,bi,bj) - 0.5 _d 0
+     &          * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj))
+          ENDDO
+         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL( urelw,'EXFurelw',0,1,3,bi,bj,myThid )
+          CALL DIAGNOSTICS_FILL( vrelw,'EXFvrelw',0,1,3,bi,bj,myThid )
+         ENDIF
+#endif
+        ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uwind (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vwind (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE urelw (:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vrelw (:,:)       = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
@@ -110,12 +140,12 @@ CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 C--   Wind speed and direction.
          DO j = 1,sNy
           DO i = 1,sNx
-           wsSq = uwind(i,j,bi,bj)*uwind(i,j,bi,bj)
-     &          + vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
+           wsSq = urelw(i,j)*urelw(i,j)
+     &          + vrelw(i,j)*vrelw(i,j)
            IF ( wsSq .NE. 0. _d 0 ) THEN
              wsLoc(i,j) = SQRT(wsSq)
-             cw(i,j,bi,bj) = uwind(i,j,bi,bj)/wsLoc(i,j)
-             sw(i,j,bi,bj) = vwind(i,j,bi,bj)/wsLoc(i,j)
+             cw(i,j,bi,bj) = urelw(i,j)/wsLoc(i,j)
+             sw(i,j,bi,bj) = vrelw(i,j)/wsLoc(i,j)
            ELSE
              wsLoc(i,j) = 0. _d 0
              cw(i,j,bi,bj) = 0. _d 0
@@ -173,24 +203,28 @@ C             cdn(umps); ustar can be directly computed from stress;
           recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
           DO j = 1,sNy
            DO i = 1,sNx
-            ustar = wStress(i,j,bi,bj)*recip_sqrtRhoA
-            IF ( ustar .EQ. 0. _d 0 ) THEN
-             wsLoc(i,j) = 0. _d 0
-            ELSE IF ( ustar .LT. ustofu11 ) THEN
-             tmp1 = -cquadrag_2/cquadrag_1*exf_half
-             tmp2 = SQRT(tmp1*tmp1 + ustar*ustar/cquadrag_1)
-             wsLoc(i,j) = SQRT(tmp1 + tmp2)
+C     check for zero wStress to please AD tools
+            IF ( wStress(i,j,bi,bj) .LE. 0. _d 0 ) THEN
+             ustar      = 0. _d 0
+             wsloc(i,j) = 0. _d 0
             ELSE
-             tmp1 = clindrag_2/clindrag_1*oneThirdRL
-             tmp2 = ustar*ustar/clindrag_1*exf_half
-     &            - tmp1*tmp1*tmp1
-             tmp3 = SQRT( ustar*ustar/clindrag_1*
-     &            (ustar*ustar/clindrag_1*0.25 _d 0 - tmp1*tmp1*tmp1 )
-     &                  )
-             tmp4 = (tmp2 + tmp3)**oneThirdRL
-             wsLoc(i,j) = tmp4 + tmp1*tmp1 / tmp4 - tmp1
-c            wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
-c    &            tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
+             ustar = SQRT(wStress(i,j,bi,bj))*recip_sqrtRhoA
+             IF ( ustar .LT. ustofu11 ) THEN
+              tmp1 = -cquadrag_2/cquadrag_1*exf_half
+              tmp2 = SQRT(tmp1*tmp1 + ustar*ustar/cquadrag_1)
+              wsLoc(i,j) = SQRT(tmp1 + tmp2)
+             ELSE
+              tmp1 = clindrag_2/clindrag_1*oneThirdRL
+              tmp2 = ustar*ustar/clindrag_1*exf_half
+     &             - tmp1*tmp1*tmp1
+              tmp3 = SQRT( ustar*ustar/clindrag_1*
+     &             (ustar*ustar/clindrag_1*0.25 _d 0 - tmp1*tmp1*tmp1 )
+     &                    )
+              tmp4 = (tmp2 + tmp3)**oneThirdRL
+              wsLoc(i,j) = tmp4 + tmp1*tmp1 / tmp4 - tmp1
+c             wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
+c    &             tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
+             ENDIF
             ENDIF
            ENDDO
           ENDDO
@@ -258,9 +292,9 @@ C--   Computes wind-stress:
            tmpbulk = exf_scal_BulkCdn
      &             * ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
            ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
-     &                        * uwind(i,j,bi,bj)
+     &                        * urelw(i,j)
            vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
-     &                        * vwind(i,j,bi,bj)
+     &                        * vrelw(i,j)
           ENDDO
          ENDDO
 c#else /* ALLOW_ATM_WIND */

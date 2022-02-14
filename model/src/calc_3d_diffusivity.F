@@ -85,29 +85,33 @@ CEOP
         KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
      &       *(atan(-(rF(k)-diffKrBLEQHo)/diffKrBLEQscl)/PI+0.5 _d 0)
 #endif
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
 #ifdef ALLOW_LONGSTEP
-          IF ( trIdentity .GE. GAD_TR1) THEN
+        IF ( trIdentity .GE. GAD_TR1) THEN
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            KappaRTr(i,j,k) =
      &         LS_IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
      &         + KbryanLewis79
 #ifdef ALLOW_BL79_LAT_VARY
      &         + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
 #endif
-          ELSE
+          ENDDO
+         ENDDO
+        ELSE
 #else
-          IF ( .TRUE. ) THEN
+        IF ( .TRUE. ) THEN
 #endif /* ALLOW_LONGSTEP */
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
            KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
      &         + KbryanLewis79
 #ifdef ALLOW_BL79_LAT_VARY
      &         + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
 #endif
-          ENDIF
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
        ENDDO
        IF ( trIdentity.EQ.GAD_TEMPERATURE ) THEN
         DO k = 1,Nr
@@ -237,6 +241,20 @@ C--   Set vertical diffusivity contribution from KPP
       ENDIF
 #endif
 
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+       IF ( smag3D_diffCoeff.GT.zeroRL ) THEN
+        DO k = 2,Nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           KappaRTr(i,j,k) = KappaRTr(i,j,k)
+     &          + halfRL*( smag3D_diffK(i,j,k-1,bi,bj)
+     &                   + smag3D_diffK(i,j, k, bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_SMAG_3D_DIFFUSIVITY */
+
 #ifndef EXCLUDE_PCELL_MIX_CODE
       IF ( interDiffKr_pCell ) THEN
 C--   This is a hack: alter vertical diffusivity (instead of changing many S/R)
@@ -278,28 +296,26 @@ C-    Increase KappaRTr above bottom level:
              ENDIF
            ENDDO
           ENDDO
-         ENDIF
-         IF ( mixBott.EQ.2 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          IF ( mixBott.EQ.2 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ELSEIF ( mixBott.EQ.3 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          ELSEIF ( mixBott.EQ.3 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ELSEIF ( mixBott.EQ.4 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          ELSEIF ( mixBott.EQ.4 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
      &                   * tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ENDIF
-         IF ( mixBott.GE.1 ) THEN
+          ENDIF
 C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx
@@ -325,28 +341,26 @@ C-    Increase KappaRTr below surface level:
              ENDIF
            ENDDO
           ENDDO
-         ENDIF
-         IF ( mixSurf.EQ.2 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          IF ( mixSurf.EQ.2 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ELSEIF ( mixSurf.EQ.3 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          ELSEIF ( mixSurf.EQ.3 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ELSEIF ( mixSurf.EQ.4 ) THEN
-          DO j = 2-OLy, sNy+OLy
-           DO i = 2-OLx, sNx+OLx
+          ELSEIF ( mixSurf.EQ.4 ) THEN
+           DO j = 2-OLy, sNy+OLy
+            DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
      &                   * tmpFac(i,j)*tmpFac(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-         ENDIF
-         IF ( mixSurf.GE.1 ) THEN
+          ENDIF
 C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
           DO j = 2-OLy, sNy+OLy
            DO i = 2-OLx, sNx+OLx

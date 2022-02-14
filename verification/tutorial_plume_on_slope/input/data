@@ -67,10 +67,10 @@
 
 # Input datasets
  &PARM05
- bathyFile='topog.slope',
+ bathyFile      ='topog.slope',
  hydrogThetaFile='T.init',
- surfQfile='Qnet.forcing',
+ surfQnetFile   ='Qnet.forcing',
 #hydrogThetaFile='T.pickup',
-#uVelInitFile='U.pickup',
-#pSurfInitFile='Eta.pickup',
+#uVelInitFile   ='U.pickup',
+#pSurfInitFile  ='Eta.pickup',
  &

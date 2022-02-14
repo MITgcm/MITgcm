@@ -23,7 +23,7 @@ move_outp()
 #   move mitgcm output files to directory 'arg_1'
     if [ $prt -ge 1 ] ; then echo ' move_outp:' $1 ; fi
     mv *.data *.meta $1
-    listF=`ls -1 *.txt STD???.00?? 2> /dev/null`
+    listF=`ls -1 *.txt STD???.???? 2> /dev/null`
     if test "x$listF" != x ; then mv $listF $1 ; fi
     #- move back sym link:
     listL=`find $1 -type l`
@@ -106,7 +106,7 @@ if test $flag = 'NC' -o $flag = 'All' ; then Multi=1 ; else Multi=0 ; fi
 if test "x$cmdEXE" = x
 then
   if [ $mpi -ge 1 ] ; then
-    cmdEXE="mpirun -machinefile ../../mf -v -np 2 $gcmEXE"
+    cmdEXE="mpirun -machinefile ../../mf -np 2 $gcmEXE"
   else
     cmdEXE=$gcmEXE
   fi
@@ -170,9 +170,11 @@ done
 if [ $prt -ge 2 ] ; then echo ' ' ; fi
 # add nIter0 & nTimeSteps in namelist "PARM03":
 Dbl=`expr $Nit \* 2`
-sed "/^ *\&PARM03/a \ nTimeSteps=$Dbl," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nTimeSteps=$Dbl," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
-sed "/^ *\&PARM03/a \ nIter0=$iter," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nIter0=$iter," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
 echo "prepare file 'data.tst' : done"
 if  [ $prt -ge 1 ] ; then
@@ -185,7 +187,7 @@ if test $action = 1 ; then
  mv -f *.data $tmpDir
  mv -f *.meta $tmpDir
  mv -f *.txt $tmpDir 2> /dev/null
- mv -f STD???.0[0-9][0-9][0-9] $tmpDir
+ mv -f STD???.[0-9][0-9][0-9][0-9] $tmpDir
 #- move main parameter file "data":
  mv -f data $tmpDir
 #- do not deal with MNC pickup at all:

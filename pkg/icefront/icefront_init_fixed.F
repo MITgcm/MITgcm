@@ -32,11 +32,11 @@ C     === Local variables ===
 C     I,J,K,bi,bj   :: Loop counters
 C     errCount      :: error counter
       INTEGER I, J, K, bi, bj
-      INTEGER errCount
 #ifdef ALLOW_ICEFRONT_DEBUG
       INTEGER ISinterface
 #endif
 #ifdef ALLOW_EXF
+      INTEGER errCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif /* ALLOW_EXF */
 

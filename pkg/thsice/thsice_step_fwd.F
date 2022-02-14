@@ -2,6 +2,9 @@
 #ifdef ALLOW_ATM2D
 # include "ctrparam.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD
@@ -32,10 +35,8 @@ C     === Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
       INTEGER siLo, siHi, sjLo, sjHi
@@ -101,6 +102,11 @@ C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
       INTEGER i,j
       LOGICAL dBugFlag
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
@@ -132,7 +138,7 @@ C-    Initialise
           saltFlux(i,j,bi,bj) = 0. _d 0
 #endif
           frzSeaWat(i,j) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
           iceFrac(i,j) = 0.
 C-   set these arrays everywhere: overlap are not set and not used,
 C     but some arrays are stored and storage includes overlap.
@@ -178,9 +184,6 @@ C--
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-# ifdef OLD_THSICE_CALL_SEQUENCE
-        CALL DIAGNOSTICS_FILL(iceMask,'SI_FrcFx',0,1,1,bi,bj,myThid)
-# endif
         CALL DIAGNOSTICS_FRACT_FILL( snowPrc,
      I                       iceMask(1-OLx,1-OLy,bi,bj), oneRL, 1,
      I                              'SIsnwPrc', 0,1,2,bi,bj,myThid )
@@ -396,9 +399,6 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
 CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
 # endif
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      IF ( .TRUE. ) THEN
-#else /* OLD_THSICE_CALL_SEQUENCE */
       IF ( thSIceAdvScheme.LE.0 ) THEN
 C- note: 1) regarding sIceLoad in ocean-dynamics, in case thSIceAdvScheme > 0,
 C          compute sIceLoad in THSICE_DO_ADVECT after seaice advection is done.
@@ -406,7 +406,6 @@ C        2) regarding sIceLoad in seaice-dynamics, probably better not to update
 C          sIceLoad here, to keep the balance between sIceLoad and adjusted Eta.
 C        3) not sure in the case of no advection (thSIceAdvScheme=0) but using
 C          seaice dynamics (unlikely senario anyway).
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 C--   Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
        DO j = jMin, jMax
         DO i = iMin, iMax
@@ -419,21 +418,6 @@ C--   Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
         ENDDO
        ENDDO
       ENDIF
-
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      IF ( thSIceAdvScheme.GT.0 ) THEN
-C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 ) THEN
-          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - oceQnet(i,j,bi,bj)
-          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- oceFWfx(i,j,bi,bj)
-          saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - oceSflx(i,j,bi,bj)
-         ENDIF
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN

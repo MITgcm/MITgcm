@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine ecco_cost_final( mythid )
+      subroutine ecco_cost_final( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_final
@@ -30,7 +30,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
@@ -38,7 +39,9 @@ c     == global variables ==
 # include "optim.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
-# include "CTRL_OBCS.h"
+# ifdef ALLOW_OBCS
+#  include "CTRL_OBCS.h"
+# endif /* ALLOW_OBCS */
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
@@ -47,20 +50,19 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 C     === Functions ====
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == local variables ==
 
       integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
       integer ifc
-      integer totnum
-      integer num_file,num_var
+      integer num_var
 
 #ifndef ALLOW_PROFILES
       integer NFILESPROFMAX
@@ -101,7 +103,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_ssh , f_tp, f_ers, f_gfo
       _RL f_argot, f_argos, f_ctdtclim, f_ctdsclim
       _RL f_scatx, f_scaty, f_scatxm, f_scatym
-      _RL f_ageos, f_curmtr
+      _RL f_curmtr
       _RL f_ini_fin
       _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
@@ -109,7 +111,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif /* ECCO_CTRL_DEPRECATED */
 
       _RL f_gencost(NGENCOST)
-      _RL f_obcsn, f_obcss, f_obcsw, f_obcse
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
+      _RL f_obcsn, f_obcss, f_obcsw, f_obcse, f_ageos
+#endif
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
@@ -141,7 +145,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_ssh, no_tp, no_ers, no_gfo
       _RL no_argot, no_argos, no_ctdtclim, no_ctdsclim
       _RL no_scatx, no_scaty, no_scatxm, no_scatym
-      _RL no_ageos, no_curmtr
+      _RL no_curmtr
       _RL no_ini_fin
       _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
@@ -150,8 +154,11 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif /* ECCO_CTRL_DEPRECATED */
 
       _RL no_gencost(NGENCOST)
-      _RL no_obcsn, no_obcss, no_obcsw, no_obcse
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
+      _RL no_obcsn, no_obcss, no_obcsw, no_obcse, no_ageos
+#endif
 #ifdef ALLOW_PROFILES
+      integer num_file
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
 #endif
@@ -169,15 +176,8 @@ c the adjoint, pkg/autodiff most likely require cost though.
       character*(MAX_LEN_MBUF) msgBuf
 
       INTEGER IL
-C Functions
-      INTEGER ILNBLNK
 
 c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
 
       ifc = 30
 
@@ -260,7 +260,6 @@ c     == end of interface ==
       f_scatxm = 0. _d 0
       f_scatym = 0. _d 0
       f_curmtr  = 0. _d 0
-      f_ageos   = 0. _d 0
       f_ini_fin = 0. _d 0
       f_kapgm   = 0. _d 0
       f_kapredi   = 0. _d 0
@@ -271,10 +270,13 @@ c     == end of interface ==
       f_ies = 0. _d 0
 #endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       f_obcsn   = 0. _d 0
       f_obcss   = 0. _d 0
       f_obcsw   = 0. _d 0
       f_obcse   = 0. _d 0
+      f_ageos   = 0. _d 0
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -366,12 +368,7 @@ c     == end of interface ==
       no_scaty = 0. _d 0
       no_scatxm = 0. _d 0
       no_scatym = 0. _d 0
-      no_obcsn   = 0. _d 0
-      no_obcss   = 0. _d 0
-      no_obcsw   = 0. _d 0
-      no_obcse   = 0. _d 0
       no_curmtr  = 0. _d 0
-      no_ageos   = 0. _d 0
       no_ini_fin = 0. _d 0
       no_kapgm   = 0. _d 0
       no_kapredi   = 0. _d 0
@@ -382,6 +379,13 @@ c     == end of interface ==
       no_ies = 0. _d 0
 #endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
+      no_obcsn   = 0. _d 0
+      no_obcss   = 0. _d 0
+      no_obcsw   = 0. _d 0
+      no_obcse   = 0. _d 0
+      no_ageos   = 0. _d 0
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -414,8 +418,8 @@ c     == end of interface ==
 #endif
 
 c--   Sum up all contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 
           tile_fc(bi,bj) = tile_fc(bi,bj)
 #ifdef ECCO_CTRL_DEPRECATED
@@ -491,13 +495,13 @@ c--   Sum up all contributions.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &         + mult_obcsn   * objf_obcsn(bi,bj)
      &         + mult_obcss   * objf_obcss(bi,bj)
      &         + mult_obcsw   * objf_obcsw(bi,bj)
      &         + mult_obcse   * objf_obcse(bi,bj)
-# ifdef ECCO_CTRL_DEPRECATED
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
      &         + mult_ageos   * objf_ageos(bi,bj)
 # endif
 #endif
@@ -628,12 +632,12 @@ c--   Sum up all contributions.
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
           f_obcss  = f_obcss + objf_obcss(bi,bj)
           f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
           f_obcse  = f_obcse + objf_obcse(bi,bj)
-# ifdef ECCO_CTRL_DEPRECATED
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
           f_ageos  = f_ageos + objf_ageos(bi,bj)
 # endif
 #endif
@@ -733,7 +737,6 @@ c--   Sum up all contributions.
           no_scatxm = no_scatxm + num_scatxm(bi,bj)
           no_scatym = no_scatym + num_scatym(bi,bj)
           no_curmtr = no_curmtr + num_curmtr(bi,bj)
-          no_ageos = no_ageos + num_ageos(bi,bj)
           no_kapgm = no_kapgm + num_kapgm(bi,bj)
           no_kapredi = no_kapredi + num_kapredi(bi,bj)
           no_diffkr = no_diffkr + num_diffkr(bi,bj)
@@ -744,11 +747,14 @@ c--   Sum up all contributions.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
           no_obcss = no_obcss + num_obcss(bi,bj)
           no_obcse = no_obcse + num_obcse(bi,bj)
           no_obcsw = no_obcsw + num_obcsw(bi,bj)
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
+          no_ageos = no_ageos + num_ageos(bi,bj)
+# endif
 #endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -787,8 +793,9 @@ c--   Sum up all contributions.
        enddo
 #endif
 
-        enddo
-      enddo
+C-   end bi,bj loops
+       ENDDO
+      ENDDO
 
 c local copy used in print statements, for
 c which we always want to do the global sum.
@@ -876,7 +883,6 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_scatxm , myThid )
       _GLOBAL_SUM_RL( f_scatym , myThid )
       _GLOBAL_SUM_RL( f_curmtr , myThid )
-      _GLOBAL_SUM_RL( f_ageos , myThid )
       _GLOBAL_SUM_RL( f_kapgm , myThid )
       _GLOBAL_SUM_RL( f_kapredi, myThid )
       _GLOBAL_SUM_RL( f_diffkr , myThid )
@@ -885,11 +891,14 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _GLOBAL_SUM_RL( f_obcsn , myThid )
       _GLOBAL_SUM_RL( f_obcss , myThid )
       _GLOBAL_SUM_RL( f_obcsw , myThid )
       _GLOBAL_SUM_RL( f_obcse , myThid )
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
+      _GLOBAL_SUM_RL( f_ageos , myThid )
+# endif
 #endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -982,7 +991,6 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_scatxm , myThid )
       _GLOBAL_SUM_RL( no_scatym , myThid )
       _GLOBAL_SUM_RL( no_curmtr , myThid )
-      _GLOBAL_SUM_RL( no_ageos , myThid )
       _GLOBAL_SUM_RL( no_kapgm , myThid )
       _GLOBAL_SUM_RL( no_kapredi , myThid )
       _GLOBAL_SUM_RL( no_diffkr , myThid )
@@ -991,11 +999,14 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _GLOBAL_SUM_RL( no_obcsn , myThid )
       _GLOBAL_SUM_RL( no_obcss , myThid )
       _GLOBAL_SUM_RL( no_obcsw , myThid )
       _GLOBAL_SUM_RL( no_obcse , myThid )
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
+      _GLOBAL_SUM_RL( no_ageos , myThid )
+# endif
 #endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -1189,7 +1200,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_bottomdrag =', f_bottomdrag
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_obcsn   =',f_obcsn
       write(standardmessageunit,'(A,D22.15)')
@@ -1198,7 +1209,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_obcsw   =',f_obcsw
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_obcse   =',f_obcse
-# ifdef ECCO_CTRL_DEPRECATED
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_ageos   =',f_ageos
 # endif
@@ -1212,7 +1223,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
      &      num_file, num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
       enddo
@@ -1222,7 +1233,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_profiles_mean =',f_profiles_mean(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
       enddo
       endif
@@ -1234,7 +1245,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_gencost =',f_gencost(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1245,7 +1256,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1256,7 +1267,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1267,7 +1278,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
          call print_message( msgBuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
+     &                       SQUEEZE_RIGHT, myThid )
         endif
        enddo
 #endif
@@ -1322,7 +1333,7 @@ C     only master thread of master CPU open and write to file
         write(msgBuf,'(A,D22.15)')
      &           ' --> fc               =', locfc
         call print_message( msgBuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT, myThid )
 
         write(cfname,'(A,i4.4)') 'costfunction',eccoiter
         open(unit=ifc,file=cfname)
@@ -1506,7 +1517,7 @@ C     only master thread of master CPU open and write to file
      &       'f_transp =', f_transp, no_transp
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
         write(ifc,'(A,2D22.15)')
      &       'f_obcsn =', f_obcsn, no_obcsn
         write(ifc,'(A,2D22.15)')
@@ -1515,7 +1526,7 @@ C     only master thread of master CPU open and write to file
      &       'f_obcsw =', f_obcsw, no_obcsw
         write(ifc,'(A,2D22.15)')
      &       'f_obcse =', f_obcse, no_obcse
-# ifdef ECCO_CTRL_DEPRECATED
+# ifdef OBCS_AGEOS_COST_CONTRIBUTION
         write(ifc,'(A,2D22.15)')
      &       'f_ageos =', f_ageos, no_ageos
 # endif
@@ -1614,17 +1625,17 @@ c#endif /* ECCO_CTRL_DEPRECATED */
       write(msgBuf,'(a,D22.15)')
      &  ' cost_Final: final cost function = ',locfc
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)') ' '
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)')
      &  '             cost function evaluation finished.'
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
       write(msgBuf,'(a)') ' '
       call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
 
       return

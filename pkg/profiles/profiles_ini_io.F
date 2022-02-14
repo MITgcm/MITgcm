@@ -31,7 +31,9 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
+#ifndef HAVE_SYSTEM
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
       CHARACTER*(MAX_LEN_FNAM) namBuf
       INTEGER iL, pIL
 CEOP

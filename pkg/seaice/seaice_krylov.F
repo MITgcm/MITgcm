@@ -14,8 +14,8 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_KRYLOV
 C     | o Picard solver for ice dynamics using a preconditioned
-C     |   KRYLOV (Generalized Minimum RESidual=GMRES) method for 
-C     |   solving the linearised system following J.-F. Lemieux 
+C     |   KRYLOV (Generalized Minimum RESidual=GMRES) method for
+C     |   solving the linearised system following J.-F. Lemieux
 C     |   et al., JGR 113, doi:10.1029/2007JC004680, 2008.
 C     *==========================================================*
 C     | written by Martin Losch, Jan 2016
@@ -81,7 +81,7 @@ C
       LOGICAL picardConverged, krylovConverged
       LOGICAL writeNow
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      
+
       _RL uIceLin(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLin(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     extra time level required for backward difference time stepping
@@ -124,7 +124,7 @@ C     Initialise
 
       iOutFGMRES=0
 C     with iOutFgmres=1, seaice_fgmres prints the residual at each iteration
-      IF ( debugLevel.GE.debLevC .AND. 
+      IF ( debugLevel.GE.debLevC .AND.
      &     .NOT.SEAICEusePicardAsPrecon .AND.
      &     DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock ) )
      &     iOutFGMRES=1
@@ -138,7 +138,7 @@ C     backward difference extrapolation factors
         bdfFac = 0.5 _d 0
        ENDIF
       ENDIF
-      bdfAlpha = 1. _d 0 + bdfFac 
+      bdfAlpha = 1. _d 0 + bdfFac
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -153,9 +153,9 @@ C     backward difference extrapolation factors
 C     cycle ice velocities
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * bdfAlpha 
+          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * bdfAlpha
      &         + ( uIce(I,J,bi,bj) - uIceNm1(I,J,bi,bj) ) * bdfFac
-          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * bdfAlpha 
+          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * bdfAlpha
      &         + ( vIce(I,J,bi,bj) - vIceNm1(I,J,bi,bj) ) * bdfFac
           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
@@ -182,34 +182,34 @@ C     Start nonlinear Picard iteration: outer loop iteration
      &     .NOT.picardConverged )
        picardIter = picardIter + 1
 C     smooth ice velocities in time for computation of
-C     the non-linear drag coefficents 
+C     the non-linear drag coefficents
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            uIceLin(I,J,bi,bj) = 0.5 _d 0 *
      &          (uIce(I,J,bi,bj) + uIceLin(I,J,bi,bj))
-           vIceLin(I,J,bi,bj) = 0.5 _d 0 * 
+           vIceLin(I,J,bi,bj) = 0.5 _d 0 *
      &          (vIce(I,J,bi,bj) + vIceLin(I,J,bi,bj))
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-C     u/vIce have changed in Picard iteration so that new drag 
+C     u/vIce have changed in Picard iteration so that new drag
 C     coefficients and viscosities are required (that will not change in
 C     the Krylov iteration)
        CALL SEAICE_OCEANDRAG_COEFFS(
-     I      uIceLin, vIceLin,
+     I      uIceLin, vIceLin, HEFFM,
      O      DWATN,
      I      0, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I      uIceLin, vIceLin,
+       CALL SEAICE_BOTTOMDRAG_COEFFS(
+     I      uIceLin, vIceLin, HEFFM,
 #ifdef SEAICE_ITD
      I      HEFFITD, AREAITD, AREA,
 #else
      I      HEFF, AREA,
-#endif      
+#endif
      O      CbotC,
      I      0, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
@@ -218,7 +218,7 @@ C     the Krylov iteration)
      O      e11, e22, e12,
      I      0, myTime, myIter, myThid )
        CALL SEAICE_CALC_VISCOSITIES(
-     I      e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
+     I      e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
      O      eta, etaZ, zeta, zetaZ, press, deltaC,
      I      0, myTime, myIter, myThid )
 C     compute rhs that does not change during Krylov iteration
@@ -407,7 +407,9 @@ C     end of Picard iterate
 C--   Output diagnostics
 
       IF ( SEAICE_monFreq .GT. 0. _d 0 ) THEN
-C     Count iterations
+C     Only Master Thread updates counters in common block:
+      _BEGIN_MASTER(myThid)
+C     Cumulate some diagnostic counters for the Krylov solver
        totalJFNKtimeSteps = totalJFNKtimeSteps + 1
        totalNewtonIters   = totalNewtonIters + picardIter
        totalKrylovIters   = totalKrylovIters + totalKrylovItersLoc
@@ -416,6 +418,7 @@ C     Record failure
        IF ( picardIter .EQ. picardIterMax ) THEN
         totalNewtonfails = totalNewtonfails + 1
        ENDIF
+       _END_MASTER( myThid )
       ENDIF
 C     Decide whether it is time to dump and reset the counter
       writeNow = DIFFERENT_MULTIPLE(SEAICE_monFreq,
@@ -425,7 +428,7 @@ C     Decide whether it is time to dump and reset the counter
        CALL CAL_TIME2DUMP(
      I      zeroRL, SEAICE_monFreq,  deltaTClock,
      U      writeNow,
-     I      myTime+deltaTclock, myIter+1, myThid )
+     I      myTime+deltaTClock, myIter+1, myThid )
       ENDIF
 #endif
       IF ( writeNow ) THEN
@@ -446,7 +449,7 @@ C     Decide whether it is time to dump and reset the counter
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,I10)')
-     &      ' %KRYLOV_MON: Nb. of time steps      = ', 
+     &      ' %KRYLOV_MON: Nb. of time steps      = ',
      &      totalJFNKtimeSteps
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
@@ -477,17 +480,17 @@ C     Decide whether it is time to dump and reset the counter
      &' // ======================================================='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
-       _END_MASTER( myThid )
-C     reset and start again
+C     Reset and start again
        totalJFNKtimeSteps = 0
        totalNewtonIters   = 0
        totalKrylovIters   = 0
        totalKrylovFails   = 0
        totalNewtonfails   = 0
+       _END_MASTER( myThid )
       ENDIF
 
 C     Print more debugging information
-      IF ( debugLevel.GE.debLevA 
+      IF ( debugLevel.GE.debLevA
      &     .AND. .NOT.SEAICEusePicardAsPrecon ) THEN
        IF ( picardIter .EQ. picardIterMax ) THEN
         _BEGIN_MASTER( myThid )

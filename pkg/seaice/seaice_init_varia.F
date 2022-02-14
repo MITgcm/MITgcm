@@ -37,7 +37,7 @@ C     === Local variables ===
 C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
-      INTEGER kSurface
+      INTEGER kSrf
       _RS  mask_uice
       INTEGER k
 #ifdef ALLOW_SITRACER
@@ -50,201 +50,11 @@ C     i,j,k,bi,bj :: Loop counters
       _RL recip_tensilDepth
 #endif
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface = Nr
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
       ELSE
-       kSurface = 1
+       kSrf = 1
       ENDIF
-
-C--   Initialize grid info
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          HEFFM(i,j,bi,bj)       = 0. _d 0
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          HEFFM(i,j,bi,bj)= 1. _d 0
-          IF (_hFacC(i,j,kSurface,bi,bj).eq.0.)
-     &         HEFFM(i,j,bi,bj)= 0. _d 0
-         ENDDO
-        ENDDO
-#ifndef SEAICE_CGRID
-        DO j=1-OLy+1,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-          UVM(i,j,bi,bj)=0. _d 0
-          mask_uice=HEFFM(i,j,  bi,bj)+HEFFM(i-1,j-1,bi,bj)
-     &             +HEFFM(i,j-1,bi,bj)+HEFFM(i-1,j,  bi,bj)
-          IF(mask_uice.GT.3.5 _d 0) UVM(i,j,bi,bj)=1. _d 0
-         ENDDO
-        ENDDO
-#endif /* SEAICE_CGRID */
-       ENDDO
-      ENDDO
-
-C     coefficients for metric terms
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef SEAICE_CGRID
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtZ(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtZ(I,J,bi,bj) = 0.0 _d 0
-         ENDDO
-        ENDDO
-        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
-C     This is the only case where tan(phi) is not zero. In this case
-C     C and U points, and Z and V points have the same phi, so that we
-C     only need a copy here. Do not use tan(YC) and tan(YG), because
-C     these
-C     can be the geographical coordinates and not the correct grid
-C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtZ(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
-          ENDDO
-         ENDDO
-        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
-C     compute metric term coefficients from finite difference
-C     approximation
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj)
-     &          * ( _dyC(I,J,bi,bj) - _dyC(I-1,J,bi,bj) )
-     &          * _recip_dxV(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtZ(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
-     &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
-     &          * _recip_dyU(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
-#else /* not SEAICE_CGRID */
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtU(I,J,bi,bj) = 0.0 _d 0
-          k1AtV(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtU(I,J,bi,bj) = 0.0 _d 0
-          k2AtV(I,J,bi,bj) = 0.0 _d 0
-         ENDDO
-        ENDDO
-        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
-C     This is the only case where tan(phi) is not zero. In this case
-C     C and U points, and Z and V points have the same phi, so that we
-C     only need a copy here. Do not use tan(YC) and tan(YG), because
-C     these
-C     can be the geographical coordinates and not the correct grid
-C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtU(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtV(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
-          ENDDO
-         ENDDO
-        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
-C     compute metric term coefficients from finite difference
-C     approximation
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           k1AtU(I,J,bi,bj) = _recip_dyG(I,J,bi,bj)
-     &          * ( _dyF(I,J,bi,bj) - _dyF(I-1,J,bi,bj) )
-     &          * _recip_dxC(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtV(I,J,bi,bj) = _recip_dyC(I,J,bi,bj)
-     &          * ( _dyU(I+1,J,bi,bj) - _dyU(I,J,bi,bj) )
-     &          * _recip_dxG(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtU(I,J,bi,bj) = _recip_dxC(I,J,bi,bj)
-     &          * ( _dxV(I,J+1,bi,bj) - _dxV(I,J,bi,bj) )
-     &          * _recip_dyG(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtV(I,J,bi,bj) = _recip_dxG(I,J,bi,bj)
-     &          * ( _dxF(I,J,bi,bj) - _dxF(I,J-1,bi,bj) )
-     &          * _recip_dyC(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
-#endif /* not SEAICE_CGRID */
-       ENDDO
-      ENDDO
-
-#ifndef SEAICE_CGRID
-C--   Choose a proxy level for geostrophic velocity,
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          KGEO(i,j,bi,bj)   = 0
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_BICE_STRESS
-          KGEO(i,j,bi,bj) = 1
-#else /* SEAICE_BICE_STRESS */
-          IF (klowc(i,j,bi,bj) .LT. 2) THEN
-           KGEO(i,j,bi,bj) = 1
-          ELSE
-           KGEO(i,j,bi,bj) = 2
-           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 _d 0 .AND.
-     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
-              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
-           ENDDO
-          ENDIF
-#endif /* SEAICE_BICE_STRESS */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* SEAICE_CGRID */
 
 C--   Initialise all variables in common blocks:
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -268,13 +78,17 @@ C>>>ToM
           vice_fd(i,j,bi,bj)=0. _d 0
 #endif
 C
-          uIceNm1(i,j,bi,bj)=0. _d 0
-          vIceNm1(i,j,bi,bj)=0. _d 0
-          ETA (i,j,bi,bj)   = 0. _d 0
-          etaZ(i,j,bi,bj)   = 0. _d 0
-          ZETA(i,j,bi,bj)   = 0. _d 0
-          FORCEX(i,j,bi,bj) = 0. _d 0
-          FORCEY(i,j,bi,bj) = 0. _d 0
+          uIceNm1(i,j,bi,bj) = 0. _d 0
+          vIceNm1(i,j,bi,bj) = 0. _d 0
+          e11    (i,j,bi,bj) = 0. _d 0
+          e22    (i,j,bi,bj) = 0. _d 0
+          e12    (i,j,bi,bj) = 0. _d 0
+          deltaC (i,j,bi,bj) = 0. _d 0
+          ETA    (i,j,bi,bj) = 0. _d 0
+          etaZ   (i,j,bi,bj) = 0. _d 0
+          ZETA   (i,j,bi,bj) = 0. _d 0
+          FORCEX (i,j,bi,bj) = 0. _d 0
+          FORCEY (i,j,bi,bj) = 0. _d 0
 #ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
@@ -287,25 +101,26 @@ C
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
 # endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_CGRID */
-          uIceC(i,j,bi,bj)  = 0. _d 0
-          vIceC(i,j,bi,bj)  = 0. _d 0
-          AMASS(i,j,bi,bj)  = 0. _d 0
-          DAIRN(i,j,bi,bj)  = 0. _d 0
-          WINDX(i,j,bi,bj)  = 0. _d 0
-          WINDY(i,j,bi,bj)  = 0. _d 0
-          GWATX(i,j,bi,bj)  = 0. _d 0
-          GWATY(i,j,bi,bj)  = 0. _d 0
+          uIceC(i,j,bi,bj)   = 0. _d 0
+          vIceC(i,j,bi,bj)   = 0. _d 0
+          AMASS(i,j,bi,bj)   = 0. _d 0
+          DAIRN(i,j,bi,bj)   = 0. _d 0
+          WINDX(i,j,bi,bj)   = 0. _d 0
+          WINDY(i,j,bi,bj)   = 0. _d 0
+          GWATX(i,j,bi,bj)   = 0. _d 0
+          GWATY(i,j,bi,bj)   = 0. _d 0
 #endif /* SEAICE_CGRID */
-          DWATN(i,j,bi,bj)  = 0. _d 0
+          DWATN(i,j,bi,bj)   = 0. _d 0
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-          CbotC(i,j,bi,bj)  = 0. _d 0
+          CbotC(i,j,bi,bj)   = 0. _d 0
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
-          PRESS0(i,j,bi,bj) = 0. _d 0
-          FORCEX0(i,j,bi,bj)= 0. _d 0
-          FORCEY0(i,j,bi,bj)= 0. _d 0
-          ZMAX(i,j,bi,bj)   = 0. _d 0
-          ZMIN(i,j,bi,bj)   = 0. _d 0
-          HSNOW(i,j,bi,bj)  = 0. _d 0
+          PRESS0(i,j,bi,bj)  = 0. _d 0
+          PRESS (i,j,bi,bj)  = 0. _d 0
+          FORCEX0(i,j,bi,bj) = 0. _d 0
+          FORCEY0(i,j,bi,bj) = 0. _d 0
+          ZMAX(i,j,bi,bj)    = 0. _d 0
+          ZMIN(i,j,bi,bj)    = 0. _d 0
+          HSNOW(i,j,bi,bj)   = 0. _d 0
           tensileStrFac(i,j,bi,bj) = 0. _d 0
 CToM<<<
 #ifdef SEAICE_ITD
@@ -568,11 +383,11 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           AREAITD(I,J,1,bi,bj)   = AREA(I,J,bi,bj)
-           HEFFITD(I,J,1,bi,bj)   = HEFF(I,J,bi,bj)
-           HSNOWITD(I,J,1,bi,bj)  = HSNOW(I,J,bi,bj)
-           opnWtrFrac(I,J,bi,bj)  = 1. _d 0 - AREA(I,J,bi,bj)
-           fw2ObyRidge(I,J,bi,bj) = 0. _d 0
+           AREAITD(i,j,1,bi,bj)   = AREA(i,j,bi,bj)
+           HEFFITD(i,j,1,bi,bj)   = HEFF(i,j,bi,bj)
+           HSNOWITD(i,j,1,bi,bj)  = HSNOW(i,j,bi,bj)
+           opnWtrFrac(i,j,bi,bj)  = 1. _d 0 - AREA(i,j,bi,bj)
+           fw2ObyRidge(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
          CALL SEAICE_ITD_REDIST(bi, bj, baseTime, nIter0, myThid)
@@ -585,7 +400,7 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)*
+           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSrf,bi,bj)*
      &            SEAICE_rhoIce*SEAICE_saltFrac
 cif     &            ICE2WATR*rhoConstFresh*SEAICE_saltFrac
 
@@ -672,7 +487,7 @@ C---  Complete initialization
           ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO

@@ -39,7 +39,6 @@ C     == Global variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -59,6 +58,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k, km1
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER igmkey, kkey
+#endif
       _RL half_K
       _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -70,16 +74,16 @@ C     == Local variables ==
 C-    Initialization : <= done in S/R gmredi_init
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igmkey = (act1 + 1) + act2*max1
-     &                        + act3*max1*max2
-     &                        + act4*max1*max2*max3
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      igmkey = (act1 + 1) + act2*max1
+     &                    + act3*max1*max2
+     &                    + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -89,47 +93,47 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 #endif
       IF (GM_AdvForm) THEN
        DO k=2,Nr
-       km1 = k-1
+        km1 = k-1
 
 #ifdef ALLOW_AUTODIFF
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         SlopeX(i,j)       = 0. _d 0
-         SlopeY(i,j)       = 0. _d 0
-         dSigmaDrW(i,j)    = 0. _d 0
-         dSigmaDrS(i,j)    = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          SlopeX(i,j)       = 0. _d 0
+          SlopeY(i,j)       = 0. _d 0
+          dSigmaDrW(i,j)    = 0. _d 0
+          dSigmaDrS(i,j)    = 0. _d 0
+         ENDDO
         ENDDO
-       ENDDO
 #endif
 
 C      Gradient of Sigma below U and V points
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx+1,sNx+OLx
-         SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
-     &                  *maskW(i,j,k,bi,bj)
-         dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
-     &                  *maskW(i,j,k,bi,bj)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+          SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
+     &                   *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
+          dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
+     &                   *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
-       DO j=1-OLy+1,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
-     &                  *maskS(i,j,k,bi,bj)
-         dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
-     &                  *maskS(i,j,k,bi,bj)
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
+     &                   *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
+          dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
+     &                   *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
 
 C      Calculate slopes , taper and/or clip
-       CALL GMREDI_SLOPE_PSI(
-     O             taperX, taperY,
-     U             SlopeX, SlopeY,
-     U             dSigmaDrW, dSigmaDrS,
-     I             ldd97_LrhoW, ldd97_LrhoS, rF(k), k,
-     I             bi, bj, myThid )
+        CALL GMREDI_SLOPE_PSI(
+     O              taperX, taperY,
+     U              SlopeX, SlopeY,
+     U              dSigmaDrW, dSigmaDrS,
+     I              ldd97_LrhoW, ldd97_LrhoS, rF(k), k,
+     I              bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+        kkey = (igmkey-1)*Nr + k
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -137,10 +141,11 @@ CADJ STORE taperY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-  Compute the 2 stream-function Components ( GM bolus vel.)
-       half_K = GM_background_K
+C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
+        half_K = GM_background_K
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx+1,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
 #ifdef ALLOW_KAPGM_CONTROL
 #  ifdef ALLOW_KAPGM_CONTROL_OLD
@@ -156,15 +161,22 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
-     &      )*maskW(i,j,k,bi,bj)
+#ifdef ALLOW_GM_LEITH_QG
+     &      +op25*( GM_LeithQG_K(i-1,j,km1,bi,bj)
+     &            + GM_LeithQG_K( i ,j,km1,bi,bj)
+     &            + GM_LeithQG_K(i-1,j,k,bi,bj)
+     &            + GM_LeithQG_K( i ,j,k,bi,bj) )
+#endif
+     &      )
+c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
      &     +eddyPsiX(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
 #endif
+         ENDDO
         ENDDO
-       ENDDO
-       DO j=1-OLy+1,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
 #ifdef ALLOW_KAPGM_CONTROL
 #  ifdef ALLOW_KAPGM_CONTROL_OLD
      &     *( kapGM(i,j,k,bi,bj)
@@ -179,16 +191,24 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
-     &      )*maskS(i,j,k,bi,bj)
+#ifdef ALLOW_GM_LEITH_QG
+     &      +op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)
+     &            + GM_LeithQG_K(i, j ,km1,bi,bj)
+     &            + GM_LeithQG_K(i,j-1,k,bi,bj)
+     &            + GM_LeithQG_K(i, j ,k,bi,bj) )
+#endif
+     &      )
+c    &       *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
      &     +eddyPsiY(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
 #endif
+         ENDDO
         ENDDO
-       ENDDO
 
 C----- end of loop on level k
        ENDDO
 
+C     end if GM_AdvForm block
       ENDIF
 #endif /* GM_BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */

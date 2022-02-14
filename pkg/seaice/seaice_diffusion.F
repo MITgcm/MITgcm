@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_DIFFUSION
@@ -32,10 +29,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 CML#include "SEAICE_GRID.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT PARAMETERS:
 C     === Routine arguments ===
 C     afx        :: horizontal advective flux, x direction
@@ -52,6 +45,7 @@ C     myThid     :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+#ifdef ALLOW_GENERIC_ADVDIFF
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
@@ -75,8 +69,8 @@ C--   Set diagnostic suffix for the current tracer
 #endif
 C--   Tendency due to horizontal diffusion
         k = 1
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           fZon  (i,j) = 0. _d 0
           fMer  (i,j) = 0. _d 0
          ENDDO
@@ -86,8 +80,8 @@ C--   X-direction
 C--   Y-direction
         CALL GAD_DIFF_Y(bi,bj,k,yA,diffKh,iceFld,fMer,myThid)
 C--   Divergence of fluxes: update scalar field
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           gFld(i,j)= gFld(i,j)
      &        - fac*iceMask(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &        *( (fZon(i+1,j)-fZon(i,j))
@@ -106,6 +100,7 @@ C     excluding advective terms:
 #endif
 C     endif do horizontal diffusion
       ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END

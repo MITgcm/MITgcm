@@ -68,9 +68,9 @@ C        (even if usingMPI=F) --> comment out test on usingMPI
 c     IF ( usingMPI ) THEN
 C     better to avoid this call if multi-components set-up ; otherwise will
 C     hang here since procs of other comp. are not calling MPI_finalize now.
-       IF ( .NOT.( useCoupler
-     &        .OR. useNEST_PARENT
-     &        .OR. useNEST_CHILD )
+       IF ( .NOT.( useCoupler .OR.
+     &             useNEST_PARENT .OR. useNEST_CHILD .OR.
+     &             useNest2W_parent .OR. useNest2W_child )
      &    ) THEN
 #ifdef ALLOW_OASIS
          IF ( useOASIS ) CALL OASIS_ABORT

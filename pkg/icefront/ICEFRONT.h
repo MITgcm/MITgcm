@@ -36,7 +36,7 @@ C     R_icefront          - icefront depth [m] (2D)
 C     icefrontlength      - icefront horizontal length divided
 C                           by grid cell area [m/m^2] (2D)
 C     icefront_TendT      - temperature tendency (Kelvin/s)
-C     icefront_TendS      - salinity tendency (psu/s)
+C     icefront_TendS      - salinity tendency (g/kg/s)
 C
 C--   Constants that can be set in data.icefront, namelist /ICEFRONT_EXF_PARM02/
 C     SGRunOffFile           - name of subglacial runoff file (kg/s)

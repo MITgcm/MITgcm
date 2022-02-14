@@ -1,4 +1,7 @@
 #include "EXF_OPTIONS.h"
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -26,7 +29,7 @@ C     !USES:
 # include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_BLING
-# include "BLING_OPTIONS.h"
+# include "EXF_INTERP_SIZE.h"
 # include "BLING_VARS.h"
 #endif
 
@@ -195,7 +198,7 @@ C       Print some statistics about input forcing fields
         ENDIF
 # endif
 #endif
-#ifdef EXF_SALTFLX
+#ifdef ALLOW_SALTFLX
         IF ( saltflxfile .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, saltflx,'_saltflx',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )

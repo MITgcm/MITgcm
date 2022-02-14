@@ -19,9 +19,13 @@
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
+ salt_stayPositive=.TRUE.,
  exactConserv=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
+#- just to test quasiHydrostatic with staggerTimeStep:
+ staggerTimeStep = .TRUE.,
+#--
  quasiHydrostatic=.TRUE.,
  useNHMTerms=.TRUE.,
 # turn on looped cells
@@ -41,6 +45,7 @@
 
 # Time stepping parameters
  &PARM03
+ pickupStrictlyMatch=.FALSE.,
  nIter0=36000,
  nTimeSteps=10,
 # 100 years of integration will yield a reasonable flow field
@@ -86,7 +91,7 @@
  meridWindFile=  'trenberth_tauy.bin',
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
- surfQFile=      'ncep_qnet.bin',
+ surfQnetFile=   'ncep_qnet.bin',
  the_run_name=   'global_ocean.90x40x15',
  EmPmRFile=      'ncep_emp.bin',
  &

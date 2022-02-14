@@ -1,4 +1,3 @@
-C this needs changes
 
 #include "STREAMICE_OPTIONS.h"
 
@@ -25,9 +24,11 @@ CEOP
 
       INTEGER bi, bj, i, j
       _RL OD, rhoi, rhow, delta, r, h, hf, i_r, rlo
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
       _RL ETA_GL_STREAMICE
       external ETA_GL_STREAMICE
+#endif
+#if defined(STREAMICE_SMOOTH_FLOATATION2) || defined(STREAMICE_SMOOTH_FLOATATION)
       _RL PHI_GL_STREAMICE
       external PHI_GL_STREAMICE
 #endif
@@ -47,15 +48,12 @@ CEOP
 #endif
 
 
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-         if (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
-     &        STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
-
           
           if (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &        STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
@@ -85,19 +83,19 @@ CEOP
      &       streamice_smooth_gl_width)
 
           ENDIF
-         ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
 #else 
-! STREAMICE_SMOOTH_FLOATATION
+! STREAMICE_SMOOTH_FLOATATION2
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
+          h = H_streamice(i,j,bi,bj)
 # ifdef USE_ALT_RLOW
           rlo = R_low_si (i,j,bi,bj)
 # else
@@ -117,7 +115,7 @@ CEOP
           else
 #endif
           OD = -1.0 * Rlo - 
-     &     H_streamice(i,j,bi,bj) * rhoi/rhow
+     &     H * rhoi/rhow
 #ifdef STREAMICE_FIRN_CORRECTION
           endif
 #endif
@@ -125,22 +123,22 @@ CEOP
           IF (OD .ge. 0. _d 0) THEN          
 
 c         ice thickness does not take up whole ocean column -> floating
-           float_frac_streamice(i,j,bi,bj) = 0.0
+!           float_frac_streamice(i,j,bi,bj) = 0.0
            base_el_streamice(i,j,bi,bj) = Rlo+OD
 #ifdef STREAMICE_FIRN_CORRECTION
            if (STREAMICE_apply_firn_correction) then
-           if (h_streamice(i,j,bi,bj).lt.firn_depth) then
+           if (h.lt.firn_depth) then
             surf_el_streamice(i,j,bi,bj) = 
-     &      (1-streamice_density_firn/rhow)*h_streamice(i,j,bi,bj)
+     &      (1-streamice_density_firn/rhow)*h
            else
             surf_el_streamice(i,j,bi,bj) = 
-     &      (1-rhoi/rhow)*h_streamice(i,j,bi,bj) + 
+     &      (1-rhoi/rhow)*h + 
      &        rhoi/rhow*streamice_firn_correction
            endif
            else
 #endif
            surf_el_streamice(i,j,bi,bj) = 
-     &      (1-rhoi/rhow)*H_streamice(i,j,bi,bj)
+     &      (1-rhoi/rhow)*H
 #ifdef STREAMICE_FIRN_CORRECTION
            endif
 #endif
@@ -148,11 +146,39 @@ c         ice thickness does not take up whole ocean column -> floating
           ELSE
 
 
-           float_frac_streamice(i,j,bi,bj) = 1.0
+!           float_frac_streamice(i,j,bi,bj) = 1.0
            base_el_streamice(i,j,bi,bj) = Rlo
            surf_el_streamice(i,j,bi,bj) = Rlo
-     &      + H_streamice(i,j,bi,bj)
+     &      + H
           ENDIF
+
+#ifndef STREAMICE_SMOOTH_FLOATATION
+
+
+          IF (OD .ge. 0. _d 0) THEN          
+           float_frac_streamice(i,j,bi,bj) = 0.0
+          ELSE
+           float_frac_streamice(i,j,bi,bj) = 1.0
+          ENDIF
+
+#else
+
+          if (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
+     &        STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
+# ifdef USE_ALT_RLOW
+           hf = -1.0 * i_r * R_low_si (i,j,bi,bj) 
+# else
+           hf = -1.0 * i_r * R_low (i,j,bi,bj) 
+# endif
+           
+           float_frac_streamice(i,j,bi,bj) = 
+     &      PHI_GL_STREAMICE (
+     &       h-hf+streamice_smooth_gl_width/2., 
+     &       streamice_smooth_gl_width)
+
+          endif
+#endif
+
          ENDDO
         ENDDO
        ENDDO

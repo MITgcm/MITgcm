@@ -13,7 +13,6 @@ C     *==========================================================*
 C     | SUBROUTINE GMREDI_CHECK
 C     | o Check consistency with model configuration
 C     *==========================================================*
-C     *==========================================================*
 C     \ev
 
 C     !USES:
@@ -33,15 +32,18 @@ C     === Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
+C     !FUNCTIONS:
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iL, errCount
 CEOP
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -49,10 +51,19 @@ CEOP
 #endif
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
        WRITE(msgBuf,'(A)') 'GMREDI_CHECK: #define GMREDI'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
+
+       IF ( GM_useLeithQG .AND. viscC2LeithQG.EQ.zeroRL ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
+     &   'switch OFF GM_useLeithQG since viscC2LeithQG = 0'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        GM_useLeithQG = .FALSE.
+       ENDIF
 
 C- print out some kee parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
@@ -115,6 +126,9 @@ C- print out some kee parameters :
      &  'subMeso_LfMin =',' /* minimum length-scale "Lf" [m] */')
        CALL WRITE_0D_RS( subMeso_Lmax, INDEX_NONE,
      &  'subMeso_Lmax =',' /* maximum grid-scale length [m] */')
+       CALL WRITE_0D_L( GM_useLeithQG, INDEX_NONE,
+     &  'GM_useLeithQG =',
+     &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
 
 C--  Check parameters:
 
@@ -122,19 +136,19 @@ C-     GM/Redi needs implicit diffusion (will be packaged later)
       IF ( .NOT.implicitDiffusion ) THEN
         WRITE(msgBuf,'(A)') 'GM/Redi needs implicitDiffusion=.true.'
         CALL PRINT_ERROR( msgBuf , myThid )
-        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 #ifndef GM_VISBECK_VARIABLE_K
 C     Make sure we are not trying to use something that is unavailable
       IF ( GM_Visbeck_alpha.NE.0. ) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: Visbeck variables used in data.gmredi'
+     &   'GMREDI_CHECK: Visbeck variables used in data.gmredi'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: without #define GM_VISBECK_VARIABLE_K'
+     &   'GMREDI_CHECK: without #define GM_VISBECK_VARIABLE_K'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -142,76 +156,73 @@ C     Make sure we are not trying to use something that is unavailable
 C     Make sure we are not trying to use some arrays that are unavailable
       IF ( GM_AdvForm ) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: GM Advection form used in data.gmredi'
+     &   'GMREDI_CHECK: GM Advection form used in data.gmredi'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: without #define GM_BOLUS_ADVEC'
+     &   'GMREDI_CHECK: without #define GM_BOLUS_ADVEC'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
       ENDIF
 #endif
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 # ifndef HAVE_LAPACK
-      WRITE(msgBuf, '(A)')
-     &     'Must use CPP option HAVE_LAPACK when using GM_K3D'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      STOP ' ABNORMAL END: S/R GMREDI_CHECK'
+c     IF ( GM_useBatesK3d ) THEN
+        WRITE(msgBuf, '(A)')
+     &     'Must use CPP option HAVE_LAPACK when using BatesK3d'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+c     ENDIF
 # endif
 
-      IF ( GM_useK3D) THEN
-        CALL WRITE_0D_L( GM_useK3D, INDEX_NONE,
-     &   'GM_useK3D =', '     /* if TRUE => use K3D for diffusivity */')
-
-        IF ( GM_K3D_use_constK ) THEN
-          CALL WRITE_0D_L( GM_K3D_use_constK, INDEX_NONE,
-     &         'GM_K3D_use_constK =',
-     &         '     /* if TRUE => Uses a constant K for'//
+      IF ( GM_useBatesK3d ) THEN
+        CALL WRITE_0D_L( GM_useBatesK3d, INDEX_NONE,
+     &   'GM_useBatesK3d =',
+     &   ' /* if TRUE => use BatesK3d for GM diffusivity */')
+        IF ( GM_Bates_use_constK ) THEN
+          CALL WRITE_0D_L( GM_Bates_use_constK, INDEX_NONE,
+     &         'GM_Bates_use_constK =',
+     &         ' /* if TRUE => Uses a constant K for'//
      &         ' the eddy transport closure */')
-
-          CALL WRITE_0D_L( GM_K3D_smooth, INDEX_NONE,
-     &         'GM_K3D_smooth =',
+          CALL WRITE_0D_L( GM_Bates_smooth, INDEX_NONE,
+     &         'GM_Bates_smooth =',
      &         ' /* if TRUE => Expands in terms of baroclinic modes */')
-
-          IF ( GM_K3D_smooth ) THEN
-            CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
-     &           'GM_K3D_NModes =',
+          IF ( GM_Bates_smooth ) THEN
+            CALL WRITE_0D_I( GM_Bates_NModes, INDEX_NONE,
+     &           'GM_Bates_NModes =',
      &           ' /* Number of modes for expansion */')
           ENDIF
-
         ELSE
-          CALL WRITE_0D_I( GM_K3D_NModes, INDEX_NONE,
-     &         'GM_K3D_NModes =',
+          CALL WRITE_0D_I( GM_Bates_NModes, INDEX_NONE,
+     &         'GM_Bates_NModes =',
      &         ' /* Number of modes for expansion */')
-
         ENDIF
-
       ENDIF
 
-C     Make sure that we use K3D with the advective form only.
+C     Make sure that we use BatesK3d with the advective form only.
 C     The skew form is not presently supported.
-      IF ( GM_useK3D .AND. .NOT. GM_AdvForm) THEN
-        WRITE(msgBuf,'(A)')
-     &       ' GMREDI_CHECK: GM_useK3D=.TRUE. but GM_AdvForm=.FALSE.'
+      IF ( GM_useBatesK3d .AND. .NOT.GM_AdvForm ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
+     &       'GM_useBatesK3d=.TRUE. but GM_AdvForm=.FALSE.'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-     &       ' GMREDI_CHECK: To use GM_useK3D set GM_AdvForm=.TRUE.'
+     &       'GMREDI_CHECK: To use BatesK3d set GM_AdvForm=.TRUE.'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP ' ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
       ENDIF
 
-#endif
+#endif /* GM_BATES_K3D */
 
 #ifndef GM_EXTRA_DIAGONAL
 C     Make sure we are not trying to use some arrays that are unavailable
       IF ( GM_ExtraDiag ) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: GM_skew_Flux_K & GM_isopycK not equal'
+     &   'GMREDI_CHECK: GM_skew_Flux_K & GM_isopycK not equal'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: without #define GM_EXTRA_DIAGONAL'
+     &   'GMREDI_CHECK: without #define GM_EXTRA_DIAGONAL'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
       ENDIF
 #endif
 
@@ -219,61 +230,129 @@ C     Make sure we are not trying to use some arrays that are unavailable
       IF ( GM_iso2dFile .NE. ' ' .OR.
      &     GM_iso1dFile .NE. ' ' ) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: needs #define GM_NON_UNITY_DIAGONAL'
+     &   'GMREDI_CHECK: needs #define GM_NON_UNITY_DIAGONAL'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: to use GM_iso2dFile or GM_iso1dFile'
+     &   'GMREDI_CHECK: to use GM_iso2dFile or GM_iso1dFile'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
+      ENDIF
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: GM_useLeithQG is only implemented for cases'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: with #define GM_NON_UNITY_DIAGONAL'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
       ENDIF
 #endif
 
+#ifndef ALLOW_GM_LEITH_QG
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: GM_useLeithQG used in data.gmredi without'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: #define ALLOW_GM_LEITH_QG'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+      IF ( GM_useLeithQG .AND. .NOT.momStepping ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
+     &   'cannot use GM_useLeithQG with "momStepping= FALSE"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 #ifdef GM_EXCLUDE_SUBMESO
       IF ( GM_useSubMeso ) THEN
-        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
      &   'cannot use Sub-Meso (GM_useSubMeso=T)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
      &   'when compiled with #define GM_EXCLUDE_SUBMESO'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* GM_EXCLUDE_SUBMESO */
 
       IF ( GM_useSubMeso .AND. .NOT.GM_AdvForm ) THEN
-        WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
      &   'Sub-Meso only implemented within GM_AdvForm'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( GM_InMomAsStress ) THEN
 #ifdef ALLOW_EDDYPSI
-        IF (.NOT. GM_AdvForm) THEN
-          WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
+        IF ( .NOT.GM_AdvForm ) THEN
+          WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
      &         'GM_InMomAsStress=.TRUE. but GM_AdvForm=.FALSE.'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+          errCount = errCount + 1
         ENDIF
-        IF (.NOT. GM_useK3D) THEN
-          WRITE(msgBuf,'(3A)')
-     &         ' GMREDI_CHECK: Using GM_InMomAsStress and not',
-     &         ' GM_useK3D. GM_InMomAsStress=.true. has only been',
-     &         ' tested with GM_K3D=.true.'
+        IF ( .NOT.GM_useBatesK3d ) THEN
+          WRITE(msgBuf,'(3A)') 'GMREDI_CHECK: ',
+     &         'Using GM_InMomAsStress and not GM_useBatesK3d. ',
+     &         'GM_InMomAsStress=T has only been tested with BatesK3d'
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
         ENDIF
 #else /* ALLOW_EDDYPSI */
        WRITE(msgBuf,'(2A)')
-     &  ' GMREDI_CHECK: need to define ALLOW_EDDYPSI in CPP_OPTIONS.h',
+     &  'GMREDI_CHECK: need to define ALLOW_EDDYPSI in CPP_OPTIONS.h',
      &  ' to use GM_InMomAsStress'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
 #endif /* ALLOW_EDDYPSI */
       ENDIF
       IF ( GM_InMomAsStress .AND. .NOT.GM_AdvForm ) THEN
        WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: need GM_AdvForm=T to use GM_InMomAsStress'
+     &   'GMREDI_CHECK: need GM_AdvForm=T to use GM_InMomAsStress'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+       errCount = errCount + 1
+      ENDIF
+
+      IF ( useShelfIce .OR. topoFile.NE.' ' ) THEN
+C-    Some GM options are likely to not work when some dry grid cells are found
+C     near the top (e.g., under ice-shelf). This might change as more pieces of
+C     code get fixed (e.g., once Mixed-Layer depth is fixed) but for now safer
+C     to just stop here if it is the case.
+       IF ( GM_taper_scheme.EQ.'ldd97' .OR.
+     &      GM_taper_scheme.EQ.'fm07' ) THEN
+        iL = ILNBLNK(GM_taper_scheme)
+        WRITE(msgBuf,'(3A)') 'GMREDI_CHECK: GM_taper_scheme "',
+     &   GM_taper_scheme(1:iL), '" not yet fixed for dry cell @ top'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_useSubMeso ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: GM_useSubMeso',
+     &   ' not yet fixed for dry cell @ top'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_useBatesK3d ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
+     &    'GM_useBatesK3d potentially unsafe with dry cell @ top'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( GM_Visbeck_alpha.NE.zeroRL ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** Warning ** GMREDI_CHECK: ',
+     &    'Visbeck scheme not fully tested with dry cell @ top'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( GM_useLeithQG ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** Warning ** GMREDI_CHECK: ',
+     &    'GM_useLeithQG not fully tested with dry cell @ top'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+C-    end special check for dry cell @ top
       ENDIF
 
 #ifdef ALLOW_PTRACERS
@@ -283,16 +362,16 @@ C     Make sure we are not trying to use some arrays that are unavailable
         DO iTr=1,PTRACERS_numInUse
          IF ( .NOT.PTRACERS_useGMRedi(iTr) ) THEN
           redFlag = .TRUE.
-          WRITE(msgBuf,'(2A,I3,A,L5)') ' GMREDI_CHECK:',
+          WRITE(msgBuf,'(2A,I3,A,L5)') 'GMREDI_CHECK:',
      &     ' pTracers_useGMRedi(',iTr,' )=', PTRACERS_useGMRedi(iTr)
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
         ENDDO
         IF ( redFlag ) THEN
-          WRITE(msgBuf,'(2A)') ' GMREDI_CHECK:',
+          WRITE(msgBuf,'(2A)') 'GMREDI_CHECK:',
      &     ' but GM Advective Form applies to all tracers !'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+          errCount = errCount + 1
         ENDIF
       ENDIF
 #endif /* ALLOW_PTRACERS */
@@ -303,7 +382,7 @@ C     Check size of overlap region
      &       .AND. GM_Visbeck_alpha.NE.0.
      &       .AND. useMultiDimAdvec ) THEN
 C       Visbeck variable K requires 1 more row/column in the overlap:
-C       might need to increase Olx,Oly from 2 to 3 if GM advective
+C       might need to increase OLx,OLy from 2 to 3 if GM advective
 C       form & multi-dim advection are used. This happens when:
 C       a) using a 5 points stencil advection scheme ; or
 C       b) using a 3 points stencil advection scheme on CS-grid
@@ -315,6 +394,13 @@ C       b) using a 3 points stencil advection scheme on CS-grid
       ENDIF
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'GMREDI_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
       _END_MASTER(myThid)
 
 #endif /* ALLOW_GMREDI */

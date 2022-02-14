@@ -7,18 +7,24 @@
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
 #- to reproduce old results with former #undef SEAICE_SOLVE4TEMP_LEGACY code
-  SEAICE_wetAlbTemp = 0.,
-  SEAICE_snowThick  = 0.,
+ SEAICE_wetAlbTemp = 0.,
+ SEAICE_snowThick  = 0.,
 #
  SEAICE_salt0          = 4.,
- SEAICEadvHeff         = .TRUE.,
- SEAICEadvArea         = .TRUE.,
- SEAICEadvSnow         = .TRUE.,
- SEAICEadvScheme       = 30,
+ SEAICEadvScheme       = 33,
  SEAICE_areaLossFormula=2,
  SEAICE_mcPheePiston   = 0.0005787037037037037,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICEetaZmethod = 0,
+ SEAICE_Olx       = 0,
+ SEAICE_Oly       = 0,
+ SEAICE_drag = 0.002,
+ SEAICE_waterDrag = 0.005314009661835749,
  &
 
  &SEAICE_PARM02

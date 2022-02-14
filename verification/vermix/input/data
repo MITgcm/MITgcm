@@ -68,6 +68,6 @@
 # Input datasets
  &PARM05
  hydrogThetaFile='T_26.init',
- surfQfile='Qnet_72.forcing',
- zonalWindFile='taux_72.forcing',
+ surfQnetFile   ='Qnet_72.forcing',
+ zonalWindFile  ='taux_72.forcing',
  &

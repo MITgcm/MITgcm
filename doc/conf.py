@@ -18,7 +18,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.abspath('.'), '_extensions'))
+sys.path.insert(0, os.path.abspath('_extensions'))
+sys.path.insert(0, os.path.abspath('../utils/python/MITgcmutils'))
 
 
 # -- General configuration ------------------------------------------------
@@ -31,10 +32,16 @@ sys.path.insert(0, os.path.join(os.path.abspath('.'), '_extensions'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinxcontrib.bibtex',
+    'sphinxcontrib.programoutput',
     'mitgcm']
+
+autodoc_mock_imports = ['matplotlib', 'mpl_toolkits']
+
+bibtex_bibfiles = ['manual_references.bib']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -149,6 +156,11 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'css/custom.css',
+    'css/wrap_tables.css',
+]
+
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -176,6 +188,7 @@ latex_elements = {
     \newcommand{\pp}[2]{\frac{\partial #1}{\partial #2}}
     \newcommand{\dd}[2]{\frac{d #1}{d #2}}
     \newcommand{\h}{\frac{1}{2}}
+    \setlength{\tymax}{0.5\textwidth}
     ''',
 
     # Latex figure (float) alignment
@@ -212,6 +225,3 @@ texinfo_documents = [
      author, 'MITgcm', 'A highly configurable general circulation model.',
      'Miscellaneous'),
 ]
-
-def setup(app):
-    app.add_stylesheet('css/custom.css')

@@ -27,10 +27,22 @@ cadj SUBROUTINE active_read_3d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 cadj SUBROUTINE active_read_3d_rl OUTPUT  =    2
 
 c----------------------------------------
+c subroutine active_read_1d_rl
+c----------------------------------------
+cadj SUBROUTINE active_read_1d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_1d_rl OUTPUT  =    2
+
+c----------------------------------------
 c subroutine active_read_3d_rs
 c----------------------------------------
 cadj SUBROUTINE active_read_3d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 cadj SUBROUTINE active_read_3d_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_1d_rs
+c----------------------------------------
+cadj SUBROUTINE active_read_1d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_1d_rs OUTPUT  =    2
 
 c----------------------------------------
 c subroutine active_read_xz_rl
@@ -63,10 +75,22 @@ cadj SUBROUTINE active_write_3d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE active_write_3d_rl OUTPUT  =    2
 
 c----------------------------------------
+c subroutine active_write_1d_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_1d_rl INPUT   = 1, 2, 3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_1d_rl OUTPUT  =    2
+
+c----------------------------------------
 c subroutine active_write_3d_rs
 c----------------------------------------
 cadj SUBROUTINE active_write_3d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
 cadj SUBROUTINE active_write_3d_rs OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_1d_rs
+c----------------------------------------
+cadj SUBROUTINE active_write_1d_rs INPUT   = 1, 2, 3, 4, 5, 6, 7
+cadj SUBROUTINE active_write_1d_rs OUTPUT  =    2
 
 c----------------------------------------
 c subroutine active_write_xz_rl

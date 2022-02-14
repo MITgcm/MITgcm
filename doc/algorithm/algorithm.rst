@@ -61,6 +61,8 @@ Basic operators:
      \overline{\nabla}\cdot \overline{\nabla}\Phi`
 |
 
+.. _time_stepping:
+
 Time-stepping
 =============
 
@@ -276,7 +278,7 @@ The rigid-lid approximation can be easily replaced by a linearization of
 the free-surface equation which can be written:
 
 .. math::
-   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = P-E+R
+   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\mathcal{P-E+R}}
    :label: linear-free-surface=P-E
 
 which differs from the depth integrated continuity equation with
@@ -291,7 +293,7 @@ method is then replaced by the time discretization of
    \eta^{n+1}
    + \Delta t \partial_x H \widehat{u^{n+1}}
    + \Delta t \partial_y H \widehat{v^{n+1}}
-   = \eta^{n} + \Delta t ( P - E )
+   = \eta^{n} + \Delta t ( {\mathcal{P-E}})
    :label: discrete-time-backward-free-surface
 
 where the use of flow at time level :math:`n+1` makes the method
@@ -314,7 +316,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t (P-E) )
+   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -342,7 +344,7 @@ limit of large :math:`\Delta t` the rigid-lid method is recovered.
 However, the implicit treatment of the free-surface allows the flow to
 be divergent and for the surface pressure/elevation to respond on a
 finite time-scale (as opposed to instantly). To recover the rigid-lid
-formulation, we introduced a switch-like parameter,
+formulation, we use a switch-like variable,
 :math:`\epsilon_{fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
 rigid-lid; :math:`\epsilon_{fs}=1` allows the free-surface to evolve;
 :math:`\epsilon_{fs}=0` imposes the rigid-lid. The evolution in time and
@@ -357,10 +359,11 @@ Explicit time-stepping: Adams-Bashforth
 
 In describing the the pressure method above we deferred describing the
 time discretization of the explicit terms. We have historically used the
-quasi-second order Adams-Bashforth method for all explicit terms in both
+quasi-second order Adams-Bashforth method (AB-II) for all explicit terms in both
 the momentum and tracer equations. This is still the default mode of
 operation but it is now possible to use alternate schemes for tracers
-(see :numref:`tracer_eqns`). In the previous sections, we summarized an explicit scheme as:
+(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III). 
+In the previous sections, we summarized an explicit scheme as:
 
 .. math::
    \tau^{*} = \tau^{n} + \Delta t G_\tau^{(n+1/2)}
@@ -370,8 +373,13 @@ where :math:`\tau` could be any prognostic variable (:math:`u`,
 :math:`v`, :math:`\theta` or :math:`S`) and :math:`\tau^*` is an
 explicit estimate of :math:`\tau^{n+1}` and would be exact if not for
 implicit-in-time terms. The parenthesis about :math:`n+1/2` indicates
-that the term is explicit and extrapolated forward in time and for this
-we use the quasi-second order Adams-Bashforth method:
+that the term is explicit and extrapolated forward in time. Below we describe
+in more detail the AB-II and AB-III schemes.
+
+Adams-Bashforth II
+------------------
+
+The quasi-second order Adams-Bashforth scheme is formulated as follows:
 
 .. math::
    G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{AB}) G_\tau^n
@@ -402,7 +410,6 @@ point.
 A stability analysis for a relaxation equation should be given at this
 point.
 
-
   .. figure:: figs/oscil+damp_AB2.*
     :width: 80%
     :align: center
@@ -410,6 +417,84 @@ point.
     :name: oscil+damp_AB2
 
     Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{AB}` parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
+
+Adams-Bashforth III
+-------------------
+
+The 3rd order Adams-Bashforth time stepping (AB-III) provides several
+advantages (see, e.g., Durran 1991 :cite:`durran:91`) compared to the
+default quasi-second order Adams-Bashforth method:
+
+-  higher accuracy;
+
+-  stable with a longer time-step;
+
+-  no additional computation (just requires the storage of one
+   additional time level).
+
+The 3rd order Adams-Bashforth can be used to extrapolate
+forward in time the tendency (replacing :eq:`adams-bashforth2`)
+as:
+
+.. math::
+   G_\tau^{(n+1/2)} = ( 1 + \alpha_{AB} + \beta_{AB}) G_\tau^n
+   - ( \alpha_{AB} + 2 \beta_{AB}) G_\tau^{n-1}
+   + \beta_{AB} G_\tau^{n-2}
+   :label: adams-bashforth3
+
+3rd order accuracy is obtained with
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2,\,5/12)`. Note that selecting
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2+\epsilon_{AB},\,0)` one
+recovers AB-II. The AB-III time stepping improves the
+stability limit for an oscillatory problem like advection or Coriolis.
+As seen from :numref:`ab3_oscill_response`, it remains stable up to a
+CFL of 0.72, compared to only 0.50 with AB-II and
+:math:`\epsilon_{AB} = 0.1`. It is interesting to note that the
+stability limit can be further extended up to a CFL of 0.786 for an
+oscillatory problem (see :numref:`ab3_oscill_response`) using
+:math:`(\alpha_{AB},\,\beta_{AB}) = (0.5,\,0.2811)` but then the scheme
+is only second order accurate.
+
+However, the behavior of the AB-III for a damping problem (like diffusion)
+is less favorable, since the stability limit is reduced to 0.54 only
+(and 0.64 with :math:`\beta_{AB} = 0.2811`) compared to 1.0 (and 0.9 with
+:math:`\epsilon_{AB} = 0.1`) with the AB-II (see
+:numref:`ab3_damp_response`).
+
+A way to enable the use of a longer time step is to keep the dissipation
+terms outside the AB extrapolation (setting :varlink:`momDissip_In_AB` to ``.FALSE.``
+in main parameter file ``data``, namelist ``PARM03``, thus returning to
+a simple forward time-stepping for dissipation, and to use AB-III only for
+advection and Coriolis terms.
+
+The AB-III time stepping is activated by defining the option ``#define``
+:varlink:`ALLOW_ADAMSBASHFORTH_3` in :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. The parameters
+:math:`\alpha_{AB},\beta_{AB}` can be set from the main parameter file
+``data`` (namelist ``PARM03``) and their default values correspond to
+the 3rd order Adams-Bashforth. A simple example is provided in
+:filelink:`verification/advect_xy/input.ab3_c4`.
+
+AB-III is not yet available for the vertical momentum equation
+(non-hydrostatic) nor for passive tracers.
+
+  .. figure:: figs/stab_AB3_oscil.*
+    :width: 80%
+    :align: center
+    :alt: ab3_stability_analysis
+    :name: ab3_oscill_response
+
+    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
+  .. figure:: figs/stab_AB3_dampR.*
+    :width: 80%
+    :align: center
+    :alt: ab3_damping_analysis
+    :name: ab3_damp_response
+
+    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
 
 .. _implicit-backward-stepping:
 
@@ -531,7 +616,7 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)- \Delta t
+   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
@@ -654,7 +739,7 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t (P-E)^n \right)- \Delta t
+   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
@@ -832,7 +917,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)
+   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -896,7 +981,7 @@ where
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
    \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t (P-E)^{n}
+   \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -985,6 +1070,7 @@ at the same point in the code.
    crank-nicol.rst
    nonlinear-freesurf.rst
 
+.. _spatial_discret_dyn_eq:
 
 Spatial discretization of the dynamical equations
 =================================================
@@ -1024,7 +1110,7 @@ continuity equation which can be summarized as:
 .. math::
    \delta_i \Delta y_g \Delta r_f h_w u +
    \delta_j \Delta x_g \Delta r_f h_s v +
-   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (P-E)_{r=0}
+   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (\mathcal{P-E})_{r=0}
    :label: discrete-continuity
 
 where the continuity equation has been most naturally discretized by
@@ -1046,10 +1132,10 @@ the vertical to yield the free-surface equation:
 .. math::
   {\cal A}_c \partial_t \eta + \delta_i \sum_k \Delta y_g \Delta r_f h_w
    u + \delta_j \sum_k \Delta x_g \Delta r_f h_s v = {\cal
-   A}_c(P-E)_{r=0}
+   A}_c(\mathcal{P-E})_{r=0}
   :label: discrete-freesurface
 
-The source term :math:`P-E` on the rhs of continuity accounts for the
+The source term :math:`\mathcal{P-E}` on the rhs of continuity accounts for the
 local addition of volume due to excess precipitation and run-off over
 evaporation and only enters the top-level of the ocean model.
 
@@ -1096,6 +1182,7 @@ The calculations are made in the subroutine :filelink:`CALC_PHI_HYD <model/src/c
 this routine, one of other of the atmospheric/oceanic form is selected
 based on the string variable :varlink:`buoyancyRelation`.
 
+.. _flux-form_momentum_equations:
 
 Flux-form momentum equations
 ============================
@@ -1197,6 +1284,8 @@ momentum correctly conserves kinetic energy.
 
     | :math:`uv, vv, wv` : :varlink:`fZon`, :varlink:`fMer`, :varlink:`fVerVkp` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_cor_terms:
+
 Coriolis terms
 --------------
 
@@ -1258,8 +1347,10 @@ where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
 the Coriolis parameters at the appropriate points in space. The above
 discretization does *not* conserve anything, especially energy, but for
 historical reasons is the default for the code. A flag controls this
-discretization: set run-time logical :varlink:`useEnergyConservingCoriolis` to
-.TRUE. which otherwise defaults to .FALSE..
+discretization: set run-time integer :varlink:`selectCoriScheme` to two (=2)
+(which otherwise defaults to zero)
+to select the energy-conserving conserving form :eq:`cdscheme_gu`, :eq:`cdscheme_gv`, and :eq:`cdscheme_gw` above.
+
 
 .. admonition:: S/R  :filelink:`CD_CODE_SCHEME <pkg/cd_code/cd_code_scheme.F>`, :filelink:`MOM_U_CORIOLIS <pkg/mom_fluxform/mom_u_coriolis.F>`, :filelink:`MOM_V_CORIOLIS <pkg/mom_fluxform/mom_v_coriolis.F>`
   :class: note
@@ -1313,6 +1404,7 @@ points respectively.
 
     | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _non_hyd_metric_terms:
 
 Non-hydrostatic metric terms
 ----------------------------
@@ -1354,6 +1446,7 @@ in the past, used a different discretization in the model which is:
 
     | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_lat_dissip:
 
 Lateral dissipation
 -------------------
@@ -1397,9 +1490,8 @@ The lateral viscous stresses are discretized:
                   -A_4 c_{22\Delta^2}(\varphi) \frac{1}{\Delta y_f} \delta_j \nabla^2 v
    :label: tau22
 
-where the non-dimensional factors
-:math:`c_{lm\Delta^n}(\varphi), \{l,m,n\} \in
-\{1,2\}` define the “cosine” scaling with latitude which can be applied
+where the non-dimensional factors :math:`c_{lm\Delta^n}(\varphi), \{l,m,n\} \in \{1,2\}`
+define the “cosine” scaling with latitude which can be applied
 in various ad-hoc ways. For instance, :math:`c_{11\Delta} =
 c_{21\Delta} = (\cos{\varphi})^{3/2}`,
 :math:`c_{12\Delta}=c_{22\Delta}=1` would represent the anisotropic
@@ -1629,6 +1721,7 @@ Mom Diagnostics
     VISrE_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
     VISrI_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
+.. _vec_invar_mom_eqs:
 
 Vector invariant momentum equations
 ===================================
@@ -1797,12 +1890,12 @@ consistent with the vertical advection of shear:
 
 .. math::
    G_u^{\zeta_2 w} = \frac{1}{ {\cal A}_w \Delta r_f h_w } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_i w ) }^k
    :label: gu_zeta2w
 
 .. math::
    G_v^{\zeta_1 w} = \frac{1}{ {\cal A}_s \Delta r_f h_s } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{nh} \delta_j w ) }^k
    :label: gv_zeta1w
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_VERTSHEAR <pkg/mom_vecinv/mom_vi_u_vertshear.F>`, :filelink:`MOM_VI_V_VERTSHEAR <pkg/mom_vecinv/mom_vi_v_vertshear.F>`
@@ -1933,6 +2026,8 @@ separate sections. The basic discretization of the advection-diffusion
 part of the tracer equations and the various advection schemes will be
 described here.
 
+.. _sub_tracer_eqns_ab:
+
 Time-stepping of tracers: ABII
 ------------------------------
 
@@ -2029,584 +2124,15 @@ the standard second, third and fourth order advection schemes. Selection
 of any other advection scheme disables Adams-Bashforth for tracers so
 that explicit diffusion and forcing use the forward method.
 
-Linear advection schemes
-========================
+.. _advection_schemes:
 
-The advection schemes known as centered second order, centered fourth
-order, first order upwind and upwind biased third order are known as
-linear advection schemes because the coefficient for interpolation of
-the advected tracer are linear and a function only of the flow, not the
-tracer field it self. We discuss these first since they are most
-commonly used in the field and most familiar.
+Advection schemes
+=================
 
-Centered second order advection-diffusion
------------------------------------------
+.. toctree:: 
+    adv-schemes.rst
 
-The basic discretization, centered second order, is the default. It is
-designed to be consistent with the continuity equation to facilitate
-conservation properties analogous to the continuum. However, centered
-second order advection is notoriously noisy and must be used in
-conjunction with some finite amount of diffusion to produce a sensible
-solution.
-
-The advection operator is discretized:
-
-.. math::
-   {\cal A}_c \Delta r_f h_c G_{adv}^\tau = 
-   \delta_i F_x + \delta_j F_y + \delta_k F_r
-   :label: cent_2nd_ord
-
-where the area integrated fluxes are given by:
-
-.. math::
-
-   \begin{aligned}
-   F_x & = & U \overline{ \tau }^i \\
-   F_y & = & V \overline{ \tau }^j \\
-   F_r & = & W \overline{ \tau }^k\end{aligned}
-
-The quantities :math:`U`, :math:`V` and :math:`W` are volume fluxes.
-defined as:
-
-.. math::
-
-   \begin{aligned}
-   U & = & \Delta y_g \Delta r_f h_w u \\
-   V & = & \Delta x_g \Delta r_f h_s v \\
-   W & = & {\cal A}_c w\end{aligned}
-
-For non-divergent flow, this discretization can be shown to conserve the
-tracer both locally and globally and to globally conserve tracer
-variance, :math:`\tau^2`. The proof is given in
-Adcroft (1995) :cite:`adcroft:95` and Adcroft et al. (1997) :cite:`adcroft:97` .
-
-.. admonition:: S/R  :filelink:`GAD_C2_ADV_X <pkg/generic_advdiff/gad_c2_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_C2_ADV_Y <pkg/generic_advdiff/gad_c2_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_C2_ADV_R <pkg/generic_advdiff/gad_c2_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-Third order upwind bias advection
----------------------------------
-
-Upwind biased third order advection offers a relatively good compromise
-between accuracy and smoothness. It is not a “positive” scheme meaning
-false extrema are permitted but the amplitude of such are significantly
-reduced over the centered second order method.
-
-The third order upwind fluxes are discretized:
-
-.. math::
-
-   \begin{aligned}
-   F_x & = & U \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^i
-            + \frac{1}{2} |U| \delta_i \frac{1}{6} \delta_{ii} \tau \\
-   F_y & = & V \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^j
-            + \frac{1}{2} |V| \delta_j \frac{1}{6} \delta_{jj} \tau \\
-   F_r & = & W \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^k
-            + \frac{1}{2} |W| \delta_k \frac{1}{6} \delta_{kk} \tau \end{aligned}
-
-At boundaries, :math:`\delta_{\hat{n}} \tau` is set to zero allowing
-:math:`\delta_{nn}` to be evaluated. We are currently examine the
-accuracy of this boundary condition and the effect on the solution.
-
-.. admonition:: S/R  :filelink:`GAD_U3_ADV_X <pkg/generic_advdiff/gad_u3_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_U3_ADV_Y <pkg/generic_advdiff/gad_u3_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_U3_ADV_R <pkg/generic_advdiff/gad_u3_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-
-Centered fourth order advection
--------------------------------
-
-Centered fourth order advection is formally the most accurate scheme we
-have implemented and can be used to great effect in high resolution
-simulations where dynamical scales are well resolved. However, the scheme
-is noisy, like the centered second order method, and so must be used with
-some finite amount of diffusion. Bi-harmonic is recommended since it is
-more scale selective and less likely to diffuse away the well resolved
-gradient the fourth order scheme worked so hard to create.
-
-The centered fourth order fluxes are discretized:
-
-.. math::
-
-   \begin{aligned}
-   F_x & = & U \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^i \\
-   F_y & = & V \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^j \\
-   F_r & = & W \overline{\tau - \frac{1}{6} \delta_{ii} \tau}^k\end{aligned}
-
-As for the third order scheme, the best discretization near boundaries
-is under investigation but currently :math:`\delta_i \tau=0` on a
-boundary.
-
-.. admonition:: S/R  :filelink:`GAD_C4_ADV_X <pkg/generic_advdiff/gad_c4_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_C4_ADV_Y <pkg/generic_advdiff/gad_c4_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_C4_ADV_R <pkg/generic_advdiff/gad_c4_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-First order upwind advection
-----------------------------
-
-Although the upwind scheme is the underlying scheme for the robust or
-non-linear methods given in :numref:`nonlinear_adv`, we haven’t actually implemented this method
-for general use. It would be very diffusive and it is unlikely that it
-could ever produce more useful results than the positive higher order
-schemes.
-
-Upwind bias is introduced into many schemes using the *abs* function and
-it allows the first order upwind flux to be written:
-
-.. math::
-
-   \begin{aligned}
-   F_x & = & U \overline{ \tau }^i - \frac{1}{2} |U| \delta_i \tau \\
-   F_y & = & V \overline{ \tau }^j - \frac{1}{2} |V| \delta_j \tau \\
-   F_r & = & W \overline{ \tau }^k - \frac{1}{2} |W| \delta_k \tau\end{aligned}
-
-If for some reason the above method is desired, the second order
-flux limiter scheme described in :numref:`secondord_FL` reduces to the above scheme if the
-limiter is set to zero.
-
-.. _nonlinear_adv:
-
-Non-linear advection schemes
-============================
-
-Non-linear advection schemes invoke non-linear interpolation and are
-widely used in computational fluid dynamics (non-linear does not refer
-to the non-linearity of the advection operator). The flux limited
-advection schemes belong to the class of finite volume methods which
-neatly ties into the spatial discretization of the model.
-
-When employing the flux limited schemes, first order upwind or
-direct-space-time method, the time-stepping is switched to forward in
-time.
-
-.. _secondord_FL:
-
-Second order flux limiters
---------------------------
-
-The second order flux limiter method can be cast in several ways but is
-generally expressed in terms of other flux approximations. For example,
-in terms of a first order upwind flux and second order Lax-Wendroff
-flux, the limited flux is given as:
-
-.. math:: F = F_1 + \psi(r) F_{LW}
-   :label: limited_flux
-
-where :math:`\psi(r)` is the limiter function,
-
-.. math:: F_1 = u \overline{\tau}^i - \frac{1}{2} |u| \delta_i \tau
-
-is the upwind flux,
-
-.. math:: F_{LW} = F_1 + \frac{|u|}{2} (1-c) \delta_i \tau
-
-is the Lax-Wendroff flux and :math:`c = \frac{u \Delta t}{\Delta x}` is
-the Courant (CFL) number.
-
-The limiter function, :math:`\psi(r)`, takes the slope ratio
-
-.. math::
-
-   \begin{aligned}
-   r = \frac{ \tau_{i-1} - \tau_{i-2} }{ \tau_{i} - \tau_{i-1} } & \forall & u > 0
-   \\
-   r = \frac{ \tau_{i+1} - \tau_{i} }{ \tau_{i} - \tau_{i-1} } & \forall & u < 0\end{aligned}
-
-as its argument. There are many choices of limiter function but we
-only provide the Superbee limiter (Roe 1995 :cite:`roe:85`):
-
-.. math:: \psi(r) = \max[0,\min[1,2r],\min[2,r]]
-
-.. admonition:: S/R  :filelink:`GAD_FLUXLIMIT_ADV_X <pkg/generic_advdiff/gad_fluxlimit_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_FLUXLIMIT_ADV_Y <pkg/generic_advdiff/gad_fluxlimit_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_FLUXLIMIT_ADV_R <pkg/generic_advdiff/gad_fluxlimit_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-
-Third order direct space time
------------------------------
-
-The direct-space-time method deals with space and time discretization
-together (other methods that treat space and time separately are known
-collectively as the “Method of Lines”). The Lax-Wendroff scheme falls
-into this category; it adds sufficient diffusion to a second order flux
-that the forward-in-time method is stable. The upwind biased third order
-DST scheme is:
-
-.. math::
-   \begin{aligned}F = u \left( \tau_{i-1}
-           + d_0 (\tau_{i}-\tau_{i-1}) + d_1 (\tau_{i-1}-\tau_{i-2}) \right)
-   \phantom{W} & \forall & u > 0 \\
-   F = u \left( \tau_{i}
-           - d_0 (\tau_{i}-\tau_{i-1}) - d_1 (\tau_{i+1}-\tau_{i}) \right)
-   \phantom{W} & \forall & u < 0\end{aligned}
-   :label: F_posneg-u
-
-where
-
-.. math::
-
-   \begin{aligned}
-   d_0 & = & \frac{1}{6} ( 2 - |c| ) ( 1 - |c| ) \\
-   d_1 & = & \frac{1}{6} ( 1 - |c| ) ( 1 + |c| )\end{aligned}
-
-The coefficients :math:`d_0` and :math:`d_1` approach :math:`1/3` and
-:math:`1/6` respectively as the Courant number, :math:`c`, vanishes. In
-this limit, the conventional third order upwind method is recovered. For
-finite Courant number, the deviations from the linear method are
-analogous to the diffusion added to centered second order advection in
-the Lax-Wendroff scheme.
-
-The DST3 method described above must be used in a forward-in-time manner
-and is stable for :math:`0 \le |c| \le 1`. Although the scheme appears
-to be forward-in-time, it is in fact third order in time and the
-accuracy increases with the Courant number! For low Courant number, DST3
-produces very similar results (indistinguishable in
-:numref:`advect-1d-lo`) to the linear third order method but for large
-Courant number, where the linear upwind third order method is unstable,
-the scheme is extremely accurate (:numref:`advect-1d-hi`) with only
-minor overshoots.
-
-.. admonition:: S/R  :filelink:`GAD_DST3_ADV_X <pkg/generic_advdiff/gad_dst3_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_DST3_ADV_Y <pkg/generic_advdiff/gad_dst3_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_DST3_ADV_R <pkg/generic_advdiff/gad_dst3_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-Third order direct space time with flux limiting
-------------------------------------------------
-
-The overshoots in the DST3 method can be controlled with a flux limiter.
-The limited flux is written:
-
-.. math::
-   F = \frac{1}{2}(u+|u|)\left( \tau_{i-1} + \psi(r^+)(\tau_{i} - \tau_{i-1} )\right)
-   + \frac{1}{2}(u-|u|)\left( \tau_{i-1} + \psi(r^-)(\tau_{i} - \tau_{i-1} )\right)
-   :label: dst3_limiter
-
-where
-
-.. math::
-
-   \begin{aligned}
-   r^+ & = & \frac{\tau_{i-1} - \tau_{i-2}}{\tau_{i} - \tau_{i-1}} \\
-   r^- & = & \frac{\tau_{i+1} - \tau_{i}}{\tau_{i} - \tau_{i-1}}\end{aligned}
-
-and the limiter is the Sweby limiter:
-
-.. math:: \psi(r) = \max[0, \min[\min(1,d_0+d_1r],\frac{1-c}{c}r ]]
-
-.. admonition:: S/R  :filelink:`GAD_DST3FL_ADV_X <pkg/generic_advdiff/gad_dst3fl_adv_x.F>`
-  :class: note
-
-    | :math:`F_x` : :varlink:`uT` ( argument )
-    | :math:`U` : :varlink:`uTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_DST3FL_ADV_Y <pkg/generic_advdiff/gad_dst3fl_adv_y.F>`
-  :class: note
-
-    | :math:`F_y` : :varlink:`vT` ( argument )
-    | :math:`V` : :varlink:`vTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-.. admonition:: S/R  :filelink:`GAD_DST3FL_ADV_R <pkg/generic_advdiff/gad_dst3fl_adv_r.F>`
-  :class: note
-
-    | :math:`F_r` : :varlink:`wT` ( argument )
-    | :math:`W` : :varlink:`rTrans` ( argument )
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-
-Multi-dimensional advection
----------------------------
-
-In many of the aforementioned advection schemes the behavior in multiple
-dimensions is not necessarily as good as the one dimensional behavior.
-For instance, a shape preserving monotonic scheme in one dimension can
-have severe shape distortion in two dimensions if the two components of
-horizontal fluxes are treated independently. There is a large body of
-literature on the subject dealing with this problem and among the fixes
-are operator and flux splitting methods, corner flux methods, and more.
-We have adopted a variant on the standard splitting methods that allows
-the flux calculations to be implemented as if in one dimension:
-
-.. math::
-   \begin{aligned}
-   \tau^{n+1/3} & = & \tau^{n}
-   - \Delta t \left( \frac{1}{\Delta x} \delta_i F^x(\tau^{n})
-              - \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
-   \tau^{n+2/3} & = & \tau^{n+1/3}
-   - \Delta t \left( \frac{1}{\Delta y} \delta_j F^y(\tau^{n+1/3})
-              - \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
-   \tau^{n+3/3} & = & \tau^{n+2/3}
-   - \Delta t \left( \frac{1}{\Delta r} \delta_k F^x(\tau^{n+2/3})
-              - \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
-   :label: tau_multiD
-
-In order to incorporate this method into the general model algorithm, we
-compute the effective tendency rather than update the tracer so that
-other terms such as diffusion are using the :math:`n` time-level and not
-the updated :math:`n+3/3` quantities:
-
-.. math:: G^{n+1/2}_{adv} = \frac{1}{\Delta t} ( \tau^{n+3/3} - \tau^{n} )
-
-So that the over all time-stepping looks likes:
-
-.. math:: \tau^{n+1} = \tau^{n} + \Delta t \left( G^{n+1/2}_{adv} + G_{diff}(\tau^{n}) + G^{n}_{forcing} \right)
-
-.. admonition:: S/R  :filelink:`GAD_ADVECTION <pkg/generic_advdiff/gad_advection.F>`
-  :class: note
-
-    | :math:`\tau` : :varlink:`tracer` ( argument )
-    | :math:`G^{n+1/2}_{adv}` : :varlink:`gTracer` ( argument )
-    | :math:`F_x, F_y, F_r` : :varlink:`aF` ( local )
-    | :math:`U` : :varlink:`uTrans` ( local )
-    | :math:`V` : :varlink:`vTrans` ( local )
-    | :math:`W` : :varlink:`rTrans` ( local )
-
-A schematic of multi-dimension time stepping for the cube sphere configuration is show in :numref:`multiDim_CS` .
-
-  .. figure:: figs/multiDim_CS.*
-    :width: 60%
-    :align: center
-    :alt: multiDim_CS
-    :name: multiDim_CS
-
-    Multi-dimensional advection time-stepping with cubed-sphere topology.
-
-Comparison of advection schemes
-===============================
-
-:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm. “A.B.” stands for Adams-Bashforth and “DST” for direct space time. The code corresponds to the number used to select the corresponding advection scheme in the parameter file (e.g., tempAdvScheme=3 in file data selects the 3rd order upwind advection scheme for temperature).
-
-.. table:: MITgcm Advection Schemes
-  :name: adv_scheme_summary
-
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  |                                         |      |     |   use      |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  |                                         |      | use |   multi    | stencil |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | Advection Scheme                        | Code | AB? |  -dim?     |  (1-D)  | comments                            |
-  +=========================================+======+=====+============+=========+=====================================+
-  | 1st order upwind                        |  1   |  no |     yes    |   3     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | centered 2nd order                      |  2   | yes |     no     |   3     | linear                              |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order upwind                        |  3   | yes |     no     |   5     | linear :math:`\tau`                 |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | centered 4th order                      |  4   | yes |     no     |   5     | linear                              |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order DST (Lax-Wendroff)            |  20  |  no |     yes    |   3     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order DST                           |  30  |  no |     yes    |   5     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order-moment Prather                |  80  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order flux limiters                 |  77  |  no |     yes    |   5     | non-linear                          |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order DST flux limiter              |  33  |  no |     yes    |   5     | non-linear                          |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order-moment Prather w/limiter      |  81  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise parabolic w/“null” limiter    |  40  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise parabolic w/“mono” limiter    |  41  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“null” limiter      |  50  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“mono” limiter      |  51  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“weno” limiter      |  52  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 7th order one-step method w/            |   7  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | monotonicity preserving limiter         |      |     |            |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-
-
-Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison of advection schemes. Here we advect both a smooth hill and a hill with a more abrupt shock.
-:numref:`advect-1d-lo` shown the result for a weak flow  (low Courant number) whereas  :numref:`advect-1d-hi` shows the result for a stronger flow (high Courant number).
-
-  .. figure:: figs/advect-1d-lo.*
-    :width: 100%
-    :align: center
-    :alt: advect-1d-lo
-    :name: advect-1d-lo
-
-    Comparison of 1-D advection schemes: Courant number is 0.05 with 60 points and solutions are shown for T=1 (one complete period). a) Shows the upwind biased schemes; first order upwind, DST3, third order upwind and second order upwind. b) Shows the centered schemes; Lax-Wendroff, DST4, centered second order, centered fourth order and finite volume fourth order. c) Shows the second order flux limiters: minmod, Superbee, MC limiter and the van Leer limiter. d) Shows the DST3 method with flux limiters due to Sweby with :math:`\mu =1` ,  :math:`\mu =c/(1-c)` and a fourth order DST method with Sweby limiter,  :math:`\mu =c/(1-c)` .
-
-  .. figure:: figs/advect-1d-hi.*
-    :width: 100%
-    :align: center
-    :alt: advect-1d-hi
-    :name: advect-1d-hi
-
-    Comparison of 1-D advection schemes: Courant number is 0.89 with 60 points and solutions are shown for T=1 (one complete period). a) Shows the upwind biased schemes; first order upwind and DST3. Third order upwind and second order upwind are unstable at this Courant number. b) Shows the centered schemes; Lax-Wendroff, DST4. Centered second order, centered fourth order and finite volume fourth order are unstable at this Courant number. c) Shows the second order flux limiters: minmod, Superbee, MC limiter and the van Leer limiter. d) Shows the DST3 method with flux limiters due to Sweby with :math:`\mu =1` ,  :math:`\mu =c/(1-c)` and a fourth order DST method with Sweby limiter,  :math:`\mu =c/(1-c)` .
-
-
-:numref:`advect-2d-lo-diag`, :numref:`advect-2d-mid-diag` and
-:numref:`advect-2d-hi-diag` show solutions to a simple diagonal advection
-problem using a selection of schemes for low, moderate and high Courant
-numbers, respectively. The top row shows the linear schemes, integrated
-with the Adams-Bashforth method. Theses schemes are clearly unstable for
-the high Courant number and weakly unstable for the moderate Courant
-number. The presence of false extrema is very apparent for all Courant
-numbers. The middle row shows solutions obtained with the unlimited but
-multi-dimensional schemes. These solutions also exhibit false extrema
-though the pattern now shows symmetry due to the multi-dimensional
-scheme. Also, the schemes are stable at high Courant number where the
-linear schemes weren’t. The bottom row (left and middle) shows the
-limited schemes and most obvious is the absence of false extrema. The
-accuracy and stability of the unlimited non-linear schemes is retained
-at high Courant number but at low Courant number the tendency is to
-lose amplitude in sharp peaks due to diffusion. The one dimensional
-tests shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` show
-this phenomenon.
-
-Finally, the bottom left and right panels use the same advection scheme
-but the right does not use the multi-dimensional method. At low Courant
-number this appears to not matter but for moderate Courant number severe
-distortion of the feature is apparent. Moreover, the stability of the
-multi-dimensional scheme is determined by the maximum Courant number
-applied of each dimension while the stability of the method of lines is
-determined by the sum. Hence, in the high Courant number plot, the
-scheme is unstable.
-
-  .. figure:: figs/advect-2d-lo-diag.*
-    :width: 100%
-    :align: center
-    :alt: advect-2d-lo-diag
-    :name: advect-2d-lo-diag
-
-    Comparison of advection schemes in two dimensions; diagonal advection of a resolved Gaussian feature. Courant number is 0.01 with 30 :math:`\times` 30 points and solutions are shown for T=1/2. White lines indicate zero crossing (ie. the presence of false minima). The left column shows the second order schemes; top) centered second order with Adams-Bashforth, middle) Lax-Wendroff and bottom) Superbee flux limited. The middle column shows the third order schemes; top) upwind biased third order with Adams-Bashforth, middle) third order direct space-time method and bottom) the same with flux limiting. The top right panel shows the centered fourth order scheme with Adams-Bashforth and right middle panel shows a fourth order variant on the DST method. Bottom right panel shows the Superbee flux limiter (second order) applied independently in each direction (method of lines).
-
-  .. figure:: figs/advect-2d-mid-diag.*
-    :width: 100%
-    :align: center
-    :alt: advect-2d-mid-diag
-    :name: advect-2d-mid-diag
-
-    Comparison of advection schemes in two dimensions; diagonal advection of a resolved Gaussian feature. Courant number is 0.27 with 30 :math:`\times` 30 points and solutions are shown for T=1/2. White lines indicate zero crossing (ie. the presence of false minima). The left column shows the second order schemes; top) centered second order with Adams-Bashforth, middle) Lax-Wendroff and bottom) Superbee flux limited. The middle column shows the third order schemes; top) upwind biased third order with Adams-Bashforth, middle) third order direct space-time method and bottom) the same with flux limiting. The top right panel shows the centered fourth order scheme with Adams-Bashforth and right middle panel shows a fourth order variant on the DST method. Bottom right panel shows the Superbee flux limiter (second order) applied independently in each direction (method of lines).
-
-  .. figure:: figs/advect-2d-hi-diag.*
-    :width: 100%
-    :align: center
-    :alt: advect-2d-hi-diag
-    :name: advect-2d-hi-diag
-
-    Comparison of advection schemes in two dimensions; diagonal advection of a resolved Gaussian feature. Courant number is 0.47 with 30 :math:`\times` 30 points and solutions are shown for T=1/2. White lines indicate zero crossings and initial maximum values (ie. the presence of false extrema). The left column shows the second order schemes; top) centered second order with Adams-Bashforth, middle) Lax-Wendroff and bottom) Superbee flux limited. The middle column shows the third order schemes; top) upwind biased third order with Adams-Bashforth, middle) third order direct space-time method and bottom) the same with flux limiting. The top right panel shows the centered fourth order scheme with Adams-Bashforth and right middle panel shows a fourth order variant on the DST method. Bottom right panel shows the Superbee flux limiter (second order) applied independently in each direction (method of lines).
-
-With many advection schemes implemented in the code two questions arise:
-“Which scheme is best?” and “Why don’t you just offer the best advection
-scheme?”. Unfortunately, no one advection scheme is “the best” for all
-particular applications and for new applications it is often a matter of
-trial to determine which is most suitable. Here are some guidelines but
-these are not the rule;
-
--  If you have a coarsely resolved model, using a positive or upwind
-   biased scheme will introduce significant diffusion to the solution
-   and using a centered higher order scheme will introduce more noise.
-   In this case, simplest may be best.
-
--  If you have a high resolution model, using a higher order scheme will
-   give a more accurate solution but scale-selective diffusion might
-   need to be employed. The flux limited methods offer similar accuracy
-   in this regime.
-
--  If your solution has shocks or propagating fronts then a flux limited
-   scheme is almost essential.
-
--  If your time-step is limited by advection, the multi-dimensional
-   non-linear schemes have the most stability (up to Courant number 1).
-
--  If you need to know how much diffusion/dissipation has occurred you
-   will have a lot of trouble figuring it out with a non-linear method.
-
--  The presence of false extrema is non-physical and this alone is the
-   strongest argument for using a positive scheme.
+.. _shapiro_filter:
 
 Shapiro Filter
 ==============
@@ -2678,6 +2204,7 @@ SHAP Diagnostics
     SHAP_dU |  5 |UU   148MR  |m/s^2    |Zonal Wind Tendency due to Shapiro Filter
     SHAP_dV |  5 |VV   147MR  |m/s^2    |Meridional Wind Tendency due to Shapiro Filter
 
+.. _nonlinear_vis_schemes:
 
 Nonlinear Viscosities for Large Eddy Simulation
 ===============================================
@@ -2905,14 +2432,16 @@ vertical viscosity should be used:
 
 This vertical viscosity is currently not implemented in MITgcm.
 
+.. _leith_viscosity:
+
 Leith Viscosity
 ~~~~~~~~~~~~~~~
 
-Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-d turbulence is
-quite different from 3-d. In two-dimensional turbulence, energy cascades
+Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-D turbulence is
+quite different from 3-D. In 2-D turbulence, energy cascades
 to larger scales, so there is no concern about resolving the scales of
 energy dissipation. Instead, another quantity, enstrophy, (which is the
-vertical component of vorticity squared) is conserved in 2-d turbulence,
+vertical component of vorticity squared) is conserved in 2-D turbulence,
 and it cascades to smaller scales where it is dissipated.
 
 Following a similar argument to that above about energy flux, the
@@ -2938,6 +2467,10 @@ enstrophy-dissipation and the resulting eddy viscosity are
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde v}}}{\partial{x}}}
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
    :label: Leith3
+
+The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.)
+or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when
+computing the gradients. This can occur when using the cubed sphere and other complex grids.
 
 Modified Leith Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2987,6 +2520,76 @@ often what sets the maximum timestep, this viscosity may substantially
 increase the allowable timestep without severely compromising the verity
 of the simulation. Tests have shown that in some calculations, a
 timestep three times larger was allowed when :varlink:`viscC2LeithD` = :varlink:`viscC2Leith`.
+
+
+Quasi-Geostrophic Leith Viscosity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A variant of Leith viscosity can be derived for quasi-geostrophic dynamics.
+This leads to a slightly different equation for the viscosity that includes
+a contribution from quasigeostrophic vortex stretching (Bachman et al. 2017 :cite:`bachman:17`).
+The viscosity is given by
+
+.. math::
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} | \nabla_{h}(f\mathbf{\hat{z}}) + 
+    \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}} \nabla_{h} b|
+    :label: bachman2017_eq39
+
+where :math:`\Lambda` is a tunable parameter of :math:`\mathcal{O}(1)`,
+:math:`\Delta s = \sqrt{\Delta x \Delta y}` is the grid scale, :math:`f\mathbf{\hat{z}}`
+is the vertical component of the Coriolis parameter, :math:`\mathbf{v}_{h*}` is the horizontal velocity,
+:math:`N^{2}` is the Brunt-Väisälä frequency, and :math:`b` is the buoyancy.
+
+However, the viscosity given by :eq:`bachman2017_eq39` does not constrain purely
+divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is added
+
+.. math::
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
+    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}}
+    :label: bachman2017_eq40
+
+This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
+in regions of weak or vanishing stratification, the vortex stretching term becomes very large.
+The resulting large viscosities can lead to numerical instabilities. Bachman et al. (2017) :cite:`bachman:17`
+present two limiting forms for the viscosity based on flow parameters such as :math:`Fr_{*}`,
+the Froude number, and :math:`Ro_{*}`, the Rossby number. The second of which,
+
+.. math::
+    \begin{aligned}
+    \nu_{*} = & \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \\
+    & \sqrt{min\left(|\nabla_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \nabla_{h} b |,
+    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}},
+    \end{aligned}
+    :label: bachman2017_eq56
+
+
+has been implemented and is active when ``#define`` :varlink:`ALLOW_LEITH_QG` is included
+in a copy of :filelink:`MOM_COMMON_OPTIONS.h<pkg/mom_common/MOM_COMMON_OPTIONS.h>` in
+a code mods directory (specified through :ref:`-mods <mods_option>` command
+line option in :filelink:`genmake2 <tools/genmake2>`).
+
+LeithQG viscosity is designed to work best in simulations that resolve some mesoscale features.
+In simulations that are too coarse to permit eddies or fine enough to resolve submesoscale features,
+it should fail gracefully. The non-dimensional parameter :varlink:`viscC2LeithQG` corresponds to
+:math:`\Lambda` in the above equations and scales the viscosity; the recommended value is 1.
+
+There is no reason to use the quasi-geostrophic form of Leith at the same time as either
+standard Leith or modified Leith. Therefore, the model will not run if non-zero values have
+been set for these coefficients; the model will stop during the configuration check.
+LeithQG can be used regardless of the setting for :varlink:`useFullLeith`. Just as for the
+other forms of Leith viscosity, this flag determines whether or not the full gradients are used.
+The simplified gradients were originally intended for use on complex grids, but have been
+shown to produce better kinetic energy spectra even on very straightforward grids.
+
+To add the LeithQG viscosity to the GMRedi coefficient, as was done in some of the simulations
+in Bachman et al. (2017) :cite:`bachman:17`, ``#define`` :varlink:`ALLOW_LEITH_QG` must be specified,
+as described above. In addition to this, the compile-time flag :varlink:`ALLOW_GM_LEITH_QG`
+must also be defined in a (``-mods``) copy of :filelink:`GMREDI_OPTIONS.h<pkg/gmredi/GMREDI_OPTIONS.h>`
+when the model is compiled, and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in ``data.gmredi``.
+This will use the value of :varlink:`viscC2LeithQG` specified in the ``data`` input file to compute the coefficient.
+
+.. _CFL_constraint_visc:
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3123,7 +2726,8 @@ that the minimum of :math:`L_x` and :math:`L_y` be used. On the other
 hand, other viscosities which involve whether a particular wavelength is
 ’resolved’ might be better suited to use the maximum of :math:`L_x` and
 :math:`L_y`. Currently, MITgcm uses :varlink:`useAreaViscLength` to select between
-two options. If false, the geometric mean of :math:`L^2_x` and
+two options. If false, the square root of the `harmonic mean <https://en.wikipedia.org/wiki/Harmonic_mean>`_
+of :math:`L^2_x` and
 :math:`L^2_y` is used for all viscosities, which is closer to the
 minimum and occurs naturally in the CFL constraint. If :varlink:`useAreaViscLength`
 is true, then the square root of the area of the grid cell is used.

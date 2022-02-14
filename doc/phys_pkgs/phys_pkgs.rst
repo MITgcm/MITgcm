@@ -6,13 +6,13 @@ Packages I - Physical Parameterizations
 
 In this chapter and in the following chapter, the MITgcm 'packages' are
 described. While you can carry out many experiments with MITgcm by starting
-from case studies in section \ref{sec:modelExamples}, configuring
+from case studies in section :numref:`chap_modelExamples`, configuring
 a brand new experiment or making major changes to an experimental configuration
 requires some knowledge of the *packages*
 that make up the full MITgcm code. Packages are used in MITgcm to
 help organize and layer various code building blocks that are assembled
 and selected to perform a specific experiment. Each of the specific experiments
-described in section \ref{sec:modelExamples} uses a particular combination
+described in section :numref:`chap_modelExamples` uses a particular combination
 of packages.
 
 :numref:`fig_package_organigramme` shows the full set of packages that
@@ -40,17 +40,17 @@ I/O and time-keeping functions that are used in many different scenarios.
 
 
 The following sections describe the packages shown in
-:numref:`fig_package_organigramme`. Section \ref{sec:pkg:using}
+:numref:`fig_package_organigramme`. Section :numref:`using_packages`
 describes the general procedure for using any package in MITgcm.
-Following that sections \ref{sec:pkg:gad}-\ref{sec:pkg:monitor}
+Sections :numref:`packagesI` to :numref:`chap_state_estimation`
 layout the algorithms implemented in specific packages
 and describe how to use the individual packages. A brief synopsis of the
-function of each package is given in table \ref{tab:package_summary_tab}.
+function of each package is given in :numref:`fig_package_organigramme`.
 Organizationally package code is assigned a
 separate subdirectory in the MITgcm code distribution
-(within the source code directory \texttt{pkg}).
+(within the source code directory :filelink:`pkg`).
 The name of this subdirectory is used as the package name in
-table \ref{tab:package_summary_tab}.
+:numref:`fig_package_organigramme`.
 
 
 Overview
@@ -69,6 +69,7 @@ Packages Related to Hydrodynamical Kernel
    :maxdepth: 3
 
    generic_advdiff.rst
+   mom_packages.rst
    shap_filt.rst
    zonal_filt.rst
    exch2.rst
@@ -109,14 +110,17 @@ Atmosphere Packages
    land.rst
    fizhi.rst
 
-Sea Ice Packages
-================
+Ice and Sea Ice Packages
+========================
 
 .. toctree::
    :maxdepth: 3
 
    thsice.rst
    seaice.rst
+   shelfice.rst
+   remesh.rst   
+   streamice.rst   
 
 Biogeochemistry Packages
 ========================

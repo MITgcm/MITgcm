@@ -137,11 +137,13 @@ c    &   , misValInt
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C  - DIAG_PARAMS common block:
+C    useDiag4AdjOutp :: use diagnostics pkg for Adjoint variables
 C    diagLoc_ioUnit :: internal parameter: I/O unit for local diagnostics output
 C    dumpAtLast :: always write time-ave (freq>0) diagnostics at the end of the run
 C    diagMdsDir :: directory where diagnostics will be written when using mds
 C    diagMdsDirCreate :: system call to mkdir to create diagMdsDir
       INTEGER diagLoc_ioUnit
+      LOGICAL useDiag4AdjOutp
       LOGICAL dumpAtLast,              diagMdsDirCreate
       LOGICAL diag_pickup_read,        diag_pickup_write
       LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
@@ -150,7 +152,7 @@ C    diagMdsDirCreate :: system call to mkdir to create diagMdsDir
 
       COMMON / DIAG_PARAMS_I /
      &     diagLoc_ioUnit
-      COMMON / DIAG_PARAMS_L /
+      COMMON / DIAG_PARAMS_L /      useDiag4AdjOutp,
      &     dumpAtLast,              diagMdsDirCreate,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,

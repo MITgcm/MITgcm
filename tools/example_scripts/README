@@ -1,5 +1,10 @@
-#
-#
+Update: 
+- testing scripts were no longer maintained here and have been
+  removed (around Dec 01, 2018). 
+- updated ones can be found in:
+   http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/test_scripts/
+ and can be downloaded using CVS (http://mitgcm.org/public/using_cvs.html)
+------------------------------------------------------------------------
 
 =====  What is this?  =====
 

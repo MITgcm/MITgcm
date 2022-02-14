@@ -39,9 +39,10 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "EXF_INTERP_SIZE.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     fldName        :: field short name (to print mesg)
@@ -128,7 +129,19 @@ C-    fldPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
             CALL cal_GetMonthsRec(
      O           fac, first, changed,
-     O           count0, count1,
+     O           count0, count1, year0, year1,
+     I           myTime, myIter, myThid )
+#endif /* ALLOW_CAL */
+         ELSEIF ( useCal .AND. fldperiod .EQ. -1.) THEN
+C-    fldPeriod=-1 means fields are monthly means.
+C     With useExfYearlyFields=.TRUE., each yearly input file contains
+C     12 monthly mean records.  Otherwise, a single input file contains
+C     monthly mean records starting at the month fldStartTime falls in.
+#ifdef ALLOW_CAL
+            CALL EXF_GetMonthsRec(
+     I           fldStartTime, useExfYearlyFields,
+     O           fac, first, changed,
+     O           count0, count1, year0, year1,
      I           myTime, myIter, myThid )
 #endif /* ALLOW_CAL */
          ELSEIF ( fldPeriod .LT. 0. ) THEN
@@ -154,7 +167,7 @@ C-    get record numbers and interpolation factor for this field
      &       '  myIter, count0, count1:', myIter, count0, count1
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') 'EXF_SET_FLD: ',
+           WRITE(msgBuf,'(2A,2(L2,2X),F21.17)') 'EXF_SET_FLD: ',
      &       '  first, changed, fac:  ', first, changed, fac
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
@@ -194,21 +207,22 @@ C-    get record numbers and interpolation factor for this field
      I             count0, fld_xout, fld_yout,
      I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
      I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
+
+              IF ( exf_output_interp ) THEN
+               j = ILNBLNK(locFile0)
+               WRITE(out_file,'(2A)') locFile0(1:j), '_out'
+               IF ( count0.NE.1 )
+     &         CALL WRITE_REC_XY_RL( out_file, fld1, 1,
+     &                                         myIter, myThid )
+               CALL WRITE_REC_XY_RL( out_file, fld1, count0,
+     &                                         myIter, myThid )
+              ENDIF
+
             ELSE
 #endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( locFile0, exf_iprec, 1,
      &                             fld1, count0, myIter, myThid )
 #ifdef USE_EXF_INTERPOLATION
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-#ifdef USE_EXF_INTERPOLATION
-            IF ( exf_output_interp ) THEN
-             j = ILNBLNK(locFile0)
-             WRITE(out_file,'(2A)') locFile0(1:j), '_out'
-             IF ( count0.NE.1 )
-     &       CALL WRITE_REC_XY_RL( out_file, fld1, 1, myIter, myThid )
-             CALL WRITE_REC_XY_RL( out_file,fld1,count0,myIter,myThid )
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
@@ -253,19 +267,19 @@ C-    end if ( first ) block
      I             count1, fld_xout, fld_yout,
      I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
      I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
+
+              IF ( exf_output_interp ) THEN
+               j = ILNBLNK(locFile1)
+               WRITE(out_file,'(2A)') locFile1(1:j), '_out'
+               CALL WRITE_REC_XY_RL( out_file, fld1, count1,
+     &                                         myIter, myThid )
+              ENDIF
+
             ELSE
 #endif /* USE_EXF_INTERPOLATION */
               CALL READ_REC_3D_RL( locFile1, exf_iprec, 1,
      &                             fld1, count1, myIter, myThid )
 #ifdef USE_EXF_INTERPOLATION
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-#ifdef USE_EXF_INTERPOLATION
-            IF ( exf_output_interp ) THEN
-             j = ILNBLNK(locFile1)
-             WRITE(out_file,'(2A)') locFile1(1:j), '_out'
-             CALL WRITE_REC_XY_RL( out_file,fld1,count1,myIter,myThid )
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
@@ -277,7 +291,7 @@ C-    end if ( first or changed ) block
 
 C     Loop over tiles.
          DO bj = myByLo(myThid),myByHi(myThid)
-          DO bi = myBxLo(myThid),mybxhi(myThid)
+          DO bi = myBxLo(myThid),myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
 C     Interpolate linearly onto the  time.

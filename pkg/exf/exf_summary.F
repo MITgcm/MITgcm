@@ -43,19 +43,23 @@ C     !USES:
 C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "EXF_CONSTANTS.h"
 #include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid  :: My thread Id number
       INTEGER myThid
 
 C     !FUNCTIONS:
+#ifdef ALLOW_RUNOFTEMP
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+      INTEGER iL
+#endif
 
 C     !LOCAL VARIABLES:
-      INTEGER il
       LOGICAL prtBlkLn, addBlkLn
       CHARACTER*1 blkLin
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -102,10 +106,16 @@ C--   Print general parameters:
      &  'exf_output_interp =',
      &  ' /* output directly interpolation result */')
 #endif
+      CALL WRITE_0D_L( diags_opOceWeighted, INDEX_NONE,
+     &  'diags_opOceWeighted =',
+     &  ' /* weight flux diags by open-ocean fraction */')
       CALL WRITE_0D_I( exf_debugLev, INDEX_NONE, 'exf_debugLev =',
      &  ' /* select EXF-debug printing level */')
       CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq  =',
      &  ' /* EXF monitor frequency [ s ] */')
+      CALL WRITE_0D_I( exf_adjMonSelect, INDEX_NONE,
+     &  'exf_adjMonSelect =',
+     &  ' /* select group of exf AD-variables to monitor */')
       CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
      &  ' /* period for cycling forcing dataset [ s ] */')
       CALL WRITE_0D_RL( climtempfreeze, INDEX_NONE,'climTempFreeze=',
@@ -580,12 +590,12 @@ c      CALL EXF_FLD_SUMMARY( 'Runoff temp.',
 c    I      runoftempfile, runoffRepCycle, runoffperiod,
 c    I      runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
 c      addBlkLn = .TRUE.
-       il = ILNBLNK(runoftempfile)
+       iL = ILNBLNK(runoftempfile)
        WRITE(msgBuf,'(A)')
      & '   Runoff temp. is read from file:'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(3A)') '   >> ', runoftempfile(1:il), ' <<'
+       WRITE(msgBuf,'(3A)') '   >> ', runoftempfile(1:iL), ' <<'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        prtBlkLn = .TRUE.
@@ -869,7 +879,8 @@ CEOP
        CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      IF ( fld_period.GT.0. ) THEN
+      IF ( fld_period.GT.0. .OR.
+     &     (fld_period.EQ.-1. .AND. .NOT.useYearlyFields) ) THEN
        WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' starts at'
        WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_start_time
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

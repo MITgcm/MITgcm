@@ -66,17 +66,17 @@ C       |-- RBCS_INIT_VARIA
 C       |
 C       |-- MATRIX_INIT_VARIA
 C       |
+C       |-- STREAMICE_INIT_VARIA
+C       |
+C       |-- SHELFICE_INIT_VARIA
+C       |
+C       |-- ICEFRONT_INIT_VARIA
+C       |
 C       |-- FRAZIL_INIT_VARIA
 C       |
 C       |-- SEAICE_INIT_VARIA
 C       |
 C       |-- SALT_PLUME_INIT_VARIA
-C       |
-C       |-- SHELFICE_INIT_VARIA
-C       |
-C       |-- STREAMICE_INIT_VARIA
-C       |
-C       |-- ICEFRONT_INIT_VARIA
 C       |
 C       |-- THSICE_INI_VARS
 C       |
@@ -94,6 +94,8 @@ C       |-- LAYERS_INIT_VARIA
 C       |
 C       |-- NEST_CHILD_INIT_VARIA
 C       |-- NEST_PARENT_INIT_VARIA
+C       |
+C       |-- NEST2W_INIT_VARIA
 C       |
 C       |-- CPL_INI_VARS
 C       |
@@ -114,8 +116,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
-# include "tamc.h"
-# include "tamc_keys.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -315,6 +318,33 @@ C--   Initialise float position
       ENDIF
 #endif /* ALLOW_MATRIX */
 
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
+# endif
+       CALL STREAMICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_STREAMICE */
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
+# endif
+       CALL SHELFICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
+# endif
+       CALL ICEFRONT_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_ICEFRONT */
+
 #ifdef ALLOW_FRAZIL
       IF (useFRAZIL) THEN
 # ifdef ALLOW_DEBUG
@@ -339,33 +369,6 @@ C--   Initialize SEAICE model.
         CALL SALT_PLUME_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
-
-#ifdef ALLOW_SHELFICE
-      IF (useShelfIce) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
-# endif
-       CALL SHELFICE_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_STREAMICE
-      IF (useStreamIce) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
-# endif
-       CALL STREAMICE_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_STREAMICE */
-
-#ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
-# endif
-       CALL ICEFRONT_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
@@ -447,6 +450,16 @@ C--   Initialize NEST in PARENT configuration
       ENDIF
 #endif /* ALLOW_NEST_PARENT */
 
+#ifdef ALLOW_NEST2W_COMMON
+C--   Initialise the 2-Way Nesting packages variables
+      IF ( useNest2W_parent .OR. useNest2W_child ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('NEST2W_INIT_VARIA',myThid)
+# endif
+        CALL NEST2W_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_NEST2W_COMMON */
+
 #ifdef COMPONENT_MODULE
       IF (useCoupler) THEN
 # ifdef ALLOW_DEBUG
@@ -486,6 +499,12 @@ C--   Initialise pkg/profiles
 
 C--   Initialise pkg/ecco (and related pkgs components)
 #ifdef ALLOW_ECCO
+# ifdef ALLOW_AUTODIFF_TAMC
+#  if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+CADJ STORE uvel = tapelev_init, key = 1
+CADJ STORE vvel = tapelev_init, key = 1
+#  endif
+# endif
       IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )
 #endif
 

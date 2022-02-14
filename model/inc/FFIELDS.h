@@ -9,7 +9,7 @@ C     | FFIELDS.h
 C     | o Model forcing fields
 C     *==========================================================*
 C     | More flexible surface forcing configurations are
-C     | available via pkg/exf and pkg/seaice
+C     | available via, e.g., pkg/exf
 C     *==========================================================*
 C     \ev
 CEOP
@@ -35,11 +35,9 @@ C           NOTE: for backward compatibility EmPmRfile is specified in
 C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C
-C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
+C  saltFlux :: Net upward salt flux in g/kg.kg/m^2/s = g/m^2/s
 C              flux of Salt taken out of the ocean per time unit (second).
-C              Note: a) only used when salty sea-ice forms or melts.
-C                    b) units: when salinity (unit= psu) is expressed
-C                       in g/kg, saltFlux unit becomes g/m^2/s.
+C              Note: only used when salty sea-ice forms or melts.
 C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C
@@ -58,7 +56,7 @@ C
 C     SST   :: Sea surface temperature in degrees C for relaxation
 C              Southwest C-grid tracer point
 C
-C     SSS   :: Sea surface salinity in psu for relaxation
+C     SSS   :: Sea surface salinity in g/kg for relaxation
 C              Southwest C-grid tracer point
 C
 C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
@@ -67,10 +65,11 @@ C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
 
 C     phiTide2d :: vertically uniform (2d-map), time-dependent geopotential
 C                  anomaly (e.g., tidal forcing); Units are m^2/s^2
-C     pLoad :: for the ocean:      atmospheric pressure at z=eta
+C     pLoad :: for the ocean:      atmospheric pressure anomaly (relative to
+C                                   "surf_pRef") at z=eta
 C                Units are           Pa=N/m^2
-C              for the atmosphere: geopotential of the orography
-C                Units are           meters (converted)
+C              for the atmosphere (hack): geopotential anomaly of the orography
+C                Units are           m^2/s^2
 C     sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation
@@ -181,6 +180,9 @@ C     [0,1]         :: End points for interpolation
 #ifdef SHORTWAVE_HEATING
      &               , Qsw0, Qsw1
 #endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+     &               , geothFlux0, geothFlux1
+#endif
 #ifdef ATMOSPHERIC_LOADING
      &               , pLoad0, pLoad1
 #endif
@@ -199,13 +201,17 @@ C     [0,1]         :: End points for interpolation
       _RS  saltFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef SHORTWAVE_HEATING
+      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+      _RS  geothFlux0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  geothFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef ATMOSPHERIC_LOADING
       _RS  pLoad0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pLoad1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#ifdef SHORTWAVE_HEATING
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif /* EXCLUDE_FFIELDS_LOAD */
 
@@ -214,37 +220,45 @@ C                -> usage in gU:     gU = gU + surfaceForcingU/drF [m/s^2]
 C     surfaceForcingV     units are  r_unit.m/s^2 (=m^2/s^-2 if r=z)
 C                -> usage in gU:     gV = gV + surfaceForcingV/drF [m/s^2]
 C
-C     surfaceForcingS     units are  r_unit.psu/s (=psu.m/s if r=z)
+C     surfaceForcingS     units are  r_unit.g/kg/s (=g/kg.m/s if r=z)
 C            - EmPmR * S_surf plus salinity relaxation*drF(1)
-C                -> usage in gS:     gS = gS + surfaceForcingS/drF [psu/s]
+C                -> usage in gS:     gS = gS + surfaceForcingS/drF [g/kg/s]
 C
 C     surfaceForcingT     units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C            - Qnet (+Qsw) plus temp. relaxation*drF(1)
 C                -> calculate        -lambda*(T(model)-T(clim))
 C            Qnet assumed to be net heat flux including ShortWave rad.
 C                -> usage in gT:     gT = gT + surfaceforcingT/drF [K/s]
-C     surfaceForcingTice
-C            - equivalent Temperature flux in the top level that corresponds
-C              to the melting or freezing of sea-ice.
-C              Note that the surface level temperature is modified
-C              directly by the sea-ice model in order to maintain
-C              water temperature under sea-ice at the freezing
-C              point.  But we need to keep track of the
-C              equivalent amount of heat that this surface-level
-C              temperature change implies because it is used by
-C              the KPP package (kpp_calc.F and kpp_transport_t.F).
-C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
+C     adjustColdSST_diag :: diagnostic field for how much too cold (below
+C              Tfreezing) SST has been adjusted (with allowFreezing=T).
+C              > 0 for increase of SST (up to Tfreezing).
+C              Units are r_unit.K/s (=Kelvin.m/s if r=z).
+C        Note: 1) allowFreezing option is a crude hack to fix too cold SST that
+C              results from missing seaice component. It should never be used
+C              with any seaice component, neither current seaice pkg (pkg/seaice
+C              or pkg/thsice) nor a seaice component from atmos model when
+C              coupled to it.
+C              2) this diagnostic is currently used by KPP package (kpp_calc.F
+C              and kpp_transport_t.F) although it is not very clear it should.
 
       COMMON /SURFACE_FORCING/
      &                         surfaceForcingU,
      &                         surfaceForcingV,
      &                         surfaceForcingT,
      &                         surfaceForcingS,
-     &                         surfaceForcingTice
+     &                         adjustColdSST_diag
       _RL  surfaceForcingU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  adjustColdSST_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C     botDragU :: bottom stress (for diagnostics), Zonal component
+C                Units are N/m^2 ;   > 0 increase uVel @ bottom
+C     botDragV :: bottom stress (for diagnostics), Merid. component
+C                Units are N/m^2 ;   > 0 increase vVel @ bottom
+      COMMON /FFIELDS_bottomStress/ botDragU, botDragV
+      _RS  botDragU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  botDragV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

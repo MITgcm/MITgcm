@@ -72,7 +72,7 @@ C     stat_fName  :: List of statistics output Filename
       CHARACTER*8 fields(fdimLoc,ldimLoc)
       CHARACTER*8 stat_fields(fdimLoc,ldimLoc)
       CHARACTER*80 fileName(ldimLoc), blkFilName
-      CHARACTER*80 stat_fname(ldimLoc)
+      CHARACTER*80 stat_fName(ldimLoc)
       CHARACTER*8 fileFlags(ldimLoc)
       CHARACTER*8 blk8c, diagName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -101,13 +101,14 @@ C--   full level output:
 C--   per level statistics output:
       NAMELIST / DIAG_STATIS_PARMS /
      &     stat_freq, stat_phase, stat_region, stat_fields,
-     &     stat_fname, diagSt_mnc,
+     &     stat_fName, diagSt_mnc,
      &     set_regMask, val_regMask,
      &     diagSt_regMaskFile, nSetRegMskFile
 
       IF ( .NOT.useDiagnostics ) THEN
 C-    pkg DIAGNOSTICS is not used
         _BEGIN_MASTER(myThid)
+         useDiag4AdjOutp = .FALSE.
 C-    Track diagnostics pkg activation status:
          diag_pkgStatus = -1
 C     print a (weak) warning if data.diagnostics is found
@@ -176,7 +177,7 @@ c       missing_value(l)     = UNSET_RL
       DO l = 1,ldimLoc
         stat_freq(l)  = 0.
         stat_phase(l) = UNSET_RL
-        stat_fname(l) = blkFilName
+        stat_fName(l) = blkFilName
         DO k = 1,rdimLoc
           stat_region(k,l) = UNSET_I
         ENDDO
@@ -184,6 +185,8 @@ c       missing_value(l)     = UNSET_RL
           stat_fields(m,l) = blkName
         ENDDO
       ENDDO
+C     useDiag4AdjOutp will be to set to T if ADJ diags are found in namelist
+      useDiag4AdjOutp = .FALSE.
 C-    Track diagnostics pkg activation status:
       diag_pkgStatus = 1
 
@@ -431,7 +434,7 @@ C     for now, simpler just to read it from namelist in data.diagnostics
       ENDIF
 
       DO l = 1,ldimLoc
-       iLen = ILNBLNK(stat_fname(l))
+       iLen = ILNBLNK(stat_fName(l))
 C-     Only lists with non-empty file name (iLen>0) are considered
        IF ( iLen.GE.1 .AND. diagSt_nbLists.LT.numLists)THEN
          n = diagSt_nbLists + 1
@@ -441,7 +444,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
          ELSEIF ( stat_freq(l) .LT. 0. ) THEN
            diagSt_phase(n) = -0.5 _d 0 * stat_freq(l)
          ENDIF
-         diagSt_Fname(n)  = stat_fname(l)
+         diagSt_Fname(n)  = stat_fName(l)
          regionCount = 0
          DO k=1,rdimLoc
            j = stat_region(k,l)
@@ -452,7 +455,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
             ELSE
              WRITE(msgBuf,'(2A,I4,2A)')
      &        'DIAGNOSTICS_READPARMS:',
-     &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
+     &        ' in list l=', l, ', stat_fName: ', stat_fName(l)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT , myThid )
              WRITE(msgBuf,'(A,I4,A)')
@@ -464,7 +467,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            ELSEIF ( j.NE.UNSET_I ) THEN
              WRITE(msgBuf,'(A,I4,A,I4,2A)')
      &       'DIAGNOSTICS_READPARMS: region=',j,
-     &         ' in list l=', l, ', stat_fname: ', stat_fname(l)
+     &         ' in list l=', l, ', stat_fName: ', stat_fName(l)
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,A,I4,2A)')
      &       'DIAGNOSTICS_READPARMS: ==> exceed Max.Nb of regions',
@@ -492,7 +495,7 @@ C-       no region selected => default is Global statistics (region Id: 0)
      &        'when trying to add stat_field (m=', m, ' ): ', diagName
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
+     &        ' in list l=', l, ', stat_fName: ', stat_fName(l)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
            ENDIF
@@ -507,7 +510,7 @@ c        write(6,*) 'stat-list summary:',n,diagSt_nbFlds(n),regionCount
      &    'when trying to add stat_list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &    ' Frq=', stat_freq(l), ', stat_fname: ', stat_fname(l)
+     &    ' Frq=', stat_freq(l), ', stat_fName: ', stat_fName(l)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
        ENDIF

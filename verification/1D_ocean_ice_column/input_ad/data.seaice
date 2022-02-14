@@ -33,6 +33,8 @@
 # not set a good example
  SEAICE_snow_emiss     = 0.97001763668430343479,
  SEAICE_ice_emiss      = 0.97001763668430343479,
+# old defaults
+ SEAICEadvScheme       = 2,
  &
  &SEAICE_PARM02
   mult_ice   = 1.,

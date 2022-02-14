@@ -197,12 +197,6 @@ C--   end bi,bj loops.
       ENDDO
       ENDDO
 
-#ifdef ALLOW_OBCS_BALANCE
-      IF ( useOBCSbalance ) THEN
-        CALL OBCS_BALANCE_FLOW( futureTime, futureIter, myThid )
-      ENDIF
-#endif /* ALLOW_OBCS_BALANCE */
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
 #endif

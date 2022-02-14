@@ -105,11 +105,9 @@ C                  Input or input/output field
 C
 C     runoftemp :: Temperature of runoff in deg C
 C
-C     saltflx   :: Net upward salt flux in psu.kg/m^2/s
+C     saltflx   :: Net upward salt flux in (g/kg).kg/m^2/s = g/m^2/s
 C                  > 0 for decrease in SSS.
 C                  Typical origin: salty sea-ice formation / melting.
-C                  Units: when salinity (unit= psu) is expressed
-C                       in g/kg, saltflx unit becomes g/m^2/s.
 C
 C     swdown    :: Downward shortwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
@@ -121,13 +119,12 @@ C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 50 < lwdown < 450
 C                  Input/output field
 C
-C     apressure :: Atmospheric pressure field in N/m^2
-C                  > 0 for ????
-C                  Typical range: ???? < apressure < ????
+C     apressure :: Atmospheric surface pressure field in Pa
+C                  Typical range: 88000 < apressure < 108000
 C                  Input field
 C
 C     tidePot   :: Tidal geopotential forcing in m^2/s^2
-C                  Typical range: -10 < apressure < +10
+C                  Typical range: -10 < tidePot < +10
 C                  Input field
 
 C     NOTES:
@@ -240,10 +237,10 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-      COMMON /exf_rad_down_r/
-     &     swdown, lwdown, swdown0, swdown1, lwdown0, lwdown1
+      COMMON /exf_rad_down_r/ swdown, lwdown
       _RL swdown    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /exfl_rad_down_r/ swdown0, swdown1, lwdown0, lwdown1
       _RL swdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL swdown1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwdown0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -339,4 +336,3 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL climvstr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climvstr1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-

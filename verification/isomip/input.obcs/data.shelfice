@@ -1,0 +1,15 @@
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
+ &SHELFICE_PARM01
+ SHELFICEconserve = .TRUE.,
+ SHELFICEboundaryLayer = .TRUE.,
+ SHELFICEtopoFile='icetopo.obcs',
+ SHELFICEmassFile='iceShelf_Mass.obcs',
+ SHELFICEMAssStepping = .TRUE.,
+ SHELFICEMassDynTendFile ='iceShelf_MassTend.obcs',
+ SHELFICEadvDiffHeatFlux = .TRUE.,
+ SHELFICEuseGammaFrict = .TRUE.,
+ SHELFICEselectDragQuadr = 1,
+ SHELFICEwriteState = .TRUE.,
+ &

@@ -61,8 +61,8 @@ Note that in this case, the two definitions of :math:`\phi_s` and
 :eq:`split-phi-bo` converge toward the same (approximated) expressions:
 :math:`\phi_s = \int^{r_{surf}}_{R_o} b_o dr` and
 :math:`\phi'_{hyd}=\int^{R_o}_r b' dr`.
-On the contrary, the unapproximated formulation (“non-linear
-free-surface”, see the next section) retains the full expression:
+On the contrary, the unapproximated formulation
+(see :numref:`free_surf_effect_col_thick`) retains the full expression:
 :math:`\phi'_{hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
 obtained by selecting :varlink:`nonlinFreeSurf` =4 in parameter file ``data``.
 Regarding the surface potential:
@@ -86,6 +86,8 @@ linear coefficient :math:`b_s` is used and computed (:filelink:`INI_LINEAR_PHISU
 according to the reference surface pressure :math:`p_o`:
 :math:`b_s = b_o(R_o) = c_p \kappa (p_o / P^o_{SL})^{(\kappa - 1)} \theta_{ref}(p_o)`,
 with :math:`P^o_{SL}` the mean sea-level pressure.
+
+.. _free_surf_effect_col_thick:
 
 Free surface effect on column total thickness (Non-linear free-surface)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,9 +117,9 @@ equations remains unchanged, except for the 2D continuity equation
 
 .. math::
    \epsilon_{fs} \partial_t \eta =
-   \left. \dot{r} \right|_{r=r_{surf}} + \epsilon_{fw} (P-E) =
+   \left. \dot{r} \right|_{r=r_{surf}} + \epsilon_{fw} ({\mathcal{P-E}}) =
    - {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o+\eta} \vec{\bf v} dr
-   + \epsilon_{fw} (P-E)
+   + \epsilon_{fw} ({\mathcal{P-E}})
 
 Since :math:`\eta` has a direct effect on the horizontal velocity
 (through :math:`\nabla_h \Phi_{surf}`), this adds a non-linear term to
@@ -143,7 +145,7 @@ where
    \begin{aligned}
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
    \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o+\eta^n} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta_t (P-E)^{n}\end{aligned}
+   \: + \: \epsilon_{fw} \Delta_t ({\mathcal{P-E}})^{n}\end{aligned}
 
 This method requires us to update the solver matrix at each time step.
 
@@ -177,28 +179,26 @@ involved in the solver matrix update is negligible.
    :name: nonlinFreeSurf-flags
 
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | parameter                 | value   | description                                                                            |
+   | Parameter                 | Value   | Description                                                                            |
    +===========================+=========+========================================================================================+
-   |                           | -1      | linear free-surface, restart from a pickup file                                        |
+   | :varlink:`nonlinFreeSurf` | -1      | linear free-surface, restart from a pickup file                                        |
+   |                           |         | produced with #undef :varlink:`EXACT_CONSERV` code                                     |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           |         | produced with #undef EXACT\_CONSERV code                                               |
+   |                           | 0       | linear free-surface (= default)                                                        |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 0       | Linear free-surface                                                                    |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | :varlink:`nonlinFreeSurf` | 4       | Non-linear free-surface                                                                |
+   |                           | 4       | full non-linear free-surface                                                           |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 3       | same as 4 but neglecting :math:`\int_{R_o}^{R_o+\eta} b' dr` in :math:`\Phi'_{hyd}`    |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 2       | same as 3 but do not update cg2d solver matrix                                         |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 1       | same as 2 but treat momentum as in Linear FS                                           |
+   |                           | 1       | same as 2 but treat momentum as in linear free-surface                                 |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 0       | do not use :math:`r*` vertical coordinate (= default)                                  |
+   | :varlink:`select_rStar`   | 0       | do not use :math:`r^*` vertical coordinate (= default)                                 |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | :varlink:`select_rStar`   | 2       | use :math:`r^*` vertical coordinate                                                    |
+   |                           | 2       | use :math:`r^*` vertical coordinate                                                    |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 1       | same as 2 but without the contribution of the                                          |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           |         | slope of the coordinate in :math:`\nabla \Phi`                                         |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
 
@@ -215,23 +215,23 @@ the barotropic part (to find :math:`\eta`) and baroclinic part (to find
 :math:`w = \dot{r}`).
 
 To illustrate this, consider the shallow water model, with a source of
-fresh water (P):
+fresh water (:math:`\mathcal{P}`):
 
-.. math:: \partial_t h + \nabla \cdot h \vec{\bf v} = P
+.. math:: \partial_t h + \nabla \cdot h \vec{\bf v} = \mathcal{P}
 
 where :math:`h` is the total thickness of the water column. To conserve
 the tracer :math:`\theta` we have to discretize:
 
 .. math::
    \partial_t (h \theta) + \nabla \cdot ( h \theta \vec{\bf v})
-     = P \theta_{\mathrm{rain}}
+     = \mathcal{P} \theta_{\mathrm{rain}}
 
 Using the implicit (non-linear) free surface described above
 (:numref:`press_meth_linear`) we have:
 
 .. math::
    \begin{aligned}
-   h^{n+1} = h^{n} - \Delta t \nabla \cdot (h^n \, \vec{\bf v}^{n+1} ) + \Delta t P \\\end{aligned}
+   h^{n+1} = h^{n} - \Delta t \nabla \cdot (h^n \, \vec{\bf v}^{n+1} ) + \Delta t \mathcal{P} \\\end{aligned}
 
 The discretized form of the tracer equation must adopt the same “form”
 in the computation of tracer fluxes, that is, the same value of
@@ -241,7 +241,7 @@ in the computation of tracer fluxes, that is, the same value of
    \begin{aligned}
    h^{n+1} \, \theta^{n+1} = h^n \, \theta^n
            - \Delta t \nabla \cdot (h^n \, \theta^n \, \vec{\bf v}^{n+1})
-           + \Delta t P \theta_{rain}\end{aligned}
+           + \Delta t \mathcal{P} \theta_{rain}\end{aligned}
 
 The use of a 3 time-levels time-stepping scheme such as the
 Adams-Bashforth make the conservation sightly tricky. The current
@@ -264,11 +264,11 @@ is taken into account:
 
 .. math::
    \theta^{n+1} = \theta^n + \Delta t \frac{h^n}{h^{n+1}}
-      \left( G_\theta^{(n+1/2)} + P (\theta_{\mathrm{rain}} - \theta^n )/h^n \right)
+      \left( G_\theta^{(n+1/2)} + \mathcal{P} (\theta_{\mathrm{rain}} - \theta^n )/h^n \right)
 
 Note that with a simple forward time step (no Adams-Bashforth), these
 two formulations are equivalent, since
-:math:`(h^{n+1} - h^{n})/ \Delta t = P - \nabla \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{surf}^{n+1}`
+:math:`(h^{n+1} - h^{n})/ \Delta t = \mathcal{P} - \nabla \cdot (h^n \, \vec{\bf v}^{n+1} ) = P + \dot{r}_{surf}^{n+1}`
 
 .. _nonlin-freesurf-timestepping:
 
@@ -289,7 +289,7 @@ synchronous time-stepping case. Among the simplifications, salinity
 equation, implicit operator and detailed elliptic equation are
 omitted. Surface forcing is explicitly written as fluxes of
 temperature, fresh water and momentum,
-:math:`Q^{n+1/2}, P^{n+1/2}, F_{\bf v}^n` respectively. :math:`h^n`
+:math:`\mathcal{Q}^{n+1/2}, \mathcal{P}^{n+1/2}, \mathcal{F}_{\bf v}^n` respectively. :math:`h^n`
 and :math:`dh^n` are the column and grid box thickness in
 r-coordinate.
 
@@ -343,7 +343,7 @@ r-coordinate.
   .. math::
      \theta^{n+1} =\theta^{n} + \Delta t \frac{dh^n}{dh^{n+1}} \left(
      G_{\theta}^{(n+1/2)}
-     +( P^{n+1/2} (\theta_{\mathrm{rain}}-\theta^n) + Q^{n+1/2})/dh^n \right)
+     +( P^{n+1/2} (\theta_{\mathrm{rain}}-\theta^n) + \mathcal{Q}^{n+1/2})/dh^n \right)
      \nonumber
      :label: t-n+1-nlfs
 

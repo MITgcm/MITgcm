@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine ecco_cost_weights( mythid )
+      subroutine ecco_cost_weights( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_cost_weights
@@ -31,58 +31,76 @@ c     ==================================================================
 
 c     == global variables ==
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ecco_cost.h"
+#ifdef ECCO_CTRL_DEPRECATED
+# include "ecco_cost.h"
+# ifdef ALLOW_CTRL
+#  include "ctrl.h"
+# endif
+#else
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+# include "ecco_local_params.h"
+#endif /* ECCO_CTRL_DEPRECATED */
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
 # include "CTRL_OBCS.h"
-#endif
 #endif
 
 c     == routine arguments ==
 
-      integer  mythid
+      integer  myThid
 
 c     == local variables ==
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
+      integer k
+      integer gwUnit
+      integer ilo,ihi
+      integer iobcs
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer gwUnit
       integer irec,nnz
-      integer ilo,ihi
-      integer iobcs
       integer num_var
+#endif
 
-      _RL factor
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
+      _RL ratio
       _RL wti(nr)
       _RL wsi(nr)
       _RL wui(nr)
       _RL wvi(nr)
+      _RL dummy
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
+      _RL factor
       _RL whflux0m
       _RL wsflux0m
       _RL wtau0m
-      _RL ratio
-      _RL dummy
       _RS dummyRS
-      _RL wsshv4tmp ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wsshv4tmp ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
 
       logical lwtheta2InUse
       logical lwsalt2InUse
       logical lwthetaLevInUse
       logical lwsaltLevInUse
+#endif
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
       logical  exst
+#endif
 
 c     == external ==
 
@@ -93,32 +111,38 @@ c     == external ==
 
 c     == end of interface ==
 
+#ifdef ECCO_CTRL_DEPRECATED
       lwtheta2InUse   = .false.
       lwsalt2InUse    = .false.
       lwthetaLevInUse = .false.
       lwsaltLevInUse  = .false.
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
 c--   Initialize background weights
       whflux0m = whflux0
       wsflux0m = wsflux0
       wtau0m   = wtau0
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c--   Initialize variance (weight) fields.
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
       do k = 1,nr
          wti(k) = 0. _d 0
          wsi(k) = 0. _d 0
          wui(k) = 0. _d 0
          wvi(k) = 0. _d 0
       enddo
+#endif
+#ifdef ECCO_CTRL_DEPRECATED
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
@@ -208,6 +232,7 @@ cph)
           enddo
         enddo
       enddo
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
@@ -237,6 +262,7 @@ cph)
 
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 
+#ifdef ECCO_CTRL_DEPRECATED
 c--   Build area weighting matrix used in the cost function
 c--   contributions.
 
@@ -244,8 +270,8 @@ c--   Define frame.
       do j = jmin,jmax
         do i = imin,imax
 c--       North/South and West/East edges set to zero.
-cph          if ( (j .lt. 1) .or. (j .gt. sny) .or.
-cph     &         (i .lt. 1) .or. (i .gt. snx)      ) then
+cph          if ( (j .lt. 1) .or. (j .gt. sNy) .or.
+cph     &         (i .lt. 1) .or. (i .gt. sNx)      ) then
 cph            frame(i,j) = 0. _d 0
 cph          else
             frame(i,j) = 1. _d 0
@@ -271,7 +297,10 @@ cds     &                            frame(i,j)
           enddo
         enddo
       enddo
+#endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS)) \
+      || (defined ECCO_CTRL_DEPRECATED)
 c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
       ilo = ifnblnk(data_errfile)
@@ -287,7 +316,7 @@ c--   Read error information and set up weight matrices.
 
         read(gwUnit,*) ratio
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
-     &       , wbaro
+     &       , dummy
 #endif
         do k = 1,nr
           read(gwUnit,*) wti(k), wsi(k)
@@ -305,15 +334,16 @@ c--   Read error information and set up weight matrices.
       _END_MASTER(myThid)
 
       _BARRIER
+#endif
 
+#ifdef ECCO_CTRL_DEPRECATED
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-
 c indices are inconsistent with ecco_cost.h declaration
 c          wsfluxmm(bi,bj) = 1.
 c          whfluxmm(bi,bj) = 1.
@@ -337,46 +367,85 @@ c--
               wsalt(k,bi,bj) = 0.0 _d 0
             endif
           enddo
-
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-          do k = 1,nr
-#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
-            wobcsn(k,1) = wti(k)
-            wobcsn(k,2) = wsi(k)
-            wobcsn(k,3) = wvi(k)
-            wobcsn(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-            wobcss(k,1) = wti(k)
-            wobcss(k,2) = wsi(k)
-            wobcss(k,3) = wvi(k)
-            wobcss(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-            wobcsw(k,1) = wti(k)
-            wobcsw(k,2) = wsi(k)
-            wobcsw(k,3) = wvi(k)
-            wobcsw(k,4) = wvi(k)
-#endif
-#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
-            wobcse(k,1) = wti(k)
-            wobcse(k,2) = wsi(k)
-            wobcse(k,3) = wvi(k)
-            wobcse(k,4) = wvi(k)
-#endif
-          enddo
-#endif /* ALLOW_CTRL and OBCS */
-
         enddo
       enddo
+#endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      do k = 1,nr
+# ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+       wobcsn(k,1) = wti(k)
+       wobcsn(k,2) = wsi(k)
+       wobcsn(k,3) = wvi(k)
+       wobcsn(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+       wobcss(k,1) = wti(k)
+       wobcss(k,2) = wsi(k)
+       wobcss(k,3) = wvi(k)
+       wobcss(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+       wobcsw(k,1) = wti(k)
+       wobcsw(k,2) = wsi(k)
+       wobcsw(k,3) = wvi(k)
+       wobcsw(k,4) = wvi(k)
+# endif
+# ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+       wobcse(k,1) = wti(k)
+       wobcse(k,2) = wsi(k)
+       wobcse(k,3) = wvi(k)
+       wobcse(k,4) = wvi(k)
+# endif
+      enddo
+# ifdef ALLOW_OBCS_COST_CONTRIBUTION
+      do iobcs = 1,nobcs
+       do k = 1,nr
+#  ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+        if (wobcsn(k,iobcs) .ne. 0.) then
+         wobcsn(k,iobcs) =
+     &        ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
+        else
+         wobcsn(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+        if (wobcss(k,iobcs) .ne. 0.) then
+         wobcss(k,iobcs) =
+     &        ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
+        else
+         wobcss(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+        if (wobcsw(k,iobcs) .ne. 0.) then
+         wobcsw(k,iobcs) =
+     &        ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
+        else
+         wobcsw(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+#  ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+        if (wobcse(k,iobcs) .ne. 0.) then
+         wobcse(k,iobcs) =
+     &        ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
+        else
+         wobcse(k,iobcs) = 0.0 _d 0
+        endif
+#  endif
+       enddo
+      enddo
+# endif /* ALLOW_OBCS_COST_CONTRIBUTION */
+#endif /* ALLOW_CTRL and ALLOW_OBCS */
+
+#ifdef ECCO_CTRL_DEPRECATED
 #if (defined (ALLOW_SALT0_COST_CONTRIBUTION) || \
       defined (ALLOW_SALT0_CONTROL) || \
       defined (ALLOW_WSALTLEV))
       lwsaltLevInUse = .true.
       if ( salt0errfile .NE. ' ' ) then
-         call mdsreadfield( salt0errfile, cost_iprec, cost_yftype, Nr,
-     &         wsaltLev, 1, mythid)
+       CALL READ_REC_3D_RL( salt0errfile, cost_iprec, Nr,
+     &                      wsaltLev, 1, 1, myThid )
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -409,7 +478,7 @@ c--           Test for missing values.
          enddo
       endif
       call active_write_xyz( 'wsaltLev', wsaltLev,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       _EXCH_XYZ_RL( wsaltLev, myThid )
 #endif
 
@@ -418,8 +487,8 @@ c--           Test for missing values.
      defined (ALLOW_WTHETALEV))
       lwthetaLevInUse = .true.
       if ( temp0errfile .NE. ' ' ) then
-         call mdsreadfield( temp0errfile, cost_iprec, cost_yftype, Nr,
-     &         wthetaLev, 1, mythid)
+       CALL READ_REC_3D_RL( temp0errfile, cost_iprec, Nr,
+     &                      wthetaLev, 1, 1, myThid )
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -452,7 +521,7 @@ c--           Test for missing values.
          enddo
       endif
       call active_write_xyz( 'wthetaLev', wthetaLev,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       _EXCH_XYZ_RL( wthetaLev, myThid )
 #endif
 
@@ -463,8 +532,8 @@ c--           Test for missing values.
 
       lwsalt2InUse = .true.
       if ( salterrfile .NE. ' ' ) then
-         call mdsreadfield( salterrfile, cost_iprec, cost_yftype, Nr,
-     &                      wsalt2, 1, mythid)
+       CALL READ_REC_3D_RL( salterrfile, cost_iprec, Nr,
+     &                      wsalt2, 1, 1, myThid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -511,8 +580,8 @@ c--           Test for missing values.
 
       lwtheta2InUse = .true.
       if ( temperrfile .NE. ' ' ) then
-         call mdsreadfield( temperrfile, cost_iprec, cost_yftype, Nr,
-     &                      wtheta2, 1, mythid)
+       CALL READ_REC_3D_RL( temperrfile, cost_iprec, Nr,
+     &                      wtheta2, 1, 1, myThid )
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -554,13 +623,13 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
       if ( ( using_cost_sst ).AND.( ssterrfile .NE. ' ' ) )
-     &   call mdsreadfield( ssterrfile, cost_iprec, cost_yftype, 1,
-     &                      wsst, 1, mythid)
+     & CALL READ_REC_3D_RL( ssterrfile, cost_iprec, 1,
+     &                      wsst, 1, 1, myThid )
 #endif
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
       if ( ssserrfile .NE. ' ' )
-     &   call mdsreadfield( ssserrfile, cost_iprec, cost_yftype, 1,
-     &                      wsss, 1, mythid)
+     & CALL READ_REC_3D_RL( ssserrfile, cost_iprec, 1,
+     &                      wsss, 1, 1, myThid )
 #endif
 
       k = 1
@@ -618,10 +687,10 @@ cgf use general hydrography weights
      defined (ALLOW_DAILYSST_COST_CONTRIBUTION) || \
      defined (ALLOW_SST_CONTROL))
       IF (using_cost_sst)
-     &    call active_write_xy_loc( 'wsst', wsst, 1, 0, mythid, dummy)
+     &    call active_write_xy_loc( 'wsst', wsst, 1, 0, myThid, dummy)
 #endif
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
-      call active_write_xy_loc( 'wsss', wsss, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wsss', wsss, 1, 0, myThid, dummy)
 #endif
 
       IF (using_cost_altim) THEN
@@ -633,8 +702,8 @@ c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
       irec  =  1
       if ( geoid_errfile .NE. ' ' ) then
-      call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype,
-     &    nnz, wp, irec, mythid )
+      CALL READ_REC_3D_RL( geoid_errfile, cost_iprec, nnz,
+     &                     wp, irec, 1, myThid )
 c--   Set all tile edges to zero.
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -665,15 +734,15 @@ cph-indonesian)
         enddo
       enddo
 #endif
-#endif
+#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
 c--   Read SSH anomaly rms field. Data in units of centimeters.
       nnz   =   1
       irec  =   1
       if ( ssh_errfile .NE. ' ' ) then
-         call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype,
-     &      nnz, wtp, irec, mythid )
+        CALL READ_REC_3D_RL( ssh_errfile, cost_iprec, nnz,
+     &                       wtp, irec, 1, myThid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -701,18 +770,18 @@ c--           T/P error + 5cm
 
 c-- overwrite T/P error field, if available:
       if ( tp_errfile .NE. ' ' )
-     &     call mdsreadfield( tp_errfile, cost_iprec, cost_yftype, nnz,
-     &     wtp, irec, mythid )
+     &  CALL READ_REC_3D_RL( tp_errfile, cost_iprec, nnz,
+     &                       wtp, irec, 1, myThid )
 
 c-- overwrite ERS error field, if available:
       if ( ers_errfile .NE. ' ' )
-     &     call mdsreadfield( ers_errfile, cost_iprec, cost_yftype, nnz,
-     &     wers, irec, mythid )
+     &  CALL READ_REC_3D_RL( ers_errfile, cost_iprec, nnz,
+     &                       wers, irec, 1, myThid )
 
 c-- overwrite GFO error field, if available:
       if ( gfo_errfile .NE. ' ' )
-     &     call mdsreadfield( gfo_errfile, cost_iprec, cost_yftype, nnz,
-     &     wgfo, irec, mythid )
+     &  CALL READ_REC_3D_RL( gfo_errfile, cost_iprec, nnz,
+     &                       wgfo, irec, 1, myThid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -778,8 +847,8 @@ cph-indonesian)
 
       if ( sshv4cost_errfile(num_var) .NE. ' ' ) then
 c--   read error standard deviation
-      call mdsreadfield( sshv4cost_errfile(num_var),
-     &    cost_iprec, cost_yftype, 1, wsshv4tmp, 1, mythid)
+      CALL READ_REC_3D_RL( sshv4cost_errfile(num_var), cost_iprec, 1,
+     &                     wsshv4tmp, 1, 1, myThid )
 c--   convert to units of meters
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -818,7 +887,7 @@ c--   convert to units of meters
       enddo
 
       call active_write_xy_loc( 'wsshv4', wsshv4tmp,
-     &   num_var, 0, mythid, dummy)
+     &   num_var, 0, myThid, dummy)
 
       enddo
 
@@ -828,8 +897,8 @@ c--   convert to units of meters
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       IF (using_cost_bp) THEN
       if ( bperrfile .NE. ' ' )
-     &   call mdsreadfield( bperrfile, cost_iprec, cost_yftype, 1,
-     &                      wbp, 1, mythid)
+     &   CALL READ_REC_3D_RL( bperrfile, cost_iprec, 1,
+     &                        wbp, 1, 1, myThid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -843,14 +912,14 @@ c--   convert to units of meters
         enddo
       enddo
 
-      call active_write_xy_loc( 'wbp', wbp, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wbp', wbp, 1, 0, myThid, dummy)
       ENDIF ! IF (using_cost_bp) THEN
 #endif
 
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
       if ( ieserrfile .NE. ' ' )
-     &   call mdsreadfield( ieserrfile, cost_iprec, cost_yftype, 1,
-     &                      wies, 1, mythid)
+     &   CALL READ_REC_3D_RL( ieserrfile, cost_iprec, 1,
+     &                        wies, 1, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -864,7 +933,7 @@ c--   convert to units of meters
         enddo
       enddo
 
-      call active_write_xy_loc( 'wies', wies, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wies', wies, 1, 0, myThid, dummy)
 #endif
 
 c--   Read zonal wind stress variance.
@@ -875,11 +944,11 @@ c--   Read zonal wind stress variance.
       nnz   =   1
       irec  =   1
       if ( scatx_errfile .NE. ' ' )
-     &call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
-     &                   wscatx, irec, mythid )
+     &  CALL READ_REC_3D_RL( scatx_errfile, cost_iprec, nnz,
+     &                       wscatx, irec, 1, myThid )
       if ( scaty_errfile .NE. ' ' )
-     &call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz,
-     &                   wscaty, irec, mythid )
+     &  CALL READ_REC_3D_RL( scaty_errfile,cost_iprec, nnz,
+     &                       wscaty, irec, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -914,9 +983,9 @@ c--   Read zonal wind stress variance.
       nnz   =   1
       irec  =   1
 cph      call mdsreadfield( tauum_errfile, cost_iprec, cost_yftype,
-cph     &                   nnz, wtauum, irec, mythid )
+cph     &                   nnz, wtauum, irec, myThid )
 cph      call mdsreadfield( tauvm_errfile, cost_iprec, cost_yftype,
-cph     &                   nnz, wtauvm, irec, mythid )
+cph     &                   nnz, wtauvm, irec, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -948,8 +1017,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( tauu_errfile .NE. ' ' ) then
-         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype,
-     &      nnz, wtauu, irec, mythid )
+       CALL READ_REC_3D_RL( tauu_errfile, cost_iprec, nnz,
+     &                      wtauu, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -986,8 +1055,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( uwind_errfile .NE. ' ' ) then
-         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype,
-     &      nnz, wuwind, irec, mythid )
+       CALL READ_REC_3D_RL( uwind_errfile, cost_iprec, nnz,
+     &                      wuwind, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1018,8 +1087,8 @@ ce(   due to Patrick processing:
 ce)
 
       if ( tauv_errfile .NE. ' ' ) then
-         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz,
-     &        wtauv, irec, mythid )
+       CALL READ_REC_3D_RL( tauv_errfile, cost_iprec, nnz,
+     &                      wtauv, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1056,8 +1125,8 @@ ce(   due to Patrick processing:
 ce)
 
       if ( vwind_errfile .NE. ' ' ) then
-         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype,
-     &      nnz, wvwind, irec, mythid )
+       CALL READ_REC_3D_RL( vwind_errfile, cost_iprec, nnz,
+     &                      wvwind, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1088,8 +1157,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( hflux_errfile .NE. ' ' ) then
-         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype,
-     &      nnz, whflux, irec, mythid )
+       CALL READ_REC_3D_RL( hflux_errfile, cost_iprec, nnz,
+     &                      whflux, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1123,8 +1192,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( atemp_errfile .NE. ' ' ) then
-         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype,
-     &      nnz, watemp, irec, mythid )
+       CALL READ_REC_3D_RL( atemp_errfile, cost_iprec, nnz,
+     &                      watemp, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1156,8 +1225,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( sflux_errfile .NE. ' ' ) then
-         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype,
-     &      nnz, wsflux, irec, mythid )
+       CALL READ_REC_3D_RL( sflux_errfile, cost_iprec, nnz,
+     &                      wsflux, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1191,8 +1260,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( aqh_errfile .NE. ' ' ) then
-         call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz,
-     &        waqh, irec, mythid )
+       CALL READ_REC_3D_RL( aqh_errfile, cost_iprec, nnz,
+     &                      waqh, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1223,8 +1292,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( precip_errfile .NE. ' ' ) then
-        call mdsreadfield( precip_errfile, cost_iprec, cost_yftype,
-     &      nnz, wprecip, irec, mythid )
+       CALL READ_REC_3D_RL( precip_errfile, cost_iprec, nnz,
+     &                      wprecip, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1255,8 +1324,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swflux_errfile .NE. ' ' ) then
-        call mdsreadfield( swflux_errfile, cost_iprec, cost_yftype,
-     &      nnz, wswflux, irec, mythid )
+       CALL READ_REC_3D_RL( swflux_errfile, cost_iprec, nnz,
+     &                      wswflux, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1287,8 +1356,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swdown_errfile .NE. ' ' ) then
-        call mdsreadfield( swdown_errfile, cost_iprec, cost_yftype,
-     &      nnz, wswdown, irec, mythid )
+       CALL READ_REC_3D_RL( swdown_errfile, cost_iprec, nnz,
+     &                      wswdown, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1319,8 +1388,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwflux_errfile .NE. ' ' ) then
-        call mdsreadfield( lwflux_errfile, cost_iprec, cost_yftype,
-     &      nnz, wlwflux, irec, mythid )
+        CALL READ_REC_3D_RL( lwflux_errfile, cost_iprec, nnz,
+     &                       wlwflux, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1351,8 +1420,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwdown_errfile .NE. ' ' ) then
-        call mdsreadfield( lwdown_errfile, cost_iprec, cost_yftype,
-     &      nnz, wlwdown, irec, mythid )
+        CALL READ_REC_3D_RL( lwdown_errfile, cost_iprec, nnz,
+     &                       wlwdown ,irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1383,8 +1452,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( snowprecip_errfile .NE. ' ' ) then
-        call mdsreadfield( snowprecip_errfile, cost_iprec, cost_yftype,
-     &      nnz, wsnowprecip, irec, mythid )
+        CALL READ_REC_3D_RL( snowprecip_errfile, cost_iprec, nnz,
+     &                       wsnowprecip, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1416,8 +1485,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( evap_errfile .NE. ' ' ) then
-        call mdsreadfield( evap_errfile, cost_iprec, cost_yftype,
-     &      nnz, wevap, irec, mythid )
+        CALL READ_REC_3D_RL( evap_errfile, cost_iprec, nnz,
+     &                       wevap, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1448,8 +1517,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( apressure_errfile .NE. ' ' ) then
-        call mdsreadfield( apressure_errfile, cost_iprec, cost_yftype,
-     &      nnz, wapressure, irec, mythid )
+        CALL READ_REC_3D_RL( apressure_errfile, cost_iprec, nnz,
+     &                       wapressure, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1481,8 +1550,8 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( runoff_errfile .NE. ' ' ) then
-        call mdsreadfield( runoff_errfile, cost_iprec, cost_yftype,
-     &      nnz, wrunoff, irec, mythid )
+        CALL READ_REC_3D_RL( runoff_errfile, cost_iprec, nnz,
+     &                       wrunoff, irec, 1, myThid )
       endif
 
       do bj = jtlo,jthi
@@ -1506,8 +1575,8 @@ c--           Data are in units of m/s.
 #if (defined (ALLOW_BOTTOMDRAG_COST_CONTRIBUTION) || defined (ALLOW_BOTTOMDRAG_CONTROL))
       if ( bottomdrag_errfile .NE. ' ' ) then
 
-        call mdsreadfield( bottomdrag_errfile, cost_iprec, cost_yftype,
-     &      nnz, wbottomdrag, irec, mythid )
+        CALL READ_REC_3D_RL( bottomdrag_errfile, cost_iprec, nnz,
+     &                       wbottomdrag, irec, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1528,8 +1597,8 @@ c--           Test for missing values.
 #if (defined (ALLOW_DIFFKR_COST_CONTRIBUTION) || defined (ALLOW_DIFFKR_CONTROL))
       if ( diffkr_errfile .NE. ' ' ) then
 
-        call mdsreadfield( diffkr_errfile, cost_iprec, cost_yftype,
-     &      Nr, wdiffkr2, 1, mythid )
+        CALL READ_REC_3D_RL( diffkr_errfile, cost_iprec, Nr,
+     &                       wdiffkr2, 1, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1552,8 +1621,8 @@ c--           Test for missing values.
 #if (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
       if ( kapgm_errfile .NE. ' ' ) then
 
-        call mdsreadfield( kapgm_errfile, cost_iprec, cost_yftype,
-     &      Nr, wkapgm2, 1, mythid )
+        CALL READ_REC_3D_RL( kapgm_errfile, cost_iprec, Nr,
+     &                       wkapgm2, 1, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1576,8 +1645,8 @@ c--           Test for missing values.
 #if (defined (ALLOW_KAPREDI_COST_CONTRIBUTION) || defined (ALLOW_KAPREDI_CONTROL))
       if ( kapredi_errfile .NE. ' ' ) then
 
-        call mdsreadfield( kapredi_errfile, cost_iprec, cost_yftype,
-     &      Nr, wkapredi2, 1, mythid )
+        CALL READ_REC_3D_RL( kapredi_errfile, cost_iprec, Nr,
+     &                       wkapredi2, 1, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1600,8 +1669,8 @@ c--           Test for missing values.
 #if ( defined (ALLOW_EDDYPSI_COST_CONTRIBUTION) || defined (ALLOW_EDDYPSI_CONTROL) )
       if ( edtau_errfile .NE. ' ' ) then
 
-        call mdsreadfield( edtau_errfile, cost_iprec, cost_yftype,
-     &      Nr, wedtaux2, 1, mythid )
+        CALL READ_REC_3D_RL( edtau_errfile, cost_iprec, Nr,
+     &                       wedtaux2, 1 ,1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1624,8 +1693,8 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_ETAN0_COST_CONTRIBUTION) || defined (ALLOW_ETAN0_CONTROL))
       if ( etan0errfile .NE. ' ' ) then
-         call mdsreadfield( etan0errfile, cost_iprec, cost_yftype, 1,
-     &         wetan, 1, mythid)
+         CALL READ_REC_3D_RL( etan0errfile, cost_iprec, 1,
+     &                        wetan, 1, 1, myThid )
          do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -1654,7 +1723,7 @@ c--           Test for missing values.
 !         enddo
       endif
       call active_write_xy( 'wetan', wetan,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       _EXCH_XY_RL( wetan, myThid )
 #endif
 
@@ -1662,10 +1731,10 @@ c--           Test for missing values.
 #if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
 
       if ( uvel0errfile .NE. ' ' .AND. vvel0errfile .NE. ' ' ) then
-         call mdsreadfield( uvel0errfile, cost_iprec, cost_yftype, Nr,
-     &         wuvel3d, 1, mythid)
-         call mdsreadfield( vvel0errfile, cost_iprec, cost_yftype, Nr,
-     &         wvvel3d, 1, mythid)
+         CALL READ_REC_3D_RL( uvel0errfile, cost_iprec, Nr,
+     &                        wuvel3d, 1, 1, myThid )
+         CALL READ_REC_3D_RL( vvel0errfile, cost_iprec, Nr,
+     &                        wvvel3d, 1, 1, myThid )
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -1691,9 +1760,9 @@ c--           Test for missing values.
          enddo
       endif
       call active_write_xyz( 'wuvel', wuvel3d,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       call active_write_xyz( 'wvvel', wvvel3d,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       _EXCH_XYZ_RL( wuvel3d, myThid )
       _EXCH_XYZ_RL( wvvel3d, myThid )
 #endif
@@ -1894,47 +1963,6 @@ cph)
             enddo
           enddo
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-#ifdef ALLOW_OBCS_COST_CONTRIBUTION
-          do iobcs = 1,nobcs
-            do k = 1,nr
-#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
-              if (wobcsn(k,iobcs) .ne. 0.) then
-                 wobcsn(k,iobcs) =
-     &                ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
-              else
-                 wobcsn(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
-              if (wobcss(k,iobcs) .ne. 0.) then
-                 wobcss(k,iobcs) =
-     &                ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
-              else
-                 wobcss(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-              if (wobcsw(k,iobcs) .ne. 0.) then
-                 wobcsw(k,iobcs) =
-     &                ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
-              else
-                 wobcsw(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
-              if (wobcse(k,iobcs) .ne. 0.) then
-                 wobcse(k,iobcs) =
-     &                ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
-              else
-                 wobcse(k,iobcs) = 0.0 _d 0
-              endif
-#endif
-            enddo
-          enddo
-#endif /* ALLOW_OBCS_COST_CONTRIBUTION */
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
-
         enddo
       enddo
 
@@ -2019,118 +2047,117 @@ c
 c#ifdef REAL4_IS_SLOW
 C     leave this commented out (in case of problems with ACTIVE_WRITE_GEN_RS)
 c     call active_write_xyz_loc( 'maskCtrlC', maskC,
-c    &     1, 0, mythid, dummy)
+c    &     1, 0, myThid, dummy)
 c     call active_write_xyz_loc( 'maskCtrlW', maskW,
-c    &     1, 0, mythid, dummy)
+c    &     1, 0, myThid, dummy)
 c     call active_write_xyz_loc( 'maskCtrlS', maskS,
-c    &     1, 0, mythid, dummy)
+c    &     1, 0, myThid, dummy)
 c#else
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlC', maskC, 'XY', Nr,
-     I                          1, .TRUE., 0, mythid, dummyRS )
+     I                          1, .TRUE., 0, myThid, dummyRS )
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlW', maskW, 'XY', Nr,
-     I                          1, .TRUE., 0, mythid, dummyRS )
+     I                          1, .TRUE., 0, myThid, dummyRS )
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
-     I                          1, .TRUE., 0, mythid, dummyRS )
+     I                          1, .TRUE., 0, myThid, dummyRS )
 c#endif
 
 #if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
-      call active_write_xy_loc( 'whflux', whflux, 1, 0, mythid, dummy)
-      call active_write_xy_loc( 'whflux2', whflux2, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'whflux', whflux, 1, 0, myThid, dummy)
+      call active_write_xy_loc( 'whflux2', whflux2, 1, 0, myThid, dummy)
 #elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) || defined (ALLOW_ATEMP_CONTROL))
-      call active_write_xy_loc( 'watemp', watemp, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'watemp', watemp, 1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SFLUX_CONTROL))
-      call active_write_xy_loc( 'wsflux', wsflux, 1, 0, mythid, dummy)
-      call active_write_xy_loc( 'wsflux2', wsflux2, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wsflux', wsflux, 1, 0, myThid, dummy)
+      call active_write_xy_loc( 'wsflux2', wsflux2, 1, 0, myThid, dummy)
 #elif (defined (ALLOW_AQH_COST_CONTRIBUTION) || defined (ALLOW_AQH_CONTROL))
-      call active_write_xy_loc( 'waqh', waqh, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'waqh', waqh, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_PRECIP_COST_CONTRIBUTION) || defined (ALLOW_PRECIP_CONTROL))
-      call active_write_xy_loc( 'wprecip', wprecip, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wprecip', wprecip, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_SWFLUX_COST_CONTRIBUTION) || defined (ALLOW_SWFLUX_CONTROL))
-      call active_write_xy_loc( 'wswflux', wswflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wswflux', wswflux, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_SWDOWN_COST_CONTRIBUTION) || defined (ALLOW_SWDOWN_CONTROL))
-      call active_write_xy_loc( 'wswdown', wswdown, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wswdown', wswdown, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_LWFLUX_COST_CONTRIBUTION) || defined (ALLOW_LWFLUX_CONTROL))
-      call active_write_xy_loc( 'wlwflux', wlwflux, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wlwflux', wlwflux, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_LWDOWN_COST_CONTRIBUTION) || defined (ALLOW_LWDOWN_CONTROL))
-      call active_write_xy_loc( 'wlwdown', wlwdown, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wlwdown', wlwdown, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_EVAP_COST_CONTRIBUTION) || defined (ALLOW_EVAP_CONTROL))
-      call active_write_xy_loc( 'wevap', wevap, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wevap', wevap, 1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_SNOWPRECIP_COST_CONTRIBUTION) || defined (ALLOW_SNOWPRECIP_CONTROL))
       call active_write_xy_loc( 'wsnowprecip', wsnowprecip,
-     &    1, 0, mythid, dummy)
+     &    1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_APRESSURE_COST_CONTRIBUTION) || defined (ALLOW_APRESSURE_CONTROL))
       call active_write_xy_loc( 'wapressure', wapressure,
-     &    1, 0, mythid, dummy)
+     &    1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_RUNOFF_COST_CONTRIBUTION) || defined (ALLOW_RUNOFF_CONTROL))
-      call active_write_xy_loc( 'wrunoff', wrunoff, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wrunoff', wrunoff, 1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
-      call active_write_xy_loc( 'wtauu', wtauu,   1, 0, mythid, dummy)
-      call active_write_xy_loc( 'wtauu2', wtauu2,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauu', wtauu,   1, 0, myThid, dummy)
+      call active_write_xy_loc( 'wtauu2', wtauu2,   1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
-      call active_write_xy_loc( 'wuwind', wuwind, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wuwind', wuwind, 1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION) || defined (ALLOW_VSTRESS_CONTROL))
-      call active_write_xy_loc( 'wtauv', wtauv,   1, 0, mythid, dummy)
-      call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wtauv', wtauv,   1, 0, myThid, dummy)
+      call active_write_xy_loc( 'wtauv2', wtauv2,   1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_VWIND_COST_CONTRIBUTION) || defined (ALLOW_VWIND_CONTROL))
-      call active_write_xy_loc( 'wvwind', wvwind, 1, 0, mythid, dummy)
+      call active_write_xy_loc( 'wvwind', wvwind, 1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
       call active_write_xyz( 'wkapgmFld',wkapgmFld,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_KAPREDI_COST_CONTRIBUTION) || defined (ALLOW_KAPREDI_CONTROL))
       call active_write_xyz( 'wkaprediFld',wkaprediFld,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
 #endif
 
 #if   (defined (ALLOW_DIFFKR_COST_CONTRIBUTION) || defined (ALLOW_DIFFKR_CONTROL))
       call active_write_xyz( 'wdiffkrFld',wdiffkrFld,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
 #endif
 
 #if   ( defined (ALLOW_EDDYPSI_COST_CONTRIBUTION) || defined (ALLOW_EDDYPSI_CONTROL) )
       call active_write_xyz( 'wedtauxFld',wedtauxFld,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
       call active_write_xyz( 'wedtauyFld',wedtauyFld,
-     &     1, 0, mythid, dummy)
+     &     1, 0, myThid, dummy)
 #endif
 
 #if (defined (ALLOW_BOTTOMDRAG_COST_CONTRIBUTION) || defined (ALLOW_BOTTOMDRAG_CONTROL))
       call active_write_xy_loc( 'wbottomdrag', wbottomdrag
-     & , 1, 0, mythid, dummy)
+     & , 1, 0, myThid, dummy)
 #endif
-
-#endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
+#endif /* ECCO_CTRL_DEPRECATED */
 
       RETURN
       END

@@ -20,6 +20,11 @@ Usage: "$0" [OPTIONS]
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
+    -oadsingularity NAME | --oadsingularity NAME | -oadsngl NAME | --oadsngl NAME
+      -oadsingularity=NAME | --oadsingularity=NAME | -oadsngl=NAME | --oadsngl=NAME
+	  Here, "NAME" specifies the singularity file
+	  that contains the OpenAD execulable.
+
     -nocat4ad | -dog4ad | -ncad | -dad
 	  do not concatenate (cat) source code sent to TAF
 	  resulting in compilation of multiple files
@@ -165,11 +170,12 @@ Usage: "$0" [OPTIONS]
 
   which, depending upon your shell, may need to be single-quoted.
 
-  For more detailed genmake documentation, please see:
-
-    http://mitgcm.org/public/devel_HOWTO/
+  For more detailed genmake documentation, please see section "Building the model"
+    (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
+#- full link directly to section 3.5:
+#https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#building-the-model
 
     exit 1
 }
@@ -600,11 +606,91 @@ Error: No options file was found in:  $ROOTDIR/tools/build_options/
     1) the command line (eg. "-optfile=path/to/OPTFILE"), or
     2) the MITGCM_OF environment variable.
 
-  If you need help, please contact the developers at <MITgcm-support@mitgcm.org>.
+  If you need help, please contact the <MITgcm-support@mitgcm.org> list.
 
 EOF
 	exit 1
     fi
+}
+
+#  Just try to use FC, report failed attempt as a Warning
+check_fortran_compiler() {
+    echo -n "  check Fortran Compiler... "
+    echo "" >> $LOGFILE
+    echo "running: check_fortran_compiler" >> $LOGFILE
+    FC_CHECK=-1
+    rm -f ./genmake_tcomp.f
+    cat >> genmake_tcomp.f <<EOF
+      program hello
+      integer i
+      do i=1,3
+        print *, 'hello world : ', i
+      enddo
+      end
+EOF
+    COMM="$FC $FFLAGS $FOPTIM -c genmake_tcomp.f"
+    echo ' '$COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	FC_CHECK=0
+	echo "" >> $LOGFILE
+	echo " Warning: FORTRAN compiler test fails to compile" >> $LOGFILE
+	echo -n " fail to compile"
+    fi
+    if test $FC_CHECK = '-1' ; then
+	COMM="$LINK $FFLAGS $FOPTIM -o genmake_tcomp genmake_tcomp.o $LIBS"
+	echo ' '$COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
+	RETVAL=$?
+    else RETVAL=0 ; fi
+    if test "x$RETVAL" != x0 ; then
+	FC_CHECK=1
+	echo "" >> $LOGFILE
+	echo " Warning: FORTRAN compiler test fails to link" >> $LOGFILE
+	echo -n " fail to generate executable"
+    fi
+    if test $FC_CHECK = '-1' -a -x genmake_tcomp ; then
+	if test "x$MPI" = 'xtrue' ; then
+	  which mpirun > /dev/null 2>&1
+	  RETVAL=$?
+	  if test "x${RETVAL}" = x0 ; then
+	    COMM="mpirun -np 1 ./genmake_tcomp"
+	  else
+	    which mpiexec > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x${RETVAL}" = x0 ; then
+	      COMM="mpiexec -np 1 ./genmake_tcomp"
+	    else
+	      FC_CHECK=4
+	      echo "" >> $LOGFILE
+	      echo " warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
+	     #echo -n " fail to generate executable"
+	    fi
+	  fi
+	else
+	    COMM="./genmake_tcomp"
+	fi
+    elif test $FC_CHECK = '-1' ; then
+	FC_CHECK=2
+	echo 'WARNING: missing executable from FORTRAN compiler test' >> $LOGFILE
+	echo -n " fail to generate executable"
+    fi
+    if test $FC_CHECK = '-1' ; then
+	echo ' '$COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	   FC_CHECK=3
+	  #echo -n " fail to run"
+	else
+	   FC_CHECK=5
+	   echo -n " pass"
+	fi
+    fi
+    rm -f genmake_tcomp.* genmake_tcomp
+    echo " --> set FC_CHECK= $FC_CHECK /5" >> $LOGFILE
+    echo "  (set FC_CHECK=${FC_CHECK}/5)"
 }
 
 #  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
@@ -1029,7 +1115,7 @@ EOF
 	    >> genmake_tnc.log
     fi
     echo "$FC $FFLAGS $FOPTIM -c genmake_tnc.$FS  \ " >> genmake_tnc.log
-    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc.o $LIBS" >> genmake_tnc.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS" >> genmake_tnc.log
     $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
@@ -1062,11 +1148,11 @@ EOF
 	    HAVE_NETCDF=t
 	    echo "check_netcdf: successful" >> $LOGFILE
 	else
-	# try again with "-lnetcdff" added to the libs
+	# try again with "-lnetcdff -lnetcdf" added to the libs
 	    echo "==> try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
 	    echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
 	    echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
-	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
+	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf" >> genmake_tnc.log
 	    cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS 2>/dev/null  \
 		&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 		&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf >> genmake_tnc.log 2>&1
@@ -1085,7 +1171,7 @@ EOF
 }
 
 check_lapack_libs()  {
-    if test "x$CHECK_FOR_LAPACK" = xf ; then return ; fi
+    HAVE_LAPACK=f
     echo >> $LOGFILE
     echo "running: check_lapack_libs()" >> $LOGFILE
     cat <<EOF > genmake_tla.F
@@ -1287,6 +1373,7 @@ CHECK_FOR_LAPACK=f
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
 HAVE_FDATE=
+FC_CHECK=
 FC_NAMEMANGLE=
 HAVE_CLOC=
 # HAVE_SETRLSTK=
@@ -1302,6 +1389,7 @@ TOOLSDIR=
 SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
+SINGULARITYFILE=
 
 #- local config file
 gm_local="genmake_local"
@@ -1357,7 +1445,7 @@ gm_s3="FEXTRAFLAGS IEEE DEVEL GSL TS PAPIS PCLS PAPI PCL HPMT DUMPSTATE"
 gm_s4="LN S64 LINK PACKAGES INCLUDES FFLAGS FOPTIM"
 gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s6="PWD TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
-gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
+gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
@@ -1374,10 +1462,22 @@ GENMAKE :
 
 A program for GENerating MAKEfiles for the MITgcm project.
    For a quick list of options, use "genmake2 -h"
-or for more detail see the Developer's HOWTO manual at:
-   http://mitgcm.org/public/docs.html
+or for more detail see the documentation, section "Building the model"
+   (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
+
+if test "x$MITGCM_ROOTDIR" = x ; then
+  if test "x$ROOTDIR" != x ; then
+    echo "WARNING: Environment Variable 'ROOTDIR' getting retired soon ;"
+    echo "WARNING:  ==> has been replaced by Env. Var. 'MITGCM_ROOTDIR'"
+  # echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
+  # echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
+    echo ''
+  fi
+else
+  ROOTDIR=$MITGCM_ROOTDIR
+fi
 
 LOGFILE="genmake.log"
 #- clean-up previous genmake logfiles:
@@ -1413,6 +1513,10 @@ for ac_option in "$@" ; do
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl)
+	    ac_prev=SINGULARITYFILE ;;
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*)
+	    SINGULARITYFILE=$ac_optarg ;;
 	-nocat4ad | -dog4ad | -ncad | -dad)
 	    CAT_SRC_FOR_TAF=0 ;;
 	-adoptfile | --adoptfile | -adof | --adof)
@@ -1607,10 +1711,9 @@ fi
 if test -f ./.genmakerc ; then
     echo
     echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
-    echo "  file.  This file format is no longer supported.  For directions on"
-    echo "  how to setup and use the new \"genmake2\" script, please see:"
-    echo "    http://mitgcm.org/public/devel_HOWTO/"
-    echo "  and send an email to MITgcm-support@mitgcm.org if you need help."
+    echo "  file.  This file format is no longer supported."
+    echo "  For directions on how to setup and use the new \"genmake2\" script,"
+    echo "  please see the User Manual at:  https://mitgcm.readthedocs.io/"
     echo "WARNING: ignore \"./.genmakerc\" and continue."
     echo
 fi
@@ -1633,8 +1736,8 @@ if test "x${ROOTDIR}" = x ; then
 fi
 if test "x${ROOTDIR}" = x ; then
     echo "Error: Cannot determine ROOTDIR for MITgcm code."
-    echo "  Please specify a ROOTDIR using either an options "
-    echo "  file or a command-line option."
+    echo "  Please specify a ROOTDIR using either the command line"
+    echo "   option '-rootdir' or the Env.Var. 'MITGCM_ROOTDIR'."
     exit 1
 fi
 if test ! -d ${ROOTDIR} ; then
@@ -1714,6 +1817,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 	exit 1
     fi
 fi
+if test $CAT_SRC_FOR_TAF = 0 ; then TAF_EXTRA="${TAF_EXTRA} -fixed" ; fi
 
 #====================================================================
 # Initialize INCLUDEDIRSMK from and optfile INCLUDEDIRS
@@ -1764,6 +1868,12 @@ fi
 if test "x$MAKE" = x ; then
     MAKE="make"
 fi
+
+#- check for fortran compiler (for now, just for information, no consequence)
+if test "x$FC_CHECK" = x -o "x$FC_CHECK" = xt ; then
+    check_fortran_compiler
+else FC_CHECK=-2 ; fi
+
 if test "x$CPP" = x ; then
     CPP="cpp -traditional -P"
 fi
@@ -2072,13 +2182,22 @@ else
     echo "no"
 fi
 
-printf "  Can we create LAPACK-enabled binaries...  "
-check_lapack_libs
-if test "x$HAVE_LAPACK" != x ; then
-    DEFINES="$DEFINES -DHAVE_LAPACK"
-    echo "yes"
+if test "x$CHECK_FOR_LAPACK" = xf ; then
+    echo   "    skip check for LAPACK Libs"
 else
-    echo "no"
+    printf "  Can we create LAPACK-enabled binaries...  "
+    check_lapack_libs
+    if test "x$HAVE_LAPACK" = xt ; then
+	echo "yes"
+    else
+	echo "no"
+    fi
+fi
+if test "x$HAVE_LAPACK" = xt ; then
+    DEFINES="$DEFINES -DHAVE_LAPACK"
+elif test "x$HAVE_LAPACK" = x ; then
+   #- do not report if unset and unchecked:
+    gm_state=`echo $gm_state | sed 's/HAVE_LAPACK//'`
 fi
 
 printf "  Can we call FLUSH intrinsic subroutine...  "
@@ -3327,6 +3446,8 @@ ftl_taf_output.$FS: ftl_input_code.$FS
 \$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
+ftlobj: ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+
 EOF
 
 else
@@ -3347,6 +3468,9 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 \$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+
+ftlobj: ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
+	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
 
 EOF
 fi
@@ -3404,6 +3528,30 @@ ALL_LINKED_FILES= \
 \$(F90_SRC_FILES) \
 \$(SPECIAL_FILES)
 
+EOF
+
+if test "x$SINGULARITYFILE" != x ; then
+# run OpenAD commands in singularity container with standard paths
+cat >>$MAKEFILE <<EOF
+SINGULARITYCMD = singularity exec ${SINGULARITYFILE}
+export SINGULARITYENV_LD_LIBRARY_PATH=/OpenAD//Open64/osprey1.0/targ_ia64_ia64_linux/whirl2f/
+export OPENADROOT=/OpenAD
+export XAIFBOOSTERROOT=/OpenAD/xaifBooster/..
+export XAIFSCHEMAROOT=/OpenAD/xaif
+export OPENADFORTTK_BASE=/OpenAD/OpenADFortTk
+export OPEN64ROOT=/OpenAD/Open64/osprey1.0/targ_ia64_ia64_linux
+export OPENADFORTTK=/OpenAD/OpenADFortTk/OpenADFortTk-x86_64-Linux
+
+EOF
+else
+# run OpenAD directly
+cat >>$MAKEFILE <<EOF
+SINGULARITYCMD =
+
+EOF
+fi
+
+cat >>$MAKEFILE <<EOF
 ifndef OPENADROOT
   \$(error "Error:  environment variable OPENADROOT not defined!")
 endif
@@ -3521,7 +3669,7 @@ ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 
 # canonicalizer
 ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
+	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/preProcess.py --timing --r8 -H -S  -o \$@ \$^
 
 # replace stop statements (to avoid the implied unstructured control flow)  with print statements
 ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
@@ -3529,23 +3677,23 @@ ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
 
 # F -> WHIRL
 ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
-	\${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
+	\${SINGULARITYCMD} \${OPEN64ROOT}/crayf90/sgi/mfef90 -r8 -z -F ad_input_code_sf.pre.s2p.f90
 
 # WHIRL -> XAIF
 ad_input_code_sf.pre.s2p.xaif : ad_input_code_sf.pre.s2p.B
-	\${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
 ad_input_code_sf.pre.s2p.xb.xaif : ad_input_code_sf.pre.s2p.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd
-	\${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
+	\${SINGULARITYCMD} \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.pre.s2p.xb.x2w.B : ad_input_code_sf.pre.s2p.xb.xaif
-	\${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK}/bin/xaif2whirl --debug 1 ad_input_code_sf.pre.s2p.B \$<
 
 # WHIRL' -> F'
 ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
-	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
+	\${SINGULARITYCMD} \${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
 ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \$(OADTOOLS)/insertTemplateDir.bash
@@ -3554,7 +3702,7 @@ ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w
 PPEXTRAS=\$(notdir \$(wildcard \$(OADTOOLS)/ad_template.*.F)) ad_inline.F
 # postprocess F'
 postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
-	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
+	\${SINGULARITYCMD} \${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
 	# the target is a placeholder to trigger a single execution of the rule
 	touch \$@
 # put this so make knows about the postprocessing output
@@ -3638,4 +3786,29 @@ if test "x$DUMPSTATE" = xt ; then
 	eval $t1
 	echo "$i='$t2'" | sed -e 's/  */ /g' >> genmake_state
     done
+fi
+
+#  Conclude
+if test $FC_CHECK = 5 ; then
+    echo "  original 'Makefile' generated successfully"
+    echo "=> next steps:"
+    ad=`echo $PACKAGES | grep -c autodiff`
+    if test "x$OPENAD" != x ; then
+	echo "  > make adAll    (<-- adjoint executable)"
+    elif test $ad != 0 ; then
+	echo "  > make depend"
+	echo "    > make adall  (<-- adjoint executable)"
+	echo " or > make ftlall (<-- tang-lin executable)"
+	echo " or > make        (<-- forward executable)"
+    else
+#	echo "  > make depend   (add dependencies to Makefile)"
+	echo "  > make depend"
+	echo "  > make       (<-- to generate executable)"
+    fi
+elif [ $FC_CHECK -ge 3 ] ; then
+    echo "  original 'Makefile' generated but was unable to"
+    echo "   run compiled test-program (please see '$LOGFILE')"
+elif [ $FC_CHECK -ge 0 ] ; then
+    echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
+    echo "Warning: 'Makefile' might be unusable (check your optfile)"
 fi

@@ -29,29 +29,45 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 #ifdef STREAMICE_HYBRID_STRESS
 
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj, k, l, m
-      INTEGER ikey_1
       _RL ux, uy, vx, vy, exx, eyy, exy, unorm, second_inv
       _RL ub, vb, fb, mean_u_shear, mean_v_shear, umid, vmid
       _RL omega_temp (Nr+1), u_shear(Nr+1), v_shear(Nr+1)
+      _RL C_fric_val, Bglen_val
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL buttr_param, pwr
 #endif
-
+#ifdef STREAMICE_COULOMB_SLIDING
+      _RL effective_stress, hf
+      _RL ETA_GL_STREAMICE
+      _RL i_nbasalfric
+      EXTERNAL ETA_GL_STREAMICE
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+#endif
+      INTEGER ikey_1
+#endif
       _RL STREAMICE_BSTRESS_EXP
-!       _RL total_vol_out
-      external STREAMICE_BSTRESS_EXP
+c       _RL total_vol_out
+      EXTERNAL STREAMICE_BSTRESS_EXP
 
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       buttr_param = 5**(1./3.) / (streamice_buttr_width/2.)**(4./3.)
       pwr = 1./n_glen
+#endif
+
+#ifdef STREAMICE_COULOMB_SLIDING
+      i_nbasalfric = 1. / n_basal_friction
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -145,22 +161,26 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
      &            0.25 * streamice_vert_shear_vz(m)**2)
 
 #ifdef STREAMICE_3D_GLEN_CONST
+            IF (.not.STREAMICE_use_log_ctrl) THEN
+             Bglen_val = B_glen(i,j,m,bi,bj)**2
+            ELSE
+             Bglen_val = exp(B_glen(i,j,m,bi,bj))
+            ENDIF
+#else
+            IF (.not.STREAMICE_use_log_ctrl) THEN
+             Bglen_val = B_glen(i,j,bi,bj)**2
+            ELSE
+             Bglen_val = exp(B_glen(i,j,bi,bj))
+            ENDIF
+#endif
+
 #if (defined (ALLOW_STREAMICE_OAD_FP))
             visc_full_new_si(i,j,m,bi,bj) =
 #else
             visc_streamice_full(i,j,m,bi,bj) =
 #endif
-     &       .5 * B_glen(i,j,m,bi,bj)**2 *
+     &       .5 * Bglen_val *
      &        second_inv**((1-n_glen)/n_glen)
-#else
-#if (defined (ALLOW_STREAMICE_OAD_FP))
-            visc_full_new_si(i,j,m,bi,bj) =
-#else
-            visc_streamice_full(i,j,m,bi,bj) =
-#endif
-     &       .5 * B_glen(i,j,bi,bj)**2 *
-     &        second_inv**((1-n_glen)/n_glen)
-#endif
 
             visc_streamice (i,j,bi,bj) = visc_streamice (i,j,bi,bj) +
      &       H_streamice(i,j,bi,bj) * streamice_delsigma (m) *
@@ -223,24 +243,53 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
-           fb = C_basal_friction(i,j,bi,bj)**2 *
+           if (.not.STREAMICE_use_log_ctrl) THEN
+            C_fric_val = C_basal_friction(i,j,bi,bj)**2
+           else
+            C_fric_val = exp(C_basal_friction(i,j,bi,bj))
+           endif
+
+#ifdef STREAMICE_COULOMB_SLIDING
+           IF (.not.streamice_allow_reg_coulomb) THEN
+#endif
+           fb = C_fric_val *
      &      STREAMICE_BSTRESS_EXP (unorm,n_basal_friction) *
      &      streamice_basal_geom(i,j,bi,bj) *
      &      float_frac_streamice(i,j,bi,bj)
+
+#ifdef STREAMICE_COULOMB_SLIDING
+           ELSE
+
+           hf = max (0.0, -1.0 *streamice_density_ocean_avg
+     &        / streamice_density * R_low_si(i,j,bi,bj))
+
+           effective_stress = streamice_density * gravity *
+     &      (H_streamice(i,j,bi,bj)-hf)
+           effective_stress= max(0.0, effective_stress)
+           fb = C_fric_val *
+     &      unorm ** n_basal_friction *
+     &      .5 * effective_stress /
+     &      (C_fric_val**(i_nbasalfric)*unorm+
+     &       (0.5 * effective_stress) ** (i_nbasalfric)) **
+     &        n_basal_friction *
+     &      streamice_basal_geom(i,j,bi,bj) *
+     &      float_frac_streamice(i,j,bi,bj) / unorm
+           ENDIF
+
+#endif
 
            tau_beta_eff_streamice(i,j,bi,bj) =
      &       fb /
      &       (1+fb*streamice_omega(i,j,bi,bj)/H_streamice(i,j,bi,bj))
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
            if (usestreamiceflowlineButtr) then
-           tau_beta_eff_streamice(i,j,bi,bj) = 
-     &      tau_beta_eff_streamice(i,j,bi,bj) + 
-     &      buttr_param*B_glen(i,j,bi,bj)**2 * 
+           tau_beta_eff_streamice(i,j,bi,bj) =
+     &      tau_beta_eff_streamice(i,j,bi,bj) +
+     &      buttr_param*B_glen(i,j,bi,bj)**2 *
      &      STREAMICE_BSTRESS_EXP (unorm,pwr)*
      &      H_streamice(i,j,bi,bj)
           endif
 #endif
-
 
           ENDIF
          ENDDO
@@ -249,10 +298,10 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
       ENDDO
 #ifdef ALLOW_OPENAD
 #ifdef STREAMICE_HYBRID_STRESS
-      tau_beta_eff_streamice(1,1,1,1) = 
+      tau_beta_eff_streamice(1,1,1,1) =
      &  tau_beta_eff_streamice(1,1,1,1) +
-     &  0. * streamice_u_surf(1,1,1,1) + 
-     &  0. * streamice_v_surf(1,1,1,1)  
+     &  0. * streamice_u_surf(1,1,1,1) +
+     &  0. * streamice_v_surf(1,1,1,1)
 #endif
 #endif
 

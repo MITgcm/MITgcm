@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_CALC_LHS
@@ -46,10 +43,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime :: Simulation time
@@ -72,7 +65,7 @@ C     i,j,bi,bj,k :: loop indices
       INTEGER i,j,bi,bj
       INTEGER k
       _RS     SINWAT
-      _RL     COSWAT, recip_deltaT, eplus, eminus
+      _RL     COSWAT, recip_deltaT
 C     backward difference extrapolation factor
       _RL bdfAlpha
 C     symmetric drag coefficient
@@ -121,11 +114,11 @@ C     symmetric drag coefficient may include bottomdrag for grounded ice
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
          ENDDO
         ENDDO
-C     
+C
 C     compute components of stress tensor from current velocity field
 C     and compute divergence of stress tensor
 C
-        CALL SEAICE_CALC_STRESSDIV( 
+        CALL SEAICE_CALC_STRESSDIV(
      I       e11, e22, e12, press, zeta, eta, etaZ,
      O       stressDivergenceX, stressDivergenceY,
      I       bi, bj, myTime, myIter, myThid )
@@ -141,11 +134,11 @@ C     compute lhs side of momentum equations
         DO J=1,sNy
          DO I=1,sNx
 C     mass*(uIce)/deltaT - dsigma/dx
-          uIceLHS(I,J,bi,bj) = 
+          uIceLHS(I,J,bi,bj) =
      &         bdfAlpha*seaiceMassU(I,J,bi,bj)*recip_deltaT
      &         *uIceLoc(I,J,bi,bj) - stressDivergenceX(I,J,bi,bj)
 C     mass*(vIce)/deltaT - dsigma/dy
-          vIceLHS(I,J,bi,bj) = 
+          vIceLHS(I,J,bi,bj) =
      &         bdfAlpha*seaiceMassV(I,J,bi,bj)*recip_deltaT
      &         *vIceLoc(I,J,bi,bj) - stressDivergenceY(I,J,bi,bj)
 C     coriols terms: - mass*f*vIce
@@ -188,9 +181,9 @@ C     apply masks for interior (important when we have open boundaries)
          ENDDO
         ENDDO
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
-        IF ( SEAICEmomAdvection ) THEN 
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
+        IF ( SEAICEmomAdvection ) THEN
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            gUmom(I,J) = 0. _d 0
            gVmom(I,J) = 0. _d 0
           ENDDO

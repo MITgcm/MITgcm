@@ -44,9 +44,11 @@ C    | |-INI_PARMS :: Routine to set kernel model parameters.
 C    | |           :: Kernel parameters are read from file "data"
 C    | |           :: in directory in which code executes.
 C    | |
-C    | |-PACKAGES_BOOT      :: Start up the optional package environment.
-C    | |                    :: Runtime selection of active packages.
-C    | |-PACKAGES_READPARMS :: read each package input parameter file
+C    | |-PACKAGES_BOOT       :: Start up the optional package environment.
+C    | |                     :: Runtime selection of active packages.
+C    | |-CPL_IMPORT_CPLPARMS :: Import coupling parameters from/to
+C    | |                     :: the coupler layer
+C    | |-PACKAGES_READPARMS  :: Read each package input parameter file
 C    | | |- ${PKG}_READPARMS
 C    | |
 C    | |-SET_PARMS :: Finalise model parameter setting (if fct of pkg usage)
@@ -122,6 +124,7 @@ C #endif
 C    | | |-INI_NLFS_VARS :: Initialise all Non-Lin Free-Surf arrays (SURFACE.h)
 C    | | |-INI_DYNVARS   :: Initialise to zero all DYNVARS.h arrays
 C    | | |-INI_NH_VARS   :: Initialise to zero all NH_VARS.h arrays
+C    | | |-INI_FFIELDS   :: Initialise forcing fields in FFIELDS.h to zero
 C    | | |
 C    | | |-INI_FIELDS    :: Control initialising model fields to non-zero
 C    | | | |-INI_VEL     :: Initialize 3D flow field.
@@ -131,6 +134,8 @@ C    | | | |-INI_PSURF   :: Set model initial free-surface height/pressure.
 C    | | | |-READ_PICKUP :: Read in main model pickup files to restart a run.
 C    | | |
 C    | | |-INI_MIXING   :: Initialise diapycnal diffusivity.
+C    | | |
+C    | | |-TAUEDDY_INIT_VARIA :: Initialise eddy (bolus) streamfunction
 C    | | |
 C    | | |-INI_FORCING  :: Set model initial forcing fields, either
 C    | | |   |          :: set in-line or from file as shown here:
@@ -161,6 +166,7 @@ C    | | |
 C    | | |-INTEGR_CONTINUITY :: Integrate the continuity Equation
 C    | | | |-INTEGRATE_FOR_W :: Integrate for vertical velocity
 C    | | | |-OBCS_APPLY_W    :: Open boundary package (see pkg/obcs).
+C    | | | |-DUMMY_FOR_ETAN  :: For printing adEtaN (see pkg/autodiff).
 C    | | | |-UPDATE_ETAH     :: Update Surface height/pressure
 C    | | |
 C    | | |-CALC_R_STAR    :: Calculate the new level thickness factor (r* coord)
@@ -574,7 +580,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
@@ -652,7 +658,7 @@ C--   Set model configuration (fixed arrays)
       CALL COST_DEPENDENT_INIT ( myThid )
 # endif
 
-# if ( defined (ALLOW_TANGENTLINEAR_RUN) )
+# if defined( ALLOW_TANGENTLINEAR_RUN )
 
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
@@ -661,8 +667,7 @@ C--   Set model configuration (fixed arrays)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
 
-# elif ( defined (ALLOW_ADJOINT_RUN) || \
-         defined (ALLOW_ECCO_OPTIMIZATION) )
+# elif defined( ALLOW_ADJOINT_RUN )
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'

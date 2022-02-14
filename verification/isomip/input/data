@@ -18,7 +18,7 @@
  eosType='JMD95Z', 
  HeatCapacity_cp = 3974.0,
  rhoConst=1030.,
- rhoNil=1030.,
+ rhoConst=1030.,
  gravity=9.81,
  convertFW2Salt = 33.4,
  rigidLid=.FALSE.,

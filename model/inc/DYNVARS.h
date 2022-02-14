@@ -19,7 +19,10 @@ C     etaN  :: free-surface r-anomaly (r unit) at current time level
 C     uVel  :: zonal velocity (m/s, i=1 held at western face)
 C     vVel  :: meridional velocity (m/s, j=1 held at southern face)
 C     theta :: potential temperature (oC, held at pressure/tracer point)
-C     salt  :: salinity (ppt, held at pressure/tracer point)
+C     salt  :: salinity (g/kg, held at pressure/tracer point; note that
+C              salinity is either a conductivity ratio or, if using TEOS10,
+C              a mass ratio;here we assume it is a mass ratio even though
+C              it is only correct for TEOS10)
 C     gX, gxNm1 :: Time tendencies at current and previous time levels.
 C     etaH  :: surface r-anomaly, advanced in time consistently
 C              with 2.D flow divergence (Exact-Conservation):
@@ -81,6 +84,13 @@ C               for mixing of tracers vertically ( units of r^2/s )
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C     smag3D_diffK :: isotropic 3D diffusivity from Smagorisky viscosity
+C                     at grid-cell center (units: m^2/s )
+      COMMON /DYNVARS_DIFFK_SMAG3D/ smag3D_diffK
+      _RL smag3D_diffK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 C   The following blocks containing requires anomaly fields of control vars
 C   and related to Options:
 C   ALLOW_KAPGM_CONTROL , ALLOW_KAPREDI_CONTROL and ALLOW_BOTTOMDRAG_CONTROL
@@ -94,25 +104,35 @@ C                     BryanLewis79 vertical diffusivity
 #endif
 
 C     Diagnostic Variables:
-C     phiHydLow    :: Phi-Hydrostatic at r-lower boundary
-C                     (bottom in z-coordinates, top in p-coordinates)
+C     rhoInSitu    :: In-Situ density anomaly [kg/m^3] at cell center level.
 C     totPhiHyd    :: total hydrostatic Potential (anomaly, for now),
 C                     at cell center level ; includes surface contribution.
 C                     (for diagnostic + used in Z-coord with EOS_funct_P)
-C     rhoInSitu    :: In-Situ density anomaly [kg/m^3] at cell center level.
+C     phiHydLow    :: Phi-Hydrostatic at r-lower boundary
+C                     (bottom in z-coordinates, top in p-coordinates)
 C     hMixLayer    :: Mixed layer depth [m]
 C                     (for diagnostic + used GMRedi "fm07")
 C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
 C                     = 0 (not convecting) or 1 (convecting)
       COMMON /DYNVARS_DIAG/
-     &                phiHydLow, totPhiHyd,
      &                rhoInSitu,
+     &                totPhiHyd, phiHydLow,
      &                hMixLayer, IVDConvCount
-      _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  hMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+C     Leith QG dynamic viscosity scheme requires buoyancy frequency.
+C     ECCO sometimes uses sigmaR (with ALLOW_SIGMAR_COST_CONTRIBUTION).
+C     Store sigmaRfield to avoid computing density multiple times and give
+C     access to all levels during the k-loop
+C     sigmaRfield           :: vertical gradient of buoyancy.
+      COMMON /DYNVARS_sigmaR/ sigmaRfield
+      _RL sigmaRfield  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
 
 #ifdef ALLOW_SOLVE4_PS_AND_DRAG
 C     Variables for Implicit friction (& vert. visc) in 2-D pressure solver
@@ -126,3 +146,11 @@ C                     pressure gradient in Y (no Units)
       _RL  dU_psFacX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dV_psFacY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+C     cSound       :: Speed of sound in seawater (m/s)
+C                     following Del Grosso (1974)
+      COMMON /DYNVARS_cSound/ cSound
+      _RL  cSound(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* INCLUDE_SOUNDSPEED_CALC_CODE */
+

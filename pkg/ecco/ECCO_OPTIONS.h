@@ -33,6 +33,10 @@ C allow for 3 dimensional generic terms
 
 C include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC
+#ifdef ATMOSPHERIC_LOADING
+C apply inverse barometer correction
+#define ALLOW_IB_CORR
+#endif
 C allow for near-shore and high-latitude altimetry
 #undef ALLOW_SHALLOW_ALTIMETRY
 #undef ALLOW_HIGHLAT_ALTIMETRY
@@ -43,11 +47,6 @@ C allow for In-Situ Profiles cost function contribution
 C cost function output format
 #undef ALLOW_ECCO_OLD_FC_PRINT
 
-C re-activate deprecated codes (just in case ... but not recommended)
-#undef ECCO_CTRL_DEPRECATED
-
-
-
 C-- real options?
 
 C include dump of snap shots for checks
@@ -57,16 +56,11 @@ cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 c#define SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
 cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 
-#undef  ALLOW_ECCO_OPTIMIZATION
-
 C generate more text in STDOUT.0000
 #undef ECCO_VERBOSE
 
 C allow cost function term for sigmaR
 #undef ALLOW_SIGMAR_COST_CONTRIBUTION
-
-
-
 
 C--  fake options (only used to be printed in S/R ECCO_SUMMARY):
 

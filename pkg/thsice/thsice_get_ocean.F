@@ -88,6 +88,15 @@ C--     Mixed layer thickness: take the 1rst layer
           ENDDO
         ENDIF
 
+#ifdef ALLOW_SHELFICE
+C--   Prevent seaice to form where Ice-Shelf is present
+        IF ( useShelfIce ) THEN
+          CALL SHELFICE_MASK_SEAICE(
+     U                  hOceMxL,
+     I                  bi, bj, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_SHELFICE */
+
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           tOceMxL(i,j,bi,bj) = theta(i,j,ks,bi,bj)

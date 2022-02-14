@@ -74,7 +74,7 @@ C     albsno     :: albedo of snow
 C     albice     :: albedo of ice
 C     albNewSnow :: albedo of new (fresh) snow
 C     albNewSnow :: albedo of new (fresh) snow
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 c     _RL  frsnow
       _RL albsno
       _RL albice
@@ -83,7 +83,9 @@ c     _RL  frsnow
       _RL albNIR_ice, albNIR_fHice, recFac_albNIR
       INTEGER i,j
       INTEGER ii,jj,icount
+#ifndef ALLOW_AUTODIFF
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -104,7 +106,7 @@ C     Near-InfraRed albedo
          hs  = hSnow(i,j)
          Tsf = tSrf(i,j)
          age = ageSnw(i,j)
-         
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Albedo of Bare Sea-Ice
          albice = albIceMax + (albIceMin-albIceMax)*EXP(-hi/hAlbIce)
@@ -144,7 +146,7 @@ C--   Compute near-infrared albedo
      &         + 0.075 _d 0 * MIN( -Tsf - 1. _d 0, 0. _d 0 )
 
           sAlbNIR(i,j) = albNIR_ice * ( 1. _d 0 - hs/(hs + 0.02 _d 0) )
-     &         + ( albNIR_dsnow 
+     &         + ( albNIR_dsnow
      &             + 0.15 _d 0 *MIN( -Tsf - 1. _d 0, 0. _d 0) )
      &         * hs/(hs + 0.02 _d 0)
          ELSE
@@ -174,7 +176,7 @@ c       print*,'QQ - albedo problem', albedo, age, hs, albsno
      &      'THSICE_ALBEDO: Problem, e.g., at:', myIter,ii,jj,bi,bj
        CALL PRINT_ERROR( msgBuf , myThid)
        WRITE(msgBuf,'(A,1P3E17.9)')
-     &      'THSICE_ALBEDO: albedo=', sAlb(ii,jj),ageSnw(ii,jj), 
+     &      'THSICE_ALBEDO: albedo=', sAlb(ii,jj),ageSnw(ii,jj),
      &      hsnow(ii,jj)
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'THSICE_ALBEDO: albedo out of range'

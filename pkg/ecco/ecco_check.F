@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C--  File ecco_check.F:
 C--   Contents
@@ -38,14 +41,13 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il, k2, ioUnit
+      INTEGER igen_etaday, il
       LOGICAL exst
-      CHARACTER*(128) tempfile,tempfile1
+      CHARACTER*(128) tempfile
       INTEGER icount_transp
-      _RS     dummyRS(1)
 #endif
 
       INTEGER bi, bj, i, j, k
@@ -59,7 +61,7 @@ c     == external functions ==
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
           do k = 1,nr
-            do j = 1-OLy,sNy+Oly
+            do j = 1-OLy,sNy+OLy
               do i = 1-OLx,sNx+OLx
                 eccoVol_0(i,j,k,bi,bj)=
      &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
@@ -275,6 +277,7 @@ c ============ backward compatibility checks
 
 c ============ check for missing data files
 
+#ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
      & bpdatfile, bpstartdate(1), myThid )
@@ -294,6 +297,7 @@ c ============ check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c ============ deprecated codes related checks
 
@@ -395,7 +399,7 @@ catn-- put stop statement if use old siv4 names:
            STOP 'ABNORMAL END: S/R ECCO_CHECK'
          endif
 
-c-atn add another block for cost that do not need datafile but 
+c-atn add another block for cost that do not need datafile but
 c should have checks for other things:
 c here, separate into different gencost_flag block
          else  !if ( gencost_datafile(k) .ne. ' ' ) then
@@ -501,11 +505,13 @@ c
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
-           if (.not.( 
+           if (.not.(
      &          (gencost_barfile(k)(1:15).EQ.'m_boxmean_theta').OR.
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
      &          (gencost_barfile(k)(1:17).EQ.'m_boxmean_ptracer').OR.
+     &          (gencost_barfile(k)(1:16).EQ.'m_boxmean_shifwf').OR.
+     &          (gencost_barfile(k)(1:16).EQ.'m_boxmean_shihtf').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_horflux_vol')
      &        )) then
             using_gencost(k)=.FALSE.
@@ -525,19 +531,77 @@ c-- (upper/lower-case matters) in cost_gencost_customize
            endif !barfile
 
 c---------------- block -4 ----------------------------
-c-- transs: require [err,bar][W,S]file, can have datafile, but
+c-- transs: require [mask,bar][W,S]file, can have datafile, but
 c-- not checked here. also not checked for variwei at the moment
-         elseif ( gencost_flag(k).eq. -4 ) then
+         elseif ( (gencost_flag(k).eq. -4) .or.
+     &            (gencost_flag(k).eq. -5) ) then
           WRITE(msgBuf,'(A,i3,L5)')
-     &     'ecco_check for gencost transp; k,using_gencost(k): ,',
+     &     'ecco_check for gencost transp & moc; k,using_gencost(k): ,',
      &     k,using_gencost(k)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
-          if ( gencost_errfile(k) .NE. ' ' ) then
+C ---
+C Warn the user that this is a less tested objective function
+C TBD: Write a more consistent transport objective function
+C ---
+
+          if ((gencost_barfile(k)(1:7).eq.'m_trVol').and.
+     &        (gencost_flag(k).eq.-4)) then
+           WRITE(msgBuf,'(A)')
+     &  '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)')
+     &   ' See m_horflux_vol via cost_gencost_boxmean.F.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          elseif( (gencost_barfile(k)(1:8).eq.'m_trHeat').or.
+     &            (gencost_barfile(k)(1:8).eq.'m_trSalt') ) then
+           WRITE(msgBuf,'(2A)')
+     &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with',
+     &   ' caution because:'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)')
+     &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)')
+     &  '  (2) bolus velocities not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)')
+     &  '  (3) diffusion components not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+         endif
+
+C ---
+C Note to user: use gencost_mask not errfile
+C ---
+          if(gencost_errfile(k) .ne. ' ') then
+            WRITE(msgBuf,'(3A)') 'S/R ECCO_CHECK: transp & moc now ',
+     &        ' use gencost_mask instead of gencost_errfile --',
+     &        ' please update data.ecco accordingly'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R ECCO_CHECK'
+          endif
+
+          if(gencost_mask(k) .eq. ' ') then
+            using_gencost(k)=.FALSE.
+            il = ilnblnk(gencost_name(k))
+            WRITE(msgBuf,'(4A)')
+     &        '** WARNING ** ECCO_CHECK_FILES: gencost_mask is',
+     &        ' undefined so ',gencost_name(k)(1:il),
+     &        ' gets switched off'
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                 SQUEEZE_RIGHT , myThid)
+
+          else
 c-- West ----------------------
-           il = ilnblnk(gencost_errfile(k))
-           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
+           il = ilnblnk(gencost_mask(k))
+           write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
            inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
      &       tempfile(1:il+1),exst
@@ -546,7 +610,7 @@ c-- West ----------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -555,23 +619,10 @@ c-- West ----------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-cgf (1) should indeed be moved to init_fixed
-cgf (2) generalization: read in a 1D vertical mask and do the product
-cgf     of e.g. gencost_mskWsurf*gencost_mskZ in ecco_phys.F?
-cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
-cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
-cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
-             call ecco_zero(msktrVolW,1,zeroRL,mythid)
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            msktrVolW,1,mythid)
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
 c-- South --------------------
-           il = ilnblnk(gencost_errfile(k))
-           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
+           il = ilnblnk(gencost_mask(k))
+           write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
            inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
      &       tempfile(1:il+1),exst
@@ -580,7 +631,7 @@ c-- South --------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -589,24 +640,9 @@ c-- South --------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-             call ecco_zero(msktrVolS,1,zeroRL,mythid)
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            msktrVolS,1,mythid)
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
-          else
-           using_gencost(k)=.FALSE.
-           il=ilnblnk(gencost_name(k))
-           WRITE(msgBuf,'(4A)')
-     &     '** WARNING ** ECCO_CHECKD: errfile not defined',
-     &     ' so ',gencost_name(k)(1:il),' gets switched off'
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &               SQUEEZE_RIGHT , myThid)
+         endif ! gencost_mask.eq.' '
 
-          endif!errfile
 c-- check barfile, make sure character m_tr[Vol,Heat,Salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
           if(.not.( (gencost_barfile(k)(1:7).EQ.'m_trVol') .OR.
@@ -628,7 +664,8 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &                         SQUEEZE_RIGHT, myThid )
           endif !barfile
 c-- set using_cost_transp
-          if(using_gencost(k)) icount_transp=icount_transp+1
+          if((using_gencost(k)).and.(gencost_flag(k).eq.-4))
+     &      icount_transp=icount_transp+1
           if(icount_transp.gt.0) using_cost_transp = .TRUE.
 c-- final report to make sure using_cost_transp is set correctly
           WRITE(msgBuf,'(2A,i3,L5)')
@@ -636,6 +673,7 @@ c-- final report to make sure using_cost_transp is set correctly
      &     'using_cost_transp: ',icount_transp,using_cost_transp
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
+
          endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
@@ -656,7 +694,7 @@ c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
      &    '** WARNING ** S/R ECCO_CHECK: missing file: ',
-     &    ' for altimeter data so cost gets switched off'
+     &    'for altimeter data so cost gets switched off'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       else
@@ -664,10 +702,24 @@ c print result to screen
         write(msgbuf,'(a,i3)')
      &  'etaday defined by gencost ',igen_etaday
         call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , myThid)
       endif
 
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
+C ============ other pkg/ecco related checks
+      _BEGIN_MASTER(myThid)
+
+#ifndef ALLOW_PSBAR_STERIC
+      IF (ecco_output_sterGloH) THEN
+         WRITE(msgBuf,'(3A)') 'ECCO_CHECK:',
+     &         ' Cannot set ecco_output_sterGloH to TRUE',
+     &         ' with #undef ALLOW_PSBAR_STERIC'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
 #endif
+      _END_MASTER(myThid)
 
       RETURN
       END
@@ -690,7 +742,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -704,7 +757,7 @@ C     myThid -  Number of this instances
       integer localstartdate1
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER irec, mody, modm, yday, locy, il
       LOGICAL exst, singleFileTest, yearlyFileTest
@@ -757,7 +810,7 @@ c switch off cost function term
            IF ( (.NOT.exst).AND.(yday.GE.locy) ) THEN
 c warn user as we override using_cost_local
              WRITE(msgBuf,'(5A)')
-     &       '** WARNING ** ECCO_CHECK_FILES: missing',fname,
+     &       '** WARNING ** ECCO_CHECK_FILES: missing ',fname,
      &       ' so ',localname,' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)

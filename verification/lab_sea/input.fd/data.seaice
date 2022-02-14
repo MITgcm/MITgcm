@@ -23,6 +23,11 @@
 # SEAICEheatConsFix  = .TRUE.,
 #- seaice I/O params:
   SEAICEwriteState   = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICE_waterDrag = 0.005355404089581304,
  &
 
  &SEAICE_PARM03

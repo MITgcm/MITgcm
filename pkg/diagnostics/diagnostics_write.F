@@ -37,9 +37,10 @@ C     !FUNCTIONS:
 
 c Local variables
 c ===============
-      INTEGER   n
+      INTEGER   n, nd
       INTEGER   myItM1, wrIter
       LOGICAL   dump2fileNow, write2file
+      LOGICAL   writeDiags(numLists), writeStats(numLists)
       _RL       phiSec, freqSec, wrTime
 #ifdef ALLOW_FIZHI
       CHARACTER *9 tagname
@@ -74,8 +75,8 @@ C       state-variable time-step:
      &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
-           WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = ALARM2(tagname)
+            WRITE(tagname,'(A,I2.2)')'diagtag',n
+            dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
 #ifdef ALLOW_CAL
@@ -87,10 +88,16 @@ C       state-variable time-step:
 #endif /* ALLOW_CAL */
           IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
+          IF ( useDiag4AdjOutp ) THEN
+            nd = ABS(jdiag(1,n))
+            IF ( gdiag(nd)(4:4).EQ.'A' ) dump2fileNow = .FALSE.
+          ENDIF
           IF ( dump2fileNow ) THEN
             write2file = .TRUE.
             CALL DIAGNOSTICS_OUT(n,wrTime,wrIter,myThid)
           ENDIF
+          writeDiags(n) = dump2fileNow
+C-      end loop on list id number n
         ENDDO
 
 C---   Check to see if its time for Statistics Diag. Output
@@ -133,6 +140,8 @@ C       state-variable time-step:
             write2file = .TRUE.
             CALL DIAGSTATS_OUTPUT(n,wrTime,wrIter,myThid)
           ENDIF
+          writeStats(n) = dump2fileNow
+C-      end loop on list id number n
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -149,7 +158,8 @@ C-      Track diagnostics pkg activation status:
 c         IF ( diag_pkgStatus.NE.ready2fillDiags ) STOP
           _BARRIER
           _BEGIN_MASTER(myThid)
-          diag_pkgStatus = 99
+C ---   Do not disable diagnostics package for adj variables
+          IF ( .NOT.useDiag4AdjOutp ) diag_pkgStatus = 99
           _END_MASTER(myThid)
           _BARRIER
 C       Close all Stat-diags output files
@@ -157,56 +167,11 @@ C       Close all Stat-diags output files
         ENDIF
 
 C--     Clear storage space:
-
         DO n = 1,nlists
-          freqSec = freq(n)
-          phiSec = phase(n)
-
-          wrTime = myTime
-          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTClock
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTClock )
-#ifdef ALLOW_FIZHI
-          IF ( useFIZHI ) THEN
-           WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = ALARM2(tagname)
-          ENDIF
-#endif
-#ifdef ALLOW_CAL
-          IF ( useCAL ) THEN
-            CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
-     U                          dump2fileNow,
-     I                          wrTime, myIter, myThid )
-          ENDIF
-#endif /* ALLOW_CAL */
-          IF ( dumpAtLast .AND. modelEnd
-     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
-          IF ( dump2fileNow ) CALL DIAGNOSTICS_CLEAR(n,myThid)
+          IF ( writeDiags(n) ) CALL DIAGNOSTICS_CLEAR(n,myThid)
         ENDDO
-
         DO n = 1,diagSt_nbLists
-          freqSec = diagSt_freq(n)
-          phiSec = diagSt_phase(n)
-          wrTime = myTime
-          IF ( freqSec.LT.0. ) wrTime = myTime - deltaTClock
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTClock )
-#ifdef ALLOW_FIZHI
-          IF ( useFIZHI ) THEN
-           WRITE(tagname,'(A,I2.2)')'diagStg',n
-           dump2fileNow = ALARM2(tagname)
-          ENDIF
-#endif
-#ifdef ALLOW_CAL
-          IF ( useCAL ) THEN
-            CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
-     U                          dump2fileNow,
-     I                          wrTime, myIter, myThid )
-          ENDIF
-#endif /* ALLOW_CAL */
-          IF ( dumpAtLast .AND. modelEnd
-     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
-          IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR( n, myThid )
+          IF ( writeStats(n) ) CALL DIAGSTATS_CLEAR( n, myThid )
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

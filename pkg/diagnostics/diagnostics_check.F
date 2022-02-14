@@ -24,13 +24,17 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
+C     msgBuf     :: Informational/error message buffer
+C     errCount   :: Error counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
       INTEGER ld,md,nd
       INTEGER k,m
       INTEGER jpoint1, ipoint1, jpoint2, ipoint2
       _RL     margin
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Check diagnostics parameter consistency
@@ -46,8 +50,7 @@ C     Check diagnostics parameter consistency
         WRITE(msgBuf,'(A,A)') 'S/R DIAGNOSTICS_CHECK: diagMdsDir ',
      &       'and pkg/mnc cannot be used together'
         CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+        errCount = errCount + 1
       ENDIF
 
       IF ( (mdsioLocalDir.NE.' ').AND.(diagMdsDir.NE.' ') ) THEN
@@ -57,8 +60,7 @@ C     Check diagnostics parameter consistency
         WRITE(msgBuf,'(A)')
      &   'S/R DIAGNOSTICS_CHECK: specified at the same time'
         CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+        errCount = errCount + 1
       ENDIF
 
 #ifdef DIAGNOSTICS_HAS_PICKUP
@@ -83,15 +85,14 @@ C-    stop if trying to use part of the code that is not compiled:
      &   'diag_pickup_read  is TRUE ',
      &   'but DIAGNOSTICS_HAS_PICKUP is "#undef"'
         CALL PRINT_ERROR( msgBuf , myThid)
+        errCount = errCount + 1
       ENDIF
       IF ( diag_pickup_write ) THEN
         WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
      &   'diag_pickup_write is TRUE ',
      &   'but DIAGNOSTICS_HAS_PICKUP is "#undef"'
         CALL PRINT_ERROR( msgBuf , myThid)
-      ENDIF
-      IF ( diag_pickup_read .OR. diag_pickup_write ) THEN
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+        errCount = errCount + 1
       ENDIF
 #endif /* DIAGNOSTICS_HAS_PICKUP */
 
@@ -100,7 +101,7 @@ C-    File names:
        DO m = 1,ld-1
         IF ( fnames(ld).EQ.fnames(m) ) THEN
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
-     &            'found 2 identical filenames:'
+     &            'found 2 identical file-names:'
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    '1rst (m=', m, ' ): ', fnames(m)
@@ -108,7 +109,7 @@ C-    File names:
          WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    ' 2nd (n=', ld, ' ): ', fnames(ld)
          CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+         errCount = errCount + 1
         ENDIF
        ENDDO
       ENDDO
@@ -117,7 +118,7 @@ C-    File names:
        DO m = 1,ld-1
         IF ( diagSt_Fname(ld).EQ.diagSt_Fname(m) ) THEN
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
-     &            'found 2 identical stat_fname:'
+     &            'found 2 identical stat_fName:'
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    '1rst (m=', m, ' ): ', diagSt_Fname(m)
@@ -125,7 +126,7 @@ C-    File names:
          WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    ' 2nd (n=', ld, ' ): ', diagSt_Fname(ld)
          CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+         errCount = errCount + 1
         ENDIF
        ENDDO
       ENDDO
@@ -151,13 +152,13 @@ C      (needs p>0 for p^kappa ; here take a 10 % margin)
 
             WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &       'Vertical Interp. for list l=', ld,
-     &       ', filename: ', fnames(ld)
+     &       ', fileName: ', fnames(ld)
             CALL PRINT_ERROR( msgBuf , myThid )
             WRITE(msgBuf,'(2A,I4,3(A,F16.8))') 'DIAGNOSTICS_CHECK: ',
      &       ' lev(k=', k, ') p=', levs(k,ld),
      &       ' not in the domain:',rF(1),' :',rF(Nr+1)
             CALL PRINT_ERROR( msgBuf , myThid )
-            STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+            errCount = errCount + 1
            ENDIF
           ENDDO
         ELSE
@@ -166,9 +167,9 @@ C-    p^kappa interpolation: meaningfull only if Atmosphere & P-coordiante
      &       'INTERP_VERT not allowed in this config'
           CALL PRINT_ERROR( msgBuf , myThid )
            WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
-     &       ' for list l=', ld, ', filename: ', fnames(ld)
+     &       ' for list l=', ld, ', fileName: ', fnames(ld)
           CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+          errCount = errCount + 1
         ENDIF
         IF (select_rStar.GT.0) THEN
 C-    If nonlinear free surf is active, need averaged pressures
@@ -208,12 +209,75 @@ C-    If nonlinear free surf is active, need averaged pressures
      &        'with same output time'
               CALL PRINT_ERROR( msgBuf , myThid )
             ENDIF
-            STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+            errCount = errCount + 1
           ENDIF
          ENDDO
         ENDIF
        ENDIF
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     To print adjoint variables through diagnostics package, must keep
+C     fwd and adjoint variables separate within lists.
+C     Here: Check to see if variables are mixed, stop if so
+      IF ( useDiag4AdjOutp ) THEN
+       DO ld = 1,nlists
+        nd = ABS(jdiag(1,ld))
+        IF (gdiag(nd)(4:4).EQ.'A') THEN
+         DO md = 1,nfields(ld)
+          nd = ABS(jdiag(md,ld))
+          IF (gdiag(nd)(4:4).NE.'A') THEN
+            WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
+     &        'Cannot define forward and adjoint variables within the'
+            CALL PRINT_ERROR( msgBuf , myThid )
+            WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
+     &       ' same diag list, l=', ld, ', fileName: ', fnames(ld)
+            CALL PRINT_ERROR( msgBuf , myThid )
+            errCount = errCount + 1
+          ENDIF
+         ENDDO
+        ELSE
+         DO md = 1,nfields(ld)
+          nd = ABS(jdiag(md,ld))
+          IF (gdiag(nd)(4:4).EQ.'A') THEN
+            WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
+     &        'Cannot define forward and adjoint variables within the'
+            CALL PRINT_ERROR( msgBuf , myThid )
+            WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
+     &       ' same diag list, l=', ld, ', fileName: ', fnames(ld)
+            CALL PRINT_ERROR( msgBuf , myThid )
+            errCount = errCount + 1
+          ENDIF
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+C-    for now, adjoint variable diagnostics not implemented for stats-diags
+      DO ld = 1,diagSt_nbLists
+       DO md=1,diagSt_nbFlds(ld)
+        nd = ABS(jSdiag(md,ld))
+        IF ( gdiag(nd)(4:4).EQ.'A' ) THEN
+         WRITE(msgBuf,'(4A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
+     &    'Adj-diag "', diagSt_Flds(md,ld), '" in list ld=', ld,
+     &    ', stat_fName: ', diagSt_Fname(ld)
+         CALL PRINT_ERROR( msgBuf , myThid )
+         WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
+     &    'but Adj-Var diagnostic not coded for Stats-Diags output'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         errCount = errCount + 1
+        ENDIF
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &     'DIAGNOSTICS_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+      ENDIF
 
       _END_MASTER(myThid)
 

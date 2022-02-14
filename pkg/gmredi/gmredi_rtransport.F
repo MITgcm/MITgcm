@@ -8,7 +8,7 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_RTRANSPORT(
      I     trIdentity, bi, bj, k,
      I     iMin, iMax, jMin, jMax,
-     I     Tracer,
+     I     maskUp, Tracer,
      U     df,
      I     myThid )
 
@@ -35,7 +35,6 @@ C     == GLobal variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
@@ -47,12 +46,14 @@ C     bi, bj       :: current tile indices
 C     k            :: current level index
 C     iMin,iMax    :: Range of 1rst index where results will be set
 C     jMin,jMax    :: Range of 2nd  index where results will be set
+C     maskUp       :: 2-D array for mask at W points
 C     Tracer       :: 3D Tracer field
 C     df           :: Diffusive flux component work array.
 C     myThid       :: my Thread Id number
       INTEGER trIdentity
       INTEGER bi, bj, k
       INTEGER iMin, iMax, jMin, jMax
+      _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -62,6 +63,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER igadkey, kkey
+#endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef GM_BOLUS_ADVEC
@@ -69,25 +75,24 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = trIdentity - 1
-          max0 = maxpass
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          kkey = (igadkey-1)*Nr + k
-          if (trIdentity.GT.maxpass) then
-             print *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
-             STOP 'maxpass seems smaller than trIdentity'
-          endif
+      act0 = trIdentity - 1
+      max0 = maxpass
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      igadkey = (act0 + 1) + act1*max0
+     &                     + act2*max0*max1
+     &                     + act3*max0*max1*max2
+     &                     + act4*max0*max1*max2*max3
+      kkey = (igadkey-1)*Nr + k
+      IF (trIdentity.GT.maxpass) THEN
+       PRINT *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
+       STOP 'maxpass seems smaller than trIdentity'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Surface flux is zero
@@ -143,7 +148,7 @@ C-    Off-diagonal components of vertical flux
           df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
      &       *( LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)
-     &        + LS_Kwy(i,j,k,bi,bj)*dTdy(i,j) )
+     &        + LS_Kwy(i,j,k,bi,bj)*dTdy(i,j) )*maskUp(i,j)
          ENDDO
         ENDDO
       ELSE
@@ -153,7 +158,7 @@ C-    Off-diagonal components of vertical flux
           df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
      &       *( Kwx(i,j,k,bi,bj)*dTdx(i,j)
-     &        + Kwy(i,j,k,bi,bj)*dTdy(i,j) )
+     &        + Kwy(i,j,k,bi,bj)*dTdy(i,j) )*maskUp(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_LONGSTEP
@@ -181,7 +186,7 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
          df(i,j) = df(i,j)
      &    +rTrans(i,j)*op5
      &                *(Tracer(i,j,k)+Tracer(i,j,k-1))
-     &        *maskInC(i,j,bi,bj)
+     &        *maskInC(i,j,bi,bj)*maskUp(i,j)
         ENDDO
        ENDDO
       ENDIF

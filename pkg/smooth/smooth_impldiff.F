@@ -11,7 +11,6 @@ C     | o Copy of model/src/impldiff
 C     |    (simplified and with specified time step)
 C     *==========================================================*
 
-
 C     !USES:
       IMPLICIT NONE
 C     == Global data ==
@@ -21,26 +20,22 @@ C     == Global data ==
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL KappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL gXnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER bi, bj, iMin, iMax, jMin, jMax
+      _RL deltaTX
+      _RL KappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RS recip_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gXnm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i,j,k
-      _RL deltaTX
-      _RL gYnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL a(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL gYnm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL bet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gam(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 CEOP
-
-c         deltaTX = 1. _d 0
 
 C--   Initialise
       DO k=1,Nr
@@ -137,7 +132,6 @@ CADJ loop = sequential
 
       ENDIF
 
-
       DO j=jMin,jMax
        DO i=iMin,iMax
         gYNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j,1)
@@ -151,7 +145,6 @@ CADJ loop = sequential
         ENDDO
        ENDDO
       ENDDO
-
 
 C--    Backward sweep
 CADJ loop = sequential

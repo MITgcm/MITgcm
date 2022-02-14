@@ -90,6 +90,12 @@ C--   Initialise other Geo-Chemistry pkg variables:
 # endif
 #endif /* ALLOW_BLING */
 
+#ifdef ALLOW_SPOIL
+      IF ( useSPOIL ) THEN
+         CALL SPOIL_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_SPOIL */
+
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
          CALL DARWIN_INIT_VARI(myThid )

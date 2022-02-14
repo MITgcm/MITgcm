@@ -15,3 +15,7 @@
 
 
 ## Other information:
+
+
+## Suggested addition to `tag-index`
+(To avoid unnecessary merge conflicts, please don't update `tag-index`. One of the admins will do that when merging your pull request.)
