@@ -371,6 +371,9 @@ CADJ STORE phiHydLow= comlev1, key=ikey_dynamics, byte=isbyte
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef SEAICE_USE_GROWTH_ADX
+CADJ STORE tices             = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
 #  ifdef ALLOW_EXF
 CADJ STORE atemp,aqh,precip  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swdown,lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
