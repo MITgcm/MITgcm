@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - avoid division by zero when useOBCStides=.True. and tidalPeriod=0.
 o pkg/gmredi:
   - fix basic code to also work with dry grid cells near the top (e.g., under
     ice-shelf) and in this case, for now, stop if unsafe features are used ;
