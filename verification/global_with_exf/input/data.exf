@@ -24,9 +24,9 @@
 #vstressstartdate2 = 000000,
  vstressperiod     = -12.,
 #
-#climsststartdate1 = 19920101,
-#climsststartdate2 = 000000,
- climsstperiod     = -12.,
+ climsststartdate1 = 19911216,
+ climsststartdate2 = 000000,
+ climsstperiod     = -1.,
 # 2 months restoring timescale for temperature
  climsstTauRelax   = 5184000.,
 #
@@ -40,7 +40,7 @@
 #sfluxfile    = 'ncep_emp.bin',
  ustressfile  = 'trenberth_taux.bin',
  vstressfile  = 'trenberth_tauy.bin',
- climsstfile  = 'lev_sst.bin',
+ climsstfile  = 'lev_sst_startdec.tmp',
  climsssfile  = 'lev_sss.bin',
 #
  &

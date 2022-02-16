@@ -323,7 +323,7 @@ C-    GM/Redi flux in X
       IF ( trUseGMRedi ) THEN
         CALL GMREDI_XTRANSPORT(
      I         trIdentity, bi, bj, k, iMin, iMax+1, jMin, jMax,
-     I         xA, TracerN,
+     I         xA, maskUp, TracerN,
      U         df,
      I         myThid )
       ENDIF
@@ -454,7 +454,7 @@ C-    GM/Redi flux in Y
       IF ( trUseGMRedi ) THEN
         CALL GMREDI_YTRANSPORT(
      I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax+1,
-     I         yA, TracerN,
+     I         yA, maskUp, TracerN,
      U         df,
      I         myThid )
       ENDIF

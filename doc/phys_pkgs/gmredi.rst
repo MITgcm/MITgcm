@@ -189,7 +189,7 @@ be re-written in terms of a non-divergent flux and a skew-flux:
 The first vector is non-divergent and thus has no effect on the tracer
 field and can be dropped. The remaining flux can be written:
 
-.. math:: {\bf u}^\star \tau = - \kappa_{\rm GM} {\bf K}_{\rm GM} \nabla \tau
+.. math:: \bf{u}^\star \tau = - \kappa_{\rm GM} \bf{K}_{\rm GM} \bf{\nabla} \tau
 
 where
 
@@ -396,7 +396,7 @@ down the tensor so that the effective vertical diffusivity term
 :math:`\kappa f_1(S) |{\bf S}|^2 = \kappa S_{\max}^2`.
 
 The GKW91 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’gkw91’** in *data.gmredi*.
+**GM\_taper\_scheme = ’gkw91’** in ``data.gmredi``.
 
 
 Tapering: Danabasoglu and McWilliams, J. Clim. 1995
@@ -414,7 +414,7 @@ lower cut-off, turning off the GM/Redi SGS parameterization for weaker
 slopes.
 
 The DM95 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’dm95’** in *data.gmredi*.
+**GM\_taper\_scheme = ’dm95’** in ``data.gmredi``.
 
 
 Tapering: Large, Danabasoglu and Doney, JPO 1997
@@ -432,7 +432,7 @@ was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’ldd97’** in *data.gmredi*.
+**GM\_taper\_scheme = ’ldd97’** in ``data.gmredi``.
 
 
 .. _ssub_phys_pkg_gmredi_diagnostics:
@@ -462,11 +462,12 @@ Package Reference
 Experiments and tutorials that use gmredi
 +++++++++++++++++++++++++++++++++++++++++
 
--  Global Ocean tutorial, in tutorial\_global\_oce\_latlon verification
-   directory, described in section [sec:eg-global]
+-  Southern Ocean Reentrant Channel Example, in :filelink:`verification/tutorial_reentrant_channel`,
+   described in :numref:`sec_eg_reentrant_channel`
 
--   Front Relax experiment, in front\_relax verification directory.
+-  Global Ocean Simulation, in :filelink:`verification/tutorial_global_oce_latlon`,
+   described in :numref:`sec_global_oce_latlon`
 
--   Ideal 2D Ocean experiment, in ideal\_2D\_oce verification directory.
+-  Front Relax experiment, in front\_relax verification directory.
 
-
+-  Ideal 2D Ocean experiment, in ideal\_2D\_oce verification directory.

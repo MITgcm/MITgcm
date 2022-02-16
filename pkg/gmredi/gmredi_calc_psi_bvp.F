@@ -107,9 +107,9 @@ C      Gradient of Sigma below U and V points
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           sigmaX_W = op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
-     &                  *maskW(i,j,k,bi,bj)
+     &                  *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
           dSigmaDrW = op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
-     &                  *maskW(i,j,k,bi,bj)
+     &                  *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
 
           wkb_cW(i,j) = wkb_cW(i,j)
      &                + SQRT(MAX( -dSigmaDrW, 0. _d 0 ))
@@ -136,7 +136,8 @@ C       However in our case this term is zero since Psi(k=Nr+1)=0
         km1 = k-1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          IF ( maskW(i,j,k,bi,bj).NE.0. ) THEN
+          IF ( maskW(i,j,km1,bi,bj).NE.zeroRS .AND.
+     &         maskW(i,j, k, bi,bj).NE.zeroRS ) THEN
             c2 = MAX( wkb_cW(i,j)*wkb_cW(i,j), GM_BVP_cHat2Min )
             GM_a3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(km1)*recip_hFacW(i,j,km1,bi,bj)
@@ -186,9 +187,9 @@ C      cut k loop in 2 to prevent bad optimisation with some compilers
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           sigmaY_W = op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
-     &                  *maskS(i,j,k,bi,bj)
+     &                  *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
           dSigmaDrS = op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
-     &                  *maskS(i,j,k,bi,bj)
+     &                  *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
 
           wkb_cS(i,j) = wkb_cS(i,j)
      &                + SQRT(MAX( -dSigmaDrS, 0. _d 0 ))
@@ -208,7 +209,8 @@ C      This is initially the RHS
         km1 = k-1
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          IF ( maskS(i,j,k,bi,bj).NE.0. ) THEN
+          IF ( maskS(i,j,km1,bi,bj).NE.zeroRS .AND.
+     &         maskS(i,j, k, bi,bj).NE.zeroRS ) THEN
             c2 = MAX( wkb_cS(i,j)*wkb_cS(i,j), GM_BVP_cHat2Min )
             GM_a3d(i,j,k) = -c2*recip_drC(k)
      &                      *recip_drF(km1)*recip_hFacS(i,j,km1,bi,bj)

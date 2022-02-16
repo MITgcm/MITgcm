@@ -67,10 +67,10 @@ We assume a turbulent Prandtl number of 1, so :math:`A_v=K_{v}`.
 
 We also calculate and output a turbulent dissipation from this scheme.
 We do not simply evaluate the overturns for :math:`\epsilon` using
-([eq:pkg:kl10:Lo]). Instead we compute the vertical shear terms that the
+:eq:`eq-pkg-kl10-Lo`. Instead we compute the vertical shear terms that the
 viscosity is acting on:
 
-.. math:: \epsilon_v = A_v \left(\left(\frac{\partial u}{\partial z}\right)^2 + \left(\frac{\partial v}{\partial z}\right)^2 \right).
+.. math:: \epsilon_v = A_v \left[ \left(\partial_z u \right)^2 + \left( \frac{\partial u}{\partial z} \right)^2 \right].
 
 There are straightforward caveats to this approach, covered in :cite:`klymaklegg10`.
 
@@ -101,7 +101,7 @@ There are straightforward caveats to this approach, covered in :cite:`klymaklegg
 
 .. _ssub_phys_pkg_kl10_comp:
 
-KL10 configuration and compiling 
+KL10 configuration and compiling
 ++++++++++++++++++++++++++++++++
 
 As with all MITgcm packages, KL10 can be turned on or off at compile
@@ -226,4 +226,3 @@ Experiments and tutorials that use KL10
 
 -  Modified Internal Wave experiment, in internal_wave verification
    directory
-

@@ -7,8 +7,8 @@
  nbeg             = 1,
  nstep            = 1,
  nend             = 4,
-# to test xx_tr1 set 17
- grdchkvarindex   = 1,
+# to test xx_tr1 set 204
+ grdchkvarindex   = 201,
  iGloPos  =10,
  jGloPos  =10,
  kGloPos  =1,

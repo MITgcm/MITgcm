@@ -184,11 +184,11 @@ C     Do MY82 diagnostics.
      &     CALL MY82_OUTPUT( myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_OPPS
+c#ifdef ALLOW_OPPS
 C--   Do OPPS diagnostics.
-      IF ( useOPPS )
-     & CALL OPPS_OUTPUT( myTime, myIter, myThid )
-#endif
+c     IF ( useOPPS )
+c    & CALL OPPS_OUTPUT( myTime, myIter, myThid )
+c#endif
 
 #ifdef ALLOW_GGL90
 C--   Do GGL90 diagnostics.

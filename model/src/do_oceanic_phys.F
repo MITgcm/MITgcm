@@ -371,6 +371,9 @@ CADJ STORE phiHydLow= comlev1, key=ikey_dynamics, byte=isbyte
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef SEAICE_USE_GROWTH_ADX
+CADJ STORE tices             = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
 #  ifdef ALLOW_EXF
 CADJ STORE atemp,aqh,precip  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swdown,lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
@@ -614,10 +617,8 @@ cph although some of these are re-initialised later.
            Kwx(i,j,k,bi,bj)  = 0. _d 0
            Kwy(i,j,k,bi,bj)  = 0. _d 0
            Kwz(i,j,k,bi,bj)  = 0. _d 0
-#  ifdef GM_NON_UNITY_DIAGONAL
            Kux(i,j,k,bi,bj)  = 0. _d 0
            Kvy(i,j,k,bi,bj)  = 0. _d 0
-#  endif
 #  ifdef GM_EXTRA_DIAGONAL
            Kuz(i,j,k,bi,bj)  = 0. _d 0
            Kvz(i,j,k,bi,bj)  = 0. _d 0
