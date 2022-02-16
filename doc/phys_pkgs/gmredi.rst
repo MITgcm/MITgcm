@@ -250,7 +250,7 @@ Variable GM diffusivity :math:`kappa_{GM}`
 ++++++++++++++++++++++++++++++++++++++++++
 
 :cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
-the Eady growth rate, :math:`|f|/\sqrt{{\rm Ri}}`. The formula involves a
+the Eady growth rate, :math:`|f|/\sqrt{Ri}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
 .. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{{\rm Ri}}} }^z
