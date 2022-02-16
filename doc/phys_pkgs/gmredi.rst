@@ -246,8 +246,8 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-Variable GM diffusivity :math:`kappa_{GM}`
-++++++++++++++++++++++++++++++++++++++++++
+Variable GM diffusivity :math:`\kappa_{GM}`
++++++++++++++++++++++++++++++++++++++++++++
 
 :cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
 the Eady growth rate, :math:`|f|/\sqrt{Ri}`. The formula involves a
@@ -257,7 +257,7 @@ non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
 where the Eady growth rate has been depth averaged (indicated by the
 over-line). A local Richardson number is defined
-:math:` Ri = N^2 / (\partial u/\partial z)^2` which, when combined with thermal wind gives:
+:math:`Ri = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
 
 .. math::
 
