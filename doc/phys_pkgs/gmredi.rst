@@ -91,7 +91,7 @@ the tracer tendency equation (on the rhs):
 
 The bolus velocity :math:`{\bf u}^\star` is defined as the rotational part
 of a streamfunction
-:math:`{\bf F}^\star`\ =\ :math:`(F_x^\star, F_y^\star, 0)`:
+:math:`{\bf F}^\star = (F_x^\star, F_y^\star, 0)`:
 
 .. math::
 
