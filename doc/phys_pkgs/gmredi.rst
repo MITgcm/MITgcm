@@ -357,7 +357,7 @@ so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
 S_{\max}`.
 
 The slope clipping scheme is activated in the model by setting
-**GM\_taper\_scheme = ’clipping’** in *data.gmredi*.
+**GM\_taper\_scheme = ’clipping’** in ``data.gmredi``.
 
 Even using slope clipping, it is normally the case that the vertical
 diffusion term (with coefficient :math:`\kappa_\rho{\bf K}_{33} =
