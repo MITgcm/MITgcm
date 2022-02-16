@@ -253,15 +253,15 @@ Variable GM diffusivity :math:`kappa_{GM}`
 the Eady growth rate, :math:`|f|/\sqrt{Ri}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
-.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{{\rm Ri}}} }^z
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{Ri}} }^z
 
 where the Eady growth rate has been depth averaged (indicated by the
 over-line). A local Richardson number is defined
-:math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
+:math:` Ri = N^2 / (\partial u/\partial z)^2` which, when combined with thermal wind gives:
 
 .. math::
 
-   \frac{1}{{\rm Ri}} = \frac{(\partial_z u)^2}{N^2} =
+   \frac{1}{Ri} = \frac{(\partial_z u)^2}{N^2} =
    \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 }
 
