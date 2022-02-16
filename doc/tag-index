@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - fix some math notation in docs.
 o pkg/obcs:
   - avoid division by zero when useOBCStides=.True. and tidalPeriod=0.
 o pkg/gmredi:
