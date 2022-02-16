@@ -261,7 +261,7 @@ over-line). A local Richardson number is defined
 
 .. math::
 
-   \frac{1}{Ri} = \frac{(\partial_z u)^2}{N^2} =
+   \frac{1}{Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
    \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 }
 
