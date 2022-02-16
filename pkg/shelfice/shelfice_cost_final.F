@@ -53,9 +53,7 @@ C     !LOCAL VARIABLES:
 cML      _RL no_shelfice
       _RL no_shifwflx
 
-#ifndef ALLOW_ECCO
       INTEGER i, j
-#endif
 CEOP
 
       f_shelfice = 0. _d 0
@@ -63,10 +61,10 @@ CEOP
 cML      no_shelfice= 0. _d 0
       no_shifwflx= 0. _d 0
 
-#ifndef ALLOW_ECCO
+      IF ( .NOT. useECCO ) THEN
 C--   Calculate cost function on tile of this instance
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
 ccc        do klev = 1, Nr
           DO j=1,sNy
            DO i=1,sNx
@@ -78,9 +76,9 @@ ccc        do klev = 1, Nr
            ENDDO
           ENDDO
 ccc        end do
+        ENDDO
        ENDDO
-      ENDDO
-#endif /* ALLOW_ECCO */
+      ENDIF
 
 C--   Sum up all contributions.
       DO bj = myByLo(myThid), myByHi(myThid)
