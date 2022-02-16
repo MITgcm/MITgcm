@@ -246,8 +246,8 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-Variable GM diffusivity
-+++++++++++++++++++++++
+Variable GM diffusivity :math:`kappa_{GM}`
+++++++++++++++++++++++++++++++++++++++++++
 
 :cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
 the Eady growth rate, :math:`|f|/\sqrt{{\rm Ri}}`. The formula involves a
