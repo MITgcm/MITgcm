@@ -5,13 +5,14 @@ GMREDI: Gent-McWilliams/Redi Eddy Parameterization
 
 
 There are two parts to the Redi/GM subgrid-scale parameterization of geostrophic
-eddies. The first, the Redi scheme :cite:`redi1982`, aims to mix tracer properties along
+eddies. The first, the Redi scheme (Redi 1982 :cite:`redi1982`), aims to mix tracer properties along
 isentropes (neutral surfaces) by means of a diffusion operator oriented
-along the local isentropic surface. The second part, GM :cite:`gen-mcw:90,gen-eta:95`, adiabatically
+along the local isentropic surface. The second part, GM 
+(Gent and McWiliams 1990 :cite:`gen-mcw:90`, Gent et al. 1995 :cite:`gen-eta:95`), adiabatically
 re-arranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
 
-The first GCM implementation of the Redi scheme was by :cite:`cox87` in the GFDL ocean
+The first GCM implementation of the Redi scheme was by Cox (1987) :cite:`cox87` in the GFDL ocean
 circulation model. The original approach failed to distinguish between
 isopycnals and surfaces of locally referenced potential density (now
 called neutral surfaces), which are proper isentropes for the ocean. As
@@ -25,7 +26,7 @@ non-divergent bolus velocity. The method defines two stream-functions
 expressed in terms of the isoneutral slopes subject to the boundary
 condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
-Here in lies a problem highlighted by Griffies et al. :cite:`gretal:98`: the
+Here in lies a problem highlighted by Griffies et al. (1998) :cite:`gretal:98`: the
 bolus velocities involve multiple derivatives on the potential density field,
 which can consequently give rise to noise. Griffies et al. point out that the GM
 bolus fluxes can be identically written as a skew flux which involves
@@ -131,10 +132,10 @@ parameterization is given by:
    \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
    \end{pmatrix}
 
-This is the form of the GM parameterization as applied by Donabasaglu,
-1997, in MOM versions 1 and 2.
+This is the form of the GM parameterization as applied by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95`,
+employed in the GFDL Modular Ocean Model (MOM) versions 1 and 2.
 
-Note that in the MITgcm, the variables containing the GM bolus
+Note that in MITgcm, the variables containing the GM bolus
 streamfunction are:
 
 .. math::
@@ -157,7 +158,7 @@ streamfunction are:
 Griffies Skew Flux
 ++++++++++++++++++
 
-Griffies :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
+Griffies (1998) :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
 fields and computational modes. He pointed out that the bolus flux can
 be re-written in terms of a non-divergent flux and a skew-flux:
@@ -249,7 +250,8 @@ non-zero elements in the :math:`z`-row.
 Variable GM diffusivity :math:`\kappa_{GM}`
 +++++++++++++++++++++++++++++++++++++++++++
 
-:cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
+Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
+:math:`\kappa_{\rm GM}`, a function of
 the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
@@ -282,53 +284,18 @@ Tapering and stability
 Experience with the GFDL model showed that the GM scheme has to be
 matched to the convective parameterization. This was originally
 expressed in connection with the introduction of the KPP boundary layer
-scheme :cite:`lar-eta:94` but in fact, as subsequent experience with the MIT model has
+scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent experience with the MIT model has
 found, is necessary for any convective parameterization.
 
-
-.. admonition:: Subroutine
-  :class: note
-
-  S/R GMREDI_SLOPE_LIMIT (*pkg/gmredi/gmredi_slope_limit.F*)
-
-  :math:`\sigma_x, s_x`: **SlopeX** (argument)
-
-  :math:`\sigma_y, s_y`: **SlopeY** (argument)
-
-  :math:`\sigma_z`: **dSigmadRReal** (argument)
-
-  :math:`z_\sigma^{*}`: **dRdSigmaLtd** (argument)
-
-
-
-.. figure:: figs/tapers.*
-    :width: 70%
-    :align: center
-    :alt: Tapering for GM scheme
-    :name: tapers
-
-    Taper functions used in GKW91 and DM95. 
-
-
-.. figure:: figs/effective_slopes.*
-    :width: 70%
-    :align: center
-    :alt: Tapering for GM scheme
-    :name: effective_slopes
-
-    Effective slope as a function of 'true' slope using Cox slope clipping, GKW91 limiting and DM95 limiting.
-
-
-
 Slope clipping
-++++++++++++++
+==============
 
 Deep convection sites and the mixed layer are indicated by homogenized,
 unstable or nearly unstable stratification. The slopes in such regions
 can be either infinite, very large with a sign reversal or simply very
 large. From a numerical point of view, large slopes lead to large
 variations in the tensor elements (implying large bolus flow) and can be
-numerically unstable. This was first recognized by :cite:`cox87` who implemented
+numerically unstable. This was first recognized by Cox (1987) :cite:`cox87` who implemented
 “slope clipping” in the isopycnal mixing tensor. Here, the slope
 magnitude is simply restricted by an upper limit:
 
@@ -373,11 +340,24 @@ Limiting the slopes also breaks the adiabatic nature of the GM/Redi
 parameterization, re-introducing diabatic fluxes in regions where the
 limiting is in effect.
 
+.. admonition:: Subroutine
+  :class: note
 
-Tapering: Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  S/R GMREDI_SLOPE_LIMIT (*pkg/gmredi/gmredi_slope_limit.F*)
 
-The tapering scheme used in :cite:`gkw:91` addressed two issues with the clipping
+  :math:`\sigma_x, s_x`: **SlopeX** (argument)
+
+  :math:`\sigma_y, s_y`: **SlopeY** (argument)
+
+  :math:`\sigma_z`: **dSigmadRReal** (argument)
+
+  :math:`z_\sigma^{*}`: **dRdSigmaLtd** (argument)
+
+Tapering: Gerdes, Koberle and Willebrand, 1991
+==============================================
+
+The tapering scheme used in Gerdes et al. (1991) :cite:`gkw:91` (GKW91)
+addressed two issues with the clipping
 method: the introduction of large vertical fluxes in addition to
 convective adjustment fluxes is avoided by tapering the GM/Redi slopes
 back to zero in low-stratification regions; the adjustment of slopes is
@@ -398,12 +378,28 @@ down the tensor so that the effective vertical diffusivity term
 The GKW91 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’gkw91’`` in ``data.gmredi``.
 
+.. figure:: figs/tapers.*
+    :width: 70%
+    :align: center
+    :alt: Tapering for GM scheme
+    :name: tapers
 
-Tapering: Danabasoglu and McWilliams, J. Clim. 1995
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+    Taper functions used in GKW91 and DM95. 
 
-The tapering scheme used by followed a similar procedure but used a
-different tapering function, :math:`f_1(S)`:
+
+.. figure:: figs/effective_slopes.*
+    :width: 70%
+    :align: center
+    :alt: Tapering for GM scheme
+    :name: effective_slopes
+
+    Effective slope as a function of 'true' slope using Cox slope clipping, GKW91 limiting and DM95 limiting.
+
+Tapering: Danabasoglu and McWilliams, 1995
+==========================================
+
+The tapering scheme used by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95` (DM95)
+followed a similar procedure but used a different tapering function, :math:`f_1(S)`:
 
 .. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right]
 
@@ -417,17 +413,19 @@ The DM95 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’dm95’`` in ``data.gmredi``.
 
 
-Tapering: Large, Danabasoglu and Doney, JPO 1997
-++++++++++++++++++++++++++++++++++++++++++++++++
+Tapering: Large, Danabasoglu and Doney, 1997
+============================================
 
-The tapering used in :cite:`lar-eta:97` is based on the DM95 tapering scheme, but also
+The tapering used in Large et al. (1997) :cite:`lar-eta:97` (LDD97)
+is based on the DM95 tapering scheme, but also
 tapers the scheme with an additional function of height, :math:`f_2(z)`,
 so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
 .. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) = \frac{1}{2} \left( 1 + \sin(\pi \frac{z}{D} - \frac{\pi}{2})\right)
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
-Coriolis parameter and :math:`c=2` m/s. This tapering that varies with depth
+Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed, so that :math:`c/f` is the Rossby radius).
+This tapering that varies with depth
 was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
