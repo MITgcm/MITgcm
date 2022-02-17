@@ -1,10 +1,10 @@
 .. _sub_phys_pkg_gmredi:
 
-GMREDI: Gent-McWilliams/Redi SGS Eddy Parameterization
-------------------------------------------------------
+GMREDI: Gent-McWilliams/Redi Eddy Parameterization
+--------------------------------------------------
 
 
-There are two parts to the Redi/GM parameterization of geostrophic
+There are two parts to the Redi/GM subgrid-scale parameterization of geostrophic
 eddies. The first, the Redi scheme :cite:`redi1982`, aims to mix tracer properties along
 isentropes (neutral surfaces) by means of a diffusion operator oriented
 along the local isentropic surface. The second part, GM :cite:`gen-mcw:90,gen-eta:95`, adiabatically
@@ -82,7 +82,7 @@ Redi projection tensor then simplifies to:
 GM parameterization
 +++++++++++++++++++
 
-The GM parameterization aims to represent the “advective” or “transport”
+The GM parameterization aims to represent the advective or “transport”
 effect of geostrophic eddies by means of a “bolus” velocity,
 :math:`{\bf u}^\star`. The divergence of this advective flux is added to
 the tracer tendency equation (on the rhs):
@@ -140,8 +140,8 @@ streamfunction are:
 .. math::
 
    \begin{pmatrix}
-   \texttt{GM_PsiX} \\
-   \texttt{GM_PsiY}
+   \sf{GM\_PsiX} \\
+   \sf{GM\_PsiY}
    \end{pmatrix} =
    \begin{pmatrix}
    \kappa_{\rm GM} S_x \\
@@ -157,7 +157,7 @@ streamfunction are:
 Griffies Skew Flux
 ++++++++++++++++++
 
-Griffies :cite:`gr:98` notes that the discretisation of bolus velocities involves multiple
+Griffies :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
 fields and computational modes. He pointed out that the bolus flux can
 be re-written in terms of a non-divergent flux and a skew-flux:
@@ -216,7 +216,7 @@ the Redi isoneutral mixing scheme:
    - {\bf u}^\star \tau = 
    ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \nabla \tau
 
-If the Reddi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
+If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
 
 .. math::
    \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} =
@@ -250,18 +250,18 @@ Variable GM diffusivity :math:`\kappa_{GM}`
 +++++++++++++++++++++++++++++++++++++++++++
 
 :cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
-the Eady growth rate, :math:`|f|/\sqrt{Ri}`. The formula involves a
+the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
-.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{Ri}} }^z
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\rm Ri}} }^z
 
 where the Eady growth rate has been depth averaged (indicated by the
 over-line). A local Richardson number is defined
-:math:`Ri = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
+:math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
 
 .. math::
 
-   \frac{1}{Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
+   \frac{1}{\rm Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
    \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 }
 
@@ -357,12 +357,12 @@ so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
 S_{\max}`.
 
 The slope clipping scheme is activated in the model by setting
-**GM\_taper\_scheme = ’clipping’** in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’clipping’`` in ``data.gmredi``.
 
 Even using slope clipping, it is normally the case that the vertical
 diffusion term (with coefficient :math:`\kappa_\rho{\bf K}_{33} =
 \kappa_\rho S_{\max}^2`) is large and must be time-stepped using an
-implicit procedure (see section on discretisation and code later). Fig.
+implicit procedure (see :numref:`implicit-backward-stepping`). Fig.
 [fig-mixedlayer] shows the mixed layer depth resulting from a) using the
 GM scheme with clipping and b) no GM scheme (horizontal diffusion). The
 classic result of dramatically reduced mixed layers is evident. Indeed,
@@ -396,7 +396,7 @@ down the tensor so that the effective vertical diffusivity term
 :math:`\kappa f_1(S) |{\bf S}|^2 = \kappa S_{\max}^2`.
 
 The GKW91 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’gkw91’** in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’gkw91’`` in ``data.gmredi``.
 
 
 Tapering: Danabasoglu and McWilliams, J. Clim. 1995
@@ -410,11 +410,11 @@ different tapering function, :math:`f_1(S)`:
 where :math:`S_c = 0.004` is a cut-off slope and :math:`S_d=0.001` is a
 scale over which the slopes are smoothly tapered. Functionally, the
 operates in the same way as the GKW91 scheme but has a substantially
-lower cut-off, turning off the GM/Redi SGS parameterization for weaker
+lower cut-off, turning off the GM/Redi parameterization for weaker
 slopes.
 
 The DM95 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’dm95’** in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’dm95’`` in ``data.gmredi``.
 
 
 Tapering: Large, Danabasoglu and Doney, JPO 1997
@@ -424,7 +424,7 @@ The tapering used in :cite:`lar-eta:97` is based on the DM95 tapering scheme, bu
 tapers the scheme with an additional function of height, :math:`f_2(z)`,
 so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
-.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right)
+.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) = \frac{1}{2} \left( 1 + \sin(\pi \frac{z}{D} - \frac{\pi}{2})\right)
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
 Coriolis parameter and :math:`c=2` m/s. This tapering that varies with depth
@@ -432,7 +432,7 @@ was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’ldd97’** in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’ldd97’`` in ``data.gmredi``.
 
 
 .. _ssub_phys_pkg_gmredi_diagnostics:
