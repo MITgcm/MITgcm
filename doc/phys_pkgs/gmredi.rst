@@ -1,8 +1,14 @@
 .. _sub_phys_pkg_gmredi:
 
 GMREDI: Gent-McWilliams/Redi Eddy Parameterization
---------------------------------------------------
+**************************************************
 
+Introduction
+============
+
+Package :filelink:`gmredi <pkg/gmredi>` parameterizes transport due to mesoscale eddy mixing
+for use in non-eddy-resolving ocean circulation models. This package is commonly
+applied for transport of heat, salinity and tracers.
 
 There are two parts to the Redi/GM subgrid-scale parameterization of geostrophic
 eddies. The first, the Redi scheme (Redi 1982 :cite:`redi1982`), aims to mix tracer properties along
@@ -11,6 +17,156 @@ along the local isentropic surface. The second part, GM
 (Gent and McWiliams 1990 :cite:`gen-mcw:90`, Gent et al. 1995 :cite:`gen-eta:95`), adiabatically
 re-arranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
+
+CPP options enable or disable different aspects of the package
+(:numref:`ssub_phys_pkg_gmredi_config`). Run-time options, flags, filenames and
+field-related dates/times are set in ``data.gmredi``
+(:numref:`ssub_phys_pkg_gmredi_runtime`).  A description of key package equations used is
+given in :numref:`ssub_phys_pkg_gmredi_descr`.  Available diagnostics
+output is listed in :numref:`ssub_phys_pkg_gmredi_diagnostics`.
+
+.. _ssub_phys_pkg_gmredi_config:
+
+GMREDI configuration and compiling
+==================================
+
+Compile-time options
+--------------------
+
+As with all MITgcm packages, GMREDI can be turned on or off at compile time
+(see :numref:`building_code`)
+
+- using the ``packages.conf`` file by adding ``gmredi`` to it
+
+- or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=gmredi`` or
+  ``-disable=gmredi`` switches
+
+- **required packages and CPP options**:
+  :filelink:`seaice <pkg/gmredi>` requires
+
+
+Parts of the :filelink:`seaice <pkg/gmredi>` code can be enabled or disabled at
+compile time via CPP preprocessor flags. These options are set in
+:filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
+:numref:`tab_phys_pkg_gmredi_cpp` summarizes the most important ones. For more
+options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
+
+.. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
+
+.. csv-table:: Some of the most relevant CPP preprocessor flags in the :filelink:`gmredi <pkg/gmredi>` package.
+   :header: "CPP option", "Default", Description"
+   :widths: 30, 10, 60
+   :name: tab_phys_pkg_gmredi_cpp
+
+   :varlink:`GM_NON_UNITY_DIAGONAL`, #define, allows the leading diagonal (top two rows) to be non-unity
+   :varlink:`GM_EXTRA_DIAGONAL`, #define, allows different values of :math:`\kappa_{\rm GM}` and :math:`\kappa_{\rho}`; also required for advective form
+   :varlink:`GM_BOLUS_ADVEC`, #define, allows use of the advective form (bolus velocity)
+   :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
+   :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
+   :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
+
+.. _ssub_phys_pkg_gmredi_runtime:
+
+Run-time parameters
+===================
+
+Run-time parameters (see :numref:`tab_phys_pkg_gmredi_runtimeparms`) are set in
+``data.gmredi`` (read in :filelink:`pkg/gmredi/gmredi_readparms.F`).
+
+Enabling the package
+--------------------
+
+:filelink:`gmredi <pkg/gmredi>` package is switched on/off at run-time by
+setting :varlink:`useGMREDI` ``= .TRUE.,`` in ``data.pkg``.
+
+General flags and parameters
+----------------------------
+
+:numref:`tab_phys_pkg_gmredi_runtimeparms` lists most run-time parameters.
+
+.. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
+
+.. table:: Run-time parameters and default values
+  :class: longtable
+  :name: tab_phys_pkg_gmredi_runtimeparms
+
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  |   Name                             |      Default value           |   Description                                                           |
+  +====================================+==============================+=========================================================================+
+  | :varlink:`GM_AdvForm`              |     FALSE                    | use advective form (bolus velocity); FALSE uses skewflux form           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_AdvSeparate`          |     FALSE                    | do advection by Eulerian and bolus velocity separately                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_InMomAsStress`        |     FALSE                    | apply GM as a stress in momentum equations                              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity (m\ :sup:`2`\ /s) (GM bolus transport)            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity (m\ :sup:`2`\ /s) (Redi tensor)                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s)                        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Small_Number`         |     1.0E-20                  | :math:`\epsilon` used in computing the slope                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('orig', 'clipping', 'fm07', 'stableGmAdjTap',      |
+  |                                    |                              | 'linear', 'ac02', 'gkw91', 'dm95', 'ldd97')                             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum trans. layer thick. as a factor of local mixed-layer depth      |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum trans. layer thick. as a factor of local dr                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for 'dm95' and 'ldd97 ' tapering function         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for 'dm95' and 'ldd97' tapering function          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_UseBVP`               |     FALSE                    | use Boundary-Value-Problem method for bolus transport                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_BVP_cMin`             |     1.0E-01                  | minimum value for wave speed parameter :math:`c` in BVP (m/s)           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_alpha`        |     0.0                      | :math:`\alpha` parameter for Visbeck et al. scheme (non-dim.)           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_length`       |     200.0E+03                | :math:`L` length scale parameter for Visbeck et al. scheme (m)          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_depth`        |     1000.0                   | depth (m) over which to average in computing Visbeck                    |
+  |                                    |                              | :math:`\kappa_{\rm GM}`                                                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_minDepth`     |     0.0                      | remove from table? (m)                                                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_maxSlope`     |     :varlink:`GM_maxSlope`   | maximum slope using Visbeck et al.                                      |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_minVal_K`     |     0.0                      | minimum diffusivity (m\ :sup:`2`\ /s) using Visbeck et al.              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum diffusivity (m\ :sup:`2`\ /s) using Visbeck et al.              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_iso2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of isopycnal diffusivity        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_iso1dFile`            |     ' '                      | input file for 1D vert. scaling of isopycnal diffusivity                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_bol2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of thickness diffusivity        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_bol1dFile`            |     ' '                      | input file for 1D vert. scaling of thickness diffusivity                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_background_K3dFile`   |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_isopycK3dFile`        |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_MNC`                  |     :varlink:`useMNC`        | write GMREDI snapshot output using :filelink:`/pkg/mnc`                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+ 
+
+.. _ssub_phys_pkg_gmredi_descr:
+
+Description
+===========
 
 The first GCM implementation of the Redi scheme was by Cox (1987) :cite:`cox87` in the GFDL ocean
 circulation model. The original approach failed to distinguish between
@@ -35,9 +191,8 @@ formulation and Redi scheme, substantial cancellations take place to the
 point that the horizontal fluxes are unmodified from the lateral
 diffusion parameterization.
 
-
 Redi scheme: Isopycnal diffusion
-++++++++++++++++++++++++++++++++
+--------------------------------
 
 The Redi scheme diffuses tracers along isopycnals and introduces a term
 in the tendency (rhs) of such a tracer (here :math:`\tau`) of the form:
@@ -81,7 +236,7 @@ Redi projection tensor then simplifies to:
 .. _GM_bolus_desc:  
 
 GM parameterization
-+++++++++++++++++++
+-------------------
 
 The GM parameterization aims to represent the advective or “transport”
 effect of geostrophic eddies by means of a “bolus” velocity,
@@ -135,8 +290,8 @@ parameterization is given by:
 This is the form of the GM parameterization as applied by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95`,
 employed in the GFDL Modular Ocean Model (MOM) versions 1 and 2.
 
-Note that in MITgcm, the variables containing the GM bolus
-streamfunction are:
+Note that in MITgcm, the variables for the GM bolus
+streamfunction :varlink:`GM_PsiX` and :varlink:`GM_PsiY` are defined:
 
 .. math::
 
@@ -156,7 +311,7 @@ streamfunction are:
 .. _sub_gmredi_skewflux:
 
 Griffies Skew Flux
-++++++++++++++++++
+------------------
 
 Griffies (1998) :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
@@ -234,7 +389,7 @@ non-zero elements in the :math:`z`-row.
 .. admonition:: Subroutine
   :class: note
 
-  S/R GMREDI_CALC_TENSOR (*pkg/gmredi/gmredi_calc_tensor.F*)
+  S/R GMREDI_CALC_TENSOR (:filelink:`pkg/gmredi/gmredi_calc_tensor.F`)
 
   :math:`\sigma_x`: **SlopeX** (argument on entry)
 
@@ -247,8 +402,8 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-Variable GM diffusivity :math:`\kappa_{GM}`
-+++++++++++++++++++++++++++++++++++++++++++
+Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
+-----------------------------------------------------------
 
 Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
 :math:`\kappa_{\rm GM}`, a function of
@@ -279,7 +434,7 @@ the formula for :math:`\kappa_{\rm GM}` gives:
 .. _sub_gmredi_tapering_stability:
 
 Tapering and stability
-++++++++++++++++++++++
+----------------------
 
 Experience with the GFDL model showed that the GM scheme has to be
 matched to the convective parameterization. This was originally
@@ -288,7 +443,7 @@ scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent experie
 found, is necessary for any convective parameterization.
 
 Slope clipping
-==============
+++++++++++++++
 
 Deep convection sites and the mixed layer are indicated by homogenized,
 unstable or nearly unstable stratification. The slopes in such regions
@@ -343,7 +498,7 @@ limiting is in effect.
 .. admonition:: Subroutine
   :class: note
 
-  S/R GMREDI_SLOPE_LIMIT (*pkg/gmredi/gmredi_slope_limit.F*)
+  S/R GMREDI_SLOPE_LIMIT (:filelink:`pkg/gmredi/gmredi_slope_limit.F`)
 
   :math:`\sigma_x, s_x`: **SlopeX** (argument)
 
@@ -353,8 +508,8 @@ limiting is in effect.
 
   :math:`z_\sigma^{*}`: **dRdSigmaLtd** (argument)
 
-Tapering: Gerdes, Koberle and Willebrand, 1991
-==============================================
+Tapering: Gerdes, Koberle and Willebrand, 1991 (GKW91)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The tapering scheme used in Gerdes et al. (1991) :cite:`gkw:91` (GKW91)
 addressed two issues with the clipping
@@ -395,8 +550,8 @@ The GKW91 tapering scheme is activated in the model by setting
 
     Effective slope as a function of 'true' slope using Cox slope clipping, GKW91 limiting and DM95 limiting.
 
-Tapering: Danabasoglu and McWilliams, 1995
-==========================================
+Tapering: Danabasoglu and McWilliams, 1995 (DM95)
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The tapering scheme used by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95` (DM95)
 followed a similar procedure but used a different tapering function, :math:`f_1(S)`:
@@ -413,8 +568,8 @@ The DM95 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’dm95’`` in ``data.gmredi``.
 
 
-Tapering: Large, Danabasoglu and Doney, 1997
-============================================
+Tapering: Large, Danabasoglu and Doney, 1997 (LDD97)
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The tapering used in Large et al. (1997) :cite:`lar-eta:97` (LDD97)
 is based on the DM95 tapering scheme, but also
@@ -435,30 +590,41 @@ The LDD97 tapering scheme is activated in the model by setting
 
 .. _ssub_phys_pkg_gmredi_diagnostics:
 
-Package Reference
-+++++++++++++++++
+GMREDI Diagnostics
+==================
 
 ::
 
-    ------------------------------------------------------------------------
-    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c) 
-    ------------------------------------------------------------------------
-    GM_VisbK|  1 |SM P    M1      |m^2/s           |Mixing coefficient from Visbeck etal parameterization
-    GM_Kux  | 15 |UU P 177MR      |m^2/s           |K_11 element (U.point, X.dir) of GM-Redi tensor
-    GM_Kvy  | 15 |VV P 176MR      |m^2/s           |K_22 element (V.point, Y.dir) of GM-Redi tensor
-    GM_Kuz  | 15 |UU   179MR      |m^2/s           |K_13 element (U.point, Z.dir) of GM-Redi tensor
-    GM_Kvz  | 15 |VV   178MR      |m^2/s           |K_23 element (V.point, Z.dir) of GM-Redi tensor
-    GM_Kwx  | 15 |UM   181LR      |m^2/s           |K_31 element (W.point, X.dir) of GM-Redi tensor
-    GM_Kwy  | 15 |VM   180LR      |m^2/s           |K_32 element (W.point, Y.dir) of GM-Redi tensor
-    GM_Kwz  | 15 |WM P    LR      |m^2/s           |K_33 element (W.point, Z.dir) of GM-Redi tensor
-    GM_PsiX | 15 |UU   184LR      |m^2/s           |GM Bolus transport stream-function : X component
-    GM_PsiY | 15 |VV   183LR      |m^2/s           |GM Bolus transport stream-function : Y component
-    GM_KuzTz| 15 |UU   186MR      |degC.m^3/s      |Redi Off-diagonal Tempetature flux: X component
-    GM_KvzTz| 15 |VV   185MR      |degC.m^3/s      |Redi Off-diagonal Tempetature flux: Y component
+   ----------------------------------------------------------------------
+   <-Name->|Levs|<- code ->|<--  Units   -->|<- Description
+   ----------------------------------------------------------------------
+   GM_VisbK|  1 |SM P    M1|m^2/s           |Mixing coefficient from Visbeck etal parameterization
+   GM_hTrsL|  1 |SM P    M1|m               |Base depth (>0) of the Transition Layer
+   GM_baseS|  1 |SM P    M1|1               |Slope at the base of the Transition Layer
+   GM_rLamb|  1 |SM P    M1|1/m             |Slope vertical gradient at Trans. Layer Base (=recip.Lambda)
+   SubMesLf|  1 |SM P    M1|m               |Sub-Meso horiz. Length Scale (Lf)
+   SubMpsiX|  1 |UU      M1|m^2/s           |Sub-Meso transp.stream-funct. magnitude (Psi0): U component
+   SubMpsiY|  1 |VV      M1|m^2/s           |Sub-Meso transp.stream-funct. magnitude (Psi0): V component
+   GM_Kux  | 18 |UU P    MR|m^2/s           |K_11 element (U.point, X.dir) of GM-Redi tensor
+   GM_Kvy  | 18 |VV P    MR|m^2/s           |K_22 element (V.point, Y.dir) of GM-Redi tensor
+   GM_Kuz  | 18 |UU      MR|m^2/s           |K_13 element (U.point, Z.dir) of GM-Redi tensor
+   GM_Kvz  | 18 |VV      MR|m^2/s           |K_23 element (V.point, Z.dir) of GM-Redi tensor
+   GM_Kwx  | 18 |UM      LR|m^2/s           |K_31 element (W.point, X.dir) of GM-Redi tensor
+   GM_Kwy  | 18 |VM      LR|m^2/s           |K_32 element (W.point, Y.dir) of GM-Redi tensor
+   GM_Kwz  | 18 |WM P    LR|m^2/s           |K_33 element (W.point, Z.dir) of GM-Redi tensor
+   GM_PsiX | 18 |UU      LR|m^2/s           |GM Bolus transport stream-function : U component
+   GM_PsiY | 18 |VV      LR|m^2/s           |GM Bolus transport stream-function : V component
+   GM_KuzTz| 18 |UU      MR|degC.m^3/s      |Redi Off-diagonal Temperature flux: X component
+   GM_KvzTz| 18 |VV      MR|degC.m^3/s      |Redi Off-diagonal Temperature flux: Y component
+   GM_KwzTz| 18 |WM      LR|degC.m^3/s      |Redi main-diagonal vertical Temperature flux
+   GM_ubT  | 18 |UUr     MR|degC.m^3/s      |Zonal Mass-Weight Bolus Transp of Pot Temp
+   GM_vbT  | 18 |VVr     MR|degC.m^3/s      |Meridional Mass-Weight Bolus Transp of Pot Temp
+   GM_BVPcW|  1 |SU P    M1|m/s             |WKB wave speed (at Western edge location)
+   GM_BVPcS|  1 |SV P    M1|m/s             |WKB wave speed (at Southern edge location)
 
 
-Experiments and tutorials that use gmredi
-+++++++++++++++++++++++++++++++++++++++++
+Experiments and tutorials that use GMREDI
+=========================================
 
 -  Southern Ocean Reentrant Channel Example, in :filelink:`verification/tutorial_reentrant_channel`,
    described in :numref:`sec_eg_reentrant_channel`
@@ -466,6 +632,6 @@ Experiments and tutorials that use gmredi
 -  Global Ocean Simulation, in :filelink:`verification/tutorial_global_oce_latlon`,
    described in :numref:`sec_global_oce_latlon`
 
--  Front Relax experiment, in front\_relax verification directory.
+-  Front Relax experiment, in :filelink:`verification/front_relax`
 
--  Ideal 2D Ocean experiment, in ideal\_2D\_oce verification directory.
+-  Ideal 2D Ocean experiment, in :filelink:`verification/ideal_2D_oce`.
