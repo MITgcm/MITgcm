@@ -1,8 +1,10 @@
  &CTRL_NML
  doPackDiag = .FALSE.,
- /
+ &
+
  &CTRL_PACKNAMES
- /
+ &
+
  &CTRL_NML_GENARR
  xx_genarr2d_file(1)   = 'xx_b_glen',
  xx_genarr2d_weight(1) = 'wunit',
@@ -12,4 +14,4 @@
  xx_gentim2d_period(1) = 6307200.,
  xx_gentim2d_weight(1) = 'wunit',
 # genarr2dPrecond = 5 200
- /
+ &
