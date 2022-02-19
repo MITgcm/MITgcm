@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68g (2022/02/19)
 o doc:
   - fix some math notation in docs.
 o pkg/obcs:
