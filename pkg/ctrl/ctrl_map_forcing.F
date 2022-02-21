@@ -29,6 +29,9 @@ C     == Global variables ===
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"
 #endif
@@ -379,6 +382,25 @@ c--   hfluxm.
        CALL EXCH_XY_RS( pLoad , myThid )
        CALL EXCH_XY_RS( saltFlux , myThid )
        CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
+
+#ifdef ALLOW_STREAMICE
+       IF ( useStreamice ) THEN
+        DO iarr = 1, maxCtrlTim2D
+         IF (xx_gentim2d_file(iarr)(1:17).EQ.'xx_bdot_streamice') THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j = 1-OLy,sNy+OLy
+             DO i = 1-OLx,sNx+OLx
+              bdot_streamice(i,j,bi,bj) = xx_gentim2d(i,j,bi,bj,iarr)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+          CALL EXCH_XY_RL( bdot_streamice, myThid )
+         ENDIF
+        ENDDO
+       ENDIF
+#endif
 
       ENDIF !if (ctrlUseGen) then
 #endif /* ALLOW_GENTIM2D_CONTROL */
