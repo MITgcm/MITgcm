@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+
+o verification AD exp.:
+  - remove ECCO_CPPOPTIONS.h from global_ocean_ebm/ and halfpipe_streamice/
+    code_ad/ dir and replace by appropriate AUTODIFF/CTRL/COST_OPTIONS.h ;
+  - for halfpipe_streamice AD exp., make necessary adjustments in pkg/streamice
+    and remove ALLOW_GENTIM2D_CONTROL from store directive header files 
+    streamice_ad_check_lev?_dir.h ;
+  - remove customized version of ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F
+    from halfpipe_streamice/code_ad/ and add corresponding code to pkg/ctrl.
+
 checkpoint68g (2022/02/19)
 o doc:
   - fix some math notation in docs.
