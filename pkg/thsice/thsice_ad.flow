@@ -5,8 +5,7 @@ CADJ SUBROUTINE thsice_read_pickup  INPUT  = 1,2,3
 CADJ SUBROUTINE thsice_read_pickup  OUTPUT =
 
 C----------------------------------------
-C subroutine THSICE_DIAG_SUFX
+C function THSICE_DIAG_SUFX
 C----------------------------------------
-CADJ SUBROUTINE THSICE_DIAG_SUFX  INPUT  = 1,2
-CADJ SUBROUTINE THSICE_DIAG_SUFX  OUTPUT = 1
-
+CADJ FUNCTION THSICE_DIAG_SUFX  INPUT  = 1,2
+CADJ FUNCTION THSICE_DIAG_SUFX  OUTPUT =
