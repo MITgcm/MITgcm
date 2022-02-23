@@ -160,16 +160,6 @@ C-    Functions:
 #endif
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
-      IF (tracerIdentity.GT.maxpass) THEN
-       WRITE(msgBuf,'(A,2I3)')
-     &      'GAD_SOM_ADVECT: maxpass < tracerIdentity ',
-     &      maxpass, tracerIdentity
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GAD_SOM_ADVECT'
-      ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostics flags and suffix for the current tracer
       doDiagAdvX = .FALSE.
@@ -260,12 +250,12 @@ C--   Set tile-specific parameters for horizontal fluxes
       limiter = MOD(advectionScheme, 10)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      IF (npass .GT. maxpass) THEN
+      IF (npass .GT. maxcube) THEN
        STOP 'GAD_SOM_ADVECT: npass > maxcube. check tamc.h'
       ENDIF
 CADJ INIT somtape = COMMON, 1
 CADJ INIT somtape_k = COMMON, Nr
-CADJ INIT somtape_k_pass = COMMON, maxpass*Nr
+CADJ INIT somtape_k_pass = COMMON, maxcube*Nr
 #endif
 C--   Start of k loop for horizontal fluxes
       DO k=1,Nr
@@ -311,7 +301,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
        DO ipass=1,npass
 #ifdef ALLOW_AUTODIFF_TAMC
-        ipasskey = ipass + (k-1) * maxpass
+        ipasskey = ipass + (k-1) * maxcube
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         interiorOnly = .FALSE.
