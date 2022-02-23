@@ -30,10 +30,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_AUTODIFF_TAMC
-#  include "tamc.h"
-# endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
@@ -340,7 +338,7 @@ C-    not CubedSphere
           calc_fluxes_X = MOD(ipass,2).EQ.1
           calc_fluxes_Y = .NOT.calc_fluxes_X
         ENDIF
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE smtr(:,:,k,bi,bj,:) =somtape_k_pass,key=ipasskey,kind=isbyte
 CADJ STORE smtr0(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
 CADJ STORE smVol(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
@@ -568,6 +566,7 @@ C--   Set advective fluxes at the very bottom:
          ENDDO
         ENDIF
 
+C-- Compute Vertical transport
 #ifdef ALLOW_AIM
 C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 c       IF ( k.EQ.1 .OR.
