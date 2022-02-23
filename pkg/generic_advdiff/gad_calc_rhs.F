@@ -1,4 +1,7 @@
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GAD_CALC_RHS
@@ -157,6 +160,12 @@ C     make local copies to be tampered with if necessary
       advectionScheme = advectionSchArg
       vertAdvecScheme = vertAdvecSchArg
 #ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT gad_local_tape = COMMON, 1
+C     This store directive just suppresses a recomputation warning.
+C     TAF generates an extra field with or without this directive.
+CADJ STORE fvert = gad_local_tape
+#endif
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
@@ -215,7 +224,16 @@ C--   Make local copy of tracer array
 
 C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
       IF (diffK4 .NE. 0.) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These two store directives suppress two recomputation warings at
+C     the cost of two extra local 2D fields and not much
+C     computational gain; not really necessary, commented out
+cCADJ STORE localT = gad_local_tape
+#endif
        CALL GAD_GRAD_X(bi,bj,k,xA,localT,fZon,myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE localT = gad_local_tape
+#endif
        CALL GAD_GRAD_Y(bi,bj,k,yA,localT,fMer,myThid)
        CALL GAD_DEL2(bi,bj,k,fZon,fMer,df4,myThid)
       ENDIF
