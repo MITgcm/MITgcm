@@ -221,9 +221,6 @@ c       rTrans(i,j)  = 0. _d 0
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        npass  = 3
-#ifdef ALLOW_AUTODIFF_TAMC
-       IF ( npass.GT.maxcube ) STOP 'maxcube needs to be = 3'
-#endif
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
@@ -250,9 +247,11 @@ C--   Set tile-specific parameters for horizontal fluxes
       limiter = MOD(advectionScheme, 10)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      IF (npass .GT. maxcube) THEN
-       WRITE(*,*) 'maxcube < npass = ', npass, ', check tamch.h'
-       STOP 'GAD_SOM_ADVECT: npass > maxcube. check tamc.h'
+      IF ( npass.GT.maxcube ) THEN
+        WRITE(msgBuf,'(A,2(I3,A))') 'S/R GAD_SOM_ADVECT: npass =',
+     &     npass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_SOM_ADVECT'
       ENDIF
 CADJ INIT somtape = COMMON, 1
 CADJ INIT somtape_k = COMMON, Nr
