@@ -251,6 +251,7 @@ C--   Set tile-specific parameters for horizontal fluxes
 
 #ifdef ALLOW_AUTODIFF_TAMC
       IF (npass .GT. maxcube) THEN
+       WRITE(*,*) 'maxcube < npass = ', npass, ', check tamch.h'
        STOP 'GAD_SOM_ADVECT: npass > maxcube. check tamc.h'
       ENDIF
 CADJ INIT somtape = COMMON, 1
