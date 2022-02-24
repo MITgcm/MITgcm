@@ -10,7 +10,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: CTRL_MAP_GENARR2D
 C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_GENARR2D( fld, xx_gen_dummy, iarr, myThid )
+      SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, myThid )
 
 C     !DESCRIPTION: \bv
 C     *=================================================================
@@ -34,10 +34,10 @@ C     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 #include "CTRL_GENARR.h"
+#include "ctrl_dummy.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL     xx_gen_dummy
       INTEGER iarr
       INTEGER myThid
 
@@ -114,7 +114,7 @@ c               passed to data.ctrl, (default = 0.0)
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, 1, doglobalread,
-     &     ladinit, optimcycle, myThid, xx_gen_dummy )
+     &     ladinit, optimcycle, myThid, xx_genarr2d_dummy(iarr) )
 #else
       CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
@@ -178,7 +178,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: CTRL_MAP_GENARR3D
 C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_GENARR3D( fld, xx_gen_dummy, iarr, myThid )
+      SUBROUTINE CTRL_MAP_GENARR3D( fld, iarr, myThid )
 
 C     !DESCRIPTION: \bv
 C     *=================================================================
@@ -202,10 +202,10 @@ C     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 #include "CTRL_GENARR.h"
+#include "ctrl_dummy.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL     xx_gen_dummy
       INTEGER iarr
       INTEGER myThid
 
@@ -287,7 +287,7 @@ c               passed to data.ctrl, (default = 0.0)
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XYZ( fnamegenIn, xx_gen, 1, doglobalread,
-     & ladinit, optimcycle, myThid, xx_gen_dummy )
+     & ladinit, optimcycle, myThid, xx_genarr3d_dummy(iarr) )
 #else
       CALL READ_REC_XYZ_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
