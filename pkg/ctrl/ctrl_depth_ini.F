@@ -21,6 +21,7 @@ C     !USES:
 #include "CTRL_SIZE.h"
 #ifdef ALLOW_GENARR2D_CONTROL
 # include "CTRL_GENARR.h"
+# include "ctrl_dummy.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -67,9 +68,8 @@ C--   use generic 2D control variable infrastructure to set xx_r_low
        IF ( xx_genarr2d_weight(iarr).NE.' ' .AND.
      &      xx_genarr2d_file(iarr)(1:8).EQ.'xx_depth') igen = iarr
       ENDDO
-      IF ( igen .GT. 0 ) THEN
-       CALL CTRL_MAP_GENARR2D( xx_r_low, igen, myThid )
-      ENDIF
+      IF ( igen .GT. 0 ) CALL CTRL_MAP_GENARR2D( xx_r_low,
+     &      xx_genarr2d_dummy(igen), igen, myThid )
 #else
       STOP 'ALLOW_DEPTH_CONTROL only works with ALLOW_GENARR2D_CONTROL'
 #endif /* ALLOW_GENARR2D_CONTROL */
