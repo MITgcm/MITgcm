@@ -225,16 +225,19 @@ C--   Make local copy of tracer array
 C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
       IF (diffK4 .NE. 0.) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-C     These two store directives suppress two recomputation warings at
-C     the cost of two extra local 2D fields and not much
-C     computational gain; not really necessary, commented out
-cCADJ STORE localT = gad_local_tape
+C     These store directives suppress two recomputation warnings and
+C     avoid the corresponding recomputations of fZon, fMer at the cost
+C     of only four extra local 2D-fields.
+CADJ STORE localT = gad_local_tape
 #endif
        CALL GAD_GRAD_X(bi,bj,k,xA,localT,fZon,myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE localT = gad_local_tape
+CADJ STORE localT = gad_local_tape
 #endif
        CALL GAD_GRAD_Y(bi,bj,k,yA,localT,fMer,myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fZon, fMer = gad_local_tape
+#endif
        CALL GAD_DEL2(bi,bj,k,fZon,fMer,df4,myThid)
       ENDIF
 
