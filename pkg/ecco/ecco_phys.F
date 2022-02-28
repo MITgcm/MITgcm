@@ -66,16 +66,19 @@ c- note defined with overlap here, not needed, but more efficient
       _RL sIceLoadFacLoc
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-      _RL AREAsumTile(nSx,nSy),PLOADsumTile(nSx,nSy)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL ploadbar, AREAsumGlob, PLOADsumGlob
+      _RL AREAsumTile(nSx,nSy), PLOADsumTile(nSx,nSy)
+      _RL m_eta_ib(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sterht  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif
       _RL rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_PSBAR_STERIC
-      _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
+      _RL VOLsumTile(nSx,nSy), RHOsumTile(nSx,nSy)
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 C     Mload     :: total mass load (kg/m**2)
-      _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 c need to include halos for find_rho_2d
       iMin = 1-OLx
@@ -113,10 +116,8 @@ c need to include halos for find_rho_2d
 #ifdef ALLOW_PSBAR_STERIC
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          RHOsumTile(bi,bj)=0. _d 0
-          VOLsumTile(bi,bj)=0. _d 0
-          VOLsumGlob=0. _d 0
-          RHOsumGlob=0. _d 0
+          RHOsumTile(bi,bj) = 0. _d 0
+          VOLsumTile(bi,bj) = 0. _d 0
           do k = 1,Nr
             do j = 1,sNy
               do i =  1,sNx
@@ -128,17 +129,17 @@ c need to include halos for find_rho_2d
               enddo
             enddo
           enddo
-        enddo
-      enddo
+        ENDDO
+      ENDDO
       CALL GLOBAL_SUM_TILE_RL( VOLsumTile, VOLsumGlob, myThid )
       CALL GLOBAL_SUM_TILE_RL( RHOsumTile, RHOsumGlob, myThid )
-      RHOsumGlob=RHOsumGlob/VOLsumGlob
+      RHOsumGlob = RHOsumGlob/VOLsumGlob
 
       if (RHOsumGlob_0.GT.0. _d 0) then
-        sterGloH=VOLsumGlob_0/globalArea
+        sterGloH = VOLsumGlob_0/globalArea
      &        *(1. _d 0 - RHOsumGlob/RHOsumGlob_0)
       else
-        sterGloH=0. _d 0
+        sterGloH = 0. _d 0
       endif
 
 c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
@@ -149,101 +150,111 @@ c    &                       SQUEEZE_RIGHT, myThid )
 
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-      ploadbar = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-          PLOADsumTile(bi,bj)=0. _d 0
-          AREAsumTile(bi,bj)=0. _d 0
-          AREAsumGlob=0. _d 0
-          PLOADsumGlob=0. _d 0
-          ploadbar = 0. _d 0
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          PLOADsumTile(bi,bj) = 0. _d 0
+          AREAsumTile(bi,bj) = 0. _d 0
           do j = 1,sNy
             do i =  1,sNx
-              PLOADsumTile(bi,bj)=PLOADsumTile(bi,bj)+
-     &          pload(i,j,bi,bj)*
-     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
-              AREAsumTile(bi,bj)=AREAsumTile(bi,bj)+
-     &          maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+              PLOADsumTile(bi,bj) = PLOADsumTile(bi,bj)
+     &          + pLoad(i,j,bi,bj)
+     &           *maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+              AREAsumTile(bi,bj) = AREAsumTile(bi,bj)
+     &          + maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
             enddo
           enddo
-        enddo
-      enddo
+        ENDDO
+      ENDDO
       CALL GLOBAL_SUM_TILE_RL( AREAsumTile, AREAsumGlob, myThid )
       CALL GLOBAL_SUM_TILE_RL( PLOADsumTile, PLOADsumGlob, myThid )
-      ploadbar=PLOADsumGlob/AREAsumGlob
+      ploadbar = PLOADsumGlob/AREAsumGlob
 #endif /* ALLOW_IB_CORR */
 #endif /* ATMOSPHERIC_LOADING */
 
       DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j = jmin,jmax
-              do i =  imin,imax
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+          do j = jmin,jmax
+            do i =  imin,imax
 C calculte total sea level including inverse barometer (IB) effect if
 C  there is air pressure forcing
-                m_eta(i,j,bi,bj)=
-     &                (etan(i,j,bi,bj)
-     &                +sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
+              m_eta(i,j,bi,bj) =
+     &           ( etaN(i,j,bi,bj)
+     &           + sIceLoad(i,j,bi,bj)*sIceLoadFacLoc
 #ifdef ALLOW_PSBAR_STERIC
 C apply Greatbatch correction
-     &                +sterGloH
+     &           + sterGloH
 #endif /* ALLOW_PSBAR_STERIC */
-     &                ) * maskC(i,j,1,bi,bj)
+     &           ) * maskC(i,j,1,bi,bj)
 
 C Model equivalent of ocean bottom pressure gauge data (in m^2/s^2)
 C  that are NOT corrected for global ocean mean atmospheric pressure variations
 C  = Ocean mass + sea-ice & snow load + air-pressure load + Greatbatch corr.
 C  (all terms on RHS are converted to m^2/s^2). It is
 C  essentially Mload (as in pkg/sbo/sbo_calc.F) plus air-pressure load
-                m_bp(i,j,bi,bj) =  gravity * (etaN(i,j,bi,bj)
+              m_bp(i,j,bi,bj) =
+     &           ( etaN(i,j,bi,bj)
+c    &           + Ro_surf(i,j,bi.bj)
      &           - R_low(i,j,bi,bj)
 #ifdef ALLOW_PSBAR_STERIC
 C add back the correction due to the global mean steric ssh change,
 C     i.e. sterGloH computed above (units converted from m to m2/s2)
      &           + sterGloH
 #endif /* ALLOW_PSBAR_STERIC */
-     &           )
+     &           ) * gravity
 C sIceLoad in kg/m^2
-     &           + sIceLoad(i,j,bi,bj) * gravity * sIceLoadFacLoc
+     &         + sIceLoad(i,j,bi,bj) * gravity * sIceLoadFacLoc
 C pLoad in N/m^2
-     &           + pLoad(i,j,bi,bj) * recip_rhoConst
+     &         + pLoad(i,j,bi,bj) * recip_rhoConst
+            enddo
+          enddo
 C integrate rho_anomaly through water column
-                DO k = 1, Nr
-                   m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) +
-     &               rhoLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
-     &               * gravity * recip_rhoConst
-                ENDDO
-                m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) * maskC(i,j,1,bi,bj)
+          DO k = 1, Nr
+           do j = jmin,jmax
+            do i =  imin,imax
+              m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj)
+     &         + rhoLoc(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+     &                              * gravity * recip_rhoConst
+            enddo
+           enddo
+          ENDDO
+          do j = jmin,jmax
+            do i =  imin,imax
+              m_bp(i,j,bi,bj) = m_bp(i,j,bi,bj) * maskC(i,j,1,bi,bj)
+            enddo
+          enddo
 
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
+          do j = jmin,jmax
+            do i =  imin,imax
 C calculate IB correction m_eta_ib (in m)
-                m_eta_ib(i,j,bi,bj)=
-     &           (ploadbar-pload(i,j,bi,bj))*tmpfac
+              m_eta_ib(i,j,bi,bj) =
+     &           ( ploadbar - pLoad(i,j,bi,bj) )*tmpfac
      &           * maskC(i,j,1,bi,bj)
 C calculte dynamic sea level for comparison with altimetry data (in m)
-                m_eta_dyn(i,j,bi,bj)=
-     &           (m_eta(i,j,bi,bj) - m_eta_ib(i,j,bi,bj))
+              m_eta_dyn(i,j,bi,bj) =
+     &           ( m_eta(i,j,bi,bj) - m_eta_ib(i,j,bi,bj) )
      &           * maskC(i,j,1,bi,bj)
 
 C calculate GRACE-equvivalent ocean bottom pressure (in m2/s2)
 C  by removing global ocean mean atmospheric pressure variations
-                m_bp_nopabar(i,j,bi,bj)=
-     &           (m_bp(i,j,bi,bj)
-     &            - ploadbar * recip_rhoConst
+              m_bp_nopabar(i,j,bi,bj) =
+     &           ( m_bp(i,j,bi,bj)
+     &           - ploadbar * recip_rhoConst
      &           ) * maskC(i,j,1,bi,bj)
 C calculate steric height
 C (in m; = m_eta_dyn - (m_bp_nopabr * recip_gravity + R_low))
 C R_low (<0) is Depth in m.
-                sterht(i,j,bi,bj)=
-     &           m_eta_dyn(i,j,bi,bj)
-     &           - (m_bp_nopabar(i,j,bi,bj) * recip_gravity
-     &              + R_low(i,j,bi,bj))
+              sterht(i,j,bi,bj) = m_eta_dyn(i,j,bi,bj)
+     &          - ( m_bp_nopabar(i,j,bi,bj) * recip_gravity
+c    &            - Ro_surf(i,j,bi,bj)
+     &            + R_low(i,j,bi,bj)  )
+            enddo
+          enddo
 #endif /* ALLOW_IB_CORR */
 #endif /* ATMOSPHERIC_LOADING */
-              enddo
-            enddo
-        enddo
-      enddo
+        ENDDO
+      ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. myIter.GE.0 ) THEN

@@ -126,17 +126,15 @@ C                 the current model integration.
       INTEGER ndaysrec
 
       COMMON /ECCO_R/
-     &                    m_eta,m_UE,m_VN,
+     &                    m_eta, m_UE, m_VN,
      &                    m_bp,
 #ifdef ALLOW_PSBAR_STERIC
      &                    sterGloH,
 #endif
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-     &                    ploadbar,
-     &                    AREAsumGlob, PLOADsumGlob,
      &                    m_bp_nopabar,
-     &                    m_eta_dyn, m_eta_ib, sterht,
+     &                    m_eta_dyn,
 #endif
 #endif
      &                    trVol, trHeat, trSalt,
@@ -153,15 +151,12 @@ C                 the current model integration.
 #endif
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
-      _RL ploadbar, AREAsumGlob, PLOADsumGlob
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_dyn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL m_eta_ib(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL sterht(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
 #endif
-      _RL m_UE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
-      _RL m_VN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL m_UE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL m_VN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -249,20 +244,20 @@ C     objf_gencost :: gencost user defined contribution
      &       nSx,nSy,NGENCOST)
       _RL  gencost_mskSsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &       nSx,nSy,NGENCOST)
-      _RL  gencost_mskVertical(nr,NGENCOST)
+      _RL  gencost_mskVertical(Nr,NGENCOST)
 #ifdef ALLOW_GENCOST3D
       _RL  gencost_bar3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
       _RL  gencost_mod3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
       _RL  gencost_wei3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
       _RL  gencost_mskC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
       _RL  gencost_mskW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
       _RL  gencost_mskS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
-     &       nr,nSx,nSy,NGENCOST3D)
+     &       Nr,nSx,nSy,NGENCOST3D)
 #endif
       _RL gencost_preproc_r(NGENPPROC,NGENCOST)
       _RL gencost_posproc_r(NGENPPROC,NGENCOST)
