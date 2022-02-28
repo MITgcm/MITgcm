@@ -214,7 +214,13 @@ C     Let us keep our fingers crossed, that the model will be benign!
         ENDDO
 #endif /* SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+C     The following statement helps TAF to understand that TICES is not
+C     modified/reset everywhere so that it is correctly stored in the
+C     outer checkpoint levels. This is a TAF bug and this statement can
+C     probably be removed again, once this bug is fixed (but it does not
+C     hurt, either).
+CADJ INCOMPLETE TICES
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx

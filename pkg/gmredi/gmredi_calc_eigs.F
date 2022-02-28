@@ -34,16 +34,16 @@ C     bi, bj    :: tile indices
       INTEGER bi, bj
       INTEGER myThid
       INTEGER nmodes
-      INTEGER kLow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL mask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL hfac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL recip_hfac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL N2(  1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vec(nmodes,1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      INTEGER kLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL hfac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL recip_hfac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rlow(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL N2(  1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Rmid(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vec(nmodes,1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,kk,m
@@ -63,10 +63,10 @@ C     array    :: Array containing the matrix with a,b,c
 C     eigval   :: Vector containing the eigenvalues
       INTEGER info
       INTEGER idx
-      _RL a3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c3d(   1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL val(   1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL a3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c3d(   1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL val(   1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL eigR(Nr),eigI(Nr),vecs(Nr,Nr),dummy(1,Nr),work(Nr*Nr)
       _RL array(Nr,Nr)
       _RL eigval(0:nmodes)
@@ -78,18 +78,18 @@ C     intN0    :: Vertical integral of BuoyFreq to z=0
 C     c1       :: intN0/pi
 C     nEigs    :: number of eigenvalues/vectors to calculate
       _RL drNr
-      _RL BuoyFreq(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1)
-      _RL intN(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL intN0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL c1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER nEigs(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL BuoyFreq(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL intN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL intN0(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER nEigs(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # endif
 C     small    :: a small number (used to avoid floating point exceptions)
 C     vecint   :: vertical integral of eigenvector and/or square of eigenvector
 C     fCori2   :: square of the Coriolis parameter
       _RL small
-      _RL vecint(nmodes,1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fCori2(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vecint(nmodes,1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fCori2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       small = TINY(zeroRL)
@@ -102,8 +102,8 @@ C     Square of the Coriolis parameter
       ENDDO
 
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO m=1,nmodes
           vec(m,i,j,k) = zeroRL
          ENDDO
@@ -154,8 +154,8 @@ C     and c3d is the upper off-diagonal
        ENDDO
       ENDDO
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         IF (kLow(i,j).GT.0) THEN
           DO kk=1,Nr
            DO k=1,Nr
@@ -178,20 +178,20 @@ C     and c3d is the upper off-diagonal
           CALL DGEEV('N','V',Nr,array,Nr,eigR,eigI,dummy,1,
      &         vecs,Nr,work,Nr*Nr,info)
           IF( info.LT.0 ) THEN
-            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)') 
+            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)')
      &           'GMREDI_CALC_EIGS problem with arguments for DGEEV at',
      &           '(',i,',',j,')', 'error code =',info
             CALL PRINT_ERROR( msgBuf , myThid )
-            
+
           ELSEIF(info.GT.0 ) THEN
-            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)') 
+            WRITE(msgBuf,'(A,x,2(A1,I2),A1,x,A,I4)')
      &           'GMREDI_CALC_EIGS problems with eigensolver DGEEV at',
      &           '(',i,',',j,')', 'error code =',info
             CALL PRINT_ERROR( msgBuf , myThid )
-            
+
           ENDIF
 
-C         Find the second largest eigenvalue (the Rossby radius) 
+C         Find the second largest eigenvalue (the Rossby radius)
 C         and the first M baroclinic modes (eigenvectors)
           DO m=0,nmodes
            eigval(m) = -HUGE(zeroRL)
@@ -230,8 +230,8 @@ C         and the first M baroclinic modes (eigenvectors)
        ENDDO
       ENDDO
 
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          IF (kLow(i,j).GT.2 .AND. val(i,j).NE.zeroRL) THEN
            Rmid(i,j) = 1.0/(SQRT(ABS(val(i,j)))+small)
          ELSE
@@ -240,17 +240,17 @@ C         and the first M baroclinic modes (eigenvectors)
         ENDDO
        ENDDO
 
-# else      
+# else
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          BuoyFreq(i,j,k) = mask(i,j,k)*SQRT(N2(i,j,k))
         ENDDO
        ENDDO
       ENDDO
       k=Nr+1
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         BuoyFreq(i,j,k) = zeroRL
        ENDDO
       ENDDO
@@ -261,46 +261,46 @@ C     when k=Nr, say that N(k+2)=0 and N(k+1)=0
       k=Nr
 C     drNr is like drC(Nr+1)/2
       drNr = rC(Nr)-rF(Nr+1)
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         intN(i,j,k) = op5*BuoyFreq(i,j,k)*drNr
        ENDDO
       ENDDO
       DO k=Nr-1,1,-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         intN(i,j,k) = intN(i,j,k+1) 
-     &        + drC(k)*( op25*BuoyFreq(i,j,k+2) + op5*BuoyFreq(i,j,k) 
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         intN(i,j,k) = intN(i,j,k+1)
+     &        + drC(k)*( op25*BuoyFreq(i,j,k+2) + op5*BuoyFreq(i,j,k)
      &                 + op25*BuoyFreq(i,j,k+1) )
         ENDDO
        ENDDO
       ENDDO
-      
+
 C     intN integrates to z=rC(1).  We want to integrate to z=0.
 C     Assume that N(0)=0 and N(1)=0.
 C     drC(1) is like half a grid cell.
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        intN0(i,j) = intN(i,j,1) 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        intN0(i,j) = intN(i,j,1)
      &       + drC(1)*op5*BuoyFreq(i,j,2)
        ENDDO
       ENDDO
-      
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         c1(i,j) = intN0(i,j)/pi
         Rmid(i,j) = c1(i,j)/ABS(fCori(i,j,bi,bj))
        ENDDO
-      ENDDO      
+      ENDDO
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         nEigs(i,j) = MIN(klow(i,j),nmodes)
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          IF (mask(i,j,k).NE.0.0) THEN
            DO m=1,nEigs(i,j)
             vec(m,i,j,k) = -COS(intN(i,j,k)/(m*c1(i,j)))
@@ -310,34 +310,34 @@ C     drC(1) is like half a grid cell.
        ENDDO
       ENDDO
 
-C     The WKB approximation for the baroclinic mode does not always 
+C     The WKB approximation for the baroclinic mode does not always
 C     integrate to zero so we adjust it.
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         DO m=1,nEigs(i,j)
          vecint(m,i,j) = zeroRL
         ENDDO
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO m=1,nEigs(i,j)
          vecint(m,i,j) = vecint(m,i,j) + hfac(i,j,k)*vec(m,i,j,k)*drF(k)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         DO m=1,nEigs(i,j)
          vecint(m,i,j) = vecint(m,i,j)/(-rlow(i,j)+small)
         ENDDO
        ENDDO
       ENDDO
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO m=1,nEigs(i,j)
           vec(m,i,j,k) = vec(m,i,j,k) - vecint(m,i,j)
          ENDDO
@@ -347,8 +347,8 @@ C     integrate to zero so we adjust it.
 # endif
 
 C     Normalise the eigenvectors
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         DO m=1,nmodes
          vecint(m,i,j) = zeroRL
         ENDDO
@@ -356,10 +356,10 @@ C     Normalise the eigenvectors
       ENDDO
 
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO m=1,nmodes
-          vecint(m,i,j) = vecint(m,i,j) + 
+          vecint(m,i,j) = vecint(m,i,j) +
      &         mask(i,j,k)*drF(k)*hfac(i,j,k)
      &         *vec(m,i,j,k)*vec(m,i,j,k)
          ENDDO
@@ -367,8 +367,8 @@ C     Normalise the eigenvectors
        ENDDO
       ENDDO
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         DO m=1,nmodes
          vecint(m,i,j) = SQRT(vecint(m,i,j))
         ENDDO
@@ -376,8 +376,8 @@ C     Normalise the eigenvectors
       ENDDO
 
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          DO m=1,nmodes
           vec(m,i,j,k) = vec(m,i,j,k)/(vecint(m,i,j)+small)
          ENDDO
@@ -388,7 +388,7 @@ C     Normalise the eigenvectors
 # ifdef ALLOW_DIAGNOSTICS
 C     Diagnostics
       IF ( useDiagnostics.AND.writediag ) THEN
-#  ifdef HAVE_LAPACK        
+#  ifdef HAVE_LAPACK
         CALL DIAGNOSTICS_FILL(a3d, 'GM_A3D  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(b3d, 'GM_B3D  ',0,Nr,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(c3d, 'GM_C3D  ',0,Nr,0,1,1,myThid)
@@ -396,7 +396,7 @@ C     Diagnostics
       ENDIF
 # endif
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END
