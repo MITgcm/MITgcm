@@ -18,7 +18,7 @@ In the atmosphere, (see :numref:`zandp-vert-coord`), we interpret:
    :label: atmos-b
 
 .. math::
-   \theta =T(\frac{p_{c}}{p})^{\kappa }\text{  is potential temperature}
+   \theta =T \left( \frac{p_{c}}{p} \right)^{\kappa} \text{  is potential temperature}
    :label: atmos-theta
 
 .. math:: S=q \text{  is the specific humidity}
@@ -39,22 +39,22 @@ In the above the ideal gas law, :math:`p=\rho RT`, has been expressed in
 terms of the Exner function :math:`\Pi (p)` given by :eq:`exner`
 (see also :numref:`atmos_appendix`)
 
-.. math:: \Pi (p)=c_{p}(\frac{p}{p_{c}})^{\kappa }
+.. math:: \Pi (p)=c_{p} \left( \frac{p}{p_{c}} \right)^{\kappa},
    :label: exner
 
-where :math:`p_{c}` is a reference pressure and :math:`\kappa =R/c_{p}`
+where :math:`p_{c}` is a reference pressure and :math:`\kappa = R/c_{p}`
 with :math:`R` the gas constant and :math:`c_{p}` the specific heat of
 air at constant pressure.
 
 At the top of the atmosphere (which is ‘fixed’ in our :math:`r`
 coordinate):
 
-.. math:: R_{fixed}=p_{top}=0
+.. math:: R_{\rm fixed}=p_{\rm top}=0.
 
 In a resting atmosphere the elevation of the mountains at the bottom is
 given by
 
-.. math:: R_{moving}=R_{o}(x,y)=p_{o}(x,y)
+.. math:: R_{\rm moving}=R_{o}(x,y)=p_{o}(x,y) ,
 
 i.e. the (hydrostatic) pressure at the top of the mountains in a
 resting atmosphere.
@@ -62,11 +62,11 @@ resting atmosphere.
 The boundary conditions at top and bottom are given by:
 
 .. math::
-   \omega =0~\text{at }r=R_{fixed} \text{ (top of the atmosphere)}
+   \omega =0~\text{at }r=R_{\rm fixed} \text{ (top of the atmosphere)}
    :label: fixed-bc-atmos
 
 .. math::
-   \omega =~\frac{Dp_{s}}{Dt}\text{ at }r=R_{moving}\text{ (bottom of the atmosphere)}
+   \omega =~\frac{Dp_{s}}{Dt}\text{ at }r=R_{\rm moving}\text{ (bottom of the atmosphere)}
    :label: moving-bc-atmos
 
 Then the (hydrostatic form of) equations

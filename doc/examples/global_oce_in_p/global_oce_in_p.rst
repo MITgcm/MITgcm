@@ -91,8 +91,8 @@ variables :math:`x` and :math:`y` are initialized according to
 .. math::
 
    \begin{aligned}
-   x=r\cos(\phi),~\Delta x & = &r\cos(\Delta \phi) \\
-   y=r\lambda,~\Delta y &= &r\Delta \lambda \end{aligned}
+   x=r\cos(\phi),~\Delta x & = r\cos(\Delta \phi) \\
+   y=r\lambda,~\Delta y & = r\Delta \lambda \end{aligned}
 
 Arctic polar regions are not included in this experiment. Meridionally
 the model extends from 80\ :sup:`o`\ S to
@@ -139,9 +139,9 @@ of equations solved in this configuration as follows:
    :label: eg-global-model_equations_pcoord_uv
 
    \frac{Du}{Dt} - fv +
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial x} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}u -
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial u}{\partial p}
+     \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial x} -
+      \nabla _h \cdot ( A_{h} \nabla _h u )-
+     (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial u}{\partial p}\right)
     &=
    \begin{cases}
    {\cal F}_u & \text{(surface)} \\
@@ -149,9 +149,9 @@ of equations solved in this configuration as follows:
    \end{cases}
    \\
    \frac{Dv}{Dt} + fu +
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial y} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}v -
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial v}{\partial p}
+     \frac{1}{\rho}\frac{\partial \Phi^\prime}{\partial y} -
+      \nabla _h \cdot ( A_{h} \nabla _h v) -
+     (g\rho_0)^2\frac{\partial}{\partial p}\left( A_{r}\frac{\partial v}{\partial p}\right)
    &=
    \begin{cases}
    {\cal F}_v & \text{(surface)} \\
@@ -159,26 +159,26 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-  \frac{\partial p_{b}}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
+  \frac{\partial p_{b}}{\partial t} +  \nabla _h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_pcoord_ts
 
    \frac{D\theta}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial\theta}{\partial p}
+     \nabla _h \cdot (K_{h} \nabla _h \theta)
+    - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial\theta}{\partial p}\right)
    &=
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{D s}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}s
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial S}{\partial p}
+   \frac{D S}{Dt} -
+     \nabla _h \cdot (K_{h} \nabla _h S)
+    - (g\rho_0)^2\frac{\partial}{\partial p}\left( \Gamma(K_{r})\frac{\partial S}{\partial p}\right)
    &=
    \begin{cases}
-   {\cal F}_s & \text{(surface)} \\
+   {\cal F}_S & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
 
@@ -187,7 +187,7 @@ of equations solved in this configuration as follows:
 
 where :math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
 :math:`v=\frac{Dy}{Dt}=r \frac{D \phi}{Dt}` are the zonal and meridional
-components of the flow vector, :math:`\vec{u}`, on the sphere. As
+components of the flow vector, :math:`\vec{\bf u}`, on the sphere. As
 described in :numref:`discret_algorithm`, the time evolution of potential
 temperature :math:`\theta` equation is solved prognostically. The full
 geopotential height :math:`\Phi` is diagnosed by summing the

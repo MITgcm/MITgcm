@@ -3,7 +3,12 @@ c     store directives for checkpoint level 4
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-#ifdef AUTODIFF_USE_OLDSTORE_2D
+#ifdef AUTODIFF_USE_STORE_RESTORE
+c
+CADJ STORE StoreDynVars2D = tapelev4, key = ilev_4
+CADJ STORE StoreDynVars3D = tapelev4, key = ilev_4
+c
+#else
 c
 CADJ STORE etan  = tapelev4, key = ilev_4
 #ifndef EXCLUDE_FFIELDS_LOAD
@@ -40,14 +45,6 @@ CADJ STORE dEtaHdt = tapelev4, key = ilev_4
 CADJ STORE PmEpR = tapelev4, key = ilev_4
 #endif
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_2D */
-c
-CADJ STORE StoreDynVars2D     = tapelev4, key = ilev_4
-c
-#endif /* AUTODIFF_USE_OLDSTORE_2D */
-c
-#ifdef AUTODIFF_USE_OLDSTORE_3D
-c
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm = tapelev4, key = ilev_4
 CADJ STORE gsnm = tapelev4, key = ilev_4
@@ -66,11 +63,7 @@ CADJ STORE vvel  = tapelev4, key = ilev_4
 CADJ STORE wvel  = tapelev4, key = ilev_4
 CADJ STORE totphihyd  = tapelev4, key = ilev_4
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_3D */
-c
-CADJ STORE StoreDynVars3D     = tapelev4, key = ilev_4
-c
-#endif /* AUTODIFF_USE_OLDSTORE_3D */
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 
 CADJ STORE phi0surf     = tapelev4, key = ilev_4
 CADJ STORE saltflux     = tapelev4, key = ilev_4

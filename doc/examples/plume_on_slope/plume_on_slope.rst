@@ -67,26 +67,26 @@ instability is suppressed at low Reynolds and Peclet numbers given by
 where :math:`h` is the depth of the dense fluid on the slope. Hence
 this experiment is carried out in the high Re, Pe regime. A further
 constraint is that the convective heat flux must be much greater than
-the diffusive heat flux (Nusselt number :math:`>> 1`). Then
+the diffusive heat flux (Nusselt number :math:`\gg  1`). Then
 
-.. math:: Nu = \frac{U h^* }{\kappa} >> 1
+.. math:: Nu = \frac{U h^* }{\kappa} \gg  1
 
 Finally, since we have assumed that the convective mixing on the shelf
 occurs in a much shorter time than the horizontal equilibration, this
-implies :math:`H/R << 1`.
+implies :math:`H/R \ll 1`.
 
 Hence to summarize the important non-dimensional parameters, and the
 limits we are considering:
 
 .. math::
 
-   \frac{H}{R} << 1 \mbox{ ; } Re >> 1 \mbox{  ; } Pe >> 1 \mbox{  ; } Nu >> 1
-   \mbox{  ;  } \mbox{  ; } Ri < 1/4
+   \frac{H}{R} \ll  1 \mbox{ ; } Re \gg  1 \mbox{  ; } Pe \gg  1 \mbox{  ; } Nu \gg  1
+   \mbox{  ;  } \mbox{  ; } Ri < 1/4 .
 
 In addition we are assuming that the slope is steep enough to provide
 sufficient acceleration to the gravity plume, but nonetheless much less
 that 1:1, since many Kelvin-Helmholtz billows appear on the
-slope, implying horizontal length scale of the slope :math:`>>` the depth
+slope, implying horizontal length scale of the slope :math:`\gg` the depth
 of the dense fluid.
 
 Configuration
@@ -147,12 +147,12 @@ where
 .. math::
 
    \begin{aligned}
-   Nx & = & 320 \\
-   Lx & = & 6400 \;\; \mbox{(m)} \\
-   \Delta x_1 & = & \frac{2}{3} \frac{Lx}{Nx} \;\; \mbox{(m)} \\
-   \Delta x_2 & = & \frac{Lx/2}{Nx-Lx/(2 \Delta x_1)} \;\; \mbox{(m)} \\
-   i_s & = & Lx/( 2 \Delta x_1 ) \\
-   w & = & 40\end{aligned}
+   Nx & = 320 \\
+   Lx & = 6400 \;\; \mbox{(m)} \\
+   \Delta x_1 & = \frac{2}{3} \frac{Lx}{Nx} \;\; \mbox{(m)} \\
+   \Delta x_2 & = \frac{Lx/2}{Nx-Lx/(2 \Delta x_1)} \;\; \mbox{(m)} \\
+   i_s & = Lx/( 2 \Delta x_1 ) \\
+   w & = 40\end{aligned}
 
 Here, :math:`\Delta x_1` is the resolution on the shelf,
 :math:`\Delta x_2` is the resolution in deep water and :math:`Nx` is the
@@ -167,11 +167,11 @@ where
 .. math::
 
    \begin{aligned}
-   H_o & = & 200 \;\; \mbox{(m)} \\
-   h_s & = & 40 \;\; \mbox{(m)} \\
-   x_s & = & 1500 + Lx/2 \;\; \mbox{(m)} \\
-   L_s & = & \frac{(H_o - h_s)}{2 s} \;\; \mbox{(m)} \\
-   s & = & 0.15\end{aligned}
+   H_o & = 200 \;\; \mbox{(m)} \\
+   h_s & = 40 \;\; \mbox{(m)} \\
+   x_s & = 1500 + Lx/2 \;\; \mbox{(m)} \\
+   L_s & = \frac{(H_o - h_s)}{2 s} \;\; \mbox{(m)} \\
+   s & = 0.15\end{aligned}
 
 Here, :math:`s` is the maximum slope, :math:`H_o` is the maximum depth,
 :math:`h_s` is the shelf depth, :math:`x_s` is the lateral position of
@@ -188,9 +188,9 @@ where
 .. math::
 
    \begin{aligned}
-   Q_o & = & 200 \;\; \mbox{(W m$^{-2}$)} \\
-   x_q & = & 2500 + Lx/2 \;\; \mbox{(m)} \\
-   L_q & = & 100 \;\; \mbox{(m)}\end{aligned}
+   Q_o & = 200 \;\; \mbox{(W m$^{-2}$)} \\
+   x_q & = 2500 + Lx/2 \;\; \mbox{(m)} \\
+   L_q & = 100 \;\; \mbox{(m)}\end{aligned}
 
 Here, :math:`Q_o` is the maximum heat flux, :math:`x_q` is the
 position of the cut-off, and :math:`L_q` is the width of the cut-off.
