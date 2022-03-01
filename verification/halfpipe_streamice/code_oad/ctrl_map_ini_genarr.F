@@ -195,10 +195,10 @@ C--   to 3 generic 2D control arrays
       iarr = 1
 cdg need to force openad to recognise fields as active
 cdg as cannot seem to trace dependency thru CTRL_MAP_GENARR
-#ifdef ALLOW_OPENAD
-       B_glen(1,1,1,1) = B_glen(1,1,1,1) +
-     &  0.0 * xx_genarr2d_dummy(iarr)
-#endif
+!#ifdef ALLOW_OPENAD
+!       B_glen(1,1,1,1) = B_glen(1,1,1,1) +
+!     &  0.0 * xx_genarr2d_dummy(iarr)
+!#endif
       CALL CTRL_MAP_GENARR2D( B_glen, iarr, myThid )
       iarr = 2
 #ifdef ALLOW_OPENAD
