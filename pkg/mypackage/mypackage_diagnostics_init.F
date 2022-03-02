@@ -15,6 +15,7 @@ C     !USES:
 C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "MYPACKAGE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
