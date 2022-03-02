@@ -70,17 +70,24 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
-c     == external ==
-      integer  ilnblnk
-      external ilnblnk
-
 c     == local variables ==
 
-      _RL    fcloc
+      logical doglobalread
+      logical ladinit
+      logical lxxadxx
 
       integer i, k
 c     integer ig,jg
       integer ivartype
+      integer cunit
+      integer ictrlgrad
+      _RL    fcloc
+
+      character*(128) cfile
+
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
+      character*( 80) weighttype
+#endif
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       integer iobcs
       character*(80) fname_obcsn(3)
@@ -94,6 +101,10 @@ C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
       character*(80) fname_local(3)
+#endif
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
+C 9 character limit set by set_(un)pack
+      character*( 9) mskNameForSetPack
 #endif
 
 #ifdef ECCO_CTRL_DEPRECATED
@@ -141,20 +152,6 @@ cHFLUXM_CONTROL
 cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
-
-      logical doglobalread
-      logical ladinit
-      logical lxxadxx
-
-      integer cunit
-      integer ictrlgrad
-
-      character*(128) cfile
-#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
-      character*( 80) weighttype
-#endif
-C 9 character limit set by set_(un)pack
-      character*( 9) mskNameForSetPack
 
 c     == end of interface ==
 
@@ -806,7 +803,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
@@ -822,7 +819,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         wunit, lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
@@ -844,7 +841,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )

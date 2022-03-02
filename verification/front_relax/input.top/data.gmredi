@@ -1,0 +1,23 @@
+# GM-Redi parameters
+ &GM_PARM01
+ GM_AdvForm=.TRUE.,
+#GM_useBVP = .TRUE.,
+ GM_BVP_modeNumber=5,
+ GM_background_K=1000.,
+#GM_isopycK    = 1000.,
+#GM_taper_scheme='orig',
+#GM_taper_scheme='linear',
+#GM_taper_scheme='gkw91',
+ GM_taper_scheme='ac02',
+#GM_taper_scheme='dm95',
+#GM_taper_scheme='ldd97',
+#GM_taper_scheme='fm07',
+ GM_maxSlope    =1.E-02,
+ GM_facTrL2dz   = 0.,
+#GM_facTrL2ML   = 5.,
+#GM_maxTransLay = 500.,
+#GM_useSubMeso = .TRUE.,
+#subMeso_Ceff  = 3.e-2,
+#subMeso_LfMin = 5.e+3,
+ &
+

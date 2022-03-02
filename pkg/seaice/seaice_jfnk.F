@@ -537,6 +537,14 @@ C     Initialise some local variables
       facLS = 1. _d 0
       doLineSearch = .TRUE.
       DO WHILE ( doLineSearch )
+C     The computation of the line search factor is complicated because
+C     we overwrite the solution, so that we have to reconstruct what
+C     should be just u_l = u_0 + (1-gamma)**l *du. Instead, after adding
+C     du/vIce in the first iteration (l=0), we substract a decreasing
+C     part of du/vIce from u/vIce in the next iterations until the
+C     residual is smaller than the initial residual.
+       IF ( l .GT. 0 ) facLS = - SEAICE_JFNK_lsGamma
+     &       *(1. _d 0 - SEAICE_JFNK_lsGamma)**(l-1)
 C     Create update
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -561,20 +569,19 @@ C     product that SEAICE_FGMRES does
        resLoc = SQRT(resLoc)
 C     Determine, if we need more iterations
        doLineSearch = resLoc .GE. JFNKresidual
-C     Limit the maximum number of iterations arbitrarily to four
-       doLineSearch = doLineSearch .AND. l .LT. 4
+C     Limit the maximum number of iterations arbitrarily to
+C     SEAICE_JFNK_lsLmax (default is 4)
+       doLineSearch = doLineSearch .AND. l .LE. SEAICE_JFNK_lsLmax
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
 C     iteration
        IF ( newtonIter .EQ. 1 ) doLineSearch = .FALSE.
 C     Only start a linesearch after some Newton iterations
        IF ( newtonIter .LE. SEAICE_JFNK_lsIter ) doLineSearch = .FALSE.
-C     Increment counter
-       l = l + 1
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,2(1XI6),3E12.5)')
+        WRITE(msgBuf,'(2A,2(1XI6),1X,3E12.5)')
      &       ' S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, ',
      &       'facLS, JFNKresidual, resLoc = ',
      &        newtonIter, l, facLS, JFNKresidual, resLoc
@@ -582,10 +589,8 @@ C     some output diagnostics
      &       SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
        ENDIF
-C     Get ready for the next iteration: after adding du/vIce in the first
-C     iteration, we substract 0.5*du/vIce from u/vIce in the next
-C     iterations, 0.25*du/vIce in the second, etc.
-       facLS = - 0.5 _d 0 * ABS(facLS)
+C     Increment counter
+       l = l + 1
       ENDDO
 C     This is the new residual
       JFNKresidual = resLoc

@@ -6,7 +6,7 @@ eq :eq:`horiz-mtm` and :eq:`vert-mtm` in the (so-called) ‘vector invariant’ 
 
 .. math::
    \frac{D\vec{\mathbf{v}}}{Dt}=\frac{\partial \vec{\mathbf{v}}}{\partial t}
-   +\left( \nabla \times \vec{\mathbf{v}}\right) \times \vec{\mathbf{v}}+\nabla 
+   +\left(  \nabla  \times \vec{\mathbf{v}}\right) \times \vec{\mathbf{v}} +  \nabla 
    \left[ \frac{1}{2}(\vec{\mathbf{v}}\cdot \vec{\mathbf{v}})\right]
    :label: vi-identity
 

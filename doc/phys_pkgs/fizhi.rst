@@ -45,12 +45,12 @@ mass flux, is a linear function of height, expressed as:
 
 .. math::
 
-   \pp{\eta(z)}{z} = \lambda \hspace{0.4cm}or\hspace{0.4cm} \pp{\eta(P^{\kappa})}{P^{\kappa}} = 
-   -\frac{c_p}{g}\theta\lambda
+   \pp{\eta(z)}{z} = \lambda \hspace{0.4cm} \text{or} \hspace{0.4cm} \pp{\eta(P^{\kappa})}{P^{\kappa}} = 
+   -\frac{c_p}{g} \theta \lambda
 
 where we have used the hydrostatic equation written in the form:
 
-.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g}\theta
+.. math:: \pp{z}{P^{\kappa}} = -\frac{c_p}{g} \theta
 
 The entrainment parameter, :math:`\lambda`, characterizes a particular
 subensemble based on its detrainment level, and is obtained by assuming
@@ -59,7 +59,7 @@ level at which the moist static energy of the cloud, :math:`h_c`, is
 equal to the saturation moist static energy of the environment,
 :math:`h^*`. Following :cite:`moorsz:92`, :math:`\lambda` may be written as
 
-.. math:: \lambda = \frac{h_B - h^*_D}{ \frac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}},
+.. math:: \lambda = \frac{h_B - h^*_D}{\frac{c_p}{g} \int_{P_D}^{P_B}\theta(h^*_D-h)dP^{\kappa}}
 
 where the subscript :math:`B` refers to cloud base, and the subscript
 :math:`D` refers to the detrainment level.
@@ -85,17 +85,17 @@ balance the rate of change of :math:`A` *due to the generation by the
 large scale*. This is the quasi-equilibrium assumption, and results in
 an expression for :math:`m_B`:
 
-.. math:: m_B = \frac{- \left. \frac{dA}{dt} \right|_{ls}}{K}
+.. math:: m_B = \dfrac{- \left. \frac{dA}{dt} \right|_{\rm ls}}{K}
 
 where :math:`K` is the cloud kernel, defined as the rate of change of
 the cloud work function per unit cloud base mass flux, and is currently
 obtained by analytically differentiating the expression for :math:`A` in
 time. The rate of change of :math:`A` due to the generation by the large
 scale can be written as the difference between the current
-:math:`A(t+\Delta t)` and its equillibrated value after the previous
+:math:`A(t+\Delta t)` and its equilibrated value after the previous
 convective time step :math:`A(t)`, divided by the time step.
-:math:`A(t)` is approximated as some critical :math:`A_{crit}`, computed
-by Lord (1982) from :math:`in situ` observations.
+:math:`A(t)` is approximated as some critical :math:`A_{\rm crit}`, computed
+by Lord (1982) from in situ observations.
 
 The predicted convective mass fluxes are used to solve grid-scale
 temperature and moisture budget equations to determine the impact of
@@ -107,7 +107,7 @@ and detrainment):
 
 and
 
-.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{ m_B}{L} \eta (\pp{h}{p}-\pp{s}{p})
+.. math:: \left.{\pp{q}{t}}\right|_{c} = \alpha \frac{m_B}{L} \eta \left( \pp{h}{p}-\pp{s}{p} \right)
 
 where :math:`\theta = \frac{T}{P^{\kappa}}`, :math:`P = (p/p_0)`, and
 :math:`\alpha` is the relaxation parameter.
@@ -116,7 +116,7 @@ As an approximation to a full interaction between the different
 allowable subensembles, many clouds are simulated frequently, each
 modifying the large scale environment some fraction :math:`\alpha` of
 the total adjustment. The parameterization thereby “relaxes” the large
-scale environment towards equillibrium.
+scale environment towards equilibrium.
 
 In addition to the RAS cumulus convection scheme, the fizhi package
 employs a Kessler-type scheme for the re-evaporation of falling rain :cite:`sudm:88`,
@@ -140,9 +140,11 @@ convection, from just above cloud base to 10 mb.
 
 Supersaturation or large-scale precipitation is initiated in the fizhi
 package whenever the relative humidity in any grid-box exceeds a
-critical value, currently 100 %. The large-scale precipitation
+critical value, currently 100%. The large-scale precipitation
 re-evaporates during descent to partially saturate lower layers in a
 process identical to the re-evaporation of convective rain.
+
+.. _fizhi_clouds:
 
 Cloud Formation
 ###############
@@ -153,35 +155,37 @@ the cumulus and large-scale parameterizations. Convective cloud
 fractions produced by RAS are proportional to the detrained liquid water
 amount given by
 
-.. math:: F_{RAS} = \min\left[ \frac{l_{RAS}}{l_c}, 1.0 \right]
+.. math:: F_{\rm RAS} = \min\left[ \frac{l_{\rm RAS}}{l_c}, 1 \right]
 
 where :math:`l_c` is an assigned critical value equal to :math:`1.25`
 g/kg. A memory is associated with convective clouds defined by:
 
-.. math:: F_{RAS}^n = \min\left[ F_{RAS} + (1-\frac{\Delta t_{RAS}}{\tau})F_{RAS}^{n-1}, 1.0 \right]
+.. math:: F_{\rm RAS}^n = \min\left[ F_{\rm RAS} + \left(1-\frac{\Delta t_{\rm RAS}}{\tau}\right) F_{\rm RAS}^{n-1} \, , \, 1 \right],
 
-where :math:`F_{RAS}` is the instantanious cloud fraction and
-:math:`F_{RAS}^{n-1}` is the cloud fraction from the previous RAS
+where :math:`F_{\rm RAS}` is the instantaneous cloud fraction and
+:math:`F_{\rm RAS}^{n-1}` is the cloud fraction from the previous RAS
 timestep. The memory coefficient is computed using a RAS cloud
 timescale, :math:`\tau`, equal to 1 hour. RAS cloud fractions are
-cleared when they fall below 5 %.
+cleared when they fall below 5%.
 
 Large-scale cloudiness is defined, following Slingo and Ritter (1985),
 as a function of relative humidity:
 
-.. math:: F_{LS} = \min\left[ { \left( \frac{RH-RH_c}{1-RH_c} \right) }^2, 1.0 \right]
+.. math:: F_{\rm ls} = \min\left[ { \left( \frac{\textrm{RH}-\textrm{RH}_c}{1-\textrm{RH}_c} \right) }^2 \, , \, 1 \right]
 
 where
 
-RH\ :sub:`c` & = & 1-s(1-s)(2-+2 s)r
-s & = & p/p\ :sub:`surf`
-r & = & ( )
-RH\ :sub:`min` & = & 0.75
-& = & 0.573285 .
+.. math::
+   \begin{aligned}
+   \textrm{RH}_c & = 1-s(1-s)(2-\sqrt{3}+2\sqrt{3}s)r \\
+   s & = p/p_{\rm surf} \\
+   r & = \left(\frac{1.0-\textrm{RH}_{\rm min}}{\alpha}\right) \\
+   \textrm{RH}_{\rm min} & = 0.75 \\
+   \alpha & = 0.573285 \end{aligned}
 
 These cloud fractions are suppressed, however, in regions where the
 convective sub-cloud layer is conditionally unstable. The functional
-form of :math:`RH_c` is shown in :numref:`rhcrit`
+form of :math:`\textrm{RH}_c` is shown in :numref:`rhcrit`
 
 
 
@@ -198,7 +202,7 @@ form of :math:`RH_c` is shown in :numref:`rhcrit`
 The total cloud fraction in a grid box is determined by the larger of
 the two cloud fractions:
 
-.. math:: F_{CLD} = \max \left[ F_{RAS},F_{LS} \right] .
+.. math:: F_{\rm cld} = \max \left[ F_{\rm RAS} \, , \, F_{\rm ls} \right]
 
 Finally, cloud fractions are time-averaged between calls to the
 radiation packages.
@@ -233,8 +237,8 @@ The time tendency for Longwave Radiation is updated every 3 hours. The
 time tendency for Shortwave Radiation is updated once every three hours
 assuming a normalized incident solar radiation, and subsequently
 modified at every model time step by the true incident radiation. The
-solar constant value used in the package is equal to 1365 :math:`W/m^2`
-and a :math:`CO_2` mixing ratio of 330 ppm. For the ozone mixing ratio,
+solar constant value used in the package is equal to 1365 W m\ :sup:`--2`
+and a CO\ :sub:`2` mixing ratio of 330 ppm. For the ozone mixing ratio,
 monthly mean zonally averaged climatological values specified as a
 function of latitude and height :cite:`rosen:87` are linearly interpolated to the
 current time.
@@ -265,7 +269,7 @@ studies but also for studies on the photolysis in the upper atmosphere
 and the photosynthesis in the biosphere.
 
 
-.. table:: UV and Visible Spectral Regions used in shortwave radiation package. 
+.. table:: UV and visible spectral regions used in shortwave radiation package. 
   :name: tab_phys_pkg_fizhi_solar1
 
   +----------+--------+-----------------------+
@@ -295,7 +299,7 @@ and the photosynthesis in the biosphere.
 
 
 
-.. table:: Infrared Spectral Regions used in shortwave radiation package.
+.. table:: Infrared spectral regions used in shortwave radiation package.
   :name: tab_phys_pkg_fizhi_solar2
 
   +--------+---------------------------------+-----------------------+
@@ -342,7 +346,7 @@ spectral bands together with their absorbers and parameterization methods,
 configured for the fizhi package, are shown in
 :numref:`tab_phys_pkg_fizhi_longwave`.
 
-.. table:: IR Spectral Bands, Absorbers, and Parameterization Method
+.. table:: IR spectral bands, absorbers, and parameterization method
   :name: tab_phys_pkg_fizhi_longwave
 
   +----------------+------------------------------------+------------------------------+----------+
@@ -350,33 +354,33 @@ configured for the fizhi package, are shown in
   +----------------+------------------------------------+------------------------------+----------+
   | Band           | Spectral Range (cm\ :sup:`--1`)    | Absorber                     | Method   |
   +================+====================================+==============================+==========+
-  | 1              | 0-340                              | H\ :math:`_2`\ O line        | T        |
+  | 1              | 0-340                              | H\ :sub:`2`\ O line          | T        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 2              | 340-540                            | H\ :math:`_2`\ O line        | T        |
+  | 2              | 340-540                            | H\ :sub:`2`\ O line          | T        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 3a             | 540-620                            | H\ :math:`_2`\ O line        | K        |
+  | 3a             | 540-620                            | H\ :sub:`2`\ O line          | K        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 3b             | 620-720                            | H\ :math:`_2`\ O continuum   | S        |
+  | 3b             | 620-720                            | H\ :sub:`2`\ O continuum     | S        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 3b             | 720-800                            | CO\ :math:`_2`               | T        |
+  | 3b             | 720-800                            | CO\ :sub:`2`                 | T        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 4              | 800-980                            | H\ :math:`_2`\ O line        | K        |
+  | 4              | 800-980                            | H\ :sub:`2`\ O line          | K        |
   +----------------+------------------------------------+------------------------------+----------+
-  |                |                                    | H\ :math:`_2`\ O continuum   | S        |
+  |                |                                    | H\ :sub:`2`\ O continuum     | S        |
   +----------------+------------------------------------+------------------------------+----------+
-  |                |                                    | H\ :math:`_2`\ O line        | K        |
+  |                |                                    | H\ :sub:`2`\ O line          | K        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 5              | 980-1100                           | H\ :math:`_2`\ O continuum   | S        |
+  | 5              | 980-1100                           | H\ :sub:`2`\ O continuum     | S        |
   +----------------+------------------------------------+------------------------------+----------+
-  |                |                                    | O\ :math:`_3`                | T        |
+  |                |                                    | O\ :sub:`3`                  | T        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 6              | 1100-1380                          | H\ :math:`_2`\ O line        | K        |
+  | 6              | 1100-1380                          | H\ :sub:`2`\ O line          | K        |
   +----------------+------------------------------------+------------------------------+----------+
-  |                |                                    | H\ :math:`_2`\ O continuum   | S        |
+  |                |                                    | H\ :sub:`2`\ O continuum     | S        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 7              | 1380-1900                          | H\ :math:`_2`\ O line        | T        |
+  | 7              | 1380-1900                          | H\ :sub:`2`\ O line          | T        |
   +----------------+------------------------------------+------------------------------+----------+
-  | 8              | 1900-3000                          | H\ :math:`_2`\ O line        | K        |
+  | 8              | 1900-3000                          | H\ :sub:`2`\ O line          | K        |
   +----------------+------------------------------------+------------------------------+----------+
   | K: :math:`k`-distribution method with linear pressure scaling                                 |
   +----------------+------------------------------------+------------------------------+----------+
@@ -388,13 +392,13 @@ configured for the fizhi package, are shown in
 
 The longwave radiation package accurately computes cooling rates for the
 middle and lower atmosphere from 0.01 mb to the surface. Errors are
-:math:`<` 0.4 C day\ :math:`^{-1}` in cooling rates and :math:`<` 1% in
+< 0.4 C day\ :sup:`--1` in cooling rates and < 1% in
 fluxes. From Chou and Suarez, it is estimated that the total effect of
 neglecting all minor absorption bands and the effects of minor infrared
-absorbers such as nitrous oxide (N:math:`_2`\ O), methane
-(CH:math:`_4`), and the chlorofluorocarbons (CFCs), is an underestimate
-of :math:`\approx` 5 W/m\ :math:`^2` in the downward flux at the surface
-and an overestimate of :math:`\approx` 3 W/m\ :math:`^2` in the upward
+absorbers such as nitrous oxide (N\ :sub:`2`\ O), methane
+(CH\ :sub:`4`), and the chlorofluorocarbons (CFCs), is an underestimate
+of :math:`\approx 5` W m\ :sup:`--2` in the downward flux at the surface
+and an overestimate of :math:`\approx 3` W m\ :sup:`--2` in the upward
 flux at the top of the atmosphere.
 
 Similar to the procedure used in the shortwave radiation package, clouds
@@ -404,14 +408,14 @@ clear line-of-site probability :math:`(P)` between any two levels,
 overlapped cloud groups, is simply the product of the probabilities
 within each group:
 
-.. math:: P_{net} = P_{low} \times P_{mid} \times P_{hi} .
+.. math:: P_{\rm net} = P_{\rm low} \times P_{\rm mid} \times P_{\rm hi}
 
 Since all clouds within a group are assumed maximally overlapped, the
 clear line-of-site probability within a group is given by:
 
-.. math:: P_{group} = 1 - F_{max} ,
+.. math:: P_{\rm group} = 1 - F_{\rm max}
 
-where :math:`F_{max}` is the maximum cloud fraction encountered between
+where :math:`F_{\rm max}` is the maximum cloud fraction encountered between
 :math:`p_1` and :math:`p_2` within that group. For groups and/or levels
 outside the range of :math:`p_1` and :math:`p_2`, a clear line-of-site
 probability equal to 1 is assigned.
@@ -428,35 +432,35 @@ super-saturation. Two values are used corresponding to cloud ice
 particles and water droplets. The range of optical thickness for these
 clouds is given as
 
-.. math:: 0.0002 \le \tau_{ice} (mb^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \quad\mbox{mg/kg} ,
+.. math:: 0.0002 \le \tau_{\rm ice} (\text{mb}^{-1}) \le 0.002  \quad\mbox{for}\quad  0 \le \ell \le 2 \; \text{mg/kg}
 
-.. math:: 0.02 \le \tau_{h_2o} (mb^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \quad\mbox{mg/kg} .
+.. math:: 0.02 \le \tau_{\rm H_2O} (\text{mb}^{-1}) \le 0.2  \quad\mbox{for}\quad  0 \le \ell \le 10 \; \text{mg/kg}
 
 The partitioning, :math:`\alpha`, between ice particles and water
 droplets is achieved through a linear scaling in temperature:
 
-.. math:: 0 \le \alpha \le 1 \quad\mbox{for}\quad  233.15 \le T \le 253.15 .
+.. math:: 0 \le \alpha \le 1 \quad\mbox{for}\quad  233.15 \le T \le 253.15
 
 The resulting optical depth associated with large-scale cloudiness is
 given as
 
-.. math:: \tau_{LS} = \alpha \tau_{h_2o} + (1-\alpha)\tau_{ice} .
+.. math:: \tau_{\rm ls} = \alpha \tau_{\rm H_2O} + (1-\alpha) \tau_{\rm ice}
 
 The optical thickness associated with sub-grid scale convective clouds
 produced by RAS is given as
 
-.. math:: \tau_{RAS} = 0.16 \quad mb^{-1} .
+.. math:: \tau_{\rm RAS} = 0.16 \; \text{mb}^{-1}
 
 The total optical depth in a given model layer is computed as a weighted
 average between the large-scale and sub-grid scale optical depths,
 normalized by the total cloud fraction in the layer:
 
-.. math:: \tau = \left( \frac{F_{RAS} \,\,\, \tau_{RAS} + F_{LS} \,\,\, \tau_{LS} }{ F_{RAS}+F_{LS} } \right) \Delta p,
+.. math:: \tau = \left( \frac{F_{\rm RAS} \,\,\, \tau_{\rm RAS} + F_{\rm ls} \,\,\, \tau_{\rm ls} }{ F_{\rm RAS}+F_{\rm ls} } \right) \Delta p
 
-where :math:`F_{RAS}` and :math:`F_{LS}` are the time-averaged cloud
+where :math:`F_{\rm RAS}` and :math:`F_{\rm ls}` are the time-averaged cloud
 fractions associated with RAS and large-scale processes described in
-Section [sec:fizhi:clouds]. The optical thickness for the longwave
-radiative feedback is assumed to be 75 :math:`\%` of these values.
+:numref:`fizhi_clouds`. The optical thickness for the longwave
+radiative feedback is assumed to be 75%  of these values.
 
 The entire Moist Convective Processes Module is called with a frequency
 of 10 minutes. The cloud fraction values are time-averaged over the
@@ -475,25 +479,17 @@ minutes. The tendencies of atmospheric state variables due to turbulent
 diffusion are calculated using the diffusion equations:
 
 .. math::
-
-   {\pp{u}{t}}_{turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{(K_m \pp{u}{z})}
-
-.. math::
-
-   {\pp{v}{t}}_{turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
-    = {\pp{}{z} }{(K_m \pp{v}{z})}
-
-.. math::
-
-   {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{turb} = 
+   \begin{aligned}
+   {\pp{u}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
+    = {\pp{}{z} }{\left(K_m \pp{u}{z}\right)} \nonumber \\
+   {\pp{v}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
+    = {\pp{}{z} }{\left(K_m \pp{v}{z}\right)} \nonumber \\
+   {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{\rm turb} &= 
    P^{\kappa}{\pp{}{z} }{(- \overline{w^{\prime}\theta^{\prime}})}
-    = P^{\kappa}{\pp{}{z} }{(K_h \pp{\theta_v}{z})}
-
-.. math::
-
-   {\pp{q}{t}}_{turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
-    = {\pp{}{z} }{(K_h \pp{q}{z})}
+    = P^{\kappa}{\pp{}{z} }{\left(K_h \pp{\theta_v}{z}\right)} \nonumber \\
+   {\pp{q}{t}}_{\rm turb} &= {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
+    = {\pp{}{z} }{\left(K_h \pp{q}{z}\right)}
+   \end{aligned}
 
 Within the atmosphere, the time evolution of second turbulent moments is
 explicitly modeled by representing the third moments in terms of the
@@ -502,7 +498,7 @@ closure modeling. To simplify and streamline the computation of the
 second moments, the level 2.5 assumption of Mellor and Yamada (1974) and :cite:`yam:77`
 is employed, in which only the turbulent kinetic energy (TKE),
 
-.. math:: {\h}{q^2}={\overline{{u^{\prime}}^2}}+{\overline{{v^{\prime}}^2}}+{\overline{{w^{\prime}}^2}},
+.. math:: {\h}{q^2}={\overline{{u^{\prime}}^2}}+{\overline{{v^{\prime}}^2}}+{\overline{{w^{\prime}}^2}}
 
 is solved prognostically and the other second moments are solved
 diagnostically. The prognostic equation for TKE allows the scheme to
@@ -512,8 +508,8 @@ computation of the terms linear in :math:`q^2` and is written:
 
 .. math::
 
-   {\dd{}{t} ({{\h} q^2})} - { \pp{}{z} ({ \frac{5}{3} {{\lambda}_1} q { \pp {}{z} 
-   ({\h}q^2)} })} =
+   {\dd{}{t} \left({{\h} q^2}\right)} - { \pp{}{z} \left[{ \frac{5}{3} {{\lambda}_1} q { \pp {}{z} 
+   \left({\h}q^2\right)} }\right]} =
    {- \overline{{u^{\prime}}{w^{\prime}}} { \pp{U}{z} }} - {\overline{{v^{\prime}}{w^{\prime}}} 
    { \pp{V}{z} }} + {\frac{g}{\Theta_0}{\overline{{w^{\prime}}{{{\theta}_v}^{\prime}}}}
    - \frac{ q^3}{{\Lambda}_1} }
@@ -545,7 +541,7 @@ are expressed as
 
    K_h 
     = \left\{ \begin{array}{l@{\quad\mbox{for}\quad}l} q \, \ell \, S_H(G_M,G_H) \, & \mbox{decaying turbulence}
-   \\ \frac{ q^2 }{ q_e } \, \ell \, S_{H}(G_{M_e},G_{H_e}) \, & \mbox{growing turbulence} \end{array} \right.
+   \\ \frac{ q^2 }{ q_{\rm eq} } \, \ell \, S_{H}(G_{M_e},G_{H_e}) \, & \mbox{growing turbulence} \end{array} \right.
 
 and
 
@@ -553,10 +549,10 @@ and
 
    K_m
     = \left\{ \begin{array}{l@{\quad\mbox{for}\quad}l} q \, \ell \, S_M(G_M,G_H) \, & \mbox{decaying turbulence}                
-   \\ \frac{ q^2 }{ q_e } \, \ell \, S_{M}(G_{M_e},G_{H_e}) \, & \mbox{growing turbulence} \end{array} \right.
+   \\ \frac{ q^2 }{ q_{\rm eq} } \, \ell \, S_{M}(G_{M_e},G_{H_e}) \, & \mbox{growing turbulence} \end{array} \right.
 
-where the subscript :math:`e` refers to the value under conditions of
-local equillibrium (obtained from the Level 2.0 Model), :math:`\ell` is
+where the subscript 'eq' refers to the value under conditions of
+local equilibrium (obtained from the Level 2.0 Model), :math:`\ell` is
 the master length scale related to the vertical structure of the
 atmosphere, and :math:`S_M` and :math:`S_H` are functions of :math:`G_H`
 and :math:`G_M`, the dimensionless buoyancy and wind shear parameters,
@@ -565,12 +561,11 @@ values :math:`G_{H_e}` and :math:`G_{M_e}`, are functions of the
 Richardson number:
 
 .. math::
-
-   {\bf RI} = \frac{ \frac{g}{\theta_v} \pp{\theta_v}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 }
-    =  \frac{c_p \pp{\theta_v}{z} \pp{P^ \kappa}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 } .
+   \textrm{RI} = \frac{ \frac{g}{\theta_v} \pp{\theta_v}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 }
+   =  \frac{c_p \pp{\theta_v}{z} \pp{P^ \kappa}{z} }{ (\pp{u}{z})^2 + (\pp{v}{z})^2 }
 
 Negative values indicate unstable buoyancy and shear, small positive
-values (:math:`<0.2`) indicate dominantly unstable shear, and large
+values (<0.2) indicate dominantly unstable shear, and large
 positive values indicate dominantly stable stratification.
 
 Turbulent eddy diffusion coefficients of momentum, heat and moisture in
@@ -578,11 +573,11 @@ the surface layer, which corresponds to the lowest GCM level (see *—
 missing table —*), are calculated using stability-dependant functions
 based on Monin-Obukhov theory:
 
-.. math:: {K_m} (surface) = C_u \times u_* = C_D W_s
+.. math:: {K_m} ({\rm surface}) = C_u \times u_* = C_D W_s
 
 and
 
-.. math:: {K_h} (surface) =  C_t \times u_* = C_H W_s
+.. math:: {K_h} ({\rm surface}) =  C_t \times u_* = C_H W_s
 
 where :math:`u_*=C_uW_s` is the surface friction velocity, :math:`C_D`
 is termed the surface drag coefficient, :math:`C_H` the heat transfer
@@ -596,7 +591,7 @@ the surface layer similarity functions:
 where k is the Von Karman constant and :math:`\psi_m` is the surface
 layer non-dimensional wind shear given by
 
-.. math:: \psi_{m} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{m} }{ \zeta} d \zeta} .
+.. math:: \psi_{m} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{m} }{ \zeta} d \zeta}
 
 Here :math:`\zeta` is the non-dimensional stability parameter, and
 :math:`\phi_m` is the similarity function of :math:`\zeta` which
@@ -616,7 +611,7 @@ moisture from the surface layer similarity functions:
 where :math:`\psi_h` is the surface layer non-dimensional temperature
 gradient given by
 
-.. math:: \psi_{h} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{h} }{ \zeta} d \zeta} .
+.. math:: \psi_{h} = {\int_{\zeta_{0}}^{\zeta} \frac{\phi_{h} }{ \zeta} d \zeta}
 
 Here :math:`\phi_h` is the similarity function of :math:`\zeta`, which
 expresses the stability dependance of the temperature and moisture
@@ -630,13 +625,13 @@ moisture gradients can be quite large. Based on :cite:`yagkad:74`:
 
 .. math::
 
-   \psi_{g} = \frac{ 0.55 (Pr^{2/3} - 0.2) }{ \nu^{1/2} }
-   (h_{0}u_{*} - h_{0_{ref}}u_{*_{ref}})^{1/2}
+   \psi_{g} = \frac{ 0.55 ({\rm Pr}^{2/3} - 0.2) }{ \nu^{1/2} }
+   (h_{0}u_{*} - h_{0_{\rm ref}}u_{*_{\rm ref}})^{1/2}
 
 where Pr is the Prandtl number for air, :math:`\nu` is the molecular
 viscosity, :math:`z_{0}` is the surface roughness length, and the
-subscript *ref* refers to a reference value. :math:`h_{0} = 30z_{0}`
-with a maximum value over land of 0.01
+subscript 'ref' refers to a reference value. :math:`h_{0} = 30z_{0}`
+with a maximum value over land of 0.01.
 
 The surface roughness length over oceans is is a function of the
 surface-stress velocity,
@@ -656,7 +651,7 @@ generalization for heat and moisture:
 .. math::
 
    {\phi_m}^4 - 18 \zeta {\phi_m}^3 = 1 \hspace{1cm} ; \hspace{1cm} 
-   {\phi_h}^2 - 18 \zeta {\phi_h}^3 = 1 \hspace{1cm} .
+   {\phi_h}^2 - 18 \zeta {\phi_h}^3 = 1 \hspace{1cm}
 
 The function for heat and moisture assures non-vanishing heat and
 moisture fluxes as the wind speed approaches zero.
@@ -670,7 +665,7 @@ flux:
    {\phi_m} = \frac{ 1 + 5 {{\zeta}_1} }{ 1 + 0.00794 {\zeta}_1
    (1+ 5 {\zeta}_1) } \hspace{1cm} ; \hspace{1cm}
    {\phi_h} = \frac{ 1 + 5 {{\zeta}_1} }{ 1 + 0.00794 {\zeta}
-   (1+ 5 {{\zeta}_1}) } .
+   (1+ 5 {{\zeta}_1}) }
 
 The moisture flux also depends on a specified evapotranspiration
 coefficient, set to unity over oceans and dependant on the
@@ -694,60 +689,58 @@ Surface Energy Budget
 The ground temperature equation is solved as part of the turbulence
 package using a backward implicit time differencing scheme:
 
-.. math:: C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{ice} - H - LE
+.. math:: C_g\pp{T_g}{t} = R_{\rm sw} - R_{\rm lw} + Q_{\rm ice} - H - LE
 
-where :math:`R_{sw}` is the net surface downward shortwave radiative
-flux and :math:`R_{lw}` is the net surface upward longwave radiative
+where :math:`R_{\rm sw}` is the net surface downward shortwave radiative
+flux and :math:`R_{\rm lw}` is the net surface upward longwave radiative
 flux.
 
 :math:`H` is the upward sensible heat flux, given by:
 
 .. math::
-
-   {H} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{surface} - \theta_{NLAY})
-   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
+   {H} = P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{\rm NLAY})
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`c_{p}` is the specific heat of air at constant pressure, and
 :math:`\theta` represents the potential temperature of the surface and
 of the lowest :math:`\sigma`-level, respectively.
 
-The upward latent heat flux, :math:`LE`, is given by
+The upward latent heat flux, :math:`\textrm{LE}`, is given by
 
 .. math::
 
-   {LE} =  \rho \beta L C_{H} W_s (q_{surface} - q_{NLAY})
-   \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
+   \textrm{LE} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q_{\rm NLAY})
+   \hspace{1cm}\text{where}: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\beta` is the fraction of the potential evapotranspiration
 actually evaporated, L is the latent heat of evaporation, and
-:math:`q_{surface}` and :math:`q_{NLAY}` are the specific humidity of
+:math:`q_{\rm surface}` and :math:`q_{\rm NLAY}` are the specific humidity of
 the surface and of the lowest :math:`\sigma`-level, respectively.
 
-The heat conduction through sea ice, :math:`Q_{ice}`, is given by
+The heat conduction through sea ice, :math:`Q_{\rm ice}`, is given by
 
-.. math:: {Q_{ice}} = \frac{C_{ti} }{ H_i} (T_i-T_g)
+.. math:: {Q_{\rm ice}} = \frac{C_{\rm ti} }{ H_i} (T_i-T_g)
 
-where :math:`C_{ti}` is the thermal conductivity of ice, :math:`H_i` is
-the ice thickness, assumed to be :math:`3 \hspace{.1cm} m` where sea ice
+where :math:`C_{\rm ti}` is the thermal conductivity of ice, :math:`H_i` is
+the ice thickness, assumed to be 3 m where sea ice
 is present, :math:`T_i` is 273 degrees Kelvin, and :math:`T_g` is the
 surface temperature of the ice.
 
 :math:`C_g` is the total heat capacity of the ground, obtained by
 solving a heat diffusion equation for the penetration of the diurnal
-cycle into the ground (), and is given by:
+cycle into the ground (Blackadar 1977), and is given by:
 
 .. math::
 
    C_g = \sqrt{ \frac{\lambda C_s }{ 2\omega} } = \sqrt{(0.386 + 0.536W + 0.15W^2)2\times10^{-3}
-   \frac{86400}{2\pi} } \, \, .
+   \frac{86400}{2\pi} }
 
 Here, the thermal conductivity, :math:`\lambda`, is equal to
-:math:`2\times10^{-3}` :math:`\frac{ly}{sec}
-\frac{cm}{K}`, the angular velocity of the earth, :math:`\omega`, is
-written as :math:`86400` :math:`sec/day` divided by :math:`2 \pi`
-:math:`radians/  
-day`, and the expression for :math:`C_s`, the heat capacity per unit
+:math:`2\times10^{-3}` :math:`\frac{\text{ly}}{\text{sec}}\frac{\text{cm}}{\text{K}}`,
+the angular velocity of the earth, :math:`\omega`, is
+written as 86400 sec day\ :sup:`--1` divided by :math:`2 \pi`
+radians day\ :sup:`--1`, and the expression for :math:`C_s`, the heat capacity per unit
 volume at the surface, is a function of the ground wetness, :math:`W`.
 
 Land Surface Processes:
@@ -845,7 +838,7 @@ gravity wave stress at the surface is based on that derived by
 Pierrehumbert (1986) and is given by:
 
 .. math:: 
-  |\vec{\tau}_{sfc}| = \frac{\rho U^3}{N \ell^*} \left( \frac{F_r^2}{1+F_r^2}\right) \, \, ,
+  |\vec{\tau}_{\rm sfc}| = \frac{\rho U^3}{N \ell^*} \left( \frac{F_r^2}{1+F_r^2}\right)
 
 
 where :math:`F_r = N h /U` is the Froude number, :math:`N` is the *Brunt
@@ -873,7 +866,8 @@ surface wind strength), of mountain torque (through a redistribution of
 mean sea-level pressure), and of momentum convergence (through a
 reduction in the flux of westerly momentum by transient flow eddies).
 
-Boundary Conditions and other Input Data:
+Boundary Conditions and other Input Data
+########################################
 
 Required fields which are not explicitly predicted or diagnosed during
 model execution must either be prescribed internally or obtained from
@@ -943,7 +937,7 @@ and the GCM.
 Fizhi Diagnostics
 +++++++++++++++++
 
-Fizhi Diagnostic Menu: [sec:pkg:fizhi:diagnostics]
+Fizhi Diagnostic Menu:
     
 +--------+----------------------------------+---------+--------------------------------------------------+
 | NAME   |  UNITS                           |  LEVELS | DESCRIPTION                                      |
@@ -1247,7 +1241,7 @@ eddy exchange coefficient:
 
 .. math::
 
-   {\bf HFLUX} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{surface} - \theta_{Nrphys})
+   {\bf HFLUX} =  P^{\kappa}\rho c_{p} C_{H} W_s (\theta_{\rm surface} - \theta_{Nrphys})
    \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
@@ -1268,7 +1262,7 @@ evapotranspiration fraction and the eddy exchange coefficient:
 
 .. math::
 
-   {\bf EFLUX} =  \rho \beta L C_{H} W_s (q_{surface} - q_{Nrphys})
+   {\bf EFLUX} =  \rho \beta L C_{H} W_s (q_{\rm surface} - q_{Nrphys})
    \hspace{1cm}where: \hspace{.2cm}C_H = C_u C_t
 
 where :math:`\rho` = the atmospheric density at the surface,
@@ -1279,7 +1273,7 @@ the magnitude of the surface layer wind, :math:`C_u` is the
 dimensionless surface exchange coefficient for momentum (see diagnostic
 number 10), :math:`C_t` is the dimensionless surface exchange
 coefficient for heat and moisture (see diagnostic number 9), and
-:math:`q_{surface}` and :math:`q_{Nrphys}` are the specific humidity at
+:math:`q_{\rm surface}` and :math:`q_{Nrphys}` are the specific humidity at
 the surface and at the bottom model level, respectively.
 
 Heat Conduction Through Sea Ice (:math:`Watts/m^2`)
@@ -1493,7 +1487,7 @@ The tendency of U-Momentum due to turbulence is written:
 
 .. math::
 
-   {\bf TURBU} = {\pp{u}{t}}_{turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
+   {\bf TURBU} = {\pp{u}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{u^{\prime}w^{\prime}})}
     = {\pp{}{z} }{(K_m \pp{u}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1507,7 +1501,7 @@ The tendency of V-Momentum due to turbulence is written:
 
 .. math::
 
-   {\bf TURBV} = {\pp{v}{t}}_{turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
+   {\bf TURBV} = {\pp{v}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{v^{\prime}w^{\prime}})}
     = {\pp{}{z} }{(K_m \pp{v}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1522,7 +1516,7 @@ The tendency of temperature due to turbulence is written:
 
 .. math::
 
-   {\bf TURBT} = {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{turb} = 
+   {\bf TURBT} = {\pp{T}{t}} = P^{\kappa}{\pp{\theta}{t}}_{\rm turb} = 
    P^{\kappa}{\pp{}{z} }{(- \overline{w^{\prime}\theta^{\prime}})}
     = P^{\kappa}{\pp{}{z} }{(K_h \pp{\theta_v}{z})}
 
@@ -1538,7 +1532,7 @@ The tendency of specific humidity due to turbulence is written:
 
 .. math::
 
-   {\bf TURBQ} = {\pp{q}{t}}_{turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
+   {\bf TURBQ} = {\pp{q}{t}}_{\rm turb} = {\pp{}{z} }{(- \overline{w^{\prime}q^{\prime}})}
     = {\pp{}{z} }{(K_h \pp{q}{z})}
 
 The Helfand and Labraga level 2.5 scheme models the turbulent flux of
@@ -1617,16 +1611,16 @@ the model surface pressure, :math:`p^{\prime} = p_{surf}`, for the
 upward and downward radiative fluxes. (see Section
 [sec:fizhi:radcloud]). The cloudy-sky flux is then obtained as:
 
-.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW},
+.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW}
 
 Finally, the net longwave heating rate is calculated as the vertical
 divergence of the net terrestrial radiative fluxes:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F_{LW}^{NET} ,
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F_{LW}^{NET}
 
 or
 
-.. math:: {\bf RADLW} = \frac{g}{c_p \pi} \p{\sigma} F_{LW}^{NET} .
+.. math:: {\bf RADLW} = \frac{g}{c_p \pi} \p{\sigma} F_{LW}^{NET}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, and
@@ -1651,11 +1645,11 @@ atmosphere.
 The heating rate due to Shortwave Radiation under cloudy skies is
 defined as:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F(cloudy)_{SW}^{NET} \cdot {\rm RADSWT},
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F(cloudy)_{SW}^{NET} \cdot {\rm RADSWT}
 
 or
 
-.. math:: {\bf RADSW} = \frac{g}{c_p \pi} \p{\sigma} F(cloudy)_{SW}^{NET}\cdot {\rm RADSWT} .
+.. math:: {\bf RADSW} = \frac{g}{c_p \pi} \p{\sigma} F(cloudy)_{SW}^{NET}\cdot {\rm RADSWT}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, RADSWT is the true incident
@@ -1771,10 +1765,6 @@ stable surface layer:
 where :math:`k` is the Von Karman constant, :math:`h` is the height of
 the surface layer, and :math:`z_0` is the surface roughness.
 
-NOTE: CN is not available through model version 5.3, but is available
-in subsequent versions.
-
-
 WINDS - Surface Wind Speed (meter/sec)
 ######################################
 
@@ -1813,11 +1803,11 @@ package using a backward implicit time differencing scheme:
 .. math::
 
    {\bf TG} \hspace{.1cm} is \hspace{.1cm} obtained \hspace{.1cm} from: \hspace{.1cm}
-   C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{ice} - H - LE
+   C_g\pp{T_g}{t} = R_{sw} - R_{lw} + Q_{\rm ice} - H - LE
 
 where :math:`R_{sw}` is the net surface downward shortwave radiative
 flux, :math:`R_{lw}` is the net surface upward longwave radiative flux,
-:math:`Q_{ice}` is the heat conduction through sea ice, :math:`H` is the
+:math:`Q_{\rm ice}` is the heat conduction through sea ice, :math:`H` is the
 upward sensible heat flux, :math:`LE` is the upward latent heat flux,
 and :math:`C_g` is the total heat capacity of the ground. :math:`C_g` is
 obtained by solving a heat diffusion equation for the penetration of the
@@ -1826,7 +1816,7 @@ diurnal cycle into the ground (), and is given by:
 .. math::
 
    C_g = \sqrt{ \frac{\lambda C_s }{ 2 \omega } } = \sqrt{(0.386 + 0.536W + 0.15W^2)2x10^{-3}
-   \frac{86400.}{2\pi} } \, \, .
+   \frac{86400.}{2\pi} }
 
 Here, the thermal conductivity, :math:`\lambda`, is equal to
 :math:`2x10^{-3}` :math:`\frac{ly}{sec} 
@@ -1949,16 +1939,16 @@ the model surface pressure, :math:`p^{\prime} = p_{surf}`, for the
 upward and downward radiative fluxes. (see Section
 [sec:fizhi:radcloud]). The cloudy-sky flux is then obtained as:
 
-.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW},
+.. math:: F_{LW} = C(p,p') \cdot F^{clearsky}_{LW}
 
 Thus, **LWCLR** is defined as the net longwave heating rate due to the
 vertical divergence of the clear-sky longwave radiative flux:
 
-.. math:: \pp{\rho c_p T}{t}_{clearsky} = - \p{z} F(clearsky)_{LW}^{NET} ,
+.. math:: \pp{\rho c_p T}{t}_{clearsky} = - \p{z} F(clearsky)_{LW}^{NET}
 
 or
 
-.. math:: {\bf LWCLR} = \frac{g}{c_p \pi} \p{\sigma} F(clearsky)_{LW}^{NET} .
+.. math:: {\bf LWCLR} = \frac{g}{c_p \pi} \p{\sigma} F(clearsky)_{LW}^{NET}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, and
@@ -2068,7 +2058,7 @@ EVAP - Surface Evaporation (mm/day)
 The surface evaporation is a function of the gradient of moisture, the
 potential evapotranspiration fraction and the eddy exchange coefficient:
 
-.. math:: {\bf EVAP} =  \rho \beta K_{h} (q_{surface} - q_{Nrphys})
+.. math:: {\bf EVAP} =  \rho \beta K_{h} (q_{\rm surface} - q_{Nrphys})
 
 where :math:`\rho` = the atmospheric density at the surface,
 :math:`\beta` is the fraction of the potential evapotranspiration
@@ -2106,8 +2096,8 @@ and Analysis forcing.
 .. math::
 
    \begin{aligned}
-   {\bf DTDT} & = & \pp{T}{t}_{Dynamics} + \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-              & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
+   {\bf DTDT} & = \pp{T}{t}_{Dynamics} + \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+              & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
 
 
 DQDT - Total Specific Humidity Tendency  (g/kg/day)
@@ -2170,7 +2160,7 @@ The depth of the PBL is defined by the turbulence parameterization to be
 the depth at which the turbulent kinetic energy reduces to ten percent
 of its surface value.
 
-.. math:: {\bf PBL} = P_{PBL} - P_{surface}
+.. math:: {\bf PBL} = P_{PBL} - P_{\rm surface}
 
 where :math:`P_{PBL}` is the pressure in :math:`mb` at which the
 turbulent kinetic energy reaches one tenth of its surface value, and
@@ -2194,11 +2184,11 @@ atmosphere.
 The heating rate due to Shortwave Radiation under clear skies is defined
 as:
 
-.. math:: \pp{\rho c_p T}{t} = - \p{z} F(clear)_{SW}^{NET} \cdot {\rm RADSWT},
+.. math:: \pp{\rho c_p T}{t} = - \p{z} F(clear)_{SW}^{NET} \cdot {\rm RADSWT}
 
 or
 
-.. math:: {\bf SWCLR} = \frac{g}{c_p } \p{p} F(clear)_{SW}^{NET}\cdot {\rm RADSWT} .
+.. math:: {\bf SWCLR} = \frac{g}{c_p } \p{p} F(clear)_{SW}^{NET}\cdot {\rm RADSWT}
 
 where :math:`g` is the accelation due to gravity, :math:`c_p` is the
 heat capacity of air at constant pressure, RADSWT is the true incident
@@ -2359,8 +2349,8 @@ the Analysis forcing.
 .. math::
 
    \begin{aligned}
-   {\bf DIABT} & = & \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-              & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
+   {\bf DIABT} & = \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+              & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence} + \pp{T}{t}_{Analysis} \end{aligned}
 
 If we define the time-tendency of Temperature due to Diabatic
 processes as
@@ -2368,8 +2358,8 @@ processes as
 .. math::
 
    \begin{aligned}
-   \pp{T}{t}_{Diabatic} & = & \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
-                        & + & \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence}\end{aligned}
+   \pp{T}{t}_{Diabatic} & = \pp{T}{t}_{Moist Processes} + \pp{T}{t}_{Shortwave Radiation} \\
+                        & + \pp{T}{t}_{Longwave Radiation} + \pp{T}{t}_{Turbulence}\end{aligned}
 
 then, since there are no surface pressure changes due to Diabatic
 processes, we may write
@@ -2525,8 +2515,8 @@ specific humidity, given by:
 .. math::
 
    \begin{aligned}
-   {\bf QINT} & = & \int_{surf}^{top} \rho q dz \\
-              & = & \frac{\pi}{g} \int_0^1 q dp
+   {\bf QINT} & = \int_{surf}^{top} \rho q dz \\
+              & = \frac{\pi}{g} \int_0^1 q dp
    \end{aligned}
 
 where we have used the hydrostatic relation

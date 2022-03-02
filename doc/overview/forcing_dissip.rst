@@ -35,19 +35,19 @@ similar form to that of momentum except that the diffusion tensor can be
 non-diagonal and have varying coefficients.
 
 .. math::
-   D_{T,S}=\nabla .[\underline{\underline{K}}\nabla (T,S)]+K_{4}\nabla
-   _{h}^{4}(T,S)
+   D_{T,S} =  \nabla  \cdot \left[ \boldsymbol{K}  \nabla  (T,S) \right] + K_{4} \nabla
+   _{h}^{4}(T,S),
    :label: diffusion
 
-where :math:`\underline{\underline{K}}\ `\ is the diffusion tensor and
-the :math:`K_{4}\ ` horizontal coefficient for biharmonic diffusion. In
+where :math:`\boldsymbol{K}` is the diffusion tensor and
+:math:`K_{4}\ ` the horizontal coefficient for biharmonic diffusion. In
 the simplest case where the subgrid-scale fluxes of heat and salt are
 parameterized with constant horizontal and vertical diffusion
-coefficients, :math:`\underline{\underline{K}}`, reduces to a diagonal
+coefficients, :math:`\boldsymbol{K}`, reduces to a diagonal
 matrix with constant coefficients:
 
 .. math::
-   \qquad \qquad \qquad \qquad K=\left( 
+   \qquad \qquad \qquad \qquad \boldsymbol{K} = \left( 
    \begin{array}{ccc}
    K_{h} & 0 & 0 \\ 
    0 & K_{h} & 0 \\ 

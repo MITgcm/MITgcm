@@ -114,14 +114,6 @@ C-    Check wind parameters:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( useRelativeWind .AND.
-     &      ( uwindfile .EQ. ' ' .OR. uwindperiod.EQ.0. .OR.
-     &        vwindfile .EQ. ' ' .OR. vwindperiod.EQ.0. ) ) THEN
-        WRITE(msgBuf,'(2A)') 'EXF_CHECK: useRelativeWind ',
-     &       'requires to update u/vwind'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
       ENDIF
 
       IF ( .NOT.useAtmWind ) THEN

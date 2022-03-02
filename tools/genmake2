@@ -1115,7 +1115,7 @@ EOF
 	    >> genmake_tnc.log
     fi
     echo "$FC $FFLAGS $FOPTIM -c genmake_tnc.$FS  \ " >> genmake_tnc.log
-    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc.o $LIBS" >> genmake_tnc.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS" >> genmake_tnc.log
     $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
@@ -1148,11 +1148,11 @@ EOF
 	    HAVE_NETCDF=t
 	    echo "check_netcdf: successful" >> $LOGFILE
 	else
-	# try again with "-lnetcdff" added to the libs
+	# try again with "-lnetcdff -lnetcdf" added to the libs
 	    echo "==> try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
 	    echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
 	    echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
-	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
+	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf" >> genmake_tnc.log
 	    cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS 2>/dev/null  \
 		&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 		&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf >> genmake_tnc.log 2>&1
