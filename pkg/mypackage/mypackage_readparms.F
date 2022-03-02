@@ -22,7 +22,6 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
@@ -112,8 +111,6 @@ C     Fix to avoid running without getting any output:
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

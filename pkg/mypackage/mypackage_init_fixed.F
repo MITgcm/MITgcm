@@ -24,7 +24,6 @@ C     myThid ::  my Thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN

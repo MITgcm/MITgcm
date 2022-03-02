@@ -33,7 +33,6 @@ C     myThid          :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef ALLOW_MYPACKAGE
 #if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_2D_STATE)
 
 C     === Functions ====
@@ -141,7 +140,6 @@ C     uses this specific S/R to write (with more informations) only meta files
 C--------------------------
 
 #endif /* MYPACKAGE_3D_STATE or MYPACKAGE_2D_STATE */
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

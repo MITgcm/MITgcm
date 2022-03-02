@@ -24,7 +24,6 @@ CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
 C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
@@ -41,7 +40,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-c     IF ( useDiagnotics ) THEN
+      IF ( useDiagnostics ) THEN
 
         diagName  = 'MYPaSta1'
         diagTitle = 'Scalar state variable 1 for package MYPACKAGE'
@@ -130,7 +129,7 @@ C--     an example of how to set "free levels option" diagnostics
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         CALL DIAGNOSTICS_SETKLEV( diagName, 3, myThid )
 
-c     ENDIF
+      ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */
 

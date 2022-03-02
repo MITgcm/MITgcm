@@ -24,7 +24,6 @@ C     myThid            :: thread number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_MYPACKAGE
 #if (defined MYPACKAGE_3D_STATE) || (defined MYPACKAGE_2D_STATE)
 
 C     !LOCAL VARIABLES:
@@ -196,7 +195,6 @@ C-      Assume Agrid position:
 #endif /* MYPACKAGE_2D_STATE */
 
 #endif /* MYPACKAGE_3D_STATE or MYPACKAGE_2D_STATE */
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

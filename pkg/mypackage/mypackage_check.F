@@ -23,7 +23,6 @@ C     myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -73,8 +72,6 @@ C-     For example, require this package to use tempStepping
        ENDIF
 
       _END_MASTER(myThid)
-
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

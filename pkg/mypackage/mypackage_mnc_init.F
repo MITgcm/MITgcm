@@ -22,7 +22,6 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
 #ifdef ALLOW_MNC
 
       IF (useMNC) THEN
@@ -72,9 +71,6 @@ CEOP
       ENDIF
 
 #endif /* ALLOW_MNC */
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

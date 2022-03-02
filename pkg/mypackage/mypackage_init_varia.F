@@ -24,10 +24,7 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
-
 C     !LOCAL VARIABLES:
-C     === Local variables ===
       INTEGER i,j,k,bi,bj
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -127,8 +124,6 @@ C--   restart from a pickup:
 
 C--   end start-from-iter-zero if/else block
       ENDIF
-
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

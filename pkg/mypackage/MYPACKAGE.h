@@ -1,4 +1,3 @@
-#ifdef ALLOW_MYPACKAGE
 CBOP
 C     !ROUTINE: MYPACKAGE.h
 C     !INTERFACE:
@@ -83,4 +82,4 @@ C     MYPA 2-dim. fields
      &    myPa_TendVelU,  mypa_TendVelV
 #endif /* MYPACKAGE_TENDENCY */
 
-#endif /* ALLOW_MYPACKAGE */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
