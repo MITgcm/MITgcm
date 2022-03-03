@@ -15,7 +15,7 @@ eddies. The first, the Redi scheme (Redi 1982 :cite:`redi1982`), aims to mix tra
 isentropes (neutral surfaces) by means of a diffusion operator oriented
 along the local isentropic surface. The second part, GM 
 (Gent and McWiliams 1990 :cite:`gen-mcw:90`, Gent et al. 1995 :cite:`gen-eta:95`), adiabatically
-re-arranges tracers through an advective flux where the advecting flow
+rearranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
 
 CPP options enable or disable different aspects of the package
@@ -97,9 +97,11 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_AdvSeparate`          |     FALSE                    | do advection by Eulerian and bolus velocity separately                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity (m\ :sup:`2`\ /s) (GM bolus transport)            |
+  | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s)         |
+  |                                    |                              | (GM bolus transport)                                                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity (m\ :sup:`2`\ /s) (Redi tensor)                   |
+  | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity :math:`\kappa_{\rho}` (m\ :sup:`2`\ /s)           |
+  |                                    |                              | (Redi tensor)                                                           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -127,6 +129,16 @@ General flags and parameters
   | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_BVP_cMin`             |     1.0E-01                  | minimum value for wave speed parameter :math:`c` in BVP (m/s)           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_UseSubMeso`           |     FALSE                    | use sub-mesoscale eddy parameterization for bolus transport             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_Ceff`            |     7.0E-02                  | efficiency coefficient of mixed-layer eddies                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_invTau`          |     2.0E-06                  | inverse of mixing timescale in sub-meso parameterization (s\ :sup:`-1`) |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_LfMin`           |     1.0E+03                  | minimum value for length-scale :math:`L_f` (m)                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_Lmax`            |     110.0E+03                | maximum horizontal grid-scale length (m)                                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_Visbeck_alpha`        |     0.0                      | :math:`\alpha` parameter for Visbeck et al. scheme (non-dim.)           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -174,7 +186,7 @@ requires a background lateral diffusion to be present to conserve the
 integrity of the model fields.
 
 The GM parameterization was then added to the GFDL code in the form of a
-non-divergent bolus velocity. The method defines two stream-functions
+non-divergent bolus velocity. The method defines two streamfunctions
 expressed in terms of the isoneutral slopes subject to the boundary
 condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
@@ -266,8 +278,9 @@ streamfunction is specified in terms of the isoneutral slopes
    \end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
-lower boundaries. In the end, the bolus transport in the GM
-parameterization is given by:
+lower boundaries. :math:`\kappa_{\rm GM}` is colloquially called the isopycnal "thickness diffusivity"
+or the "GM diffusivity". The bolus transport in the GM
+parameterization is thus given by:
 
 .. math::
 
@@ -283,8 +296,14 @@ parameterization is given by:
    \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
    \end{pmatrix}
 
-This is the form of the GM parameterization as applied by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95`,
-employed in the GFDL Modular Ocean Model (MOM) versions 1 and 2.
+This is the "advective form" of the GM parameterization as applied by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95`,
+employed in the GFDL Modular Ocean Model (MOM) versions 1 and 2. To use the advective form in MITgcm, set
+:varlink:`GM_AdvForm` ``=.TRUE.`` in ``data.gmredi``
+(also requires ``#define`` :varlink:`GM_BOLUS_ADVEC` and :varlink:`GM_EXTRA_DIAGONAL`).
+As implemented in the MITgcm code, :math:`{\bf u}^\star` is simply added to Eulerian :math:`\vec{\bf u}`
+(i.e., MITgcm variables :varlink:`uVel`, :varlink:`vVel`, :varlink:`wVel`)
+and passed to tracer advection subroutines (:numref:`advection_schemes`)
+unless :varlink:`GM_AdvSeparate` ``=.TRUE.`` in ``data.gmredi``, in which case the bolus transport is computed separately.
 
 Note that in MITgcm, the variables for the GM bolus
 streamfunction :varlink:`GM_PsiX` and :varlink:`GM_PsiY` are defined:
