@@ -42,19 +42,19 @@ As with all MITgcm packages, GMREDI can be turned on or off at compile time
   ``-disable=gmredi`` switches
 
 - **required packages and CPP options**:
-  :filelink:`seaice <pkg/gmredi>` requires
+  :filelink:`gmredi <pkg/gmredi>` requires
 
 
-Parts of the :filelink:`seaice <pkg/gmredi>` code can be enabled or disabled at
+Parts of the :filelink:`gmredi <pkg/gmredi>` code can be enabled or disabled at
 compile time via CPP preprocessor flags. These options are set in
 :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
-:numref:`tab_phys_pkg_gmredi_cpp` summarizes the most important ones. For more
+:numref:`tab_phys_pkg_gmredi_cpp` summarizes the most important ones. For additional
 options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
 
 .. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
 
 .. csv-table:: Some of the most relevant CPP preprocessor flags in the :filelink:`gmredi <pkg/gmredi>` package.
-   :header: "CPP option", "Default", Description"
+   :header: "CPP option", "Default", "Description"
    :widths: 30, 10, 60
    :name: tab_phys_pkg_gmredi_cpp
 
@@ -97,8 +97,6 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_AdvSeparate`          |     FALSE                    | do advection by Eulerian and bolus velocity separately                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_InMomAsStress`        |     FALSE                    | apply GM as a stress in momentum equations                              |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity (m\ :sup:`2`\ /s) (GM bolus transport)            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity (m\ :sup:`2`\ /s) (Redi tensor)                   |
@@ -137,13 +135,11 @@ General flags and parameters
   | :varlink:`GM_Visbeck_depth`        |     1000.0                   | depth (m) over which to average in computing Visbeck                    |
   |                                    |                              | :math:`\kappa_{\rm GM}`                                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_minDepth`     |     0.0                      | remove from table? (m)                                                  |
+  | :varlink:`GM_Visbeck_maxSlope`     |     :varlink:`GM_maxSlope`   | maximum slope used in computing Visbeck et al. :math:`\kappa_{\rm GM}`  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_maxSlope`     |     :varlink:`GM_maxSlope`   | maximum slope using Visbeck et al.                                      |
+  | :varlink:`GM_Visbeck_minVal_K`     |     0.0                      | minimum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_minVal_K`     |     0.0                      | minimum diffusivity (m\ :sup:`2`\ /s) using Visbeck et al.              |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum diffusivity (m\ :sup:`2`\ /s) using Visbeck et al.              |
+  | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
