@@ -51,7 +51,7 @@ curDir=`pwd`
 #============================================================================
 
 if test $kpr = 0 ; then
- rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy}
+ rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy,pTr}
  rm -f ${bdPfx}_???/TTT.*make.* ${bdPfx}_???/TTT.mkdepend.*
  /bin/rm -r -f rank_? rank_1? rank_2?
  if test -f ${bdPfx}_cpl/Makefile ; then cd ${bdPfx}_cpl ; make Clean ; cd .. ; fi
@@ -60,13 +60,25 @@ if test $kpr = 0 ; then
 fi
 if test $kpr = 5 ; then
  echo 'remove output files in rank_0,1,2 dir.'
- rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy}
+ rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy,pTr}
  test -f rank_0/Coupler.0000.clog && rm -f rank_0/Coupler.0000.clog
  if test -d rank_$rnkO ; then
-   ( cd rank_$rnkO ; rm -f *.data *.meta *.txt *.log STD???.00?? UV-*.00??.clog )
+   ( cd rank_$rnkO ; rm -f *.txt *.log STD???.00?? UV-*.00??.clog
+     mkdir tmp_trash ; mv *.data *.meta tmp_trash
+     listLNK=`find tmp_trash -type l`
+     if test "x$listLNK" != x ; then mv $listLNK .
+       echo -n " move back to rank_$rnkO : " ; echo $listLNK | sed "s|tmp_trash/||g"
+     fi
+     /bin/rm -rf tmp_trash )
  fi
  if test -d rank_$rnkA ; then
-   ( cd rank_$rnkA ; rm -f *.data *.meta *.txt *.log STD???.00?? UV-*.00??.clog )
+   ( cd rank_$rnkA ; rm -f *.txt *.log STD???.00?? UV-*.00??.clog
+     mkdir tmp_trash ; mv *.data *.meta tmp_trash
+     listLNK=`find tmp_trash -type l`
+     if test "x$listLNK" != x ; then mv $listLNK .
+       echo -n " move back to rank_$rnkA : " ; echo $listLNK | sed "s|tmp_trash/||g"
+     fi
+     /bin/rm -rf tmp_trash )
  fi
 fi
 
@@ -324,6 +336,14 @@ if test $kpr = 4 ; then
       echo '==> check Seaice output:'
       $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.$rfx S
       mv -f comp_res.log comp_res.icDy
+    fi
+    usePkg=`grep -i '^ *usePTRACERS *=' rank_$rnkO/data.pkg | tail -n 1 | grep -i -c '= *\.TRUE\.'`
+    if [ $usePkg -ge 1 ] ; then
+      echo '==> check pTracers output:'
+      nTr=`grep -i '^ *PTRACERS_numInUse *=' rank_$rnkO/data.ptracers \
+           | tail -n 1 | sed 's/^.*=//' | sed 's/,.*$//'`
+      $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.$rfx $nTr
+      mv -f comp_res.log comp_res.pTr
     fi
     echo ' '
   else echo "No Ocean output file in rank_$rnkO" ; fi
