@@ -110,7 +110,7 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       PARAMETER( maxpass     = 2 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube     = 1 )
+      PARAMETER( maxcube     = 2 )
 
 c     ================================================================
 c     END OF HEADER TAMC
