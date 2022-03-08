@@ -47,6 +47,12 @@ c     == local variables ==
       integer iarr,jarr
 #endif
 
+      CHARACTER*(MAX_LEN_FNAM) namBuf
+      INTEGER IL
+#ifdef HAVE_SYSTEM
+      INTEGER pIL
+#endif
+
 c     == external ==
 
       integer  ilnblnk
@@ -122,7 +128,7 @@ c--   Read the namelist input.
      &  doMainUnpack, doMainPack,
      &  doSinglePrecTapelev,
      &  doAdmtlmBypassAD,
-     &  delZexp, forcingPrecond ,ctrlprec
+     &  delZexp, forcingPrecond ,ctrlprec, ctrlDir
 cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL
@@ -205,6 +211,8 @@ C     flag is defined
 #else
         ctrlprec = 64
 #endif
+
+        ctrlDir = ' '
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
@@ -517,6 +525,40 @@ c allow for switching off correl2d in adjoint
       useSmoothCorrel2DinAdMode =
      &         useSmoothCorrel2DinAdMode .AND. ctrlSmoothCorrel2D
 #endif
+
+      IF ( ctrlDir .NE. ' ' ) THEN
+       IL = ILNBLNK( ctrlDir )
+C      append "/", if necessary
+       IF ( IL.LT.MAX_LEN_FNAM .AND. ctrlDir(IL:IL).NE.'/' ) THEN
+        namBuf(1:IL) = ctrlDir(1:IL)
+        WRITE(ctrlDir(1:IL+1),'(2A)') namBuf(1:IL),'/'
+       ENDIF
+#ifdef HAVE_SYSTEM
+C      create directory
+       IL = ILNBLNK( ctrlDir ) -1
+       WRITE(namBuf,'(2A)') ' mkdir -p ', ctrlDir(1:IL)
+       pIL = 1 + ILNBLNK( namBuf )
+       WRITE(standardMessageUnit,'(3A)')
+     &  '==> SYSTEM CALL (from CTRL_READPARMS): >',
+     &                                 namBuf(1:pIL), '<'
+       CALL SYSTEM( namBuf(1:pIL) )
+#else
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_READPARMS: ',
+     &       'cannot call mkdir -> please create ctrlDir manually'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
+      ENDIF
+
+      IF (ctrlDir .NE. ' ') THEN
+       WRITE(msgBuf,'(2A)')
+     & 'read-write ctrl files from ', ctrlDir
+      ELSE
+       WRITE(msgBuf,'(A)')
+     & 'read-write ctrl files from current run directory'
+      ENDIF
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 

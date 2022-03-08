@@ -35,6 +35,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer il
+      integer ilDir
 
 c     == external ==
 
@@ -46,6 +47,7 @@ c     == end of interface ==
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
+      ilDir=ilnblnk( ctrlDir )
       il=ilnblnk( xx_fname )
 
       write(fname(1)(1:80),'(80a)') ' '
@@ -53,11 +55,14 @@ c--   Only the master thread will do I/O.
       write(fname(3)(1:80),'(80a)') ' '
 
       if ( il .GT. 0 .AND. il .LE. 80 ) then
-         write(fname(1)(1:80),'(2a,i10.10)')
+         write(fname(1)(1:80),'(3a,i10.10)')
+     &        ctrlDir(1:ilDir),
      &        xx_fname(1:il) ,'.', optimcycle
-         write(fname(2)(1:80),'(3a,i10.10)')
+         write(fname(2)(1:80),'(4a,i10.10)')
+     &        ctrlDir(1:ilDir),
      &        yadprefix, xx_fname(1:il), '.', optimcycle
-         write(fname(3)(1:80),'(3a,i10.10)')
+         write(fname(3)(1:80),'(4a,i10.10)')
+     &        ctrlDir(1:ilDir),
      &        'hn', xx_fname(1:il), '.', optimcycle
       endif
 

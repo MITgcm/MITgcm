@@ -63,10 +63,14 @@ C     !LOCAL VARIABLES:
 C--   only do interior, and exchange outside
       INTEGER iMin, iMax, jMin, jMax
       PARAMETER( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
+      INTEGER ilDir
 CEOP
 
       doglobalread = .FALSE.
       ladinit      = .FALSE.
+
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -90,7 +94,8 @@ CEOP
       _EXCH_XYZ_RL( wFld3d, myThid )
 
       il = ILNBLNK( xxFileCur )
-      WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+      WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &      ctrlDir(1:ilDir),
      &      xxFileCur(1:il), '.', optimcycle
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XYZ( fnamegeneric, xxFld3d, 1, doglobalread,
@@ -157,7 +162,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
 #ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL3D
         IF (useSMOOTH) CALL SMOOTH3D( xxFld3d, paramSmooth, myThid )
-        WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+        WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &        ctrlDir(1:ilDir),
      &        xxFileCur(1:il), '.smooth.', optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, Nr,
      &                        xxFld3d, 1, optimcycle, myThid )
@@ -184,7 +190,8 @@ C-    avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D( paramFld3d, maskFld3d, boundsVec, myThid )
 
       IF ( ctrlSmoothCorrel3D ) THEN
-        WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+        WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &        ctrlDir(1:ilDir),
      &        xxFileCur(1:il), '.effective.', optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, Nr,
      &                        paramFld3d, 1, optimcycle, myThid )
@@ -248,10 +255,14 @@ C     !LOCAL VARIABLES:
 C--   only do interior, and exchange outside
       INTEGER iMin, iMax, jMin, jMax
       PARAMETER( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
+      INTEGER ilDir
 CEOP
 
       doglobalread = .FALSE.
       ladinit      = .FALSE.
+
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -273,7 +284,8 @@ CEOP
       _EXCH_XY_RL( wFld2d, myThid )
 
       il = ILNBLNK( xxFileCur )
-      WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+      WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &      ctrlDir(1:ilDir),
      &      xxFileCur(1:il), '.', optimcycle
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XY( fnamegeneric, xxFld2d, 1, doglobalread,
@@ -338,7 +350,8 @@ C-    avoid xx larger than boundsVec(5) X uncertainty
 # ifdef ALLOW_SMOOTH_CTRL2D
         IF (useSMOOTH) CALL SMOOTH2D( xxFld2d, maskFld2d,
      &                                paramSmooth, myThid )
-        WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+        WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &        ctrlDir(1:ilDir),
      &        xxFileCur(1:il), '.smooth.', optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &                        xxFld2d, 1, optimcycle, myThid )
@@ -362,7 +375,8 @@ C-    end if ctrlSmoothCorrel2D / else
       CALL CTRL_BOUND_2D( paramFld2d, maskFld2d, boundsVec, myThid )
 
       IF ( ctrlSmoothCorrel2D ) THEN
-        WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+        WRITE(fnamegeneric(1:80),'(3A,I10.10)')
+     &        ctrlDir(1:ilDir),
      &        xxFileCur(1:il), '.effective.', optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &                        paramFld2d, 1, optimcycle, myThid )

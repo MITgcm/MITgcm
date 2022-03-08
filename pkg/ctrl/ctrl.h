@@ -45,6 +45,11 @@ cph set to 64 by default.
       _RL delZexp
       _RL forcingPrecond
 
+      common /controlparams_c/
+     &                       ctrlDir
+
+      CHARACTER*(MAX_LEN_FNAM) ctrlDir
+
 C     doInitXX               ::   at iter 0 only, set ctrls to 0 and write to xx*000.data
 C     doMainPack             ::   pack adxx*data files into ecco_cost_* file (usually for optim.x)
 C     doMainUnpack           ::   unpack ecco_ctrl_* file (usually from optim.x) into xx_*data files
