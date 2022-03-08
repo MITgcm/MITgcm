@@ -70,7 +70,7 @@ We do not simply evaluate the overturns for :math:`\epsilon` using
 :eq:`eq-pkg-kl10-Lo`. Instead we compute the vertical shear terms that the
 viscosity is acting on:
 
-.. math:: \epsilon_v = A_v \left(\left(\frac{\partial u}{\partial z}\right)^2 + \left(\frac{\partial v}{\partial z}\right)^2 \right).
+.. math:: \epsilon_v = A_v \left[ \left(\partial_z u \right)^2 + \left( \frac{\partial u}{\partial z} \right)^2 \right].
 
 There are straightforward caveats to this approach, covered in :cite:`klymaklegg10`.
 
