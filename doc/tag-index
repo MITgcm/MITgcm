@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff & seaice:
+  - avoid recomputation in Second-Order Moment (SOM) advection S/R by using
+    local tapes ; reduce local tapesize in seaice_solve4temp.F ;
+  - fix key and size of tapes in muti-dimensional advection routines and adjust
+    maxcube value (2 or 3 if using CubedSphereExchange) in few exp. "tamc.h".
 o pkg/mdsio:
   - retire all S/R from mdsio_rw_slice.F after replacing the last 2 calls to
     MDSWRITEFIELD{X,Y}Z in pkg/ctrl/ctrl_set_globfld_{x,y}z.F with calls to
