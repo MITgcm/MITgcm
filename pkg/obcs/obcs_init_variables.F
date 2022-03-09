@@ -427,7 +427,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     (OBWphFile,fp,tidalComponents,OBWph,1,nIter0,myThid )
       IF ( OBWamtFile .NE. ' '  ) CALL READ_REC_YZ_RL
      &     (OBWamtFile,fp,tidalComponents,OBWamt,1,nIter0,myThid )
-      IF ( OBWphFile .NE. ' '  ) CALL READ_REC_YZ_RL
+      IF ( OBWphtFile .NE. ' '  ) CALL READ_REC_YZ_RL
      &     (OBWphtFile,fp,tidalComponents,OBWpht,1,nIter0,myThid )
 # endif
       _BARRIER
