@@ -24,7 +24,7 @@ C     ================================================================
   You need to place you own copy of tamc.h in the include path for the
   model (e.g., where your SIZE.h is), and comment out these lines.
   In particular the parameters nchklev_1/2/3 (and possibly also maxpass
-   and maxcube in case you are using ptracers or cubed sphere grid)
+   and maxcube in case you are using seaice or cubed sphere grid)
   need to be set correctly.
 
 C     TAMC checkpointing parameters:
@@ -36,13 +36,13 @@ C     run.
 C
 C     nyears_chkpt   :: Number of calendar years affected by the assimilation
 C                       experiment; nyears_chkpt has to be at least equal to
-C                       the result of cal_IntYears(mythid).
+C                       the result of cal_IntYears(myThid).
 C     nmonths_chkpt  :: Number of months per year; nmonth_chkpt has to be at
 C                       least equal to nmonthyear.
 C     ndays_chkpt    :: Number of days per month; nday_chkpt has to be at least
 C                       equal to nmaxdaymonth.
 C     nsteps_chkpt   :: Number of steps per day; nsteps_chkpt has to be at
-C                       least equal to cal_nStepDay(mythid)
+C                       least equal to cal_nStepDay(myThid)
 C     ncheck_chkpt   :: Number of innermost checkpoints.
 C
 C     ngeom_chkpt    :: Geometry factor.
@@ -58,7 +58,7 @@ C     nthreads_chkpt :: Number of threads to be used; nth_chkpt .eq. nTx*nTy
       parameter (nyears_chkpt   =          1 )
       parameter (nmonths_chkpt  =         12 )
       parameter (ndays_chkpt    =         31 )
-      parameter (ngeom_chkpt    = nr*nsx*nsy )
+      parameter (ngeom_chkpt    = Nr*nSx*nSy )
       parameter (ncheck_chkpt   =          6 )
       parameter ( nthreads_chkpt = 1 )
 
@@ -114,12 +114,14 @@ c     For smaller tapes replace 8 by 4.
       PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
+C     maxpass :: maximum number of (active + passive) tracers
 #ifndef ALLOW_PTRACERS
       INTEGER    maxpass
       PARAMETER( maxpass     = 2 )
 #endif
+C     maxcube :: for Multi-Dim advection, max number of horizontal directions
       INTEGER    maxcube
-      PARAMETER( maxcube     = 1 )
+      PARAMETER( maxcube     = 2 )
 
 #ifdef ALLOW_CG2D_NSA
 C     Parameter that is needed for the tape complev_cg2d_iter
