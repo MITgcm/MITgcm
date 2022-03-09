@@ -1,7 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/generic_advdiff & seaice:
+o pkg/ptracer (adjoint):
+  - remove AUTODIFF_PTRACERS_SPLIT_FILES as it has no effect.
+o pkg/generic_advdiff & seaice (adjoint):
   - avoid recomputation in Second-Order Moment (SOM) advection S/R by using
     local tapes ; reduce local tapesize in seaice_solve4temp.F ;
   - fix key and size of tapes in muti-dimensional advection routines and adjust
