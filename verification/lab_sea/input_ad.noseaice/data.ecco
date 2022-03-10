@@ -57,4 +57,15 @@
  gencost_spzero(4) = -9999.0,
  gencost_outputlevel(4)=5,
  mult_gencost(4) = 1.,
+#
+ gencost_avgperiod(5)  = 'month',
+ gencost_barfile(5) = 'm_boxmean_theta',
+ gencost_mask(5) = 'labsea_densityfollowing_mask',
+ gencost_name(5) = 'labsea_densityfollowing_theta',
+ gencost_useDensityMask(5) = .TRUE.,
+ gencost_refPressure(5) = 0.0,
+ gencost_sigmaLow(5) = 26.5,
+ gencost_sigmaHigh(5) = 27.8,
+ gencost_outputlevel(5)=1,
+ mult_gencost(5) = 1.D+02,
  &
