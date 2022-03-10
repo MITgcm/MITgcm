@@ -153,9 +153,7 @@ C     local copies of global variables
 C     iceOrNot :: this is HICE_ACTUAL.GT.0.
       LOGICAL iceOrNot(1:sNx,1:sNy)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3
-      INTEGER max1, max2
-      INTEGER iicekey, itmpkey
+      INTEGER iicekey
 #endif
 #ifdef SEAICE_DEBUG
 #endif /* SEAICE_DEBUG */
@@ -163,7 +161,10 @@ C     iceOrNot :: this is HICE_ACTUAL.GT.0.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_solve4temp = COMMON, nSx*nSy*nthreads_chkpt*NMAX_TICE
+C     Since this is a "local" tape, is does not need to include number
+C     of threads or tiles per mpi-process. It does not even lead to a
+C     common block.
+CADJ INIT comlev1_solve4temp = COMMON, NMAX_TICE
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    MAYKUT CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
@@ -362,18 +363,9 @@ c        hice_tmp = max(HICE_ACTUAL(I,J),5. _d -2)
       ENDDO                     !/* j */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      itmpkey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-#endif
       DO ITER=1,IMAX_TICE
 #ifdef ALLOW_AUTODIFF_TAMC
-       iicekey = (itmpkey-1)*NMAX_TICE + ITER
+       iicekey = ITER
 CADJ STORE tsurfLoc = comlev1_solve4temp, key = iicekey, byte = isbyte
 #endif
        DO J=1,sNy
