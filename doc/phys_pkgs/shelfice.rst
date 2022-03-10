@@ -152,22 +152,22 @@ coordinates, the ice shelf topography on top of the water column has a
 similar role as (and in the language of Marshall et al. (2004) :cite:`marshall:04`,
 is isomorphic to) the orography and the pressure boundary conditions at
 the bottom of the fluid for atmospheric and oceanic models in pressure
-coordinates. The total pressure :math:`p_{tot}` in the ocean can be
+coordinates. The total pressure :math:`p_{\rm tot}` in the ocean can be
 divided into the pressure at the top of the water column
-:math:`p_{top}`, the hydrostatic pressure and the non-hydrostatic
-pressure contribution :math:`p_{NH}`:
+:math:`p_{\rm top}`, the hydrostatic pressure and the non-hydrostatic
+pressure contribution :math:`p_{\rm nh}`:
 
 .. math::
-   p_{tot} = p_{top} + \int_z^{\eta-h} g\,\rho\,dz + p_{NH}
+   p_{\rm tot} = p_{\rm top} + \int_z^{\eta-h} g\,\rho\,dz + p_{\rm nh}
    :label: pressureocean
 
 
 with the gravitational acceleration :math:`g`, the density
 :math:`\rho`, the vertical coordinate :math:`z` (positive upwards), and
 the dynamic sea-surface height :math:`\eta`. For the open ocean,
-:math:`p_{top}=p_{a}` (atmospheric pressure) and :math:`h=0`. Underneath
+:math:`p_{\rm top}=p_{a}` (atmospheric pressure) and :math:`h=0`. Underneath
 an ice-shelf that is assumed to be floating in isostatic equilibrium,
-:math:`p_{top}` at the top of the water column is the atmospheric
+:math:`p_{\rm top}` at the top of the water column is the atmospheric
 pressure :math:`p_{a}` plus the weight of the ice-shelf. It is this
 weight of the ice-shelf that has to be provided as a boundary condition
 at the top of the water column (in run-time parameter :varlink:`SHELFICEloadAnomalyFile`). The weight is
@@ -177,7 +177,7 @@ ice, from :math:`z=0` to a “reference” ice-shelf draft at :math:`z=-h` (Beck
 :cite:`beckmann:99`), so that
 
 .. math::
-   p_{top} = p_{a} + \int_{-h}^{0}g\,\rho^{*}\,dz
+   p_{\rm top} = p_{a} + \int_{-h}^{0}g\,\rho^{*}\,dz
    :label: ptop
 
 Underneath the ice shelf, the “sea-surface height” :math:`\eta` is the
@@ -185,32 +185,32 @@ deviation from the “reference” ice-shelf draft :math:`h`. During a model
 integration, :math:`\eta` adjusts so that the isostatic equilibrium is
 maintained for sufficiently slow and large scale motion.
 
-In MITgcm, the total pressure anomaly :math:`p'_{tot}` which is used
+In MITgcm, the total pressure anomaly :math:`p'_{\rm tot}` which is used
 for pressure gradient computations is defined by subtracting a purely
 depth dependent contribution :math:`-g\rho_c z` using constant
-reference density :math:`\rho_c` from :math:`p_{tot}`.
+reference density :math:`\rho_c` from :math:`p_{\rm tot}`.
 :eq:`pressureocean` becomes
 
 .. math::
-     p_{tot} = p_{top} - g \rho_c (z+h)  + g \rho_c \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_c) \, dz} + \, p_{NH}
+     p_{\rm tot} = p_{\rm top} - g \rho_c (z+h)  + g \rho_c \eta + \, \int_z^{\eta-h}{ g (\rho-\rho_c) \, dz} + \, p_{\rm nh}
      :label: pressure
 
 and after rearranging
 
 .. math::
-   p'_{tot} = p'_{top} + g \rho_c \eta + \, \int_z^{\eta-h}{g (\rho-\rho_c) \, dz} + \, p_{NH}
+   p'_{\rm tot} = p'_{\rm top} + g \rho_c \eta + \, \int_z^{\eta-h}{g (\rho-\rho_c) \, dz} + \, p_{\rm nh}
 
-with :math:`p'_{tot} = p_{tot} + g\,\rho_c\,z` and
-:math:`p'_{top} = p_{top} -
-g\,\rho_c\,h`. The non-hydrostatic pressure contribution :math:`p_{NH}`
+with :math:`p'_{\rm tot} = p_{\rm tot} + g\,\rho_c\,z` and
+:math:`p'_{\rm top} = p_{\rm top} - g\,\rho_c\,h`.
+The non-hydrostatic pressure contribution :math:`p_{\rm nh}`
 is neglected in the following.
 
-In practice, the ice shelf contribution to :math:`p_{top}` is computed
+In practice, the ice shelf contribution to :math:`p_{\rm top}` is computed
 by integrating :eq:`ptop` from :math:`z=0` to the bottom of the
 last fully dry cell within the ice shelf:
 
 .. math::
-   p_{top} = g\,\sum_{k'=1}^{n-1}\rho_{k'}^{*}\Delta{z_{k'}} + p_{a}
+   p_{\rm top} = g\,\sum_{k'=1}^{n-1}\rho_{k'}^{*}\Delta{z_{k'}} + p_{a}
    :label: surfacepressure
 
 where :math:`n` is the vertical index of the first (at least partially)
@@ -220,7 +220,7 @@ evaluating the pressure gradient is computed in the center of the “wet”
 cell :math:`k` as
 
 .. math::
-   p'_{k} = p'_{top} + g\rho_{n}\eta +
+   p'_{k} = p'_{\rm top} + g\rho_{n}\eta +
    g\,\sum_{k'=n}^{k}\left((\rho_{k'}-\rho_c)\Delta{z_{k'}}
      \frac{1+H(k'-k)}{2}\right)
    :label: discretizedpressure

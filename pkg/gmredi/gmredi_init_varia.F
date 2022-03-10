@@ -59,8 +59,8 @@ C     Initialize arrays in common blocks :
 #ifdef ALLOW_GM_LEITH_QG
            GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
 #endif
-#ifdef GM_K3D
-           K3D(i,j,k,bi,bj) = 0. _d 0
+#ifdef GM_BATES_K3D
+           GM_BatesK3d(i,j,k,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -102,14 +102,14 @@ C--   write GM scaling factors to file:
       ENDIF
 #endif /* ALLOW_GMREDI */
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
       IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
      &     .AND. pickupSuff.EQ.' ' )) THEN
-        IF (GM_useK3D) CALL GMREDI_READ_PICKUP( niter0, myThid )
+        IF (GM_useBatesK3d) CALL GMREDI_READ_PICKUP( nIter0, myThid )
       ENDIF
 #endif
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 C This is put here, but really should be in gmredi_init_fixed.F. The problem is that
 C fCori, fCoriCos, etc are not initialized when gmredi_init_fixed.F is called. To be fixed.
 C     Computing beta = df/dy

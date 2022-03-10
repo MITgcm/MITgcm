@@ -185,17 +185,17 @@ see :numref:`zandp-vert-coord`.
     Vertical coordinates and kinematic boundary conditions for atmosphere (top) and ocean (bottom).
 
 .. math::
-   \frac{D\vec{\mathbf{v}_{h}}}{Dt}+\left( 2\vec{\Omega}\times \vec{\mathbf{v}}
-   \right) _{h}+\mathbf{\nabla }_{h}\phi =\mathcal{F}_{\vec{\mathbf{v}_{h}}}\text{  horizontal momentum}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+\left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{v}}
+   \right) _{h}+ \nabla _{h}\phi = \vec{\boldsymbol{\mathcal{F}}}_h\text{  horizontal momentum}
    :label: horiz-mtm
 
 .. math::
-   \frac{D\dot{r}}{Dt}+\widehat{k}\cdot \left( 2\vec{\Omega}\times \vec{\mathbf{
+   \frac{D\dot{r}}{Dt}+\hat{\boldsymbol{k}}\cdot \left( 2\vec{\boldsymbol{\Omega}}\times \vec{\mathbf{
    v}}\right) +\frac{\partial \phi }{\partial r}+b=\mathcal{F}_{\dot{r}}\text{  vertical momentum}
    :label: vert-mtm
 
 .. math::
-   \mathbf{\nabla }_{h}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \dot{r}}{
+    \nabla _{h}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial \dot{r}}{
    \partial r}=0\text{  continuity}
    :label: continuity
 
@@ -217,17 +217,17 @@ Here:
 
 .. math::
 
-   \frac{D}{Dt}=\frac{\partial }{\partial t}+\vec{\mathbf{v}}\cdot \nabla \text{ is the total derivative}
+   \frac{D}{Dt}=\frac{\partial }{\partial t}+\vec{\mathbf{v}}\cdot  \nabla  \text{ is the total derivative}
 
 .. math::
 
-   \mathbf{\nabla }=\mathbf{\nabla }_{h}+\widehat{k}\frac{\partial }{\partial r}
+    \nabla = \nabla _{h}+\hat{\boldsymbol{k}}\frac{\partial }{\partial r}
    \text{  is the ‘grad’ operator}
 
-with :math:`\mathbf{\nabla }_{h}` operating in the horizontal and
-:math:`\widehat{k}
+with :math:`\nabla _{h}` operating in the horizontal and
+:math:`\hat{\boldsymbol{k}}
 \frac{\partial }{\partial r}` operating in the vertical, where
-:math:`\widehat{k}` is a unit vector in the vertical
+:math:`\hat{\boldsymbol{k}}` is a unit vector in the vertical
 
 .. math:: t\text{ is time}
 
@@ -237,7 +237,7 @@ with :math:`\mathbf{\nabla }_{h}` operating in the horizontal and
 
 .. math:: \phi \text{ is the ‘pressure’/‘geopotential’}
 
-.. math:: \vec{\Omega}\text{ is the Earth's rotation}
+.. math:: \vec{\boldsymbol{\Omega}}\text{ is the Earth's rotation}
 
 .. math:: b\text{ is the ‘buoyancy’}
 
@@ -247,14 +247,14 @@ with :math:`\mathbf{\nabla }_{h}` operating in the horizontal and
 
 .. math::
 
-   \mathcal{F}_{\vec{\mathbf{v}}}\text{ are forcing and dissipation of }\vec{
+   \vec{\boldsymbol{\mathcal{F}}}\text{ are forcing and dissipation of }\vec{
    \mathbf{v}}
 
 .. math:: \mathcal{Q}_{\theta }\mathcal{\ }\text{ are forcing and dissipation of }\theta
 
 .. math:: \mathcal{Q}_{S}\mathcal{\ }\text{are forcing and dissipation of }S
 
-The :math:`\mathcal{F}^{\prime }s` and :math:`\mathcal{Q}^{\prime }s`
+The terms :math:`\vec{\boldsymbol{\mathcal{F}}}` and :math:`\mathcal{Q}` 
 are provided by ‘physics’ and forcing packages for atmosphere and ocean.
 These are described in later chapters.
 

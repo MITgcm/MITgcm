@@ -16,7 +16,6 @@ c     ================================================================
 c     HEADER TAMC
 c     ================================================================
 
-
 c     TAMC checkpointing parameters:
 c     ==============================
 c
@@ -110,7 +109,7 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       PARAMETER( maxpass     = 3 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube     = 3 )
+      PARAMETER( maxcube     = 2 )
 
 c     ================================================================
 c     END OF HEADER TAMC

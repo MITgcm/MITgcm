@@ -1,0 +1,78 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 10*10.0, 9.9, 9.8, 9.7, 9.5, 9.4, 9.2, 9.0, 8.7, 8.4, 8.0, 7.6, 7.1, 6.5, 5.8, 5.2,
+ viscAr=2.E-4,
+ viscA4=12.E5,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ bottomDragLinear=1.E-3,
+#bottomDragQuadratic=1.E-3,
+ diffKrT=2.E-5,
+ diffKrS=2.E-5,
+#diffKrNrT=6*1.E-2, 19*2.E-5,
+#diffKrNrS=6*1.E-2, 19*2.E-5,
+ diffKhT=0.E3,
+ diffKhS=0.E3,
+ beta=0.E-11,
+ f0  =1.E-4,
+ gravity=9.81,
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ rhoConst=1000.,
+ rhoNil=1000.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ implicitDiffusion=.TRUE.,
+ hFacMin= 0.05,
+#hMixCriteria=-0.04,
+ hMixCriteria= 1.5,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ debugLevel=3,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+#nTimeSteps=8641,
+ nTimeSteps=25,
+ deltaT=3600.,
+ cAdjFreq=-1.,
+ abEps=0.1,
+ pChkptFreq=0.,
+ chkptFreq =0.,
+ dumpFreq=2592000.,
+#monitorFreq=864000.,
+ monitorSelect=1,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delR= 8*20.,  24.,  29.,  35.,  41.,  50.,  60.,  72.,
+          86., 103., 124., 148., 178., 213., 256., 3*307.,
+ delX=1*1.E5,
+ delY=32*1.E5,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='t_ini.bin',
+ hydrogSaltFile ='s_ini.bin',
+ uVelInitFile   ='u_ini.bin',
+ bathyFile      ='topo_slp.bin',
+ topoFile       ='top_bump.bin',
+ &
