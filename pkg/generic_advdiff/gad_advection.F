@@ -329,9 +329,6 @@ C--   For cube need one pass for each of red, green and blue axes.
        DO ipass=1,npass
 #ifdef ALLOW_AUTODIFF_TAMC
         ipasskey = ipass + (k-1) * maxcube
-        IF (npass .GT. maxcube) THEN
-         STOP 'GAD_ADVECTION: npass > maxcube. check tamc.h'
-        ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         interiorOnly = .FALSE.
@@ -609,7 +606,6 @@ C-     Advective flux in Y
 #else /* ALLOW_AUTODIFF */
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifndef DISABLE_MULTIDIM_ADVECTION
-C     this changes results
 CADJ STORE localTij = gad_advtape_k_pass, key = ipasskey, kind = isbyte
 #  endif
 # endif
