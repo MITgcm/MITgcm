@@ -10,7 +10,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: CTRL_MAP_GENARR2D
 C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, myThid )
+      SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, dummy, myThid )
 
 C     !DESCRIPTION: \bv
 C     *=================================================================
@@ -34,11 +34,12 @@ C     == global variables ==
 #include "ctrl.h"
 #include "optim.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+C#include "ctrl_dummy.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iarr
+      _RL     dummy(maxCtrlArr2D) 
       INTEGER myThid
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -114,7 +115,7 @@ c               passed to data.ctrl, (default = 0.0)
 
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, 1, doglobalread,
-     &     ladinit, optimcycle, myThid, xx_genarr2d_dummy(iarr) )
+     &     ladinit, optimcycle, myThid, dummy(iarr) )
 #else
       CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif

@@ -122,23 +122,28 @@ cdg temp_genarr_fnam used below instead of xx_genarr2d_file(iarr)
       ENDDO
 
       IF (igen_etan.GT.0) THEN
-        CALL CTRL_MAP_GENARR2D( etaN, igen_etan, myThid )
+        CALL CTRL_MAP_GENARR2D( etaN, igen_etan, 
+     &           xx_genarr2d_dummy(iarr),myThid )
       ENDIF
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       IF (igen_bdrag.GT.0)
-     &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, myThid )
+     &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, 
+     &           xx_genarr2d_dummy(iarr),myThid )
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
       IF (igen_geoth.GT.0)
-     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
+     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, 
+     &           xx_genarr2d_dummy(iarr),myThid )
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
       IF (igen_shiCoeffT.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,
+     &           xx_genarr2d_dummy(iarr),myThid )
 
       IF (igen_shiCoeffS.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffS,igen_shiCoeffS,myThid)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffS,igen_shiCoeffS,
+     &           xx_genarr2d_dummy(iarr),myThid )
 
 C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
       IF ((igen_shiCoeffS.EQ.0).AND.(igen_shiCoeffT.GT.0)) THEN
@@ -168,7 +173,8 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
 # else
       dragThermoEqualMom = .FALSE.
       IF (igen_shiCDrag.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
+     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,
+     &           xx_genarr2d_dummy(iarr),myThid )
 C--     Set drag coefficient used in momentum equal to thermodynamic,
 C--      u* drag coefficient
       DO k2 = 1, maxCtrlProc
@@ -199,13 +205,15 @@ cdg as cannot seem to trace dependency thru CTRL_MAP_GENARR
 !       B_glen(1,1,1,1) = B_glen(1,1,1,1) +
 !     &  0.0 * xx_genarr2d_dummy(iarr)
 !#endif
-      CALL CTRL_MAP_GENARR2D( B_glen, iarr, myThid )
+      CALL CTRL_MAP_GENARR2D( B_glen, iarr,
+     &           xx_genarr2d_dummy(iarr),myThid )
       iarr = 2
-#ifdef ALLOW_OPENAD
-       H_streamice(1,1,1,1) = H_streamice(1,1,1,1) + 
-     &  0.0 * xx_genarr2d_dummy(iarr)
-#endif
-      CALL CTRL_MAP_GENARR2D( H_streamice, iarr, myThid )
+!#ifdef ALLOW_OPENAD
+!       H_streamice(1,1,1,1) = H_streamice(1,1,1,1) + 
+!     &  0.0 * xx_genarr2d_dummy(iarr)
+!#endif
+      CALL CTRL_MAP_GENARR2D( H_streamice, iarr,
+     &           xx_genarr2d_dummy(iarr),myThid )
 C     iarr = 5
 C     CALL CTRL_MAP_GENARR2D( BDOT_streamice, iarr, myThid )
 C---  end customized code
