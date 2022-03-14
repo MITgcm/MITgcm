@@ -1,4 +1,8 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SOLVE_PENTADIAGONAL
@@ -291,6 +295,9 @@ C-    end i,j loop
 
 #else  /* ndef SOLVE_DIAGONAL_KINNER */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT solvepenta_tape = COMMON, Nr
+#endif
 C--   Init. + copy to temp. array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -302,15 +309,15 @@ C--   Init. + copy to temp. array
          y5d_m1(i,j,k) = y5d(i,j,k)
         ENDDO
        ENDDO
-c     ENDDO
+      ENDDO
 
-C     This loop split seems to confuse TAF, as it tries to recompute
-C     d/e/y5d_prime, which have just been initialised to zero. Fusing
-C     the k-loops makes the recomtuation warnings go away.
-
-cCADJ loop = sequential
-c     DO k=1,Nr
+      DO k=1,Nr
 C--   Forward sweep (starting from top)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE d5d_prime(:,:,k) = solvepenta_tape, key = k
+CADJ STORE e5d_prime(:,:,k) = solvepenta_tape, key = k
+CADJ STORE y5d_prime(:,:,k) = solvepenta_tape, key = k
+#endif
        IF ( k .EQ. 1 ) THEN
 C-    just copy terms
         DO j=1-OLy,sNy+OLy
@@ -369,7 +376,6 @@ C-    end k-loop
       ENDDO
 
 C--   Backward sweep (starting from bottom)
-CADJ loop = sequential
       DO k=Nr,1,-1
        IF ( k .EQ. Nr ) THEN
         DO j=1-OLy,sNy+OLy
