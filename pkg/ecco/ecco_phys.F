@@ -3,26 +3,26 @@
 # include "SHELFICE_OPTIONS.h"
 #endif
 
-      subroutine ecco_phys( myThid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ECCO_PHYS
 
-c     ==================================================================
-c     SUBROUTINE ecco_phys
-c     ==================================================================
-c
-c     ==================================================================
-c     SUBROUTINE ecco_phys
-c     ==================================================================
+C     !INTERFACE:
+      SUBROUTINE ECCO_PHYS( myThid )
 
-      implicit none
+C     !DESCRIPTION:
+C     Compute some derived quantities and averages
+C     for GenCost and ECCO cost function.
 
+C     !USES:
+      IMPLICIT NONE
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "GRID.h"
 #ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
@@ -35,22 +35,23 @@ c     == global variables ==
 # include "SHELFICE.h"
 #endif
 
-c     == routine arguments ==
+C     !INPUT PARAMETERS:
+C     myThid     :: my Thread Id number
+      INTEGER myThid
 
-      integer myThid
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
+C     !LOCAL VARIABLES:
+C     bi, bj     :: tile indices
+C     i, j, k    :: loop indices
+      INTEGER bi, bj
+      INTEGER i, j, k
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      integer kgen, kgen3d, itr
+      INTEGER kgen, kgen3d, itr
       _RL areavolTile(nSx,nSy), areavolGlob
       _RL tmpfld, tmpvol, tmpmsk, tmpmsk2, tmpmskW, tmpmskS
       _RL tmp_sigmsk, tmpsig, tmpsig_lower, tmpsig_upper
 #endif
 
-c- note defined with overlap here, not needed, but more efficient
+C- note defined with overlap here, not needed, but more efficient
       _RL trVolW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trVolS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trHeatW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -70,6 +71,7 @@ c- note defined with overlap here, not needed, but more efficient
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
 #endif
+CEOP
 
 #ifdef ALLOW_PSBAR_STERIC
 
@@ -267,7 +269,7 @@ cts ---
 c---------
            DO k = 1,Nr
             tmpvol=hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-c
+
             tmpmsk=0. _d 0
             IF (.NOT.gencost_msk_is3d(kgen)) THEN
              tmpmsk=gencost_mskCsurf(i,j,bi,bj,kgen)*
@@ -279,31 +281,29 @@ c
 #endif
             ENDIF
 
-c
-c ---- If density mask is enabled, use it here ----
-            IF (hFacC(i,j,k,bi,bj).GT.0.0 .AND.
-     &           gencost_useDensityMask(kgen)) THEN
-c            - first, calculate the scalar density
+C ---- If density mask is enabled, use it here ----
+            IF ( maskC(i,j,k,bi,bj).EQ.oneRS .AND.
+     &           gencost_useDensityMask(kgen) ) THEN
+C            - first, calculate the scalar density
              CALL FIND_RHO_SCALAR(
      I              theta(i,j,k,bi,bj),
      I              salt(i,j,k,bi,bj),
      I              gencost_refPressure(kgen),
      O              tmpsig,
-     I              mythid)
-c            - subtract 1000 to get sigma
+     I              myThid )
+C            - subtract 1000 to get sigma
              tmpsig = tmpsig - 1000. _d 0
-c            - now, tmpmsk is sigmoid times this value
+C            - now, tmpmsk is sigmoid times this value
              tmpsig_lower = 0.5 + 0.5*tanh(gencost_tanhScale(kgen)
      &           *(tmpsig-gencost_sigmaLow(kgen)))
              tmpsig_upper = 0.5 - 0.5*tanh(gencost_tanhScale(kgen)
      &           *(tmpsig-gencost_sigmaHigh(kgen)))
-c             - update mask value based on the sigmoid function
+C             - update mask value based on the sigmoid function
              tmp_sigmsk = tmpsig_lower*tmpsig_upper
              tmpmsk = tmpmsk*tmp_sigmsk
             ENDIF
-c ---- end of density mask (but tmpmsk is used below)
+C ---- end of density mask (but tmpmsk is used below)
 
-c
 cts ---
 c Now: at each (i,j,k,bi,bj) fill the SCALAR variables
 c   tmpfld - from 3D field theta, salt, ptracer
@@ -328,7 +328,7 @@ cts ---
              IF (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
 #endif
             ENDIF
-c
+
 cts ---
 c Fill 3D field
 c       gencost_store - masked field of interest * grid cell volume
@@ -343,7 +343,7 @@ cts ---
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
-c
+
            ENDDO ! Ends do k=1,Nr
 
            tmpmsk  = 0. _d 0
@@ -403,7 +403,7 @@ cts ---
      &        +tmpmsk2*rA(i,j,bi,bj)
 c---------
            DO k = 1,Nr
-c
+
             tmpmskW=0. _d 0
             tmpmskS=0. _d 0
             IF (.NOT.gencost_msk_is3d(kgen)) THEN
@@ -420,7 +420,7 @@ c
             ENDIF
             tmpmskW=tmpmskW*hFacW(i,j,k,bi,bj)*dyG(i,j,bi,bj)*drF(k)
             tmpmskS=tmpmskS*hFacS(i,j,k,bi,bj)*dxG(i,j,bi,bj)*drF(k)
-c
+
             IF (gencost_barfile(kgen)(1:13).EQ.'m_horflux_vol') THEN
               gencost_storefld(i,j,bi,bj,kgen) =
      &          gencost_storefld(i,j,bi,bj,kgen)
@@ -480,7 +480,7 @@ cts ---
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 areavolGlob, 1, 1, myThid )
-      endif
+       ENDIF
 
 C     end kgen-loop
       ENDDO
