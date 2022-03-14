@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - add new feature (within gencost) to evaluate cost-function contribution
+    over specified density range (instead of depth range, see issue #483);
+  - add few run-time parameters including logical switch: gencost_useDensityMask
+  - test this new feature in lab_sea/input_ad.noseaice and update ref. output.
 o pkg/ptracer (adjoint):
   - remove AUTODIFF_PTRACERS_SPLIT_FILES as it has no effect.
 o pkg/generic_advdiff & seaice (adjoint):
