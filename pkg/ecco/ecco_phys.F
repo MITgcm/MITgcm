@@ -279,31 +279,29 @@ c
 #endif
             ENDIF
 
-c
-c ---- If density mask is enabled, use it here ----
-            IF (hFacC(i,j,k,bi,bj).GT.0.0 .AND.
-     &           gencost_useDensityMask(kgen)) THEN
-c            - first, calculate the scalar density
+C ---- If density mask is enabled, use it here ----
+            IF ( maskC(i,j,k,bi,bj).EQ.oneRS .AND.
+     &           gencost_useDensityMask(kgen) ) THEN
+C            - first, calculate the scalar density
              CALL FIND_RHO_SCALAR(
      I              theta(i,j,k,bi,bj),
      I              salt(i,j,k,bi,bj),
      I              gencost_refPressure(kgen),
      O              tmpsig,
-     I              mythid)
-c            - subtract 1000 to get sigma
+     I              myThid )
+C            - subtract 1000 to get sigma
              tmpsig = tmpsig - 1000. _d 0
-c            - now, tmpmsk is sigmoid times this value
+C            - now, tmpmsk is sigmoid times this value
              tmpsig_lower = 0.5 + 0.5*tanh(gencost_tanhScale(kgen)
      &           *(tmpsig-gencost_sigmaLow(kgen)))
              tmpsig_upper = 0.5 - 0.5*tanh(gencost_tanhScale(kgen)
      &           *(tmpsig-gencost_sigmaHigh(kgen)))
-c             - update mask value based on the sigmoid function
+C             - update mask value based on the sigmoid function
              tmp_sigmsk = tmpsig_lower*tmpsig_upper
              tmpmsk = tmpmsk*tmp_sigmsk
             ENDIF
-c ---- end of density mask (but tmpmsk is used below)
+C ---- end of density mask (but tmpmsk is used below)
 
-c
 cts ---
 c Now: at each (i,j,k,bi,bj) fill the SCALAR variables
 c   tmpfld - from 3D field theta, salt, ptracer
@@ -480,7 +478,7 @@ cts ---
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 areavolGlob, 1, 1, myThid )
-      endif
+       ENDIF
 
 C     end kgen-loop
       ENDDO
