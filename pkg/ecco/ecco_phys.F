@@ -54,7 +54,7 @@ C     i, j, k   :: loop indices
       _RL tmp_sigmsk, tmpsig, tmpsig_lower, tmpsig_upper
 #endif
 
-C- note defined with overlap here, not needed, but more efficient
+C- note: defined with overlap here, not needed, but more efficient
       _RL trVolW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trVolS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trHeatW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -82,8 +82,8 @@ c     _RL Mload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
       tmpfac = recip_rhoConst*recip_gravity
-      sIceLoadFacLoc=zeroRL
-      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc=recip_rhoConst
+      sIceLoadFacLoc = zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFacLoc = recip_rhoConst
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -116,11 +116,11 @@ CEOP
         DO k = 1,Nr
          DO j = 1,sNy
           DO i =  1,sNx
-           RHOsumTile(bi,bj)=RHOsumTile(bi,bj)+
-     &            (rhoConst+rhoLoc(i,j,k,bi,bj))*
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-           VOLsumTile(bi,bj)=VOLsumTile(bi,bj)+
-     &            hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
+           RHOsumTile(bi,bj) = RHOsumTile(bi,bj)
+     &          + ( rhoConst + rhoLoc(i,j,k,bi,bj) )
+     &           *hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
+           VOLsumTile(bi,bj) = VOLsumTile(bi,bj)
+     &          + hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -138,7 +138,7 @@ CEOP
       ENDIF
 
 c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
-c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c     CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 c    &                       SQUEEZE_RIGHT, myThid )
 
 #endif /* ALLOW_PSBAR_STERIC */
@@ -171,7 +171,7 @@ c    &                       SQUEEZE_RIGHT, myThid )
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
 
-C calculte total sea level including inverse barometer (IB) effect if
+C calculate total sea level including inverse barometer (IB) effect if
 C  there is air pressure forcing
            m_eta(i,j,bi,bj) =
      &           ( etaN(i,j,bi,bj)
@@ -275,10 +275,10 @@ c    &            - Ro_surf(i,j,bi,bj)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k = 1,Nr
-         DO j = 1,sNy
-          DO i =  1,sNx
-           m_UE(i,j,k,bi,bj)=0. _d 0
-           m_VN(i,j,k,bi,bj)=0. _d 0
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           m_UE(i,j,k,bi,bj) = 0. _d 0
+           m_VN(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -296,9 +296,9 @@ c--       convert from [ppt*m^3/sec] via rhoConst/1000.
 c--       ( 1ppt = 1000*[mass(salt)]/[mass(seawater)] )
 
 c-- init
-      CALL ECCO_ZERO(trVol,Nr,zeroRL,myThid)
-      CALL ECCO_ZERO(trHeat,Nr,zeroRL,myThid)
-      CALL ECCO_ZERO(trSalt,Nr,zeroRL,myThid)
+      CALL ECCO_ZERO( trVol,  Nr, zeroRL, myThid )
+      CALL ECCO_ZERO( trHeat, Nr, zeroRL, myThid )
+      CALL ECCO_ZERO( trSalt, Nr, zeroRL, myThid )
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
@@ -315,8 +315,8 @@ cts ---
 
        itr = gencost_itracer(kgen)
 
-       CALL ECCO_ZERO(gencost_storefld(1-OLx,1-OLy,1,1,kgen),
-     &      1,zeroRL,myThid)
+       CALL ECCO_ZERO( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+     &                 1, zeroRL, myThid )
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -541,7 +541,7 @@ cts ---
        IF (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .AND.
      &    gencost_barfile(kgen)(11:13).NE.'shi') THEN
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
-        CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+        CALL ECCO_DIV( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 areavolGlob, 1, 1, myThid )
        ENDIF
 
