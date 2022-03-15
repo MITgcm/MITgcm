@@ -1,12 +1,30 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o pkg/ecco:
+  - add new feature (within gencost) to evaluate cost-function contribution
+    over specified density range (instead of depth range, see issue #483);
+  - add few run-time parameters including logical switch: gencost_useDensityMask
+  - test this new feature in lab_sea/input_ad.noseaice and update ref. output.
+o pkg/ptracer (adjoint):
+  - remove AUTODIFF_PTRACERS_SPLIT_FILES as it has no effect.
+o pkg/generic_advdiff & seaice (adjoint):
+  - avoid recomputation in Second-Order Moment (SOM) advection S/R by using
+    local tapes ; reduce local tapesize in seaice_solve4temp.F ;
+  - fix key and size of tapes in muti-dimensional advection routines and adjust
+    maxcube value (2 or 3 if using CubedSphereExchange) in few exp. "tamc.h".
+o pkg/mdsio:
+  - retire all S/R from mdsio_rw_slice.F after replacing the last 2 calls to
+    MDSWRITEFIELD{X,Y}Z in pkg/ctrl/ctrl_set_globfld_{x,y}z.F with calls to
+    S/R WRITE_REC_{X,Y}Z_RL (from pkg/rw).
+  - remove src file mdsio_rw_field.F & mdsio_rw_slice.F from NOOPTFILES list
+    in few linux_amd64_ifort* optfiles.
+  - move if statement out of "lengthBuff" loop in mdsio_{read,write}_whalos.F
 o verification AD exp.:
   - remove ECCO_CPPOPTIONS.h from global_ocean_ebm/ and halfpipe_streamice/
     code_ad/ dir and replace by appropriate AUTODIFF/CTRL/COST_OPTIONS.h ;
   - for halfpipe_streamice AD exp., make necessary adjustments in pkg/streamice
-    and remove ALLOW_GENTIM2D_CONTROL from store directive header files 
+    and remove ALLOW_GENTIM2D_CONTROL from store directive header files
     streamice_ad_check_lev?_dir.h ;
   - remove customized version of ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F
     from halfpipe_streamice/code_ad/ and add corresponding code to pkg/ctrl.
