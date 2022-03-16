@@ -1,18 +1,38 @@
 #! /usr/bin/env bash
 
+#---
+# Description:
+#   script to compile and run MITgcm Atmosphere-Ocean coupled set-up
+#     see, e.g., verification/cpl_aim+ocn/README.md
+#         or     verification_other/cpl_gray+ocn/
+#   Note: currently these coupled set-up are not covered by "testreport"
+# 1) running "./run_cpl_test" show the different steps (+ some options) available
+# 2) some options are not available as argument and require editing this script, e.g.,
+#    a) to run Ocean or Atmos component on more that 1 MPI process (edit: NpOc and Npr)
+#    b) to compile and run Ocean or Atmos component with multi-threads (edit: MTH)
+#    c) to use compiler Optimisation (edit: GMKopt)
+#---
+
 bdPfx='build'; # build-dir prefix
 
+# Npr  :: total number of MPI procs (including coupler)
+# NpOc :: number of MPI procs for Ocean component
+# Npr - NpOc - 1 :: number of MPI procs for Atmos. component
 #- default:
  Npr=3 ; NpOc=1 ;
 #Npr=25; NpOc=12;
+
+# MTH :: genmake2 option for multi-threading compilation
 MTH=
-MTHo=
-MTHa=
+
+# GMKopt :: other genmake2 option (empty --> use compiler optimisation)
 GMKopt='-devel'
 #GMKopt='-ieee'
 #GMKopt=
-rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
 
+rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
+MTHo=
+MTHa=
 #- parse options:
 if [ $# -ge 1 ] ; then if test $1 = '-mth' ; then
   MTH='-omp' ; shift
