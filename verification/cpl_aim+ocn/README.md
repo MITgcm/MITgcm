@@ -1,6 +1,6 @@
-Atmosphere-Ocean coupled set-up example "cpl_aim+ocn" using simplified
- atmospheric physics (AIM), in realistic configuration (orography & continent)
- with Land and Sea-ice component, on Cubed-Sphere (cs-32) grid.
+Atmosphere-Ocean coupled set-up example "cpl_aim+ocn"
+ using simplified atmospheric physics (AIM), in realistic configuration (orography 
+ & continent) with Land and Sea-ice component, on Cubed-Sphere (cs-32) grid.
 ================================================================================
 
 Used "in-house" MITgcm coupler (pkg/atm_ocn_coupler, pkg/compon_communic,
@@ -54,6 +54,6 @@ for primary set-up:
   ../../tools/run_cpl_test 4
 and for secondary test:
   ../../tools/run_cpl_test 4 icedyn
-but this requires to have, in the path, a simple comparaison script "comp_res" (which is 
+but this requires to have, in the path, a simple comparison script "comp_res" (which is 
 not provided here but could be found in: 
  http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/ ).
