@@ -313,6 +313,8 @@ c     scale param adjustment
             IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
              xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
      &                /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
+            ELSE 
+             xx_gen(i,j,k,bi,bj)=0. _d 0
             ENDIF
            ENDDO
           ENDDO
@@ -325,8 +327,10 @@ c     or in case of log10ctrl, fld = 10^(xx_gen)
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
-            fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)
-     &           + xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
+            IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
+             fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)
+     &            + xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
@@ -334,11 +338,15 @@ c     or in case of log10ctrl, fld = 10^(xx_gen)
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
-            xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
+            IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
+             xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
 C           xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
 C     this is faster, especially if log(10) has been evaluated before
 C           xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
-            xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
+             xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
+            ELSE
+             xx_gen(i,j,k,bi,bj) = 0. _d 0
+            ENDIF
             fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
            ENDDO
           ENDDO
