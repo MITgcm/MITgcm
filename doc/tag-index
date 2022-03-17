@@ -2,6 +2,13 @@
     ==============================
 
 o pkg/ecco:
+  - new src files: ecco_init_fixed.F & ecco_diagnostics_init.F ;
+  - new SSH diagnostics: SSH,SSHNOIBC (with & w-out Inv.Barometer corr.: SSHIBC)
+    STERICHT (steric height anomaly); and Bottom-Pressure/Mass: OBP & OBPGMAP ;
+  - add arg myTime & myIter to S/R ECCO_PHYS and adjust calls ; change to use
+    model "rhoInSitu" (instead of recomputed rho) for Greatbatch correction ;
+    this affects cost "m_eta".
+o pkg/ecco:
   - add new feature (within gencost) to evaluate cost-function contribution
     over specified density range (instead of depth range, see issue #483);
   - add few run-time parameters including logical switch: gencost_useDensityMask
