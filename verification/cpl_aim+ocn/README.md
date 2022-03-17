@@ -27,14 +27,12 @@ Configure and compile, e.g., using gfortran optfile:
 
 To run primary set-up (no seaice dynamics, only thermodynamics):
 ```
-  /bin/rm -rf rank_{0,1,2}
   ../../tools/run_cpl_test 2
   ../../tools/run_cpl_test 3
 ```
 
 To run secondary test (with seaice dynamics as part of ocean component), using input parameter files in: input_cpl.icedyn, input_atm.icedyn, input_ocn.icedyn :
 ```
-  /bin/rm -rf rank_{0,1,2}
   ../../tools/run_cpl_test 2 icedyn
   ../../tools/run_cpl_test 3
 ```

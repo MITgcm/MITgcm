@@ -9,13 +9,12 @@
 # 1) running "./run_cpl_test" show the different steps (+ some options) available
 # 2) some options are not available as argument and require editing this script, e.g.,
 #    a) to run Ocean or Atmos component on more that 1 MPI process (edit: NpOc and Npr)
-#    b) to compile and run Ocean or Atmos component with multi-threads (edit: MTH)
-#    c) to use compiler Optimisation (edit: GMKopt)
+#    b) to use compiler Optimisation (edit: GMKopt)
 #---
 
 bdPfx='build'; # build-dir prefix
 
-# Npr  :: total number of MPI procs (including coupler)
+# Npr  :: total number of MPI procs (including 1 for coupler)
 # NpOc :: number of MPI procs for Ocean component
 # Npr - NpOc - 1 :: number of MPI procs for Atmos. component
 #- default:
