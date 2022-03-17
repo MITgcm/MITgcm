@@ -42,11 +42,9 @@ To run secondary test (with seaice dynamics as part of ocean component), using i
 Results are written in rank_{0,1,2} dir, for coupler, ocean and atmos comp. respectively
 
 There is comparison output corresponding to primary set-up in the directory:<br> 
- results/atmSTDOUT.0000
- results/ocnSTDOUT.0000<br>
+ *results/atmSTDOUT.0000* & *results/ocnSTDOUT.0000*<br>
 and for secondary test, in the same directory:<br> 
-   results/atmSTDOUT.icedyn
-   results/ocnSTDOUT.icedyn
+ *results/atmSTDOUT.icedyn* & *results/ocnSTDOUT.icedyn*
 
 Comments:<br>
 To check the results, monitor output could be compared to reference one (in results/) using "run_cpl_test", step 4:<br>
@@ -58,6 +56,6 @@ and for secondary test:
 ```
   ../../tools/run_cpl_test 4 icedyn
 ```
-but this requires to have, in the path, a simple comparison script "comp_res" (which is 
-not provided here but could be found in: 
+but this requires to have, in the path, a simple comparison script "comp_res"
+(which is not provided here but could be found in: 
  http://wwwcvs.mitgcm.org/viewvc/MITgcm/MITgcm_contrib/jmc_script/ ).
