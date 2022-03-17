@@ -1,9 +1,9 @@
 Atmosphere-Ocean coupled set-up example "cpl_aim+ocn"
+================================================================================
+using simplified atmospheric physics (AIM), in realistic configuration (orography 
+& continent) with Land and Sea-ice component, on Cubed-Sphere (cs-32) grid.
 
- using simplified atmospheric physics (AIM), in realistic configuration (orography 
- & continent) with Land and Sea-ice component, on Cubed-Sphere (cs-32) grid.
-
-Use "in-house" MITgcm coupler (pkg/atm_ocn_coupler, pkg/compon_communic,
+Uses "in-house" MITgcm coupler (pkg/atm_ocn_coupler, pkg/compon_communic,
  pkg/atm_compon_interf, pkg/ocn_compon_interf )
 with each component config and customized src code in: code_cpl, code_atm, code_ocn ;
 and input parameter files in: input_cpl, input_atm, input_ocn.
