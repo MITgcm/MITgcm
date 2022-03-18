@@ -591,7 +591,7 @@ is based on the DM95 tapering scheme, but also
 tapers the scheme with an additional function of height, :math:`f_2(z)`,
 so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 
-.. math:: f_2(z) = \sin^2 \left( \frac{\pi z}{2 D} \right) = \frac{1}{2} \left( 1 + \sin(\pi \frac{z}{D} - \frac{\pi}{2})\right)
+.. math:: f_2(z) = \frac{1}{2} \left[ 1 + \sin \left(\pi \frac{z}{D} - \frac{\pi}{2} \right) \right]
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
 Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed, so that :math:`c/f` is the Rossby radius).
