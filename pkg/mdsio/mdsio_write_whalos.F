@@ -81,6 +81,9 @@ C     == local variables ==
       INTEGER i, j, i2d
       INTEGER dUnit, irec2d
       LOGICAL iAmDoingIO
+#ifdef ALLOW_WHIO_3D
+      INTEGER js
+#endif
 CEOP
 
 #ifdef ALLOW_WHIO_3D
@@ -155,24 +158,34 @@ C determine current file record
           irec2d=i2d+n2d*(irec-1)
           iWh=(irec2d-1)/nWh+1
 C copy
-          DO i=1,lengthBuff
-            j=(jWh-1)*lengthBuff+i
-            IF ( .NOT.locSingleCpuIO ) THEN
-              IF (filePrec .EQ. precFloat32) THEN
-                fld3d_procbuff_r4(j)=fld2d_procbuff_r4(i)
-              ELSE
-                fld3d_procbuff_r8(j)=fld2d_procbuff_r8(i)
-              ENDIF
+          js = (jWh-1)*lengthBuff
+          IF ( .NOT.locSingleCpuIO ) THEN
+            IF (filePrec .EQ. precFloat32) THEN
+              DO i=1,lengthBuff
+                j = js + i
+                fld3d_procbuff_r4(j) = fld2d_procbuff_r4(i)
+              ENDDO
             ELSE
-#  ifdef INCLUDE_WHIO_GLOBUFF_3D
-              IF (filePrec .EQ. precFloat32) THEN
-                fld3d_globuff_r4(j)=fld2d_globuff_r4(i)
-              ELSE
-                fld3d_globuff_r8(j)=fld2d_globuff_r8(i)
-              ENDIF
-#  endif
+              DO i=1,lengthBuff
+                j = js + i
+                fld3d_procbuff_r8(j) = fld2d_procbuff_r8(i)
+              ENDDO
             ENDIF
-          ENDDO
+          ELSE
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+            IF (filePrec .EQ. precFloat32) THEN
+              DO i=1,lengthBuff
+                j = js + i
+                fld3d_globuff_r4(j) = fld2d_globuff_r4(i)
+              ENDDO
+            ELSE
+              DO i=1,lengthBuff
+                j = js + i
+                fld3d_globuff_r8(j) = fld2d_globuff_r8(i)
+              ENDDO
+            ENDIF
+#  endif
+          ENDIF
 C write chunk if needed
           IF (jWh.EQ.nWh) THEN
             IF ( .NOT.locSingleCpuIO ) THEN
@@ -193,9 +206,9 @@ C write chunk if needed
           ENDIF
 
         ELSEIF ( iAmDoingIO ) THEN
-#else
+#else /* ALLOW_WHIO_3D */
         IF ( iAmDoingIO ) THEN
-#endif
+#endif /* ALLOW_WHIO_3D */
           irec2d=i2d+n2d*(irec-1)
           IF ( .NOT.locSingleCpuIO ) THEN
             IF (filePrec .EQ. precFloat32) THEN
@@ -221,7 +234,7 @@ C write chunk if needed
         CLOSE( dUnit )
       ENDIF
 
-#endif
+#endif /* ALLOW_WHIO */
 
       RETURN
       END

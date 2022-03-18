@@ -67,7 +67,7 @@ The first point to note is that a typical slope in the ocean interior is
 small, say of the order :math:`10^{-4}`. A maximum slope might be of
 order :math:`10^{-2}` and only exceeds such in unstratified regions
 where the slope is ill defined. It is therefore justifiable, and
-customary, to make the small slope approximation, :math:`|S| << 1`. The
+customary, to make the small slope approximation, :math:`|S| \ll  1`. The
 Redi projection tensor then becomes:
 
 .. math::
@@ -112,8 +112,8 @@ streamfunction is specified in terms of the isoneutral slopes
 .. math::
 
    \begin{aligned}
-   F_x^\star & = & -\kappa_{GM} S_y \\
-   F_y^\star & = &  \kappa_{GM} S_x\end{aligned}
+   F_x^\star & = -\kappa_{\rm GM} S_y \\
+   F_y^\star & =  \kappa_{\rm GM} S_x\end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
 lower boundaries. In the end, the bolus transport in the GM
@@ -129,9 +129,9 @@ parameterization is given by:
    \end{array}
    \right) = \left(
    \begin{array}{c}
-   - \partial_z (\kappa_{GM} S_x) \\
-   - \partial_z (\kappa_{GM} S_y) \\
-   \partial_x  (\kappa_{GM} S_x) + \partial_y (\kappa_{GM} S_y)
+   - \partial_z (\kappa_{\rm GM} S_x) \\
+   - \partial_z (\kappa_{\rm GM} S_y) \\
+   \partial_x  (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y)
    \end{array}
    \right)
 
@@ -145,13 +145,13 @@ streamfunction are:
 
    \left(
    \begin{array}{c}
-   GM\_PsiX \\
-   GM\_PsiY
+   {\sf GM\_PsiX} \\
+   {\sf GM\_PsiY}
    \end{array}
    \right) = \left(
    \begin{array}{c}
-   \kappa_{GM} S_x \\
-   \kappa_{GM} S_y
+   \kappa_{\rm GM} S_x \\
+   \kappa_{\rm GM} S_y
    \end{array}
    \right)= \left(
    \begin{array}{c}
@@ -174,35 +174,35 @@ be re-written in terms of a non-divergent flux and a skew-flux:
 
    \begin{aligned}
    \bf{u}^\star \tau
-   & = &
+   & =
    \left( \begin{array}{c}
-   - \partial_z ( \kappa_{GM} S_x ) \tau \\
-   - \partial_z ( \kappa_{GM} S_y ) \tau \\
-   (\partial_x \kappa_{GM} S_x + \partial_y \kappa_{GM} S_y)\tau
+   - \partial_z ( \kappa_{\rm GM} S_x ) \tau \\
+   - \partial_z ( \kappa_{\rm GM} S_y ) \tau \\
+   (\partial_x \kappa_{\rm GM} S_x + \partial_y \kappa_{\rm GM} S_y)\tau
    \end{array} \right)
    \\
-   & = &
+   & =
    \left( \begin{array}{c}
-   - \partial_z ( \kappa_{GM} S_x \tau) \\
-   - \partial_z ( \kappa_{GM} S_y \tau) \\
-   \partial_x ( \kappa_{GM} S_x \tau) + \partial_y ( \kappa_{GM} S_y \tau)
+   - \partial_z ( \kappa_{\rm GM} S_x \tau) \\
+   - \partial_z ( \kappa_{\rm GM} S_y \tau) \\
+   \partial_x ( \kappa_{\rm GM} S_x \tau) + \partial_y ( \kappa_{\rm GM} S_y \tau)
    \end{array} \right)
    + \left( \begin{array}{c}
-    \kappa_{GM} S_x \partial_z \tau \\
-    \kappa_{GM} S_y \partial_z \tau \\
-   - \kappa_{GM} S_x \partial_x \tau - \kappa_{GM} S_y \partial_y \tau
+    \kappa_{\rm GM} S_x \partial_z \tau \\
+    \kappa_{\rm GM} S_y \partial_z \tau \\
+   - \kappa_{\rm GM} S_x \partial_x \tau - \kappa_{\rm GM} S_y \partial_y \tau
    \end{array} \right)\end{aligned}
 
 The first vector is non-divergent and thus has no effect on the tracer
 field and can be dropped. The remaining flux can be written:
 
-.. math:: \bf{u}^\star \tau = - \kappa_{GM} \bf{K}_{GM} \bf{\nabla} \tau
+.. math:: \bf{u}^\star \tau = - \kappa_{\rm GM} \bf{K}_{\rm GM} \bf{\nabla} \tau
 
 where
 
 .. math::
 
-   \bf{K}_{GM} =
+   \bf{K}_{\rm GM} =
    \left(
    \begin{array}{ccc}
    0 & 0 & -S_x \\
@@ -225,11 +225,11 @@ the Redi isoneutral mixing scheme:
    - u^\star \tau = 
    ( \kappa_\rho \bf{K}_{Redi} + \kappa_{GM} \bf{K}_{GM} ) \bf{\nabla} \tau
 
-In the instance that :math:`\kappa_{GM} = \kappa_{\rho}` then
+In the instance that :math:`\kappa_{\rm GM} = \kappa_{\rho}` then
 
 .. math::
 
-   \kappa_\rho \bf{K}_{Redi} + \kappa_{GM} \bf{K}_{GM} =
+   \kappa_\rho \bf{K}_{Redi} + \kappa_{\rm GM} \bf{K}_{GM} =
    \kappa_\rho
    \left( \begin{array}{ccc}
    1 & 0 & 0 \\
@@ -257,33 +257,33 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-Variable :math:`\kappa_{GM}`
-++++++++++++++++++++++++++++
+Variable :math:`\kappa_{\rm GM}`
+++++++++++++++++++++++++++++++++
 
-:cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{GM}`, a function of
-the Eady growth rate, :math:`|f|/\sqrt{Ri}`. The formula involves a
+:cite:`visbeck:97` suggest making the eddy coefficient, :math:`\kappa_{\rm GM}`, a function of
+the Eady growth rate, :math:`|f|/\sqrt{\textrm{Ri}}`. The formula involves a
 non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
 
-.. math:: \kappa_{GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{Ri}} }^z
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\textrm{Ri}}} }^z
 
 where the Eady growth rate has been depth averaged (indicated by the
 over-line). A local Richardson number is defined
-:math:`Ri = N^2 / (\partial
+:math:`\textrm{Ri} = N^2 / (\partial
 u/\partial z)^2` which, when combined with thermal wind gives:
 
 .. math::
 
-   \frac{1}{Ri} = \frac{(\frac{\partial u}{\partial z})^2}{N^2} =
+   \frac{1}{\textrm{Ri}} = \frac{(\frac{\partial u}{\partial z})^2}{N^2} =
    \frac{ ( \frac{g}{f \rho_o} | {\bf \nabla} \sigma | )^2 }{N^2} =
    \frac{ M^4 }{ |f|^2 N^2 }
 
 where :math:`M^2` is defined
 :math:`M^2 = \frac{g}{\rho_o} |{\bf \nabla} \sigma|`. Substituting into
-the formula for :math:`\kappa_{GM}` gives:
+the formula for :math:`\kappa_{\rm GM}` gives:
 
 .. math::
 
-   \kappa_{GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
+   \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |S| N }^z
 
@@ -348,32 +348,32 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\nabla \sigma| & = & \sqrt{ \sigma_x^2 + \sigma_y^2 } \\
-   S_{lim} & = & - \frac{|\nabla \sigma|}{ S_{max} }
-   \;\;\;\;\;\;\;\; \mbox{where $S_{max}$ is a parameter} \\
-   \sigma_z^\star & = & \min( \sigma_z , S_{lim} ) \\
-   {[s_x,s_y]} & = & - \frac{ [\sigma_x,\sigma_y] }{\sigma_z^\star}\end{aligned}
+   |\nabla \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 } \\
+   S_{\rm lim} & = - \frac{|\nabla \sigma|}{ S_{\rm max} }
+   \;\;\;\;\;\;\;\; \mbox{where $S_{\rm max}$ is a parameter} \\
+   \sigma_z^\star & = \min( \sigma_z , S_{\rm lim} ) \\
+   {[s_x,s_y]} & = - \frac{ [\sigma_x,\sigma_y] }{\sigma_z^\star}\end{aligned}
 
 Notice that this algorithm assumes stable stratification through the
-“min” function. In the case where the fluid is well stratified
-(:math:`\sigma_z < S_{lim}`) then the slopes evaluate to:
+'min' function. In the case where the fluid is well stratified
+(:math:`\sigma_z < S_{\rm lim}`) then the slopes evaluate to:
 
 .. math:: {[s_x,s_y]} = - \frac{ [\sigma_x,\sigma_y] }{\sigma_z}
 
-while in the limited regions (:math:`\sigma_z > S_{lim}`) the slopes
+while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
 become:
 
-.. math:: {[s_x,s_y]} = \frac{ [\sigma_x,\sigma_y] }{|\nabla \sigma|/S_{max}}
+.. math:: {[s_x,s_y]} = \frac{ [\sigma_x,\sigma_y] }{|\nabla \sigma|/S_{\rm max}}
 
 so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
-S_{max}`.
+S_{\rm max}`.
 
 The slope clipping scheme is activated in the model by setting
 **GM\_taper\_scheme = ’clipping’** in *data.gmredi*.
 
 Even using slope clipping, it is normally the case that the vertical
 diffusion term (with coefficient :math:`\kappa_\rho{\bf K}_{33} =
-\kappa_\rho S_{max}^2`) is large and must be time-stepped using an
+\kappa_\rho S_{\rm max}^2`) is large and must be time-stepped using an
 implicit procedure (see section on discretisation and code later). Fig.
 [fig-mixedlayer] shows the mixed layer depth resulting from a) using the
 GM scheme with clipping and b) no GM scheme (horizontal diffusion). The
@@ -399,17 +399,17 @@ direction of fluxes is unaffected as the amplitude is scaled.
 The scheme inserts a tapering function, :math:`f_1(S)`, in front of the
 GM/Redi tensor:
 
-.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{max}}{|S|}\right)^2 \right]
+.. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\rm max}}{|S|}\right)^2 \right]
 
-where :math:`S_{max}` is the maximum slope you want allowed. Where the
-slopes, :math:`|S|<S_{max}` then :math:`f_1(S) = 1` and the tensor is
-un-tapered but where :math:`|S| \ge S_{max}` then :math:`f_1(S)` scales
+where :math:`S_{\rm max}` is the maximum slope you want allowed. Where the
+slopes, :math:`|S|<S_{\rm max}` then :math:`f_1(S) = 1` and the tensor is
+un-tapered but where :math:`|S| \ge S_{\rm max}` then :math:`f_1(S)` scales
 down the tensor so that the effective vertical diffusivity term
 :math:`\kappa f_1(S) |S|^2 =
-\kappa S_{max}^2`.
+\kappa S_{\rm max}^2`.
 
 The GKW91 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’gkw91’** in *data.gmredi*.
+**GM\_taper\_scheme = ’gkw91’** in ``data.gmredi``.
 
 
 Tapering: Danabasoglu and McWilliams, J. Clim. 1995
@@ -427,7 +427,7 @@ lower cut-off, turning off the GM/Redi SGS parameterization for weaker
 slopes.
 
 The DM95 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’dm95’** in *data.gmredi*.
+**GM\_taper\_scheme = ’dm95’** in ``data.gmredi``.
 
 
 Tapering: Large, Danabasoglu and Doney, JPO 1997
@@ -440,12 +440,12 @@ so that the GM/Redi SGS fluxes are reduced near the surface:
 .. math:: f_2(z) = \frac{1}{2} \left( 1 + \sin(\pi \frac{z}{D} - \frac{\pi}{2})\right)
 
 where :math:`D = L_\rho |S|` is a depth-scale and :math:`L_\rho=c/f`
-with :math:`c=2` m s:math:`^{-1}`. This tapering with height was
+with :math:`c=2` m s\ :sup:`--1`. This tapering with height was
 introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
-**GM\_taper\_scheme = ’ldd97’** in *data.gmredi*.
+**GM\_taper\_scheme = ’ldd97’** in ``data.gmredi``.
 
 
 .. _ssub_phys_pkg_gmredi_diagnostics:
@@ -475,11 +475,14 @@ Package Reference
 Experiments and tutorials that use gmredi
 +++++++++++++++++++++++++++++++++++++++++
 
--  Global Ocean tutorial, in tutorial\_global\_oce\_latlon verification
-   directory, described in section [sec:eg-global]
+-  Southern Ocean Reentrant Channel Example, in :filelink:`verification/tutorial_reentrant_channel`,
+   described in :numref:`sec_eg_reentrant_channel`
 
--   Front Relax experiment, in front\_relax verification directory.
+-  Global Ocean Simulation, in :filelink:`verification/tutorial_global_oce_latlon`,
+   described in :numref:`sec_global_oce_latlon`
 
--   Ideal 2D Ocean experiment, in ideal\_2D\_oce verification directory.
+-  Front Relax experiment, in front\_relax verification directory.
+
+-  Ideal 2D Ocean experiment, in ideal\_2D\_oce verification directory.
 
 
