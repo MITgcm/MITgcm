@@ -113,11 +113,14 @@ C     !INTERFACE:
      I                arrhFac, arrMask, arrArea, arrDr,
      I                arrName, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE REMOVE_MEAN_RS                                |
-C     | o Calculate mean of global "_RS" array "arrFld" and      |
-C     |   substract it from the same array                       |
-C     *==========================================================*
+C     Correct for global-mean imbalance of global "_RS" array "arrFld"
+C      (i.e., output arrFld has zero mean):
+C     Apply either (if arrDr(1) > 0) uniform correction
+C      or (if arrDr(1) < 0) a correction scaled by "arrhFac" weight.
+C     The global mean imbalance is computed as area (arrArea), mask
+C      (arrMask) and thickness (arrDr) weighted, as well as thickness
+C      factor (arrhFac) weighted (1rst case) or without (2nd case).
+C     Comment: currently this S/R is only applied to 2-D field.
 C     \ev
 
 C     !USES:
@@ -129,8 +132,19 @@ C     === Global data ===
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     myNr      :: third dimension of field to correct
+C     arrFld    :: field array to correct for imbalance
+C     arrhFac   :: same size as arrFld ; thickness factor (1rst case)
+C               :: or correction scaling factor (2nd case)
+C     arrMask   :: 2-D mask for global mean calculation
+C     arrArea   :: 2-D grid-cell area for global mean calculation
+C     arrDr     :: myNr long vector (level thickness)
+C     arrName   :: name of field to correct
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number in simulation
+C     myThid    :: my Thread ID number
       INTEGER myNr
-      _RS arrFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS arrFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -224,15 +238,15 @@ C     Print the global mean to standard output, this is a measure
 C     of the magnitude of the correction to array arrFld
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       theMean = 0. _d 0
        IF ( arrDr(1).GE.zeroRS ) THEN
-        IF ( volGlob.GT.zeroRL ) theMean = sumGlob/volGlob
+        theMean = meanCorr
         WRITE(msgBuf,'(3A,1PE21.14,A,I10)')
      &        'REMOVE_MEAN_RS: Global mean of ', arrName, ' = ',
      &        theMean, '  @ it=', myIter
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ELSE
+        theMean = 0. _d 0
         IF ( globalArea.GT.zeroRL ) theMean = sumGlob/globalArea
         WRITE(msgBuf,'(3A,2(1PE21.14,A),I10)')
      &        'REMOVE_MEAN_RS: ', arrName, ' Global mean= ',
