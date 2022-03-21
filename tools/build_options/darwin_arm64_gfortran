@@ -8,22 +8,18 @@
 # gfortran-mp-devel, netcdf/netcdf-fortran, and openmpi obtained from
 # https://www.macports.org
 
-#-------
-# need to set NETCDF_ROOT to where the NetCDF is installed, e.g.:
-#       export NETCDF_ROOT='/usr/NetCDF'
-# MPI : need to set environment variable MPI_INC_DIR to the include
-#       directory of your MPI implementation
-
-#-------
-# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
-#    and generally, needs to increase the thread stack-size:
-#   -  sh,bash:
-#     > export OMP_NUM_THREADS=2
-#     > export GOMP_STACKSIZE=400m
-#   - csh,tcsh:
-#     > setenv OMP_NUM_THREADS 2
-#     > setenv GOMP_STACKSIZE 400m
-#-------
+# Note: at the time of creating this file (Mar2022), the simplest
+# gfortran compiler available to me that works without additional
+# changes to the code is gfortran-mp-devel that was installed along
+# with openmpi with "port install openmpi". gfortran-mp-devel is also
+# used in mpif77/90. The gfortran-build of http://hpc.sourceforge.net
+# does not work with testreport (also: cannot compile like the "etime"
+# test and leads to multile warnings at the link step), because the
+# model compiled with this gfortran does not print the last line
+# before the stop statement without an additional flush-statement. As
+# more stable gfortran builds become available in the future, we may
+# change the compiler from gfortran-mp-devel to gfortran as the name
+# of the file implies.
 
 if test "x$MPI" = xtrue ; then
   CC=mpicc
@@ -34,8 +30,9 @@ else
   CC=gcc
   # FC=gfortran
   # F90C=gfortran
-  # this one is used in mpif77/f90, so let us try to use it here, too.
-  # it is the newer build and compatible with netcdf and openmpi
+  # This one is used in mpif77/f90, so let us try to use it here, too.
+  # It is the newer build and compatible with netcdf and openmpi,
+  # see note above.
   FC=gfortran-mp-devel
   F90C=gfortran-mp-devel
   LINK=$F90C
@@ -171,4 +168,3 @@ if [ "x$MPI" = xtrue ] ; then
       exit 1
    fi
 fi
-
