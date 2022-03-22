@@ -18,158 +18,13 @@ along the local isentropic surface. The second part, GM
 rearranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
 
+A description of key package equations used is
+given in :numref:`ssub_phys_pkg_gmredi_descr`.
 CPP options enable or disable different aspects of the package
 (:numref:`ssub_phys_pkg_gmredi_config`). Run-time options, flags, filenames and
 field-related dates/times are set in ``data.gmredi``
-(:numref:`ssub_phys_pkg_gmredi_runtime`).  A description of key package equations used is
-given in :numref:`ssub_phys_pkg_gmredi_descr`.  Available diagnostics
+(:numref:`ssub_phys_pkg_gmredi_runtime`). Available diagnostics
 output is listed in :numref:`ssub_phys_pkg_gmredi_diagnostics`.
-
-.. _ssub_phys_pkg_gmredi_config:
-
-GMREDI configuration and compiling
-==================================
-
-Compile-time options
---------------------
-
-As with all MITgcm packages, GMREDI can be turned on or off at compile time
-(see :numref:`building_code`)
-
-- using the ``packages.conf`` file by adding ``gmredi`` to it
-
-- or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=gmredi`` or
-  ``-disable=gmredi`` switches
-
-- **required packages and CPP options**:
-  :filelink:`gmredi <pkg/gmredi>` requires
-
-
-Parts of the :filelink:`gmredi <pkg/gmredi>` code can be enabled or disabled at
-compile time via CPP preprocessor flags. These options are set in
-:filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
-:numref:`tab_phys_pkg_gmredi_cpp` summarizes the most important ones. For additional
-options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
-
-.. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
-
-.. csv-table:: Some of the most relevant CPP preprocessor flags in the :filelink:`gmredi <pkg/gmredi>` package.
-   :header: "CPP option", "Default", "Description"
-   :widths: 30, 10, 60
-   :name: tab_phys_pkg_gmredi_cpp
-
-   :varlink:`GM_NON_UNITY_DIAGONAL`, #define, allows the leading diagonal (top two rows) to be non-unity
-   :varlink:`GM_EXTRA_DIAGONAL`, #define, allows different values of :math:`\kappa_{\rm GM}` and :math:`\kappa_{\rho}`; also required for advective form
-   :varlink:`GM_BOLUS_ADVEC`, #define, allows use of the advective form (bolus velocity)
-   :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
-   :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
-   :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
-
-.. _ssub_phys_pkg_gmredi_runtime:
-
-Run-time parameters
-===================
-
-Run-time parameters (see :numref:`tab_phys_pkg_gmredi_runtimeparms`) are set in
-``data.gmredi`` (read in :filelink:`pkg/gmredi/gmredi_readparms.F`).
-
-Enabling the package
---------------------
-
-:filelink:`gmredi <pkg/gmredi>` package is switched on/off at run-time by
-setting :varlink:`useGMREDI` ``= .TRUE.,`` in ``data.pkg``.
-
-General flags and parameters
-----------------------------
-
-:numref:`tab_phys_pkg_gmredi_runtimeparms` lists most run-time parameters.
-
-.. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
-
-.. table:: Run-time parameters and default values
-  :class: longtable
-  :name: tab_phys_pkg_gmredi_runtimeparms
-
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  |   Name                             |      Default value           |   Description                                                           |
-  +====================================+==============================+=========================================================================+
-  | :varlink:`GM_AdvForm`              |     FALSE                    | use advective form (bolus velocity); FALSE uses skewflux form           |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_AdvSeparate`          |     FALSE                    | do advection by Eulerian and bolus velocity separately                  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s)         |
-  |                                    |                              | (GM bolus transport)                                                    |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity :math:`\kappa_{\rho}` (m\ :sup:`2`\ /s)           |
-  |                                    |                              | (Redi tensor)                                                           |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s)                        |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Small_Number`         |     1.0E-20                  | :math:`\epsilon` used in computing the slope                            |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('orig', 'clipping', 'fm07', 'stableGmAdjTap',      |
-  |                                    |                              | 'linear', 'ac02', 'gkw91', 'dm95', 'ldd97')                             |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum trans. layer thick. as a factor of local mixed-layer depth      |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum trans. layer thick. as a factor of local dr                     |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for 'dm95' and 'ldd97 ' tapering function         |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for 'dm95' and 'ldd97' tapering function          |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_UseBVP`               |     FALSE                    | use Boundary-Value-Problem method for bolus transport                   |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_BVP_cMin`             |     1.0E-01                  | minimum value for wave speed parameter :math:`c` in BVP (m/s)           |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_UseSubMeso`           |     FALSE                    | use sub-mesoscale eddy parameterization for bolus transport             |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`subMeso_Ceff`            |     7.0E-02                  | efficiency coefficient of mixed-layer eddies                            |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`subMeso_invTau`          |     2.0E-06                  | inverse of mixing timescale in sub-meso parameterization (s\ :sup:`-1`) |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`subMeso_LfMin`           |     1.0E+03                  | minimum value for length-scale :math:`L_f` (m)                          |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`subMeso_Lmax`            |     110.0E+03                | maximum horizontal grid-scale length (m)                                |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_alpha`        |     0.0                      | :math:`\alpha` parameter for Visbeck et al. scheme (non-dim.)           |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_length`       |     200.0E+03                | :math:`L` length scale parameter for Visbeck et al. scheme (m)          |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_depth`        |     1000.0                   | depth (m) over which to average in computing Visbeck                    |
-  |                                    |                              | :math:`\kappa_{\rm GM}`                                                 |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_maxSlope`     |     :varlink:`GM_maxSlope`   | maximum slope used in computing Visbeck et al. :math:`\kappa_{\rm GM}`  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_minVal_K`     |     0.0                      | minimum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_iso2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of isopycnal diffusivity        |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_iso1dFile`            |     ' '                      | input file for 1D vert. scaling of isopycnal diffusivity                |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_bol2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of thickness diffusivity        |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_bol1dFile`            |     ' '                      | input file for 1D vert. scaling of thickness diffusivity                |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_background_K3dFile`   |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_isopycK3dFile`        |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_MNC`                  |     :varlink:`useMNC`        | write GMREDI snapshot output using :filelink:`/pkg/mnc`                 |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
- 
 
 .. _ssub_phys_pkg_gmredi_descr:
 
@@ -416,7 +271,6 @@ non-zero elements in the :math:`z`-row.
 
   :math:`S_y`: **SlopeY** (argument on exit)
 
-
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
 
@@ -602,6 +456,150 @@ parameterization.
 The LDD97 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’ldd97’`` in ``data.gmredi``.
 
+.. _ssub_phys_pkg_gmredi_config:
+
+GMREDI configuration and compiling
+==================================
+
+Compile-time options
+--------------------
+
+As with all MITgcm packages, GMREDI can be turned on or off at compile time
+(see :numref:`building_code`)
+
+- using the ``packages.conf`` file by adding ``gmredi`` to it
+
+- or using :filelink:`genmake2 <tools/genmake2>` adding ``-enable=gmredi`` or
+  ``-disable=gmredi`` switches
+
+- **required packages and CPP options**:
+  :filelink:`gmredi <pkg/gmredi>` requires
+
+
+Parts of the :filelink:`gmredi <pkg/gmredi>` code can be enabled or disabled at
+compile time via CPP preprocessor flags. These options are set in
+:filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
+:numref:`tab_phys_pkg_gmredi_cpp` summarizes the most important ones. For additional
+options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
+
+.. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
+
+.. csv-table:: Some of the most relevant CPP preprocessor flags in the :filelink:`gmredi <pkg/gmredi>` package.
+   :header: "CPP option", "Default", "Description"
+   :widths: 30, 10, 60
+   :name: tab_phys_pkg_gmredi_cpp
+
+   :varlink:`GM_NON_UNITY_DIAGONAL`, #define, allows the leading diagonal (top two rows) to be non-unity
+   :varlink:`GM_EXTRA_DIAGONAL`, #define, allows different values of :math:`\kappa_{\rm GM}` and :math:`\kappa_{\rho}`; also required for advective form
+   :varlink:`GM_BOLUS_ADVEC`, #define, allows use of the advective form (bolus velocity)
+   :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
+   :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
+   :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
+
+.. _ssub_phys_pkg_gmredi_runtime:
+
+Run-time parameters
+===================
+
+Run-time parameters (see :numref:`tab_phys_pkg_gmredi_runtimeparms`) are set in
+``data.gmredi`` (read in :filelink:`pkg/gmredi/gmredi_readparms.F`).
+
+Enabling the package
+--------------------
+
+:filelink:`gmredi <pkg/gmredi>` package is switched on/off at run-time by
+setting :varlink:`useGMREDI` ``= .TRUE.,`` in ``data.pkg``.
+
+General flags and parameters
+----------------------------
+
+:numref:`tab_phys_pkg_gmredi_runtimeparms` lists most run-time parameters.
+
+.. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
+
+.. table:: Run-time parameters and default values
+  :class: longtable
+  :name: tab_phys_pkg_gmredi_runtimeparms
+
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  |   Name                             |      Default value           |   Description                                                           |
+  +====================================+==============================+=========================================================================+
+  | :varlink:`GM_AdvForm`              |     FALSE                    | use advective form (bolus velocity); FALSE uses skewflux form           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_AdvSeparate`          |     FALSE                    | do advection by Eulerian and bolus velocity separately                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_background_K`         |     0.0                      | thickness diffusivity :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s)         |
+  |                                    |                              | (GM bolus transport)                                                    |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_isopycK`              |   :varlink:`GM_background_K` | isopycnal diffusivity :math:`\kappa_{\rho}` (m\ :sup:`2`\ /s)           |
+  |                                    |                              | (Redi tensor)                                                           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s)                        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Small_Number`         |     1.0E-20                  | :math:`\epsilon` used in computing the slope                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('orig', 'clipping', 'fm07', 'stableGmAdjTap',      |
+  |                                    |                              | 'linear', 'ac02', 'gkw91', 'dm95', 'ldd97')                             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum trans. layer thick. as a factor of local mixed-layer depth      |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum trans. layer thick. as a factor of local dr                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for 'dm95' and 'ldd97 ' tapering function         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for 'dm95' and 'ldd97' tapering function          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_UseBVP`               |     FALSE                    | use Boundary-Value-Problem method for bolus transport                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_BVP_cMin`             |     1.0E-01                  | minimum value for wave speed parameter :math:`c` in BVP (m/s)           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_UseSubMeso`           |     FALSE                    | use sub-mesoscale eddy parameterization for bolus transport             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_Ceff`            |     7.0E-02                  | efficiency coefficient of mixed-layer eddies                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_invTau`          |     2.0E-06                  | inverse of mixing timescale in sub-meso parameterization (s\ :sup:`-1`) |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_LfMin`           |     1.0E+03                  | minimum value for length-scale :math:`L_f` (m)                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`subMeso_Lmax`            |     110.0E+03                | maximum horizontal grid-scale length (m)                                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_alpha`        |     0.0                      | :math:`\alpha` parameter for Visbeck et al. scheme (non-dim.)           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_length`       |     200.0E+03                | :math:`L` length scale parameter for Visbeck et al. scheme (m)          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_depth`        |     1000.0                   | depth (m) over which to average in computing Visbeck                    |
+  |                                    |                              | :math:`\kappa_{\rm GM}`                                                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_maxSlope`     |     :varlink:`GM_maxSlope`   | maximum slope used in computing Visbeck et al. :math:`\kappa_{\rm GM}`  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_minVal_K`     |     0.0                      | minimum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_iso2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of isopycnal diffusivity        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_iso1dFile`            |     ' '                      | input file for 1D vert. scaling of isopycnal diffusivity                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_bol2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of thickness diffusivity        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_bol1dFile`            |     ' '                      | input file for 1D vert. scaling of thickness diffusivity                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_background_K3dFile`   |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_isopycK3dFile`        |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_MNC`                  |     :varlink:`useMNC`        | write GMREDI snapshot output using :filelink:`/pkg/mnc`                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 .. _ssub_phys_pkg_gmredi_diagnostics:
 
