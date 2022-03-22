@@ -24,16 +24,16 @@
  xx_genarr3d_weight(2)     = 'ones_64b.bin',
 #xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
 #
- xx_gentim2d_file(1)       = 'xx_qnet',
- xx_gentim2d_weight(1)     = 'ones_64b.bin',
+ xx_genarr2d_file(1)       = 'xx_qnet',
+ xx_genarr2d_weight(1)     = 'ones_64b.bin',
 #
- xx_gentim2d_file(2)       = 'xx_empmr',
- xx_gentim2d_weight(2)     = 'ones_64b.bin',
+ xx_genarr2d_file(2)       = 'xx_empmr',
+ xx_genarr2d_weight(2)     = 'ones_64b.bin',
 #
- xx_gentim2d_file(3)       = 'xx_fu',
- xx_gentim2d_weight(3)     = 'ones_64b.bin',
+ xx_genarr2d_file(3)       = 'xx_fu',
+ xx_genarr2d_weight(3)     = 'ones_64b.bin',
 #
- xx_gentim2d_file(4)       = 'xx_fv',
- xx_gentim2d_weight(4)     = 'ones_64b.bin',
+ xx_genarr2d_file(4)       = 'xx_fv',
+ xx_genarr2d_weight(4)     = 'ones_64b.bin',
 #
  &
