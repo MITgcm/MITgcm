@@ -119,7 +119,7 @@ C     Apply either (if arrDr(1) > 0) uniform correction
 C      or (if arrDr(1) < 0) a correction scaled by "arrhFac" weight.
 C     The global mean imbalance is computed as area (arrArea), mask
 C      (arrMask) and thickness (arrDr) weighted, as well as thickness
-C      factor (arrhFac) weighted (1rst case) or without (2nd case).
+C      factor (arrhFac) weighted (1rst case) or not (2nd case).
 C     Comment: currently this S/R is only applied to 2-D field.
 C     \ev
 
