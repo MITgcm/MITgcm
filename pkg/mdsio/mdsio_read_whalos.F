@@ -81,7 +81,9 @@ C     == local variables ==
       INTEGER i, j, i2d
       INTEGER dUnit, irec2d
       LOGICAL iAmDoingIO
-Cph(
+#ifdef ALLOW_WHIO_3D
+      INTEGER js
+#endif
 #ifdef INTEL_COMMITQQ
 Cph   Fix on Pleiades following model crashes on disk /nobackupnfs2/
 Cph   reported by Yoshihiro.Nakayama@jpl.nasa.gov
@@ -90,7 +92,6 @@ Cph forrtl: severe (39): error during read, unit 1001, file
 Cph   Workaround by NAS engineer Sherry.Chang@nasa.gov
       LOGICAL results, commitqq
 #endif
-Cph)
 CEOP
 
 #ifdef ALLOW_WHIO_3D
@@ -130,12 +131,10 @@ C get the unit and open file
       ENDIF
       ENDIF
 
-Cph(
-Cph   NAS Pleiades fix here:
 #ifdef INTEL_COMMITQQ
+Cph   NAS Pleiades fix here:
       results = commitqq(dUnit)
 #endif
-Cph)
 
       DO i2d=1,n2d
 
@@ -168,29 +167,39 @@ C read new chunk if needed
             ENDIF
           ENDIF
 C copy
-          DO i=1,lengthBuff
-            j=(jWh-1)*lengthBuff+i
-            IF ( .NOT.locSingleCpuIO ) THEN
-              IF (filePrec .EQ. precFloat32) THEN
-                fld2d_procbuff_r4(i)=fld3d_procbuff_r4(j)
-              ELSE
-                fld2d_procbuff_r8(i)=fld3d_procbuff_r8(j)
-              ENDIF
+          js = (jWh-1)*lengthBuff
+          IF ( .NOT.locSingleCpuIO ) THEN
+            IF (filePrec .EQ. precFloat32) THEN
+              DO i=1,lengthBuff
+                j = js + i
+                fld2d_procbuff_r4(i) = fld3d_procbuff_r4(j)
+              ENDDO
             ELSE
-#  ifdef INCLUDE_WHIO_GLOBUFF_3D
-              IF (filePrec .EQ. precFloat32) THEN
-                fld2d_globuff_r4(i)=fld3d_globuff_r4(j)
-              ELSE
-                fld2d_globuff_r8(i)=fld3d_globuff_r8(j)
-              ENDIF
-#  endif
+              DO i=1,lengthBuff
+                j = js + i
+                fld2d_procbuff_r8(i) = fld3d_procbuff_r8(j)
+              ENDDO
             ENDIF
-          ENDDO
+          ELSE
+#  ifdef INCLUDE_WHIO_GLOBUFF_3D
+            IF (filePrec .EQ. precFloat32) THEN
+              DO i=1,lengthBuff
+                j = js + i
+                fld2d_globuff_r4(i) = fld3d_globuff_r4(j)
+              ENDDO
+            ELSE
+              DO i=1,lengthBuff
+                j = js + i
+                fld2d_globuff_r8(i) = fld3d_globuff_r8(j)
+              ENDDO
+            ENDIF
+#  endif
+          ENDIF
 
         ELSEIF ( iAmDoingIO ) THEN
-#else
+#else /* ALLOW_WHIO_3D */
         IF ( iAmDoingIO ) THEN
-#endif
+#endif /* ALLOW_WHIO_3D */
           irec2d=i2d+n2d*(irec-1)
           IF ( .NOT.locSingleCpuIO ) THEN
             IF (filePrec .EQ. precFloat32) THEN
@@ -238,7 +247,7 @@ C copy
          CLOSE( dUnit )
        ENDIF
 
-#endif
+#endif /* ALLOW_WHIO */
 
       RETURN
       END
