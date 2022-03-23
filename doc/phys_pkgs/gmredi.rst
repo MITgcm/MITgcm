@@ -6,9 +6,9 @@ GMREDI: Gent-McWilliams/Redi Eddy Parameterization
 Introduction
 ============
 
-Package :filelink:`gmredi <pkg/gmredi>` parameterizes transport due to mesoscale eddy mixing
-for use in non-eddy-resolving ocean circulation models. This package is commonly
-applied for transport of heat, salinity and tracers.
+Package :filelink:`gmredi <pkg/gmredi>` parameterizes
+the effects of unresolved mesoscale eddies on tracer distribution,
+i.e., temperature, salinity and other tracers.
 
 There are two parts to the Redi/GM subgrid-scale parameterization of geostrophic
 eddies. The first, the Redi scheme (Redi 1982 :cite:`redi1982`), aims to mix tracer properties along
@@ -21,8 +21,8 @@ is a function of slope of the isentropic surfaces.
 A description of key package equations used is
 given in :numref:`ssub_phys_pkg_gmredi_descr`.
 CPP options enable or disable different aspects of the package
-(:numref:`ssub_phys_pkg_gmredi_config`). Run-time options, flags, filenames and
-field-related dates/times are set in ``data.gmredi``
+(:numref:`ssub_phys_pkg_gmredi_config`). Run-time options, flags, and filenames
+are set in ``data.gmredi``
 (:numref:`ssub_phys_pkg_gmredi_runtime`). Available diagnostics
 output is listed in :numref:`ssub_phys_pkg_gmredi_diagnostics`.
 
@@ -474,7 +474,6 @@ As with all MITgcm packages, GMREDI can be turned on or off at compile time
 
 - **required packages and CPP options**:
   :filelink:`gmredi <pkg/gmredi>` requires
-
 
 Parts of the :filelink:`gmredi <pkg/gmredi>` code can be enabled or disabled at
 compile time via CPP preprocessor flags. These options are set in
