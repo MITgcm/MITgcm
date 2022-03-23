@@ -47,10 +47,8 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       integer bi,bj
       integer i,j,k
-      integer jmin,jmax
-      integer imin,imax
       integer il
-      integer iarr
+      integer iarr, iptr
 
       logical doglobalread
       logical ladinit
@@ -66,11 +64,6 @@ C     == local variables ==
 #endif
 CEOP
 
-      jmin = 1
-      jmax = sNy
-      imin = 1
-      imax = sNx
-
       doglobalread = .false.
       ladinit      = .false.
       fac = 1. _d 0
@@ -85,30 +78,67 @@ cc--->>>
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr2D
 
+C     These forcing control variables are constant in time for this
+C     experiment, so that we can specify them here. Once we know how to
+C     make OpenAD use the gentim2d controls, these should be handled via
+C     ctrl_map_gentim2d.F
        fnamebase = xx_genarr2d_file(iarr)
        il=ILNBLNK( fnamebase )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
+       WRITE(fnamegeneric(1:80),'(2a,i10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      myThid, xx_genarr2d_dummy(iarr) )
-       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
-          do j = jmin,jmax
-            do i = imin,imax
-              if ( iarr .eq. 1 ) then
-CC
-              elseif ( iarr. eq. 2 ) then
-CC
-              endif
-            enddo
-          enddo
+       IF ( iarr .EQ. 1 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            qnet(i,j,bi,bj) = qnet(i,j,bi,bj)
+     &           + fac*tmpfld2d(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( iarr .EQ. 2 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            empmr(i,j,bi,bj) = empmr(i,j,bi,bj)
+     &           + fac*tmpfld2d(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSEIF ( iarr .EQ. 3 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            fu(i,j,bi,bj) = fu(i,j,bi,bj)
+     &           + fac*tmpfld2d(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSEIF ( iarr .EQ. 4 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            fv(i,j,bi,bj) = fv(i,j,bi,bj)
+     &           + fac*tmpfld2d(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 C--   end iarr loop
       ENDDO
-CC       _EXCH_XYZ_RL( theta, myThid )
-CC       _EXCH_XYZ_RL( salt, myThid )
+      _EXCH_XY_RL( qnet,  myThid )
+      _EXCH_XY_RL( empmr, myThid )
+      CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -121,11 +151,11 @@ cc--->>> BE SURE WHAT YOU ARE DOING AND CUSTOMIZE <<<---
 cc--->>>
 cc
 cc A CONSISTENCY CHECK: FOR THIS CUSTOMIZATION
-cc WE ASSUME maxCtrlArr3D <= PTRACERS_num
+cc WE ASSUME maxCtrlArr3D-3 <= PTRACERS_num
 cc
-      IF ( maxCtrlArr3D .GT. PTRACERS_num ) THEN
+      IF ( maxCtrlArr3D-3 .GT. PTRACERS_num ) THEN
         WRITE(msgBuf,'(A)')
-     &   'CTRL_MAP_INI_GENARR: need maxCtrlArr3D <= PTRACERS_num'
+     &   'CTRL_MAP_INI_GENARR: need maxCtrlArr3D-3 <= PTRACERS_num'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CTRL_MAP_INI_GENARR'
       ENDIF
@@ -140,27 +170,69 @@ C--   generic - user-defined control vars
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_genarr3d_dummy(iarr) )
-       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
-          do k = 1,Nr
-           do j = jmin,jmax
-            do i = imin,imax
-cc#ifdef ALLOW_OPENAD
-cc              pTracer(i,j,k,bi,bj,iarr) = pTracer(i,j,k,bi,bj,iarr)
-cc     &         + fac*xx_genarr3d(i,j,k,bi,bj,iarr)
-cc     &         + fac*tmpfld3d(i,j,k,bi,bj)
-cc#else
-              pTracer(i,j,k,bi,bj,iarr) = pTracer(i,j,k,bi,bj,iarr)
+       IF ( iarr .EQ. 1 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
      &         + fac*tmpfld3d(i,j,k,bi,bj)
-cc#endif
-            enddo
-           enddo
-          enddo
+C     necessary to reproduce old results
+             IF ( theta(i,j,k,bi,bj).LT.-2.0 )
+     &            theta(i,j,k,bi,bj) = -2.0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDDO
-       ENDDO
-
-       CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iarr),
+        CALL EXCH_3D_RL( theta, Nr, myThid )
+       ELSEIF ( iarr .EQ. 2 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
+     &         + fac*tmpfld3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL EXCH_3D_RL( salt, Nr, myThid )
+       ELSEIF ( iarr .EQ. 3 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             diffKr(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
+     &         + fac*tmpfld3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL EXCH_3D_RL( diffKr, Nr, myThid )
+       ELSEIF ( iarr .EQ. 4 ) THEN
+        iptr = iarr-3
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             pTracer(i,j,k,bi,bj,iptr) = pTracer(i,j,k,bi,bj,iptr)
+     &         + fac*tmpfld3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iptr),
      &                  Nr, myThid )
+      ENDIF
+
 C--   end iarr loop
       ENDDO
 
