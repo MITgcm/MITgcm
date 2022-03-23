@@ -217,9 +217,9 @@ C     Net heat flux Qnet:
 #ifdef SHORTWAVE_HEATING
      &          -Qsw(i,j,bi,bj)
 #endif
-#ifdef ALLOW_HFLUXM_CONTROL
+c#ifdef ALLOW_HFLUXM_CONTROL
      &          +Qnetm(i,j,bi,bj)
-#endif
+c#endif
      &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)

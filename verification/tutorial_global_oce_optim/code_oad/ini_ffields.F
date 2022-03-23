@@ -60,9 +60,7 @@ C-    2-D forcing fields
 #ifdef ALLOW_GEOTHERMAL_FLUX
           geothermalFlux  (i,j,bi,bj) = 0. _d 0
 #endif
-#ifdef ALLOW_HFLUXM_CONTROL
           Qnetm (i,j,bi,bj) = 0. _d 0
-#endif
 #ifndef EXCLUDE_FFIELDS_LOAD
 C-    Time reccord loaded from file:
           taux0           (i,j,bi,bj) = 0. _d 0

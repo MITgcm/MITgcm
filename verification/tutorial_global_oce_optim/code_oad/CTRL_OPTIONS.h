@@ -27,10 +27,15 @@ C   ==================================================================
 C-- Package-specific Options & Macros go here
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+#undef ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
 #define ALLOW_NONDIMENSIONAL_CONTROL_IO
+C     This is necessary for this experiment, because something about
+C     reading the weights in ctrl_pack/unpack (turned on by the
+C     ALLOW_NONDIMENSIONAL_CONTROL_IO flag) is fishy in the default
+C     method.
+#define ALLOW_PACKUNPACK_METHOD2
 
 C       >>> Initial values.
 #undef ALLOW_THETA0_CONTROL
@@ -64,10 +69,8 @@ C       >>> Other Control.
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
 
-#define ALLOW_HFLUXM_CONTROL
-
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
 

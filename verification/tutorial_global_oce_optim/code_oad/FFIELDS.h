@@ -129,10 +129,8 @@ C                    (global mean on the order 0.09 - 0.1 W/m^2)
       _RS geothermalFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifdef ALLOW_HFLUXM_CONTROL
       COMMON /Mean_qnet/ Qnetm
       _RS  Qnetm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition
 C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
