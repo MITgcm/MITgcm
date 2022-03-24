@@ -136,8 +136,8 @@ C     ctrl_map_gentim2d.F
        ENDIF
 C--   end iarr loop
       ENDDO
-      _EXCH_XY_RL( qnet,  myThid )
-      _EXCH_XY_RL( empmr, myThid )
+      _EXCH_XY_RS( qnet,  myThid )
+      _EXCH_XY_RS( empmr, myThid )
       CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 
 #endif /* ALLOW_GENARR2D_CONTROL */
