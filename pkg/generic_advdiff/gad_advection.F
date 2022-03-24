@@ -193,9 +193,9 @@ C     make local copies to be tampered with if necessary
      &               + act3*max0*max1*max2
      &               + act4*max0*max1*max2*max3
       IF (trIdentity.GT.maxpass) THEN
-       WRITE(msgBuf,'(A,2I3)')
-     &      'GAD_ADVECTION: maxpass < trIdentity ',
-     &      maxpass, trIdentity
+       WRITE(msgBuf,'(A,2I5)')
+     &      'GAD_ADVECTION: trIdentity > maxpass ',
+     &      trIdentity, maxpass
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GAD_ADVECTION'
       ENDIF
@@ -260,9 +260,6 @@ C-    rTrans and fVerT need to be initialised to zero:
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        npass  = 3
-#ifdef ALLOW_AUTODIFF_TAMC
-       IF ( npass.GT.maxcube ) STOP 'maxcube needs to be = 3'
-#endif
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
@@ -285,6 +282,15 @@ C--   Set tile-specific parameters for horizontal fluxes
        E_edge = .FALSE.
        W_edge = .FALSE.
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( npass.GT.maxcube ) THEN
+        WRITE(msgBuf,'(A,2(I3,A))') 'S/R GAD_ADVECTION: npass =',
+     &     npass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GAD_ADVECTION'
+      ENDIF
+#endif
 
 C--   Start of k loop for horizontal fluxes
       DO k=1,Nr
@@ -341,12 +347,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,npass
 #ifdef ALLOW_AUTODIFF_TAMC
-         passkey = ipass
-     &                   + (k-1)      *maxpass
-     &                   + (igadkey-1)*maxpass*Nr
-         IF (npass .GT. maxpass) THEN
-          STOP 'GAD_ADVECTION: npass > maxcube. check tamc.h'
-         ENDIF
+         passkey = ipass + (kkey-1)*maxcube
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       interiorOnly = .FALSE.
