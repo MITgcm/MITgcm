@@ -27,14 +27,14 @@ C   ==================================================================
 C-- Package-specific Options & Macros go here
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+#undef ECCO_CTRL_DEPRECATED
 
 #define EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#define ALLOW_SALT0_CONTROL
+#undef ALLOW_THETA0_CONTROL
+#undef ALLOW_SALT0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
@@ -59,7 +59,7 @@ C       >>> Atmospheric state.
 #undef ALLOW_PRECIP_CONTROL
 
 C       >>> Other Control.
-#define ALLOW_DIFFKR_CONTROL
+#undef ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
@@ -69,7 +69,7 @@ cph#define ALLOW_SHIFWFLX_CONTROL
 
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
 
 C  o Rotation of wind/stress controls adjustments
