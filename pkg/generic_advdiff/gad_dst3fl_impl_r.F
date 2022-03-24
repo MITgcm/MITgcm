@@ -84,7 +84,7 @@ C     rC4km, rC4kp :: high order contributions
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT gadtapeloc = COMMON, (sNx+2*OLx)*(sNy+2*OLy)
+CADJ INIT loctape_gad = COMMON, (sNx+2*OLx)*(sNy+2*OLy)
 #endif
 C--   process interior interface only:
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
@@ -129,7 +129,7 @@ C-         1rst case: theta < 0 (Rj & Rjh opposite sign) => Psi = 0
            ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 C     These stores to local tape avoid recomputations and associated warnings
-CADJ STORE Rjh, Rj = gadtapeloc, key = ikey
+CADJ STORE Rjh, Rj = loctape_gad, key = ikey
 #endif
              Rj  = ABS(Rj)
              Rjh = ABS(Rjh)

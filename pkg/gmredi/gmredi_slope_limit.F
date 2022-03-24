@@ -144,8 +144,8 @@ CADJ PASSIVE depthz
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
-CADJ INIT gmtape = COMMON, 1
-CADJ STORE dSigmaDr = gmtape
+CADJ INIT loctape_gm = COMMON, 1
+CADJ STORE dSigmaDr = loctape_gm
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy+1,sNy+OLy-1
@@ -459,7 +459,7 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
-CADJ STORE dSigmaDr = gmtape
+CADJ STORE dSigmaDr = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1

@@ -75,7 +75,7 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT shaptape_bibj_k = COMMON, nSx*nSy*Nr
+CADJ INIT loctape_shapfilt_bibj_k = COMMON, nSx*nSy*Nr
 #endif
       IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
 
@@ -128,7 +128,7 @@ C     can do it like this and suppress the recomputation warning
            act3 = myThid - 1
            max3 = nTx*nTy
            kkey= k + (act1 + act2*max1 + act3*max1*max2 -1 ) * Nr
-CADJ STORE hFacZ = shaptape_bibj_k, key = kkey
+CADJ STORE hFacZ = loctape_shapfilt_bibj_k, key = kkey
 #endif
            IF ( n.LE.nShapUVPhys .OR.
      &          n.GT.nShapUV-nShapUVPhys )

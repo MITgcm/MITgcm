@@ -74,11 +74,11 @@ C     save fld from previous time step
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT advecttape = COMMON, 2
+CADJ INIT loctape_advect = COMMON, 2
 #endif
       DO k=1,2
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fld = advecttape, key = k
+CADJ STORE fld = loctape_advect, key = k
 #endif
 C     Backward Euler correction step
         DO bj=myByLo(myThid),myByHi(myThid)

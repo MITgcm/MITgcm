@@ -296,7 +296,7 @@ C-    end i,j loop
 #else  /* ndef SOLVE_DIAGONAL_KINNER */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT solvepenta_tape = COMMON, Nr
+CADJ INIT loctape_solvepenta = COMMON, Nr
 #endif
 C--   Init. + copy to temp. array
       DO k=1,Nr
@@ -314,9 +314,9 @@ C--   Init. + copy to temp. array
       DO k=1,Nr
 C--   Forward sweep (starting from top)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE d5d_prime(:,:,k) = solvepenta_tape, key = k
-CADJ STORE e5d_prime(:,:,k) = solvepenta_tape, key = k
-CADJ STORE y5d_prime(:,:,k) = solvepenta_tape, key = k
+CADJ STORE d5d_prime(:,:,k) = loctape_solvepenta, key = k
+CADJ STORE e5d_prime(:,:,k) = loctape_solvepenta, key = k
+CADJ STORE y5d_prime(:,:,k) = loctape_solvepenta, key = k
 #endif
        IF ( k .EQ. 1 ) THEN
 C-    just copy terms
