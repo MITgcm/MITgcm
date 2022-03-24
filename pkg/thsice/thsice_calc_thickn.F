@@ -617,8 +617,8 @@ C     end i/j-loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
-C     these change the results (increase gradient error sligthly)
-C     and do not do too much, so we leave commented
+C     these change the results (increase gradient error sligthly);
+C     they do not improve performance too much, so we leave commented
 cCADJ STORE hnew (:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
 cCADJ STORE qicen(:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
