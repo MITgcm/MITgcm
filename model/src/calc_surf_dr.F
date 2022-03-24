@@ -47,6 +47,9 @@ C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,bi,bj
       INTEGER ks, numbWrite, numbWrMax
+#ifdef ALLOW_OPENAD
+      INTEGER nTmp
+#endif
       _RL hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
@@ -202,9 +205,16 @@ C-- Global diagnostic :
       IF ( adjust_nb_pt.GE.1. ) THEN
         _GLOBAL_SUM_RL( adjust_volum , myThid )
         _BEGIN_MASTER( myThid )
+#ifdef ALLOW_OPENAD
+        nTmp = nint(adjust_nb_pt)
+        WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
+     &    ' SURF_ADJUSTMENT: Iter=', myIter,
+     &    ' Nb_pts,Vol=', nTmp, adjust_volum
+#else
         WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
      &    ' SURF_ADJUSTMENT: Iter=', myIter,
      &    ' Nb_pts,Vol=', nint(adjust_nb_pt), adjust_volum
+#endif
         _END_MASTER( myThid )
       ENDIF
 
