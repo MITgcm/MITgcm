@@ -116,7 +116,7 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       PARAMETER( maxpass     = 2 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube     = 1 )
+      PARAMETER( maxcube     = 2 )
 
 #ifdef ALLOW_CG2D_NSA
 C     Parameter that is needed for the tape complev_cg2d_iter

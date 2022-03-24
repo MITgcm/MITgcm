@@ -59,14 +59,14 @@ layer. Altogether, this yields the following forcing from
 Held and Suarez (1994) :cite:`held-suar:94` that is applied to the fluid:
 
 .. math::
-   \vec{{\cal F}_\mathbf{v}} = -k_\mathbf{v}(p)\vec{\mathbf{v}}_h
+   \vec{\boldsymbol{\cal F}_\mathbf{v}} = -k_\mathbf{v}(p)\vec{\mathbf{v}}_h
    :label: eg-hs-global_forcing_fv
 
 .. math::
    {\cal F}_{\theta} = -k_{\theta}(\varphi,p)[\theta-\theta_{eq}(\varphi,p)]
   :label: eg-hs-global_forcing_ft
 
-where :math:`\vec{\cal F}_\mathbf{v}`, :math:`{\cal F}_{\theta}`, are
+where :math:`\vec{\boldsymbol{\cal F}_\mathbf{v}}`, :math:`{\cal F}_{\theta}`, are
 the forcing terms in the zonal and meridional momentum and in the
 potential temperature equations, respectively. The term
 :math:`k_\mathbf{v}` in :eq:`eg-hs-global_forcing_fv`
@@ -77,9 +77,9 @@ layer. It is defined so as to decay as pressure decreases according to
 
    \begin{aligned}
    \label{eq:eg-hs-define_kv}
-   k_\mathbf{v} & = & k_{f}~\max[0,~(p^*/P^{0}_{s}-\sigma_{b})/(1-\sigma_{b})]
+   k_\mathbf{v} & = k_{f}~\max[0,~(p^*/P^{0}_{s}-\sigma_{b})/(1-\sigma_{b})]
    \\
-   \sigma_{b} & = & 0.7 ~~{\rm and}~~
+   \sigma_{b} & = 0.7 ~~{\rm and}~~
    k_{f}  =  1/86400 ~{\rm s}^{-1}\end{aligned}
 
 where :math:`p^*` is the pressure level of the cell center and
@@ -138,11 +138,11 @@ configuration:
 
 .. math::
    \frac{\partial \vec{\mathbf{v}}_h}{\partial t}
-   +(f + \zeta)\hat{\mathbf{k}} \times \vec{\mathbf{v}}_h
-   +\mathbf{\nabla }_{p} (\rm{KE})
+   +(f + \zeta)\hat{\boldsymbol{k}} \times \vec{\mathbf{v}}_h
+   + \nabla_{p} (\mathrm{KE})
    + \omega \frac{\partial \vec{\mathbf{v}}_h }{\partial p}
-   +\mathbf{\nabla }_p \Phi ^{\prime }
-   = -k_\mathbf{v}\vec{\mathbf{v}}_h
+   + \nabla_p \Phi ^{\prime }
+   = -k_\mathbf{v} \vec{\mathbf{v}}_h
    :label: eg-hs-model_equations
 
 .. math::
@@ -150,20 +150,20 @@ configuration:
    +\frac{\partial \Pi }{\partial p}\theta ^{\prime } =0
 
 .. math::
-   \mathbf{\nabla }_{p}\cdot \vec{\mathbf{v}}_h+\frac{\partial \omega }{
+    \nabla _{p}\cdot \vec{\mathbf{v}}_h+\frac{\partial \omega }{
    \partial p} =0
 
 .. math::
    \frac{\partial \theta }{\partial t}
-   + \mathbf{\nabla }_{p}\cdot (\theta \vec{\mathbf{v}}_h)
+   +  \nabla _{p}\cdot (\theta \vec{\mathbf{v}}_h)
    + \frac{\partial (\theta \omega)}{\partial p}
-   = -k_{\theta}[\theta-\theta_{eq}]
+   = -k_{\theta}[\theta-\theta_{\rm eq}]
 
 where :math:`\vec{\mathbf{v}}_h` and :math:`\omega = \frac{Dp}{Dt}` are
 the horizontal velocity vector and the vertical velocity in pressure
 coordinate, :math:`\zeta` is the relative vorticity and :math:`f` the
-Coriolis parameter, :math:`\hat{\mathbf{k}}` is the vertical unity
-vector, :math:`\rm{KE}` is the kinetic energy, :math:`\Phi` is the geopotential, and
+Coriolis parameter, :math:`\hat{\boldsymbol{k}}` is the vertical unity
+vector, :math:`\mathrm{KE}` is the kinetic energy, :math:`\Phi` is the geopotential, and
 :math:`\Pi` the Exner function
 (:math:`\Pi = C_p (p/p_c)^\kappa` with :math:`p_c = 10^5` Pa). Primed variables
 correspond to anomaly from the resting, uniformly
@@ -190,18 +190,18 @@ The numerical stability for inertial oscillations
 (see Adcroft 1995 :cite:`adcroft:95`):
 
 .. math::
-    S_{i} = f^{2} {\Delta t}^2
+    S_{\rm inert} = f^{2} {\Delta t}^2
     :label: eg-hs-inertial_stability
 
 evaluates to :math:`4 \times10^{-3}` at the poles, for
 :math:`f=2\Omega\sin(\pi / 2) = 1.45\times10^{-4}~{\rm s}^{-1}`, which
-is well below the :math:`S_{i} < 1` upper limit for stability.
+is well below the :math:`S_{\rm inert} < 1` upper limit for stability.
 The advective CFL (Adcroft 1995 :cite:`adcroft:95`) for a extreme maximum
-horizontal flow speed of :math:`| \vec{u} | = 90 {\rm m/s}`  and the
+horizontal flow speed of :math:`| \vec{\mathbf{u}} | = 90 {\rm m/s}`  and the
 smallest horizontal grid spacing :math:`\Delta x = 1.1\times10^5 {\rm m}`:
 
 .. math::
-   S_{a} = \frac{| \vec{u} | \Delta t}{ \Delta x}
+   S_{\rm adv} = \frac{| \vec{\mathbf{u}} | \Delta t}{ \Delta x}
    :label: eg-hs-cfl_stability
 
 evaluates to 0.37, which is close to the stability limit of 0.5.
@@ -345,11 +345,11 @@ configuration are:
 
    Select the linear relation between surface geopotential anomaly and
    surface pressure anomaly to be evaluated from
-   :math:`\frac{\partial \Phi_s}{\partial p_s} = 1/\rho(\theta_{Ref})`
+   :math:`\frac{\partial \Phi_s}{\partial p_s} = 1/\rho(\theta_{\rm ref})`
    (see :numref:`nonlinear-freesurface`). Note that using the default
    (``=.TRUE.``), the constant :math:`1/\rho_0` is used instead, and is not
    necessarily consistent with other parts of the geopotential that
-   rely on :math:`\theta_{Ref}`.
+   rely on :math:`\theta_{\rm ref}`.
 
 -  Line 23-24,
 

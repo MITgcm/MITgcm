@@ -500,7 +500,7 @@ c--
 CADJ INIT comlev1_bibj_k_gad = COMMON,
 CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxpass
+CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxcube
 #   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifdef ALLOW_MOM_COMMON
@@ -544,7 +544,7 @@ CML#   endif
 CADJ INIT comlev1_bibj_k_gadice = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxpass
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxcube
 #    endif /* DISABLE_MULTIDIM_ADVECTION */
 # endif /* ALLOW_SEAICE */
 c--

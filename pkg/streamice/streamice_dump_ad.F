@@ -1,6 +1,8 @@
-#include "AD_CONFIG.h"
-#include "PACKAGES_CONFIG.h"
 #include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: adstreamice_dump
