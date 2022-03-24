@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model:
+  - add option to apply a correction for net global fresh-water flux imbalance
+    proportional to, fixed in time, 2-D weight field that is read-in from file ;
+  - new integer selector "selectBalanceEmPmR" (=0: off, =1: uniform correction,
+    =2: correction scaled by weight) that replaces logical switch "balanceEmPmR"
+    with backward compatibility setting.
+
 checkpoint68h (2022/03/22)
 o pkg/ecco:
   - new src files: ecco_init_fixed.F & ecco_diagnostics_init.F ;
