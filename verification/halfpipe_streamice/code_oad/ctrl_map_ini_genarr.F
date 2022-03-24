@@ -69,8 +69,11 @@ cdg temporary string declared, required for oad compilation
       INTEGER igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-      INTEGER i, j, bi, bj, k2
+      INTEGER i, j, bi, bj
+#  ifdef SHI_ALLOW_GAMMAFRICT
+      INTEGER k2
       LOGICAL dragThermoEqualMom
+#  endif
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -101,7 +104,7 @@ C--   generic 2D control variables
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
 cdg temp_genarr_fnam used below instead of xx_genarr2d_file(iarr)
         temp_genarr_fnam = xx_genarr2d_file(iarr)
-        IF (temp_genarr_fnam(1:7).EQ.'xx_etan') 
+        IF (temp_genarr_fnam(1:7).EQ.'xx_etan')
      &     igen_etan=iarr
         IF (temp_genarr_fnam(1:13).EQ.'xx_bottomdrag')
      &     igen_bdrag=iarr
@@ -202,7 +205,7 @@ cdg as cannot seem to trace dependency thru CTRL_MAP_GENARR
       CALL CTRL_MAP_GENARR2D( B_glen, iarr, myThid )
       iarr = 2
 #ifdef ALLOW_OPENAD
-       H_streamice(1,1,1,1) = H_streamice(1,1,1,1) + 
+       H_streamice(1,1,1,1) = H_streamice(1,1,1,1) +
      &  0.0 * xx_genarr2d_dummy(iarr)
 #endif
       CALL CTRL_MAP_GENARR2D( H_streamice, iarr, myThid )
