@@ -74,7 +74,7 @@ C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
 C     some compilers complain about the wrong dimensions of this field
 C     in AD-model, so we do it right for the AD case, but safe some
 C     memory otherwise
-      _RL tmpFlx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:2)
+      _RL tmpFlx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
 #else
       _RL tmpFlx (1:2)
 #endif
@@ -111,6 +111,7 @@ C Initialize certain arrays
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         dTsrf(i,j)    = 0. _d 0
+        tmpFlx(i,j,0) = 0. _d 0
         tmpFlx(i,j,1) = 0. _d 0
         tmpFlx(i,j,2) = 0. _d 0
        ENDDO
