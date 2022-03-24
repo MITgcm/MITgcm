@@ -1,4 +1,6 @@
-# Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme  |
+# =====================================================================
+# | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme  |
+# =====================================================================
  &GGL90_PARM01
  GGL90diffTKEh=0.E3,
  GGL90ck = 0.1,
@@ -8,7 +10,6 @@
  GGL90TKEmin = 0.E-6,
  GGL90TKEbottom=4.E-6,
  GGL90TKEsurfMin=1.E-4,
-#GGL90mixingLengthMin=,
  mxlMaxFlag=2,
  GGL90viscMax=1.E2,
  GGL90diffMax=1.E2,
@@ -16,9 +17,6 @@
  GGL90_dirichlet=.FALSE.,
  useIDEMIX  = .TRUE.,
 #-- IO related params:
-#GGL90TKEFile=,
-#GGL90dumpFreq=,
-#GGL90taveFreq=,
  GGL90mixingMaps=.FALSE.,
  GGL90writeState=.FALSE.,
  &

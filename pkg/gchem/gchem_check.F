@@ -138,7 +138,7 @@ c    &  ' exceeds number of PTRACERS(_numInUse)=', PTRACERS_numInUse
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
-     &       'GCEHM_CHECK: detected', errCount,' fatal error(s)'
+     &       'GCHEM_CHECK: detected', errCount,' fatal error(s)'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R GCHEM_CHECK'

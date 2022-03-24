@@ -102,9 +102,9 @@ c     INTEGER actualIts
       _RL    rhsMax
       _RL    rhsNorm
       _RL    cg2d_min(1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_v(1:sNx,1:sNy,nSx,nSy)
+      _RL    cg2d_q(1:sNx,1:sNy,nSx,nSy)
       _RL    cg2d_y(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    cg2d_v(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -154,11 +154,15 @@ C--   Initial residual calculation
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Initialise local working arrays:
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_v(i,j,bi,bj) = 0. _d 0
+          cg2d_q(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
         DO j=0,sNy+1
          DO i=0,sNx+1
           cg2d_y(i,j,bi,bj) = 0. _d 0
-          cg2d_v(i,j,bi,bj) = 0. _d 0
-          cg2d_q(i,j,bi,bj) = 0. _d 0
           cg2d_r(i,j,bi,bj) = 0. _d 0
           cg2d_s(i,j,bi,bj) = 0. _d 0
          ENDDO

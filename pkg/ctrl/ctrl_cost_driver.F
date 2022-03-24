@@ -5,10 +5,6 @@
 c     ==================================================================
 c     SUBROUTINE ctrl_cost_driver
 c     ==================================================================
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_cost_driver
-c     ==================================================================
 
       implicit none
 
@@ -39,18 +35,21 @@ c     == local variables ==
       integer endrec
 #endif
 
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#if ( defined ALLOW_GENTIM2D_CONTROL  || defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL )
       integer iarr
       logical dodimensionalcost
       integer k2
-      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+#endif
+#if ( defined ALLOW_GENTIM2D_CONTROL  || defined ALLOW_GENARR2D_CONTROL )
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
+      _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 c     == end of interface ==
 
 c--   Evaluate the individual cost function contributions.
-
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       do iarr = 1, maxCtrlTim2D
@@ -80,7 +79,7 @@ C --- Get appropriate mask for field
      &     startrec, endrec,
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
      &     xx_gentim2d_period(iarr),
-     &     wgentim2d(1-Olx,1-Oly,1,1,iarr),
+     &     wgentim2d(1-OLx,1-OLy,1,1,iarr),
      &     dodimensionalcost,
      &     num_gentim2d(1,1,iarr),
      &     objf_gentim2d(1,1,iarr),
@@ -111,7 +110,7 @@ C --- Get appropriate mask for field
       call ctrl_cost_gen2d (
      &     1,1,
      &     xx_genarr2d_file(iarr),xx_genarr2d_dummy(iarr),
-     &     zeroRL, wgenarr2d(1-Olx,1-Oly,1,1,iarr),
+     &     zeroRL, wgenarr2d(1-OLx,1-OLy,1,1,iarr),
      &     dodimensionalcost,
      &     num_genarr2d(1,1,iarr), objf_genarr2d(1,1,iarr),
 #ifdef ECCO_CTRL_DEPRECATED
@@ -124,7 +123,6 @@ C --- Get appropriate mask for field
 
       enddo
 #endif
-
 
 #ifdef ALLOW_GENARR3D_CONTROL
       do iarr = 1, maxCtrlArr3D
@@ -142,7 +140,7 @@ C --- Get appropriate mask for field
       if (xx_genarr3d_weight(iarr).NE.' ') then
       call ctrl_cost_gen3d (
      &     xx_genarr3d_file(iarr),xx_genarr3d_dummy(iarr),
-     &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),
+     &     wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),
      &     dodimensionalcost,
      &     num_genarr3d(1,1,iarr), objf_genarr3d(1,1,iarr),
      &     mask3D, myThid )
@@ -152,7 +150,6 @@ C --- Get appropriate mask for field
 #endif
 
 #endif
-
 
       return
       end

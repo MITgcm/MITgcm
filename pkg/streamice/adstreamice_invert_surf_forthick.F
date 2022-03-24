@@ -1,5 +1,7 @@
-#include "CPP_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 
       SUBROUTINE ADSTRMICE_H_INV (
@@ -28,9 +30,9 @@
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_AUTODIFF
 
-      _RL resid, f, fp, hf, htmp
+      _RL fp, hf
       _RL rhoi, rhow, i_r, delta
-      INTEGER ITER, i, j, bi, bj
+      INTEGER i, j, bi, bj
       _RL ETA_GL_STREAMICE
       EXTERNAL ETA_GL_STREAMICE
       _RL ETA_GL_PRIME_STREAMICE

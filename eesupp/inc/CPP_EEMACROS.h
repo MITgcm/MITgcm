@@ -191,4 +191,8 @@ C     and S/R open_copy_data_file. The default of I9.9 should work for
 C     a long time (until we will use 10e10 processors and more)
 #define FMT_PROC_ID 'I9.9'
 
+C--   Set the format for writing ensemble task IDs in S/R eeset_parms
+C     and S/R open_copy_data_file.
+#define FMT_TSK_ID 'I6.6'
+
 #endif /* _CPP_EEMACROS_H_ */

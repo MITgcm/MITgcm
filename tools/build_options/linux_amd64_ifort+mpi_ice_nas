@@ -1,14 +1,23 @@
-#!/bin/bash
-#
-# Used to run the testreport on pleiades with:
-# module load comp-intel/2016.2.181 mpi-sgi/mpt.2.14r19 hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
-# works on all types of nodes
+#! /usr/bin/env bash
+
+# Used to run testreport on pleiades after OS changed from SLES to TOSS (v.3),
+# using either recent intel compiler:
+#   > module load comp-intel/2020.4.304
+# or using older intel compiler:
+#   > module load comp-intel/2016.2.181
+#- and, with MPI:
+#   > module load mpi-hpe/mpt.2.25
+#   > module load hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
+#- and without:
+#   > module load hdf4/4.2.12 hdf5/1.8.18_serial netcdf/4.4.1.1_serial
+#- Note: in both cases, the last line of 3 module setting is for NetCDF
+#        (could be skipped if not using at all this type of I/O).
 
 FC=ifort
 CC=icc
 
 CPP='/lib/cpp -traditional -P'
-DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4 -DINTEL_COMMITQQ'
+DEFINES='-DWORDLENGTH=4 -DINTEL_COMMITQQ'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
@@ -44,7 +53,7 @@ else
    #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
     FOPTIM="-O0 -noalign -g -traceback"
     NOOPTFLAGS=$FOPTIM
-    NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
+    NOOPTFILES='adread_adwrite.F'
     FOPTIM="$FOPTIM -warn all -warn nounused"
     FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
   fi
@@ -53,10 +62,27 @@ fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 
-LIBS='-L/nasa/sgi/mpt/2.14r19/lib -lmpi -L/nasa/netcdf/4.4.1.1_mpt/lib -lnetcdf'
-INCLUDES='-I/nasa/sgi/mpt/2.14r19/include -I/nasa/netcdf/4.4.1.1_mpt/include'
-#INCLUDEDIRS='/nasa/sgi/mpt/2.14r19/include'
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
 
-#- used for parallel (MPI) DIVA
- MPIINCLUDEDIR='/nasa/sgi/mpt/2.14r19/include'
-#MPI_HEADER_FILES='mpif.h mpiof.h'
+if [ -n "$MPI_ROOT" -a "x$MPI" = xtrue ] ; then
+    if [ -z "$MPI_INC_DIR" ]; then
+      MPI_INC_DIR="${MPI_ROOT}/include"
+    fi
+    LIBS="$LIBS -L${MPI_ROOT}/lib -lmpi"
+fi
+
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    INCLUDES="$INCLUDES -I${MPI_INC_DIR}"
+    #INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    MPIINCLUDEDIR="$MPI_INC_DIR"
+    #MPI_HEADER_FILES='mpif.h mpiof.h'
+fi
+
+if [ "x$NETCDF" != x ] ; then
+    INCLUDES="$INCLUDES -I${NETCDF}/include"
+    #INCLUDEDIRS="$INCLUDEDIRS ${NETCDF}/include"
+    LIBS="$LIBS -L${NETCDF}/lib"
+fi

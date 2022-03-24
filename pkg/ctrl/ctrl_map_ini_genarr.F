@@ -2,6 +2,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_DIC
 # include "DIC_OPTIONS.h"
 #endif
@@ -44,6 +47,9 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+#endif
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
 # include "DIC_VARS.h"
 #endif
@@ -67,8 +73,14 @@ C     == local variables ==
       INTEGER igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-      INTEGER i, j, bi, bj, k2
+      INTEGER i, j, bi, bj
+#  ifdef SHI_ALLOW_GAMMAFRICT
+      INTEGER k2
       LOGICAL dragThermoEqualMom
+#  endif
+# endif
+#ifdef ALLOW_STREAMICE
+      INTEGER igen_b_glen, igen_h_streamice
 # endif
 # if (defined ALLOW_DIC && defined DIC_BIOTIC)
       INTEGER igen_alpha
@@ -98,6 +110,10 @@ C--   generic 2D control variables
       igen_shiCoeffS=0
       igen_shiCDrag=0
 #endif
+#ifdef ALLOW_STREAMICE
+      igen_b_glen=0
+      igen_h_streamice=0
+#endif
       DO iarr = 1, maxCtrlArr2D
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
         IF (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
@@ -116,6 +132,12 @@ C--   generic 2D control variables
         IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
      &     igen_shiCDrag=iarr
 # endif
+#endif
+#ifdef ALLOW_STREAMICE
+        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_b_glen')
+     &     igen_b_glen=iarr
+        IF (xx_genarr2d_file(iarr)(1:14).EQ.'xx_h_streamice')
+     &     igen_h_streamice=iarr
 #endif
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
         IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_alpha')
@@ -168,7 +190,7 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
         ENDDO
        ENDDO
       ENDIF
-# else
+# else /* SHI_ALLOW_GAMMAFRICT */
       dragThermoEqualMom = .FALSE.
       IF (igen_shiCDrag.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
@@ -192,6 +214,12 @@ C--      u* drag coefficient
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_STREAMICE
+      IF (igen_b_glen.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( B_glen, igen_b_glen, myThid )
+      IF (igen_h_streamice.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( H_streamice, igen_h_streamice, myThid )
+#endif /* ALLOW_STREAMICE */
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
       IF (igen_alpha.GT.0)
      &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
