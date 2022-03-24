@@ -70,7 +70,14 @@ C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       INTEGER i,j
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpFlx(1:2)
+#ifdef ALLOW_AUTODIFF
+C     some compilers complain about the wrong dimensions of this field
+C     in AD-model, so we do it right for the AD case, but safe some
+C     memory otherwise
+      _RL tmpFlx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:2)
+#else
+      _RL tmpFlx (1:2)
+#endif
       _RL opFrac, icFrac
       LOGICAL dBugFlag
 
@@ -101,11 +108,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF
 C Initialize certain arrays
-      tmpFlx(1) = 0. _d 0
-      tmpFlx(2) = 0. _d 0
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
-          dTsrf(i,j) = 0. _d 0
+        dTsrf(i,j)    = 0. _d 0
+        tmpFlx(i,j,1) = 0. _d 0
+        tmpFlx(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
 #endif /* ALLOW_AUTODIFF */
