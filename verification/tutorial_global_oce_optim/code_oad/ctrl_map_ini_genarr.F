@@ -76,6 +76,15 @@ C--   generic - user-defined control vars
 C     The control variables in this experiment is the mean heat flux. As
 C     is it constant in time , we can specify it here and add it to qnet
 C     at the beginning of the integration.
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+           tmpfld2d(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
        fnamebase = xx_genarr2d_file(iarr)
        il=ILNBLNK( fnamebase )
        WRITE(fnamegeneric(1:80),'(2a,i10.10)')
@@ -113,6 +122,17 @@ cc
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr3D
 
+       DO bj=myByLo(myThid), myByHi(myThid)
+        DO bi=myBxLo(myThid), myBxHi(myThid)
+         DO k = 1,Nr
+          DO j = 1,sNy
+           DO i = 1,sNx
+            tmpfld3d(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
        fnamebase = xx_genarr3d_file(iarr)
        il=ILNBLNK( fnamebase )
        write(fnamegeneric(1:80),'(2a,i10.10)')
