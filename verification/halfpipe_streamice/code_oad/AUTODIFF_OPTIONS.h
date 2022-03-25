@@ -29,15 +29,15 @@ C-- Package-specific Options & Macros go here
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-#define ALLOW_AUTODIFF_TAMC
+#undef ALLOW_AUTODIFF_TAMC
 
 C       >>> Checkpointing as handled by TAMC
-#define ALLOW_TAMC_CHECKPOINTING
+#undef ALLOW_TAMC_CHECKPOINTING
 
 C       >>> Extract adjoint state
-#define ALLOW_AUTODIFF_MONITOR
+#undef ALLOW_AUTODIFF_MONITOR
 C       >>> and DYNVARS_DIAG adjoint state
-#define ALLOW_AUTODIFF_MONITOR_DIAG
+#undef ALLOW_AUTODIFF_MONITOR_DIAG
 
 C       >>> DO 2-level checkpointing instead of 3-level
 c#undef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -52,7 +52,7 @@ C o use divided adjoint to split adjoint computations
 
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
-#define ALLOW_AUTODIFF_WHTAPEIO
+#undef ALLOW_AUTODIFF_WHTAPEIO
 
 C o use standard MDSFINDUINTS instead of local pkg/autodiff version for
 C   WHTAPEIO code I/O.
@@ -68,7 +68,7 @@ C   Might still be used for OBCS since WHTAPEIO does not support OBCS fields.
 #undef AUTODIFF_USE_STORE_RESTORE_OBCS
 
 C o allow using viscFacInAd to recompute viscosities in AD
-#define AUTODIFF_ALLOW_VISCFACADJ
+#undef AUTODIFF_ALLOW_VISCFACADJ
 
 C o for output of AD-variables (ALLOW_AUTODIFF_MONITOR), specific code (e.g.,
 C   in addummy_in_stepping.F) relies on adexch_uv_xy_rs and adexch_xy_rs S/R

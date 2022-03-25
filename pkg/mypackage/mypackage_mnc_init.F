@@ -1,7 +1,7 @@
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: MYPACKAGE_MNC_INIT
 
 C     !INTERFACE:
@@ -12,6 +12,7 @@ C     Initialize MNC lookup tables for Mypackage.
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -21,7 +22,6 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
 #ifdef ALLOW_MNC
 
       IF (useMNC) THEN
@@ -71,9 +71,6 @@ CEOP
       ENDIF
 
 #endif /* ALLOW_MNC */
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
