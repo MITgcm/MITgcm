@@ -11,6 +11,6 @@
  &DIC_FORCING
   DIC_iceFile='fice.bin',
   DIC_windFile='tren_speed.bin',
-  DIC_silicaSurfFile='sil_surf_clim.bin',
+  DIC_silicaSurfFile='sillev1.bin',
   DIC_silicaFile='silicate_clim_deep_RS.bin',
  &
