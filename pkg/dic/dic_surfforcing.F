@@ -114,7 +114,7 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif /* DIC_BIOTIC */
 C FOR NON-INTERACTIVE Si
-             surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
+            surfsi(i,j) = SILICAsurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = max(-4. _d 0,
      &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
@@ -267,6 +267,8 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj)
      &         )
 #else
+
+ 
 C Corrected by Val Bennington Nov 2010 per G.A. McKinley s finding
 C of error in application of water vapor correction
 c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)

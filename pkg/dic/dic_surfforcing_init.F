@@ -63,8 +63,8 @@ ccccccccccccccccccccccccccccccccccccccccc
       IF ( periodicExternalForcing ) THEN
 
 c read in silica field
-         CALL LEF_ZERO( silica0,myThid )
-         CALL LEF_ZERO( silica1,myThid )
+         CALL LEF_ZERO( silicaSurf0,myThid )
+         CALL LEF_ZERO( silicaSurf1,myThid )
 
 C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
@@ -79,10 +79,10 @@ C--   Now calculate whether it is time to update the forcing arrays
      &   ' : Reading new data, i0,i1=', intime0, intime1
        _END_MASTER(myThid)
 
-       IF ( DIC_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
+       IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf0,intime0,
      &        nIter0,myThid )
-         CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf1,intime1,
      &        nIter0,myThid )
        ENDIF
 
@@ -93,16 +93,18 @@ c        CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
 c      ENDIF
 c#endif
 
-       _EXCH_XY_RS(silica0, myThid )
-       _EXCH_XY_RS(silica1, myThid )
+       _EXCH_XY_RS(silicaSurf0, myThid )
+       _EXCH_XY_RS(silicaSurf1, myThid )
 
-       IF ( DIC_silicaFile .NE. ' '  ) THEN
+       IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-             SILICA(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
-     &                        + aWght*silica1(i,j,bi,bj)
+
+             SILICAsurf(i,j,bi,bj)= bWght*silicaSurf0(i,j,bi,bj)
+     &                        + aWght*silicaSurf1(i,j,bi,bj)
+
            ENDDO
           ENDDO
          ENDDO
@@ -190,7 +192,7 @@ C determine inorganic carbon chem coefficients
              surfphos(i,j)= 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif /* DIC_BIOTIC */
 C FOR NON-INTERACTIVE Si
-             surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
+            surfsi(i,j)  =  SilicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
             surftemp(i,j) = max(-4. _d 0,
      &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
@@ -203,6 +205,7 @@ C FOR NON-INTERACTIVE Si
             surfsalt(i,j) = salt(i,j,kLev,bi,bj)
             surfdic(i,j)  = PTRACER(i,j,kLev,bi,bj,1)
      &                    * maskC(i,j,kLev,bi,bj)
+
 #endif
          ENDDO
         ENDDO
@@ -221,6 +224,7 @@ C FOR NON-INTERACTIVE Si
         CALL CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 C====================================================================

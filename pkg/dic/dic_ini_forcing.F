@@ -27,7 +27,7 @@ CEOP
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-       INTEGER bi,bj,i,j
+       INTEGER bi,bj,i,j,k
 #if (defined (READ_PAR) && defined (USE_QSW))
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
@@ -75,7 +75,7 @@ c set reasonable values to those that need at least something
           DO i=1-OLx,sNx+OLx
              WIND(i,j,bi,bj)   = 5. _d 0*maskC(i,j,1,bi,bj)
              AtmosP(i,j,bi,bj) = 1. _d 0*maskC(i,j,1,bi,bj)
-             SILICA(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+
              FIce(i,j,bi,bj)   = 0. _d 0
              FluxCO2(i,j,bi,bj)= 0. _d 0
 #ifdef READ_PAR
@@ -87,7 +87,10 @@ C If the chlorophyll climatology is not provided, use this default value.
 #endif
 #ifdef ALLOW_FE
              InputFe(i,j,bi,bj)= 1. _d -11*maskC(i,j,1,bi,bj)
-#endif
+#endif 
+            DO k=1,Nr
+            SILICA(i,j,k,bi,bj) = 7.6838 _d -3*maskC(i,j,k,bi,bj)
+            ENDDO
           ENDDO
          ENDDO
         ENDDO

@@ -17,21 +17,24 @@ C                       flux calculations (m/s).
 C     FIce        :: Fraction of sea ice cover loaded from file
 C                       (or set by thice/seaice)
 C                       for air-sea flux calculations.
-C     Silica      :: Surface ocean concentration of silicate for
+C     SILICAsurf      :: Surface ocean concentration of silicate for
 C                       pCO2 calculations. Read in from file (mol/m3).
+C     Silica      :: 3d-field of silicate concentration for
+C                       pH calculations. Read in from file (mol/m3).
 C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
-     &              wind, FIce, Silica, Kwexch_Pre
+     &              wind, FIce, Silica, Kwexch_Pre,SILICAsurf
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  SILICAsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C Store dissociation and carbon chemistry coefficients for
@@ -197,6 +200,7 @@ C  DIC_atmospFile  :: file name of atmospheric pressure
 C  DIC_iceFile     :: file name of seaice fraction
 C  DIC_ironFile    :: file name of aeolian iron flux
 C  DIC_silicaFile  :: file name of surface silica
+C  DIC_silicaSurfFile  :: file name of 3d silica fields
 C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
 C  DIC_chlaFile    :: file name of chlorophyll climatology
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
@@ -214,7 +218,7 @@ C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_iceFile,
      &        DIC_ironFile, DIC_silicaFile, DIC_parFile,
-     &        DIC_chlaFile,
+     &        DIC_chlaFile, DIC_silicaSurfFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 
@@ -223,6 +227,7 @@ C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
       CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_silicaSurfFile
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile
       _RL     DIC_forcingPeriod

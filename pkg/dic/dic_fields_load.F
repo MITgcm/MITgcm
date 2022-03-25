@@ -26,11 +26,11 @@ C  myThid               :: thread number
       INTEGER myIter
       _RL myTime
       INTEGER myThid
-
+      
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-      INTEGER bi, bj, i, j
+      INTEGER bi, bj, i, j,k
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
 #ifdef READ_PAR
@@ -97,10 +97,16 @@ C     data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( DIC_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
+        IF ( DIC_silicaSurfFile .NE. ' '  ) THEN 
+         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf1,intime1,
+     &        myIter,myThid )
+        ENDIF
+        IF ( DIC_silicaFile .NE. ' '  ) THEN 
+         CALL READ_REC_XYZ_RS( DIC_silicaFile,silica0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XYZ_RS( DIC_silicaFile,silica1,intime1,
      &        myIter,myThid )
         ENDIF
         IF ( DIC_iceFile .NE. ' '  ) THEN
@@ -138,8 +144,10 @@ C--   fill-in overlap after loading temp arrays:
         _EXCH_XY_RS(dicwind1, myThid )
         _EXCH_XY_RS(atmosp0, myThid )
         _EXCH_XY_RS(atmosp1, myThid )
-        _EXCH_XY_RS(silica0, myThid )
-        _EXCH_XY_RS(silica1, myThid )
+        _EXCH_XY_RS(silicaSurf0, myThid )
+        _EXCH_XY_RS(silicaSurf1, myThid )
+        _EXCH_XYZ_RS(silica0, myThid )
+        _EXCH_XYZ_RS(silica1, myThid )
         _EXCH_XY_RS(ice0, myThid )
         _EXCH_XY_RS(ice1, myThid )
 #ifdef READ_PAR
@@ -164,6 +172,7 @@ C-    save newly loaded time-record
 C-     end if-bloc (time to load new fields)
        ENDIF
 
+
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          IF ( DIC_windFile .NE. ' '  ) THEN
@@ -173,6 +182,7 @@ C-     end if-bloc (time to load new fields)
      &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
            ENDDO
+
 C calculate piston velocity
 C QQ: note - we should have wind speed variance in here
 C QQ         also need to check units, and conversion factors
@@ -191,11 +201,25 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          IF ( DIC_silicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             SILICA(i,j,bi,bj) = bWght*silica0(i,j,bi,bj)
-     &                         + aWght*silica1(i,j,bi,bj)
+             DO k=1,Nr
+
+             SILICA(i,j,k,bi,bj) = bWght*silica0(i,j,k,bi,bj)
+     &                         + aWght*silica1(i,j,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
          ENDIF
+
+         IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             SILICAsurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
+     &                         + aWght*silicaSurf1(i,j,bi,bj)
+
+             ENDDO
+            ENDDO
+         ENDIF
+
          IF ( DIC_iceFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx

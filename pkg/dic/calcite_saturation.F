@@ -42,7 +42,7 @@ C  i,j,k                  :: loop indices
        LOGICAL debugPrt
        _RL carbonate
        _RL calcium
-       _RL silicaTEST
+       _RL silicalocal
        _RL po4local
        _RL diclocal
        _RL alklocal
@@ -108,13 +108,10 @@ C Now correct the coefficients for pressure dependence
 #endif
 
 c 30 micromol = 0.03 mol m-3
-             silicaTEST = 0.03 _d 0
+             silicalocal = SILICA(i,j,k,bi,bj)
              po4local = PTR_PO4(i,j,k)
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)
-Cmick - TEMPORARY!!!!!
-Cmick silica = fixed
-Cmick silica = fixed
 
 #ifdef CARBONCHEM_SOLVESAPHE
       IF ( selectPHsolver.GT.0 ) THEN
@@ -135,13 +132,13 @@ C call AHINI_FOR_AT to get better initial guess of pH
             CALL CALC_PCO2_SOLVESAPHE(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          silicaTEST,alklocal,
+     I          silicalocal,alklocal,
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
             debugPrt = .FALSE.
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
-             carbonate=carbonate*permil
+              carbonate=carbonate*permil
       ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -149,6 +146,7 @@ C Use the original Follows et al. (2006) solver
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
             pHlocal = 7.9 _d 0
+
 Cmick -DEC 04
 Cmick- NOW ITERATE pH SOLVER AT DEPTH ONLY
 Cmick  TO ENSURE ACCURATE ESTIMATE OF CO3 AT DEPTH
@@ -157,11 +155,12 @@ Cmick - NOTE Si STILL USING A UNIFORM DUMMY VALUE
 Cmick - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
 Cmick - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
 CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
+
             DO CO3iter = 1, CO3itermax
               CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
-     I          silicaTEST,alklocal,
+     I          silicalocal,alklocal,
      I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
      I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
@@ -170,7 +169,7 @@ CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
-
+       
 c........................................................
 c               if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
 c                 write(6,*)'Iteration, pH = ',CO3iter,pHlocal
@@ -178,11 +177,13 @@ c               endif
 c........................................................
             ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
+
       ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
 
              omegaC(i,j,k,bi,bj) = calcium * carbonate /
      &                          Ksp_TP_Calc(i,j,bi,bj)
+     
 
 Cmick...................................................
 c            if(omegaC(i,j,k,bi,bj) .eq. 0.) then
@@ -210,10 +211,11 @@ c             end if
 Cmick....................................................
            ELSE
              omegaC(i,j,k,bi,bj) = 0. _d 0
+
            ENDIF
 
          ENDDO
-        ENDDO
+        ENDDO       
 
 C-     end k loop
        ENDDO
