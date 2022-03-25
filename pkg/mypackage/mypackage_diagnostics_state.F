@@ -1,7 +1,7 @@
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_DIAGNOSTICS_STATE
 
 C !INTERFACE:
@@ -13,6 +13,7 @@ C     Fill-in diagnostics array for MYPACKAGE state variables
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mypackage:
+  - improve description (for a coding style example).
 o model:
   - add option to apply a correction for net global fresh-water flux imbalance
     proportional to, fixed in time, 2-D weight field that is read-in from file ;
