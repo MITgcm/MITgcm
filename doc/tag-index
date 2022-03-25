@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/halfpipe_streamice:
+  - update OpenAD test by removing ECCO_CPPOPTIONS.h (but, for now, keep local
+    version: ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F in code_oad).
 o pkg/mypackage:
   - improve description (for a coding style example).
 o model:
