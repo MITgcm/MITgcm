@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/cpl_aim+ocn:
+  - add secondary test set-up using seaice dynamics (pkg/seaice) as part of
+    ocean component and update script to handle option to run multiple test.
 o verification/halfpipe_streamice:
   - update OpenAD test by removing ECCO_CPPOPTIONS.h (but, for now, keep local
     version: ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F in code_oad).
