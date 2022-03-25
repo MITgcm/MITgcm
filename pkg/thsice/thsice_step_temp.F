@@ -70,14 +70,9 @@ C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       INTEGER i,j
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_AUTODIFF
 C     some compilers complain about the wrong dimensions of this field
-C     in AD-model, so we do it right for the AD case, but safe some
-C     memory otherwise
+C     so it has to be defined with overlaps
       _RL tmpFlx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
-#else
-      _RL tmpFlx (1:2)
-#endif
       _RL opFrac, icFrac
       LOGICAL dBugFlag
 
@@ -106,26 +101,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF
-C Initialize certain arrays
+C     Initialise some local arrays
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
+        tFrzOce(i,j)  = 0. _d 0
         dTsrf(i,j)    = 0. _d 0
         tmpFlx(i,j,0) = 0. _d 0
         tmpFlx(i,j,1) = 0. _d 0
         tmpFlx(i,j,2) = 0. _d 0
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF */
 
       dBugFlag = debugLevel.GE.debLevC
 C-    Initialise flxAtm,evpAtm
-       DO j = 1-OLy, sNy+OLy
-        DO i = 1-OLx, sNx+OLx
-          icFlxAtm(i,j,bi,bj) = 0.
-          icFrwAtm(i,j,bi,bj) = 0.
-        ENDDO
+      DO j = 1-OLy, sNy+OLy
+       DO i = 1-OLx, sNx+OLx
+        icFlxAtm(i,j,bi,bj) = 0.
+        icFrwAtm(i,j,bi,bj) = 0.
        ENDDO
+      ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
