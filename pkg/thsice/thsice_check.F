@@ -78,9 +78,9 @@ C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
 #endif
-       IF ( balanceEmPmR ) THEN
+       IF ( selectBalanceEmPmR.GE.1 ) THEN
         WRITE(msgBuf,'(2A)') 'THSICE_CHECK: cannot use',
-     &       ' both balanceEmPmR and thSIceBalanceAtmFW'
+     &       ' both selectBalanceEmPmR and thSIceBalanceAtmFW'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
