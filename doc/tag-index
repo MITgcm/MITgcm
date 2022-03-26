@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - add deep-factor to pkg/gmredi code to work with "deepAtmosphere=T".
 o verification/cpl_aim+ocn:
   - add secondary test set-up using seaice dynamics (pkg/seaice) as part of
     ocean component and update script to handle option to run multiple test.
