@@ -2,12 +2,6 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_STREAMICE
-# include "STREAMICE_OPTIONS.h"
-#endif
-#ifdef ALLOW_DIC
-# include "DIC_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -47,12 +41,6 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
-#ifdef ALLOW_STREAMICE
-# include "STREAMICE.h"
-#endif
-#if (defined ALLOW_DIC && defined DIC_BIOTIC)
-# include "DIC_VARS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -73,19 +61,12 @@ C     == local variables ==
       _RL     airTlev1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     airQlev1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER igen_etan,igen_bdrag,igen_geoth
-      INTEGER i, j, bi, bj
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-#  ifdef SHI_ALLOW_GAMMAFRICT
-      INTEGER k2
+      INTEGER i, j, bi, bj, k2
       LOGICAL dragThermoEqualMom
-#  endif
-# endif
-#ifdef ALLOW_STREAMICE
-      INTEGER igen_b_glen, igen_h_streamice
-# endif
-# if (defined ALLOW_DIC && defined DIC_BIOTIC)
-      INTEGER igen_alpha
+# else
+      INTEGER i, j, bi, bj
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -112,10 +93,6 @@ C--   generic 2D control variables
       igen_shiCoeffS=0
       igen_shiCDrag=0
 #endif
-#ifdef ALLOW_STREAMICE
-      igen_b_glen=0
-      igen_h_streamice=0
-#endif
       DO iarr = 1, maxCtrlArr2D
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
         IF (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
@@ -135,36 +112,27 @@ C--   generic 2D control variables
      &     igen_shiCDrag=iarr
 # endif
 #endif
-#ifdef ALLOW_STREAMICE
-        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_b_glen')
-     &     igen_b_glen=iarr
-        IF (xx_genarr2d_file(iarr)(1:14).EQ.'xx_h_streamice')
-     &     igen_h_streamice=iarr
-#endif
-#if (defined ALLOW_DIC && defined DIC_BIOTIC)
-        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_alpha')
-     &     igen_alpha=iarr
-#endif
        ENDIF
       ENDDO
 
-      IF (igen_etan.GT.0) CALL CTRL_MAP_GENARR2D( etaN,
-     &     xx_genarr2d_dummy(igen_etan), igen_etan, myThid )
+      IF (igen_etan.GT.0) THEN
+        CALL CTRL_MAP_GENARR2D( etaN, igen_etan, myThid )
+      ENDIF
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      IF (igen_bdrag.GT.0) CALL CTRL_MAP_GENARR2D( bottomDragFld,
-     &     xx_genarr2d_dummy(igen_bdrag), igen_bdrag, myThid )
+      IF (igen_bdrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, myThid )
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
-      IF (igen_geoth.GT.0) CALL CTRL_MAP_GENARR2D( geothermalFlux,
-     &     xx_genarr2d_dummy(igen_geoth), igen_geoth, myThid )
+      IF (igen_geoth.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
-      IF (igen_shiCoeffT.GT.0) CALL CTRL_MAP_GENARR2D(shiTransCoeffT,
-     &     xx_genarr2d_dummy(igen_shiCoeffT), igen_shiCoeffT, myThid)
+      IF (igen_shiCoeffT.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
 
-      IF (igen_shiCoeffS.GT.0) CALL CTRL_MAP_GENARR2D(shiTransCoeffS,
-     &     xx_genarr2d_dummy(igen_shiCoeffS), igen_shiCoeffS, myThid)
+      IF (igen_shiCoeffS.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffS,igen_shiCoeffS,myThid)
 
 C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
       IF ((igen_shiCoeffS.EQ.0).AND.(igen_shiCoeffT.GT.0)) THEN
@@ -191,10 +159,10 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
         ENDDO
        ENDDO
       ENDIF
-# else /* SHI_ALLOW_GAMMAFRICT */
+# else
       dragThermoEqualMom = .FALSE.
-      IF (igen_shiCDrag.GT.0) CALL CTRL_MAP_GENARR2D(shiCDragFld,
-     &     xx_genarr2d_dummy(igen_shiCDrag), igen_shiCDrag, myThid)
+      IF (igen_shiCDrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
 C--     Set drag coefficient used in momentum equal to thermodynamic,
 C--      u* drag coefficient
       DO k2 = 1, maxCtrlProc
@@ -215,16 +183,6 @@ C--      u* drag coefficient
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
-#ifdef ALLOW_STREAMICE
-      IF (igen_b_glen.GT.0) CALL CTRL_MAP_GENARR2D( B_glen,
-     &     xx_genarr2d_dummy(igen_b_glen), igen_b_glen, myThid )
-      IF (igen_h_streamice.GT.0) CALL CTRL_MAP_GENARR2D( H_streamice,
-     &     xx_genarr2d_dummy(igen_h_streamice), igen_h_streamice,myThid)
-#endif /* ALLOW_STREAMICE */
-#if (defined ALLOW_DIC && defined DIC_BIOTIC)
-      IF (igen_alpha.GT.0) CALL CTRL_MAP_GENARR2D( alpha,
-     &     xx_genarr2d_dummy(igen_alpha), igen_alpha, myThid )
-#endif
 C--   begin customized code for experiment hs94.1x64x5
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -237,11 +195,9 @@ C--   begin customized code for experiment hs94.1x64x5
        ENDDO
       ENDDO
       iarr = 1
-      CALL CTRL_MAP_GENARR2D( airTlev1,
-     &     xx_genarr2d_dummy(iarr), iarr, myThid )
+      CALL CTRL_MAP_GENARR2D( airTlev1, iarr, myThid )
       iarr = 2
-      CALL CTRL_MAP_GENARR2D( airQlev1,
-     &     xx_genarr2d_dummy(iarr), iarr, myThid )
+      CALL CTRL_MAP_GENARR2D( airQlev1, iarr, myThid )
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy,sNy+OLy
@@ -309,22 +265,22 @@ C--   begin customized code for experiment hs94.1x64x5
 C     This is commented out to not interfer with the customized
 C     for the genarr2d part. Alternatively, one could use
 C     store directives to avoid additional recomputation warnings.
-C     IF (igen_theta0.GT.0) CALL CTRL_MAP_GENARR3D( theta,
-C    &     xx_genarr3d_dummy(igen_theta0), igen_theta0, myThid )
-C     IF (igen_salt0.GT.0) CALL CTRL_MAP_GENARR3D( salt,
-C    &     xx_genarr3d_dummy(igen_salt0), igen_salt0, myThid )
+C     IF (igen_theta0.GT.0)
+C    &  CALL CTRL_MAP_GENARR3D( theta, igen_theta0, myThid )
+C     IF (igen_salt0.GT.0)
+C    &  CALL CTRL_MAP_GENARR3D( salt, igen_salt0, myThid )
 C---  end customized code
 # ifdef ALLOW_KAPGM_CONTROL
-      IF (igen_kapgm.GT.0) CALL CTRL_MAP_GENARR3D( kapGM,
-     &     xx_genarr3d_dummy(igen_kapgm), igen_kapgm, myThid )
+      IF (igen_kapgm.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapGM, igen_kapgm, myThid )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      IF (igen_kapredi.GT.0) CALL CTRL_MAP_GENARR3D( kapRedi,
-     &     xx_genarr3d_dummy(igen_kapredi), igen_kapredi, myThid )
+      IF (igen_kapredi.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapRedi, igen_kapredi, myThid )
 # endif
 # if ( defined ALLOW_DIFFKR_CONTROL && defined ALLOW_3D_DIFFKR )
-      IF (igen_diffkr.GT.0) CALL CTRL_MAP_GENARR3D( diffKr,
-     &     xx_genarr3d_dummy(igen_diffkr), igen_diffkr, myThid )
+      IF (igen_diffkr.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
 
 # ifdef ALLOW_PTRACERS
@@ -332,18 +288,16 @@ CADJ loop = parallel
       DO iPtr = 1, PTRACERS_num
         IF ( igen_ptr(iPtr).GT.0 ) THEN
           CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,iPtr),
-     &        xx_genarr3d_dummy(igen_ptr(iPtr)), igen_ptr(iPtr), myThid)
+     &                            igen_ptr(iPtr), myThid )
         ENDIF
       ENDDO
 # endif /* ALLOW_PTRACERS */
 
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       IF (igen_uvel0.GT.0 .AND. igen_vvel0.GT.0) THEN
-       CALL CTRL_MAP_GENARR3D( uVel,
-     &      xx_genarr3d_dummy(igen_uvel0), igen_uvel0, myThid )
-       CALL CTRL_MAP_GENARR3D( vVel,
-     &      xx_genarr3d_dummy(igen_vvel0), igen_vvel0, myThid )
-       CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
+        CALL CTRL_MAP_GENARR3D( uVel, igen_uvel0, myThid )
+        CALL CTRL_MAP_GENARR3D( vVel, igen_vvel0, myThid )
+        CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
       ENDIF
 # endif
 

@@ -146,23 +146,24 @@ C--   generic 2D control variables
        ENDIF
       ENDDO
 
-      IF (igen_etan.GT.0) CALL CTRL_MAP_GENARR2D( etaN,
-     &     xx_genarr2d_dummy(igen_etan), igen_etan, myThid )
+      IF (igen_etan.GT.0) THEN
+        CALL CTRL_MAP_GENARR2D( etaN, igen_etan, myThid )
+      ENDIF
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      IF (igen_bdrag.GT.0) CALL CTRL_MAP_GENARR2D( bottomDragFld,
-     &     xx_genarr2d_dummy(igen_bdrag), igen_bdrag, myThid )
+      IF (igen_bdrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, myThid )
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
-      IF (igen_geoth.GT.0) CALL CTRL_MAP_GENARR2D( geothermalFlux,
-     &     xx_genarr2d_dummy(igen_geoth), igen_geoth, myThid )
+      IF (igen_geoth.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
-      IF (igen_shiCoeffT.GT.0) CALL CTRL_MAP_GENARR2D(shiTransCoeffT,
-     &     xx_genarr2d_dummy(igen_shiCoeffT), igen_shiCoeffT, myThid)
+      IF (igen_shiCoeffT.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
 
-      IF (igen_shiCoeffS.GT.0) CALL CTRL_MAP_GENARR2D(shiTransCoeffS,
-     &     xx_genarr2d_dummy(igen_shiCoeffS), igen_shiCoeffS, myThid)
+      IF (igen_shiCoeffS.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiTransCoeffS,igen_shiCoeffS,myThid)
 
 C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
       IF ((igen_shiCoeffS.EQ.0).AND.(igen_shiCoeffT.GT.0)) THEN
@@ -191,8 +192,8 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
       ENDIF
 # else /* SHI_ALLOW_GAMMAFRICT */
       dragThermoEqualMom = .FALSE.
-      IF (igen_shiCDrag.GT.0) CALL CTRL_MAP_GENARR2D(shiCDragFld,
-     &     xx_genarr2d_dummy(igen_shiCDrag), igen_shiCDrag, myThid)
+      IF (igen_shiCDrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
 C--     Set drag coefficient used in momentum equal to thermodynamic,
 C--      u* drag coefficient
       DO k2 = 1, maxCtrlProc
@@ -214,14 +215,14 @@ C--      u* drag coefficient
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_STREAMICE
-      IF (igen_b_glen.GT.0) CALL CTRL_MAP_GENARR2D( B_glen,
-     &     xx_genarr2d_dummy(igen_b_glen), igen_b_glen, myThid )
-      IF (igen_h_streamice.GT.0) CALL CTRL_MAP_GENARR2D( H_streamice,
-     &     xx_genarr2d_dummy(igen_h_streamice), igen_h_streamice,myThid)
+      IF (igen_b_glen.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( B_glen, igen_b_glen, myThid )
+      IF (igen_h_streamice.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( H_streamice, igen_h_streamice, myThid )
 #endif /* ALLOW_STREAMICE */
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
-      IF (igen_alpha.GT.0) CALL CTRL_MAP_GENARR2D( alpha,
-     &     xx_genarr2d_dummy(igen_alpha), igen_alpha, myThid )
+      IF (igen_alpha.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
 #endif
 
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -275,21 +276,21 @@ C--   generic 3D control variables
        ENDIF
       ENDDO
 
-      IF (igen_theta0.GT.0) CALL CTRL_MAP_GENARR3D( theta,
-     &     xx_genarr3d_dummy(igen_theta0), igen_theta0, myThid )
-      IF (igen_salt0.GT.0) CALL CTRL_MAP_GENARR3D( salt,
-     &     xx_genarr3d_dummy(igen_salt0), igen_salt0, myThid )
+      IF (igen_theta0.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( theta, igen_theta0, myThid )
+      IF (igen_salt0.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( salt, igen_salt0, myThid )
 # ifdef ALLOW_KAPGM_CONTROL
-      IF (igen_kapgm.GT.0) CALL CTRL_MAP_GENARR3D( kapGM,
-     &     xx_genarr3d_dummy(igen_kapgm), igen_kapgm, myThid )
+      IF (igen_kapgm.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapGM, igen_kapgm, myThid )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      IF (igen_kapredi.GT.0) CALL CTRL_MAP_GENARR3D( kapRedi,
-     &     xx_genarr3d_dummy(igen_kapredi), igen_kapredi, myThid )
+      IF (igen_kapredi.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapRedi, igen_kapredi, myThid )
 # endif
 # if ( defined ALLOW_DIFFKR_CONTROL && defined ALLOW_3D_DIFFKR )
-      IF (igen_diffkr.GT.0) CALL CTRL_MAP_GENARR3D( diffKr,
-     &     xx_genarr3d_dummy(igen_diffkr), igen_diffkr, myThid )
+      IF (igen_diffkr.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
 
 # ifdef ALLOW_PTRACERS
@@ -297,18 +298,16 @@ CADJ loop = parallel
       DO iPtr = 1, PTRACERS_num
         IF ( igen_ptr(iPtr).GT.0 ) THEN
           CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,iPtr),
-     &        xx_genarr3d_dummy(igen_ptr(iPtr)), igen_ptr(iPtr), myThid)
+     &                            igen_ptr(iPtr), myThid )
         ENDIF
       ENDDO
 # endif /* ALLOW_PTRACERS */
 
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       IF (igen_uvel0.GT.0 .AND. igen_vvel0.GT.0) THEN
-       CALL CTRL_MAP_GENARR3D( uVel,
-     &      xx_genarr3d_dummy(igen_uvel0), igen_uvel0, myThid )
-       CALL CTRL_MAP_GENARR3D( vVel,
-     &      xx_genarr3d_dummy(igen_vvel0), igen_vvel0, myThid )
-       CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
+        CALL CTRL_MAP_GENARR3D( uVel, igen_uvel0, myThid )
+        CALL CTRL_MAP_GENARR3D( vVel, igen_vvel0, myThid )
+        CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
       ENDIF
 # endif
 
