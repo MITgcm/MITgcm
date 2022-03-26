@@ -63,7 +63,8 @@ C       |-- SEAICE_COST_INIT_FIXED
 C       |
 C       |-- SMOOTH_INIT_FIXED
 C       |
-C       |-- ECCO_COST_INIT_FIXED
+C       |-- ECCO_INIT_FIXED
+C       |   |- ECCO_COST_INIT_FIXED
 C       |
 C       |-- PROFILES_INIT_FIXED
 C       |
@@ -359,15 +360,14 @@ C--   in order to provide the weight files
       ENDIF
 #endif
 
-
 #ifdef ALLOW_ECCO
       IF (useECCO) THEN
-C--   Initialise ecco-specific cost function. This needs to preceed
-C     the call ctrl_init in order to provide the weight files
+C--   Calls ECCO_COST_INIT_FIXED which initialises ecco-specific cost function.
+C     This needs to preceed CTRL_INIT call in order to provide the weight files
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('ECCO_COST_INIT_FIXED',myThid)
+        IF (debugMode) CALL DEBUG_CALL('ECCO_INIT_FIXED',myThid)
 # endif
-        CALL ECCO_COST_INIT_FIXED( myThid )
+        CALL ECCO_INIT_FIXED( myThid )
       ENDIF
 #endif
 
