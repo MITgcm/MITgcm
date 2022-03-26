@@ -69,10 +69,10 @@ C     tmpFlx    :: dummy array for surface fluxes and derivative vs Tsurf
 C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       INTEGER i,j
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dTsrf  (1:sNx,1:sNy)
 C     some compilers complain about the wrong dimensions of this field
 C     so it has to be defined with overlaps
-      _RL tmpFlx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
+      _RL tmpFlx (1:sNx,1:sNy,0:2)
       _RL opFrac, icFrac
       LOGICAL dBugFlag
 
@@ -105,6 +105,10 @@ C     Initialise some local arrays
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         tFrzOce(i,j)  = 0. _d 0
+       ENDDO
+      ENDDO
+      DO j = 1, sNy
+       DO i = 1, sNx
         dTsrf(i,j)    = 0. _d 0
         tmpFlx(i,j,0) = 0. _d 0
         tmpFlx(i,j,1) = 0. _d 0

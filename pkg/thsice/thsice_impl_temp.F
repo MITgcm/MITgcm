@@ -55,8 +55,7 @@ C     dTsrf    :: surf. temp adjusment: Ts^n+1 - Ts^n
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sFLxLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
+c     _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL dBugFlag
 
 C-    define grid-point location where to print debugging values
@@ -79,10 +78,6 @@ C-------
       DO j = jMin, jMax
        DO i = iMin, iMax
         icFlxSW(i,j,bi,bj) = netSW(i,j)
-        dTsrf(i,j)         = dTsurf(i,j)
-        sFlxLoc(i,j,0)     = sFlx(i,j,0)
-        sFlxLoc(i,j,1)     = sFlx(i,j,1)
-        sFlxLoc(i,j,2)     = sFlx(i,j,2)
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
           tFrzOce(i,j) = -mu_Tf*sOceMxL(i,j,bi,bj)
 #ifdef ALLOW_DBUG_THSICE
@@ -104,19 +99,14 @@ C-------
      I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag, .FALSE.,.FALSE.,
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
-     I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, sFlxLoc,
+     I          snowHeight(siLo,sjLo,bi,bj), tFrzOce, sFlx,
      U          icFlxSW(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
      U          Qice1(siLo,sjLo,bi,bj), Qice2(siLo,sjLo,bi,bj),
-     O          Tice1(siLo,sjLo,bi,bj), Tice2(siLo,sjLo,bi,bj), dTsrf,
+     O          Tice1(siLo,sjLo,bi,bj), Tice2(siLo,sjLo,bi,bj), dTsurf,
      O          sHeating(siLo,sjLo,bi,bj), flxCndBt(siLo,sjLo,bi,bj),
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 
-      DO j = jMin, jMax
-       DO i = iMin, iMax
-        dTsurf(i,j) = dTsrf(i,j)
-       ENDDO
-      ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_THSICE */
 

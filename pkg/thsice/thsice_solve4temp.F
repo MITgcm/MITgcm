@@ -117,8 +117,9 @@ C     myThid      :: my Thread Id number
       _RL flxCnB (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL evpAtm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxExSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,0:2)
-      _RL dTsrf1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C
+      _RL flxExSW(1:sNx,1:sNy,0:2)
+      _RL dTsrf1 (1:sNx,1:sNy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
