@@ -1,4 +1,7 @@
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GAD_SOM_ADV_R
@@ -39,6 +42,9 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj        :: tile indices
@@ -115,6 +121,9 @@ C  wLoc         :: volume transported (per time step)
 CEOP
 
 #ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT somtape_r = COMMON, 1
+# endif
       alp(1,1,kDw) = alp(1,1,kDw)
       aln(1,1,kDw) = aln(1,1,kDw)
       fp_v(1,1,kDw) = fp_v(1,1,kDw)
@@ -146,6 +155,10 @@ CEOP
       noFlowAcrossSurf = rigidLid .OR. nonlinFreeSurf.GE.1
      &                            .OR. select_rStar.NE.0
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sm_o,sm_v,sm_x,sm_xz,sm_y,sm_yz,sm_z,sm_zz
+CADJ &     = somtape_r, key = 1, kind = isbyte
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.1 : calculate flux for all moments
       DO j=jMinAdvR,jMaxAdvR

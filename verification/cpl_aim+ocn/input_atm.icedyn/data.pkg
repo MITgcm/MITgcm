@@ -1,0 +1,12 @@
+# Packages
+#     useAIM  :: use Atmospheric Intermediate complexity Model
+#     useLand :: use (simple) Land package to compute surf. BC over land
+#   useThSIce :: use Therm. SeaIce package (+slab ocean)
+ &PACKAGES
+ useAIM=.TRUE.,
+ useLand=.TRUE.,
+ useThSIce=.TRUE.,
+ useSHAP_FILT=.TRUE.,
+ useDiagnostics=.TRUE.,
+#useMNC=.TRUE.,
+ &
