@@ -55,6 +55,7 @@ C     !LOCAL VARIABLES:
       LOGICAL doscaling
       LOGICAL dolog10ctrl
       _RL log10initval
+      _RL ln10
       _RL xx_gen  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
@@ -76,6 +77,7 @@ c--   Now, read the control vector.
       doscaling=.TRUE.
       dolog10ctrl=.FALSE.
       log10initval=0. _d 0
+      ln10 = LOG(10.0D0)
 
       numsmo = 1
       DO k2 = 1, maxCtrlProc
@@ -132,31 +134,42 @@ C --- Do any smoothing
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j = 1,sNy
-         DO i = 1,sNx
+        IF (doscaling) THEN
+         DO j = 1,sNy
+          DO i = 1,sNx
 c scale param adjustment
-          IF ( (mask2D(i,j,bi,bj).NE.0.).AND.
-     &         (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
-           IF (doscaling) THEN
+           IF ( wgenarr2d(i,j,bi,bj,iarr).GT.0. ) THEN
             xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
-     &               /SQRT( wgenarr2d(i,j,bi,bj,iarr) )
+     &               / SQRT( wgenarr2d(i,j,bi,bj,iarr) )
             IF (dolog10ctrl) THEN
              xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
-             xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
-            ENDIF ! log10ctrls
-           ENDIF ! doscaling
-          ELSE
-           xx_gen(i,j,bi,bj) = 0.
-          ENDIF
+C            xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+C     this is faster, especially if log(10) has been evaluated before
+C            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
+             xx_gen(i,j,bi,bj) = EXP(ln10 * xx_gen(i,j,bi,bj))
+            ENDIF ! dolog10ctrls
+           ELSE
+            xx_gen(i,j,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF ! doscaling
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-          IF ( .NOT. dolog10ctrl ) THEN
-           fld(i,j,bi,bj) = fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
-          ELSE
-           fld(i,j,bi,bj) = xx_gen(i,j,bi,bj)
-          ENDIF
+        IF (dolog10ctrl) THEN
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fld(i,j,bi,bj) = xx_gen(i,j,bi,bj)*mask2D(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+         DO j = 1,sNy
+          DO i = 1,sNx
+           fld(i,j,bi,bj) = fld(i,j,bi,bj)
+     &           + xx_gen(i,j,bi,bj)*mask2D(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF ! dolog10ctrls
        ENDDO
       ENDDO
 
@@ -311,10 +324,17 @@ c     scale param adjustment
           DO j = 1,sNy
            DO i = 1,sNx
             IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
-             xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-     &                /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
+             xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj)
+     &                / SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
+             IF (dolog10ctrl) THEN
+              xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
+C             xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+C     this is faster, especially if log(10) has been evaluated before
+C             xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
+              xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
+             ENDIF
             ELSE 
-             xx_gen(i,j,k,bi,bj)=0. _d 0
+             xx_gen(i,j,k,bi,bj) = 0. _d 0
             ENDIF
            ENDDO
           ENDDO
@@ -323,14 +343,11 @@ c     doscaling
         ENDIF
 c     add to model parameter
 c     or in case of log10ctrl, fld = 10^(xx_gen)
-        IF ( .NOT. dolog10ctrl ) THEN
+        IF ( dolog10ctrl ) THEN
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
-            IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
-             fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)
-     &            + xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
-            ENDIF
+            fld(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -338,16 +355,8 @@ c     or in case of log10ctrl, fld = 10^(xx_gen)
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
-            IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
-             xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
-C           xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
-C     this is faster, especially if log(10) has been evaluated before
-C           xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
-             xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
-            ELSE
-             xx_gen(i,j,k,bi,bj) = 0. _d 0
-            ENDIF
-            fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
+            fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)
+     &           + xx_gen(i,j,k,bi,bj)*mask3D(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
