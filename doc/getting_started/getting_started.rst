@@ -1454,7 +1454,7 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    | :varlink:`EXCLUDE_FFIELDS_LOAD`               | #undef  | exclude external forcing-fields load; code allows reading and simple linear time interpolation of oceanic            |
    |                                               |         | forcing fields, if no specific pkg (e.g., :filelink:`pkg/exf`) is used to compute them                               |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`INCLUDE_PHIHYD_CALCULATION_CODE`    | #define | include code to calculate :math:`\phi_{hyd}`                                                                         |
+   | :varlink:`INCLUDE_PHIHYD_CALCULATION_CODE`    | #define | include code to calculate :math:`\phi_{\rm hyd}`                                                                     |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`INCLUDE_CONVECT_CALL`               | #define | include code for convective adjustment mixing algorithm                                                              |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
@@ -2604,7 +2604,7 @@ fluxes can be computed implicitly by setting the logical variable
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`interDiffKr_pCell`           | PARM04    | FALSE                                            | account for partial-cell in interior vertical diffusion on/off flag                                     |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`linFSConserveTr`             | PARM01    | TRUE                                             | correct source/sink of tracer due to use of linear free surface on/off flag                             |
+   | :varlink:`linFSConserveTr`             | PARM01    | FALSE                                            | correct source/sink of tracer due to use of linear free surface on/off flag                             |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`doAB_onGtGs`                 | PARM03    | TRUE                                             | apply Adams-Bashforth on tendencies (rather than on T,S) on/off flag                                    |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2852,7 +2852,15 @@ salinity (in g/kg) data files and relaxation timescale coefficient
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceSaltClimRelax`        | PARM01    | FALSE                                            | subtract global mean flux due to salt relaxation every time step on/off flag                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`balanceEmPmR`                | PARM01    | FALSE                                            | subtract global mean EmPmR every time step on/off flag; requires #define :varlink:`ALLOW_BALANCE_FLUXES`|
+   | :varlink:`selectBalanceEmPmR`          | PARM01    | 0                                                | option to balance net surface freshwater flux every time step                                           |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | - 0: off                                                                                                |
+   |                                        |           |                                                  | - 1: uniform surface correction                                                                         |
+   |                                        |           |                                                  | - 2: non-uniform surface correction, scaled using :varlink:`wghtBalancedFile` for local weighting       |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | if =1 or 2, requires #define :varlink:`ALLOW_BALANCE_FLUXES`                                            |
+   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`wghtBalanceFile`             | PARM05    | :kbd:`' '`                                       | filename for 2D specification of weights used in :varlink:`selectBalanceEmPmR` =2 correction            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (g/kg)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+

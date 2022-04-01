@@ -600,8 +600,9 @@ C---  report of some vector-invariant parameters ends here
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
 #ifdef ALLOW_BALANCE_FLUXES
-      CALL WRITE_0D_L( balanceEmPmR, INDEX_NONE, 'balanceEmPmR =',
-     &             '  /* balance net fresh-water flux on/off flag */')
+      CALL WRITE_0D_I( selectBalanceEmPmR, INDEX_NONE,
+     &                'selectBalanceEmPmR =',
+     &                ' /* balancing glob.mean EmPmR selector */' )
 #endif
       CALL WRITE_0D_L( doSaltClimRelax, INDEX_NONE,
      & 'doSaltClimRelax =', ' /* apply SSS relaxation on/off flag */')
@@ -618,8 +619,8 @@ C---  report of some vector-invariant parameters ends here
      &  ' /* Precision used for writing binary files */')
 #ifdef ALLOW_BALANCE_FLUXES
       CALL WRITE_0D_L( balancePrintMean, INDEX_NONE,
-     &                 'balancePrintMean  =',
-     &  '  /* print means for balancing fluxes */')
+     &                'balancePrintMean =',
+     &                ' /* print means for balancing fluxes */')
 #endif
 C---
 c     CALL WRITE_0D_I(rwSuffixType, INDEX_NONE, 'rwSuffixType =',

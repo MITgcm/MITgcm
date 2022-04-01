@@ -16,18 +16,18 @@ In the ocean we interpret:
    :label: ocean-p
 
 .. math::
-   b(\theta ,S,r)=\frac{g}{\rho _{c}}\left( \rho (\theta ,S,r)-\rho
-   _{c}\right) \text{  is the buoyancy}
+   b(\theta ,S,r)=\frac{g}{\rho _{c}} \left( \vphantom{\dot{W}} \rho (\theta,S,r) - \rho_{c}\right) 
+   \text{  is the buoyancy}
    :label: ocean-b
 
-where :math:`\rho _{c}` is a fixed reference density of water and
+where :math:`\rho_{c}` is a fixed reference density of water and
 :math:`g` is the acceleration due to gravity.
 
 In the above:
 
-At the bottom of the ocean: :math:`R_{fixed}(x,y)=-H(x,y)`.
+At the bottom of the ocean: :math:`R_{\rm fixed}(x,y)=-H(x,y)`.
 
-The surface of the ocean is given by: :math:`R_{moving}=\eta`
+The surface of the ocean is given by: :math:`R_{\rm moving}=\eta`
 
 The position of the resting free surface of the ocean is given by
 :math:`R_{o}=Z_{o}=0`.
@@ -35,11 +35,11 @@ The position of the resting free surface of the ocean is given by
 Boundary conditions are:
 
 .. math::
-   w=0~\text{at }r=R_{fixed}\text{  (ocean bottom)}
+   w=0~\text{at }r=R_{\rm fixed}\text{  (ocean bottom)}
    :label: fixed-bc-ocean
 
 .. math::
-   w=\frac{D\eta }{Dt}\text{ at }r=R_{moving}=\eta \text{  (ocean surface)}
+   w=\frac{D\eta }{Dt}\text{ at }r=R_{\rm moving}=\eta \text{  (ocean surface)}
    :label: moving-bc-ocean
 
 where :math:`\eta` is the elevation of the free surface.
