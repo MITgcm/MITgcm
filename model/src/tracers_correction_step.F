@@ -4,7 +4,7 @@
 CBOP
 C     !ROUTINE: TRACERS_CORRECTION_STEP
 C     !INTERFACE:
-      SUBROUTINE TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
+      SUBROUTINE TRACERS_CORRECTION_STEP( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE TRACERS_CORRECTION_STEP
