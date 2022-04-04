@@ -6,7 +6,7 @@
 # gcc, gfortran, netcdf/netcdf-fortran, and openmpi obtained from
 # https://www.macports.org
 # sudo port install gcc11
-# sudo port select --set gcc mp-devel
+# sudo port select --set gcc mp-gcc11
 # similar results can be achieved using homebrew
 
 # Note: at the time of creating this file (Mar2022), the
