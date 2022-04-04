@@ -3,23 +3,18 @@
 # tested on MacBook Pro with macOS Monterey
 # uname -a
 # Darwin bkli04m056 21.3.0 Darwin Kernel Version 21.3.0: Wed Jan  5 21:37:58 PST 2022; root:xnu-8019.80.24~20/RELEASE_ARM64_T6000 arm64
-# gcc and gfortran obtained from
-# http://hpc.sourceforge.net/
-# gfortran-mp-devel, netcdf/netcdf-fortran, and openmpi obtained from
+# gcc, gfortran, netcdf/netcdf-fortran, and openmpi obtained from
 # https://www.macports.org
+# sudo port install gcc11
+# sudo port select --set gcc mp-devel
+# similar results can be achieved using homebrew
 
-# Note: at the time of creating this file (Mar2022), the simplest
-# gfortran compiler available to me that works without additional
-# changes to the code is gfortran-mp-devel that was installed along
-# with openmpi with "port install openmpi". gfortran-mp-devel is also
-# used in mpif77/90. The gfortran-build of http://hpc.sourceforge.net
-# does not work with testreport (also: cannot compile like the "etime"
-# test and leads to multile warnings at the link step), because the
-# model compiled with this gfortran does not print the last line
-# before the stop statement without an additional flush-statement. As
-# more stable gfortran builds become available in the future, we may
-# change the compiler from gfortran-mp-devel to gfortran as the name
-# of the file implies.
+# Note: at the time of creating this file (Mar2022), the
+# gfortran-build of http://hpc.sourceforge.net does not work with
+# testreport (also: cannot compile like the "etime" test and leads to
+# multile warnings at the link step), because the model compiled with
+# this gfortran does not print the last line before the stop statement
+# without an additional flush-statement.
 
 if test "x$MPI" = xtrue ; then
   CC=mpicc
@@ -28,13 +23,8 @@ if test "x$MPI" = xtrue ; then
   LINK=$F90C
 else
   CC=gcc
-  # FC=gfortran
-  # F90C=gfortran
-  # This one is used in mpif77/f90, so let us try to use it here, too.
-  # It is the newer build and compatible with netcdf and openmpi,
-  # see note above.
-  FC=gfortran-mp-devel
-  F90C=gfortran-mp-devel
+  FC=gfortran
+  F90C=gfortran
   LINK=$F90C
 fi
 
@@ -117,7 +107,7 @@ elif [[ -n $( nf-config --includedir ) && ($? == 0) ]] ; then
     INCLUDEDIR=$( nf-config --includedir )
     INCLUDES="-I$INCLUDEDIR"
     # although this would is the best option, the resulting -arch arm64 is
-    # supported by gfortran
+    # not supported by gfortran from hpc.sourceforge.net
     LIBS=$( nf-config --flibs )
     # if FC=gfortran from hpc.sourceforge.net, then this works:
     # LIBDIR=$( nf-config --prefix )/lib
