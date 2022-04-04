@@ -1185,7 +1185,7 @@ C--     this is done after exchanges to allow interpolation
 
 #ifdef ALLOW_ECCO
 C--   Diagnose variables for pkg/ecco averaging and cost function purposes
-      IF ( useECCO ) CALL ECCO_PHYS( myThid )
+      IF ( useECCO ) CALL ECCO_PHYS( myTime, myIter, myThid )
 #endif
 
 C--   Check if it has reached the end of simulation

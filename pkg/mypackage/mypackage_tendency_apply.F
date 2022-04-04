@@ -7,7 +7,7 @@ C--   o MYPACKAGE_TENDENCY_APPLY_T
 C--   o MYPACKAGE_TENDENCY_APPLY_S
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_TENDENCY_APPLY_U
 
 C !INTERFACE:
@@ -23,6 +23,7 @@ C     on A-grid.
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
@@ -75,7 +76,7 @@ C--   Assume Agrid position:
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_TENDENCY_APPLY_V
 
 C !INTERFACE:
@@ -91,6 +92,7 @@ C     on A-grid.
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
@@ -143,7 +145,7 @@ C--   Assume Agrid position:
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_TENDENCY_APPLY_T
 
 C !INTERFACE:
@@ -158,6 +160,7 @@ C     for one level at a time
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
@@ -200,7 +203,7 @@ C     !LOCAL VARIABLES:
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_TENDENCY_APPLY_S
 
 C !INTERFACE:
@@ -215,6 +218,7 @@ C     level at a time
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
