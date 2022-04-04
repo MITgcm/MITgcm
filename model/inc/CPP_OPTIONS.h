@@ -54,12 +54,14 @@ C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
 C o Include/exclude sound speed calculation code
-C o (Note that this is a diagnostic from Del Grasso algorithm, not derived from EOS)
+C o (Note that this is a diagnostic from Del Grasso algorithm, not derived
+C    from EOS)
 #undef INCLUDE_SOUNDSPEED_CALC_CODE
 
 C-- Vertical mixing code options:
 
-C o Include/exclude call to S/R CONVECT
+C o Include/exclude convective adjustement code in S/R CONVECTIVE_ADJUSTMENT
+C   and other routines
 #define INCLUDE_CONVECT_CALL
 
 C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT_INI, turned off by
