@@ -29,7 +29,6 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: my Thread Id number
@@ -39,10 +38,11 @@ C     myThid :: my Thread Id number
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
-C     == Local variables
+      INTEGER bi, bj
+#ifdef ALLOW_OPPS
       INTEGER iMin,iMax
       INTEGER jMin,jMax
-      INTEGER bi, bj
+#endif
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -94,12 +94,12 @@ C -- Fill negative tracer values (for now, only if Fizhi is running)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C--     Convectively adjust new fields to be statically stable
-        iMin = 1
-        iMax = sNx
-        jMin = 1
-        jMax = sNy
 #ifdef ALLOW_OPPS
         IF ( useOPPS ) THEN
+         iMin = 1
+         iMax = sNx
+         jMin = 1
+         jMax = sNy
          CALL OPPS_INTERFACE(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
@@ -107,8 +107,10 @@ C--     Convectively adjust new fields to be statically stable
 #else /* ALLOW_OPPS */
         IF ( cAdjFreq .NE. 0. ) THEN
 #endif /* ALLOW_OPPS */
+#ifdef INCLUDE_CONVECT_CALL
          CALL CONVECTIVE_ADJUSTMENT(
      I        bi, bj, myTime, myIter, myThid )
+#endif /* INCLUDE_CONVECT_CALL */
         ENDIF
 
 #ifdef ALLOW_MATRIX
