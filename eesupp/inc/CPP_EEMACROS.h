@@ -195,13 +195,12 @@ C--   Set the format for writing ensemble task IDs in S/R eeset_parms
 C     and S/R open_copy_data_file.
 #define FMT_TSK_ID 'I6.6'
 
-C--   Set OPEN specifier ACTION when opening read-only files.
-C     If OPEN_AS_READONLY is defined, action='read'.
-C     Otherwise, action='readwrite'.
-#ifdef OPEN_AS_READONLY
-#define _READ_ACTION 'read'
+C--   Set ACTION= in OPEN instruction for input file (before doing IO)
+C     leave it empty (if EXCLUDE_OPEN_ACTION) or set it to proper value
+#ifdef EXCLUDE_OPEN_ACTION
+# define _READONLY_ACTION
 #else
-#define _READ_ACTION 'readwrite'
+# define _READONLY_ACTION ACTION='read',
 #endif
 
 #endif /* _CPP_EEMACROS_H_ */
