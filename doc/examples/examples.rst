@@ -256,9 +256,13 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`adjustment.128x64x1 <verification/adjustment.128x64x1>` - Barotropic adjustment problem on latitude-longitude
    grid with 128x64 grid points (2.8\ :sup:`o` resolution).
 
-#. :filelink:`adjustment.cs-32x32x1 <verification/adjustment.cs-32x32x1>` - Barotropic adjustment problem on cube
-   sphere grid with 32x32 points per face (roughly 2.8\ :sup:`o` resolution).
-   Also contains a non-linear free-surface adjustment version (:filelink:`input.nlfs <verification/adjustment.cs-32x32x1/input.nlfs>`).
+#. :filelink:`adjustment.cs-32x32x1 <verification/adjustment.cs-32x32x1>` -
+   Barotropic adjustment problem on cube sphere grid with 32x32 points per face
+   (roughly 2.8\ :sup:`o` resolution) with a rectangular island at the equator.
+   Note that "blank tiles" are used in the MPI test
+   (:filelink:`data.exch2.mpi <verification/adjustment.cs-32x32x1/input/data.exch2.mpi>`).
+   Also contains a non-linear free-surface, atmospheric like, barotropic
+   adjustment version (:filelink:`input.nlfs <verification/adjustment.cs-32x32x1/input.nlfs>`).
 
 #. :filelink:`advect_cs <verification/advect_cs>` - 2-D passive advection test on cube sphere
    grid (32x32 grid points per face, roughly 2.8\ :sup:`o` resolution).
@@ -296,6 +300,8 @@ For many experiments, additional information is provided in a ``README`` file lo
    on cubed-sphere cs32 horizontal grid, using intermediate atmospheric
    physics (:filelink:`pkg/aim_v23`) thermodynamic seaice (:filelink:`pkg/thsice`) and land
    packages.
+   Also contains an additional setup with seaice dynamics
+   (:filelink:`input_cpl.icedyn  <verification/cpl_aim+ocn/input_cpl.icedyn>`, :filelink:`input_atm.icedyn  <verification/cpl_aim+ocn/input_atm.icedyn>`, :filelink:`input_ocn.icedyn  <verification/cpl_aim+ocn/input_ocn.icedyn>`).
 
 #. :filelink:`deep_anelastic <verification/deep_anelastic>` - Convection simulation on a giant planet: relaxes
    both the Boussinesq approximation (anelastic) and the thin atmosphere
@@ -335,11 +341,16 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with mixed-layer eddy parameterization (Ferrari and McWilliams
      2008 :cite:`ferrari:08`) (:filelink:`input.mxl <verification/front_relax/input.mxl>`).
 
-#. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Global ocean simulation at 4\ :sup:`o`\ x4\ :sup:`o`
-   resolution. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`, but using
-   :math:`z^*` coordinates with quasi-non-hydrostatic and
-   non-hydrostatic metric terms. This experiment illustrates the use
-   of :filelink:`sbo </pkg/sbo>` package. Also contains additional setups:
+   - with dry-cell at the top and a sloping bottom
+     (:filelink:`input.top <verification/front_relax/input.top>`).
+
+#. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` -
+   Global ocean simulation at 4\ :sup:`o`\ x4\ :sup:`o` resolution.
+   Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`, but
+   using :math:`z^*` coordinates with quasi-non-hydrostatic and non-hydrostatic metric
+   terms. This experiment illustrates the use of :filelink:`sbo </pkg/sbo>` package.
+   Note that "blank tiles" are used in the MPI test (:filelink:`data.exch2.mpi <verification/global_ocean.90x40x15/input/data.exch2.mpi>`).
+   Also contains additional setups:
 
    - using :filelink:`down-slope package <pkg/down_slope>` (:filelink:`input.dwnslp <verification/global_ocean.90x40x15/input.dwnslp>`)
 
@@ -348,6 +359,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
 #. :filelink:`global_ocean.cs32x15 <verification/global_ocean.cs32x15>` - Global ocean experiment on the cubed
    sphere grid. Also contains additional setups:
+
+   - using pressure as vertical coordinate (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
    - non-hydrostatic with biharmonic viscosity (:filelink:`input.viscA4 <verification/global_ocean.cs32x15/input.viscA4>`)
 
