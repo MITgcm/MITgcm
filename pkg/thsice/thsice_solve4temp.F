@@ -76,7 +76,8 @@ C     icMask      :: sea-ice fractional mask [0-1]
 C     hIce        :: ice height [m]
 C     hSnow1      :: snow height [m]
 C     tFrz        :: sea-water freezing temperature [oC] (function of S)
-C     flxExSW     :: surf. heat flux (+=down) except SW, function of surf. temp Ts:
+C     flxExSW     :: surf. heat flux (+=down) except SW,
+C                    function of surf. temp Ts:
 C                    0: Flx(Ts=0) ; 1: Flx(Ts=Ts^n) ; 2: d.Flx/dTs(Ts=Ts^n)
 C---  Modified (input&output):
 C     flxSW       :: net Short-Wave flux (+=down) [W/m2]: input= at surface
@@ -88,7 +89,8 @@ C---  Output
 C     tIc1        :: temperature of ice layer 1 [oC]
 C     tIc2        :: temperature of ice layer 2 [oC]
 C     dTsrf1      :: surf. temp adjusment: Ts^n+1 - Ts^n
-C     sHeat       :: surf heating flux left to melt snow or ice (= Atmos-conduction)
+C     sHeat       :: surf heating flux left to melt snow or ice
+C                    (= Atmos-conduction)
 C     flxCnB      :: heat flux conducted through the ice to bottom surface
 C     flxAtm      :: net flux of energy from the atmosphere [W/m2] (+=down)
 C                    without snow precip. (energy=0 for liquid water at 0.oC)
@@ -137,15 +139,18 @@ C     fswpen       :: SW penetrating beneath surface (W m-2)
 C     fswdn        :: SW absorbed at surface (W m-2)
 C     fswint       :: SW absorbed in ice (W m-2)
 C     fswocn       :: SW passed through ice to ocean (W m-2)
-C     Tsf          :: surface (ice or snow) temperature   (local copy of tSrf1)
-C     flx0exSW     :: net surface heat flux over melting snow/ice, except short-wave.
+C     TsfDummy     :: (dummy) surface (ice or snow) temperature, always 0.
+C     flx0exSW     :: net surface heat flux over melting snow/ice,
+C                     except short-wave.
 C     flxTexSW     :: net surface heat flux, except short-wave (W/m2)
-C     dFlxdT       :: deriv of flxNet wrt Tsf (W m-2 deg-1)
-C     evap00       :: evaporation over melting snow/ice [kg/m2/s] (>0 if evaporate)
-C                     renamed to evap00 because TAF confuses symbol with EXF evap0
+C     dFlxdT       :: deriv of flxNet wrt tSrf1 (W m-2 deg-1)
+C     evap00       :: evaporation over melting snow/ice [kg/m2/s]
+C                     (>0 if evaporate), renamed to evap00 because TAF confuses
+C                     symbol with EXF evap0
 C     evapT        :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
-C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
-C     flxNet       :: net surf heat flux (+=down), from Atmos. to sea-ice (W m-2)
+C     dEvdT        :: derivative of evap. with respect to tSrf1 [kg/m2/s/K]
+C     flxNet       :: net surf heat flux (+=down), from atmosphere
+C                     to sea-ice (W m-2)
 C     netSW        :: net Short-Wave flux at surface (+=down) [W/m2]
 C     fct          :: heat conducted to top surface
 C     k12, k32     :: thermal conductivity terms
@@ -165,7 +170,7 @@ C     dt           :: timestep
       _RL  fswint
       _RL  fswocn
       _RL  iceFlag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  Tsf     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  TsfDummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flx0exSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  flxTexSW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  dFlxdT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -229,7 +234,7 @@ C     but some arrays are stored and storage includes overlap.
         evapT   (i,j) = 0. _d 0
         dEvdT   (i,j) = 0. _d 0
         iceFlag (i,j) = 0. _d 0
-        Tsf     (i,j) = 0. _d 0
+        TsfDummy(i,j) = 0. _d 0
        ENDDO
       ENDDO
 #endif
@@ -358,7 +363,7 @@ C--   Get surface fluxes over melting surface
 #endif
         DO j = jMin, jMax
          DO i = iMin, iMax
-           Tsf(i,j) = 0.
+           TsfDummy(i,j) = 0.
          ENDDO
         ENDDO
 #ifndef ALLOW_AUTODIFF
@@ -367,7 +372,7 @@ C--   Get surface fluxes over melting surface
            k = 1
            CALL THSICE_GET_EXF(   bi, bj, k,
      I                            iMin, iMax, jMin, jMax,
-     I                            iceFlag, hSnow1, Tsf,
+     I                            iceFlag, hSnow1, TsfDummy,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
 #ifndef ALLOW_AUTODIFF
@@ -375,7 +380,7 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
         ELSEIF ( useBulkForce ) THEN
            CALL THSICE_GET_BULKF( bi, bj,
      I                            iMin, iMax, jMin, jMax,
-     I                            iceFlag, hSnow1, Tsf,
+     I                            iceFlag, hSnow1, TsfDummy,
      O                            flx0exSW, dFlxdT, evap00, dEvdT,
      I                            myTime, myIter, myThid )
 C--- end if: IF ( useEXF ) THEN
@@ -453,7 +458,7 @@ CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
 #endif
 C--   Compute new top layer and surface temperatures.
-C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
+C     If tSrf1 is computed to be > 0 C, fix tSrf1 = 0 and recompute tIc1
 C     with different coefficients.
         DO j = jMin, jMax
          DO i = iMin, iMax
@@ -474,7 +479,7 @@ C     with different coefficients.
      &                   /(k12(i,j)-dFlxdT(i,j))
 C     this line causes 3 recomputation warings for TAF because tSrf1 is
 C     updated and the updated value is used to update tSrf1 (and other
-C     variables) again; with this intermediate variable, the warning go
+C     variables) again; with this intermediate variable, the warnings go
 C     away.
 C          tSrf1(i,j) = tSrf1(i,j) + dTsrf1(i,j)
            TsfTmp = tSrf1(i,j) + dTsrf1(i,j)
@@ -516,9 +521,9 @@ C--   Check for convergence.  If no convergence, then repeat.
            iterate4Tsf = iterate4Tsf .OR. (iceFlag(i,j).GT.0. _d 0)
 #endif
 
-C     Convergence test: Make sure Tsfc has converged, within prescribed error.
+C     Convergence test: Make sure tSrf1 has converged, within prescribed error.
 C     (Energy conservation is guaranteed within machine roundoff, even
-C      if Tsfc has not converged.)
+C      if tSrf1 has not converged.)
 C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
@@ -529,12 +534,12 @@ C     If no convergence, then repeat.
             WRITE(stdUnit,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
             WRITE(stdUnit,*)
-     &        'BB: not converge: Tsf, dTsf=', tSrf1(i,j), dTsrf1(i,j)
+     &        'BB: not converge: Tsrf, dTsrf=', tSrf1(i,j), dTsrf1(i,j)
             WRITE(stdUnit,*)
      &        'BB: not converge: flxNet,dFlxT=', flxNet, dFlxdT(i,j)
             IF ( tSrf1(i,j).LT.-70. _d 0 ) THEN
              WRITE( msgBuf, '(A,2I4,2I3,I10,F12.3)')
-     &        'THSICE_SOLVE4TEMP: Too low Tsf in', i, j, bi, bj,
+     &        'THSICE_SOLVE4TEMP: Too low tSrf in', i, j, bi, bj,
      &                            myIter, tSrf1(i,j)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
@@ -628,7 +633,7 @@ C     (This should not happen for reasonable values of i0swFrac)
           ENDIF
 
           IF ( dBug(i,j,bi,bj) ) THEN
-           WRITE(stdUnit,1020) 'ThSI_SOLV_4T: Tsf, Tice(1,2), dTsurf=',
+           WRITE(stdUnit,1020) 'ThSI_SOLV_4T: tSrf,Tice(1,2), dTsurf=',
      &           tSrf1(i,j), tIc1(i,j), tIc2(i,j), dTsrf1(i,j)
            WRITE(stdUnit,1020) 'ThSI_SOLV_4T: sHeat, flxCndBt, Qice =',
      &           sHeat(i,j), flxCnB(i,j), qIc1(i,j), qIc2(i,j)
