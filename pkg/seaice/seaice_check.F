@@ -217,6 +217,15 @@ C-------------------------------------------------
 
 C--   check specifications of new features for testing
 
+#ifdef ALLOW_BALANCE_FLUXES
+      IF ( usePW79thermodynamics .AND. selectBalanceEmPmR.EQ.2 ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
+     &       'selectBalanceEmPmR=2 not yet implemented in pkg/seaice'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifdef SEAICE_DISABLE_HEATCONSFIX
       IF ( SEAICEheatConsFix ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
@@ -1259,7 +1268,7 @@ C
 #endif
 
       IF ( errCount .GE. 1 ) THEN
-       WRITE(msgBuf,'(A,I3,A)') 'S/R SEAICE_CHECK: ', errCount,
+       WRITE(msgBuf,'(A,I3,A)') 'SEAICE_CHECK: ', errCount,
      &      ' parameter/CPP-flag combinations are '//
      &      'inconsistent or incomplete'
        CALL PRINT_ERROR( msgBuf, myThid )

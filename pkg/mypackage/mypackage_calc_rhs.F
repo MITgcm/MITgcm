@@ -12,10 +12,15 @@ C Calculate custom tendency terms outside k-loop in DO_OCEANIC_PHYS
 
 C !USES: ===============================================================
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 c#include "PARAMS.h"
-c#include "MYPACKAGE.h"
+C  put following include within #ifdef in case this file is copied to local
+C  code dir but pkg/mypackage is not compiled (missing file MYPACKAGE.h).
+c#ifdef ALLOW_MYPACKAGE
+c# include "MYPACKAGE.h"
+c#endif
 
 C !INPUT PARAMETERS: ===================================================
 C myTime    :: Current time in simulation
@@ -26,6 +31,7 @@ C myThid    :: my Thread Id number
 
 C !OUTPUT PARAMETERS: ==================================================
 
+#ifdef ALLOW_MYPACKAGE
 C !LOCAL VARIABLES: ====================================================
 C bi,bj     :: Tile indices
       INTEGER bi, bj
@@ -40,6 +46,8 @@ C--   Calculate custom tendency terms ...
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

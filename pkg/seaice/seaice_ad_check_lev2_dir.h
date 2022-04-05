@@ -1,5 +1,32 @@
-CADJ STORE StoreSEAICE    = tapelev2, key = ilev_2
-CADJ STORE tices      =     tapelev2, key = ilev_2
+#ifdef AUTODIFF_USE_STORE_RESTORE
+CADJ STORE StoreSEAICE       = tapelev2, key = ilev_2
+#else
+CADJ STORE AREA              = tapelev2, key = ilev_2
+CADJ STORE HEFF              = tapelev2, key = ilev_2
+CADJ STORE HSNOW             = tapelev2, key = ilev_2
+CADJ STORE RUNOFF            = tapelev2, key = ilev_2
+CADJ STORE UICE              = tapelev2, key = ilev_2
+CADJ STORE VICE              = tapelev2, key = ilev_2
+CADJ STORE ZETA              = tapelev2, key = ilev_2
+CADJ STORE ETA               = tapelev2, key = ilev_2
+CADJ STORE TICES             = tapelev2, key = ilev_2
+# ifdef SEAICE_CGRID
+CADJ STORE dwatn             = tapelev2, key = ilev_2
+#  ifdef SEAICE_ALLOW_BOTTOMDRAG
+CADJ STORE cbotc             = tapelev2, key = ilev_2
+#  endif /* SEAICE_ALLOW_BOTTOMDRAG */
+CADJ STORE stressDivergenceX = tapelev2, key = ilev_2
+CADJ STORE stressDivergenceY = tapelev2, key = ilev_2
+# ifdef SEAICE_ALLOW_EVP
+CADJ STORE seaice_sigma1     = tapelev2, key = ilev_2
+CADJ STORE seaice_sigma2     = tapelev2, key = ilev_2
+CADJ STORE seaice_sigma12    = tapelev2, key = ilev_2
+# endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_CGRID */
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE HSALT             = tapelev2, key = ilev_2
+# endif
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
 CADJ STORE area  = tapelev2, key = ilev_2
@@ -44,4 +71,3 @@ CADJ STORE sitracer = tapelev2, key = ilev_2
 CADJ STORE sitrarea = tapelev2, key = ilev_2
 CADJ STORE sitrheff = tapelev2, key = ilev_2
 #endif
-

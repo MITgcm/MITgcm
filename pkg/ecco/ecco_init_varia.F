@@ -1,6 +1,6 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine ecco_init_varia( myThid )
+      SUBROUTINE ECCO_INIT_VARIA( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_init_varia
@@ -12,12 +12,13 @@ c     ==================================================================
 c     SUBROUTINE ecco_cost_init_varia
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
@@ -27,11 +28,9 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer myThid
+      INTEGER myThid
 
 c     == local variables ==
-
-c     == external functions ==
 
 c     == end of interface ==
 
@@ -40,7 +39,7 @@ c     == end of interface ==
       VOLsumGlob_0=0. _d 0
 #endif
 
-      CALL ECCO_PHYS( myThid )
+      CALL ECCO_PHYS( startTime, -1, myThid )
 
 #ifdef ALLOW_PSBAR_STERIC
       RHOsumGlob_0=RHOsumGlob

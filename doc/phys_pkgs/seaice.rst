@@ -83,7 +83,7 @@ Run-time parameters
 ===================
 
 Run-time parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
-`data.seaice` (read in :filelink:`pkg/seaice/seaice_readparms.F`).
+``data.seaice`` (read in :filelink:`pkg/seaice/seaice_readparms.F`).
 
 Enabling the package
 --------------------
@@ -474,14 +474,14 @@ Dynamics
 The momentum equation of the sea-ice model is
 
 .. math::
-   m \frac{D\mathbf{u}}{Dt} = -mf\mathbf{k}\times\mathbf{u} +
+   m \frac{D\mathbf{u}}{Dt} = -mf\hat{\mathbf{k}}\times\mathbf{u} +
    \mathbf{\tau}_\mathrm{air} + \mathbf{\tau}_\mathrm{ocean}
    - m \nabla{\phi(0)} + \mathbf{F}
    :label: eq_momseaice
 
 where :math:`m=m_{i}+m_{s}` is the ice and snow mass per unit area;
-:math:`\mathbf{u}=u\mathbf{i}+v\mathbf{j}` is the ice velocity vector;
-:math:`\mathbf{i}`, :math:`\mathbf{j}`, and :math:`\mathbf{k}` are unit vectors
+:math:`\mathbf{u}=u\hat{\mathbf{i}}+v\hat{\mathbf{j}}` is the ice velocity vector;
+:math:`\hat{\mathbf{i}}`, :math:`\hat{\mathbf{j}}`, and :math:`\hat{\mathbf{k}}` are unit vectors
 in the :math:`x`, :math:`y`, and :math:`z` directions, respectively; :math:`f`
 is the Coriolis parameter; :math:`\mathbf{\tau}_\mathrm{air}` and
 :math:`\mathbf{\tau}_\mathrm{ocean}` are the wind-ice and ocean-ice stresses,
@@ -490,7 +490,7 @@ gradient (or tilt) of the sea surface height; :math:`\phi(0) = g\eta +
 p_{a}/\rho_{0} + mg/\rho_{0}` is the sea surface height potential in response
 to ocean dynamics (:math:`g\eta`), to atmospheric pressure loading
 (:math:`p_{a}/\rho_{0}`, where :math:`\rho_{0}` is a reference density) and a
-term due to snow and ice loading ; and :math:`\mathbf{F}=\nabla\cdot\sigma` is
+term due to snow and ice loading ; and :math:`\mathbf{F}= \nabla  \cdot\sigma` is
 the divergence of the internal ice stress tensor :math:`\sigma_{ij}`.
 Advection of sea-ice momentum is neglected. The wind and ice-ocean stress terms
 are given by
@@ -553,14 +553,14 @@ the code) is the replacement pressure
     :label: eq_pressrepl
 
     P = (1-k_t)\,P_{\max} \left( (1 - f_{r})
-    + f_{r} \frac{\Delta}{\Delta_{reg}}  \right)
+    + f_{r} \frac{\Delta}{\Delta_{\rm reg}}  \right)
 
 where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac`
-(default = 1.0), and :math:`\Delta_{reg}` is a regularized form of
+(default = 1.0), and :math:`\Delta_{\rm reg}` is a regularized form of
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 +
 \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example
-:math:`\Delta_{reg} = \max(\Delta,\Delta_{\min})`.
+:math:`\Delta_{\rm reg} = \max(\Delta,\Delta_{\min})`.
 
 The tensile strength factor :math:`k_t` (run-time parameter
 :varlink:`SEAICE_tensilFac`) determines the ice tensile strength :math:`T =
@@ -1111,7 +1111,7 @@ written as:
 
 .. math::
    \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
-   \Big(\frac{\Delta t}{m}\nabla \cdot{\bf \sigma}^{p+1}+
+   \Big(\frac{\Delta t}{m} \nabla  \cdot\boldsymbol{\sigma}^{p+1}+
    \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
      -\mathbf{u}^p\Big)
    :label: eq_evpstarmom
@@ -1394,53 +1394,53 @@ heat capacity of ice is zero, and all internal heat sources so that the heat
 equation reduces to a constant conductive heat flux. This constant upward
 conductive heat flux together with a constant ice conductivity implies a linear
 temperature profile. The boundary conditions for the heat equations are: at the
-bottom of the ice :math:`T|_{bottom} = T_{fr}` (freezing point temperature of
-sea water), and at the surface: :math:`Q_{top} =
-\frac{\partial{T}}{\partial{z}} = (K/h)(T_{0}-T_{fr})`, where :math:`K` is the
-ice conductivity, :math:`h` the ice thickness, and :math:`T_{0}-T_{fr}` the
+bottom of the ice :math:`T|_{\rm bottom} = T_{\rm fr}` (freezing point temperature of
+sea water), and at the surface: :math:`Q_{\rm top} =
+\frac{\partial{T}}{\partial{z}} = (K/h)(T_{0}-T_{\rm fr})`, where :math:`K` is the
+ice conductivity, :math:`h` the ice thickness, and :math:`T_{0}-T_{\rm fr}` the
 difference between the ice surface temperature and the water temperature at the
 bottom of the ice (at the freezing point). The surface heat flux
-:math:`Q_{top}` is computed in a similar way to that of Parkinson and
+:math:`Q_{\rm top}` is computed in a similar way to that of Parkinson and
 Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979)
 :cite:`manabe:79`. The resulting equation for surface temperature is
 
 .. math::
    \begin{aligned}
-   \frac{K}{h}(T_{0}-T_{fr}) &= Q_{SW\downarrow}(1-\mathrm{albedo}) \\
-   & + \epsilon Q_{LW\downarrow} - Q_{LW\uparrow}(T_{0}) \\
-   & + Q_{LH}(T_{0}) + Q_{SH}(T_{0}),
+   \frac{K}{h}(T_{0}-T_{\rm fr}) &= Q_{\rm SW\downarrow}(1-\mathrm{albedo}) \\
+   & + \epsilon Q_{\rm LW\downarrow} - Q_{\rm LW\uparrow}(T_{0}) \\
+   & + Q_{\rm LH}(T_{0}) + Q_{\rm SH}(T_{0}),
    \end{aligned}
    :label: eq_zerolayerheatbalance
 
 where :math:`\epsilon` is the emissivity of the surface (snow or ice),
-:math:`Q_{S/LW\downarrow}` the downwelling shortwave and longwave radiation to
-be prescribed, and :math:`Q_{LW\uparrow}=\epsilon\sigma_B T_{0}^4` the emitted
+:math:`Q_{\rm S/LW\downarrow}` the downwelling shortwave and longwave radiation to
+be prescribed, and :math:`Q_{\rm LW\uparrow}=\epsilon\sigma_B T_{0}^4` the emitted
 long wave radiation with the Stefan-Boltzmann constant :math:`\sigma_B`. With
 explicit expressions in :math:`T_0` for the turbulent fluxes of latent and
 sensible heat
 
 .. math::
    \begin{aligned}
-   Q_{LH} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
+   Q_{\rm LH} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
    |\mathbf{U}_\mathrm{air}|
    \left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] \\
-   Q_{SH} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
+   Q_{\rm SH} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
    \left[ T_\mathrm{10m} - T_{0} \right],
    \end{aligned}
 
-:eq:`eq_zerolayerheatbalance` can be solved for math:`T_0` with an iterative
-:Ralphson-Newton method, which usually converges very quickly in less that 10
-:iterations. In these equations, :math:`\rho_\mathrm{air}` is the air density
-:(parameter :varlink:`SEAICE_rhoAir`), math:`C_E` is the ice-ocean transfer
-:coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
+:eq:`eq_zerolayerheatbalance` can be solved for :math:`T_0` with an iterative
+Ralphson-Newton method, which usually converges very quickly in less that 10
+iterations. In these equations, :math:`\rho_\mathrm{air}` is the air density
+(parameter :varlink:`SEAICE_rhoAir`), :math:`C_E` is the ice-ocean transfer
+coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
 :math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and
-:fusion, respectively (parameters :varlink:`SEAICE_lhEvap` and
-::varlink:`SEAICE_lhFusion`), and :math:`c_p` is the specific heat of air
-:(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{LH}` a
-:choice can be made between the old polynomial expression for saturation
-:humidity :math:`q_\mathrm{sat}(T_0)` (by setting
-::varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default exponential
-:relation approximation that is more accurate at low temperatures.
+fusion, respectively (parameters :varlink:`SEAICE_lhEvap` and
+:varlink:`SEAICE_lhFusion`), and :math:`c_p` is the specific heat of air
+(parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{\rm LH}` a
+choice can be made between the old polynomial expression for saturation
+humidity :math:`q_\mathrm{sat}(T_0)` (by setting
+:varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default exponential
+relation approximation that is more accurate at low temperatures.
 
 In the zero-layer model of Semtner (1976) :cite:`semtner:76`, the conductive
 heat flux depends strongly on the ice thickness :math:`h`. However, the ice
@@ -1469,7 +1469,7 @@ al. 2014 :cite:`castro-morales:14`).
 The atmospheric heat flux is balanced by an oceanic heat flux from below. The
 oceanic flux is proportional to :math:`\rho\,c_{p}\left(T_{w}-T_{fr}\right)`
 where :math:`\rho` and :math:`c_{p}` are the density and heat capacity of sea
-water and :math:`T_{fr}` is the local freezing point temperature that is a
+water and :math:`T_{\rm fr}` is the local freezing point temperature that is a
 function of salinity. This flux is not assumed to instantaneously melt or
 create ice, but a time scale of three days (run-time parameter
 :varlink:`SEAICE_gamma_t`) is used to relax :math:`T_{w}` to the freezing
@@ -1497,17 +1497,17 @@ parameter :varlink:`SEAICEuseFlooding` set to ``.TRUE.``.
 Advection of thermodynamic variables
 ------------------------------------
 
-Effective ice thickness (ice volume per unit area, :math:`c\cdot{h}`),
-concentration :math:`c` and effective snow thickness (:math:`c\cdot{h}_{s}`)
+Effective ice thickness (ice volume per unit area, :math:`c h`),
+concentration :math:`c` and effective snow thickness (:math:`c h_s`)
 are advected by ice velocities:
 
 .. math::
    \frac{\partial{X}}{\partial{t}} =
-	 - \nabla\cdot\left(\mathbf{u}\,X\right) + \Gamma_{X} + D_{X}
+	 -  \nabla  \cdot\left(\mathbf{u}\,X\right) + \Gamma_{X} + D_{X}
    :label: eq_advection
 
 where :math:`\Gamma_X` are the thermodynamic source terms and :math:`D_{X}` the
-diffusive terms for quantities :math:`X=(c\cdot{h}), c, (c\cdot{h}_{s})`. From
+diffusive terms for quantities :math:`X= c h, c, c h_s`. From
 the various advection schemes that are available in MITgcm, we recommend
 flux-limited schemes to preserve sharp gradients and edges that are typical of
 sea ice distributions and to rule out unphysical over- and undershoots
@@ -1567,7 +1567,7 @@ thickness :math:`h` following the evolution equation
 
 
 .. math::
-   \frac{\partial g}{\partial t} = - \nabla \cdot (\mathbf{u} g) - \frac{\partial}{\partial h}(fg) + \Psi.
+   \frac{\partial g}{\partial t} = -  \nabla  \cdot (\mathbf{u} g) - \frac{\partial}{\partial h}(fg) + \Psi.
    :label: eq_itd
 
 
@@ -1661,8 +1661,8 @@ to compute :varlink:`Hlimit`:
    H_\mathrm{limit}(k) = H_\mathrm{limit}(k-1) + \frac{c_1}{n}
    + \frac{c_1 c_2}{n} [ 1 + \tanh c_3 (\frac{k-1}{n} - 1) ]
 
-with :math:`H_\mathrm{limit}(0)=0\,\text{m}` and
-:math:`H_\mathrm{limit}(n)=999.9\,\text{m}`. The three constants are the
+with :math:`H_\mathrm{limit}(0)=0` m and
+:math:`H_\mathrm{limit}(n)=999.9` m. The three constants are the
 run-time parameters :varlink:`Hlimit_c1`, :varlink:`Hlimit_c2`, and
 :varlink:`Hlimit_c3`.  The total ice concentration and volume can then be
 calculated by summing up the values for each category.

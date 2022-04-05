@@ -1,8 +1,102 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - new optfile "darwin_arm64_gfortran" for Mac ARM 64-bit processor.
+o pkg/gmredi:
+  - add deep-factor to pkg/gmredi code to work with "deepAtmosphere=T".
+o verification/cpl_aim+ocn:
+  - add secondary test set-up using seaice dynamics (pkg/seaice) as part of
+    ocean component and update script to handle option to run multiple test.
+o verification/halfpipe_streamice:
+  - update OpenAD test by removing ECCO_CPPOPTIONS.h (but, for now, keep local
+    version: ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F in code_oad).
+o pkg/mypackage:
+  - improve description (for a coding style example).
+o model:
+  - add option to apply a correction for net global fresh-water flux imbalance
+    proportional to, fixed in time, 2-D weight field that is read-in from file ;
+  - new integer selector "selectBalanceEmPmR" (=0: off, =1: uniform correction,
+    =2: correction scaled by weight) that replaces logical switch "balanceEmPmR"
+    with backward compatibility setting.
+
+checkpoint68h (2022/03/22)
+o pkg/ecco:
+  - new src files: ecco_init_fixed.F & ecco_diagnostics_init.F ;
+  - new SSH diagnostics: SSH,SSHNOIBC (with & w-out Inv.Barometer corr.: SSHIBC)
+    STERICHT (steric height anomaly); and Bottom-Pressure/Mass: OBP & OBPGMAP ;
+  - add arg myTime & myIter to S/R ECCO_PHYS and adjust calls ; change to use
+    model "rhoInSitu" (instead of recomputed rho) for Greatbatch correction ;
+    this affects cost "m_eta".
+o pkg/ecco:
+  - add new feature (within gencost) to evaluate cost-function contribution
+    over specified density range (instead of depth range, see issue #483);
+  - add few run-time parameters including logical switch: gencost_useDensityMask
+  - test this new feature in lab_sea/input_ad.noseaice and update ref. output.
+o pkg/ptracer (adjoint):
+  - remove AUTODIFF_PTRACERS_SPLIT_FILES as it has no effect.
+o pkg/generic_advdiff & seaice (adjoint):
+  - avoid recomputation in Second-Order Moment (SOM) advection S/R by using
+    local tapes ; reduce local tapesize in seaice_solve4temp.F ;
+  - fix key and size of tapes in multi-dimensional advection routines and adjust
+    maxcube value (2 or 3 if using CubedSphereExchange) in few exp. "tamc.h".
+o pkg/mdsio:
+  - retire all S/R from mdsio_rw_slice.F after replacing the last 2 calls to
+    MDSWRITEFIELD{X,Y}Z in pkg/ctrl/ctrl_set_globfld_{x,y}z.F with calls to
+    S/R WRITE_REC_{X,Y}Z_RL (from pkg/rw).
+  - remove src file mdsio_rw_field.F & mdsio_rw_slice.F from NOOPTFILES list
+    in few linux_amd64_ifort* optfiles.
+  - move if statement out of "lengthBuff" loop in mdsio_{read,write}_whalos.F
+o verification AD exp.:
+  - remove ECCO_CPPOPTIONS.h from global_ocean_ebm/ and halfpipe_streamice/
+    code_ad/ dir and replace by appropriate AUTODIFF/CTRL/COST_OPTIONS.h ;
+  - for halfpipe_streamice AD exp., make necessary adjustments in pkg/streamice
+    and remove ALLOW_GENTIM2D_CONTROL from store directive header files
+    streamice_ad_check_lev?_dir.h ;
+  - remove customized version of ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F
+    from halfpipe_streamice/code_ad/ and add corresponding code to pkg/ctrl.
+
+checkpoint68g (2022/02/19)
+o doc:
+  - fix some math notation in docs.
+o pkg/obcs:
+  - avoid division by zero when useOBCStides=.True. and tidalPeriod=0.
+o pkg/gmredi:
+  - fix basic code to also work with dry grid cells near the top (e.g., under
+    ice-shelf) and in this case, for now, stop if unsafe features are used ;
+  - fix tapering 'ac02' and 'stableGmAdjTap' ;
+  - add a secondary test, "input.top", in verification exp. front_relax to test
+    GM with dry cells at the top (+ also 'ac02' tapering) ;
+  - update few adm & tlm & oad ref. output from exp. global_ocean.90x40x15
+    since adding better masking in gmredi_s{x,y}rtransport.F does affect AD &
+    TLM gradient (@ machine truncation level).
+o pkg/autodiff:
+  - new CPP-flags allow to turnoff (default) autodiff_store/restore entirely:
+    * New flags AUTODIFF_USE_STORE_RESTORE, AUTODIFF_USE_STORE_RESTORE_OBCS to
+      turn on autodiff_store/restore, undefined by default ;
+    * AUTODIFF_EXCLUDE_ADEXCH_RS to skip calls to some AD-exch (if missing).
+  - improve comments in AUTODIFF_OPTIONS.h, fix some store directives for new
+    default, which are:
+       #define ALLOW_AUTODIFF_WHTAPEIO
+       c#define AUTODIFF_USE_MDSFINDUNITS
+       #undef AUTODIFF_USE_STORE_STORE_RESTORE
+       #undef AUTODIFF_USE_STORE_STORE_RESTORE_OBCS
+    and update local AUTODIFF_OPTIONS.h files from verification experiments.
+  - experiment specific setting:
+    * define AUTODIFF_EXCLUDE_ADEXCH_RS in exp.: hs94.1x64x5, obcs_ctrl & OpenAD
+    * increase "nWH" value in local MDSIO_BUFF_WH.h for exp.:
+      global_oce_biogeo_bling, offline_exf_seaice & tutorial_dic_adjoffline
+  - add a TAF "INCOMPLETE" directive for TICES and wVel to avoid a TAF bug.
+  - fix a TAF store directive to avoid extra call of "load_fields_driver"
+    with EXF_SEAICE_FRACTION defined.
+o pkg/gmredi:
+  - rename S/R, CPP option (GM_BATES_K3D), on/off switch (GM_useBatesK3d),
+    parameters (GM_Bates_*) and 3-D var (GM_BatesK3d) of Bates etal (JPO, 2014)
+    scheme that computes 3-D field GM/Redi diffusivity (analog to Visbeck etal
+    variable/option naming example).
+
 checkpoint68f (2022/01/14)
-o pkg/exf: 
+o pkg/exf:
   - clean-up relative wind implementation so that uwind and vwind are kept
     unchanged (always vanilla atmospheric winds after interpolation) while
     relative wind is computed locally; add diagnostics for relative wind.
