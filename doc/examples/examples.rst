@@ -360,7 +360,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`global_ocean.cs32x15 <verification/global_ocean.cs32x15>` - Global ocean experiment on the cubed
    sphere grid. Also contains additional setups:
 
-   - using pressure as vertical coordinate (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
+   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>` package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
    - non-hydrostatic with biharmonic viscosity (:filelink:`input.viscA4 <verification/global_ocean.cs32x15/input.viscA4>`)
 
@@ -463,6 +463,25 @@ For many experiments, additional information is provided in a ``README`` file lo
    - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>` and (:filelink:`pkg/seaice`) advection
      (:filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
 
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
+     elliptical yield curve with :ref:`non-normal flow rule <rheologies_ellnnfr>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_ellnnfr <verification/offline_exf_seaice/input.dyn_ellnnfr>`)
+
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
+     :ref:`Mohr-Coulomb yieldcurve with elliptical plastic potential <rheologies_MCE>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_mce <verification/offline_exf_seaice/input.dyn_mce>`)
+
+   - sea ice dynamics-only using :ref:`Picard (KRYLOV) solver <para_phys_pkg_seaice_LSRJFNK>`,
+     :ref:`parabolic lens yieldcurve <rheologies_PL>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_paralens <verification/offline_exf_seaice/input.dyn_paralens>`)
+
+   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>`, :ref:`teardrop yieldcurve <rheologies_TD>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_teardrop <verification/offline_exf_seaice/input.dyn_teardrop>`)
+
    - sea ice thermodynamics-only using (:filelink:`pkg/seaice`) (:filelink:`input.thermo <verification/offline_exf_seaice/input.thermo>`)
 
    - sea ice thermodynamics-only using (:filelink:`pkg/thsice`) (:filelink:`input.thsice <verification/offline_exf_seaice/input.thsice>`).
@@ -530,17 +549,25 @@ Additional Example Experiments: Adjoint Model Setups
 
 Unless stated otherwise, the physical setup of the adjoint run is identical to the forward run, see description above.
 TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``, whereas OpenAD requires
-directories ``coad_oad`` and ``input_oad`` respectively.
+directories ``code_oad`` and ``input_oad`` respectively.
 
 #. :filelink:`1D_ocean_ice_column <verification/1D_ocean_ice_column>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
 
-#. :filelink:`bottom_ctrl_5x5 <verification/bottom_ctrl_5x5>` - TAF adjoint test using the bottom topography as the
-   control parameter, uses package :filelink:`ecco <pkg/ecco>`.
+#. :filelink:`bottom_ctrl_5x5 <verification/bottom_ctrl_5x5>` - TAF adjoint
+   test using the bottom topography as the control parameter, uses package
+   :filelink:`ecco <pkg/ecco>` and "not self-adjoint" version of cg2d:
+   :filelink:`cg2d_nsa.F <model/src/cg2d_nsa.F>`.
+
+   - uses default :filelink:`cg2d.F <model/src/cg2d.F>` with a hand-written
+     full (manual) adjoint routine :filelink:`cg2d_mad.F
+     <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facd2d
+     <verification/verification/bottom_ctrl_5x5/input_ad.facg2d>`)
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
    TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
 
-   - with bottom drag as a control (:filelink:`input_ad.bottomdrag <verification/global_ocean.90x40x15/input_ad.bottomdrag>`)
+   - with bottom drag as a control and manual adjoint :filelink:`cg2d_mad.F
+     <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.bottomdrag <verification/global_ocean.90x40x15/input_ad.bottomdrag>`)
 
    - with :math:`\kappa_{GM}` as a control (:filelink:`input_ad.kapgm <verification/global_ocean.90x40x15/input_ad.kapgm>`)
 
