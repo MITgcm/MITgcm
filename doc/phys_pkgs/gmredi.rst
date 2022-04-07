@@ -45,8 +45,8 @@ non-divergent bolus velocity. The method defines two streamfunctions
 expressed in terms of the isoneutral slopes subject to the boundary
 condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
-Here in lies a problem highlighted by Griffies et al. (1998) :cite:`gretal:98`: the
-bolus velocities involve multiple derivatives on the potential density field,
+Herein lies a problem highlighted by Griffies et al. (1998) :cite:`gretal:98`: the
+bolus velocities involve multiple derivatives of the potential density field,
 which can consequently give rise to noise. Griffies et al. point out that the GM
 bolus fluxes can be identically written as a skew flux which involves
 fewer differential operators. Further, combining the skew flux
@@ -62,7 +62,7 @@ in the tendency (rhs) of such a tracer (here :math:`\tau`) of the form:
 
 .. math:: \nabla \cdot ( \kappa_\rho {\bf K}_{\rm Redi} \nabla \tau )
 
-where :math:`\kappa_\rho` is the along isopycnal diffusivity and
+where :math:`\kappa_\rho` is the along isopycnal diffusivity (parameter :varlink:`GM_isopycK`) and
 :math:`{\bf K}_{\rm Redi}` is a rank 2 tensor that projects the gradient of
 :math:`\tau` onto the isopycnal surface. The unapproximated projection
 tensor is:
@@ -133,7 +133,8 @@ streamfunction is specified in terms of the isoneutral slopes
    \end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
-lower boundaries. :math:`\kappa_{\rm GM}` is colloquially called the isopycnal "thickness diffusivity"
+lower boundaries. :math:`\kappa_{\rm GM}` (parameter :varlink:`GM_background_K`) is
+colloquially called the isopycnal "thickness diffusivity"
 or the "GM diffusivity". The bolus transport in the GM
 parameterization is thus given by:
 
@@ -256,33 +257,19 @@ If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rh
 which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
 
-.. admonition:: Subroutine
-  :class: note
-
-  S/R GMREDI_CALC_TENSOR (:filelink:`pkg/gmredi/gmredi_calc_tensor.F`)
-
-  :math:`\sigma_x`: **SlopeX** (argument on entry)
-
-  :math:`\sigma_y`: **SlopeY** (argument on entry)
-
-  :math:`\sigma_z`: **SlopeY** (argument)
-
-  :math:`S_x`: **SlopeX** (argument on exit)
-
-  :math:`S_y`: **SlopeY** (argument on exit)
-
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
 
 Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
 :math:`\kappa_{\rm GM}`, a function of
 the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
-non-dimensional constant, :math:`\alpha`, and a length-scale :math:`L`:
+non-dimensional constant, :math:`\alpha` (parameter :varlink:`GM_Visbeck_alpha`),
+and a length-scale :math:`L` (parameter :varlink:`GM_Visbeck_length`):
 
 .. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\rm Ri}} }^z
 
-where the Eady growth rate has been depth averaged (indicated by the
-over-line). A local Richardson number is defined
+where the Eady growth rate has been depth-averaged (indicated by the
+over-line) from the surface to parameter :varlink:`GM_Visbeck_depth`. A local Richardson number is defined
 :math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
 
 .. math::
@@ -300,6 +287,12 @@ the formula for :math:`\kappa_{\rm GM}` gives:
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |{\bf S}| N }^z
 
+A minimum and maximum value for :math:`\kappa_{\rm GM}` can be set using
+:varlink:`GM_Visbeck_minVal_K` and :varlink:`GM_Visbeck_maxVal_K`, respectively.
+Note that using the Visbeck et al. parameterization,  :math:`\kappa_{\rm GM} = \kappa_{\rho}`.
+At present, it is not possible to combine the Visbeck et al. :math:`\kappa_{GM}(x,y)` with a varying vertical profile,
+i.e., using specified files :varlink:`GM_iso1dFile` or :varlink:`GM_bol1dFile`.
+
 .. _sub_gmredi_tapering_stability:
 
 Tapering and stability
@@ -308,18 +301,20 @@ Tapering and stability
 Experience with the GFDL model showed that the GM scheme has to be
 matched to the convective parameterization. This was originally
 expressed in connection with the introduction of the KPP boundary layer
-scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent experience with the MIT model has
-found, is necessary for any convective parameterization.
-
-Slope clipping
-++++++++++++++
-
-Deep convection sites and the mixed layer are indicated by homogenized,
+scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent
+experience with the MIT model has
+found, is necessary for any convective parameterization. Deep convection
+sites and the mixed layer are indicated by homogenized,
 unstable or nearly unstable stratification. The slopes in such regions
 can be either infinite, very large with a sign reversal or simply very
 large. From a numerical point of view, large slopes lead to large
 variations in the tensor elements (implying large bolus flow) and can be
-numerically unstable. This was first recognized by Cox (1987) :cite:`cox87` who implemented
+numerically unstable. 
+
+Slope clipping
+++++++++++++++
+
+The aforementioned problem was first recognized by Cox (1987) :cite:`cox87` who implemented
 “slope clipping” in the isopycnal mixing tensor. Here, the slope
 magnitude is simply restricted by an upper limit:
 
@@ -344,11 +339,11 @@ become:
 
 .. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\nabla_h \sigma| / S_{\max}}
 
-so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
-S_{\max}`.
+so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} = S_{\max}`
+(parameter :varlink:`GM_maxSlope` in ``data.gmredi``).
 
 The slope clipping scheme is activated in the model by setting
-:varlink:`GM_taper_scheme` ``= ’clipping’`` in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’clipping’``.
 
 Even using slope clipping, it is normally the case that the vertical
 diffusion term (with coefficient :math:`\kappa_\rho{\bf K}_{33} =
@@ -364,18 +359,8 @@ Limiting the slopes also breaks the adiabatic nature of the GM/Redi
 parameterization, re-introducing diabatic fluxes in regions where the
 limiting is in effect.
 
-.. admonition:: Subroutine
-  :class: note
-
-  S/R GMREDI_SLOPE_LIMIT (:filelink:`pkg/gmredi/gmredi_slope_limit.F`)
-
-  :math:`\sigma_x, s_x`: **SlopeX** (argument)
-
-  :math:`\sigma_y, s_y`: **SlopeY** (argument)
-
-  :math:`\sigma_z`: **dSigmadRReal** (argument)
-
-  :math:`z_\sigma^{*}`: **dRdSigmaLtd** (argument)
+Tapering: Linear
+++++++++++++++++
 
 Tapering: Gerdes, Koberle and Willebrand, 1991 (GKW91)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -455,6 +440,15 @@ parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’ldd97’`` in ``data.gmredi``.
+
+Tapering: Ferrari and McWilliams, 2008 (FM07)
++++++++++++++++++++++++++++++++++++++++++++++
+
+Boundary-Value Problem (BVP) bolus transport solution
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Other parameterizations: SubMeso
+--------------------------------
 
 .. _ssub_phys_pkg_gmredi_config:
 
