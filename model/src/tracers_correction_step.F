@@ -103,15 +103,14 @@ C--     Convectively adjust new fields to be statically stable
          CALL OPPS_INTERFACE(
      I        bi, bj, iMin, iMax, jMin, jMax,
      I        myTime, myIter, myThid )
-        ELSEIF ( cAdjFreq .NE. 0. ) THEN
-#else /* ALLOW_OPPS */
-        IF ( cAdjFreq .NE. 0. ) THEN
+        ENDIF
 #endif /* ALLOW_OPPS */
 #ifdef INCLUDE_CONVECT_CALL
+        IF ( .NOT. useOPPS .AND. cAdjFreq .NE. 0. ) THEN
          CALL CONVECTIVE_ADJUSTMENT(
      I        bi, bj, myTime, myIter, myThid )
-#endif /* INCLUDE_CONVECT_CALL */
         ENDIF
+#endif /* INCLUDE_CONVECT_CALL */
 
 #ifdef ALLOW_MATRIX
         IF (useMATRIX)
