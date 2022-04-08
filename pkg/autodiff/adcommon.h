@@ -216,13 +216,6 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
 
 #ifdef ALLOW_SHELFICE
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
-      _RS adshelficeHeatFlux
-     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS adshelficeFreshwaterFlux
-     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      common /adshelfice_fields_rs/
-     &  adshelficeheatflux, adshelficefreshwaterflux
-
       _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshelficemass    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
