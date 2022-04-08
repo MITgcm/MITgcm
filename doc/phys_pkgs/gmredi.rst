@@ -187,7 +187,7 @@ Griffies Skew Flux
 Griffies (1998) :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
 fields and computational modes. He pointed out that the bolus flux can
-be re-written in terms of a non-divergent flux and a skew-flux:
+be re-written in terms of a non-divergent flux and a skew flux:
 
 .. math::
 
@@ -256,6 +256,17 @@ If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rh
 
 which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
+
+For historical reasons, the skew flux form is the default in MITgcm (i.e., :varlink:`GM_AdvForm` ``=.FALSE.``).
+However, we recommend use of the advective form described :ref:`above <GM_bolus_desc>`, for two reasons.
+First, the numerical implementation of the skew flux form does not follow the recommended "density triad"
+approach advocated in Griffies et. al (1998) :cite:`gretal:98` and may include numerical artifacts. Secondly,
+for diagnostic purposes, it is useful to compute the bolus velocity, which is straightforward  (and exact)
+using the advective form (e.g. see :ref:`sec_eg_reentrant_channel`) but more difficult and imprecise, due to discretization issues,
+in the skew flux form. In practice, the numerical advantage of the
+skew flux form is fairly limited, as the main factors
+limiting overall MITgcm throughput lie in other routines, numerical solvers, and other computational aspects.
+
 
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
@@ -458,7 +469,7 @@ GMREDI configuration and compiling
 Compile-time options
 --------------------
 
-As with all MITgcm packages, GMREDI can be turned on or off at compile time
+:filelink:`gmredi <pkg/gmredi>` can be turned on or off at compile time
 (see :numref:`building_code`)
 
 - using the ``packages.conf`` file by adding ``gmredi`` to it
@@ -529,14 +540,15 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s)                        |
+  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s), i.e. minimum          |
+  |                                    |                              | :math:`\kappa_\rho {\bf K}_{11}` and :math:`\kappa_\rho {\bf K}_{22}`   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_Small_Number`         |     1.0E-20                  | :math:`\epsilon` used in computing the slope                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('orig', 'clipping', 'fm07', 'stableGmAdjTap',      |
-  |                                    |                              | 'linear', 'ac02', 'gkw91', 'dm95', 'ldd97')                             |
+  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option (clipping', 'fm07', 'stableGmAdjTap',               |
+  |                                    |                              | 'linear', 'gkw91', 'dm95', 'ldd97')                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
