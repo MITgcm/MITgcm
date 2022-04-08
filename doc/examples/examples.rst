@@ -457,10 +457,12 @@ For many experiments, additional information is provided in a ``README`` file lo
    so ocean is "offline", not to be confused with :filelink:`pkg/offline`).
    Also contains additional setups:
 
-   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>` and (:filelink:`pkg/seaice`) advection
+   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>`
+     and (:filelink:`pkg/thsice`) advection
      (:filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
 
-   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>` and (:filelink:`pkg/seaice`) advection
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`
+     and (:filelink:`pkg/seaice`) advection
      (:filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
 
    - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
@@ -557,11 +559,11 @@ directories ``code_oad`` and ``input_oad`` respectively.
    test using the bottom topography as the control parameter, uses package
    :filelink:`ecco <pkg/ecco>` and "not self-adjoint" version of cg2d:
    :filelink:`cg2d_nsa.F <model/src/cg2d_nsa.F>`.
-
-   - uses default :filelink:`cg2d.F <model/src/cg2d.F>` with a hand-written
-     full (manual) adjoint routine :filelink:`cg2d_mad.F
-     <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facd2d
-     <verification/verification/bottom_ctrl_5x5/input_ad.facg2d>`)
+   Also contains an additional TAF adjoint setup
+   that uses default :filelink:`cg2d.F <model/src/cg2d.F>` with a hand-written
+   full (manual) adjoint routine :filelink:`cg2d_mad.F
+   <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facd2d
+   <verification/verification/bottom_ctrl_5x5/input_ad.facg2d>`)
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
    TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
