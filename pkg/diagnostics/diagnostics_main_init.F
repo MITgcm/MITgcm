@@ -1111,6 +1111,93 @@ C     Tangent Linear Model state variables
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C--   surface fluxes:
+      diagName  = 'TLMtaux '
+      diagTitle = 'dTaux: Perturbation to zonal surface wind stress'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'UU A    U1      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'TLMtauy '
+      diagTitle = 'dTauy: Perturbation to merid. surface wind stress'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'VV A    U1      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'TLMempmr'
+      diagTitle = 'dEmPmR: Perturbation to net surface Fresh-Water'
+     &          //' flux into the ocean'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMqnet'
+      diagTitle = 'dQnet: Perturbation to net surface heat flux'
+     &          //'into the ocean'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMqsw'
+      diagTitle = 'dQsw: Sensitivitiy to net Short-Wave radiation'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM A    U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMsst'
+      diagTitle = 'dSST: Perturbation to Sea Surface Temperature'
+      diagUnits = 'K'
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMsss'
+      diagTitle = 'dSSS: Perturbation to Sea Surface Salinity'
+      diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C Miscellanious
+      diagName  = 'TLMbtdrg'
+      diagTitle = 'dJ/dCd: Perturbation to bottom drag coefficient'
+      diagUnits = ''
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMdifkr'
+      diagTitle = 'dJ/dKr: Perturbation to vertical diffusivity'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'TLMepsix'
+      diagTitle = 'dJ/dEddyPsiX: Perturbation to zonal eddy'
+     &           //'streamfunction'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'UURA    UR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'TLMepsiy'
+      diagTitle = 'dEddyPsiY: Perturbation to meridional eddy'
+     &           //'streamfunction'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'VVRA    UR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 # endif
 #endif /* ALLOW_AUTODIFF */
 

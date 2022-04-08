@@ -130,63 +130,61 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C--- Surface Forcing
 C-----------------------------------------------------------------------
-CCC TODO: add the diagnostics in the right place
-CCC      IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
-CCC       CALL DUMP_ADJ_XY_UV(
-CCC     &      g_Fu, dumRL, 'TLMtaux ', 'G_Jtaux.',
-CCC     &      g_Fv, dumRL, 'TLMtauy ', 'G_Jtauy.',
-CCC     &      33, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC        CALL DUMP_ADJ_XY(g_Qnet, dumRL, 'TLMqnet ', 'G_Jqnet.',
-CCC     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC        CALL DUMP_ADJ_XY(g_EmPmR, dumRL, 'TLMempmr', 'G_Jempr.',
-CCC     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+       CALL DUMP_ADJ_XY_UV(
+     &      g_Fu, dumRL, 'TLMtaux ', 'G_Jtaux.',
+     &      g_Fv, dumRL, 'TLMtauy ', 'G_Jtauy.',
+     &      33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+        CALL DUMP_ADJ_XY(g_Qnet, dumRL, 'TLMqnet ', 'G_Jqnet.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+        CALL DUMP_ADJ_XY(g_EmPmR, dumRL, 'TLMempmr', 'G_Jempr.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 
-CCC# ifdef SHORTWAVE_HEATING
-CCC        CALL DUMP_ADJ_XY(g_Qsw, dumRL, 'TLMqsw  ', 'G_Jqsw.',
-CCC     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC      ENDIF
-CCC# ifdef ALLOW_SST0_CONTROL
-CCC      CALL DUMP_ADJ_XY(g_SST, dumRL, 'TLMsst  ', 'G_Jsst.',
-CCC     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC# ifdef ALLOW_SSS0_CONTROL
-CCC      CALL DUMP_ADJ_XY(g_SSS, dumRL, 'TLMsss  ', 'G_Jsss.',
-CCC     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
+# ifdef SHORTWAVE_HEATING
+        CALL DUMP_ADJ_XY(g_Qsw, dumRL, 'TLMqsw  ', 'G_Jqsw.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+      ENDIF
+# ifdef ALLOW_SST0_CONTROL
+      CALL DUMP_ADJ_XY(g_SST, dumRL, 'TLMsst  ', 'G_Jsst.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_SSS0_CONTROL
+      CALL DUMP_ADJ_XY(g_SSS, dumRL, 'TLMsss  ', 'G_Jsss.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
 
 C-----------------------------------------------------------------------
 C---Various packages and parameters
 C-----------------------------------------------------------------------
-CCC TODO: add the diagnostics in the right place
-CCC# ifdef ALLOW_BOTTOMDRAG_CONTROL
-CCC      CALL DUMP_ADJ_XY(dumRS, g_BottomDragFld,
-CCC     &                 'TLMbtdrg','G_Jbottomdrag.',
-CCC     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC# ifdef ALLOW_GGL90
-CCC      CALL DUMP_ADJ_XYZ(dumRS, g_GGL90TKE, 'TLMtke90', 'G_Jggl90tke.',
-CCC     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC# ifdef ALLOW_DIFFKR_CONTROL
-CCC      CALL DUMP_ADJ_XYZ(dumRS, g_DiffKr, 'TLMdifkr', 'G_Jdiffkr.',
-CCC     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC# ifdef ALLOW_KAPGM_CONTROL
-CCC      CALL DUMP_ADJ_XYZ(dumRS, g_KapGM, 'TLMkapgm', 'G_Jkapgm.',
-CCC     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC# ifdef ALLOW_KAPREDI_CONTROL
-CCC      CALL DUMP_ADJ_XYZ(dumRS, g_KapRedi, 'TLMkapre', 'G_Jkapredi.',
-CCC     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
-CCC
-CCC# ifdef ALLOW_EDDYPSI_CONTROL
-CCC      CALL DUMP_ADJ_XYZ_UV(
-CCC     &     g_EddyPsiX,dumRL,'TLMepsix','G_Jeddipsix.',
-CCC     &     g_EddyPsiY,dumRL,'TLMepsiy','G_Jeddipsiy.',
-CCC     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
-CCC# endif
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
+      CALL DUMP_ADJ_XY(dumRS, g_BottomDragFld,
+     &                 'TLMbtdrg','G_Jbottomdrag.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_GGL90
+      CALL DUMP_ADJ_XYZ(dumRS, g_GGL90TKE, 'TLMtke90', 'G_Jggl90tke.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_DIFFKR_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_DiffKr, 'TLMdifkr', 'G_Jdiffkr.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_KapGM, 'TLMkapgm', 'G_Jkapgm.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_KapRedi, 'TLMkapre', 'G_Jkapredi.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+
+# ifdef ALLOW_EDDYPSI_CONTROL
+      CALL DUMP_ADJ_XYZ_UV(
+     &     g_EddyPsiX,dumRL,'TLMepsix','G_Jeddipsix.',
+     &     g_EddyPsiY,dumRL,'TLMepsiy','G_Jeddipsiy.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
 # ifdef ALLOW_SHELFICE
       CALL DUMP_ADJ_XY(g_shelficeFreshwaterFlux, dumRL,
      &                 'TLMshfwf','G_Jshifwf.',
@@ -207,11 +205,6 @@ CCC# endif
 #  endif
 # endif
 
-CCC TODO: add diagnostics and stuff
-CCC#ifdef ALLOW_AUTODIFF_MONITOR_PHIHYD
-CCC      CALL WRITE_FLD_XYZ_RL(
-CCC     &     'G_Jphihyd.',suff, g_totphihyd, myIter, myThid )
-CCC#endif
 #endif /* not ALLOW_OPENAD */
 
 
