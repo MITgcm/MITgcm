@@ -360,8 +360,6 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`global_ocean.cs32x15 <verification/global_ocean.cs32x15>` - Global ocean experiment on the cubed
    sphere grid. Also contains additional setups:
 
-   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>` package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
-
    - non-hydrostatic with biharmonic viscosity (:filelink:`input.viscA4 <verification/global_ocean.cs32x15/input.viscA4>`)
 
    - using thermodynamic sea ice and bulk force (:filelink:`input.thsice <verification/global_ocean.cs32x15/input.thsice>`)
@@ -371,6 +369,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - using thermodynamic and dynamic (:filelink:`pkg/seaice`) sea ice with :filelink:`exf <pkg/exf>` package
      package (:filelink:`input.seaice <verification/global_ocean.cs32x15/input.seaice>`).
+
+   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>` package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
 #. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Global ocean experiment on a lat-lon grid
    coupled to a zonally averaged atmospheric energy balance model. Similar to
