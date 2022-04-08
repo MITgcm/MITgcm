@@ -1224,11 +1224,10 @@ C--   Save state for restarts
       ENDIF
 #endif /* HAVE_SIGREG */
 
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_TANGENTLINEAR_RUN
+#if (defined ALLOW_AUTODIFF_MONITOR) && \
+    (defined ALLOW_TANGENTLINEAR_RUN)
       CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
-# endif
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
