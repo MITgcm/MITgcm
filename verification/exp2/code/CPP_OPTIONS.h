@@ -60,8 +60,7 @@ C    from EOS)
 
 C-- Vertical mixing code options:
 
-C o Include/exclude convective adjustement code in S/R CONVECTIVE_ADJUSTMENT
-C   and other routines
+C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT
 #define INCLUDE_CONVECT_CALL
 
 C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT_INI, turned off by
@@ -160,18 +159,10 @@ C   The definition of the flag is commented to avoid interference with
 C   such other header files.
 c#define COSINEMETH_III
 
-C o Use "OLD" UV discretisation near boundaries (*not* recommended)
-C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
-C          because the old code did not have no-slip BCs
-#undef OLD_ADV_BCS
-
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
-
-C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
-#undef USE_OLD_EXTERNAL_FORCING
 
 C-- Other option files:
 

@@ -60,8 +60,7 @@ C    from EOS)
 
 C-- Vertical mixing code options:
 
-C o Include/exclude convective adjustement code in S/R CONVECTIVE_ADJUSTMENT
-C   and other routines
+C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT
 #define INCLUDE_CONVECT_CALL
 
 C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT_INI, turned off by
