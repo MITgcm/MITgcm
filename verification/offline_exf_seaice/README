@@ -65,30 +65,38 @@ Seaice-only verification experiment in idealized periodic channel
  c) seaice-dynamics only with LSR solver and elliptical yieldcurve with
     non-normal flow rule (input.dyn_ellnnfr)
   use same forcing as main forward experiment,
-  ( link input files from "input.dyn_ellnnfr/" dir 1rst, then from "input/" dir )
-  turn off seaice thermodynamics
-  (usePW79thermodynamics=.FALSE., in input.dyn_ellnnfr/data.seaice).
+  ( link input files from "input.dyn_ellnnfr/" dir 1rst, then from
+    "input.dyn_lsr/" and "input/" dir )
+  advect pkg/seaice properties using pkg/seaice advection S/R.);
+  turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
+   input.dyn_ellnnfr/data.seaice).
 
  d) seaice-dynamics only with LSR solver and Mohr-Coulomb
     yieldcurve with elliptical plastic potential (input.dyn_mce)
   use same forcing as main forward experiment,
-  ( link input files from "input.dyn_mce/" dir 1rst, then from "input/" dir )
-  turn off seaice thermodynamics
-  (usePW79thermodynamics=.FALSE., in input.dyn_mce/data.seaice).
+  ( link input files from "input.dyn_mce/" dir 1rst, then from
+    "input.dyn_lsr/" and "input/" dir )
+  advect pkg/seaice properties using pkg/seaice advection S/R.);
+  turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
+   input.dyn_mce/data.seaice).
 
  e) seaice-dynamics only with KRYLOV solver and parabolic lens yieldcurve
     (input.dyn_paralens)
   use same forcing as main forward experiment,
-  ( link input files from "input.dyn_paralens/" dir 1rst, then from "input/" dir )
-  turn off seaice thermodynamics
-  (usePW79thermodynamics=.FALSE., in input.dyn_paralens/data.seaice).
+  ( link input files from "input.dyn_paralens/" dir 1rst, then from
+    "input.dyn_jfnk/" and "input/" dir )
+  turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
+   "input.dyn_mce/data.ice" lined from "input.dyn_jfnk/") and
+   advect pkg/thsice properties using pkg/thsice advection S/R.
 
  f) seaice-dynamics only with JFNK solver and teardrop yieldcurve
     (input.dyn_teardrop)
   use same forcing as main forward experiment,
-  ( link input files from "input.dyn_teardrop/" dir 1rst, then from "input/" dir )
-  turn off seaice thermodynamics
-  (usePW79thermodynamics=.FALSE., in input.dyn_teardrop/data.seaice).
+  ( link input files from "input.dyn_teardrop/" dir 1rst, then from
+    "input.dyn_jfnk/" and "input/" dir )
+  turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
+   "input.dyn_mce/data.ice" lined from "input.dyn_jfnk/") and
+   advect pkg/thsice properties using pkg/thsice advection S/R.
 
  g) seaice-thermodynamics only from pkg/seaice (input.thermo/)
   use same forcing as main forward experiment,

@@ -466,21 +466,21 @@ For many experiments, additional information is provided in a ``README`` file lo
    - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
      elliptical yield curve with :ref:`non-normal flow rule <rheologies_ellnnfr>`
      and (:filelink:`pkg/seaice`) advection
-     (:filelink:`input.dyn_ellnnfr <verification/offline_exf_seaice/input.dyn_ellnnfr>`)
+     (:filelink:`input.dyn_ellnnfr <verification/offline_exf_seaice/input.dyn_ellnnfr>` and :filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
 
    - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
      :ref:`Mohr-Coulomb yieldcurve with elliptical plastic potential <rheologies_MCE>`
      and (:filelink:`pkg/seaice`) advection
-     (:filelink:`input.dyn_mce <verification/offline_exf_seaice/input.dyn_mce>`)
+     (:filelink:`input.dyn_mce <verification/offline_exf_seaice/input.dyn_mce>` and :filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
 
    - sea ice dynamics-only using :ref:`Picard (KRYLOV) solver <para_phys_pkg_seaice_LSRJFNK>`,
      :ref:`parabolic lens yieldcurve <rheologies_PL>`
-     and (:filelink:`pkg/seaice`) advection
-     (:filelink:`input.dyn_paralens <verification/offline_exf_seaice/input.dyn_paralens>`)
+     and (:filelink:`pkg/thsice`) advection
+     (:filelink:`input.dyn_paralens <verification/offline_exf_seaice/input.dyn_paralens>` and :filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
 
    - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>`, :ref:`teardrop yieldcurve <rheologies_TD>`
-     and (:filelink:`pkg/seaice`) advection
-     (:filelink:`input.dyn_teardrop <verification/offline_exf_seaice/input.dyn_teardrop>`)
+     and (:filelink:`pkg/thsice`) advection
+     (:filelink:`input.dyn_teardrop <verification/offline_exf_seaice/input.dyn_teardrop>` and :filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
 
    - sea ice thermodynamics-only using (:filelink:`pkg/seaice`) (:filelink:`input.thermo <verification/offline_exf_seaice/input.thermo>`)
 
