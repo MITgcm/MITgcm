@@ -67,7 +67,7 @@ Seaice-only verification experiment in idealized periodic channel
   use same forcing as main forward experiment,
   ( link input files from "input.dyn_ellnnfr/" dir 1rst, then from
     "input.dyn_lsr/" and "input/" dir )
-  advect pkg/seaice properties using pkg/seaice advection S/R.);
+  advect pkg/seaice properties using pkg/seaice advection S/R.;
   turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
    input.dyn_ellnnfr/data.seaice).
 
@@ -76,7 +76,7 @@ Seaice-only verification experiment in idealized periodic channel
   use same forcing as main forward experiment,
   ( link input files from "input.dyn_mce/" dir 1rst, then from
     "input.dyn_lsr/" and "input/" dir )
-  advect pkg/seaice properties using pkg/seaice advection S/R.);
+  advect pkg/seaice properties using pkg/seaice advection S/R.;
   turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
    input.dyn_mce/data.seaice).
 
