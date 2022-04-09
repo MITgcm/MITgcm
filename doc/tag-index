@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model:
+  - new CPP option to exclude (= default) S/R CONVECTIVE_ADJUSTMENT_INI;
+    to reproduce old results, define new option INCLUDE_CONVECT_INI_CALL in
+    two verification experiments: exp2 and tutorial_tracer_adjsens.
+  - add a check for INCLUDE_CONVECT_CALL if cAdjFreq <> 0.
 o tools/build_options:
   - new optfile "darwin_arm64_gfortran" for Mac ARM 64-bit processor.
 o pkg/gmredi:
