@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - new optfile "darwin_arm64_gfortran" for Mac ARM 64-bit processor.
 o pkg/gmredi:
   - add deep-factor to pkg/gmredi code to work with "deepAtmosphere=T".
 o verification/cpl_aim+ocn:
