@@ -191,8 +191,7 @@ C-    Assign a free unit number as the I/O channel for this subroutine
 
 C-    Open meta-file
         OPEN( mUnit, FILE=mFileName, STATUS='old',
-     &        ACTION=_READ_ACTION,
-     &        FORM='formatted', IOSTAT=errIO )
+     &        _READONLY_ACTION FORM='formatted', IOSTAT=errIO )
 c       write(0,*) 'errIO=',errIO
         IF ( errIO .NE. 0 ) THEN
           WRITE(msgBuf,'(A,A)') 'MDS_READ_META: Unable to open file: ',

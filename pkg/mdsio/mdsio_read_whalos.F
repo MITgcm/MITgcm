@@ -124,8 +124,7 @@ C get the unit and open file
       IF (fid.EQ.0) THEN
         CALL MDSFINDUNIT( dUnit, myThid )
         OPEN( dUnit, file=pfName, status='old',
-     &         action=_READ_ACTION,
-     &         access='direct', recl=length_of_rec )
+     &         _READONLY_ACTION access='direct', recl=length_of_rec )
       ELSE
         dUnit=fid
       ENDIF

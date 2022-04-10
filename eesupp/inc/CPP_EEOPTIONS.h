@@ -58,13 +58,6 @@ C     Enable to switch REAL4_IS_SLOW from genmake2 (with LET_RS_BE_REAL4):
 #define REAL4_IS_SLOW
 #endif /* LET_RS_BE_REAL4 */
 
-C--   Control macro _READ_ACTION for specifer ACTION 
-C     when open read-only files.
-C     When defined, ACTION='read'.
-C     On Pleiades machines at NASA Ames it improves performance.
-C     Otherwise, ACTION='readwrite'.
-#define OPEN_AS_READONLY
-
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0

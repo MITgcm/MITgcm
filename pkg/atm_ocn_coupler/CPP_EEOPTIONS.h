@@ -91,13 +91,6 @@ C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
 
-C--   Control macro _READ_ACTION for specifer ACTION
-C     when open read-only files.
-C     When defined, ACTION='read'.
-C     On Pleiades machines at NASA Ames it improves performance.
-C     Otherwise, ACTION='readwrite'.
-#define OPEN_AS_READONLY
-
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
