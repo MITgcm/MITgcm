@@ -129,7 +129,8 @@ Seaice-only verification experiment in idealized periodic channel
   Use similar forward set-up as "input.thermo/",
   no seaice dynamics and no seaice advection.
 
+4) other (secondary) adjoint experiment (using the same executable)
+
  a) seaice-thermodynamics form pkg/thsice (input_ad.thsice)
   use similar forward set-up as  "input.thsice",
   no seaice dynamics and no seaice advection.
-   (to be completed ...)
