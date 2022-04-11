@@ -35,6 +35,10 @@ SVD_TAF_FLAGS="-reverse -forward -pure -l taf_svd.log $SVD_TAF_FLAGS"
 
 TAF_COMMON_FLAGS="-i4 -r4 -intrinsic system,flush"
 
+if test "x$USE_EXTENDED_SRC" = "xt"; then
+    TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
+fi
+
 #- after Jan 14, 2016, TAF default is "-f95"
 if test "x$ALWAYS_USE_F90" = "x1" ; then
     TAF_COMMON_FLAGS="-f90 $TAF_COMMON_FLAGS"
