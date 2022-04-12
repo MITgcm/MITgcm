@@ -103,8 +103,6 @@ C !LOCAL VARIABLES: ====================================================
 C  maskLocC      :: 2-D array mask at grid-cell center
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
-C  iMin,iMax,    :: loop range for called routines
-C  jMin,jMax     :: loop range for called routines
 C [iMin,iMax]Upd :: loop range to update sea-ice field
 C [jMin,jMax]Upd :: loop range to update sea-ice field
 C  i,j           :: loop indices
@@ -124,7 +122,6 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RS maskLocC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iMin,iMax,jMin,jMax
       INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k
       _RL uCfl    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -169,6 +166,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                     + act2*max0*max1
      &                     + act3*max0*max1*max2
      &                     + act4*max0*max1*max2*max3
+      IF (tracerIdentity.GT.maxpass) THEN
+       WRITE(msgBuf,'(A,2I5)')
+     &      'THSICE_ADVECTION: tracerIdentity > maxpass ',
+     &      tracerIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R THSICE_ADVECTION'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DBUG_THSICE
@@ -214,10 +218,14 @@ C--   Set tile-specific parameters for horizontal fluxes
        W_edge = .FALSE.
       ENDIF
 
-      iMin = 1-OLx
-      iMax = sNx+OLx
-      jMin = 1-OLy
-      jMax = sNy+OLy
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF (nipass .GT. maxcube) THEN
+       WRITE(msgBuf,'(A,2(I3,A))') 'S/R THSICE_ADVECTION: nipass =',
+     &      nipass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R THSICE_ADVECTION'
+      ENDIF
+#endif
 
 C--   Start horizontal fluxes
 
@@ -263,14 +271,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-       ipasskey = ipass + (ticekey-1) * maxpass
-       IF (nipass .GT. maxpass) THEN
-        WRITE(msgBuf,'(A,2I3)')
-     &       'THSICE_ADVECTION: nipass > maxpass. check tamc.h ',
-     &       nipass, maxpass
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R THSICE_ADVECTION'
-       ENDIF
+       ipasskey = ipass + (ticekey-1) * maxcube
 #endif
 
        interiorOnly = .FALSE.
