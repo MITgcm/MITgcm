@@ -562,8 +562,8 @@ directories ``code_oad`` and ``input_oad`` respectively.
    Also contains an additional TAF adjoint setup
    that uses default :filelink:`cg2d.F <model/src/cg2d.F>` with a hand-written
    full (manual) adjoint routine :filelink:`cg2d_mad.F
-   <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facd2d
-   <verification/verification/bottom_ctrl_5x5/input_ad.facg2d>`)
+   <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facg2d
+   <verification/bottom_ctrl_5x5/input_ad.facg2d>`)
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
    TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
