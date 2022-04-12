@@ -62,7 +62,43 @@ Seaice-only verification experiment in idealized periodic channel
    "input.dyn_jfnk/data.ice") and advect pkg/thsice properties using
    pkg/thsice advection S/R.
 
- c) seaice-thermodynamics only from pkg/seaice (input.thermo/)
+ c) seaice-dynamics only with LSR solver and elliptical yieldcurve with
+    non-normal flow rule (input.dyn_ellnnfr)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_ellnnfr/" dir 1rst, then from
+    "input.dyn_lsr/" and "input/" dir )
+  advect pkg/seaice properties using pkg/seaice advection S/R.;
+  turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
+   input.dyn_ellnnfr/data.seaice).
+
+ d) seaice-dynamics only with LSR solver and Mohr-Coulomb
+    yieldcurve with elliptical plastic potential (input.dyn_mce)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_mce/" dir 1rst, then from
+    "input.dyn_lsr/" and "input/" dir )
+  advect pkg/seaice properties using pkg/seaice advection S/R.;
+  turn off seaice thermodynamics (usePW79thermodynamics=.FALSE., in
+   input.dyn_mce/data.seaice).
+
+ e) seaice-dynamics only with KRYLOV solver and parabolic lens yieldcurve
+    (input.dyn_paralens)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_paralens/" dir 1rst, then from
+    "input.dyn_jfnk/" and "input/" dir )
+  turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
+   "input.dyn_mce/data.ice" linked from "input.dyn_jfnk/") and
+   advect pkg/thsice properties using pkg/thsice advection S/R.
+
+ f) seaice-dynamics only with JFNK solver and teardrop yieldcurve
+    (input.dyn_teardrop)
+  use same forcing as main forward experiment,
+  ( link input files from "input.dyn_teardrop/" dir 1rst, then from
+    "input.dyn_jfnk/" and "input/" dir )
+  turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
+   "input.dyn_mce/data.ice" linked from "input.dyn_jfnk/") and
+   advect pkg/thsice properties using pkg/thsice advection S/R.
+
+ g) seaice-thermodynamics only from pkg/seaice (input.thermo/)
   use same forcing as main forward experiment,
   ( link input files from "input.thermo/" dir 1rst, then from "input/" dir )
   Except a different bathymetry (no triangular shape coast line in the South,
@@ -80,7 +116,7 @@ Seaice-only verification experiment in idealized periodic channel
   Turn off seaice dynamics (SEAICEuseDYNAMICS =.FALSE., in
    "input.thermo/data.seaice") which implies no advection (zero ice velocity).
 
- d) seaice-thermodynamics only from pkg/thsice (input.thsice/)
+ h) seaice-thermodynamics only from pkg/thsice (input.thsice/)
   use same forcing as main forward experiment,
   ( link input files from "input.thsice/" dir 1rst, then from "input/" dir )
   Except for bathymetry and initial seaice concentration which are identical
@@ -90,5 +126,11 @@ Seaice-only verification experiment in idealized periodic channel
    are used (useSEAICE = .TRUE., commented out in "input.thsice/data.pkg"),
 
 3) main adjoint experiment (code_ad, input_ad)
-  Use similar forward set-up as "input.thermo/".
-   (to be completed ...)
+  Use similar forward set-up as "input.thermo/",
+  no seaice dynamics and no seaice advection.
+
+4) other (secondary) adjoint experiment (using the same executable)
+
+ a) seaice-thermodynamics form pkg/thsice (input_ad.thsice)
+  use similar forward set-up as  "input.thsice",
+  no seaice dynamics and no seaice advection.
