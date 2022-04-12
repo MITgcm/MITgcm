@@ -51,6 +51,18 @@
    fileName(4) = 'adjDiagSurf',
 # frequency(4) = 311040000.,
   frequency(4) = 432000.,
+#
+  fields(1:5,5)  = 'TLMuvel ','TLMvvel ','TLMwvel ',
+                   'TLMtheta','TLMsalt ',
+   fileName(5) = 'tlmDiag',
+# frequency(5) = 311040000.,
+  frequency(5) = 432000.,
+
+  fields(1:5,6)  = 'TLMetan ','TLMqnet ','TLMempmr',
+                   'TLMtaux ','TLMtauy ',
+   fileName(6) = 'tlmDiagSurf',
+# frequency(6) = 311040000.,
+  frequency(6) = 432000.,
  &
 
 #--------------------
