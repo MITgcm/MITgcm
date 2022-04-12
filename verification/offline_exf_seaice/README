@@ -86,7 +86,7 @@ Seaice-only verification experiment in idealized periodic channel
   ( link input files from "input.dyn_paralens/" dir 1rst, then from
     "input.dyn_jfnk/" and "input/" dir )
   turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
-   "input.dyn_mce/data.ice" lined from "input.dyn_jfnk/") and
+   "input.dyn_mce/data.ice" linked from "input.dyn_jfnk/") and
    advect pkg/thsice properties using pkg/thsice advection S/R.
 
  f) seaice-dynamics only with JFNK solver and teardrop yieldcurve
@@ -95,7 +95,7 @@ Seaice-only verification experiment in idealized periodic channel
   ( link input files from "input.dyn_teardrop/" dir 1rst, then from
     "input.dyn_jfnk/" and "input/" dir )
   turn off seaice thermodynamics (thSIce_skipThermo=.TRUE., in file
-   "input.dyn_mce/data.ice" lined from "input.dyn_jfnk/") and
+   "input.dyn_mce/data.ice" linked from "input.dyn_jfnk/") and
    advect pkg/thsice properties using pkg/thsice advection S/R.
 
  g) seaice-thermodynamics only from pkg/seaice (input.thermo/)
