@@ -17,7 +17,7 @@ course, some complication that goes with the inclusion of
 :math:`\cos \varphi \ ` Coriolis terms and the relaxation of the shallow
 atmosphere approximation. But this leads to negligible increase in
 computation. In **NH**, in contrast, one additional elliptic equation -
-a three-dimensional one - must be inverted for :math:`p_{nh}`. However
+a three-dimensional one - must be inverted for :math:`p_{\rm nh}`. However
 the ‘overhead’ of the **NH** model is essentially negligible in the
 hydrostatic limit (see detailed discussion in Marshall et al. (1997) :cite:`marshall:97a`
 resulting in a non-hydrostatic algorithm that, in the hydrostatic limit,
