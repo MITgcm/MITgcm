@@ -66,7 +66,7 @@ C     !LOCAL VARIABLES:
       _RS mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-c--   Now, read the control vector.
+C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
@@ -77,7 +77,7 @@ c--   Now, read the control vector.
       doscaling=.TRUE.
       dolog10ctrl=.FALSE.
       log10initval=0. _d 0
-      ln10 = LOG(10.0D0)
+      ln10 = LOG(10. _d 0)
 
       numsmo = 1
       DO k2 = 1, maxCtrlProc
@@ -96,9 +96,9 @@ c--   Now, read the control vector.
           doscaling = .FALSE.
         ENDIF
         IF (xx_genarr2d_preproc_c(k2,iarr).EQ.'log10ctrl') THEN
-c             fld := log10(xx_gen)
-c               with initial guess for xx_gen set to log10initval
-c               passed to data.ctrl, (default = 0.0)
+C             fld := log10(xx_gen)
+C               with initial guess for xx_gen set to log10initval
+C               passed to data.ctrl, (default = 0.0)
           dolog10ctrl=.TRUE.
           log10initval = xx_genarr2d_preproc_r(k2,iarr)
         ENDIF
@@ -137,15 +137,15 @@ C --- Do any smoothing
         IF (doscaling) THEN
          DO j = 1,sNy
           DO i = 1,sNx
-c scale param adjustment
+C scale param adjustment
            IF ( wgenarr2d(i,j,bi,bj,iarr).GT.0. ) THEN
             xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
      &               / SQRT( wgenarr2d(i,j,bi,bj,iarr) )
             IF (dolog10ctrl) THEN
              xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
-C            xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+c            xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
 C     this is faster, especially if log(10) has been evaluated before
-C            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
+c            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
              xx_gen(i,j,bi,bj) = EXP(ln10 * xx_gen(i,j,bi,bj))
             ENDIF ! dolog10ctrls
            ELSE
@@ -154,8 +154,8 @@ C            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
           ENDDO
          ENDDO
         ENDIF ! doscaling
-c add to model parameter
-c or in case of log10ctrl, fld = 10^(xx_gen)
+C add to model parameter
+C or in case of log10ctrl, fld = 10^(xx_gen)
         IF (dolog10ctrl) THEN
          DO j = 1,sNy
           DO i = 1,sNx
@@ -173,7 +173,7 @@ c or in case of log10ctrl, fld = 10^(xx_gen)
        ENDDO
       ENDDO
 
-c avoid param out of [boundsVec(1) boundsVec(4)]
+C avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_2D(fld,mask2D,xx_genarr2d_bounds(1,iarr),myThid)
 
       CALL EXCH_XY_RL( fld, myThid )
@@ -250,7 +250,7 @@ C     !LOCAL VARIABLES:
       _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
-c--   Now, read the control vector.
+C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
@@ -261,7 +261,7 @@ c--   Now, read the control vector.
       doscaling=.TRUE.
       dolog10ctrl=.FALSE.
       log10initval=0. _d 0
-      ln10 = LOG(10.0D0)
+      ln10 = LOG(10. _d 0)
 
       numsmo = 1
       DO k2 = 1, maxCtrlProc
@@ -280,9 +280,9 @@ c--   Now, read the control vector.
           doscaling = .FALSE.
         ENDIF
         IF (xx_genarr3d_preproc_c(k2,iarr).EQ.'log10ctrl') THEN
-c             fld := log10(xx_gen)
-c               with initial guess for xx_gen set to log10initval
-c               passed to data.ctrl, (default = 0.0)
+C             fld := log10(xx_gen)
+C               with initial guess for xx_gen set to log10initval
+C               passed to data.ctrl, (default = 0.0)
           dolog10ctrl=.TRUE.
           log10initval = xx_genarr3d_preproc_r(k2,iarr)
         ENDIF
@@ -319,7 +319,7 @@ C --- Do any smoothing
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         IF (doscaling) THEN
-c     scale param adjustment
+C     scale param adjustment
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
@@ -328,21 +328,21 @@ c     scale param adjustment
      &                / SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
              IF (dolog10ctrl) THEN
               xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
-C             xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+c             xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
 C     this is faster, especially if log(10) has been evaluated before
-C             xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
+c             xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
               xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
              ENDIF
-            ELSE 
+            ELSE
              xx_gen(i,j,k,bi,bj) = 0. _d 0
             ENDIF
            ENDDO
           ENDDO
          ENDDO
-c     doscaling
+C     doscaling
         ENDIF
-c     add to model parameter
-c     or in case of log10ctrl, fld = 10^(xx_gen)
+C     add to model parameter
+C     or in case of log10ctrl, fld = 10^(xx_gen)
         IF ( dolog10ctrl ) THEN
          DO k = 1,Nr
           DO j = 1,sNy
@@ -361,11 +361,11 @@ c     or in case of log10ctrl, fld = 10^(xx_gen)
           ENDDO
          ENDDO
         ENDIF
-c     end bi/bj-loops
+C     end bi/bj-loops
        ENDDO
       ENDDO
 
-c avoid param out of [boundsVec(1) boundsVec(4)]
+C avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D(fld,mask3D,xx_genarr3d_bounds(1,iarr),myThid)
 
 C The tile exchange for xx_uvel and xx_vvel will be
