@@ -393,7 +393,6 @@ C     !-----------------------------------------------------------------
 #if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
 C     smooth regulatization
           ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -4)
-          ustar=max(5. _d -3,ustar)
 #else
 C     for no currents:
           ustar = 5. _d -2
@@ -801,7 +800,7 @@ C-- modified scheme. taking into account Ice enthalpy
               hq = hnewTmp*qicen(i,j,k)-dhi*Lfresh
               hnew(i,j,k) = hnewTmp - dhi
 #if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
-              qicen(i,j,k)=hq/SQRT(hnew(i,j,k)**2 + 1. _d 4)
+              qicen(i,j,k)=hq/SQRT(hnew(i,j,k)**2 + 1. _d -4)
 #else
               qicen(i,j,k)=hq/hnew(i,j,k)
 #endif
