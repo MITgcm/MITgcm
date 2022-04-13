@@ -549,10 +549,10 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxcube
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
-C     this tape is for thsice_advection, which is called for five
-C     different variables, hence the factor 5
+C     Tape for thsice_advection, which is called for thSIce_nAdv (=5)
+C     different variables (thSIce_nAdv is set in THSICE_SIZE.h)
 CADJ INIT comlev1_thsice_adv = COMMON,
-CADJ &    nchklev_1*nSx*nSy*maxpass*5*nthreads_chkpt
+CADJ &    nchklev_1*nSx*nSy*maxcube*thSIce_nAdv*nthreads_chkpt
 CADJ INIT comlev1_thsice_nlyr = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nlyr*nthreads_chkpt
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
