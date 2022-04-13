@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp & pkg/mdsio:
+  - new (CPP) Macro to open read-only files with ACTION='read', added to
+    most pkg/mdsio S/R (+ exf_interp_read.F); disable this in few old compiler
+    optfiles (g77, pgf77) by adding EXCLUDE_OPEN_ACTION to DEFINES list.
 o model:
   - new CPP option to exclude (= default) S/R CONVECTIVE_ADJUSTMENT_INI;
     to reproduce old results, define new option INCLUDE_CONVECT_INI_CALL in
