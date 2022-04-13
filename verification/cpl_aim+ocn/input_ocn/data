@@ -36,6 +36,7 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  debugLevel=2,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters
