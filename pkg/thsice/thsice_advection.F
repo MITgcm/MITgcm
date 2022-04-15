@@ -167,7 +167,7 @@ C     tracerIdentity has negative values from GAD_SI_FRAC=-5 to GAD_SI_QICE2=-9
      &                     + act2*max0*max1
      &                     + act3*max0*max1*max2
      &                     + act4*max0*max1*max2*max3
-      IF ( act0+1 .GT. thSIce_nAdv) THEN
+      IF ( act0 .LT. 0 .OR. act0+1 .GT. thSIce_nAdv) THEN
        WRITE(msgBuf,'(A,2(I3,A))')
      &      'THSICE_ADVECTION: tracerIdentity =', tracerIdentity,
      &      ' not consistent with thSIce_nAdv =', thSIce_nAdv,
