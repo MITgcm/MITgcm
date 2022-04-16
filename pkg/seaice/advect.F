@@ -72,7 +72,6 @@ C     save fld from previous time step
        ENDDO
       ENDDO
 
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ INIT loctape_advect = COMMON, 2
 #endif
@@ -93,8 +92,8 @@ C     Backward Euler correction step
         ENDDO
 
 #ifdef ALLOW_AUTODIFF
-       DO J=1-Oly,sNy+Oly
-        DO I=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          afx(i,j) = 0. _d 0
          afy(i,j) = 0. _d 0
         ENDDO
