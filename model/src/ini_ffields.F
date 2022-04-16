@@ -131,6 +131,9 @@ C-    Intermediate surface forcing arrays
           adjustColdSST_diag  (i,j,bi,bj) = 0. _d 0
           lambdaThetaClimRelax(i,j,bi,bj) = 0. _d 0
           lambdaSaltClimRelax (i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_BALANCE_FLUXES
+          weight2BalanceFlx(i,j,bi,bj) = 0. _d 0
+#endif
           botDragU        (i,j,bi,bj) = 0. _d 0
           botDragV        (i,j,bi,bj) = 0. _d 0
          ENDDO

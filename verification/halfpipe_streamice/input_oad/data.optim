@@ -1,4 +1,3 @@
-#
 # ********************************
 # Off-line optimization parameters
 # ********************************
@@ -9,7 +8,8 @@
  fmin=0.15e5,
  iprint=10,
  nupdate=4,
- /
+ &
+
  &M1QN3
 #coldStart=.true.,
- /
+ &

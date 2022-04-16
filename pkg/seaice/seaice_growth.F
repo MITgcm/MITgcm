@@ -2484,7 +2484,7 @@ CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 C Compute tile integrals of heat/fresh water fluxes to/from atm.
 C ==============================================================
         FWFsiTile(bi,bj) = 0. _d 0
-        IF ( balanceEmPmR ) THEN
+        IF ( selectBalanceEmPmR.EQ.1 ) THEN
          DO j=1,sNy
           DO i=1,sNx
            FWFsiTile(bi,bj) =
@@ -2495,7 +2495,8 @@ C ==============================================================
         ENDIF
 C to translate global mean FWF adjustements (see below) we may need :
         FWF2HFsiTile(bi,bj) = 0. _d 0
-        IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
+        IF ( selectBalanceEmPmR.EQ.1 .AND.
+     &       temp_EvPrRn.EQ.UNSET_RL ) THEN
          DO j=1,sNy
           DO i=1,sNx
            FWF2HFsiTile(bi,bj) = FWF2HFsiTile(bi,bj) +
@@ -2619,14 +2620,15 @@ CADJ STORE FWFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE HFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE FWF2HFsiTile = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
-      FWFsiGlob=0. _d 0
-      IF ( balanceEmPmR )
-     &   CALL GLOBAL_SUM_TILE_RL( FWFsiTile, FWFsiGlob, myThid )
-      FWF2HFsiGlob=0. _d 0
-      IF ( balanceEmPmR.AND.(temp_EvPrRn.EQ.UNSET_RL) ) THEN
-         CALL GLOBAL_SUM_TILE_RL(FWF2HFsiTile, FWF2HFsiGlob, myThid)
-      ELSEIF ( balanceEmPmR ) THEN
-         FWF2HFsiGlob=HeatCapacity_Cp * temp_EvPrRn * globalArea
+      FWFsiGlob = 0. _d 0
+      FWF2HFsiGlob = 0. _d 0
+      IF ( selectBalanceEmPmR.EQ.1 ) THEN
+        CALL GLOBAL_SUM_TILE_RL( FWFsiTile, FWFsiGlob, myThid )
+        IF ( temp_EvPrRn.EQ.UNSET_RL ) THEN
+          CALL GLOBAL_SUM_TILE_RL( FWF2HFsiTile, FWF2HFsiGlob, myThid )
+        ELSE
+          FWF2HFsiGlob = HeatCapacity_Cp * temp_EvPrRn * globalArea
+        ENDIF
       ENDIF
       HFsiGlob=0. _d 0
       IF ( balanceQnet )
@@ -2641,10 +2643,10 @@ C        (if mean SIatmFW was removed uniformely from ocean)
 C mean SItflux (before potential adjustement due to SIatmFW)
       tmpscal2=HFsiGlob / globalArea
 C mean SItflux (after potential adjustement due to SIatmFW)
-      IF ( balanceEmPmR ) tmpscal2=tmpscal2-tmpscal1
+      IF ( selectBalanceEmPmR.EQ.1 ) tmpscal2=tmpscal2-tmpscal1
 
 C 3) balancing adjustments
-      IF ( balanceEmPmR ) THEN
+      IF ( selectBalanceEmPmR.EQ.1 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy

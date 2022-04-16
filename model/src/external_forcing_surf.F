@@ -84,14 +84,25 @@ C     to oceanic surface forcing
 
 #ifdef ALLOW_BALANCE_FLUXES
 C     balance fluxes
+# ifdef ALLOW_AUTODIFF
       tmpVar(1) = oneRS
-      IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
-        CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, tmpVar,
-     &                       'EmPmR', myTime, myIter, myThid )
+# endif
+      IF ( selectBalanceEmPmR.GE.1 .AND.
+     &     (.NOT.useSeaice .OR. useThSIce) ) THEN
+       IF ( selectBalanceEmPmR.EQ.1 ) THEN
+        tmpVar(1) = oneRS
+        CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA,
+     &                       tmpVar, 'EmPmR', myTime, myIter, myThid )
+       ELSEIF ( selectBalanceEmPmR.EQ.2 ) THEN
+        tmpVar(1) = -oneRS
+        CALL REMOVE_MEAN_RS( 1, EmPmR, weight2BalanceFlx, maskInC, rA,
+     &                       tmpVar, 'EmPmR', myTime, myIter, myThid )
+       ENDIF
       ENDIF
       IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
-        CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, tmpVar,
-     &                       'Qnet ', myTime, myIter, myThid )
+        tmpVar(1) = oneRS
+        CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA,
+     &                       tmpVar, 'Qnet ', myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_BALANCE_FLUXES */
 

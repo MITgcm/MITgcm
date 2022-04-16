@@ -882,8 +882,8 @@ C-        Vertical gradients interpolated to U points
      &        +maskC( i ,j,k,bi,bj)*maskC( i ,j,kp1,bi,bj)*
      &           (theta( i ,j,k,bi,bj)-theta( i ,j,kp1,bi,bj))
      &       )      ) * 0.25 _d 0
-           tmp1k(i,j) = dyG(i,j,bi,bj)*drF(k)
-     &                * _hFacW(i,j,k,bi,bj)
+           tmp1k(i,j) = dyG(i,j,bi,bj) * deepFacC(k)
+     &                * drF(k) * _hFacW(i,j,k,bi,bj)
      &                * tmp1k(i,j) * dTdz
          ENDDO
         ENDDO
@@ -1115,8 +1115,8 @@ C-        Vertical gradients interpolated to U points
      &        +maskC(i, j ,kp1,bi,bj)*maskC(i, j ,k,bi,bj)*
      &           (theta(i, j ,k,bi,bj)-theta(i, j ,kp1,bi,bj))
      &       )      ) * 0.25 _d 0
-           tmp1k(i,j) = dxG(i,j,bi,bj)*drF(k)
-     &                * _hFacS(i,j,k,bi,bj)
+           tmp1k(i,j) = dxG(i,j,bi,bj) * deepFacC(k)
+     &                * drF(k) * _hFacS(i,j,k,bi,bj)
      &                * tmp1k(i,j) * dTdz
          ENDDO
         ENDDO

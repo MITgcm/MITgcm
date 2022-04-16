@@ -59,9 +59,9 @@ C
 C     SSS   :: Sea surface salinity in g/kg for relaxation
 C              Southwest C-grid tracer point
 C
-C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C     lambdaThetaClimRelax :: Inverse time scale for SST relaxation ( 1/s ).
 C
-C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C     lambdaSaltClimRelax  :: Inverse time scale for SSS relaxation ( 1/s ).
 
 C     phiTide2d :: vertically uniform (2d-map), time-dependent geopotential
 C                  anomaly (e.g., tidal forcing); Units are m^2/s^2
@@ -126,6 +126,12 @@ C                    Typical range: 0 < geothermalFlux < 1.5 W/m^2
 C                    (global mean on the order 0.09 - 0.1 W/m^2)
       COMMON /FFIELDS_geothermal/ geothermalFlux
       _RS geothermalFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_BALANCE_FLUXES
+C  weight2BalanceFlx :: weight used for applying weighted correction
+C                       to global-mean surf. flux imbalance ; no-units
+      COMMON /FFIELDS_W2BALANCE/ weight2BalanceFlx
+      _RS weight2BalanceFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition
