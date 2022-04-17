@@ -177,7 +177,7 @@ C--   Open the file:
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, nSize, myThid )
           OPEN( dUnit, file=dataFname, status=_OLD_STATUS,
-     &          access='direct', recl=length_of_rec )
+     &          _READONLY_ACTION access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
         ELSE
           fileIsOpen=.FALSE.

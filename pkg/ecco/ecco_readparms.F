@@ -203,6 +203,11 @@ c--   Read the namelist input.
      &         gencost_is1d,
      &         gencost_is3d,
      &         gencost_msk_is3d,
+     &         gencost_useDensityMask,
+     &         gencost_refPressure,
+     &         gencost_sigmaLow,
+     &         gencost_sigmaHigh,
+     &         gencost_tanhScale,
      &         gencost_timevaryweight,
      &         mult_gencost
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
@@ -611,6 +616,11 @@ c--   Set default values.
          mult_gencost(k)       = 1. _d 0
          gencost_is1d(k)       = .FALSE.
          gencost_is3d(k)       = .FALSE.
+         gencost_useDensityMask(k) = .FALSE.
+         gencost_refPressure(k) = 0. _d 0
+         gencost_sigmaLow(k)    = 0. _d 0
+         gencost_sigmaHigh(k)   = 1. _d 3
+         gencost_tanhScale(k)   = 1. _d 5
          gencost_pointer3d(k)  = 0
          gencost_msk_is3d(k)   = .FALSE.
          gencost_msk_pointer3d(k)  = 0
