@@ -1,6 +1,31 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - fix issue in S/R CTRL_MAP_GENARR3D by explicitly set xx_gen to zero where
+    wgenarr3d is zero ; also replacing 10^xx_gen with EXP(log(10)*xx_gen) for
+    log10ctrl produces small differences at machine truncation level.
+o eesupp & pkg/mdsio:
+  - new (CPP) Macro to open read-only files with ACTION='read', added to
+    most pkg/mdsio S/R (+ exf_interp_read.F); disable this in few old compiler
+    optfiles (g77, pgf77) by adding EXCLUDE_OPEN_ACTION to DEFINES list.
+o model:
+  - new CPP option to exclude (= default) S/R CONVECTIVE_ADJUSTMENT_INI;
+    to reproduce old results, define new option INCLUDE_CONVECT_INI_CALL in
+    two verification experiments: exp2 and tutorial_tracer_adjsens.
+  - add a check for INCLUDE_CONVECT_CALL if cAdjFreq <> 0.
+o tools/build_options:
+  - new optfile "darwin_arm64_gfortran" for Mac ARM 64-bit processor.
+o pkg/gmredi:
+  - add deep-factor to pkg/gmredi code to work with "deepAtmosphere=T".
+o verification/cpl_aim+ocn:
+  - add secondary test set-up using seaice dynamics (pkg/seaice) as part of
+    ocean component and update script to handle option to run multiple test.
+o verification/halfpipe_streamice:
+  - update OpenAD test by removing ECCO_CPPOPTIONS.h (but, for now, keep local
+    version: ctrl_map_gentim2d.F & ctrl_map_ini_genarr.F in code_oad).
+o pkg/mypackage:
+  - improve description (for a coding style example).
 o model:
   - add option to apply a correction for net global fresh-water flux imbalance
     proportional to, fixed in time, 2-D weight field that is read-in from file ;

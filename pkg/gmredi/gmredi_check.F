@@ -174,7 +174,6 @@ c     IF ( GM_useBatesK3d ) THEN
         errCount = errCount + 1
 c     ENDIF
 # endif
-
       IF ( GM_useBatesK3d ) THEN
         CALL WRITE_0D_L( GM_useBatesK3d, INDEX_NONE,
      &   'GM_useBatesK3d =',
@@ -210,7 +209,24 @@ C     The skew form is not presently supported.
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
+      IF ( GM_useBatesK3d .AND. deepAtmosphere ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: GM_useBatesK3d',
+     &   ' not yet fixed for deep geometry (deepAtmosphere=T)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
+#else /* GM_BATES_K3D */
+C     Make sure we are not trying to use something that is unavailable
+      IF ( GM_useBatesK3d ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: GM_useBatesK3d is set to True in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: without #define GM_BATES_K3D'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
 #endif /* GM_BATES_K3D */
 
 #ifndef GM_EXTRA_DIAGONAL
@@ -287,12 +303,6 @@ C     Make sure we are not trying to use some arrays that are unavailable
 
       IF ( GM_InMomAsStress ) THEN
 #ifdef ALLOW_EDDYPSI
-        IF ( .NOT.GM_AdvForm ) THEN
-          WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: ',
-     &         'GM_InMomAsStress=.TRUE. but GM_AdvForm=.FALSE.'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          errCount = errCount + 1
-        ENDIF
         IF ( .NOT.GM_useBatesK3d ) THEN
           WRITE(msgBuf,'(3A)') 'GMREDI_CHECK: ',
      &         'Using GM_InMomAsStress and not GM_useBatesK3d. ',

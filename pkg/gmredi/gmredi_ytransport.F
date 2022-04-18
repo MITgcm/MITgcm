@@ -122,8 +122,8 @@ C--   Area integrated meridional flux
         df(i,j) = df(i,j)
      &   -yA(i,j)
      &    *Kvy(i,j,k,bi,bj)
-     &    *_recip_dyC(i,j,bi,bj)
-     &    *(Tracer(i,j,k)-Tracer(i,j-1,k))
+     &    *_recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &    *( Tracer(i,j,k) - Tracer(i,j-1,k) )
        ENDDO
       ENDDO
 
@@ -175,9 +175,10 @@ C-    Off-diagonal components of horizontal flux
        IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
-         vTrans(i,j) = dxG(i,j,bi,bj)*( GM_PsiY(i,j,kp1,bi,bj)*maskp1
-     &                                 -GM_PsiY(i,j,k,bi,bj) )
-     &                               *maskS(i,j,k,bi,bj)
+         vTrans(i,j) = dxG(i,j,bi,bj)
+     &      *( GM_PsiY(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &       - GM_PsiY(i,j, k, bi,bj)*deepFacF(k)
+     &       )*maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
@@ -187,7 +188,7 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
        DO j=jMin,jMax
         DO i=iMin,iMax
          df(i,j) = df(i,j)
-     &    +vTrans(i,j)*op5*(Tracer(i,j,k)+Tracer(i,j-1,k))
+     &    + vTrans(i,j)*op5*( Tracer(i,j,k) + Tracer(i,j-1,k) )
         ENDDO
        ENDDO
       ENDIF
@@ -195,18 +196,18 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics
-     &     .AND. DIAGNOSTICS_IS_ON('GM_vbT  ', myThid )
-     &     .AND. trIdentity.EQ.1 ) THEN
+      IF ( useDiagnostics .AND. trIdentity.EQ.1 .AND.
+     &     DIAGNOSTICS_IS_ON( 'GM_vbT  ', myThid ) ) THEN
        kp1 = MIN(k+1,Nr)
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
-         tmp1k(i,j) = dxG(i,j,bi,bj)*( GM_PsiY(i,j,kp1,bi,bj)*maskp1
-     &                                -GM_PsiY(i,j,k,bi,bj) )
-     &                               *maskS(i,j,k,bi,bj)
-     &               *op5*(Tracer(i,j,k)+Tracer(i,j-1,k))
+         tmp1k(i,j) = dxG(i,j,bi,bj)
+     &      *( GM_PsiY(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &       - GM_PsiY(i,j, k, bi,bj)*deepFacF(k)
+     &       )*maskS(i,j,k,bi,bj)
+     &        *op5*( Tracer(i,j,k) + Tracer(i,j-1,k) )
         ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(tmp1k,'GM_vbT  ', k,1,2,bi,bj,myThid)

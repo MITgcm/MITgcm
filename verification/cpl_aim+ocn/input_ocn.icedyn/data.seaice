@@ -1,0 +1,24 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ usePW79thermodynamics=.FALSE.,
+ SEAICE_strength    = 2.6780e+04,
+#OCEAN_drag         = 8.1541e-04,
+# use same Air/Ocean drag than Air/sIce drag (like in AIM):
+ OCEAN_drag         = 2.E-3,
+ SEAICE_no_Slip     = .FALSE.,
+ LSR_ERROR          = 1.E-12,
+ SEAICElinearIterMax= 1500,
+#LSR_mixIniGuess    = 1,
+ SEAICEwriteState   = .TRUE.,
+ SEAICE_monFreq     = 3600.,
+# old defaults:
+ SEAICE_waterDrag   = 5.195E-3,
+ SEAICE_drag        = 2.E-3,
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICE_Olx         = 0,
+ SEAICE_Oly         = 0,
+ SEAICEetaZmethod   = 0,
+ &
+
+ &SEAICE_PARM03
+ &

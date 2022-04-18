@@ -33,7 +33,6 @@ C     == Global data ==
 #endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     bi,bj  :: tile indices
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration in simulation
@@ -43,14 +42,13 @@ C     myThid :: My Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef INCLUDE_CONVECT_CALL
+#ifdef INCLUDE_CONVECT_INI_CALL
 
 C     !FUNCTIONS:
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+c     EXTERNAL DIFFERENT_MULTIPLE
+c     LOGICAL  DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     iMin,iMax,jMin,jMax :: computation domain
 C     i,j,k        :: Loop counters
 C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
@@ -70,8 +68,8 @@ C     ConvectCount :: Convection mixing freq. counter.
 CEOP
 
 C--   Check to see if should convect now
-      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
-     &   ) THEN
+c     IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
+c    &   ) THEN
 
 C--   Define computation domain
         iMin=1-OLx
@@ -184,9 +182,9 @@ C--       End DO k=1,Nr
         ENDDO
 
 C--   End IF (DIFFERENT_MULTIPLE)
-      ENDIF
+c     ENDIF
 
-#endif /* INCLUDE_CONVECT_CALL */
+#endif /* INCLUDE_CONVECT_INI_CALL */
 
       RETURN
       END
