@@ -203,10 +203,8 @@ C--   Initialisation (+ build oceanic mask)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
       IF ( thSIce_diffK .GT. 0. ) THEN
         CALL THSICE_DIFFUSION(
@@ -238,9 +236,8 @@ C--   Fractional area
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icevol(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE utrice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE vtrice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE utrice = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE vtrice = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
         CALL THSICE_ADVECTION(
      I       GAD_SI_FRAC,  thSIceAdvScheme, .TRUE.,
@@ -255,6 +252,10 @@ C--   Snow thickness
           iceVol(i,j) = iceMask(i,j,bi,bj)*rA(i,j,bi,bj)
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uTrans                = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE vTrans                = comlev1_bibj,key=ticekey,byte=isbyte
+#endif
         CALL THSICE_ADVECTION(
      I       GAD_SI_HSNOW, thSIceAdvScheme, .FALSE.,
      I       uTrans, vTrans, maskOce, thSIce_deltaT, areaEpsil,
@@ -263,8 +264,8 @@ C--   Snow thickness
      I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceMask(:,:,bi,bj)   = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 C--   sea-ice Thickness
         DO j=1-OLy,sNy+OLy
@@ -281,9 +282,8 @@ C--   sea-ice Thickness
      I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE utrice(:,:)      = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE vtrice(:,:)      = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE utrice      = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE vtrice      = comlev1_bibj, key=ticekey, byte=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -442,12 +442,9 @@ c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(i,j)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceFrc(:,:) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceFrc                = comlev1_bibj,key=ticekey,byte=isbyte
 #endif
 
 C--   Update Ice Fraction: ensure that fraction is > iceMaskMin & < 1
@@ -471,6 +468,14 @@ c           IF ( dBug(i,j,bi,bj) )
           ENDIF
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Store directives to avoid recomputing of this routine in ad-code
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qIce1     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE qIce2     (:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+#endif
 C-     adjust sea-ice state if ice is too thin.
         DO j=1,sNy
          DO i=1,sNx
