@@ -58,6 +58,30 @@ C      (as long as all procs finish cleanly by calling ALL_PROC_DIE)
 
 C-  check that CPP option is "defined" when running-flag parameter is on:
 
+#ifndef INCLUDE_CONVECT_CALL
+C     o Check that Convective-adjustment code is compiled If cAdjFreq <> 0
+      IF ( cAdjFreq .NE. 0. ) THEN
+#ifdef INCLUDE_CONVECT_INI_CALL
+        WRITE(msgBuf,'(2A)') '** Warning ** CONFIG_CHECK: ',
+     &  'Convective-Adjustment (cAdjFreq) turned off (except INI)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** Warning ** CONFIG_CHECK: ',
+     &  ' without "#define INCLUDE_CONVECT_CALL" in CPP_OPTIONS.h'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+#else
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'Cannot use Convective-Adjustment (cAdjFreq) without'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  ' defining INCLUDE_CONVECT_(CALL/INI_CALL) in CPP_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+#endif
+      ENDIF
+#endif /* ndef INCLUDE_CONVECT_CALL */
+
 C     o If diffKrFile is set, then we should make sure the corresponing
 C       code is being compiled
 #ifndef ALLOW_3D_DIFFKR

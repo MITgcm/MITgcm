@@ -1,6 +1,33 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix store directives + modify code of thsice_calc_thickn.F, thsice_extend.F
+    and thsice_solve4temp.F to avoid 28 recomputation warnings and recomputing
+    the state unnecessarily;
+  - define new tape and retire two old thsice related tapes (commented out for
+    now) in the_main_loop.F;
+  - change offline_exf_seaice.thsice experiment to be more sensitive to changes;
+  - fixing a bug leads to smaller gradient errors and correct TLM cost function
+    values and requires updating (both ADM and TLM) offline_exf_seaice.thsice
+    and global_ocean.cs32x15.thsice reference output;
+o pkg/ctrl:
+  - fix issue in S/R CTRL_MAP_GENARR3D by explicitly set xx_gen to zero where
+    wgenarr3d is zero ; also replacing 10^xx_gen with EXP(log(10)*xx_gen) for
+    log10ctrl produces small differences at machine truncation level.
+o eesupp & pkg/mdsio:
+  - new (CPP) Macro to open read-only files with ACTION='read', added to
+    most pkg/mdsio S/R (+ exf_interp_read.F); disable this in few old compiler
+    optfiles (g77, pgf77) by adding EXCLUDE_OPEN_ACTION to DEFINES list.
+o model:
+  - new CPP option to exclude (= default) S/R CONVECTIVE_ADJUSTMENT_INI;
+    to reproduce old results, define new option INCLUDE_CONVECT_INI_CALL in
+    two verification experiments: exp2 and tutorial_tracer_adjsens.
+  - add a check for INCLUDE_CONVECT_CALL if cAdjFreq <> 0.
+o tools/build_options:
+  - new optfile "darwin_arm64_gfortran" for Mac ARM 64-bit processor.
+o pkg/gmredi:
+  - add deep-factor to pkg/gmredi code to work with "deepAtmosphere=T".
 o verification/cpl_aim+ocn:
   - add secondary test set-up using seaice dynamics (pkg/seaice) as part of
     ocean component and update script to handle option to run multiple test.

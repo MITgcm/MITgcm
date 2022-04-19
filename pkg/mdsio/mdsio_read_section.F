@@ -153,7 +153,7 @@ C If negative check for global file with MDS name (ie. fName.data)
 C If we are reading from a global file then we open it here
       IF (globalFile) THEN
        length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
-       OPEN( dUnit, file=dataFName, status='old',
+       OPEN( dUnit, file=dataFName, status='old', _READONLY_ACTION
      &       access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       ENDIF
@@ -178,7 +178,7 @@ C (This is a place-holder for the active/passive mechanism
      &                         SQUEEZE_RIGHT, myThid )
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
-          OPEN( dUnit, file=dataFName, status='old',
+          OPEN( dUnit, file=dataFName, status='old', _READONLY_ACTION
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          ELSE
@@ -431,7 +431,7 @@ C If negative check for global file with MDS name (ie. fName.data)
 C If we are reading from a global file then we open it here
       IF (globalFile) THEN
        length_of_rec = MDS_RECLEN( filePrec, sNy, myThid )
-       OPEN( dUnit, file=dataFName, status='old',
+       OPEN( dUnit, file=dataFName, status='old', _READONLY_ACTION
      &       access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       ENDIF
@@ -456,7 +456,7 @@ C (This is a place-holder for the active/passive mechanism
      &                         SQUEEZE_RIGHT, myThid )
           ENDIF
           length_of_rec = MDS_RECLEN( filePrec, sNy, myThid )
-          OPEN( dUnit, file=dataFName, status='old',
+          OPEN( dUnit, file=dataFName, status='old', _READONLY_ACTION
      &          access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          ELSE
