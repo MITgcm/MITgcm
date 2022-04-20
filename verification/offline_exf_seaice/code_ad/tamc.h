@@ -96,7 +96,7 @@ c     and writing data.
 
       INTEGER    isbyte
 C     For more accurate but larger tapes replace 4 by 8.
-      PARAMETER( isbyte      = 4 )
+      PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
 #ifndef ALLOW_PTRACERS

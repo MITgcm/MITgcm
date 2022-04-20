@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix store directives + modify code of thsice_calc_thickn.F, thsice_extend.F
+    and thsice_solve4temp.F to avoid 28 recomputation warnings and recomputing
+    the state unnecessarily;
+  - define new tape and retire two old thsice related tapes (commented out for
+    now) in the_main_loop.F;
+  - change offline_exf_seaice.thsice experiment to be more sensitive to changes;
+  - fixing a bug leads to smaller gradient errors and correct TLM cost function
+    values and requires updating (both ADM and TLM) offline_exf_seaice.thsice
+    and global_ocean.cs32x15.thsice reference output;
 o pkg/ctrl:
   - fix issue in S/R CTRL_MAP_GENARR3D by explicitly set xx_gen to zero where
     wgenarr3d is zero ; also replacing 10^xx_gen with EXP(log(10)*xx_gen) for
