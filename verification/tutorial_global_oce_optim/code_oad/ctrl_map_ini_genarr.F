@@ -12,6 +12,8 @@ C     | Add the generic arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
 C     *=================================================================
+C     | local version for OpenAD exp. tutorial_global_oce_optim
+C     *=================================================================
 C     \ev
 
 C     !USES:

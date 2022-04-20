@@ -1,4 +1,5 @@
 #include "CTRL_OPTIONS.h"
+#undef PREVENT_TOO_COLD_TEMP
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -11,6 +12,8 @@ C     | SUBROUTINE CTRL_MAP_INI_GENARR
 C     | Add the generic arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
+C     *=================================================================
+C     | local version for OpenAD exp. OpenAD, global_ocean.90x40x15
 C     *=================================================================
 C     \ev
 
@@ -188,6 +191,11 @@ C--   generic - user-defined control vars
             DO i = 1,sNx
              theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
      &         + fac*tmpfld3d(i,j,k,bi,bj)
+#ifdef PREVENT_TOO_COLD_TEMP
+C     necessary to reproduce old results
+             IF ( theta(i,j,k,bi,bj).LT.-2.0 _d 0 )
+     &            theta(i,j,k,bi,bj) = -2.0 _d 0
+#endif
             ENDDO
            ENDDO
           ENDDO
@@ -208,6 +216,20 @@ C--   generic - user-defined control vars
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( salt, Nr, myThid )
+CML       ELSEIF ( iarr .EQ. 3 ) THEN
+CML        DO bj=myByLo(myThid), myByHi(myThid)
+CML         DO bi=myBxLo(myThid), myBxHi(myThid)
+CML          DO k = 1,Nr
+CML           DO j = 1,sNy
+CML            DO i = 1,sNx
+CML             diffKr(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
+CML     &         + fac*tmpfld3d(i,j,k,bi,bj)
+CML            ENDDO
+CML           ENDDO
+CML          ENDDO
+CML         ENDDO
+CML        ENDDO
+CML        CALL EXCH_3D_RL( diffKr, Nr, myThid )
       ENDIF
 
 C--   end iarr loop
