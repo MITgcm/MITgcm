@@ -58,6 +58,11 @@ C     myThid :: My Thread Id number
 
 #ifdef ALLOW_GGL90
 
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
 C !LOCAL VARIABLES: ====================================================
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k          :: array computation indices
@@ -1084,46 +1089,65 @@ C     ===============================
         CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
      &                         0,Nr, 2, bi, bj, myThid )
 
-C     diagnose surface flux of TKE
-        IF ( usingPCoords ) THEN
-C     diagnose surface flux of TKE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           surf_flx_tke(i,j) =
-     &          (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
-     &          - GGL90TKE(i,j,kSrf,bi,bj) )
-     &          *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
-     &          *KappaE(i,j,kSrf)
-     &          *coordFac
+C     avoid extra 3D diagnostics field and abuse unused field
+        IF ( DIAGNOSTICS_IS_ON('GGL90KN2',myThid) ) THEN
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            TKEPrandtlNumber(i,j,k) =
+     &           GGL90diffKr(i,j,k,bi,bj) * Nsquare(i,j,k)
+           ENDDO
           ENDDO
          ENDDO
-        ELSE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
-     &                         GGL90TKE(i,j,kTop,bi,bj))
+         CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90KN2',
+     &                          0, Nr, 2, bi, bj, myThid )
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('GGL90flx',myThid) ) THEN
+C     diagnose surface flux of TKE
+         IF ( usingPCoords ) THEN
+C     diagnose surface flux of TKE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            surf_flx_tke(i,j) =
+     &           (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
+     &           - GGL90TKE(i,j,kSrf,bi,bj) )
+     &           *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
+     &           *KappaE(i,j,kSrf)
+     &           *coordFac
+           ENDDO
+          ENDDO
+         ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            surf_flx_tke(i,j) = (GGL90TKE(i,j,kSrf,bi,bj)-
+     &                           GGL90TKE(i,j,kTop,bi,bj))
      &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
      &         *KappaE(i,j,kTop)
+           ENDDO
           ENDDO
-         ENDDO
-        ENDIF
-        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90flx',
-     &                         0, 1, 2, bi, bj, myThid )
+         ENDIF
+         CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90flx',
+     &                          0, 1, 2, bi, bj, myThid )
 
-        k=kSrf
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('GGL90tau',myThid) ) THEN
+         k=kSrf
+         DO j=jMin,jMax
+          DO i=iMin,iMax
 C     diagnose work done by the wind
-          surf_flx_tke(i,j) =
+           surf_flx_tke(i,j) =
      &      halfRL*( surfaceForcingU(i,  j,bi,bj)*uVel(i  ,j,k,bi,bj)
      &              +surfaceForcingU(i+1,j,bi,bj)*uVel(i+1,j,k,bi,bj))
      &    + halfRL*( surfaceForcingV(i,j,  bi,bj)*vVel(i,j  ,k,bi,bj)
      &              +surfaceForcingV(i,j+1,bi,bj)*vVel(i,j+1,k,bi,bj))
-          surf_flx_tke(i,j) = surf_flx_tke(i,j) *recip_coordFac
+           surf_flx_tke(i,j) = surf_flx_tke(i,j) *recip_coordFac
+          ENDDO
          ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
-     &                         0, 1, 2, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
+     &                          0, 1, 2, bi, bj, myThid )
+        ENDIF
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
