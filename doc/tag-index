@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o autodiff(TAF):
+  - avoid unnecessary local recomputations and associated warnings by storing to
+    local tapes in: seaice/advect.F, gad_dst3fl_impl_r.F, gmredi_slope_limit.F,
+    shap_filt_uv_s2.F, solve_pentadiagonal.F
 o pkg/thsice:
   - fix store directives + modify code of thsice_calc_thickn.F, thsice_extend.F
     and thsice_solve4temp.F to avoid 28 recomputation warnings and recomputing
