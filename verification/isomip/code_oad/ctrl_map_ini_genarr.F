@@ -40,27 +40,26 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      integer bi,bj
-      integer i,j,k
-      integer il
-      integer iarr
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER il
+      INTEGER iarr
 
-      logical doglobalread
-      logical ladinit
-      character*(MAX_LEN_FNAM) fnamebase
-      character*( 80)   fnamegeneric
-      character*(MAX_LEN_MBUF) msgBuf
+      LOGICAL doglobalread
+      LOGICAL ladinit
+      CHARACTER*(MAX_LEN_FNAM) fnamebase
+      CHARACTER*(80) fnamegeneric
       _RL     fac
 #ifdef ALLOW_GENARR2D_CONTROL
-      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
-      _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 CEOP
 
-      doglobalread = .false.
-      ladinit      = .false.
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
       fac = 1. _d 0
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -88,7 +87,7 @@ C     ctrl_map_gentim2d.F
        ENDDO
        fnamebase = xx_genarr2d_file(iarr)
        il=ILNBLNK( fnamebase )
-       WRITE(fnamegeneric(1:80),'(2a,i10.10)')
+       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
@@ -171,7 +170,7 @@ C--   generic - user-defined control vars
        ENDDO
        fnamebase = xx_genarr3d_file(iarr)
        il=ILNBLNK( fnamebase )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
+       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,
