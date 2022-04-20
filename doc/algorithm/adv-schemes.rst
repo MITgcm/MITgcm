@@ -211,7 +211,7 @@ generally expressed in terms of other flux approximations. For example,
 in terms of a first order upwind flux and second order Lax-Wendroff
 flux, the limited flux is given as:
 
-.. math:: F = F_1 + \psi(r) F_{\rm LW}
+.. math:: F = (1 - \psi(r)) F_1 + \psi(r) F_{\rm LW}
    :label: limited_flux
 
 where :math:`\psi(r)` is the limiter function,
@@ -220,9 +220,9 @@ where :math:`\psi(r)` is the limiter function,
 
 is the upwind flux,
 
-.. math:: F_{\rm LW} = F_1 + \frac{|u|}{2} (1-c) \delta_i \tau
+.. math:: F_{\rm LW} = u \overline{\tau}^i - \frac{1}{2} c |u| \delta_i \tau
 
-is the Lax-Wendroff flux and :math:`c = \frac{u \Delta t}{\Delta x}` is
+is the Lax-Wendroff flux and :math:`c = \frac{|u| \Delta t}{\Delta x}` is
 the Courant (CFL) number.
 
 The limiter function, :math:`\psi(r)`, takes the slope ratio
