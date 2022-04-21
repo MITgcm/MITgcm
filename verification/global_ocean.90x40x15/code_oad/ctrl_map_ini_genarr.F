@@ -216,6 +216,7 @@ C     necessary to reproduce old results
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( salt, Nr, myThid )
+#ifdef ALLOW_3D_DIFFKR
        ELSEIF ( iarr .EQ. 3 ) THEN
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -230,6 +231,7 @@ C     necessary to reproduce old results
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( diffKr, Nr, myThid )
+#endif
       ENDIF
 
 C--   end iarr loop

@@ -216,20 +216,22 @@ C     necessary to reproduce old results
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( salt, Nr, myThid )
-CML       ELSEIF ( iarr .EQ. 3 ) THEN
-CML        DO bj=myByLo(myThid), myByHi(myThid)
-CML         DO bi=myBxLo(myThid), myBxHi(myThid)
-CML          DO k = 1,Nr
-CML           DO j = 1,sNy
-CML            DO i = 1,sNx
-CML             diffKr(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
-CML     &         + fac*tmpfld3d(i,j,k,bi,bj)
-CML            ENDDO
-CML           ENDDO
-CML          ENDDO
-CML         ENDDO
-CML        ENDDO
-CML        CALL EXCH_3D_RL( diffKr, Nr, myThid )
+#ifdef ALLOW_3D_DIFFKR
+       ELSEIF ( iarr .EQ. 3 ) THEN
+        DO bj=myByLo(myThid), myByHi(myThid)
+         DO bi=myBxLo(myThid), myBxHi(myThid)
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             diffKr(i,j,k,bi,bj) = diffKr(i,j,k,bi,bj)
+     &         + fac*tmpfld3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL EXCH_3D_RL( diffKr, Nr, myThid )
+#endif
       ENDIF
 
 C--   end iarr loop
