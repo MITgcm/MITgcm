@@ -67,7 +67,6 @@ C     i, j, k          :: array computation indices
 C     kSrf             :: vertical index of surface level
 C     kTop             :: index of top interface (just below surf. level)
 C     kBot             :: index of bottom interface (just above bottom lev.)
-C     delK             :: from interface k to level just below: k-delK
 C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
 C     implDissFac      :: implicit Dissipation Factor (in [0-1])
@@ -90,8 +89,8 @@ C         rMixingLength:: inverse of mixing length
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k
-      INTEGER kp1, km1, kl
-      INTEGER kSrf, kTop, kBot, delK
+      INTEGER kp1, km1
+      INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL deltaTloc
       _RL explDissFac, implDissFac
@@ -121,10 +120,14 @@ c     _RL SQRTTKE
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     IDEMIX_gTKE :: TKE tendency due to internal waves
 C                    (output of S/R GGL90_IDEMIX)
-      _RL IDEMIX_gTKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
+      _RL msk
+#ifdef ALLOW_GGL90_SMOOTH
+      _RL maskI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 C-    tri-diagonal matrix
       _RL a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -167,11 +170,9 @@ CEOP
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
-       delK =  1
       ELSE
        kSrf =  1
        kTop =  2
-       delK =  0
       ENDIF
       deltaTloc = dTtracerLev(kSrf)
 
@@ -277,11 +278,11 @@ c       rMixingLength(i,j,1)  = 0. _d 0
       ENDDO
 
       DO k = 2, Nr
-       kl = k-delK
        DO j=jMin,jMax
         DO i=iMin,iMax
+         msk = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
 #ifdef ALLOW_AUTODIFF
-         IF ( maskC(i,j,kl,bi,bj).EQ.oneRS ) THEN
+         IF ( msk.EQ.oneRS ) THEN
 #endif
           SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
 #ifdef ALLOW_AUTODIFF
@@ -298,7 +299,7 @@ C     to save some memory
 C     mixing length
          GGL90mixingLength(i,j,k) = SQRTTWO *
      &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
-     &        * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &        * msk
         ENDDO
        ENDDO
       ENDDO
@@ -1030,7 +1031,13 @@ C     end of time step
 C     ===============================
 
       DO k=2,Nr
-       kl = k-delK
+#ifdef ALLOW_GGL90_SMOOTH
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         maskI(i,j) = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+        ENDDO
+       ENDDO
+#endif
        DO j=1,sNy
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
@@ -1046,15 +1053,15 @@ C     ===============================
      &           + GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj) ) )
      &             )/(
      &     p4
-     &    +p8 *(( maskC(i-1,j  ,kl,bi,bj)*mskCor(i-1,j  ,bi,bj)
-     &          + maskC(i+1,j  ,kl,bi,bj)*mskCor(i+1,j  ,bi,bj) )
-     &         +( maskC(i  ,j-1,kl,bi,bj)*mskCor(i  ,j-1,bi,bj)
-     &          + maskC(i  ,j+1,kl,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &    +p16*(( maskC(i+1,j+1,kl,bi,bj)*mskCor(i+1,j+1,bi,bj)
-     &          + maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj) )
-     &         +( maskC(i+1,j-1,kl,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &          + maskC(i-1,j+1,kl,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
-     &               )*maskC(i,j,kl,bi,bj)*mskCor(i,j,bi,bj)
+     &    +p8 *(( maskI(i-1,j  )*mskCor(i-1,j  ,bi,bj)
+     &          + maskI(i+1,j  )*mskCor(i+1,j  ,bi,bj) )
+     &         +( maskI(i  ,j-1)*mskCor(i  ,j-1,bi,bj)
+     &          + maskI(i  ,j+1)*mskCor(i  ,j+1,bi,bj) ) )
+     &    +p16*(( maskI(i+1,j+1)*mskCor(i+1,j+1,bi,bj)
+     &          + maskI(i-1,j-1)*mskCor(i-1,j-1,bi,bj) )
+     &         +( maskI(i+1,j-1)*mskCor(i+1,j-1,bi,bj)
+     &          + maskI(i-1,j+1)*mskCor(i-1,j+1,bi,bj) ) )
+     &               )*maskI(i,j)*mskCor(i,j,bi,bj)
 #else
          tmpVisc = GGL90visctmp(i,j,k)
 #endif
@@ -1063,10 +1070,7 @@ C     ===============================
          GGL90diffKr(i,j,k,bi,bj)= MAX( tmpVisc , diffKrNrS(k) )
         ENDDO
        ENDDO
-      ENDDO
 
-      DO k=2,Nr
-       kl = k-delK
        DO j=1,sNy
         DO i=1,sNx+1
 #ifdef ALLOW_GGL90_SMOOTH
@@ -1079,14 +1083,14 @@ C     ===============================
      &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *(( maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &          + maskC(i  ,j-1,kl,bi,bj)*mskCor(i  ,j-1,bi,bj) )
-     &         +( maskC(i-1,j+1,kl,bi,bj)*mskCor(i-1,j+1,bi,bj)
-     &          + maskC(i  ,j+1,kl,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &               )*maskC(i-1,j,kl,bi,bj)*mskCor(i-1,j,bi,bj)
-     &                *maskC(i  ,j,kl,bi,bj)*mskCor(i  ,j,bi,bj)
+     &    +p8 *(( maskI(i-1,j-1)*mskCor(i-1,j-1,bi,bj)
+     &          + maskI(i  ,j-1)*mskCor(i  ,j-1,bi,bj) )
+     &         +( maskI(i-1,j+1)*mskCor(i-1,j+1,bi,bj)
+     &          + maskI(i  ,j+1)*mskCor(i  ,j+1,bi,bj) ) )
+     &               )*maskI(i-1,j)*mskCor(i-1,j,bi,bj)
+     &                *maskI(i  ,j)*mskCor(i  ,j,bi,bj)
 #else
-         tmpVisc = _maskW(i,j,kl,bi,bj) * halfRL
+         tmpVisc = _maskW(i,j,k-1,bi,bj) * _maskW(i,j,k,bi,bj) * halfRL
      &          *( GGL90visctmp(i-1,j,k)
      &           + GGL90visctmp(i,  j,k) )
 #endif
@@ -1095,10 +1099,7 @@ C     ===============================
          GGL90viscArU(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
         ENDDO
        ENDDO
-      ENDDO
 
-      DO k=2,Nr
-       kl = k-delK
        DO j=1,sNy+1
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
@@ -1111,14 +1112,14 @@ C     ===============================
      &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *(( maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &          + maskC(i-1,j  ,kl,bi,bj)*mskCor(i-1,j  ,bi,bj) )
-     &         +( maskC(i+1,j-1,kl,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &          + maskC(i+1,j  ,kl,bi,bj)*mskCor(i+1,j  ,bi,bj) ) )
-     &               )*maskC(i,j-1,kl,bi,bj)*mskCor(i,j-1,bi,bj)
-     &                *maskC(i,j  ,kl,bi,bj)*mskCor(i,j  ,bi,bj)
+     &    +p8 *(( maskI(i-1,j-1)*mskCor(i-1,j-1,bi,bj)
+     &          + maskI(i-1,j  )*mskCor(i-1,j  ,bi,bj) )
+     &         +( maskI(i+1,j-1)*mskCor(i+1,j-1,bi,bj)
+     &          + maskI(i+1,j  )*mskCor(i+1,j  ,bi,bj) ) )
+     &               )*maskI(i,j-1)*mskCor(i,j-1,bi,bj)
+     &                *maskI(i,j  )*mskCor(i,j  ,bi,bj)
 #else
-         tmpVisc = _maskS(i,j,kl,bi,bj) * halfRL
+         tmpVisc = _maskS(i,j,k-1,bi,bj) * _maskS(i,j,k,bi,bj) * halfRL
      &          *( GGL90visctmp(i,j-1,k)
      &           + GGL90visctmp(i,j,  k) )
 #endif
