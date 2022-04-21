@@ -23,7 +23,7 @@ solution.
 The advection operator is discretized:
 
 .. math::
-   {\cal A}_c \Delta r_f h_c G_{\rm adv}^\tau = 
+   {\cal A}_c \Delta r_f h_c G_{\rm adv}^\tau =
    \delta_i F_x + \delta_j F_y + \delta_k F_r
    :label: cent_2nd_ord
 
@@ -116,7 +116,6 @@ accuracy of this boundary condition and the effect on the solution.
     | :math:`F_r` : :varlink:`wT` ( argument )
     | :math:`W` : :varlink:`rTrans` ( argument )
     | :math:`\tau` : :varlink:`tracer` ( argument )
-
 
 Centered fourth order advection
 -------------------------------
@@ -259,7 +258,6 @@ only provide the Superbee limiter (Roe 1995 :cite:`roe:85`):
     | :math:`F_r` : :varlink:`wT` ( argument )
     | :math:`W` : :varlink:`rTrans` ( argument )
     | :math:`\tau` : :varlink:`tracer` ( argument )
-
 
 Third order direct space-time
 -----------------------------
@@ -430,14 +428,13 @@ A schematic of multi-dimension time stepping for the cube sphere configuration i
 Comparison of advection schemes
 ===============================
 
-:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm. 
+:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm.
 “AB” stands for Adams-Bashforth and “DST” for direct space-time. The code corresponds to the number used
 to select the corresponding advection scheme in the parameter file (e.g., ``tempAdvScheme=3`` in file
 ``data`` selects the 3rd order upwind advection scheme for temperature advection).
 
 .. table:: MITgcm Advection Schemes
   :name: adv_scheme_summary
-
 
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
   | Advection Scheme                                            | Code | Use | Use           | Stencil | Comments                                          |
@@ -477,7 +474,6 @@ to select the corresponding advection scheme in the parameter file (e.g., ``temp
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
   | second order-moment Prather w/limiter                       |  81  |  no |        yes    |   3     | non-linear                                        |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
- 
 
 yes\ :sup:`*` indicates that either the multi-dim advection algorithm or standard approach can be utilized, controlled by a namelist parameter :varlink:`multiDimAdvection`
 (in these cases, given that these schemes was designed to use multi-dim advection, using the standard approach is not recommended).
@@ -506,7 +502,6 @@ Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison o
     :name: advect-1d-hi
 
     Comparison of 1-D advection schemes: Courant number is 0.89 with 60 points and solutions are shown for T=1 (one complete period). a) Shows the upwind biased schemes; first order upwind and DST3. Third order upwind and second order upwind are unstable at this Courant number. b) Shows the centered schemes; Lax-Wendroff, DST4. Centered second order, centered fourth order and finite volume fourth order are unstable at this Courant number. c) Shows the second order flux limiters: minmod, Superbee, MC limiter and the van Leer limiter. d) Shows the DST3 method with flux limiters due to Sweby with :math:`\mu =1` ,  :math:`\mu =c/(1-c)` and a fourth order DST method with Sweby limiter,  :math:`\mu =c/(1-c)` .
-
 
 :numref:`advect-2d-lo-diag`, :numref:`advect-2d-mid-diag` and
 :numref:`advect-2d-hi-diag` show solutions to a simple diagonal advection
