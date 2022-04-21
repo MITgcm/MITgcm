@@ -392,10 +392,10 @@ C     ! melting conditions
 C     !-----------------------------------------------------------------
 #if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
 C     smooth regulatization
-          ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -4)
+          ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -6)
 #else
 C     for no currents:
-          ustar = 5. _d -2
+          ustar = 5. _d -3
 C frictional velocity between ice and water
           IF (v2oc(i,j) .NE. 0.)
      &     ustar = SQRT(0.00536 _d 0*v2oc(i,j))
