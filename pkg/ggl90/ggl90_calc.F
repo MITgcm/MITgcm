@@ -310,7 +310,7 @@ C- ensure mixing between first and second level
 #ifdef ALLOW_SHELFICE
          IF ( useShelfIce ) THEN
           kSrf = MAX(1,kTopC(i,j,bi,bj))
-          kTop = MAX(2,kTopC(i,j,bi,bj))
+          kTop = MIN(kSrf+1,Nr)
          ENDIF
 #endif
          GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
@@ -945,6 +945,12 @@ C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(kTopC(i,j,bi,bj),1)
+          kTop = kSrf
+         ENDIF
+#endif
          GGL90TKE(i,j,kSrf,bi,bj) = GGL90TKE(i,j,kSrf,bi,bj)
      &        - c3d(i,j,kSrf) * maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
@@ -957,7 +963,7 @@ C     Dirichlet surface boundary condition for TKE
 #ifdef ALLOW_SHELFICE
          IF ( useShelfIce ) THEN
           kSrf = MAX(1,kTopC(i,j,bi,bj))
-          kTop = MAX(2,kTopC(i,j,bi,bj))
+          kTop = MIN(kSrf+1,Nr)
          ENDIF
 #endif
          GGL90TKE(i,j,kSrf,bi,bj) = maskC(i,j,kSrf,bi,bj)
@@ -1141,6 +1147,12 @@ C     diagnose surface flux of TKE
 C     diagnose surface flux of TKE
          DO j=jMin,jMax
           DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+           IF ( useShelfIce ) THEN
+            kSrf = MAX(kTopC(i,j,bi,bj),1)
+            kTop = kSrf
+           ENDIF
+#endif
            surf_flx_tke(i,j) =
      &          (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
      &          - GGL90TKE(i,j,kSrf,bi,bj) )
@@ -1155,7 +1167,7 @@ C     diagnose surface flux of TKE
 #ifdef ALLOW_SHELFICE
            IF ( useShelfIce ) THEN
             kSrf = MAX(1,kTopC(i,j,bi,bj))
-            kTop = MAX(2,kTopC(i,j,bi,bj))
+            kTop = MIN(kSrf+1,Nr)
            ENDIF
 #endif
            surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
