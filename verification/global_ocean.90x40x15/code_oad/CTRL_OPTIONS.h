@@ -26,37 +26,8 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C allow use of legacy ecco/ctrl codes
-#undef ECCO_CTRL_DEPRECATED
-
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
-
-C       >>> Initial values.
-#undef ALLOW_THETA0_CONTROL
-#undef ALLOW_SALT0_CONTROL
-#undef ALLOW_TR10_CONTROL
-#undef ALLOW_TAUU0_CONTROL
-#undef ALLOW_TAUV0_CONTROL
-#undef ALLOW_SFLUX0_CONTROL
-#undef ALLOW_HFLUX0_CONTROL
-#undef ALLOW_SSS0_CONTROL
-#undef ALLOW_SST0_CONTROL
-
-C       >>> Surface fluxes.
-#undef ALLOW_HFLUX_CONTROL
-#undef ALLOW_SFLUX_CONTROL
-#undef ALLOW_USTRESS_CONTROL
-#undef ALLOW_VSTRESS_CONTROL
-#undef ALLOW_SWFLUX_CONTROL
-#undef ALLOW_LWFLUX_CONTROL
-
-C       >>> Atmospheric state.
-#undef ALLOW_ATEMP_CONTROL
-#undef ALLOW_AQH_CONTROL
-#undef ALLOW_UWIND_CONTROL
-#undef ALLOW_VWIND_CONTROL
-#undef ALLOW_PRECIP_CONTROL
 
 C       >>> Other Control.
 #undef ALLOW_DIFFKR_CONTROL
