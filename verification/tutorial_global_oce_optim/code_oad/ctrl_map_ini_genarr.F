@@ -99,7 +99,7 @@ C     at the beginning of the integration.
          DO bi=myBxLo(myThid), myBxHi(myThid)
           DO j = 1,sNy
            DO i = 1,sNx
-            qnetm(i,j,bi,bj) = qnetm(i,j,bi,bj)
+            Qnetm(i,j,bi,bj) = Qnetm(i,j,bi,bj)
      &           + fac*tmpfld2d(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -108,7 +108,7 @@ C     at the beginning of the integration.
        ENDIF
 C--   end iarr loop
       ENDDO
-      _EXCH_XY_RS( qnetm,  myThid )
+      _EXCH_XY_RS( Qnetm, myThid )
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
