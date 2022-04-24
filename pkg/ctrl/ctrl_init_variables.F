@@ -42,9 +42,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
       INTEGER k
-#if (defined ALLOW_BOTTOMDRAG_CONTROL) \
-      || (defined ALLOW_SHIFWFLX_CONTROL) \
-      || (defined ECCO_CTRL_DEPRECATED)
+#if (defined ALLOW_BOTTOMDRAG_CONTROL) || (defined ECCO_CTRL_DEPRECATED)
       INTEGER i,j
 #endif
 #ifdef ECCO_CTRL_DEPRECATED
