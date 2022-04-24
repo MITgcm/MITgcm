@@ -104,8 +104,8 @@ cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
       WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
-      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   Sum up all contributions.
       loc_fc = 0.
@@ -113,33 +113,33 @@ c--   Sum up all contributions.
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_COST_TEST
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &       ' --> objf_test(bi,bj)        = ', objf_test(bi,bj)
 #endif
 #ifdef ALLOW_COST_TRACER
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
 #endif
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
 # ifdef ALLOW_COST_ATLANTIC_HEAT
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
 # endif
 #endif
 #ifdef ALLOW_COST_TEMP
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_temp_tut(bi,bj)  = ', objf_temp_tut(bi,bj)
 #endif
 #ifdef ALLOW_COST_HFLUXM
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
 #endif
 #ifdef ALLOW_COST_TRANSPORT
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
 #ifdef ALLOW_COST_DEPTH
-          WRITE(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
 #endif
 
@@ -186,8 +186,8 @@ c--   Sum up all contributions.
       ENDDO
 
       WRITE(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
-      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
@@ -206,8 +206,8 @@ cph-- quickly for testing
 #endif
 
       WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
-      CALL PRINT_MESSAGE( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :
