@@ -68,9 +68,9 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
       INTEGER k
-      INTEGER n,ijd,ijs,kshelf
+      INTEGER n,ijd,ijs,kshelf,kDeep
       _RL     gTrLoc(0:Nr)
-      _RL     tmpFld
+      _RL     dTrac(0:Nr)
       INTEGER upward
       LOGICAL onOffFlag
 
@@ -141,20 +141,25 @@ C- detect density gradient along the slope => Downsloping flow
          ijs = ijd + DWNSLP_shVsD(n,bi,bj)
 
          kshelf = kBottom(ijs,bi,bj)
-         tmpFld = tracer(ijs,kshelf)
+         kDeep = DWNSLP_deepK(n,bi,bj)
+C- precomute vertical tracer differences to help TAF
+         dTrac(kshelf-1) = tracer(ijd,kshelf)-tracer(ijs,kshelf)
+         DO k=kshelf,kDeep-1
+          dTrac(k) = tracer(ijd,k+1)-tracer(ijd,k)
+         ENDDO
+         dTrac(kDeep) = tracer(ijs,kshelf)-tracer(ijd,kDeep)
 C- downsloping flow (in) & upward return flow :
          DO k=DWNSLP_deepK(n,bi,bj),kshelf,upward
           gTrLoc(k) = DWNSLP_Transp(n,bi,bj)
-     &       *( tmpFld - tracer(ijd,k) )
+     &       * dTrac(k)
      &       *recip_drF(k)*recip_hFac(ijd,k)
      &       *recip_rA_arg(ijd,bi,bj)
           gTracer(ijd,k) = gTracer(ijd,k) + gTrLoc(k)
-          tmpFld = tracer(ijd,k)
          ENDDO
 C- downsloping flow (out) & return flow to the shelf
           k = kshelf
           gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
-     &       *( tmpFld - tracer(ijs,k) )
+     &       * dTrac(k-1)
      &       *recip_drF(k)*recip_hFac(ijs,k)
      &       *recip_rA_arg(ijs,bi,bj)
           gTracer(ijs,k) = gTracer(ijs,k) + gTrLoc(0)
@@ -170,10 +175,7 @@ C- downsloping flow (out) & return flow to the shelf
      &       *recip_rA_arg(ijd,bi,bj)*
      &        (tracer(ijs,kshelf)-tracer(ijd,k)),
      &      tracer(ijs,kshelf),
-     &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
-     &       *recip_drF(kshelf)*recip_hFac(ijs,kshelf)
-     &       *recip_rA_arg(ijs,bi,bj)*
-     &        (tmpFld-tracer(ijs,kshelf))
+     &      deltaTLev(k)*gTrLoc(0)
           _END_MASTER(myThid)
          ENDIF
         ENDIF
