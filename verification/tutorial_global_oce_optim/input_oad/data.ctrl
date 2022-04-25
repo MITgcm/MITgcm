@@ -4,7 +4,6 @@
 # ECCO controlvariables
 # *********************
  &CTRL_NML
- xx_hfluxm_file      = 'xx_hfluxm',
  &
 #
 # *********************
@@ -12,4 +11,11 @@
 # *********************
  &CTRL_PACKNAMES
  &
-
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr2d_file(1)   = 'xx_qnetm',
+ xx_genarr2d_weight(1) = 'ones_64b.bin',
+ &

@@ -13,8 +13,7 @@ C     | Add the generic arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
 C     *=================================================================
-C     | local version for OpenAD exp. tutorial_global_oce_biogeo and
-C     |   tutorial_tracer_adjsens
+C     | local version for OpenAD exp. OpenAD, global_ocean.90x40x15
 C     *=================================================================
 C     \ev
 
@@ -52,13 +51,12 @@ C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER il
-      INTEGER iarr, iptr
+      INTEGER iarr
 
       LOGICAL doglobalread
       LOGICAL ladinit
       CHARACTER*(MAX_LEN_FNAM) fnamebase
       CHARACTER*(80) fnamegeneric
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     fac
 #ifdef ALLOW_GENARR2D_CONTROL
       _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
@@ -163,15 +161,6 @@ cc--->>> COMPILE FAILURE IS DELIBERATE
 cc--->>> BE SURE WHAT YOU ARE DOING AND CUSTOMIZE <<<---
 cc--->>>
 cc
-cc A CONSISTENCY CHECK: FOR THIS CUSTOMIZATION
-cc WE ASSUME maxCtrlArr3D-3 <= PTRACERS_num
-cc
-      IF ( maxCtrlArr3D-3 .GT. PTRACERS_num ) THEN
-        WRITE(msgBuf,'(A)')
-     &   'CTRL_MAP_INI_GENARR: need maxCtrlArr3D-3 <= PTRACERS_num'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CTRL_MAP_INI_GENARR'
-      ENDIF
 
 C--   generic - user-defined control vars
       DO iarr = 1, maxCtrlArr3D
@@ -227,6 +216,7 @@ C     necessary to reproduce old results
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( salt, Nr, myThid )
+#ifdef ALLOW_3D_DIFFKR
        ELSEIF ( iarr .EQ. 3 ) THEN
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -241,22 +231,7 @@ C     necessary to reproduce old results
          ENDDO
         ENDDO
         CALL EXCH_3D_RL( diffKr, Nr, myThid )
-       ELSEIF ( iarr .EQ. 4 ) THEN
-        iptr = iarr-3
-        DO bj=myByLo(myThid), myByHi(myThid)
-         DO bi=myBxLo(myThid), myBxHi(myThid)
-          DO k = 1,Nr
-           DO j = 1,sNy
-            DO i = 1,sNx
-             pTracer(i,j,k,bi,bj,iptr) = pTracer(i,j,k,bi,bj,iptr)
-     &         + fac*tmpfld3d(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL EXCH_3D_RL( pTracer(1-OLx,1-OLy,1,1,1,iptr),
-     &                  Nr, myThid )
+#endif
       ENDIF
 
 C--   end iarr loop

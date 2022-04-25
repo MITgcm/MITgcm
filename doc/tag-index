@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification, OpenAD:
+  - make all OpenAD experiments use generic control variables, so that from now
+    on, the ECCO_CTRL_DEPRECATED code is no longer tested in verification
+    (neither in verification_other, where it never was tested), except for
+    global_ocean.cs32x15.thsice (this is intentioal).
 o autodiff(TAF):
   - avoid unnecessary local recomputations and associated warnings by storing to
     local tapes in: seaice/advect.F, gad_dst3fl_impl_r.F, gmredi_slope_limit.F,
