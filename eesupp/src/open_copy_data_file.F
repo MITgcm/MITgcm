@@ -106,7 +106,7 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 
 C--   Open the parameter file
       OPEN( UNIT=modelDataUnit, FILE=data_file,
-     &      STATUS='OLD', _READONLY_ACTION IOSTAT=errIO )
+     &      _READONLY_ACTION STATUS='OLD', IOSTAT=errIO )
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'Unable to open parameter file: ',data_file
@@ -164,7 +164,7 @@ C     writing scratchFile1 before opening it
       CALL SYSTEM('sleep 1')
 #endif
       OPEN( UNIT=scrUnit1, FILE=scratchFile1,
-     &      STATUS='OLD' _READONLY_ACTION )
+     &      _READONLY_ACTION STATUS='OLD' )
 #endif /* SINGLE_DISK_IO */
 
 C--   Return open unit to caller
