@@ -925,13 +925,10 @@ C-     Explicit case: diagnose directly the Ice-Shelf stress
            tempVp = shelficeDragV(i,j+1,bi,bj)
           ELSE
 C-     Implicit case: use drag-coeff to diagnose the Ice-Shelf stress
-           k = MAX( 1, kTopC(i-1,j,bi,bj), kTopC(i,j,bi,bj) )
+           k = MAX( 1, kTopC(i,j,bi,bj) )
            tempU  = -shelficeDragU( i ,j,bi,bj) * uVel( i ,j,k,bi,bj)
-           k = MAX( 1, kTopC(i+1,j,bi,bj), kTopC(i,j,bi,bj) )
            tempUp = -shelficeDragU(i+1,j,bi,bj) * uVel(i+1,j,k,bi,bj)
-           k = MAX( 1, kTopC(i,j-1,bi,bj), kTopC(i,j,bi,bj) )
            tempV  = -shelficeDragV(i, j ,bi,bj) * vVel(i, j ,k,bi,bj)
-           k = MAX( 1, kTopC(i,j+1,bi,bj), kTopC(i,j,bi,bj) )
            tempVp = -shelficeDragV(i,j+1,bi,bj) * vVel(i,j+1,k,bi,bj)
           ENDIF
           uStarSquare(i,j) = SQRT(
