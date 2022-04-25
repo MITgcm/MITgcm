@@ -87,7 +87,9 @@ C     tFrzOce   :: sea-water freezing temperature [oC] (function of S)
 C     isIceFree :: true for ice-free grid-cell that remains ice-free
 C     ageFac    :: snow aging factor [1]
 C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
+#ifdef ALLOW_BULK_FORCE
       LOGICAL isIceFree(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL     iceFrac  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     flx2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     frw2oc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -131,7 +133,9 @@ C-    Initialise
       dBugFlag = debugLevel.GE.debLevC
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
+#ifdef ALLOW_BULK_FORCE
           isIceFree(i,j) = .FALSE.
+#endif
 #ifdef ALLOW_ATM2D
           sFluxFromIce(i,j) = 0. _d 0
 #else
@@ -155,12 +159,7 @@ c         frzmltMxL(i,j) = 0. _d 0
       snowFac = thSIce_deltaT/(rhos*hNewSnowAge)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE iceheight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE icfrwatm(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE snowheight(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -233,9 +232,14 @@ C-------
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE icFrwAtm  (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE tFrzOce               = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE frzMltMxl             = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
-
       CALL THSICE_CALC_THICKN(
      I          bi, bj,
      I          iMin,iMax, jMin,jMax, dBugFlag,
@@ -249,35 +253,22 @@ CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
      U          icFrwAtm(siLo,sjLo,bi,bj), frzmltMxL, flx2oc,
      O          frw2oc, fsalt, frzSeaWat,
      I          myTime, myIter, myThid )
-
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE fsalt(:,:)  = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE flx2oc(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
-CADJ STORE frw2oc(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+C     these stores avoid recomputing s/r thsice_calc_thickn
+CADJ STORE icFrwAtm(:,:,bi,bj)
+CADJ &               = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frzSeaWat = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE fsalt     = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE flx2oc    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frw2oc    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE frzmltMxL = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
-C--    Net fluxes :
+
+C--   Net fluxes :
       DO j = jMin, jMax
        DO i = iMin, iMax
-c#ifdef ALLOW_AUTODIFF_TAMC
-c         ikey_1 = i
-c    &         + sNx*(j-1)
-c    &         + sNx*sNy*act1
-c    &         + sNx*sNy*max1*act2
-c    &         + sNx*sNy*max1*max2*act3
-c    &         + sNx*sNy*max1*max2*max3*act4
-c#endif /* ALLOW_AUTODIFF_TAMC */
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
-c#endif
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
 C-     weighted average net fluxes:
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE  fsalt(i,j) = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  flx2oc(i,j) = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  frw2oc(i,j) = comlev1_thsice_1, key=ikey_1
-cCADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
-c#endif
           icFrac = iceMask(i,j,bi,bj)
           opFrac= 1. _d 0-icFrac
 #ifdef ALLOW_ATM2D
@@ -294,10 +285,12 @@ c#endif
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
 #endif
+#if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
 C-    All seawater freezing (no reduction by surf. melting) from CALC_THICKN
 c         frzSeaWat(i,j) = icFrac*frzSeaWat(i,j)
 C-    Net seawater freezing (underestimated if there is surf. melting or rain)
           frzSeaWat(i,j) = MAX( -icFrac*frw2oc(i,j), 0. _d 0 )
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -340,8 +333,11 @@ C-------
      I          myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
+C     these stores avoid recomputing s/r thsice_extend
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -355,7 +351,9 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
 #endif
+#if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
           frzSeaWat(i,j) = frzSeaWat(i,j) + MAX(-frw2oc(i,j), 0. _d 0 )
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
         IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -364,9 +362,11 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
      &           snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
 #endif
 
+#ifdef ALLOW_BULK_FORCE
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
      &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
      &                  .AND.   iceFrac(i,j) .LE.0. _d 0
+#endif
         IF ( iceFrac(i,j) .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=iceFrac(i,j)
           IF ( snowHeight(i,j,bi,bj).EQ.0. _d 0 )
@@ -395,10 +395,6 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
       ENDIF
 #endif /* ALLOW_SALT_PLUME or ALLOW_ATM_COMPON_INTERF */
 
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj,key=ticekey,byte=isbyte
-# endif
       IF ( thSIceAdvScheme.LE.0 ) THEN
 C- note: 1) regarding sIceLoad in ocean-dynamics, in case thSIceAdvScheme > 0,
 C          compute sIceLoad in THSICE_DO_ADVECT after seaice advection is done.
