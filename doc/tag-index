@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  - simplify reading parameter file, using single scratch file (instead of 2).
 o verification, OpenAD:
   - make all OpenAD experiments use generic control variables, so that from now
     on, the ECCO_CTRL_DEPRECATED code is no longer tested in verification
