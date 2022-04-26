@@ -70,7 +70,7 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER k
       INTEGER n,ijd,ijs,kshelf,kDeep
       _RL     gTrLoc(0:Nr)
-      _RL     dTrac(0:Nr)
+      _RL     dTrac(1:Nr)
       INTEGER upward
       LOGICAL onOffFlag
 
@@ -123,6 +123,7 @@ C--   Set diagnostic suffix for the current tracer
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+#ifndef TARGET_NEC_SX
        IF ( DWNSLP_ioUnit.GT.0 ) THEN
         _BEGIN_MASTER(myThid)
         WRITE(DWNSLP_ioUnit,'(A,I8,3I4)')
@@ -131,6 +132,7 @@ C--   Set diagnostic suffix for the current tracer
      &   ' kDp   Tr_Dp         Gt_Dp         Tr_Sh         Gt_Sh'
         _END_MASTER(myThid)
        ENDIF
+#endif
 
        DO n=1,DWNSLP_NbSite(bi,bj)
         IF (DWNSLP_deepK(n,bi,bj).NE.0) THEN
@@ -143,13 +145,12 @@ C- detect density gradient along the slope => Downsloping flow
          kshelf = kBottom(ijs,bi,bj)
          kDeep = DWNSLP_deepK(n,bi,bj)
 C- precomute vertical tracer differences to help TAF
-         dTrac(kshelf-1) = tracer(ijd,kshelf)-tracer(ijs,kshelf)
-         DO k=kshelf,kDeep-1
-          dTrac(k) = tracer(ijd,k+1)-tracer(ijd,k)
+         DO k=kshelf,kDeep+upward,-upward
+          dTrac(k) = tracer(ijd,k-upward)-tracer(ijd,k)
          ENDDO
          dTrac(kDeep) = tracer(ijs,kshelf)-tracer(ijd,kDeep)
 C- downsloping flow (in) & upward return flow :
-         DO k=DWNSLP_deepK(n,bi,bj),kshelf,upward
+         DO k=kshelf,kDeep,-upward
           gTrLoc(k) = DWNSLP_Transp(n,bi,bj)
      &       * dTrac(k)
      &       *recip_drF(k)*recip_hFac(ijd,k)
@@ -159,11 +160,15 @@ C- downsloping flow (in) & upward return flow :
 C- downsloping flow (out) & return flow to the shelf
           k = kshelf
           gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
-     &       * dTrac(k-1)
+     &       * ( tracer(ijd,k)-tracer(ijs,k) )
      &       *recip_drF(k)*recip_hFac(ijs,k)
      &       *recip_rA_arg(ijs,bi,bj)
           gTracer(ijs,k) = gTracer(ijs,k) + gTrLoc(0)
 
+#ifndef TARGET_NEC_SX
+C     write statements will inhibit vectorisation making this one of the
+C     most expensive routines on a vector comptuater, so we comment this
+C     out for now, if compiled for a vector computer
          IF ( DWNSLP_ioUnit.GT.0 ) THEN
           _BEGIN_MASTER(myThid)
           k=DWNSLP_deepK(n,bi,bj)
@@ -178,13 +183,16 @@ C- downsloping flow (out) & return flow to the shelf
      &      deltaTLev(k)*gTrLoc(0)
           _END_MASTER(myThid)
          ENDIF
+#endif
         ENDIF
        ENDDO
+#ifndef TARGET_NEC_SX
        IF ( DWNSLP_ioUnit.GT.0 ) THEN
          _BEGIN_MASTER(myThid)
          WRITE(DWNSLP_ioUnit,*)
          _END_MASTER(myThid)
        ENDIF
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
        IF ( doDiagDwnSlpTend )
