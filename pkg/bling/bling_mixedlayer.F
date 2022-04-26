@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
       SUBROUTINE BLING_MIXEDLAYER(
@@ -56,6 +59,9 @@ C     === Local variables ===
        INTEGER blgI,blgJ
 #endif
        INTEGER i,j,k
+#ifdef ALLOW_AUTODIFF_TAMC
+       INTEGER ijkkey
+#endif
 CEOP
 
 # ifndef BLING_USE_THRESHOLD_MLD
@@ -112,16 +118,25 @@ c  get drhdr
 CMM Strat at k is on bottom of cell
 
 C  % 1. find min(drho/dz)
-        DO j=jmin,jmax
-         DO i=imin,imax
-          DO k = 1,NR
-           IF(blg_stra(i,j,k).LT.blg_minstra(i,j))
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_blingmxl = COMMON, Nr
+#endif
+      DO k = 1,NR
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE blg_minstra = loctape_blingmxl, key = k
+#endif
+       DO j=jmin,jmax
+        DO i=imin,imax
+         IF(blg_stra(i,j,k).LT.blg_minstra(i,j))
      &        blg_minstra(i,j) = blg_stra(i,j,k)
-          ENDDO
-         ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 
 CMM NOW LOOP TO GET MLD
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_blingmxl_ijk = COMMON, Nr*(2*OLx+sNx)*(2*OLy+sNy)
+#endif
         DO j=jmin,jmax
          DO i=imin,imax
 C  % 2. check that we have at least 3 grid cells of water
@@ -139,6 +154,10 @@ C % 4. compute the second derivative (d2rho/dz2)..
 CMM Only look up
             blg_str2max = -999
             DO k = 3,blgI
+#ifdef ALLOW_AUTODIFF_TAMC
+             ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+CADJ STORE blg_str2max = loctape_blingmxl_ijk, key = ijkkey
+#endif
 CMM blg_str2 will be in cell center
              blg_str2(k) = (blg_stra(i,j,k-1) -blg_stra(i,j,k))
      &                                             *recip_drF(k)
