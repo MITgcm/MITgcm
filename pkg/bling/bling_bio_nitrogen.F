@@ -1152,12 +1152,12 @@ C  Initialize upper flux
         DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
              ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
-CADJ STORE PONflux_u = loctape_bbnitro_ijk, key = ijkkey
-CADJ STORE POPflux_u = loctape_bbnitro_ijk, key = ijkkey
-CADJ STORE PFEflux_u = loctape_bbnitro_ijk, key = ijkkey
-CADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey
+CADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CADJ STORE POPflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CADJ STORE PFEflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
 # ifdef USE_SIBLING
-CADJ STORE PONflux_u = loctape_bbnitro_ijk, key = ijkkey
+CADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
 # endif
 #endif
 
