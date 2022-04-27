@@ -333,7 +333,7 @@ C
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itdkey
+      INTEGER itdkey, ijkkey
 #endif
 CEOP
 
@@ -1130,6 +1130,10 @@ C  not intercepted by the bottom at this level, according to the
 C  subgridscale sediment interception fraction.
 C  Since Ft=0 in the first layer,
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_bbnitro_ijk = COMMON, Nr*(2*OLx+sNx)*(2*OLy+sNy)
+#endif
+
 C$TAF LOOP = parallel
       DO j=jmin,jmax
 C$TAF LOOP = parallel
@@ -1146,6 +1150,16 @@ C  Initialize upper flux
 #endif
 
         DO k=1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+             ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+CADJ STORE PONflux_u = loctape_bbnitro_ijk, key = ijkkey
+CADJ STORE POPflux_u = loctape_bbnitro_ijk, key = ijkkey
+CADJ STORE PFEflux_u = loctape_bbnitro_ijk, key = ijkkey
+CADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey
+# ifdef USE_SIBLING
+CADJ STORE PONflux_u = loctape_bbnitro_ijk, key = ijkkey
+# endif
+#endif
 
 C  Initialization here helps taf
 
@@ -1400,7 +1414,9 @@ C  Prepare the tracers for the next layer down
         ENDDO
        ENDDO
       ENDDO
-
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE N_reminp = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 C-----------------------------------------------------------
 C  remineralization from diel vertical migration
 #ifdef USE_BLING_DVM
