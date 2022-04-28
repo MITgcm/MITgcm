@@ -121,12 +121,7 @@ C     drKp1, recip_drLoc
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
-#endif
-#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
       _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
-      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
@@ -167,18 +162,6 @@ C     instead of etastar = sqrt(1+zetaN*ustar./(f*Lo*Rc))
        etastar = 1. _d 0
        gammaTurbConst  = 1. _d 0 / (2. _d 0 * shiZetaN*etastar)
      &      - recip_shiKarman
-#ifdef ALLOW_AUTODIFF
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy,sNy+OLy
-          DO I = 1-OLx,sNx+OLx
-           shiTransCoeffT(i,j,bi,bj) = 0. _d 0
-           shiTransCoeffS(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif /* ALLOW_AUTODIFF */
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 
@@ -231,9 +214,9 @@ C     where this value is part of the protocol
 #if (defined SHI_ALLOW_GAMMAFRICT && defined ALLOW_DIAGNOSTICS)
           uStarDiag             (I,J,bi,bj) = 0. _d 0
 #endif /* SHI_ALLOW_GAMMAFRICT and ALLOW_DIAGNOSTICS */
-#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
+#ifdef ALLOW_GENTIM2D_CONTROL
           xx_shifwflx_loc       (I,J,bi,bj) = 0. _d 0
-#endif /* ALLOW_SHIFWFLX_CONTROL or ALLOW_GENTIM2D_CONTROL */
+#endif /* ALLOW_GENTIM2D_CONTROL */
          ENDDO
         ENDDO
        ENDDO
@@ -255,19 +238,6 @@ C     where this value is part of the protocol
         ENDIF
        ENDDO
 #endif /* ALLOW_GENTIM2D_CONTROL */
-#if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
-C     unfortunately, we need this CPP flag here, because otherwise
-C     none of these fields are defined
-      ELSEIF ( useCTRL ) THEN
-        CALL CTRL_GET_MASK2D( xx_shifwflx_file, mask2D, myThid )
-        CALL CTRL_GET_GEN (
-     &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
-     &     mask2D, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
-     &     xx_shifwflx_dummy,
-     &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
-     &     wshifwflx,
-     &     myTime, myIter, myThid )
-#endif /* ECCO_CTRL_DEPRECATED and ALLOW_SHIFWFLX_CONTROL */
       ENDIF
 #endif /* ALLOW_CTRL */
 
@@ -559,9 +529,9 @@ C--   Calculate the upward heat and  fresh water fluxes
      &           * shiTransCoeffT(i,j,bi,bj)
      &           * ( tLoc(I,J) - thetaFreeze )
      &           * HeatCapacity_Cp*rUnit2mass
-#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
+#ifdef ALLOW_GENTIM2D_CONTROL
      &           - xx_shifwflx_loc(I,J,bi,bj)*SHELFICElatentHeat
-#endif /*  ALLOW_SHIFWFLX_CONTROL */
+#endif /*  ALLOW_GENTIM2D_CONTROL */
 C     upward heat flux into the shelf-ice implies basal melting,
 C     thus a downward (negative upward) fresh water flux (as a mass flux),
 C     and vice versa
@@ -681,9 +651,9 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
             freshWaterFlux = rUnit2mass
      &           * shiTransCoeffS(i,j,bi,bj)
      &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
-#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
+#ifdef ALLOW_GENTIM2D_CONTROL
      &           + xx_shifwflx_loc(I,J,bi,bj)
-#endif /*  ALLOW_SHIFWFLX_CONTROL */
+#endif /*  ALLOW_GENTIM2D_CONTROL */
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
@@ -726,22 +696,6 @@ C     end bi,bj loops
       IF (SHELFICEMassStepping) THEN
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
       ENDIF
-
-C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
-#ifndef ALLOW_AUTODIFF
-c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
-     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-c     ENDIF
-#endif /* ndef ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
