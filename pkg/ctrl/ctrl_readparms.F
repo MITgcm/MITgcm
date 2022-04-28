@@ -25,9 +25,7 @@ c     == global variables ==
 # include "ctrl.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
-# ifndef ECCO_CTRL_DEPRECATED
-#  include "ctrl_local_params.h"
-# endif
+# include "ctrl_local_params.h"
 #endif
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_PARAMS.h"

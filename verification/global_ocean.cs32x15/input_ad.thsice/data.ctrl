@@ -29,7 +29,7 @@
 # ECCO control variables
 # **********************
  &CTRL_NML
- ctrlUseGen = .FALSE.,
+#ctrlUseGen = .FALSE.,
 # old control variable method, defined through CPP-flags, here they
 # are just comments
 # define ALLOW_THETA0_CONTROL

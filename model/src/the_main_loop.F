@@ -374,15 +374,6 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
       CALL INITIALISE_VARIA( myThid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_ECCO
-#  ifdef ECCO_CTRL_DEPRECATED
-cph: avoid renewed call of initialise_varia in recomputation loop
-cph: in some circumstances
-CADJ STORE sbar_gen,tbar_gen  = tapelev_init, key = 1
-#  endif
-# endif
-#endif
 
 #ifdef ALLOW_SHOWFLOPS
       CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', myThid)
