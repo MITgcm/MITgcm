@@ -37,18 +37,19 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer iUnit
+      INTEGER iUnit
+      INTEGER nRetired
 
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      integer iarr,jarr
+      INTEGER iarr,jarr
 #endif
 
 c     == external ==
 
-      integer  ilnblnk
-      external ilnblnk
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == end of interface ==
 
@@ -276,131 +277,6 @@ c
         enddo
 #endif
 c
-        xx_hfluxstartdate1 =   0
-        xx_hfluxstartdate2 =   0
-        xx_hfluxperiod     =   0. _d 0
-        xx_hflux_file      = 'xx_hfl'
-        xx_hflux_remo_intercept =   0. _d 0
-        xx_hflux_remo_slope =   0. _d 0
-c
-        xx_sfluxstartdate1 =   0
-        xx_sfluxstartdate2 =   0
-        xx_sfluxperiod     =   0. _d 0
-        xx_sflux_file      = 'xx_sfl'
-        xx_sflux_remo_intercept =   0. _d 0
-        xx_sflux_remo_slope =   0. _d 0
-c
-        xx_tauustartdate1  =   0
-        xx_tauustartdate2  =   0
-        xx_tauuperiod      =   0. _d 0
-        xx_tauu_file       = 'xx_tauu'
-        xx_tauu_remo_intercept =   0. _d 0
-        xx_tauu_remo_slope =   0. _d 0
-c
-        xx_tauvstartdate1  =   0
-        xx_tauvstartdate2  =   0
-        xx_tauvperiod      =   0. _d 0
-        xx_tauv_file       = 'xx_tauv'
-        xx_tauv_remo_intercept =   0. _d 0
-        xx_tauv_remo_slope =   0. _d 0
-c
-        xx_atempstartdate1  =   0
-        xx_atempstartdate2  =   0
-        xx_atempperiod      =   0. _d 0
-        xx_atemp_file       = 'xx_atemp'
-        xx_atemp_mean_file  = 'xx_atemp_mean'
-        xx_atemp_remo_intercept =   0. _d 0
-        xx_atemp_remo_slope =   0. _d 0
-c
-        xx_aqhstartdate1    =   0
-        xx_aqhstartdate2    =   0
-        xx_aqhperiod        =   0. _d 0
-        xx_aqh_file         = 'xx_aqh'
-        xx_aqh_mean_file    = 'xx_aqh_mean'
-        xx_aqh_remo_intercept =   0. _d 0
-        xx_aqh_remo_slope =   0. _d 0
-c
-        xx_precipstartdate1 =   0
-        xx_precipstartdate2 =   0
-        xx_precipperiod     =   0. _d 0
-        xx_precip_file      = 'xx_precip'
-        xx_precip_mean_file = 'xx_precip_mean'
-        xx_precip_remo_intercept =   0. _d 0
-        xx_precip_remo_slope =   0. _d 0
-c
-        xx_swfluxstartdate1 =   0
-        xx_swfluxstartdate2 =   0
-        xx_swfluxperiod     =   0. _d 0
-        xx_swflux_file      = 'xx_swflux'
-        xx_swflux_remo_intercept =   0. _d 0
-        xx_swflux_remo_slope =   0. _d 0
-c
-        xx_swdownstartdate1 =   0
-        xx_swdownstartdate2 =   0
-        xx_swdownperiod     =   0. _d 0
-        xx_swdown_file      = 'xx_swdown'
-        xx_swdown_mean_file = 'xx_swdown_mean'
-        xx_swdown_remo_intercept =   0. _d 0
-        xx_swdown_remo_slope =   0. _d 0
-c
-        xx_lwfluxstartdate1 =   0
-        xx_lwfluxstartdate2 =   0
-        xx_lwfluxperiod     =   0. _d 0
-        xx_lwflux_file      = 'xx_lwflux'
-        xx_lwflux_remo_intercept =   0. _d 0
-        xx_lwflux_remo_slope =   0. _d 0
-c
-        xx_lwdownstartdate1 =   0
-        xx_lwdownstartdate2 =   0
-        xx_lwdownperiod     =   0. _d 0
-        xx_lwdown_file      = 'xx_lwdown'
-        xx_lwdown_remo_intercept =   0. _d 0
-        xx_lwdown_remo_slope =   0. _d 0
-c
-        xx_evapstartdate1 =   0
-        xx_evapstartdate2 =   0
-        xx_evapperiod     =   0. _d 0
-        xx_evap_file      = 'xx_evap'
-        xx_evap_remo_intercept =   0. _d 0
-        xx_evap_remo_slope =   0. _d 0
-c
-        xx_snowprecipstartdate1 =   0
-        xx_snowprecipstartdate2 =   0
-        xx_snowprecipperiod     =   0. _d 0
-        xx_snowprecip_file      = 'xx_snowprecip'
-        xx_snowprecip_remo_intercept =   0. _d 0
-        xx_snowprecip_remo_slope =   0. _d 0
-c
-        xx_apressurestartdate1 =   0
-        xx_apressurestartdate2 =   0
-        xx_apressureperiod     =   0. _d 0
-        xx_apressure_file      = 'xx_apressure'
-        xx_apressure_remo_intercept =   0. _d 0
-        xx_apressure_remo_slope =   0. _d 0
-c
-        xx_runoffstartdate1 =   0
-        xx_runoffstartdate2 =   0
-        xx_runoffperiod     =   0. _d 0
-        xx_runoff_file      = 'xx_runoff'
-        xx_runoff_remo_intercept =   0. _d 0
-        xx_runoff_remo_slope =   0. _d 0
-c
-        xx_uwindstartdate1  =   0
-        xx_uwindstartdate2  =   0
-        xx_uwindperiod      =   0. _d 0
-        xx_uwind_file       = 'xx_uwind'
-        xx_uwind_mean_file  = 'xx_uwind_mean'
-        xx_uwind_remo_intercept =   0. _d 0
-        xx_uwind_remo_slope =   0. _d 0
-c
-        xx_vwindstartdate1  =   0
-        xx_vwindstartdate2  =   0
-        xx_vwindperiod      =   0. _d 0
-        xx_vwind_file       = 'xx_vwind'
-        xx_vwind_mean_file  = 'xx_vwind_mean'
-        xx_vwind_remo_intercept =   0. _d 0
-        xx_vwind_remo_slope =   0. _d 0
-c
         xx_obcsnstartdate1  =   0
         xx_obcsnstartdate2  =   0
         xx_obcsnperiod      =   0. _d 0
@@ -421,26 +297,84 @@ c
         xx_obcseperiod      =   0. _d 0
         xx_obcse_file       = 'xx_obcse'
 c
-        xx_sststartdate1    =   0
-        xx_sststartdate2    =   0
-        xx_sstperiod        =   0. _d 0
-        xx_sst_file         = 'xx_sst'
-        xx_sst_remo_intercept =   0. _d 0
-        xx_sst_remo_slope =   0. _d 0
+c     retired parameters
 c
-        xx_sssstartdate1    =   0
-        xx_sssstartdate2    =   0
-        xx_sssperiod        =   0. _d 0
-        xx_sss_file         = 'xx_sss'
-        xx_sss_remo_intercept =   0. _d 0
-        xx_sss_remo_slope =   0. _d 0
-c
-        xx_shifwflxstartdate1  =   0
-        xx_shifwflxstartdate2  =   0
-        xx_shifwflxperiod      =   0. _d 0
-        xx_shifwflx_file       = 'xx_shifwflx'
-        xx_shifwflx_remo_intercept=0. _d 0
-        xx_shifwflx_remo_slope =   0. _d 0
+        CALL CTRL_SET_RETIRED_PARMS(xx_hfluxstartdate1,
+     I       xx_hfluxstartdate2, xx_hfluxperiod, xx_hflux_file,
+     I       xx_hflux_file, xx_hflux_remo_intercept,
+     I       xx_hflux_remo_slope , mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_sfluxstartdate1,
+     I       xx_sfluxstartdate2, xx_sfluxperiod, xx_sflux_file,
+     I       xx_sflux_file, xx_sflux_remo_intercept,
+     I       xx_sflux_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_tauustartdate1,xx_tauustartdate2,
+     I       xx_tauuperiod, xx_tauu_file, xx_tauu_file,
+     I       xx_tauu_remo_intercept, xx_tauu_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_tauvstartdate1,xx_tauvstartdate2,
+     I       xx_tauvperiod, xx_tauv_file, xx_tauv_file,
+     I       xx_tauv_remo_intercept, xx_tauv_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_atempstartdate1,
+     I       xx_atempstartdate2, xx_atempperiod, xx_atemp_file,
+     I       xx_atemp_mean_file, xx_atemp_remo_intercept,
+     I       xx_atemp_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_aqhstartdate1, xx_aqhstartdate2,
+     I       xx_aqhperiod, xx_aqh_file, xx_aqh_mean_file,
+     I       xx_aqh_remo_intercept, xx_aqh_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_precipstartdate1,
+     I       xx_precipstartdate2, xx_precipperiod, xx_precip_file,
+     I       xx_precip_mean_file, xx_precip_remo_intercept,
+     I       xx_precip_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_sfluxstartdate1,
+     I       xx_sfluxstartdate2, xx_sfluxperiod, xx_sflux_file,
+     I       xx_sflux_file, xx_sflux_remo_intercept,xx_sflux_remo_slope,
+     I       mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_swdownstartdate1,
+     I       xx_swdownstartdate2, xx_swdownperiod, xx_swdown_file,
+     I       xx_swdown_mean_file, xx_swdown_remo_intercept,
+     I       xx_swdown_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_lwfluxstartdate1,
+     I       xx_lwfluxstartdate2, xx_lwfluxperiod, xx_lwflux_file,
+     I       xx_lwflux_file, xx_lwflux_remo_intercept,
+     I       xx_lwflux_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_lwdownstartdate1,
+     I       xx_lwdownstartdate2, xx_lwdownperiod, xx_lwdown_file,
+     I       xx_lwdown_file, xx_lwdown_remo_intercept,
+     I       xx_lwdown_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_evapstartdate1,xx_evapstartdate2,
+     I       xx_evapperiod, xx_evap_file, xx_evap_file,
+     I       xx_evap_remo_intercept, xx_evap_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_snowprecipstartdate1,
+     I       xx_snowprecipstartdate2, xx_snowprecipperiod,
+     I       xx_snowprecip_file, xx_snowprecip_file,
+     I       xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
+     I       mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_apressurestartdate1,
+     I       xx_apressurestartdate2, xx_apressureperiod,
+     I       xx_apressure_file, xx_apressure_file,
+     I       xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     I       mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_runoffstartdate1,
+     I       xx_runoffstartdate2, xx_runoffperiod, xx_runoff_file,
+     I       xx_runoff_file, xx_runoff_remo_intercept,
+     I       xx_runoff_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_uwindstartdate1,
+     I       xx_uwindstartdate2, xx_uwindperiod, xx_uwind_file,
+     I       xx_uwind_file, xx_uwind_remo_intercept,xx_uwind_remo_slope,
+     I       mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_vwindstartdate1,
+     I       xx_vwindstartdate2, xx_vwindperiod, xx_vwind_file,
+     I       xx_vwind_file, xx_vwind_remo_intercept,xx_vwind_remo_slope,
+     I       mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_sststartdate1, xx_sststartdate2,
+     I       xx_sstperiod, xx_sst_file, xx_sst_file,
+     I       xx_sst_remo_intercept, xx_sst_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_sssstartdate1, xx_sssstartdate2,
+     I       xx_sssperiod, xx_sss_file, xx_sss_file,
+     I       xx_sss_remo_intercept, xx_sss_remo_slope, mythid )
+        CALL CTRL_SET_RETIRED_PARMS(xx_shifwflxstartdate1,
+     I       xx_shifwflxstartdate2, xx_shifwflxperiod, xx_shifwflx_file,
+     I       xx_shifwflx_file, xx_shifwflx_remo_intercept,
+     I       xx_shifwflx_remo_slope, mythid )
 c
         xx_diffkr_file      = 'xx_diffkr'
         xx_kapgm_file       = 'xx_kapgm'
@@ -461,6 +395,7 @@ c
 cHFLUXM_CONTROL
         xx_hfluxm_file      = 'xx_hfluxm'
 cHFLUXM_CONTROL
+c     end retired parameters
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'
@@ -512,9 +447,217 @@ c allow for switching off correl2d in adjoint
      &         useSmoothCorrel2DinAdMode .AND. ctrlSmoothCorrel2D
 #endif
 
+      nretired = 0
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_hflux',
+     I     xx_hfluxstartdate1, xx_hfluxstartdate2,
+     I     xx_hfluxperiod, xx_hflux_file, xx_hflux_file,
+     I     xx_hflux_remo_intercept, xx_hflux_remo_slope,
+     U     nRetired,
+     I     mythid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_sflux',
+     I     xx_sfluxstartdate1, xx_sfluxstartdate2,
+     I     xx_sfluxperiod, xx_sflux_file, xx_sflux_file,
+     I     xx_sflux_remo_intercept,xx_sflux_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_tauu',
+     I     xx_tauustartdate1, xx_tauustartdate2,
+     I     xx_tauuperiod, xx_tauu_file, xx_tauu_file,
+     I     xx_tauu_remo_intercept, xx_tauu_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_tauv',
+     I     xx_tauvstartdate1,xx_tauvstartdate2,
+     I     xx_tauvperiod, xx_tauv_file, xx_tauv_file,
+     I     xx_tauv_remo_intercept, xx_tauv_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_atemp',
+     I     xx_atempstartdate1, xx_atempstartdate2,
+     I     xx_atempperiod, xx_atemp_file, xx_atemp_mean_file,
+     I     xx_atemp_remo_intercept, xx_atemp_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_aqh',
+     I     xx_aqhstartdate1, xx_aqhstartdate2,
+     I     xx_aqhperiod, xx_aqh_file, xx_aqh_mean_file,
+     I     xx_aqh_remo_intercept, xx_aqh_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_precip',
+     I     xx_precipstartdate1, xx_precipstartdate2,
+     I     xx_precipperiod, xx_precip_file, xx_precip_mean_file,
+     I     xx_precip_remo_intercept, xx_precip_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_sflux',
+     I     xx_sfluxstartdate1, xx_sfluxstartdate2,
+     I     xx_sfluxperiod, xx_sflux_file, xx_sflux_file,
+     I     xx_sflux_remo_intercept,xx_sflux_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS('xx_swdown',
+     I     xx_swdownstartdate1, xx_swdownstartdate2,
+     I     xx_swdownperiod, xx_swdown_file, xx_swdown_mean_file,
+     I     xx_swdown_remo_intercept, xx_swdown_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS('xx_lwflux',
+     I     xx_lwfluxstartdate1, xx_lwfluxstartdate2,
+     I     xx_lwfluxperiod, xx_lwflux_file, xx_lwflux_file,
+     I     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS(xx_lwdownstartdate1,
+     I     xx_lwdownstartdate2, xx_lwdownperiod, xx_lwdown_file,
+     I     xx_lwdown_file, xx_lwdown_remo_intercept,
+     I     xx_lwdown_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_evap',
+     I     xx_evapstartdate1, xx_evapstartdate2,
+     I     xx_evapperiod, xx_evap_file, xx_evap_file,
+     I     xx_evap_remo_intercept, xx_evap_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_snowprecip',
+     I     xx_snowprecipstartdate1, xx_snowprecipstartdate2,
+     I     xx_snowprecipperiod, xx_snowprecip_file, xx_snowprecip_file,
+     I     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_apressure',
+     I     xx_apressurestartdate1, xx_apressurestartdate2,
+     I     xx_apressureperiod, xx_apressure_file, xx_apressure_file,
+     I     xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_runoff',
+     I     xx_runoffstartdate1, xx_runoffstartdate2,
+     I     xx_runoffperiod, xx_runoff_file, xx_runoff_file,
+     I     xx_runoff_remo_intercept, xx_runoff_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_uwind',
+     I     xx_uwindstartdate1, xx_uwindstartdate2,
+     I     xx_uwindperiod, xx_uwind_file, xx_uwind_file,
+     I     xx_uwind_remo_intercept,xx_uwind_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_vwind',
+     I     xx_vwindstartdate1, xx_vwindstartdate2,
+     I     xx_vwindperiod, xx_vwind_file, xx_vwind_file,
+     I     xx_vwind_remo_intercept,xx_vwind_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_sst',
+     I     xx_sststartdate1, xx_sststartdate2,
+     I     xx_sstperiod, xx_sst_file, xx_sst_file,
+     I     xx_sst_remo_intercept, xx_sst_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_sss',
+     I     xx_sssstartdate1, xx_sssstartdate2,
+     I     xx_sssperiod, xx_sss_file, xx_sss_file,
+     I     xx_sss_remo_intercept, xx_sss_remo_slope,
+     U     nRetired,
+     I     myThid )
+      CALL CTRL_CHECK_RETIRED_PARMS( 'xx_shifwflx',
+     I     xx_shifwflxstartdate1, xx_shifwflxstartdate2,
+     I     xx_shifwflxperiod, xx_shifwflx_file,
+     I     xx_shifwflx_file, xx_shifwflx_remo_intercept,
+     I     xx_shifwflx_remo_slope,
+     U     nRetired,
+     I     myThid )
+
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R CTRL_READPARMS: ',
+     &  'Error reading parameter file "data.ctrl"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,I3,A)') 'S/R CTRL_READPARMS: ', nRetired,
+     &      ' out of date parameters were found in the namelist'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
+       STOP 'ABNORMAL END: S/R CTRL_READPARMS'
+      ENDIF
+
       _END_MASTER( myThid )
 
       _BARRIER
 
       return
       end
+
+      SUBROUTINE CTRL_SET_RETIRED_PARMS(
+     I     xx_startdate1,
+     I     xx_startdate2,
+     I     xx_period,
+     I     xx_file,
+     I     xx_mean_file,
+     I     xx_remo_intercept,
+     I     xx_remo_slope,
+     I     mythid )
+
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+
+      INTEGER mythid
+      INTEGER xx_startdate1, xx_startdate2
+      _RL xx_period, xx_remo_intercept, xx_remo_slope
+      CHARACTER*(*) xx_file, xx_mean_file
+
+      xx_startdate1 = UNSET_I
+      xx_startdate2 = UNSET_I
+      xx_period     = UNSET_RL
+      xx_remo_intercept = UNSET_RL
+      xx_remo_slope = UNSET_RL
+      xx_file = ' '
+      xx_mean_file = ' '
+
+      RETURN
+      END
+
+      SUBROUTINE CTRL_CHECK_RETIRED_PARMS(
+     I     xx_name,
+     I     xx_startdate1,
+     I     xx_startdate2,
+     I     xx_period,
+     I     xx_file,
+     I     xx_mean_file,
+     I     xx_remo_intercept,
+     I     xx_remo_slope,
+     U     nretired,
+     I     mythid )
+
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+
+      INTEGER mythid
+      INTEGER xx_startdate1, xx_startdate2
+      _RL xx_period, xx_remo_intercept, xx_remo_slope
+      CHARACTER*(*) xx_name, xx_file, xx_mean_file
+      INTEGER nretired
+
+      INTEGER il
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      IF ( xx_startdate1 .NE. UNSET_I .OR. xx_startdate2 .NE. UNSET_I
+     &     .OR. xx_period .NE. UNSET_RL .OR.
+     &     xx_remo_intercept .NE. UNSET_RL .OR.
+     &     xx_remo_slope .NE. UNSET_RL .OR.
+     &     xx_file .NE. ' ' .OR. xx_mean_file .NE. ' ' ) THEN
+       il = ILNBLNK(xx_name)
+       WRITE(msgBuf,'(A,A,A)')
+     &  'S/R CTRL_READPARMS: ', xx_name(1:il),
+     &  'is no longer allowed in file "data.ctrl"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R CTRL_READPARMS: use generic controls instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nretired = nretired + 1
+      ENDIF
+
+      RETURN
+      END

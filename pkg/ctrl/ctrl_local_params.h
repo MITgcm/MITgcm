@@ -53,10 +53,10 @@ c     xx_tauv_file  - control vector meridional wind stress file.
       character*(MAX_LEN_FNAM) xx_uvel_file
       character*(MAX_LEN_FNAM) xx_vvel_file
       character*(MAX_LEN_FNAM) xx_etan_file
-      character*(MAX_LEN_FNAM) xx_relaxsst_file
-      character*(MAX_LEN_FNAM) xx_relaxsss_file
-      character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
-      character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
+CML      character*(MAX_LEN_FNAM) xx_relaxsst_file
+CML      character*(MAX_LEN_FNAM) xx_relaxsss_file
+CML      character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
+CML      character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
       character*(MAX_LEN_FNAM) xx_siarea_file
       character*(MAX_LEN_FNAM) xx_siheff_file
       character*(MAX_LEN_FNAM) xx_sihsnow_file
@@ -182,26 +182,26 @@ c                         control part.
       integer xx_shifwflxstartdate1
       integer xx_shifwflxstartdate2
 
-      integer xx_hfluxstartdate(4)
-      integer xx_sfluxstartdate(4)
-      integer xx_tauustartdate(4)
-      integer xx_tauvstartdate(4)
-      integer xx_atempstartdate(4)
-      integer xx_aqhstartdate(4)
-      integer xx_precipstartdate(4)
-      integer xx_swfluxstartdate(4)
-      integer xx_swdownstartdate(4)
-      integer xx_snowprecipstartdate(4)
-      integer xx_lwfluxstartdate(4)
-      integer xx_lwdownstartdate(4)
-      integer xx_evapstartdate(4)
-      integer xx_apressurestartdate(4)
-      integer xx_runoffstartdate(4)
-      integer xx_uwindstartdate(4)
-      integer xx_vwindstartdate(4)
-      integer xx_sststartdate(4)
-      integer xx_sssstartdate(4)
-      integer xx_shifwflxstartdate(4)
+CML      integer xx_hfluxstartdate(4)
+CML      integer xx_sfluxstartdate(4)
+CML      integer xx_tauustartdate(4)
+CML      integer xx_tauvstartdate(4)
+CML      integer xx_atempstartdate(4)
+CML      integer xx_aqhstartdate(4)
+CML      integer xx_precipstartdate(4)
+CML      integer xx_swfluxstartdate(4)
+CML      integer xx_swdownstartdate(4)
+CML      integer xx_snowprecipstartdate(4)
+CML      integer xx_lwfluxstartdate(4)
+CML      integer xx_lwdownstartdate(4)
+CML      integer xx_evapstartdate(4)
+CML      integer xx_apressurestartdate(4)
+CML      integer xx_runoffstartdate(4)
+CML      integer xx_uwindstartdate(4)
+CML      integer xx_vwindstartdate(4)
+CML      integer xx_sststartdate(4)
+CML      integer xx_sssstartdate(4)
+CML      integer xx_shifwflxstartdate(4)
 
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl_local_params.h
