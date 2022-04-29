@@ -13,7 +13,7 @@ C     \============================================================/
 
 C     === Global variables ===
 #ifdef ALLOW_PETSC
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
 C assumes paths 
 C {petsc_dir}/include/petsc/finclude/ 
 C {petsc_dir}/include
