@@ -486,6 +486,10 @@ C  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
      U                         mld,
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myTime, myIter, myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+C     save result of s/r bling_mixedlayer to avoid calling it in AD-code
+CADJ STORE mld = comlev1_bibj, key=itdkey, kind=isbyte
+# endif
 #endif
 
 C  Phytoplankton mixing
@@ -562,6 +566,11 @@ C  light availability for biological production
      U                    irr_inst, irr_eff,
      I                    bi, bj, imin, imax, jmin, jmax,
      I                    myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     save results of s/r bling_light to avoid calling it in AD-code
+CADJ STORE irr_inst = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE irr_eff  = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
 C  phytoplankton photoadaptation to local light level
 C  This represents the fact that phytoplankton cells are adapted
@@ -1119,6 +1128,16 @@ C  long-lived dissolved organic matter.
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     these stores avoid recomputing the previous loop, but avoiding
+C     that may not be necessary
+CADJ STORE N_spm = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE P_spm = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Fe_spm = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE don_prod = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE n_recycle = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
+
 C ---------------------------------------------------------------------
 C  Remineralization
 C  In general, the flux at the bottom of a grid cell should equal
@@ -1151,14 +1170,23 @@ C  Initialize upper flux
 
         DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-             ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
-CADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CADJ STORE POPflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CADJ STORE PFEflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+         ijkkey = (itdkey - 1) * (2*OLx+sNx) * (2*OLy+sNy) * Nr
+     &        +   ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE POPflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE PFEflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE CaCO3flux_u = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # ifdef USE_SIBLING
-CADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # endif
+CML         ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+CMLCADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CMLCADJ STORE POPflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CMLCADJ STORE PFEflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CMLCADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CML# ifdef USE_SIBLING
+CMLCADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
+CML# endif
 #endif
 
 C  Initialization here helps taf
