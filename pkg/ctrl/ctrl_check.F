@@ -73,6 +73,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
+      IF ( .NOT. ctrlUseGen ) THEN
+       WRITE(msgBuf,'(A)') 'ctrlUseGen = .FALSE. is not allowed'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+
 #ifdef ALLOW_TANGENTLINEAR_RUN
       IF ( yadmark .NE. 'g_' ) THEN
         WRITE(msgBuf,'(A)')
@@ -85,20 +91,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif
 
-#if ( (!defined ALLOW_GENARR2D_CONTROL) && (!defined ALLOW_GENARR3D_CONTROL) \
-      && (!defined ALLOW_GENTIM2D_CONTROL) )
-      IF (ctrlUseGen) THEN
-        WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &     'Cannot ctrlUseGen unless ALLOW_GEN*_CONTROL is defined '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif
-
 #ifdef ALLOW_GENTIM2D_CONTROL
-      IF ( ctrlUseGen .AND. .NOT.useCAL ) THEN
+      IF ( .NOT.useCAL ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
-     &    'ALLOW_GENTIM2D_CONTROL and ctrlUseGen=T is'
+     &    'ALLOW_GENTIM2D_CONTROL is'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A)') '** WARNING ** ',

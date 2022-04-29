@@ -171,11 +171,7 @@ c--     Set default values.
 #else
         ctrlSmoothCorrel2D  = .FALSE.
 #endif
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
         ctrlUseGen          = .TRUE.
-#else
-        ctrlUseGen          = .FALSE.
-#endif
 #ifdef ALLOW_ADMTLM
         doAdmTlm            = .TRUE.
 #else
