@@ -26,7 +26,7 @@ C     \============================================================/
 
 
 #ifdef ALLOW_PETSC
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
 C assumes paths 
 C {petsc_dir}/include/petsc/finclude/ 
 C {petsc_dir}/include
@@ -96,14 +96,14 @@ c      _RL mat_values (2*Nx*Ny,2*(sNx*nSx*sNy*nSy))
       INTEGER indices_col(18)
       INTEGER local_dofs, global_dofs, dof_index, dof_index_col
       INTEGER local_offset
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
       INTEGER local_null
 #endif
 c      Mat matrix
 c      KSP ksp
 c      PC  pc
       PC  subpc
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
       KSP subksp
 #else
       KSP subksp(1)
@@ -266,7 +266,7 @@ c     &              A_uv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
             ENDDO
            ENDDO
 
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
            call MatSetValues1n (matrix, 1, dof_index, k, indices_col,
 #else
            call MatSetValues (matrix, 1, dof_index, k, indices_col,
@@ -314,7 +314,7 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
             ENDDO
            ENDDO
 
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
            call MatSetValues1n (matrix, 1, dof_index, k, indices_col,
 #else
            call MatSetValues (matrix, 1, dof_index, k, indices_col,
@@ -331,7 +331,7 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
       call MatAssemblyEnd(matrix,MAT_FINAL_ASSEMBLY,ierr)
 
       call KSPCreate(PETSC_COMM_WORLD, ksp, ierr)
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
       call KSPSetOperators(ksp, matrix, matrix,
      &                      ierr)
 #else
@@ -370,7 +370,7 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
        PRINT *, "PETSC PRECOND: SELECTED BJACOBI"
        call PCSetType(pc, PCBJACOBI, ierr)
        call kspsetup (ksp, ierr)
-#ifdef STREAMICE_PETSC_ARCHER2
+#ifdef STREAMICE_PETSC_3_8
        local_null =0 !PETSC_NULL_INTEGER
        call PCBJacobiGetSubKSP1 (pc,local_null,local_null,
 #else
