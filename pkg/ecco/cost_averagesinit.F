@@ -45,7 +45,7 @@ c     == local variables ==
       integer bi,bj
       integer jmin,jmax
       integer imin,imax
-#ifdefd ALLOW_GENCOST_CONTRIBUTION
+#ifdef ALLOW_GENCOST_CONTRIBUTION
       integer i,j,k,kk
 #endif
 

@@ -42,7 +42,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
       INTEGER k
-#ifdef ALLOW_BOTTOMDRAG_CONTROL)
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
       INTEGER i,j
 #endif
 c     == end of interface ==
