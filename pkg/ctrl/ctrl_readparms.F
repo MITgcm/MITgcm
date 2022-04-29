@@ -508,10 +508,10 @@ c allow for switching off correl2d in adjoint
      I     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
      U     nRetired,
      I     myThid )
-      CALL CTRL_CHECK_RETIRED_PARMS(xx_lwdownstartdate1,
-     I     xx_lwdownstartdate2, xx_lwdownperiod, xx_lwdown_file,
-     I     xx_lwdown_file, xx_lwdown_remo_intercept,
-     I     xx_lwdown_remo_slope,
+      CALL CTRL_CHECK_RETIRED_PARMS('xx_lwdown',
+     I     xx_lwdownstartdate1, xx_lwdownstartdate2,
+     I     xx_lwdownperiod, xx_lwdown_file, xx_lwdown_file,
+     I     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      U     nRetired,
      I     myThid )
       CALL CTRL_CHECK_RETIRED_PARMS( 'xx_evap',
@@ -643,11 +643,12 @@ c allow for switching off correl2d in adjoint
       EXTERNAL ILNBLNK
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF ( xx_startdate1 .NE. UNSET_I .OR. xx_startdate2 .NE. UNSET_I
-     &     .OR. xx_period .NE. UNSET_RL .OR.
-     &     xx_remo_intercept .NE. UNSET_RL .OR.
-     &     xx_remo_slope .NE. UNSET_RL .OR.
-     &     xx_file .NE. ' ' .OR. xx_mean_file .NE. ' ' ) THEN
+      IF (      xx_startdate1 .NE. UNSET_I
+     &     .OR. xx_startdate2 .NE. UNSET_I
+     &     .OR. xx_period .NE. UNSET_RL
+     &     .OR. xx_remo_intercept .NE. UNSET_RL
+     &     .OR. xx_remo_slope .NE. UNSET_RL
+     &     .OR. xx_file .NE. ' ' .OR. xx_mean_file .NE. ' ' ) THEN
        il = ILNBLNK(xx_name)
        WRITE(msgBuf,'(A,A,A)')
      &  'S/R CTRL_READPARMS: ', xx_name(1:il),
