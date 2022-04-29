@@ -32,7 +32,7 @@ C     myThid          :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -53,14 +53,14 @@ C     msgBuf      :: Informational/error message buffer
       _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 2+2*GM_K3D_NModes )
+      PARAMETER( listDim = 2+2*GM_Bates_NModes )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL vec(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
 CEOP
 
-      IF (.NOT. GM_useK3D) RETURN
+      IF ( .NOT.GM_useBatesK3d ) RETURN
 
       lChar = ILNBLNK(suff)
       IF ( lChar.EQ.0 ) THEN
@@ -77,8 +77,8 @@ C     Centre mode
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            vec(i,j,k,bi,bj) = modesC(1,i,j,k,bi,bj)
           ENDDO
          ENDDO
@@ -92,12 +92,12 @@ C     Centre mode
       IF (m.LE.listDim) wrFldList(m) = fieldname
 
 C     Western Mode
-      DO n=1,GM_K3D_NModes
+      DO n=1,GM_Bates_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             vec(i,j,k,bi,bj) = modesW(n,i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -112,12 +112,12 @@ C     Western Mode
       ENDDO
 
 C     Southern Mode
-      DO n=1,GM_K3D_NModes
+      DO n=1,GM_Bates_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             vec(i,j,k,bi,bj) = modesS(n,i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -142,7 +142,7 @@ C     The deformation radius (2D field)
      &     Rdef, nm, myIter, myThid )
       fieldname = 'Rdef'
       IF (m.LE.listDim) wrFldList(m) = fieldname
-      
+
       nWrFlds = m
       IF ( nWrFlds.GT.listDim ) THEN
         WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
@@ -172,7 +172,7 @@ C     uses this specific S/R to write (with more informations) only meta files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END

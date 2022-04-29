@@ -12,6 +12,8 @@ C     | Add the generic arrays of the
 C     | control vector to the model state and update the tile halos.
 C     | The control vector is defined in the header file "ctrl.h".
 C     *=================================================================
+C     | local version for OpenAD exp. hs94.1x64x5
+C     *=================================================================
 C     \ev
 
 C     !USES:
@@ -45,24 +47,23 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      integer bi,bj
-      integer i,j,k
-      integer jmin,jmax
-      integer imin,imax
-      integer il
-      integer iarr
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER jmin,jmax
+      INTEGER imin,imax
+      INTEGER il
+      INTEGER iarr
 
-      logical doglobalread
-      logical ladinit
-      character*( 80)   fnamebase
-      character*( 80)   fnamegeneric
-      character*(MAX_LEN_MBUF) msgBuf
+      LOGICAL doglobalread
+      LOGICAL ladinit
+      CHARACTER*(80) fnamebase
+      CHARACTER*(80) fnamegeneric
       _RL     fac
 #ifdef ALLOW_GENARR2D_CONTROL
-      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
-      _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 CEOP
 
@@ -71,8 +72,8 @@ CEOP
       imin = 1
       imax = sNx
 
-      doglobalread = .false.
-      ladinit      = .false.
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
       fac = 1. _d 0
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -87,24 +88,24 @@ C--   generic - user-defined control vars
 
        fnamebase = xx_genarr2d_file(iarr)
        il=ILNBLNK( fnamebase )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
+       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      myThid, xx_genarr2d_dummy(iarr) )
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
-          do j = jmin,jmax
-            do i = imin,imax
-              if ( iarr .eq. 1 ) then
+          DO j = jmin,jmax
+            DO i = imin,imax
+              IF ( iarr .EQ. 1 ) THEN
                 theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
      &                             + tmpfld2d(i,j,bi,bj)
-              elseif ( iarr .eq. 2 ) then
+              ELSEIF ( iarr .EQ. 2 ) THEN
                 salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
      &                            + tmpfld2d(i,j,bi,bj)
-              endif
-            enddo
-          enddo
+              ENDIF
+            ENDDO
+          ENDDO
         ENDDO
        ENDDO
 C--   end iarr loop
@@ -127,26 +128,26 @@ C--   generic - user-defined control vars
 
        fnamebase = xx_genarr3d_file(iarr)
        il=ILNBLNK( fnamebase )
-       write(fnamegeneric(1:80),'(2a,i10.10)')
+       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_genarr3d_dummy(iarr) )
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
-          do k = 1,Nr
-           do j = jmin,jmax
-            do i = imin,imax
-cc              if ( iarr .eq. 1 ) then
+          DO k = 1,Nr
+           DO j = jmin,jmax
+            DO i = imin,imax
+cc              if ( iarr .EQ. 1 ) then
 cc                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj)
 cc     &                             + fac*tmpfld3d(i,j,k,bi,bj)
-cc              elseif ( iarr .eq. 2 ) then
+cc              ELSEIF ( iarr .EQ. 2 ) then
 cc                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj)
 cc     &                            + fac*tmpfld3d(i,j,k,bi,bj)
 cc              endif
-            enddo
-           enddo
-          enddo
+            ENDDO
+           ENDDO
+          ENDDO
         ENDDO
        ENDDO
 C--   end iarr loop

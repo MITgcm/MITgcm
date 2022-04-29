@@ -105,21 +105,21 @@ here we use standard Cartesian geometry rather than spherical polar coordinates:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial x} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}u ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h u ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    &= \mathcal{F}_u
      \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial y} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}v ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h v ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    &= \mathcal{F}_v
  
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \left( H \vec{\widehat{u}} \right) = 0 
+      \frac{\partial \eta}{\partial t} +  \nabla _h \cdot \left( H \vec{\widehat{\bf u}} \right) = 0 
 
 .. math::
-   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   \frac{D\theta}{Dt} +  \nabla _h \cdot (-\kappa_{h}  \nabla _h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: channel_model_theta
@@ -164,8 +164,8 @@ using its own time stepping scheme.
 The fixed flux form of the momentum equations are solved, as described in :numref:`flux-form_momentum_equations`,
 with an implicit linear free surface (:numref:`press_meth_linear`). Laplacian diffusion of tracers and momentum is employed.
 The pressure forces that drive
-the fluid motions, :math:`\frac{\partial p^{'}}{\partial x}`
-and :math:`\frac{\partial p^{'}}{\partial y}`, are found by
+the fluid motions, :math:`\partial_x p^\prime`
+and :math:`\partial_y p^\prime`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The sea-surface height is found by solving implicitly the 2-D (elliptic) surface pressure equation
@@ -190,14 +190,14 @@ implications for the length of the timestep we will be able to use. Let us consi
 CFL condition :eq:`eq_SOch_cfl_stability` and the stability of inertial oscillations :eq:`eq_SOCh_inertial_stability`:
 
 .. math::
-    S_{a} = 2 \left( \frac{ |c_{max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+    S_{\rm adv} = 2 \left( \frac{ |c_{\rm max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
     :label: eq_SOch_cfl_stability
 
 .. math::
-    S_{i} = f {\Delta t} < 0.5 \text{ for stability}
+    S_{\rm inert} = f {\Delta t} < 0.5 \text{ for stability}
     :label: eq_SOCh_inertial_stability
 
-where :math:`|c_{max}|` is the maximum horizontal velocity. We anticipate :math:`|c_{max}|` of order ~ 1 ms\ :sup:`-1`.
+where :math:`|c_{\rm max}|` is the maximum horizontal velocity. We anticipate :math:`|c_{\rm max}|` of order ~ 1 ms\ :sup:`-1`.
 Note that barotropic currents of this speed over a jet of order ~ 100 km in lateral scale will result in a
 barotropic flow of the order of hundreds of Sverdups. At a resolution of 50 km, :eq:`eq_SOch_cfl_stability` then
 implies that the timestep must be less than 12000 s and  :eq:`eq_SOCh_inertial_stability` implies a timestep less than 3500 s.
@@ -206,7 +206,7 @@ Here we make a conservative choice of :math:`\Delta t = 1000` s to keep  :math:`
 How shall we set the horizontal viscosity? From the numerical stability criteria:
 
 .. math::
-    S_{l} = 4 A_{h} \Delta t \left( \frac{1}{{\Delta x}^2} + \frac{1}{{\Delta y}^2} \right)  < 1.0 \text{ for stability}
+    S_{\ Lh} = 4 A_{h} \Delta t \left( \frac{1}{{\Delta x}^2} + \frac{1}{{\Delta y}^2} \right)  < 1.0 \text{ for stability}
     :label: eq_SOch__laplacian_stability
 
 Note that the threshold in :eq:`eq_SOch__laplacian_stability` is < 1.0 instead of < 0.6 due to our
@@ -218,7 +218,7 @@ With :math:`\Delta t = 1000` s, we can choose :math:`A_{h}` to be as large as or
 very viscous solution. We anticipate a boundary current along the deep ridge and sloping notch on a scale given by Munk scaling:
 
 .. math::
-    M_{w} = \frac{2\pi}{\sqrt{3}} ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}.
+    M = \frac{2\pi}{\sqrt{3}} \left( \frac { A_{h} }{ \beta } \right)^{\frac{1}{3}}.
     :label: eq_SOch__munk_layer
 
 We can set :math:`A_{h}` to as low as 100 m\ :sup:`2` s\ :sup:`--1` and still comfortably resolve the
@@ -237,7 +237,7 @@ Otherwise, given that our vertical resolution is quite fine near the surface (ap
 the following stability criteria would have applied:
 
 .. math::
-   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 1.0 \text{ for stability}
+   S_{\rm Lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 1.0 \text{ for stability}
    :label: eq_SOch__laplacian_v_stability
 
 which effectively would limit our choice for :math:`A_{v}` to very small values.
@@ -1152,7 +1152,7 @@ Running at higher resolution requires a smaller time step for stability. Revisit
 (CFL condition, :eq:`eq_SOch_cfl_stability`) one could simply decrease the time step by the same factor of 10 decrease as :math:`\Delta x` -- stability
 of inertial oscillations is no longer a limiting factor, given a smaller :math:`\Delta t` in :eq:`eq_SOCh_inertial_stability` --
 but to speed things up we'd like to keep :math:`\Delta t` as large as possible. With a rich eddying solution, however, is it clear that horizontal velocity
-will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
+will remain order ~1 ms\ :sup:`--1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
 :filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. For this choice, a 30-year integration
 requires setting :varlink:`nTimeSteps`\ ``=3732480``. 
 
@@ -1259,15 +1259,15 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
   In the coarse runs, however, the sponge layer is effectively cooling, particularly in the non-GM run.
   Although at present there is no diagnostic available in :filelink:`pkg/rbcs` which directly tabulates these fluxes,
   computing them is quite simple: the heat flux (in watts) into a grid cell in the sponge layer is computed as
-  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T} * M_{rbc}`
-  where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`-1`\ K\ :sup:`-1` by default), :math:`{\cal V}_\theta` is the grid cell volume
+  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{\rm rbc} (i,j,k)}{\tau_T} * M_{\rm rbc}`
+  where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`--1` K\ :sup:`--1` by default), :math:`{\cal V}_\theta` is the grid cell volume
   (:varlink:`rA`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k);
   see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
   :math:`\theta (i,j,k)` is gridpoint potential temperature (:sup:`o`\ C),
-  :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
+  :math:`\theta (i,j,k)_{\rm rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
   as prescribed in file ``input/temperature.5km.bin`` or ``input/temperature.50km.bin``),
   :math:`\tau_T` is the restoring timescale :varlink:`tauRelaxT` (as set in :ref:`data.rbcs <tut_so_channel_rbcs>` to 864,000 seconds or 10 days),
-  and :math:`M_{rbc}` is a 3-D restoring mask (values between 0.0 and 1.0 as discussed
+  and :math:`M_{\rm rbc}` is a 3-D restoring mask (values between 0.0 and 1.0 as discussed
   :ref:`above <reentrant_channel_ rbcsmaskfile>`) as specified in file ``T_relax_mask.5km.bin`` or ``T_relax_mask.50km.bin``.
 
 .. [#] Note it is not stricly necessary to remove :filelink:`pkg/gmredi` from your high-resolution build -- however, if kept in the list of packages included in

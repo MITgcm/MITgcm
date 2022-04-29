@@ -2,7 +2,7 @@
  &GM_PARM01
  GM_AdvForm=.TRUE.,
  GM_useBVP = .TRUE.,
-#GM_BVP_modeNumber=5,
+ GM_BVP_modeNumber=5,
  GM_background_K=1000.,
  GM_taper_scheme='linear',
  GM_maxSlope    =1.E-02,
@@ -10,7 +10,7 @@
 #GM_facTrL2ML   = 5.,
 #GM_maxTransLay = 500.,
  GM_useSubMeso = .TRUE.,
-#subMeso_Ceff  = 5.e-2,
-#subMeso_LfMin = 5.e+3,
+ subMeso_Ceff  = 3.E-2,
+#subMeso_LfMin = 5.E+3,
  &
 

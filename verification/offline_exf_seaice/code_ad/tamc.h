@@ -12,11 +12,9 @@ c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
 c              - new keys, separate for different packages
 
-
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
-
 
 c     TAMC checkpointing parameters:
 c     ==============================
@@ -98,7 +96,7 @@ c     and writing data.
 
       INTEGER    isbyte
 C     For more accurate but larger tapes replace 4 by 8.
-      PARAMETER( isbyte      = 4 )
+      PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
 #ifndef ALLOW_PTRACERS
@@ -106,7 +104,7 @@ C     For more accurate but larger tapes replace 4 by 8.
       PARAMETER( maxpass     = 3 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube     = 3 )
+      PARAMETER( maxcube     = 2 )
 
 c     ================================================================
 c     END OF HEADER TAMC

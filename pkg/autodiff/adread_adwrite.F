@@ -216,9 +216,9 @@ C     indices) to disk. At init and final time it is always possible to
 C     recompute or store in memory without much trouble or computational
 C     cost.
 cc         WRITE(msgBuf,'(3A)')
-cc     &        'ADWRITE: ',name,'was not saved to tape.'
+cc     &        'ADREAD: ', name, ' was not saved to tape.'
 cc         CALL PRINT_ERROR( msgBuf, myThid )
-cc         STOP 'ABNORMAL END: S/R ADWRITE'
+cc         STOP 'ABNORMAL END: S/R ADREAD'
 cc      ENDIF
 
       ELSE
@@ -388,17 +388,38 @@ cc      IF (n2d*length2d.EQ.length) THEN
           IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
           ELSE
-            tapeFileCounter=tapeFileCounter+1
-            jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
-              WRITE(msgBuf,'(A,2I5)')
-     &              'ADWRITE: tapeFileCounter > tapeMaxCounter ',
-     &              tapeFileCounter, tapeMaxCounter
+            tapeFileCounter = tapeFileCounter+1
+            jrec = tapeFileCounter+tapeMaxCounter*(irec-1)
+            IF ( tapeFileCounter.GT.tapeMaxCounter ) THEN
+              WRITE(msgBuf,'(2A,I6,A,I6,A)') 'ADWRITE: ',
+     &            'tapeFileCounter (=',tapeFileCounter,
+     &            ') > tapeMaxCounter (= nWh =', tapeMaxCounter, ')'
               CALL PRINT_ERROR( msgBuf, myThid )
-              WRITE(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
+              WRITE(msgBuf,'(3A)') 'ADWRITE: ',
+     &            ' for file: ', fname(1:lenLoc)
               CALL PRINT_ERROR( msgBuf, myThid )
+C     Here, we cannot determine how many tapeFiles we need, so we print
+C     this rather unspecific instruction.
+              WRITE(msgBuf,'(2A)') 'ADWRITE: ',
+     &             '==> Need to increase "nWh" in: MDSIO_BUFF_WH.h'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A)') 'ADWRITE: Tip to find lowest',
+     &             ' allowed "nWh": setting debugLevel >= 3'
+              CALL PRINT_ERROR( msgBuf , myThid )
+              WRITE(msgBuf,'(2A)') 'ADWRITE:  will report ',
+     &             '"tapeFileCounter" to STDOUT (can grep for)'
+              CALL PRINT_ERROR( msgBuf , myThid )
               STOP 'ABNORMAL END: S/R ADWRITE'
             ENDIF
+#ifdef ALLOW_DEBUG
+            IF ( debugLevel.GE.debLevC ) THEN
+C     Print tapeFileCounter to help find minimum tapeMaxCounter=nWh value
+              WRITE(msgBuf,'(A,I6)') 'ADWRITE:  tapeFileCounter =',
+     &            tapeFileCounter
+              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+            ENDIF
+#endif
           ENDIF
           j2d=(i2d-1)*length2d+1
           CALL MDS_WRITE_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
