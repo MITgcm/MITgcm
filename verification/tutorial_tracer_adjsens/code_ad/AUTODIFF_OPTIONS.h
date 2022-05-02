@@ -52,7 +52,7 @@ C o use divided adjoint to split adjoint computations
 
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
-#undef ALLOW_AUTODIFF_WHTAPEIO
+#define ALLOW_AUTODIFF_WHTAPEIO
 
 C o use standard MDSFINDUINTS instead of local pkg/autodiff version for
 C   WHTAPEIO code I/O.
