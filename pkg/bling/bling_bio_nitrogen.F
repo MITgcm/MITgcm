@@ -1131,11 +1131,11 @@ C  long-lived dissolved organic matter.
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing the previous loop, but avoiding
 C     that may not be necessary
-CADJ STORE N_spm = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE P_spm = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE Fe_spm = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE don_prod = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE n_recycle = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE N_spm     = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE P_spm     = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE Fe_spm    = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE don_prod  = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE n_recycle = comlev1_bibj, key = itdkey, kind = isbyte
 #endif
 
 C ---------------------------------------------------------------------
@@ -1148,10 +1148,6 @@ C  This is also multiplied by the fraction of the grid cell that is
 C  not intercepted by the bottom at this level, according to the
 C  subgridscale sediment interception fraction.
 C  Since Ft=0 in the first layer,
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT loctape_bbnitro_ijk = COMMON, Nr*(2*OLx+sNx)*(2*OLy+sNy)
-#endif
 
 C$TAF LOOP = parallel
       DO j=jmin,jmax
@@ -1179,14 +1175,6 @@ CADJ STORE CaCO3flux_u = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # ifdef USE_SIBLING
 CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 # endif
-CML         ijkkey = ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
-CMLCADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CMLCADJ STORE POPflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CMLCADJ STORE PFEflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CMLCADJ STORE CaCO3flux_u = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CML# ifdef USE_SIBLING
-CMLCADJ STORE PONflux_u   = loctape_bbnitro_ijk, key = ijkkey, kind=isbyte
-CML# endif
 #endif
 
 C  Initialization here helps taf
