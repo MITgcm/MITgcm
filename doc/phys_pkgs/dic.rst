@@ -20,7 +20,7 @@ There is also a representation of the carbonate flux handled as in the
 OCMIP experiments. The air-sea exchange on CO\ :math:`_2` is affected by
 temperature, salinity and the pH of the surface waters. The pH is
 determined following the method of Follows et al. For more details of
-the equations see section [sec:eg-biogeochem\_tutorial].
+the equations see :numref:`sub_global_oce_biogeo`.
 
 Key subroutines and parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,4 +147,4 @@ Experiments and tutorials that use dic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Global Ocean tutorial, in tutorial\_global\_oce\_biogeo verification
-   directory, described in section [sec:eg-biogeochem\_tutorial]
+   directory, described in :numref:`sub_global_oce_biogeo`.
