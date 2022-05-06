@@ -1,6 +1,18 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - Remove ALLOW_SHIFWFLX_CONTROL and all xx_shifwflx related code in favor of
+    already implemented gentim2d;
+  - move update of shelficeLoadAnomaly inside shelfice_step_icemass.F (within
+    IF (SHELFICEMassStepping) ...);
+  - fix storage dir for SHELFICEMassStepping, allowing to realFreshWaterFlux=T
+    with ALLOW_AUTODIFF defined (remove STOP there). Still not working with
+    OpenAD (add a STOP in shelfice_check.F).
+
+checkpoint68i (2022/04/27)
+o eesupp/src:
+  - simplify reading parameter file, using single scratch file (instead of 2).
 o verification, OpenAD:
   - make all OpenAD experiments use generic control variables, so that from now
     on, the ECCO_CTRL_DEPRECATED code is no longer tested in verification
