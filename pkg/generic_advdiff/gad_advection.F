@@ -85,7 +85,9 @@ C !OUTPUT PARAMETERS: ==================================================
 C  gTracer           :: tendency array
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-# ifndef DISABLE_MULTIDIM_ADVECTION
+#ifdef DISABLE_MULTIDIM_ADVECTION
+      STOP 'GAD_ADVECTION is empty with DISABLE_MULTIDIM_ADVECTION'
+#else /*  DISABLE_MULTIDIM_ADVECTION */
 C !FUNCTIONS: ==========================================================
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*4 GAD_DIAG_SUFX
@@ -141,10 +143,10 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef ALLOW_AUTODIFF
+       LOGICAL usePPMvertAdv, usePQMvertAdv
       _RL rTran3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL afr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-c     _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -273,9 +275,8 @@ C--   Set tile-specific parameters for horizontal fluxes
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GAD_ADVECTION'
       ENDIF
-C     Define local tapes. Using local tapes makes it necessary to
-C     recompute the forward routine (once) in AD-mode, but saves a lot
-C     of memory.
+C     Define local tapes. Using local tapes makes it necessary to recompute
+C     the forward routine (once) in AD-mode, but saves a lot of memory.
 CADJ INIT loctape_gad_adv = COMMON, 1
 CADJ INIT loctape_gad_adv_k = COMMON, Nr
 CADJ INIT loctape_gad_adv_k_pass = COMMON, maxcube*Nr
@@ -437,7 +438,7 @@ CADJ &     , kind = isbyte
      O              afx, myThid )
 #endif /* ndef ALLOW_AUTODIFF */
           ELSE
-           STOP'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
+           STOP 'GAD_ADVECTION: adv. scheme incompatible with multi-dim'
           ENDIF
 
 #ifdef ALLOW_OBCS
@@ -656,7 +657,7 @@ CADJ &     , kind = isbyte
      O              afy, myThid )
 #endif /* ndef ALLOW_AUTODIFF */
           ELSE
-           STOP'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+           STOP 'GAD_ADVECTION: adv. scheme incompatible with mutli-dim'
           ENDIF
 
 #ifdef ALLOW_OBCS
@@ -862,10 +863,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( .NOT.implicitAdvection ) THEN
 
 #ifndef ALLOW_AUTODIFF
-       IF (vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &     vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &     vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
-C-- PPM-style vertical advection
+       usePPMvertAdv = vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT
+     &            .OR. vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT
+     &            .OR. vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT
+       usePQMvertAdv = vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT
+     &            .OR. vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT
+     &            .OR. vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT
+       IF ( usePPMvertAdv .OR. usePQMvertAdv ) THEN
+C-- PPM-style or PQM-style vertical advection
         DO k=1,Nr
          IF (k.EQ.1) THEN
 C-- vertical transport:  surface
@@ -885,39 +890,19 @@ C-- vertical transport: interior
           ENDDO
          ENDIF
         ENDDO
+        IF ( usePPMvertAdv ) THEN
 C-- calc. PPM vertical flux data
-        CALL GAD_PPM_ADV_R( vertAdvecScheme, bi, bj,
-     I               deltaTLev, wFld, rTran3d, localT3d,
-     O               afr, myThid )
-       ENDIF
-
-       IF (vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &     vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &     vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
-C-- PQM-style vertical advection
-        DO k=1,Nr
-         IF (k.EQ.1) THEN
-C-- vertical transport:  surface
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            rTran3d(i,j,k) = 0. _d 0
-           ENDDO
-          ENDDO
-         ELSE
-C-- vertical transport: interior
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            rTran3d(i,j,k) = wFld(i,j,k)*rA(i,j,bi,bj)
-     &                 *deepFac2F(k)*rhoFacF(k)
-     &                 *maskC(i,j,k-1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDIF
-        ENDDO
+         CALL GAD_PPM_ADV_R( vertAdvecScheme, bi, bj,
+     I                deltaTLev, wFld, rTran3d, localT3d,
+     O                afr, myThid )
+        ENDIF
+        IF ( usePQMvertAdv ) THEN
 C-- calc. PQM vertical flux data
-        CALL GAD_PQM_ADV_R( vertAdvecScheme, bi, bj,
-     I               deltaTLev, wFld, rTran3d, localT3d,
-     O               afr, myThid )
+         CALL GAD_PQM_ADV_R( vertAdvecScheme, bi, bj,
+     I                deltaTLev, wFld, rTran3d, localT3d,
+     O                afr, myThid )
+        ENDIF
+C-- end PPM / PQM style vertical advection
        ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
 
@@ -1009,12 +994,7 @@ C-    Compute vertical advective flux in the interior:
           CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-         ELSEIF ( vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &            vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &            vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT  .OR.
-     &            vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &            vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &            vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( usePPMvertAdv .OR. usePQMvertAdv ) THEN
 C- copy level from 3d flux data
           DO j = 1-OLy,sNy+OLy
            DO i = 1-OLx,sNx+OLx
@@ -1023,7 +1003,7 @@ C- copy level from 3d flux data
           ENDDO
 #endif /* ndef ALLOW_AUTODIFF */
          ELSE
-          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+          STOP 'GAD_ADVECTION: adv. scheme incompatible with mutli-dim'
          ENDIF
 
 C- end Surface/Interior if bloc
@@ -1100,7 +1080,7 @@ C--   End of K loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block
       ENDIF
-# endif /* ndef DISABLE_MULTIDIM_ADVECTION */
+#endif /* DISABLE_MULTIDIM_ADVECTION */
 
       RETURN
       END
