@@ -79,10 +79,10 @@ C--   Now calculate whether it is time to update the forcing arrays
      &   ' : Reading new data, i0,i1=', intime0, intime1
        _END_MASTER(myThid)
 
-       IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf0,intime0,
+       IF ( DIC_silicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
      &        nIter0,myThid )
-         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
      &        nIter0,myThid )
        ENDIF
 
@@ -96,7 +96,7 @@ c#endif
        _EXCH_XY_RS(silicaSurf0, myThid )
        _EXCH_XY_RS(silicaSurf1, myThid )
 
-       IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
+       IF ( DIC_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -104,6 +104,30 @@ c#endif
 
              SILICAsurf(i,j,bi,bj)= bWght*silicaSurf0(i,j,bi,bj)
      &                        + aWght*silicaSurf1(i,j,bi,bj)
+
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+
+             SILICAsurf(i,j,bi,bj)= SILICA(i,j,klev,bi,bj)
+
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+
+             SILICAsurf(i,j,bi,bj)=7.6838 _d -3*maskC(i,j,klev,bi,bj)
 
            ENDDO
           ENDDO
