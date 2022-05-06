@@ -97,16 +97,16 @@ C     data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( DIC_silicaSurfFile .NE. ' '  ) THEN 
-         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf0,intime0,
+        IF ( DIC_silicaFile .NE. ' '  ) THEN 
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( DIC_silicaSurfFile,silicaSurf1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( DIC_silicaFile .NE. ' '  ) THEN 
-         CALL READ_REC_XYZ_RS( DIC_silicaFile,silica0,intime0,
+        IF ( DIC_deepSilicaFile .NE. ' '  ) THEN 
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silica0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XYZ_RS( DIC_silicaFile,silica1,intime1,
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silica1,intime1,
      &        myIter,myThid )
         ENDIF
         IF ( DIC_iceFile .NE. ' '  ) THEN
@@ -198,7 +198,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            ENDDO
          ENDIF
 #endif
-         IF ( DIC_silicaFile .NE. ' '  ) THEN
+         IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              DO k=1,Nr
@@ -208,9 +208,19 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
              ENDDO
             ENDDO
            ENDDO
+         ELSE
+C- Using constant silicate value of 0.03 mol m^-3 if no data are provided         
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             DO k=1,Nr
+
+             SILICA(i,j,k,bi,bj) = 0.03 _d 0
+             ENDDO
+            ENDDO
+           ENDDO       
          ENDIF
 
-         IF ( DIC_silicaSurfFile .NE. ' '  ) THEN
+         IF ( DIC_silicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              SILICAsurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
