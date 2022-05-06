@@ -225,7 +225,7 @@ C     help TAF with these variables
       INTEGER max1, max2, max3
       INTEGER ticekey, ikey_1
 #endif
-#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+#ifdef THSICE_REGULARIZE_CALC_THICKN
       _RL kScal
       PARAMETER ( kScal=1. )
 #endif
@@ -390,7 +390,7 @@ C between hThinIce & hThickIce, use partition factor fracEnFreez
 C     !-----------------------------------------------------------------
 C     ! melting conditions
 C     !-----------------------------------------------------------------
-#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+#ifdef THSICE_REGULARIZE_CALC_THICKN
 C     smooth regulatization
           ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -6)
 #else
@@ -404,7 +404,7 @@ C frictional velocity between ice and water
 c         cpchr =cpWater*rhosw*bMeltCoef
           Fbot(i,j) = cpchr*(tFrz(i,j)-tOce(i,j))*ustar
 C     fzMlOc < Fbot < 0
-#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+#ifdef THSICE_REGULARIZE_CALC_THICKN
 C     smooth regulatization
 C     we want to have some soft maximum for better differentiability:
 C     max(a,b;k) = (a*exp(k*a)+b*exp(k*b))/(exp(k*a)+exp(k*b))
@@ -799,7 +799,7 @@ C-- modified scheme. taking into account Ice enthalpy
              ELSE
               hq = hnewTmp*qicen(i,j,k)-dhi*Lfresh
               hnew(i,j,k) = hnewTmp - dhi
-#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
+#ifdef THSICE_REGULARIZE_CALC_THICKN
               qicen(i,j,k)=hq/SQRT(hnew(i,j,k)**2 + 1. _d -4)
 #else
               qicen(i,j,k)=hq/hnew(i,j,k)
@@ -964,8 +964,8 @@ C Compute new total ice thickness.
 #endif
 
           hlyr = hIce(i,j) * rec_nlyr
-#if defined ( ALLOW_AUTODIFF ) && defined ( THSICE_AUTODIFF_REGULARIZE )
-          hlyr = SQRT( hlyr**2 + 1. _d -04 )
+#ifdef THSICE_REGULARIZE_CALC_THICKN
+          hlyr = SQRT( hlyr**2 + 1. _d -4 )
 #endif
 CML          CALL THSICE_RESHAPE_LAYERS(
 CML     U         qicen(i,j,:),
