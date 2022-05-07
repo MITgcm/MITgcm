@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff (TAF):
+  - in gad_advection.F, replace global tapes "comlev1_bibj_k_gad" &
+    "comlev1_bibj_k_gad" by local tapes; avoid unnecessary recomputations, but
+    recompute full routine (only) once in ad-routine;
+  - this affects results when useApproxAdvectionInAdMode=T, since now all tapes
+    are computed using approximate Adv-Scheme (inAdMode=T); udate AD ref. output
+    of exp. global_ocean.cs32x15.seaice.
 o pkg/shelfice:
   - Remove ALLOW_SHIFWFLX_CONTROL and all xx_shifwflx related code in favor of
     already implemented gentim2d;
