@@ -77,6 +77,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -85,8 +88,14 @@ CEOP
 
       myNr = 1
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_READ_3D_RL(
+     &                 fnames(1), active_var, doglobalread,
+#else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
+#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -144,6 +153,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -152,8 +164,14 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_READ_3D_RL(
+     &                 fnames(1), active_var, doglobalread,
+#else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
+#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -211,6 +229,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -219,8 +240,14 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_READ_XZ_RL(
+     &                 fnames(1), active_var, doglobalread,
+#else
       CALL ACTIVE_READ_XZ_RL(
      &                 active_var_file, active_var, doglobalread,
+#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -277,6 +304,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -285,8 +315,14 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_READ_YZ_RL(
+     &                 fnames(1), active_var, doglobalread,
+#else
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
+#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -396,6 +432,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -406,8 +445,14 @@ CEOP
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fnames(1), active_var, globalFile,
+#else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
+#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -457,6 +502,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -467,8 +515,14 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_WRITE_3D_RL(
+     &                 fnames(1), active_var, globalFile,
+#else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
+#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -518,6 +572,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -528,8 +585,14 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_WRITE_XZ_RL(
+     &                 fnames(1), active_var, globalFile,
+#else
       CALL ACTIVE_WRITE_XZ_RL(
      &                 active_var_file, active_var, globalFile,
+#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -579,6 +642,9 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
+#ifdef ALLOW_CTRL
+      CHARACTER*(*) fnames(3)
+#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -589,8 +655,14 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
+#ifdef ALLOW_CTRL
+      CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      CALL ACTIVE_WRITE_YZ_RL(
+     &                 fnames(1), active_var, globalFile,
+#else
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,
+#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
