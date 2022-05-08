@@ -78,7 +78,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -154,7 +154,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -230,7 +230,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -305,7 +305,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -433,7 +433,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -503,7 +503,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -573,7 +573,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
@@ -643,7 +643,7 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy
 #ifdef ALLOW_CTRL
-      CHARACTER*(*) fnames(3)
+      CHARACTER*(80) fnames(3)
 #endif
 
 C     !LOCAL VARIABLES:
