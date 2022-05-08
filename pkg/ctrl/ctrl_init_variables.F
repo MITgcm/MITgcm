@@ -42,9 +42,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables
       INTEGER bi,bj
       INTEGER k
-#if (defined ALLOW_BOTTOMDRAG_CONTROL) \
-      || (defined ALLOW_SHIFWFLX_CONTROL) \
-      || (defined ECCO_CTRL_DEPRECATED)
+#if (defined ALLOW_BOTTOMDRAG_CONTROL) || (defined ECCO_CTRL_DEPRECATED)
       INTEGER i,j
 #endif
 #ifdef ECCO_CTRL_DEPRECATED
@@ -346,19 +344,6 @@ CEOP
       ENDDO
 #endif /* ALLOW_ATM_MEAN_CONTROL */
 #endif /* ECCO_CTRL_DEPRECATED */
-
-#ifdef ALLOW_SHIFWFLX_CONTROL
-      DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)
-          DO j = 1-OLy,sNy+OLy
-            DO i = 1-OLx,sNx+OLx
-              xx_shifwflx0(i,j,bi,bj) = 0. _d 0
-              xx_shifwflx1(i,j,bi,bj) = 0. _d 0
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-#endif
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       DO bj = myByLo(myThid),myByHi(myThid)

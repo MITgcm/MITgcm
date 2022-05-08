@@ -20,7 +20,7 @@ There is also a representation of the carbonate flux handled as in the
 OCMIP experiments. The air-sea exchange on CO\ :math:`_2` is affected by
 temperature, salinity and the pH of the surface waters. The pH is
 determined following the method of Follows et al. For more details of
-the equations see section [sec:eg-biogeochem\_tutorial].
+the equations see :numref:`sub_global_oce_biogeo`.
 
 Key subroutines and parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,7 +33,7 @@ Key subroutines and parameters
   the biotic part of the calculations are initialized in
   *dic\_biotic\_param* and are stored in *DIC\_BIOTIC.h*. The first
   guess of pH is calculated in *dic\_surfforcing\_init.F*.
-| 
+|
 | **LOADING FIELDS**
 | The air-sea exchange of :math:`CO_2` and :math:`O_2` need wind,
   atmospheric pressure (although the current version has this hardwired
@@ -41,7 +41,7 @@ Key subroutines and parameters
   fields. These fields are read in in *dic\_fields\_load.F*. These
   fields are initialized to zero in *dic\_ini\_forcing.F*. The fields
   for interpolating are in common block in *DIC\_LOAD.h*.
-| 
+|
 | **FORCING**
 | The tracers are advected-diffused in *ptracers\_integrate.F*. The
   updated tracers are passed to *dic\_biotic\_forcing.F* where the
@@ -75,7 +75,7 @@ Key subroutines and parameters
   The older scheme is done following OCMIP protocols (see more in
   Dutkiewicz et al 2005), in the subroutines *dic\_surfforcing.F* and
   *alk\_surfforcing.F*. To use this you need to set in
-  GCHEM\_OPTIONS.h: #define ALLOW\_OLD\_VIRTUALFLUX. But this can also 
+  GCHEM\_OPTIONS.h: #define ALLOW\_OLD\_VIRTUALFLUX. But this can also
   be done by the ptracers pkg if this is undefined.
   You will then need to set the concentration of the tracer in rainwater
   and potentially a reference tracer value in data.ptracer
@@ -85,12 +85,12 @@ Key subroutines and parameters
 
 | Iron chemistry (the amount of free iron) is taken care of in
   *fe\_chem.F*.
-| 
+|
 | **DIAGNOSTICS**
 | Averages of air-sea exchanges, biological productivity, carbonate
   activity and pH are calculated. These are initialized to zero in
   *dic\_biotic\_init* and are stored in common block in *DIC\_BIOTIC.h*.
-| 
+|
 | **COMPILE TIME FLAGS**
 | These are set in GCHEM\_OPTIONS.h:
 | DIC\_BIOTIC: needs to be set for dic to work properly (should be fixed
@@ -118,7 +118,7 @@ Key subroutines and parameters
   become negative. (This is advicable). ALLOW\_DIC\_COST: was used for
   calculating cost function (but hasn’t been updated or maintained, so
   not sure if it works still)
-| 
+|
 
 Do’s and Don’ts
 ~~~~~~~~~~~~~~~
@@ -135,9 +135,9 @@ Reference Material
   a Two-Dimensional Atmospheric Model: Uses in Climate Change Studies,
   Report 122, Joint Program of the Science and Policy of Global Change,
   M.I.T., Cambridge, MA.
-| Follows, M., T. Ito and S. Dutkiewicz, 2006: A Compact and Accurate
-  Carbonate Chemistry Solver for Ocean Biogeochemistry Models. *Ocean
-  Modeling*, 12, 290-301.
+| Follows, M., T. Ito and S. Dutkiewicz, 2006: On the solution of the carbonate
+  chemistry system in ocean biogeochemistry models, *Ocean Modeling*, 12,
+  290-301, doi:10.1016/j.ocemod.2005.05.004
 | Friis, K., R. Najjar, M.J. Follows, and S. Dutkiewicz, 2006: Possible
   overestimation of shallow-depth calcium carbonate dissolution in the
   ocean, *Global Biogeochemical Cycles*, 20, GB4019,
@@ -147,4 +147,4 @@ Experiments and tutorials that use dic
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Global Ocean tutorial, in tutorial\_global\_oce\_biogeo verification
-   directory, described in section [sec:eg-biogeochem\_tutorial]
+   directory, described in :numref:`sub_global_oce_biogeo`.

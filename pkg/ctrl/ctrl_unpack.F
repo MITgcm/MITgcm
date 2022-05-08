@@ -859,16 +859,6 @@ c----------------------------------------------------------------------
      &         weighttype, wkapredi, nwetcglobal, mythid)
 #endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
-          ivartype    = 45
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wshifwflx"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_shifwflx(ictrlgrad), "maskCtrlI",
-     &         weighttype, nwetiglobal, mythid)
-#endif
-
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENARR2D_CONTROL

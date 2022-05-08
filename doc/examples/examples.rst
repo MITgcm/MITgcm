@@ -256,9 +256,13 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`adjustment.128x64x1 <verification/adjustment.128x64x1>` - Barotropic adjustment problem on latitude-longitude
    grid with 128x64 grid points (2.8\ :sup:`o` resolution).
 
-#. :filelink:`adjustment.cs-32x32x1 <verification/adjustment.cs-32x32x1>` - Barotropic adjustment problem on cube
-   sphere grid with 32x32 points per face (roughly 2.8\ :sup:`o` resolution).
-   Also contains a non-linear free-surface adjustment version (:filelink:`input.nlfs <verification/adjustment.cs-32x32x1/input.nlfs>`).
+#. :filelink:`adjustment.cs-32x32x1 <verification/adjustment.cs-32x32x1>` -
+   Barotropic adjustment problem on cube sphere grid with 32x32 points per face
+   (roughly 2.8\ :sup:`o` resolution) with a rectangular island at the equator.
+   Note that "blank tiles" are used in the MPI test
+   (:filelink:`data.exch2.mpi <verification/adjustment.cs-32x32x1/input/data.exch2.mpi>`).
+   Also contains a non-linear free-surface, atmospheric like, barotropic
+   adjustment version (:filelink:`input.nlfs <verification/adjustment.cs-32x32x1/input.nlfs>`).
 
 #. :filelink:`advect_cs <verification/advect_cs>` - 2-D passive advection test on cube sphere
    grid (32x32 grid points per face, roughly 2.8\ :sup:`o` resolution).
@@ -296,6 +300,8 @@ For many experiments, additional information is provided in a ``README`` file lo
    on cubed-sphere cs32 horizontal grid, using intermediate atmospheric
    physics (:filelink:`pkg/aim_v23`) thermodynamic seaice (:filelink:`pkg/thsice`) and land
    packages.
+   Also contains an additional setup with seaice dynamics
+   (:filelink:`input_cpl.icedyn  <verification/cpl_aim+ocn/input_cpl.icedyn>`, :filelink:`input_atm.icedyn  <verification/cpl_aim+ocn/input_atm.icedyn>`, :filelink:`input_ocn.icedyn  <verification/cpl_aim+ocn/input_ocn.icedyn>`).
 
 #. :filelink:`deep_anelastic <verification/deep_anelastic>` - Convection simulation on a giant planet: relaxes
    both the Boussinesq approximation (anelastic) and the thin atmosphere
@@ -335,11 +341,16 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with mixed-layer eddy parameterization (Ferrari and McWilliams
      2008 :cite:`ferrari:08`) (:filelink:`input.mxl <verification/front_relax/input.mxl>`).
 
-#. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Global ocean simulation at 4\ :sup:`o`\ x4\ :sup:`o`
-   resolution. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`, but using
-   :math:`z^*` coordinates with quasi-non-hydrostatic and
-   non-hydrostatic metric terms. This experiment illustrates the use
-   of :filelink:`sbo </pkg/sbo>` package. Also contains additional setups:
+   - with dry-cell at the top and a sloping bottom
+     (:filelink:`input.top <verification/front_relax/input.top>`).
+
+#. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` -
+   Global ocean simulation at 4\ :sup:`o`\ x4\ :sup:`o` resolution.
+   Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`, but
+   using :math:`z^*` coordinates with quasi-non-hydrostatic and non-hydrostatic metric
+   terms. This experiment illustrates the use of :filelink:`sbo </pkg/sbo>` package.
+   Note that "blank tiles" are used in the MPI test (:filelink:`data.exch2.mpi <verification/global_ocean.90x40x15/input/data.exch2.mpi>`).
+   Also contains additional setups:
 
    - using :filelink:`down-slope package <pkg/down_slope>` (:filelink:`input.dwnslp <verification/global_ocean.90x40x15/input.dwnslp>`)
 
@@ -358,6 +369,8 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - using thermodynamic and dynamic (:filelink:`pkg/seaice`) sea ice with :filelink:`exf <pkg/exf>` package
      package (:filelink:`input.seaice <verification/global_ocean.cs32x15/input.seaice>`).
+
+   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>` package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
 #. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Global ocean experiment on a lat-lon grid
    coupled to a zonally averaged atmospheric energy balance model. Similar to
@@ -444,11 +457,32 @@ For many experiments, additional information is provided in a ``README`` file lo
    so ocean is "offline", not to be confused with :filelink:`pkg/offline`).
    Also contains additional setups:
 
-   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>` and (:filelink:`pkg/seaice`) advection
+   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>`
+     and (:filelink:`pkg/thsice`) advection
      (:filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
 
-   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>` and (:filelink:`pkg/seaice`) advection
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`
+     and (:filelink:`pkg/seaice`) advection
      (:filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
+
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
+     elliptical yield curve with :ref:`non-normal flow rule <rheologies_ellnnfr>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_ellnnfr <verification/offline_exf_seaice/input.dyn_ellnnfr>` and :filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
+
+   - sea ice dynamics-only using :ref:`LSR solver <para_phys_pkg_seaice_LSRJFNK>`,
+     :ref:`Mohr-Coulomb yieldcurve with elliptical plastic potential <rheologies_MCE>`
+     and (:filelink:`pkg/seaice`) advection
+     (:filelink:`input.dyn_mce <verification/offline_exf_seaice/input.dyn_mce>` and :filelink:`input.dyn_lsr <verification/offline_exf_seaice/input.dyn_lsr>`)
+
+   - sea ice dynamics-only using :ref:`Picard (KRYLOV) solver <para_phys_pkg_seaice_LSRJFNK>`,
+     :ref:`parabolic lens yieldcurve <rheologies_PL>`
+     and (:filelink:`pkg/thsice`) advection
+     (:filelink:`input.dyn_paralens <verification/offline_exf_seaice/input.dyn_paralens>` and :filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
+
+   - sea ice dynamics-only using :ref:`JFNK solver <para_phys_pkg_seaice_LSRJFNK>`, :ref:`teardrop yieldcurve <rheologies_TD>`
+     and (:filelink:`pkg/thsice`) advection
+     (:filelink:`input.dyn_teardrop <verification/offline_exf_seaice/input.dyn_teardrop>` and :filelink:`input.dyn_jfnk <verification/offline_exf_seaice/input.dyn_jfnk>`)
 
    - sea ice thermodynamics-only using (:filelink:`pkg/seaice`) (:filelink:`input.thermo <verification/offline_exf_seaice/input.thermo>`)
 
@@ -517,17 +551,25 @@ Additional Example Experiments: Adjoint Model Setups
 
 Unless stated otherwise, the physical setup of the adjoint run is identical to the forward run, see description above.
 TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``, whereas OpenAD requires
-directories ``coad_oad`` and ``input_oad`` respectively.
+directories ``code_oad`` and ``input_oad`` respectively.
 
 #. :filelink:`1D_ocean_ice_column <verification/1D_ocean_ice_column>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
 
-#. :filelink:`bottom_ctrl_5x5 <verification/bottom_ctrl_5x5>` - TAF adjoint test using the bottom topography as the
-   control parameter, uses package :filelink:`ecco <pkg/ecco>`.
+#. :filelink:`bottom_ctrl_5x5 <verification/bottom_ctrl_5x5>` - TAF adjoint
+   test using the bottom topography as the control parameter, uses package
+   :filelink:`ecco <pkg/ecco>` and "not self-adjoint" version of cg2d:
+   :filelink:`cg2d_nsa.F <model/src/cg2d_nsa.F>`.
+   Also contains an additional TAF adjoint setup
+   that uses default :filelink:`cg2d.F <model/src/cg2d.F>` with a hand-written
+   full (manual) adjoint routine :filelink:`cg2d_mad.F
+   <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.facg2d
+   <verification/bottom_ctrl_5x5/input_ad.facg2d>`)
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
    TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
 
-   - with bottom drag as a control (:filelink:`input_ad.bottomdrag <verification/global_ocean.90x40x15/input_ad.bottomdrag>`)
+   - with bottom drag as a control and manual adjoint :filelink:`cg2d_mad.F
+     <pkg/autodiff/cg2d_mad.F>` (:filelink:`input_ad.bottomdrag <verification/global_ocean.90x40x15/input_ad.bottomdrag>`)
 
    - with :math:`\kappa_{GM}` as a control (:filelink:`input_ad.kapgm <verification/global_ocean.90x40x15/input_ad.kapgm>`)
 

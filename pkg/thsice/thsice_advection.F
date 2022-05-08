@@ -103,8 +103,6 @@ C !LOCAL VARIABLES: ====================================================
 C  maskLocC      :: 2-D array mask at grid-cell center
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
-C  iMin,iMax,    :: loop range for called routines
-C  jMin,jMax     :: loop range for called routines
 C [iMin,iMax]Upd :: loop range to update sea-ice field
 C [jMin,jMax]Upd :: loop range to update sea-ice field
 C  i,j           :: loop indices
@@ -124,7 +122,6 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RS maskLocC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iMin,iMax,jMin,jMax
       INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k
       _RL uCfl    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -140,9 +137,10 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER myTile
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ticekey, ikey_4
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER ticekey, ipasskey
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
@@ -155,6 +153,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       k = 1
 #ifdef ALLOW_AUTODIFF_TAMC
+C     tracerIdentity has negative values from GAD_SI_FRAC=-5 to GAD_SI_QICE2=-9
+      act0 = GAD_SI_FRAC - tracerIdentity
+      max0 = thSIce_nAdv
       act1 = bi - myBxLo(myThid)
       max1 = myBxHi(myThid) - myBxLo(myThid) + 1
       act2 = bj - myByLo(myThid)
@@ -162,9 +163,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       act3 = myThid - 1
       max3 = nTx*nTy
       act4 = ikey_dynamics - 1
-      ticekey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      ticekey = (act0 + 1) + act1*max0
+     &                     + act2*max0*max1
+     &                     + act3*max0*max1*max2
+     &                     + act4*max0*max1*max2*max3
+      IF ( act0 .LT. 0 .OR. act0+1 .GT. thSIce_nAdv) THEN
+       WRITE(msgBuf,'(A,2(I3,A))')
+     &      'THSICE_ADVECTION: tracerIdentity =', tracerIdentity,
+     &      ' not consistent with thSIce_nAdv =', thSIce_nAdv,
+     &      ', ==> check "THSICE_SIZE.h"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R THSICE_ADVECTION'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DBUG_THSICE
@@ -210,10 +220,14 @@ C--   Set tile-specific parameters for horizontal fluxes
        W_edge = .FALSE.
       ENDIF
 
-      iMin = 1-OLx
-      iMax = sNx+OLx
-      jMin = 1-OLy
-      jMax = sNy+OLy
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF (nipass .GT. maxcube) THEN
+       WRITE(msgBuf,'(A,2(I3,A))') 'S/R THSICE_ADVECTION: nipass =',
+     &      nipass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R THSICE_ADVECTION'
+      ENDIF
+#endif
 
 C--   Start horizontal fluxes
 
@@ -259,17 +273,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-         ikey_4 = ipass
-     &         + nipass*act1
-     &         + nipass*max1*act2
-     &         + nipass*max1*max2*act3
-     &         + nipass*max1*max2*max3*act4
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
+       ipasskey = ipass + (ticekey-1) * maxcube
 #endif
 
        interiorOnly = .FALSE.
@@ -311,9 +315,8 @@ C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
 #endif
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
@@ -405,8 +408,9 @@ C            in corner region) but safer to keep them.
          IF ( E_edge ) iMaxUpd = sNx
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE af     = comlev1_thsice_adv, key=ipasskey, byte=isbyte
 #endif
          IF ( S_edge ) THEN
           IF ( useGridArea ) THEN
@@ -476,6 +480,11 @@ C-    end if North Edge
          ENDIF
 
         ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE af     = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+#endif
 C     do not only update the overlap
           jMinUpd = 1-OLy
           jMaxUpd = sNy+OLy
@@ -527,9 +536,8 @@ C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
 #endif
         IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
@@ -620,8 +628,9 @@ C         in corner region) but safer to keep them.
          IF ( N_edge ) jMaxUpd = sNy
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
-CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE af     = comlev1_thsice_adv, key=ipasskey, byte=isbyte
 #endif
          IF ( W_edge ) THEN
           IF ( useGridArea ) THEN
@@ -691,6 +700,11 @@ C-    end if East Edge
          ENDIF
 
         ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE iceVol = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+CADJ STORE af     = comlev1_thsice_adv, key=ipasskey, byte=isbyte
+#endif
 C     do not only update the overlap
           iMinUpd = 1-OLx
           iMaxUpd = sNx+OLx
