@@ -144,10 +144,6 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,L5,a)')
-     &' ctrlUseGen  = ',ctrlUseGen,
-     &' /* use generic controls */'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_GENARR2D_CONTROL
       do iarr = 1, maxCtrlArr2D

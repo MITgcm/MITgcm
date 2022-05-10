@@ -45,19 +45,24 @@ cph set to 64 by default.
       _RL delZexp
       _RL forcingPrecond
 
-C     doInitXX               ::   at iter 0 only, set ctrls to 0 and write to xx*000.data
-C     doMainPack             ::   pack adxx*data files into ecco_cost_* file (usually for optim.x)
-C     doMainUnpack           ::   unpack ecco_ctrl_* file (usually from optim.x) into xx_*data files
-C     doPackDiag             ::   output diag_pack*/diag_unpack* files during ctrl_pack/ctrl_unpack
-C     doSinglePrecTapelev    ::   reduce precision of ad tape files to float32 (only used in pkg/autodiff ...)
-C     ctrlSmoothCorrel2D     ::   use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
-C     ctrlSmoothCorrel3D     ::   use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
-C     ctrlUseGen             ::   use generic control approach rather than old codes from pkg/ecco
+C     doInitXX            :: at iter 0 only, set ctrls to 0 and write
+C                            to xx*000.data
+C     doMainPack          :: pack adxx*data files into ecco_cost_* file
+C                            (usually for optim.x)
+C     doMainUnpack        :: unpack ecco_ctrl_* file (usually from optim.x)
+C                            into xx_*data files
+C     doPackDiag          :: output diag_pack*/diag_unpack* files during
+C                            ctrl_pack/ctrl_unpack
+C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
+C                            (only used in pkg/autodiff ...)
+C     ctrlSmoothCorrel2D  :: use pkg/smooth correlation operator (incl.
+C                            smoother) for 2D controls (Weaver, Courtier 01)
+C     ctrlSmoothCorrel3D  :: use pkg/smooth correlation operator (incl.
+C                            smoother) for 3D controls (Weaver, Courtier 01)
 
       common /controlvars_l /
      &                       ctrlSmoothCorrel2D,
      &                       ctrlSmoothCorrel3D,
-     &                       ctrlUseGen,
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -69,7 +74,6 @@ C     ctrlUseGen             ::   use generic control approach rather than old c
      &                       doAdmtlmBypassAD
 
       logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D
-      logical ctrlUseGen
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag
@@ -267,17 +271,6 @@ c     Define unit weight as a placeholder
 c     Control variables:
 c     ==================
 c
-c     xx_theta - control vector temperature part.
-c     xx_salt  - control vector salt part.
-c     xx_hflux   - control vector surface heat flux part.
-c     xx_sflux   - control vector surface salt flux part.
-c     xx_tauu  - control vector zonal wind stress part.
-c     xx_tauv  - control vector meridional wind stress part.
-cph(
-c     xx_... are to be replaced by tmpfld2d/3d throughout the code;
-c     control variables are written to / read from active files
-c     TAMC sees xx_..._dummy
-
 #ifdef ALLOW_OPENAD
 C
       common /controlvars_r_openad/

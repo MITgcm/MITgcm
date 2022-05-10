@@ -483,7 +483,7 @@ C-    Salt flux
 #endif
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_GENTIM2D_CONTROL))
-      IF ( useCTRL.AND.ctrlUseGen ) THEN
+      IF ( useCTRL ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy
@@ -575,7 +575,7 @@ C-    Salt flux
        ENDDO
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
 
-      ENDIF !if (ctrlUseGen) then
+      ENDIF !if (useCTRL) then
 #endif
 
       RETURN

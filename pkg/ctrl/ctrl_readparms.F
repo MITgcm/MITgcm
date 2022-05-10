@@ -45,6 +45,8 @@ c     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr,jarr
 #endif
+c     retired parameters (others are in ctrl_local_params.h)
+      logical ctrlUseGen
 
 c     == external ==
 
@@ -448,6 +450,13 @@ c allow for switching off correl2d in adjoint
 #endif
 
       nretired = 0
+      IF ( .NOT. ctrlUseGen ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R CTRL_READPARMS: ctrlUseGen',
+     &  ' is no longer allowed in file "data.ctrl"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nretired = nretired + 1
+      ENDIF
       CALL CTRL_CHECK_RETIRED_PARMS( 'xx_hflux',
      I     xx_hfluxstartdate1, xx_hfluxstartdate2,
      I     xx_hfluxperiod, xx_hflux_file, ' ',

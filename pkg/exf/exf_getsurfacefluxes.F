@@ -102,7 +102,7 @@ CEOP
 
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
-      IF ( useCTRL.AND.ctrlUseGen) THEN
+      IF ( useCTRL) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),mybxhi(myThid)
          DO j = 1,sNy
@@ -134,7 +134,7 @@ CEOP
          ENDDO
         ENDDO
        ENDDO
-      ENDIF !if (ctrlUseGen) then
+      ENDIF !if (useCTRL) then
 #endif
 
       IF ( (useCTRL).AND.(.NOT.useAtmWind) ) THEN

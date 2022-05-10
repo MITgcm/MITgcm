@@ -68,67 +68,66 @@ CEOP
 
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
-      IF ( ctrlUseGen ) THEN
 
-       DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO j = 1-OLy,sNy+OLy
-          DO i = 1-OLx,sNx+OLx
-            tmpUE(i,j,bi,bj) = 0. _d 0
-            tmpVN(i,j,bi,bj) = 0. _d 0
-            tmpUX(i,j,bi,bj) = 0. _d 0
-            tmpVY(i,j,bi,bj) = 0. _d 0
-          ENDDO
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          tmpUE(i,j,bi,bj) = 0. _d 0
+          tmpVN(i,j,bi,bj) = 0. _d 0
+          tmpUX(i,j,bi,bj) = 0. _d 0
+          tmpVY(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
-       DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
-           DO iarr = 1, maxCtrlTim2D
-            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fe') tmpUE
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+          DO iarr = 1, maxCtrlTim2D
+           IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fe') tmpUE
      &       (i,j,bi,bj)=tmpUE(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fn') tmpVN
+           IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fn') tmpVN
      &        (i,j,bi,bj)=tmpVN(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
-       _EXCH_XY_RL(tmpUE,myThid)
-       _EXCH_XY_RL(tmpVN,myThid)
-       CALL rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
-     &      .FALSE.,.TRUE.,.TRUE.,1,myThid)
+      _EXCH_XY_RL(tmpUE,myThid)
+      _EXCH_XY_RL(tmpVN,myThid)
+      CALL rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
+     &     .FALSE.,.TRUE.,.TRUE.,1,myThid)
 
-       DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
-           fu(i,j,bi,bj)=fu(i,j,bi,bj)+tmpUX(i,j,bi,bj)
-           fv(i,j,bi,bj)=fv(i,j,bi,bj)+tmpVY(i,j,bi,bj)
-           DO iarr = 1, maxCtrlTim2D
-            IF (xx_gentim2d_file(iarr)(1:7).EQ.'xx_qnet') Qnet
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+          fu(i,j,bi,bj)=fu(i,j,bi,bj)+tmpUX(i,j,bi,bj)
+          fv(i,j,bi,bj)=fv(i,j,bi,bj)+tmpVY(i,j,bi,bj)
+          DO iarr = 1, maxCtrlTim2D
+           IF (xx_gentim2d_file(iarr)(1:7).EQ.'xx_qnet') Qnet
      &       (i,j,bi,bj)=Qnet(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_empmr') EmPmR
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_empmr') EmPmR
      &       (i,j,bi,bj)=EmPmR(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_qsw') Qsw
+           IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_qsw') Qsw
      &       (i,j,bi,bj)=Qsw(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-             IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sst') SST
+           IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sst') SST
      &       (i,j,bi,bj)=SST(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sss') SSS
+           IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sss') SSS
      &       (i,j,bi,bj)=SSS(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_pload') pLoad
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_pload') pLoad
      &       (i,j,bi,bj)=pLoad(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_saltflux') saltFlux
+           IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_saltflux') saltFlux
      &       (i,j,bi,bj)=saltFlux(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fu') fu
+           IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fu') fu
      &       (i,j,bi,bj)=fu(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fv') fv
+           IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fv') fv
      &       (i,j,bi,bj)=fv(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
-           ENDDO
+          ENDDO
           ENDDO
          ENDDO
         ENDDO
@@ -162,7 +161,6 @@ CEOP
        ENDIF
 #endif
 
-      ENDIF !if (ctrlUseGen) then
 #endif /* ALLOW_GENTIM2D_CONTROL */
 #endif /* ndef ALLOW_OPENAD */
 

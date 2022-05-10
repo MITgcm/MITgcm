@@ -73,12 +73,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      IF ( .NOT. ctrlUseGen ) THEN
-       WRITE(msgBuf,'(A)') 'ctrlUseGen = .FALSE. is not allowed'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ENDIF
-
 #ifdef ALLOW_TANGENTLINEAR_RUN
       IF ( yadmark .NE. 'g_' ) THEN
         WRITE(msgBuf,'(A)')

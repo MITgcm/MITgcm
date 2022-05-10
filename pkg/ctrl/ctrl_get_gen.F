@@ -89,13 +89,7 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-      if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
-        ilgen=ilnblnk( xx_gen_file )
-        write(fnamegen(1:80),'(2a,i10.10)')
-     &       xx_gen_file(1:ilgen), '.', optimcycle
-      endif
-
-      if ( (optimcycle .ge. 0).AND.ctrlUseGen ) then
+      if ( optimcycle .ge. 0 ) then
         ilgen=ilnblnk( xx_gen_file )
         write(fnamegen(1:80),'(2a,i10.10)')
      &    xx_gen_file(1:ilgen),'.effective.',optimcycle
