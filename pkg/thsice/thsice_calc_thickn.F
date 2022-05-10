@@ -799,11 +799,7 @@ C-- modified scheme. taking into account Ice enthalpy
              ELSE
               hq = hnewTmp*qicen(i,j,k)-dhi*Lfresh
               hnew(i,j,k) = hnewTmp - dhi
-#ifdef THSICE_REGULARIZE_CALC_THICKN
-              qicen(i,j,k)=hq/SQRT(hnew(i,j,k)**2 + 1. _d -4)
-#else
               qicen(i,j,k)=hq/hnew(i,j,k)
-#endif
               evapLoc(i,j)=0. _d 0
              ENDIF
 C-------
@@ -964,9 +960,6 @@ C Compute new total ice thickness.
 #endif
 
           hlyr = hIce(i,j) * rec_nlyr
-#ifdef THSICE_REGULARIZE_CALC_THICKN
-          hlyr = SQRT( hlyr**2 + 1. _d -4 )
-#endif
 CML          CALL THSICE_RESHAPE_LAYERS(
 CML     U         qicen(i,j,:),
 CML     I         hlyr, hnew(i,j,:), myThid )
