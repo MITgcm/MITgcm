@@ -303,6 +303,10 @@ A minimum and maximum value for :math:`\kappa_{\rm GM}` can be set using
 Note that using the Visbeck et al. parameterization,  :math:`\kappa_{\rm GM} = \kappa_{\rho}`.
 At present, it is not possible to combine the Visbeck et al. :math:`\kappa_{GM}(x,y)` with a varying vertical profile,
 i.e., using specified files :varlink:`GM_iso1dFile` or :varlink:`GM_bol1dFile`.
+**NOTE**: the computed Visbeck :math:`\kappa_{\rm GM}` is *added* to the background value
+set by parameter :varlink:`GM_background_K`, so for typical usage of Visbeck et al. (where :math:`\kappa_{\rm GM}`
+is fully determined by the Visbeck scheme) the user will want to make sure 
+:varlink:`GM_background_K` is set to 0 (its default value) in ``data.gmredi``.
 
 .. _sub_gmredi_tapering_stability:
 
@@ -332,13 +336,13 @@ magnitude is simply restricted by an upper limit:
 .. math::
 
    \begin{aligned}
-   |\nabla_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
-   S_{\rm lim} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }, 
-   \quad \mbox{where $S_{\max}>0$ is a parameter} \\
-   \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) \\
+   \sigma_{z_{\rm lim}} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }\\
+   \sigma_z^\star & = \min( \sigma_z, \sigma_{z_{\rm lim}} ) \\
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
    \end{aligned}
 
+where :math:`|\nabla_h \sigma| = \sqrt{ \sigma_x^2 + \sigma_y^2 }`
+and :math:`S_{\max} (>0)` is parameter :varlink:`GM_maxSlope` in ``data.gmredi``.
 Notice that this algorithm assumes stable stratification through the
 “min” function. In the case where the fluid is well stratified
 (:math:`\sigma_z < S_{\rm lim}`) then the slopes evaluate to:
@@ -350,8 +354,7 @@ become:
 
 .. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\nabla_h \sigma| / S_{\max}}
 
-so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} = S_{\max}`
-(parameter :varlink:`GM_maxSlope` in ``data.gmredi``).
+so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} = S_{\max}`.
 
 The slope clipping scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’clipping’``.
