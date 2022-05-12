@@ -324,7 +324,10 @@ unstable or nearly unstable stratification. The slopes in such regions
 can be either infinite, very large with a sign reversal or simply very
 large. From a numerical point of view, large slopes lead to large
 variations in the tensor elements (implying large bolus flow) and can be
-numerically unstable. 
+numerically unstable. Note, for numerical reasons :math:`S_x` and :math:`S_y`
+can have a maximum value of :varlink:`GM_bigslope` while :math:`|{\bf S}|^2`
+is capped at :varlink:`GM_slopeSqCutoff`, even if no tapering (or clipping)
+scheme is chosen (not recommended).
 
 Slope clipping
 ++++++++++++++
@@ -341,15 +344,15 @@ magnitude is simply restricted by an upper limit:
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
    \end{aligned}
 
-where :math:`|\nabla_h \sigma| = \sqrt{ \sigma_x^2 + \sigma_y^2 }`
+where  :math:`\sigma_x = \partial_x \sigma`, :math:`|\nabla_h \sigma| = \sqrt{ \sigma_x^2 + \sigma_y^2 }`,
 and :math:`S_{\max} (>0)` is parameter :varlink:`GM_maxSlope` in ``data.gmredi``.
 Notice that this algorithm assumes stable stratification through the
 “min” function. In the case where the fluid is well stratified
-(:math:`\sigma_z < S_{\rm lim}`) then the slopes evaluate to:
+(:math:`\sigma_z < \sigma_{z_{\rm lim}}`) then the slopes evaluate to:
 
 .. math:: {[s_x, s_y]} = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z}
 
-while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
+while in the limited regions (:math:`\sigma_z > \sigma_{z_{\rm lim}}`) the slopes
 become:
 
 .. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\nabla_h \sigma| / S_{\max}}
@@ -373,9 +376,6 @@ Limiting the slopes also breaks the adiabatic nature of the GM/Redi
 parameterization, re-introducing diabatic fluxes in regions where the
 limiting is in effect.
 
-Tapering: Linear
-++++++++++++++++
-
 Tapering: Gerdes, Koberle and Willebrand, 1991 (GKW91)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -387,7 +387,8 @@ back to zero in low-stratification regions; the adjustment of slopes is
 replaced by a tapering of the entire GM/Redi tensor. This means the
 direction of fluxes is unaffected as the amplitude is scaled.
 
-The scheme inserts a tapering function, :math:`f_1(S)`, in front of the
+The tapering scheme used in Gerdes et al. (1991) :cite:`gkw:91` (GKW91)
+inserts a tapering function, :math:`f_1(S)`, in front of the
 GM/Redi tensor:
 
 .. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right]
@@ -418,18 +419,30 @@ The GKW91 tapering scheme is activated in the model by setting
 
     Effective slope as a function of 'true' slope using Cox slope clipping, GKW91 limiting and DM95 limiting.
 
+Tapering: Linear
+++++++++++++++++
+
+The linear tapering scheme is very similar to GKW91, except that the tapering function is chosen as:
+
+.. math:: f_1(S) = \min \left[ 1,  \frac{S_{\max}}{|{\bf S}|} \right]
+
+which will result in somewhat less tapering for large :math:`|{\bf S}|` than GKW91.
+The linear tapering scheme is activated in the model by setting
+:varlink:`GM_taper_scheme` ``= ’linear’`` in ``data.gmredi``.
+
+
 Tapering: Danabasoglu and McWilliams, 1995 (DM95)
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
 The tapering scheme used by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95` (DM95)
-followed a similar procedure but used a different tapering function, :math:`f_1(S)`:
+follows a similar procedure but used a different tapering function, :math:`f_1(S)`:
 
 .. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right]
 
-where :math:`S_c = 0.004` is a cut-off slope and :math:`S_d=0.001` is a
+where :math:`S_c = 0.004` is a cutoff slope and :math:`S_d=0.001` is a
 scale over which the slopes are smoothly tapered. Functionally, the
 operates in the same way as the GKW91 scheme but has a substantially
-lower cut-off, turning off the GM/Redi parameterization for weaker
+lower cutoff, turning off the GM/Redi parameterization for weaker
 slopes.
 
 The DM95 tapering scheme is activated in the model by setting
