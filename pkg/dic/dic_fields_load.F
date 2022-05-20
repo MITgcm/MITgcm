@@ -208,16 +208,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
              ENDDO
             ENDDO
            ENDDO
-         ELSE
-C- Using constant silicate value of 0.03 mol m^-3 if no data are provided         
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             DO k=1,Nr
-
-             SILICA(i,j,k,bi,bj) = 0.03 _d 0
-             ENDDO
-            ENDDO
-           ENDDO       
+        
          ENDIF
 
          IF ( DIC_silicaFile .NE. ' '  ) THEN
