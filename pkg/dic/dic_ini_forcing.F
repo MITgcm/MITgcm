@@ -89,7 +89,7 @@ C If the chlorophyll climatology is not provided, use this default value.
              InputFe(i,j,bi,bj)= 1. _d -11*maskC(i,j,1,bi,bj)
 #endif 
             DO k=1,Nr
-            SILICA(i,j,k,bi,bj) = 7.6838 _d -3*maskC(i,j,k,bi,bj)
+            SILICA(i,j,k,bi,bj) = 3 _d -2*maskC(i,j,k,bi,bj)
             ENDDO
           ENDDO
          ENDDO
