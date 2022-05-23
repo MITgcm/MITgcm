@@ -326,7 +326,7 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 C--   Wind speed
             wsm        = sh(i,j,bi,bj)
 #ifdef  ALLOW_BULK_LARGEYEAGER09
-C     Large and Yeager (2009), J.Clim equation 11a/b
+C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
             tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
      &           + cdrag_8 * wsm**6
             tmpbulk = exf_scal_BulkCdn
