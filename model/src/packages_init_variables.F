@@ -221,12 +221,16 @@ C--   Initialize KPP vertical mixing scheme.
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameterization
-      IF (useGMRedi) THEN
+# ifndef ALLOW_AUTODIFF
+      IF ( useGMRedi ) THEN
+# endif
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_VARIA',myThid)
 # endif
         CALL GMREDI_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_BBL

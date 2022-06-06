@@ -524,7 +524,7 @@ C-- end 1rst loop on vertical level index k
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 #endif
       IF ( GM_Visbeck_alpha.GT.0. ) THEN
-C-     Limit range that KapGM can take
+C-     Limit range that Kappa-GM can take
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
          VisbeckK(i,j,bi,bj)=
@@ -554,20 +554,22 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op5
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-         Kgm_tmp = kapRedi(i,j,k,bi,bj)
+         Kgm_tmp = GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-         Kgm_tmp = op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i,j,km1,bi,bj))
+         Kgm_tmp = op5*( GM_inpK3dRedi(i,j,km1,bi,bj)
+     &                 + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
          Kgm_tmp = isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#ifdef GM_READ_K3D_GM
 #  ifdef ALLOW_KAPGM_CONTROL_OLD
-     &           + GM_skewflx*kapGM(i,j,k,bi,bj)
+     &           + GM_skewflx*GM_inpK3dGM(i,j,k,bi,bj)
 #  else
-     &     + GM_skewflx*op5*(kapGM(i,j,k,bi,bj)+kapGM(i,j,km1,bi,bj))
+     &           + GM_skewflx*op5*( GM_inpK3dGM(i,j,km1,bi,bj)
+     &                            + GM_inpK3dGM(i,j,k,bi,bj) )
 #  endif
 #else
      &           + GM_skewflx*bolus_K*GM_bolFac2d(i,j,bi,bj)
@@ -587,12 +589,12 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-         Kwz(i,j,k,bi,bj)= ( kapRedi(i,j,k,bi,bj)
+         Kwz(i,j,k,bi,bj)= ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-         Kwz(i,j,k,bi,bj)= ( op5*(kapRedi(i,j,k,bi,bj)
-     &                            +kapRedi(i,j,km1,bi,bj))
+         Kwz(i,j,k,bi,bj)= ( op5*( GM_inpK3dRedi(i,j,km1,bi,bj)
+     &                           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
          Kwz(i,j,k,bi,bj)= ( isopycK*GM_isoFac2d(i,j,bi,bj)
@@ -749,11 +751,12 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kux(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-     &     ( kapRedi(i,j,k,bi,bj)
+     &     ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-     &     ( op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i-1,j,k,bi,bj))
+     &     ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
@@ -793,21 +796,23 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kuz(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-     &     ( kapRedi(i,j,k,bi,bj)
+     &     ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-     &     ( op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i-1,j,k,bi,bj))
+     &     ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#ifdef GM_READ_K3D_GM
 #  ifdef ALLOW_KAPGM_CONTROL_OLD
-     &     - GM_skewflx*kapGM(i,j,k,bi,bj)
+     &     - GM_skewflx*GM_inpK3dGM(i,j,k,bi,bj)
 #  else
-     &     - GM_skewflx*op5*(kapGM(i,j,k,bi,bj)+kapGM(i-1,j,k,bi,bj))
+     &     - GM_skewflx*op5*( GM_inpK3dGM(i-1,j,k,bi,bj)
+     &                      + GM_inpK3dGM(i,j,k,bi,bj) )
 #  endif
 #else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
@@ -842,12 +847,12 @@ c       ENDDO
         DO j=1,sNy
          DO i=1,sNx+1
 C         store in tmp1k Kuz_Redi
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-          tmp1k(i,j) = ( kapRedi(i,j,k,bi,bj)
+          tmp1k(i,j) = ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-          tmp1k(i,j) = ( op5*(kapRedi(i-1,j,k,bi,bj)
-     &                       +kapRedi(i,j,k,bi,bj))
+          tmp1k(i,j) = ( op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
+     &                       + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
           tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
@@ -982,11 +987,12 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kvy(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-     &     ( kapRedi(i,j,k,bi,bj)
+     &     ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-     &     ( op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i,j-1,k,bi,bj))
+     &     ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
@@ -1026,21 +1032,23 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           Kvz(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-     &     ( kapRedi(i,j,k,bi,bj)
+     &     ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-     &     ( op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i,j-1,k,bi,bj))
+     &     ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
      &     ( GM_isopycK*GM_isoFac1d(k)
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#ifdef GM_READ_K3D_GM
 #  ifdef ALLOW_KAPGM_CONTROL_OLD
-     &     - GM_skewflx*kapGM(i,j,k,bi,bj)
+     &     - GM_skewflx*GM_inpK3dGM(i,j,k,bi,bj)
 #  else
-     &     - GM_skewflx*op5*(kapGM(i,j,k,bi,bj)+kapGM(i,j-1,k,bi,bj))
+     &     - GM_skewflx*op5*( GM_inpK3dGM(i,j-1,k,bi,bj)
+     &                      + GM_inpK3dGM(i,j,k,bi,bj) )
 #  endif
 #else
      &     - GM_skewflx*GM_background_K*GM_bolFac1d(k)
@@ -1075,12 +1083,12 @@ c       ENDDO
         DO j=1,sNy+1
          DO i=1,sNx
 C         store in tmp1k Kvz_Redi
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 #  ifdef ALLOW_KAPREDI_CONTROL_OLD
-          tmp1k(i,j) = ( kapRedi(i,j,k,bi,bj)
+          tmp1k(i,j) = ( GM_inpK3dRedi(i,j,k,bi,bj)
 #  else
-          tmp1k(i,j) = ( op5*(kapRedi(i,j-1,k,bi,bj)
-     &                       +kapRedi(i,j,k,bi,bj))
+          tmp1k(i,j) = ( op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
+     &                       + GM_inpK3dRedi(i,j,k,bi,bj) )
 #  endif
 #else
           tmp1k(i,j) = ( GM_isopycK*GM_isoFac1d(k)
@@ -1134,10 +1142,11 @@ C-- end 3rd  loop on vertical level index k
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
           Kux(i,j,k,bi,bj) = (
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 c#  ifdef ALLOW_KAPREDI_CONTROL_OLD
-c    &       kapRedi(i,j,k,bi,bj)
-     &       op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i-1,j,k,bi,bj))
+c    &       GM_inpK3dRedi(i,j,k,bi,bj)
+     &       op5*( GM_inpK3dRedi(i-1,j,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #else
      &       GM_isopycK
 #endif
@@ -1150,10 +1159,11 @@ c    &       kapRedi(i,j,k,bi,bj)
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
           Kvy(i,j,k,bi,bj) = (
-#ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 c#  ifdef ALLOW_KAPREDI_CONTROL_OLD
-c    &       kapRedi(i,j,k,bi,bj)
-     &       op5*(kapRedi(i,j,k,bi,bj)+kapRedi(i,j-1,k,bi,bj))
+c    &       GM_inpK3dRedi(i,j,k,bi,bj)
+     &       op5*( GM_inpK3dRedi(i,j-1,k,bi,bj)
+     &           + GM_inpK3dRedi(i,j,k,bi,bj) )
 #else
      &       GM_isopycK
 #endif
