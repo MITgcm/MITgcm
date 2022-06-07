@@ -422,7 +422,7 @@ The GKW91 tapering scheme is activated in the model by setting
 Tapering: Linear
 ++++++++++++++++
 
-The linear tapering scheme is very similar to GKW91, except that the tapering function is chosen as:
+The linear tapering scheme is similar to GKW91, except that the tapering function is chosen as:
 
 .. math:: f_1(S) = \min \left[ 1,  \frac{S_{\max}}{|{\bf S}|} \right]
 
@@ -563,20 +563,22 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option (clipping', 'fm07', 'stableGmAdjTap',               |
+  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('clipping', 'fm07', 'stableGmAdjTap',              |
   |                                    |                              | 'linear', 'gkw91', 'dm95', 'ldd97')                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
+  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m) for FM07                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum trans. layer thick. as a factor of local mixed-layer depth      |
+  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum transition layer thickness for FM07 as factor of                |
+  |                                    |                              | local mixed-layer depth                                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum trans. layer thick. as a factor of local dr                     |
+  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum transition layer thickness for FM07 as a factor of              |
+  |                                    |                              | local :math:`\Delta r_f`                                                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for 'dm95' and 'ldd97 ' tapering function         |
+  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for DM95 and LDD97 tapering function              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for 'dm95' and 'ldd97' tapering function          |
+  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for DM95 and LDD97 tapering function              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_UseBVP`               |     FALSE                    | use Boundary-Value-Problem method for bolus transport                   |
+  | :varlink:`GM_UseBVP`               |     FALSE                    | use BVP method for bolus transport                                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
