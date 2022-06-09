@@ -138,7 +138,6 @@ C--   Set diagnostic suffix for the current tracer
         IF (DWNSLP_deepK(n,bi,bj).NE.0) THEN
 
 C- detect density gradient along the slope => Downsloping flow
-
          ijd = DWNSLP_ijDeep(n,bi,bj)
          ijs = ijd + DWNSLP_shVsD(n,bi,bj)
 
@@ -158,29 +157,22 @@ C- downsloping flow (in) & upward return flow :
           gTracer(ijd,k) = gTracer(ijd,k) + gTrLoc(k)
          ENDDO
 C- downsloping flow (out) & return flow to the shelf
-          k = kshelf
-          gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
+         k = kshelf
+         gTrLoc(0) = DWNSLP_Transp(n,bi,bj)
      &       * ( tracer(ijd,k)-tracer(ijs,k) )
      &       *recip_drF(k)*recip_hFac(ijs,k)
      &       *recip_rA_arg(ijs,bi,bj)
-          gTracer(ijs,k) = gTracer(ijs,k) + gTrLoc(0)
+         gTracer(ijs,k) = gTracer(ijs,k) + gTrLoc(0)
 
 #ifndef TARGET_NEC_SX
-C     write statements will inhibit vectorisation making this one of the
-C     most expensive routines on a vector comptuater, so we comment this
-C     out for now, if compiled for a vector computer
+C-    skip within do-loop write statement when compiling on a vector computer
          IF ( DWNSLP_ioUnit.GT.0 ) THEN
           _BEGIN_MASTER(myThid)
-          k=DWNSLP_deepK(n,bi,bj)
+          k = kDeep
           WRITE(DWNSLP_ioUnit,'(2I4,I6,2I8,I4,1P4E14.6)')
      &      bi,bj,n,ijd,ijs,k,
-     &      tracer(ijd,k),
-     &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
-     &       *recip_drF(k)*recip_hFac(ijd,k)
-     &       *recip_rA_arg(ijd,bi,bj)*
-     &        (tracer(ijs,kshelf)-tracer(ijd,k)),
-     &      tracer(ijs,kshelf),
-     &      deltaTLev(k)*gTrLoc(0)
+     &      tracer(ijd,k), deltaTLev(k)*gTrLoc(k),
+     &      tracer(ijs,kshelf), deltaTLev(k)*gTrLoc(0)
           _END_MASTER(myThid)
          ENDIF
 #endif
