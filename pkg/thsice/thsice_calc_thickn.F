@@ -227,7 +227,7 @@ C     help TAF with these variables
 #endif
 #ifdef THSICE_REGULARIZE_CALC_THICKN
       _RL kScal
-      PARAMETER ( kScal=1. )
+      PARAMETER ( kScal = 1.D0 )
 #endif
 #ifdef ALLOW_DBUG_THSICE
 C-    define grid-point location where to print debugging values
@@ -399,7 +399,7 @@ C     for no currents:
 C frictional velocity between ice and water
           IF (v2oc(i,j) .NE. 0.)
      &     ustar = SQRT(0.00536 _d 0*v2oc(i,j))
-          ustar=max(5. _d -3,ustar)
+          ustar = MAX(5. _d -3,ustar)
 #endif
 c         cpchr =cpWater*rhosw*bMeltCoef
           Fbot(i,j) = cpchr*(tFrz(i,j)-tOce(i,j))*ustar
@@ -409,13 +409,13 @@ C     smooth regulatization
 C     we want to have some soft maximum for better differentiability:
 C     max(a,b;k) = (a*exp(k*a)+b*exp(k*b))/(exp(k*a)+exp(k*b))
           Fbot(i,j) = (
-     &             Fbot(i,j) * exp(kScal*  Fbot(i,j))
-     &         + fzMlOc(i,j) * exp(kScal*fzMlOc(i,j))
-     &         )/( exp(kScal*Fbot(i,j)) + exp(kScal*fzMlOc(i,j)) )
+     &             Fbot(i,j) * EXP(kScal*  Fbot(i,j))
+     &         + fzMlOc(i,j) * EXP(kScal*fzMlOc(i,j))
+     &         )/( EXP(kScal*Fbot(i,j)) + EXP(kScal*fzMlOc(i,j)) )
 #else
-          Fbot(i,j) = max(Fbot(i,j),fzMlOc(i,j))
+          Fbot(i,j) = MAX(Fbot(i,j),fzMlOc(i,j))
 #endif
-          Fbot(i,j) = min(Fbot(i,j),0. _d 0)
+          Fbot(i,j) = MIN(Fbot(i,j),0. _d 0)
          ENDIF
 
 C  mass of fresh water and salt initially present in ice
@@ -526,7 +526,7 @@ CADJ STORE etop   = comlev1_bibj, key = ticekey, kind = isbyte
        DO i = iMin, iMax
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
      &         etop(i,j) .GT. 0. _d 0 .AND.
-     &        hSnow1(i,j) .GT. 0. _d 0) THEN
+     &       hSnow1(i,j) .GT. 0. _d 0) THEN
 
 C     Make sure internal ice temperatures do not exceed Tmlt.
 C     If they do, then eliminate the layer.  (Dont think this will happen
@@ -661,7 +661,7 @@ C     energy from the mixed layer
        DO i = iMin, iMax
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
      &       ebot(i,j)   .GT. 0. _d 0 .AND.
-     &       hSnow1(i,j)  .GT. 0. _d 0) THEN
+     &       hSnow1(i,j) .GT. 0. _d 0) THEN
          rq =  rhos * qsnow
          rqh = rq * hSnow1(i,j)
          IF (ebot(i,j) .LT. rqh) THEN
@@ -1050,7 +1050,7 @@ c    &      + snow(i,j,bi,bj)*rhos - frwAtm
      &         (mwater0(i,j)-(rhos*hSnow1(i,j)+rhoi*hIce(i,j)))/dt,
      &         evapLoc(i,j),frw2oc(i,j),fsalt(i,j)
           WRITE(6,1020)'ThSI_CALC_TH: flx2oc,Fbot,extend/dt =',
-     &         flx2oc(I,J),Fbot(i,j),(etope(i,j)+ebote(i,j))/dt
+     &         flx2oc(i,j),Fbot(i,j),(etope(i,j)+ebote(i,j))/dt
          ENDIF
 #endif
 
