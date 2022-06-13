@@ -148,13 +148,9 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
          DO i=1-OLx+1,sNx+OLx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
 #ifdef GM_READ_K3D_GM
-#  ifdef ALLOW_KAPGM_CONTROL_OLD
-     &     *( GM_inpK3dGM(i,j,k,bi,bj)
-#  else
      &     *( op25
      &        *( GM_inpK3dGM(i-1,j,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
      &         + GM_inpK3dGM(i-1,j,k,bi,bj)+GM_inpK3dGM(i,j,k,bi,bj) )
-#  endif
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i-1,j,bi,bj)+GM_bolFac2d(i,j,bi,bj))
@@ -179,13 +175,9 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
          DO i=1-OLx,sNx+OLx
           GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
 #ifdef GM_READ_K3D_GM
-#  ifdef ALLOW_KAPGM_CONTROL_OLD
-     &     *( GM_inpK3dGM(i,j,k,bi,bj)
-#  else
      &     *( op25
      &        *( GM_inpK3dGM(i,j-1,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
      &         + GM_inpK3dGM(i,j-1,k,bi,bj)+GM_inpK3dGM(i,j,k,bi,bj) )
-#  endif
 #else
      &     *( half_K
      &          *(GM_bolFac2d(i,j-1,bi,bj)+GM_bolFac2d(i,j,bi,bj))
