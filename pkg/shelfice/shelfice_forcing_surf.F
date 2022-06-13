@@ -129,7 +129,7 @@ c           ENDIF
           ENDDO
         ENDIF
 
-c#ifdef ALLOW_DIAGNOSTICS
+#ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -138,7 +138,7 @@ c#ifdef ALLOW_DIAGNOSTICS
            ENDDO
           ENDDO
          ENDIF
-c#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_DIAGNOSTICS */
 
 c      ENDDO
 c     ENDDO

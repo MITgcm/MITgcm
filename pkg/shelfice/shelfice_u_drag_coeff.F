@@ -188,9 +188,11 @@ C-    same as above but using wet-point method to average 4 V
        ENDDO
       ENDIF
 
-c#ifdef ALLOW_DIAGNOSTICS
-      IF ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
-     &                      .OR. SHELFICEselectDragQuadr.GE.0 ) THEN
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND.
+     &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
+     &                        .OR. SHELFICEselectDragQuadr.GE.0 )
+     &   ) THEN
        IF ( selectImplicitDrag.EQ.0 ) THEN
 C-     Explicit case: diagnose directly the Ice-Shelf stress
          DO j=1-OLy,sNy+OLy
@@ -209,7 +211,7 @@ C-     Implicit case: save drag-coeff for diagnostics of the Ice-Shelf stress
          ENDDO
        ENDIF
       ENDIF
-c#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
 
       RETURN
