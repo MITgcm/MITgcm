@@ -135,7 +135,7 @@ c  get drhdr
 CMM Strat at k is on bottom of cell
 
 C  % 1. find min(drho/dz)
-      DO k = 1,NR
+      DO k = 1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = ikey + k
 CADJ STORE blg_minstra = comlev1_bibj_k, key = kkey
@@ -157,7 +157,7 @@ C  %  check that we have stable strat
            IF (blg_minstra(i,j).LT. 0. _d 0) THEN
 C  % 3. find the index of minimum stratification
             blgI = 3
-            DO k = NR,1,-1
+            DO k = Nr,1,-1
              IF (blg_stra(i,j,k).EQ.blg_minstra(i,j))  blgI = k
             ENDDO
 C        %if deep enough see strat starts before pynocline
@@ -179,7 +179,7 @@ Cblg_invdz should be DRF
              IF (blg_str2(k).GT.blg_str2max)
      &            blg_str2max = blg_str2(k)
             ENDDO
-            DO k = NR,1,-1
+            DO k = Nr,1,-1
              IF (blg_str2(k).EQ.blg_str2max)  blgJ = k
             ENDDO
 

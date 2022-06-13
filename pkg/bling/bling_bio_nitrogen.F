@@ -1618,7 +1618,7 @@ c!!          if (k .eq. grid_kmt(i,j)) exit
 
 C  Sum up the total organic flux to be transported by DVM
 
-        do k = 1, nr
+        do k = 1, Nr
           fdvmn_vint  = fdvmn_vint  + N_dvm(i,j,k)  * drf(k)
           fdvmp_vint  = fdvmp_vint  + P_dvm(i,j,k)  * drf(k)
           fdvmfe_vint = fdvmfe_vint + Fe_dvm(i,j,k) * drf(k)
@@ -1633,7 +1633,7 @@ C  Calculate the remineralization terms as the divergence of the flux
         Fe_remindvm(i,j,1) = fdvmfe_vint * (1 - dvm(i,j,1)) /
      &     (epsln + drf(1))
 
-        do k = 2, nr
+        do k = 2, Nr
           N_remindvm(i,j,k)  = fdvmn_vint  *
      &       (dvm(i,j,k-1) - dvm(i,j,k)) / (epsln + drf(k))
           P_remindvm(i,j,k)  = fdvmp_vint  *
