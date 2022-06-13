@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+  - fix bug in computation of ustar (case velocity=0) in thsice_calc_thickn.F;
+  - introduce & document THSICE_REGULARIZE_CALC_THICKN flag.
 o pkg/generic_advdiff (TAF):
   - in gad_advection.F, replace global tapes "comlev1_bibj_k_gad" &
     "comlev1_bibj_k_gad" by local tapes; avoid unnecessary recomputations, but
