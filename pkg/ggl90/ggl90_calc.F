@@ -149,6 +149,17 @@ C     gTKE     :: right hand side of diffusion equation
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
 #endif
+#ifdef ALLOW_SHELFICE
+      INTEGER ki
+      _RL KE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDragU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDragV (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stressU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stressV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL kappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+#endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
@@ -914,26 +925,57 @@ C     Instead, uStarSquare is computed from the sub-glacial drag.
      &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
      &                        .OR. SHELFICEselectDragQuadr.GE.0 )
      &   ) THEN
+C     First, we need to compute an early estimate of the drag
+C     coefficients based ond the ocean velocity of the previous time
+C     step only; because kappaRU and kappaRV are not yet available,
+C     kappyRX is just set to horizontally constant viscosity
+C     coefficients.
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         stressU(i,j) = 0. _d 0
+         stressV(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+       DO k=1,Nr+1
+        ki = MIN(k,Nr)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          kappaRX(i,j,k) = viscArNr(ki)
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KE  (i,j) = 0. _d 0
+          uFld(i,j) = uVel(i,j,k,bi,bj)
+          vFld(i,j) = vVel(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+        CALL MOM_CALC_KE( bi,bj,k,2,uFld,vFld,KE,myThid )
+        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragU,
+     I       myIter, myThid )
+        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragV,
+     I       myIter, myThid )
+C-     compute explicit stress
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          stressU(i,j) = stressU(i,j) - cDragU(i,j)*uFld(i,j)*rUnit2mass
+          stressV(i,j) = stressV(i,j) - cDragV(i,j)*vFld(i,j)*rUnit2mass
+         ENDDO
+        ENDDO
+       ENDDO
+C
        DO j=jMin,jMax
         DO i=jMin,jMax
          IF ( kTopC(i,j,bi,bj) .GT. 0 ) THEN
-          IF ( selectImplicitDrag.EQ.0 ) THEN
-C-     Explicit case: diagnose directly the Ice-Shelf stress
-           tempU  = shelficeDragU( i ,j,bi,bj)
-           tempUp = shelficeDragU(i+1,j,bi,bj)
-           tempV  = shelficeDragV(i, j ,bi,bj)
-           tempVp = shelficeDragV(i,j+1,bi,bj)
-          ELSE
-C-     Implicit case: use drag-coeff to diagnose the Ice-Shelf stress
-           k = kTopC(i,j,bi,bj)
-           tempU  = -shelficeDragU( i ,j,bi,bj) * uVel( i ,j,k,bi,bj)
-           tempUp = -shelficeDragU(i+1,j,bi,bj) * uVel(i+1,j,k,bi,bj)
-           tempV  = -shelficeDragV(i, j ,bi,bj) * vVel(i, j ,k,bi,bj)
-           tempVp = -shelficeDragV(i,j+1,bi,bj) * vVel(i,j+1,k,bi,bj)
-          ENDIF
           uStarSquare(i,j) = SQRT(
-     &         ( tempU*tempU + tempUp*tempUp
-     &         + tempV*tempV + tempVp*tempVp
+     &         ( stressU(i,j)*stressU(i,j)+stressU(i+1,j)*stressU(i+1,j)
+     &         + stressV(i,j)*stressV(i,j)+stressV(i,j+1)*stressV(i,j+1)
      &         )*halfRL          )*recip_coordFac
          ENDIF
         ENDDO
@@ -945,12 +987,12 @@ C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-         IF ( useShelfIce ) THEN
-          kSrf = MAX(kTopC(i,j,bi,bj),1)
-          kTop = kSrf
-         ENDIF
-#endif
+CML#ifdef ALLOW_SHELFICE
+CML         IF ( useShelfIce ) THEN
+CML          kSrf = MAX(kTopC(i,j,bi,bj),1)
+CML          kTop = kSrf
+CML         ENDIF
+CML#endif
          GGL90TKE(i,j,kSrf,bi,bj) = GGL90TKE(i,j,kSrf,bi,bj)
      &        - c3d(i,j,kSrf) * maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
@@ -1129,12 +1171,12 @@ C     diagnose surface flux of TKE
 C     diagnose surface flux of TKE
          DO j=jMin,jMax
           DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-           IF ( useShelfIce ) THEN
-            kSrf = MAX(kTopC(i,j,bi,bj),1)
-            kTop = kSrf
-           ENDIF
-#endif
+CML#ifdef ALLOW_SHELFICE
+CML           IF ( useShelfIce ) THEN
+CML            kSrf = MAX(kTopC(i,j,bi,bj),1)
+CML            kTop = kSrf
+CML           ENDIF
+CML#endif
            surf_flx_tke(i,j) =
      &          (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
      &          - GGL90TKE(i,j,kSrf,bi,bj) )
