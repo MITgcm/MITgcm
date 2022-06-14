@@ -343,7 +343,7 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       cdrag_1        =        0.0027000 _d 0
       cdrag_2        =        0.0001420 _d 0
       cdrag_3        =        0.0000764 _d 0
-#ifdef  ALLOW_BULK_LARGEYEAGER09
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
       cdrag_8        =       -3.1480700 _d -13
       cdragMax       =        2.34      _d -03
       umax           =       33.        _d 0
