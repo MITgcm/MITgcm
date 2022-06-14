@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o autodiff(TAF):
+  - fix taf recomputation and conflict warnings in: pkg/bling dwnslope_apply.F
+    and calc_3d_diffusivity.F (PCELL_MIX_CODE).
 o pkg/thsice:
   - fix bug in computation of ustar (case velocity=0) in thsice_calc_thickn.F;
   - introduce & document THSICE_REGULARIZE_CALC_THICKN flag.
