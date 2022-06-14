@@ -329,9 +329,10 @@ C--   Wind speed
 C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
             tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
      &           + cdrag_8 * wsm**6
-            tmpbulk = exf_scal_BulkCdn
-     &           * ( 0.5 _d 0 - SIGN(0.5 _d 0, wsm-umax) )*tmpbulk
+            tmpbulk = exf_scal_BulkCdn * (
+     &             ( 0.5 _d 0 - SIGN(0.5 _d 0, wsm-umax) )*tmpbulk
      &           + ( 0.5 _d 0 + SIGN(0.5 _d 0, wsm-umax) )*cdragMax
+     &           )
 #else
             tmpbulk    = exf_scal_BulkCdn *
      &           ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
@@ -456,9 +457,10 @@ C-   Update the 10m, neutral stability transfer coefficients (momentum)
 C     Large and Yeager (2009), J.Clim equation 11a/b
              tmpbulk =  cdrag_1/usm + cdrag_2 + cdrag_3*usm
      &            + cdrag_8 * usm**6
-             tmpbulk = exf_scal_BulkCdn
-     &            * ( 0.5 _d 0 - SIGN(0.5 _d 0, usm-umax) )*tmpbulk
+             tmpbulk = exf_scal_BulkCdn * (
+     &              ( 0.5 _d 0 - SIGN(0.5 _d 0, usm-umax) )*tmpbulk
      &            + ( 0.5 _d 0 + SIGN(0.5 _d 0, usm-umax) )*cdragMax
+     &            )
 #else
              tmpbulk  = exf_scal_BulkCdn *
      &            ( cdrag_1/usm + cdrag_2 + cdrag_3*usm )

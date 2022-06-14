@@ -293,9 +293,10 @@ C--   Computes wind-stress:
 C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
            tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
      &          + cdrag_8 * wsm**6
-           tmpbulk = exf_scal_BulkCdn
-     &          * ( 0.5 _d 0 - SIGN(0.5 _d 0, wsm-umax) )*tmpbulk
+           tmpbulk = exf_scal_BulkCdn * (
+     &            ( 0.5 _d 0 - SIGN(0.5 _d 0, wsm-umax) )*tmpbulk
      &          + ( 0.5 _d 0 + SIGN(0.5 _d 0, wsm-umax) )*cdragMax
+     &          )
 # else
            tmpbulk = exf_scal_BulkCdn
      &             * ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
