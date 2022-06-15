@@ -164,9 +164,9 @@ C--   Print general parameters:
       CALL WRITE_0D_RL( cdrag_3, INDEX_NONE, 'cDrag_3 =',
      &  ' /* coef used in drag calculation [s/m] */')
       CALL WRITE_0D_RL( cdrag_8, INDEX_NONE, 'cDrag_8 =',
-     &  ' /* coef used in drag calculation [(s/m)**6] */')
+     &  ' /* coef used in drag calculation [(s/m)^6] */')
       CALL WRITE_0D_RL( cdragMax, INDEX_NONE, 'cDragMax =',
-     &  ' /* maximum drag (Large and Yeager, 2009) [m/s] */')
+     &  ' /* maximum drag (Large and Yeager, 2009) [-] */')
       CALL WRITE_0D_RL( umax, INDEX_NONE, 'umax =',
      &  ' /* at maximum wind (Large and Yeager, 2009) [m/s] */')
       CALL WRITE_0D_RL( cstanton_1, INDEX_NONE, 'cStanton_1 =',
