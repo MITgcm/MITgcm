@@ -164,6 +164,7 @@ c----------------------
 
 c gather rhs and initial guess values to populate petsc vectors
 
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy

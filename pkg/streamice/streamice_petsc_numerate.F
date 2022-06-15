@@ -32,8 +32,9 @@ C     === Global variables ===
       INTEGER i, j, bi, bj, ki, kj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
-      integer mpiRC, mpiMyWid
+      integer mpiRC
 #endif
+      integer mpimywid
 #ifdef ALLOW_PETSC
       _RS DoFCount
       integer n_dofs_proc_loc (0:nPx*nPy-1)
@@ -112,7 +113,8 @@ C    NOTE THESE NUMBERING ARRAYS ARE USED TO CONSTRUCT PETSC VECTORS AND MATRIX
 #else /* ALLOW_USE_MPI */
 
       n_dofs_process (0) = INT(DoFCount)+1
-      n_dofs_cum_sum (0) = INT(DoFCount)+1
+      n_dofs_cum_sum (0) = 0
+      mpimywid = 0
 
 #endif /* ALLOW_USE_MPI */
 
