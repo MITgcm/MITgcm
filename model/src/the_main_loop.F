@@ -481,6 +481,10 @@ c--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
+#   ifdef ALLOW_BLING
+CADJ INIT comlev1_bibj_ijk = COMMON,
+CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)*nthreads_chkpt
+#   endif
 c--
 #   ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
@@ -498,13 +502,6 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num
 CADJ INIT comlev1_bibj_k_ptracers = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num*Nr
 #   endif /* ALLOW_PTRACERS */
-c--
-#   ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_k_gad = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
-CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxcube
-#   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH

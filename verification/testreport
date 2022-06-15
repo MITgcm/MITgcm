@@ -590,7 +590,7 @@ makemodel()
     if test $KIND = 2 -a -f taf_ad.log ; then
 	head -1 taf_ad.log >> $CDIR"/summary.txt"
 	nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
-	nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' taf_ad.log`
+	nwar=`grep -c '^TAF *.* RECOMPUTATION *.* WARNING ' taf_ad.log`
 	if test -f taf_output ; then
 	    n2er=`grep -c 'TAF *.* ERROR ' taf_output`
 	    n3er=`grep -c '\*ERROR\* ' taf_output`

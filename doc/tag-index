@@ -1,6 +1,20 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o autodiff(TAF):
+  - fix few taf recomputation and conflict warnings in: calc_3d_diffusivity.F
+    (PCELL_MIX_CODE), pkg/bling & dwnslope_apply.F ; update reference AD output
+    of exp. that use pkg/dwnslope (lab_sea).
+o pkg/thsice:
+  - fix bug in computation of ustar (case velocity=0) in thsice_calc_thickn.F;
+  - introduce & document THSICE_REGULARIZE_CALC_THICKN flag.
+o pkg/generic_advdiff (TAF):
+  - in gad_advection.F, replace global tapes "comlev1_bibj_k_gad" &
+    "comlev1_bibj_k_gad" by local tapes; avoid unnecessary recomputations, but
+    recompute full routine (only) once in ad-routine;
+  - this affects results when useApproxAdvectionInAdMode=T, since now all tapes
+    are computed using approximate Adv-Scheme (inAdMode=T); udate AD ref. output
+    of exp. global_ocean.cs32x15.seaice.
 o pkg/shelfice:
   - Remove ALLOW_SHIFWFLX_CONTROL and all xx_shifwflx related code in favor of
     already implemented gentim2d;
