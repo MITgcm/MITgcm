@@ -6,7 +6,6 @@ ctrl_get_gen_rec.f
 ctrl_get_mask.f
 ctrl_init_rec.f
 ctrl_init_variables.f
-ctrl_map_ini.f
 ctrl_map_ini_gen.f
 ctrl_map_ini_genarr.f
 ctrl_map_ini_gentim2d.f
