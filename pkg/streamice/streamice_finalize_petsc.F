@@ -28,12 +28,14 @@ C in the include statement
 #include "petsc/finclude/petscpc.h"
       use petscpc
       use STREAMICE_PETSC_mod
+      IMPLICIT NONE
 # else
+      IMPLICIT NONE
 #include "finclude/petsc.h"
 #include "STREAMICE_PETSC.h"
 #endif
 #endif
-      IMPLICIT NONE
+
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
