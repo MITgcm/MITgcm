@@ -20,15 +20,13 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "cost.h"
 #include "ctrl_weights.h"
-#ifdef ALLOW_HFLUXM_CONTROL
 #include "FFIELDS.h"
-#endif
 
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
       integer myThid
 
-#if (defined (ALLOW_COST_HFLUXM) && defined (ALLOW_HFLUXM_CONTROL))
+#ifdef ALLOW_COST_HFLUXM
 C     ========= Local variables =========================
       integer i, j
       integer bi, bj
@@ -67,6 +65,6 @@ c        print*,'objf_hflux_tut =',locfc
        ENDDO
       ENDDO
 
-#endif /* ALLOW_COST_HFLUXM & ALLOW_HFLUXM_CONTROL */
+#endif /* ALLOW_COST_HFLUXM */
       RETURN
       END

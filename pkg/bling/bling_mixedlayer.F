@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
       SUBROUTINE BLING_MIXEDLAYER(
@@ -25,7 +28,9 @@ C     === Global variables ===
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 C     === Routine arguments ===
 C     bi,bj         :: tile indices
 C     iMin,iMax     :: computation domain: 1rst index range
@@ -53,11 +58,29 @@ C     === Local variables ===
       _RL blg_minstra(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL blg_str2   (Nr)
       _RL blg_str2max
-       INTEGER blgI,blgJ
+      INTEGER blgI,blgJ
 #endif
-       INTEGER i,j,k
+      INTEGER i,j,k
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ijkkey, ikey, kkey
+#endif
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      ikey = (act1 + 1) + act2*max1
+     &                  + act3*max1*max2
+     &                  + act4*max1*max2*max3
+      ikey = (ikey-1)*Nr
+#endif /* ALLOW_AUTODIFF_TAMC */
 # ifndef BLING_USE_THRESHOLD_MLD
 c ---------------------------------------------------------------------
 c  Mixed layer depth initialization
@@ -112,14 +135,18 @@ c  get drhdr
 CMM Strat at k is on bottom of cell
 
 C  % 1. find min(drho/dz)
-        DO j=jmin,jmax
-         DO i=imin,imax
-          DO k = 1,NR
-           IF(blg_stra(i,j,k).LT.blg_minstra(i,j))
+      DO k = 1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = ikey + k
+CADJ STORE blg_minstra = comlev1_bibj_k, key = kkey
+#endif
+       DO j=jmin,jmax
+        DO i=imin,imax
+         IF(blg_stra(i,j,k).LT.blg_minstra(i,j))
      &        blg_minstra(i,j) = blg_stra(i,j,k)
-          ENDDO
-         ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 
 CMM NOW LOOP TO GET MLD
         DO j=jmin,jmax
@@ -130,7 +157,7 @@ C  %  check that we have stable strat
            IF (blg_minstra(i,j).LT. 0. _d 0) THEN
 C  % 3. find the index of minimum stratification
             blgI = 3
-            DO k = NR,1,-1
+            DO k = Nr,1,-1
              IF (blg_stra(i,j,k).EQ.blg_minstra(i,j))  blgI = k
             ENDDO
 C        %if deep enough see strat starts before pynocline
@@ -139,6 +166,11 @@ C % 4. compute the second derivative (d2rho/dz2)..
 CMM Only look up
             blg_str2max = -999
             DO k = 3,blgI
+#ifdef ALLOW_AUTODIFF_TAMC
+             ijkkey = ikey * (2*OLx+sNx) * (2*OLy+sNy)
+     &            + ( (j-1)*(2*OLx+sNx) + (i-1) ) + k
+CADJ STORE blg_str2max = comlev1_bibj_ijk, key = ijkkey
+#endif
 CMM blg_str2 will be in cell center
              blg_str2(k) = (blg_stra(i,j,k-1) -blg_stra(i,j,k))
      &                                             *recip_drF(k)
@@ -147,7 +179,7 @@ Cblg_invdz should be DRF
              IF (blg_str2(k).GT.blg_str2max)
      &            blg_str2max = blg_str2(k)
             ENDDO
-            DO k = NR,1,-1
+            DO k = Nr,1,-1
              IF (blg_str2(k).EQ.blg_str2max)  blgJ = k
             ENDDO
 

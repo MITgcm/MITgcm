@@ -298,20 +298,21 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# ifdef ALLOW_GENTIM2D_CONTROL
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+# endif
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
-# ifdef ALLOW_GENTIM2D_CONTROL
-CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+# ifdef ALLOW_SHELFICE
+CADJ STORE shelficeLoadAnomaly    = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeHeatFlux       = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffT         = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffS         = tapelev_init, key=1, kind=isbyte
 # endif
-# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
-CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
-CADJ STORE shiTransCoeffT         = tapelev_init, key=1
-CADJ STORE shiTransCoeffS         = tapelev_init, key=1
-# endif
-# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+# ifdef ALLOW_STREAMICE
 CADJ STORE H_streamice = tapelev_init, key=1
 CADJ STORE B_glen      = tapelev_init, key=1
 # endif
@@ -480,6 +481,10 @@ c--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
+#   ifdef ALLOW_BLING
+CADJ INIT comlev1_bibj_ijk = COMMON,
+CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)*nthreads_chkpt
+#   endif
 c--
 #   ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
@@ -497,13 +502,6 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num
 CADJ INIT comlev1_bibj_k_ptracers = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num*Nr
 #   endif /* ALLOW_PTRACERS */
-c--
-#   ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_k_gad = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
-CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxcube
-#   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH

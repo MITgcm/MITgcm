@@ -755,21 +755,6 @@ c--
 #endif /* ALLOW_KAPREDI_CONTROL */
 
 c----------------------------------------------------------------------
-c----------------------------------------------------------------------
-
-#ifdef ALLOW_SHIFWFLX_CONTROL
-c--   freshwater flux underneath ice-shelves
-      call ctrl_init_rec ( xx_shifwflx_file,
-     I     xx_shifwflxstartdate1, xx_shifwflxstartdate2,
-     I     xx_shifwflxperiod, 1,
-     O     xx_shifwflxstartdate, diffrec, startrec, endrec,
-     I     myThid )
-      call ctrl_init_ctrlvar (
-     &     xx_shifwflx_file, 45, 145, diffrec, startrec, endrec,
-     &     snx, sny, 1, 'i', 'xy', myThid )
-#endif /* ALLOW_SHIFWFLX_CONTROL */
-
-c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_ATM_MEAN_CONTROL
 # ifdef ALLOW_ATEMP_CONTROL
