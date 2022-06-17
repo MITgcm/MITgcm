@@ -952,12 +952,11 @@ C     coefficients.
           vFld(i,j) = vVel(i,j,k,bi,bj)
          ENDDO
         ENDDO
-        CALL MOM_CALC_KE( bi,bj,k,2,uFld,vFld,KE,myThid )
-        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .FALSE.,
      I       uFld, vFld, kappaRX, KE,
      O       cDragU,
      I       myIter, myThid )
-        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .FALSE.,
      I       uFld, vFld, kappaRX, KE,
      O       cDragV,
      I       myIter, myThid )
