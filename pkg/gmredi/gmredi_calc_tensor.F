@@ -662,6 +662,37 @@ C          If using BatesK3d PsiX and PsiY are calculated in GMREDI_CALC_BATES_K
       ENDIF
 #endif /* ndef GM_EXCLUDE_SUBMESO */
 
+#ifdef GM_TRIADS_SCHEME
+C-    Save isoneutral gradient and Redi diffusivity
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         GM_Nm2(i,j,k,bi,bj) = oneRL
+     &       / MAX( gravitySign*sigmaR(i,j,k), GM_Small_Number )
+         GM_isoK3d(i,j,k,bi,bj) =
+#ifdef ALLOW_KAPREDI_CONTROL
+     &     kapRedi(i,j,k,bi,bj)
+#else
+     &     GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+#endif
+#ifdef GM_VISBECK_VARIABLE_K
+     &                     + VisbeckK(i,j,bi,bj)
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &                     + GM_LeithQG_K(i,j,k,bi,bj)
+#endif
+#if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
+     &                     +  GM_BatesK3d(i,j,k,bi,bj)
+#endif
+C     For now, just reset tensor:
+         Kwx(i,j,k,bi,bj)  = 0. _d 0
+         Kwy(i,j,k,bi,bj)  = 0. _d 0
+         Kwz(i,j,k,bi,bj)  = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+#else /* GM_TRIADS_SCHEME */
+
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 2nd  k loop : compute Tensor Coeff. at U point
@@ -1165,6 +1196,7 @@ c    &       kapRedi(i,j,k,bi,bj)
        ENDDO
       ENDDO
 #endif /* ndef GM_NON_UNITY_DIAGONAL */
+#endif /* GM_TRIADS_SCHEME */
 
 #ifdef ALLOW_TIMEAVE
 C--   Time-average

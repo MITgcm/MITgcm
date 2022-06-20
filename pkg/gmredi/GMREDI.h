@@ -88,6 +88,7 @@ C--   COMMON /GM_PARAMS_R/ GM/Redi real-type parameters
 C     GM_isopycK       :: Isopycnal diffusivity [m^2/s] (Redi-tensor)
 C     GM_background_K  :: Thickness diffusivity [m^2/s] (GM bolus transport)
 C     GM_maxSlope      :: maximum slope (tapering/clipping) [-]
+C     GM_delT_lim      :: stability time-scale for triads implementation [s]
 C     GM_Kmin_horiz    :: minimum horizontal diffusivity [m^2/s]
 C     GM_Small_Number  :: epsilon used in computing the slope
 C     GM_slopeSqCutoff :: slope^2 cut-off value
@@ -126,6 +127,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_isopycK
       _RL GM_background_K
       _RL GM_maxSlope
+      _RL GM_delT_lim
       _RL GM_Kmin_horiz
       _RL GM_Small_Number
       _RL GM_slopeSqCutoff
@@ -164,7 +166,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Bates_maxRenorm
       COMMON /GM_PARAMS_RL/
      &                 GM_isopycK, GM_background_K,
-     &                 GM_maxSlope,
+     &                 GM_maxSlope, GM_delT_lim,
      &                 GM_Kmin_horiz,
      &                 GM_Small_Number, GM_slopeSqCutoff,
      &                 GM_Scrit, GM_Sd,
@@ -241,6 +243,13 @@ C     Kvz :: K_23 element of GM/Redi tensor, Z direction at V point
 #else
       _RL Kuz, Kvz
       PARAMETER( Kuz=1., Kvz=1. )
+#endif
+
+#ifdef GM_TRIADS_SCHEME
+C-    Save isoneutral gradient and Redi diffusivity
+      _RL GM_Nm2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GM_isoK3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /GM_TRIADS/ GM_Nm2, GM_isoK3d
 #endif
 
 #ifdef GM_BOLUS_ADVEC
