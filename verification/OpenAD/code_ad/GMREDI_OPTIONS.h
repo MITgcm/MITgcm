@@ -19,7 +19,7 @@ C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_SUBMESO
 
 C Allows to read-in background 3-D Redi and GM diffusivity coefficients
-C Note: need these to be defined for use as Control (pkg/ctrl) parameters
+C Note: need these to be defined for use as control (pkg/ctrl) parameters
 #undef GM_READ_K3D_REDI
 #define GM_READ_K3D_GM
 
