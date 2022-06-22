@@ -78,7 +78,8 @@ C     Surface flux data.
      & useStabilityFct_overIce, diags_opOceWeighted,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
-     & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
+     & cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax,
+     & cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
      & cvapor_fac, cvapor_exp, cvapor_fac_ice, cvapor_exp_ice,
      & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac
@@ -342,6 +343,15 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       cdrag_1        =        0.0027000 _d 0
       cdrag_2        =        0.0001420 _d 0
       cdrag_3        =        0.0000764 _d 0
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+      cdrag_8        =       -3.1480700 _d -13
+      cdragMax       =        2.34      _d -03
+      umax           =       33.        _d 0
+#else
+      cdrag_8        = UNSET_RL
+      cdragMax       = UNSET_RL
+      umax           = UNSET_RL
+#endif
       cstanton_1     =        0.0327 _d 0
       cstanton_2     =        0.0180 _d 0
       cdalton        =        0.0346 _d 0
