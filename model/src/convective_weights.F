@@ -43,7 +43,7 @@ C     myThid  :: my Thread Id number
       _RL convectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
-#ifdef INCLUDE_CONVECT_CALL
+#if (defined INCLUDE_CONVECT_CALL || defined INCLUDE_CONVECT_INI_CALL)
 
 C !LOCAL VARIABLES:
 C     i,j      :: Loop counter
@@ -74,7 +74,7 @@ C      Where statically stable, do nothing
        ENDDO
       ENDDO
 
-#endif /* INCLUDE_CONVECT_CALL */
+#endif /* INCLUDE_CONVECT_CALL or INCLUDE_CONVECT_INI_CALL */
 
       RETURN
       END

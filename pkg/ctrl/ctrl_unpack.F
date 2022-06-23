@@ -75,21 +75,25 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
-c     == external ==
-      integer  ilnblnk
-      external ilnblnk
-
 c     == local variables ==
 
       integer i, k
       integer ivartype
       integer ictrlgrad
+      integer cunit
+      logical lxxadxx
+      character*(128) cfile
+
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_unpack,
 C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
       character*(80) fname_local(3)
+#endif
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
+      integer nwettmp(Nr)
+      character*( 9) mskNameForSetUnpack
 #endif
 
 #ifdef ECCO_CTRL_DEPRECATED
@@ -138,15 +142,9 @@ cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
 
-      integer cunit
-      integer nwettmp(Nr)
-
-      character*(128) cfile
-      character*( 80) weighttype
-      character*( 9) mskNameForSetUnpack
-
-      logical lxxadxx
-
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
+      character*(80) weighttype
+#endif
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       character*(80) fname_obcsn(3)
       character*(80) fname_obcss(3)
@@ -170,10 +168,6 @@ cgg)
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Initialise
       nbuffGlobal = 0
@@ -326,9 +320,9 @@ c
              print *, 'WARNING: wrong nvarlength ',
      &            filenvarlength, nvarlength
              STOP 'in S/R ctrl_unpack'
-          else if ( filensx .NE. nsx .OR. filensy .NE. nsy ) then
-             print *, 'WARNING: wrong nsx or nsy ',
-     &            filensx, nsx, filensy, nsy
+          else if ( filensx .NE. nSx .OR. filensy .NE. nSy ) then
+             print *, 'WARNING: wrong nSx or nSy ',
+     &            filensx, nSx, filensy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
           do k = 1, nr
@@ -865,28 +859,22 @@ c----------------------------------------------------------------------
      &         weighttype, wkapredi, nwetcglobal, mythid)
 #endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
-          ivartype    = 45
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wshifwflx"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_shifwflx(ictrlgrad), "maskCtrlI",
-     &         weighttype, nwetiglobal, mythid)
-#endif
-
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
         if (xx_genarr2d_weight(iarr).NE.' ') then
          mskNameForSetUnpack='maskCtrlC'
-         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+         DO k=1,Nr
+           nwettmp(k) = nwetcglobal(k)
+         ENDDO
 # ifdef ALLOW_SHELFICE
          if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
      &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetUnpack='maskCtrlI'
-          nwettmp(1:Nr) = nwetiglobal(1:Nr)
+          DO k=1,Nr
+           nwettmp(k) = nwetiglobal(k)
+          ENDDO
          endif
 # endif
           call ctrl_set_fname( xx_genarr2d_file(iarr),
@@ -901,7 +889,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         nwettmp, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
@@ -909,32 +897,36 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_fname( xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype(1:80),'(80a)') ' '
+c          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_local(ictrlgrad), "maskCtrlC",
      &         xx_genarr3d_weight(iarr),
      &         wunit, nwetcglobal, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
         if (xx_gentim2d_weight(iarr).NE.' ') then
          mskNameForSetUnpack='maskCtrlC'
-         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+         DO k=1,Nr
+           nwettmp(k) = nwetcglobal(k)
+         ENDDO
 # ifdef ALLOW_SHELFICE
          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
-            mskNameForSetUnpack='maskCtrlI'
-            nwettmp(1:Nr) = nwetiglobal(1:Nr)
+           mskNameForSetUnpack='maskCtrlI'
+           DO k=1,Nr
+             nwettmp(k) = nwetiglobal(k)
+           ENDDO
          endif
 # endif
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype(1:80),'(80a)') ' '
+c          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
@@ -942,7 +934,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         nwettmp, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )

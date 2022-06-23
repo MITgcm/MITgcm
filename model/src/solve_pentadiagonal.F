@@ -1,4 +1,8 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: SOLVE_PENTADIAGONAL
@@ -291,6 +295,9 @@ C-    end i,j loop
 
 #else  /* ndef SOLVE_DIAGONAL_KINNER */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_solvepenta = COMMON, Nr
+#endif
 C--   Init. + copy to temp. array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -304,10 +311,13 @@ C--   Init. + copy to temp. array
        ENDDO
       ENDDO
 
-CADJ loop = sequential
       DO k=1,Nr
 C--   Forward sweep (starting from top)
-
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE d5d_prime(:,:,k) = loctape_solvepenta, key = k
+CADJ STORE e5d_prime(:,:,k) = loctape_solvepenta, key = k
+CADJ STORE y5d_prime(:,:,k) = loctape_solvepenta, key = k
+#endif
        IF ( k .EQ. 1 ) THEN
 C-    just copy terms
         DO j=1-OLy,sNy+OLy
@@ -366,7 +376,6 @@ C-    end k-loop
       ENDDO
 
 C--   Backward sweep (starting from bottom)
-CADJ loop = sequential
       DO k=Nr,1,-1
        IF ( k .EQ. Nr ) THEN
         DO j=1-OLy,sNy+OLy

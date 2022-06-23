@@ -1,6 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine cost_sla_read( sla_file, sla_startdate, sla_period,
+      subroutine cost_sla_read(
+     I                sla_file, sla_startdate, sla_period,
      I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
      I                irec, myThid )
@@ -27,15 +28,25 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "cal.h"
-#include "ecco.h"
+#include "ECCO_SIZE.h"
+#include "ECCO.h"
 
 c     == routine arguments ==
-
+      character*(MAX_LEN_FNAM) sla_file
+      integer sla_startdate(4)
+      _RL sla_period
+      _RL sla_intercept
+      _RL sla_slope
+      _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer irec
       integer myThid
 
-c     == local variables ==
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
@@ -46,19 +57,9 @@ c     == local variables ==
       integer difftime(4)
       integer tempDate_1
       integer middate(4)
-      integer noffset
       _RL diffsecs
       _RL spval
       _RL factor
-
-      integer sla_startdate(4)
-      _RL sla_period
-      _RL sla_intercept
-      _RL sla_slope
-      _RL sla_obs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL sla_mask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      character*(MAX_LEN_FNAM) sla_file
-
 cnew(
       integer  il
       _RL daytime
@@ -69,11 +70,6 @@ cnew(
       character*(80) fnametmp
       logical exst
 cnew)
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 

@@ -23,7 +23,7 @@ solution.
 The advection operator is discretized:
 
 .. math::
-   {\cal A}_c \Delta r_f h_c G_{adv}^\tau = 
+   {\cal A}_c \Delta r_f h_c G_{\rm adv}^\tau =
    \delta_i F_x + \delta_j F_y + \delta_k F_r
    :label: cent_2nd_ord
 
@@ -116,7 +116,6 @@ accuracy of this boundary condition and the effect on the solution.
     | :math:`F_r` : :varlink:`wT` ( argument )
     | :math:`W` : :varlink:`rTrans` ( argument )
     | :math:`\tau` : :varlink:`tracer` ( argument )
-
 
 Centered fourth order advection
 -------------------------------
@@ -211,7 +210,7 @@ generally expressed in terms of other flux approximations. For example,
 in terms of a first order upwind flux and second order Lax-Wendroff
 flux, the limited flux is given as:
 
-.. math:: F = F_1 + \psi(r) F_{LW}
+.. math:: F = (1 - \psi(r)) F_1 + \psi(r) F_{\rm LW}
    :label: limited_flux
 
 where :math:`\psi(r)` is the limiter function,
@@ -220,9 +219,9 @@ where :math:`\psi(r)` is the limiter function,
 
 is the upwind flux,
 
-.. math:: F_{LW} = F_1 + \frac{|u|}{2} (1-c) \delta_i \tau
+.. math:: F_{\rm LW} = u \overline{\tau}^i - \frac{1}{2} c |u| \delta_i \tau
 
-is the Lax-Wendroff flux and :math:`c = \frac{u \Delta t}{\Delta x}` is
+is the Lax-Wendroff flux and :math:`c = \frac{|u| \Delta t}{\Delta x}` is
 the Courant (CFL) number.
 
 The limiter function, :math:`\psi(r)`, takes the slope ratio
@@ -259,7 +258,6 @@ only provide the Superbee limiter (Roe 1995 :cite:`roe:85`):
     | :math:`F_r` : :varlink:`wT` ( argument )
     | :math:`W` : :varlink:`rTrans` ( argument )
     | :math:`\tau` : :varlink:`tracer` ( argument )
-
 
 Third order direct space-time
 -----------------------------
@@ -385,13 +383,13 @@ the flux calculations to be implemented as if in one dimension:
 
 .. math::
    \begin{aligned}
-   \tau^{n+1/3} & = & \tau^{n}
+   \tau^{n+1/3} & = \tau^{n}
    - \Delta t \left( \frac{1}{\Delta x} \delta_i F^x(\tau^{n})
               - \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
-   \tau^{n+2/3} & = & \tau^{n+1/3}
+   \tau^{n+2/3} & = \tau^{n+1/3}
    - \Delta t \left( \frac{1}{\Delta y} \delta_j F^y(\tau^{n+1/3})
               - \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
-   \tau^{n+3/3} & = & \tau^{n+2/3}
+   \tau^{n+3/3} & = \tau^{n+2/3}
    - \Delta t \left( \frac{1}{\Delta r} \delta_k F^x(\tau^{n+2/3})
               - \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
    :label: tau_multiD
@@ -401,11 +399,11 @@ compute the effective tendency rather than update the tracer so that
 other terms such as diffusion are using the :math:`n` time-level and not
 the updated :math:`n+3/3` quantities:
 
-.. math:: G^{n+1/2}_{adv} = \frac{1}{\Delta t} ( \tau^{n+3/3} - \tau^{n} )
+.. math:: G^{n+1/2}_{\rm adv} = \frac{1}{\Delta t} ( \tau^{n+3/3} - \tau^{n} )
 
 So that the over all time-stepping looks likes:
 
-.. math:: \tau^{n+1} = \tau^{n} + \Delta t \left( G^{n+1/2}_{adv} + G_{diff}(\tau^{n}) + G^{n}_{forcing} \right)
+.. math:: \tau^{n+1} = \tau^{n} + \Delta t \left( G^{n+1/2}_{\rm adv} + G_{\rm diff}(\tau^{n}) + G^{n}_{\rm forcing} \right)
 
 .. admonition:: S/R  :filelink:`GAD_ADVECTION <pkg/generic_advdiff/gad_advection.F>`
   :class: note
@@ -430,14 +428,13 @@ A schematic of multi-dimension time stepping for the cube sphere configuration i
 Comparison of advection schemes
 ===============================
 
-:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm. 
+:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm.
 “AB” stands for Adams-Bashforth and “DST” for direct space-time. The code corresponds to the number used
 to select the corresponding advection scheme in the parameter file (e.g., ``tempAdvScheme=3`` in file
 ``data`` selects the 3rd order upwind advection scheme for temperature advection).
 
 .. table:: MITgcm Advection Schemes
   :name: adv_scheme_summary
-
 
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
   | Advection Scheme                                            | Code | Use | Use           | Stencil | Comments                                          |
@@ -477,7 +474,6 @@ to select the corresponding advection scheme in the parameter file (e.g., ``temp
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
   | second order-moment Prather w/limiter                       |  81  |  no |        yes    |   3     | non-linear                                        |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
- 
 
 yes\ :sup:`*` indicates that either the multi-dim advection algorithm or standard approach can be utilized, controlled by a namelist parameter :varlink:`multiDimAdvection`
 (in these cases, given that these schemes was designed to use multi-dim advection, using the standard approach is not recommended).
@@ -506,7 +502,6 @@ Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison o
     :name: advect-1d-hi
 
     Comparison of 1-D advection schemes: Courant number is 0.89 with 60 points and solutions are shown for T=1 (one complete period). a) Shows the upwind biased schemes; first order upwind and DST3. Third order upwind and second order upwind are unstable at this Courant number. b) Shows the centered schemes; Lax-Wendroff, DST4. Centered second order, centered fourth order and finite volume fourth order are unstable at this Courant number. c) Shows the second order flux limiters: minmod, Superbee, MC limiter and the van Leer limiter. d) Shows the DST3 method with flux limiters due to Sweby with :math:`\mu =1` ,  :math:`\mu =c/(1-c)` and a fourth order DST method with Sweby limiter,  :math:`\mu =c/(1-c)` .
-
 
 :numref:`advect-2d-lo-diag`, :numref:`advect-2d-mid-diag` and
 :numref:`advect-2d-hi-diag` show solutions to a simple diagonal advection

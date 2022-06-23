@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#
 # Build options for g77 compiler (compat-gcc-34-g77) on Linux AMD64 platform
 #  Tested on Linux 2.4.21-102-smp (x86_64),
 #         on Fedora Core  8, 10 (e.g.: dickens), 13 (e.g.: baudelaire),
@@ -8,7 +7,8 @@
 
 CC=gcc34
 FC=g77
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77 -DEXCLUDE_OPEN_ACTION'
+DEFINES="$DEFINES -DAUTODIFF_USE_MDSFINDUNITS -DPROFILES_USE_MDSFINDUNITS"
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 GET_FC_VERSION="--version"
 

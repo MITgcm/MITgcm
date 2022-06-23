@@ -1,7 +1,4 @@
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
       SUBROUTINE EXF_RADIATION( myTime, myIter, myThid )
 
@@ -28,9 +25,6 @@ C     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     == routine arguments ==
 
@@ -60,6 +54,10 @@ C     swflux = - ( 1 - albedo ) * swdown
 #ifdef ALLOW_ATM_TEMP
       ks = 1
       kl = 2
+      IF ( usingPCoords ) THEN
+       ks = Nr
+       kl = Nr-1
+      ENDIF
 
       IF ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' ) THEN
 C     Loop over tiles.
@@ -137,7 +135,7 @@ c     ENDIF
 #ifdef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming ) THEN
        CALL EXF_ZENITHANGLE(myTime, myIter, myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       ELSE
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)

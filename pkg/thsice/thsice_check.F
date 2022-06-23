@@ -78,9 +78,9 @@ C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
 #endif
-       IF ( balanceEmPmR ) THEN
+       IF ( selectBalanceEmPmR.GE.1 ) THEN
         WRITE(msgBuf,'(2A)') 'THSICE_CHECK: cannot use',
-     &       ' both balanceEmPmR and thSIceBalanceAtmFW'
+     &       ' both selectBalanceEmPmR and thSIceBalanceAtmFW'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
@@ -102,17 +102,6 @@ C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
         errCount = errCount + 1
 # endif
 #endif /* ALLOW_AUTODIFF */
-
-#ifdef OLD_THSICE_CALL_SEQUENCE
-        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
-     &   'OLD_THSICE_CALL_SEQUENCE code no longer maintained'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** THSICE_CHECK: ',
-     &   'option and related code will be removed after chkpt-64e'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
       IF ( useAIM .AND. .NOT.( stepFwd_oceMxL .OR. useCoupler )
      &            .AND.  tauRelax_MxL.NE. -1. _d 0 ) THEN

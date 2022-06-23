@@ -63,7 +63,7 @@ comes from chemical and biological sources and sinks. For any tracer
 
 .. math::
 
-   \frac{\partial A}{\partial t}=-\nabla \cdot (\vec{u^{*}} A)+\nabla \cdot
+   \frac{\partial A}{\partial t}=- \nabla  \cdot (\vec{u^{*}} A)+ \nabla  \cdot
      (\mathbf{K}\nabla A)+S_A \nonumber
 
 where :math:`\vec{u^{*}}` is the transformed Eulerian mean circulation
@@ -75,11 +75,11 @@ The sources and sinks are:
 
 .. math::
    \begin{aligned}
-   S_{DIC} & = &  F_{CO_2} + V_{CO_2} + r_{C:P} S_{PO_4}  + J_{Ca} \\
-   S_{ALK} & = &  V_{ALK}-r_{N:P} S_{PO_4}  + 2 J_{Ca}  \\
-   S_{PO_4}& = &  -f_{DOP} J_{prod} - \frac{\partial F_P}{\partial z} + \kappa_{remin} [DOP]\\
-   S_{DOP} & = &  f_{DOP} J_{prod} -\kappa_{remin} [DOP] \\
-   S_{O_2} & = & \left\{ \begin{array}{ll}
+   S_{DIC} & =  F_{CO_2} + V_{CO_2} + r_{C:P} S_{PO_4}  + J_{Ca} \\
+   S_{ALK} & =  V_{ALK}-r_{N:P} S_{PO_4}  + 2 J_{Ca}  \\
+   S_{PO_4}& =  -f_{DOP} J_{prod} - \frac{\partial F_P}{\partial z} + \kappa_{remin} [DOP]\\
+   S_{DOP} & =  f_{DOP} J_{prod} -\kappa_{remin} [DOP] \\
+   S_{O_2} & = \left\{ \begin{array}{ll}
                   -r_{O:P} S_{PO_4} & \mbox{if $O_2>O_{2crit}$} \\
                    0  & \mbox{if $O_2<O_{2crit}$}
                          \end{array}
@@ -170,7 +170,7 @@ The input fields needed for this run (in
    many tracers are used, and :varlink:`PTRACERS_Iter0` which states at which
    timestep the biogeochemistry model tracers were initialized.
 
--  ``depth_g77.bin``: bathymetry data file
+-  ``bathy.bin``: bathymetry data file
 
 -  :filelink:`input/eedata <verification/tutorial_global_oce_biogeo/input/eedata>`: This file uses standard default values and does not
    contain customizations for this experiment.

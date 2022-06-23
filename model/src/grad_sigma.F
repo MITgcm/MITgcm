@@ -24,7 +24,6 @@ C     == Global variables ==
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     bi, bj     :: tile indices
 C     iMin,iMax  :: not used
 C     jMin,jMax  :: not used
@@ -44,8 +43,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     rhoLoc :: local copy of rhoK
+C     rhoLoc     :: local copy of rhoK
       INTEGER i,j
       _RL rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
@@ -58,31 +56,27 @@ C-    safer to work on a local copy of rhoK (before a partial update)
       ENDDO
 
 C-    Internal exchange for calculations in X
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
         CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                             rhoLoc, bi,bj, myThid )
       ENDIF
-cph-exch2#endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx+1,sNx+OLx
         sigmaX(i,j,k)=_maskW(i,j,k,bi,bj)
-     &        *_recip_dxC(i,j,bi,bj)
+     &        *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
      &        *(rhoLoc(i,j)-rhoLoc(i-1,j))
        ENDDO
       ENDDO
 
 C-    Internal exchange for calculations in Y
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
         CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                             rhoLoc, bi,bj, myThid )
       ENDIF
-cph-exch2#endif
       DO j=1-OLy+1,sNy+OLy
        DO i=1-OLx,sNx+OLx
         sigmaY(i,j,k)=_maskS(i,j,k,bi,bj)
-     &        *_recip_dyC(i,j,bi,bj)
+     &        *_recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
      &        *(rhoLoc(i,j)-rhoLoc(i,j-1))
        ENDDO
       ENDDO

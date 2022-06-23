@@ -1,4 +1,14 @@
-#ifdef ALLOW_MYPACKAGE
+CBOP
+C     !ROUTINE: MYPACKAGE.h
+C     !INTERFACE:
+C     #include "MYPACKAGE.h"
+
+C     !DESCRIPTION:
+C     *================================================================*
+C     | MYPACKAGE.h
+C     | o Header file defining "mypackage" parameters and variables
+C     *================================================================*
+CEOP
 
 C     Package flag
       LOGICAL myPa_MNC
@@ -48,8 +58,8 @@ C-    file names for initial conditions:
 C     MYPA 3-dim. fields
       _RL myPa_StatScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_StatScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_StatVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_StatVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /MYPA_STATE_3D/
      &    myPa_StatScal1, myPa_StatScal2,
      &    myPa_StatVelU,  myPa_StatVelV
@@ -65,15 +75,11 @@ C     MYPA 2-dim. fields
 #ifdef MYPACKAGE_TENDENCY
       _RL myPa_TendScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL myPa_TendScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_TendVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL myPa_TendVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /MYPA_TENDENCY/
      &    myPa_TendScal1, mypa_TendScal2,
      &    myPa_TendVelU,  mypa_TendVelV
 #endif /* MYPACKAGE_TENDENCY */
 
-#endif /* ALLOW_MYPACKAGE */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

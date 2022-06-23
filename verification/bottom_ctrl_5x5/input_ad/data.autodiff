@@ -5,4 +5,5 @@
 #
  &AUTODIFF_PARM01
 # inAdExact = .FALSE.,
+ cg2dFullAdjoint = .FALSE.,
  &

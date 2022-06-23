@@ -213,7 +213,7 @@ C     these need to be 2D-arrays for vectorizing code
       _RL ztln                  ! = log(zth/zref)
       _RL tmpbulk
       _RL recip_rhoConstFresh
-      INTEGER ksrf, ksrfp1
+      INTEGER ks, kl
       INTEGER iter
 C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculation
       LOGICAL solve4Stress
@@ -238,7 +238,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
       ENDIF
 
-C-- Set surface parameters :
+      IF ( usingPCoords ) THEN
+       ks = Nr
+       kl = Nr-1
+      ELSE
+       ks = 1
+       kl = 2
+      ENDIF
+
+C--   Set surface parameters :
       zwln = LOG(hu/zref)
       ztln = LOG(ht/zref)
       czol = hu*karman*gravity_mks
@@ -256,8 +264,7 @@ C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        ksrf   = 1
-        ksrfp1 = 2
+
         DO j = 1,sNy
          DO i = 1,sNx
 
@@ -286,11 +293,11 @@ C--- Compute turbulent surface fluxes
 C-   Pot. Temp and saturated specific humidity
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 C-   Surface Temp.
-           Tsf = theta(i,j,ksrf,bi,bj) + cen2kel
+           Tsf = theta(i,j,ks,bi,bj) + cen2kel
            IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
             SSTtmp = sstExtrapol
-     &              *( theta(i,j,ksrf,bi,bj)-theta(i,j,ksrfp1,bi,bj) )
-     &              *  maskC(i,j,ksrfp1,bi,bj)
+     &              *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
+     &              *  maskC(i,j,kl,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
            ENDIF
 
@@ -318,8 +325,18 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--   Wind speed
             wsm        = sh(i,j,bi,bj)
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
+            tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
+     &           + cdrag_8 * wsm**6
+            tmpbulk = exf_scal_BulkCdn * (
+     &             ( halfRL - SIGN(halfRL, wsm-umax) )*tmpbulk
+     &           + ( halfRL + SIGN(halfRL, wsm-umax) )*cdragMax
+     &           )
+#else
             tmpbulk    = exf_scal_BulkCdn *
      &           ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
+#endif
             rdn(i,j)   = SQRT(tmpbulk)
             ustar(i,j) = rdn(i,j)*wsm
            ELSE
@@ -436,8 +453,18 @@ C     similar to largeyeager04, but does not give the same results, strange
              usm   = MAX(usn, umin)
 
 C-   Update the 10m, neutral stability transfer coefficients (momentum)
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+C     Large and Yeager (2009), J.Clim equation 11a/b
+             tmpbulk =  cdrag_1/usm + cdrag_2 + cdrag_3*usm
+     &            + cdrag_8 * usm**6
+             tmpbulk = exf_scal_BulkCdn * (
+     &              ( halfRL - SIGN(halfRL, usm-umax) )*tmpbulk
+     &            + ( halfRL + SIGN(halfRL, usm-umax) )*cdragMax
+     &            )
+#else
              tmpbulk  = exf_scal_BulkCdn *
      &            ( cdrag_1/usm + cdrag_2 + cdrag_3*usm )
+#endif
              rdn(i,j)   = SQRT(tmpbulk)
 #ifdef ALLOW_BULK_LARGEYEAGER04
              rd(i,j)    = rdn(i,j)/(exf_one + rdn(i,j)*dzTmp)
@@ -497,7 +524,13 @@ c          evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 C   but older version was using rhonil instead:
 c           evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 #endif
-           IF ( useAtmWind ) THEN
+           IF ( useAtmWind .AND. useRelativeWind ) THEN
+            tmpbulk =  tau(i,j)*rd(i,j)
+            ustress(i,j,bi,bj) = tmpbulk* ( uwind(i,j,bi,bj) -
+     &           0.5 _d 0 * (uVel(i,j,ks,bi,bj)+uVel(i+1,j,ks,bi,bj)) )
+            vstress(i,j,bi,bj) = tmpbulk* ( vwind(i,j,bi,bj) -
+     &           0.5 _d 0 * (vVel(i,j,ks,bi,bj)+vVel(i,j+1,ks,bi,bj)) )
+           ELSEIF ( useAtmWind ) THEN
 c           ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
 c           vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
 C- jmc: below is how it should be written ; different from above when

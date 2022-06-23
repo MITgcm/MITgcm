@@ -10,7 +10,6 @@ C     !INTERFACE:
      O     fname1, fname2, localrec, obsrec, exst,
      I     mythid )
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE cost_gencal
@@ -32,25 +31,27 @@ C     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
-
-      integer mythid, irec, localstartdate(4)
-      _RL localperiod
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
+      integer irec, localstartdate(4)
+      _RL localperiod
       character*(128) fname1, fname2
       integer localrec, obsrec
-
+      logical exst
+      integer mythid
 
 #ifdef ALLOW_ECCO
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
-
 c      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       integer k, il
       _RL daytime
       _RL diffsecs
@@ -62,16 +63,8 @@ c      CHARACTER*(MAX_LEN_MBUF) msgBuf
       integer yday, ymod
       integer md, dd, sd, ld, wd
       integer mody, modm
-      integer beginmodel, beginlocal
-      logical exst
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
-
 CEOP
 
       write(fname1(1:128),'(80a)') ' '

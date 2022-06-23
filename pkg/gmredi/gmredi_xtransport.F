@@ -2,9 +2,6 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: GMREDI_XTRANSPORT
@@ -12,7 +9,7 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_XTRANSPORT(
      I     trIdentity, bi, bj, k,
      I     iMin, iMax, jMin, jMax,
-     I     xA, Tracer,
+     I     xA, maskFk, Tracer,
      U     df,
      I     myThid )
 
@@ -32,9 +29,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_FIELDS.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -44,19 +38,21 @@ C     == GLobal variables ==
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     trIdentity   :: tracer Id number
-C     bi, bj       :: current tile indices
-C     k            :: current level index
-C     iMin,iMax    :: Range of 1rst index where results will be set
-C     jMin,jMax    :: Range of 2nd  index where results will be set
-C     xA           :: Area of X face
-C     Tracer       :: 3D Tracer field
-C     df           :: Diffusive flux component work array.
-C     myThid       :: my Thread Id number
+C     trIdentity :: tracer Id number
+C     bi, bj     :: current tile indices
+C     k          :: current level index
+C     iMin,iMax  :: Range of 1rst index where results will be set
+C     jMin,jMax  :: Range of 2nd  index where results will be set
+C     xA         :: Area of X face
+C     maskFk     :: 2-D mask for vertical interface k (between level k-1 & k)
+C     Tracer     :: 3D Tracer field
+C     df         :: Diffusive flux component work array.
+C     myThid     :: my Thread Id number
       INTEGER trIdentity
       INTEGER bi, bj, k
       INTEGER iMin, iMax, jMin, jMax
-      _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskFk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -64,17 +60,17 @@ CEOP
 
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
-C     i, j    ::  Loop counters
+C     i, j       :: Loop counters
       INTEGER i, j
 #if ( defined (GM_EXTRA_DIAGONAL) || defined (GM_BOLUS_ADVEC) )
       INTEGER kp1
+      _RL maskp1
 #endif
 #ifdef GM_EXTRA_DIAGONAL
       INTEGER km1
       _RL dTdz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef GM_BOLUS_ADVEC
-      _RL maskp1
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -112,10 +108,8 @@ C     i, j    ::  Loop counters
       IF (useGMRedi) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE Kux(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
-# endif
 # ifdef GM_EXTRA_DIAGONAL
 CADJ STORE Kuz(:,:,k,bi,bj) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
@@ -127,82 +121,74 @@ C--   Area integrated zonal flux
        DO i=iMin,iMax
         df(i,j) = df(i,j)
      &   -xA(i,j)
-#ifdef GM_NON_UNITY_DIAGONAL
      &    *Kux(i,j,k,bi,bj)
-#else
-#ifdef ALLOW_KAPREDI_CONTROL
-     &    *(kapRedi(i,j,k,bi,bj)
-#else
-     &    *(GM_isopycK
-#endif
-#ifdef GM_VISBECK_VARIABLE_K
-     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
-#endif
-     &     )
-#endif /* GM_NON_UNITY_DIAGONAL */
-     &    *_recip_dxC(i,j,bi,bj)
-     &    *(Tracer(i,j,k)-Tracer(i-1,j,k))
+     &    *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &    *( Tracer(i,j,k) - Tracer(i-1,j,k) )
        ENDDO
       ENDDO
 
 #ifdef GM_EXTRA_DIAGONAL
-      IF (GM_ExtraDiag) THEN
+      IF ( GM_ExtraDiag ) THEN
        km1 = MAX(k-1,1)
        kp1 = MIN(k+1,Nr)
-
 C-    Vertical gradients interpolated to U points
+C     Note: no real needs for masking out with maskp1 when k=Nr since the Tracer
+C           difference is already zero (k=kp1 in this case); but cleaner for
+C           AD-code to ensure exactly zero contribution to Tracer AD var.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
-        dTdz(i,j) =  op5*(
-     &   +op5*recip_drC(k)*
-     &       ( maskC(i-1,j,k,bi,bj)*
-     &           (Tracer(i-1,j,km1)-Tracer(i-1,j,k))
-     &        +maskC( i ,j,k,bi,bj)*
-     &           (Tracer( i ,j,km1)-Tracer( i ,j,k))
-     &       )
-     &   +op5*recip_drC(kp1)*
-     &       ( maskC(i-1,j,kp1,bi,bj)*
-     &           (Tracer(i-1,j,k)-Tracer(i-1,j,kp1))
-     &        +maskC( i ,j,kp1,bi,bj)*
-     &           (Tracer( i ,j,k)-Tracer( i ,j,kp1))
-     &       )      )
-
+         dTdz(i,j) = op5*(
+     &    +op5*recip_drC(k)*
+     &        ( maskFk(i-1,j)*
+     &            ( Tracer(i-1,j,km1)-Tracer(i-1,j,k) )
+     &         +maskFk( i ,j)*
+     &            ( Tracer( i ,j,km1)-Tracer( i ,j,k) )
+     &        )
+     &    +op5*recip_drC(kp1)*
+     &        ( maskC(i-1,j,k,bi,bj)*maskC(i-1,j,kp1,bi,bj)*maskp1*
+     &            ( Tracer(i-1,j,k)-Tracer(i-1,j,kp1) )
+     &         +maskC( i ,j,k,bi,bj)*maskC( i ,j,kp1,bi,bj)*maskp1*
+     &            ( Tracer( i ,j,k)-Tracer( i ,j,kp1) )
+     &        )          )
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dtdz(:,:) =
+CADJ STORE dTdz(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
 C-    Off-diagonal components of horizontal flux
        DO j=jMin,jMax
         DO i=iMin,iMax
-        df(i,j) = df(i,j) - xA(i,j)*Kuz(i,j,k,bi,bj)*dTdz(i,j)
+         df(i,j) = df(i,j) - xA(i,j)*Kuz(i,j,k,bi,bj)*dTdz(i,j)
         ENDDO
        ENDDO
       ENDIF
 #endif /* GM_EXTRA_DIAGONAL */
 
 #ifdef GM_BOLUS_ADVEC
-      IF (GM_AdvForm .AND. GM_AdvSeparate
-     & .AND. .NOT.GM_InMomAsStress) THEN
+      IF ( GM_AdvForm .AND. GM_AdvSeparate
+     &                .AND. .NOT.GM_InMomAsStress ) THEN
        kp1 = MIN(k+1,Nr)
-       maskp1 = 1.
-       IF (k.GE.Nr) maskp1 = 0.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
-         uTrans(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
-     &                                 -GM_PsiX(i,j,k,bi,bj) )
-     &                               *maskW(i,j,k,bi,bj)
+         uTrans(i,j) = dyG(i,j,bi,bj)
+     &      *( GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &       - GM_PsiX(i,j, k ,bi,bj)*deepFacF(k)
+     &       )*maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE utrans(:,:) =
+CADJ STORE uTrans(:,:) =
 CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 #endif
        DO j=jMin,jMax
         DO i=iMin,iMax
          df(i,j) = df(i,j)
-     &    +uTrans(i,j)*op5*(Tracer(i,j,k)+Tracer(i-1,j,k))
+     &    + uTrans(i,j)*op5*( Tracer(i,j,k) + Tracer(i-1,j,k) )
         ENDDO
        ENDDO
       ENDIF
@@ -210,18 +196,18 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics
-     &     .AND. DIAGNOSTICS_IS_ON('GM_ubT  ', myThid )
-     &     .AND. trIdentity.EQ.1 ) THEN
+      IF ( useDiagnostics .AND. trIdentity.EQ.1 .AND.
+     &     DIAGNOSTICS_IS_ON( 'GM_ubT  ', myThid ) ) THEN
        kp1 = MIN(k+1,Nr)
-       maskp1 = 1.
-       IF (k.GE.Nr) maskp1 = 0.
+       maskp1 = 1. _d 0
+       IF (k.GE.Nr) maskp1 = 0. _d 0
        DO j=jMin,jMax
         DO i=iMin,iMax
-         tmp1k(i,j) = dyG(i,j,bi,bj)*( GM_PsiX(i,j,kp1,bi,bj)*maskp1
-     &                                -GM_PsiX(i,j,k,bi,bj) )
-     &                               *maskW(i,j,k,bi,bj)
-     &               *op5*(Tracer(i,j,k)+Tracer(i-1,j,k))
+         tmp1k(i,j) = dyG(i,j,bi,bj)
+     &      *( GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &       - GM_PsiX(i,j, k ,bi,bj)*deepFacF(k)
+     &       )*maskW(i,j,k,bi,bj)
+     &        *op5*( Tracer(i,j,k) + Tracer(i-1,j,k) )
         ENDDO
        ENDDO
        CALL DIAGNOSTICS_FILL(tmp1k,'GM_ubT  ', k,1,2,bi,bj,myThid)

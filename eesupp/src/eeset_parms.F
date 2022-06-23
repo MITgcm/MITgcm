@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: EESET_PARMS
 
 C     !INTERFACE:
-      SUBROUTINE EESET_PARMS ( procId, doReport )
+      SUBROUTINE EESET_PARMS( procId, doReport )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -53,11 +53,13 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_PREC) record
 # if !defined(USE_FORTRAN_SCRATCH_FILES) || defined(SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
-      CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
 #ifdef SINGLE_DISK_IO
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
+#endif
+#ifdef USE_PDAF
+      INTEGER mpi_task_id
 #endif
 CEOP
 
@@ -131,34 +133,33 @@ C     NOTE: read from main parameter file "data"
       useSingleCpuIO = .FALSE.
 
 C--   Read in data from eedata file
-C     We really ought to be using our environment file reading
-C     package - but we have not written it yet.
 
-C     Make scratch copies of input data file with and without comments
+C     Make a scratch copy of input eedata file without comments
 #ifdef SINGLE_DISK_IO
 C     Stop if called from eeboot_minimal.F before myProcId is set
       IF ( .NOT.doReport )
      &     STOP 'ABNORMAL END: S/R EESET_PARMS: myProcId unset'
       WRITE(scratchFile1,'(A)') 'scratch1'
-      WRITE(scratchFile2,'(A)') 'scratch2'
       IF( myProcId .EQ. 0 ) THEN
-       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+       OPEN( UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN' )
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 # ifdef USE_FORTRAN_SCRATCH_FILES
 C     this is the old default, which can cause filename conflicts on some
 C     multi-node/multi-processor systems
-      OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
-      OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+      OPEN( UNIT=scrUnit1, STATUS='SCRATCH' )
 # else
 C     this definition will go into CPP_EEMACROS.h, once this method is
 C     properly established
 C     After opening regular files here, they are closed with STATUS='DELETE'
+#ifdef USE_PDAF
+      CALL GET_TASKID_PDAF(mpi_task_id)
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch1.', procId, '.', mpi_task_id
+#else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
-      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+#endif
+      OPEN( UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN' )
 # endif
 #endif /* SINGLE_DISK_IO */
 
@@ -166,8 +167,9 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
       IF( myProcId .EQ. 0 ) THEN
 #endif
 
-      OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
-     &     err=1,IOSTAT=errIO)
+C--   Open the parameter file eedata
+      OPEN( UNIT=eeDataUnit, FILE='eedata', STATUS='OLD',
+     &      err=1, IOSTAT=errIO )
       IF ( errIO .GE. 0 ) GOTO 2
     1 CONTINUE
       IF ( doReport ) THEN
@@ -183,20 +185,9 @@ c       STOP 'ABNORMAL END: S/R EESET_PARMS'
         RETURN
       ENDIF
     2 CONTINUE
- 1000 CONTINUE
-       READ(eeDataUnit,FMT='(A)',END=1001) RECORD
-       IL = MAX(ILNBLNK(RECORD),1)
-       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
-         CALL NML_SET_TERMINATOR( RECORD )
-         WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
-       ENDIF
-       WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
-       GOTO 1000
- 1001 CONTINUE
-      CLOSE(eeDataUnit)
 
-C--   Report contents of parameter file
-      iUnit = scrUnit2
+C--   Read parameter eedata file, make a scratch copy without comments
+C     and report contents of parameter file to STDOUT
       IF ( doReport ) THEN
        WRITE(msgBuf,'(A)')
      & '// ======================================================='
@@ -207,20 +198,27 @@ C--   Report contents of parameter file
        WRITE(msgBuf,'(A)')
      & '// ======================================================='
        CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1)
+      ENDIF
 
-       REWIND(iUnit)
- 2000  CONTINUE
-        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
-        IL = MAX(ILNBLNK(RECORD),1)
+C     Read file, remove comments and apply specific syntax changes:
+ 1000 CONTINUE
+       READ(eeDataUnit,FMT='(A)',END=1001) RECORD
+       IL = MAX(ILNBLNK(RECORD),1)
+       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+         CALL NML_SET_TERMINATOR( RECORD )
+         WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
+       ENDIF
+       IF ( doReport ) THEN
         WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
-        GOTO 2000
- 2001  CONTINUE
-
+        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1 )
+       ENDIF
+       GOTO 1000
+ 1001 CONTINUE
+      CLOSE(eeDataUnit)
+      IF ( doReport ) THEN
        WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
       ENDIF
-      CLOSE(iUnit,STATUS='DELETE')
 
 #ifdef SINGLE_DISK_IO
       CALL FLUSH(scrUnit1)
@@ -236,7 +234,7 @@ C     writing scratchFile1 before opening it
 #ifdef HAVE_SYSTEM
       CALL SYSTEM('sleep 1')
 #endif
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
+      OPEN( UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD' )
 #endif /* SINGLE_DISK_IO */
 
 C--   Read namelist

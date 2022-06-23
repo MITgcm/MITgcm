@@ -70,17 +70,24 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
-c     == external ==
-      integer  ilnblnk
-      external ilnblnk
-
 c     == local variables ==
 
-      _RL    fcloc
+      logical doglobalread
+      logical ladinit
+      logical lxxadxx
 
       integer i, k
 c     integer ig,jg
       integer ivartype
+      integer cunit
+      integer ictrlgrad
+      _RL    fcloc
+
+      character*(128) cfile
+
+#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
+      character*( 80) weighttype
+#endif
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       integer iobcs
       character*(80) fname_obcsn(3)
@@ -94,6 +101,10 @@ C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
       character*(80) fname_local(3)
+#endif
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
+C 9 character limit set by set_(un)pack
+      character*( 9) mskNameForSetPack
 #endif
 
 #ifdef ECCO_CTRL_DEPRECATED
@@ -142,23 +153,7 @@ cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 #endif /* ECCO_CTRL_DEPRECATED */
 
-      logical doglobalread
-      logical ladinit
-      logical lxxadxx
-
-      integer cunit
-      integer ictrlgrad
-
-      character*(128) cfile
-      character*( 80) weighttype
-C 9 character limit set by set_(un)pack
-      character*( 9) mskNameForSetPack
-
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      fmin       = 0. _d 0
-#endif
 
 c--   Tiled files are used.
       doglobalread = .false.
@@ -168,6 +163,9 @@ c--   Initialise adjoint variables on active files.
 
 c--   Initialise global buffer index
       nbuffglobal = 0
+
+c--   Initialise local cost function value
+      fcloc     = zeroRL
 
 c--   Assign file names.
 
@@ -231,7 +229,7 @@ c--   Only the master thread will do I/O.
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
-          fcloc     = fmin
+          fcloc     = zeroRL
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlpospack, optimcycle
@@ -246,8 +244,6 @@ c     >>> Write gradient vector <<<
 # else
           fcloc     = fc
 # endif
-#else
-          fcloc     = zeroRL
 #endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
@@ -269,11 +265,7 @@ c--       Header information.
           write(cunit) nvarlength
           write(cunit) yctrlid
           write(cunit) optimCycle
-#ifdef ALLOW_COST
-          write(cunit) fc
-#else
-          write(cunit) zeroRL
-#endif
+          write(cunit) fcloc
 C     place holder of obsolete variable iG
           write(cunit) 1
 C     place holder of obsolete variable jG
@@ -777,16 +769,6 @@ c          write(cunit) nWetiGlobal(1)
      &         weighttype, wkapredi, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
-          ivartype = 45
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wshifwflx"
-          call ctrl_set_pack_xy(
-     &         cunit, ivartype, forcingPrecond,
-     &         fname_shifwflx(ictrlgrad),
-     &         "maskCtrlI", weighttype, lxxadxx, mythid)
-#endif
-
 #endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -811,7 +793,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
@@ -827,7 +809,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         wunit, lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
@@ -849,7 +831,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
      &         lxxadxx, mythid)
         endif
        enddo
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )

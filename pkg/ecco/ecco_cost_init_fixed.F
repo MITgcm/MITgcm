@@ -45,7 +45,8 @@ c     == global variables ==
 # ifdef ECCO_CTRL_DEPRECATED
 #  include "ecco_cost.h"
 # else
-#  include "ecco.h"
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
 # endif
 #endif
 #ifdef ALLOW_CTRL
@@ -60,18 +61,17 @@ c     == local variables ==
 
       integer k
       logical exst
-      _RL     dummy
-      integer tempDate1(4)
-      integer tempDate2(4)
-      integer gwunit
-      integer il, ilo,ihi
-      character*(max_len_mbuf) msgbuf
-      integer irec
       _RL     missingObsFlag
       PARAMETER ( missingObsFlag = 1. _d 23 )
+#if ( defined ECCO_CTRL_DEPRECATED || defined ALLOW_GENCOST_1D )
+      character*(MAX_LEN_MBUF) msgBuf
+      integer ilo, ihi, irec, gwunit
+#endif
+#if ( defined ECCO_CTRL_DEPRECATED && defined ALLOW_TRANSPORT_COST_CONTRIBUTION )
+      _RL     dummy
+#endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      integer bi,bj
-      integer i,j,kk,k2
+      integer k2
 #endif
 
 c     == external functions ==

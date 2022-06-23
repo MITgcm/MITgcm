@@ -46,25 +46,23 @@ c     == local variables ==
       INTEGER bi,bj
       _RL glob_fc, loc_fc
 #ifdef ALLOW_PROFILES
-      integer num_file,num_var
+      INTEGER num_file,num_var
 #endif
-      character*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
 #ifdef ALLOW_SEAICE
-      if (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
+      IF (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
 #endif
 
 #ifdef ALLOW_SHELFICE
-      CALL SHELFICE_COST_FINAL (myThid)
+      IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
-c     print *, 'ph-1 in thsice_cost_final'
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
-c     print *, 'ph-3 in thsice_cost_final'
 
 #ifdef ALLOW_ECCO
       IF (useECCO) CALL ECCO_COST_FINAL (myThid)
@@ -92,8 +90,8 @@ cgf : same idea as for ALLOW_COST_STATE_FINAL
 # endif
 
 #ifdef ALLOW_COST_HFLUXM
-cgf : to compile previous line user is expected to provide cost_hflux.F
       CALL COST_HFLUX (myThid)
+cgf : to compile previous line user is expected to provide cost_hflux.F
 #endif
 
 #ifdef ALLOW_COST_TEMP
@@ -101,9 +99,13 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-      write(msgBuf,'(A,D22.15)') '  early fc = ', fc
-      call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+#ifdef ALLOW_COST_DEPTH
+      CALL COST_DEPTH( myThid )
+#endif
+
+      WRITE(msgBuf,'(A,D22.15)') '  early fc = ', fc
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   Sum up all contributions.
       loc_fc = 0.
@@ -111,30 +113,34 @@ c--   Sum up all contributions.
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #ifdef ALLOW_COST_TEST
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
+         WRITE(standardMessageUnit,'(A,D22.15)')
+     &       ' --> objf_test(bi,bj)        = ', objf_test(bi,bj)
 #endif
 #ifdef ALLOW_COST_TRACER
-          write(standardmessageunit,'(A,D22.15)')
-     &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
+         WRITE(standardMessageUnit,'(A,D22.15)')
+     &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
 #endif
 #if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
 # ifdef ALLOW_COST_ATLANTIC_HEAT
-          write(standardmessageunit,'(A,D22.15)')
-     &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
+         WRITE(standardMessageUnit,'(A,D22.15)')
+     &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
 # endif
 #endif
 #ifdef ALLOW_COST_TEMP
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_temp_tut(bi,bj)   = ', objf_temp_tut(bi,bj)
+         WRITE(standardMessageUnit,'(A,D22.15)')
+     &         ' --> objf_temp_tut(bi,bj)  = ', objf_temp_tut(bi,bj)
 #endif
 #ifdef ALLOW_COST_HFLUXM
-          write(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
 #endif
 #ifdef ALLOW_COST_TRANSPORT
-          write(standardmessageunit,'(A,D22.15)')
+         WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
+#endif
+#ifdef ALLOW_COST_DEPTH
+         WRITE(standardMessageUnit,'(A,D22.15)')
+     &         ' --> objf_depth(bi,bj)     = ', objf_depth(bi,bj)
 #endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -158,17 +164,20 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
 #endif
+#ifdef ALLOW_COST_DEPTH
+     &            + mult_depth     * objf_depth(bi,bj)
+#endif
 
 #ifdef ALLOW_PROFILES
-      if (.NOT.useECCO) then
-      do num_file=1,NFILESPROFMAX
-       do num_var=1,NVARMAX
-          tile_fc(bi,bj) = tile_fc(bi,bj)
+         IF (.NOT.useECCO) THEN
+          DO num_file=1,NFILESPROFMAX
+           DO num_var=1,NVARMAX
+            tile_fc(bi,bj) = tile_fc(bi,bj)
      &            + mult_profiles(num_file,num_var)
      &            *objf_profiles(num_file,num_var,bi,bj)
-       enddo
-      enddo
-      endif
+           ENDDO
+          ENDDO
+         ENDIF
 #endif
 
          loc_fc = loc_fc + tile_fc(bi,bj)
@@ -176,9 +185,9 @@ c--   Sum up all contributions.
        ENDDO
       ENDDO
 
-      write(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
-      call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      WRITE(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
@@ -196,9 +205,9 @@ cph-- quickly for testing
       fc = totcost
 #endif
 
-      write(msgBuf,'(A,D22.15)') ' global fc = ', fc
-      call print_message( msgBuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      WRITE(msgBuf,'(A,D22.15)') ' global fc = ', fc
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :
@@ -206,5 +215,5 @@ c--   switch off output flag :
 
 #endif /* ALLOW_COST */
 
-      return
-      end
+      RETURN
+      END

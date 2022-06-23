@@ -26,9 +26,9 @@
  vstressstartdate2 = 000000,
  vstressperiod     = 2592000.0,
 #
- climsststartdate1 = 19910116,
- climsststartdate2 = 000000,
- climsstperiod     = 2592000.0,
+#climsststartdate1 = 19910116,
+#climsststartdate2 = 000000,
+ climsstperiod     = -1.0,
 # 2 months restoring timescale for temperature
  climsstTauRelax   = 5184000.,
 #

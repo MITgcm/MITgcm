@@ -1454,7 +1454,7 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    | :varlink:`EXCLUDE_FFIELDS_LOAD`               | #undef  | exclude external forcing-fields load; code allows reading and simple linear time interpolation of oceanic            |
    |                                               |         | forcing fields, if no specific pkg (e.g., :filelink:`pkg/exf`) is used to compute them                               |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`INCLUDE_PHIHYD_CALCULATION_CODE`    | #define | include code to calculate :math:`\phi_{hyd}`                                                                         |
+   | :varlink:`INCLUDE_PHIHYD_CALCULATION_CODE`    | #define | include code to calculate :math:`\phi_{\rm hyd}`                                                                     |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`INCLUDE_CONVECT_CALL`               | #define | include code for convective adjustment mixing algorithm                                                              |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
@@ -1527,8 +1527,132 @@ Additional CPP options that affect the model core code are set in files
 optional (non-default) packages also include package-specific CPP options that
 must be set in files ``${PKG}_OPTIONS.h``.
 
-The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP
-options that typically will need to be modified by users.
+.. _cpp_eeoptions_doc:
+
+Preprocessor Execution Environment Options
+------------------------------------------
+
+**Most MITgcm users can skip this section**; many of these flags were
+intended for very specific platform environments, and not meant to be changed
+for more general environments (an exception being if you are using a coupled
+setup, see below).
+
+The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
+directory :filelink:`eesupp/inc/` contains a number of CPP flags related to
+the execution environment where the model will run. Below we describe the
+subset of user-editable CPP flags:
+
+.. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
+
+.. table::
+   :class: longtable
+   :name: cpp_eeopt_flags
+
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | CPP Flag Name                                 | Default | Description                                                                                                          |
+   +===============================================+=========+======================================================================================================================+
+   | :varlink:`GLOBAL_SUM_ORDER_TILES`             | #define | always cumulate tile local-sum in the same order by applying MPI allreduce to array of tiles                         |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`CG2D_SINGLECPU_SUM`                 | #undef  | alternative way of doing global sum on a single CPU  to eliminate tiling-dependent roundoff errors                   |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`SINGLE_DISK_IO`                     | #undef  | to write STDOUT, STDERR and scratch files from process 0 only                                                        |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`USE_FORTRAN_SCRATCH_FILES`          | #undef  | flag to turn on old default of opening scratch files with the STATUS='SCRATCH' option                                |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`COMPONENT_MODULE`                   | #undef  | control use of communication with other components, i.e., sets component to work with a coupler interface            |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`DISCONNECTED_TILES`                 | #undef  | use disconnected tiles (no exchange between tiles, just fill-in edges assuming locally periodic subdomain)           |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`REAL4_IS_SLOW`                      | #define | if undefined, force ``_RS`` variables to be declared as real*4                                                       |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
+:filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to
+achieve numerically reproducible global sums for a given tile domain
+decomposition. As implemented however, this
+approach will increase the volume of network traffic in a way that scales
+with the total number of tiles.
+Profiling has shown that letting the code fall through to a baseline
+approach that simply uses
+`MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
+can provide significantly improved performance for certain simulations [#]_.
+The fall-though approach is activated by ``#undef``
+:varlink:`GLOBAL_SUM_ORDER_TILES`.
+
+In order to get bit-wise reproducible results between different tile domain
+decompositions (e.g., single tile on single processor versus multiple tiles
+either on single or multiple processors), one can choose to ``#define``
+option :varlink:`CG2D_SINGLECPU_SUM` to use the **MUCH** slower
+:filelink:`global_sum_singlecpu.F <eesupp/src/global_sum_singlecpu.F>`
+for the key part of MITgcm algorithm :filelink:`CG2D <model/src/cg2d.F>`
+that relies on global sum.
+This option is not only much slower but also requires a large volume of
+communications so it is practically unusable for a large set-up;
+furthermore, it does not address reproducibility when global sum is used
+outside :filelink:`CG2D <model/src/cg2d.F>`, e.g., in non-hydrostatic simulations.
+
+In a default multi-processor configuration, each process opens and reads its
+own set of namelist files and open and writes its own standard output. This can
+be slow or even problematic for very large processor counts. Defining the
+CPP-flag :varlink:`SINGLE_DISK_IO` suppresses this behavior and lets only the
+master process (process 0) read namelist files and write a standard output
+stream. This may seem advantageous, because it reduces the amount of seemingly
+redundant output, but use this option with caution and only when absolutely
+confident that the setup is working since any message (error/warning/print)
+from any processor :math:`\ne 0` will be lost.
+
+The way the namelist files are read requires temporary (scratch) files in the
+initialization phase. By default, the MITgcm does not use intrinsic Fortran
+scratch files (``STATUS='scratch'``) because they can lead to conflicts in
+multi-processor simulations on some HPC-platforms, when the processors do not
+open scratch files with reserved names. However, the implemented default scheme
+for the scratch files can be slow for large processor counts. If this is a
+problem in a given configuration, defining the CPP-flag
+:varlink:`USE_FORTRAN_SCRATCH_FILES` may help by making the code use the
+intrinsic Fortran scratch files.
+
+The CPP-flag :varlink:`COMPONENT_MODULE` needs to be set to ``#define`` only for
+builds in which the MITgcm executable (for either an oceanic or atmospheric
+simulation) is configured to communicate with a coupler.
+This coupler can be a specially configured build of MITgcm itself;
+see, for example, verification experiment `cpl_aim+ocn
+<https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
+
+The CPP-flag :varlink:`DISCONNECTED_TILES` should not be ``#define``
+unless one wants to run simultaneously several small, single-tile ensemble
+members from a single process, as each tile will be disconnected from the others
+and considered locally as a doubly periodic patch.
+
+..
+    should reference the to-be-written section about _RS, _RL within chapter 6
+
+MITgcm ``_RS`` variables are forced to be declared as
+``real*4`` if CPP-flag :varlink:`REAL4_IS_SLOW` to is set to ``#undef``
+in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
+(``_RS`` is a macro used in declaring real variables that, in principle,
+do not require double precision). However, this option is not recommended
+except for computational benchmarking or for testing the trade-off between memory
+footprint and model precision.  And even for these specialized tests, there is no need
+to edit :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
+since this feature can be activated using the :filelink:`genmake2 <tools/genmake2>`
+command line option ``-use_r4``,  as done in some regression tests
+(see testing `results <https://mitgcm.org/testing-summary>`_
+page tests with optfile suffix ``.use_r4``).
+
+.. [#] One example is the llc_540 case located at
+   https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case
+   was run on the Pleiades computer for 20 simulated days using 767 and 2919
+   MPI ranks.  At 767 ranks, the fall-through approach provided a throughput of
+   to 799.0 simulated days per calendar day (dd/d) while the default approach
+   gave 781.0.  The profiler showed the speedup was directly attributable to
+   spending less time in MPI_Allreduce. The volume of memory traffic associated
+   with MPI_Allreduce dropped by 3 orders (22.456T -> 32.596G).  At 2819 MPI
+   ranks the fall-through approach gave a throughput of 1300 dd/d while the
+   default approach gave 800.0 dd/d. Put another way, this case did not scale
+   at all from 767p to 2819p unless the fall-though approach was utilized. The
+   profiler showed the speedup was directly attributable to spending less time
+   in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce
+   dropped by 3 orders (303.70T ->121.08G ).
 
 .. _customize_model:
 
@@ -2480,7 +2604,7 @@ fluxes can be computed implicitly by setting the logical variable
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`interDiffKr_pCell`           | PARM04    | FALSE                                            | account for partial-cell in interior vertical diffusion on/off flag                                     |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`linFSConserveTr`             | PARM01    | TRUE                                             | correct source/sink of tracer due to use of linear free surface on/off flag                             |
+   | :varlink:`linFSConserveTr`             | PARM01    | FALSE                                            | correct source/sink of tracer due to use of linear free surface on/off flag                             |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`doAB_onGtGs`                 | PARM03    | TRUE                                             | apply Adams-Bashforth on tendencies (rather than on T,S) on/off flag                                    |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2728,7 +2852,15 @@ salinity (in g/kg) data files and relaxation timescale coefficient
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceSaltClimRelax`        | PARM01    | FALSE                                            | subtract global mean flux due to salt relaxation every time step on/off flag                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`balanceEmPmR`                | PARM01    | FALSE                                            | subtract global mean EmPmR every time step on/off flag; requires #define :varlink:`ALLOW_BALANCE_FLUXES`|
+   | :varlink:`selectBalanceEmPmR`          | PARM01    | 0                                                | option to balance net surface freshwater flux every time step                                           |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | - 0: off                                                                                                |
+   |                                        |           |                                                  | - 1: uniform surface correction                                                                         |
+   |                                        |           |                                                  | - 2: non-uniform surface correction, scaled using :varlink:`wghtBalancedFile` for local weighting       |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | if =1 or 2, requires #define :varlink:`ALLOW_BALANCE_FLUXES`                                            |
+   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`wghtBalanceFile`             | PARM05    | :kbd:`' '`                                       | filename for 2D specification of weights used in :varlink:`selectBalanceEmPmR` =2 correction            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (g/kg)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+

@@ -111,7 +111,7 @@ c     print*,'Weights for temperature: wti', (wti(k),k=1,nr)
 
 C--   Then the hflux weights :
 
-#if (defined (ALLOW_COST_HFLUXM) || defined (ALLOW_HFLUXM_CONTROL))
+#ifdef ALLOW_COST_HFLUXM
       CALL READ_REC_3D_RL( 'Err_hflux.bin', precFloat64, 1,
      &                      whfluxm, 1, 0, myThid )
       _EXCH_XY_RL(whfluxm   , myThid )
@@ -133,6 +133,6 @@ c            print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       CALL ACTIVE_WRITE_XY('whfluxm',whfluxm,1,0,myThid,dummy)
 #endif
-#endif /* ALLOW_COST_HFLUXM or ALLOW_HFLUXM_CONTROL */
+#endif /* ALLOW_COST_HFLUXM */
       RETURN
       END

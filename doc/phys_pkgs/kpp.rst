@@ -12,7 +12,8 @@ Authors: Dimitris Menemenlis and Patrick Heimbach
 Introduction
 ++++++++++++
 
-The nonlocal K-Profile Parameterization (KPP) scheme of :cite:`lar-eta:94` unifies the
+The nonlocal K-Profile Parameterization (KPP) scheme of Large et al. (1994)
+:cite:`lar-eta:94` unifies the
 treatment of a variety of unresolved processes involved in vertical
 mixing. To consider it as one mixing scheme is, in the view of the
 authors, somewhat misleading since it consists of several entities to
@@ -45,7 +46,8 @@ layer, and the interior:
    independent of the vertical property gradient further enhances mixing
    where the water column is unstable
 
-The scheme has been extensively compared to observations (see e.g. :cite:`lar-eta:97`) and
+The scheme has been extensively compared to observations
+(see e.g. Large et al. 1997 :cite:`lar-eta:97`) and
 is now common in many ocean models.
 
 The current code originates in the NCAR NCOM 1-D code and was kindly
@@ -56,12 +58,12 @@ decomposition and threading capability), to enable automatic
 differentiation of tangent linear and adjoint code via TAMC.
 
 The following sections will describe the KPP package configuration and
-compiling ([sec:pkg:kpp:comp]), the settings and choices of runtime
-parameters ([sec:pkg:kpp:runtime]), more detailed description of
-equations to which these parameters relate ([sec:pkg:kpp:equations]),
-and key subroutines where they are used ([sec:pkg:kpp:flowchart]), and
+compiling (:numref:`ssub_phys_pkg_kpp_comp`), the settings and choices of runtime
+parameters (:numref:`ssub_phys_pkg_kpp_runtime`), more detailed description of
+equations to which these parameters relate (:numref:`ssub_phys_pkg_kpp_eqns_key_routines`),
+and key subroutines where they are used (:numref:`ssub_phys_pkg_kpp_flowchart`), and
 diagnostics output of KPP-derived diffusivities, viscosities and
-boundary-layer/mixed-layer depths ([sec:pkg:kpp:diagnostics]).
+boundary-layer/mixed-layer depths (:numref:`ssub_phys_pkg_kpp_diagnostics`).
 
 .. _ssub_phys_pkg_kpp_comp:
 
@@ -81,7 +83,7 @@ As with all MITgcm packages, KPP can be turned on or off at compile time
     layer needs to be set in ``CPP_OPTIONS.h`` as follows:
     ``#define SHORTWAVE_HEATING``
 
-(see Section [sec:buildingCode]).
+(see :numref:`using_packages`)
 
 Parts of the KPP code can be enabled or disabled at compile time via CPP
 preprocessor flags. These options are set in ``KPP_OPTIONS.h``. Table
@@ -252,7 +254,7 @@ Equations and key routines
 
 We restrict ourselves to writing out only the essential equations that
 relate to main processes and parameters mentioned above. We closely
-follow the notation of :cite:`lar-eta:94`.
+follow the notation of Large et al. (1994) :cite:`lar-eta:94`.
 
 KPP_CALC:
 #########
@@ -289,7 +291,8 @@ coefficient :math:`K_x`
    .. math:: K_x(\sigma) \, = \, h \, w_x(\sigma) \, G(\sigma)
 
    with dimensionless vertical coordinate :math:`\sigma = d/h`. For
-   details of :math:` w_x(\sigma)` and :math:`G(\sigma)` we refer to .
+   details of :math:`w_x(\sigma)` and :math:`G(\sigma)` we refer
+   to Large et al. (1994) :cite:`lar-eta:94`.
 
 -  *Nonlocal mixing term*
    The nonlocal transport term :math:`\gamma` is nonzero only for
@@ -308,17 +311,17 @@ coefficient :math:`K_x`
       \gamma_m \, = \, 0 \\
        ~ \\
       \gamma_s \, = \, C_s 
-      \frac{\overline{w s_0}}{w_s(\sigma) h} \\
+      \dfrac{\overline{w s_0}}{w_s(\sigma) h} \\
        ~ \\
       \gamma_{\theta} \, = \, C_s
-      \frac{\overline{w \theta_0}+\overline{w \theta_R}}{w_s(\sigma) h} \\
+      \dfrac{\overline{w \theta_0}+\overline{w \theta_R}}{w_s(\sigma) h} \\
       \end{array}
       \right\} 
       &
       \zeta \, < \, 0 \\
       \end{array}\end{aligned}
 
-In practice, the routine peforms the following tasks:
+In practice, the routine performs the following tasks:
 
 #. compute velocity scales at hbl
 

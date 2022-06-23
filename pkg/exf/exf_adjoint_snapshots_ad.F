@@ -8,28 +8,28 @@
 #endif
 
 CBOP
-C     !ROUTINE: adexf_adjoint_snapshots
+C     !ROUTINE: ADEXF_ADJOINT_SNAPSHOTS
 C     !INTERFACE:
-      SUBROUTINE adexf_adjoint_snapshots(
-     &     iwhen, myTime, myIter, myThid )
+      SUBROUTINE ADEXF_ADJOINT_SNAPSHOTS(
+     I                 iwhen, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE adexf_adjoint_snapshots                       |
+C     | SUBROUTINE ADEXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
-C     Extract adjoint variable from TAMC/TAF-generated
+C     Adjoint version of EXF Adjoint-variable output subroutine:
+C     extract adjoint variable from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
 C     *==========================================================*
-C     | SUBROUTINE adexf_adjoint_snapshots                       |
+C     | SUBROUTINE ADEXF_ADJOINT_SNAPSHOTS                       |
 C     *==========================================================*
 C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -49,17 +49,17 @@ C     == Global variables ===
 #  include "DIAGNOSTICS.h"
 # endif
 #endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
+C     iwhen  :: indicates where this S/R is called from
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: Thread number for this instance of the routine.
-      integer iwhen
+      INTEGER iwhen
       _RL     myTime
-      integer myIter
-      integer myThid
+      INTEGER myIter
+      INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
@@ -69,15 +69,10 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
 c     CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_MNC
-      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
       _RS dumRS(1)
       _RL dumRL(1)
       INTEGER dumpAdRecEx
@@ -106,7 +101,7 @@ c#endif
        CALL DUMP_ADJ_XY_UV(
      &      dumRS, adustress, 'ADJustrs', 'ADJustress.',
      &      dumRS, advstress, 'ADJvstrs', 'ADJvstress.',
-     &     34, doDump, dumpAdRecEx, myTime, myIter, myThid)
+     &      34, doDump, dumpAdRecEx, myTime, myIter, myThid )
        CALL DUMP_ADJ_XY( dumRS, adhflux, 'ADJhflux', 'ADJhflux.',
      &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
        CALL DUMP_ADJ_XY( dumRS, adsflux, 'ADJsflux', 'ADJsflux.',
@@ -126,14 +121,12 @@ c#endif
        CALL DUMP_ADJ_XY( dumRS, adrunoff, 'ADJroff ', 'ADJrunoff.',
      &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
-# ifdef ALLOW_ATM_WIND
        IF ( useAtmWind ) THEN
         CALL DUMP_ADJ_XY( dumRS, aduwind, 'ADJuwind', 'ADJuwind.',
      &       12, doDump, dumpAdRecEx, myTime, myIter, myThid )
         CALL DUMP_ADJ_XY( dumRS, advwind, 'ADJvwind', 'ADJvwind.',
      &       12, doDump, dumpAdRecEx, myTime, myIter, myThid )
        ENDIF
-# endif
 # ifdef ALLOW_DOWNWARD_RADIATION
        CALL DUMP_ADJ_XY( dumRS, adswdown, 'ADJswdn ', 'ADJswdown.',
      &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
@@ -154,30 +147,31 @@ c#endif
        CALL DUMP_ADJ_XY_UV(
      &      adFu, dumRL, 'ADJtaux ', 'ADJtaux.',
      &      adFv, dumRL, 'ADJtauy ', 'ADJtauy.',
-     &      33, doDump, dumpAdRecEx, myTime, myIter,myThid)
+     &      33, doDump, dumpAdRecEx, myTime, myIter, myThid )
        CALL DUMP_ADJ_XY(adQnet, dumRL, 'ADJqnet ', 'ADJqnet.',
-     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
+     &      11, doDump, dumpAdRecEx, myTime, myIter, myThid )
        CALL DUMP_ADJ_XY(adEmPmR, dumRL, 'ADJempmr', 'ADJempr.',
-     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
+     &      11, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # ifdef SHORTWAVE_HEATING
        CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw  ', 'ADJqsw.',
-     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
+     &      11, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 
       ENDIF
+
       IF ( doDump ) THEN
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 
-          IF ( iwhen.EQ.1 ) THEN
-c
+         IF ( iwhen.EQ.1 ) THEN
+
           CALL MNC_CW_SET_UDIM('adexf', -1, myThid)
           CALL MNC_CW_RL_W_S('D','adexf',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('adexf', 0, myThid)
           CALL MNC_CW_I_W_S('I','adexf',0,0,'iter',myIter,myThid)
           CALL MNC_CW_RL_W_S('D','adexf',0,0,'model_time',myTime,
      &         myThid)
-c
+
           CALL MNC_CW_RL_W('D','adexf',0,0,'adustress',
      &         adustress, myThid)
           CALL MNC_CW_RL_W('D','adexf',0,0,'advstress',
@@ -186,7 +180,7 @@ c
      &         adhflux, myThid)
           CALL MNC_CW_RL_W('D','adexf',0,0,'adsflux',
      &         adsflux, myThid)
-          ELSEIF ( iwhen.EQ.2 ) THEN
+         ELSEIF ( iwhen.EQ.2 ) THEN
 # ifdef ALLOW_ATM_TEMP
           CALL MNC_CW_RL_W('D','adexf',0,0,'adatemp',
      &         adatemp, myThid)
@@ -199,14 +193,12 @@ c
           CALL MNC_CW_RL_W('D','adexf',0,0,'adrunoff',
      &         adrunoff, myThid)
 # endif
-# ifdef ALLOW_ATM_WIND
-      IF ( useAtmWind ) THEN
-          CALL MNC_CW_RL_W('D','adexf',0,0,'aduwind',
-     &         aduwind, myThid)
-          CALL MNC_CW_RL_W('D','adexf',0,0,'advwind',
-     &         advwind, myThid)
-      ENDIF
-# endif
+          IF ( useAtmWind ) THEN
+           CALL MNC_CW_RL_W('D','adexf',0,0,'aduwind',
+     &          aduwind, myThid)
+           CALL MNC_CW_RL_W('D','adexf',0,0,'advwind',
+     &          advwind, myThid)
+          ENDIF
 # ifdef ALLOW_DOWNWARD_RADIATION
           CALL MNC_CW_RL_W('D','adexf',0,0,'adswdown',
      &         adswdown, myThid)
@@ -221,14 +213,13 @@ c
           CALL MNC_CW_RL_W('D','adexf',0,0,'adclimsss',
      &         adclimsss, myThid)
 # endif
-c
-          ENDIF
+
+         ENDIF
 
         ENDIF
 #endif /* ALLOW_MNC */
 
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       ENDIF
 
 #ifdef ALLOW_MONITOR

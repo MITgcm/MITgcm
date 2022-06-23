@@ -3,7 +3,6 @@
 EXF: The external forcing package
 ---------------------------------
 
-
 Authors: Patrick Heimbach and Dimitris Menemenlis
 
 .. _ssub_phys_pkg_exf_intro:
@@ -56,7 +55,6 @@ preprocessor flags. These options are set in either ``EXF_OPTIONS.h`` or
 in ``ECCO_CPPOPTIONS.h``. :numref:`tab_phys_pkg_exf_cpp_options` summarizes these
 options.
 
-
 .. table:: EXF CPP options
     :name: tab_phys_pkg_exf_cpp_options
 
@@ -69,8 +67,14 @@ options.
     +----------------------------------+-----------------------------------------------------------+
     | :code:`ALLOW_ATM_WIND`           |  compute wind stress from wind speed input                |
     +----------------------------------+-----------------------------------------------------------+
-    | :code:`ALLOW_BULKFORMULAE`       |  is used if :code:`ALLOW_ATM_TEMP` or                     |
-    |                                  |  :code:`ALLOW_ATM_WIND` is enabled                        |
+    | :code:`ALLOW_BULKFORMULAE`       |  use bulk formulae following Large and Pond (1981, 1982); |
+    |                                  |  requires to define :code:`ALLOW_ATM_TEMP`.               |
+    +----------------------------------+-----------------------------------------------------------+
+    | :code:`ALLOW_BULK_LARGEYEAGER04` |  use modifications of Large and Pond (1981, 1982), as     |
+    |                                  |  described in  Large and Yeager (2004) NCAR/TN-460+STR.   |
+    +----------------------------------+-----------------------------------------------------------+
+    | :code:`ALLOW_DRAG_LARGEYEAGER09` |  compute drag cofficient following Large and Yeager       |
+    |                                  |  (2009), Climate Dynamics, 33, pages 341-364              |
     +----------------------------------+-----------------------------------------------------------+
     | :code:`EXF_READ_EVAP`            |  read evaporation instead of computing it                 |
     +----------------------------------+-----------------------------------------------------------+
@@ -169,11 +173,23 @@ General flags and parameters
     +-------------------------+------------------+-------------------------------------------------------------------------------+
     | umin                    | 0.5              | minimum absolute wind speed for computing Cd                                  |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
-    | atmrho                  | 1.2              | mean atmospheric density [kg/m\^3]                                            |
+    | atmrho                  | 1.2              | mean atmospheric density [kg/m\ :sup:`3`]                                     |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
     | atmcp                   | 1005.0           | mean atmospheric specific heat [J/kg/K]                                       |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
-    | cdrag_[n]               | ???              | n = 1,2,3; parameters for drag coeff. function                                |
+    | cdrag_[n]               |                  | n = 1,2,3,8; parameters for drag coeff. function                              |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | cdrag_1                 | 0.0027000        | [m/s]                                                                         |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | cdrag_2                 | 0.0001420        | [-]                                                                           |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | cdrag_3                 | 0.0000764        | [s/m]                                                                         |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | cdrag_8                 | -3.14807e-13     | [(s/m)\ :sup:`6`] (only used with Large and Yeager, 2009)                     |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | cdragMax                |  0.00234         | maximum drag [-] (only Large and Yeager, 2009) for wind > umax                |
+    +-------------------------+------------------+-------------------------------------------------------------------------------+
+    | umax                    | 33.              | threshold above which cdragMax applies [m/s] (only Large and Yeager, 2009)    |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
     | cstanton_[n]            | ???              | n = 1,2; parameters for Stanton number function                               |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
@@ -205,11 +221,6 @@ General flags and parameters
     +-------------------------+------------------+-------------------------------------------------------------------------------+
     | exf_iprec               | 32               | precision of input fields (32-bit or 64-bit)                                  |
     +-------------------------+------------------+-------------------------------------------------------------------------------+
-    | exf_yftype              | 'RL'             | precision of arrays ('RL' vs. 'RS')                                           |
-    +-------------------------+------------------+-------------------------------------------------------------------------------+
-
-
-
 
 Field attributes
 ################
@@ -229,7 +240,6 @@ attribute, e.g. for attribute ``period`` this yields ``uwindperiod``:
        \text{e.g.} & \text{uwind} & \& & \text{period} & \longrightarrow & \text{uwindperiod} \\
      \end{array}\end{aligned}
 
-
 .. table:: EXF runtime attributes
            Note there is one exception for the default of ``atempconst`` = celsius2K = 273.16
     :name: tab_phys_pkg_exf_runtime_attributes
@@ -242,14 +252,14 @@ attribute, e.g. for attribute ``period`` this yields ``uwindperiod``:
     | *field* ``const``           | 0.0                       | constant that will be used if no file is read                                |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | *field* ``startdate1``      | 0.0                       | format: ``YYYYMMDD``; start year (YYYY), month (MM), day (YY)                |
-    +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     |                             |                           | of field to determine record number                                          |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | *field* ``startdate2``      | 0.0                       | format: ``HHMMSS``; start hour (HH), minute (MM), second(SS)                 |
-    +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     |                             |                           | of field to determine record number                                          |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
-    | *field* ``period``          | 0.0                       | interval in seconds between two records                                      |
+    | *field* ``period``          | 0.0                       | interval in seconds between two records; the special value -12 means         |
+    |                             |                           | 12 repeating (calendar) monthly records; the special value -1 means          |
+    |                             |                           | non-repeating (calendar) monthly records (see below)                         |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
     | ``exf_inscal_``\ *field*    |                           | optional rescaling of input fields to comply with EXF units                  |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
@@ -270,7 +280,11 @@ attribute, e.g. for attribute ``period`` this yields ``uwindperiod``:
     | *field* ``_nlat``           | :code:`Ny`                | number of grid points in longitude of input                                  |
     +-----------------------------+---------------------------+------------------------------------------------------------------------------+
 
-
+For *field*\ ``period``\ =-1, the records in the forcing file represent
+averages over calendar months.  If ``useExfYearlyFields = .TRUE.``, each yearly
+file must have 12 records, starting with January.  For ``useExfYearlyFields =
+.FALSE.``, a single file starting with the month given by
+*field*\ ``startdate1`` is required.
 
 Example configuration
 #####################
@@ -306,7 +320,6 @@ Interpolation on-the-fly is used (in the present case trivially on the
 same grid, but included nevertheless for illustration), and input field
 grid starting coordinates and increments are supplied as well.
 
-
 .. _ssub_phys_pkg_exf_bulk_formulae:
 
 EXF bulk formulae
@@ -315,7 +328,6 @@ EXF bulk formulae
 T.B.D. (cross-ref. to parameter list table)
 
 .. _ssub_phys_pkg_exf_inputs_units:
-
 
 EXF input fields and units
 ++++++++++++++++++++++++++
@@ -328,7 +340,6 @@ Output fields which EXF provides to the MITgcm are fields **fu**,
 ``FFIELDS.h``.
 
 ::
-
 
     c----------------------------------------------------------------------
     c               |
@@ -454,7 +465,6 @@ Output fields which EXF provides to the MITgcm are fields **fu**,
     c               |  Input field
     c----------------------------------------------------------------------
 
-
 .. _ssub_phys_pkg_exf_subroutines:
 
 Key subroutines
@@ -538,7 +548,6 @@ Interpolation: ``exf_interp.F``
 
 Header routines
 
-
 .. _ssub_phys_pkg_exf_diagnostics:
 
 EXF diagnostics
@@ -547,7 +556,6 @@ EXF diagnostics
 Diagnostics output is available via the diagnostics package (see
 :numref:`sub_outp_pkg_diagnostics`). Available output fields are
 summarized below.
-
 
 ::
 
@@ -574,10 +582,8 @@ summarized below.
      EXFempmr|  1 | SM | m/s            | net upward freshwater flux, > 0 increases salinity
      EXFpress|  1 | SM | N/m^2          | atmospheric pressure field
 
-
 References
 ++++++++++
-
 
 Experiments and tutorials that use exf
 ++++++++++++++++++++++++++++++++++++++

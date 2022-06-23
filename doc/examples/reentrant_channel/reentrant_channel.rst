@@ -46,10 +46,10 @@ necessary changes in code and parameters, and examine this high-resolution solut
 In our discussion, our focus will be on highlighting how the representation of mesoscale eddies
 plays a significant role in governing the equilibrium state.
 
-Below we describe the idealized configuration in detail (see :numref:`channel_simulation_config`).
-The sinusoidal wind-stress variations are defined thus:
+Below we describe the idealized configuration in detail (see :numref:`channel_simulation_config`). 
+The sinusoidal wind-stress variations are defined thus: 
 
-.. math::
+.. math:: 
    \tau_x(y) = \tau_{0}\sin \left( \frac{y}{2 L_y} \pi \right),
 
 where :math:`L_{y}` is the lateral domain extent and
@@ -59,7 +59,7 @@ to -2 :sup:`o`\ C at the southern end. A wall is placed at the southern boundary
 thus our setup is only reentrant in the east-west direction. Because MITgcm assumes a periodic
 domain in both the east-west and north-south directions, our southern wall effectively functions as a wall
 at the northern boundary as well.
-The full water column in the northern boundary is a "sponge layer";
+The full water column in the northern boundary is a "sponge layer"; 
 relaxing temperature though the full water column will partially constrain the stratification,
 and in the eddy-permitting solution will absorb any eddies reaching the northern boundary (truly acting as a "sponge").
 As shown in :numref:`channel_simulation_config`, a north-south ridge runs through the bottom topography,
@@ -82,7 +82,7 @@ we use a linear equation of state which is a function of temperature only
 (temperature is our only model tracer field). :numref:`channel_simulation_temp_ic` shows initial conditions in temperature at
 the northern and southern end of the domain. Initial temperature decreases exponentially from the relaxation SST profile
 to -2 :sup:`o`\ C at depth :math:`H`.
-Note that this same northern boundary profile is used to restore temperature in the model's sponge layer, as discussed above.
+Note that this same northern boundary profile is used to restore temperature in the model's sponge layer, as discussed above. 
 
  .. figure:: figs/temp_ic.png
       :width: 100%
@@ -105,21 +105,21 @@ here we use standard Cartesian geometry rather than spherical polar coordinates:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial x} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}u ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h u ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    &= \mathcal{F}_u
      \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho_c}\frac{\partial p'}{\partial y} +
-     \nabla_{h}\cdot ( -A_{h}\nabla_{h}v ) +
+      \nabla _h \cdot ( -A_{h}  \nabla _h v ) +
      \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    &= \mathcal{F}_v
+ 
+.. math::
+      \frac{\partial \eta}{\partial t} +  \nabla _h \cdot \left( H \vec{\widehat{\bf u}} \right) = 0 
 
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \left( H \vec{\widehat{u}} \right) = 0
-
-.. math::
-   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   \frac{D\theta}{Dt} +  \nabla _h \cdot (-\kappa_{h}  \nabla _h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: channel_model_theta
@@ -164,8 +164,8 @@ using its own time stepping scheme.
 The fixed flux form of the momentum equations are solved, as described in :numref:`flux-form_momentum_equations`,
 with an implicit linear free surface (:numref:`press_meth_linear`). Laplacian diffusion of tracers and momentum is employed.
 The pressure forces that drive
-the fluid motions, :math:`\frac{\partial p^{'}}{\partial x}`
-and :math:`\frac{\partial p^{'}}{\partial y}`, are found by
+the fluid motions, :math:`\partial_x p^\prime`
+and :math:`\partial_y p^\prime`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The sea-surface height is found by solving implicitly the 2-D (elliptic) surface pressure equation
@@ -181,7 +181,7 @@ Numerical Stability Criteria
 The numerical considerations behind our setup are not trivial.
 We do not wish the thermocline to be diffused away by numerics.
 Accordingly, we employ a vertical diffusivity acting on temperature typical of background values
-observed in the ocean, :math:`1 \times 10^{-5}` m\ :sup:`2` s\ :sup:`--1`).
+observed in the ocean, :math:`1 \times 10^{-5}` m\ :sup:`2` s\ :sup:`--1`). 
 We now examine numerical stability criteria to help choose and assess parameters for our coarse resolution study:
 parameters used in the eddy-permitting setup are discussed in :numref:`reentrant_channel_soln_eddy`.
 
@@ -190,14 +190,14 @@ implications for the length of the timestep we will be able to use. Let us consi
 CFL condition :eq:`eq_SOch_cfl_stability` and the stability of inertial oscillations :eq:`eq_SOCh_inertial_stability`:
 
 .. math::
-    S_{a} = 2 \left( \frac{ |c_{max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+    S_{\rm adv} = 2 \left( \frac{ |c_{\rm max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
     :label: eq_SOch_cfl_stability
 
 .. math::
-    S_{i} = f {\Delta t} < 0.5 \text{ for stability}
+    S_{\rm inert} = f {\Delta t} < 0.5 \text{ for stability}
     :label: eq_SOCh_inertial_stability
 
-where :math:`|c_{max}|` is the maximum horizontal velocity. We anticipate :math:`|c_{max}|` of order ~ 1 ms\ :sup:`-1`.
+where :math:`|c_{\rm max}|` is the maximum horizontal velocity. We anticipate :math:`|c_{\rm max}|` of order ~ 1 ms\ :sup:`-1`.
 Note that barotropic currents of this speed over a jet of order ~ 100 km in lateral scale will result in a
 barotropic flow of the order of hundreds of Sverdups. At a resolution of 50 km, :eq:`eq_SOch_cfl_stability` then
 implies that the timestep must be less than 12000 s and  :eq:`eq_SOCh_inertial_stability` implies a timestep less than 3500 s.
@@ -206,7 +206,7 @@ Here we make a conservative choice of :math:`\Delta t = 1000` s to keep  :math:`
 How shall we set the horizontal viscosity? From the numerical stability criteria:
 
 .. math::
-    S_{l} = 4 A_{h} \Delta t \left( \frac{1}{{\Delta x}^2} + \frac{1}{{\Delta y}^2} \right)  < 1.0 \text{ for stability}
+    S_{\ Lh} = 4 A_{h} \Delta t \left( \frac{1}{{\Delta x}^2} + \frac{1}{{\Delta y}^2} \right)  < 1.0 \text{ for stability}
     :label: eq_SOch__laplacian_stability
 
 Note that the threshold in :eq:`eq_SOch__laplacian_stability` is < 1.0 instead of < 0.6 due to our
@@ -218,14 +218,14 @@ With :math:`\Delta t = 1000` s, we can choose :math:`A_{h}` to be as large as or
 very viscous solution. We anticipate a boundary current along the deep ridge and sloping notch on a scale given by Munk scaling:
 
 .. math::
-    M_{w} = \frac{2\pi}{\sqrt{3}} ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}.
+    M = \frac{2\pi}{\sqrt{3}} \left( \frac { A_{h} }{ \beta } \right)^{\frac{1}{3}}.
     :label: eq_SOch__munk_layer
 
 We can set :math:`A_{h}` to as low as 100 m\ :sup:`2` s\ :sup:`--1` and still comfortably resolve the
 Munk boundary layer on our grid. However, guided by an ensemble of runs exploring parameter space,
 we found the solution with :math:`A_{h} = 100 ` m\ :sup:`2` s\ :sup:`--1`, while stable, was rather noisy.
 As a compromise, a value of :math:`A_{h} = 2000` m\ :sup:`2` s\ :sup:`--1` reduced solution noise
-whilst also controlling the strength of the barotropic current. This is the value used here.
+whilst also controlling the strength of the barotropic current. This is the value used here. 
 Also note with this choice :math:`A_{h} / \Delta x` gives a velocity
 scaling of 4 cm/s,  a reasonable value.
 
@@ -237,11 +237,11 @@ Otherwise, given that our vertical resolution is quite fine near the surface (ap
 the following stability criteria would have applied:
 
 .. math::
-   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 1.0 \text{ for stability}
+   S_{\rm Lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 1.0 \text{ for stability}
    :label: eq_SOch__laplacian_v_stability
 
 which effectively would limit our choice for :math:`A_{v}` to very small values.
-For simplicity, and given that away from the equator coarse resolution models are typically not
+For simplicity, and given that away from the equator coarse resolution models are typically not 
 very sensitive to the value of vertical viscosity, we pick a constant value of :math:`A_{v} = 3\times10^{-3}` m\ :sup:`2` s\ :sup:`--1`
 over the full domain, somewhere in between (in geometric mean sense) typical values
 found in the mixed layer (:math:`\sim 10^{-2}`) and in the deep ocean (:math:`\sim 10^{-4}`) (Roach et al. 2015 :cite:`roach:15`)
@@ -273,9 +273,9 @@ The experiment files
  - verification/tutorial_reentrant_channel/input/temperature.50km.bin
  - verification/tutorial_reentrant_channel/input/T_relax_mask.50km.bin
 
-contain the code customizations and parameter settings for this
+contain the code customizations and parameter settings for this 
 experiment. Below we describe these customizations in detail.
-
+ 
 Compile-time Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -286,7 +286,7 @@ File :filelink:`code/packages.conf <verification/tutorial_reentrant_channel/code
     :linenos:
     :caption: verification/tutorial_reentrant_channel/code/packages.conf
 
-In addition to the pre-defined standard package group ``gfd``, we define four additional packages.
+In addition to the pre-defined standard package group ``gfd``, we define four additional packages. 
 
 - Package :filelink:`pkg/gmredi` (see :ref:`sub_phys_pkg_gmredi`):
   This implements the Gent and McWilliams parameterization (as first described in Gent and McWilliams 1990 :cite:`gen-mcw:90`)
@@ -368,7 +368,7 @@ This file, reproduced in its entirety above, specifies the main parameters for t
 (shown with line numbers to left) are as follows.
 
 PARM01 - Continuous equation parameters
-#######################################
+####################################### 
 
 - These lines set the horizontal and vertical Laplacian viscosities.
   As in earlier tutorials, we use a spatially uniform value for viscosity in both the horizontal and vertical. We set viscosity to be solved implicitly,
@@ -383,8 +383,8 @@ PARM01 - Continuous equation parameters
   Gent-McWilliams parameterization (:filelink:`pkg/gmredi`) is activated, and we set the horizontal diffusivity to zero
   (which is the default value).
   Similar to tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`, we set a large vertical diffusivity (:varlink:`ivdc_kappa`)
-  for mixing unstable water columns, which requires implicit numerical treatment of vertical diffusion.
-
+  for mixing unstable water columns, which requires implicit numerical treatment of vertical diffusion. 
+  
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: diffKhT
        :end-at: implicitDiff
@@ -399,7 +399,7 @@ PARM01 - Continuous equation parameters
   conservation -- it turns out the solution is rather sensitive to this discretization (particularly
   adjacent to topography). We tested both the default and wet-points methods, and found the wet-points
   method closer to the eddy-permitting solution, where obviously the discretization of the Coriolis term is better resolved.
-
+  
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: f0
        :end-at: selectCoriScheme
@@ -409,7 +409,7 @@ PARM01 - Continuous equation parameters
   Boussinesq reference density :varlink:`rhoConst` as our value :varlink:`rhoNil`, for the linear equation of state.
   To keep things simple, as well as speed up model run-time, we limit ourselves to a single tracer, temperature,
   and tell the model not to step salinity forward in time or include salinity in the equation of state.
-  Also note we use a uniform reference temperature (:varlink:`tRef`) throughout the water column.
+  Also note we use a uniform reference temperature (:varlink:`tRef`) throughout the water column. 
   We will be specifying a file for initial conditions of temperature in our simulation, and so :varlink:`tRef` will
   not be used for this purpose (as it was in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
   Thus, :varlink:`tRef` is only employed here as a reference to compute density anomalies. In principle, one could
@@ -456,7 +456,7 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 PARM02 - Elliptic solver parameters
-###################################
+################################### 
 
 These parameters are unchanged from tutorials :ref:`Barotropic Ocean Gyre <sec_eg_baro>`
 and :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
@@ -501,8 +501,8 @@ PARM03 - Time stepping parameters
 - This instructs the model to NOT apply Adams-Bashforth scheme to the viscosity tendency and other dissipation terms
   (such as side grad and bottom drag) in the momentum equations (the default is to use Adams-Bashforth for all terms);
   instead, dissipation is computed using a explicit, forward, first-order scheme.
-  For our coarse resolution setup with uniform harmonic viscosity, this setting is not strictly necessary
-  (and does not noticeably change results). However, for our eddy-permitting run we will use a difference
+  For our coarse resolution setup with uniform harmonic viscosity, this setting is not strictly necessary 
+  (and does not noticeably change results). However, for our eddy-permitting run we will use a difference 
   scheme for setting viscosity, and for stability requires this setting.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
@@ -511,7 +511,7 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 PARM04 - Gridding parameters
-############################
+############################ 
 
 - We specify a Cartesian coordinate system with 20 gridpoints in :math:`x` and 40 gridpoints in :math:`y`,
   with (default) origin (0,0).
@@ -521,7 +521,7 @@ PARM04 - Gridding parameters
        :end-at: delY
        :lineno-match:
 
-- We set the vertical grid spacing for 49 vertical levels, ranging from thickness of approximately 5.5 m at the
+- We set the vertical grid spacing for 49 vertical levels, ranging from thickness of approximately 5.5 m at the 
   surface to 149 m at depth. When varying cell thickness in this manner, one must be careful that vertical grid
   spacing varies smoothly with depth; see :numref:`sec_SOch_num_config` for details on how this specific grid spacing was generated.
 
@@ -529,7 +529,7 @@ PARM04 - Gridding parameters
        :start-at: delR
        :end-at: 149.35
        :lineno-match:
-
+ 
 PARM05 - Input datasets
 #######################
 
@@ -540,8 +540,8 @@ PARM05 - Input datasets
        :start-at: bathyFile
        :end-at: thetaClim
        :lineno-match:
-
-- This last line specifies the name of the 3-D file containing initial conditions for temperature (as noted above,
+ 
+- This last line specifies the name of the 3-D file containing initial conditions for temperature (as noted above, 
   :varlink:`tRef` values specified in namelist ``PARM01`` are NOT used for the initial state).
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
@@ -760,7 +760,8 @@ File ``input/bathy.50km.bin``
 
 This is a 2-D(:math:`x,y`) map of bottom bathymetry,
 as generated by the `MATLAB <https://www.mathworks.com/>`_ program :filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.m`
-(input files are 32-bit single precision, by default). Our bathymetry file has active ocean grid cells
+or the `Python <https://www.python.org/>`_ script :filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.py`.
+Input files are 32-bit single precision, by default. Our bathymetry file has active ocean grid cells
 along both the eastern and western boundaries (i.e., no land points or walls are present along either boundary),
 and thus our model will be fully zonally reentrant.
 While our northern boundary also consists entirely of active ocean points, we prescribe a wall
@@ -791,7 +792,8 @@ File ``input/zonal_wind.50km.bin``, ``input/SST_relax.50km.bin``
 
 These files are 2-D(:math:`x,y`)
 maps of zonal wind stress :math:`\tau_{x}` (Nm\ :sup:`--2`) and surface relaxation temperature (:sup:`o`\ C),
-as generated by program :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m`.
+as generated by program :filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.m` or
+:filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.py`.
 Note that a 2-D(:math:`x,y`) file is expected even though  as specified, both :math:`\tau_{x}` and SST field are only :math:`f(y)`.
 
 .. _reentrant_channel_ rbcsfiles:
@@ -800,7 +802,9 @@ File ``input/temperature.50km.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file specifies a 3-D(:math:`x,y,z`) map of temperature (:sup:`o`\ C),
-as generated by :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m` (see :numref:`channel_simulation_temp_ic`).
+as generated by :filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.m` or
+:filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.py`
+(see :numref:`channel_simulation_temp_ic`).
 Note again a 3-D(:math:`x,y,z`) file is expected despite temperature begin only :math:`f(y,z)`.
 This file is used here for two purposes: first, as specified in
 :filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`, these values are used for temperature initial conditions;
@@ -815,9 +819,11 @@ File ``input/T_relax_mask.50km.bin``
 This file specifies a 3-D(:math:`x,y,z`) mask, as required by :filelink:`/pkg/rbcs` to inform the model which gridpoints to relax.
 These values should be between 0.0 and 1.0, with 0.0 for no restoring, 1.0 for full restoring, with fractional values as a multiplicative factor
 to effectively weaken restoring at that location (see :numref:`sub_phys_pkg_rbcs`). Here, we select a value of 1.0 along the model northern wall
-for all sub-surface depths (relaxation at the surface is specified using ``input/SST_relax.50km.bin``, otherwise you would be restoring the surface layer twice),
+for all sub-surface depths (relaxation at the surface is specified using ``input/SST_relax.50km.bin``,
+otherwise you would be restoring the surface layer twice),
 and use a fractional value for the :math:`xz` plane of grid cells just south of the northern border (see
-:filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m`).
+:filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.m` or
+:filelink:`verification/tutorial_reentrant_channel/input/gendata.50km.py`).
 
 .. _reentrant_channel_build_run:
 
@@ -836,7 +842,7 @@ it should take 12 hours or so to run 30 years; to speed this up using
 (see :numref:`running_mpi` for instructions how to run using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_,
 here you will be using 4 cores).
 As an exercise, see if you can speed it up further using additional processor cores, e.g.,
-by decreasing the tile size in :math:`x` and increasing :varlink:`nPx`.
+by decreasing the tile size in :math:`x` and increasing :varlink:`nPx`. 
 
 As configured, the model runs with :filelink:`pkg/gmredi` activated, i.e., :varlink:`useGMRedi`\ ``=.TRUE.``
 in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>`. In :numref:`reentrant_channel_solution`
@@ -854,8 +860,16 @@ are discussed.
 Model Solution
 --------------
 
-See :filelink:`verification/tutorial_reentrant_channel/analysis/matlab_plots.m` for `MATLAB <https://www.mathworks.com/>`_
-analysis code to compute and plot :numref:`channel_zm_temp_ml` through :numref:`channel_MOC_eddy_layers`.
+Our primary focus in this section is physical interpretation of the model solution,
+not how to generate plots from MITgcm output, and thus in parallel we strongly recommend carefully
+going through our `Python <https://www.python.org/>`_ analysis code, documented in
+`Jupyter Notebook <https://jupyter.org/>`_ format, see
+:filelink:`verification/tutorial_reentrant_channel/analysis/py_notebook.ipynb`.
+This notebook reads in grid data, discusses (and plots) the setup and forcing data
+files in additional detail, and generates figures shown in the tutorial. 
+`MATLAB <https://www.mathworks.com/>`_ analysis code 
+to generate tutorial output figures is available at
+:filelink:`verification/tutorial_reentrant_channel/analysis/matlab_plots.m`.
 
 .. _reentrant_channel_solution:
 
@@ -873,17 +887,18 @@ In this tutorial we use standard :ref:`native Fortan (binary) output <pkg_mdsio>
 rather than `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_  output (as done in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
 Important note: when using :filelink:`pkg/mdsio`, the statistical diagnostics output is written in plain text,
 NOT binary format. An advantage is that this permits a simple unix ``cat`` or ``more`` command to display the file to the terminal window
-as integration proceeds, i.e., for a quick check that results look reasonable. The disadvantage however is that some additional parsing
-is required to generate some plots using these data. Making use of MITgcm shell script :filelink:`utils/scripts/extract_StD`,
+as integration proceeds, i.e., for a quick check that results look reasonable. The disadvantage however
+is that some additional parsing is required (when using `MATLAB <https://www.mathworks.com/>`_) 
+to generate some plots using these data. Making use of MITgcm shell script :filelink:`utils/scripts/extract_StD`,
 in a terminal window (in the run directory) type
 
 ::
-
+  
    % ../../../utils/scripts/extract_StD dynStDiag.0000000000.txt STATDIAGS  dat
 
 where ``dynStDiag.0000000000.txt`` is the name of our statistical diagnostics output file, ``STATDIAGS``
 is a name we chose for files generated by running the script, with extension ``dat``.
-This shell script extracts data into the following (plain text) files:
+This shell script extracts data into the following (plain text) files: 
 
  - STATDIAGS_head.dat  - header file containing metadata
  - STATDIAGS_Iter.dat - list of iteration numbers for which statdiags dumped
@@ -907,11 +922,24 @@ where
   -  nIter     = number of iterations (i.e., time records) dumped
   -  regList   = list of region numbers (=0 here, as we did not define any regions, by default global output only)
   -  time(:,1) = iteration numbers ; time(:,2) = time in simulation (seconds)
-  -  listFlds  = list of fields dumped
+  -  listFlds  = list of fields dumped 
   -  listK     = for each field, lists number of k levels dumped
-  -  stdiagout = 5 dimensional output array
+  -  stdiagout = 5 dimensional output array 
      ( kLev, time_rec, region_rec, [ave,std,min,max,vol], fld_rec )
      where kLev=1 is depth-average, kLev=2:50 is for depths :varlink:`rC`\ (1:49)
+
+A function to parse statistical diagnostics MITgcm output is also available in the python package :ref:`MITgcmutils`.
+Executing the python command
+
+:: 
+
+   stdiags_bylev,stdiags_2D,iters = readstats('dynStDiag.0000000000.txt')
+
+will load up the level-by-level statistical diagnostics into ``stdiags_bylev`` (e.g., ``stdiags_bylev['THETA'][:,0,0]``
+is the time series for top level average temperature),
+``stdiags_2D`` given column-integrated or 2-D fields (e.g., ``stdiags_2D['TRELAX'][:,0]`` is the time series for surface heat flux),
+and ``iters`` is iteration number for the time series (e.g. ``iters['TRELAX']`` is a series of iteration numbers for the ``THETA`` diagnostic,
+the user is left to convert into time units). See the  :ref:`MITgcmutils` documention for more information.
 
 On the left side of :numref:`channel_soln_stdiags` we show time series of global surface heat flux.
 In the first decade there is rapid adjustment, with a much slower trend in both mean and standard deviation
@@ -937,7 +965,7 @@ temperature structure of the model solution is sensitive to our mesoscale eddy p
       :alt: HF and temperature Stat Diags
       :name: channel_soln_stdiags
 
-      Left: time series of area-integrated heat flux into the surface ocean (blue) and its standard deviation (magenta).
+      Left: time series of area-integrated heat flux into the surface ocean (blue) and its standard deviation (magenta). 
       Right: area-mean temperature at the surface (top, cyan), in the thermocline (middle, green), and at depth (bottom, red).
       In all panels, solid curves show non-GM run, dashed curves include GM.
 
@@ -1028,7 +1056,7 @@ was first reported in Danabasoglu et al. (1994) :cite:`danabasoglu:94`.
 
 Now let's use :filelink:`pkg/layers` output to examine the residual meridional overturning circulation, shown in :numref:`channel_bt_MOC_res_T`.
 We integrate the time- and zonal-mean transport in
-isopycnal layers (see :numref:`layers_trans_schematic`) to obtain a streamfunction in density coordinates.
+isopycnal layers (see :numref:`layers_trans_schematic`) to obtain a streamfunction in density coordinates. 
 See Abernathy et al. (2011) :cite:`abernathy:11` for a more detailed explanation of this calculation;
 this approach is the tried-and-true method to diagnose the residual circulation in an eddy-permitting regime,
 as required when we run this setup at higher resolution (:numref:`reentrant_channel_soln_eddy`).
@@ -1055,7 +1083,7 @@ which requires changing :filelink:`LAYERS_SIZE.h <verification/tutorial_reentran
       :name: channel_bt_MOC_res_T
 
       Residual meridional overturning circulation (shaded) as computed in density (i.e., temperature) coordinates, averaged over simulation year 30. Contour interval is 0.5 Sv.
-      Green dashed curves show maximum and minimum SST in each latitude band. Left plot is from non-GM run, right using GM.
+      Green dashed curves show maximum and minimum SST in each latitude band. Left plot is from non-GM run, right using GM. 
 
 Finally, let's convert the residual circulatiom shown in :numref:`channel_bt_MOC_res_T` back into depth coordinates, see :numref:`channel_bt_MOC_res_Ttoz`.
 Solid lines now display contours of zonal mean temperature. On the left, consistent with previous analyses, we see a small, upper ocean counter-clockwise
@@ -1096,7 +1124,7 @@ it will require parallelizing (using `MPI <https://en.wikipedia.org/wiki/Message
 on at least a hundred processor cores or else a 30-year integration will take on the order of a month or longer
 -- in other words, this requires a large cluster or high-performance computing (HPC) facility to run efficiently.
 
-Running with higher resolution requires re-compiling the code after changing the tile size and number of processors, see
+Running with higher resolution requires re-compiling the code after changing the tile size and number of processors, see 
 :filelink:`code/SIZE.h_eddy <verification/tutorial_reentrant_channel/code/SIZE.h_eddy>` (as configured here, for 100 processors;
 for faster results change the tile size and use 200 or even 400 processors).
 Note we will NOT enable :filelink:`pkg/gmredi` in our eddy run, so it can be eliminated from the list in
@@ -1116,6 +1144,7 @@ to specify 5 km resolution in 200 :math:`\times` 400 grid cells in :math:`x` and
 New files for bathymetry, forcing fields, and initial temperature
 can be generated using the `MATLAB <https://www.mathworks.com/>`_ program
 :filelink:`verification/tutorial_reentrant_channel/input/gendata_5km.m`
+or `Python <https://www.python.org/>`_ script :filelink:`verification/tutorial_reentrant_channel/input/gendata.5km.py`
 (don't forget to change the filenames in :filelink:`data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
 and ``PARM05`` in :filelink:`data <verification/tutorial_reentrant_channel/input/data>`).
 
@@ -1123,9 +1152,9 @@ Running at higher resolution requires a smaller time step for stability. Revisit
 (CFL condition, :eq:`eq_SOch_cfl_stability`) one could simply decrease the time step by the same factor of 10 decrease as :math:`\Delta x` -- stability
 of inertial oscillations is no longer a limiting factor, given a smaller :math:`\Delta t` in :eq:`eq_SOCh_inertial_stability` --
 but to speed things up we'd like to keep :math:`\Delta t` as large as possible. With a rich eddying solution, however, is it clear that horizontal velocity
-will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
+will remain order ~1 ms\ :sup:`--1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
 :filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. For this choice, a 30-year integration
-requires setting :varlink:`nTimeSteps`\ ``=3732480``.
+requires setting :varlink:`nTimeSteps`\ ``=3732480``. 
 
 While it would be possible to decrease (spatially uniform) harmonic viscosity to
 a more appropriate value for this resolution, or perhaps use bi-harmonic viscosity
@@ -1187,9 +1216,9 @@ showing a time mean over the last five years of the simulation.
       :name: channel_MOC_eddy_layers
 
       Left: Residual meridional overturning circulation (shaded) as computed in density (i.e., temperature) coordinates,
-      from eddying simulation averaged over years 26-30. Contour interval is 0.5 Sv. Green dashed curve shows maximum and minimum (instantaneous) SST in each latitude band.
+      from eddying simulation averaged over years 26-30. Contour interval is 0.5 Sv. Green dashed curve shows maximum and minimum (instantaneous) SST in each latitude band. 
       Right: Residual meridional overturning circulation (shaded) as computed in density coordinates and converted back into depth coordinates, from eddying simulation averaged over years 26-30.
-      Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C.
+      Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. 
 
 In general, our coarse resolution solutions are not a bad likeness of the (time mean)
 eddying solution, particularly when we use :filelink:`pkg/gmredi`
@@ -1230,15 +1259,15 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
   In the coarse runs, however, the sponge layer is effectively cooling, particularly in the non-GM run.
   Although at present there is no diagnostic available in :filelink:`pkg/rbcs` which directly tabulates these fluxes,
   computing them is quite simple: the heat flux (in watts) into a grid cell in the sponge layer is computed as
-  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T} * M_{rbc}`
-  where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`-1`\ K\ :sup:`-1` by default), :math:`{\cal V}_\theta` is the grid cell volume
+  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{\rm rbc} (i,j,k)}{\tau_T} * M_{\rm rbc}`
+  where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`--1` K\ :sup:`--1` by default), :math:`{\cal V}_\theta` is the grid cell volume
   (:varlink:`rA`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k);
   see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
   :math:`\theta (i,j,k)` is gridpoint potential temperature (:sup:`o`\ C),
-  :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
+  :math:`\theta (i,j,k)_{\rm rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
   as prescribed in file ``input/temperature.5km.bin`` or ``input/temperature.50km.bin``),
   :math:`\tau_T` is the restoring timescale :varlink:`tauRelaxT` (as set in :ref:`data.rbcs <tut_so_channel_rbcs>` to 864,000 seconds or 10 days),
-  and :math:`M_{rbc}` is a 3-D restoring mask (values between 0.0 and 1.0 as discussed
+  and :math:`M_{\rm rbc}` is a 3-D restoring mask (values between 0.0 and 1.0 as discussed
   :ref:`above <reentrant_channel_ rbcsmaskfile>`) as specified in file ``T_relax_mask.5km.bin`` or ``T_relax_mask.50km.bin``.
 
 .. [#] Note it is not stricly necessary to remove :filelink:`pkg/gmredi` from your high-resolution build -- however, if kept in the list of packages included in

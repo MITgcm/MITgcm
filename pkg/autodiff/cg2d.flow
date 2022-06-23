@@ -1,23 +1,34 @@
 C----------------------------------------
 C subroutine  cg2d
 C----------------------------------------
-CADJ SUBROUTINE cg2d    ADNAME  = cg2d_sad
+CADJ SUBROUTINE cg2d    ADNAME  = cg2d_mad
 CADJ SUBROUTINE cg2d    FTLNAME = cg2d
 CADJ SUBROUTINE cg2d    INPUT   = 1,2,      6,7,8
 CADJ SUBROUTINE cg2d    OUTPUT  =   2,3,4,5,6,7
 CADJ SUBROUTINE cg2d    ACTIVE  = 1,2
 CADJ SUBROUTINE cg2d    DEPEND  =           6,7,8
-CADJ SUBROUTINE cg2d    COMMON CG2D_I_R  INPUT = 1,2,3,4,5,6,7,8
-CADJ SUBROUTINE cg2d    COMMON CG2D_I_R DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE cg2d    COMMON CG2D_I_RS  INPUT = 1,2,3,4,5,6
+CADJ SUBROUTINE cg2d    COMMON CG2D_I_RS DEPEND = 1,2,3,4,5,6
 
 C----------------------------------------
 C subroutine  cg2d_sr
 C----------------------------------------
-CADJ SUBROUTINE cg2d_sr ADNAME  = cg2d_sad
+CADJ SUBROUTINE cg2d_sr ADNAME  = cg2d_mad
 CADJ SUBROUTINE cg2d_sr FTLNAME = cg2d_sr
 CADJ SUBROUTINE cg2d_sr INPUT   = 1,2,      6,7,8
 CADJ SUBROUTINE cg2d_sr OUTPUT  =   2,3,4,5,6,7
 CADJ SUBROUTINE cg2d_sr ACTIVE  = 1,2
 CADJ SUBROUTINE cg2d_sr DEPEND  =           6,7,8
-CADJ SUBROUTINE cg2d_sr COMMON CG2D_I_R  INPUT = 1,2,3,4,5,6,7,8
-CADJ SUBROUTINE cg2d_sr COMMON CG2D_I_R DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE cg2d_sr COMMON CG2D_I_RS  INPUT = 1,2,3,4,5,6
+CADJ SUBROUTINE cg2d_sr COMMON CG2D_I_RS DEPEND = 1,2,3,4,5,6
+
+C----------------------------------------
+C subroutine  cg2d_store
+C----------------------------------------
+CADJ SUBROUTINE cg2d_store INPUT   = 1,2,3
+CADJ SUBROUTINE cg2d_store OUTPUT  = 1
+CADJ SUBROUTINE cg2d_store ACTIVE  =
+CADJ SUBROUTINE cg2d_store DEPEND  =   2,3
+
+CADJ COMMON cg2d_i_rs  ADNAME = adcg2d_i_rs
+CADJ COMMON cg2d_i_rs FTLNAME = g_cg2d_i_rs

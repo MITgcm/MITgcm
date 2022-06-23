@@ -121,6 +121,8 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_calve_to_mask`        |    FALSE                     | if :varlink:`streamice_move_front` TRUE do not allow to advance beyond :varlink:`streamice_calve_mask`             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_use_log_ctrl`         |    FALSE                     | specify :math:`C` and :math:`B` via their logarithm rather than square root                                        | 
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamicecalveMaskFile`         |    :kbd:`' '`                | file to initialize :varlink:`streamice_calve_mask`                                                                 |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_diagnostic_only`      |    FALSE                     | do not update ice thickness (velocity solve only)                                                                  |
@@ -149,9 +151,9 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamiceHmaskFile`             |   :kbd:`' '`                 | :varlink:`streamice_hmask` initialization file; requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`              |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`streamiceuFaceBdryFile`         |     :kbd:`' '`               | streamice`STREAMICE_ufacemask_bdry` initialization file; requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`     |
+   | :varlink:`streamiceuFaceBdryFile`         |     :kbd:`' '`               | :varlink:`streamice_ufacemask_bdry` initialization file; requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`streamicevFaceBdryFile`         |     :kbd:`' '`               | streamice`STREAMICE_vfacemask_bdry`` initialization file; requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`    |
+   | :varlink:`streamicevFaceBdryFile`         |     :kbd:`' '`               | :varlink:`streamice_vfacemask_bdry` initialization file; requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamiceuMassFluxFile`         |     :kbd:`' '`               | mass flux at :math:`u`-faces init. file (m\ :sup:`2`\ /yr); requires #define :varlink:`STREAMICE_GEOM_FILE_SETUP`  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -186,6 +188,14 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    | :varlink:`streamice_smooth_gl_width`      |   0                          | thickness range parameter in basal traction smoothing across grounding line  (m)                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_allow_reg_coulomb`    |   FALSE                      | use regularized Coulomb sliding :eq:`coul_eqn`. Requires :varlink:`STREAMICE_COULOMB_SLIDING` CPP option.          |
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_vel_ext`              |   FALSE                      | over-ride velocity calculation with binary file                                                                    |
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_vel_ext`              |   FALSE                      | over-ride velocity calculation with binary file, with velocities applied directly to C-grid.                       |
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_uvel_ext_file`        |   FALSE                      | file to initialise `x`-velocity component (m/a)                                                                    |
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`STREAMICE_vvel_ext_file`        |   FALSE                      | file to initialise `y`-velocity component (m/a)                                                                    | 
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
  
 .. _ssub_phys_pkg_streamice_domain_setup:
@@ -365,7 +375,7 @@ From the velocity field, thickness evolves according to the continuity
 equation:
 
 .. math::
-   h_t + \nabla\cdot(h\vec{u}) = \dot{a}-\dot{b}
+   h_t +  \nabla  \cdot(h\vec{u}) = \dot{a}-\dot{b}
    :label: adv_eqn
 
 Where :math:`\dot{b}` is a basal mass balance (e.g., melting due to
@@ -408,7 +418,7 @@ Thus
    \nu =
    \frac{1}{2}A^{-\frac{1}{n}}\left(\dot{\varepsilon}_{xx}^2+\dot{\varepsilon}_{yy}
    ^2+\dot{\varepsilon}_{xx}\dot{\varepsilon}_{yy}+\dot{\varepsilon}_{xy}^2+\dot{
-   \varepsilon}_{min}^2\right)^{\frac{1-n}{2n}}
+   \varepsilon}_{\min}^2\right)^{\frac{1-n}{2n}}
    :label: visc_eqn
 
 though the form is slightly different if a hybrid formulation is used. 
@@ -421,7 +431,7 @@ rethought if the effects of tides are to be considered.
 :math:`\vec{\tau}_b` has the form
 
 .. math::
-   \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}.
+   \vec{\tau}_b = C (|\vec{u}|^2+u_{\min}^2)^{\frac{m-1}{2}}\vec{u}.
    :label: tau_eqn
  
 Again, the form is slightly different if a hybrid formulation is to be
@@ -445,7 +455,7 @@ where :math:`u` is shorthand for the regularized norm in :eq:`tau_eqn` (or for :
 with :math:`h_f` the floatation thickness 
 
 .. math::
-   h_f = max\left(0,-\frac{\rho_w}{\rho}R\right),
+   h_f = \max\left(0,-\frac{\rho_w}{\rho}R\right),
 
 where :math:`R` is bed elevation. This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:16`.
 :eq:`eff_press` assumes complete hydraulic connectivity to the ocean throughout 
@@ -498,7 +508,7 @@ becomes
    \nu =
    \frac{1}{2}A^{-\frac{1}{n}}\left(\dot{\varepsilon}_{xx}^2+\dot{\varepsilon}_{yy}
    ^2+\dot{\varepsilon}_{xx}\dot{\varepsilon}_{yy}+\dot{\varepsilon}_{xy}^2+\frac{1
-   }{4}u_z^2+\frac{1}{4}v_z^2+\dot{\varepsilon}_{min}^2\right)^{\frac{1-n}{2n}}
+   }{4}u_z^2+\frac{1}{4}v_z^2+\dot{\varepsilon}_{\min}^2\right)^{\frac{1-n}{2n}}
 
 In the formulation for :math:`\tau_b`, :math:`u_b`, the horizontal
 velocity at :math:`u_b` is used instead. The details are given in Goldberg (2011)
@@ -514,7 +524,7 @@ for this flux and potential advance of the ice shelf front. If :varlink:`streami
 
 The algorithm is based on Albrecht et al. (2011) :cite:`Albrecht:2011`. In this scheme,
 for empty or partial cells adjacent to a calving front, a **reference** thickness
-:math:`h_{ref}` is found, defined as an average over the thickness
+:math:`h_{\rm ref}` is found, defined as an average over the thickness
 of all neighboring cells that flow into the cell. The total volume input over a time step
 is added to the volume of ice already in the cell, whose partial area coverage is then updated
 based on the volume and reference thickness. If the area coverage reaches 100% in a time step,
@@ -599,7 +609,7 @@ arrays within :filelink:`pkg/streamice`. They are
 :math:`hmask` is defined at cell centers, like :math:`h`. :math:`umask`
 and :math:`vmask` are defined at cell nodes, like velocities.
 :math:`ufacemaskbdry` and :math:`vfacemaskbdry` are defined at cell
-faces, like velocities in a :math:`C`-grid - but unless one sets 
+faces, like velocities in a C-grid - but unless one sets 
 ``#define`` :varlink:`STREAMICE_GEOM_FILE_SETUP`  in
 :filelink:`STREAMICE_OPTIONS.h <pkg/streamice/STREAMICE_OPTIONS.h>`,
 the values are only relevant at the boundaries of the grid.

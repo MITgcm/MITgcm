@@ -273,7 +273,11 @@ CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     surface level
-      kSrf = 1
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
@@ -1501,13 +1505,11 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER i,j
-      INTEGER kSrf
       _RL hFacM
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-      kSrf = 1
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         sig11(i,j) = 0. _d 0
@@ -1632,13 +1634,11 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER i,j
-      INTEGER kSrf
       _RL hFacM
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-      kSrf = 1
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         sig22(i,j) = 0. _d 0

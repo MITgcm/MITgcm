@@ -50,11 +50,7 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-
       integer ivar
-      integer startrec
-      integer endrec
-      integer diffrec
 
       _RL dummy
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -74,12 +70,16 @@ c     == local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       CHARACTER*(MAX_LEN_FNAM) fnamegen
       INTEGER ilgen, k2, diffrecFull, endrecFull
+      INTEGER diffrec, startrec, endrec
+#elif ( defined ALLOW_OBCS_CONTROL || defined ECCO_CTRL_DEPRECATED )
+      INTEGER diffrec, startrec, endrec
 #endif
 
 c     == external ==
-
+#ifdef ALLOW_GENTIM2D_CONTROL
       integer  ilnblnk
       external ilnblnk
+#endif
 
 c     == end of interface ==
 
@@ -746,7 +746,6 @@ CML     I     myThid )
      &     snx, sny, 1, 'c', 'xy', myThid )
 #endif /* ALLOW_sihsnow_CONTROL */
 
-
 c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_KAPREDI_CONTROL
@@ -754,21 +753,6 @@ c--
      &     xx_kapredi_file, 44, 144, 1, 1, 1,
      &     snx, sny, nr, 'c', '3d', myThid )
 #endif /* ALLOW_KAPREDI_CONTROL */
-
-c----------------------------------------------------------------------
-c----------------------------------------------------------------------
-
-#ifdef ALLOW_SHIFWFLX_CONTROL
-c--   freshwater flux underneath ice-shelves
-      call ctrl_init_rec ( xx_shifwflx_file,
-     I     xx_shifwflxstartdate1, xx_shifwflxstartdate2,
-     I     xx_shifwflxperiod, 1,
-     O     xx_shifwflxstartdate, diffrec, startrec, endrec,
-     I     myThid )
-      call ctrl_init_ctrlvar (
-     &     xx_shifwflx_file, 45, 145, diffrec, startrec, endrec,
-     &     snx, sny, 1, 'i', 'xy', myThid )
-#endif /* ALLOW_SHIFWFLX_CONTROL */
 
 c----------------------------------------------------------------------
 c--

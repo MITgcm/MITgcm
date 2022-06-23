@@ -3,7 +3,12 @@ c     store directives for checkpoint level 2
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-#ifdef AUTODIFF_USE_OLDSTORE_2D
+#ifdef AUTODIFF_USE_STORE_RESTORE
+c
+CADJ STORE StoreDynVars2D = tapelev2, key = ilev_2
+CADJ STORE StoreDynVars3D = tapelev2, key = ilev_2
+c
+#else
 c
 CADJ STORE etan  = tapelev2, key = ilev_2
 #ifndef EXCLUDE_FFIELDS_LOAD
@@ -40,14 +45,6 @@ CADJ STORE dEtaHdt = tapelev2, key = ilev_2
 CADJ STORE PmEpR = tapelev2, key = ilev_2
 #endif
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_2D */
-c
-CADJ STORE StoreDynVars2D     = tapelev2, key = ilev_2
-c
-#endif /* AUTODIFF_USE_OLDSTORE_2D */
-c
-#ifdef AUTODIFF_USE_OLDSTORE_3D
-c
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm = tapelev2, key = ilev_2
 CADJ STORE gsnm = tapelev2, key = ilev_2
@@ -66,11 +63,7 @@ CADJ STORE vvel  = tapelev2, key = ilev_2
 CADJ STORE wvel  = tapelev2, key = ilev_2
 CADJ STORE totphihyd  = tapelev2, key = ilev_2
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_3D */
-c
-CADJ STORE StoreDynVars3D     = tapelev2, key = ilev_2
-c
-#endif /* AUTODIFF_USE_OLDSTORE_3D */
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 
 CADJ STORE phi0surf     = tapelev2, key = ilev_2
 CADJ STORE saltflux     = tapelev2, key = ilev_2
@@ -98,10 +91,13 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev2, key = ilev_2
 # endif
 
+#endif /* NONLIN_FRSURF */
+
+#if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 CADJ STORE aW2d, aS2d, aC2d = tapelev2, key = ilev_2
 CADJ STORE pc, ps, pw       = tapelev2, key = ilev_2
-
-#endif /* NONLIN_FRSURF */
+#endif
 
 #ifdef ALLOW_CD_CODE
 # include "cd_code_ad_check_lev2_dir.h"
@@ -136,6 +132,7 @@ CADJ STORE pc, ps, pw       = tapelev2, key = ilev_2
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow  = tapelev2, key = ilev_2
 # include "seaice_ad_check_lev2_dir.h"
 #endif /* ALLOW_SEAICE */
 

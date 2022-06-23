@@ -71,10 +71,10 @@ Temperature is restored in the surface layer to a linear profile:
 
 .. math::
    {\cal F}_\theta = - \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW}
-   \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o)
+   \theta^* = \frac{\theta_{\rm max} - \theta_{\rm min}}{L_\varphi} (\varphi - \varphi_o)
    :label: baroc_restore_theta
 
-where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{max}=30^{\circ}` C, :math:`\theta_{min}=0^{\circ}` C.
+where the relaxation timescale :math:`\tau_{\theta} = 30` days and :math:`\theta_{\rm max}=30^{\circ}` C, :math:`\theta_{\rm min}=0^{\circ}` C.
 
 .. _baroc_eq_solved:
 
@@ -98,14 +98,14 @@ coordinates as follows:
 .. math::
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} +
    \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} +
-   \nabla_{h} \cdot (-A_{h}\nabla_{h} u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
+    \nabla _h \cdot (-A_{h}  \nabla _h u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    =  \mathcal{F}_u
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
    \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} +
-   \nabla_{h} \cdot (-A_{h}\nabla_{h} v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
+    \nabla _h \cdot (-A_{h}  \nabla _h v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
    = \mathcal{F}_v
    :label: baroc_gyre_vmom
 
@@ -115,7 +115,7 @@ coordinates as follows:
    :label: baroc_gyre_cont
 
 .. math::
-   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   \frac{D\theta}{Dt} +  \nabla _h \cdot (-\kappa_{h}  \nabla _h \theta)
    + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
    = \mathcal{F}_\theta
    :label: barooc_gyre_theta
@@ -144,7 +144,7 @@ The forcing terms :math:`\mathcal{F}_u`, :math:`\mathcal{F}_v`, and :math:`\math
 applied as source terms in the model surface layer and are zero in the interior.
 The windstress forcing, :math:`{\mathcal F}_u` and :math:`{\mathcal F}_v`, is
 applied in the zonal and meridional momentum
-equations, respectively; in this configuration, :math:`\mathcal{F}_u = \frac{\tau_x}{\rho_c\Delta z_s}`
+equations, respectively; in this configuration, :math:`\mathcal{F}_u = \tau_x / (\rho_c\Delta z_s)`
 (where :math:`\Delta z_s` is the depth of the surface model gridcell), and
 :math:`\mathcal{F}_v = 0`. Similarly, :math:`\mathcal{F}_\theta` is applied in the temperature equation,
 as given by :eq:`baroc_restore_theta`.
@@ -157,8 +157,7 @@ MITgcm parameter :varlink:`gBaro` whereas in the seond term :math:`g` is paramet
 allowing for different gravity constants here is useful, for example, if one wanted to slow down external gravity waves.
 
 In the momentum equations, lateral and vertical boundary conditions for
-the :math:`\nabla_{h}^{2}` and
-:math:`\frac{\partial^{2}}{\partial z^{2}}` operators are specified in the
+the :math:`\nabla_{h}^{2}` and :math:`\partial_z^2` operators are specified in the
 runtime configuration - see :numref:`sec_eg_baroclinic_code_config`.
 For temperature, the boundary condition along the bottom and sidewalls is zero-flux.
 
@@ -193,8 +192,8 @@ temperature equation.
 Prognostic terms in the momentum equations are
 solved using flux form as described in :numref:`flux-form_momentum_equations`.
 The pressure forces that drive
-the fluid motions, :math:`\frac{\partial p^{'}}{\partial \lambda}`
-and :math:`\frac{\partial p^{'}}{\partial \varphi}`, are found by
+the fluid motions, :math:`\partial_{\lambda} p^\prime`
+and :math:`\partial_{\varphi} p^\prime`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The hydrostatic part of the pressure is
@@ -214,25 +213,25 @@ in the grid :math:`\Delta x` spacing.
 In order to choose an appropriate time step, note that our smallest gridcells (i.e., in the far north)
 have :math:`\Delta x \approx 29` km, which
 is similar to our grid spacing in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`. Thus, using the advective
-CFL condition, first assuming our solution will achieve maximum horizontal advection :math:`|c_{max}|` ~ 1 ms\ :sup:`-1`)
+CFL condition, first assuming our solution will achieve maximum horizontal advection :math:`|c_{\rm max}|` ~ 1 ms\ :sup:`-1`)
 
 .. math::
-   S_{a} = 2 \left( \frac{ |c_{max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+   S_{\rm adv} = 2 \left( \frac{ |c_{\rm max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
    :label: eq_baroc_cfl_stability
 
 we choose the same time step as in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
-:math:`\Delta t` = 1200 s (= 20 minutes), resulting in :math:`S_{a} = 0.08`.
+:math:`\Delta t` = 1200 s (= 20 minutes), resulting in :math:`S_{\rm adv} = 0.08`.
 Also note this time step is stable for propagation of internal gravity waves:
 approximating the propagation speed as :math:`\sqrt{g' h}` where :math:`g'` is reduced gravity (our maximum
 :math:`\Delta \rho` using our linear equation of state is
 :math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`h` is the upper layer depth
-(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`|c_{max}| = 3` ms\ :sup:`--1`
+(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`|c_{\rm max}| = 3` ms\ :sup:`--1`
 (see Adcroft 1995 :cite:`adcroft:95` or Gill 1982 :cite:`gill:82`), thus still comfortably below the threshold.
 
 Using our chosen value of :math:`\Delta t`, numerical stability for inertial oscillations using Adams-Bashforth II
 
 .. math::
-   S_{i} = f {\Delta t} < 0.5 \text{ for stability}
+   S_{\rm inert} = f {\Delta t} < 0.5 \text{ for stability}
    :label: eq_baroc_inertial_stability
 
 evaluates to 0.17 for the largest :math:`f` value in our domain (:math:`1.4\times10^{-4}` s\ :sup:`--1`),
@@ -242,7 +241,7 @@ To choose a horizontal Laplacian eddy viscosity :math:`A_{h}`, note that the lar
 value in our domain (i.e., in the south) is :math:`\approx 110` km. With the Munk boundary width as follows,
 
 .. math::
-   M_{w} = \frac{2\pi}{\sqrt{3}}  \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
+   M = \frac{2\pi}{\sqrt{3}}  \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
    :label: baroc_munk_layer
 
 in order to to have a well resolved boundary current in the subtropical gyre we will set
@@ -254,7 +253,7 @@ tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
 let's re-examine the stability of horizontal Laplacian friction:
 
 .. math::
-   S_{lh} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
+   S_{\rm Lh} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
    :label: baroc_laplacian_stability
 
 evaluates to 0.057 for our smallest :math:`\Delta x`, which is below the stability threshold.
@@ -264,7 +263,7 @@ Note this same stability test also applies to horizontal Laplacian diffusion of 
 Finally, stability of vertical diffusion of momentum:
 
 .. math::
-   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
+   S_{\rm Lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
    :label: baroc_laplacian_v_stability
 
 Here we will choose :math:`A_{v} = 1\times10^{-2}` m\ :sup:`2` s\ :sup:`--1`,
@@ -485,7 +484,7 @@ PARM01 - Continuous equation parameters
   Note a list of :varlink:`Nr` (=15, from :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`)
   potential temperature values in :sup:`o`\ C is specified for parameter :varlink:`tRef`, ordered from surface to depth.
   :varlink:`tRef` is used for two purposes here.
-  First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{ref}(z)`;
+  First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{\rm ref}(z)`;
   see use in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`.
   Second, the model will use these reference temperatures for its initial state, as we are not providing a pickup file
   nor specifying an initial temperature hydrographic file (in later tutorials we will demonstrate how to do so).
@@ -940,7 +939,7 @@ Several additional files are output in standard binary format. These are:
 
 ``RhoRef.data, RhoRef.meta`` - this is a 1-D (k=1...\ :varlink:`Nr`) array of reference density, defined as:
 
-.. math:: \rho_{ref}(k) = \rho_0  \left( 1 - \alpha_{\theta} (\theta_{ref}(k) - \theta_{ref}(1)) \right)
+.. math:: \rho_{\rm ref}(k) = \rho_0  \big[ 1 - \alpha_{\theta} (\theta_{\rm ref}(k) - \theta_{\rm ref}(1)) \big]
 
 ``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1-D (k=1...\ :varlink:`Nr` for PHrefC and
 k=1...\ :varlink:`Nr`\ +1 for PHrefF) arrays containing a reference
@@ -1186,18 +1185,18 @@ depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
       Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to
       temperature restoring (W/m\ :sup:`2`), blue indicating cooling.
 
-So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{bt}, V_{bt}`
+So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{\rm bt}, V_{\rm bt}`
 (units: m\ :sup:`2` s\ :sup:`-1`) and use it calculate the barotropic transport streamfunction:
 
-.. math:: U_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} V_{bt} = \frac{\partial \Psi}{\partial x}
+.. math:: U_{\rm bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} V_{\rm bt} = \frac{\partial \Psi}{\partial x}
 
-Compute :math:`U_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
+Compute :math:`U_{\rm bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
 (``grid.nc`` variable :varlink:`drF`, i.e.,
 the separation between gridcell faces in the vertical). Now do a cumulative sum of
-:math:`-U_{bt}` times the gridcell spacing the in the :math:`y` direction (you
+:math:`-U_{\rm bt}` times the gridcell spacing the in the :math:`y` direction (you
 will need to load ``grid.nc`` variable :varlink:`dyG`, the separation between gridcell faces in :math:`y`).
 A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_psi`.
-Note one could also cumulative sum :math:`V_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
+Note one could also cumulative sum :math:`V_{\rm bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
 
  .. figure:: figs/baroc_psi.png
       :width: 80%
@@ -1215,10 +1214,10 @@ from tutorial :ref:`sec_eg_baro`, when our model grid was only a single layer in
 Is the magnitude of :math:`\Psi`
 we obtain in our solution reasonable? To check this, consider the Sverdrup transport:
 
-.. math:: \rho v_{bt} = \hat{k} \cdot \frac{\nabla \times \vec{\tau}}{\beta}
+.. math:: \rho v_{\rm bt} = \hat{\boldsymbol{k}} \cdot \frac{ \nabla  \times \vec{\boldsymbol{\tau}}}{\beta}
 
 If we plug in a typical mid-latitude value for :math:`\beta` (:math:`2 \times 10^{-11}` m\ :sup:`-1` s\ :sup:`-1`)
-and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`-2` over :math:`15^{\circ}` latitude,
+and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`—2` over :math:`15^{\circ}` latitude,
 and multiply by the width of our ocean sector, we obtain an estimate of approximately 20 Sv.
 This estimate agrees reasonably well with the strength of the circulation in :numref:`baroclinic_gyre_psi`.
 
@@ -1247,9 +1246,9 @@ What sets the penetration depth of the subtropical gyre? Following a simple adve
 this scaling is obtained via thermal wind and the linearized barotropic vorticity equation),
 the depth of the thermocline :math:`h` should scale as:
 
-.. math:: h = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
+.. math:: h = \left( \frac{w_{\rm Ek} f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
 
-where :math:`w_e` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
+where :math:`w_{\rm Ek}` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
 is the variation in buoyancy across the gyre,
 and :math:`L_x` and :math:`L_y` are length scales in the
 :math:`x` and :math:`y` directions, respectively.

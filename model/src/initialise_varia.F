@@ -97,12 +97,12 @@ C     == Global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
+#ifdef INCLUDE_CONVECT_INI_CALL
       INTEGER bi,bj
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -113,8 +113,7 @@ CEOP
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 #endif /* ALLOW_AUTODIFF */
 
-#ifdef ALLOW_CTRL
-# ifdef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
 C--   Intialize the depth for TAF/TAMC
       CALL INI_DEPTHS( myThid )
 C--   Get control parameter depth
@@ -123,8 +122,7 @@ C--   Re-calculate hFacS/W and some other parameters from hFacC
       CALL UPDATE_MASKS_ETC( myThid )
 C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
-# endif /* ALLOW_DEPTH_CONTROL */
-#endif /* ALLOW_CTRL */
+#endif /* ALLOW_DEPTH_CONTROL */
 
 C--   Initialise Non-Lin FreeSurf variables:
       CALL INI_NLFS_VARS( myThid )
@@ -149,6 +147,9 @@ C     are set here. Fields are either set to default or read from
 C     stored files.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE phi0surf = tapelev_init, key = 1
 #endif
       CALL INI_FIELDS( myThid )
 
@@ -210,7 +211,7 @@ c      CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
 c     ENDIF
 c#endif
 
-#ifndef ALLOW_AUTODIFF_WHTAPEIO
+#ifdef INCLUDE_CONVECT_INI_CALL
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN
 #ifdef ALLOW_DEBUG
@@ -225,7 +226,7 @@ CADJ loop = parallel
          ENDDO
         ENDDO
       ENDIF
-#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+#endif /* INCLUDE_CONVECT_INI_CALL */
 
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
@@ -245,6 +246,12 @@ C     and modify hFac(C,W,S) accordingly :
 # endif /* DISABLE_SIGMA_CODE */
        ELSE
         CALL CALC_SURF_DR(etaH, startTime, -1 , myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These fields are only updated in the surface layer and TAF gets
+C     confused about it so that their contribution is not always added
+C     to the hfac*_ad lateron. This directive fixes that.
+CADJ INCOMPLETE recip_hFacC, recip_hFacW, recip_hFacS
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL UPDATE_SURF_DR( .TRUE., startTime, nIter0, myThid )
        ENDIF
       ENDIF

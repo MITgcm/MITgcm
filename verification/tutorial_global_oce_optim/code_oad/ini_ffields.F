@@ -1,8 +1,4 @@
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: INI_FFIELDS
@@ -60,9 +56,8 @@ C-    2-D forcing fields
 #ifdef ALLOW_GEOTHERMAL_FLUX
           geothermalFlux  (i,j,bi,bj) = 0. _d 0
 #endif
-#ifdef ALLOW_HFLUXM_CONTROL
+C     Extra mean heat flux field specific to this experiment
           Qnetm (i,j,bi,bj) = 0. _d 0
-#endif
 #ifndef EXCLUDE_FFIELDS_LOAD
 C-    Time reccord loaded from file:
           taux0           (i,j,bi,bj) = 0. _d 0
@@ -138,6 +133,9 @@ C-    Intermediate surface forcing arrays
           adjustColdSST_diag  (i,j,bi,bj) = 0. _d 0
           lambdaThetaClimRelax(i,j,bi,bj) = 0. _d 0
           lambdaSaltClimRelax (i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_BALANCE_FLUXES
+          weight2BalanceFlx(i,j,bi,bj) = 0. _d 0
+#endif
           botDragU        (i,j,bi,bj) = 0. _d 0
           botDragV        (i,j,bi,bj) = 0. _d 0
          ENDDO
