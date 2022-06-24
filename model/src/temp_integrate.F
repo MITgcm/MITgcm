@@ -536,7 +536,7 @@ CADJ STORE gT_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 
 #ifdef ALLOW_TIMEAVE
       useVariableK = useKPP .OR. usePP81 .OR. useKL10 .OR. useMY82
-     &       .OR. useGGL90 .OR. useGMredi .OR. ivdc_kappa.NE.0.
+     &       .OR. useGGL90 .OR. useGMRedi .OR. ivdc_kappa.NE.0.
       IF ( taveFreq.GT.0. .AND. useVariableK
      &                    .AND.implicitDiffusion ) THEN
         CALL TIMEAVE_CUMUL_DIF_1T( TdiffRtave,
