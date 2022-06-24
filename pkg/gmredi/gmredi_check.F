@@ -90,6 +90,11 @@ C- print out some kee parameters :
      &  'GM_Small_Number =', '  /* epsilon used in slope calc */')
        CALL WRITE_0D_RL( GM_slopeSqCutoff, INDEX_NONE,
      &  'GM_slopeSqCutoff =', ' /* Slope^2 cut-off value */')
+#ifdef GM_TRIADS_SCHEME
+       CALL WRITE_0D_RL( GM_delT_lim, INDEX_NONE,
+     &  'GM_delT_lim =',
+     &  ' /* Stability time-scale for Triads scheme */')
+#endif
        CALL WRITE_0D_C( GM_taper_scheme, 0, INDEX_NONE,
      &  'GM_taper_scheme =',
      &  '  /* Type of Tapering/Clipping scheme */')
