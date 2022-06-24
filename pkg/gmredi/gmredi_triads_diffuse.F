@@ -75,70 +75,101 @@ C !FUNCTIONS: ==========================================================
 C !LOCAL VARIABLES: ====================================================
 C  i, j, k       :: loop indices
 C  xA, yA        :: areas of X and Y face of tracer cells
-C  dfx           :: 3-D array of horizontal diffusive flux in X-dir
-C  dfy           :: 3-D array of horizontal diffusive flux in Y-dir
-C  dfr           :: 3-D array of vertical diffusive flux
 C  sigmaX        :: density gradient, X component
 C  sigmaY        :: density gradient, Y component
-C  KwzLoc        :: vertical diffusivity contribution from GM-Redi
 C  slope         :: isopycnal slope (no sign)
 C  Kslope        :: Kappa x slope (no sign)
 C  K_slp         :: tappered Kappa x slope (with sign)
 C  K_lim         :: tappered Kappa
+C  dfx           :: 2-D array of horizontal diffusive flux in X-dir @ level k
+C  dfy           :: 2-D array of horizontal diffusive flux in Y-dir @ level k
+C  dfr           :: 3-D array of vertical diffusive flux
+C  KwzLoc        :: vertical diffusivity contribution from GM-Redi
+C  flxDiv        :: temp array to holds horizontal flux divergence
 C dTdx,dTdy,dTdr :: tracer gradient, 3 components
       INTEGER i, j, k, kl, kp1
-      _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dfx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL dfy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL dfr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KwzLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL K_slp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL K_lim (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfx   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KwzLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL flxDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 c     _RL GM_bolK3d
-      _RL dR_delT_lim
-      _RL maskp25, mskP1
-      _RL K_loc, slope
-      _RL Kslope, K_lim, K_slp
+      _RL dR_delT_lim, half_dr
+      _RL maskp5, mskP1, tmpFac
+      _RL K_loc, slope, Kslope
       _RL dTdx, dTdy, dTdr
 C     msgBuf     :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
-      LOGICAL     doDiagAdvX, doDiagAdvY, doDiagAdvR
+      LOGICAL     doDiagDfX, doDiagDfY, doDiagDfR
+      LOGICAL     doDiagDifX, doDiagDifY
+      _RL KuxLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KvyLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KuzLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KvzLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KwxLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KwyLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostics flags and suffix for the current tracer
-      doDiagAdvX = .FALSE.
-      doDiagAdvY = .FALSE.
-      doDiagAdvR = .FALSE.
+      doDiagDfX = .FALSE.
+      doDiagDfY = .FALSE.
+      doDiagDfR = .FALSE.
+      doDiagDifX = .FALSE.
+      doDiagDifY = .FALSE.
+      diagSufx = 'xxxx'
       IF ( useDiagnostics ) THEN
+# ifdef ALLOW_GENERIC_ADVDIFF
        diagSufx = GAD_DIAG_SUFX( trIdentity, myThid )
-       diagName = 'ADVx'//diagSufx
-       doDiagAdvX = DIAGNOSTICS_IS_ON( diagName, myThid )
-       diagName = 'ADVy'//diagSufx
-       doDiagAdvY = DIAGNOSTICS_IS_ON( diagName, myThid )
-       diagName = 'ADVr'//diagSufx
-       doDiagAdvR = DIAGNOSTICS_IS_ON( diagName, myThid )
+# endif
+       diagName = 'DFxE'//diagSufx
+       doDiagDfX = DIAGNOSTICS_IS_ON( diagName, myThid )
+       diagName = 'DFyE'//diagSufx
+       doDiagDfY = DIAGNOSTICS_IS_ON( diagName, myThid )
+       diagName = 'DFrE'//diagSufx
+       doDiagDfR = DIAGNOSTICS_IS_ON( diagName, myThid )
+       IF ( trIdentity.EQ.1 ) THEN
+        doDiagDifX = DIAGNOSTICS_IS_ON( 'GM_Kux  ', myThid )
+     &          .OR. DIAGNOSTICS_IS_ON( 'GM_Kuz  ', myThid )
+     &          .OR. DIAGNOSTICS_IS_ON( 'GM_Kwx  ', myThid )
+        doDiagDifY = DIAGNOSTICS_IS_ON( 'GM_Kvy  ', myThid )
+     &          .OR. DIAGNOSTICS_IS_ON( 'GM_Kvz  ', myThid )
+     &          .OR. DIAGNOSTICS_IS_ON( 'GM_Kwy  ', myThid )
+       ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
+         xA(i,j) = 0. _d 0
+         yA(i,j) = 0. _d 0
          sigmaX(i,j) = 0. _d 0
          sigmaY(i,j) = 0. _d 0
+         K_lim(i,j)  = 0. _d 0
+         K_slp(i,j)  = 0. _d 0
+#ifdef ALLOW_DIAGNOSTICS
+         KwxLoc(i,j) = 0. _d 0
+         KwyLoc(i,j) = 0. _d 0
+#endif /* ALLOW_DIAGNOSTICS */
        ENDDO
       ENDDO
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         dfx(i,j,k) = 0. _d 0
-         dfy(i,j,k) = 0. _d 0
-         dfr(i,j,k) = 0. _d 0
+         dfr(i,j,k)    = 0. _d 0
+         KwzLoc(i,j,k) = 0. _d 0
+         flxDiv(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -162,375 +193,573 @@ C-  Here last division is accounted in divergence of fluxes (units: [Tr]*m^3/s)
 C   and we scale by a fraction of the grid-cell interrface area, e.g., triad #3
 C    contrib to dfx: *drC(k)*dyG(i,j)*deepFacF(k)
 C    contrib to dfr: *rAw(i,j)*deepFac2F(k)
+C   Note that scaling of dfr (& KwzLoc) by deepFac2F/2 is done at the end
 
-C---  Start of k loop for horizontal fluxes
-      DO k=2,Nr
-
-C-    for stability limit:
-       dR_delT_lim = op25*drC(k)*deepFacF(k) / GM_delT_lim
+C---  Start of k loop corresponding to horizontal fluxes
+      DO k=1,Nr
 
 C-    set-up local 2-D array within k loop
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         xA(i,j) = _dyG(i,j,bi,bj)*deepFacF(k)*drC(k)
-         yA(i,j) = _dxG(i,j,bi,bj)*deepFacF(k)*drC(k)
-         KwzLoc(i,j) = 0. _d 0
+         dfx(i,j)    = 0. _d 0
+         dfy(i,j)    = 0. _d 0
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( doDiagDifX .OR. doDiagDifY ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KuxLoc(i,j) = 0. _d 0
+          KuzLoc(i,j) = 0. _d 0
+          KvyLoc(i,j) = 0. _d 0
+          KvzLoc(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   X-Z plane:
 
-C-     density gradient in X-dir @ level k-1
-       kl = k-1
-       DO j=1-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-         sigmaX(i,j) =_maskW(i,j,kl,bi,bj)
-     &               *_recip_dxC(i,j,bi,bj)*recip_deepFacC(kl)
-     &               *( rhoLoc(i,j,kl) - rhoLoc(i-1,j,kl) )
-        ENDDO
-       ENDDO
-
-C--   triad #1 : (i-1,k-1)| (i,k-1)
-C                (i-1,k)  |
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
-C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskW(i,j,k-1,bi,bj)*maskC(i-1,j,k,bi,bj)
-         slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i-1,j,k-1,bi,bj)
-C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaX(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdx = ( tracer(i,j,k-1) - tracer(i-1,j,k-1) )
-     &        * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k-1)
-         dTdr = ( tracer(i-1,j,k-1) - tracer(i-1,j,k) )
-     &        * recip_drC(k)
-         dfx(i,j,k-1) = dfx(i,j,k-1)
-     &              - ( K_lim*dTdx
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*xA(i,j)
-         dfr(i-1,j,k) = dfr(i-1,j,k)
-     &              - ( K_slp*dTdx
-C    &                + GM_skewflx*GM_bolK3d*dTdx
-     &                )*rAw(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i-1,j) = KwzLoc(i-1,j)
-     &              + Kslope*slope*rAw(i,j,bi,bj)
-        ENDDO
-       ENDDO
-
-C--   triad #2 : (i-1,k-1)| (i,k-1)
-C                         |  (i,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
-C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskW(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
-         slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j,k-1,bi,bj)
-C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaX(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdx = ( tracer(i,j,k-1) - tracer(i-1,j,k-1) )
-     &        * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k-1)
-         dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &        * recip_drC(k)
-         dfx(i,j,k-1) = dfx(i,j,k-1)
-     &              - ( K_lim*dTdx
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*xA(i,j)
-         dfr(i,j,k) = dfr(i,j,k)
-     &              - ( K_slp*dTdx
-C    &                + GM_skewflx*GM_bolK3d*dTdx
-     &                )*rAw(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j) = KwzLoc(i,j)
-     &              + Kslope*slope*rAw(i,j,bi,bj)
-        ENDDO
-       ENDDO
-
 C-     density gradient in X-dir @ level k
-       kl = k
        DO j=1-OLy,sNy+OLy
         DO i=2-OLx,sNx+OLx
-         sigmaX(i,j) =_maskW(i,j,kl,bi,bj)
-     &               *_recip_dxC(i,j,bi,bj)*recip_deepFacC(kl)
-     &               *( rhoLoc(i,j,kl) - rhoLoc(i-1,j,kl) )
+         sigmaX(i,j) =_maskW(i,j,k,bi,bj)
+     &               *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &               *( rhoLoc(i,j,k) - rhoLoc(i-1,j,k) )
         ENDDO
        ENDDO
 
-C--   triad #3 :          | (i,k-1)
-C                (i-1,k)  |  (i,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
+       IF ( k.GT.1 ) THEN
+        kl = k
+C-    for stability limit:
+        dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
 
+        half_dr = rF(kl) - rC(k)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          xA(i,j) = _dyG(i,j,bi,bj)*deepFacF(kl)
+     &            * half_dr*hFacW(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+
+C--   triad #1 ; corner (i,k),              | Tr(i,k-1)
+C                                Tr(i-1,k)  | Tr(i,k)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskW(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
-         slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j,k,bi,bj)
+          maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+          slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j,k,bi,bj)
 C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaX(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
-     &        * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-         dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &        * recip_drC(k)
-         dfx(i,j,k) = dfx(i,j,k)
-     &              - ( K_lim*dTdx
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*xA(i,j)
-         dfr(i,j,k) = dfr(i,j,k)
-     &              - ( K_slp*dTdx
-C    &                + GM_skewflx*GM_bolK3d*dTdx
-     &                )*rAw(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j) = KwzLoc(i,j)
-     &              + Kslope*slope*rAw(i,j,bi,bj)
+          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
+     &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
+     &         * recip_drC(kl)
+          dfx(i,j) = dfx(i,j)
+     &               - ( K_lim(i,j)*dTdx
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*xA(i,j)
+          dfr(i,j,kl) = dfr(i,j,kl)
+     &               - ( K_slp(i,j)*dTdx
+C    &                 + GM_skewflx*GM_bolK3d*dTdx
+     &                 )*rAw(i,j,bi,bj)
+          KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
+     &               + Kslope*slope*rAw(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifX ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KuxLoc(i,j) = KuxLoc(i,j) + K_lim(i,j)*half_dr
+           KuzLoc(i,j) = KuzLoc(i,j) + K_slp(i,j)*half_dr
+           KwxLoc(i,j) = KwxLoc(i,j) + K_slp(i,j)*rAw(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
-C--   triad #4 : (i-1,k-1)|
-C                (i-1,k)  |  (i,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
+C--   triad #2 : corner (i,k),   Tr(i-1,k-1)|
+C                                Tr(i-1,k)  | Tr(i,k)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskW(i,j,k,bi,bj)*maskC(i-1,j,k-1,bi,bj)
-         slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i-1,j,k,bi,bj)
+          maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i-1,j,k-1,bi,bj)
+          slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i-1,j,k,bi,bj)
 C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaX(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
-     &        * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-         dTdr = ( tracer(i-1,j,k-1) - tracer(i-1,j,k) )
-     &        * recip_drC(k)
-         dfx(i,j,k) = dfx(i,j,k)
-     &              - ( K_lim*dTdx
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*xA(i,j)
-         dfr(i-1,j,k) = dfr(i-1,j,k)
-     &              - ( K_slp*dTdx
-C    &                + GM_skewflx*GM_bolK3d*dTdx
-     &                )*rAw(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i-1,j) = KwzLoc(i-1,j)
-     &              + Kslope*slope*rAw(i,j,bi,bj)
+          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
+     &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i-1,j,k-1) - tracer(i-1,j,k) )
+     &         * recip_drC(kl)
+          dfx(i,j) = dfx(i,j)
+     &               - ( K_lim(i,j)*dTdx
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*xA(i,j)
+          dfr(i-1,j,kl) = dfr(i-1,j,kl)
+     &               - ( K_slp(i,j)*dTdx
+C    &                 + GM_skewflx*GM_bolK3d*dTdx
+     &                 )*rAw(i,j,bi,bj)
+          KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
+     &               + Kslope*slope*rAw(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifX ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KuxLoc(i,j) = KuxLoc(i,j) + K_lim(i,j)*half_dr
+           KuzLoc(i,j) = KuzLoc(i,j) + K_slp(i,j)*half_dr
+           KwxLoc(i-1,j) = KwxLoc(i-1,j) + K_slp(i,j)*rAw(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KwxLoc(i,j) = KwxLoc(i,j)*recip_rA(i,j,bi,bj)*halfRL
+          ENDDO
+         ENDDO
+C-       fill diagnostics with KwxLoc
+         CALL DIAGNOSTICS_FILL( KwxLoc, 'GM_Kwx  ',
+     &                          k, 1, 2, bi, bj, myThid )
+         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT( 'GM_Kwx  ',
+     &                                   bi, bj, myThid )
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KwxLoc(i,j) = 0.
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C-     end if k > 1
+       ENDIF
+
+       IF ( k.LT.Nr ) THEN
+        kl = k+1
+C-    for stability limit:
+        dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+
+        half_dr = rC(k) - rF(kl)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          xA(i,j) = _dyG(i,j,bi,bj)*deepFacF(kl)
+     &            * half_dr*hFacW(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+
+C--   triad #3 : corner (i,k+1), Tr(i-1,k)  | Tr(i,k)
+C                                Tr(i-1,k+1)|
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
+          maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i-1,j,k+1,bi,bj)
+          slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i-1,j,k,bi,bj)
+C-     Stability limit:
+          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
+     &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i-1,j,k) - tracer(i-1,j,k+1) )
+     &         * recip_drC(kl)
+          dfx(i,j) = dfx(i,j)
+     &               - ( K_lim(i,j)*dTdx
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*xA(i,j)
+          dfr(i-1,j,kl) = dfr(i-1,j,kl)
+     &               - ( K_slp(i,j)*dTdx
+C    &                 + GM_skewflx*GM_bolK3d*dTdx
+     &                 )*rAw(i,j,bi,bj)
+          KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
+     &               + Kslope*slope*rAw(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifX ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KuxLoc(i,j) = KuxLoc(i,j) + K_lim(i,j)*half_dr
+           KuzLoc(i,j) = KuzLoc(i,j) + K_slp(i,j)*half_dr
+           KwxLoc(i-1,j) = KwxLoc(i-1,j) + K_slp(i,j)*rAw(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C--   triad #4 : corner (i,k+1), Tr(i-1,k)  | Tr(i,k)
+C                                           | Tr(i,k+1)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
+          maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
+          slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j,k,bi,bj)
+C-     Stability limit:
+          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
+     &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j,k) - tracer(i,j,k+1) )
+     &         * recip_drC(kl)
+          dfx(i,j) = dfx(i,j)
+     &               - ( K_lim(i,j)*dTdx
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*xA(i,j)
+          dfr(i,j,kl) = dfr(i,j,kl)
+     &               - ( K_slp(i,j)*dTdx
+C    &                 + GM_skewflx*GM_bolK3d*dTdx
+     &                 )*rAw(i,j,bi,bj)
+          KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
+     &               + Kslope*slope*rAw(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifX ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KuxLoc(i,j) = KuxLoc(i,j) + K_lim(i,j)*half_dr
+           KuzLoc(i,j) = KuzLoc(i,j) + K_slp(i,j)*half_dr
+           KwxLoc(i,j) = KwxLoc(i,j) + K_slp(i,j)*rAw(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C-     end if k < Nr
+       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y-Z plane:
 
-C-     density gradient in Y-dir @ level k-1
-       kl = k-1
-       DO j=2-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         sigmaY(i,j)=_maskS(i,j,kl,bi,bj)
-     &              *_recip_dyC(i,j,bi,bj)*recip_deepFacC(kl)
-     &              *( rhoLoc(i,j,kl) - rhoLoc(i,j-1,kl) )
-        ENDDO
-       ENDDO
-
-C--   triad #1 : (j-1,k-1)| (j,k-1)
-C                (j-1,k)  |
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
-C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskS(i,j,k-1,bi,bj)*maskC(i,j-1,k,bi,bj)
-         slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j-1,k-1,bi,bj)
-C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaY(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdy = ( tracer(i,j,k-1) - tracer(i,j-1,k-1) )
-     &        * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k-1)
-         dTdr = ( tracer(i,j-1,k-1) - tracer(i,j-1,k) )
-     &        * recip_drC(k)
-         dfy(i,j,k-1) = dfy(i,j,k-1)
-     &              - ( K_lim*dTdy
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*yA(i,j)
-         dfr(i,j-1,k) = dfr(i,j-1,k)
-     &              - ( K_slp*dTdy
-C    &                + GM_skewflx*GM_bolK3d*dTdy
-     &                )*rAs(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j-1) = KwzLoc(i,j-1)
-     &              + Kslope*slope*rAs(i,j,bi,bj)
-        ENDDO
-       ENDDO
-
-C--   triad #2 : (j-1,k-1)| (j,k-1)
-C                         |  (j,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
-C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskS(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
-         slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j,k-1,bi,bj)
-C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaY(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdy = ( tracer(i,j,k-1) - tracer(i,j-1,k-1) )
-     &        * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k-1)
-         dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &        * recip_drC(k)
-         dfy(i,j,k-1) = dfy(i,j,k-1)
-     &              - ( K_lim*dTdy
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*yA(i,j)
-         dfr(i,j,k) = dfr(i,j,k)
-     &              - ( K_slp*dTdy
-C    &                + GM_skewflx*GM_bolK3d*dTdy
-     &                )*rAs(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j) = KwzLoc(i,j)
-     &              + Kslope*slope*rAs(i,j,bi,bj)
-        ENDDO
-       ENDDO
-
 C-     density gradient in Y-dir @ level k
-       kl = k
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         sigmaY(i,j)=_maskS(i,j,kl,bi,bj)
-     &              *_recip_dyC(i,j,bi,bj)*recip_deepFacC(kl)
-     &              *( rhoLoc(i,j,kl) - rhoLoc(i,j-1,kl) )
+         sigmaY(i,j) =_maskS(i,j,k,bi,bj)
+     &               *_recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &               *( rhoLoc(i,j,k) - rhoLoc(i,j-1,k) )
         ENDDO
        ENDDO
 
-C--   triad #3 :          | (j,k-1)
-C                (j-1,k)  |  (j,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
+       IF ( k.GT.1 ) THEN
+        kl = k
+C-    for stability limit:
+        dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
 
+        half_dr = rF(kl) - rC(k)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          yA(i,j) = _dxG(i,j,bi,bj)*deepFacF(kl)
+     &            * half_dr*hFacS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+
+C--   triad #1 ; corner (j,k),              | Tr(j,k-1)
+C                                Tr(j-1,k)  | Tr(j,k)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskS(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
-         slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j,k,bi,bj)
+          maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+          slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j,k,bi,bj)
 C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaY(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
-     &        * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-         dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &        * recip_drC(k)
-         dfy(i,j,k) = dfy(i,j,k)
-     &              - ( K_lim*dTdy
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*yA(i,j)
-         dfr(i,j,k) = dfr(i,j,k)
-     &              - ( K_slp*dTdy
-C    &                + GM_skewflx*GM_bolK3d*dTdy
-     &                )*rAs(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j) = KwzLoc(i,j)
-     &              + Kslope*slope*rAs(i,j,bi,bj)
+          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
+     &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
+     &         * recip_drC(kl)
+          dfy(i,j) = dfy(i,j)
+     &               - ( K_lim(i,j)*dTdy
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*yA(i,j)
+          dfr(i,j,kl) = dfr(i,j,kl)
+     &               - ( K_slp(i,j)*dTdy
+C    &                 + GM_skewflx*GM_bolK3d*dTdy
+     &                 )*rAs(i,j,bi,bj)
+          KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
+     &               + Kslope*slope*rAs(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifY ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KvyLoc(i,j) = KvyLoc(i,j) + K_lim(i,j)*half_dr
+           KvzLoc(i,j) = KvzLoc(i,j) + K_slp(i,j)*half_dr
+           KwyLoc(i,j) = KwyLoc(i,j) + K_slp(i,j)*rAs(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
-C--   triad #4 : (j-1,k-1)|
-C                (j-1,k)  |  (j,k)
-       DO j=2-OLy,sNy+OLy
-        DO i=2-OLx,sNx+OLx
-
+C--   triad #2 : corner (j,k),   Tr(j-1,k-1)|
+C                                Tr(j-1,k)  | Tr(j,k)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
 C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
-         maskp25 = op25*maskS(i,j,k,bi,bj)*maskC(i,j-1,k-1,bi,bj)
-         slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,k,bi,bj) )
-         K_loc = GM_isoK3d(i,j-1,k,bi,bj)
+          maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j-1,k-1,bi,bj)
+          slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j-1,k,bi,bj)
 C-     Stability limit:
-         Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &           *maskp25
-         IF ( slope.GT.zeroRL ) THEN
-          K_lim = Kslope / slope
-          K_slp = SIGN( Kslope, sigmaY(i,j) )
-         ELSE
-          K_lim = K_loc*maskp25
-          K_slp = 0. _d 0
-         ENDIF
-         dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
-     &        * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-         dTdr = ( tracer(i,j-1,k-1) - tracer(i,j-1,k) )
-     &        * recip_drC(k)
-         dfy(i,j,k) = dfy(i,j,k)
-     &              - ( K_lim*dTdy
-     &                + K_slp*dTdr
-C    &                - GM_skewflx*GM_bolK3d*dTdr
-     &                )*yA(i,j)
-         dfr(i,j-1,k) = dfr(i,j-1,k)
-     &              - ( K_slp*dTdy
-C    &                + GM_skewflx*GM_bolK3d*dTdy
-     &                )*rAs(i,j,bi,bj)*deepFac2F(k)
-         KwzLoc(i,j-1) = KwzLoc(i,j-1)
-     &              + Kslope*slope*rAs(i,j,bi,bj)
+          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
+     &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j-1,k-1) - tracer(i,j-1,k) )
+     &         * recip_drC(kl)
+          dfy(i,j) = dfy(i,j)
+     &               - ( K_lim(i,j)*dTdy
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*yA(i,j)
+          dfr(i,j-1,kl) = dfr(i,j-1,kl)
+     &               - ( K_slp(i,j)*dTdy
+C    &                 + GM_skewflx*GM_bolK3d*dTdy
+     &                 )*rAs(i,j,bi,bj)
+          KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
+     &               + Kslope*slope*rAs(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifY ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KvyLoc(i,j) = KvyLoc(i,j) + K_lim(i,j)*half_dr
+           KvzLoc(i,j) = KvzLoc(i,j) + K_slp(i,j)*half_dr
+           KwyLoc(i,j-1) = KwyLoc(i,j-1) + K_slp(i,j)*rAs(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KwyLoc(i,j) = KwyLoc(i,j)*recip_rA(i,j,bi,bj)*halfRL
+          ENDDO
+         ENDDO
+C-       fill diagnostics with KwyLoc
+         CALL DIAGNOSTICS_FILL( KwyLoc, 'GM_Kwy  ',
+     &                          k, 1, 2, bi, bj, myThid )
+         IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT( 'GM_Kwy  ',
+     &                                   bi, bj, myThid )
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KwyLoc(i,j) = 0.
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C-     end if k > 1
+       ENDIF
+
+       IF ( k.LT.Nr ) THEN
+        kl = k+1
+C-    for stability limit:
+        dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+
+        half_dr = rC(k) - rF(kl)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          yA(i,j) = _dxG(i,j,bi,bj)*deepFacF(kl)
+     &            * half_dr*hFacS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+
+C--   triad #3 : corner (j,k+1), Tr(j-1,k)  | Tr(j,k)
+C                                Tr(j-1,k+1)|
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
+          maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j-1,k+1,bi,bj)
+          slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j-1,k,bi,bj)
+C-     Stability limit:
+          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
+     &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j-1,k) - tracer(i,j-1,k+1) )
+     &         * recip_drC(kl)
+          dfy(i,j) = dfy(i,j)
+     &               - ( K_lim(i,j)*dTdy
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*yA(i,j)
+          dfr(i,j-1,kl) = dfr(i,j-1,kl)
+     &               - ( K_slp(i,j)*dTdy
+C    &                 + GM_skewflx*GM_bolK3d*dTdy
+     &                 )*rAs(i,j,bi,bj)
+          KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
+     &               + Kslope*slope*rAs(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifY ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KvyLoc(i,j) = KvyLoc(i,j) + K_lim(i,j)*half_dr
+           KvzLoc(i,j) = KvzLoc(i,j) + K_slp(i,j)*half_dr
+           KwyLoc(i,j-1) = KwyLoc(i,j-1) + K_slp(i,j)*rAs(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C--   triad #4 : corner (j,k+1), Tr(j-1,k)  | Tr(j,k)
+C                                           | Tr(j,k+1)
+        DO j=2-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
+C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
+          maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
+          slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,kl,bi,bj) )
+          K_loc = GM_isoK3d(i,j,k,bi,bj)
+C-     Stability limit:
+          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
+     &            *maskp5
+          IF ( slope.GT.zeroRL ) THEN
+           K_lim(i,j) = Kslope / slope
+           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+          ELSE
+           K_lim(i,j) = K_loc*maskp5
+           K_slp(i,j) = 0. _d 0
+          ENDIF
+          dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
+     &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+          dTdr = ( tracer(i,j,k) - tracer(i,j,k+1) )
+     &         * recip_drC(kl)
+          dfy(i,j) = dfy(i,j)
+     &               - ( K_lim(i,j)*dTdy
+     &                 + K_slp(i,j)*dTdr
+C    &                 - GM_skewflx*GM_bolK3d*dTdr
+     &                 )*yA(i,j)
+          dfr(i,j,kl) = dfr(i,j,kl)
+     &               - ( K_slp(i,j)*dTdy
+C    &                 + GM_skewflx*GM_bolK3d*dTdy
+     &                 )*rAs(i,j,bi,bj)
+          KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
+     &               + Kslope*slope*rAs(i,j,bi,bj)
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( doDiagDifY ) THEN
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           KvyLoc(i,j) = KvyLoc(i,j) + K_lim(i,j)*half_dr
+           KvzLoc(i,j) = KvzLoc(i,j) + K_slp(i,j)*half_dr
+           KwyLoc(i,j) = KwyLoc(i,j) + K_slp(i,j)*rAs(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C-     end if k < Nr
+       ENDIF
 
 C--   end Y-Z plane.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Add contribution to vertical diffusivity:
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         KwzLoc(i,j) = KwzLoc(i,j)*recip_rA(i,j,bi,bj)
-         kappaRk(i,j,k) = kappaRk(i,j,k)
-c    &              + KwzLoc(i,j)
-     &              + MIN( KwzLoc(i,j), 1000. _d 0 )
+C--   Save horizontal flux divergence:
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
+          flxDiv(i,j,k) = ( dfx(i+1,j) - dfx(i,j) )
+     &                  + ( dfy(i,j+1) - dfy(i,j) )
         ENDDO
        ENDDO
+C--   Add contribution to vertical diffusivity:
+C     note: could move this in its own k loop
+C-    Safer to cap diffusivity but with a large enough cap to not matter:
+       dR_delT_lim = ( drC(k)*drC(k) / GM_delT_lim )*1000. _d 0
+c      dR_delT_lim = 0. _d 0
+       tmpFac = deepFac2F(k)*halfRL*rhoFacF(k)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          dfr(i,j,k) = dfr(i,j,k)*tmpFac
+          KwzLoc(i,j,k) = KwzLoc(i,j,k)*recip_rA(i,j,bi,bj)*halfRL
+          kappaRk(i,j,k) = kappaRk(i,j,k)
+     &              + MIN( KwzLoc(i,j,k), dR_delT_lim )
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( doDiagDifX ) THEN
+        tmpFac = recip_drF(k)
+        CALL DIAGNOSTICS_SCALE_FILL( KuxLoc, tmpFac, 1, 'GM_Kux  ',
+     &                               k, 1, 2, bi, bj, myThid )
+        CALL DIAGNOSTICS_SCALE_FILL( KuzLoc, tmpFac, 1, 'GM_Kuz  ',
+     &                               k, 1, 2, bi, bj, myThid )
+       ENDIF
+       IF ( doDiagDifY ) THEN
+        tmpFac = recip_drF(k)
+        CALL DIAGNOSTICS_SCALE_FILL( KvyLoc, tmpFac, 1, 'GM_Kvy  ',
+     &                               k, 1, 2, bi, bj, myThid )
+        CALL DIAGNOSTICS_SCALE_FILL( KvzLoc, tmpFac, 1, 'GM_Kvz  ',
+     &                               k, 1, 2, bi, bj, myThid )
+       ENDIF
+       IF ( doDiagDfX ) THEN
+        diagName = 'DFxE'//diagSufx
+        CALL DIAGNOSTICS_FILL( dfx, diagName, k,1, -2,bi,bj, myThid )
+       ENDIF
+       IF ( doDiagDfY ) THEN
+        diagName = 'DFyE'//diagSufx
+        CALL DIAGNOSTICS_FILL( dfy, diagName, k,1, -2,bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C---  end k loop
       ENDDO
@@ -547,29 +776,24 @@ C--   Tendency is minus flux-divergence:
           gTracer(i,j,k) = gTracer(i,j,k)
      &       - _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &        *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
-     &        *( ( dfx(i+1,j,k) - dfx(i,j,k) )
-     &         + ( dfy(i,j+1,k) - dfy(i,j,k) )
+     &        *( flxDiv(i,j,k)
      &         + ( dfr(i,j,kp1)*mskP1 - dfr(i,j,k) )*rkSign
+     &           *recip_rhoFacC(k)
      &         )*maskInC(i,j,bi,bj)
-c    &        *recip_rhoFacC(k)
         ENDDO
        ENDDO
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-c      IF ( doDiagAdvX ) THEN
-c       diagName = 'ADVx'//diagSufx
-c       CALL DIAGNOSTICS_FILL( afx, diagName, k,1, 2,bi,bj, myThid )
-c      ENDIF
-c      IF ( doDiagAdvY ) THEN
-c       diagName = 'ADVy'//diagSufx
-c       CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
-c      ENDIF
-c       IF ( doDiagAdvR ) THEN
-c        diagName = 'ADVr'//diagSufx
-c        CALL DIAGNOSTICS_FILL( fVerT(1-OLx,1-OLy,kUp),
-c    &                          diagName, k,1, 2,bi,bj, myThid )
-c       ENDIF
+      IF ( useDiagnostics .AND. trIdentity.EQ.1 ) THEN
+        CALL DIAGNOSTICS_FILL( KwzLoc, 'GM_Kwz  ',
+     &                         0, Nr, 2, bi, bj, myThid )
+      ENDIF
+      IF ( doDiagDfR ) THEN
+        diagName = 'DFrE'//diagSufx
+        CALL DIAGNOSTICS_FILL( dfr, diagName,
+     &                         0, Nr, -2, bi, bj, myThid )
+      ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* GM_TRIADS_SCHEME */
