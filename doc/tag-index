@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68j (2022/06/28)
 o pkg/exf:
   - implement drag coefficient of Large and Yeager (2009), Climate Dynamics, 33,
     pages 341-364, within #ifdef ALLOW_DRAG_LARGEYEAGER09
