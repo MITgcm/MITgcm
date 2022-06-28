@@ -100,7 +100,8 @@ C dTdx,dTdy,dTdr :: tracer gradient, 3 components
       _RL KwzLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL flxDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 c     _RL GM_bolK3d
-      _RL dR_delT_lim, half_dr
+      _RL GM_dR2_fact
+      _RL dR_delT_lim, dR2delT_lim, half_dr
       _RL maskp5, mskP1, tmpFac
       _RL K_loc, slope, Kslope
       _RL dTdx, dTdy, dTdr
@@ -182,6 +183,9 @@ C   expressed as dt_max (GM_delT_lim):
 C     if this is satisfied: |slope|*Kgm < 1/4 (dx*dz) / dt_max
 C     then will just have to pick dt_max such as: dt < c_max * dt_max
 
+C-    Safer to cap diffusivity but with a large enough cap to not matter:
+      GM_dR2_fact = 1. _d +3
+
 C-  Converting Griffies etal, JPO paper (MOM) grid variables to MITgcm var:
 C      dxu --> dxC ; dxt --> dxF
 C      dzw --> drC ; dzt --> drF
@@ -233,6 +237,7 @@ C-     density gradient in X-dir @ level k
         kl = k
 C-    for stability limit:
         dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+        dR2delT_lim = op25*( drC(kl)*drC(kl)/GM_delT_lim )*GM_dR2_fact
 
         half_dr = rF(kl) - rC(k)
         DO j=1-OLy,sNy+OLy
@@ -250,13 +255,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
           slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -297,13 +303,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i-1,j,k-1,bi,bj)
           slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i-1,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -358,6 +365,7 @@ C-     end if k > 1
         kl = k+1
 C-    for stability limit:
         dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+        dR2delT_lim = op25*( drC(kl)*drC(kl)/GM_delT_lim )*GM_dR2_fact
 
         half_dr = rC(k) - rF(kl)
         DO j=1-OLy,sNy+OLy
@@ -375,13 +383,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i-1,j,k+1,bi,bj)
           slope = ABS( sigmaX(i,j)*GM_Nm2(i-1,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i-1,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -422,13 +431,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskW(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
           slope = ABS( sigmaX(i,j)*GM_Nm2(i,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dxC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -480,6 +490,7 @@ C-     density gradient in Y-dir @ level k
         kl = k
 C-    for stability limit:
         dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+        dR2delT_lim = op25*( drC(kl)*drC(kl)/GM_delT_lim )*GM_dR2_fact
 
         half_dr = rF(kl) - rC(k)
         DO j=1-OLy,sNy+OLy
@@ -497,13 +508,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
           slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -544,13 +556,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j-1,k-1,bi,bj)
           slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j-1,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -605,6 +618,7 @@ C-     end if k > 1
         kl = k+1
 C-    for stability limit:
         dR_delT_lim = op25*drC(kl)*deepFacF(kl) / GM_delT_lim
+        dR2delT_lim = op25*( drC(kl)*drC(kl)/GM_delT_lim )*GM_dR2_fact
 
         half_dr = rC(k) - rF(kl)
         DO j=1-OLy,sNy+OLy
@@ -622,13 +636,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j-1,k+1,bi,bj)
           slope = ABS( sigmaY(i,j)*GM_Nm2(i,j-1,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j-1,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -669,13 +684,14 @@ C-    GM_Nm2 (N^-2) holds the inverse of "gravitySign*sigmaR"
           maskp5 = halfRS*maskS(i,j,k,bi,bj)*maskC(i,j,k+1,bi,bj)
           slope = ABS( sigmaY(i,j)*GM_Nm2(i,j,kl,bi,bj) )
           K_loc = GM_isoK3d(i,j,k,bi,bj)
-C-     Stability limit:
-          Kslope = MIN( K_loc*slope, dyC(i,j,bi,bj)*dR_delT_lim )
-     &            *maskp5
           IF ( slope.GT.zeroRL ) THEN
+C-     Stability limit:
+           Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
+     &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
           ELSE
+           Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
           ENDIF
@@ -723,16 +739,12 @@ C--   Save horizontal flux divergence:
        ENDDO
 C--   Add contribution to vertical diffusivity:
 C     note: could move this in its own k loop
-C-    Safer to cap diffusivity but with a large enough cap to not matter:
-       dR_delT_lim = ( drC(k)*drC(k) / GM_delT_lim )*1000. _d 0
-c      dR_delT_lim = 0. _d 0
        tmpFac = deepFac2F(k)*halfRL*rhoFacF(k)
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           dfr(i,j,k) = dfr(i,j,k)*tmpFac
           KwzLoc(i,j,k) = KwzLoc(i,j,k)*recip_rA(i,j,bi,bj)*halfRL
-          kappaRk(i,j,k) = kappaRk(i,j,k)
-     &              + MIN( KwzLoc(i,j,k), dR_delT_lim )
+          kappaRk(i,j,k) = kappaRk(i,j,k) + KwzLoc(i,j,k)
         ENDDO
        ENDDO
 
