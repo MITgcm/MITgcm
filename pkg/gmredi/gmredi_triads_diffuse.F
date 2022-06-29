@@ -83,10 +83,10 @@ C  K_slp         :: tappered Kappa x slope (with sign)
 C  K_lim         :: tappered Kappa
 C  dfx           :: 2-D array of horizontal diffusive flux in X-dir @ level k
 C  dfy           :: 2-D array of horizontal diffusive flux in Y-dir @ level k
-C  dfr           :: 3-D array of vertical diffusive flux
+C  dfr           :: 3-D array of vertical diffusive flux (> 0 in r-direction)
 C  KwzLoc        :: vertical diffusivity contribution from GM-Redi
 C  flxDiv        :: temp array to holds horizontal flux divergence
-C dTdx,dTdy,dTdr :: tracer gradient, 3 components
+C dTdx,dTdy,dTdr :: tracer gradient, 3 components (but dTdr > 0 upward)
       INTEGER i, j, k, kl, kp1
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -99,7 +99,7 @@ C dTdx,dTdy,dTdr :: tracer gradient, 3 components
       _RL dfr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KwzLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL flxDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-c     _RL GM_bolK3d
+c     _RL GM_bolK3d, K_skewFlx
       _RL GM_dR2_fact
       _RL dR_delT_lim, dR2delT_lim, half_dr
       _RL maskp5, mskP1, tmpFac
@@ -189,15 +189,22 @@ C-    Safer to cap diffusivity but with a large enough cap to not matter:
 C-  Converting Griffies etal, JPO paper (MOM) grid variables to MITgcm var:
 C      dxu --> dxC ; dxt --> dxF
 C      dzw --> drC ; dzt --> drF
-C   grid-weight factor from JPO paper: e.g. for triad #3,
+C   grid-weight factor from JPO paper: e.g. for triad #1,
 C   contribution to dfx(i,j,k) is *drC(k) and at the end divide dfx by 4*drF(k)
 C   contribution to dfr(i,j,k) is *dxC(i) and at the end divide dfr by 4*dxF(i)
 C    and same for KappaR(i,j,k)
 C-  Here last division is accounted in divergence of fluxes (units: [Tr]*m^3/s)
-C   and we scale by a fraction of the grid-cell interrface area, e.g., triad #3
+C   and we scale by a fraction of the grid-cell interface area, e.g., triad #1
 C    contrib to dfx: *drC(k)*dyG(i,j)*deepFacF(k)
 C    contrib to dfr: *rAw(i,j)*deepFac2F(k)
-C   Note that scaling of dfr (& KwzLoc) by deepFac2F/2 is done at the end
+C   Note: scaling of dfr (& KwzLoc) by deepFac2F/2 (& 1/rA/2) is done at the end
+C   Note for P-coords:
+C    slope variable here has same sign than in z-coords (upward direction), i.e.
+C    opposite to p-coord slope (Sp= -dSigmaX/dSigmaP); therefore, in computing
+C    horizontal fluxes, sign of dTdr is reversed (= -dTdp) as well as vertical
+C    flux expression (+ instead of -) but remains consistent with r-coord dir.:
+C      dfx = -[ K*dTdx + K*(-Sp)*(-dTdp) ]
+C      dfr = +[ K*(-Sp)*dTdx + K*(Sp^2)*(-dTdp) ]
 
 C---  Start of k loop corresponding to horizontal fluxes
       DO k=1,Nr
@@ -261,24 +268,26 @@ C-     Stability limit:
      &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+c          K_skewFlx = GM_skewflx*SIGN( GM_bolK3d*slope, sigmaX(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
+c          K_skewFlx =  0. _d 0
           ENDIF
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j,k) - tracer(i,j,k-1) )
+     &         * recip_drC(kl)*gravitySign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
+C    &                 - K_skewFlx*dTdr
      &                 )*xA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               - ( K_slp(i,j)*dTdx
-C    &                 + GM_skewflx*GM_bolK3d*dTdx
-     &                 )*rAw(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdx
+C    &                 + K_skewFlx*dTdx
+     &                 )*rAw(i,j,bi,bj)*gravitySign
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -316,17 +325,15 @@ C-     Stability limit:
           ENDIF
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i-1,j,k-1) - tracer(i-1,j,k) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i-1,j,k) - tracer(i-1,j,k-1) )
+     &         * recip_drC(kl)*gravitySign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*xA(i,j)
           dfr(i-1,j,kl) = dfr(i-1,j,kl)
-     &               - ( K_slp(i,j)*dTdx
-C    &                 + GM_skewflx*GM_bolK3d*dTdx
-     &                 )*rAw(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)*gravitySign
           KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -396,17 +403,15 @@ C-     Stability limit:
           ENDIF
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i-1,j,k) - tracer(i-1,j,k+1) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i-1,j,k+1) - tracer(i-1,j,k) )
+     &         * recip_drC(kl)*gravitySign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*xA(i,j)
           dfr(i-1,j,kl) = dfr(i-1,j,kl)
-     &               - ( K_slp(i,j)*dTdx
-C    &                 + GM_skewflx*GM_bolK3d*dTdx
-     &                 )*rAw(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)*gravitySign
           KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -444,17 +449,15 @@ C-     Stability limit:
           ENDIF
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j,k) - tracer(i,j,k+1) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j,k+1) - tracer(i,j,k) )
+     &         * recip_drC(kl)*gravitySign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*xA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               - ( K_slp(i,j)*dTdx
-C    &                 + GM_skewflx*GM_bolK3d*dTdx
-     &                 )*rAw(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)*gravitySign
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -514,24 +517,26 @@ C-     Stability limit:
      &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
            K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+c          K_skewFlx = GM_skewflx*SIGN( GM_bolK3d*slope, sigmaY(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
            K_slp(i,j) = 0. _d 0
+c          K_skewFlx =  0. _d 0
           ENDIF
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j,k-1) - tracer(i,j,k) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j,k) - tracer(i,j,k-1) )
+     &         * recip_drC(kl)*gravitySign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
+C    &                 - K_skewFlx*dTdr
      &                 )*yA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               - ( K_slp(i,j)*dTdy
-C    &                 + GM_skewflx*GM_bolK3d*dTdy
-     &                 )*rAs(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdy
+C    &                 + K_skewFlx*dTdy
+     &                 )*rAs(i,j,bi,bj)*gravitySign
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -569,17 +574,15 @@ C-     Stability limit:
           ENDIF
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j-1,k-1) - tracer(i,j-1,k) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j-1,k) - tracer(i,j-1,k-1) )
+     &         * recip_drC(kl)*gravitySign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*yA(i,j)
           dfr(i,j-1,kl) = dfr(i,j-1,kl)
-     &               - ( K_slp(i,j)*dTdy
-C    &                 + GM_skewflx*GM_bolK3d*dTdy
-     &                 )*rAs(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)*gravitySign
           KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -649,17 +652,15 @@ C-     Stability limit:
           ENDIF
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j-1,k) - tracer(i,j-1,k+1) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j-1,k+1) - tracer(i,j-1,k) )
+     &         * recip_drC(kl)*gravitySign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*yA(i,j)
           dfr(i,j-1,kl) = dfr(i,j-1,kl)
-     &               - ( K_slp(i,j)*dTdy
-C    &                 + GM_skewflx*GM_bolK3d*dTdy
-     &                 )*rAs(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)*gravitySign
           KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -697,17 +698,15 @@ C-     Stability limit:
           ENDIF
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-          dTdr = ( tracer(i,j,k) - tracer(i,j,k+1) )
-     &         * recip_drC(kl)
+          dTdr = ( tracer(i,j,k+1) - tracer(i,j,k) )
+     &         * recip_drC(kl)*gravitySign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
-C    &                 - GM_skewflx*GM_bolK3d*dTdr
      &                 )*yA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               - ( K_slp(i,j)*dTdy
-C    &                 + GM_skewflx*GM_bolK3d*dTdy
-     &                 )*rAs(i,j,bi,bj)
+     &               + ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)*gravitySign
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
