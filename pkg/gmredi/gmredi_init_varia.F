@@ -35,7 +35,7 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER i,j,k,bi,bj
 
-C--   Initialise again 3-D control variables
+C--   Initialise again 3-D control variables (AD-compiler need to see this)
 #if (defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
 C--   Initialize 3-D Isopycnal diffusivity in common block
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -69,6 +69,10 @@ C--   Initialize 3-D Thickness diffusivity in common block
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call GMREDI_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useGMRedi.
+C        Therefore, in this case, the "If useGMRedi" is added back here:
       IF ( useGMRedi ) THEN
 #endif
 
