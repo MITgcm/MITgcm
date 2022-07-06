@@ -660,8 +660,8 @@ C-    Save isoneutral gradient and Redi diffusivity
          GM_Nm2(i,j,k,bi,bj) = oneRL
      &       / MAX( gravitySign*sigmaR(i,j,k), GM_Small_Number )
          GM_isoK3d(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPREDI_CONTROL
-     &     kapRedi(i,j,k,bi,bj)
+#ifdef GM_READ_K3D_REDI
+     &     GM_inpK3dRedi(i,j,k,bi,bj)
 #else
      &     GM_isopycK*GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
 #endif
