@@ -257,8 +257,10 @@ C     Kvz :: K_23 element of GM/Redi tensor, Z direction at V point
 #endif
 
 #ifdef GM_TRIADS_SCHEME
-C-    Save isoneutral gradient and Redi diffusivity
-      _RL GM_Nm2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C-    Save 1/stratification and Redi diffusivity
+C     GM_Nm2    :: minus reciprocal of d.sigma.dR (i.e, proportional to N^-2)
+C     GM_isoK3d :: isopycnal (Redi) diffusivity coeff. [m^2/s] (post tapering)
+      _RL GM_Nm2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GM_isoK3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_TRIADS/ GM_Nm2, GM_isoK3d
 #endif
