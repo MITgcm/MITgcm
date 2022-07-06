@@ -5,6 +5,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ctrl_map_ini
@@ -43,6 +46,9 @@ c     == global variables ==
 # else
 #  include "ctrl_weights.h"
 # endif
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
@@ -305,6 +311,7 @@ c--   diffkr.
 
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_KAPGM_CONTROL
+#ifdef GM_READ_K3D_GM
 c--   kapgm.
       il=ilnblnk( xx_kapgm_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -318,12 +325,12 @@ c--   kapgm.
             do j = jmin,jmax
               do i = imin,imax
 #ifdef ALLOW_OPENAD
-                kapGM(i,j,k,bi,bj) = kapGM(i,j,k,bi,bj) +
-     &                               xx_kapgm(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
+                GM_inpK3dGM(i,j,k,bi,bj) = GM_inpK3dGM(i,j,k,bi,bj)
+     &                               + xx_kapgm(i,j,k,bi,bj)
+     &                               + tmpfld3d(i,j,k,bi,bj)
 #else
-                kapGM(i,j,k,bi,bj) = kapGM(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
+                GM_inpK3dGM(i,j,k,bi,bj) = GM_inpK3dGM(i,j,k,bi,bj)
+     &                               + tmpfld3d(i,j,k,bi,bj)
 #endif
               enddo
             enddo
@@ -332,9 +339,11 @@ c--   kapgm.
       enddo
 #endif
 #endif
+#endif
 
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
 c--   kapredi.
       il=ilnblnk( xx_kapredi_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -347,13 +356,14 @@ c--   kapredi.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                kapRedi(i,j,k,bi,bj) = kapRedi(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
+                GM_inpK3dRedi(i,j,k,bi,bj) = GM_inpK3dRedi(i,j,k,bi,bj)
+     &                               + tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
+#endif
 #endif
 #endif
 
@@ -616,10 +626,10 @@ c--   Update the tile edges.
       _EXCH_XYZ_RL( diffKr, mythid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-      _EXCH_XYZ_RL( kapGM, mythid)
+      _EXCH_XYZ_RL( GM_inpK3dGM, mythid )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      _EXCH_XYZ_RL( kapRedi, mythid)
+      _EXCH_XYZ_RL( GM_inpK3dRedi, mythid )
 # endif
 #endif
 
