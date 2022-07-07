@@ -7,7 +7,7 @@ C     The following common block is the "state" for the MNC interface to
 C     NetCDF.  The intent is to keep track of the associations between
 C     files, attributes, variables, grids, and dimensions.  These
 C     objects are roughly defined as:
-C     
+C
 C     a dimension:
 C     - contains: [ name, size ]
 C     - exists per-NetCDF-file
@@ -15,22 +15,22 @@ C
 C     a grid:
 C     - contains *ORDERED* sets of dimensions: [ name, 1+ dim-refs ]
 C     - exists per-NetCDF-file
-C     - NOTE: when created, the name and dim-refs are embedded in 
+C     - NOTE: when created, the name and dim-refs are embedded in
 C         the NetCDF file attributes for later retrieval
-C     - NOTE: grid coordinates are implemented using variables with 
-C         special names (eg. lat, lon) and special units 
+C     - NOTE: grid coordinates are implemented using variables with
+C         special names (eg. lat, lon) and special units
 C         (eg. degree_east)
-C     
+C
 C     a variable:
 C     - contains: [ name, units, 1 grid-ref, data ]
 C     - exists per-NetCDF-file
 C     - NOTE: is associated with *exactly* one grid
-C     
+C
 C     an attribute:
 C     - contains: [ name, units, data ]
 C     - basically, a scalar (non-grid) variable
 C     - exists per-NetCDF-file
-C     
+C
 C     a NetCDF file:
 C     - contains: [ name, 0+ attr, 0+ grid-ref, 0+ var-ref ]
 C
@@ -43,12 +43,12 @@ C     !INTERFACE:
 C     #include "MNC_COMMON.h"
 
 C     !DESCRIPTION:
-C     Contains the ``look-up'' tables for the MNC package.  These tables
+C     Contains the "look-up" tables for the MNC package.  These tables
 C     contain the mappings between the various names and the NetCDF
 C     entities.
 
 C     !LOCAL VARIABLES:
-C     The following MNC "Internals" are implemented on a 
+C     The following MNC "Internals" are implemented on a
 C     PER-NetDCF-FILE basis:
 C     .
 C     mnc_blank_name    :: (convenience) just MNC_MAX_CHAR spaces
@@ -56,7 +56,7 @@ C     .
 C     mnc_f_names (fi)  :: file names
 C     mnc_g_names (gi)  :: grid names    <----+
 C     .                                       |
-C     mnc_f_info (fi,-) :: isDEF, fID, Ngrid, g1,ds1,de1, 
+C     mnc_f_info (fi,-) :: isDEF, fID, Ngrid, g1,ds1,de1,
 C     .                                       g2,ds2,de2, ...
 C     .                                          |   |
 C     mnc_fd_ind (fi,-) :: dim indicies  <-------+---+
@@ -78,7 +78,7 @@ C     vi                ::  variable index
 C     di                ::  dimension index
 C     .
 C     .
-C     The following MNC "Convenience Wrapper" variables are 
+C     The following MNC "Convenience Wrapper" variables are
 C     implemented independently of any NetCDF files
 C     .
 C     mnc_cw_fgnm  (f)  :: file group name (or "base name")
@@ -129,8 +129,8 @@ CEOP
 
 C=====================================================================
       COMMON /MNC_VARS_C/
-     &     mnc_blank_name, 
-     &     mnc_g_names, mnc_v_names, mnc_d_names, 
+     &     mnc_blank_name,
+     &     mnc_g_names, mnc_v_names, mnc_d_names,
      &     mnc_out_path, mnc_f_names
 
       character*(MNC_MAX_CHAR) mnc_blank_name
@@ -156,8 +156,8 @@ C=====================================================================
 
 C=====================================================================
       COMMON /MNC_CW_VARS_C/
-     &     mnc_cw_gname, mnc_cw_dn, 
-     &     mnc_cw_vname, 
+     &     mnc_cw_gname, mnc_cw_dn,
+     &     mnc_cw_vname,
      &     mnc_cw_vtnm,  mnc_cw_vinm,  mnc_cw_vdnm,
      &     mnc_cw_fgnm,
      &     mnc_cw_vtat
@@ -175,7 +175,7 @@ C     Note the longer string length here
 
 C=====================================================================
       COMMON /MNC_CW_VARS_I/
-     &     mnc_cw_ndim,  mnc_cw_dims, 
+     &     mnc_cw_ndim,  mnc_cw_dims,
      &     mnc_cw_is,    mnc_cw_ie,
      &     mnc_cw_vgind, mnc_cw_vfmv,  mnc_cw_vmvi, mnc_cw_vnat,
      &     mnc_cw_vbij,  mnc_cw_viat,

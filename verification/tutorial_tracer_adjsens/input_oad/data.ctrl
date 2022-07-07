@@ -16,5 +16,41 @@
 # names for CTRL_GENARR, CTRL_GENTIM
 # *********************
  &CTRL_NML_GENARR
+# Since everything is hard coded, the following has no effect but is
+# just meant to document the control variables;
+# the forcing controls are constant in time so they are realized
+# via genarr2d rather than gentim2d and hard coded in
+# ctrl_map_ini_genarr.F
+ xx_genarr2d_file(1)       = 'xx_qnet',
+ xx_genarr2d_weight(1)     = 'ones_64b.bin',
+#xx_gentim2d_startdate1(1) = 19920101,
+#xx_gentim2d_startdate2(1) = 000000,
+#xx_gentim2d_period(1)     = 0.0,
+#
+ xx_genarr2d_file(2)       = 'xx_empmr',
+ xx_genarr2d_weight(2)     = 'ones_64b.bin',
+#xx_gentim2d_startdate1(2) = 19920101,
+#xx_gentim2d_startdate2(2) = 000000,
+#xx_gentim2d_period(2)     = 0.0,
+#
+ xx_genarr2d_file(3)       = 'xx_fu',
+ xx_genarr2d_weight(3)     = 'ones_64b.bin',
+#xx_gentim2d_startdate1(3) = 19920101,
+#xx_gentim2d_startdate2(3) = 000000,
+#xx_gentim2d_period(3)     = 0.0,
+#
+ xx_genarr2d_file(4)       = 'xx_fv',
+ xx_genarr2d_weight(4)     = 'ones_64b.bin',
+#xx_gentim2d_startdate1(4) = 19920101,
+#xx_gentim2d_startdate2(4) = 000000,
+#xx_gentim2d_period(4)     = 0.0,
+#
+ xx_genarr3d_weight(1) = 'ones_64b.bin',
+ xx_genarr3d_file(1)   = 'xx_theta',
+ xx_genarr3d_weight(2) = 'ones_64b.bin',
+ xx_genarr3d_file(2)   = 'xx_salt',
+ xx_genarr3d_weight(3) = 'ones_64b.bin',
+ xx_genarr3d_file(3)   = 'xx_diffKr',
+ xx_genarr3d_weight(4) = 'ones_64b.bin',
+ xx_genarr3d_file(4)   = 'xx_ptr1',
  &
-

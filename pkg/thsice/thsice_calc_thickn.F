@@ -1,6 +1,7 @@
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+# define ALLOW_AUTODIFF_TAMC_MORE
 #endif
 
 CBOP
@@ -180,6 +181,8 @@ C     q2tmp      :: Temporary value of qice for layer 2
       _RL esurp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL extend
       _RL hnew   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nlyr)
+C     help TAF with these variables
+      _RL hnewTmp, icFracTmp, hIceTmp, hSnwTmp
       _RL hlyr
       _RL dhi
       _RL dhs
@@ -209,9 +212,12 @@ C     q2tmp      :: Temporary value of qice for layer 2
       _RL c1Mlt, c2Mlt, aMlt, hMlt
       _RL c1Frz, c2Frz, aFrz, hFrz
       _RL enFrcMlt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL xxMlt, tmpMlt
+      _RL xxMlt
       _RL enFrcFrz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL xxFrz, tmpFrz
+      _RL xxFrz
+# if ( !defined TARGET_NEC_SX && !defined ALLOW_AUTODIFF )
+      _RL tmpMlt, tmpFrz
+# endif
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -219,10 +225,16 @@ C     q2tmp      :: Temporary value of qice for layer 2
       INTEGER max1, max2, max3
       INTEGER ticekey, ikey_1
 #endif
+#ifdef THSICE_REGULARIZE_CALC_THICKN
+      _RL kScal
+      PARAMETER ( kScal = 1.D0 )
+#endif
+#ifdef ALLOW_DBUG_THSICE
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 
  1020 FORMAT(A,1P4E11.3)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -242,6 +254,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       rec_nlyr = nlyr
       rec_nlyr = 1. _d 0 / rec_nlyr
       dt  = thSIce_deltaT
+      cpchr = cpWater*rhosw*bMeltCoef
 
 C     for now, use hard coded threshold (iceMaskMin +1.% and +10.%)
       lowIcFrac1 = iceMaskMin*1.01 _d 0
@@ -300,25 +313,20 @@ C     initialise local arrays
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     The commented store directives ("cCADJ") are not picked up by TAF,
+C     that does not mean that under different circumstances they might,
+C     so I leave them here as a reminder.
+CADJ STORE hice   = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icfrac = comlev1_bibj, key=ticekey, kind=isbyte
+cCADJ STORE frwatm = comlev1_bibj, key=ticekey, kind=isbyte
+cCADJ STORE fzmloc = comlev1_bibj, key=ticekey, kind=isbyte
+cCADJ STORE hSnow1 = comlev1_bibj, key=ticekey, kind=isbyte
+cCADJ STORE qic1   = comlev1_bibj, key=ticekey, kind=isbyte
+cCADJ STORE qic2   = comlev1_bibj, key=ticekey, kind=isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CML        ikey_1 = i
-CML     &       + sNx*(j-1)
-CML     &       + sNx*sNy*act1
-CML     &       + sNx*sNy*max1*act2
-CML     &       + sNx*sNy*max1*max2*act3
-CML     &       + sNx*sNy*max1*max2*max3*act4
-CML#endif /* ALLOW_AUTODIFF_TAMC */
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE frwatm(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE fzmloc(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hice(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hSnow1(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE icfrac(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE qic1(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE qic2(i,j) = comlev1_thsice_1, key=ikey_1
-CML#endif
 
         IF (iceMask(i,j).GT.0. _d 0) THEN
          qicen(i,j,1)= qIc1(i,j)
@@ -339,7 +347,7 @@ C------------------------------------------------------------------------
          xxFrz = aFrz*(hIce(i,j)-hFrz)
 c--
          IF ( powerLawExp2 .GE. 1 ) THEN
-#ifdef TARGET_NEC_SX
+#if ( defined TARGET_NEC_SX || defined ALLOW_AUTODIFF )
 C     avoid the short inner loop that cannot be vectorized
           xxMlt = xxMlt**powerLaw
           xxFrz = xxFrz**powerLaw
@@ -382,17 +390,32 @@ C between hThinIce & hThickIce, use partition factor fracEnFreez
 C     !-----------------------------------------------------------------
 C     ! melting conditions
 C     !-----------------------------------------------------------------
+#ifdef THSICE_REGULARIZE_CALC_THICKN
+C     smooth regulatization
+          ustar = SQRT(0.00536 _d 0 *v2oc(i,j) + 25. _d -6)
+#else
 C     for no currents:
-          ustar = 5. _d -2
+          ustar = 5. _d -3
 C frictional velocity between ice and water
           IF (v2oc(i,j) .NE. 0.)
      &     ustar = SQRT(0.00536 _d 0*v2oc(i,j))
-          ustar=max(5. _d -3,ustar)
-          cpchr =cpWater*rhosw*bMeltCoef
+          ustar = MAX(5. _d -3,ustar)
+#endif
+c         cpchr =cpWater*rhosw*bMeltCoef
           Fbot(i,j) = cpchr*(tFrz(i,j)-tOce(i,j))*ustar
 C     fzMlOc < Fbot < 0
-          Fbot(i,j) = max(Fbot(i,j),fzMlOc(i,j))
-          Fbot(i,j) = min(Fbot(i,j),0. _d 0)
+#ifdef THSICE_REGULARIZE_CALC_THICKN
+C     smooth regulatization
+C     we want to have some soft maximum for better differentiability:
+C     max(a,b;k) = (a*exp(k*a)+b*exp(k*b))/(exp(k*a)+exp(k*b))
+          Fbot(i,j) = (
+     &             Fbot(i,j) * EXP(kScal*  Fbot(i,j))
+     &         + fzMlOc(i,j) * EXP(kScal*fzMlOc(i,j))
+     &         )/( EXP(kScal*Fbot(i,j)) + EXP(kScal*fzMlOc(i,j)) )
+#else
+          Fbot(i,j) = MAX(Fbot(i,j),fzMlOc(i,j))
+#endif
+          Fbot(i,j) = MIN(Fbot(i,j),0. _d 0)
          ENDIF
 
 C  mass of fresh water and salt initially present in ice
@@ -409,6 +432,9 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icFrac = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -492,14 +518,15 @@ C     layers
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE etop   = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE etop(i,j) = comlev1_thsice_1, key=ikey_1
-CML#endif
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
      &         etop(i,j) .GT. 0. _d 0 .AND.
-     &        hSnow1(i,j) .GT. 0. _d 0) THEN
+     &       hSnow1(i,j) .GT. 0. _d 0) THEN
 
 C     Make sure internal ice temperatures do not exceed Tmlt.
 C     If they do, then eliminate the layer.  (Dont think this will happen
@@ -519,24 +546,20 @@ C     endif iceMask > 0, etc.
 C     end i/j-loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 C     two layers of ice
       DO k = 1, nlyr
+#ifdef ALLOW_AUTODIFF_TAMC
+       ikey_1 = k + (ticekey-1)*nlyr
+CADJ STORE etop         = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
+CADJ STORE hnew (:,:,k) = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
+CADJ STORE qicen(:,:,k) = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
+#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j).GT.0. _d 0) THEN
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CML          ikey_2 = k
-CML     &         + nlyr*(i-1)
-CML     &         + nlyr*sNx*(j-1)
-CML     &         + nlyr*sNx*sNy*act1
-CML     &         + nlyr*sNx*sNy*max1*act2
-CML     &         + nlyr*sNx*sNy*max1*max2*act3
-CML     &         + nlyr*sNx*sNy*max1*max2*max3*act4
-CML#endif
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE etop(i,j) = comlev1_thsice_2, key=ikey_2
-CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
-CML#endif
           IF (etop(i,j) .GT. 0. _d 0) THEN
            rq =  rhoi * qicen(i,j,k)
            rqh = rq * hnew(i,j,k)
@@ -564,6 +587,13 @@ C     end i/j-loops
        ENDDO
 C     end k-loop
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     if isbyte=4, these change the AD-monitor output a little (11-14
+C     digits of agreement)
+CADJ STORE ebot  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
 C Bottom growth:
       DO j = jMin, jMax
@@ -573,11 +603,6 @@ C Compute enthalpy of new ice growing at bottom surface.
          qbot =  -cpIce *tFrz(i,j) + Lfresh
          dhi = -ebot(i,j) / (qbot * rhoi)
          ebot(i,j) = 0. _d 0
-cph         k = nlyr
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
-CML#endif
          qicen(i,j,nlyr) =
      &        (hnew(i,j,nlyr)*qicen(i,j,nlyr)+dhi*qbot) /
      &        (hnew(i,j,nlyr)+dhi)
@@ -590,29 +615,19 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etop(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE ebot(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     these change the results (increase gradient error sligthly);
+C     they do not improve performance too much, so we leave commented
+cCADJ STORE hnew (:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
+cCADJ STORE qicen(:,:,nlyr) = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 
 C Bottom melt:
       DO k = nlyr, 1, -1
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CML           ikey_2 = (nlyr-k+1)
-CML     &         + nlyr*(i-1)
-CML     &         + nlyr*sNx*(j-1)
-CML     &         + nlyr*sNx*sNy*act1
-CML     &         + nlyr*sNx*sNy*max1*act2
-CML     &         + nlyr*sNx*sNy*max1*max2*act3
-CML     &         + nlyr*sNx*sNy*max1*max2*max3*act4
-CML#endif
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE ebot(i,j) = comlev1_thsice_2, key=ikey_2
-CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
-CMLCADJ STORE qicen(i,j,k) = comlev1_thsice_2, key=ikey_2
-CML#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+       ikey_1 = k + (ticekey-1)*nlyr
+CADJ STORE ebot = comlev1_thsice_nlyr, key=ikey_1, kind = isbyte
+#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j) .GT. 0. _d 0 .AND.
@@ -634,13 +649,19 @@ C     end i/j-loops
        ENDDO
 C     end k-loop
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     if isbyte=4, these change the AD-monitor output a little (10-11
+C     digits of agreement)
+CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE ebot = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 C     If ice melts completely and snow is left, remove the snow with
 C     energy from the mixed layer
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j) .GT. 0. _d 0 .AND.
      &       ebot(i,j)   .GT. 0. _d 0 .AND.
-     &       hSnow1(i,j)  .GT. 0. _d 0) THEN
+     &       hSnow1(i,j) .GT. 0. _d 0) THEN
          rq =  rhos * qsnow
          rqh = rq * hSnow1(i,j)
          IF (ebot(i,j) .LT. rqh) THEN
@@ -661,6 +682,9 @@ C     endif iceMask > 0, etc.
 C     end i/j-loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE hSnow1 = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j).GT.0. _d 0) THEN
@@ -726,10 +750,6 @@ C Let it snow
           hSnow1(i,j) = hSnow1(i,j) + dt*snowP(i,j)/rhos
 C If ice evap is used to sublimate surface snow/ice or
 C if no ice pass on to ocean
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE evapLoc(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hSnow1(i,j) = comlev1_thsice_1, key=ikey_1
-CML#endif
           IF (hSnow1(i,j).GT.0. _d 0) THEN
            IF (evapLoc(i,j)/rhos *dt.GT.hSnow1(i,j)) THEN
             evapLoc(i,j)=evapLoc(i,j)-hSnow1(i,j)*rhos/dt
@@ -747,65 +767,38 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE evaploc(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hSnow1(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE icfrac(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-#endif
-
 C-    else: hIce > 0
       DO k = 1, nlyr
+#ifdef ALLOW_AUTODIFF_TAMC
+       ikey_1 = k + (ticekey-1)*nlyr
+CADJ STORE evaploc      = comlev1_thsice_nlyr, key=ikey_1, kind=isbyte
+#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j).GT.0. _d 0 ) THEN
 
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE evapLoc(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hIce(i,j) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-CMLCADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
-CML#endif
+           hnewTmp = hnew(i,j,k)
            IF (hIce(i,j).GT.0. _d 0.AND.evapLoc(i,j).GT.0. _d 0) THEN
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CML            ikey_2 = k
-CML     &         + nlyr*(i-1)
-CML     &         + nlyr*sNx*(j-1)
-CML     &         + nlyr*sNx*sNy*act1
-CML     &         + nlyr*sNx*sNy*max1*act2
-CML     &         + nlyr*sNx*sNy*max1*max2*act3
-CML     &         + nlyr*sNx*sNy*max1*max2*max3*act4
-CML#endif
-CMLC--
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE evapLoc(i,j) = comlev1_thsice_2, key=ikey_2
-CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
-CMLCADJ STORE qicen(i,j,k) = comlev1_thsice_2, key=ikey_2
-CML#endif
 C            IF (evapLoc(i,j) .GT. 0. _d 0) THEN
 C-- original scheme, does not care about ice temp.
 C-  this can produce small error (< 1.W/m2) in the Energy budget
-c              IF (evapLoc(i,j)/rhoi *dt.GT.hnew(i,j,k)) THEN
-c                evapLoc(i,j)=evapLoc(i,j)-hnew(i,j,k)*rhoi/dt
+c              IF (evapLoc(i,j)/rhoi *dt.GT.hnewTmp) THEN
+c                evapLoc(i,j)=evapLoc(i,j)-hnewTmp*rhoi/dt
 c                hnew(i,j,k)=0. _d 0
 c              ELSE
-c                hnew(i,j,k) = hnew(i,j,k) - evapLoc(i,j)/rhoi *dt
+c                hnew(i,j,k) = hnewTmp - evapLoc(i,j)/rhoi *dt
 c                evapLoc(i,j)=0. _d 0
 c              ENDIF
 C-- modified scheme. taking into account Ice enthalpy
              dhi = evapLoc(i,j)/rhoi*dt
-             IF (dhi.GE.hnew(i,j,k)) THEN
-              evapLoc(i,j)=evapLoc(i,j)-hnew(i,j,k)*rhoi/dt
+             IF (dhi.GE.hnewTmp) THEN
+              evapLoc(i,j)=evapLoc(i,j)-hnewTmp*rhoi/dt
               esurp(i,j) = esurp(i,j)
-     &             - hnew(i,j,k)*rhoi*(qicen(i,j,k)-Lfresh)
+     &             - hnewTmp*rhoi*(qicen(i,j,k)-Lfresh)
               hnew(i,j,k)=0. _d 0
              ELSE
-CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE hnew(i,j,k) = comlev1_thsice_2, key=ikey_2
-CML#endif
-              hq = hnew(i,j,k)*qicen(i,j,k)-dhi*Lfresh
-              hnew(i,j,k) = hnew(i,j,k) - dhi
+              hq = hnewTmp*qicen(i,j,k)-dhi*Lfresh
+              hnew(i,j,k) = hnewTmp - dhi
               qicen(i,j,k)=hq/hnew(i,j,k)
               evapLoc(i,j)=0. _d 0
              ENDIF
@@ -825,12 +818,14 @@ C     end i/j-loops
 C     end k-loop
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etop(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-cphCADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     if isbyte=4, these change the AD-monitor output a little (8-10
+C     digits of agreement)
+CADJ STORE evapLoc = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hSnow1  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hIce    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew    = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE qicen   = comlev1_bibj, key = ticekey, kind = isbyte
 #endif
 
 C     still else: hice > 0
@@ -869,19 +864,15 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hice(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hSnow1(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-#endif
-
       DO j = jMin, jMax
        DO i = iMin, iMax
+C     These helper variables avoid TAF recomputation warnings
+        hIceTmp = hIce(i,j)
+        hSnwTmp = hSnow1(i,j)
+        hnewTmp = hnew(i,j,1)
         IF (iceMask(i,j).GT.0. _d 0) THEN
 
-         IF ( hIce(i,j) .GT. 0. _d 0 ) THEN
+         IF ( hIceTmp .GT. 0. _d 0 ) THEN
 
 C If there is enough snow to lower the ice/snow interface below
 C freeboard, convert enough snow to ice to bring the interface back
@@ -889,45 +880,64 @@ C to sea-level OR if snow height is larger than hsMax, snow is
 C converted to ice to bring hSnow1 down to hsMax. Largest change is
 C applied and enthalpy of top ice layer adjusted accordingly.
 
-#ifdef ALLOW_AUTODIFF_TAMC
-        ikey_1 = i
-     &       + sNx*(j-1)
-     &       + sNx*sNy*act1
-     &       + sNx*sNy*max1*act2
-     &       + sNx*sNy*max1*max2*act3
-     &       + sNx*sNy*max1*max2*max3*act4
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hIce(i,j) = comlev1_thsice_1, key=ikey_1
-CADJ STORE hSnow1(i,j) = comlev1_thsice_1, key=ikey_1
-CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-CADJ STORE qicen(i,j,:) = comlev1_thsice_1, key=ikey_1
-#endif
-          IF ( hSnow1(i,j) .GT. hIce(i,j)*floodFac
-     &         .OR. hSnow1(i,j) .GT. hsMax ) THEN
+          IF ( hSnwTmp .GT. hIceTmp*floodFac
+     &         .OR. hSnwTmp .GT. hsMax ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
-c          dhi = (hSnow1(i,j) * rhos - hIce(i,j) * rhoiw) / rhosw
+c          dhi = (hSnwTmp * rhos - hIceTmp * rhoiw) / rhosw
 c          dhs = dhi * rhoi / rhos
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hnew(i,j,:) = comlev1_thsice_1, key=ikey_1
-#endif
-           dhs = (hSnow1(i,j) - hIce(i,j)*floodFac) * rhoi / rhosw
-           dhs = MAX( hSnow1(i,j) - hsMax, dhs )
+           dhs = (hSnwTmp - hIceTmp*floodFac) * rhoi / rhosw
+           dhs = MAX( hSnwTmp - hsMax, dhs )
            dhi = dhs * rhos / rhoi
-           rqh = rhoi*qicen(i,j,1)*hnew(i,j,1) + rhos*qsnow*dhs
-           hnew(i,j,1)    = hnew(i,j,1) + dhi
-           qicen(i,j,1)   = rqh / (rhoi*hnew(i,j,1))
-           hIce(i,j)  = hIce(i,j) + dhi
-           hSnow1(i,j) = hSnow1(i,j) - dhs
+           rqh = rhoi*qicen(i,j,1)*hnewTmp + rhos*qsnow*dhs
+           hnew(i,j,1)  = hnewTmp + dhi
+           qicen(i,j,1) = rqh / (rhoi*hnew(i,j,1))
+           hIce(i,j)    = hIceTmp + dhi
+           hSnow1(i,j)  = hSnwTmp - dhs
           ENDIF
+#ifdef ALLOW_AUTODIFF
+C     This is awkward, but makes storing a few variables (hIce, hnew,
+C     qicen) unnecessary. Splitting the loop also changes the condition
+C     hIce>0 because hIce has been modified above. This could be handled
+C     more cleanly, but because hIce>0 is required for the previous
+C     block to be executed where snow is turned into ice hIce>0 is still
+C     unchanged, so splitting this loop with the if conditions should be
+C     safe. If this turns out to be robust, we can use this code also
+C     for non-AD simulation.
 
+C-    if hIce > 0 : end
+         ENDIF
+C     endif iceMask > 0
+        ENDIF
+C     end i/j-loops
+       ENDDO
+      ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+C     if isbyte=4, these change the AD-monitor output a little (8-10
+C     digits of agreement), but avoid quite a few recomputations
+CADJ STORE qicen       = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hice        = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew(:,:,1) = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+C     This helper variable avoids TAF recomputation warnings
+        hIceTmp = hIce(i,j)
+        IF (iceMask(i,j).GT.0. _d 0) THEN
+         IF ( hIceTmp .GT. 0. _d 0 ) THEN
+C limit ice height
+C- NOTE: this part does not conserve Energy ;
+C        but surplus of fresh water and salt are taken into account.
+          IF (hIceTmp.GT.hiMax) THEN
+cBB      print*,'BBerr, hIce>hiMax',i,j,hIce(i,j)
+           chi=hIceTmp-hiMax
+#else /* ndef ALLOW_AUTODIFF */
 C limit ice height
 C- NOTE: this part does not conserve Energy ;
 C        but surplus of fresh water and salt are taken into account.
           IF (hIce(i,j).GT.hiMax) THEN
 cBB      print*,'BBerr, hIce>hiMax',i,j,hIce(i,j)
            chi=hIce(i,j)-hiMax
+#endif /* ALLOW_AUTODIFF */
            hnew(i,j,1)=hnew(i,j,1)-chi/2. _d 0
            hnew(i,j,2)=hnew(i,j,2)-chi/2. _d 0
            frw2oc(i,j) = frw2oc(i,j) + chi*rhoi/dt
@@ -994,6 +1004,10 @@ C     endif iceMask > 0
 C     end i/j-loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC_MORE
+CADJ STORE qicen = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE hnew = comlev1_bibj, key = ticekey, kind = isbyte
+#endif
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -1036,7 +1050,7 @@ c    &      + snow(i,j,bi,bj)*rhos - frwAtm
      &         (mwater0(i,j)-(rhos*hSnow1(i,j)+rhoi*hIce(i,j)))/dt,
      &         evapLoc(i,j),frw2oc(i,j),fsalt(i,j)
           WRITE(6,1020)'ThSI_CALC_TH: flx2oc,Fbot,extend/dt =',
-     &         flx2oc(I,J),Fbot(i,j),(etope(i,j)+ebote(i,j))/dt
+     &         flx2oc(i,j),Fbot(i,j),(etope(i,j)+ebote(i,j))/dt
          ENDIF
 #endif
 
@@ -1049,30 +1063,24 @@ C     end i/j-loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE icemask(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE icfrac(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hnew(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hSnow1(:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qicen(:,:,:) = comlev1_bibj, key=ticekey, byte=isbyte
-#endif
-
       DO j = jMin, jMax
        DO i = iMin, iMax
+C     this copy really only helps TAF
+        icFracTmp = icFrac(i,j)
         IF (iceMask(i,j).GT.0. _d 0) THEN
 C--   note: at this point, icFrac has not been changed (unless reset to zero)
 C     and it can only be reduced by lateral melting in the following part:
 
 C     calculate extent changes
          extend=etope(i,j)+ebote(i,j)
-         IF (icFrac(i,j).GT.0. _d 0.AND.extend.GT.0. _d 0) THEN
+         IF (icFracTmp.GT.0. _d 0.AND.extend.GT.0. _d 0) THEN
           rq =  rhoi * 0.5 _d 0*(qicen(i,j,1)+qicen(i,j,2))
           rs =  rhos * qsnow
           rqh = rq * hIce(i,j) + rs * hSnow1(i,j)
           freshe=(rhos*hSnow1(i,j)+rhoi*hIce(i,j))/dt
           salte=(rhoi*hIce(i,j)*saltIce)/dt
           IF ( extend.LT.rqh ) THEN
-           icFrac(i,j)=(1. _d 0-extend/rqh)*icFrac(i,j)
+           icFrac(i,j)=(1. _d 0-extend/rqh)*icFracTmp
           ENDIF
           IF ( extend.LT.rqh .AND. icFrac(i,j).GE.iceMaskMin ) THEN
            frw2oc(i,j)=frw2oc(i,j)+extend/rqh*freshe

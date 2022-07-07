@@ -325,8 +325,18 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--   Wind speed
             wsm        = sh(i,j,bi,bj)
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
+            tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
+     &           + cdrag_8 * wsm**6
+            tmpbulk = exf_scal_BulkCdn * (
+     &             ( halfRL - SIGN(halfRL, wsm-umax) )*tmpbulk
+     &           + ( halfRL + SIGN(halfRL, wsm-umax) )*cdragMax
+     &           )
+#else
             tmpbulk    = exf_scal_BulkCdn *
      &           ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
+#endif
             rdn(i,j)   = SQRT(tmpbulk)
             ustar(i,j) = rdn(i,j)*wsm
            ELSE
@@ -443,8 +453,18 @@ C     similar to largeyeager04, but does not give the same results, strange
              usm   = MAX(usn, umin)
 
 C-   Update the 10m, neutral stability transfer coefficients (momentum)
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+C     Large and Yeager (2009), J.Clim equation 11a/b
+             tmpbulk =  cdrag_1/usm + cdrag_2 + cdrag_3*usm
+     &            + cdrag_8 * usm**6
+             tmpbulk = exf_scal_BulkCdn * (
+     &              ( halfRL - SIGN(halfRL, usm-umax) )*tmpbulk
+     &            + ( halfRL + SIGN(halfRL, usm-umax) )*cdragMax
+     &            )
+#else
              tmpbulk  = exf_scal_BulkCdn *
      &            ( cdrag_1/usm + cdrag_2 + cdrag_3*usm )
+#endif
              rdn(i,j)   = SQRT(tmpbulk)
 #ifdef ALLOW_BULK_LARGEYEAGER04
              rd(i,j)    = rdn(i,j)/(exf_one + rdn(i,j)*dzTmp)
