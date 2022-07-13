@@ -267,47 +267,6 @@ in the skew flux form. In practice, the numerical advantage of the
 skew flux form is fairly limited, as the main factors
 limiting overall MITgcm throughput lie in other routines, numerical solvers, and other computational aspects.
 
-
-Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
------------------------------------------------------------
-
-Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
-:math:`\kappa_{\rm GM}`, a function of
-the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
-non-dimensional constant, :math:`\alpha` (parameter :varlink:`GM_Visbeck_alpha`),
-and a length-scale :math:`L` (parameter :varlink:`GM_Visbeck_length`):
-
-.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\rm Ri}} }^z
-
-where the Eady growth rate has been depth-averaged (indicated by the
-over-line) from the surface to parameter :varlink:`GM_Visbeck_depth`. A local Richardson number is defined
-:math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
-
-.. math::
-
-   \frac{1}{\rm Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
-   \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
-   \frac{ M^4 }{ |f|^2 N^2 }
-
-where :math:`M^2 = g | \nabla \sigma| / \rho_0`. Substituting into
-the formula for :math:`\kappa_{\rm GM}` gives:
-
-.. math::
-
-   \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
-   \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
-   \alpha L^2 \overline{ |{\bf S}| N }^z
-
-A minimum and maximum value for :math:`\kappa_{\rm GM}` can be set using
-:varlink:`GM_Visbeck_minVal_K` and :varlink:`GM_Visbeck_maxVal_K`, respectively.
-Note that using the Visbeck et al. parameterization,  :math:`\kappa_{\rm GM} = \kappa_{\rho}`.
-At present, it is not possible to combine the Visbeck et al. :math:`\kappa_{GM}(x,y)` with a varying vertical profile,
-i.e., using specified files :varlink:`GM_iso1dFile` or :varlink:`GM_bol1dFile`.
-**NOTE**: the computed Visbeck :math:`\kappa_{\rm GM}` is *added* to the background value
-set by parameter :varlink:`GM_background_K`, so for typical usage of Visbeck et al. (where :math:`\kappa_{\rm GM}`
-is fully determined by the Visbeck scheme) the user will want to make sure 
-:varlink:`GM_background_K` is set to 0 (its default value) in ``data.gmredi``.
-
 .. _sub_gmredi_tapering_stability:
 
 Tapering and stability
@@ -439,8 +398,9 @@ follows a similar procedure but used a different tapering function, :math:`f_1(S
 
 .. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right]
 
-where :math:`S_c = 0.004` is a cutoff slope and :math:`S_d=0.001` is a
-scale over which the slopes are smoothly tapered. Functionally, the
+where :math:`S_c = 0.004` is a cutoff slope (in lieu of parameter :varlink:`GM_maxSlope`)
+and :math:`S_d=0.001` is a scale over which the slopes are smoothly tapered.
+Functionally, this
 operates in the same way as the GKW91 scheme but has a substantially
 lower cutoff, turning off the GM/Redi parameterization for weaker
 slopes.
@@ -460,7 +420,8 @@ so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 .. math:: f_2(z) = \frac{1}{2} \left[ 1 + \sin \left(\pi \frac{z}{D} - \frac{\pi}{2} \right) \right]
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
-Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed, so that :math:`c/f` is the Rossby radius).
+Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed,
+so that :math:`c/f` is the Rossby radius, with minimum of 15 km and maximum of 100 km).
 This tapering that varies with depth
 was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
@@ -473,6 +434,46 @@ Tapering: Ferrari and McWilliams, 2008 (FM07)
 
 Boundary-Value Problem (BVP) bolus transport solution
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
+-----------------------------------------------------------
+
+Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
+:math:`\kappa_{\rm GM}`, a function of
+the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
+non-dimensional constant, :math:`\alpha` (parameter :varlink:`GM_Visbeck_alpha`),
+and a length-scale :math:`L` (parameter :varlink:`GM_Visbeck_length`):
+
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\rm Ri}} }^z
+
+where the Eady growth rate has been depth-averaged (indicated by the
+over-line) from the surface to parameter :varlink:`GM_Visbeck_depth`. A local Richardson number is defined
+:math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
+
+.. math::
+
+   \frac{1}{\rm Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
+   \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
+   \frac{ M^4 }{ |f|^2 N^2 }
+
+where :math:`M^2 = g | \nabla \sigma| / \rho_0`. Substituting into
+the formula for :math:`\kappa_{\rm GM}` gives:
+
+.. math::
+
+   \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
+   \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
+   \alpha L^2 \overline{ |{\bf S}| N }^z
+
+A minimum and maximum value for :math:`\kappa_{\rm GM}` can be set using
+:varlink:`GM_Visbeck_minVal_K` and :varlink:`GM_Visbeck_maxVal_K`, respectively.
+Note that using the Visbeck et al. parameterization,  :math:`\kappa_{\rm GM} = \kappa_{\rho}`.
+At present, it is not possible to combine the Visbeck et al. :math:`\kappa_{GM}(x,y)` with a varying vertical profile,
+i.e., using specified files :varlink:`GM_iso1dFile` or :varlink:`GM_bol1dFile`.
+**NOTE**: the computed Visbeck :math:`\kappa_{\rm GM}` is *added* to the background value
+set by parameter :varlink:`GM_background_K`, so for typical usage of Visbeck et al. (where :math:`\kappa_{\rm GM}`
+is fully determined by the Visbeck scheme) the user will want to make sure 
+:varlink:`GM_background_K` is set to 0 (its default value) in ``data.gmredi``.
 
 Other parameterizations: SubMeso
 --------------------------------
@@ -515,6 +516,8 @@ options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
    :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
    :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
    :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
+   :varlink:`GM_READ_K3D_REDI`, #undef, allows read-in file of background 3D Redi diffusivity coefficients
+   :varlink:`GM_READ_K3D_GM`, #undef, allows read-in file of background 3D GM diffusivity coefficients
 
 .. _ssub_phys_pkg_gmredi_runtime:
 
@@ -617,9 +620,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_bol1dFile`            |     ' '                      | input file for 1D vert. scaling of thickness diffusivity                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_background_K3dFile`   |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
+  | :varlink:`GM_K3dGMFile`            |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_isopycK3dFile`        |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
+  | :varlink:`GM_K3dRediFile`          |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_MNC`                  |     :varlink:`useMNC`        | write GMREDI snapshot output using :filelink:`/pkg/mnc`                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
