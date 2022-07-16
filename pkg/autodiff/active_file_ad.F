@@ -101,8 +101,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -112,8 +112,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(2), adactive_var, doglobalread,
+     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -201,8 +202,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -212,8 +213,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(2), adactive_var, doglobalread,
+     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -301,8 +303,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -312,8 +314,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_READ_XZ_RL(
-     &                 fnames(2), adactive_var, doglobalread,
+     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -401,8 +404,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -412,8 +415,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_READ_YZ_RL(
-     &                 fnames(2), adactive_var, doglobalread,
+     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -575,8 +579,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -588,8 +592,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(2), adactive_var, globalFile,
+     &                 fnames(2)(1:il-11), adactive_var, globalFile,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -667,8 +672,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -680,8 +685,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(2), adactive_var, globalFile,
+     &                 fnames(2)(1:il-11), adactive_var, globalFile,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -759,8 +765,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -772,8 +778,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_WRITE_XZ_RL(
-     &                 fnames(2), adactive_var, globalFile,
+     &                 fnames(2)(1:il-11), adactive_var, globalFile,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
@@ -851,8 +858,8 @@ C     !LOCAL VARIABLES:
 #else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
 #endif
+      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -864,8 +871,9 @@ CEOP
 
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il = ILNBLNK( fnames(2) )
       CALL ACTIVE_WRITE_YZ_RL(
-     &                 fnames(2), adactive_var, globalFile,
+     &                 fnames(2)(1:il-11), adactive_var, globalFile,
 #else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )

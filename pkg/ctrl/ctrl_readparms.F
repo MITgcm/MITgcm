@@ -552,7 +552,7 @@ C      create directory
 
       IF (ctrlDir .NE. ' ') THEN
        WRITE(msgBuf,'(2A)')
-     & 'read-write ctrl files from ', ctrlDir
+     & 'read-write ctrl files from ', ctrlDir(1:IL)
       ELSE
        WRITE(msgBuf,'(A)')
      & 'read-write ctrl files from current run directory'

@@ -156,16 +156,6 @@ C      create directory
 #endif
       ENDIF
 
-      IF (smoothDir .NE. ' ') THEN
-       WRITE(msgBuf,'(2A)')
-     & 'read-write smooth files from ', smoothDir
-      ELSE
-       WRITE(msgBuf,'(A)')
-     & 'read-write smooth files from current run directory'
-      ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-
       DO smoothOpNb=1,smoothOpNbMax
         IF (smooth2Dtype(smoothOpNb).NE.0) THEN
           WRITE(msgBuf,'(A,I2,I6,2F6.0,A)') 'smooth 2D parameters: ',

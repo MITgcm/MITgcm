@@ -79,6 +79,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -90,8 +96,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(1), active_var, doglobalread,
+     &                 fnames(1)(1:il-11), active_var, doglobalread,
 #else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -155,6 +162,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -166,8 +179,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(1), active_var, doglobalread,
+     &                 fnames(1)(1:il-11), active_var, doglobalread,
 #else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -231,6 +245,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -242,8 +262,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_READ_XZ_RL(
-     &                 fnames(1), active_var, doglobalread,
+     &                 fnames(1)(1:il-11), active_var, doglobalread,
 #else
       CALL ACTIVE_READ_XZ_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -306,6 +327,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -317,8 +344,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_READ_YZ_RL(
-     &                 fnames(1), active_var, doglobalread,
+     &                 fnames(1)(1:il-11), active_var, doglobalread,
 #else
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -434,6 +462,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -447,8 +481,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(1), active_var, globalFile,
+     &                 fnames(1)(1:il-11), active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
@@ -504,6 +539,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -517,8 +558,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(1), active_var, globalFile,
+     &                 fnames(1)(1:il-11), active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
@@ -574,6 +616,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -587,8 +635,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_WRITE_XZ_RL(
-     &                 fnames(1), active_var, globalFile,
+     &                 fnames(1)(1:il-11), active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_XZ_RL(
      &                 active_var_file, active_var, globalFile,
@@ -644,6 +693,12 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 #ifdef ALLOW_CTRL
       CHARACTER*(80) fnames(3)
+      INTEGER il
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 #endif
 
 C     !LOCAL VARIABLES:
@@ -657,8 +712,9 @@ CEOP
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
       CALL ctrl_set_fname( active_var_file, fnames, myThid )
+      il=ilnblnk( fnames(1) )
       CALL ACTIVE_WRITE_YZ_RL(
-     &                 fnames(1), active_var, globalFile,
+     &                 fnames(1)(1:il-11), active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,

@@ -94,8 +94,12 @@ c     Find ctrlDir (w/o trailing blanks) length
       _EXCH_XYZ_RL( wFld3d, myThid )
 
       il = ILNBLNK( xxFileCur )
+#ifdef ALLOW_AUTODIFF
+      WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+#else
       WRITE(fnamegeneric(1:80),'(3A,I10.10)')
      &      ctrlDir(1:ilDir),
+#endif
      &      xxFileCur(1:il), '.', optimcycle
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XYZ( fnamegeneric, xxFld3d, 1, doglobalread,
@@ -284,8 +288,12 @@ c     Find ctrlDir (w/o trailing blanks) length
       _EXCH_XY_RL( wFld2d, myThid )
 
       il = ILNBLNK( xxFileCur )
+#ifdef ALLOW_AUTODIFF
+      WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+#else
       WRITE(fnamegeneric(1:80),'(3A,I10.10)')
      &      ctrlDir(1:ilDir),
+#endif
      &      xxFileCur(1:il), '.', optimcycle
 #ifdef ALLOW_AUTODIFF
       CALL ACTIVE_READ_XY( fnamegeneric, xxFld2d, 1, doglobalread,

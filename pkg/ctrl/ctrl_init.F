@@ -75,8 +75,6 @@ c     == local variables ==
       INTEGER diffrec, startrec, endrec
 #endif
 
-      INTEGER il
-
 c     == external ==
       integer  ilnblnk
       external ilnblnk
@@ -108,9 +106,6 @@ c
             enddo
          enddo
       enddo
-
-c     Find ctrlDir (w/o trailing blanks) length
-      il = ilnblnk(ctrlDir)
 
 #ifdef ALLOW_AUTODIFF
       call active_write_xyz( 'wunit', loctmp3d, 1, 0, mythid, dummy)
@@ -893,8 +888,7 @@ C
         enddo
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen(1:MAX_LEN_FNAM),'(3a)')
-     &       ctrlDir(1:il),
+        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),
@@ -903,8 +897,7 @@ C
      &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen(1:MAX_LEN_FNAM),'(3a)')
-     &       ctrlDir(1:il),
+        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),

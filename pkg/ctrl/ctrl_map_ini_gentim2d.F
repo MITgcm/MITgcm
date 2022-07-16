@@ -145,14 +145,26 @@ C--   generic 2D control variables
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
+#ifdef ALLOW_AUTODIFF
+        write(fnamegenIn(1:80),'(2a,i10.10)')
+#else
         write(fnamegenIn(1:80),'(3a,i10.10)')
      &       ctrlDir(1:ilDir),
+#endif
      &       fnamebase(1:ilgen),'.',optimcycle
+#ifdef ALLOW_AUTODIFF
+        write(fnamegenOut(1:80),'(2a,i10.10)')
+#else
         write(fnamegenOut(1:80),'(3a,i10.10)')
      &       ctrlDir(1:ilDir),
+#endif
      &       fnamebase(1:ilgen),'.effective.',optimcycle
+#ifdef ALLOW_AUTODIFF
+        write(fnamegenTmp(1:80),'(2a,i10.10)')
+#else
         write(fnamegenTmp(1:80),'(3a,i10.10)')
      &       ctrlDir(1:ilDir),
+#endif
      &       fnamebase(1:ilgen),'.tmp.',optimcycle
 
 c--   docycle

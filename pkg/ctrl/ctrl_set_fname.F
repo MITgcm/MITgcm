@@ -28,7 +28,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      character*(MAX_LEN_FNAM) xx_fname
+      character*(*) xx_fname
       character*( 80)   fname(3)
       integer mythid
 

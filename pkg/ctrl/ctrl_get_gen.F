@@ -101,16 +101,24 @@ c--   Now, read the control vector.
       if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
         il   =ilnblnk( ctrlDir )
         ilgen=ilnblnk( xx_gen_file )
+#ifdef ALLOW_AUTODIFF
+        write(fnamegen(1:80),'(2a,i10.10)')
+#else
         write(fnamegen(1:80),'(3a,i10.10)')
      &       ctrlDir(1:il),
+#endif
      &       xx_gen_file(1:ilgen), '.', optimcycle
       endif
 
       if ( (optimcycle .ge. 0).AND.ctrlUseGen ) then
         il   =ilnblnk( ctrlDir )
         ilgen=ilnblnk( xx_gen_file )
+#ifdef ALLOW_AUTODIFF
+        write(fnamegen(1:80),'(2a,i10.10)')
+#else
         write(fnamegen(1:80),'(3a,i10.10)')
      &       ctrlDir(1:il),
+#endif
      &    xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
 

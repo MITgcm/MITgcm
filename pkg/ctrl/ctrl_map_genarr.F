@@ -64,7 +64,7 @@ C     !LOCAL VARIABLES:
       LOGICAL doglobalread
       LOGICAL ladinit
       _RS mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER il
+      INTEGER ilDir
 CEOP
 
 C--   Now, read the control vector.
@@ -79,9 +79,6 @@ C--   Now, read the control vector.
       dolog10ctrl=.FALSE.
       log10initval=0. _d 0
       ln10 = LOG(10. _d 0)
-
-c     Find ctrlDir (w/o trailing blanks) length
-      il = ilnblnk(ctrlDir)
 
       numsmo = 1
       DO k2 = 1, maxCtrlProc
@@ -110,11 +107,17 @@ C               passed to data.ctrl, (default = 0.0)
 
       fnamebase = xx_genarr2d_file(iarr)
       ilgen = ILNBLNK( fnamebase )
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+#ifdef ALLOW_AUTODIFF
+      WRITE(fnamegenIn(1:80),'(2A,I10.10)')
+#else
       WRITE(fnamegenIn(1:80),'(3A,I10.10)')
-     &       ctrlDir(1:il),
+     &       ctrlDir(1:ilDir),
+#endif
      &       fnamebase(1:ilgen),'.',optimcycle
       WRITE(fnamegenOut(1:80),'(3A,I10.10)')
-     &       ctrlDir(1:il),
+     &       ctrlDir(1:ilDir),
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr2d_weight(iarr), ctrlprec, 1,
@@ -254,7 +257,7 @@ C     !LOCAL VARIABLES:
       LOGICAL doglobalread
       LOGICAL ladinit
       _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER il
+      INTEGER ilDir
 CEOP
 
 C--   Now, read the control vector.
@@ -269,9 +272,6 @@ C--   Now, read the control vector.
       dolog10ctrl=.FALSE.
       log10initval=0. _d 0
       ln10 = LOG(10. _d 0)
-
-c     Find ctrlDir (w/o trailing blanks) length
-      il = ilnblnk(ctrlDir)
 
       numsmo = 1
       DO k2 = 1, maxCtrlProc
@@ -300,11 +300,17 @@ C               passed to data.ctrl, (default = 0.0)
 
       fnamebase = xx_genarr3d_file(iarr)
       ilgen = ILNBLNK( fnamebase )
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+#ifdef ALLOW_AUTODIFF
+      WRITE(fnamegenIn(1:80),'(2a,i10.10)')
+#else
       WRITE(fnamegenIn(1:80),'(3a,i10.10)')
-     &       ctrlDir(1:il),
+     &       ctrlDir(1:ilDir),
+#endif
      &       fnamebase(1:ilgen),'.',optimcycle
       WRITE(fnamegenOut(1:80),'(3a,i10.10)')
-     &       ctrlDir(1:il),
+     &       ctrlDir(1:ilDir),
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr3d_weight(iarr), ctrlprec, Nr,
