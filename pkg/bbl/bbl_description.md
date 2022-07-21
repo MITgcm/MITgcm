@@ -5,11 +5,11 @@ the bottom of the model domain and to become a source of Antarctic Bottom
 Water.  The bbl package aims to address the following two limitations of
 package down_slope:
 
-(i) In pkg/down\_slope, dense water cannot flow down-slope unless there is a
+(i) In `pkg/down_slope`, dense water cannot flow down-slope unless there is a
 step, i.e., a change of vertical level in the bathymetry.  In pkg/bbl, dense
 water can flow even on a slight incline or flat bottom.
 
-(ii) In pkg/down\_slope, dense water is diluted as it flows into grid cells
+(ii) In `pkg/down_slope`, dense water is diluted as it flows into grid cells
 whose thickness depends on model configuration, typically much thicker than a
 bottom boundary layer.  In pkg/bbl, dense water is contained in a thin
 sub-layer and hence able to preserve its tracer properties.
