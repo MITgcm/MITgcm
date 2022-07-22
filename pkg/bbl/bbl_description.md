@@ -23,11 +23,7 @@ with properties `tracer`, and density `rho` is divided in two sub-levels:
 1. A bottom boundary layer with T/S tracer properties `bbl_tracer`,
 density `bbl_rho`, and thickness `bbl_eta`.
 
-2. A residual thickness
-
-    resThk = thk - bbl_eta
-
-with tracer properties
+2. A residual thickness `resThk = thk - bbl_eta` with tracer properties
 
     resTracer = ( tracer * thk - bbl_tracer * bbl_eta ) / resThk
 
