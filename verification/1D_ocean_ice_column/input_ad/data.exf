@@ -7,6 +7,10 @@
  useExfCheckRange  = .TRUE.,
  repeatPeriod      = 31622400.0,
  exf_iprec         = 32,
+# to reproduce old results with ALLOW_BULK_LARGEYEAGER09 set new
+# coefficent to zero and umax to some value that is never reached.
+ cdrag_8 = 0.,
+ umax    = 1000.,
 #
  &
 
