@@ -230,7 +230,6 @@ cph!!!
 c--   Summarize the cost function setup.
       _BEGIN_MASTER( myThid )
       call ecco_summary( myThid )
-      call ecco_cost_summary( myThid )
       _END_MASTER( myThid )
 
       _BARRIER
