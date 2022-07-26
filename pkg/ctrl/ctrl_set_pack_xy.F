@@ -369,25 +369,13 @@ c-- 2.2: normalize field if needed
             fld2dDim(i,j,bi,bj)=0. _d 0
             fld2dNodim(i,j,bi,bj)=0. _d 0
            else
-# ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
             if (lxxadxx) then
-               fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
-     &              / PrecondScalar
+             fld2dNodim(i,j,bi,bj) =
+     &            fld2dDim(i,j,bi,bj) / PrecondScalar
             else
-               fld2dNodim(i,j,bi,bj) = fld2dDim(i,j,bi,bj)
-     &              * PrecondScalar
+             fld2dNodim(i,j,bi,bj) =
+     &              fld2dDim(i,j,bi,bj) * PrecondScalar
             endif
-# else
-            if (lxxadxx) then
-               fld2dNodim(i,j,bi,bj) =
-     &              fld2dDim(i,j,bi,bj) * sqrt(wei2d(i,j,bi,bj))
-     &                       / PrecondScalar
-            else
-               fld2dNodim(i,j,bi,bj) =
-     &              fld2dDim(i,j,bi,bj) / sqrt(wei2d(i,j,bi,bj))
-     &                       * PrecondScalar
-            endif
-# endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
            endif
           ENDDO
          ENDDO
