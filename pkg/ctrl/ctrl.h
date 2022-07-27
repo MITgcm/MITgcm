@@ -55,14 +55,8 @@ C     doPackDiag          :: output diag_pack*/diag_unpack* files during
 C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
-C     ctrlSmoothCorrel2D  :: use pkg/smooth correlation operator (incl.
-C                            smoother) for 2D controls (Weaver, Courtier 01)
-C     ctrlSmoothCorrel3D  :: use pkg/smooth correlation operator (incl.
-C                            smoother) for 3D controls (Weaver, Courtier 01)
 
       common /controlvars_l /
-     &                       ctrlSmoothCorrel2D,
-     &                       ctrlSmoothCorrel3D,
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -73,7 +67,6 @@ C                            smoother) for 3D controls (Weaver, Courtier 01)
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD
 
-      logical ctrlSmoothCorrel2D, ctrlSmoothCorrel3D
       logical doInitXX
       logical doAdmTlm
       logical doPackDiag

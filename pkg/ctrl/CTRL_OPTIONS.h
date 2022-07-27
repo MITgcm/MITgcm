@@ -50,15 +50,6 @@ C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
 C    to the other the time variable atmospheric controls.
 #undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
-C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL2D
-C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel3D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL3D
-
-C  o apply pkg/ctrl/ctrl_smooth.F to 2D controls (outside of ctrlSmoothCorrel2D)
-#undef ALLOW_CTRL_SMOOTH
 C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
 #undef ALLOW_SMOOTH_CTRL2D
 C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
