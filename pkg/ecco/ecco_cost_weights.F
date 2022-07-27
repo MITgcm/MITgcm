@@ -37,7 +37,6 @@ c     == global variables ==
 #include "GRID.h"
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
-#include "ecco_local_params.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
 #endif
