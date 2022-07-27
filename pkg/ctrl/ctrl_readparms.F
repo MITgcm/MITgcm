@@ -47,6 +47,8 @@ c     == local variables ==
 #endif
 c     retired parameters (others are in ctrl_local_params.h)
       logical ctrlUseGen
+      logical ctrlSmoothCorrel3D
+      logical ctrlSmoothCorrel2D
 
 c     == external ==
 
@@ -164,16 +166,8 @@ C     print a (weak) warning if data.ctrl is found
 
 c--     Set default values.
         doInitXX            = .TRUE.
-#ifdef ALLOW_SMOOTH_CORREL3D
-        ctrlSmoothCorrel3D  = .TRUE.
-#else
         ctrlSmoothCorrel3D  = .FALSE.
-#endif
-#ifdef ALLOW_SMOOTH_CORREL2D
-        ctrlSmoothCorrel2D  = .TRUE.
-#else
         ctrlSmoothCorrel2D  = .FALSE.
-#endif
         ctrlUseGen          = .TRUE.
 #ifdef ALLOW_ADMTLM
         doAdmTlm            = .TRUE.
@@ -450,6 +444,26 @@ c allow for switching off correl2d in adjoint
 #endif
 
       nretired = 0
+      IF ( ctrlSmoothCorrel2D ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R CTRL_READPARMS: ctrlSmoothCorrel2D',
+     &  ' is no longer allowed in file "data.ctrl"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nretired = nretired + 1
+      ENDIF
+      IF ( ctrlSmoothCorrel3D ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R CTRL_READPARMS: ctrlSmoothCorrel3D',
+     &  ' is no longer allowed in file "data.ctrl"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       nretired = nretired + 1
+      ENDIF
       IF ( .NOT. ctrlUseGen ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'S/R CTRL_READPARMS: ctrlUseGen',

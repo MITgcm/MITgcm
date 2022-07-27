@@ -208,80 +208,11 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 # endif
 #endif /* ALLOW_KAPREDI_CONTROL */
 
-#if (defined (ALLOW_HFLUX_CONTROL) && defined (ALLOW_ATEMP_CONTROL))
-      WRITE(msgBuf,'(A)')
-     &     'Cannot have both ALLOW_HFLUX_CONTROL & ALLOW_ATEMP_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-#endif
-
-#if (defined (ALLOW_SFLUX_CONTROL) && defined (ALLOW_AQH_CONTROL))
-      WRITE(msgBuf,'(A)')
-     &     'Cannot have both ALLOW_SFLUX_CONTROL & ALLOW_AQH_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-#endif
-
-#ifdef  ALLOW_ATEMP_CONTROL
-# ifndef ALLOW_ATM_TEMP
-      WRITE(msgBuf,'(A)')
-     &     'ALLOW_ATEMP_CONTROL used without ALLOW_ATM_TEMP'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-# endif
-#endif /* ALLOW_ATEMP_CONTROL */
-
-#ifdef  ALLOW_AQH_CONTROL
-# ifndef ALLOW_ATM_TEMP
-      WRITE(msgBuf,'(A)')
-     &     'ALLOW_AQH_CONTROL used without ALLOW_ATM_TEMP'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-# endif
-#endif /* ALLOW_AQH_CONTROL */
-
-#if ( defined ALLOW_UWIND_CONTROL || defined ALLOW_VWIND_CONTROL )
-# ifdef ALLOW_EXF
-      IF ( .NOT.useEXF .OR. .NOT.useAtmWind ) THEN
-# endif
-        WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: ',
-     &               'ALLOW_U/VWIND_CONTROL used without ',
-     &               'exf & useAtmWind will have no effect'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-# ifdef ALLOW_EXF
-      ENDIF
-# endif
-#endif /* ALLOW_UWIND_CONTROL or ALLOW_VWIND_CONTROL */
-
-#if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
-# ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN
-        WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: ',
-     &               'ALLOW_U/VSTRESS_CONTROL used with ',
-     &               'exf & useAtmWind will have no effect'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-      ENDIF
-# endif
-#endif /* ALLOW_USTRESS_CONTROL or ALLOW_VSTRESS_CONTROL */
-
 #ifdef ALLOW_SEAICE
 C     pkg/seaice requires a particular set of control parameters
 C     which in turn require a particular set of input fields
-# if ( defined ALLOW_HFLUX_CONTROL || defined ALLOW_SFLUX_CONTROL )
-      WRITE(msgBuf,'(A)')
-     &     'The SEAICE adjoint does not allow the surface fluxes'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      WRITE(msgBuf,'(A)') '  ALLOW_HFLUX_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      WRITE(msgBuf,'(A)') '  ALLOW_SFLUX_CONTROL'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      WRITE(msgBuf,'(A)') 'to be control variables'
-      CALL PRINT_ERROR( msgBuf, myThid )
-      errCount = errCount + 1
-# endif
 # if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
+C     needs to replaced by appropriate runtime options
       IF ( useAtmWind ) THEN
         solve4Stress = .TRUE.
       ELSE
@@ -353,7 +284,7 @@ C     which in turn require a particular set of input fields
 C     For now only print the error message, but do not increase the
 C     error count so that the model does not stop as along as we have to
 C     put up with the OpenAD version of tutorial_global_oce_optim
-C      errCount = errCount + 1
+      errCount = errCount + 1
 #endif /* ALLOW_HFLUXM_CONTROL */
 
       IF ( errCount.GE.1 ) THEN
