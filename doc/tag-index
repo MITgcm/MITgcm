@@ -1,6 +1,22 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - allow to read-in 3-D background isopycnal (Redi) and thickness (GM)
+    diffusivity without pkg/ctrl: new 3-D arrays, new CPP options:
+    GM_READ_K3D_REDI & GM_READ_K3D_GM and new input files: GM_K3dRediFile &
+    GM_K3dGMFile (replacing retired GM_isopycK3dFile & GM_background_K3dFile).
+  - update code for ALLOW_KAPGM_CONTROL & ALLOW_KAPREDI_CONTROL to use
+    these new 3-D arrays (from GMREDI.h) and move setting of 3-D control arrays
+    from from ini_mixing.F to gmredi_init_varia.F (+ adjust call condition);
+  Note: need to define new option GM_INPUT_K3D_GM and/or GM_INPUT_K3D_REDI
+    to use KAPGM_CONTROL and/or KAPREDI_CONTROL.
+  - remove obsolete code & CPP option ALLOW_KAPGM/KAPREDI_CONTROL_OLD
+
+checkpoint68j (2022/06/28)
+o pkg/exf:
+  - implement drag coefficient of Large and Yeager (2009), Climate Dynamics, 33,
+    pages 341-364, within #ifdef ALLOW_DRAG_LARGEYEAGER09
 o autodiff(TAF):
   - fix few taf recomputation and conflict warnings in: calc_3d_diffusivity.F
     (PCELL_MIX_CODE), pkg/bling & dwnslope_apply.F ; update reference AD output
