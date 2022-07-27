@@ -1,10 +1,4 @@
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
       subroutine ecco_cost_driver(  myTime, myIter, myThid  )
 
@@ -25,18 +19,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ECCO.h"
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_SSH_COST_CONTRIBUTION
-#  ifdef ALLOW_PROFILES
-#   include "PROFILES_SIZE.h"
-#   include "profiles.h"
-#  endif
-# endif
-#endif
 
 c     == routine arguments ==
       integer myThid

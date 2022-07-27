@@ -1,13 +1,4 @@
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
-#endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
       subroutine cost_averagesfields( mytime, mythid )
 
@@ -38,10 +29,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
-#include "GRID.h"
-#include "CG2D.h"
 
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
@@ -73,12 +60,6 @@ c     == local variables ==
       integer sum1gen(NGENCOST)
       integer genrec(NGENCOST)
       integer kk
-#endif
-#if (defined (ALLOW_CTRL) && \
-     defined (ALLOW_GENTIM2D_CONTROL) && \
-     defined (ALLOW_PSBAR_GENPRECIP))
-      _RL genprecipGloH
-      INTEGER iarr
 #endif
 
 c     == external functions ==

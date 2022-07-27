@@ -1,10 +1,4 @@
 #include "ECCO_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
       SUBROUTINE ECCO_SUMMARY( mythid )
 
@@ -25,10 +19,6 @@ c     == global variables ==
 #include "SIZE.h"
 #include "ECCO_SIZE.h"
 #include "ECCO.h"
-
-#ifdef ALLOW_CTRL
-# include "optim.h"
-#endif
 
 c     == routine arguments ==
 c     integer mythid - thread number for this instance of the routine.

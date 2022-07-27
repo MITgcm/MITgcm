@@ -3,12 +3,7 @@ c --- ctrl_cost_gen2d
 c --- ctrl_cost_gen3d
 c ----------------------------------------------------------------
 
-c ----------------------------------------------------------------
-
 #include "CTRL_OPTIONS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_OPTIONS.h"
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -40,10 +35,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#ifdef ALLOW_ECCO
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
-#endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
@@ -212,10 +203,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#ifdef ALLOW_ECCO
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
-#endif
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 # include "optim.h"
@@ -338,7 +325,7 @@ c--     Loop over this thread tiles.
           enddo
         enddo
 
-#endif
+#endif /* ALLOW_CTRL */
 
       return
       end
