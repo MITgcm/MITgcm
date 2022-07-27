@@ -1,7 +1,4 @@
 #include "CTRL_OPTIONS.h"
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -30,13 +27,9 @@ c     == global variables ==
 # include "ctrl.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
-# include "optim.h"
 #endif
 #ifdef ALLOW_CAL
 # include "cal.h"
-#endif
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_DIC_CONTROL
 # include "DIC_CTRL.h"
@@ -333,11 +326,9 @@ C
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
 c----------------------------------------------------------------------
-c----------------------------------------------------------------------
 
       call ctrl_init_wet( myThid )
 
-c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
 #ifdef ALLOW_DIC_CONTROL
@@ -347,38 +338,6 @@ c----------------------------------------------------------------------
 #endif
 
 c----------------------------------------------------------------------
-c----------------------------------------------------------------------
-
-      do bj = mybylo(myThid), mybyhi(myThid)
-       do bi = mybxlo(myThid), mybxhi(myThid)
-        do j = 1-OLy, sNy+OLy
-         do i = 1-OLx, sNx+Olx
-          wareaunit (i,j,bi,bj) = 1.0
-#ifndef ALLOW_ECCO
-          whflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wsflux    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wtauu     (i,j,bi,bj) = maskW(i,j,1,bi,bj)
-          wtauv     (i,j,bi,bj) = maskS(i,j,1,bi,bj)
-          watemp    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          waqh      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wprecip   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wswflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wswdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wuwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wvwind    (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wlwflux   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wlwdown   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wevap     (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wsnowprecip(i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wapressure(i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wrunoff   (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wsst      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-          wsss      (i,j,bi,bj) = maskC(i,j,1,bi,bj)
-#endif
-         enddo
-        enddo
-       enddo
-      enddo
 
       _BARRIER
 

@@ -190,10 +190,8 @@ C                            smoother) for 3D controls (Weaver, Courtier 01)
 
 c     Define unit weight as a placeholder
       common /ctrl_weights_unit_r/
-     &                        wunit,
-     &                        wareaunit
+     &                        wunit
       _RL wunit     (nr,nsx,nsy)
-      _RL wareaunit (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       common /packnames_c/
      &                      yadmark,
@@ -224,48 +222,6 @@ c     Define unit weight as a placeholder
 
       common /admtlm_r/ phtmpadmtlm
       double precision phtmpadmtlm(maxn)
-#endif
-
-#ifndef ALLOW_ECCO
-      common /ctrl_weights_atmos_r/
-     &                      whflux,
-     &                      wsflux,
-     &                      wtauu,
-     &                      wtauv,
-     &                      watemp,
-     &                      waqh,
-     &                      wprecip,
-     &                      wswflux,
-     &                      wswdown,
-     &                      wuwind,
-     &                      wvwind,
-     &                      wlwflux,
-     &                      wlwdown,
-     &                      wevap,
-     &                      wsnowprecip,
-     &                      wapressure,
-     &                      wrunoff,
-     &                      wsst,
-     &                      wsss
-      _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wsflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wtauu   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wtauv   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL watemp  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL waqh    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wswflux (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wswdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wlwflux (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wlwdown (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wevap   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wsnowprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wapressure(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wrunoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 c     Control variables:
