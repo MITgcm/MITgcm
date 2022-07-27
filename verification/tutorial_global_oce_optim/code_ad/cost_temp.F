@@ -22,16 +22,18 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "cost.h"
-#include "ctrl_weights.h"
+#ifdef ALLOW_OPENAD
+# include "FFIELDS.h"
+#else
+# include "cost_local.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_COST_TEMP
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i, j, k
       INTEGER bi, bj
       INTEGER Nk
