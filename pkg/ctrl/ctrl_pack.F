@@ -2,9 +2,6 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
@@ -52,13 +49,9 @@ c     == global variables ==
 # include "CTRL_GENARR.h"
 # include "optim.h"
 # include "CTRL_OBCS.h"
-# include "ctrl_weights.h"
 #endif
 #ifdef ALLOW_COST
 # include "cost.h"
-#endif
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
 #endif
 
 c     == routine arguments ==
