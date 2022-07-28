@@ -50,11 +50,6 @@ C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
 C    to the other the time variable atmospheric controls.
 #undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
-C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
-#undef ALLOW_SMOOTH_CTRL2D
-C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
-#undef ALLOW_SMOOTH_CTRL3D
-
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_CTRL */

@@ -436,13 +436,6 @@ c--     Next, read the cost data file.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-#ifdef ALLOW_AUTODIFF
-c allow for switching off correl2d in adjoint
-      useSmoothCorrel2DinFwdMode = ctrlSmoothCorrel2D
-      useSmoothCorrel2DinAdMode =
-     &         useSmoothCorrel2DinAdMode .AND. ctrlSmoothCorrel2D
-#endif
-
       nretired = 0
       IF ( ctrlSmoothCorrel2D ) THEN
        WRITE(msgBuf,'(A,A)')
