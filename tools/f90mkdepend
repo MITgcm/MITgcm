@@ -17,7 +17,7 @@ for filename in *.F90 *.F *.h; do
   if grep -i '^ *use ' $filename > /dev/null; then
 
     # extract module name in lower case
-    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$\|\r$//' | sed 's/\r$//')
+    modreflist=$(grep -i '^ *use ' $filename | awk '{print tolower($2)}' | sed 's/,.*$\|\r$//')
 
     echo "$filename => $modreflist" >> f90mkdepend.log
 
@@ -33,7 +33,7 @@ for filename in *.F90 *.F *.h; do
         # source file name is module name without "_mod"
         depline="$depline ${m%_mod}.o"
       else
-        echo "WARNING: in $filename f90mkdepend: no source file found for module $m" 1>&2
+        echo "WARNING: f90mkdepend: for $filename no source file found for module $m" 1>&2
       fi
     done
     echo $depline
