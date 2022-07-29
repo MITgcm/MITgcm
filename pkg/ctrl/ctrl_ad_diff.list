@@ -16,6 +16,5 @@ ctrl_getobcsn.f
 ctrl_getobcss.f
 ctrl_getobcsw.f
 ctrl_init_obcs_variables.f
-ctrl_getrec.f
 ctrl_swapffields.f
 ctrl_toolbox.f
