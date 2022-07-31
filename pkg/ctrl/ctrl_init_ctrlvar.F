@@ -56,7 +56,6 @@ c     == local variables ==
       character*( 80) fname(3), gfname
       character*(MAX_LEN_MBUF) msgBuf
       logical  exst, g_exst
-      integer ilDir
 
 C     == external ==
       integer ILNBLNK
@@ -64,10 +63,6 @@ C     == external ==
 C     == end of interface ==
 
 c     _BEGIN_MASTER( mythid )
-
-c     Find ctrlDir (w/o trailing blanks) length
-      ilDir = ilnblnk(ctrlDir)
-
       ncvarindex(ivarindex)    = ncvarindex_loc
       ncvarrecs (ivarindex)    = ncvarrecs_loc
       ncvarrecstart(ivarindex) = ncvarrecstart_loc
@@ -93,8 +88,7 @@ C     for existing perturbation file g_xx_, otherwise
 C     initialize to zero and warn user
       if (yadprefix.eq.'g_') then
         il = ILNBLNK(fname(2))
-        write(gfname(1:il+5),'(2a)')
-     &        fname(2)(1:il),'.data'
+        write(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
         inquire(file=gfname,exist=g_exst)
         if (.not. g_exst) then
             write(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
