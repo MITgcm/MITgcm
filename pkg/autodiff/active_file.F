@@ -1,4 +1,7 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 C     ==================================================================
 C     active_file.F: Routines to handle the I/O of the active file for
@@ -58,6 +61,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -95,10 +101,9 @@ CEOP
       myNr = 1
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(1)(1:il-11), active_var, doglobalread,
+     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
 #else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -141,6 +146,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -178,10 +186,9 @@ CEOP
       myNr = Nr
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_READ_3D_RL(
-     &                 fnames(1)(1:il-11), active_var, doglobalread,
+     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
 #else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -224,6 +231,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -261,10 +271,9 @@ CEOP
       myNr = Nr
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_READ_XZ_RL(
-     &                 fnames(1)(1:il-11), active_var, doglobalread,
+     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
 #else
       CALL ACTIVE_READ_XZ_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -306,6 +315,9 @@ C     \ev
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -343,10 +355,9 @@ CEOP
       myNr = Nr
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_READ_YZ_RL(
-     &                 fnames(1)(1:il-11), active_var, doglobalread,
+     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
 #else
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
@@ -447,6 +458,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -480,10 +494,9 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(1)(1:il-11), active_var, globalFile,
+     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
@@ -524,6 +537,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -557,10 +573,9 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(1)(1:il-11), active_var, globalFile,
+     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
@@ -601,6 +616,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -634,10 +652,9 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_WRITE_XZ_RL(
-     &                 fnames(1)(1:il-11), active_var, globalFile,
+     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_XZ_RL(
      &                 active_var_file, active_var, globalFile,
@@ -678,6 +695,9 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -711,10 +731,9 @@ CEOP
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 #ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il=ilnblnk( fnames(1) )
+      il = ilnblnk( ctrlDir )
       CALL ACTIVE_WRITE_YZ_RL(
-     &                 fnames(1)(1:il-11), active_var, globalFile,
+     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
 #else
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,
