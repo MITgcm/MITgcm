@@ -50,6 +50,14 @@ C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
 C    to the other the time variable atmospheric controls.
 #undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
+C  Note: this flag turns on extra smoothing code in ctrl_get_gen.F which
+C  is inconsistent with the Weaver and Courtier, 2001 algorithm, and
+C  should probably not be used. The corresponding 3D flag applied only
+C  to deprecated code that is now removed. At some point we will remove
+C  this flag and associated code as well.
+C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
+#undef ALLOW_SMOOTH_CTRL2D
+
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_CTRL */

@@ -67,6 +67,9 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
+#if ( defined ALLOW_SMOOTH && defined ALLOW_SMOOTH_CTRL2D )
+      character*(80) fnamegeneric
+#endif
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file
       character*(MAX_LEN_FNAM) xx_aqh_file
@@ -119,7 +122,17 @@ cc#else
 #endif
 cc#endif /* ALLOW_OPENAD */
 
-      endif
+#ifdef ALLOW_SMOOTH
+#ifdef ALLOW_SMOOTH_CTRL2D
+        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount1, optimcycle, mythid )
+#endif /* ALLOW_SMOOTH_CTRL2D */
+#endif /* ALLOW_SMOOTH */
+
+        endif
 
       if (( genfirst ) .or. ( genchanged )) then
         call CTRL_SWAPFFIELDS( xx_gen0, xx_gen1, mythid )
@@ -137,6 +150,16 @@ cc#else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount1, 1, myThid )
 #endif
 cc#endif /* ALLOW_OPENAD */
+
+#ifdef ALLOW_SMOOTH
+#ifdef ALLOW_SMOOTH_CTRL2D
+        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount0, optimcycle, mythid )
+#endif /* ALLOW_SMOOTH_CTRL2D */
+#endif /* ALLOW_SMOOTH */
 
       endif
 
