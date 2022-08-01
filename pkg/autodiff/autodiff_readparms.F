@@ -96,7 +96,7 @@ C--   default : write one file per record
 C-- pkg/seaice related switches
       SEAICEuseFREEDRIFTswitchInAd = .FALSE.
       SEAICEuseDYNAMICSswitchInAd  = .FALSE.
-      useSmoothCorrel2DinAdMode    = .FALSE.
+      useSmoothCorrel2DinAdMode    = .TRUE.
 
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -161,7 +161,7 @@ c     level of approximation in seaice thermodynamics adjoint
 
 C-    Retired parameters
       nRetired = 0
-      IF ( useSmoothCorrel2DinAdMode ) THEN
+      IF ( .NOT. useSmoothCorrel2DinAdMode ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)')
      &  'S/R AUTODIFF_READPARMS: "useSmoothCorrel2DinAdMode" ',
