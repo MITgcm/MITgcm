@@ -1,9 +1,5 @@
 #!/bin/bash
 # To be used on ARCHER2 UK HPC with the default Cray compilers (PrgEnv-cray).
-# -
-# Created and tested by Mike Mineter (@github MikeMineter)
-# Funded by ARCHER2-eCSE02-6 (PI: Emma Boland, @github emmomp)
-# -
 #
 # Default modlues as of 7 June 2022:
 # >> module list
@@ -29,10 +25,7 @@ NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
 if test "x$IEEE" = x ; then   #- with optimisation:
-
-	# notes from ARcher opt file:
 	#   FOPTIM='-O2 -hfp3 -Oipa5' for less agressive optimization
-
     FOPTIM='-O3 -hfp3 -Oipa5'
 else
     if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
