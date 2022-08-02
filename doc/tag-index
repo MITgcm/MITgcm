@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - adjust code to also work under an ice-shelf (with pkg/shelfice); idemix
+    under ice-shelf not fixed yet.
+  - turn on ggl90 in isomip experiment secondary test "obcs" and update
+    reference output file.
 o pkg/gmredi:
   - allow to read-in 3-D background isopycnal (Redi) and thickness (GM)
     diffusivity without pkg/ctrl: new 3-D arrays, new CPP options:
