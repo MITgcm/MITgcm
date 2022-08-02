@@ -5,6 +5,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
       subroutine ctrl_map_ini_ecco( mythid )
 
@@ -49,6 +52,9 @@ c     == global variables ==
 # include "CTRL_GENARR.h"
 # include "ctrl_dummy.h"
 # include "optim.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
@@ -269,6 +275,7 @@ c-- exchange UV:
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
+#ifdef GM_READ_K3D_GM
       boundsVec(1)=1. _d 2
       boundsVec(2)=2. _d 2
       boundsVec(3)=0.9 _d 4
@@ -276,12 +283,14 @@ c-- exchange UV:
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld',
-     & xx_kapgm_dummy, boundsVec, kapGM, maskC, paramSmooth,
+     & xx_kapgm_dummy, boundsVec, GM_inpK3dGM, maskC, paramSmooth,
      & mythid )
-      _EXCH_XYZ_RL( kapGM, mythid )
+      _EXCH_XYZ_RL( GM_inpK3dGM, mythid )
+#endif
 #endif
 
 #ifdef ALLOW_KAPREDI_CONTROL
+#ifdef GM_READ_K3D_REDI
       boundsVec(1)=1. _d 2
       boundsVec(2)=2. _d 2
       boundsVec(3)=0.9 _d 4
@@ -289,9 +298,10 @@ c-- exchange UV:
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld',
-     & xx_kapredi_dummy, boundsVec, kapRedi, maskC, paramSmooth,
+     & xx_kapredi_dummy, boundsVec, GM_inpK3dRedi, maskC, paramSmooth,
      & mythid )
-      _EXCH_XYZ_RL( kapRedi, mythid )
+      _EXCH_XYZ_RL( GM_inpK3dRedi, mythid )
+#endif
 #endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL
