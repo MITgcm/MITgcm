@@ -287,23 +287,6 @@ C     put up with the OpenAD version of tutorial_global_oce_optim
       errCount = errCount + 1
 #endif /* ALLOW_HFLUXM_CONTROL */
 
-      IF ( errCount.GE.1 ) THEN
-        WRITE(msgBuf,'(A,I3,A)')
-     &       'CTRL_CHECK: detected', errCount,' fatal error(s)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R CTRL_CHECK'
-      ENDIF
-
-      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
-     &                     ' <-- Ends Normally'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      _END_MASTER(myThid)
-
 #ifdef ALLOW_GENARR2D_CONTROL
 c     Warn user: doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr2D
@@ -316,7 +299,8 @@ c     Warn user: doscaling must be true to do log10 ctrl
             WRITE(msgBuf,'(A,I2,A)')
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,').'
             CALL PRINT_ERROR( msgBuf, myThid )
-            STOP 'ABNORMAL END: S/R CTRL_CHECK'
+            errCount = errCount + 1
+C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO
@@ -333,7 +317,8 @@ C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
      &    'Cannot use shiTransCoeffT/S when SHI_ALLOW_GAMMAFRICT ',
      &    'is defined'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          errCount = errCount + 1
+C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  else
@@ -350,7 +335,8 @@ C     but is probably not what the user wants or expects.
      &    'Cannot use shiCDrag when SHI_ALLOW_GAMMAFRICT ',
      &    'is NOT defined'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          errCount = errCount + 1
+C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  endif /* SHI_ALLOW_GAMMAFRICT */
@@ -369,11 +355,255 @@ c     Warn user: doscaling must be true to do log10 ctrl
             WRITE(msgBuf,'(A,I2,A)')
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,'). '
             CALL PRINT_ERROR( msgBuf, myThid )
-            STOP 'ABNORMAL END: S/R CTRL_CHECK'
+            errCount = errCount + 1
+C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO
 #endif
+
+#ifdef ECCO_CTRL_DEPRECATED
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: CPP-flag ECCO_CTRL_DEPRECATED is no longer '//
+     &     'available.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: Along with ECCO_CTRL_DEPRECATED a long list '
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: of CPP flags have no effect anymore:'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_APRESSURE_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: ALLOW_APRESSURE_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_AQH_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ARGO_SALT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ARGO_THETA_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ATEMP_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ATM_MEAN_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_AUTODIFF_INIT_OLD'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_BOTTOMDRAG_CONTROL_NONGENERIC'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_BOTTOMDRAG_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_BP_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_CTDS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_CTDT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_CTRL_SMOOTH'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: ALLOW_DAILYSCAT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_DAILYSST_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_diffkr_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_DIFFKR_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_DRIFTER_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_DRIFTW_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ECCO_DIAGNOSTIC_RUN'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ECCO_FORWARD_RUN'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EDDYPSI_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EFLUXY0_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EGM96_ERROR_COV'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EGM96_ERROR_DIAG'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_ETAN0_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EVAP_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_EVAP_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_GEN2D_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_GEN3D_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_GRADIENT_CHECK'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_HFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_IESTAU_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_KAPGM_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_KAPREDI_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_LWDOWN_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_LWDOWN_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_LWFLUX_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_LWFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: ALLOW_MEAN_HFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_NEW_SSH_COST'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_NO_DYNAMICS'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_PRECIP_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_PRECIP_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_READ_EGM_DATA'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_RELAXSSS_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_RELAXSST_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_RUNOFF_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_RUNOFF_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SALT0_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SALT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SCAT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: ALLOW_SMOOTH_BC_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SMOOTH_CTRL3D'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SNOWPRECIP_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &     'CTRL_CHECK: ALLOW_SNOWPRECIP_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SPH_PROJECTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSH_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSH_ERSANOM_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSH_GFOANOM_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSH_MEAN_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSH_TOT'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &    'CTRL_CHECK: ALLOW_SSH_TPANOM_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSHV4_COST'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSS_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SSS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SST_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SST_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_STEPPING_CALL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &    'CTRL_CHECK: ALLOW_STRESS_MEAN_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SWDOWN_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SWDOWN_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SWFLUX_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_SWFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_THETA0_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_THETA_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_TMI_SST_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &    'CTRL_CHECK: ALLOW_TRANSPORT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_USTRESS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_UVEL0_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_UWIND_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_UWIND_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_VSTRESS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_VVEL0_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_VWIND_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_VWIND_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_XBT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ALLOW_YMDS_TREE'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_HFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_SALT_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_SFLUX_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_SSH_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_SST_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_THETA_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_USTRESS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: APPLY_VSTRESS_COST_CONTRIBUTION'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: DISABLE_CTRL_THETA_LIMIT'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: GENERIC_BAR_MONTH'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A,A)')
+     &     'CTRL_CHECK: end of ECCO_CTRL_DEPRECATED associated flags ',
+     &     'that have no effect anymore.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'CTRL_CHECK: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R CTRL_CHECK'
+      ENDIF
+
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &                     ' <-- Ends Normally'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      _END_MASTER(myThid)
 
       RETURN
       END
