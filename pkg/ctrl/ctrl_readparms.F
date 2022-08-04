@@ -1,22 +1,26 @@
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
+C--  File ctrl_readparms.F:
+C--   Contents
+C--   o CTRL_READPARMS
+C--   o CTRL_SET_RETIRED_PARMS
+C--   o CTRL_CHECK_RETIRED_PARMS
 
-      subroutine ctrl_readparms( mythid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CTRL_READPARMS
+C     !INTERFACE:
+      SUBROUTINE CTRL_READPARMS( myThid )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_readparms
-c     ==================================================================
-c
-c     o read ctrl parameters
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_readparms
-c     ==================================================================
+C     !DESCRIPTION:
+C     ==================================================================
+C     o read ctrl parameters
+C     ==================================================================
 
-      implicit none
+C     !USES:
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -31,34 +35,24 @@ c     == global variables ==
 #include "AUTODIFF_PARAMS.h"
 #endif
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER myThid
 
-      integer mythid
-
-c     == local variables ==
-
+C     !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER nRetired
-
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr,jarr
 #endif
-c     retired parameters (others are in ctrl_local_params.h)
-      logical ctrlUseGen
-      logical ctrlSmoothCorrel3D
-      logical ctrlSmoothCorrel2D
+C     retired parameters (others are in ctrl_local_params.h)
+      LOGICAL ctrlUseGen
+      LOGICAL ctrlSmoothCorrel3D
+      LOGICAL ctrlSmoothCorrel2D
+CEOP
 
-c     == external ==
-
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-c     == end of interface ==
-
-c--   Read the namelist input.
-      namelist /ctrl_nml/
+C--   Read the namelist input.
+      NAMELIST /CTRL_NML/
      &  xx_theta_file, xx_salt_file,
      &  xx_hflux_file, xx_hflux_remo_intercept, xx_hflux_remo_slope,
      &  xx_hfluxstartdate1, xx_hfluxstartdate2, xx_hfluxperiod,
@@ -130,12 +124,12 @@ cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL
 
-      namelist /ctrl_packnames/
+      NAMELIST /CTRL_PACKNAMES/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
 
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      namelist /ctrl_nml_genarr/
+      NAMELIST /CTRL_NML_GENARR/
      &  xx_genarr2d_file, xx_genarr3d_file, xx_gentim2d_file,
      &  xx_genarr2d_weight, xx_genarr3d_weight, xx_gentim2d_weight,
      &  xx_genarr2d_bounds, xx_genarr3d_bounds, xx_gentim2d_bounds,
@@ -164,10 +158,18 @@ C     print a (weak) warning if data.ctrl is found
 
       _BEGIN_MASTER( myThid )
 
-c--     Set default values.
+C--     Set default values.
         doInitXX            = .TRUE.
+#ifdef ALLOW_SMOOTH_CORREL3D
+        ctrlSmoothCorrel3D  = .TRUE.
+#else
         ctrlSmoothCorrel3D  = .FALSE.
+#endif
+#ifdef ALLOW_SMOOTH_CORREL2D
+        ctrlSmoothCorrel2D  = .TRUE.
+#else
         ctrlSmoothCorrel2D  = .FALSE.
+#endif
         ctrlUseGen          = .TRUE.
 #ifdef ALLOW_ADMTLM
         doAdmTlm            = .TRUE.
@@ -199,7 +201,7 @@ C     flag is defined
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
-c
+
         xx_gen2d_file      = 'xx_gen2d'
         xx_gen3d_file      = 'xx_gen3d'
 
@@ -224,7 +226,7 @@ c
           xx_genarr2d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
         enddo
-c
+
         do iarr = 1, maxCtrlArr3D
          write(xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_OPENAD
@@ -245,7 +247,7 @@ c
           xx_genarr3d_preproc_r(jarr,iarr) = 0. _d 0
          enddo
         enddo
-c
+
         do iarr = 1, maxCtrlTim2D
          write(xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),'(a)') ' '
 #ifdef ALLOW_OPENAD
@@ -272,106 +274,106 @@ c
          enddo
         enddo
 #endif
-c
+
         xx_obcsnstartdate1  =   0
         xx_obcsnstartdate2  =   0
         xx_obcsnperiod      =   0. _d 0
         xx_obcsn_file       = 'xx_obcsn'
-c
+
         xx_obcssstartdate1  =   0
         xx_obcssstartdate2  =   0
         xx_obcssperiod      =   0. _d 0
         xx_obcss_file       = 'xx_obcss'
-c
+
         xx_obcswstartdate1  =   0
         xx_obcswstartdate2  =   0
         xx_obcswperiod      =   0. _d 0
         xx_obcsw_file       = 'xx_obcsw'
-c
+
         xx_obcsestartdate1  =   0
         xx_obcsestartdate2  =   0
         xx_obcseperiod      =   0. _d 0
         xx_obcse_file       = 'xx_obcse'
-c
-c     retired parameters
-c
+
+C     retired parameters
+
         CALL CTRL_SET_RETIRED_PARMS(xx_hfluxstartdate1,
      I       xx_hfluxstartdate2, xx_hfluxperiod, xx_hflux_file,
      I       xx_hflux_file, xx_hflux_remo_intercept,
-     I       xx_hflux_remo_slope , mythid )
+     I       xx_hflux_remo_slope , myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_sfluxstartdate1,
      I       xx_sfluxstartdate2, xx_sfluxperiod, xx_sflux_file,
      I       xx_sflux_file, xx_sflux_remo_intercept,
-     I       xx_sflux_remo_slope, mythid )
+     I       xx_sflux_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_tauustartdate1,xx_tauustartdate2,
      I       xx_tauuperiod, xx_tauu_file, xx_tauu_file,
-     I       xx_tauu_remo_intercept, xx_tauu_remo_slope, mythid )
+     I       xx_tauu_remo_intercept, xx_tauu_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_tauvstartdate1,xx_tauvstartdate2,
      I       xx_tauvperiod, xx_tauv_file, xx_tauv_file,
-     I       xx_tauv_remo_intercept, xx_tauv_remo_slope, mythid )
+     I       xx_tauv_remo_intercept, xx_tauv_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_atempstartdate1,
      I       xx_atempstartdate2, xx_atempperiod, xx_atemp_file,
      I       xx_atemp_mean_file, xx_atemp_remo_intercept,
-     I       xx_atemp_remo_slope, mythid )
+     I       xx_atemp_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_aqhstartdate1, xx_aqhstartdate2,
      I       xx_aqhperiod, xx_aqh_file, xx_aqh_mean_file,
-     I       xx_aqh_remo_intercept, xx_aqh_remo_slope, mythid )
+     I       xx_aqh_remo_intercept, xx_aqh_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_precipstartdate1,
      I       xx_precipstartdate2, xx_precipperiod, xx_precip_file,
      I       xx_precip_mean_file, xx_precip_remo_intercept,
-     I       xx_precip_remo_slope, mythid )
+     I       xx_precip_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_sfluxstartdate1,
      I       xx_sfluxstartdate2, xx_sfluxperiod, xx_sflux_file,
      I       xx_sflux_file, xx_sflux_remo_intercept,xx_sflux_remo_slope,
-     I       mythid )
+     I       myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_swdownstartdate1,
      I       xx_swdownstartdate2, xx_swdownperiod, xx_swdown_file,
      I       xx_swdown_mean_file, xx_swdown_remo_intercept,
-     I       xx_swdown_remo_slope, mythid )
+     I       xx_swdown_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_lwfluxstartdate1,
      I       xx_lwfluxstartdate2, xx_lwfluxperiod, xx_lwflux_file,
      I       xx_lwflux_file, xx_lwflux_remo_intercept,
-     I       xx_lwflux_remo_slope, mythid )
+     I       xx_lwflux_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_lwdownstartdate1,
      I       xx_lwdownstartdate2, xx_lwdownperiod, xx_lwdown_file,
      I       xx_lwdown_file, xx_lwdown_remo_intercept,
-     I       xx_lwdown_remo_slope, mythid )
+     I       xx_lwdown_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_evapstartdate1,xx_evapstartdate2,
      I       xx_evapperiod, xx_evap_file, xx_evap_file,
-     I       xx_evap_remo_intercept, xx_evap_remo_slope, mythid )
+     I       xx_evap_remo_intercept, xx_evap_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_snowprecipstartdate1,
      I       xx_snowprecipstartdate2, xx_snowprecipperiod,
      I       xx_snowprecip_file, xx_snowprecip_file,
      I       xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
-     I       mythid )
+     I       myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_apressurestartdate1,
      I       xx_apressurestartdate2, xx_apressureperiod,
      I       xx_apressure_file, xx_apressure_file,
      I       xx_apressure_remo_intercept, xx_apressure_remo_slope,
-     I       mythid )
+     I       myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_runoffstartdate1,
      I       xx_runoffstartdate2, xx_runoffperiod, xx_runoff_file,
      I       xx_runoff_file, xx_runoff_remo_intercept,
-     I       xx_runoff_remo_slope, mythid )
+     I       xx_runoff_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_uwindstartdate1,
      I       xx_uwindstartdate2, xx_uwindperiod, xx_uwind_file,
      I       xx_uwind_file, xx_uwind_remo_intercept,xx_uwind_remo_slope,
-     I       mythid )
+     I       myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_vwindstartdate1,
      I       xx_vwindstartdate2, xx_vwindperiod, xx_vwind_file,
      I       xx_vwind_file, xx_vwind_remo_intercept,xx_vwind_remo_slope,
-     I       mythid )
+     I       myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_sststartdate1, xx_sststartdate2,
      I       xx_sstperiod, xx_sst_file, xx_sst_file,
-     I       xx_sst_remo_intercept, xx_sst_remo_slope, mythid )
+     I       xx_sst_remo_intercept, xx_sst_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_sssstartdate1, xx_sssstartdate2,
      I       xx_sssperiod, xx_sss_file, xx_sss_file,
-     I       xx_sss_remo_intercept, xx_sss_remo_slope, mythid )
+     I       xx_sss_remo_intercept, xx_sss_remo_slope, myThid )
         CALL CTRL_SET_RETIRED_PARMS(xx_shifwflxstartdate1,
      I       xx_shifwflxstartdate2, xx_shifwflxperiod, xx_shifwflx_file,
      I       xx_shifwflx_file, xx_shifwflx_remo_intercept,
-     I       xx_shifwflx_remo_slope, mythid )
-c
+     I       xx_shifwflx_remo_slope, myThid )
+
         xx_diffkr_file      = ' '
         xx_kapgm_file       = ' '
         xx_kapredi_file     = ' '
@@ -391,7 +393,7 @@ c
 cHFLUXM_CONTROL
         xx_hfluxm_file      = ' '
 cHFLUXM_CONTROL
-c     end retired parameters
+C     end retired parameters
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'
@@ -409,7 +411,7 @@ c     end retired parameters
         maskname            = ' '
         metaname            = ' '
 
-c--     Next, read the cost data file.
+C--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'CTRL_READPARMS: opening data.ctrl'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -436,7 +438,7 @@ c--     Next, read the cost data file.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-      nretired = 0
+      nRetired = 0
       IF ( ctrlSmoothCorrel2D ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'S/R CTRL_READPARMS: ctrlSmoothCorrel2D',
@@ -445,7 +447,7 @@ c--     Next, read the cost data file.
        WRITE(msgBuf,'(A)')
      &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nretired = nretired + 1
+       nRetired = nRetired + 1
       ENDIF
       IF ( ctrlSmoothCorrel3D ) THEN
        WRITE(msgBuf,'(A,A)')
@@ -455,21 +457,21 @@ c--     Next, read the cost data file.
        WRITE(msgBuf,'(A)')
      &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nretired = nretired + 1
+       nRetired = nRetired + 1
       ENDIF
       IF ( .NOT. ctrlUseGen ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'S/R CTRL_READPARMS: ctrlUseGen',
      &  ' is no longer allowed in file "data.ctrl"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nretired = nretired + 1
+       nRetired = nRetired + 1
       ENDIF
       CALL CTRL_CHECK_RETIRED_PARMS( 'xx_hflux',
      I     xx_hfluxstartdate1, xx_hfluxstartdate2,
      I     xx_hfluxperiod, xx_hflux_file, ' ',
      I     xx_hflux_remo_intercept, xx_hflux_remo_slope,
      U     nRetired,
-     I     mythid )
+     I     myThid )
       CALL CTRL_CHECK_RETIRED_PARMS( 'xx_sflux',
      I     xx_sfluxstartdate1, xx_sfluxstartdate2,
      I     xx_sfluxperiod, xx_sflux_file, ' ',
@@ -670,9 +672,13 @@ c--     Next, read the cost data file.
 
       _BARRIER
 
-      return
-      end
+      RETURN
+      END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CTRL_SET_RETIRED_PARMS
+C     !INTERFACE:
       SUBROUTINE CTRL_SET_RETIRED_PARMS(
      I     xx_startdate1,
      I     xx_startdate2,
@@ -681,16 +687,27 @@ c--     Next, read the cost data file.
      I     xx_mean_file,
      I     xx_remo_intercept,
      I     xx_remo_slope,
-     I     mythid )
+     I     myThid )
 
+C     !DESCRIPTION:
+C     ==================================================================
+C     o set some retired parameters
+C     ==================================================================
+
+C     !USES:
       IMPLICIT NONE
+C     == global variables ==
 #include "EEPARAMS.h"
 
-      INTEGER mythid
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER xx_startdate1, xx_startdate2
-      _RL xx_period, xx_remo_intercept, xx_remo_slope
+      _RL xx_period
       CHARACTER*(*) xx_file, xx_mean_file
+      _RL xx_remo_intercept, xx_remo_slope
+      INTEGER myThid
 
+C     !LOCAL VARIABLES:
+CEOP
       xx_startdate1 = UNSET_I
       xx_startdate2 = UNSET_I
       xx_period     = UNSET_RL
@@ -702,6 +719,10 @@ c--     Next, read the cost data file.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CTRL_CHECK_RETIRED_PARMS
+C     !INTERFACE:
       SUBROUTINE CTRL_CHECK_RETIRED_PARMS(
      I     xx_name,
      I     xx_startdate1,
@@ -711,22 +732,36 @@ c--     Next, read the cost data file.
      I     xx_mean_file,
      I     xx_remo_intercept,
      I     xx_remo_slope,
-     U     nretired,
-     I     mythid )
+     U     nRetired,
+     I     myThid )
 
+C     !DESCRIPTION:
+C     ==================================================================
+C     o check some retired parameter values
+C     ==================================================================
+
+C     !USES:
       IMPLICIT NONE
+C     == global variables ==
 #include "EEPARAMS.h"
 
-      INTEGER mythid
+C     !INPUT/OUTPUT PARAMETERS:
+      CHARACTER*(*) xx_name
       INTEGER xx_startdate1, xx_startdate2
-      _RL xx_period, xx_remo_intercept, xx_remo_slope
-      CHARACTER*(*) xx_name, xx_file, xx_mean_file
-      INTEGER nretired
+      _RL xx_period
+      CHARACTER*(*) xx_file, xx_mean_file
+      _RL xx_remo_intercept, xx_remo_slope
+      INTEGER nRetired
+      INTEGER myThid
 
-      INTEGER il
+C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER il
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       IF (      xx_startdate1 .NE. UNSET_I
      &     .OR. xx_startdate2 .NE. UNSET_I
@@ -743,7 +778,7 @@ c--     Next, read the cost data file.
        WRITE(msgBuf,'(A)')
      &  'S/R CTRL_READPARMS: use generic controls instead'
        CALL PRINT_ERROR( msgBuf, myThid )
-       nretired = nretired + 1
+       nRetired = nRetired + 1
       ENDIF
 
       RETURN
