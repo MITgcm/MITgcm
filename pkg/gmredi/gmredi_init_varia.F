@@ -1,4 +1,7 @@
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_INIT_VARIA
@@ -29,9 +32,66 @@ C     myThid ::  my Thread Id number
 CEOP
 
 #ifdef ALLOW_GMREDI
-
 C     !LOCAL VARIABLES:
       INTEGER i,j,k,bi,bj
+
+C--   Initialise again 3-D control variables (AD-compiler need to see this)
+#if (defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
+C--   Initialize 3-D Isopycnal diffusivity in common block
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           GM_inpK3dRedi(i,j,k,bi,bj) = GM_isopycK
+     &                  *GM_isoFac1d(k)*GM_isoFac2d(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_KAPREDI_CONTROL and GM_READ_K3D_REDI */
+#if (defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
+C--   Initialize 3-D Thickness diffusivity in common block
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           GM_inpK3dGM(i,j,k,bi,bj) = GM_background_K
+     &                  *GM_bolFac1d(k)*GM_bolFac2d(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_KAPGM_CONTROL and GM_READ_K3D_GM */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call GMREDI_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useGMRedi.
+C        Therefore, in this case, the "If useGMRedi" is added back here:
+      IF ( useGMRedi ) THEN
+#endif
+
+#if (defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
+C--   Read (again) 3-D Isopycnal diffusivity from file
+      IF ( GM_K3dRediFile .NE. ' ' ) THEN
+       CALL READ_FLD_XYZ_RL( GM_K3dRediFile, ' ',
+     &                       GM_inpK3dRedi, 0, myThid )
+       CALL EXCH_XYZ_RL( GM_inpK3dRedi, myThid )
+      ENDIF
+#endif /* ALLOW_KAPREDI_CONTROL and GM_READ_K3D_REDI */
+#if (defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
+C--   Read (again) 3-D Thickness diffusivity from file
+      IF ( GM_K3dGMFile .NE. ' ' ) THEN
+       CALL READ_FLD_XYZ_RL( GM_K3dGMFile, ' ',
+     &                       GM_inpK3dGM, 0, myThid )
+       CALL EXCH_XYZ_RL( GM_inpK3dGM, myThid )
+      ENDIF
+#endif /* ALLOW_KAPGM_CONTROL and GM_READ_K3D_GM */
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -85,6 +145,7 @@ C- end bi,bj loops
        ENDDO
       ENDDO
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   write GM scaling factors to file:
       IF ( GM_iso1dFile .NE. ' ' ) THEN
         CALL WRITE_GLVEC_RS( 'GM_isoFac1d', ' ', GM_isoFac1d,
@@ -100,7 +161,6 @@ C--   write GM scaling factors to file:
       IF ( GM_bol2dFile .NE. ' ' ) THEN
         CALL WRITE_FLD_XY_RS( 'GM_bolFac2d',' ',GM_bolFac2d,-1,myThid )
       ENDIF
-#endif /* ALLOW_GMREDI */
 
 #ifdef GM_BATES_K3D
       IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
@@ -151,7 +211,12 @@ C     Computing beta = df/dy
        ENDDO
       ENDIF
       CALL EXCH_XY_RL( gradf, myThid)
+#endif /* GM_BATES_K3D */
+
+#ifdef ALLOW_AUTODIFF
+      ENDIF
 #endif
+#endif /* ALLOW_GMREDI */
 
       RETURN
       END

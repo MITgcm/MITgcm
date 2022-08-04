@@ -33,8 +33,14 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
+C     nRetired   :: Counter used to trap "retired" parameters in namelist.
+C     GM_isopycK3dFile      :: input file for 3.D GM_isopycK
+C     GM_background_K3dFile :: input file for 3.D GM_background_K
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER nRetired
+      CHARACTER*(MAX_LEN_FNAM) GM_isopycK3dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_background_K3dFile
 CEOP
 
 C--   GM/Redi parameter
@@ -47,8 +53,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_background_K,
      &          GM_iso2dFile, GM_iso1dFile,
      &          GM_bol2dFile, GM_bol1dFile,
-     &          GM_background_K3dFile,
-     &          GM_isopycK3dFile,
+     &          GM_K3dRediFile, GM_K3dGMFile,
+     &          GM_background_K3dFile, GM_isopycK3dFile,
      &          GM_taper_scheme,
      &          GM_maxSlope,
      &          GM_Kmin_horiz,
@@ -111,8 +117,8 @@ C--   Default values GM/Redi
       GM_iso1dFile        = ' '
       GM_bol2dFile        = ' '
       GM_bol1dFile        = ' '
-      GM_background_K3dFile = ' '
-      GM_isopycK3dFile    = ' '
+      GM_K3dRediFile      = ' '
+      GM_K3dGMFile        = ' '
       GM_useLeithQG       = .FALSE.
 
 C--   Default values GM/Redi I/O control
@@ -165,6 +171,11 @@ C--   Default values for BatesK3d
       GM_Bates_vecFreq   = 2592000.
       GM_Bates_minRenorm = oneRL
       GM_Bates_maxRenorm = 20.
+
+C--   Initialise retired parameters to unlikely value
+      nRetired = 0
+      GM_background_K3dFile = ' '
+      GM_isopycK3dFile    = ' '
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -223,6 +234,37 @@ C     Fix to avoid running without getting any output:
       GM_MNC = .FALSE.
 #endif
       GM_MDSIO = (.NOT. GM_MNC) .OR. outputTypesInclusive
+
+C     Check for retired parameters
+      IF ( GM_background_K3dFile .NE. ' ' ) THEN
+        nRetired = nRetired+1
+        WRITE(msgBuf,'(2A)') 'S/R GMREDI_READPARMS: ',
+     &    '"GM_background_K3dFile" has been replaced by "GM_K3dGMFile"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'S/R GMREDI_READPARMS: ',
+     &    'and is no longer allowed in file "data.gmredi"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( GM_isopycK3dFile .NE. ' ' ) THEN
+        nRetired = nRetired+1
+        WRITE(msgBuf,'(2A)') 'S/R GMREDI_READPARMS: ',
+     &    '"GM_isopycK3dFile" has been replaced by "GM_K3dRediFile"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'S/R GMREDI_READPARMS: ',
+     &    'and is no longer allowed in file "data.gmredi"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+      IF ( nRetired .GT. 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R GMREDI_READPARMS: ',
+     &              'Error reading parameter file "data.gmredi":'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(I4,A)') nRetired,
+     &      ' out of date parameters were found in the namelist'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R GMREDI_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 
