@@ -342,11 +342,11 @@ C     different stabilisation methods are possible.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C     This is stable but slow to converge.
-         uIceC(i,j,bi,bj) = HALF*(uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj))
-         vIceC(i,j,bi,bj) = HALF*(vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj))
+C         uIceC(i,j,bi,bj) = HALF*(uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj))
+C         vIceC(i,j,bi,bj) = HALF*(vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj))
 C     This converges slightly faster than the previous lines.
-C            uIceC(i,j,bi,bj) = HALF*( uIce(i,j,bi,bj)+uIceC(i,j,bi,bj) )
-C            vIceC(i,j,bi,bj) = HALF*( vIce(i,j,bi,bj)+vIceC(i,j,bi,bj) )
+            uIceC(i,j,bi,bj) = HALF*( uIce(i,j,bi,bj)+uIceC(i,j,bi,bj) )
+            vIceC(i,j,bi,bj) = HALF*( vIce(i,j,bi,bj)+vIceC(i,j,bi,bj) )
           ENDDO
          ENDDO
         ENDIF
@@ -893,8 +893,8 @@ C     end bi,bj-loops
 c        WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
 c    &   ' U iters,error,WF = ',ipass,M,S1,S1A,WFAU
 C SAFEGUARD AGAINST BAD FORCING ETC
-C          IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
-C          S1A=S1
+          IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
+          S1A=S1
          IF(S1.LT.LSR_ERROR) THEN
           ICOUNT1=m
           doIterate4u = .FALSE.
@@ -916,8 +916,8 @@ C          S1A=S1
          ENDDO
          _GLOBAL_MAX_RL( S2, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
-C          IF(m.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
-C          S2A=S2
+          IF(m.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
+          S2A=S2
          IF(S2.LT.LSR_ERROR) THEN
           ICOUNT2=m
           doIterate4v = .FALSE.
