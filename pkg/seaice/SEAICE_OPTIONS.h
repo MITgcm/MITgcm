@@ -174,6 +174,10 @@ C     Use parameterisation of grounding ice for a better representation
 C     of fastice in shallow seas
 # undef SEAICE_ALLOW_BOTTOMDRAG
 
+C     Use the flexible LSR solver, where the number of linear iteration
+C     Depends on the residual. Good for when convergence must be reached
+# undef SEAICE_LSR_FLEX
+
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   Options for the B-grid version only:
 
