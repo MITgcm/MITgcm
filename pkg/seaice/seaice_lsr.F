@@ -100,9 +100,6 @@ C     i,j,bi,bj  :: Loop counters
       _RL residUm, residVm
 #endif /* SEAICE_LSR_FLEX */
 
-      _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
-      _RL residini, residkm1, residkm2, residiniFac
-      _RL residUm, residVm, residm
 
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
