@@ -440,9 +440,10 @@ C--     Next, read the cost data file.
 
       nRetired = 0
       IF ( ctrlSmoothCorrel2D ) THEN
-       WRITE(msgBuf,'(A,A)')
+       WRITE(msgBuf,'(A,A,A)')
      &  'S/R CTRL_READPARMS: ctrlSmoothCorrel2D',
-     &  ' is no longer allowed in file "data.ctrl"'
+     &  ' is no longer allowed in file "data.ctrl"',
+     &  ' and ALLOW_SMOOTH_CORREL2D cannot be defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
@@ -450,9 +451,10 @@ C--     Next, read the cost data file.
        nRetired = nRetired + 1
       ENDIF
       IF ( ctrlSmoothCorrel3D ) THEN
-       WRITE(msgBuf,'(A,A)')
+       WRITE(msgBuf,'(A,A,A)')
      &  'S/R CTRL_READPARMS: ctrlSmoothCorrel3D',
-     &  ' is no longer allowed in file "data.ctrl"'
+     &  ' is no longer allowed in file "data.ctrl"',
+     &  ' and ALLOW_SMOOTH_CORREL2D cannot be defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R CTRL_READPARMS: please use the smooth-pkg instead'
