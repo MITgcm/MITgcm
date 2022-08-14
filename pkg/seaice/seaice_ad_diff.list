@@ -17,7 +17,6 @@ seaice_read_pickup.f
 seaice_solve4temp.f
 seaice_tracer_phys.f
 seaice_cost_accumulate_mean.f
-seaice_cost_areasst.f
 seaice_cost_concentration.f
 seaice_cost_driver.f
 seaice_cost_export.f

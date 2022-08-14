@@ -12,7 +12,6 @@ CTRL_OBCS
 ctrl_dummy
 ctrl
 ctrl_local_params
-ctrl_weights
 DIAGNOSTICS_SIZE
 DIAGNOSTICS
 DIAGSTATS_REGIONS
