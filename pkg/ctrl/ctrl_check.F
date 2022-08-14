@@ -1,4 +1,7 @@
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -194,6 +197,26 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
       errCount = errCount + 1
 # endif
 #endif /* ALLOW_DIFFKR_CONTROL */
+
+#ifdef ALLOW_KAPGM_CONTROL
+C-    to use KAPGM_CONTROL, needs to define GM_READ_K3D_GM in GMREDI_OPTIONS.h
+# ifndef GM_READ_K3D_GM
+      WRITE(msgBuf,'(A)')
+     &        'Needs to define GM_READ_K3D_GM to use KAPGM_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+# endif
+#endif /* ALLOW_KAPGM_CONTROL */
+
+#ifdef ALLOW_KAPREDI_CONTROL
+C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS.h
+# ifndef GM_READ_K3D_REDI
+      WRITE(msgBuf,'(A)')
+     &        'Needs to define GM_READ_K3D_REDI to use KAPREDI_CONTROL'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+# endif
+#endif /* ALLOW_KAPREDI_CONTROL */
 
 #if (defined (ALLOW_HFLUX_CONTROL) && defined (ALLOW_ATEMP_CONTROL))
       WRITE(msgBuf,'(A)')

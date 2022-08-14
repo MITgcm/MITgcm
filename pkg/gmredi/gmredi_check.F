@@ -139,6 +139,29 @@ C-     GM/Redi needs implicit diffusion (will be packaged later)
         errCount = errCount + 1
       ENDIF
 
+#ifndef GM_READ_K3D_REDI
+      IF ( GM_K3dRediFile.NE.' ' ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: GM_K3dRediFile is set in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: without #define GM_READ_K3D_REDI'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+#ifndef GM_READ_K3D_GM
+      IF ( GM_K3dGMFile.NE.' ' ) THEN
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: GM_K3dGMFile is set in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   'GMREDI_CHECK: without #define GM_READ_K3D_GM'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifndef GM_VISBECK_VARIABLE_K
 C     Make sure we are not trying to use something that is unavailable
       IF ( GM_Visbeck_alpha.NE.0. ) THEN

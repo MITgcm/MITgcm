@@ -107,7 +107,10 @@ C     sstExtrapol  :: extrapolation coeff from 1rst 2 levels up to surface
 C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
 C-- to evaluate turbulent transfert coefficients:
 C     cdrag_[n]    :: n = 1,2,3 coefficients used to evaluate
-C                     drag coefficient
+C                     drag coefficient,
+C     For Large and Yeager (2009): extra coefficient n = 8 and
+C     cdragMax     :: maximum drag coefficient ...
+C     umax         :: ... at maximum wind
 C     cstanton_[n] :: n = 1,2   coefficients used to evaluate
 C                     the Stanton number (stable/unstable cond.)
 C     cdalton      :: coefficient used to evaluate the Dalton number
@@ -139,7 +142,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
       _RL    gamma_blk
       _RL    saltsat
       _RL    sstExtrapol
-      _RL    cdrag_1,    cdrag_2,     cdrag_3
+      _RL    cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax
       _RL    cstanton_1, cstanton_2
       _RL    cdalton
       _RL    zolmin
@@ -170,7 +173,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
      &       gamma_blk,
      &       saltsat,
      &       sstExtrapol,
-     &       cdrag_1,    cdrag_2,    cdrag_3,
+     &       cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax,
      &       cstanton_1, cstanton_2,
      &       cdalton,
      &       zolmin,
@@ -185,4 +188,3 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
      &       ocean_emissivity,
      &       ice_emissivity,
      &       snow_emissivity
-

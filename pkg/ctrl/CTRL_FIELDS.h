@@ -16,16 +16,6 @@ C     *==============================================================*
 C     \ev
 CEOP
 
-#ifdef ALLOW_KAPGM_CONTROL
-      COMMON /CTRL_FIELDS_KAPGM/
-     &                       kapGM
-      _RL  kapGM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
-      COMMON /CTRL_FIELDS_KAPREDI/
-     &                       kapRedi
-      _RL  kapRedi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /CTRL_FIELDS_BOTTOMDRAG/
      &                       bottomDragFld
