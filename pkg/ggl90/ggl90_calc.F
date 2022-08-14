@@ -39,6 +39,9 @@ C !USES: ============================================================
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "GGL90.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -64,7 +67,6 @@ C     i, j, k          :: array computation indices
 C     kSrf             :: vertical index of surface level
 C     kTop             :: index of top interface (just below surf. level)
 C     kBot             :: index of bottom interface (just above bottom lev.)
-C     delK             :: from interface k to level just below: k-delK
 C     hFac/hFacI       :: fractional thickness of W-cell
 C     explDissFac      :: explicit Dissipation Factor (in [0-1])
 C     implDissFac      :: implicit Dissipation Factor (in [0-1])
@@ -87,8 +89,8 @@ C         rMixingLength:: inverse of mixing length
 C     TKEPrandtlNumber :: here, an empirical function of the Richardson number
       INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k
-      INTEGER kp1, km1, kl
-      INTEGER kSrf, kTop, kBot, delK
+      INTEGER kp1, km1
+      INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL deltaTloc
       _RL explDissFac, implDissFac
@@ -118,10 +120,14 @@ c     _RL SQRTTKE
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     IDEMIX_gTKE :: TKE tendency due to internal waves
 C                    (output of S/R GGL90_IDEMIX)
-      _RL IDEMIX_gTKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
+      _RS mskLoc
+#ifdef ALLOW_GGL90_SMOOTH
+      _RS maskI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 C-    tri-diagonal matrix
       _RL a3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -142,6 +148,17 @@ C     gTKE     :: right hand side of diffusion equation
 #endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
+#endif
+#ifdef ALLOW_SHELFICE
+      INTEGER ki
+      _RL KE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDragU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDragV (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stressU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stressV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL kappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -164,11 +181,9 @@ CEOP
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
-       delK =  1
       ELSE
        kSrf =  1
        kTop =  2
-       delK =  0
       ENDIF
       deltaTloc = dTtracerLev(kSrf)
 
@@ -274,11 +289,11 @@ c       rMixingLength(i,j,1)  = 0. _d 0
       ENDDO
 
       DO k = 2, Nr
-       kl = k-delK
        DO j=jMin,jMax
         DO i=iMin,iMax
+         mskLoc = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
 #ifdef ALLOW_AUTODIFF
-         IF ( maskC(i,j,kl,bi,bj).EQ.oneRS ) THEN
+         IF ( mskLoc.EQ.oneRS ) THEN
 #endif
           SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
 #ifdef ALLOW_AUTODIFF
@@ -295,7 +310,7 @@ C     to save some memory
 C     mixing length
          GGL90mixingLength(i,j,k) = SQRTTWO *
      &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
-     &        * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &        * mskLoc
         ENDDO
        ENDDO
       ENDDO
@@ -304,6 +319,12 @@ C- ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MIN(kSrf+1,Nr)
+         ENDIF
+#endif
          GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
         ENDDO
        ENDDO
@@ -895,10 +916,82 @@ C     estimate friction velocity uStar from surface forcing
         ENDDO
        ENDDO
       ENDIF
+#ifdef ALLOW_SHELFICE
+C     uStarSquare should not have any effect undernath iceshelves, but
+C     masking uStarSquare underneath ice shelf is not necessary because
+C     surfaceForcingU/V=0 in this case (see shelfice_forcing_surf.F)
+C     Instead, uStarSquare is computed from the sub-glacial drag.
+      IF ( useSHELFICE .AND.
+     &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
+     &                        .OR. SHELFICEselectDragQuadr.GE.0 )
+     &   ) THEN
+C     First, we need to compute an early estimate of the drag
+C     coefficients based ond the ocean velocity of the previous time
+C     step only; because kappaRU and kappaRV are not yet available,
+C     kappyRX is just set to horizontally constant viscosity
+C     coefficients.
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         stressU(i,j) = 0. _d 0
+         stressV(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+       DO k=1,Nr+1
+        ki = MIN(k,Nr)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          kappaRX(i,j,k) = viscArNr(ki)
+         ENDDO
+        ENDDO
+       ENDDO
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KE  (i,j) = 0. _d 0
+          uFld(i,j) = uVel(i,j,k,bi,bj)
+          vFld(i,j) = vVel(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragU,
+     I       myIter, myThid )
+        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragV,
+     I       myIter, myThid )
+C-     compute explicit stress
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          stressU(i,j) = stressU(i,j) - cDragU(i,j)*uFld(i,j)*rUnit2mass
+          stressV(i,j) = stressV(i,j) - cDragV(i,j)*vFld(i,j)*rUnit2mass
+         ENDDO
+        ENDDO
+       ENDDO
+C
+       DO j=jMin,jMax
+        DO i=jMin,jMax
+         IF ( kTopC(i,j,bi,bj) .GT. 0 ) THEN
+          uStarSquare(i,j) = SQRT(
+     &         ( stressU(i,j)*stressU(i,j)+stressU(i+1,j)*stressU(i+1,j)
+     &         + stressV(i,j)*stressV(i,j)+stressV(i,j+1)*stressV(i,j+1)
+     &         )*halfRL          )*recip_coordFac
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
+
 C     Dirichlet surface boundary condition for TKE
       IF ( usingPCoords ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
+CML#ifdef ALLOW_SHELFICE
+CML         IF ( useShelfIce ) THEN
+CML          kSrf = MAX(kTopC(i,j,bi,bj),1)
+CML          kTop = kSrf
+CML         ENDIF
+CML#endif
          GGL90TKE(i,j,kSrf,bi,bj) = GGL90TKE(i,j,kSrf,bi,bj)
      &        - c3d(i,j,kSrf) * maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
@@ -908,6 +1001,12 @@ C     Dirichlet surface boundary condition for TKE
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MIN(kSrf+1,Nr)
+         ENDIF
+#endif
          GGL90TKE(i,j,kSrf,bi,bj) = maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
          GGL90TKE(i,j,kTop,bi,bj) = GGL90TKE(i,j,kTop,bi,bj)
@@ -970,31 +1069,31 @@ C     end of time step
 C     ===============================
 
       DO k=2,Nr
-       kl = k-delK
+#ifdef ALLOW_GGL90_SMOOTH
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         maskI(i,j) = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &        *mskCor(i,j,bi,bj)
+         GGL90visctmp(i,j,k) = GGL90visctmp(i,j,k)*mskCor(i,j,bi,bj)
+        ENDDO
+       ENDDO
+#endif
        DO j=1,sNy
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
          tmpVisc = (
-     &     p4 *    GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj)
-     &    +p8 *( ( GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj)
-     &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) )
-     &         + ( GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj)
-     &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
-     &    +p16*( ( GGL90visctmp(i+1,j+1,k)*mskCor(i+1,j+1,bi,bj)
-     &           + GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj) )
-     &         + ( GGL90visctmp(i+1,j-1,k)*mskCor(i+1,j-1,bi,bj)
-     &           + GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj) ) )
+     &     p4 *    GGL90visctmp(i  ,j  ,k)
+     &    +p8 *( ( GGL90visctmp(i-1,j  ,k) + GGL90visctmp(i+1,j  ,k) )
+     &         + ( GGL90visctmp(i  ,j-1,k) + GGL90visctmp(i  ,j+1,k) ) )
+     &    +p16*( ( GGL90visctmp(i+1,j+1,k) + GGL90visctmp(i-1,j-1,k) )
+     &         + ( GGL90visctmp(i+1,j-1,k) + GGL90visctmp(i-1,j+1,k) ) )
      &             )/(
      &     p4
-     &    +p8 *(( maskC(i-1,j  ,kl,bi,bj)*mskCor(i-1,j  ,bi,bj)
-     &          + maskC(i+1,j  ,kl,bi,bj)*mskCor(i+1,j  ,bi,bj) )
-     &         +( maskC(i  ,j-1,kl,bi,bj)*mskCor(i  ,j-1,bi,bj)
-     &          + maskC(i  ,j+1,kl,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &    +p16*(( maskC(i+1,j+1,kl,bi,bj)* mskCor(i+1,j+1,bi,bj)
-     &          + maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj) )
-     &         +( maskC(i+1,j-1,kl,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &          + maskC(i-1,j+1,kl,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
-     &               )*maskC(i,j,kl,bi,bj)*mskCor(i,j,bi,bj)
+     &    +p8 *(( maskI(i-1,j  ) + maskI(i+1,j  ) )
+     &         +( maskI(i  ,j-1) + maskI(i  ,j+1) ) )
+     &    +p16*(( maskI(i+1,j+1) + maskI(i-1,j-1) )
+     &         +( maskI(i+1,j-1) + maskI(i-1,j+1) ) )
+     &               )*maskI(i,j)
 #else
          tmpVisc = GGL90visctmp(i,j,k)
 #endif
@@ -1003,30 +1102,21 @@ C     ===============================
          GGL90diffKr(i,j,k,bi,bj)= MAX( tmpVisc , diffKrNrS(k) )
         ENDDO
        ENDDO
-      ENDDO
 
-      DO k=2,Nr
-       kl = k-delK
        DO j=1,sNy
         DO i=1,sNx+1
 #ifdef ALLOW_GGL90_SMOOTH
          tmpVisc = (
-     &     p4 *(   GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj)
-     &           + GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj) )
-     &    +p8 *( ( GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj)
-     &           + GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj) )
-     &         + ( GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj)
-     &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
+     &     p4 *(   GGL90visctmp(i-1,j  ,k) + GGL90visctmp(i,j  ,k) )
+     &    +p8 *( ( GGL90visctmp(i-1,j-1,k) + GGL90visctmp(i,j-1,k) )
+     &         + ( GGL90visctmp(i-1,j+1,k) + GGL90visctmp(i,j+1,k) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *(( maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &          + maskC(i  ,j-1,kl,bi,bj)*mskCor(i  ,j-1,bi,bj) )
-     &         +( maskC(i-1,j+1,kl,bi,bj)*mskCor(i-1,j+1,bi,bj)
-     &          + maskC(i  ,j+1,kl,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
-     &               )*maskC(i-1,j,kl,bi,bj)*mskCor(i-1,j,bi,bj)
-     &                *maskC(i  ,j,kl,bi,bj)*mskCor(i  ,j,bi,bj)
+     &    +p8 *(( maskI(i-1,j-1) + maskI(i,j-1) )
+     &         +( maskI(i-1,j+1) + maskI(i,j+1) ) )
+     &               )*maskI(i-1,j) * maskI(i,j)
 #else
-         tmpVisc = _maskW(i,j,kl,bi,bj) * halfRL
+         tmpVisc = _maskW(i,j,k-1,bi,bj) * _maskW(i,j,k,bi,bj) * halfRL
      &          *( GGL90visctmp(i-1,j,k)
      &           + GGL90visctmp(i,  j,k) )
 #endif
@@ -1035,30 +1125,21 @@ C     ===============================
          GGL90viscArU(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
         ENDDO
        ENDDO
-      ENDDO
 
-      DO k=2,Nr
-       kl = k-delK
        DO j=1,sNy+1
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
          tmpVisc = (
-     &     p4 *(   GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj)
-     &           + GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj) )
-     &    +p8 *( ( GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj)
-     &           + GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj) )
-     &         + ( GGL90visctmp(i+1,j-1,k)*mskCor(i+1,j-1,bi,bj)
-     &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) ) )
+     &     p4 *(   GGL90visctmp(i  ,j-1,k) + GGL90visctmp(i  ,j,k) )
+     &    +p8 *( ( GGL90visctmp(i-1,j-1,k) + GGL90visctmp(i-1,j,k) )
+     &         + ( GGL90visctmp(i+1,j-1,k) + GGL90visctmp(i+1,j,k) ) )
      &             )/(
      &     p4 * 2. _d 0
-     &    +p8 *(( maskC(i-1,j-1,kl,bi,bj)*mskCor(i-1,j-1,bi,bj)
-     &          + maskC(i-1,j  ,kl,bi,bj)*mskCor(i-1,j  ,bi,bj) )
-     &         +( maskC(i+1,j-1,kl,bi,bj)*mskCor(i+1,j-1,bi,bj)
-     &          + maskC(i+1,j  ,kl,bi,bj)*mskCor(i+1,j  ,bi,bj) ) )
-     &               )*maskC(i,j-1,kl,bi,bj)*mskCor(i,j-1,bi,bj)
-     &                *maskC(i,j  ,kl,bi,bj)*mskCor(i,j  ,bi,bj)
+     &    +p8 *(( maskI(i-1,j-1) + maskI(i-1,j) )
+     &         +( maskI(i+1,j-1) + maskI(i+1,j) ) )
+     &               )*maskI(i,j-1) * maskI(i,j)
 #else
-         tmpVisc = _maskS(i,j,kl,bi,bj) * halfRL
+         tmpVisc = _maskS(i,j,k-1,bi,bj) * _maskS(i,j,k,bi,bj) * halfRL
      &          *( GGL90visctmp(i,j-1,k)
      &           + GGL90visctmp(i,j,  k) )
 #endif
@@ -1089,6 +1170,12 @@ C     diagnose surface flux of TKE
 C     diagnose surface flux of TKE
          DO j=jMin,jMax
           DO i=iMin,iMax
+CML#ifdef ALLOW_SHELFICE
+CML           IF ( useShelfIce ) THEN
+CML            kSrf = MAX(kTopC(i,j,bi,bj),1)
+CML            kTop = kSrf
+CML           ENDIF
+CML#endif
            surf_flx_tke(i,j) =
      &          (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
      &          - GGL90TKE(i,j,kSrf,bi,bj) )
@@ -1100,6 +1187,12 @@ C     diagnose surface flux of TKE
         ELSE
          DO j=jMin,jMax
           DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+           IF ( useShelfIce ) THEN
+            kSrf = MAX(1,kTopC(i,j,bi,bj))
+            kTop = MIN(kSrf+1,Nr)
+           ENDIF
+#endif
            surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
      &                         GGL90TKE(i,j,kTop,bi,bj))
      &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
@@ -1113,6 +1206,9 @@ C     diagnose surface flux of TKE
         k=kSrf
         DO j=jMin,jMax
          DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+          IF ( useShelfIce ) k = MAX(1,kTopC(i,j,bi,bj))
+#endif
 C     diagnose work done by the wind
           surf_flx_tke(i,j) =
      &      halfRL*( surfaceForcingU(i,  j,bi,bj)*uVel(i  ,j,k,bi,bj)
