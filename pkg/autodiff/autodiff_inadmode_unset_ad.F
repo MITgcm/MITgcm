@@ -61,9 +61,6 @@ C --- Grab modelEnd, necessary input for diagnostics routines
       useSEAICE = useSEAICEinFwdMode
       useGGL90    = useGGL90inFwdMode
       useSALT_PLUME    = useSALT_PLUMEinFwdMode
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-      ctrlSmoothCorrel2D    = useSmoothCorrel2DinFwdMode
-#endif
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
         SEAICEuseFREEDRIFT = SEAICEuseFREEDRIFTinFwdMode
@@ -105,14 +102,6 @@ C     SIregFacInFw = UNSET_RL by default, so we need to check this here
      &      'S/R ADAUTODIFF_INADMODE_UNSET: viscFacAdj =',viscFacAdj
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-       WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_UNSET: ctrlSmoothCorrel2D    =',
-     &       ctrlSmoothCorrel2D
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-#endif
 
 #ifdef ALLOW_SEAICE
        IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN

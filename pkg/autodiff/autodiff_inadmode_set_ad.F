@@ -55,9 +55,6 @@ C     !LOCAL VARIABLES:
       useSEAICE = useSEAICEinAdMode
       useGGL90  = useGGL90inAdMode
       useSALT_PLUME = useSALT_PLUMEinAdMode
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-      ctrlSmoothCorrel2D  = useSmoothCorrel2DinAdMode
-#endif
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
         SEAICEuseFREEDRIFT = .NOT.SEAICEuseFREEDRIFTinFwdMode
@@ -100,14 +97,6 @@ C     SIregFacInAd = UNSET_RL by default, so we need to check this here
      &      'S/R ADAUTODIFF_INADMODE_SET: viscFacAdj =',viscFacAdj
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-       WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_SET: ctrlSmoothCorrel2D    =',
-     &       ctrlSmoothCorrel2D
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-#endif
 
 #ifdef ALLOW_SEAICE
        IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
