@@ -25,14 +25,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "CTRL_SIZE.h"
 #include "ctrl.h"
-#include "ctrl_dummy.h"
 #include "optim.h"
-#ifdef ALLOW_EXF
-# include "EXF_FIELDS.h"
-#endif
 
 c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
@@ -76,7 +70,6 @@ c     == local variables ==
 #if ( defined ALLOW_SMOOTH && defined ALLOW_SMOOTH_CTRL2D )
       character*(80) fnamegeneric
 #endif
-#ifndef ECCO_CTRL_DEPRECATED
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file
       character*(MAX_LEN_FNAM) xx_aqh_file
@@ -84,7 +77,7 @@ c     == local variables ==
       character*(MAX_LEN_FNAM) xx_precip_file
       character*(MAX_LEN_FNAM) xx_lwdown_file
       character*(MAX_LEN_FNAM) xx_swdown_file
-#endif
+
       INTEGER il
 
 c     == end of interface ==
@@ -99,16 +92,10 @@ c--   Now, read the control vector.
       ladinit      = .false.
       il   =ilnblnk( ctrlDir )
 
-      if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
+      if ( optimcycle .ge. 0 ) then
         ilgen=ilnblnk( xx_gen_file )
         write(fnamegen(1:80),'(2a,i10.10)')
-     &       xx_gen_file(1:ilgen), '.', optimcycle
-      endif
-
-      if ( (optimcycle .ge. 0).AND.ctrlUseGen ) then
-        ilgen=ilnblnk( xx_gen_file )
-        write(fnamegen(1:80),'(2a,i10.10)')
-     &    xx_gen_file(1:ilgen),'.effective.',optimcycle
+     &    ctrlDir(1:il)//xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
 
 c--   Get the counters, flags, and the interpolation factor.
@@ -125,13 +112,11 @@ cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( ctrlDir(1:il)//fnamegen, 
-     &                       xx_gen1, gencount0,
+        call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
        if (.false.) then
-        call active_read_xy( ctrlDir(1:il)//fnamegen, 
-     &                       xx_gen0, gencount0,
+        call active_read_xy( fnamegen, xx_gen0, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
        endif
@@ -139,14 +124,6 @@ cc#else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount0, 1, myThid )
 #endif
 cc#endif /* ALLOW_OPENAD */
-
-#ifdef ECCO_CTRL_DEPRECATED
-#ifdef ALLOW_CTRL_SMOOTH
-        if ( xx_gen_file .EQ. xx_tauu_file .OR.
-     &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask,myThid)
-#endif
-#endif
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
@@ -158,7 +135,7 @@ cc#endif /* ALLOW_OPENAD */
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
-      endif
+        endif
 
       if (( genfirst ) .or. ( genchanged )) then
         call CTRL_SWAPFFIELDS( xx_gen0, xx_gen1, mythid )
@@ -169,21 +146,13 @@ cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( ctrlDir(1:il)//fnamegen, 
-     &                       xx_gen1 , gencount1,
+        call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount1, 1, myThid )
 #endif
 cc#endif /* ALLOW_OPENAD */
-#ifdef ECCO_CTRL_DEPRECATED
-#ifdef ALLOW_CTRL_SMOOTH
-        if ( xx_gen_file .EQ. xx_tauu_file .OR.
-     &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask,myThid)
-#endif
-#endif
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
@@ -202,7 +171,6 @@ cph(
 cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
 
-#ifndef ECCO_CTRL_DEPRECATED
       xx_tauu_file       = 'xx_tauu'
       xx_tauv_file       = 'xx_tauv'
       xx_aqh_file        = 'xx_aqh'
@@ -210,7 +178,6 @@ cph Initial wind stress adjustments are too vigorous.
       xx_precip_file     = 'xx_precip'
       xx_lwdown_file     = 'xx_lwdown'
       xx_swdown_file     = 'xx_swdown'
-#endif
 
       if ( gencount0 .LE. 2 .AND. (
 #ifdef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL

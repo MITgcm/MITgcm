@@ -47,7 +47,6 @@ c     == external ==
       external ilnblnk
 
 c     == local variables ==
-      LOGICAL doPackOld
       integer bi,bj
       integer i,j,k
       integer ii, irec
@@ -108,8 +107,6 @@ c     == end of interface ==
       enddo
 #endif
 
-      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
-
 c     Initialise temporary file
       do k = 1,Nr
        do jp = 1,nPy
@@ -135,37 +132,37 @@ c--   Only the master thread will do I/O.
 
 #ifdef CTRL_DELZNORM
       do k = 1, Nr
-         print *, 'ph-delznorm ', k, delZnorm, delR(k)
-         print *, 'ph-weight   ', weightfld(k,1,1)
+       print *, 'ph-delznorm ', k, delZnorm, delR(k)
+       print *, 'ph-weight   ', weightfld(k,1,1)
       enddo
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
-         if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+       write(cfile2(1:80),'(80a)') ' '
+       write(cfile3(1:80),'(80a)') ' '
+       if ( lxxadxx ) then
+        write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-         else
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+       else
+        write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-         endif
+       endif
 
-         reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
-         call mdsfindunit( cunit2, mythid )
-         open( cunit2, file=cfile2, status='unknown',
-     &        access='direct', recl=reclen )
-         call mdsfindunit( cunit3, mythid )
-         open( cunit3, file=cfile3, status='unknown',
-     &        access='direct', recl=reclen )
+       reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
+       call mdsfindunit( cunit2, mythid )
+       open( cunit2, file=cfile2, status='unknown',
+     &       access='direct', recl=reclen )
+       call mdsfindunit( cunit3, mythid )
+       open( cunit3, file=cfile3, status='unknown',
+     &       access='direct', recl=reclen )
       endif
 
 #ifdef CTRL_UNPACK_PRECISE
@@ -201,116 +198,92 @@ c--   Only the master thread will do I/O.
 
       do irec = 1, ncvarrecs(ivartype)
 #ifndef ALLOW_ADMTLM
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
+       read(cunit) filencvarindex(ivartype)
+       if (filencvarindex(ivartype) .NE. ncvarindex(ivartype)) then
+        print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
      &           filencvarindex(ivartype), ncvarindex(ivartype)
-            STOP 'in S/R ctrl_set_unpack_xyz'
-         endif
-         read(cunit) filej
-         read(cunit) filei
+        STOP 'in S/R ctrl_set_unpack_xyz'
+       endif
+       read(cunit) filej
+       read(cunit) filei
 #endif /* ALLOW_ADMTLM */
-         do k = 1, Nr
-         irectrue = (irec-1)*Nr + k
-            if ( doZscaleUnpack ) then
-               delZnorm = (delR(1)/delR(k))**delZexp
-            else
-               delZnorm = 1. _d 0
-            endif
-            cbuffindex = nwetglobal(k)
-            if ( cbuffindex .gt. 0 ) then
+       do k = 1, Nr
+        irectrue = (irec-1)*Nr + k
+        if ( doZscaleUnpack ) then
+         delZnorm = (delR(1)/delR(k))**delZexp
+        else
+         delZnorm = 1. _d 0
+        endif
+        cbuffindex = nwetglobal(k)
+        if ( cbuffindex .gt. 0 ) then
 #ifndef ALLOW_ADMTLM
-               read(cunit) filencbuffindex
-               if (filencbuffindex .NE. cbuffindex) then
-                  print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
-                  STOP 'in S/R ctrl_set_unpack_xyz'
-               endif
-               read(cunit) filek
-               if (filek .NE. k) then
-                  print *, 'WARNING: wrong k ',
-     &                 filek, k
-                  STOP 'in S/R ctrl_set_unpack_xyz'
-               endif
+         read(cunit) filencbuffindex
+         if (filencbuffindex .NE. cbuffindex) then
+          print *, 'WARNING: wrong cbuffindex ',
+     &             filencbuffindex, cbuffindex
+          STOP 'in S/R ctrl_set_unpack_xyz'
+         endif
+         read(cunit) filek
+         if (filek .NE. k) then
+          print *, 'WARNING: wrong k ',
+     &             filek, k
+          STOP 'in S/R ctrl_set_unpack_xyz'
+         endif
 cph#endif /* ALLOW_ADMTLM */
-               read(cunit) (cbuff(ii), ii=1,cbuffindex)
+         read(cunit) (cbuff(ii), ii=1,cbuffindex)
 #endif /* ALLOW_ADMTLM */
-            endif
+        endif
 c
-            cbuffindex = 0
-            do jp = 1,nPy
-             do bj = jtlo,jthi
-              do j = jmin,jmax
-               do ip = 1,nPx
-                do bi = itlo,ithi
-                 do i = imin,imax
-                  if ( globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
-                     cbuffindex = cbuffindex + 1
-                     globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+        cbuffindex = 0
+        do jp = 1,nPy
+         do bj = jtlo,jthi
+          do j = jmin,jmax
+           do ip = 1,nPx
+            do bi = itlo,ithi
+             do i = imin,imax
+              if ( globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
+               cbuffindex = cbuffindex + 1
+               globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
 cph(
-                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+               globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
 #ifdef ALLOW_ADMTLM
-                     nveccount = nveccount + 1
-                     globfld3d(i,bi,ip,j,bj,jp,k) =
-     &                 phtmpadmtlm(nveccount)
+               nveccount = nveccount + 1
+               globfld3d(i,bi,ip,j,bj,jp,k) = phtmpadmtlm(nveccount)
 cph(
-                     globfldtmp2(i,bi,ip,j,bj,jp) =
-     &                 phtmpadmtlm(nveccount)
+               globfldtmp2(i,bi,ip,j,bj,jp) = phtmpadmtlm(nveccount)
 cph)
 #endif
-                     IF ( doPackOld ) THEN
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                     if ( lxxadxx ) then
-                        globfld3d(i,bi,ip,j,bj,jp,k) = delZnorm
-     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
-# ifdef CTRL_UNPACK_PRECISE
-     &                       / sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
-# else
-     &                       / sqrt(weightfld(k,bi,bj))
-# endif
-                     else
-                        globfld3d(i,bi,ip,j,bj,jp,k) = 1/delZnorm
-     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
-# ifdef CTRL_UNPACK_PRECISE
-     &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
-# else
-     &                       * sqrt(weightfld(k,bi,bj))
-# endif
-                     endif
-#endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-                     ENDIF !IF ( doPackOld ) THEN
-                  else
-                     globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                  endif
+              else
+               globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
+              endif
 cph(
-                  globfldtmp3(i,bi,ip,j,bj,jp) =
-     &                 globfld3d(i,bi,ip,j,bj,jp,k)
+              globfldtmp3(i,bi,ip,j,bj,jp) =
+     &             globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
-                 enddo
-                enddo
-               enddo
-              enddo
              enddo
             enddo
-c
-            if ( doPackDiag ) then
-               write(cunit2,rec=irectrue) globfldtmp2
-               write(cunit3,rec=irectrue) globfldtmp3
-            endif
-c
+           enddo
+          enddo
          enddo
+        enddo
+c
+        if ( doPackDiag ) then
+         write(cunit2,rec=irectrue) globfldtmp2
+         write(cunit3,rec=irectrue) globfldtmp3
+        endif
+c
+       enddo
 
-         call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
-     &                             Nr, globfld3d,
-     &                             irec,  optimcycle, mythid)
+       call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
+     &                           Nr, globfld3d,
+     &                           irec,  optimcycle, mythid)
 
       enddo
 
       if ( doPackDiag ) then
-         close ( cunit2 )
-         close ( cunit3 )
+       close ( cunit2 )
+       close ( cunit3 )
       endif
 
       _END_MASTER( mythid )
@@ -318,8 +291,6 @@ c
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
 c-- part 1: preliminary reads and definitions
-
-      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
 
 #ifdef CTRL_UNPACK_PRECISE
 #ifdef ALLOW_AUTODIFF
@@ -338,16 +309,16 @@ c-- part 1: preliminary reads and definitions
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
-         il = ilnblnk( fname )
-         if ( lxxadxx ) then
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_ctrl_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_ctrl_dim'
-         else
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_grad_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_grad_dim'
-         endif
+       write(cfile2(1:80),'(80a)') ' '
+       write(cfile3(1:80),'(80a)') ' '
+       il = ilnblnk( fname )
+       if ( lxxadxx ) then
+        write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_ctrl_adim'
+        write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_ctrl_dim'
+       else
+        write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_grad_adim'
+        write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_grad_dim'
+       endif
       endif
 
 c-- part 2: loop over records
@@ -357,62 +328,60 @@ c-- part 2: loop over records
 c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
-      _BEGIN_MASTER( mythid )
-        IF ( myProcId .eq. 0 ) THEN
-         read(cunit) filencvarindex(ivartype)
-         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
-     &        then
-            print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
-     &           filencvarindex(ivartype), ncvarindex(ivartype)
-            STOP 'in S/R ctrl_set_unpack_xyz'
-         endif
-         read(cunit) filej
-         read(cunit) filei
-        ENDIF
-      _END_MASTER( mythid )
-      _BARRIER
+       _BEGIN_MASTER( mythid )
+       IF ( myProcId .eq. 0 ) THEN
+        read(cunit) filencvarindex(ivartype)
+        if (filencvarindex(ivartype) .NE. ncvarindex(ivartype)) then
+         print *, 'ctrl_set_unpack_xyz:WARNING: wrong ncvarindex ',
+     &            filencvarindex(ivartype), ncvarindex(ivartype)
+         STOP 'in S/R ctrl_set_unpack_xyz'
+        endif
+        read(cunit) filej
+        read(cunit) filei
+       ENDIF
+       _END_MASTER( mythid )
+       _BARRIER
 #endif /* ALLOW_ADMTLM */
 
-      do k = 1, Nr
+       do k = 1, Nr
 
         CALL MDS_PASS_R8toRL( msk2d_buf, msk3d,
-     &                 0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
+     &                        0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( msk2d_buf_glo, msk2d_buf,
-     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+     &                     Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
         _BEGIN_MASTER( mythid )
-         cbuffindex = nwetglobal(k)
+        cbuffindex = nwetglobal(k)
         IF ( myProcId .eq. 0 ) THEN
 
 #ifndef ALLOW_ADMTLM
-        if ( cbuffindex .gt. 0) then
+         if ( cbuffindex .gt. 0) then
           read(cunit) filencbuffindex
           read(cunit) filek
           if (filencbuffindex .NE. cbuffindex) then
-            print *, 'WARNING: wrong cbuffindex ',
-     &                 filencbuffindex, cbuffindex
-            STOP 'in S/R ctrl_set_unpack_xyz'
+           print *, 'WARNING: wrong cbuffindex ',
+     &              filencbuffindex, cbuffindex
+           STOP 'in S/R ctrl_set_unpack_xyz'
           endif
           if (filek .NE. k) then
-            print *, 'WARNING: wrong k ',
-     &                 filek, k
-            STOP 'in S/R ctrl_set_unpack_xyz'
+           print *, 'WARNING: wrong k ', filek, k
+           STOP 'in S/R ctrl_set_unpack_xyz'
           endif
           read(cunit) (cbuff(ii), ii=1,cbuffindex)
-        endif
+         endif
 #endif
 
-        cbuffindex = 0
-        DO j=1,Ny
+         cbuffindex = 0
+         DO j=1,Ny
           DO i=1,Nx
-            if (msk2d_buf_glo(i,j) .ne. 0. ) then
-               cbuffindex = cbuffindex + 1
-               fld2d_buf_glo(i,j) = cbuff(cbuffindex)
-            endif
+           if (msk2d_buf_glo(i,j) .ne. 0. ) then
+            cbuffindex = cbuffindex + 1
+            fld2d_buf_glo(i,j) = cbuff(cbuffindex)
+           endif
           ENDDO
-        ENDDO
+         ENDDO
 
         ENDIF
         _END_MASTER( mythid )
@@ -420,76 +389,52 @@ c-- 2.1: array <- buffer <- global buffer <- global file
 
         CALL BAR2( myThid )
         CALL SCATTER_2D_R8( fld2d_buf_glo, fld2d_buf,
-     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+     &                      Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
         CALL MDS_PASS_R8toRL( fld2d_buf, fld3dNodim,
-     &                 0, 0, 1, k, Nr, 0, 0, .TRUE., myThid )
+     &                        0, 0, 1, k, Nr, 0, 0, .TRUE., myThid )
 
-      enddo !do k = 1, Nr
+       enddo !do k = 1, Nr
 
 c-- 2.2: normalize field if needed
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         if ( doZscalePack ) then
-            delZnorm = (delR(1)/delR(k))**delZexp
-         else
-            delZnorm = 1. _d 0
-         endif
-         DO j=1,sNy
-          DO i=1,sNx
-           if (msk3d(i,j,k,bi,bj).EQ.0. _d 0) then
-            fld3dDim(i,j,k,bi,bj)=0. _d 0
-            fld3dNodim(i,j,k,bi,bj)=0. _d 0
-           else
-#ifdef ALLOW_ADMTLM
-            nveccount = nveccount + 1
-            fld3dNodim(i,j,k,bi,bj)=phtmpadmtlm(nveccount)
-#endif
-            IF ( .NOT.doPackOld ) THEN
-            fld3dDim(i,j,k,bi,bj)=fld3dNodim(i,j,k,bi,bj)
-            ELSE !IF ( .NOT.doPackOld ) THEN
-# ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
-            fld3dDim(i,j,k,bi,bj) = fld3dNodim(i,j,k,bi,bj)
-# else
-            if (lxxadxx) then
-               fld3dDim(i,j,k,bi,bj) =
-     &              fld3dNodim(i,j,k,bi,bj) * delZnorm
-#  ifdef CTRL_UNPACK_PRECISE
-     &              / sqrt(wei3d(i,j,k,bi,bj))
-#  else
-     &              / sqrt(weightfld(k,bi,bj))
-#  endif
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          if ( doZscalePack ) then
+           delZnorm = (delR(1)/delR(k))**delZexp
+          else
+           delZnorm = 1. _d 0
+          endif
+          DO j=1,sNy
+           DO i=1,sNx
+            if (msk3d(i,j,k,bi,bj).EQ.0. _d 0) then
+             fld3dDim(i,j,k,bi,bj)=0. _d 0
+             fld3dNodim(i,j,k,bi,bj)=0. _d 0
             else
-               fld3dDim(i,j,k,bi,bj) =
-     &              fld3dNodim(i,j,k,bi,bj) / delZnorm
-#  ifdef CTRL_UNPACK_PRECISE
-     &              * sqrt(wei3d(i,j,k,bi,bj))
-#  else
-     &              * sqrt(weightfld(k,bi,bj))
-#  endif
+#ifdef ALLOW_ADMTLM
+             nveccount = nveccount + 1
+             fld3dNodim(i,j,k,bi,bj)=phtmpadmtlm(nveccount)
+#endif
+             fld3dDim(i,j,k,bi,bj)=fld3dNodim(i,j,k,bi,bj)
             endif
-# endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-            ENDIF !IF ( .NOT.doPackOld ) THEN
-           endif
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
 
 c-- 2.3:
-      if ( doPackDiag ) then
-c error: twice the same one
-      call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &        Nr, fld3dNodim, irec, 0, mythid)
-      call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &        Nr, fld3dDim, irec, 0, mythid)
-      endif
+       if ( doPackDiag ) then
+c     error: twice the same one
+        call WRITE_REC_3D_RL( cfile2, ctrlprec,
+     &       Nr, fld3dNodim, irec, 0, mythid)
+        call WRITE_REC_3D_RL( cfile3, ctrlprec,
+     &       Nr, fld3dDim, irec, 0, mythid)
+       endif
 
 c-- 2.4:
-      call WRITE_REC_3D_RL( fname, ctrlprec,
-     &        Nr, fld3dDim, irec, 0, mythid)
+       call WRITE_REC_3D_RL( fname, ctrlprec,
+     &      Nr, fld3dDim, irec, 0, mythid)
 
       enddo !do irec = 1, ncvarrecs(ivartype)
 

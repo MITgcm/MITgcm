@@ -5,7 +5,6 @@ smooth_diff3d.f
 smooth_diff2d.f
 smooth_correl3d.f
 smooth_correl2d.f
-smooth_correl2dw.f
 smooth_hetero2d.f
 smooth_impldiff.f
 smooth_init_varia.f

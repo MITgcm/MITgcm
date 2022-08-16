@@ -21,12 +21,13 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_CTRL
-# include "ctrl_weights.h"
+#ifdef ALLOW_OPENAD
+# include "FFIELDS.h"
+#else
+# include "cost_local.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
       INTEGER  myThid
 
 C     !FUNCTIONS:
@@ -34,7 +35,6 @@ C     !FUNCTIONS:
       EXTERNAL MDS_RECLEN
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER iUnit, length_of_rec
