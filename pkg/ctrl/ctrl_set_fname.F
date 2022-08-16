@@ -35,7 +35,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer il
-      integer ilDir
+      integer ll,l
 
 c     == external ==
 
@@ -47,23 +47,38 @@ c     == end of interface ==
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-      ilDir=ilnblnk( ctrlDir )
       il=ilnblnk( xx_fname )
+
+      ll = il
 
       write(fname(1)(1:80),'(80a)') ' '
       write(fname(2)(1:80),'(80a)') ' '
       write(fname(3)(1:80),'(80a)') ' '
 
       if ( il .GT. 0 .AND. il .LE. 80 ) then
-         write(fname(1)(1:80),'(3a,i10.10)')
-     &        ctrlDir(1:ilDir),
+         do l = il, 1, -1
+          if ( xx_fname(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+
+         write(fname(1)(1:80),'(2a,i10.10)')
      &        xx_fname(1:il) ,'.', optimcycle
-         write(fname(2)(1:80),'(4a,i10.10)')
-     &        ctrlDir(1:ilDir),
-     &        yadprefix, xx_fname(1:il), '.', optimcycle
-         write(fname(3)(1:80),'(4a,i10.10)')
-     &        ctrlDir(1:ilDir),
-     &        'hn', xx_fname(1:il), '.', optimcycle
+         if ( ll .eq. il ) then
+          write(fname(2)(1:80),'(3a,i10.10)')
+     &         yadprefix, xx_fname(1:il), '.', optimcycle
+          write(fname(3)(1:80),'(3a,i10.10)')
+     &         'hn', xx_fname(1:il), '.', optimcycle
+         else
+          write(fname(2)(1:80),'(3a,i10.10)')
+     &         xx_fname(1:ll)//yadprefix,xx_fname(ll+1:il), '.', 
+     &         optimcycle
+          write(fname(3)(1:80),'(3a,i10.10)')
+     &         xx_fname(1:ll)//'hn', xx_fname(1:il), '.', 
+     &         optimcycle
+         endif
       endif
 
       _END_MASTER( mythid )

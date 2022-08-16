@@ -1,7 +1,4 @@
 #include "AUTODIFF_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 C     ==================================================================
 C     active_file.F: Routines to handle the I/O of the active file for
@@ -61,9 +58,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -83,15 +77,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -100,14 +85,8 @@ CEOP
 
       myNr = 1
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_READ_3D_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
-#else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -146,9 +125,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -168,15 +144,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -185,14 +152,8 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_READ_3D_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
-#else
       CALL ACTIVE_READ_3D_RL(
      &                 active_var_file, active_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -231,9 +192,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -253,15 +211,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -270,14 +219,8 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_READ_XZ_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
-#else
       CALL ACTIVE_READ_XZ_RL(
      &                 active_var_file, active_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -315,9 +258,6 @@ C     \ev
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -337,15 +277,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -354,14 +285,8 @@ CEOP
 
       myNr = Nr
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_READ_YZ_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, doglobalread,
-#else
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -458,9 +383,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -474,15 +396,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -493,14 +406,8 @@ CEOP
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_WRITE_3D_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
-#else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -537,9 +444,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -553,15 +457,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -572,14 +467,8 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_WRITE_3D_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
-#else
       CALL ACTIVE_WRITE_3D_RL(
      &                 active_var_file, active_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -616,9 +505,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -632,15 +518,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -651,14 +528,8 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_WRITE_XZ_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
-#else
       CALL ACTIVE_WRITE_XZ_RL(
      &                 active_var_file, active_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
@@ -695,9 +566,6 @@ C     !USES:
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#ifdef ALLOW_CTRL
-# include "ctrl.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
@@ -711,15 +579,6 @@ C     myThid         :: thread number for this instance
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
-#ifdef ALLOW_CTRL
-      CHARACTER*(80) fnames(3)
-      INTEGER il
-
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-#endif
 
 C     !LOCAL VARIABLES:
       INTEGER myNr
@@ -730,14 +589,8 @@ CEOP
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
-#ifdef ALLOW_CTRL
-      il = ilnblnk( ctrlDir )
-      CALL ACTIVE_WRITE_YZ_RL(
-     &  ctrlDir(1:il)//active_var_file, active_var, globalFile,
-#else
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 

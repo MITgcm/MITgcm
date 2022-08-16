@@ -96,34 +96,33 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      myNr = 1
-      useCurrentDir = .FALSE.
-
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_READ_3D_RL(
-     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
-#else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref, 
+     &                 active_var_file(ll+1:il)
+      myNr = 1
+      useCurrentDir = .FALSE.
 
       CALL ACTIVE_READ_3D_RL(
      &                 fname, adactive_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -197,34 +196,33 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      myNr = Nr
-      useCurrentDir = .FALSE.
-
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_READ_3D_RL(
-     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
-#else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
+      myNr = Nr
+      useCurrentDir = .FALSE.
 
       CALL ACTIVE_READ_3D_RL(
      &                 fname, adactive_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -298,34 +296,33 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      myNr = Nr
-      useCurrentDir = .FALSE.
-
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_READ_XZ_RL(
-     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
-#else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
+      myNr = Nr
+      useCurrentDir = .FALSE.
 
       CALL ACTIVE_READ_XZ_RL(
      &                 fname, adactive_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -399,34 +396,33 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      myNr = Nr
-      useCurrentDir = .FALSE.
-
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_READ_YZ_RL(
-     &                 fnames(2)(1:il-11), adactive_var, doglobalread,
-#else
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
+      myNr = Nr
+      useCurrentDir = .FALSE.
 
       CALL ACTIVE_READ_YZ_RL(
      &                 fname, adactive_var, doglobalread,
-#endif
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -574,36 +570,35 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(2)(1:il-11), adactive_var, globalFile,
-#else
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
-
       CALL ACTIVE_WRITE_3D_RL(
      &                 fname, adactive_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -667,36 +662,35 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_WRITE_3D_RL(
-     &                 fnames(2)(1:il-11), adactive_var, globalFile,
-#else
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
-
       CALL ACTIVE_WRITE_3D_RL(
      &                 fname, adactive_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -760,36 +754,35 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_WRITE_XZ_RL(
-     &                 fnames(2)(1:il-11), adactive_var, globalFile,
-#else
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
-
       CALL ACTIVE_WRITE_XZ_RL(
      &                 fname, adactive_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
@@ -853,36 +846,35 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-#ifdef ALLOW_CTRL
-      character*(80) fnames(3)
-#else
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-#endif
-      INTEGER il
+      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
+      adpref = 'ad'
+      il   = ILNBLNK( active_var_file )
+      WRITE(fname(1:80),'(A)') ' '
+      ll = il
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( active_var_file(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
+     &                 active_var_file(ll+1:il)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
 
-#ifdef ALLOW_CTRL
-      CALL ctrl_set_fname( active_var_file, fnames, myThid )
-      il = ILNBLNK( fnames(2) )
-      CALL ACTIVE_WRITE_YZ_RL(
-     &                 fnames(2)(1:il-11), adactive_var, globalFile,
-#else
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
-
       CALL ACTIVE_WRITE_YZ_RL(
      &                 fname, adactive_var, globalFile,
-#endif
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 

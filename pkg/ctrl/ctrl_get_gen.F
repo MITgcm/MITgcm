@@ -97,28 +97,17 @@ c     == end of interface ==
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
+      il   =ilnblnk( ctrlDir )
 
       if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
-        il   =ilnblnk( ctrlDir )
         ilgen=ilnblnk( xx_gen_file )
-#ifdef ALLOW_AUTODIFF
         write(fnamegen(1:80),'(2a,i10.10)')
-#else
-        write(fnamegen(1:80),'(3a,i10.10)')
-     &       ctrlDir(1:il),
-#endif
      &       xx_gen_file(1:ilgen), '.', optimcycle
       endif
 
       if ( (optimcycle .ge. 0).AND.ctrlUseGen ) then
-        il   =ilnblnk( ctrlDir )
         ilgen=ilnblnk( xx_gen_file )
-#ifdef ALLOW_AUTODIFF
         write(fnamegen(1:80),'(2a,i10.10)')
-#else
-        write(fnamegen(1:80),'(3a,i10.10)')
-     &       ctrlDir(1:il),
-#endif
      &    xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
 
@@ -136,11 +125,13 @@ cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( fnamegen, xx_gen1, gencount0,
+        call active_read_xy( ctrlDir(1:il)//fnamegen, 
+     &                       xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
        if (.false.) then
-        call active_read_xy( fnamegen, xx_gen0, gencount0,
+        call active_read_xy( ctrlDir(1:il)//fnamegen, 
+     &                       xx_gen0, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
        endif
@@ -160,9 +151,8 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
-        write(fnamegeneric(1:80),'(3a,i10.10)')
-     &    ctrlDir(1:il),
-     &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &    ctrlDir(1:il)//xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &             xx_gen1, gencount1, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
@@ -179,7 +169,8 @@ cc     &                       doglobalread, ladinit, optimcycle,
 cc     &                       mythid, xx_gen_dummy )
 cc#else
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( fnamegen, xx_gen1 , gencount1,
+        call active_read_xy( ctrlDir(1:il)//fnamegen, 
+     &                       xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #else
@@ -197,9 +188,8 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
-        write(fnamegeneric(1:80),'(3a,i10.10)')
-     &     ctrlDir(1:il),
-     &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
+        write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     ctrlDir(1:il)//xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &             xx_gen1, gencount0, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
