@@ -71,7 +71,7 @@ cgg      _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     tmpz (Nr,nSx,nSy)
       _RL     stmp
 #endif
-      INTEGER ilDir
+      integer ilDir
 
 c     == end of interface ==
 
@@ -92,9 +92,8 @@ c     Find ctrlDir (w/o trailing blanks) length
 
       if (optimcycle .ge. 0) then
        ilobcse=ilnblnk( xx_obcse_file )
-       write(fnameobcse(1:80),'(3a,i10.10)')
-     &      ctrlDir(1:ilDir),
-     &      xx_obcse_file(1:ilobcse), '.', optimcycle
+       write(fnameobcse(1:80),'(2a,i10.10)')
+     &      ctrlDir(1:ilDir)//xx_obcse_file(1:ilobcse), '.', optimcycle
       endif
 
 c--   Get the counters, flags, and the interpolation factor.

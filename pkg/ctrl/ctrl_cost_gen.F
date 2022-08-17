@@ -66,7 +66,7 @@ c     == local variables ==
       integer imin,imax
       integer nrec
       integer irec
-      integer ilfld
+      integer ilfld,ilDir
 
       _RL fctile
       _RL tmpx
@@ -101,8 +101,11 @@ c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
 
-c     Number of records to be used.
+c--   Number of records to be used.
       nrec = endrec-startrec+1
+
+c--   Find ctrlDir length
+      ilDir=ilnblnk( ctrlDir )
 
       do bj = jtlo,jthi
        do bi = itlo,ithi
@@ -117,7 +120,7 @@ c     Number of records to be used.
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_gen_file )
         write(fnamefld(1:80),'(2a,i10.10)')
-     &       xx_gen_file(1:ilfld),'.',optimcycle
+     &       ctrlDir(1:ilDir)//xx_gen_file(1:ilfld),'.',optimcycle
       endif
 
 c--   >>> Loop 1 to compute mean forcing:
@@ -230,7 +233,7 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec
-      integer ilfld
+      integer ilfld,ilDir
 
       _RL tmpx
 
@@ -260,6 +263,9 @@ c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
 
+c--   Find ctrlDir length
+      ilDir=ilnblnk( ctrlDir )
+
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do k = 1,Nr
@@ -275,7 +281,7 @@ c--   Read state record from global file.
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_gen_file )
         write(fnamefld(1:80),'(2a,i10.10)')
-     &       xx_gen_file(1:ilfld),'.',optimcycle
+     &       ctrlDir(1:ilDir)//xx_gen_file(1:ilfld),'.',optimcycle
       endif
 
 c--   >>> Loop 1 to compute mean forcing:
@@ -289,9 +295,9 @@ c--   >>> Loop 1 to compute mean forcing:
       irec = 1
 
 #ifdef ALLOW_AUTODIFF
-      call active_read_xyz( fnamefld, tmpfld3d, irec, doglobalread,
-     &                       ladinit, optimcycle, myThid
-     &        , xx_gen_dummy )
+      call active_read_xyz( 
+     &      fnamefld, tmpfld3d, irec, doglobalread,
+     &      ladinit, optimcycle, myThid, xx_gen_dummy )
 #else
         CALL READ_REC_XYZ_RL( fnamefld, tmpfld3d, iRec, 1, myThid )
 #endif

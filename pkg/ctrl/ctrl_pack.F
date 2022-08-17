@@ -59,6 +59,11 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
 c     == local variables ==
 
       logical doglobalread
@@ -73,6 +78,7 @@ c     integer ig,jg
       _RL    fcloc
 
       character*(128) cfile
+      integer ilDir
 
 #ifdef ALLOW_OBCS
       character*( 80) weighttype
@@ -110,13 +116,20 @@ c--   Initialise global buffer index
 c--   Initialise local cost function value
       fcloc     = zeroRL
 
+c--   Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+
 c--   Assign file names.
 
 #ifdef ALLOW_OBCS
-      call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
-      call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
-      call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
-      call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file, 
+     & fname_obcsn, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file, 
+     & fname_obcss, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file, 
+     & fname_obcsw, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file, 
+     & fname_obcse, mythid)
 #endif
 
 c--   Only the master thread will do I/O.
@@ -254,7 +267,7 @@ c          write(cunit) nWetiGlobal(1)
           mskNameForSetPack='maskCtrlI'
          endif
 # endif
-          call ctrl_set_fname( xx_genarr2d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
 cc          write(weighttype(1:80),'(80a)') ' '
@@ -271,7 +284,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
         if (xx_genarr3d_weight(iarr).NE.' ') then
-          call ctrl_set_fname( xx_genarr3d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
 cc          write(weighttype(1:80),'(80a)') ' '
@@ -292,7 +305,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
      &          mskNameForSetPack='maskCtrlI'
 # endif
-          call ctrl_set_fname( xx_gentim2d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
 cc          write(weighttype(1:80),'(80a)') ' '

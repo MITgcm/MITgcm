@@ -106,7 +106,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -206,7 +206,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -306,7 +306,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -406,7 +406,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -581,7 +581,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -673,7 +673,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -765,7 +765,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then
@@ -857,7 +857,7 @@ CEOP
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
       WRITE(fname(1:80),'(A)') ' '
-      ll = il
+      ll = 0
       if ( il .GT. 0 .AND. il .LE. 80 ) then
          do l = il, 1, -1
           if ( active_var_file(l:l) .eq. '/' ) then

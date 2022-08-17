@@ -38,6 +38,10 @@ C     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
+C     == EXTERNAL FUNCTIONS ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER nRetired

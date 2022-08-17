@@ -130,9 +130,8 @@ C     this will be no longer necessary
 
 C--
       il=ilnblnk( xx_hfacc_file )
-      write(fnamehfacc(1:80),'(3a,i10.10)')
-     &     ctrlDir(1:ilDir),
-     &     xx_hfacc_file(1:il),'.',optimcycle
+      write(fnamehfacc(1:80),'(2a,i10.10)')
+     &     ctrlDir(1:ilDir)//xx_hfacc_file(1:il),'.',optimcycle
 #ifdef ALLOW_HFACC3D_CONTROL
       call active_read_xyz( fnamehfacc, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,

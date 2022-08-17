@@ -77,11 +77,7 @@ cph add following flag to make pack/unpack only less error-prone
 #ifndef CTRL_DO_PACK_UNPACK_ONLY
 
       ilDir=ilnblnk( ctrlDir )
-      if (ilDir .GT. 0 ) then
-        call ctrl_set_fname( ilDir//xx_fname, fname, mythid )
-      else
-        call ctrl_set_fname( xx_fname, fname, mythid )
-      endif
+      call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, mythid )
 
 c     _BEGIN_MASTER( mythid )
       inquire( file='costfinal', exist=exst )
