@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68k (2022/08/17)
 o pkg/ctrl, ecco, ... :
   Remove untested and obsolete ECCO_CTRL_DEPRECATED code: From now on it is
   only possible to specify control parameters through generic controls.
