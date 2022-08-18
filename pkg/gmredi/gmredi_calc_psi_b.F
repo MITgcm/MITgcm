@@ -60,7 +60,7 @@ C     !LOCAL VARIABLES:
       INTEGER max1, max2, max3
       INTEGER igmkey, kkey
 #endif
-      _RL halfSign, putBackSign
+      _RL halfSign
       _RL rDepth, half_K
       _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -92,8 +92,6 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
       IF (GM_AdvForm) THEN
 C     change sign of vertical Sigma gradient to match stratification sign
        halfSign = halfRL*gravitySign
-C     put back the negative sign that was dropped in GMREDI_SLOPE_PSI
-       putBackSign = -gravitySign
 
        DO k=2,Nr
         km1 = k-1
@@ -155,7 +153,7 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)*putBackSign
+          GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
 #ifdef GM_READ_K3D_GM
      &     *( op25
      &        *( GM_inpK3dGM(i-1,j,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
@@ -182,7 +180,7 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)*putBackSign
+          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
 #ifdef GM_READ_K3D_GM
      &     *( op25
      &        *( GM_inpK3dGM(i,j-1,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)

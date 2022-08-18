@@ -166,14 +166,18 @@ C-    Off-diagonal components of vertical flux
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm .AND. GM_AdvSeparate
      & .AND. .NOT.GM_InMomAsStress) THEN
+C      Since bolus transport is computed as rotational of stream-function,
+C      needs to flip sign when using Left-Handed Coordinate system such as
+C      P-coordinate
+c      flipSign4LHCoord = -gravitySign
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rTrans(i,j) = (
+         rTrans(i,j) = -gravitySign*(
      &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
-     &                 )*deepFacF(k)
+     &                              )*deepFacF(k)
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
