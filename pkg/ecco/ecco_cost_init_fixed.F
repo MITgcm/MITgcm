@@ -42,12 +42,8 @@ c     == global variables ==
 #include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# ifdef ECCO_CTRL_DEPRECATED
-#  include "ecco_cost.h"
-# else
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
-# endif
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "optim.h"
@@ -63,12 +59,9 @@ c     == local variables ==
       logical exst
       _RL     missingObsFlag
       PARAMETER ( missingObsFlag = 1. _d 23 )
-#if ( defined ECCO_CTRL_DEPRECATED || defined ALLOW_GENCOST_1D )
+#ifdef ALLOW_GENCOST_1D
       character*(MAX_LEN_MBUF) msgBuf
       integer ilo, ihi, irec, gwunit
-#endif
-#if ( defined ECCO_CTRL_DEPRECATED && defined ALLOW_TRANSPORT_COST_CONTRIBUTION )
-      _RL     dummy
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       integer k2
@@ -104,67 +97,6 @@ c--   current model integration.
       ndaysrec = cal_IntDays( myThid )
 
       _BEGIN_MASTER( myThid )
-
-#ifdef ECCO_CTRL_DEPRECATED
-
-c--     Get the complete dates of the ...
-c--     ... TMI data.
-        if ( tmidatfile .ne. ' ' )
-     &   call cal_FullDate( tmistartdate1,   tmistartdate2,
-     &                      tmistartdate,    myThid )
-c--     ... SST data.
-        if ( sstdatfile .ne. ' ' )
-     &   call cal_FullDate( sststartdate1,   sststartdate2,
-     &                      sststartdate,    myThid )
-c--     ... SSS data.
-        if ( sssdatfile .ne. ' ' )
-     &   call cal_FullDate( sssstartdate1,   sssstartdate2,
-     &                      sssstartdate,    myThid )
-c--     ... BP data.
-        if ( bpdatfile .ne. ' ' )
-     &   call cal_FullDate( bpstartdate1,   bpstartdate2,
-     &                      bpstartdate,    myThid )
-c--     ... IES data.
-        if ( iesdatfile .ne. ' ' )
-     &   call cal_FullDate( iesstartdate1,   iesstartdate2,
-     &                      iesstartdate,    myThid )
-#ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-c--     ... mdt data.
-        if ( mdtdatfile .ne. ' ' )
-     &  call cal_FullDate( mdtstartdate1, mdtstartdate2,
-     &                     mdtstartdate,  myThid )
-c--     ... mdt data.
-        if ( mdtdatfile .ne. ' ' )
-     &  call cal_FullDate( mdtenddate1, mdtenddate2,
-     &                     mdtenddate,  myThid )
-#endif /* ALLOW_SSH_MEAN_COST_CONTRIBUTION */
-c--     ... T/P data.
-        if ( topexfile .ne. ' ' )
-     &  call cal_FullDate( topexstartdate1, topexstartdate2,
-     &                     topexstartdate,  myThid )
-c--     ... ERS data.
-        if ( ersfile .ne. ' ' )
-     &   call cal_FullDate( ersstartdate1,   ersstartdate2,
-     &                      ersstartdate,    myThid )
-c--     ... GFO data.
-        if ( gfofile .ne. ' ' )
-     &   call cal_FullDate( gfostartdate1,   gfostartdate2,
-     &                      gfostartdate,    myThid )
-c--     ... SCAT data.
-        if ( scatxdatfile .ne. ' ' )
-     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
-     &                      scatxstartdate,    myThid )
-        if ( scatydatfile .ne. ' ' )
-     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
-     &                      scatystartdate,    myThid )
-c--     ... ARGO data.
-        if ( argotfile .ne. ' ' )
-     &  call cal_FullDate( argotstartdate1,   argotstartdate2,
-     &                     argotstartdate,    myThid )
-         if ( argosfile .ne. ' ' )
-     &  call cal_FullDate( argosstartdate1,   argotstartdate2,
-     &                     argosstartdate,    myThid )
-#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
@@ -295,123 +227,9 @@ cph!!!
       endif
 #endif
 
-#ifdef ECCO_CTRL_DEPRECATED
-
-#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      do irec = 1, ndaysrec
-       wtransp(irec)   = 0. _d 0
-       transpobs(irec) = 0. _d 0
-      enddo
-
-      if ( costTranspDataFile .NE. ' ' ) then
-      _BEGIN_MASTER(myThid)
-      ilo = ifnblnk(costTranspDataFile)
-      ihi = ilnblnk(costTranspDataFile)
-      CALL OPEN_COPY_DATA_FILE(
-     I                          costTranspDataFile(ilo:ihi),
-     I                          'ECCO_COST_INIT_FIXED',
-     O                          gwunit,
-     I                          myThid )
-      do irec = 1, ndaysrec
-c-- read daily transport time series
-c-- 1st: transport in m/s
-c-- 2nd: date in YYYYMMDD
-c-- 3rd: uncertainty in m/s
-         read(gwunit,*) transpobs(irec), dummy, wtransp(irec)
-c-- convert std.dev. to weight
-         if ( wtransp(irec) .NE. 0. )
-     &        wtransp(irec) =1.0/(wtransp(irec)*wtransp(irec))
-c-- set weight to zero for missing values
-         if ( transpobs(irec) .EQ. missingObsFlag )
-     &        wtransp(irec) = 0. _d 0
-      enddo
-      _END_MASTER(myThid)
-      _BARRIER
-      endif
-#endif /* ALLOW_TRANSPORT_COST_CONTRIBUTION */
-
-#ifdef ALLOW_NEW_SSH_COST
-
-c--   Read flags for picking SSH time averages
-      do irec = 1, ndaysrec
-       tpTimeMask(irec)  = 1. _d 0
-       ersTimeMask(irec) = 1. _d 0
-       gfoTimeMask(irec) = 1. _d 0
-      enddo
-c
-      _BEGIN_MASTER(myThid)
-c
-#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-      if ( tpTimeMaskFile .NE. ' ' ) then
-       ilo = ifnblnk(tpTimeMaskFile)
-       ihi = ilnblnk(tpTimeMaskFile)
-       CALL OPEN_COPY_DATA_FILE(
-     I                          tpTimeMaskFile(ilo:ihi),
-     I                          'cost_ssh tp',
-     O                          gwunit,
-     I                          myThid )
-       do irec = 1, ndaysrec
-        read(gwunit,*) tpTimeMask(irec)
-       enddo
-      endif
-#endif
-c
-#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-      if ( ersTimeMaskFile .NE. ' ' ) then
-       ilo = ifnblnk(ersTimeMaskFile)
-       ihi = ilnblnk(ersTimeMaskFile)
-       CALL OPEN_COPY_DATA_FILE(
-     I                          ersTimeMaskFile(ilo:ihi),
-     I                          'cost_ssh ers',
-     O                          gwunit,
-     I                          myThid )
-       do irec = 1, ndaysrec
-        read(gwunit,*) ersTimeMask(irec)
-       enddo
-      endif
-#endif
-c
-#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-      if ( gfoTimeMaskFile .NE. ' ' ) then
-       ilo = ifnblnk(gfoTimeMaskFile)
-       ihi = ilnblnk(gfoTimeMaskFile)
-       CALL OPEN_COPY_DATA_FILE(
-     I                          gfoTimeMaskFile(ilo:ihi),
-     I                          'cost_ssh gfo',
-     O                          gwunit,
-     I                          myThid )
-       do irec = 1, ndaysrec
-        read(gwunit,*) gfoTimeMask(irec)
-       enddo
-      endif
-#endif
-c
-       do irec = 1, ndaysrec
-        if (
-     &   ( tpTimeMask(irec).NE.0. .AND. tpTimeMask(irec).NE.1. ) .OR.
-     &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) .OR.
-     &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) )
-     &  then
-           WRITE(msgBuf,'(2A,I10)')
-     &        'ecco_cost_init_fixed: (SSH)TimeMask not 0. or 1. ',
-     &        'for irec (=day) ', irec
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &          SQUEEZE_RIGHT , myThid )
-           CALL PRINT_ERROR( msgBuf , myThid )
-           STOP 'ABNORMAL END: S/R ECCO_COST_INIT_FIXED'
-        endif
-       enddo
-c
-      _END_MASTER(myThid)
-      _BARRIER
-#endif /* ALLOW_NEW_SSH_COST */
-
-#endif /* ECCO_CTRL_DEPRECATED */
-
 c--   Summarize the cost function setup.
       _BEGIN_MASTER( myThid )
       call ecco_summary( myThid )
-      call ecco_cost_summary( myThid )
       _END_MASTER( myThid )
 
       _BARRIER

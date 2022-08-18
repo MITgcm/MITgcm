@@ -29,25 +29,6 @@
 # ECCO control variables
 # **********************
  &CTRL_NML
- ctrlUseGen = .FALSE.,
-# old control variable method, defined through CPP-flags, here they
-# are just comments
-# define ALLOW_THETA0_CONTROL
- xx_theta_file      = 'xx_theta',
-# define ALLOW_SALT0_CONTROL
- xx_salt_file       = 'xx_salt',
-# define ALLOW_TR10_CONTROL
- xx_tr1_file        = 'xx_ptr',
-# define ALLOW_TAUU0_CONTROL
- xx_tauu_file       = 'xx_tauu',
-# define ALLOW_TAUV0_CONTROL
- xx_tauv_file       = 'xx_tauv',
-# define ALLOW_SFLUX0_CONTROL
- xx_sflux_file      = 'xx_sfl',
-# define ALLOW_HFLUX0_CONTROL
- xx_hflux_file      = 'xx_hfl',
-# define ALLOW_DIFFKR_CONTROL
- xx_diffkr_file     = 'xx_diffkr',
  &
 #
 # *********************

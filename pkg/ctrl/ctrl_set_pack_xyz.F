@@ -47,7 +47,6 @@ c     == external ==
       external ilnblnk
 
 c     == local variables ==
-      LOGICAL doPackOld
       integer bi,bj
       integer i,j,k
       integer ii, irec
@@ -99,8 +98,6 @@ c     == end of interface ==
       jmax = sNy
       imin = 1
       imax = sNx
-
-      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
 
 #ifdef CTRL_DELZNORM
       delZnorm = 0.
@@ -193,96 +190,69 @@ c--   Only the master thread will do I/O.
 
       do irec = 1, ncvarrecs(ivartype)
 
-         call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
-     &        Nr, globfld3d, irec, mythid)
+       call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
+     &      Nr, globfld3d, irec, mythid)
 
 #ifndef ALLOW_ADMTLM
-         write(cunit) ncvarindex(ivartype)
-         write(cunit) 1
-         write(cunit) 1
+       write(cunit) ncvarindex(ivartype)
+       write(cunit) 1
+       write(cunit) 1
 #endif
-         do k = 1, Nr
-         irectrue = (irec-1)*Nr + k
-            if ( doZscalePack ) then
-               delZnorm = (delR(1)/delR(k))**delZexp
-            else
-               delZnorm = 1. _d 0
-            endif
-            cbuffindex = 0
-            do jp = 1,nPy
-             do bj = jtlo,jthi
-              do j = jmin,jmax
-               do ip = 1,nPx
-                do bi = itlo,ithi
-                 do i = imin,imax
-                  if (globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
-                     cbuffindex = cbuffindex + 1
+       do k = 1, Nr
+        irectrue = (irec-1)*Nr + k
+        if ( doZscalePack ) then
+         delZnorm = (delR(1)/delR(k))**delZexp
+        else
+         delZnorm = 1. _d 0
+        endif
+        cbuffindex = 0
+        do jp = 1,nPy
+         do bj = jtlo,jthi
+          do j = jmin,jmax
+           do ip = 1,nPx
+            do bi = itlo,ithi
+             do i = imin,imax
+              if (globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
+               cbuffindex = cbuffindex + 1
 cph(
-                     globfldtmp3(i,bi,ip,j,bj,jp) =
-     &                    globfld3d(i,bi,ip,j,bj,jp,k)
+               globfldtmp3(i,bi,ip,j,bj,jp) =
+     &              globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
-                  IF ( doPackOld ) THEN
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                     if (lxxadxx) then
-                        cbuff(cbuffindex) = 1/delZnorm
-     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
-# ifdef CTRL_PACK_PRECISE
-     &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
-# else
-     &                       * sqrt(weightfld(k,bi,bj))
-# endif
-                     else
-                        cbuff(cbuffindex) = delZnorm
-     &                       * globfld3d(i,bi,ip,j,bj,jp,k)
-# ifdef CTRL_PACK_PRECISE
-     &                       / sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
-# else
-     &                       / sqrt(weightfld(k,bi,bj))
-# endif
-                     endif
-cph(
-                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
-cph)
-#else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
-                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
-#endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-                     ELSE !IF ( doPackOld ) THEN
-                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
-                     ENDIF !IF ( doPackOld ) THEN
+               cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #ifdef ALLOW_ADMTLM
-                     nveccount = nveccount + 1
-                     phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+               nveccount = nveccount + 1
+               phtmpadmtlm(nveccount) = cbuff(cbuffindex)
 #endif
-                  endif
-                 enddo
-                enddo
-               enddo
-              enddo
+              endif
              enddo
             enddo
-c           --> check cbuffindex.
-            if ( cbuffindex .gt. 0) then
-#ifndef ALLOW_ADMTLM
-               write(cunit) cbuffindex
-               write(cunit) k
-cph#endif
-               write(cunit) (cbuff(ii), ii=1,cbuffindex)
-#endif
-            endif
-c
-            if ( doPackDiag ) then
-               write(cunit2,rec=irectrue) globfldtmp2
-               write(cunit3,rec=irectrue) globfldtmp3
-            endif
-c
+           enddo
+          enddo
          enddo
+        enddo
+c           --> check cbuffindex.
+        if ( cbuffindex .gt. 0) then
+#ifndef ALLOW_ADMTLM
+         write(cunit) cbuffindex
+         write(cunit) k
+cph#endif
+         write(cunit) (cbuff(ii), ii=1,cbuffindex)
+#endif
+        endif
+c
+        if ( doPackDiag ) then
+         write(cunit2,rec=irectrue) globfldtmp2
+         write(cunit3,rec=irectrue) globfldtmp3
+        endif
+c
+       enddo
 c
 c     -- end of irec loop --
       enddo
 
       if ( doPackDiag ) then
-         close ( cunit2 )
-         close ( cunit3 )
+       close ( cunit2 )
+       close ( cunit3 )
       endif
 
       _END_MASTER( mythid )
@@ -290,8 +260,6 @@ c     -- end of irec loop --
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
 c-- part 1: preliminary reads and definitions
-
-      doPackOld = (.NOT.ctrlSmoothCorrel3D).AND.(.NOT.ctrlUseGen)
 
 #ifdef CTRL_PACK_PRECISE
 #ifdef ALLOW_AUTODIFF
@@ -327,124 +295,100 @@ c-- part 2: loop over records
       do irec = 1, ncvarrecs(ivartype)
 
 c-- 2.1:
-      call READ_REC_3D_RL( fname, ctrlprec,
+       CALL READ_REC_3D_RL( fname, ctrlprec,
      &        Nr, fld3dDim, irec, 0, mythid)
 
 c-- 2.2: normalize field if needed
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         if ( doZscalePack ) then
-            delZnorm = (delR(1)/delR(k))**delZexp
-         else
-            delZnorm = 1. _d 0
-         endif
-         DO j=1,sNy
-          DO i=1,sNx
-           if (msk3d(i,j,k,bi,bj).EQ.0. _d 0) then
-            fld3dDim(i,j,k,bi,bj)=0. _d 0
-            fld3dNodim(i,j,k,bi,bj)=0. _d 0
-           else
-           IF ( .NOT.doPackOld ) THEN
-            fld3dNodim(i,j,k,bi,bj)=fld3dDim(i,j,k,bi,bj)
-           ELSE !IF ( .NOT.doPackOld ) THEN
-# ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
-            fld3dNodim(i,j,k,bi,bj) = fld3dDim(i,j,k,bi,bj)
-# else
-            if (lxxadxx) then
-               fld3dNodim(i,j,k,bi,bj) =
-     &              fld3dDim(i,j,k,bi,bj) / delZnorm
-#  ifdef CTRL_PACK_PRECISE
-     &              * sqrt(wei3d(i,j,k,bi,bj))
-#  else
-     &              * sqrt(weightfld(k,bi,bj))
-#  endif
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          if ( doZscalePack ) then
+           delZnorm = (delR(1)/delR(k))**delZexp
+          else
+           delZnorm = 1. _d 0
+          endif
+          DO j=1,sNy
+           DO i=1,sNx
+            if (msk3d(i,j,k,bi,bj).EQ.0. _d 0) then
+             fld3dDim(i,j,k,bi,bj)=0. _d 0
+             fld3dNodim(i,j,k,bi,bj)=0. _d 0
             else
-               fld3dNodim(i,j,k,bi,bj) =
-     &              fld3dDim(i,j,k,bi,bj) * delZnorm
-#  ifdef CTRL_PACK_PRECISE
-     &              / sqrt(wei3d(i,j,k,bi,bj))
-#  else
-     &              / sqrt(weightfld(k,bi,bj))
-#  endif
+             fld3dNodim(i,j,k,bi,bj)=fld3dDim(i,j,k,bi,bj)
             endif
-# endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-           ENDIF !IF ( .NOT.doPackOld ) THEN
-           endif
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
 
 c-- 2.3:
-      if ( doPackDiag ) then
+       if ( doPackDiag ) then
 c error: twice the same one
-      call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &        Nr, fld3dNodim, irec, 0, mythid)
-      call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &        Nr, fld3dDim, irec, 0, mythid)
-      endif
+        call WRITE_REC_3D_RL( cfile2, ctrlprec,
+     &       Nr, fld3dNodim, irec, 0, mythid)
+        call WRITE_REC_3D_RL( cfile3, ctrlprec,
+     &       Nr, fld3dDim, irec, 0, mythid)
+       endif
 
 c-- 2.4: array -> buffer -> global buffer -> global file
 
 #ifndef ALLOW_ADMTLM
-      _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0 ) THEN
-         write(cunit) ncvarindex(ivartype)
-         write(cunit) 1
-         write(cunit) 1
-      ENDIF
-      _END_MASTER( mythid )
-      _BARRIER
+       _BEGIN_MASTER( mythid )
+       IF ( myProcId .eq. 0 ) THEN
+        write(cunit) ncvarindex(ivartype)
+        write(cunit) 1
+        write(cunit) 1
+       ENDIF
+       _END_MASTER( mythid )
+       _BARRIER
 #endif
 
-      do k = 1, Nr
+       do k = 1, Nr
 
         CALL MDS_PASS_R8toRL( fld2d_buf, fld3dNodim,
-     &                 0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
+     &                        0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( fld2d_buf_glo, fld2d_buf,
-     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+     &       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
         CALL MDS_PASS_R8toRL( msk2d_buf, msk3d,
-     &                 0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
+     &                        0, 0, 1, k, Nr, 0, 0, .FALSE., myThid )
         CALL BAR2( myThid )
         CALL GATHER_2D_R8( msk2d_buf_glo, msk2d_buf,
-     &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
+     &                     Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
         _BEGIN_MASTER( mythid )
         cbuffindex = 0
         IF ( myProcId .eq. 0 ) THEN
 
-        DO j=1,Ny
+         DO j=1,Ny
           DO i=1,Nx
-            if (msk2d_buf_glo(i,j) .ne. 0. ) then
-               cbuffindex = cbuffindex + 1
-               cbuff(cbuffindex) = fld2d_buf_glo(i,j)
+           if (msk2d_buf_glo(i,j) .ne. 0. ) then
+            cbuffindex = cbuffindex + 1
+            cbuff(cbuffindex) = fld2d_buf_glo(i,j)
 #ifdef ALLOW_ADMTLM
-               nveccount = nveccount + 1
-               phtmpadmtlm(nveccount) = cbuff(cbuffindex)
+            nveccount = nveccount + 1
+            phtmpadmtlm(nveccount) = cbuff(cbuffindex)
 #endif
-            endif
+           endif
           ENDDO
-        ENDDO
+         ENDDO
 
 #ifndef ALLOW_ADMTLM
-        if ( cbuffindex .gt. 0) then
+         if ( cbuffindex .gt. 0) then
           write(cunit) cbuffindex
           write(cunit) k
           write(cunit) (cbuff(ii), ii=1,cbuffindex)
-        endif
+         endif
 #endif
 
         ENDIF
         _END_MASTER( mythid )
         _BARRIER
 
-      enddo
+       enddo
       enddo
 
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
