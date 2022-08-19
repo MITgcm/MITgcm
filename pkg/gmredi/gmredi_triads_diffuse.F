@@ -267,7 +267,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaX(i,j) )
 c          K_skewFlx = GM_skewflx*SIGN( GM_bolK3d*slope, sigmaX(i,j) )
           ELSE
            Kslope = 0. _d 0
@@ -278,16 +278,16 @@ c          K_skewFlx =  0. _d 0
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j,k) - tracer(i,j,k-1) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
-C    &                 - K_skewFlx*dTdr
+c    &                 - K_skewFlx*dTdr
      &                 )*xA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               + ( K_slp(i,j)*dTdx
-C    &                 + K_skewFlx*dTdx
-     &                 )*rAw(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdx
+c    &                 + K_skewFlx*dTdx
+     &                 )*rAw(i,j,bi,bj)
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -317,7 +317,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaX(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -326,14 +326,14 @@ C-     Stability limit:
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i-1,j,k) - tracer(i-1,j,k-1) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
      &                 )*xA(i,j)
           dfr(i-1,j,kl) = dfr(i-1,j,kl)
-     &               + ( K_slp(i,j)*dTdx
-     &                 )*rAw(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)
           KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -395,7 +395,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaX(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -404,14 +404,14 @@ C-     Stability limit:
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i-1,j,k+1) - tracer(i-1,j,k) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
      &                 )*xA(i,j)
           dfr(i-1,j,kl) = dfr(i-1,j,kl)
-     &               + ( K_slp(i,j)*dTdx
-     &                 )*rAw(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)
           KwzLoc(i-1,j,kl) = KwzLoc(i-1,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -441,7 +441,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dxC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaX(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaX(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -450,14 +450,14 @@ C-     Stability limit:
           dTdx = ( tracer(i,j,k) - tracer(i-1,j,k) )
      &         * _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j,k+1) - tracer(i,j,k) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfx(i,j) = dfx(i,j)
      &               - ( K_lim(i,j)*dTdx
      &                 + K_slp(i,j)*dTdr
      &                 )*xA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               + ( K_slp(i,j)*dTdx
-     &                 )*rAw(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdx
+     &                 )*rAw(i,j,bi,bj)
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAw(i,j,bi,bj)
          ENDDO
@@ -516,7 +516,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaY(i,j) )
 c          K_skewFlx = GM_skewflx*SIGN( GM_bolK3d*slope, sigmaY(i,j) )
           ELSE
            Kslope = 0. _d 0
@@ -527,16 +527,16 @@ c          K_skewFlx =  0. _d 0
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j,k) - tracer(i,j,k-1) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
-C    &                 - K_skewFlx*dTdr
+c    &                 - K_skewFlx*dTdr
      &                 )*yA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               + ( K_slp(i,j)*dTdy
-C    &                 + K_skewFlx*dTdy
-     &                 )*rAs(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdy
+c    &                 + K_skewFlx*dTdy
+     &                 )*rAs(i,j,bi,bj)
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -566,7 +566,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaY(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -575,14 +575,14 @@ C-     Stability limit:
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j-1,k) - tracer(i,j-1,k-1) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
      &                 )*yA(i,j)
           dfr(i,j-1,kl) = dfr(i,j-1,kl)
-     &               + ( K_slp(i,j)*dTdy
-     &                 )*rAs(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)
           KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -644,7 +644,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaY(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -653,14 +653,14 @@ C-     Stability limit:
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j-1,k+1) - tracer(i,j-1,k) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
      &                 )*yA(i,j)
           dfr(i,j-1,kl) = dfr(i,j-1,kl)
-     &               + ( K_slp(i,j)*dTdy
-     &                 )*rAs(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)
           KwzLoc(i,j-1,kl) = KwzLoc(i,j-1,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
@@ -690,7 +690,7 @@ C-     Stability limit:
            Kslope = maskp5*MIN( K_loc*slope, dR2delT_lim/slope,
      &                          dyC(i,j,bi,bj)*dR_delT_lim )
            K_lim(i,j) = Kslope / slope
-           K_slp(i,j) = SIGN( Kslope, sigmaY(i,j) )
+           K_slp(i,j) = -gravitySign*SIGN( Kslope, sigmaY(i,j) )
           ELSE
            Kslope = 0. _d 0
            K_lim(i,j) = K_loc*maskp5
@@ -699,14 +699,14 @@ C-     Stability limit:
           dTdy = ( tracer(i,j,k) - tracer(i,j-1,k) )
      &         * _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
           dTdr = ( tracer(i,j,k+1) - tracer(i,j,k) )
-     &         * recip_drC(kl)*gravitySign
+     &         * recip_drC(kl)*rkSign
           dfy(i,j) = dfy(i,j)
      &               - ( K_lim(i,j)*dTdy
      &                 + K_slp(i,j)*dTdr
      &                 )*yA(i,j)
           dfr(i,j,kl) = dfr(i,j,kl)
-     &               + ( K_slp(i,j)*dTdy
-     &                 )*rAs(i,j,bi,bj)*gravitySign
+     &               - ( K_slp(i,j)*dTdy
+     &                 )*rAs(i,j,bi,bj)
           KwzLoc(i,j,kl) = KwzLoc(i,j,kl)
      &               + Kslope*slope*rAs(i,j,bi,bj)
          ENDDO
