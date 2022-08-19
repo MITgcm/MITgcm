@@ -79,14 +79,15 @@ C  sigmaX        :: density gradient, X component
 C  sigmaY        :: density gradient, Y component
 C  slope         :: isopycnal slope (no sign)
 C  Kslope        :: Kappa x slope (no sign)
-C  K_slp         :: tappered Kappa x slope (with sign)
+C  K_slp         :: tappered Kappa x slope (z-coord: same sign as sigmaX/Y ;
+C                ::                         p-coord: sigmaX/Y opposite sign)
 C  K_lim         :: tappered Kappa
 C  dfx           :: 2-D array of horizontal diffusive flux in X-dir @ level k
 C  dfy           :: 2-D array of horizontal diffusive flux in Y-dir @ level k
 C  dfr           :: 3-D array of vertical diffusive flux (> 0 in r-direction)
 C  KwzLoc        :: vertical diffusivity contribution from GM-Redi
 C  flxDiv        :: temp array to holds horizontal flux divergence
-C dTdx,dTdy,dTdr :: tracer gradient, 3 components (but dTdr > 0 upward)
+C dTdx,dTdy,dTdr :: tracer gradient, 3 components
       INTEGER i, j, k, kl, kp1
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -199,12 +200,10 @@ C    contrib to dfx: *drC(k)*dyG(i,j)*deepFacF(k)
 C    contrib to dfr: *rAw(i,j)*deepFac2F(k)
 C   Note: scaling of dfr (& KwzLoc) by deepFac2F/2 (& 1/rA/2) is done at the end
 C   Note for P-coords:
-C    slope variable here has same sign than in z-coords (upward direction), i.e.
-C    opposite to p-coord slope (Sp= -dSigmaX/dSigmaP); therefore, in computing
-C    horizontal fluxes, sign of dTdr is reversed (= -dTdp) as well as vertical
-C    flux expression (+ instead of -) but remains consistent with r-coord dir.:
-C      dfx = -[ K*dTdx + K*(-Sp)*(-dTdp) ]
-C      dfr = +[ K*(-Sp)*dTdx + K*(Sp^2)*(-dTdp) ]
+C    slope (=dSigmaX/dSigmaP) has same sign than in z-coords (upward direction),
+C    but need to flip sign (-gravitySign in "K_slp") in extra-diagonal terrms:
+C      dfx = -[ K*dTdx + (-K*Sp)*dTdp ]
+C      dfr = -[ (-K*Sp)*dTdx + K*(Sp^2)*dTdp ]
 
 C---  Start of k loop corresponding to horizontal fluxes
       DO k=1,Nr
