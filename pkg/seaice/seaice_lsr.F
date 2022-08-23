@@ -687,7 +687,7 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 
       residini = SQRT(residUini*residUini+residVini*residVini)
 
-      IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GE. 2 ) exit
+      IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GT. 2 ) exit
 
 #ifdef SEAICE_LSR_FLEX
 C     From Lemieux et al. 2010
@@ -697,7 +697,7 @@ C     Other possibilities
 C       LSRflexFac = ABS(LOG10(residkm2))/ABS(LOG10(residkm1))
 C       LSRflexFac = (residkm1/residkm2)/(1+ABS(LOG10(residini)))
       LSRflexFac = MIN(LSRflexFac, 0.99 _d 0 )
-      LSRflexFac = MAX(LSRflexFac, 0.3 _d 0 )
+C      LSRflexFac = MAX(LSRflexFac, 0.3 _d 0 )
 
 C       IF ( ipass .LE. 3 ) THEN
 C        LSRflexFac = 0.99 _d 0
@@ -952,24 +952,6 @@ C--   Calculate final residual of the linearised system
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
 
-#ifdef ALLOW_DIAGNOSTICS
-       diag_SIlsrRe_isOn  = DIAGNOSTICS_IS_ON('SIlsrRe ',myThid)
-
-       IF ( diag_SIlsrRe_isOn ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            RTmp(i,j,bi,bj)=SQRT( uTmp(i,j,bi,bj) * uTmp(i,j,bi,bj)
-     &        + vTmp(i,j,bi,bj) * vTmp(i,j,bi,bj) )
-           ENDDO
-          ENDDO
-          CALL DIAGNOSTICS_FILL(RTmp,'SIlsrRe ',0,1,2,bi,bj,myThid)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif   /* ALLOW_DIAGNOSTICS */
-
         _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(A,1X,I9,1P3E16.8)')
      &    ' SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
@@ -1068,6 +1050,24 @@ C--   Compute residual norm and print
       ENDIF
 C     end outer ipass pseudo-time stepping loop
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      diag_SIlsrRe_isOn  = DIAGNOSTICS_IS_ON('SIlsrRe ',myThid)
+
+      IF ( diag_SIlsrRe_isOn ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           RTmp(i,j,bi,bj)=SQRT( uTmp(i,j,bi,bj) * uTmp(i,j,bi,bj)
+     &       + vTmp(i,j,bi,bj) * vTmp(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(RTmp,'SIlsrRe ',0,1,2,bi,bj,myThid)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif   /* ALLOW_DIAGNOSTICS */
 
       IF ( useHB87StressCoupling ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
