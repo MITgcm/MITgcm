@@ -17,6 +17,8 @@ C     o  adactive_write_xz        - Adjoint of active_write_xz
 C     o  adactive_write_yz        - Adjoint of active_write_yz
 C     o  adactive_write_1d        - Adjoint of active_write_1d
 C
+C     o  add_adprefix             - Helper S/R to add "ad" prefix 
+C
 C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 C                 - Added routines that do active writes on tiles
 C                   instead of a whole thread.
@@ -27,6 +29,9 @@ C        changed: heimbach@mit.edu 25-Mar-2002
 C                 - added active file handling of xz-/yz-arrays
 C        changed: tsmith@oden.utexas.edu 22-Oct-2019
 C                 - added 1D vectors
+C        changed: ou.wang@jpl.nasa.gov 24-Aug-2022
+C                 - added helper S/R capable of handling 
+C                   active_var_file containing directory names
 C     ==================================================================
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -91,33 +96,13 @@ C                       variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref, 
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = 1
       useCurrentDir = .FALSE.
 
@@ -191,33 +176,13 @@ C                       variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -291,33 +256,13 @@ C                       variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -391,33 +336,13 @@ C                       variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -565,34 +490,14 @@ C     myThid         :: thread number for this instance
       INTEGER myIter, myThid
       _RL     dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -657,34 +562,14 @@ C     myThid         :: thread number for this instance
       INTEGER myIter, myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -749,34 +634,14 @@ C     myThid         :: thread number for this instance
       INTEGER myIter, myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -841,34 +706,14 @@ C     myThid         :: thread number for this instance
       INTEGER myIter, myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il,ll,l
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( active_var_file(l:l) .eq. '/' ) then
-           ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      endif
-      WRITE(fname(1:2+il),'(2A)') active_var_file(1:ll)//adpref,
-     &                 active_var_file(ll+1:il)
+      CALL ADD_ADPREFIX(active_var_file, fname)
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -956,5 +801,51 @@ CEOP
      &                 fname, adactive_var, active_var_length,
      &                 iRec, REVERSE_SIMULATION, myIter, myThid )
 
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: add_adprefix
+C     !INTERFACE:
+      SUBROUTINE add_adprefix(actvarf, fname)
+
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE add_adprefix
+C     ==================================================================
+C     o Helper S/R to add "ad" prefix
+C     started: ou.wang@jpl.nasa.gov 24-Aug-2022
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
+      CHARACTER*(*) actvarf
+      CHARACTER*(80) fname
+      INTEGER il,ll,l
+
+      adpref = 'ad'
+      il   = ILNBLNK( actvarf )
+      WRITE(fname(1:80),'(A)') ' '
+      ll = 0
+      if ( il .GT. 0 .AND. il .LE. 80 ) then
+         do l = il, 1, -1
+          if ( actvarf(l:l) .eq. '/' ) then
+           ll = l
+           go to 11
+          endif
+         enddo
+ 11      continue
+      endif
+      WRITE(fname(1:2+il),'(2A)') actvarf(1:ll)//adpref, 
+     &                 actvarf(ll+1:il)
       RETURN
       END
