@@ -211,7 +211,7 @@ CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
 C- Compute the slope, no clipping, but avoid reverse slope in negatively
-C                                  stratified (Sigma_Z > 0) region :
+C                                  stratified (dSigmaDr < 0) region :
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           IF (dSigmaDrW(i,j).LE.GM_Small_Number)
