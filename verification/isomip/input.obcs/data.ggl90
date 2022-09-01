@@ -1,0 +1,10 @@
+# =====================================================================
+# | Parameters for Gaspar et al. (1990)'s TKE vertical mixing scheme  |
+# =====================================================================
+ &GGL90_PARM01
+ GGL90writeState=.TRUE.,
+ mxlMaxFlag=2,
+#- decrease Minimum TKE value @ the top (default = 1.E-4) to feel the
+#  effect of ice-shelf bottom stress on TKE and vertical mixing:
+ GGL90TKEsurfMin= 1.E-5,
+ &

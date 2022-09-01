@@ -26,50 +26,14 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
-C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
-#undef ECCO_CTRL_DEPRECATED
-
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
-
-C       >>> Initial values.
-#undef ALLOW_THETA0_CONTROL
-#undef ALLOW_SALT0_CONTROL
-#undef ALLOW_UVEL0_CONTROL
-#undef ALLOW_VVEL0_CONTROL
-#undef ALLOW_TR10_CONTROL
-#undef ALLOW_TAUU0_CONTROL
-#undef ALLOW_TAUV0_CONTROL
-#undef ALLOW_SFLUX0_CONTROL
-#undef ALLOW_HFLUX0_CONTROL
-#undef ALLOW_SSS0_CONTROL
-#undef ALLOW_SST0_CONTROL
-
-C       >>> Surface fluxes.
-#undef ALLOW_HFLUX_CONTROL
-#undef ALLOW_SFLUX_CONTROL
-#undef ALLOW_USTRESS_CONTROL
-#undef ALLOW_VSTRESS_CONTROL
-#undef ALLOW_SWFLUX_CONTROL
-#undef ALLOW_LWFLUX_CONTROL
-
-C       >>> Atmospheric state.
-#undef ALLOW_ATEMP_CONTROL
-#undef ALLOW_AQH_CONTROL
-#undef ALLOW_UWIND_CONTROL
-#undef ALLOW_VWIND_CONTROL
-#undef ALLOW_PRECIP_CONTROL
 
 C       >>> Other Control.
 #undef ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
-
-C       >>> Backward compatibility option (before checkpoint 65p)
-#undef ALLOW_KAPGM_CONTROL_OLD
-#undef ALLOW_KAPREDI_CONTROL_OLD
 
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
@@ -86,19 +50,13 @@ C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
 C    to the other the time variable atmospheric controls.
 #undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
-C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL2D
-C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel3D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL3D
-
-C  o apply pkg/ctrl/ctrl_smooth.F to 2D controls (outside of ctrlSmoothCorrel2D)
-#undef ALLOW_CTRL_SMOOTH
+C  Note: this flag turns on extra smoothing code in ctrl_get_gen.F which
+C  is inconsistent with the Weaver and Courtier, 2001 algorithm, and
+C  should probably not be used. The corresponding 3D flag applied only
+C  to deprecated code that is now removed. At some point we will remove
+C  this flag and associated code as well.
 C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
 #undef ALLOW_SMOOTH_CTRL2D
-C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
-#undef ALLOW_SMOOTH_CTRL3D
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

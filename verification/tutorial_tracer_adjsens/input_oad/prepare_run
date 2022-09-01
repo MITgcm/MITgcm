@@ -26,10 +26,6 @@ else
   echo " Error:" $fromDir "not a directory"
 fi
 
-#---------------------------------------------
-#-- for now, don't need this file ; stop here.
-exit
-#---------------------------------------------
 #- And take file 'ones_64b.bin'
 #- from this dir:
 fromDir="../../isomip/input_ad"

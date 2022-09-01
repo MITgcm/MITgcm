@@ -1,4 +1,7 @@
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -39,6 +42,9 @@ C     == global variables ==
 #include "ctrl_dummy.h"
 #include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
@@ -280,13 +286,13 @@ C--   generic 3D control variables
      &  CALL CTRL_MAP_GENARR3D( theta, igen_theta0, myThid )
       IF (igen_salt0.GT.0)
      &  CALL CTRL_MAP_GENARR3D( salt, igen_salt0, myThid )
-# ifdef ALLOW_KAPGM_CONTROL
+# if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
       IF (igen_kapgm.GT.0)
-     &  CALL CTRL_MAP_GENARR3D( kapGM, igen_kapgm, myThid )
+     &  CALL CTRL_MAP_GENARR3D( GM_inpK3dGM, igen_kapgm, myThid )
 # endif
-# ifdef ALLOW_KAPREDI_CONTROL
+# if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
       IF (igen_kapredi.GT.0)
-     &  CALL CTRL_MAP_GENARR3D( kapRedi, igen_kapredi, myThid )
+     &  CALL CTRL_MAP_GENARR3D( GM_inpK3dRedi, igen_kapredi, myThid )
 # endif
 # if ( defined ALLOW_DIFFKR_CONTROL && defined ALLOW_3D_DIFFKR )
       IF (igen_diffkr.GT.0)

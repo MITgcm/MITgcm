@@ -69,8 +69,10 @@ C     tmpFlx    :: dummy array for surface fluxes and derivative vs Tsurf
 C Note: dTsrf & tmpFlx are not used here; just allocate enough space for dTsrf.
       INTEGER i,j
       _RL tFrzOce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dTsrf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpFlx(1:2)
+      _RL dTsrf  (1:sNx,1:sNy)
+C     some compilers complain about the wrong dimensions of this field
+C     so it has to be defined with overlaps
+      _RL tmpFlx (1:sNx,1:sNy,0:2)
       _RL opFrac, icFrac
       LOGICAL dBugFlag
 
@@ -99,28 +101,32 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                     + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF
-C Initialize certain arrays
-      tmpFlx(1) = 0. _d 0
-      tmpFlx(2) = 0. _d 0
+C     Initialise some local arrays
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
-          dTsrf(i,j) = 0. _d 0
+        tFrzOce(i,j)  = 0. _d 0
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF */
+      DO j = 1, sNy
+       DO i = 1, sNx
+        dTsrf(i,j)    = 0. _d 0
+        tmpFlx(i,j,0) = 0. _d 0
+        tmpFlx(i,j,1) = 0. _d 0
+        tmpFlx(i,j,2) = 0. _d 0
+       ENDDO
+      ENDDO
 
       dBugFlag = debugLevel.GE.debLevC
 C-    Initialise flxAtm,evpAtm
-       DO j = 1-OLy, sNy+OLy
-        DO i = 1-OLx, sNx+OLx
-          icFlxAtm(i,j,bi,bj) = 0.
-          icFrwAtm(i,j,bi,bj) = 0.
-        ENDDO
+      DO j = 1-OLy, sNy+OLy
+       DO i = 1-OLx, sNx+OLx
+        icFlxAtm(i,j,bi,bj) = 0.
+        icFrwAtm(i,j,bi,bj) = 0.
        ENDDO
+      ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
 c     IF ( fluidIsWater ) THEN
        CALL THSICE_ALBEDO(
@@ -138,7 +144,10 @@ C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icflxsw(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+C     avoid calling s/r thsice_albedosolve4temp in adjoint routine again
+CADJ STORE siceAlb (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icAlbNIR(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -169,12 +178,10 @@ C-      surface net SW flux:
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE sheating(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE tsrf(:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj,
@@ -189,6 +196,10 @@ CADJ STORE tsrf(:,:,bi,bj)  = comlev1_bibj, key=ticekey, byte=isbyte
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid calling s/r thsice_solve4temp in adjoint routine again
+CADJ STORE icFlxSW(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+#endif
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN

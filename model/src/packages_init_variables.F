@@ -221,12 +221,21 @@ C--   Initialize KPP vertical mixing scheme.
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameterization
-      IF (useGMRedi) THEN
+# ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call GMREDI_INIT_VARIA to initialise control
+C        variables (ALLOW_KAPGM/KAPREDI_CONTROL) without condition on useGMRedi
+C        (in this case the "If useGMRedi" is added inside gmredi_init_varia.F).
+# else
+      IF ( useGMRedi ) THEN
+# endif
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GMREDI_INIT_VARIA',myThid)
 # endif
         CALL GMREDI_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_BBL
