@@ -289,8 +289,18 @@ C--   Computes wind-stress:
          DO j = 1,sNy
           DO i = 1,sNx
            wsm     = sh(i,j,bi,bj)
+# ifdef  ALLOW_DRAG_LARGEYEAGER09
+C     Large and Yeager (2009), Climate Dynamics, equation 11a/b
+           tmpbulk =  cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
+     &          + cdrag_8 * wsm**6
+           tmpbulk = exf_scal_BulkCdn * (
+     &            ( halfRL - SIGN(halfRL, wsm-umax) )*tmpbulk
+     &          + ( halfRL + SIGN(halfRL, wsm-umax) )*cdragMax
+     &          )
+# else
            tmpbulk = exf_scal_BulkCdn
      &             * ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
+# endif
            ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
      &                        * urelw(i,j)
            vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)

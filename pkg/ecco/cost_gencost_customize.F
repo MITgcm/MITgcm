@@ -42,6 +42,9 @@ c     == global variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
@@ -195,7 +198,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
          elseif (gencost_barfile(k)(1:8).EQ.'m_wspeed') then
            gencost_modfld(i,j,bi,bj,k) =
      &      wspeed(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-#endif
+#endif /* ALLOW_EXF */
 #ifdef ALLOW_CTRL
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
          elseif (gencost_barfile(k)(1:12).EQ.'m_bottomdrag') then
@@ -276,24 +279,24 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
            enddo
 #endif
 #ifdef ALLOW_CTRL
-#ifdef ALLOW_KAPGM_CONTROL
+#if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
          elseif (gencost_barfile(k)(1:7).EQ.'m_kapgm') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
-     &       kapgm(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
+     &       GM_inpK3dGM(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
 #endif
-#ifdef ALLOW_KAPREDI_CONTROL
+#if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
          elseif (gencost_barfile(k)(1:9).EQ.'m_kapredi') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
-     &       kapredi(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
+     &       GM_inpK3dRedi(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
 #endif
 #endif
-#endif
+#endif /* ALLOW_GENCOST3D */
          endif
 
          enddo

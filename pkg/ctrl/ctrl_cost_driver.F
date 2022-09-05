@@ -83,10 +83,6 @@ C --- Get appropriate mask for field
      &     dodimensionalcost,
      &     num_gentim2d(1,1,iarr),
      &     objf_gentim2d(1,1,iarr),
-#ifdef ECCO_CTRL_DEPRECATED
-     &     zeroRL, num_gentim2dm(1,1,iarr), objf_gentim2dm(1,1,iarr),
-     &     objf_gentim2dsmoo(1,1,iarr), zeroRL, zeroRL,
-#endif /* ECCO_CTRL_DEPRECATED */
      &     mask2D, myThid )
       endif
 
@@ -113,10 +109,6 @@ C --- Get appropriate mask for field
      &     zeroRL, wgenarr2d(1-OLx,1-OLy,1,1,iarr),
      &     dodimensionalcost,
      &     num_genarr2d(1,1,iarr), objf_genarr2d(1,1,iarr),
-#ifdef ECCO_CTRL_DEPRECATED
-     &     zeroRL, num_zero_mean, objf_zero_mean,
-     &     objf_zero_smoo, zeroRL, zeroRL,
-#endif /* ECCO_CTRL_DEPRECATED */
      &     mask2D, myThid )
 
       endif

@@ -221,9 +221,8 @@ C     where this value is part of the protocol
         ENDDO
        ENDDO
       ENDDO
-#ifdef ALLOW_CTRL
-      IF ( useCTRL .AND. ctrlUseGen ) THEN
-#ifdef ALLOW_GENTIM2D_CONTROL
+#if (defined ALLOW_CTRL && defined ALLOW_GENTIM2D_CONTROL)
+      IF ( useCTRL ) THEN
        DO iarr = 1, maxCtrlTim2D
         IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_shifwflx') THEN
          DO bj = myByLo(myThid),myByHi(myThid)
@@ -237,9 +236,8 @@ C     where this value is part of the protocol
          ENDDO
         ENDIF
        ENDDO
-#endif /* ALLOW_GENTIM2D_CONTROL */
       ENDIF
-#endif /* ALLOW_CTRL */
+#endif
 
 C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
 C     mass to change. Since current ice-shelf representation is missing

@@ -25,13 +25,9 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #ifdef ALLOW_ECCO
-# ifdef ECCO_CTRL_DEPRECATED
-#  include "ecco_cost.h"
-# else
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
-#  include "ecco_local_params.h"
-# endif
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+# include "ecco_local_params.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
