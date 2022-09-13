@@ -349,7 +349,7 @@ C     Make sure we are not trying to use some arrays that are unavailable
       ENDIF
 
       IF ( usingPcoords ) THEN
-C-    Some GM pieces of code have not been fixed to work in Pressure-coordinate
+C-    Some GM pieces of code have not been fixed to work in Pressure-coordinates
        IF ( GM_taper_scheme.EQ.'fm07' .OR.
      &      GM_taper_scheme.EQ.'stableGmAdjTap' ) THEN
         iL = ILNBLNK(GM_taper_scheme)

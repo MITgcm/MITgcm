@@ -79,7 +79,7 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       slopeCutoff = SQRT( GM_slopeSqCutoff )
-C-    Note regarding "slopeCutoff": current code by-pass the reduction of taper
+C-    Note regarding slopeCutoff: current code by-passes the reduction of taper
 C     fct when slope is larger than "slopeCutoff", and this is not very safe !
 C     However, with default GM_Small_Number (=1.E-20) and default value of
 C     GM_slopeSqCutoff (=1.E+48), this is unlikely to occur as it would require

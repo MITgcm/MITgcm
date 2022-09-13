@@ -51,9 +51,8 @@ C     i, j, k :: loop indices
 #endif
 CEOP
 
-C     Since bolus transport is computed as rotational of stream-function,
-C     needs to flip sign when using Left-Handed Coordinate system such as
-C     P-coordinate
+C     Since bolus transport is computed as curl of stream-function, needs to
+C     flip sign when using Left-Handed Coordinate system such as P-coordinate
       flipSign4LHCoord = -gravitySign
 
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
