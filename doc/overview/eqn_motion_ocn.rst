@@ -8,16 +8,16 @@ incompressible) HPE’s for the ocean written in :math:`z-`\coordinates are
 obtained. The non-Boussinesq equations for oceanic motion are:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\mathbf{\nabla }_{z}p  = \vec{\mathbf{\mathcal{F}}} 
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho }  \nabla _{z}p  = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: non-boussinesq_horizmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: non-boussinesq_vertmom
 
 .. math::
-   \frac{1}{\rho }\frac{D\rho }{Dt}+\mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}
+   \frac{1}{\rho }\frac{D\rho }{Dt}+ \nabla _{z}\cdot \vec{\mathbf{v}}
    _{h}+\frac{\partial w}{\partial z}  = 0
    :label: eq-zns-cont
 
@@ -54,7 +54,7 @@ is the reciprocal of the sound speed (:math:`c_{s}`) squared.
 Substituting into :eq:`eq-zns-cont` gives:
 
 .. math::
-   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\nabla }_{z}\cdot \vec{\mathbf{
+   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+ \nabla _{z}\cdot \vec{\mathbf{
    v}}+\partial _{z}w\approx 0  
    :label: eq-zns-pressure
 
@@ -64,16 +64,16 @@ assumed adiabatic motion, dropping the :math:`\frac{D\theta }{Dt}` and
 yields a system that can be explicitly integrated forward:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho }\mathbf{\nabla }_{z}p = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho } \nabla _{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-cns-hmom 
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+g+\frac{1}{\rho }\frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-cns-hydro
 
 .. math::
-   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+   \frac{1}{\rho c_{s}^{2}}\frac{Dp}{Dt}+ \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-cns-cont
 
 .. math::
@@ -98,17 +98,17 @@ retains the full variation in :math:`\rho` is the gravitational
 acceleration:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\mathbf{\nabla }_{z}p = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+ f \hat{\boldsymbol{k}} \times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho _{o}} \nabla _{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-zcb-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
-   \frac{\partial p}{\partial z}  = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
+   \frac{\partial p}{\partial z}  = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-zcb-hydro
 
 .. math::
-   \frac{1}{\rho _{o}c_{s}^{2}}\frac{Dp}{Dt}+\mathbf{\nabla }_{z}\cdot \vec{
+   \frac{1}{\rho _{o}c_{s}^{2}}\frac{Dp}{Dt}+ \nabla _{z}\cdot \vec{
    \mathbf{v}}_{h}+\frac{\partial w}{\partial z}  = 0  
    :label: eq-zcb-cont
 
@@ -136,7 +136,7 @@ have the same pressure dependency as the linearized pressure term, ie.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The anelastic approximation filters the acoustic mode by removing the
-time-dependency in the continuity (now pressure-) equation
+time-dependency in the continuity (now pressure) equation
 :eq:`eq-zcb-cont`. This could be done simply by noting that
 :math:`\frac{Dp}{Dt}\approx -g\rho _{o} \frac{Dz}{Dt}=-g\rho _{o}w`, 
 but this leads to an inconsistency between
@@ -144,7 +144,7 @@ continuity and EOS. A better solution is to change the dependency on
 pressure in the EOS by splitting the pressure into a reference function
 of height and a perturbation:
 
-.. math:: \rho =\rho (\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime })
+.. math:: \rho =\rho \left(\theta ,S,p_{o}(z)+\epsilon _{s}p^{\prime } \right)
 
 Remembering that the term :math:`\frac{Dp}{Dt}` in continuity comes
 from differentiating the EOS, the continuity equation then becomes:
@@ -152,38 +152,38 @@ from differentiating the EOS, the continuity equation then becomes:
 .. math::
 
    \frac{1}{\rho _{o}c_{s}^{2}}\left( \frac{Dp_{o}}{Dt}+\epsilon _{s}\frac{
-   Dp^{\prime }}{Dt}\right) +\mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+
+   Dp^{\prime }}{Dt}\right) + \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+
    \frac{\partial w}{\partial z}=0
 
 If the time- and space-scales of the motions of interest are longer
 than those of acoustic modes, then
-:math:`\frac{Dp^{\prime }}{Dt}<<(\frac{Dp_{o}}{Dt}, \mathbf{\nabla }\cdot \vec{\mathbf{v}}_{h})`
+:math:`\frac{Dp^{\prime }}{Dt}\ll \frac{Dp_{o}}{Dt},  \nabla \cdot \vec{\mathbf{v}}_{h}`
 in the continuity equations and :math:`\left. \frac{\partial \rho }{\partial p}\right| _{\theta ,S}\frac{
-Dp^{\prime }}{Dt}<<\left. \frac{\partial \rho }{\partial p}\right| _{\theta
+Dp^{\prime }}{Dt}\ll \left. \frac{\partial \rho }{\partial p}\right| _{\theta
 ,S}\frac{Dp_{o}}{Dt}` in the EOS :eq:`EOSexpansion`. Thus we set :math:`\epsilon_{s}=0`, removing the
 dependency on :math:`p^{\prime }` in the continuity equation and EOS. Expanding
 :math:`\frac{Dp_{o}(z)}{Dt}=-g\rho _{o}w` then leads to the anelastic continuity equation:
 
 .. math::
-   \mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
+   \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z}-
    \frac{g}{c_{s}^{2}}w = 0
    :label: eq-za-cont1
 
 A slightly different route leads to the quasi-Boussinesq continuity
 equation where we use the scaling
 :math:`\frac{\partial \rho ^{\prime }}{\partial t}+
-\mathbf{\nabla }_{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}<<\mathbf{\nabla }
+\nabla _{3}\cdot \rho ^{\prime }\vec{\mathbf{v}}\ll \nabla 
 _{3}\cdot \rho _{o}\vec{\mathbf{v}}` yielding:
 
 .. math::
-   \mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
+   \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
    \partial \left( \rho _{o}w\right) }{\partial z} = 0
    :label: eq-za-cont2
 
 Equations :eq:`eq-za-cont1` and :eq:`eq-za-cont2` are in fact the same equation
 if:
 
-.. math:: \frac{1}{\rho _{o}}\frac{\partial \rho _{o}}{\partial z}=\frac{-g}{c_{s}^{2}}
+.. math:: \frac{1}{\rho _{o}}\frac{\partial \rho _{o}}{\partial z} = -\frac{g}{c_{s}^{2}}
 
 Again, note that if :math:`\rho _{o}` is evaluated from prescribed
 :math:`\theta _{o}` and :math:`S_{o}` profiles, then the EOS dependency
@@ -192,22 +192,22 @@ be referred to those same profiles. The full set of ‘quasi-Boussinesq’ or �
 equations for the ocean are then:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{o}}\mathbf{\nabla }_{z}p = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho _{o}} \nabla _{z}p = \vec{\boldsymbol{\mathcal{F}}}_h
    :label: eq-zab-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{o}}+\frac{1}{\rho _{o}}
+   \frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-zab-hydro
 
 .. math::
-   \mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
+    \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{1}{\rho _{o}}\frac{
    \partial \left( \rho _{o}w\right) }{\partial z} = 0
    :label: eq-zab-cont
 
 .. math::
-   \rho = \rho (\theta ,S,p_{o}(z))
+   \rho = \rho \left(\theta ,S,p_{o}(z) \right)
    :label: eq-zab-eos
 
 .. math::
@@ -227,17 +227,17 @@ and so, technically, to also remove the dependence of :math:`\rho` on
 equations:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\mathbf{\nabla }_{z}p = \vec{\mathbf{\mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho _{c}} \nabla _{z}p = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-ztb-hmom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{c}}+\frac{1}{\rho _{c}}
-   \frac{\partial p}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho }{\rho _{c}}+\frac{1}{\rho _{c}}
+   \frac{\partial p}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-ztb-hydro
 
 .. math::
-   \mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+    \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-ztb-cont
 
 .. math::
@@ -276,18 +276,17 @@ This then yields what we can call the semi-compressible Boussinesq
 equations:
 
 .. math::
-   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\mathbf{k}}\times \vec{\mathbf{v}}
-   _{h}+\frac{1}{\rho _{c}}\mathbf{\nabla }_{z}p^{\prime } = \vec{\mathbf{
-   \mathcal{F}}}
+   \frac{D\vec{\mathbf{v}}_{h}}{Dt}+f\hat{\boldsymbol{k}}\times \vec{\mathbf{v}}
+   _{h}+\frac{1}{\rho _{c}} \nabla _{z}p^{\prime } = \vec{\boldsymbol{\mathcal{F}}}_h 
    :label: eq-ocean-mom
 
 .. math::
-   \epsilon _{nh}\frac{Dw}{Dt}+\frac{g\rho ^{\prime }}{\rho _{c}}+\frac{1}{\rho
-   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{nh}\mathcal{F}_{w}
+   \epsilon _{\rm nh}\frac{Dw}{Dt}+\frac{g\rho ^{\prime }}{\rho _{c}}+\frac{1}{\rho
+   _{c}}\frac{\partial p^{\prime }}{\partial z} = \epsilon _{\rm nh}\mathcal{F}_{w}
    :label: eq-ocean-wmom
 
 .. math::
-   \mathbf{\nabla }_{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
+    \nabla _{z}\cdot \vec{\mathbf{v}}_{h}+\frac{\partial w}{\partial z} = 0
    :label: eq-ocean-cont
 
 .. math::
@@ -309,6 +308,5 @@ effect on the dynamics.
 Though necessary, the assumptions that go into these equations are messy
 since we essentially assume a different EOS for the reference density
 and the perturbation density. Nevertheless, it is the hydrostatic
-(:math:`\epsilon_{nh}=0`) form of these equations that are used throughout the ocean
+(:math:`\epsilon_{\rm nh}=0`) form of these equations that are used throughout the ocean
 modeling community and referred to as the primitive equations (**HPE**’s).
-

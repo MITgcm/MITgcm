@@ -7,27 +7,27 @@ Let us separate :math:`\phi` in to surface, hydrostatic and
 non-hydrostatic terms:
 
 .. math::
-   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{hyd}(x,y,r)+\phi _{nh}(x,y,r)
+   \phi (x,y,r)=\phi _{s}(x,y)+\phi _{\rm hyd}(x,y,r)+\phi _{\rm nh}(x,y,r)
    :label: phi-split
 
 and write :eq:`horiz-mtm` in the form:
 
 .. math::
-   \frac{\partial \vec{\mathbf{v}_{h}}}{\partial t}+\mathbf{\nabla }_{h}\phi
-   _{s}+\mathbf{\nabla }_{h}\phi _{hyd}+\epsilon _{nh}\mathbf{\nabla }_{h}\phi
-   _{nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
+   \frac{\partial \vec{\mathbf{v}}_{h}}{\partial t}+ \nabla _{h}\phi
+   _{s}+ \nabla _{h}\phi _{\rm hyd}+\epsilon _{\rm nh} \nabla _{h}\phi
+   _{\rm nh}=\vec{\mathbf{G}}_{\vec{v}_{h}}  
    :label: mom-h
 
 .. math:: 
-   \frac{\partial \phi _{hyd}}{\partial r}=-b
+   \frac{\partial \phi _{\rm hyd}}{\partial r}=-b
    :label: hydrostatic
 
 .. math::
-   \epsilon _{nh}\frac{\partial \dot{r}}{\partial t}+\frac{\partial \phi _{nh}}{
+   \epsilon _{\rm nh}\frac{\partial \dot{r}}{\partial t}+\frac{\partial \phi _{\rm nh}}{
    \partial r}=G_{\dot{r}}
    :label: mom-w
 
-Here :math:`\epsilon _{nh}` is a non-hydrostatic parameter.
+Here :math:`\epsilon _{\rm nh}` is a non-hydrostatic parameter.
 
 The :math:`\left( \vec{\mathbf{G}}_{\vec{v}},G_{\dot{r}}\right)` in
 :eq:`mom-h` and :eq:`mom-w` represent advective, metric and Coriolis
@@ -37,7 +37,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gu-spherical
 
-   G_{u} = & -\vec{\mathbf{v}}.\nabla u && \qquad \text{advection} 
+   G_{u} = & -\vec{\mathbf{v}} \cdot  \nabla  u && \qquad \text{advection} 
 
    & -\left\{ \underline{\frac{u\dot{r}}{{r}}}-\frac{uv\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -48,7 +48,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gv-spherical
 
-   G_{v} = & -\vec{\mathbf{v}}.\nabla v && \qquad \text{advection}
+   G_{v} = & -\vec{\mathbf{v}} \cdot  \nabla  v && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{v\dot{r}}{{r}}}-\frac{u^{2}\tan \varphi}{{r}}\right\} && \qquad \text{metric}    
 
@@ -59,7 +59,7 @@ form  [#]_ - see Marshall et al. (1997a) :cite:`marshall:97a` for a full discuss
 .. math::
    :label: gw-spherical
 
-   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}}.\nabla \dot{r}}} && \qquad \text{advection}
+   G_{\dot{r}} = & -\underline{\underline{\vec{\mathbf{v}} \cdot  \nabla  \dot{r}}} && \qquad \text{advection}
  
    & -\left\{ \underline{\frac{u^{_{^{2}}}+v^{2}}{{r}}}\right\} && \qquad \text{metric}    
 
@@ -98,8 +98,8 @@ In the ‘hydrostatic primitive equations’ (**HPE**) all the underlined
 terms in Eqs. :eq:`gu-spherical`
 :math:`\rightarrow` :eq:`gw-spherical` are neglected and ‘:math:`{r}`’
 is replaced by ‘:math:`a`’, the mean radius of the earth. Once the
-pressure is found at one level - e.g. by inverting a 2-d Elliptic
-equation for :math:`\phi _{s}` at :math:`r=R_{moving}` - the pressure
+pressure is found at one level - e.g. by inverting a 2-D Elliptic
+equation for :math:`\phi _{s}` at :math:`r=R_{\rm moving}` - the pressure
 can be computed at all other levels by integration of the hydrostatic
 relation, eq :eq:`hydrostatic`.
 
@@ -113,14 +113,14 @@ relaxed. In **QH** *all* the metric terms are retained and the full
 variation of the radial position of a particle monitored. The **QH** 
 vertical momentum equation :eq:`mom-w` becomes:
 
-.. math:: \frac{\partial \phi _{nh}}{\partial r}=2\Omega u\cos \varphi
+.. math:: \frac{\partial \phi _{\rm nh}}{\partial r}=2\Omega u\cos \varphi
 
 making a small correction to the hydrostatic pressure.
 
 **QH** has good energetic credentials - they are the same as for
 **HPE**. Importantly, however, it has the same angular momentum
 principle as the full non-hydrostatic model (**NH**) - see Marshall
-et.al. (1997a) :cite:`marshall:97a`. As in **HPE** only a 2-d elliptic problem need be solved.
+et.al. (1997a) :cite:`marshall:97a`. As in **HPE** only a 2-D elliptic problem need be solved.
 
 Non-hydrostatic and quasi-nonhydrostatic forms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -151,7 +151,7 @@ In the non-hydrostatic version of our atmospheric model we approximate
 .. math:: \dot{r}=\frac{Dp}{Dt}=\frac{1}{g}\frac{D\phi }{Dt}
    :label: quasi-nh-w
 
-where :math:`p_{hy}` is the hydrostatic pressure.
+where :math:`p_{\rm hy}` is the hydrostatic pressure.
 
 Summary of equation sets supported by model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

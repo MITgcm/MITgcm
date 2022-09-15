@@ -265,7 +265,7 @@ C--   Set (free)surface-related parameters
       salt_EvPrRn = 0.
       temp_addMass = UNSET_RL
       salt_addMass = UNSET_RL
-      balanceEmPmR        = .FALSE.
+      selectBalanceEmPmR  = UNSET_I
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.
       balanceThetaClimRelax = .FALSE.
@@ -394,6 +394,7 @@ C--   Input files
       geothermalFile  = ' '
       lambdaThetaFile = ' '
       lambdaSaltFile  = ' '
+      wghtBalanceFile = ' '
       mdsioLocalDir   = ' '
       adTapeDir       = ' '
       the_run_name    = ' '

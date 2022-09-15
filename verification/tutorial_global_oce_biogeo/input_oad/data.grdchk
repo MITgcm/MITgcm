@@ -8,7 +8,10 @@
  nstep            = 1,
  nend             = 4,
 # to test xx_tr1 set 17
- grdchkvarindex   = 1,
+# to test passive tracer in
+# xx_genarr3d (4th field) set 204
+# 201 tests theta
+ grdchkvarindex   = 201,
  iGloPos  =10,
  jGloPos  =10,
  kGloPos  =1,

@@ -333,7 +333,7 @@ C
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itdkey
+      INTEGER itdkey, ijkkey
 #endif
 CEOP
 
@@ -486,6 +486,10 @@ C  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
      U                         mld,
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myTime, myIter, myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+C     save result of s/r bling_mixedlayer to avoid calling it in AD-code
+CADJ STORE mld = comlev1_bibj, key=itdkey, kind=isbyte
+# endif
 #endif
 
 C  Phytoplankton mixing
@@ -562,6 +566,11 @@ C  light availability for biological production
      U                    irr_inst, irr_eff,
      I                    bi, bj, imin, imax, jmin, jmax,
      I                    myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     save results of s/r bling_light to avoid calling it in AD-code
+CADJ STORE irr_inst = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE irr_eff  = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
 C  phytoplankton photoadaptation to local light level
 C  This represents the fact that phytoplankton cells are adapted
@@ -1119,6 +1128,16 @@ C  long-lived dissolved organic matter.
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     these stores avoid recomputing the previous loop, but avoiding
+C     that may not be necessary
+CADJ STORE N_spm     = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE P_spm     = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE Fe_spm    = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE don_prod  = comlev1_bibj, key = itdkey, kind = isbyte
+CADJ STORE n_recycle = comlev1_bibj, key = itdkey, kind = isbyte
+#endif
+
 C ---------------------------------------------------------------------
 C  Remineralization
 C  In general, the flux at the bottom of a grid cell should equal
@@ -1146,6 +1165,17 @@ C  Initialize upper flux
 #endif
 
         DO k=1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+         ijkkey = (itdkey - 1) * (2*OLx+sNx) * (2*OLy+sNy) * Nr
+     &        +   ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE POPflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE PFEflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+CADJ STORE CaCO3flux_u = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+# ifdef USE_SIBLING
+CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
+# endif
+#endif
 
 C  Initialization here helps taf
 
@@ -1400,7 +1430,9 @@ C  Prepare the tracers for the next layer down
         ENDDO
        ENDDO
       ENDDO
-
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE N_reminp = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 C-----------------------------------------------------------
 C  remineralization from diel vertical migration
 #ifdef USE_BLING_DVM
@@ -1586,7 +1618,7 @@ c!!          if (k .eq. grid_kmt(i,j)) exit
 
 C  Sum up the total organic flux to be transported by DVM
 
-        do k = 1, nr
+        do k = 1, Nr
           fdvmn_vint  = fdvmn_vint  + N_dvm(i,j,k)  * drf(k)
           fdvmp_vint  = fdvmp_vint  + P_dvm(i,j,k)  * drf(k)
           fdvmfe_vint = fdvmfe_vint + Fe_dvm(i,j,k) * drf(k)
@@ -1601,7 +1633,7 @@ C  Calculate the remineralization terms as the divergence of the flux
         Fe_remindvm(i,j,1) = fdvmfe_vint * (1 - dvm(i,j,1)) /
      &     (epsln + drf(1))
 
-        do k = 2, nr
+        do k = 2, Nr
           N_remindvm(i,j,k)  = fdvmn_vint  *
      &       (dvm(i,j,k-1) - dvm(i,j,k)) / (epsln + drf(k))
           P_remindvm(i,j,k)  = fdvmp_vint  *

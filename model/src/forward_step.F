@@ -941,9 +941,10 @@ C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   This simple store directive avoids an (expensive) extra
+C--   These store directives avoid an (expensive) extra
 C     "call solve_for_pressure" in forward_step_ad
 CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE etaN = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef NONLIN_FRSURF
@@ -1183,8 +1184,8 @@ C--     this is done after exchanges to allow interpolation
 #endif
 
 #ifdef ALLOW_ECCO
-C--   Diagnoze variables for pkg/ecco averaging and cost function purposes
-      IF ( useECCO ) CALL ECCO_PHYS( myThid )
+C--   Diagnose variables for pkg/ecco averaging and cost function purposes
+      IF ( useECCO ) CALL ECCO_PHYS( myTime, myIter, myThid )
 #endif
 
 C--   Check if it has reached the end of simulation

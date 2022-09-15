@@ -29,9 +29,9 @@ The ice model is called from *thermodynamics.F*, subroutine
 In *ice\_forcing.F*, we calculate the freezing potential of the ocean
 model surface layer of water:
 
-.. math:: {\bf frzmlt} = (T_f - SST) \frac{c_{sw} \rho_{sw} \Delta z}{\Delta t}
+.. math:: {\bf frzmlt} = (T_f - SST) \frac{c_{\rm sw} \rho_{\rm sw} \Delta z}{\Delta t}
 
-where :math:`c_{sw}` is seawater heat capacity, :math:`\rho_{sw}` is the
+where :math:`c_{\rm sw}` is seawater heat capacity, :math:`\rho_{\rm sw}` is the
 seawater density, :math:`\Delta z` is the ocean model upper layer
 thickness and :math:`\Delta t` is the model (tracer) timestep. The
 freezing temperature, :math:`T_f=\mu S` is a function of the salinity.
@@ -80,17 +80,17 @@ calculated as:
 .. math::
 
    \begin{aligned}
-   q_1 & = & -c_{i}*T_f + L_i \nonumber \\
-   q_2 & = & -c_{f}T_{mlt}+ c_{i}(T_{mlt}-T{f}) + L_i(1-\frac{T_{mlt}}{T_f})
+   q_1 & = -c_{i}*T_f + L_i \nonumber \\
+   q_2 & = -c_{f}T_{\rm mlt}+ c_{i}(T_{\rm mlt}-T{f}) + L_i(1-\frac{T_{\rm mlt}}{T_f})
    \nonumber\end{aligned}
 
 where :math:`c_f` is specific heat of liquid fresh water, :math:`c_i` is
 the specific heat of fresh ice, :math:`L_i` is latent heat of freezing,
-:math:`\rho_i` is density of ice and :math:`T_{mlt}` is melting
+:math:`\rho_i` is density of ice and :math:`T_{\rm mlt}` is melting
 temperature of ice with salinity of 1. The height of a new layer of ice
 is
 
-.. math:: h_{i new} = \frac{{\bf esurp} \Delta t}{qi_{0av}}
+.. math:: h_{i \rm new} = \frac{{\bf esurp} \Delta t}{qi_{0av}}
 
 where :math:`qi_{0av}=-\frac{\rho_i}{2} (q_1+q_2)`.
 
@@ -104,7 +104,7 @@ this determines the ice fraction **compact**. If there is already ice in
 the grid cell, the new ice must have the same height and the new ice
 fraction is
 
-.. math:: i_f=(1-\hat{i_f}) \frac{h_{i new}}{h_i}
+.. math:: i_f=(1-\hat{i_f}) \frac{h_{i \rm new}}{h_i}
 
 where :math:`\hat{i_f}` is ice fraction from previous timestep and
 :math:`h_i` is current ice height. Snow is redistributed over the new
@@ -146,15 +146,15 @@ where,
 
 .. math::
 
-   F_s  =  F_{sensible}+F_{latent}+F_{longwave}^{down}+F_{longwave}^{up}+ (1-
-   \alpha) F_{shortwave}
+   F_s  =  F_{\rm SH}+F_{\rm LH}+F_{LW \downarrow}+F_{LW \uparrow} + (1-
+   \alpha) F_{\rm SW}
 
 and
 
 .. math::
 
-   \frac{d F_s}{dT} = \frac{d F_{sensible}}{dT} + \frac{d F_{latent}}{dT}
-   +\frac{d F_{longwave}^{up}}{dT}.
+   \frac{d F_s}{dT} = \frac{d F_{\rm SH}}{dT} + \frac{d F_{\rm LH}}{dT}
+   +\frac{d F_{\rm LW \uparrow}}{dT}.
 
 :math:`F_s` and :math:`\frac{d F_s}{dT}` are currently calculated from
 the **BULKF** package described separately, but could also be provided
@@ -162,7 +162,7 @@ by an atmospheric model. The surface albedo is calculated from the ice
 height and/or surface temperature (see below, *srf\_albedo.F*) and the
 shortwave flux absorbed in the ice is
 
-.. math:: {\bf fswint} = (1-e^{\kappa_i h_i})(1-\alpha) F_{shortwave}
+.. math:: {\bf fswint} = (1-e^{\kappa_i h_i})(1-\alpha) F_{SW}
 
 where :math:`\kappa_i` is bulk extinction coefficient.
 
@@ -172,9 +172,8 @@ The conductive flux to the surface is
 
 where :math:`K_{1/2}` is the effective conductive coupling of the
 snow-ice layer between the surface and the mid-point of the upper layer
-of ice :math:`
-K_{1/2}=\frac{4 K_i K_s}{K_s h_i + 4 K_i h_s}
-`. :math:`K_i` and :math:`K_s` are constant thermal conductivities of
+of ice :math:`K_{1/2}=\frac{4 K_i K_s}{K_s h_i + 4 K_i h_s}`,
+:math:`K_i` and :math:`K_s` are constant thermal conductivities of
 seaice and snow.
 
 From the above equations we can develop a system of equations to find
@@ -191,9 +190,9 @@ a unit mass of seaice with temperature :math:`T`. For the upper layer
 .. math::
 
    \begin{aligned}
-   q_1 & = & - c_f T_f + c_i (T_f-T)+ L_{i}(1-\frac{T_f}{T})
+   q_1 & = - c_f T_f + c_i (T_f-T)+ L_{i}(1-\frac{T_f}{T})
    \nonumber \\
-   q_2 & = & -c_i T+L_i \nonumber\end{aligned}
+   q_2 & = -c_i T+L_i \nonumber\end{aligned}
 
 where :math:`c_f` is specific heat of liquid fresh water, :math:`c_i` is
 the specific heat of fresh ice, and :math:`L_i` is latent heat of
@@ -206,38 +205,38 @@ ocean-ice interface for either melting or freezing.
 .. math::
 
    \begin{aligned}
-   E_{top} &  =  & (F_s- K_{1/2}(T_s-T_1) ) \Delta t
+   E_{\rm top} &  =  & (F_s- K_{1/2}(T_s-T_1) ) \Delta t
    \nonumber \\
-   E_{bot} &= & (\frac{4K_i(T_2-T_f)}{h_i}-F_b) \Delta t
+   E_{\rm bot} &= & (\frac{4K_i(T_2-T_f)}{h_i}-F_b) \Delta t
    \nonumber\end{aligned}
 
 where :math:`F_b` is the heat flux at the ice bottom due to the sea
-surface temperature variations from freezing. If :math:`T_{sst}` is
-above freezing, :math:`F_b=c_{sw} \rho_{sw}
-\gamma (T_{sst}-T_f)u^{*}`, :math:`\gamma` is the heat transfer
+surface temperature variations from freezing. If :math:`T_{\rm SST}` is
+above freezing, :math:`F_b=c_{\rm sw} \rho_{\rm sw}
+\gamma (T_{\rm SST}-T_f)u^{*}`, :math:`\gamma` is the heat transfer
 coefficient and :math:`u^{*}=QQ` is frictional velocity between ice and
-water. If :math:`T_{sst}` is below freezing,
-:math:`F_b=(T_f - T_{sst})c_f \rho_f \Delta z /\Delta t` and set
-:math:`T_{sst}` to :math:`T_f`. We also include the energy from lower
+water. If :math:`T_{\rm SST}` is below freezing,
+:math:`F_b=(T_f - T_{\rm SST})c_f \rho_f \Delta z /\Delta t` and set
+:math:`T_{\rm SST}` to :math:`T_f`. We also include the energy from lower
 layers that drop below freezing, and set those layers to :math:`T_f`.
 
-If :math:`E_{top}>0` we melt snow from the surface, if all the snow is
+If :math:`E_{\rm top}>0` we melt snow from the surface, if all the snow is
 melted and there is energy left, we melt the ice. If the ice is all gone
 and there is still energy left, we apply the left over energy to heating
 the ocean model upper layer (See Winton, 1999, equations 27-29).
-Similarly if :math:`E_{bot}>0` we melt ice from the bottom. If all the
+Similarly if :math:`E_{\rm bot}>0` we melt ice from the bottom. If all the
 ice is melted, the snow is melted (with energy from the ocean model
-upper layer if necessary). If :math:`E_{bot}<0` we grow ice at the
+upper layer if necessary). If :math:`E_{\rm bot}<0` we grow ice at the
 bottom
 
-.. math:: \Delta h_i = \frac{-E_{bot}}{(q_{bot} \rho_i)}
+.. math:: \Delta h_i = \frac{-E_{\rm bot}}{(q_{\rm bot} \rho_i)}
 
-where :math:`q_{bot}=-c_{i} T_f + L_i` is the enthalpy of the new ice,
+where :math:`q_{\rm bot}=-c_{i} T_f + L_i` is the enthalpy of the new ice,
 The enthalpy of the second ice layer, :math:`q_2` needs to be modified:
 
 .. math::
 
-   q_2 = \frac{ \hat{h_i}/2 \hat{q_2} + \Delta h_i q_{bot} }
+   q_2 = \frac{ \hat{h_i}/2 \hat{q_2} + \Delta h_i q_{\rm bot} }
            {\hat{h_i}/{2}+\Delta h_i}
 
 If there is a ice layer and the overlying air temperature is below
@@ -264,7 +263,7 @@ equal thickness layers while conserving energy.
 The subroutine *ice\_therm.F* now calculates the heat and fresh water
 fluxes affecting the ocean model surface layer. The heat flux:
 
-.. math:: q_{net}= {\bf fswocn} - F_{b} - \frac{{\bf esurp}}{\Delta t}
+.. math:: q_{\rm net}= {\bf fswocn} - F_{b} - \frac{{\bf esurp}}{\Delta t}
 
 is composed of the shortwave flux that has passed through the ice layer
 and is absorbed by the water, **fswocn**\ :math:`=QQ`, the ocean flux to
@@ -291,12 +290,12 @@ albedo. There are two calculations provided here:
     
     .. math::
 
-       \alpha = f_s \alpha_s + (1-f_s) (\alpha_{i_{min}}
-                + (\alpha_{i_{max}}- \alpha_{i_{min}}) (1-e^{-h_i/h_{\alpha}}))
+       \alpha = f_s \alpha_s + (1-f_s) (\alpha_{i_{\min}}
+                + (\alpha_{i_{\max}}- \alpha_{i_{\min}}) (1-e^{-h_i/h_{\alpha}}))
 
     where :math:`f_s` is 1 if there is snow, 0 if not; the snow albedo,
     :math:`\alpha_s` has two values depending on whether :math:`T_s<0` or
-    not; :math:`\alpha_{i_{min}}` and :math:`\alpha_{i_{max}}` are ice
+    not; :math:`\alpha_{i_{\min}}` and :math:`\alpha_{i_{\max}}` are ice
     albedos for thin melting ice, and thick bare ice respectively, and
     :math:`h_{\alpha}` is a scale height.
 

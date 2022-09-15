@@ -134,8 +134,8 @@ of equations solved in this configuration as follows:
 
    \frac{Du}{Dt} - fv +
      \frac{1}{\rho}\frac{\partial p'}{\partial x} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}u -
-     \frac{\partial}{\partial z}A_{z}\frac{\partial u}{\partial z}
+      \nabla _h \cdot (A_{h} \nabla _h u) -
+     \frac{\partial}{\partial z}\left(A_{z}\frac{\partial u}{\partial z}\right)
    &=
    \begin{cases}
      \mathcal{F}_u & \text{(surface)} \\
@@ -144,8 +144,8 @@ of equations solved in this configuration as follows:
    \\
    \frac{Dv}{Dt} + fu +
      \frac{1}{\rho}\frac{\partial p'}{\partial y} -
-     \nabla_{h}\cdot A_{h}\nabla_{h}v -
-     \frac{\partial}{\partial z}A_{z}\frac{\partial v}{\partial z}
+      \nabla _h \cdot (A_{h} \nabla _h v) -
+     \frac{\partial}{\partial z}\left(A_{z}\frac{\partial v}{\partial z}\right)
    &=
    \begin{cases}
      \mathcal{F}_v & \text{(surface)} \\
@@ -153,26 +153,26 @@ of equations solved in this configuration as follows:
    \end{cases}
 
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
+      \frac{\partial \eta}{\partial t} +  \nabla _h \cdot \vec{\bf u} = 0
 
 .. math::
    :label: eg-global-model_equations_ts
 
    \frac{D\theta}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - \frac{\partial}{\partial z}\Gamma(K_{z})\frac{\partial\theta}{\partial z}
+     \nabla _h \cdot (K_{h} \nabla _h \theta)
+    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial\theta}{\partial z}\right)
    &=
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{D s}{Dt} -
-    \nabla_{h}\cdot K_{h}\nabla_{h}s
-    - \frac{\partial}{\partial z}\Gamma(K_{z})\frac{\partial s}{\partial z}
+   \frac{D S}{Dt} -
+     \nabla _h \cdot (K_{h} \nabla _h S)
+    - \frac{\partial}{\partial z}\left(\Gamma(K_{z})\frac{\partial S}{\partial z}\right)
    &=
    \begin{cases}
-   {\cal F}_s & \text{(surface)} \\
+   {\cal F}_S & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
@@ -182,7 +182,7 @@ of equations solved in this configuration as follows:
 
 where :math:`u=\frac{Dx}{Dt}=r \cos(\phi)\frac{D \lambda}{Dt}` and
 :math:`v=\frac{Dy}{Dt}=r \frac{D \phi}{Dt}` are the zonal and
-meridional components of the flow vector, :math:`\vec{u}`, on the
+meridional components of the flow vector, :math:`\vec{\bf u}`, on the
 sphere. As described in :numref:`discret_algorithm`, the time evolution of
 potential temperature :math:`\theta` equation is solved
 prognostically. The total pressure :math:`p` is diagnosed by summing
@@ -197,7 +197,7 @@ The Laplacian dissipation coefficient, :math:`A_{h}`, is set to
 layer width (see Adcroft 1995 :cite:`adcroft:95`),
 
 .. math::
-   M_{w} = \pi ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}
+   M = \pi ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}
    :label: eq:eg-global-munk_layer
 
 of ~600 km. This is greater than
@@ -213,7 +213,7 @@ stability parameter to the horizontal Laplacian friction
 (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
-   S_{l} = 4 \frac{A_{h} \Delta t_{v}}{{\Delta x}^2}
+   S_{\rm Lh} = 4 \frac{A_{h} \Delta t_{v}}{{\Delta x}^2}
    :label: eq:eg-global-laplacian_stability
 
 evaluates to 0.6 at a latitude of
@@ -228,7 +228,7 @@ The vertical dissipation coefficient,
 The associated stability limit
 
 .. math::
-   S_{l} = 4 \frac{A_{z} \Delta t_{v}}{{\Delta z}^2}
+   S_{\rm Lv} = 4 \frac{A_{z} \Delta t_{v}}{{\Delta z}^2}
    :label: eg-global-laplacian_stability_z
 
 evaluates to 0.0029 for the smallest
@@ -239,7 +239,7 @@ The numerical stability for inertial
 oscillations (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
-   S_{i} = f^{2} {\Delta t_v}^2
+   S_{\rm inert} = f^{2} {\Delta t_v}^2
    :label: eg-global-inertial_stability
 
 evaluates to 0.07 for
@@ -248,10 +248,10 @@ which is below the :math:`S_{i} < 1` upper limit for stability.
 
 The advective CFL (Adcroft 1995 :cite:`adcroft:95`)
 for a extreme maximum horizontal flow
-speed of :math:`| \vec{u} |` = 2 m s\ :sup:`-1`
+speed of :math:`| \vec{\bf u} |` = 2 m s\ :sup:`-1`
 
 .. math::
-   S_{a} = \frac{| \vec{u} | \Delta t_{v}}{ \Delta x}
+   S_{\rm adv} = \frac{| \vec{\bf u} | \Delta t_{v}}{ \Delta x}
    :label: eg-global-cfl_stability
 
 evaluates to :math:`5 \times 10^{-2}`. This is

@@ -44,9 +44,9 @@ C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il, k2, ioUnit
+      INTEGER igen_etaday, il
       LOGICAL exst
-      CHARACTER*(128) tempfile,tempfile1
+      CHARACTER*(128) tempfile
       INTEGER icount_transp
 #endif
 
@@ -274,46 +274,6 @@ c ============ backward compatibility checks
       IF ( (using_topex).AND.(.NOT.using_tpj) ) using_tpj=.TRUE.
 
       _END_MASTER(myThid)
-
-c ============ check for missing data files
-
-#ifdef ECCO_CTRL_DEPRECATED
-#ifdef ALLOW_BP_COST_CONTRIBUTION
-      CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
-     & bpdatfile, bpstartdate(1), myThid )
-#endif
-#ifdef ALLOW_SST_COST_CONTRIBUTION
-      CALL ECCO_CHECK_FILES( using_cost_sst,'sst',
-     & sstdatfile, sststartdate(1), myThid )
-#endif
-#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
-      CALL ECCO_CHECK_FILES( using_cost_sst,'sst',
-     & tmidatfile, tmistartdate(1), myThid )
-#endif
-#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
-     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
-      CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
-     & scatxdatfile, scatxstartdate(1), myThid )
-      CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
-     & scatydatfile, scatystartdate(1), myThid )
-#endif
-#endif /* ECCO_CTRL_DEPRECATED */
-
-c ============ deprecated codes related checks
-
-#if (defined (ALLOW_TRANSPORT_COST_CONTRIBUTION) || \
-     defined (ALLOW_NEW_SSH_COST))
-      IF ( ndaysrec .GT. maxNumDays ) THEN
-       WRITE(msgBuf,'(2A,2I10)')
-     &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
-     &        'ndaysrec > maxNumDays in ecco_cost.h ',
-     &        ndaysrec, maxNumDays
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid )
-       CALL PRINT_ERROR( msgBuf , myThid )
-       STOP 'ABNORMAL END: S/R ECCO_CHECK'
-      ENDIF
-#endif
 
 c ============ generic cost function related checks
 

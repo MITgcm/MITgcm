@@ -268,8 +268,10 @@ CADJ INIT tapelev_init       = USER
 # endif
 c--   this tape is never used
 cCADJ INIT tapelev_ini_bibj   = USER
+# ifdef INCLUDE_CONVECT_INI_CALL
 c--   currently only used in convective_adjustement_ini.F
 CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr*nthreads_chkpt
+# endif
 # if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
 c--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
@@ -278,11 +280,14 @@ CADJ INIT dummytape          = COMMON, 1
 c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
-CADJ INIT tapelev2 = USER
+CADJ  INIT tapelev2 = USER
+CADJ  INIT tapelvi2 = USER,'adi'
 #  elif (defined (AUTODIFF_4_LEVEL_CHECKPOINT))
-CADJ INIT tapelev4 = USER
+CADJ  INIT tapelev4 = USER
+CADJ  INIT tapelvi4 = USER,'adi'
 #  else
-CADJ INIT tapelev3 = USER
+CADJ  INIT tapelev3 = USER
+CADJ  INIT tapelvi3 = USER,'adi'
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -293,20 +298,21 @@ CADJ INIT tapelev3 = USER
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# ifdef ALLOW_GENTIM2D_CONTROL
+CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+# endif
 # ifdef NONLIN_FRSURF
 CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
-# ifdef ALLOW_GENTIM2D_CONTROL
-CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
+# ifdef ALLOW_SHELFICE
+CADJ STORE shelficeLoadAnomaly    = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeHeatFlux       = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffT         = tapelev_init, key=1, kind=isbyte
+CADJ STORE shiTransCoeffS         = tapelev_init, key=1, kind=isbyte
 # endif
-# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
-CADJ STORE shelficeHeatFlux       = tapelev_init, key=1
-CADJ STORE shiTransCoeffT         = tapelev_init, key=1
-CADJ STORE shiTransCoeffS         = tapelev_init, key=1
-# endif
-# if (defined ALLOW_STREAMICE) && (defined ALLOW_GENARR2D_CONTROL)
+# ifdef ALLOW_STREAMICE
 CADJ STORE H_streamice = tapelev_init, key=1
 CADJ STORE B_glen      = tapelev_init, key=1
 # endif
@@ -368,15 +374,6 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
       CALL INITIALISE_VARIA( myThid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_ECCO
-#  ifdef ECCO_CTRL_DEPRECATED
-cph: avoid renewed call of initialise_varia in recomputation loop
-cph: in some circumstances
-CADJ STORE sbar_gen,tbar_gen  = tapelev_init, key = 1
-#  endif
-# endif
-#endif
 
 #ifdef ALLOW_SHOWFLOPS
       CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', myThid)
@@ -429,6 +426,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
+CADJ    INIT tapelvi3 = USER,'adi'
 #   endif /* AUTODIFF_4_LEVEL_CHECKPOINT */
 
 #   ifndef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -447,6 +445,7 @@ c**************************************
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
+CADJ    INIT tapelvi2 = USER,'adi'
 #   endif /* AUTODIFF_2_LEVEL_CHECKPOINT */
 
         do ilev_2 = 1,nchklev_2
@@ -473,6 +472,10 @@ c--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
+#   ifdef ALLOW_BLING
+CADJ INIT comlev1_bibj_ijk = COMMON,
+CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)*nthreads_chkpt
+#   endif
 c--
 #   ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
@@ -490,13 +493,6 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num
 CADJ INIT comlev1_bibj_k_ptracers = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num*Nr
 #   endif /* ALLOW_PTRACERS */
-c--
-#   ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_k_gad = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
-CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxpass
-#   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH
@@ -539,22 +535,24 @@ CML#   endif
 CADJ INIT comlev1_bibj_k_gadice = COMMON,
 CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
-CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxpass
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxcube
 #    endif /* DISABLE_MULTIDIM_ADVECTION */
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
-CADJ INIT comlev1_thsice_1 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
-CADJ INIT comlev1_thsice_2 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
-CADJ INIT comlev1_thsice_3 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
-CADJ INIT comlev1_thsice_4 = COMMON,
-CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
+C     Tape for thsice_advection, which is called for thSIce_nAdv (=5)
+C     different variables (thSIce_nAdv is set in THSICE_SIZE.h)
+CADJ INIT comlev1_thsice_adv = COMMON,
+CADJ &    nchklev_1*nSx*nSy*maxcube*thSIce_nAdv*nthreads_chkpt
+CADJ INIT comlev1_thsice_nlyr = COMMON,
+CADJ &    nchklev_1*nSx*nSy*nlyr*nthreads_chkpt
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_thsice_5 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+CADJ INIT comlev1_thsice_exf = COMMON,
+CADJ &    nchklev_1*nSx*nSy*MaxTsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_exf_niter = COMMON,
+CADJ &    nchklev_1*nSx*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
 #   endif
 CADJ INIT comlev1_thsice_s4t = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxtsf*nthreads_chkpt
@@ -587,6 +585,16 @@ c**************************************
           ENDDO
 #endif /* STORE_LOADEDREC_TEST */
 
+#if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_OFFLINE )
+C     The following statement forces TAF to store wVel correctly in some
+C     outer checkpoint levels in some cases when it does not do it
+C     automatically (similar to TICES in seaice_reg_ridge.F). This is a
+C     TAF bug and this statement can probably be removed again, once
+C     this bug is fixed (but it does not hurt, either).
+# ifndef AUTODIFF_USE_STORE_RESTORE
+CADJ INCOMPLETE wVel
+# endif
+#endif
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
           do ilev_1 = 1,nchklev_1

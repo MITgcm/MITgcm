@@ -25,13 +25,9 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #ifdef ALLOW_ECCO
-# ifdef ECCO_CTRL_DEPRECATED
-#  include "ecco_cost.h"
-# else
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
-#  include "ecco_local_params.h"
-# endif
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+# include "ecco_local_params.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OBCS.h"
@@ -41,17 +37,17 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-      integer myThid
+      INTEGER myThid
 
 c     == external functions ==
-      integer  ilnblnk
-      external ilnblnk
+      INTEGER  ilnblnk
+      EXTERNAL ilnblnk
 
 c     == local variables ==
 C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER k, k2, iUnit, num_file, num_var
+      INTEGER k, k2, iUnit
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER IL, kk, gencost_k3d, gencost_msk_k3d, ioUnit
       CHARACTER*(128) tempfile
@@ -62,7 +58,7 @@ C     iUnit       - Work variable for IO unit number
 Catn-- retired parameters
       CHARACTER*(MAX_LEN_FNAM) topexmeanfile
       CHARACTER*(2) cost_yftype
-      integer nRetired
+      INTEGER nRetired
 
 c     == end of interface ==
 
@@ -203,6 +199,11 @@ c--   Read the namelist input.
      &         gencost_is1d,
      &         gencost_is3d,
      &         gencost_msk_is3d,
+     &         gencost_useDensityMask,
+     &         gencost_refPressure,
+     &         gencost_sigmaLow,
+     &         gencost_sigmaHigh,
+     &         gencost_tanhScale,
      &         gencost_timevaryweight,
      &         mult_gencost
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
@@ -611,6 +612,11 @@ c--   Set default values.
          mult_gencost(k)       = 1. _d 0
          gencost_is1d(k)       = .FALSE.
          gencost_is3d(k)       = .FALSE.
+         gencost_useDensityMask(k) = .FALSE.
+         gencost_refPressure(k) = 0. _d 0
+         gencost_sigmaLow(k)    = 0. _d 0
+         gencost_sigmaHigh(k)   = 1. _d 3
+         gencost_tanhScale(k)   = 1. _d 5
          gencost_pointer3d(k)  = 0
          gencost_msk_is3d(k)   = .FALSE.
          gencost_msk_pointer3d(k)  = 0
@@ -621,7 +627,7 @@ c boxmean/horflux masks
      &          1,zeroRL,myThid)
          call ecco_zero(gencost_mskSsurf(1-OLx,1-OLy,1,1,k),
      &          1,zeroRL,myThid)
-         do k2 = 1,nr
+         do k2 = 1,Nr
           gencost_mskVertical(k2,k)= 1. _d 0
          enddo
 c deprecated:

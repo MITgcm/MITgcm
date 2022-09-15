@@ -101,68 +101,68 @@ calculated from the zonal and meridional components.
 
 We calculate the virtual temperature:
 
-.. math:: T_o = T_{air} (1+\gamma q_{air})
+.. math:: T_o = T_{\rm air} (1 + \gamma q_{\rm air}),
 
-where :math:`T_{air}` is the air temperature at :math:`h_T`,
-:math:`q_{air}` is humidity at :math:`h_q` and :math:`\gamma` is a
+where :math:`T_{\rm air}` is the air temperature at :math:`h_T`,
+:math:`q_{\rm air}` is humidity at :math:`h_q` and :math:`\gamma` is a
 constant.
 
 The saturated vapor pressure is calculate (QQ ref):
 
-.. math:: q_{sat} = \frac{a}{p_o} e^{L (b-\frac{c}{T_{srf}})}
+.. math:: q_{\rm sat} = \frac{a}{p_o} \exp{\left[ L \left(b-\frac{c}{T_{\rm srf}}\right)\right]},
 
-where :math:`a,b,c` are constants, :math:`T_{srf}` is surface
+where :math:`a,b,c` are constants, :math:`T_{\rm srf}` is surface
 temperature and :math:`p_o` is the surface pressure.
 
 The two values crucial for the bulk formula calculations are the
 difference between air at sea surface and sea surface temperature:
 
-.. math:: \Delta T = T_{air} - T_{srf} +\alpha h_T
+.. math:: \Delta T = T_{\rm air} - T_{\rm srf} +\alpha h_T,
 
 where :math:`\alpha` is adiabatic lapse rate and :math:`h_T` is the
 height where the air temperature was taken; and the difference between
 the air humidity and the saturated humidity
 
-.. math:: \Delta q = q_{air} - q_{sat}.
+.. math:: \Delta q = q_{\rm air} - q_{\rm sat}.
 
 We then calculate the turbulent exchange coefficients following Bryan et
 al (1996) and the numerical scheme of Hunke and Lipscombe (1998). We
 estimate initial values for the exchange coefficients, :math:`c_u`,
 :math:`c_T` and :math:`c_q` as
 
-.. math:: \frac{\kappa}{ln(z_{ref}/z_{rou})}
+.. math:: \frac{\kappa}{\ln\left(z_{\rm ref}/z_{\rm rou}\right)},
 
-where :math:`\kappa` is the Von Karman constant, :math:`z_{ref}` is a
-reference height and :math:`z_{rou}` is a roughness length scale which
+where :math:`\kappa` is the Von Karman constant, :math:`z_{\rm ref}` is a
+reference height and :math:`z_{\rm rou}` is a roughness length scale which
 could be a function of type of surface, but is here set as a constant.
 Turbulent scales are:
 
 .. math::
 
    \begin{aligned}
-   u^* & = & c_u u_s \nonumber\\
-   T^* & = & c_T \Delta T \nonumber\\
-   q^* & = & c_q \Delta q \nonumber\end{aligned}
+   u^* & = c_u u_s \nonumber\\
+   T^* & = c_T \Delta T \nonumber\\
+   q^* & = c_q \Delta q \nonumber
+   \end{aligned}
 
 We find the “integrated flux profile” for momentum and stability if
-there are stable QQ conditions (:math:`\Upsilon>0`) :
+there are stable QQ conditions (:math:`\Upsilon>0`):
 
-.. math:: \psi_m = \psi_s = -5 \Upsilon
+.. math:: \psi_m = \psi_s = -5 \Upsilon,
 
 and for unstable QQ conditions (:math:`\Upsilon<0`):
 
 .. math::
 
    \begin{aligned}
-   \psi_m & = & 2 ln(0.5(1+\chi)) + ln(0.5(1+\chi^2)) - 2 \tan^{-1} \chi + \pi/2
+   \psi_m & = 2 \ln\left[\frac1{2}(1+\chi)\right] + \ln\left[\frac1{2}(1+\chi^2)\right] - 2 \tan^{-1} \chi + \pi/2
    \nonumber \\
-   \psi_s & = & 2 ln(0.5(1+\chi^2)) \nonumber\end{aligned}
+   \psi_s & = 2 \ln\left[\frac1{2}(1+\chi^2)\right] \nonumber\end{aligned}
 
 where
 
 .. math::
-
-   \Upsilon = \frac{\kappa g z_{ref}}{u^{*2}} (\frac{T^*}{T_o} + 
+   \Upsilon = \frac{\kappa g z_{\rm ref}}{u^{*2}} (\frac{T^*}{T_o} + 
    \frac{q^*}{1/\gamma + q_a})
 
 and :math:`\chi=(1-16\Upsilon)^{1/2}`.
@@ -172,25 +172,25 @@ The coefficients are updated through 5 iterations as:
 .. math::
 
    \begin{aligned}
-   c_u & = & \frac {\hat{c_u}}{1+\hat{c_u}(\lambda - \psi_m)/\kappa} \nonumber \\
-   c_T & = & \frac {\hat{c_T}}{1+\hat{c_T}(\lambda - \psi_s)/\kappa} \nonumber \\
-   c_q & = & c'_T\end{aligned}
+   c_u & = \frac {\hat{c_u}}{1+\hat{c_u}(\lambda - \psi_m)/\kappa} \nonumber \\
+   c_T & = \frac {\hat{c_T}}{1+\hat{c_T}(\lambda - \psi_s)/\kappa} \nonumber \\
+   c_q & = c'_T\end{aligned}
 
-where :math:`\lambda =ln(h_T/z_{ref})`.
+where :math:`\lambda = \ln\left(h_T/z_{\rm ref}\right)`.
 
 We can then find the bulk formula heat fluxes:
 
 Sensible heat flux:
 
-.. math:: Q_s=\rho_{air} c_{p_{air}} u_s c_u c_T \Delta T
+.. math:: Q_{\rm sh} = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T \Delta T
 
 Latent heat flux:
 
-.. math:: Q_l=\rho_{air} L u_s c_u c_q \Delta q
+.. math:: Q_{\rm lh} = \rho_{\rm air} L u_s c_u c_q \Delta q
 
 Up long wave radiation
 
-.. math:: Q_{lw}^{up}=\epsilon \sigma T_{srf}^4
+.. math:: Q_{\rm lw \uparrow}=\epsilon \sigma T_{\rm srf}^4
 
 where :math:`\epsilon` is emissivity (which can be different for open
 ocean, ice and snow), :math:`\sigma` is Stefan-Boltzman constant.
@@ -201,12 +201,12 @@ to surface temperature
 .. math::
 
    \begin{aligned}
-   \frac{dQ_s}{d_T} & = & \rho_{air} c_{p_{air}} u_s c_u c_T \nonumber \\
-   \frac{dQ_l}{d_T} & = & \frac{\rho_{air} L^2 u_s c_u c_q c}{T_{srf}^2} \nonumber \\
-   \frac{dQ_{]lw}^{up}}{d_T} & = &  4 \epsilon \sigma t_{srf}^3 \nonumber\end{aligned}
+   \frac{dQ_{\rm sh}}{d_T} & = \rho_{\rm air} c_{p_{\rm air}} u_s c_u c_T, \nonumber \\
+   \frac{dQ_{\rm lh}}{d_T} & = \frac{\rho_{\rm air} L^2 u_s c_u c_q c}{T_{\rm srf}^2}, \nonumber \\
+   \frac{dQ_{\rm lw \uparrow}}{d_T} & =  4 \epsilon \sigma T_{\rm srf}^3, \nonumber
+   \end{aligned}
 
-And total derivative :math:`\frac{dQ_o}{dT}= \frac{dQ_s}{dT} +
-\frac{dQ_l}{dT} + \frac{dQ_{lw}^{up}}{dT}`.
+and total derivative :math:`dQ_o/dT = dQ_{\rm sh}/dT + dQ_{\rm lh}/dT + dQ_{\rm lw \uparrow}/dT`.
 
 If we do not read in the wind stress, it is calculated here.
 

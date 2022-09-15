@@ -95,25 +95,26 @@ C     dSigmaDr    :: vertical gradient of density
 CEOP
 
 #ifdef ALLOW_GMREDI
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-#ifdef GMREDI_WITH_STABLE_ADJOINT
-      _RL slopeSqTmp,slopeTmp,slopeMax
-#endif
-      _RL dSigmMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL SlopeMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL locVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL f1,Smod,f2,Rnondim
-      _RL maxSlopeSqr
       _RL fpi
       PARAMETER( fpi = PI )
-      INTEGER i,j
+      INTEGER i, j
+      _RL f1, Smod, f2, Rnondim
+      _RL maxSlopeSqr
+      _RL dSigmMod   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifndef GM_EXCLUDE_FM07_TAP
       _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
       _RL minTransLay
+      _RL SlopeMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL locVar  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#ifdef GMREDI_WITH_STABLE_ADJOINT
+      _RL slopeSqTmp, slopeTmp, slopeMax
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
@@ -140,6 +141,11 @@ CADJ PASSIVE depthz
       ikey = (act1 + 1) + act2*max1
      &                  + act3*max1*max2
      &                  + act4*max1*max2*max3
+C     Without this store directive, TAF generates an extra field anyway
+C     so we do it here explicitly with a local tape and live without the
+C     corresponding warning.
+CADJ INIT loctape_gm = COMMON, 1
+CADJ STORE dSigmaDr = loctape_gm
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy+1,sNy+OLy-1
@@ -202,8 +208,8 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
            SlopeY(i,j) = 0. _d 0
           ELSE
            dRdSigmaLtd(i,j) = 1. _d 0/( dSigmaDr(i,j) )
-           SlopeX(i,j)=-dSigmaDx(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j)=-dSigmaDy(i,j)*dRdSigmaLtd(i,j)
+           SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j) = -dSigmaDy(i,j)*dRdSigmaLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -215,9 +221,9 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          SlopeSqr(i,j)=SlopeX(i,j)*SlopeX(i,j)
-     &                 +SlopeY(i,j)*SlopeY(i,j)
-          taperFct(i,j)=1. _d 0
+          SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
+     &                  + SlopeY(i,j)*SlopeY(i,j)
+          taperFct(i,j) = 1. _d 0
          ENDDO
         ENDDO
 
@@ -387,7 +393,7 @@ C--       end if baseSlope > 0 / else => above/below base of Trans. Layer
 
 #endif  /* GM_EXCLUDE_FM07_TAP */
 
-      ELSE IF (GM_taper_scheme.EQ.'ac02') THEN
+      ELSEIF (GM_taper_scheme.EQ.'ac02') THEN
 
 #ifdef GM_EXCLUDE_AC02_TAP
 
@@ -402,29 +408,31 @@ C         but still neglect Kxy & Kyx (assumed to be zero)
         maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          dRdSigmaLtd(i,j)=
-     &                        dSigmaDx(i,j)*dSigmaDx(i,j)
-     &                      + dSigmaDy(i,j)*dSigmaDy(i,j)
-     &                      + dSigmaDr(i,j)*dSigmaDr(i,j)
+          dRdSigmaLtd(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
+     &                     + dSigmaDy(i,j)*dSigmaDy(i,j)
+     &                     + dSigmaDr(i,j)*dSigmaDr(i,j)
           taperFct(i,j) = 1. _d 0
 
           IF (dRdSigmaLtd(i,j).NE.0.) THEN
-             dRdSigmaLtd(i,j)=1. _d 0
-     &            / ( dRdSigmaLtd(i,j) )
-             SlopeSqr(i,j)=(dSigmaDx(i,j)*dSigmaDx(i,j)
-     &            +dSigmaDy(i,j)*dSigmaDy(i,j))*dRdSigmaLtd(i,j)
-             SlopeX(i,j)=-dSigmaDx(i,j)
-     &            *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
-             SlopeY(i,j)=-dSigmaDy(i,j)
-     &            *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
-cph             T11(i,j)=(dSigmaDr(i,j)**2)*dRdSigmaLtd(i,j)
+             dRdSigmaLtd(i,j) = 1. _d 0 / ( dRdSigmaLtd(i,j) )
+             SlopeSqr(i,j) = ( dSigmaDx(i,j)*dSigmaDx(i,j)
+     &                       + dSigmaDy(i,j)*dSigmaDy(i,j)
+     &                       )*dRdSigmaLtd(i,j)
+             SlopeX(i,j) = -dSigmaDx(i,j)
+     &                     *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
+             SlopeY(i,j) = -dSigmaDy(i,j)
+     &                     *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
+          ELSE
+             SlopeSqr(i,j) = 0. _d 0
+             SlopeX(i,j) = 0. _d 0
+             SlopeY(i,j) = 0. _d 0
           ENDIF
 #ifndef ALLOWW_AUTODIFF_TAMC
 cph-- this part does not adjoint well
           IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
-          ELSE IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
+          ELSEIF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
            taperFct(i,j) = 0. _d 0
           ENDIF
 #endif
@@ -448,6 +456,10 @@ C                                  stratified (Sigma_Z > 0) region :
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+C     Without this store directive, TAF generates an extra field anyway
+C     so we do it here explicitly with a local tape and live without the
+C     corresponding warning.
+CADJ STORE dSigmaDr = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1
@@ -480,8 +492,8 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
            ENDIF
           ELSE
            dRdSigmaLtd(i,j) = 1. _d 0 / dSigmaDr(i,j)
-           SlopeX(i,j)=-dSigmaDx(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j)=-dSigmaDy(i,j)*dRdSigmaLtd(i,j)
+           SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j) = -dSigmaDy(i,j)*dRdSigmaLtd(i,j)
 c          SlopeX(i,j) = -dSigmaDx(i,j)/dSigmaDr(i,j)
 c          SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDr(i,j)
           ENDIF
@@ -498,9 +510,9 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
-          IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
-             slopeSqr(i,j) = GM_slopeSqCutoff
-             taperFct(i,j) = 0. _d 0
+          IF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
+            slopeSqr(i,j) = GM_slopeSqCutoff
+            taperFct(i,j) = 0. _d 0
           ENDIF
          ENDDO
         ENDDO
@@ -516,7 +528,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
 
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
+          ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff )  THEN
            taperFct(i,j) = SQRT(maxSlopeSqr / SlopeSqr(i,j))
            slopeSqr(i,j) = MIN( slopeSqr(i,j),GM_bigSlope*GM_bigSlope )
@@ -534,7 +546,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
 
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
+          ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
           ENDIF
@@ -550,9 +562,9 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
 
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
-           Smod=SQRT(SlopeSqr(i,j))
-           taperFct(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
+          ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+           Smod = SQRT(SlopeSqr(i,j))
+           taperFct(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ) )
           ENDIF
          ENDDO
         ENDDO
@@ -566,15 +578,15 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           IF (SlopeSqr(i,j) .EQ. 0.) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
-           Smod=SQRT(SlopeSqr(i,j))
-           f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-           Rnondim= -depthZ(k)/(Lrho(i,j)*Smod)
+           Smod = SQRT(SlopeSqr(i,j))
+           f1 = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ) )
+           Rnondim = -depthZ(k)/(Lrho(i,j)*Smod)
            IF ( Rnondim.GE.1. _d 0 ) THEN
              f2 = 1. _d 0
            ELSE
-             f2 = op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5) ))
+             f2 = op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5) ) )
            ENDIF
-           taperFct(i,j)=f1*f2
+           taperFct(i,j) = f1*f2
           ENDIF
 
          ENDDO
@@ -592,15 +604,15 @@ C (~ strong clipping, reducing non linearity of kw=f(K))
 CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-          slopeSqTmp=SlopeX(i,j)*SlopeX(i,j)
-     &              +SlopeY(i,j)*SlopeY(i,j)
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          slopeSqTmp = SlopeX(i,j)*SlopeX(i,j)
+     &               + SlopeY(i,j)*SlopeY(i,j)
 
           IF ( slopeSqTmp .GT. slopeMax**2 ) then
-           slopeTmp=sqrt(slopeSqTmp)
-           SlopeX(i,j)=SlopeX(i,j)*slopeMax/slopeTmp
-           SlopeY(i,j)=SlopeY(i,j)*slopeMax/slopeTmp
+           slopeTmp = SQRT(slopeSqTmp)
+           SlopeX(i,j) = SlopeX(i,j)*slopeMax/slopeTmp
+           SlopeY(i,j) = SlopeY(i,j)*slopeMax/slopeTmp
           ENDIF
          ENDDO
         ENDDO
@@ -608,10 +620,10 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
 C block above to reduce TAF recomputations. The assignment of taperFct is
 C also moved to keep the original order of operations.
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
-     &                   +SlopeY(i,j)*SlopeY(i,j)
+     &                  + SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
          ENDDO
         ENDDO

@@ -49,14 +49,6 @@ c     == global variables ==
 #include "EXF_INTERP_SIZE.h"
 #include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
-# endif
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -71,9 +63,9 @@ c     myThid - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      INTEGER bi, bj, i, j, ks
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER ks
+#if (defined ALLOW_CLIMSST_RELAXATION || defined ALLOW_BULK_OFFLINE )
+      INTEGER i, j, bi, bj
 #endif
 
 c     == end of interface ==
@@ -110,21 +102,9 @@ CADJ STORE climsst      = comlev1, key=ikey_dynamics, kind=isbyte
         ENDDO
        ENDDO
       ENDDO
-
 c--   Update the tile edges.
       _EXCH_XY_RL(climsst, myThid)
-#endif
-
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-# ifdef ALLOW_SST_CONTROL
-      CALL CTRL_GET_MASK2D( xx_sst_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_sst_file, xx_sststartdate, xx_sstperiod,
-     &     mask2D, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
-     &     xx_sst_remo_intercept, xx_sst_remo_slope,
-     &     wsst, myTime, myIter, myThid )
-# endif
-#endif
+#endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Get values of climatological sss fields.
@@ -139,20 +119,8 @@ c     Get values of climatological sss fields.
      I     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
 #endif
      I     myTime, myIter, myThid )
-
 c--   Update the tile edges.
       _EXCH_XY_RL(climsss, myThid)
-#endif
-
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-# ifdef ALLOW_SSS_CONTROL
-      CALL CTRL_GET_MASK2D( xx_sss_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
-     &     mask2D, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
-     &     xx_sss_remo_intercept, xx_sss_remo_slope,
-     &     wsss, myTime, myIter, myThid )
-# endif
 #endif
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION

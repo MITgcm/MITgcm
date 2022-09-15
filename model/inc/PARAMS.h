@@ -79,6 +79,10 @@ C                        density structure
 C     addMassFile     :: File containing source/sink of fluid in the interior
 C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data
 C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
+C     geothermalFile  :: File containing geothermal heat flux
+C     lambdaThetaFile :: File containing SST relaxation coefficient
+C     lambdaSaltFile  :: File containing SSS relaxation coefficient
+C     wghtBalanceFile :: File containing weight used in balancing net EmPmR
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/
      &                buoyancyRelation, eosType,
@@ -94,10 +98,10 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                saltClimFile,
      &                EmPmRfile, saltFluxFile,
      &                surfQfile, surfQnetFile, surfQswFile,
-     &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                pLoadFile, geoPotAnomFile, addMassFile,
      &                eddyPsiXFile, eddyPsiYFile, geothermalFile,
+     &                lambdaThetaFile, lambdaSaltFile, wghtBalanceFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(6)  eosType
@@ -142,6 +146,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) geothermalFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
+      CHARACTER*(MAX_LEN_FNAM) wghtBalanceFile
       CHARACTER*(MAX_LEN_PREC/2) the_run_name
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
@@ -180,6 +185,8 @@ C                           =3: use full (Hyd+NH) dynamical pressure
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
+C     selectBalanceEmPmR  :: option to balance net surface fresh-water flux:
+C                           =0 off ; =1 uniform correction ; = 2 weighted correction
 C     selectImplicitDrag  :: select Implicit treatment of bottom/top drag
 C                           = 0: fully explicit
 C                           = 1: implicit on provisional velocity
@@ -227,7 +234,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
      &        selectNHfreeSurf, selectP_inEOS_Zc,
-     &        selectAddFluid, selectImplicitDrag,
+     &        selectAddFluid, selectBalanceEmPmR, selectImplicitDrag,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
@@ -252,6 +259,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER selectNHfreeSurf
       INTEGER selectP_inEOS_Zc
       INTEGER selectAddFluid
+      INTEGER selectBalanceEmPmR
       INTEGER selectImplicitDrag
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
@@ -382,7 +390,6 @@ C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
 C                          apply AB on tracer tendencies (rather than on Tracer)
 C- Other forcing params -
-C     balanceEmPmR    :: substract global mean of EmPmR at every time step
 C     balanceQnet     :: substract global mean of Qnet at every time step
 C     balancePrintMean:: print substracted global means to STDOUT
 C     doThetaClimRelax :: Set true if relaxation to temperature
@@ -443,7 +450,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
-     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax,
      & doThetaClimRelax, doSaltClimRelax,
      & allowFreezing,
@@ -539,7 +546,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useMultiDimAdvec
       LOGICAL momDissip_In_AB
       LOGICAL doAB_onGtGs
-      LOGICAL balanceEmPmR
       LOGICAL balanceQnet
       LOGICAL balancePrintMean
       LOGICAL doThetaClimRelax

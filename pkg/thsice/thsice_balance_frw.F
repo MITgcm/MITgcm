@@ -1,4 +1,7 @@
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_BALANCE_FRW
@@ -26,6 +29,9 @@ C     === Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     iMin,iMax :: computation domain: 1rst index range
@@ -54,6 +60,13 @@ C     i, j      :: loop indices
 
 C--   Calculate and global-mean precip (+RunOff)
 C     and global-mean imbalance of net Atmos Fresh-Water flux
+#ifdef ALLOW_AUTODIFF_TAMC
+C     It is important to store these fields here so that in s/r
+C     thsice_main_ad the entire timestep does not get recomputed just to
+C     produce these two fields.
+CADJ STORE icFrwAtm = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE prcAtm   = comlev1, key = ikey_dynamics, kind = isbyte
+#endif
       IF ( thSIceBalanceAtmFW.NE.0 ) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)

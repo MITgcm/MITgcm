@@ -112,7 +112,7 @@ solved in this configuration as follows:
      \frac{1}{\rho}\frac{\partial p^{'}}{\partial x} -
      \nabla_{h}\cdot A_{h}\nabla_{h}u -
      \frac{\partial}{\partial z}A_{z}\frac{\partial u}{\partial z}
-    & = &
+    & =
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
@@ -122,7 +122,7 @@ solved in this configuration as follows:
      \frac{1}{\rho}\frac{\partial p^{'}}{\partial y} -
      \nabla_{h}\cdot A_{h}\nabla_{h}v -
      \frac{\partial}{\partial z}A_{z}\frac{\partial v}{\partial z}
-   & = &
+   & =
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
@@ -132,7 +132,7 @@ solved in this configuration as follows:
      \frac{1}{\rho}\frac{\partial p^{'}}{\partial z} -
      \nabla_{h}\cdot A_{h}\nabla_{h}w -
      \frac{\partial}{\partial z}A_{z}\frac{\partial w}{\partial z}
-   & = &
+   & =
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
@@ -141,13 +141,13 @@ solved in this configuration as follows:
    \frac{\partial u}{\partial x} +
    \frac{\partial v}{\partial y} +
    \frac{\partial w}{\partial z} +
-   &=&
+   &=
    0
    \\
    \frac{D\theta}{Dt} -
     \nabla_{h}\cdot K_{h}\nabla_{h}\theta
     - \frac{\partial}{\partial z}K_{z}\frac{\partial\theta}{\partial z}
-   & = &
+   & =
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
    0 & \text{(interior)}

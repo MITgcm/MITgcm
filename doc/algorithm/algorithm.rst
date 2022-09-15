@@ -18,7 +18,7 @@ Notation
 Because of the particularity of the vertical direction in stratified
 fluid context, in this chapter, the vector notations are mostly used for
 the horizontal component: the horizontal part of a vector is simply
-written :math:`\vec{\bf v}` (instead of :math:`{\bf v_h}` or
+written :math:`\vec{\bf v}` (instead of :math:`{{\bf v}_h}` or
 :math:`\vec{\mathbf{v}}_{h}` in chapter 1) and a 3D vector is simply
 written :math:`\vec{v}` (instead of :math:`\vec{\mathbf{v}}` in chapter
 1).
@@ -48,17 +48,17 @@ Basic operators:
 | :math:`\delta_x` :
   :math:`\delta_x \Phi = \frac{1}{\Delta x} \delta_i \Phi`
 |
-| :math:`\overline{\nabla}` = horizontal gradient operator :
-  :math:`\overline{\nabla} \Phi = \{ \delta_x \Phi , \delta_y \Phi \}`
+| :math:`\overline{ \nabla }` = horizontal gradient operator :
+  :math:`\overline{ \nabla } \Phi = \{ \delta_x \Phi , \delta_y \Phi \}`
 |
-| :math:`\overline{\nabla} \cdot` = horizontal divergence operator :
-  :math:`\overline{\nabla}\cdot \vec{\mathrm{f}}  = 
-  \frac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
+| :math:`\overline{ \nabla } \cdot` = horizontal divergence operator :
+  :math:`\overline{ \nabla }\cdot \vec{\mathrm{{\bf f}}}  = 
+  \dfrac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
                     + \delta_j \Delta x \, \mathrm{f}_y \}`
 |
 | :math:`\overline{\nabla}^2` = horizontal Laplacian operator :
   :math:`\overline{\nabla}^2 \Phi = 
-     \overline{\nabla}\cdot \overline{\nabla}\Phi`
+     \overline{ \nabla } \cdot \overline{ \nabla } \Phi`
 |
 
 .. _time_stepping:
@@ -70,7 +70,7 @@ The equations of motion integrated by the model involve four prognostic
 equations for flow, :math:`u` and :math:`v`, temperature,
 :math:`\theta`, and salt/moisture, :math:`S`, and three diagnostic
 equations for vertical flow, :math:`w`, density/buoyancy,
-:math:`\rho`/:math:`b`, and pressure/geo-potential, :math:`\phi_{hyd}`.
+:math:`\rho`/:math:`b`, and pressure/geo-potential, :math:`\phi_{\rm hyd}`.
 In addition, the surface pressure or height may by described by either a
 prognostic or diagnostic equation and if non-hydrostatics terms are
 included then a diagnostic equation for non-hydrostatic pressure is also
@@ -127,9 +127,9 @@ The horizontal momentum and continuity equations for the ocean
 .. math::
 
    \begin{aligned}
-   \partial_t u + g \partial_x \eta & = & G_u \\
-   \partial_t v + g \partial_y \eta & = & G_v \\
-   \partial_x u + \partial_y v + \partial_z w & = & 0\end{aligned}
+   \partial_t u + g \partial_x \eta & = G_u \\
+   \partial_t v + g \partial_y \eta & = G_v \\
+   \partial_x u + \partial_y v + \partial_z w & = 0\end{aligned}
 
 where we are adopting the oceanic notation for brevity. All terms in
 the momentum equations, except for surface pressure gradient, are
@@ -172,7 +172,7 @@ describing the pressure method it suffices to say that the hydrostatic
 pressure gradient is explicit and so can be included in the vector
 :math:`G`.
 
-Substituting the two momentum equations into the depth integrated
+Substituting the two momentum equations into the depth-integrated
 continuity equation eliminates :math:`u^{n+1}` and :math:`v^{n+1}`
 yielding an elliptic equation for :math:`\eta^{n+1}`. Equations
 :eq:`discrete-time-u`, :eq:`discrete-time-v` and
@@ -249,7 +249,7 @@ The calling tree for these routines is as follows:
 
 In general, the horizontal momentum time-stepping can contain some terms
 that are treated implicitly in time, such as the vertical viscosity when
-using the backward time-stepping scheme (:varlink:`implicitViscosity` =.TRUE.). The method used to solve
+using the backward time-stepping scheme (:varlink:`implicitViscosity` ``=.TRUE.``). The method used to solve
 those implicit terms is provided in :numref:`implicit-backward-stepping`, and modifies equations
 :eq:`discrete-time-u` and :eq:`discrete-time-v` to give:
 
@@ -257,10 +257,10 @@ those implicit terms is provided in :numref:`implicit-backward-stepping`, and mo
 
    \begin{aligned}
    u^{n+1} - \Delta t \partial_z A_v \partial_z u^{n+1}
-   + \Delta t g \partial_x \eta^{n+1} & = & u^{n} + \Delta t G_u^{(n+1/2)}
+   + \Delta t g \partial_x \eta^{n+1} & = u^{n} + \Delta t G_u^{(n+1/2)}
    \\
    v^{n+1} - \Delta t \partial_z A_v \partial_z v^{n+1}
-   + \Delta t g \partial_y \eta^{n+1} & = & v^{n} + \Delta t G_v^{(n+1/2)}\end{aligned}
+   + \Delta t g \partial_y \eta^{n+1} & = v^{n} + \Delta t G_v^{(n+1/2)}\end{aligned}
 
 
 .. _press_meth_linear:
@@ -281,8 +281,8 @@ the free-surface equation which can be written:
    \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\mathcal{P-E+R}}
    :label: linear-free-surface=P-E
 
-which differs from the depth integrated continuity equation with
-rigid-lid (:eq:`rigid-lid-continuity`) by the time-dependent term and
+which differs from the depth-integrated continuity equation with
+rigid-lid :eq:`rigid-lid-continuity` by the time-dependent term and
 fresh-water source term.
 
 Equation :eq:`discrete-time-cont-rigid-lid` in the rigid-lid pressure
@@ -316,7 +316,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
+   \eta^* = \epsilon_{\rm fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -324,7 +324,7 @@ re-arranged as follows:
 .. math::
    \partial_x g H \partial_x \eta^{n+1}
    + \partial_y g H \partial_y \eta^{n+1}
-   - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} =
+   - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2} =
    - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-backward-free-surface
 
@@ -345,9 +345,9 @@ However, the implicit treatment of the free-surface allows the flow to
 be divergent and for the surface pressure/elevation to respond on a
 finite time-scale (as opposed to instantly). To recover the rigid-lid
 formulation, we use a switch-like variable,
-:math:`\epsilon_{fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
-rigid-lid; :math:`\epsilon_{fs}=1` allows the free-surface to evolve;
-:math:`\epsilon_{fs}=0` imposes the rigid-lid. The evolution in time and
+:math:`\epsilon_{\rm fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
+rigid-lid; :math:`\epsilon_{\rm fs}=1` allows the free-surface to evolve;
+:math:`\epsilon_{\rm fs}=0` imposes the rigid-lid. The evolution in time and
 location of variables is exactly as it was for the rigid-lid model so
 that :numref:`pressure-method-rigid-lid` is still applicable.
 Similarly, the calling sequence, given :ref:`here <call-tree-press-meth>`, is as for the pressure-method.
@@ -382,16 +382,16 @@ Adams-Bashforth II
 The quasi-second order Adams-Bashforth scheme is formulated as follows:
 
 .. math::
-   G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{AB}) G_\tau^n
-   - ( 1/2 + \epsilon_{AB}) G_\tau^{n-1}
+   G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{\rm AB}) G_\tau^n
+   - ( 1/2 + \epsilon_{\rm AB}) G_\tau^{n-1}
    :label: adams-bashforth2
 
 This is a linear extrapolation, forward in time, to
-:math:`t=(n+1/2+{\epsilon_{AB}})\Delta t`. An extrapolation to the
+:math:`t=(n+1/2+{\epsilon_{\rm AB}})\Delta t`. An extrapolation to the
 mid-point in time, :math:`t=(n+1/2)\Delta t`, corresponding to
-:math:`\epsilon_{AB}=0`, would be second order accurate but is weakly
+:math:`\epsilon_{\rm AB}=0`, would be second order accurate but is weakly
 unstable for oscillatory terms. A small but finite value for
-:math:`\epsilon_{AB}` stabilizes the method. Strictly speaking, damping
+:math:`\epsilon_{\rm AB}` stabilizes the method. Strictly speaking, damping
 terms such as diffusion and dissipation, and fixed terms (forcing), do
 not need to be inside the Adams-Bashforth extrapolation. However, in the
 current code, it is simpler to include these terms and this can be
@@ -400,7 +400,7 @@ do, arise when forcing or motions are high frequency and this
 corresponds to a reduced stability compared to a simple forward
 time-stepping of such terms. The model offers the possibility to leave
 terms outside the Adams-Bashforth extrapolation, by turning off the logical flag :varlink:`forcing_In_AB`
-(parameter file ``data``, namelist ``PARM01``, default value = TRUE) and then setting :varlink:`tracForcingOutAB`
+(parameter file ``data``, namelist ``PARM01``, default value = ``.TRUE.``) and then setting :varlink:`tracForcingOutAB`
 (default=0), :varlink:`momForcingOutAB` (default=0), and :varlink:`momDissip_In_AB` (parameter file ``data``, namelist ``PARM01``,
 default value = TRUE), respectively for the tracer terms, momentum forcing terms, and the dissipation terms.
 
@@ -416,7 +416,10 @@ point.
     :alt: stability_analysis
     :name: oscil+damp_AB2
 
-    Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{AB}` parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
+    Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{\rm AB}`
+    parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical
+    mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane
+    for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
 
 Adams-Bashforth III
 -------------------
@@ -437,28 +440,28 @@ forward in time the tendency (replacing :eq:`adams-bashforth2`)
 as:
 
 .. math::
-   G_\tau^{(n+1/2)} = ( 1 + \alpha_{AB} + \beta_{AB}) G_\tau^n
-   - ( \alpha_{AB} + 2 \beta_{AB}) G_\tau^{n-1}
-   + \beta_{AB} G_\tau^{n-2}
+   G_\tau^{(n+1/2)} = ( 1 + \alpha_{\rm AB} + \beta_{\rm AB}) G_\tau^n
+   - ( \alpha_{\rm AB} + 2 \beta_{\rm AB}) G_\tau^{n-1}
+   + \beta_{\rm AB} G_\tau^{n-2}
    :label: adams-bashforth3
 
 3rd order accuracy is obtained with
-:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2,\,5/12)`. Note that selecting
-:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2+\epsilon_{AB},\,0)` one
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (1/2,\,5/12)`. Note that selecting
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (1/2+\epsilon_{AB},\,0)` one
 recovers AB-II. The AB-III time stepping improves the
 stability limit for an oscillatory problem like advection or Coriolis.
 As seen from :numref:`ab3_oscill_response`, it remains stable up to a
 CFL of 0.72, compared to only 0.50 with AB-II and
-:math:`\epsilon_{AB} = 0.1`. It is interesting to note that the
+:math:`\epsilon_{\rm AB} = 0.1`. It is interesting to note that the
 stability limit can be further extended up to a CFL of 0.786 for an
 oscillatory problem (see :numref:`ab3_oscill_response`) using
-:math:`(\alpha_{AB},\,\beta_{AB}) = (0.5,\,0.2811)` but then the scheme
+:math:`(\alpha_{\rm AB},\,\beta_{\rm AB}) = (0.5,\,0.2811)` but then the scheme
 is only second order accurate.
 
 However, the behavior of the AB-III for a damping problem (like diffusion)
 is less favorable, since the stability limit is reduced to 0.54 only
-(and 0.64 with :math:`\beta_{AB} = 0.2811`) compared to 1.0 (and 0.9 with
-:math:`\epsilon_{AB} = 0.1`) with the AB-II (see
+(and 0.64 with :math:`\beta_{\rm AB} = 0.2811`) compared to 1.0 (and 0.9 with
+:math:`\epsilon_{\rm AB} = 0.1`) with the AB-II (see
 :numref:`ab3_damp_response`).
 
 A way to enable the use of a longer time step is to keep the dissipation
@@ -469,7 +472,7 @@ advection and Coriolis terms.
 
 The AB-III time stepping is activated by defining the option ``#define``
 :varlink:`ALLOW_ADAMSBASHFORTH_3` in :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. The parameters
-:math:`\alpha_{AB},\beta_{AB}` can be set from the main parameter file
+:math:`\alpha_{\rm AB},\beta_{\rm AB}` can be set from the main parameter file
 ``data`` (namelist ``PARM03``) and their default values correspond to
 the 3rd order Adams-Bashforth. A simple example is provided in
 :filelink:`verification/advect_xy/input.ab3_c4`.
@@ -483,7 +486,7 @@ AB-III is not yet available for the vertical momentum equation
     :alt: ab3_stability_analysis
     :name: ab3_oscill_response
 
-    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{\rm AB},\,\beta_{\rm AB})` parameters.
     The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
 
   .. figure:: figs/stab_AB3_dampR.*
@@ -492,7 +495,7 @@ AB-III is not yet available for the vertical momentum equation
     :alt: ab3_damping_analysis
     :name: ab3_damp_response
 
-    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{\rm AB},\,\beta_{\rm AB})` parameters.
     The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
 
 
@@ -596,11 +599,11 @@ follow equations:
    :label: t-n+1-sync
 
 .. math::
-   \phi^n_{hyd} = \int b(\theta^n,S^n) dr
+   \phi^n_{\rm hyd} = \int b(\theta^n,S^n) dr
    :label: phi-hyd-sync
 
 .. math::
-   \vec{\bf G}_{\vec{\bf v}}^{n} = \vec{\bf G}_{\vec{\bf v}} ( \vec{\bf v}^n, \phi^n_{hyd} )
+   \vec{\bf G}_{\vec{\bf v}}^{n} = \vec{\bf G}_{\vec{\bf v}} ( \vec{\bf v}^n, \phi^n_{\rm hyd} )
    :label: Gv-n-sync
 
 .. math::
@@ -616,16 +619,16 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
-     \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
+   \eta^* = \epsilon_{\rm fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
+      \nabla  \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
 .. math::
-   \nabla \cdot g H \nabla \eta^{n+1} - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
+    \nabla  \cdot g H  \nabla  \eta^{n+1} - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2} ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-sync
 
 .. math::
-   \vec{\bf v}^{n+1} = \vec{\bf v}^{**} - \Delta t g \nabla \eta^{n+1}
+   \vec{\bf v}^{n+1} = \vec{\bf v}^{**} - \Delta t g  \nabla  \eta^{n+1}
    :label: v-n+1-sync
 
 :numref:`adams-bash-sync` illustrates the location of variables
@@ -667,7 +670,7 @@ ocean and atmospheric physics have been added, although they are mainly optional
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP\_TRACER <model/src/timestep_tracer.F>` :math:`\phantom{xxxxxxxxxxxxxxxww}` :math:`\theta^*` :eq:`tstar-sync`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxvwww}` :math:`\theta^{(n+1)}` :eq:`t-n+1-sync`
     | :math:`\phantom{WW}` :filelink:`DYNAMICS <model/src/dynamics.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{hyd}^n` :eq:`phi-hyd-sync`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{\rm hyd}^n` :eq:`phi-hyd-sync`
     | :math:`\phantom{WWW}` :filelink:`MOM\_FLUXFORM <pkg/mom_fluxform/mom_fluxform.F>` or :filelink:`MOM\_VECINV <pkg/mom_vecinv/mom_vecinv.F>` :math:`\phantom{xxi}` :math:`G_{\vec{\bf v}}^n` :eq:`Gv-n-sync`
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP <model/src/timestep.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\vec{\bf v}^*` :eq:`Gv-n+5-sync`, :eq:`vstar-sync`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxlw}` :math:`\vec{\bf v}^{**}` :eq:`vstarstar-sync`
@@ -695,7 +698,7 @@ Staggered baroclinic time-stepping
     :alt: adams-bash-staggered
     :name: adams-bash-staggered
 
-    A schematic of the explicit Adams-Bashforth and implicit time-stepping phases of the algorithm but with staggering in time of thermodynamic variables with the flow. Explicit momentum tendencies are evaluated at time level :math:`n-1/2` as a function of the flow field at that time level :math:`n-1/2`. The explicit tendency from the previous time level, :math:`n-3/2`, is used to extrapolate tendencies to :math:`n` (dashed arrow). The hydrostatic pressure/geo-potential  :math:`\phi _{hyd}` is evaluated directly at time level :math:`n` (vertical arrows) and used with the extrapolated tendencies to step forward the flow variables from :math:`n-1/2` to :math:`n+1/2` (solid arc-arrow). The implicit-in-time operator  :math:`{\cal L}_{\bf u,v}` (vertical arrows) is then applied to the previous estimation of the the flow field (:math:`*` -variables) and yields to the two velocity components :math:`u,v` at time level :math:`n+1/2`. These are then used to calculate the advection term (dashed arc-arrow) of the thermo-dynamics tendencies at time step :math:`n`. The extrapolated thermodynamics tendency, from time level :math:`n-1` and :math:`n` to :math:`n+1/2`, allows thermodynamic variables to be stably integrated forward-in-time (solid arc-arrow) up to time level :math:`n+1`.
+    A schematic of the explicit Adams-Bashforth and implicit time-stepping phases of the algorithm but with staggering in time of thermodynamic variables with the flow. Explicit momentum tendencies are evaluated at time level :math:`n-1/2` as a function of the flow field at that time level :math:`n-1/2`. The explicit tendency from the previous time level, :math:`n-3/2`, is used to extrapolate tendencies to :math:`n` (dashed arrow). The hydrostatic pressure/geo-potential  :math:`\phi _{\rm hyd}` is evaluated directly at time level :math:`n` (vertical arrows) and used with the extrapolated tendencies to step forward the flow variables from :math:`n-1/2` to :math:`n+1/2` (solid arc-arrow). The implicit-in-time operator  :math:`{\cal L}_{\bf u,v}` (vertical arrows) is then applied to the previous estimation of the the flow field (:math:`*` -variables) and yields to the two velocity components :math:`u,v` at time level :math:`n+1/2`. These are then used to calculate the advection term (dashed arc-arrow) of the thermo-dynamics tendencies at time step :math:`n`. The extrapolated thermodynamics tendency, from time level :math:`n-1` and :math:`n` to :math:`n+1/2`, allows thermodynamic variables to be stably integrated forward-in-time (solid arc-arrow) up to time level :math:`n+1`.
 
 For well-stratified problems, internal gravity waves may be the limiting
 process for determining a stable time-step. In the circumstance, it is
@@ -719,7 +722,7 @@ entire algorithm, :eq:`Gt-n-sync` to :eq:`v-n+1-sync`, annotating the
 position in time of variables appropriately:
 
 .. math::
-   \phi^{n}_{hyd} =  \int b(\theta^{n},S^{n}) dr
+   \phi^{n}_{\rm hyd} =  \int b(\theta^{n},S^{n}) dr
    :label: phi-hyd-staggered
 
 .. math::
@@ -731,7 +734,7 @@ position in time of variables appropriately:
    :label: Gv-n+5-staggered
 
 .. math::
-   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} - \nabla \phi_{hyd}^{n} \right)
+   \vec{\bf v}^{*}  =  \vec{\bf v}^{n-1/2} + \Delta t \left( \vec{\bf G}_{\vec{\bf v}}^{(n)} -  \nabla  \phi_{\rm hyd}^{n} \right)
    :label: vstar-staggered
 
 .. math::
@@ -739,17 +742,17 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
-     \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
+   \eta^*  = \epsilon_{\rm fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
+      \nabla  \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
 .. math::
-   \nabla \cdot g H \nabla \eta^{n+1/2}  -  \frac{\epsilon_{fs} \eta^{n+1/2}}{\Delta t^2}
-   ~ = ~ - \frac{\eta^*}{\Delta t^2}
+    \nabla  \cdot g H  \nabla  \eta^{n+1/2} - \frac{\epsilon_{\rm fs} \eta^{n+1/2}}{\Delta t^2}
+   = - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-staggered
 
 .. math::
-   \vec{\bf v}^{n+1/2}  =  \vec{\bf v}^{**} - \Delta t g \nabla \eta^{n+1/2}
+   \vec{\bf v}^{n+1/2}  =  \vec{\bf v}^{**} - \Delta t g  \nabla  \eta^{n+1/2}
    :label: v-n+1-staggered
 
 .. math::
@@ -769,7 +772,7 @@ position in time of variables appropriately:
    :label: t-n+1-staggered
 
 The corresponding calling tree is given below. The staggered algorithm is
-activated with the run-time flag :varlink:`staggerTimeStep` =.TRUE. in
+activated with the run-time flag :varlink:`staggerTimeStep` ``=.TRUE.`` in
 parameter file ``data``, namelist ``PARM01``.
 
 .. admonition:: Staggered Adams-Bashforth calling tree
@@ -780,7 +783,7 @@ parameter file ``data``, namelist ``PARM01``.
     | :math:`\phantom{WWW}` :filelink:`DO\_ATMOSPHERIC\_PHYS <model/src/do_atmospheric_phys.F>`
     | :math:`\phantom{WWW}` :filelink:`DO\_OCEANIC\_PHYS <model/src/do_oceanic_phys.F>`
     | :math:`\phantom{WW}` :filelink:`DYNAMICS <model/src/dynamics.F>`
-    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{hyd}^n` :eq:`phi-hyd-staggered`
+    | :math:`\phantom{WWW}` :filelink:`CALC\_PHI\_HYD <model/src/calc_phi_hyd.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxi}` :math:`\phi_{\rm hyd}^n` :eq:`phi-hyd-staggered`
     | :math:`\phantom{WWW}` :filelink:`MOM\_FLUXFORM <pkg/mom_fluxform/mom_fluxform.F>` or :filelink:`MOM\_VECINV <pkg/mom_vecinv/mom_vecinv.F>` :math:`\phantom{xxi}` :math:`G_{\vec{\bf v}}^{n-1/2}` :eq:`Gv-n-staggered`
     | :math:`\phantom{WWW}` :filelink:`TIMESTEP <model/src/timestep.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxxx}` :math:`\vec{\bf v}^*` :eq:`Gv-n+5-staggered`, :eq:`vstar-staggered`
     | :math:`\phantom{WWW}` :filelink:`IMPLDIFF  <model/src/impldiff.F>` :math:`\phantom{xxxxxxxxxxxxxxxxxxxxxxxxlw}` :math:`\vec{\bf v}^{**}` :eq:`vstarstar-staggered`
@@ -829,17 +832,17 @@ solve for the non-hydrostatic pressure.
 The momentum equations are discretized in time as follows:
 
 .. math::
-   \frac{1}{\Delta t} u^{n+1} + g \partial_x \eta^{n+1} + \partial_x \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} u^{n+1} + g \partial_x \eta^{n+1} + \partial_x \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} u^{n} + G_u^{(n+1/2)}
    :label: discrete-time-u-nh
 
 .. math::
-   \frac{1}{\Delta t} v^{n+1} + g \partial_y \eta^{n+1} + \partial_y \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} v^{n+1} + g \partial_y \eta^{n+1} + \partial_y \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} v^{n} + G_v^{(n+1/2)}
    :label: discrete-time-v-nh
 
 .. math::
-   \frac{1}{\Delta t} w^{n+1} + \partial_r \phi_{nh}^{n+1}
+   \frac{1}{\Delta t} w^{n+1} + \partial_r \phi_{\rm nh}^{n+1}
    = \frac{1}{\Delta t} w^{n} + G_w^{(n+1/2)}
    :label: discrete-time-w-nh
 
@@ -856,9 +859,9 @@ As before, the explicit predictions for momentum are consolidated as:
 .. math::
 
    \begin{aligned}
-   u^* & = & u^n + \Delta t G_u^{(n+1/2)} \\
-   v^* & = & v^n + \Delta t G_v^{(n+1/2)} \\
-   w^* & = & w^n + \Delta t G_w^{(n+1/2)}\end{aligned}
+   u^* & = u^n + \Delta t G_u^{(n+1/2)} \\
+   v^* & = v^n + \Delta t G_v^{(n+1/2)} \\
+   w^* & = w^n + \Delta t G_w^{(n+1/2)}\end{aligned}
 
 but this time we introduce an intermediate step by splitting the
 tendency of the flow as follows:
@@ -866,38 +869,38 @@ tendency of the flow as follows:
 .. math::
 
    \begin{aligned}
-   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{nh}^{n+1}
+   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{\rm nh}^{n+1}
    & &
    u^{**} = u^{*} - \Delta t g \partial_x \eta^{n+1} \\
-   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{nh}^{n+1}
+   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{\rm nh}^{n+1}
    & &
    v^{**} = v^{*} - \Delta t g \partial_y \eta^{n+1}\end{aligned}
 
 Substituting into the depth integrated continuity
-(equation :eq:`discrete-time-backward-free-surface`) gives
+:eq:`discrete-time-backward-free-surface` gives
 
 .. math::
-   \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
-   + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{nh}^{n+1} \right)
-    - \frac{\epsilon_{fs}\eta^{n+1}}{\Delta t^2}
+   \partial_x H \partial_x \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
+   + \partial_y H \partial_y \left( g \eta^{n+1} + \widehat{\phi}_{\rm nh}^{n+1} \right)
+    - \frac{\epsilon_{\rm fs}\eta^{n+1}}{\Delta t^2}
    = - \frac{\eta^*}{\Delta t^2}
    :label: substituting-in-cont
 
 which is approximated by equation :eq:`elliptic-backward-free-surface`
-on the basis that i) :math:`\phi_{nh}^{n+1}` is not yet known and ii)
-:math:`\nabla \widehat{\phi}_{nh}
-<< g \nabla \eta`. If :eq:`elliptic-backward-free-surface` is solved
-accurately then the implication is that :math:`\widehat{\phi}_{nh}
+on the basis that i) :math:`\phi_{\rm nh}^{n+1}` is not yet known and ii)
+:math:`\nabla  \widehat{\phi}_{\rm nh} \ll  g  \nabla  \eta`.
+If :eq:`elliptic-backward-free-surface` is solved
+accurately then the implication is that :math:`\widehat{\phi}_{\rm nh}
 \approx 0` so that the non-hydrostatic pressure field does not drive
 barotropic motion.
 
 The flow must satisfy non-divergence (equation :eq:`non-divergence-nh`)
 locally, as well as depth integrated, and this constraint is used to
-form a 3-D elliptic equations for :math:`\phi_{nh}^{n+1}`:
+form a 3-D elliptic equations for :math:`\phi_{\rm nh}^{n+1}`:
 
 .. math::
-   \partial_{xx} \phi_{nh}^{n+1} + \partial_{yy} \phi_{nh}^{n+1} +
-   \partial_{rr} \phi_{nh}^{n+1} =
+   \partial_{xx} \phi_{\rm nh}^{n+1} + \partial_{yy} \phi_{\rm nh}^{n+1} +
+   \partial_{rr} \phi_{\rm nh}^{n+1} =
    \partial_x u^{**} + \partial_y v^{**} + \partial_r w^{*}
    :label: elliptic-pnh
 
@@ -917,7 +920,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
+   \eta^* ~ = ~ \epsilon_{\rm fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -925,7 +928,7 @@ following equations:
 .. math::
     \partial_x g H \partial_x \eta^{n+1}
    + \partial_y g H \partial_y \eta^{n+1}
-   - \frac{\epsilon_{fs} \eta^{n+1}}{\Delta t^2}
+   - \frac{\epsilon_{\rm fs} \eta^{n+1}}{\Delta t^2}
    ~ = ~ - \frac{\eta^*}{\Delta t^2}
    :label: elliptic-nh
 
@@ -938,17 +941,17 @@ following equations:
    :label: vnx-nh
 
 .. math::
-   \partial_{xx} \phi_{nh}^{n+1} + \partial_{yy} \phi_{nh}^{n+1} +
-   \partial_{rr} \phi_{nh}^{n+1} =
+   \partial_{xx} \phi_{\rm nh}^{n+1} + \partial_{yy} \phi_{\rm nh}^{n+1} +
+   \partial_{rr} \phi_{\rm nh}^{n+1} =
    \partial_x u^{**} + \partial_y v^{**} + \partial_r w^{*}
    :label: phi-nh
 
 .. math::
-   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{nh}^{n+1}
+   u^{n+1} = u^{**} - \Delta t \partial_x \phi_{\rm nh}^{n+1}
    :label: un+1-nh
 
 .. math::
-   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{nh}^{n+1}
+   v^{n+1} = v^{**} - \Delta t \partial_y \phi_{\rm nh}^{n+1}
    :label: vn+1-nh
 
 .. math::
@@ -968,20 +971,20 @@ underlying algorithm but this time using the notation consistent with
 the more general vertical coordinate :math:`r`. The elliptic equation
 for free-surface coordinate (units of :math:`r`), corresponding to
 :eq:`discrete-time-backward-free-surface`, and assuming no
-non-hydrostatic effects (:math:`\epsilon_{nh} = 0`) is:
+non-hydrostatic effects (:math:`\epsilon_{\rm nh} = 0`) is:
 
 .. math::
-   \epsilon_{fs} {\eta}^{n+1} -
-   {\bf \nabla}_h \cdot \Delta t^2 (R_o-R_{fixed}) {\bf \nabla}_h b_s
+   \epsilon_{\rm fs} {\eta}^{n+1} -
+    \nabla _h \cdot \Delta t^2 (R_o-R_{\rm fixed})  \nabla _h b_s
    {\eta}^{n+1} = {\eta}^*
    :label: eq-solve2D
 
 where
 
 .. math::
-   {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
-   \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
+   {\eta}^* = \epsilon_{\rm fs} \: {\eta}^{n} -
+   \Delta t  \nabla _h \cdot \int_{R_{\rm fixed}}^{R_o} \vec{\bf v}^* dr
+   \: + \: \epsilon_{\rm fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -996,38 +999,38 @@ where
 Once :math:`{\eta}^{n+1}` has been found, substituting into
 :eq:`discrete-time-u`, :eq:`discrete-time-v` yields
 :math:`\vec{\bf v}^{n+1}` if the model is hydrostatic
-(:math:`\epsilon_{nh}=0`):
+(:math:`\epsilon_{\rm nh}=0`):
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{*}
-   - \Delta t {\bf \nabla}_h b_s {\eta}^{n+1}
+   - \Delta t  \nabla _h b_s {\eta}^{n+1}
 
 This is known as the correction step. However, when the model is
-non-hydrostatic (:math:`\epsilon_{nh}=1`) we need an additional step and
-an additional equation for :math:`\phi'_{nh}`. This is obtained by
+non-hydrostatic (:math:`\epsilon_{\rm nh}=1`) we need an additional step and
+an additional equation for :math:`\phi'_{\rm nh}`. This is obtained by
 substituting :eq:`discrete-time-u-nh`, :eq:`discrete-time-v-nh` and
 :eq:`discrete-time-w-nh` into continuity:
 
 .. math::
-   [ {\bf \nabla}_h^2 + \partial_{rr} ] {\phi'_{nh}}^{n+1}
+   [  \nabla _h^2 + \partial_{rr} ] {\phi'_{\rm nh}}^{n+1}
    = \frac{1}{\Delta t} 
-   {\bf \nabla}_h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
+    \nabla _h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
    :label: sub-u-v-w-in-cont 
 
 where
 
-.. math:: \vec{\bf v}^{**} = \vec{\bf v}^* - \Delta t {\bf \nabla}_h b_s {\eta}^{n+1}
+.. math:: \vec{\bf v}^{**} = \vec{\bf v}^* - \Delta t  \nabla _h b_s {\eta}^{n+1}
 
 Note that :math:`\eta^{n+1}` is also used to update the second RHS term
 :math:`\partial_r \dot{r}^*` since the vertical velocity at the surface
-(:math:`\dot{r}_{surf}`) is evaluated as
+(:math:`\dot{r}_{\rm surf}`) is evaluated as
 :math:`(\eta^{n+1} - \eta^n) / \Delta t`.
 
 Finally, the horizontal velocities at the new time level are found by:
 
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{**}
-   - \epsilon_{nh} \Delta t {\bf \nabla}_h {\phi'_{nh}}^{n+1}
+   - \epsilon_{\rm nh} \Delta t  \nabla _h {\phi'_{\rm nh}}^{n+1}
    :label: v-new-time-lev 
 
 and the vertical velocity is found by integrating the continuity
@@ -1042,7 +1045,7 @@ any consequence on the solution.
   :class: note
 
     | :math:`{\eta}^{n+1}` : :varlink:`etaN` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
-    | :math:`{\phi}^{n+1}_{nh}` : :varlink:`phi_nh` ( :filelink:`NH_VARS.h <model/inc/NH_VARS.h>` )
+    | :math:`{\phi}^{n+1}_{\rm nh}` : :varlink:`phi_nh` ( :filelink:`NH_VARS.h <model/inc/NH_VARS.h>` )
     | :math:`u^*` : :varlink:`gU` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`v^*` : :varlink:`gV` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`u^{n+1}` : :varlink:`uVel` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
@@ -1096,15 +1099,15 @@ The core algorithm is based on the “C grid” discretization of the
 continuity equation which can be summarized as:
 
 .. math::
-   \partial_t u + \frac{1}{\Delta x_c} \delta_i \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{nh}}{\Delta x_c} \delta_i \Phi_{nh}' = G_u - \frac{1}{\Delta x_c} \delta_i \Phi_h'
+   \partial_t u + \frac{1}{\Delta x_c} \delta_i \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{\rm nh}}{\Delta x_c} \delta_i \Phi_{\rm nh}' = G_u - \frac{1}{\Delta x_c} \delta_i \Phi_h'
    :label: discrete-momu
 
 .. math::
-   \partial_t v + \frac{1}{\Delta y_c} \delta_j \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{nh}}{\Delta y_c} \delta_j \Phi_{nh}' = G_v - \frac{1}{\Delta y_c} \delta_j \Phi_h'
+   \partial_t v + \frac{1}{\Delta y_c} \delta_j \left. \frac{ \partial \Phi}{\partial r}\right|_{s} \eta + \frac{\epsilon_{\rm nh}}{\Delta y_c} \delta_j \Phi_{\rm nh}' = G_v - \frac{1}{\Delta y_c} \delta_j \Phi_h'
    :label: discrete-momv
 
 .. math::
-   \epsilon_{nh} \left( \partial_t w + \frac{1}{\Delta r_c} \delta_k \Phi_{nh}' \right) = \epsilon_{nh} G_w + \overline{b}^k - \frac{1}{\Delta r_c} \delta_k \Phi_{h}'
+   \epsilon_{\rm nh} \left( \partial_t w + \frac{1}{\Delta r_c} \delta_k \Phi_{\rm nh}' \right) = \epsilon_{\rm nh} G_w + \overline{b}^k - \frac{1}{\Delta r_c} \delta_k \Phi_{h}'
    :label: discrete-momw
 
 .. math::
@@ -1152,7 +1155,7 @@ In the ocean, using z-coordinates, the hydrostatic balance terms are
 discretized:
 
 .. math::
-   \epsilon_{nh} \partial_t w
+   \epsilon_{\rm nh} \partial_t w
    + g \overline{\rho'}^k + \frac{1}{\Delta z} \delta_k \Phi_h' = \ldots
    :label: discrete_hydro_ocean
 
@@ -1197,21 +1200,21 @@ the various advective, Coriolis, horizontal dissipation, vertical
 dissipation and metric forces:
 
 .. math::
-   G_u = G_u^{adv} + G_u^{cor} + G_u^{h-diss} + G_u^{v-diss} +
-   G_u^{metric} + G_u^{nh-metric}
+   G_u = G_u^{\rm adv} + G_u^{\rm Cor} + G_u^{h- \rm diss} + G_u^{v- \rm diss} +
+   G_u^{\rm metric} + G_u^{\rm nh-metric}
    :label: gsplit_momu
 
 .. math::
-   G_v = G_v^{adv} + G_v^{cor} + G_v^{h-diss} + G_v^{v-diss} +
-   G_v^{metric} + G_v^{nh-metric}
+   G_v = G_v^{\rm adv} + G_v^{\rm Cor} + G_v^{h- \rm diss} + G_v^{v- \rm diss} +
+   G_v^{\rm metric} + G_v^{\rm nh-metric}
    :label: gsplit_momv
 
 .. math::
-   G_w = G_w^{adv} + G_w^{cor} + G_w^{h-diss} + G_w^{v-diss} +
-   G_w^{metric} + G_w^{nh-metric}
+   G_w = G_w^{\rm adv} + G_w^{\rm Cor} + G_w^{h- \rm diss} + G_w^{v- \rm diss} +
+   G_w^{\rm metric} + G_w^{\rm nh-metric}
    :label: gsplit_momw
 
-In the hydrostatic limit, :math:`G_w=0` and :math:`\epsilon_{nh}=0`,
+In the hydrostatic limit, :math:`G_w=0` and :math:`\epsilon_{\rm nh}=0`,
 reducing the vertical momentum to hydrostatic balance.
 
 These terms are calculated in routines called from subroutine
@@ -1232,21 +1235,21 @@ Advection of momentum
 The advective operator is second order accurate in space:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{adv} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm adv} =
      \delta_i \overline{ U }^i \overline{ u }^i
    + \delta_j \overline{ V }^i \overline{ u }^j
    + \delta_k \overline{ W }^i \overline{ u }^k
    :label: discrete-momadvu
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{adv} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm adv} =
      \delta_i \overline{ U }^j \overline{ v }^i
    + \delta_j \overline{ V }^j \overline{ v }^j
    + \delta_k \overline{ W }^j \overline{ v }^k 
    :label: discrete-momadvv
 
 .. math::
-   {\cal A}_c \Delta r_c G_w^{adv} =
+   {\cal A}_c \Delta r_c G_w^{\rm adv} =
      \delta_i \overline{ U }^k \overline{ w }^i
    + \delta_j \overline{ V }^k \overline{ w }^j
    + \delta_k \overline{ W }^k \overline{ w }^k
@@ -1293,19 +1296,19 @@ The “pure C grid” Coriolis terms (i.e. in absence of C-D scheme) are
 discretized:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{Cor} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm Cor} =
      \overline{ f {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
-   - \epsilon_{nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ w }^k }^i
+   - \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ w }^k }^i
    :label: cdscheme_gu
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{Cor} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm Cor} =
    - \overline{ f {\cal A}_c \Delta r_f h_c \overline{ u }^i }^j
    :label: cdscheme_gv
 
 .. math::
-   {\cal A}_c \Delta r_c G_w^{Cor} =
-    \epsilon_{nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ u }^i }^k
+   {\cal A}_c \Delta r_c G_w^{\rm Cor} =
+    \epsilon_{\rm nh} \overline{ f' {\cal A}_c \Delta r_f h_c \overline{ u }^i }^k
    :label: cdscheme_gw
 
 where the Coriolis parameters :math:`f` and :math:`f'` are defined:
@@ -1313,8 +1316,8 @@ where the Coriolis parameters :math:`f` and :math:`f'` are defined:
 .. math::
 
    \begin{aligned}
-   f & = & 2 \Omega \sin{\varphi} \\
-   f' & = & 2 \Omega \cos{\varphi}\end{aligned}
+   f & = 2 \Omega \sin{\varphi} \\
+   f' & = 2 \Omega \cos{\varphi}\end{aligned}
 
 where :math:`\varphi` is geographic latitude when using spherical
 geometry, otherwise the :math:`\beta`-plane definition is used:
@@ -1322,8 +1325,8 @@ geometry, otherwise the :math:`\beta`-plane definition is used:
 .. math::
 
    \begin{aligned}
-   f & = & f_o + \beta y \\
-   f' & = & 0\end{aligned}
+   f & = f_o + \beta y \\
+   f' & = 0\end{aligned}
 
 This discretization globally conserves kinetic energy. It should be
 noted that despite the use of this discretization in former
@@ -1331,16 +1334,16 @@ publications, all calculations to date have used the following different
 discretization:
 
 .. math::
-   G_u^{Cor} = f_u \overline{ v }^{ji}
-   - \epsilon_{nh} f_u' \overline{ w }^{ik}
+   G_u^{\rm Cor} = f_u \overline{ v }^{ji}
+   - \epsilon_{\rm nh} f_u' \overline{ w }^{ik}
    :label: gu_cor
 
 .. math::
-   G_v^{Cor} = - f_v \overline{ u }^{ij}
+   G_v^{\rm Cor} = - f_v \overline{ u }^{ij}
    :label: gv_cor
 
 .. math::
-   G_w^{Cor} = \epsilon_{nh} f_w' \overline{ u }^{ik}
+   G_w^{\rm Cor} = \epsilon_{\rm nh} f_w' \overline{ u }^{ik}
    :label: gw_cor
 
 where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
@@ -1355,7 +1358,7 @@ to select the energy-conserving conserving form :eq:`cdscheme_gu`, :eq:`cdscheme
 .. admonition:: S/R  :filelink:`CD_CODE_SCHEME <pkg/cd_code/cd_code_scheme.F>`, :filelink:`MOM_U_CORIOLIS <pkg/mom_fluxform/mom_u_coriolis.F>`, :filelink:`MOM_V_CORIOLIS <pkg/mom_fluxform/mom_v_coriolis.F>`
   :class: note
 
-    | :math:`G_u^{Cor}, G_v^{Cor}` : :varlink:`cF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm Cor}, G_v^{\rm Cor}` : :varlink:`cF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Curvature metric terms
 ----------------------
@@ -1367,17 +1370,17 @@ momentum equations. Under the thin-atmosphere and hydrostatic
 approximations these terms are discretized:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{metric} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
    :label: gu_metric
   
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{metric} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ u }^i }^j \\
    :label: gv_metric
   
 .. math::
-   G_w^{metric} = 0
+   G_w^{\rm metric} = 0
    :label: gw_metric
   
 where :math:`a` is the radius of the planet (sphericity is assumed) or
@@ -1393,8 +1396,8 @@ exclusively been used to date:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = & \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
-   G_v^{metric} & = & \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
+   G_u^{\rm metric} & = \frac{u \overline{v}^{ij} }{a} \tan{\varphi} \\
+   G_v^{\rm metric} & = \frac{ \overline{u}^{ij} \overline{u}^{ij}}{a} \tan{\varphi}\end{aligned}
 
 where :math:`\tan{\varphi}` is evaluated at the :math:`u` and :math:`v`
 points respectively.
@@ -1402,7 +1405,7 @@ points respectively.
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_SPHERE <pkg/mom_fluxform/mom_u_metric_sphere.F>`, :filelink:`MOM_V_METRIC_SPHERE <pkg/mom_fluxform/mom_v_metric_sphere.F>`
   :class: note
 
-    | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm metric}, G_v^{\rm metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 .. _non_hyd_metric_terms:
 
@@ -1414,17 +1417,17 @@ approximation re-introduces metric terms involving :math:`w` which are
 required to conserve angular momentum:
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{metric} =
+   {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c }^i
    :label: gu_metricnh
   
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{metric} =
+   {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{v}^j \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c}^j
    :label: gv_metricnh
   
 .. math::
-   {\cal A}_c \Delta r_c G_w^{metric} =
+   {\cal A}_c \Delta r_c G_w^{\rm metric} =
      \overline{ \frac{ {\overline{u}^i}^2 + {\overline{v}^j}^2}{a} {\cal A}_c \Delta r_f h_c }^k
    :label: wv_metricnh
 
@@ -1434,17 +1437,17 @@ in the past, used a different discretization in the model which is:
 .. math::
 
    \begin{aligned}
-   G_u^{metric} & = &
+   G_u^{\rm metric} & = 
    - \frac{u}{a} \overline{w}^{ik} \\
-   G_v^{metric} & = &
+   G_v^{\rm metric} & = 
    - \frac{v}{a} \overline{w}^{jk} \\
-   G_w^{metric} & = &
+   G_w^{\rm metric} & = 
      \frac{1}{a} ( {\overline{u}^{ik}}^2 + {\overline{v}^{jk}}^2 )\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_NH <pkg/mom_common/mom_u_metric_nh.F>`, :filelink:`MOM_V_METRIC_NH <pkg/mom_common/mom_v_metric_nh.F>`
   :class: note
 
-    | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm metric}, G_v^{\rm metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 .. _fluxform_lat_dissip:
 
@@ -1456,13 +1459,13 @@ down gradient momentum fluxes, ignoring constraints on the stress tensor
 such as symmetry.
 
 .. math::
-   {\cal A}_w \Delta r_f h_w G_u^{h-diss} =
+   {\cal A}_w \Delta r_f h_w G_u^{h- \rm diss} =
      \delta_i  \Delta y_f \Delta r_f h_c \tau_{11}
    + \delta_j  \Delta x_v \Delta r_f h_\zeta \tau_{12}
    :label: gu_h-diss
 
 .. math::
-   {\cal A}_s \Delta r_f h_s G_v^{h-diss} =
+   {\cal A}_s \Delta r_f h_s G_v^{h- \rm diss} =
      \delta_i  \Delta y_u \Delta r_f h_\zeta \tau_{21}
    + \delta_j  \Delta x_f \Delta r_f h_c \tau_{22}
    :label: gv_h-diss
@@ -1535,13 +1538,13 @@ interior stress calculation (code) independent of the boundary
 conditions. The “body” force takes the form:
 
 .. math::
-   G_u^{side-drag} =
+   G_u^{\rm side-drag} =
    \frac{4}{\Delta z_f} \overline{ (1-h_\zeta) \frac{\Delta x_v}{\Delta y_u} }^j
    \left( A_h c_{12\Delta}(\varphi) u - A_4 c_{12\Delta^2}(\varphi) \nabla^2 u \right)
    :label: gu_sidedrag
 
 .. math::
-   G_v^{side-drag} =
+   G_v^{\rm side-drag} =
    \frac{4}{\Delta z_f} \overline{ (1-h_\zeta) \frac{\Delta y_u}{\Delta x_v} }^i
    \left( A_h c_{21\Delta}(\varphi) v - A_4 c_{21\Delta^2}(\varphi) \nabla^2 v \right)
    :label: gv_sidedrag
@@ -1553,7 +1556,7 @@ neighboring vorticity points, e.g. :math:`1-h_w < 1-h_\zeta`
 .. admonition:: S/R  :filelink:`MOM_U_SIDEDRAG <pkg/mom_common/mom_u_sidedrag.F>`, :filelink:`MOM_V_SIDEDRAG <pkg/mom_common/mom_v_sidedrag.F>`
   :class: note
 
-    | :math:`G_u^{side-drag}, G_v^{side-drag}` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`G_u^{\rm side-drag}, G_v^{\rm side-drag}` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Vertical dissipation
 --------------------
@@ -1565,17 +1568,17 @@ only next to boundaries; exactly where other terms appear such as linear
 and quadratic bottom drag.
 
 .. math::
-   G_u^{v-diss} =
+   G_u^{v- \rm diss} =
    \frac{1}{\Delta r_f h_w} \delta_k \tau_{13}
    :label: gu_u-diss
 
 .. math::
-   G_v^{v-diss} =
+   G_v^{v- \rm diss} =
    \frac{1}{\Delta r_f h_s} \delta_k \tau_{23}
    :label: gv_v-diss
 
 .. math::
-   G_w^{v-diss} = \epsilon_{nh}
+   G_w^{v- \rm diss} = \epsilon_{\rm nh}
    \frac{1}{\Delta r_f h_d} \delta_k \tau_{33}
    :label: gw_w-diss
 
@@ -1586,9 +1589,9 @@ In the interior the vertical stresses are discretized:
 .. math::
 
    \begin{aligned}
-   \tau_{13} & = & A_v \frac{1}{\Delta r_c} \delta_k u \\
-   \tau_{23} & = & A_v \frac{1}{\Delta r_c} \delta_k v \\
-   \tau_{33} & = & A_v \frac{1}{\Delta r_f} \delta_k w\end{aligned}
+   \tau_{13} & = A_v \frac{1}{\Delta r_c} \delta_k u \\
+   \tau_{23} & = A_v \frac{1}{\Delta r_c} \delta_k v \\
+   \tau_{33} & = A_v \frac{1}{\Delta r_f} \delta_k w\end{aligned}
 
 It should be noted that in the non-hydrostatic form, the stress tensor
 is even less consistent than for the hydrostatic (see Wajsowicz (1993)
@@ -1611,20 +1614,20 @@ bottom. The drag is cast as a stress expressed as a linear or quadratic
 function of the mean flow in the layer above the topography:
 
 .. math::
-   \tau_{13}^{bottom-drag} =
+   \tau_{13}^{\rm bottom-drag} =
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
-   + C_d \sqrt{ \overline{2 KE}^i }
+   + C_d \sqrt{ \overline{2 \mathrm{KE}}^i }
    \right) u
    :label: tau13
 
 .. math::
-   \tau_{23}^{bottom-drag} =
+   \tau_{23}^{\rm bottom-drag} =
    \left(
    2 A_v \frac{1}{\Delta r_c}
    + r_b
-   + C_d \sqrt{ \overline{2 KE}^j }
+   + C_d \sqrt{ \overline{2 \mathrm{KE}}^j }
    \right) v
    :label: tau23
 
@@ -1637,7 +1640,7 @@ range 0.001–0.003.
 .. admonition:: S/R  :filelink:`MOM_U_BOTTOMDRAG <pkg/mom_common/mom_u_bottomdrag.F>`, :filelink:`MOM_V_BOTTOMDRAG <pkg/mom_common/mom_v_bottomdrag.F>`
   :class: note
 
-    | :math:`\tau_{13}^{bottom-drag} / \Delta r_f , \tau_{23}^{bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
+    | :math:`\tau_{13}^{\rm bottom-drag} / \Delta r_f , \tau_{23}^{\rm bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
 Derivation of discrete energy conservation
 ------------------------------------------
@@ -1646,8 +1649,8 @@ These discrete equations conserve kinetic plus potential energy using
 the following definitions:
 
 .. math::
-   KE = \frac{1}{2} \left( \overline{ u^2 }^i + \overline{ v^2 }^j +
-   \epsilon_{nh} \overline{ w^2 }^k \right)
+   \mathrm{KE} = \frac{1}{2} \left( \overline{ u^2 }^i + \overline{ v^2 }^j +
+   \epsilon_{\rm nh} \overline{ w^2 }^k \right)
    :label: KE_discrete
 
 .. _mom_diagnostics:
@@ -1739,14 +1742,14 @@ following or the conformal spherical cube system.
 The non-hydrostatic vector invariant equations read:
 
 .. math::
-   \partial_t \vec{v} + ( 2\vec{\Omega} + \vec{\zeta}) \wedge \vec{v}
-   - b \hat{r}
-   + \vec{\nabla} B = \vec{\nabla} \cdot \vec{\bf \tau}
+   \partial_t \vec{\bf v} + ( 2\vec{\boldsymbol{\Omega}} + \vec{\boldsymbol{\zeta}}) \times \vec{\bf v}
+   - b \hat{\bf r}
+   +  \nabla  B =  \nabla  \cdot \vec{\boldsymbol{\tau}}
    :label: vect_invar_nh
 
 which describe motions in any orthogonal curvilinear coordinate system.
-Here, :math:`B` is the Bernoulli function and :math:`\vec{\zeta}=\nabla
-\wedge \vec{v}` is the vorticity vector. We can take advantage of the
+Here, :math:`B` is the Bernoulli function and :math:`\vec{\boldsymbol{\zeta}}= \nabla 
+\times \vec{\bf v}` is the vorticity vector. We can take advantage of the
 elegance of these equations when discretizing them and use the discrete
 definitions of the grad, curl and divergence operators to satisfy
 constraints. We can also consider the analogy to forming derived
@@ -1761,17 +1764,17 @@ where non-hydrostatic contributions will enter:
 
 .. math::
    G_u = G_u^{fv} + G_u^{\zeta_3 v} + G_u^{\zeta_2 w} + G_u^{\partial_x B}
-   + G_u^{\partial_z \tau^x} + G_u^{h-dissip} + G_u^{v-dissip}
+   + G_u^{\partial_z \tau^x} + G_u^{h- \rm diss} + G_u^{v- \rm diss}
    :label: gu_vecinv
 
 .. math::
    G_v = G_v^{fu} + G_v^{\zeta_3 u} + G_v^{\zeta_1 w} + G_v^{\partial_y B}
-   + G_v^{\partial_z \tau^y} + G_v^{h-dissip} + G_v^{v-dissip}
+   + G_v^{\partial_z \tau^y} + G_v^{h- \rm diss} + G_v^{v- \rm diss}
    :label: gv_vecinv
 
 .. math::
    G_w = G_w^{fu} + G_w^{\zeta_1 v} + G_w^{\zeta_2 u} + G_w^{\partial_z B}
-   + G_w^{h-dissip} + G_w^{v-dissip}
+   + G_w^{h- \rm diss} + G_w^{v- \rm diss}
    :label: gw_vecinv
 
 .. admonition:: S/R  :filelink:`MOM_VECINV <pkg/mom_vecinv/mom_vecinv.F>`
@@ -1808,17 +1811,17 @@ that cell.
 Kinetic energy
 --------------
 
-The kinetic energy, denoted :math:`KE`, is defined:
+The kinetic energy, denoted :math:`\mathrm{KE}`, is defined:
 
 .. math::
-   KE = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
-   + \epsilon_{nh} \overline{ w^2 }^k )
+   \mathrm{KE} = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
+   + \epsilon_{\rm nh} \overline{ w^2 }^k )
    :label: KE_vecinv
 
 .. admonition:: S/R  :filelink:`MOM_CALC_KE <pkg/mom_common/mom_calc_KE.F>`
   :class: note
 
-    | :math:`KE` : :varlink:`KE` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`\mathrm{KE}` : :varlink:`KE` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
 
 Coriolis terms
 --------------
@@ -1890,12 +1893,12 @@ consistent with the vertical advection of shear:
 
 .. math::
    G_u^{\zeta_2 w} = \frac{1}{ {\cal A}_w \Delta r_f h_w } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_i w ) }^k
+   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{\rm nh} \delta_i w ) }^k
    :label: gu_zeta2w
 
 .. math::
    G_v^{\zeta_1 w} = \frac{1}{ {\cal A}_s \Delta r_f h_s } \overline{
-   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{\rm nh} \delta_j w ) }^k
    :label: gv_zeta1w
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_VERTSHEAR <pkg/mom_vecinv/mom_vi_u_vertshear.F>`, :filelink:`MOM_VI_V_VERTSHEAR <pkg/mom_vecinv/mom_vi_v_vertshear.F>`
@@ -1910,19 +1913,19 @@ Gradient of Bernoulli function
 
 .. math::
    G_u^{\partial_x B} =
-   \frac{1}{\Delta x_c} \delta_i ( \phi' + KE )
+   \frac{1}{\Delta x_c} \delta_i ( \phi' + \mathrm{KE} )
    :label: gu_dBdx
 
 .. math::
    G_v^{\partial_y B} =
-   \frac{1}{\Delta x_y} \delta_j ( \phi' + KE )
+   \frac{1}{\Delta x_y} \delta_j ( \phi' + \mathrm{KE} )
    :label: gv_dBdy
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_GRAD_KE <pkg/mom_vecinv/mom_vi_u_grad_ke.F>`, :filelink:`MOM_VI_V_GRAD_KE <pkg/mom_vecinv/mom_vi_v_grad_ke.F>`
   :class: note
 
-    | :math:`G_u^{\partial_x KE}` : :varlink:`uCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
-    | :math:`G_v^{\partial_y KE}` : :varlink:`vCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`G_u^{\partial_x \mathrm{KE}}` : :varlink:`uCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
+    | :math:`G_v^{\partial_y \mathrm{KE}}` : :varlink:`vCf` ( local to :filelink:`MOM_VECINV.F <pkg/mom_vecinv/mom_vecinv.F>` )
 
 
 Horizontal divergence
@@ -1951,13 +1954,13 @@ potential vorticity (thickness weighted relative vorticity) and
 divergence and dissipates energy, enstrophy and divergence squared:
 
 .. math::
-   G_u^{h-dissip} =
+   G_u^{h- \rm diss} =
      \frac{1}{\Delta x_c} \delta_i ( A_D D - A_{D4} D^*)
    - \frac{1}{\Delta y_u h_w} \delta_j h_\zeta ( A_\zeta \zeta - A_{\zeta4} \zeta^* )
    :label: gu_h-dissip
 
 .. math::
-   G_v^{h-dissip} =
+   G_v^{h- \rm diss} =
      \frac{1}{\Delta x_v h_s} \delta_i h_\zeta ( A_\zeta \zeta - A_\zeta \zeta^* )
    + \frac{1}{\Delta y_c} \delta_j ( A_D D - A_{D4} D^* )
    :label: gv_h-dissip
@@ -1967,10 +1970,10 @@ where
 .. math::
 
    \begin{aligned}
-   D^* & = & \frac{1}{{\cal A}_c h_c} (
+   D^* & = \frac{1}{{\cal A}_c h_c} (
      \delta_i \Delta y_g h_w \nabla^2 u
    + \delta_j \Delta x_g h_s \nabla^2 v ) \\
-   \zeta^* & = & \frac{1}{{\cal A}_\zeta} (
+   \zeta^* & = \frac{1}{{\cal A}_\zeta} (
      \delta_i \Delta y_c \nabla^2 v
    - \delta_j \Delta x_c \nabla^2 u )\end{aligned}
 
@@ -1987,12 +1990,12 @@ Vertical dissipation
 Currently, this is exactly the same code as the flux form equations.
 
 .. math::
-   G_u^{v-diss} =
+   G_u^{v- \rm diss} =
    \frac{1}{\Delta r_f h_w} \delta_k \tau_{13}
    :label: gu_v-dissip
 
 .. math::
-   G_v^{v-diss} =
+   G_v^{v- \rm diss} =
    \frac{1}{\Delta r_f h_s} \delta_k \tau_{23}
    :label: gv_v-dissip
 
@@ -2003,8 +2006,8 @@ In the interior the vertical stresses are discretized:
 .. math::
 
    \begin{aligned}
-   \tau_{13} & = & A_v \frac{1}{\Delta r_c} \delta_k u \\
-   \tau_{23} & = & A_v \frac{1}{\Delta r_c} \delta_k v\end{aligned}
+   \tau_{13} & = A_v \frac{1}{\Delta r_c} \delta_k u \\
+   \tau_{23} & = A_v \frac{1}{\Delta r_c} \delta_k v\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_RVISCFLUX <pkg/mom_common/mom_u_rviscflux.F>`, :filelink:`MOM_V_RVISCFLUX <pkg/mom_common/mom_u_rviscflux.F>`
   :class: note
@@ -2037,26 +2040,26 @@ stable. Historically this has been the quasi-second order
 Adams-Bashforth method (ABII) and applied to all terms. For an arbitrary
 tracer, :math:`\tau`, the forced advection-diffusion equation reads:
 
-.. math:: \partial_t \tau + G_{adv}^\tau = G_{diff}^\tau + G_{forc}^\tau
+.. math:: \partial_t \tau + G_{\rm adv}^\tau = G_{\rm diff}^\tau + G_{\rm forc}^\tau
    :label: trac_forced_advdiff
 
-where :math:`G_{adv}^\tau`, :math:`G_{diff}^\tau` and
-:math:`G_{forc}^\tau` are the tendencies due to advection, diffusion and
+where :math:`G_{\rm adv}^\tau`, :math:`G_{\rm diff}^\tau` and
+:math:`G_{\rm forc}^\tau` are the tendencies due to advection, diffusion and
 forcing, respectively, namely:
 
 .. math::
-   G_{adv}^\tau = \partial_x u \tau + \partial_y v \tau + \partial_r w \tau
-   - \tau \nabla \cdot {\bf v}
+   G_{\rm adv}^\tau = \partial_x (u \tau) + \partial_y (v \tau) + \partial_r (w \tau)
+   - \tau  \nabla  \cdot {\bf v}
    :label: g_adv-tau
 
 .. math::
-   G_{diff}^\tau = \nabla \cdot {\bf K} \nabla \tau
+   G_{\rm diff}^\tau =  \nabla  \cdot \left ( {\bf K}  \nabla  \tau \right )
    :label: g_diff-tau
 
 and the forcing can be some arbitrary function of state, time and
 space.
 
-The term, :math:`\tau \nabla \cdot {\bf v}`, is required to retain local
+The term, :math:`\tau  \nabla  \cdot {\bf v}`, is required to retain local
 conservation in conjunction with the linear implicit free-surface. It
 only affects the surface layer since the flow is non-divergent
 everywhere else. This term is therefore referred to as the surface
@@ -2065,7 +2068,7 @@ correction term. Global conservation is not possible using the flux-form
 (Griffies and Hallberg (2000) :cite:`griffies:00` , Campin et al. (2004) :cite:`cam:04`).
 
 The continuity equation can be recovered by setting
-:math:`G_{diff}=G_{forc}=0` and :math:`\tau=1`.
+:math:`G_{\rm diff}=G_{\rm forc}=0` and :math:`\tau=1`.
 
 The driver routine that calls the routines to calculate tendencies are
 :filelink:`CALC_GT <model/src/calc_gt.F>` and :filelink:`CALC_GS <model/src/calc_gs.F>` for temperature and salt (moisture),
@@ -2089,10 +2092,10 @@ method:
 
 .. math::
    G^{(n+1/2)} = 
-   (\frac{3}{2} + \epsilon) G^{(n)} - (\frac{1}{2} + \epsilon) G^{(n-1)}
+   (\tfrac{3}{2} + \epsilon) G^{(n)} - (\tfrac{1}{2} + \epsilon) G^{(n-1)}
    :label: g_nponehalf
 
-where :math:`G^{(n)} = G_{adv}^\tau + G_{diff}^\tau + G_{src}^\tau` at
+where :math:`G^{(n)} = G_{\rm adv}^\tau + G_{\rm diff}^\tau + G_{\rm src}^\tau` at
 time step :math:`n`. The tendency at :math:`n-1` is not re-calculated
 but rather the tendency at :math:`n` is stored in a global array for
 later re-use.
@@ -2158,23 +2161,17 @@ the filter damping.
 The three computational filter operators are :
 
 .. math::
-
-   \mathrm{S1c:}\hspace{2cm}
-   [1 - 1/2 \frac{\Delta t}{\tau_{shap}}
+   \begin{aligned}
+   & \mathrm{S1c:}\hspace{2cm}
+   [1 - 1/2 \frac{\Delta t}{\tau_{\rm Shap}}
       \{ (\frac{1}{4}\delta_{ii})^n 
-       + (\frac{1}{4}\delta_{jj})^n \} ]
-
-.. math::
-
-   \mathrm{S2c:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} 
-   \{ \frac{1}{8} (\delta_{ii} + \delta_{jj}) \}^n]
-
-.. math::
-
-   \mathrm{S4c:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} (\frac{1}{4}\delta_{ii})^n]
-   [1 - \frac{\Delta t}{\tau_{shap}} (\frac{1}{4}\delta_{jj})^n]
+       + (\frac{1}{4}\delta_{jj})^n \} ]\\
+   & \mathrm{S2c:}\hspace{2cm}
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} 
+   \{ \frac{1}{8} (\delta_{ii} + \delta_{jj}) \}^n]\\
+   & \mathrm{S4c:}\hspace{2cm}
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{ii})^n]
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{jj})^n]\end{aligned} 
 
 In addition, the S2 operator can easily be extended to a physical space
 filter:
@@ -2182,12 +2179,12 @@ filter:
 .. math::
 
    \mathrm{S2g:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{shap}} 
-   \{ \frac{L_{shap}^2}{8} \overline{\nabla}^2 \}^n]
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}}
+   \{ \frac{L_{\rm Shap}^2}{8} \overline{\nabla}^2 \}^n]
 
 with the Laplacian operator :math:`\overline{\nabla}^2` and a length
-scale parameter :math:`L_{shap}`. The stability of this S2g filter
-requires :math:`L_{shap} < \mathrm{Min}^{(Global)}(\Delta x,\Delta y)`.
+scale parameter :math:`L_{\rm Shap}`. The stability of this S2g filter
+requires :math:`L_{\rm Shap} < \mathrm{Min}^{(\rm Global)}(\Delta x,\Delta y)`.
 
 .. _shapiro_diagnostics:
 
@@ -2246,13 +2243,13 @@ and details of approximation) are:
 .. math::
    \frac{{\overline{D} \overline w}}{{\overline{Dt}}} + \frac{ \frac{\partial{\overline{\pi}}}{\partial{z}} - \overline b}{{\rm Fr}^2\lambda^2}
    = -\left(\overline{\frac{D{w}}{Dt}} - \frac{{\overline{D} \overline w}}{{\overline{Dt}}}\right)
-   +\frac{\nabla^2 \overline w}{{\rm Re}}\nonumber
+   +\frac{\nabla^2 \overline w}{{\rm Re}}
    :label: mercat_w
 
 .. math::
    \frac{{\overline{D} \bar b}}{{\overline{Dt}}} + \overline w =
     -\left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
-   +\frac{\nabla^2 \overline b}{\Pr{\rm Re}}\nonumber
+   +\frac{\nabla^2 \overline b}{\Pr{\rm Re}}
    :label: mercat_b
 
 .. math::
@@ -2299,7 +2296,7 @@ scales are resolved. That is, we approximate :eq:`mercat` - :eq:`mercat_b`:
 .. math::
    \left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
    \approx\frac{\nabla^2_h \overline b}{\Pr{\rm Re}_h}
-   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}\nonumber
+   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}
    :label: eddyvisc_b
 
 Reynolds-Number Limited Eddy Viscosity
@@ -2394,17 +2391,17 @@ exceeds the molecular value :math:`\nu` should ensure that the energy
 flux through viscous scale set by the eddy viscosity is the same as it
 would have been had we resolved all the way to the true viscous scale.
 That is, :math:`\epsilon\approx
-A_{hSmag} \overline D^2`. If we use this approximation to estimate the
+A_{h \rm Smag} \overline D^2`. If we use this approximation to estimate the
 Kolmogorov viscous length, then
 
 .. math::
-   L_\epsilon(A_{hSmag})\propto\pi\epsilon^{-1/4}A_{hSmag}^{3/4}\approx\pi(A_{hSmag}
-   \overline D^2)^{-1/4}A_{hSmag}^{3/4} = \pi A_{hSmag}^{1/2}\overline D^{-1/2}
+   L_\epsilon(A_{h \rm Smag})\propto\pi\epsilon^{-1/4}A_{h \rm Smag}^{3/4}\approx\pi(A_{h \rm Smag}
+   \overline D^2)^{-1/4}A_{h\rm Smag}^{3/4} = \pi A_{h\rm Smag}^{1/2}\overline D^{-1/2}
    :label: kolm_visc_len
 
-To make :math:`L_\epsilon(A_{hSmag})` scale with the gridscale, then
+To make :math:`L_\epsilon(A_{h\rm Smag})` scale with the gridscale, then
 
-.. math:: A_{hSmag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2L^2|\overline D|
+.. math:: A_{h\rm Smag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2L^2|\overline D|
    :label: AhSmag
 
 Where the deformation rate appropriate for hydrostatic flows with
@@ -2425,7 +2422,7 @@ Smagorinsky (1993) :cite:`smag:93` shows that a corresponding
 vertical viscosity should be used:
 
 .. math::
-   A_{vSmag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2H^2
+   A_{v \rm Smag} = \left(\frac{{\sf viscC2Smag}}{\pi}\right)^2H^2
    \sqrt{\left({\frac{\partial{\overline {\tilde u}}}{\partial{z}}}\right)^2
    + \left({\frac{\partial{\overline {\tilde v}}}{\partial{z}}}\right)^2}
    :label: A_vsmag
@@ -2446,23 +2443,23 @@ and it cascades to smaller scales where it is dissipated.
 
 Following a similar argument to that above about energy flux, the
 enstrophy flux is estimated to be equal to the positive-definite
-gridscale dissipation rate of enstrophy :math:`\eta\approx A_{hLeith}
+gridscale dissipation rate of enstrophy :math:`\eta\approx A_{h \rm Leith}
 |\nabla\overline \omega_3|^2`. By dimensional analysis, the
-enstrophy-dissipation scale is :math:`L_\eta(A_{hLeith})\propto\pi
-A_{hLeith}^{1/2}\eta^{-1/6}`. Thus, the Leith-estimated length scale of
+enstrophy-dissipation scale is :math:`L_\eta(A_{h \rm Leith})\propto\pi
+A_{h \rm Leith}^{1/2}\eta^{-1/6}`. Thus, the Leith-estimated length scale of
 enstrophy-dissipation and the resulting eddy viscosity are
 
 .. math::
-   L_\eta(A_{hLeith})\propto\pi A_{hLeith}^{1/2}\eta^{-1/6}
-   = \pi A_{hLeith}^{1/3}|\nabla \overline \omega_3|^{-1/3}
+   L_\eta(A_{h \rm Leith})\propto\pi A_{h \rm Leith}^{1/2}\eta^{-1/6}
+   = \pi A_{h \rm Leith}^{1/3}| \nabla  \overline \omega_3|^{-1/3}
    :label: L_eta
 
 .. math::
-   A_{hLeith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3|\nabla \overline\omega_3|
+   A_{h \rm Leith} = \left(\frac{{\sf viscC2Leith}}{\pi}\right)^3L^3| \nabla  \overline\omega_3|
    :label: Ah_Leith
 
 .. math::
-   |\nabla\omega_3| \equiv \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}
+   | \nabla \omega_3| \equiv \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}
    \left({\frac{\partial{\overline {\tilde v}}}{\partial{x}}} - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde v}}}{\partial{x}}}
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
@@ -2495,13 +2492,13 @@ specifically targeting purely divergent instabilities near the
 gridscale. The combined viscosity has the form:
 
 .. math::
-   A_{hLeith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
-   |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
-   |\nabla \nabla\cdot \overline {\tilde u}_h|^2}
+   A_{h \rm Leith} = L^3\sqrt{\left(\frac{{\sf viscC2Leith}}{\pi}\right)^6
+   | \nabla  \overline \omega_3|^2 + \left(\frac{{\sf viscC2LeithD}}{\pi}\right)^6
+   | \nabla  ( \nabla  \cdot \overline {\tilde u}_h)|^2}
    :label: Ah_Leithcomb
 
 .. math::
-   |\nabla \nabla\cdot \overline {\tilde u}_h| \equiv
+   | \nabla  ( \nabla  \cdot \overline {\tilde u}_h)| \equiv
    \sqrt{\left[{\frac{\partial{\ }}{\partial{x}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
    + {\frac{\partial{\overline {\tilde v}}}{\partial{y}}}\right)\right]^2
    + \left[{\frac{\partial{\ }}{\partial{y}}}\left({\frac{\partial{\overline {\tilde u}}}{\partial{x}}}
@@ -2531,8 +2528,8 @@ a contribution from quasigeostrophic vortex stretching (Bachman et al. 2017 :cit
 The viscosity is given by
 
 .. math::
-    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} | \nabla_{h}(f\mathbf{\hat{z}}) + 
-    \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}} \nabla_{h} b|
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \left|  \nabla _{h}(f\mathbf{\hat{z}}) + 
+     \nabla _{h}( \nabla  \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}}  \nabla _{h} b \right|
     :label: bachman2017_eq39
 
 where :math:`\Lambda` is a tunable parameter of :math:`\mathcal{O}(1)`,
@@ -2545,8 +2542,8 @@ divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is 
 
 .. math::
     \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
-    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
-    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}}
+    \sqrt{\left| \nabla _{h}(f\mathbf{\hat{z}}) +  \nabla _{h}( \nabla  \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}}  \nabla _{h} b\right|^{2} + |  \nabla  ( \nabla  \cdot \mathbf{v}_{h})|^{2}}
     :label: bachman2017_eq40
 
 This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
@@ -2558,8 +2555,8 @@ the Froude number, and :math:`Ro_{*}`, the Rossby number. The second of which,
 .. math::
     \begin{aligned}
     \nu_{*} = & \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \\
-    & \sqrt{min\left(|\nabla_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \nabla_{h} b |,
-    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}},
+    & \sqrt{\min \left( \left| \nabla _{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}}  \nabla _{h} b \right|,
+    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) | \nabla _{h}q_{2*}|\right)^{2} + |  \nabla  ( \nabla  \cdot \mathbf{v}_{h}) |^{2}}
     \end{aligned}
     :label: bachman2017_eq56
 
@@ -2634,19 +2631,19 @@ suggested a biharmonic eddy viscosity instead of a harmonic (or Laplacian) visco
 .. math::
    \left({\overline{\frac{D{\tilde v}}{Dt} }} - {\frac{{\overline{D} {{\tilde {\overline{v}}}}}}{{\overline{Dt}}} }\right)
    \approx \frac{-\nabla^4_h{{\tilde {\overline{v}}}}}{{\rm Re}_4}
-   + \frac{{\frac{\partial^2{{\tilde {\overline{v}}}}}{{\partial{z}}^2}}}{{\rm Re}_v}\nonumber
+   + \frac{{\frac{\partial^2{{\tilde {\overline{v}}}}}{{\partial{z}}^2}}}{{\rm Re}_v}
    :label: bieddyvisc_v
 
 
 .. math::
    \left(\overline{\frac{D{w}}{Dt}} - \frac{{\overline{D} \overline w}}{{\overline{Dt}}}\right)
-   \approx\frac{-\nabla^4_h\overline w}{{\rm Re}_4} + \frac{{\frac{\partial^2{\overline w}}{{\partial{z}}^2}}}{{\rm Re}_v}\nonumber
+   \approx\frac{-\nabla^4_h\overline w}{{\rm Re}_4} + \frac{{\frac{\partial^2{\overline w}}{{\partial{z}}^2}}}{{\rm Re}_v}
    :label: bieddyvisc_w
 
 .. math::
    \left(\overline{\frac{D{b}}{Dt}} - \frac{{\overline{D} \bar b}}{{\overline{Dt}}}\right)
    \approx \frac{-\nabla^4_h \overline b}{\Pr{\rm Re}_4}
-   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}\nonumber
+   +\frac{{\frac{\partial^2{\overline b}}{{\partial{z}}^2}}}{\Pr{\rm Re}_v}
    :label: bieddyvisc_b
 
 
@@ -2678,13 +2675,13 @@ h :math:`\rightarrow 4` in the MITgcm parameter name. MITgcm also supports bihar
 Smagorinsky viscosities:
 
 .. math::
-   A_{4Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^2\frac{L^4}{8}|D|
+   A_{4 \rm Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^2\frac{L^4}{8}|D|
    :label: A4_Smag
 
 .. math::
-   A_{4Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
-   |\nabla \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
-   |\nabla \nabla\cdot \overline {\bf {\tilde u}}_h|^2}
+   A_{4 \rm Leith} = \frac{L^5}{8}\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^6
+   | \nabla  \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^6
+   | \nabla  ( \nabla  \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith
 
 However, it should be noted that unlike the harmonic forms, the
@@ -2694,14 +2691,14 @@ used to estimate these scales and scale them to the gridscale, the
 resulting biharmonic viscosities should be:
 
 .. math::
-   A_{4Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^5L^5
+   A_{4 \rm Smag} = \left(\frac{{\sf viscC4Smag}}{\pi}\right)^5L^5
    |\nabla^2\overline {\bf {\tilde u}}_h|
    :label: A4_Smag_alt
 
 .. math::
-   A_{4Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
+   A_{4 \rm Leith} = L^6\sqrt{\left(\frac{{\sf viscC4Leith}}{\pi}\right)^{12}
    |\nabla^2 \overline \omega_3|^2 + \left(\frac{{\sf viscC4LeithD}}{\pi}\right)^{12}
-   |\nabla^2 \nabla\cdot \overline {\bf {\tilde u}}_h|^2}
+   |\nabla^2 ( \nabla  \cdot \overline {\bf {\tilde u}}_h)|^2}
    :label: A4_Leith_alt
 
 Thus, the biharmonic scaling suggested by Griffies and Hallberg (2000)
@@ -2710,7 +2707,7 @@ Thus, the biharmonic scaling suggested by Griffies and Hallberg (2000)
 .. math::
    \begin{aligned}
    |D| & \propto  L|\nabla^2\overline {\bf {\tilde u}}_h|\\
-   |\nabla \overline \omega_3| & \propto L|\nabla^2 \overline \omega_3|\end{aligned}
+   | \nabla  \overline \omega_3| & \propto L|\nabla^2 \overline \omega_3|\end{aligned}
 
 It is not at all clear that these assumptions ought to hold. Only the
 Griffies and Hallberg (2000) :cite:`griffies:00` forms are currently implemented in

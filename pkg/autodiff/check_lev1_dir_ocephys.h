@@ -18,6 +18,7 @@ CADJ STORE surfaceForcingV= comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE phi0surf       = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
+CADJ STORE sIceLoad       = comlev1, key = ikey_dynamics, kind = isbyte
 
 #ifdef ALLOW_OBCS
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte

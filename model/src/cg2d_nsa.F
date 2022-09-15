@@ -55,7 +55,7 @@ C     numIters  :: Inp: the maximum number of iterations allowed
 C                  Out: the actual number of iterations used
 C     nIterMin  :: Inp: decide to store (if >=0) or not (if <0) lowest res. sol.
 C                  Out: iteration number corresponding to lowest residual
-C     myThid    :: Thread on which I am working.
+C     myThid    :: my Thread Id number
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  firstResidual
@@ -95,6 +95,8 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       INTEGER act1, act2
       INTEGER max1
       INTEGER icg2dkey, ikey
+#else
+      _RL    rhsNorm
 #endif
       _RL    cg2dTolerance_sq
       _RL    err_sq,  errTile(nSx,nSy)
@@ -103,7 +105,7 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       _RL    cgBeta,  alpha
       _RL    alphaSum,alphaTile(nSx,nSy)
       _RL    sumRHS,  sumRHStile(nSx,nSy)
-      _RL    rhsMax,  rhsNorm
+      _RL    rhsMax
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
       _RL    cg2d_z(1:sNx,1:sNy,nSx,nSy)
