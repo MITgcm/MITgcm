@@ -40,6 +40,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_ICEPLUME
+#include "ICEPLUME.h"
+#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -211,6 +214,23 @@ C-    Qnet is now (after c54) the net Heat Flux (including SW)
         ENDIF
 #endif
 
+# ifdef ALLOW_ICEPLUME
+      IF ( useICEPLUME ) THEN
+      IF ( runoffVelfile .NE. ' ') THEN
+      CALL READ_REC_XY_RL(
+     &     runoffVelFile,runoffVel0,inTime0,myIter,myThid)
+      CALL READ_REC_XY_RL(
+     &     runoffVelFile,runoffVel1,inTime1,myIter,myThid)
+      ENDIF
+      IF ( runoffRadFile .NE. ' ') THEN
+      CALL READ_REC_XY_RL(
+     &     runoffRadFile,runoffRad0,inTime0,myIter,myThid)
+      CALL READ_REC_XY_RL(
+     &     runoffRadFile,runoffRad1,inTime1,myIter,myThid)
+      ENDIF
+      ENDIF
+# endif /* ALLOW_ICEPLUME */
+
 C-    thread synchronisation (barrier) is part of the EXCH S/R calls
         _EXCH_XY_RS(SST0  , myThid )
         _EXCH_XY_RS(SST1  , myThid )
@@ -329,6 +349,24 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
            DO i=1-OLx,sNx+OLx
             pLoad(i,j,bi,bj) = bWght*pLoad0(i,j,bi,bj)
      &                       + aWght*pLoad1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+#endif
+#ifdef ALLOW_ICEPLUME
+        IF ( runoffVelFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            runoffVel(i,j,bi,bj) = bWght*runoffVel0(i,j,bi,bj)
+     &                        + aWght*runoffVel1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( runoffRadFile .NE. ' '  ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            runoffRad(i,j,bi,bj) = bWght*runoffRad0(i,j,bi,bj)
+     &                        + aWght*runoffRad1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF

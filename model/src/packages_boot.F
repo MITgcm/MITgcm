@@ -80,6 +80,7 @@ C     data.pkg namelists
      &          useShelfIce,
      &          useStreamIce,
      &          useICEFRONT,
+     &          useICEPLUME,
      &          useThSIce,
      &          useLand,
      &          useATM2D,
@@ -144,6 +145,7 @@ c     useGAD          =.FALSE.
       useShelfIce     =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
+      useICEPLUME     =.FALSE.
       useThSIce       =.FALSE.
       useLand         =.FALSE.
       useATM2D        =.FALSE.
@@ -361,6 +363,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_ICEFRONT
       CALL PACKAGES_PRINT_MSG( useICEFRONT,   'ICEFRONT',    ' ' )
+#endif
+#ifdef ALLOW_ICEPLUME
+      CALL PACKAGES_PRINT_MSG( useICEPLUME,  'ICEPLUME',   ' ' )
 #endif
 #ifdef ALLOW_THSICE
       CALL PACKAGES_PRINT_MSG( useThSIce,     'ThSIce',      ' ' )

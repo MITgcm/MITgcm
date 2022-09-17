@@ -415,6 +415,9 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_ICEPLUME
+#include "ICEPLUME.h"
+#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gT_arr    :: the tendency array
@@ -505,11 +508,21 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
+
+#ifdef ALLOW_ICEPLUME
+       temp_addMass = 1 ! force loop entry
+#endif /* ALLOW_ICEPLUME */
+
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
+
+#ifdef ALLOW_ICEPLUME
+       temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
+#endif /* ALLOW_ICEPLUME */
+
             gT_arr(i,j) = gT_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - theta(i,j,k,bi,bj) )
@@ -521,6 +534,11 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
+
+#ifdef ALLOW_ICEPLUME
+       temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
+#endif /* ALLOW_ICEPLUME */
+
             gT_arr(i,j) = gT_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
@@ -736,6 +754,13 @@ c     ENDIF
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
 
+#ifdef ALLOW_ICEPLUME
+      IF ( useICEPLUME )
+     &     CALL ICEPLUME_TENDENCY_APPLY_T(
+     U                   gT_arr,
+     I                   k, bi, bj, myTime, myIter, myThid )
+#endif /* ALLOW_ICEPLUME */
+
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
@@ -811,6 +836,9 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_ICEPLUME
+#include "ICEPLUME.h"
+#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gS_arr    :: the tendency array
@@ -893,11 +921,21 @@ C--   Forcing term
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
+
+#ifdef ALLOW_ICEPLUME
+       salt_addMass = 1 ! force loop entry
+#endif /* ALLOW_ICEPLUME */
+
       IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
+
+#ifdef ALLOW_ICEPLUME
+       salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
+#endif /* ALLOW_ICEPLUME */
+
             gS_arr(i,j) = gS_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,k,bi,bj) )
@@ -909,6 +947,11 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
+
+#ifdef ALLOW_ICEPLUME
+       salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
+#endif /* ALLOW_ICEPLUME */
+
             gS_arr(i,j) = gS_arr(i,j)
      &        + addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(k) )
@@ -967,6 +1010,13 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      U                   gS_arr,
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_ICEPLUME
+      IF ( useICEPLUME )
+     &     CALL ICEPLUME_TENDENCY_APPLY_S(
+     U                   gS_arr,
+     I                   k, bi, bj, myTime, myIter, myThid )
+#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME )

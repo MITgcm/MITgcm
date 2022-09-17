@@ -72,6 +72,8 @@ C       |-- SHELFICE_INIT_VARIA
 C       |
 C       |-- ICEFRONT_INIT_VARIA
 C       |
+C       |-- ICEPLUME_INIT_VARIA
+C       |
 C       |-- FRAZIL_INIT_VARIA
 C       |
 C       |-- SEAICE_INIT_VARIA
@@ -353,6 +355,15 @@ C--   Initialise float position
        CALL ICEFRONT_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_ICEFRONT */
+
+#ifdef ALLOW_ICEPLUME
+      IF (useICEPLUME) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('ICEPLUME_INIT_VARIA',myThid)
+# endif
+       CALL ICEPLUME_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_FRAZIL
       IF (useFRAZIL) THEN
