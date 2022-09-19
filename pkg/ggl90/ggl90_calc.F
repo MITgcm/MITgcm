@@ -398,8 +398,8 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
             LCmixingLength(i,j,k) = LC_Gamma 
      &                              * LCmixingLength(i,j,k)
            ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
           ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
          ENDDO
         ENDDO
        ENDDO
