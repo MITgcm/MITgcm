@@ -42,6 +42,9 @@ C                       IDEMIX version 1:
 C                     - Olbers, D. and Eden, C. (2013), J. Phys. Oceano.
 C                       doi:10.1175/JPO-D-12-0207.1
 C
+C     useLANGMUIR     - turn on the parameterization of Langmuir circulation  
+C                       by Tak et al. (2022), Ocean Modelling
+C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
 C     GGL90writeState - output to files        (default = .FALSE.)
@@ -91,10 +94,11 @@ CEOP
       LOGICAL GGL90isOn, GGL90mixingMaps, GGL90writeState
       LOGICAL GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear
       LOGICAL useIDEMIX
+      LOGICAL useLANGMUIR
       COMMON /GGL90_PARMS_L/
      &     GGL90isOn, GGL90mixingMaps, GGL90writeState,
      &     GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear,
-     &     useIDEMIX
+     &     useIDEMIX, useLANGMUIR
 
 #ifdef ALLOW_GGL90_SMOOTH
       COMMON /GGL90_CORNER/ mskCor
@@ -157,5 +161,10 @@ C-----------------------------------------------------------------------
       COMMON /GLL90_IDEMIX_L/
      &            IDEMIX_include_GM, IDEMIX_include_GM_bottom
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+      _RL LC_Gamma, LC_num, LC_lambda
+      COMMON /GGL90_LCPARA/ LC_Gamma, LC_num, LC_lambda
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 #endif /* ALLOW_GGL90 */

@@ -53,7 +53,8 @@ C--   GGL90 vertical mixing parameters
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile,
-     &     GGL90_dirichlet, calcMeanVertShear, useIDEMIX
+     &     GGL90_dirichlet, calcMeanVertShear, useIDEMIX,
+     &     useLANGMUIR 
 
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
@@ -66,6 +67,15 @@ c-----------------------------------------------------------------------
      & IDEMIX_diff_min, IDEMIX_frac_F_b, IDEMIX_frac_F_s,
      & IDEMIX_include_GM,IDEMIX_include_GM_bottom
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+c-----------------------------------------------------------------------
+c  Langmuir circulation
+c-----------------------------------------------------------------------
+      NAMELIST /GGL90_PARM03/
+     & LC_Gamma, LC_num, LC_lambda
+#endif /* ALLOW_GGL90_LANGMUIR*/
+
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -114,6 +124,7 @@ C     Blanke and Delecluse (1993, JPO) use
       GGL90_dirichlet      = .TRUE.
       calcMeanVertShear    = .FALSE.
       useIDEMIX            = .FALSE.
+      useLANGMUIR          = .FALSE.
 
 #ifdef ALLOW_GGL90_IDEMIX
 C-----------------------------------------------------------------------
@@ -139,6 +150,15 @@ C     IDEMIX_wind_file  = 'wind_energy.bin'
       IDEMIX_include_GM = .FALSE.
       IDEMIX_include_GM_bottom = .FALSE.
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+C-----------------------------------------------------------------------
+C     set default parameter for LANGMUIR
+C-----------------------------------------------------------------------
+      LC_Gamma      =  1.0 _d 1
+      LC_num        =  3.2 _d -1
+      LC_lambda     =  4.0 _d 1
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 C-----------------------------------------------------------------------
 C define some non-dimensional constants and
@@ -201,6 +221,36 @@ c      READ( UNIT=iUnit, NML=GGL90_PARM02, IOSTAT=errIO )
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+      IF (useLANGMUIR) THEN
+       WRITE(msgBuf,'(A)')
+     &  ' GGL90_READPARMS ; starts to read GGL90_PARM03'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       READ( UNIT=iUnit, NML=GGL90_PARM03 )
+c      READ( UNIT=iUnit, NML=GGL90_PARM03, IOSTAT=errIO )
+       IF ( errIO .LT. 0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R GGL90_READPARMS'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'Error reading numerical model '
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'parameter file "data.ggl90"'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &   'Problem in namelist GGL90_PARM03'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
+       ENDIF
+       WRITE(msgBuf,'(A)')
+     &     ' GGL90_READPARMS: read GGL90_PARM03 : OK'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
@@ -382,6 +432,22 @@ C
      &  'IDEMIX_wind_file  =', ' /* file name of wind energy field */')
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
+#ifdef ALLOW_GGL90_LANGMUIR
+c-----------------------------------------------------------------------
+c-----------------------------------------------------------------------
+      CALL WRITE_0D_L(useLANGMUIR,INDEX_NONE, 'useLANGMUIR =',
+     &     '   /* turn on Langmuir circulation effect. */')
+C
+      IF ( useLANGMUIR ) THEN
+       CALL WRITE_0D_RL( LC_Gamma, INDEX_NONE,'LC_Gamma =',
+     &     '   /* Value for the Langmuir circulation effect (>=1) */')
+       CALL WRITE_0D_RL( LC_num, INDEX_NONE,'LC_num = ',
+     &     '   /* Value for the Langmuir number */')
+       CALL WRITE_0D_RL( LC_lambda, INDEX_NONE,'LC_lambda = ',
+     &     '   /* Vertical scale for Stokes velocity */')
+      ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
+
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

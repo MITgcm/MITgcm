@@ -20,6 +20,13 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#ifdef  ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+# ifdef ALLOW_GGL90_LANGMUIR
+#  include "FFIELDS.h"
+#  include "GGL90.h"
+# endif
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C   bi, bj         :: current tile indices
@@ -51,9 +58,31 @@ C   epsil          :: small number
       _RL uBarXY, vBarXY
       _RL uBarYm, uBarYp, vBarXm, vBarXp
       _RS epsil
+
+#ifdef ALLOW_GGL90_LANGMUIR
+      _RL Usfc, Vsfc, recip_Lasq
+      _RL stokesU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      recip_Lasq = 1 / LC_num
+      recip_Lasq = recip_Lasq * recip_Lasq
+#endif
+
 CEOP
 
-      epsil = 1. _d -9
+#ifdef ALLOW_GGL90_LANGMUIR
+      IF (useLANGMUIR) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
+         Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
+     &               surfaceForcingU(i,j,bi,bj)) * recip_Lasq
+         stokesU(i,j) = Usfc * exp(4*PI/LC_lambda*rC(k))
+         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
+         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       IF ( selectCoriScheme .EQ. 0 ) THEN
 C- Simple average, no hFac :
@@ -65,6 +94,16 @@ C- Simple average, no hFac :
      &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj))
      &               )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXY=vBARXY + 0.25*(
+     &      (stokesV( i , j )*dxG( i , j ,bi,bj)
+     &      +stokesV(i-1, j )*dxG(i-1, j ,bi,bj))
+     &     +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)
+     &      +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj))
+     &               )
+         ENDIF
+#endif
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
@@ -82,6 +121,18 @@ C     (formerly called: useJamartWetPoints)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)))
      &   / MAX( epsil,(_hFacS(i, j ,k,bi,bj)+_hFacS(i-1, j ,k,bi,bj))
      &               +(_hFacS(i,j+1,k,bi,bj)+_hFacS(i-1,j+1,k,bi,bj)) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXY = vBarXY + (
+     &     (stokesV( i ,j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +stokesV(i-1,j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+     &    +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
+     &     )
+     &    / MAX( epsil,(_hFacS(i, j ,k,bi,bj)+_hFacS(i-1, j ,k,bi,bj))
+     &               +(_hFacS(i,j+1,k,bi,bj)+_hFacS(i-1,j+1,k,bi,bj)) )
+         ENDIF
+#endif
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
@@ -97,6 +148,17 @@ C- hFac weighted average :
      &     +(vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
      &               )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXY=vBarXY + 0.25*(
+     &     (stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &     +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+     &    +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
+     &               )
+         ENDIF
+#endif
+
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)
@@ -109,9 +171,23 @@ C- Energy-conserving discretisation with hFac weighted average :
          vBarXm = halfRL *(
      &       vFld( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
      &      +vFld(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXm = vBarXm + halfRL *(
+     &      stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &     +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+         ENDIF
+#endif
          vBarXp = halfRL *(
      &       vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXp = vBarXp + halfRL *(
+     &      stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
+         ENDIF
+#endif
          uCoriolisTerm(i,j) = +0.5 _d 0
      &        *( vBarXm*fCoriG(i, j ,bi,bj)
      &          +vBarXp*fCoriG(i,j+1,bi,bj)
@@ -132,6 +208,16 @@ C- Simple average, no hFac :
      &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj))
      &               )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uBarXY=uBarXY + 0.25*(
+     &      (stokesU( i , j )*dyG( i , j ,bi,bj)
+     &      +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj))
+     &     +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)
+     &      +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj))
+     &               )
+         ENDIF
+#endif
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
@@ -149,6 +235,18 @@ C     (formerly called: useJamartWetPoints)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj)))
      &   / MAX( epsil,(_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
      &               +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj)) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uBarXY=uBarXY + (
+     &     (stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
+     &    +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
+     &     )
+     &    / MAX( epsil,(_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
+     &                +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj)) )
+         ENDIF
+#endif
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
@@ -164,6 +262,16 @@ C- hFac weighted average :
      &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
      &               )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uBarXY=uBarXY+0.25*(
+     &     (stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
+     &    +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
+     &               )
+         ENDIF
+#endif
          vCoriolisTerm(i,j)=
      &    -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_recip_hFacS(i,j,k,bi,bj)
@@ -176,9 +284,23 @@ C- Energy-conserving discretisation with hFac weighted average :
          uBarYm = halfRL *(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uBarYm = uBarYm + halfRL *(
+     &      stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
+         ENDIF
+#endif
          uBarYp = halfRL *(
      &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uBarYp = uBarYp + halfRL *(
+     &      stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
+         ENDIF
+#endif
          vCoriolisTerm(i,j) = -0.5 _d 0
      &        *( uBarYm*fCoriG( i ,j,bi,bj)
      &          +uBarYp*fCoriG(i+1,j,bi,bj)

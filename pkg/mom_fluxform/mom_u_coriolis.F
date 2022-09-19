@@ -22,6 +22,13 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef  ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+# ifdef ALLOW_GGL90_LANGMUIR
+#  include "FFIELDS.h"
+#  include "GGL90.h"
+# endif
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -41,7 +48,25 @@ C  i,j                  :: loop indices
       INTEGER i,j
       _RS one
       PARAMETER( one = 1. _d 0 )
+#ifdef ALLOW_GGL90_LANGMUIR
+      _RL Vsfc, recip_Lasq
+      _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      recip_Lasq = 1 / LC_num
+      recip_Lasq = recip_Lasq * recip_Lasq
+#endif
 CEOP
+
+#ifdef ALLOW_GGL90_LANGMUIR
+      IF (useLANGMUIR) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
+         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
+         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       IF ( selectCoriScheme.GE.2 ) THEN
 C Energy conserving discretization
@@ -52,6 +77,15 @@ C Energy conserving discretization
      &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
      &         + _fCori(i-1,j,bi,bj)
      &          *0.5*( vFld(i-1,j)+vFld(i-1,j+1) ) )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
+     &      +0.5*( _fCori( i ,j,bi,bj)
+     &           *0.5*( stokesV( i ,j)+stokesV( i ,j+1) )
+     &          + _fCori(i-1,j,bi,bj)
+     &           *0.5*( stokesV(i-1,j)+stokesV(i-1,j+1) ) )
+         ENDIF
+#endif
         ENDDO
        ENDDO
       ELSE
@@ -65,6 +99,17 @@ C Original discretization
      &     vFld( i ,j)+vFld( i ,j+1)
      &    +vFld(i-1,j)+vFld(i-1,j+1)
      &         )
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
+     &     +0.5*( _fCori( i ,j,bi,bj) +
+     &            _fCori(i-1,j,bi,bj)  )
+     &    *0.25*(
+     &      stokesV( i ,j)+stokesV( i ,j+1)
+     &     +stokesV(i-1,j)+stokesV(i-1,j+1)
+     &          )
+         ENDIF
+#endif
         ENDDO
        ENDDO
       ENDIF
