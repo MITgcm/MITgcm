@@ -11,10 +11,13 @@
 TAF=staf
 TAMC=tamc
 
+SHOW_MPI_TO_TAF=
 if test "x$USE_DIVA" = "x1" ; then
     DIVA='true'
     DIVA_FLAG="-pure"
-    USE_MPI=1
+    if test "x$MPI" != x ; then
+	SHOW_MPI_TO_TAF=1
+    fi
 else
     DIVA_FLAG=
 fi
@@ -57,7 +60,7 @@ else
 fi
 
 #- in case we need to show some MPI code to TAF:
-if test "x$USE_MPI" = "x1" -a "x$MPI" != x
+if test "x$SHOW_MPI_TO_TAF" = "x1" -a "x$MPI" != x
 then
     MPI_TAF_OPTIONS='-mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers'
 else
