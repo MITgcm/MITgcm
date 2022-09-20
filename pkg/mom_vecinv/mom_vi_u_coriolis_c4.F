@@ -29,12 +29,10 @@ C     == Global variables ==
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
-#ifdef  ALLOW_GGL90
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
 # include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "FFIELDS.h"
-#  include "GGL90.h"
-# endif
+# include "FFIELDS.h"
+# include "GGL90.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -68,11 +66,10 @@ C     msgBuf :: Informational/error meesage buffer
 C jmc: not sure about these 1/6 & 1/12 factors (should use the same)
       PARAMETER(oneSixth=1.D0/6.D0 , oneTwelve=1.D0/12.D0)
       PARAMETER(fourthVort3=.TRUE. )
-#ifdef ALLOW_GGL90_LANGMUIR
-      _RL Vsfc, recip_Lasq
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+      _RL Vsfc, PI, recip_Lasq
       _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      recip_Lasq = 1 / LC_num
-      recip_Lasq = recip_Lasq * recip_Lasq
+      PARAMETER ( PI    = 3.14159265358979323844D0   )
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -83,13 +80,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDDO
       ENDDO
 
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
+       recip_Lasq = 1 / LC_num
+       recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
      &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
+         stokesV(i,j) = Vsfc * EXP(4*PI/LC_lambda*rC(k))
         ENDDO
        ENDDO
       ENDIF
@@ -176,7 +175,7 @@ c       DO i=2-Olx,sNx+Olx
          ELSE
           vort3u=0.5*( vort3r(i,j) + vort3r(i,j+1) )
          ENDIF
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           vBarXY=vBarXY+0.25*(
      &     (stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
@@ -208,7 +207,7 @@ c       DO i=2-Olx,sNx+Olx
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj) )
          IF (upwindVorticity) THEN
           IF ( (vBarXm+vBarXp) .GT.0.) THEN
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
            IF (useLANGMUIR) THEN
             vBarXm=vBarXm+0.5*(
      &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
@@ -218,7 +217,7 @@ c       DO i=2-Olx,sNx+Olx
 #endif
            vort3u=vBarXm*vort3r(i, j )
           ELSE
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
            IF (useLANGMUIR) THEN
             vBarXp=vBarXp+0.5*(
      &       stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
@@ -229,7 +228,7 @@ c       DO i=2-Olx,sNx+Olx
            vort3u=vBarXp*vort3r(i,j+1)
           ENDIF
          ELSEIF (fourthVort3) THEN
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
           IF (useLANGMUIR) THEN
             vBarXm=vBarXm+0.5*(
      &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)

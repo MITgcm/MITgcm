@@ -12,4 +12,9 @@
 #GGL90ceps = 0.35,
 #GGL90m2 = 5.,
  GGL90mixingLengthMin=3.,
+ useLANGMUIR=.TRUE.,
+ &
+
+ &GGL90_PARM03
+ LC_Gamma = 10.,
  &

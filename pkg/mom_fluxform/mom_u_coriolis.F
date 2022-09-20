@@ -22,12 +22,10 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef  ALLOW_GGL90
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
 # include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "FFIELDS.h"
-#  include "GGL90.h"
-# endif
+# include "FFIELDS.h"
+# include "GGL90.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -48,16 +46,16 @@ C  i,j                  :: loop indices
       INTEGER i,j
       _RS one
       PARAMETER( one = 1. _d 0 )
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       _RL Vsfc, recip_Lasq
       _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      recip_Lasq = 1 / LC_num
-      recip_Lasq = recip_Lasq * recip_Lasq
 #endif
 CEOP
 
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
+       recip_Lasq = 1 / LC_num
+       recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
@@ -77,7 +75,7 @@ C Energy conserving discretization
      &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
      &         + _fCori(i-1,j,bi,bj)
      &          *0.5*( vFld(i-1,j)+vFld(i-1,j+1) ) )
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
      &      +0.5*( _fCori( i ,j,bi,bj)
@@ -99,7 +97,7 @@ C Original discretization
      &     vFld( i ,j)+vFld( i ,j+1)
      &    +vFld(i-1,j)+vFld(i-1,j+1)
      &         )
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
      &     +0.5*( _fCori( i ,j,bi,bj) +

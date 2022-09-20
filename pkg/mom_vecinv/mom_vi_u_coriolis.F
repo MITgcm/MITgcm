@@ -25,12 +25,10 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
-#ifdef  ALLOW_GGL90
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
 # include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "FFIELDS.h"
-#  include "GGL90.h"
-# endif
+# include "FFIELDS.h"
+# include "GGL90.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -57,11 +55,10 @@ C     msgBuf :: Informational/error meesage buffer
       _RL     oneThird, tmpFac
       _RS     epsil
       PARAMETER( upwindVort3 = .FALSE. )
-#ifdef ALLOW_GGL90_LANGMUIR
-      _RL Vsfc, recip_Lasq
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+      _RL Vsfc, PI, recip_Lasq
       _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      recip_Lasq = 1 / LC_num
-      recip_Lasq = recip_Lasq * recip_Lasq
+      PARAMETER ( PI    = 3.14159265358979323844D0   )
 #endif
 
       epsil = 1. _d -9
@@ -69,13 +66,15 @@ C     msgBuf :: Informational/error meesage buffer
 c     oneThird = 1. _d 0 / ( 1. _d 0 + 2.*tmpFac )
       oneThird = 1. _d 0 / 3. _d 0
 
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
+       recip_Lasq = 1 / LC_num
+       recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
      &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
+         stokesV(i,j) = Vsfc * EXP(4*PI/LC_lambda*rC(k))
         ENDDO
        ENDDO
       ENDIF
@@ -102,7 +101,7 @@ C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
            vort3u=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &                +omega3(i,j+1)*r_hFacZ(i,j+1))
          ENDIF
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           vBarXY=vBarXY+0.25*(
      &     (stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
@@ -137,7 +136,7 @@ C--   same as above, with different formulation (relatively to hFac)
          ELSE
            vort3u=0.5*(omega3(i,j)+omega3(i,j+1))
          ENDIF
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           vBarXY=vBarXY+0.5*(
      &      (stokesV( i , j )*dxG( i , j ,bi,bj)*hFacZ(i, j )
@@ -165,7 +164,7 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj) )
          IF (upwindVort3) THEN
           IF ( (vBarXm+vBarXp) .GT.0.) THEN
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
            IF (useLANGMUIR) THEN
             vBarXm=vBarXm+0.5*(
      &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
@@ -175,7 +174,7 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
 #endif
            vort3u=vBarXm*r_hFacZ(i, j )*omega3(i, j )
           ELSE
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
            IF (useLANGMUIR) THEN
             vBarXp=vBarXp+0.5*(
      &       stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
@@ -186,7 +185,7 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
            vort3u=vBarXp*r_hFacZ(i,j+1)*omega3(i,j+1)
           ENDIF
          ELSE
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
           IF (useLANGMUIR) THEN
             vBarXm=vBarXm+0.5*(
      &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
@@ -241,7 +240,7 @@ c    &            )*tmpFac)*oneThird
 c    &            )*tmpFac)*oneThird
      &      *vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
 C---
-#ifdef ALLOW_GGL90_LANGMUIR
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
          IF (useLANGMUIR) THEN
           vort3mj= vort3mj+( r_hFacZ(i, j )*omega3(i, j )
      &             +(r_hFacZ(i,j+1)*omega3(i,j+1)
