@@ -68,6 +68,7 @@ C   epsil          :: small number
 #endif
 
 CEOP
+      epsil = 1. _d -9
 
 #ifdef ALLOW_GGL90_LANGMUIR
       IF (useLANGMUIR) THEN
@@ -158,6 +159,7 @@ C- hFac weighted average :
      &               )
          ENDIF
 #endif
+
          uCoriolisTerm(i,j)=
      &    +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)

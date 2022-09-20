@@ -25,6 +25,13 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
+#ifdef  ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+# ifdef ALLOW_GGL90_LANGMUIR
+#  include "FFIELDS.h"
+#  include "GGL90.h"
+# endif
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -50,11 +57,29 @@ C     msgBuf :: Informational/error meesage buffer
       _RL     oneThird, tmpFac
       _RS     epsil
       PARAMETER( upwindVort3 = .FALSE. )
+#ifdef ALLOW_GGL90_LANGMUIR
+      _RL Vsfc, recip_Lasq
+      _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      recip_Lasq = 1 / LC_num
+      recip_Lasq = recip_Lasq * recip_Lasq
+#endif
 
       epsil = 1. _d -9
       tmpFac = 1. _d 0
 c     oneThird = 1. _d 0 / ( 1. _d 0 + 2.*tmpFac )
       oneThird = 1. _d 0 / 3. _d 0
+
+#ifdef ALLOW_GGL90_LANGMUIR
+      IF (useLANGMUIR) THEN
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
+         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
+         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       IF ( selectVortScheme.EQ.0 ) THEN
 C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
@@ -77,6 +102,16 @@ C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
            vort3u=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &                +omega3(i,j+1)*r_hFacZ(i,j+1))
          ENDIF
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXY=vBarXY+0.25*(
+     &     (stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &     +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
+     &    +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
+     &               )
+         ENDIF
+#endif
          uCoriolisTerm(i,j)= +vort3u*vBarXY*recip_dxC(i,j,bi,bj)
      &                              * _maskW(i,j,k,bi,bj)
         ENDDO
@@ -102,6 +137,16 @@ C--   same as above, with different formulation (relatively to hFac)
          ELSE
            vort3u=0.5*(omega3(i,j)+omega3(i,j+1))
          ENDIF
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vBarXY=vBarXY+0.5*(
+     &      (stokesV( i , j )*dxG( i , j ,bi,bj)*hFacZ(i, j )
+     &      +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*hFacZ(i, j ))
+     &     +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*hFacZ(i,j+1)
+     &      +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*hFacZ(i,j+1))
+     &               )/MAX( epsil, hFacZ(i,j)+hFacZ(i,j+1) )
+         ENDIF
+#endif
          uCoriolisTerm(i,j)= +vort3u*vBarXY*recip_dxC(i,j,bi,bj)
      &                              * _maskW(i,j,k,bi,bj)
         ENDDO
@@ -120,14 +165,42 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
      &      +vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj) )
          IF (upwindVort3) THEN
           IF ( (vBarXm+vBarXp) .GT.0.) THEN
+#ifdef ALLOW_GGL90_LANGMUIR
+           IF (useLANGMUIR) THEN
+            vBarXm=vBarXm+0.5*(
+     &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj)
+     &       )
+           ENDIF
+#endif
            vort3u=vBarXm*r_hFacZ(i, j )*omega3(i, j )
           ELSE
+#ifdef ALLOW_GGL90_LANGMUIR
+           IF (useLANGMUIR) THEN
+            vBarXp=vBarXp+0.5*(
+     &       stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &      +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)
+     &       )
+           ENDIF
+#endif
            vort3u=vBarXp*r_hFacZ(i,j+1)*omega3(i,j+1)
           ENDIF
          ELSE
-           vort3u = ( vBarXm*r_hFacZ(i, j )*omega3(i, j )
-     &               +vBarXp*r_hFacZ(i,j+1)*omega3(i,j+1)
-     &              )*0.5 _d 0
+#ifdef ALLOW_GGL90_LANGMUIR
+          IF (useLANGMUIR) THEN
+            vBarXm=vBarXm+0.5*(
+     &       stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+     &      +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj)
+     &       )
+            vBarXp=vBarXp+0.5*(
+     &       stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+     &      +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)
+     &       )
+          ENDIF
+#endif
+          vort3u = ( vBarXm*r_hFacZ(i, j )*omega3(i, j )
+     &              +vBarXp*r_hFacZ(i,j+1)*omega3(i,j+1)
+     &             )*0.5 _d 0
          ENDIF
          uCoriolisTerm(i,j)= +vort3u*recip_dxC(i,j,bi,bj)
      &                              * _maskW(i,j,k,bi,bj)
@@ -168,6 +241,34 @@ c    &            )*tmpFac)*oneThird
 c    &            )*tmpFac)*oneThird
      &      *vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
 C---
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          vort3mj= vort3mj+( r_hFacZ(i, j )*omega3(i, j )
+     &             +(r_hFacZ(i,j+1)*omega3(i,j+1)
+     &              +r_hFacZ(i-1,j)*omega3(i-1,j)
+     &             ))*oneThird
+c    &             )*tmpFac)*oneThird
+     &       *stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj)
+          vort3ij= vort3ij+( r_hFacZ(i, j )*omega3(i, j )
+     &             +(r_hFacZ(i,j+1)*omega3(i,j+1)
+     &              +r_hFacZ(i+1,j)*omega3(i+1,j)
+     &             ))*oneThird
+c    &             )*tmpFac)*oneThird
+     &       *stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+          vort3mp= vort3mp+( r_hFacZ(i,j+1)*omega3(i,j+1)
+     &             +(r_hFacZ(i, j )*omega3(i, j )
+     &              +r_hFacZ(i-1,j+1)*omega3(i-1,j+1)
+     &             ))*oneThird
+c    &             )*tmpFac)*oneThird
+     &       *stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)
+          vort3ip= vort3ip+( r_hFacZ(i,j+1)*omega3(i,j+1)
+     &             +(r_hFacZ(i, j )*omega3(i, j )
+     &              +r_hFacZ(i+1,j+1)*omega3(i+1,j+1)
+     &             ))*oneThird
+c    &             )*tmpFac)*oneThird
+     &       *stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+         ENDIF
+#endif
          uCoriolisTerm(i,j)= +( (vort3mj+vort3ij)+(vort3mp+vort3ip) )
      &                     *0.25 _d 0 *recip_dxC(i,j,bi,bj)
      &                                * _maskW(i,j,k,bi,bj)
