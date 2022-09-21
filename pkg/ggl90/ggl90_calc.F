@@ -367,15 +367,6 @@ CADJ INCOMPLETE GGL90mixingLength
           MaxLength=totalDepth(i,j)*recip_coordFac
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-           LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
-           IF (LCmixingLength(i,j,k) .EQ. MaxLength) THEN
-            LCmixingLength(i,j,k) = LC_Gamma
-     &                              * LCmixingLength(i,j,k)
-           ENDIF
-          ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
          ENDDO
         ENDDO
        ENDDO
@@ -795,9 +786,9 @@ C      surface stokes velocity (Usfc = u*/La^2)
            Usfc = SIGN(SQRT(ABS(ustar)), ustar) * recip_Lasq
            Vsfc = SIGN(SQRT(ABS(vstar)), vstar) * recip_Lasq
            stokesU = 4 * PI /LC_lambda
-     &               * Usfc * exp(4*PI/LC_lambda*rC(k))
+     &               * Usfc * EXP(4. *PI/LC_lambda*rC(k))
            stokesV = 4 * PI /LC_lambda
-     &               * Vsfc * exp(4*PI/LC_lambda*rC(k))
+     &               * Vsfc * EXP(4. *PI/LC_lambda*rC(k))
            stokesterm(i,j,k) = tempU*stokesU + tempV*stokesV
           ENDIF
 #endif

@@ -22,10 +22,12 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+#ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
-# include "FFIELDS.h"
-# include "GGL90.h"
+# ifdef ALLOW_GGL90_LANGMUIR
+#  include "GGL90.h"
+#  include "FFIELDS.h"
+# endif
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -49,22 +51,9 @@ C  i,j                  :: loop indices
 #if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       _RL Vsfc, recip_Lasq
       _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uStokesTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
-
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR) THEN
-       recip_Lasq = 1 / LC_num
-       recip_Lasq = recip_Lasq * recip_Lasq
-       DO j=1-OLy,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx
-         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
-     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-         stokesV(i,j) = Vsfc * exp(4*PI/LC_lambda*rC(k))
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
 
       IF ( selectCoriScheme.GE.2 ) THEN
 C Energy conserving discretization
@@ -75,15 +64,6 @@ C Energy conserving discretization
      &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
      &         + _fCori(i-1,j,bi,bj)
      &          *0.5*( vFld(i-1,j)+vFld(i-1,j+1) ) )
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-         IF (useLANGMUIR) THEN
-          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
-     &      +0.5*( _fCori( i ,j,bi,bj)
-     &           *0.5*( stokesV( i ,j)+stokesV( i ,j+1) )
-     &          + _fCori(i-1,j,bi,bj)
-     &           *0.5*( stokesV(i-1,j)+stokesV(i-1,j+1) ) )
-         ENDIF
-#endif
         ENDDO
        ENDDO
       ELSE
@@ -91,26 +71,57 @@ C Original discretization
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx
          uCoriolisTerm(i,j) =
-     &     0.5*( _fCori( i ,j,bi,bj) +
-     &           _fCori(i-1,j,bi,bj)  )
-     &   *0.25*(
-     &     vFld( i ,j)+vFld( i ,j+1)
-     &    +vFld(i-1,j)+vFld(i-1,j+1)
+     &     0.5*(_fCori( i ,j,bi,bj)+ _fCori(i-1,j,bi,bj))
+     &   *0.25*( vFld( i ,j)+vFld( i ,j+1)
+     &          +vFld(i-1,j)+vFld(i-1,j+1)
      &         )
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-         IF (useLANGMUIR) THEN
-          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
-     &     +0.5*( _fCori( i ,j,bi,bj) +
-     &            _fCori(i-1,j,bi,bj)  )
-     &    *0.25*(
-     &      stokesV( i ,j)+stokesV( i ,j+1)
-     &     +stokesV(i-1,j)+stokesV(i-1,j+1)
-     &          )
-         ENDIF
-#endif
         ENDDO
        ENDDO
       ENDIF
+
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+      IF (useLANGMUIR) THEN
+       recip_Lasq = 1 / LC_num
+       recip_Lasq = recip_Lasq * recip_Lasq
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
+         stokesV(i,j) = Vsfc * EXP(4. *PI/LC_lambda*rC(k))
+        ENDDO
+       ENDDO
+
+       IF ( selectCoriScheme.GE.2 ) THEN
+C Energy conserving discretization
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx
+          uStokesTerm(i,j) =
+     &     0.5*( _fCori( i ,j,bi,bj)
+     &          *0.5*(stokesV( i ,j)+stokesV( i ,j+1))
+     &         + _fCori(i-1,j,bi,bj)
+     &          *0.5*(stokesV(i-1,j)+stokesV(i-1,j+1)))
+         ENDDO
+        ENDDO
+       ELSE
+C Original discretization
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx
+          uStokesTerm(i,j) =
+     &      0.5*(_fCori( i ,j,bi,bj)+_fCori(i-1,j,bi,bj))
+     &    *0.25*( stokesV( i ,j)+stokesV( i ,j+1)
+     &           +stokesV(i-1,j)+stokesV(i-1,j+1)
+     &          )
+         ENDDO
+        ENDDO
+       ENDIF
+
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         uCoriolisTerm(i,j)=uCoriolisTerm(i,j)+uStokesTerm(i,j)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
       IF ( selectCoriScheme.EQ.1 .OR. selectCoriScheme.EQ.3 ) THEN
 C Scale term so that only "wet" points are used

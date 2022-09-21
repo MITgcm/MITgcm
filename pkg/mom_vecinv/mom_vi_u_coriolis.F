@@ -25,10 +25,12 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+#ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
-# include "FFIELDS.h"
-# include "GGL90.h"
+# ifdef ALLOW_GGL90_LANGMUIR
+#  include "GGL90.h"
+#  include "FFIELDS.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -70,8 +72,8 @@ c     oneThird = 1. _d 0 / ( 1. _d 0 + 2.*tmpFac )
       IF (useLANGMUIR) THEN
        recip_Lasq = 1 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
-       DO j=1-OLy,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
      &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
          stokesV(i,j) = Vsfc * EXP(4*PI/LC_lambda*rC(k))
