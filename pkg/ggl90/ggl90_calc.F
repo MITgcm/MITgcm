@@ -123,15 +123,14 @@ C                    (output of S/R GGL90_IDEMIX)
       _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL LCmixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL nsqterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL TKE_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL lengthscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     Usfc, Vsfc: Stokes velocity at the surface
-      _RL Usfc, Vsfc, ustar, vstar
-      _RL stokesterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL ceff, MLtmp, recip_Lasq
-      _RL stokesU, stokesV
+      _RL Usfc, Vsfc
+      _RL stokesterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dstokesUdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dstokesVdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL MLtmp, recip_Lasq, recip_LD
 #endif /* ALLOW_GGL90_LANGMUIR */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
@@ -193,6 +192,7 @@ CEOP
       IF (useLANGMUIR) THEN
        recip_Lasq = 1 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
+       recip_LD = 1/LC_lambda
       ENDIF
 #endif
       IF ( usingPCoords ) THEN
@@ -264,14 +264,6 @@ C     Initialize local fields
          KappaE(i,j,k)            = 0. _d 0
          TKEPrandtlNumber(i,j,k)  = 1. _d 0
          GGL90mixingLength(i,j,k) = GGL90mixingLengthMin
-#ifdef ALLOW_GGL90_LANGMUIR
-         IF (useLANGMUIR) THEN
-          LCmixingLength(i,j,k) = GGL90mixingLengthMin
-          nsqterm(i,j,k) = 0. _d 0
-          stokesterm(i,j,k) = 0. _d 0
-          lengthscale(i,j,k) = 0. _d 0
-         ENDIF
-#endif
          GGL90visctmp(i,j,k)      = 0. _d 0
 #ifndef SOLVE_DIAGONAL_LOWMEMORY
          a3d(i,j,k) = 0. _d 0
@@ -280,6 +272,11 @@ C     Initialize local fields
 #endif
          Nsquare(i,j,k) = 0. _d 0
          SQRTTKE(i,j,k) = 0. _d 0
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN
+          LCmixingLength(i,j,k) = GGL90mixingLengthMin
+         ENDIF
+#endif
         ENDDO
        ENDDO
       ENDDO
@@ -310,6 +307,13 @@ c       rMixingLength(i,j,1)  = 0. _d 0
         dfy(i,j) = 0. _d 0
         gTKE(i,j) = 0. _d 0
 #endif /* ALLOW_GGL90_HORIZDIFF */
+#ifdef ALLOW_GGL90_LANGMUIR
+        IF (useLANGMUIR) THEN
+         stokesterm(i,j) = 0. _d 0
+         dstokesUdR(i,j) = 0. _d 0
+         dstokesVdR(i,j) = 0. _d 0
+        ENDIF
+#endif
        ENDDO
       ENDDO
 
@@ -381,16 +385,6 @@ CADJ INCOMPLETE GGL90mixingLength
 c         MaxLength=MAX(MaxLength,20. _d 0)
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                    MaxLength)
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-           LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
-           MLtmp = (Ro_surf(i,j,bi,bj)-rF(k))*recip_coordFac
-           IF (LCmixingLength(i,j,k) .EQ. MLtmp) THEN
-            LCmixingLength(i,j,k) = LC_Gamma 
-     &                              * LCmixingLength(i,j,k)
-           ENDIF
-          ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
          ENDDO
         ENDDO
        ENDDO
@@ -453,15 +447,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
           DO i=iMin,iMax
            GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-           IF (useLANGMUIR) THEN
-            MLtmp = GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac
-            IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
-             LCmixingLength(i,j,k) = LC_Gamma
-     &                               * GGL90mixingLength(i,j,k)
-            ENDIF
-           ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
           ENDDO
          ENDDO
         ENDDO
@@ -471,11 +456,6 @@ C     because level Nr+1 is not available
          DO i=iMin,iMax
           GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-           LCmixingLength(i,j,Nr) = GGL90mixingLength(i,j,Nr)
-          ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
          ENDDO
         ENDDO
         DO k=Nr-1, 2,-1
@@ -488,12 +468,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
           DO i=iMin,iMax
            GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-           IF (useLANGMUIR) THEN
-            LCmixingLength(i,j,k) = MIN(LCmixingLength(i,j,k),
-     &          LCmixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-           ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
           ENDDO
          ENDDO
         ENDDO
@@ -557,15 +531,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
           DO i=iMin,iMax
            mxLength_Dn(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &          mxLength_Dn(i,j,k-1)+drF(k-1)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-           IF (useLANGMUIR) THEN
-            MLtmp = mxLength_Dn(i,j,k-1)+drF(k-1)*recip_coordFac
-            IF (mxLength_Dn(i,j,k) .EQ. MLtmp) THEN
-             LCmixingLength(i,j,k) = LC_Gamma
-     &                              * mxLength_Dn(i,j,k)
-            ENDIF
-           ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
           ENDDO
          ENDDO
         ENDDO
@@ -575,11 +540,6 @@ C     because level Nr+1 is not available
          DO i=iMin,iMax
           GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
      &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-           LCmixingLength(i,j,Nr) = GGL90mixingLength(i,j,Nr)
-          ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
          ENDDO
         ENDDO
         DO k=Nr-1,2,-1
@@ -592,12 +552,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
           DO i=iMin,iMax
            GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-#ifdef ALLOW_GGL90_LANGMUIR
-           IF (useLANGMUIR) THEN
-            LCmixingLength(i,j,k) = MIN(LCmixingLength(i,j,k),
-     &          LCmixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-           ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
           ENDDO
          ENDDO
         ENDDO
@@ -640,12 +594,6 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-           LCmixingLength(i,j,k) = MAX(LCmixingLength(i,j,k),
-     &                                 GGL90mixingLengthMin)
-          ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
 #ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
@@ -661,15 +609,165 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
       ENDIF
 
 #ifdef ALLOW_GGL90_LANGMUIR
-      DO k=2,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         IF (useLANGMUIR) THEN
-          GGL90mixingLength(i,j,k) = LCmixingLength(i,j,k)
-         ENDIF
+      IF (useLANGMUIR) THEN
+C      Compute the mixing length scale with Langmuir circulation. 
+C      The calculation closely follows that for GGL90mixingLength. 
+       IF ( mxlMaxFlag .EQ. 1 ) THEN
+
+        DO k=2,Nr
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           MLtmp = (Ro_surf(i,j,bi,bj)-rF(k))*recip_coordFac
+           IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
+            LCmixingLength(i,j,k) = LC_Gamma
+     &                              * GGL90mixingLength(i,j,k)
+           ELSE
+            LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
+           ENDIF
+          ENDDO
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+
+       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
+
+        IF ( usingPcoords ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Upward sweep
+         DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            MLtmp = GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac
+            IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
+             LCmixingLength(i,j,k) = LC_Gamma
+     &                               * GGL90mixingLength(i,j,k)
+            ELSE
+             LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Downward sweep
+         DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            MLtmp = GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac
+            IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
+             LCmixingLength(i,j,k) = LC_Gamma
+     &                               * GGL90mixingLength(i,j,k)
+            ELSE
+             LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+         DO k=Nr-1, 2,-1
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k+1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            LCmixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+           ENDDO
+          ENDDO
+         ENDDO
+
+        ENDIF
+
+       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
+
+        IF ( usingPcoords ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Upward sweep
+         DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            MLtmp = GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac
+            IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
+             LCmixingLength(i,j,k) = LC_Gamma
+     &                               * GGL90mixingLength(i,j,k)
+            ELSE
+             LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     Downward sweep
+         DO k=2,Nr
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkeyLoc = (ikeyLoc-1)*Nr + k
+CADJ STORE mxLength_Dn(:,:,k-1)
+CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            MLtmp = mxLength_Dn(i,j,k-1)+drF(k-1)*recip_coordFac
+            IF (GGL90mixingLength(i,j,k) .EQ. MLtmp) THEN
+             LCmixingLength(i,j,k) = LC_Gamma
+     &                              * GGL90mixingLength(i,j,k)
+            ELSE
+             LCmixingLength(i,j,k) = GGL90mixingLength(i,j,k)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+C     Upward sweep, extra treatment of k=Nr for z-coordinates
+C         DO k=Nr-1,2,-1
+C#ifdef ALLOW_AUTODIFF_TAMC
+C          kkeyLoc = (ikeyLoc-1)*Nr + k
+CCADJ STORE GGL90mixingLength(:,:,k-1)
+CCADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+C#endif /* ALLOW_AUTODIFF_TAMC */
+C          DO j=jMin,jMax
+C           DO i=iMin,iMax
+C            LCmixingLength(i,j,k) = MIN(LCmixingLength(i,j,k),
+C     &          LCmixingLength(i,j,k+1)+drF(k)*recip_coordFac)
+C           ENDDO
+C          ENDDO
+C         ENDDO
+        ENDIF
+
+       ELSE
+        WRITE(msgBuf,'(A,I5,A)')
+     &   'GGL90_CALC: Langmuir Circ. Parameterization with mxlMaxFlag=',
+     &   mxlMaxFlag,' not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GGL90_CALC'
+       ENDIF
+      ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
 
 C     start "proper" k-loop (the code above was moved out and up to
@@ -706,7 +804,7 @@ C     ... across x-faces
          ENDDO
         ENDDO
 C     ... across y-faces
-        DO i=1-OLx,sNx+OLx
+        
          dfy(i,1-OLy)=0. _d 0
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -735,7 +833,13 @@ C     end if GGL90diffTKEh .eq. 0.
 C     viscosity and diffusivity
        DO j=jMin,jMax
         DO i=iMin,iMax
-         KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
+#ifdef ALLOW_GGL90_LANGMUIR
+         IF (useLANGMUIR) THEN        
+          KappaM(i,j) = GGL90ck*LCmixingLength(i,j,k)*SQRTTKE(i,j,k)
+         ELSE
+          KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
+         ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
          GGL90visctmp(i,j,k) = MAX( KappaM(i,j),diffKrNrS(k)
      &                            * recip_coordFac*recip_coordFac )
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
@@ -776,25 +880,65 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
      &            )*halfRL*recip_drC(k)
      &             *coordFac
           verticalShear(i,j) = tempU*tempU + tempV*tempV
-#ifdef ALLOW_GGL90_LANGMUIR
-          IF (useLANGMUIR) THEN
-C      surface stokes velocity (Usfc = u*/La^2)
-           ustar = (surfaceForcingU(i,j,bi,bj)
-     &              +surfaceForcingU(i+1,j,bi,bj))*halfRL
-           vstar = (surfaceForcingV(i,j,bi,bj)
-     &              +surfaceForcingV(i,j+1,bi,bj))*halfRL
-           Usfc = SIGN(SQRT(ABS(ustar)), ustar) * recip_Lasq
-           Vsfc = SIGN(SQRT(ABS(vstar)), vstar) * recip_Lasq
-           stokesU = 4 * PI /LC_lambda
-     &               * Usfc * EXP(4. *PI/LC_lambda*rC(k))
-           stokesV = 4 * PI /LC_lambda
-     &               * Vsfc * EXP(4. *PI/LC_lambda*rC(k))
-           stokesterm(i,j,k) = tempU*stokesU + tempV*stokesV
-          ENDIF
-#endif
          ENDDO
         ENDDO
        ENDIF
+
+#ifdef ALLOW_GGL90_LANGMUIR
+       IF (useLANGMUIR) THEN
+C       compute (dStokesU/dz) and (dStokesV/dz)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
+     &                surfaceForcingU(i,j,bi,bj)) * recip_Lasq
+          dstokesUdR(i,j) = 4. *PI*recip_LD
+     &                     * Usfc * EXP(4. *PI*recip_LD*rF(k))
+          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &                surfaceForcingV(i,j,bi,bj)) * recip_Lasq
+          dstokesVdR(i,j) = 4. *PI/LC_lambda
+     &                     * Vsfc * EXP(4. *PI*recip_LD*rF(k))
+         ENDDO
+        ENDDO
+
+        IF ( calcMeanVertShear ) THEN
+C     by averaging (@ grid-cell center) the 4 vertical shear compon @
+C     U,V pos.
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           tempU  = ( uVel( i ,j,km1,bi,bj) - uVel( i ,j,k,bi,bj) )
+           tempUp = ( uVel(i+1,j,km1,bi,bj) - uVel(i+1,j,k,bi,bj) )
+           tempV  = ( vVel(i, j ,km1,bi,bj) - vVel(i, j ,k,bi,bj) )
+           tempVp = ( vVel(i,j+1,km1,bi,bj) - vVel(i,j+1,k,bi,bj) )
+           stokesterm(i,j) = (
+     &              ( tempU *dstokesUdR(i,j)
+     &               +tempUp*dstokesUdR(i+1,j) )
+     &             +( tempV *dstokesVdR(i,j)
+     &               +tempVp*dstokesVdR(i,j+1) )
+     &                       )*halfRL*recip_drC(k)*coordFac*coordFac
+          ENDDO
+         ENDDO
+        ELSE
+C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           tempU = ( ( uVel(i,j,km1,bi,bj) + uVel(i+1,j,km1,bi,bj) )
+     &              -( uVel(i,j,k  ,bi,bj) + uVel(i+1,j,k  ,bi,bj) )
+     &             )*halfRL*recip_drC(k)
+     &              *coordFac
+           tempV = ( ( vVel(i,j,km1,bi,bj) + vVel(i,j+1,km1,bi,bj) )
+     &              -( vVel(i,j,k  ,bi,bj) + vVel(i,j+1,k  ,bi,bj) )
+     &             )*halfRL*recip_drC(k)
+     &              *coordFac
+           stokesterm(i,j) = halfRL*coordFac*(
+     &                       tempU*(dstokesUdR(i,j)+dstokesUdR(i+1,j))
+     &                     + tempV*(dstokesVdR(i,j)+dstokesVdR(i,j+1))
+     &                       )
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
+
 
 C     compute Prandtl number (always greater than 0)
 #ifdef ALLOW_GGL90_IDEMIX
@@ -868,11 +1012,11 @@ C     add IDEMIX contribution to the turbulent kinetic energy
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90TKE(i,j,k,bi,bj) = GGL90TKE(i,j,k,bi,bj)
-     &         + deltaTloc*(KappaM(i,j)*stokesterm(i,j,k))
+     &         + deltaTloc*(KappaM(i,j)*stokesterm(i,j))
          ENDDO
         ENDDO
        ENDIF
-#endif /* ALLOW_GGL90_IDEMIX */
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 #ifdef ALLOW_GGL90_HORIZDIFF
        IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
@@ -1283,8 +1427,15 @@ C     ===============================
      &                         0,Nr, 1, bi, bj, myThid )
         CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90Prl',
      &                         0,Nr, 2, bi, bj, myThid )
-        CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
-     &                         0,Nr, 2, bi, bj, myThid )
+#ifdef ALLOW_GGL90_LANGMUIR
+        IF (useLANGMUIR) THEN
+         CALL DIAGNOSTICS_FILL( LCmixingLength,'GGL90Lmx',
+     &                          0,Nr, 2, bi, bj, myThid )
+        ELSE
+         CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
+     &                          0,Nr, 2, bi, bj, myThid )
+        ENDIF
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 C     diagnose surface flux of TKE
         IF ( usingPCoords ) THEN
