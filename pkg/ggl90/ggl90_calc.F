@@ -833,11 +833,10 @@ C     end if GGL90diffTKEh .eq. 0.
 C     viscosity and diffusivity
        DO j=jMin,jMax
         DO i=iMin,iMax
+         KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
 #ifdef ALLOW_GGL90_LANGMUIR
          IF (useLANGMUIR) THEN        
           KappaM(i,j) = GGL90ck*LCmixingLength(i,j,k)*SQRTTKE(i,j,k)
-         ELSE
-          KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
          ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
          GGL90visctmp(i,j,k) = MAX( KappaM(i,j),diffKrNrS(k)
