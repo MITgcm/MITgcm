@@ -7,7 +7,15 @@
 TAF=staf
 TAMC=stamc
 
-SHOW_MPI_TO_TAF=
+#- select which Fortran version to specify to TAF
+if test "x$TAF_FORTRAN_VERS" = x ; then
+    if test "x$ALWAYS_USE_F90" = "x1" ; then
+	TAF_FORTRAN_VERS='F90' ;
+    else
+	TAF_FORTRAN_VERS='F77' ;
+    fi
+fi
+
 if test "x$USE_DIVA" = "x1" ; then
     DIVA='true'
     DIVA_FLAG="-pure"
@@ -36,14 +44,14 @@ if test "x$USE_EXTENDED_SRC" = "xt"; then
     TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
 fi
 
-#- after Jan 14, 2016, TAF default is "-f95"
-if test "x$ALWAYS_USE_F90" = "x1" ; then
+if test $TAF_FORTRAN_VERS = 'F77' ; then
+    TAF_COMMON_FLAGS="-f77 $TAF_COMMON_FLAGS"
+elif test $TAF_FORTRAN_VERS = 'F90' ; then
     TAF_COMMON_FLAGS="-f90 $TAF_COMMON_FLAGS"
-elif test "x$ALWAYS_USE_F95" = "x1" ; then
+else
+    #- after Jan 14, 2016, TAF default is "-f95"
     TAF_COMMON_FLAGS="-f95 $TAF_COMMON_FLAGS"
     TAF_COMPILER=-f95
-else
-    TAF_COMMON_FLAGS="-f77 $TAF_COMMON_FLAGS"
 fi
 
 #- switch to fastopt.net TAF server (instead of default fastopt.net):
@@ -54,8 +62,7 @@ else
 fi
 
 #- in case we need to show some MPI code to TAF:
-if test "x$SHOW_MPI_TO_TAF" = "x1" -a "x$MPI" != x
-then
+if test "x$SHOW_MPI_TO_TAF" = "x1" -a "x$MPI" != x ; then
     MPI_TAF_OPTIONS='-mpi -include $(LOCAL_MPI_HEADERS) -I./mpi_headers'
 else
     MPI_TAF_OPTIONS=
@@ -69,12 +76,12 @@ else
 fi
 DIFF_FLAGS="-toplevel 'the_main_loop' \
             -input 'xx_obcsn_dummy    \
-	            xx_obcss_dummy    \
-		    xx_obcsw_dummy    \
-		    xx_obcse_dummy    \
+                    xx_obcss_dummy    \
+                    xx_obcsw_dummy    \
+                    xx_obcse_dummy    \
                     xx_genarr2d_dummy \
-		    xx_genarr3d_dummy \
-		    xx_gentim2d_dummy'\
+                    xx_genarr3d_dummy \
+                    xx_gentim2d_dummy'\
             -output '$TAF_FC'"
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
