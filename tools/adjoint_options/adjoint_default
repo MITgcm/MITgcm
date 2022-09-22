@@ -5,7 +5,7 @@
 #  please make a separate (local) copy of this file.
 
 TAF=staf
-TAMC=tamc
+TAMC=stamc
 
 SHOW_MPI_TO_TAF=
 if test "x$USE_DIVA" = "x1" ; then
