@@ -25,14 +25,12 @@ SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
 AD_TAF_FLAGS="-reverse $DIVA_FLAG -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-forward -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-reverse -forward -pure -l taf_svd.log $SVD_TAF_FLAGS"
-if test "x$TAMC_COMPATIBILITY_MODE" = "x1"
-then
-    AD_TAF_FLAGS="-v1 -nonew_arg $AD_TAF_FLAGS"
-    FTL_TAF_FLAGS="-v1 -nonew_arg $FTL_TAF_FLAGS"
-    SVD_TAF_FLAGS="-v1 -nonew_arg $SVD_TAF_FLAGS"
-fi
 
 TAF_COMMON_FLAGS="-i4 -r4 -intrinsic system,flush"
+
+if test "x$TAMC_COMPATIBILITY_MODE" = "x1" ; then
+    TAF_COMMON_FLAGS="-v1 -nonew_arg $TAF_COMMON_FLAGS"
+fi
 
 if test "x$USE_EXTENDED_SRC" = "xt"; then
     TAF_COMMON_FLAGS="-e $TAF_COMMON_FLAGS"
