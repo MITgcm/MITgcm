@@ -534,7 +534,7 @@ catn initialize
 
            tmpVar(i,j)=
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( temp_addMass3D(I,J,k,bi,bj) - theta(i,j,k,bi,bj) )
+     &          *(temp_addMass3Dplume(I,J,k,bi,bj)-theta(i,j,k,bi,bj))
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -547,7 +547,7 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           DO i=0,sNx+1
            tmpVar(i,j)=
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( temp_addMass3D(I,J,k,bi,bj) - tRef(k) )
+     &          *( temp_addMass3Dplume(I,J,k,bi,bj) - tRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -995,7 +995,7 @@ catn initialize
 
            tmpVar(i,j) =
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( salt_addMass3D(I,J,k,bi,bj) - salt(i,j,k,bi,bj) )
+     &          *( salt_addMass3Dplume(I,J,k,bi,bj)-salt(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -1009,7 +1009,7 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 
            tmpVar(i,j) =
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( salt_addMass3D(I,J,k,bi,bj) - sRef(k) )
+     &          *( salt_addMass3Dplume(I,J,k,bi,bj) - sRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)

@@ -100,10 +100,22 @@ catn      PARAMETER(rho_0=1027.0D0)
       PARAMETER(secInday=86400.0D0)
 catn      PARAMETER(rho_shelfice=917.0D0)
 catn      PARAMETER(lhfusion=333.55E+3)
+catn: be careful about overlap, i think these will all need them.
       _RL gT_icefront         (1:sNx,1:sNy,Nr)
       _RL gS_icefront         (1:sNx,1:sNy,Nr)
-      _RL mass_icefront       (1:sNx,1:sNy,Nr)
-      _RL mass_iceplume       (1:sNx,1:sNy,Nr)
+      _RL AddMass3Dbg         (1:sNx,1:sNy,Nr)
+      _RL Fwflux3D            (1:sNx,1:sNy,Nr)
+      _RL HeatFlux3D          (1:sNx,1:sNy,Nr)
+      _RL rProfPlume3D        (1:sNx,1:sNy,Nr)
+      _RL wProfPlume3D        (1:sNx,1:sNy,Nr)
+      _RL tProfPlume3D        (1:sNx,1:sNy,Nr)
+      _RL sProfPlume3D        (1:sNx,1:sNy,Nr)
+      _RL mProfPlume3D        (1:sNx,1:sNy,Nr)
+      _RL mProfAv3D           (1:sNx,1:sNy,Nr)
+#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
+      _RL thetaProfPlume3D    (1:sNx,1:sNy,Nr)
+      _RL distanceProfPlume3D (1:sNx,1:sNy,Nr)
+#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
@@ -129,12 +141,24 @@ catn: Initialize tendencies for plume
           DO i=1,sNx
            gT_icefront(i,j,k)=0. _d 0
            gS_icefront(i,j,k)=0. _d 0
-           mass_iceplume(i,j,k)=0. _d 0
-           mass_icefront(i,j,k)=0. _d 0
+           AddMass3Dbg(i,j,k)=0. _d 0
+           Fwflux3D(i,j,k)=0. _d 0
+           Heatflux3D(i,j,k)=0. _d 0
+           rProfPlume3D(i,j,k)=0. _d 0
+           wProfPlume3D(i,j,k)=0. _d 0
+           tProfPlume3D(i,j,k)=0. _d 0
+           sProfPlume3D(i,j,k)=0. _d 0
+           mProfPlume3D(i,j,k)=0. _d 0
+           mProfAv3D(i,j,k)=0. _d 0
+#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
+           thetaProfPlume3D(i,j,k)=0. _d 0
+           distanceProfPlume3D(i,j,k)=0. _d 0
+#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
           ENDDO
          ENDDO
         ENDDO
 
+catn: need to be careful here: the I,J are with overlaps
         DO J = 1-OLy,sNy+OLy
          DO I = 1-OLx,sNx+Olx
 
@@ -477,13 +501,13 @@ C If no subglacial output, then there is no plume
 C Send outputs to 3D grid for diagnostics
            IF ( usePlumeDiagnostics ) THEN
             DO K = 1,Nr
-             rProfPlume3D(I,J,K,bi,bj) = rProfPlume(k)
-             wProfPlume3D(I,J,K,bi,bj) = wProfPlume(k)
-             tProfPlume3D(I,J,K,bi,bj) = tProfPlume(k)
-             sProfPlume3D(I,J,K,bi,bj) = sProfPlume(k)
+             rProfPlume3D(I,J,K) = rProfPlume(k)
+             wProfPlume3D(I,J,K) = wProfPlume(k)
+             tProfPlume3D(I,J,K) = tProfPlume(k)
+             sProfPlume3D(I,J,K) = sProfPlume(k)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-             thetaProfPlume3D(I,J,K,bi,bj) = thetaProfPlume(k)
-             distanceProfPlume3D(I,J,K,bi,bj) = distanceProfPlume(k)
+             thetaProfPlume3D(I,J,K) = thetaProfPlume(k)
+             distanceProfPlume3D(I,J,K) = distanceProfPlume(k)
 #endif
             ENDDO
            ENDIF
@@ -622,8 +646,8 @@ C Send outputs to 3D grid for diagnostics
 catn: Since we're saving these 3D diags, should know how to calc offline
 catn: their contributions to addMass3D(plume,bg)
             IF ( usePlumeDiagnostics ) THEN
-             mProfPlume3D(I,J,K,bi,bj) = mProfPlume(k)
-             mProfAv3D(I,J,K,bi,bj) = mProfAv(k)
+             mProfPlume3D(I,J,K) = mProfPlume(k)
+             mProfAv3D(I,J,K) = mProfAv(k)
             ENDIF
 
 C ------------Tendencies------------------------------
@@ -658,7 +682,7 @@ catn: reduce this addmass3dbg to zero if the whole cell is plume.
 catn      addMass3Dbg(I,j,k,bi,bj)=Fwflux3D(I,J,k,bi,bj)*dLtangential*delta_z(k)*rUnit2mass 
 catn: pay attention to sign! addMass is minus FwFlux!! (following pkg/shelfice of eccov4r5)
 catn: kg/m2/s*m2=kg/s
-            addMass3Dbg(I,J,k,bi,bj)=-FwFlux(k)*dLtangential*delta_z(k)
+            addMass3Dbg(I,J,k)=-FwFlux(k)*dLtangential*delta_z(k)
 
 C Heat required to melt that much ice (W m^-2)
 catn: 333.55 x 10^3 is the Latent heat of fusion: When melting 1kg of ice, 333.55 kJ of 
@@ -683,13 +707,13 @@ catn: More problematic assumption about I vs J and geometry of glacier front
 catn  Now addressed with GlacierFront_is_NorthSouth flag
             IF (GlacierFront_is_NorthSouth .eq. 1) THEN
               IF ( ( J .GT. 0 ) .AND. ( J .LT. sNy+1 ) ) THEN
-               Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
-               HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
+               Fwflux3D(I,J,k) = FwFlux(k)
+               HeatFlux3D(I,J,k) = HeatFlux(k)
               ENDIF
             ELSEIF (GlacierFront_is_NorthSouth .eq. 0) THEN
               IF ( ( I .GT. 0 ) .AND. ( I .LT. sNx+1 ) ) THEN
-               Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
-               HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
+               Fwflux3D(I,J,k) = FwFlux(k)
+               HeatFlux3D(I,J,k) = HeatFlux(k)
               ENDIF
             ENDIF
 
@@ -698,8 +722,8 @@ catn: In ini_parms.F: mass2rUnit = recip_rhoConst, e.g., 1/999.8=1.0002e-3, Heat
 catn: Sign convention: using pkg/icefront as a guide: ocean will take the negative of the 
 catn: heatflux and positive of fwflux above, i.e., opposite sign of what was computed above.  
 catn: J/s/m2 * degC.m3/J = degC/s.m ; kg/s/m2 m3/kg g/kg = g/kg/s.m
-            icefront_TendT(I,J,K,bi,bj) = - HeatFlux3D(I,J,K,bi,bj)*eps5
-            icefront_TendS(I,J,K,bi,bj) = FWFlux3D(I,J,K,bi,bj)*
+            icefront_TendT(I,J,K,bi,bj) = - HeatFlux3D(I,J,K)*eps5
+            icefront_TendS(I,J,K,bi,bj) = FWFlux3D(I,J,K)*
      &                mass2rUnit * sProf(k)
 C     Scale by icefrontlength, which is the ratio of the horizontal length
 C     of the ice front in each model grid cell divided by the grid cell area.
@@ -733,9 +757,9 @@ C Find temperature and salinity of plume outflow
              DO k = 1,Nr        !second kloop
 catn: volFluxDiff entering here: when there's net convergence at this k
                IF ( volFluxDiff(k) .GT. 0. _d 0 ) THEN
-                temp_AddMass3D(I,J,K,bi,bj) = ! convert to potential temp
+                temp_AddMass3Dplume(I,J,K,bi,bj) = ! convert to potential temp
      &           SW_PTMP(sProfPlume(k),tProfPlume(k),prProf(k),0. _d 0)
-                salt_AddMass3D(I,J,K,bi,bj) = sProfPlume(k)
+                salt_AddMass3Dplume(I,J,K,bi,bj) = sProfPlume(k)
 #ifdef ALLOW_PTRACERS
                 DO iTracer = 1,PTRACERS_num
                  ptr_AddMass3D(I,J,K,bi,bj,iTracer)
@@ -743,8 +767,8 @@ catn: volFluxDiff entering here: when there's net convergence at this k
                 ENDDO
 #endif /* ALLOW_PTRACERS */
                ELSE 
-                temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
-                salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
+                temp_AddMass3Dplume(I,J,K,bi,bj) = ptProf(k)
+                salt_AddMass3Dplume(I,J,K,bi,bj) = sProf(k)
 #ifdef ALLOW_PTRACERS
                 DO iTracer = 1,PTRACERS_num
                  ptr_AddMass3D(I,J,K,bi,bj,iTracer) 
@@ -770,8 +794,8 @@ catn: rUnit2mass = rhoConst, this is how mitgcm converts between volume and mass
            ELSE !Q_sg eq 0
 
              DO K = 1,Nr
-              temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
-              salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
+              temp_AddMass3Dplume(I,J,K,bi,bj) = ptProf(k)
+              salt_AddMass3Dplume(I,J,K,bi,bj) = sProf(k)
 catn: Cannot reset a global field in here, now change to process-specfic field
 catn              addMass(I,j,k,bi,bj) = 0.D0
               addMass3Dplume(I,j,k,bi,bj) = 0. _d 0
@@ -792,7 +816,7 @@ catn: here we calc fields that live outside this routine
          DO J = 1,sNy
           DO I = 1,sNx
              addMass(I,J,K,bi,bj) = addMass(I,J,K,bi,bj) +
-     &         addMass3Dplume(i,j,k,bi,bj)+addMass3Dbg(i,j,k,bi,bj)
+     &         addMass3Dplume(i,j,k,bi,bj)+addMass3Dbg(i,j,k)
           ENDDO
          ENDDO
         ENDDO
@@ -809,26 +833,6 @@ C other options!)
         DO K = 1,Nr
          DO J = 1,sNy
           DO I = 1,sNx
-           wProfPlume3dLocal(I,J,K) =
-     &      wProfPlume3D(I,J,K,bi,bj)
-           tProfPlume3dLocal(I,J,K) =
-     &      tProfPlume3D(I,J,K,bi,bj)
-           sProfPlume3dLocal(I,J,K) =
-     &      sProfPlume3D(I,J,K,bi,bj)
-           rProfPlume3dLocal(I,J,K) =
-     &      rProfPlume3D(I,J,K,bi,bj)
-           mProfPlume3dLocal(I,J,K) =
-     &      mProfPlume3D(I,J,K,bi,bj)
-           mProfAv3dLocal(I,J,K) =
-     &      mProfAv3D(I,J,K,bi,bj)
-#ifdef ICEPLUME_ALLOW_DETACHED_PLUME          
-           thetaProfPlume3DLocal(I,J,K) =
-     &      thetaProfPlume3D(I,J,K,bi,bj)
-           distanceProfPlume3dLocal(I,J,K) =
-     &      distanceProfPlume3D(I,J,K,bi,bj)
-#endif
-            mass_icefront(i,j,k)=addMass3Dbg(i,j,k,bi,bj)
-            mass_iceplume(i,j,k)=addMass3Dplume(i,j,k,bi,bj)
             gT_icefront(i,j,k)=icefront_tendT(i,j,k,bi,bj)
             gS_icefront(i,j,k)=icefront_tendS(i,j,k,bi,bj)
 
@@ -840,31 +844,31 @@ C Output diagnostics
           DO K=1,Nr
 C Here, the first 'k' is the layer in the output field in which to save the data
 C and the second k is layer from which this data is taken in the original field
-          CALL DIAGNOSTICS_FILL_RS(wProfPlume3DLocal,'icefrntW',
+          CALL DIAGNOSTICS_FILL_RS(wProfPlume3D,'icefrntW',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(tProfPlume3DLocal,'icefrntT',
+          CALL DIAGNOSTICS_FILL_RS(tProfPlume3D,'icefrntT',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(sProfPlume3DLocal,'icefrntS',
+          CALL DIAGNOSTICS_FILL_RS(sProfPlume3D,'icefrntS',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(rProfPlume3DLocal,'icefrntR',
+          CALL DIAGNOSTICS_FILL_RS(rProfPlume3D,'icefrntR',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(mProfPlume3DLocal,'icefrntM',
+          CALL DIAGNOSTICS_FILL_RS(mProfPlume3D,'icefrntM',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(mProfAv3DLocal,'icefrntA',
+          CALL DIAGNOSTICS_FILL_RS(mProfAv3D,'icefrntA',
      &         k,k,3,bi,bj,myThid)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
-          CALL DIAGNOSTICS_FILL_RS(thetaProfPlume3DLocal,'PlumAngl',
+          CALL DIAGNOSTICS_FILL_RS(thetaProfPlume3D,'PlumAngl',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(distanceProfPlume3dLocal,'PlumDist',
+          CALL DIAGNOSTICS_FILL_RS(distanceProfPlume3D,'PlumDist',
      &         k,k,3,bi,bj,myThid)
 #endif
           CALL DIAGNOSTICS_FILL_RS(gT_icefront,'IP_gTbg ',
      &         k,k,3,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(gS_icefront,'IP_gSbg ',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(mass_iceplume,'IPmasspl',
-     &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(mass_icefront,'IPmassbg',
+          CALL DIAGNOSTICS_FILL_RS(addMass3Dplume,'IPmasspl',
+     &         k,k,1,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL_RS(addMass3Dbg,'IPmassbg',
      &         k,k,3,bi,bj,myThid)
           ENDDO
 
@@ -872,20 +876,25 @@ C Clear local arrays otherwise results replicate on other tiles
         DO K = 1,Nr
          DO J = 1,sNy
           DO I = 1,sNx
-           wProfPlume3dLocal(I,J,K) = 0.d0
-           tProfPlume3dLocal(I,J,K) = 0.d0
-           sProfPlume3dLocal(I,J,K) = 0.d0
-           rProfPlume3dLocal(I,J,K) = 0.d0
-           mProfPlume3dLocal(I,J,K) = 0.d0
-           mProfAv3dLocal(I,J,K) = 0.d0
+           wProfPlume3d(I,J,K) = 0.d0
+           tProfPlume3d(I,J,K) = 0.d0
+           sProfPlume3d(I,J,K) = 0.d0
+           rProfPlume3d(I,J,K) = 0.d0
+           mProfPlume3d(I,J,K) = 0.d0
+           mProfAv3d(I,J,K) = 0.d0
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
-           thetaProfPlume3dLocal(I,J,K) = 0.d0
-           distanceProfPlume3dLocal(I,J,K) = 0.d0
+           thetaProfPlume3d(I,J,K) = 0.d0
+           distanceProfPlume3d(I,J,K) = 0.d0
 #endif
            gT_icefront(i,j,k)=0. _d 0
            gS_icefront(i,j,k)=0. _d 0
-           mass_iceplume(i,j,k)=0. _d 0
-           mass_icefront(i,j,k)=0. _d 0
+           rProfPlume3D(i,j,k)=0. _d 0
+           wProfPlume3D(i,j,k)=0. _d 0
+           tProfPlume3D(i,j,k)=0. _d 0
+           sProfPlume3D(i,j,k)=0. _d 0
+           mProfPlume3D(i,j,k)=0. _d 0
+           mProfAv3D(i,j,k)=0. _d 0
+
           ENDDO
          ENDDO
         ENDDO

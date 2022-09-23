@@ -43,19 +43,41 @@ CEOP
       fp = readBinaryPrec
       iRec0 = 1
 
+catn prior to being set in iceplume_calc we reset here
+catn 19sep2022: even though these are set inside i,j loops in
+catn iceplume_calc.F, here we initialize to highlight the fact
+catn that they are time-varying and should not be read in from 
+catn namelists or initialized in iceplume_readparms.F
+      dLtangential = 0. _d 0
+      dLnormal     = 0. _d 0
+      Q_sg = 0. _d 0
+      r_sg = 0. _d 0
+      w_sg = 0. _d 0
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K = 1, Nr
-         DO J = 1, sNy
-          DO I = 1, sNx
+         DO J = 1-OLy, sNy+OLy
+          DO I = 1-OLx,sNx+OLx
            icefront_TendT (i,j,k,bi,bj) = 0. _d 0
            icefront_TendS (i,j,k,bi,bj) = 0. _d 0
+           temp_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
+           salt_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
+catn: move below now to local inside iceplume_calc
+c          addMass3Dbg    (I,J,K,bi,bj) = 0. _d 0
+           addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
+catn: I think all these are local variables for iceplume_calc and
+catn: should be initialized in there. A quick check in there shows 
+catn  that it's being set inside i,j loops.  But perhaps it's safe
+catn  to just initialize once in case various checks inside still
+catn  yield a loop without initialization, which can cause problem
+catn  for adjoint if implemented later.
       DO k = 1,Nr
        sProf  (K) = 0. _d 0
        tProf  (K) = 0. _d 0
@@ -88,47 +110,6 @@ catn: some variables are defined down to Nr+1
        mIntProfPlume (K) = 0. _d 0
        volFlux     (K) = 0. _d 0
       ENDDO
-
-      DO bj = 1,nSy
-      DO bi = 1,nSx
-       DO K = 1,Nr
-        DO J = 1-Oly,sNy+Oly
-         DO I = 1-OLx,sNx+OLx
-          HeatFlux3D  (I,J,K,bi,bj) = 0. _d 0
-          FwFlux3D    (I,J,K,bi,bj) = 0. _d 0
-          rProfPlume3D (I,J,K,bi,bj) = 0. _d 0
-          wProfPlume3D (I,J,K,bi,bj) = 0. _d 0
-          tProfPlume3D (I,J,K,bi,bj) = 0. _d 0
-          sProfPlume3D (I,J,K,bi,bj) = 0. _d 0
-          mProfPlume3D (I,J,K,bi,bj) = 0. _d 0
-          mProfAv3D    (I,J,K,bi,bj) = 0. _d 0
-          temp_addMass3D (I,J,K,bi,bj) = 0. _d 0
-          salt_addMass3D (I,J,K,bi,bj) = 0. _d 0
-          addMass3Dbg    (I,J,K,bi,bj) = 0. _d 0
-          addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
-          volFluxDiff3D (I,J,K,bi,bj) = 0. _d 0
-#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-           thetaProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           distanceProfPlume3D(i,j,k,bi,bj)=0. _d 0
-#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ENDDO
-
-       DO K = 1,Nr
-        DO J = 1,sNy
-         DO I = 1,sNx
-          rProfPlume3DLocal (I,J,K) = 0. _d 0
-          wProfPlume3DLocal (I,J,K) = 0. _d 0
-          tProfPlume3DLocal (I,J,K) = 0. _d 0
-          sProfPlume3DLocal (I,J,K) = 0. _d 0
-          mProfPlume3DLocal (I,J,K) = 0. _d 0
-          mProfAv3DLocal    (I,J,K) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
 
        DO I = 1,100
         runoffLocation(I,1) = 0. _d 0

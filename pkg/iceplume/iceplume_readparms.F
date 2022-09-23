@@ -34,7 +34,7 @@ CEOP
 
 C    PARMO1 - ICEPLUME inputs
       NAMELIST /ICEPLUME_PARM01/
-     &     runoffVelfile, runoffRadfile, plumeMaskFile, r_sg,
+     &     runoffVelfile, runoffRadfile, plumeMaskFile,
      &     T_sg_0, S_sg_0, E_0, Angle_sg_0,
      &     RTOL, ATOL,
      &     IceTemp,
@@ -75,9 +75,6 @@ C     Default values for PARM01
       E_0      = 0.1D0
       T_sg_0   = 1.0D-3
       S_sg_0   = 1.0D-3
-      r_sg     = 1.0D-2
-catn: instead of reading in two fields (w,r)_sg, here we default w_sg
-      w_sg     = 1.0D-2
       Angle_sg_0= PI/twoRL
       RTOL     = 1.0D-5
       ATOL     = 1.0D-5

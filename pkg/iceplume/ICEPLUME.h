@@ -37,16 +37,8 @@ C Header file pkg/ICEPLUME
      &     runoffVel, runoffVel0, runoffVel1,
      &     runoffRad, runoffRad0, runoffRad1,
      &     plumeMask, 
-     &     HeatFlux3D, FwFlux3D,
-     &     rProfPlume3D, wProfPlume3D,
-     &     tProfPlume3D, sProfPlume3D,
-     &     mProfPlume3D, mProfAv3D,
-     &     rProfPlume3DLocal, wProfPlume3DLocal,
-     &     tProfPlume3DLocal, sProfPlume3DLocal,
-     &     mProfPlume3DLocal, mProfAv3DLocal,
-     &     temp_addMass3D, salt_addMass3D,
-     &     addMass3Dplume, addMass3Dbg,
-     &     volFluxDiff3D,
+     &     temp_addMass3Dplume, salt_addMass3Dplume,
+     &     addMass3Dplume,
      &     Qin
       _RL runoffVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL runoffVel0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -55,25 +47,9 @@ C Header file pkg/ICEPLUME
       _RL runoffRad0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL plumeMask  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS HeatFlux3D  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS FwFlux3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS rProfPlume3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS wProfPlume3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS tProfPlume3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS sProfPlume3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS mProfPlume3D    (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS mProfAv3D       (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL temp_addMass3D  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL salt_addMass3D  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL temp_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL salt_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL addMass3Dbg     (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL volFluxDiff3D   (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS rProfPlume3DLocal    (sNx,sNy,Nr)
-      _RS wProfPlume3DLocal    (sNx,sNy,Nr)
-      _RS tProfPlume3DLocal    (sNx,sNy,Nr)
-      _RS sProfPlume3DLocal    (sNx,sNy,Nr)
-      _RS mProfPlume3DLocal    (sNx,sNy,Nr)
-      _RS mProfAv3DLocal       (sNx,sNy,Nr)
       _RS Qin (100)
 
       COMMON /ICEPLUME_FIELDS_PROFILES/
@@ -109,17 +85,9 @@ C Header file pkg/ICEPLUME
       
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME      
       COMMON /ICEPLUME_FIELDS_DETACHED/
-     & thetaProfPlume, distanceProfPlume,
-     & thetaProfPlume3D, distanceProfPlume3D,
-     & thetaProfPlume3DLocal, distanceProfPlume3DLocal
+     & thetaProfPlume, distanceProfPlume
       _RL thetaProfPlume (Nr+1)
       _RL distanceProfPlume (Nr+1)
-      _RL thetaProfPlume3D
-     &  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL distanceProfPlume3D
-     &  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)      
-      _RL thetaProfPlume3DLocal (sNx,sNy,Nr)
-      _RL distanceProfPlume3DLocal (sNx,sNy,Nr)
 #endif      
 
 C     dLnormal     :: the model grid d[x,y]G that is normal to the glacier wall
@@ -204,8 +172,8 @@ C     ICEFRONTheatCapacity_Cp  :: Heat Capacity of shelfice (def: 2000. J/kg)
       COMMON /ICEPLUME_ICEFRONT_FIELDS_RL/
      &     icefront_TendT,
      &     icefront_TendS
-      _RL icefront_TendT (1:sNx,1:sNy,Nr,nSx,nSy)
-      _RL icefront_TendS (1:sNx,1:sNy,Nr,nSx,nSy)
+      _RL icefront_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icefront_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C      LOGICAL ICEFRONTisOn
       LOGICAL applyIcefrontTendT
