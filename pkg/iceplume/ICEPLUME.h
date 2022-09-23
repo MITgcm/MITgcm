@@ -129,11 +129,7 @@ C     w_sg         :: time-dependent subglacial discharge vertical vel at point 
       _RL iceTemp
       _RL outputThickness
       _RL kap
-catn      _RL rho_ref
-catn      _RL g
-catn      _RL c_w
       _RL c_i
-catn      _RL L
       _RL gam
       _RL lambda1
       _RL lambda2
@@ -160,28 +156,29 @@ C Again, doesn't like MAX_LEN_FNAM
 
 C-----------------------------------------
 C Parameters relating to the icefront package
-C     ICEFRONTlatentHeat       :: latent heat of fusion (def: 334000 J/kg)
-C     ICEFRONTheatCapacity_Cp  :: Heat Capacity of shelfice (def: 2000. J/kg)
+C     ICEPLUMElatentHeat       :: latent heat of fusion (def: 334000 J/kg)
+C     ICEPLUMEheatCapacity_Cp  :: Heat Capacity of shelfice (def: 2000. J/kg)
 
-      COMMON /ICEPLUME_ICEFRONT_PARMS_R/
-     &     ICEFRONTlatentHeat, 
-     &     ICEFRONTheatCapacity_Cp
-      _RL ICEFRONTlatentHeat
-      _RL ICEFRONTheatCapacity_Cp
+      COMMON /ICEPLUME_PARMS_R/
+     &     ICEPLUMElatentHeat, 
+     &     ICEPLUMEheatCapacity_Cp
+      _RL ICEPLUMElatentHeat
+      _RL ICEPLUMEheatCapacity_Cp
 
-      COMMON /ICEPLUME_ICEFRONT_FIELDS_RL/
-     &     icefront_TendT,
-     &     icefront_TendS
-      _RL icefront_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icefront_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /ICEPLUME_FIELDS_RL/
+     &     iceplumeBG_TendT,
+     &     iceplumeBG_TendS
+      _RL iceplumeBG_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL iceplumeBG_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-C      LOGICAL ICEFRONTisOn
-      LOGICAL applyIcefrontTendT
-      LOGICAL applyIcefrontTendS
-      COMMON /ICEPLUME_ICEFRONT_PARMS_L/
-C     &     ICEFRONTisOn,
-     &     applyIcefrontTendT,
-     &     applyIcefrontTendS
+catn change icefront to iceplumeBG or iceplume to avoid potential conflict
+      LOGICAL ICEPLUMEisOn
+      LOGICAL applyIcePlumeBGTendT
+      LOGICAL applyIcePlumeBGTendS
+      COMMON /ICEPLUME_PARMS_L/
+     &     ICEPLUMEisOn,
+     &     applyIcePlumeBGTendT,
+     &     applyIcePlumeBGTendS
 
 C---------------------------------------------
 

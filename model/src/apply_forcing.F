@@ -519,6 +519,8 @@ catn: Note tendency included in addMass3Dplume here is from the plume.
 catn: The background melt is applied via iceplume_tendency_apply later.
 catn: Note: is what we are doing correct? I thought apply_forcing
 catn applies g[T,S] of all all processes that contribute to addMass.
+catn However, each process requires its own temperature? or at this
+catn point we apply whatever is the current theta/salt at this time?
 catn The way pkg/iceplume was coded, we do only iceplume from
 catn subglacial discharge here.  But what about other processes
 catn such as iceshelf or icefront that also contribe to addMass?
@@ -532,6 +534,10 @@ catn initialize
          DO j=0,sNy+1
           DO i=0,sNx+1
 
+catn 1Feb2022: from JMC we should save also addMass3Dplume*salt as it 
+catn is the quantity to convert between gT and diag fluxes similar to
+catn how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
+catn JMC is not sure if treatment for heat will work and will check
            tmpVar(i,j)=
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
      &          *(temp_addMass3Dplume(I,J,k,bi,bj)-theta(i,j,k,bi,bj))
@@ -580,7 +586,10 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
-
+catn 1Feb2022: from JMC we should save also addMass3Dplume*salt as it 
+catn is the quantity to convert between gT and diag fluxes similar to
+catn how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
+catn JMC is not sure if treatment for heat will work and will check
             tmpVar(i,j) = 
      &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
@@ -599,6 +608,24 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
       IF ( useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(tmpVar,
      &                     'gTaddMas',k,1,2,bi,bj,myThid )
+#ifdef ALLOW_ICEPLUME
+catn Originally tAddMass is just theta to check whether it is the
+catn same here as in iceplume_calc.  JMC has confirmed it is only the
+catn same if we are NOT using staggered timestepping.  So now this
+catn diag is the factor JMC suggested to save mainly for salt to see
+catn if it fixes the problem closing budg between tend vs flux forms.
+catn degC kg/s m3/kg 1/m3 = degC/s
+        DO j=0,sNy+1
+          DO i=0,sNx+1
+            tmpVar(i,j)=theta(i,j,k,bi,bj)
+     &          * addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+          CALL DIAGNOSTICS_FILL(tmpVar,
+     &                     'tAddMass',k,1,2,bi,bj,myThid )
+#endif /* ALLOW_ICEPLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_ADDFLUID */
@@ -810,6 +837,7 @@ c     ENDIF
       IF ( useICEPLUME )
      &     CALL ICEPLUME_TENDENCY_APPLY_T(
      U                   gT_arr,
+     I                   iMin,iMax,jMin,jMax, 
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEPLUME */
 
@@ -1062,6 +1090,25 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 C     conversion to g/kg/s
           CALL DIAGNOSTICS_FILL(tmpVar,
      &                     'gSaddMas',k,1,2,bi,bj,myThid )
+#ifdef ALLOW_ICEPLUME
+catn originally sAddMass is just salt to check whether it is the
+catn same here as in iceplume_calc.  JMC has confirmed it is only the
+catn same if we are NOT using staggered timestepping.  So now this
+catn diag is the factor JMC suggested to save mainly for salt to see
+catn if it fixes the problem closing budg between tend vs flux forms.
+catn psu kg/s m3/kg 1/m3 = psu/s. mimic diags_oceanic_surf_flux.F for SFLUX
+catn another question is whether below we need the hFacC factor
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+            tmpVar(i,j)=salt(i,j,k,bi,bj)
+     &          *addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+          CALL DIAGNOSTICS_FILL(tmpVar,
+     &                     'sAddMass',k,1,2,bi,bj,myThid )
+#endif /* ALLOW_ICEPLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_ADDFLUID */
@@ -1117,6 +1164,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( useICEPLUME )
      &     CALL ICEPLUME_TENDENCY_APPLY_S(
      U                   gS_arr,
+     I                   iMin,iMax,jMin,jMax,
      I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEPLUME */
 

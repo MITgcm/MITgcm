@@ -41,11 +41,11 @@ C     Equations for Sb, Tb and mdot
       a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*salinity-lambda2-lambda3*depth+
-     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &         iceTemp-(ICEPLUMElatentHeat/c_i))
      &        -GamT*HeatCapacity_Cp*(temperature-lambda2-lambda3*depth)
 
       c = GamS*salinity*(c_i*(lambda2+lambda3*depth-iceTemp)
-     &       +ICEFRONTlatentHeat)
+     &       +ICEPLUMElatentHeat)
 
       Sb   = (oneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*depth !Tb

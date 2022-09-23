@@ -354,11 +354,11 @@ C Equations for Sb, Tb and mdot
       a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &         iceTemp-(ICEPLUMElatentHeat/c_i))
      &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
       c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &        +ICEFRONTlatentHeat)
+     &        +ICEPLUMElatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
@@ -445,11 +445,11 @@ C     Equations for Sb, Tb and mdot
       a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &         iceTemp-(ICEPLUMElatentHeat/c_i))
      &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
       c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &       +ICEFRONTlatentHeat)
+     &       +ICEPLUMElatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
@@ -533,11 +533,11 @@ C     Equations for Sb, Tb and mdot
       a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &         iceTemp-(ICEPLUMElatentHeat/c_i))
      &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
       c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &         +ICEFRONTlatentHeat)
+     &         +ICEPLUMElatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb

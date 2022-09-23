@@ -59,8 +59,8 @@ catn namelists or initialized in iceplume_readparms.F
         DO K = 1, Nr
          DO J = 1-OLy, sNy+OLy
           DO I = 1-OLx,sNx+OLx
-           icefront_TendT (i,j,k,bi,bj) = 0. _d 0
-           icefront_TendS (i,j,k,bi,bj) = 0. _d 0
+           iceplumeBG_TendT (i,j,k,bi,bj) = 0. _d 0
+           iceplumeBG_TendS (i,j,k,bi,bj) = 0. _d 0
            temp_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
            salt_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
 catn: move below now to local inside iceplume_calc

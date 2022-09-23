@@ -51,16 +51,14 @@ C    PARMO1 - ICEPLUME inputs
      &     useConePlume,
      &     maxDepth,
      &     backgroundVel
-catn     &     rho_ref,
-catn     &     rhoShelfIce,
-catn     &     g,
-catn     &     L,
-catn     &     c_w,
 
-C    PARMO2 - icefront inputs required for thermodynamics
+C    PARMO2 - iceplume inputs required for thermodynamics
+catn change icefront to iceplume in case we ever run with icefront and
+catn have duplicate definitions of variables. change tend to tendBG to
+catn indicate these flags or fields are relevant for the background melt
       NAMELIST /ICEPLUME_PARM02/
-     &     ICEFRONTlatentHeat, ICEFRONTHeatCapacity_Cp,
-     &     applyIcefrontTendT,applyIcefrontTendS
+     &     ICEPLUMElatentHeat, ICEPLUMEHeatCapacity_Cp,
+     &     applyIcePlumeBGTendT,applyIcePlumeBGTendS
 
 #ifdef ALLOW_PTRACERS
 C    PARM03 - inputs relating to passive tracers
@@ -69,7 +67,22 @@ C    PARM03 - inputs relating to passive tracers
      &     useInputPtracers
 #endif /* ALLOW_PTRACERS */ 
 
+      IF ( .NOT.useICEPLUME ) THEN
+C-    pkg ICEPLUME is not used
+        _BEGIN_MASTER(myThid)
+C-    Track pkg activation status:
+         ICEPLUMEisON = .FALSE.
+C     print a (weak) warning if data.iceplume is found
+         CALL PACKAGES_UNUSED_MSG( 'useICEPLUME', ' ', ' ' )
+        _END_MASTER(myThid)
+        RETURN
+      ENDIF
+
       _BEGIN_MASTER(myThid)
+
+C This routine has been called by the main model so we set our
+C internal flag to indicate we are in business
+      ICEPLUMEisON = .TRUE.
 
 C     Default values for PARM01
       E_0      = 0.1D0
@@ -106,10 +119,10 @@ catn      L      = 334000D0
       backgroundVel = 0.001
 
 C Default values for PARMO2
-       ICEFRONTlatentHeat       =  334.0 _d 3
-       ICEFRONTHeatCapacity_Cp  = 2000.0 _d 0
-       applyIcefrontTendT       = .TRUE.
-       applyIcefrontTendS       = .TRUE.
+       ICEPLUMElatentHeat       =  334.0 _d 3
+       ICEPLUMEHeatCapacity_Cp  = 2000.0 _d 0
+       applyIcePlumeBGTendT     = .TRUE.
+       applyIcePlumeBGTendS     = .TRUE.
 
 #ifdef ALLOW_PTRACERS
 C Default values for PARM03
@@ -136,7 +149,11 @@ C Open and read the data.icefront file
      &                   SQUEEZE_RIGHT, myThid )
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C Zero values for T_sg and S_sg can cause the routine to crash
       IF ( T_sg_0.EQ.0.D0 ) T_sg_0 = 1.0D-3

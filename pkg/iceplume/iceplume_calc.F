@@ -101,8 +101,8 @@ catn      PARAMETER(rho_0=1027.0D0)
 catn      PARAMETER(rho_shelfice=917.0D0)
 catn      PARAMETER(lhfusion=333.55E+3)
 catn: be careful about overlap, i think these will all need them.
-      _RL gT_icefront         (1:sNx,1:sNy,Nr)
-      _RL gS_icefront         (1:sNx,1:sNy,Nr)
+      _RL gT_iceplumeBG       (1:sNx,1:sNy,Nr)
+      _RL gS_iceplumeBG       (1:sNx,1:sNy,Nr)
       _RL AddMass3Dbg         (1:sNx,1:sNy,Nr)
       _RL Fwflux3D            (1:sNx,1:sNy,Nr)
       _RL HeatFlux3D          (1:sNx,1:sNy,Nr)
@@ -139,8 +139,8 @@ catn: Initialize tendencies for plume
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           gT_icefront(i,j,k)=0. _d 0
-           gS_icefront(i,j,k)=0. _d 0
+           gT_iceplumeBG(i,j,k)=0. _d 0
+           gS_iceplumeBG(i,j,k)=0. _d 0
            AddMass3Dbg(i,j,k)=0. _d 0
            Fwflux3D(i,j,k)=0. _d 0
            Heatflux3D(i,j,k)=0. _d 0
@@ -287,7 +287,6 @@ C and velocity profiles for that column
 
            DO K = 1,Nr
 C           Tracers
-catn            prProf(k) = ABS(rC(k))*rho_0*9.81*1.0E-6 ! Pressure (dbar)
             prProf(k) = ABS(rC(k))*rhoConst*gravity*1.0E-6 ! Pressure (dbar)
             sProf(K)  = salt(I,J,K,bi,bj)         ! Salinity
             ptProf(K) = theta(I,J,K,bi,bj)        ! Potential Temperature
@@ -699,7 +698,7 @@ catn: (outward, postive=leaving ocean). dheat_lost_by_ocean is opposite sign of 
 catn: kg/s/m2*J/kg=J/s/m2=W/m2
 catn            heatflux(k) = -FwFlux(k)*333.55E+3
 catn This is based on mprof, so it is background fluxes
-            heatflux(k) = -FwFlux(k)*ICEFRONTlatentHeat
+            heatflux(k) = -FwFlux(k)*ICEPLUMElatentHeat
 
 C Create local (no overlap) arrays of heat and freshwater flux from background melting
 catn FwFlux kg/s/m2 , HeatFlux: W/m2
@@ -722,8 +721,8 @@ catn: In ini_parms.F: mass2rUnit = recip_rhoConst, e.g., 1/999.8=1.0002e-3, Heat
 catn: Sign convention: using pkg/icefront as a guide: ocean will take the negative of the 
 catn: heatflux and positive of fwflux above, i.e., opposite sign of what was computed above.  
 catn: J/s/m2 * degC.m3/J = degC/s.m ; kg/s/m2 m3/kg g/kg = g/kg/s.m
-            icefront_TendT(I,J,K,bi,bj) = - HeatFlux3D(I,J,K)*eps5
-            icefront_TendS(I,J,K,bi,bj) = FWFlux3D(I,J,K)*
+            iceplumeBG_TendT(I,J,K,bi,bj) = - HeatFlux3D(I,J,K)*eps5
+            iceplumeBG_TendS(I,J,K,bi,bj) = FWFlux3D(I,J,K)*
      &                mass2rUnit * sProf(k)
 C     Scale by icefrontlength, which is the ratio of the horizontal length
 C     of the ice front in each model grid cell divided by the grid cell area.
@@ -732,11 +731,11 @@ catn: More problematic assumption of geometry of delta_x and delta_y
 catn: Solved now by rename to dLtangential and dLnormal
 catn: Scale factor: dLtangential/(dLnormal*dLtantengial) = 1/dLnormal
 catn degC/s.m/m = degC/s; g/kg/s.m/m=g/kg/s
-            icefront_TendT(I,j,K,bi,bj) = 
-     &            icefront_TendT(I,j,K,bi,bj)
+            iceplumeBG_TendT(I,j,K,bi,bj) = 
+     &            iceplumeBG_TendT(I,j,K,bi,bj)
      &            * 1./dLnormal
-            icefront_TendS(I,j,K,bi,bj) = 
-     &            icefront_TendS(I,j,K,bi,bj)
+            iceplumeBG_TendS(I,j,K,bi,bj) = 
+     &            iceplumeBG_TendS(I,j,K,bi,bj)
      &            * 1./dLnormal
            ENDDO !the big k-loop
 
@@ -833,9 +832,8 @@ C other options!)
         DO K = 1,Nr
          DO J = 1,sNy
           DO I = 1,sNx
-            gT_icefront(i,j,k)=icefront_tendT(i,j,k,bi,bj)
-            gS_icefront(i,j,k)=icefront_tendS(i,j,k,bi,bj)
-
+            gT_iceplumeBG(i,j,k)=iceplumeBG_tendT(i,j,k,bi,bj)
+            gS_iceplumeBG(i,j,k)=iceplumeBG_tendS(i,j,k,bi,bj)
            ENDDO !I
           ENDDO  !J
          ENDDO   !K
@@ -862,9 +860,9 @@ C and the second k is layer from which this data is taken in the original field
           CALL DIAGNOSTICS_FILL_RS(distanceProfPlume3D,'PlumDist',
      &         k,k,3,bi,bj,myThid)
 #endif
-          CALL DIAGNOSTICS_FILL_RS(gT_icefront,'IP_gTbg ',
+          CALL DIAGNOSTICS_FILL_RS(gT_iceplumeBG,'IP_gTbg ',
      &         k,k,3,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(gS_icefront,'IP_gSbg ',
+          CALL DIAGNOSTICS_FILL_RS(gS_iceplumeBG,'IP_gSbg ',
      &         k,k,3,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(addMass3Dplume,'IPmasspl',
      &         k,k,1,bi,bj,myThid)
@@ -886,14 +884,19 @@ C Clear local arrays otherwise results replicate on other tiles
            thetaProfPlume3d(I,J,K) = 0.d0
            distanceProfPlume3d(I,J,K) = 0.d0
 #endif
-           gT_icefront(i,j,k)=0. _d 0
-           gS_icefront(i,j,k)=0. _d 0
+           gT_iceplumeBG(i,j,k)=0. _d 0
+           gS_iceplumeBG(i,j,k)=0. _d 0
+           addMass3Dbg(i,j,k)=0. _d 0
            rProfPlume3D(i,j,k)=0. _d 0
            wProfPlume3D(i,j,k)=0. _d 0
            tProfPlume3D(i,j,k)=0. _d 0
            sProfPlume3D(i,j,k)=0. _d 0
            mProfPlume3D(i,j,k)=0. _d 0
            mProfAv3D(i,j,k)=0. _d 0
+#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
+           thetaProfPlume3D(i,j,k)=0. _d 0
+           distanceProfPlume3D(i,j,k)=0. _d 0
+#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
           ENDDO
          ENDDO

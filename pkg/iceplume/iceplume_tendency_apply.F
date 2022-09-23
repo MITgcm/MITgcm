@@ -8,6 +8,7 @@ C !ROUTINE: ICEPLUME_TENDENCY_APPLY_T
 C !INTERFACE:
       SUBROUTINE ICEPLUME_TENDENCY_APPLY_T(
      U                    gT_arr,
+     I                    iMin,iMax,jMin,jMax,
      I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -32,6 +33,7 @@ C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
       _RL     gT_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
       INTEGER k, bi, bj
       _RL     myTime
       INTEGER myIter
@@ -42,14 +44,15 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_ICEPLUME
 
-      IF ( applyIcefrontTendT ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+catn: this is the background melt tendency
+      IF ( applyIceplumeBGTendT ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           gT_arr(i,j) = gT_arr(i,j)
-     &         + ICEFRONT_TendT(i,j,k,bi,bj)
+     &         + iceplumeBG_TendT(i,j,k,bi,bj)
         ENDDO
        ENDDO
-       ENDIF
+      ENDIF
 
 #endif /* ALLOW_ICEPLUME */
 
@@ -63,6 +66,7 @@ C !ROUTINE: ICEPLUME_TENDENCY_APPLY_S
 C !INTERFACE:
       SUBROUTINE ICEPLUME_TENDENCY_APPLY_S(
      U                    gS_arr,
+     I                    iMin,iMax,jMin,jMax,
      I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -86,6 +90,7 @@ C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number
 C     myThid    :: my Thread Id number
       _RL     gS_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iMin, iMax, jMin, jMax
       INTEGER k, bi, bj
       _RL     myTime
       INTEGER myIter
@@ -97,11 +102,12 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_ICEPLUME
 
-      IF ( applyIcefrontTendS ) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+catn: this is the background melt tendency
+      IF ( applyIceplumeBGTendS ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           gS_arr(i,j) = gS_arr(i,j)
-     &         + ICEFRONT_TendS(i,j,k,bi,bj)
+     &         + iceplumeBG_TendS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF

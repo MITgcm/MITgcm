@@ -400,13 +400,14 @@ catn initialize
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            tmpVar(i,j)=
+            tmpVar(i,j) =
      &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
      &        *(temp_addMass3D(I,J,Klev,bi,bj)-theta(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)+tmpVar(i,j)
+            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) + tmpVar(i,j)
 
           ENDDO
          ENDDO
@@ -419,7 +420,7 @@ catn initialize
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 
-            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)+tmpVar(i,j)
+            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) + tmpVar(i,j)
           ENDDO
          ENDDO
         ENDIF
@@ -431,32 +432,31 @@ catn: make sure (temp,salt)_addMass are unset so we do not enter here
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
-
          DO j=1,sNy
           DO i=1,sNx
 
-            tmpVar(i,j) = 
+            tmpVar(i,j) =
      &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( temp_addMass - theta(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)+tmpVar(i,j)
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj) + tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
 
-            tmpVar(i,j) = 
+            tmpVar(i,j) =
      &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)+tmpVar(i,j)
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj) + tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
@@ -633,6 +633,7 @@ c     ENDIF
       IF ( useICEPLUME )
      &     CALL ICEPLUME_TENDENCY_APPLY_T(
      U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
      I                   kLev, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEPLUME */
 
@@ -788,21 +789,24 @@ catn initialize
      &        *( salt_addMass3D(I,J,Klev,bi,bj) - salt(i,j,kLev,bi,bj) )
      &        *recip_rA(i,j,bi,bj)
      &        *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+c     &        *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gS(i,j,klev,bi,bj)=gS(i,j,k,bi,bj)+tmpVar(i,j)
+            gS(i,j,klev,bi,bj)=gS(i,j,k,bi,bj) + tmpVar(i,j)
 
           ENDDO
          ENDDO
         ELSE
          DO j=1,sNy
           DO i=1,sNx
-            tmpVar(i,j)=
+
+            tmpVar(i,j) =
      &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
      &          *( salt_addMass3D(I,J,Klev,bi,bj) - sRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+c     &         *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gS(i,j,klev,bi,bj)=gS(i,j,klev,bi,bj)+tmpVar(i,j)
+            gS(i,j,klev,bi,bj)=gS(i,j,klev,bi,bj) + tmpVar(i,j)
 
           ENDDO
          ENDDO
@@ -817,28 +821,28 @@ catn: make sure (temp,salt)_addMass are unset so we do not enter here
          DO j=1,sNy
           DO i=1,sNx
 
-            tmpVar(i,j) = 
+            tmpVar(i,j) =
      &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+tmpVar(i,j)
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj) + tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
 
-            tmpVar(i,j) = 
+            tmpVar(i,j) =
      &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
 
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+tmpVar(i,j)
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj) + tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
@@ -898,6 +902,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( useICEPLUME )
      &     CALL ICEPLUME_TENDENCY_APPLY_S(
      U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
      I                   kLev, bi, bj, myTime, 0, myThid )
 #endif /* ALLOW_ICEPLUME */
 
