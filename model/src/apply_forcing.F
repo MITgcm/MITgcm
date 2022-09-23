@@ -517,23 +517,24 @@ C--   Forcing term
 
 catn: Note tendency included in addMass3Dplume here is from the plume.
 catn: The background melt is applied via iceplume_tendency_apply later.
+catn: Note: is what we are doing correct? I thought apply_forcing
+catn applies g[T,S] of all all processes that contribute to addMass.
+catn The way pkg/iceplume was coded, we do only iceplume from
+catn subglacial discharge here.  But what about other processes
+catn such as iceshelf or icefront that also contribe to addMass?
 #ifdef ALLOW_ICEPLUME
-       temp_addMass = 1 ! force loop entry
-#endif /* ALLOW_ICEPLUME */
+catn initialize
 
-      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
-       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+      IF ( useICEPLUME ) THEN
+       IF ( selectAddFluid.NE.0) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
 
-#ifdef ALLOW_ICEPLUME
-       temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
            tmpVar(i,j)=
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( temp_addMass - theta(i,j,k,bi,bj) )
+     &          *( temp_addMass3D(I,J,k,bi,bj) - theta(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -544,13 +545,44 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
+           tmpVar(i,j)=
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          *( temp_addMass3D(I,J,k,bi,bj) - tRef(k) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 
-#ifdef ALLOW_ICEPLUME
-       temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
+           gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+      ENDIF
+#else /* ALLOW_ICEPLUME */
+
+catn: make sure we undefine (temp,salt)_addMass so we do not enter here
+      IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
+       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+         DO j=0,sNy+1
+          DO i=0,sNx+1
 
             tmpVar(i,j) =
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          addMass(i,j,k,bi,bj)*mass2rUnit
+     &          *( temp_addMass - theta(i,j,k,bi,bj) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+            gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
+          ENDDO
+         ENDDO
+       ELSE
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+
+            tmpVar(i,j) = 
+     &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -561,6 +593,8 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
          ENDDO
        ENDIF
       ENDIF
+#endif /* ALLOW_ICEPLUME */
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
           CALL DIAGNOSTICS_FILL(tmpVar,
@@ -950,21 +984,53 @@ C--   Forcing term
 catn: Note tendency included in addMass3Dplume here is from the plume.
 catn: The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
-       salt_addMass = 1 ! force loop entry
-#endif /* ALLOW_ICEPLUME */
+catn initialize
 
-      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
-       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+      IF ( useICEPLUME ) THEN
+       IF ( selectAddFluid.NE.0) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
 
-#ifdef ALLOW_ICEPLUME
-       salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
-            tmpVar(i,j) = 
+           tmpVar(i,j) =
      &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          *( salt_addMass3D(I,J,k,bi,bj) - salt(i,j,k,bi,bj) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+           gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
+          ENDDO
+         ENDDO
+       ELSE
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+
+           tmpVar(i,j) =
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          *( salt_addMass3D(I,J,k,bi,bj) - sRef(k) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+           gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+      ENDIF
+#else
+catn: make sure (salt,temp)_addMass are unset so we dont enter here
+      IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
+       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+
+         DO j=0,sNy+1
+          DO i=0,sNx+1
+
+            tmpVar(i,j) =
+     &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -977,12 +1043,8 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
          DO j=0,sNy+1
           DO i=0,sNx+1
 
-#ifdef ALLOW_ICEPLUME
-       salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
             tmpVar(i,j) =
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
+     &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -993,6 +1055,7 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
          ENDDO
        ENDIF
       ENDIF
+#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
