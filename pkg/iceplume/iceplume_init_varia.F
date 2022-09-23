@@ -146,8 +146,12 @@ catn: because there are other processes that also contrib to addMass.
         DO K = 1,Nr
          DO J = 1-OLy,sNy+OLy
           DO I = 1-OLx,sNx+OLx
-            temp_AddMass3D(I,J,K,bi,bj) = theta(I,J,K,bi,bj)
-            salt_AddMass3D(I,J,K,bi,bj) = salt(I,J,K,bi,bj)
+catn: should we be doing this? because if we're not careful on how to 
+catn: get the correct plume column then temp_AddMass3D takes theta
+catn: which makes gT zero even if we have massive entrainment of plume
+catn: (which supposed to have its own Tprofile) and the surrounding
+catn            temp_AddMass3D(I,J,K,bi,bj) = theta(I,J,K,bi,bj)
+catn            salt_AddMass3D(I,J,K,bi,bj) = salt(I,J,K,bi,bj)
 #ifdef ALLOW_PTRACERS
             DO iTracer = 1,PTRACERS_num
              ptr_Addmass3D(I,J,K,bi,bj,iTracer)

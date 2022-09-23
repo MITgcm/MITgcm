@@ -124,11 +124,17 @@ C Header file pkg/ICEPLUME
 
 C     dLnormal     :: the model grid d[x,y]G that is normal to the glacier wall
 C     dLtangential :: the model grid d[x,y]G that is parallel to (i.e., along) the glacier wall
+C     Angle_sg_0   :: initial angle with respect to horizon, deg -- make nearly horizontal
+C     T_sg_0       :: initial temperature of subglacial discharge, default to 1.d-3 degC
+C     S_sg_0       :: initial salinity of subglacial discharge, default to 1.d-3 g/kg
+C     Q_sg         :: time-dependent subglacial discharge volume flux rate at point source, default to 1.d-3 m3/s
+C     r_sg         :: time-dependent subglacial discharge radius at point source, default to 1.d-2 m
+C     w_sg         :: time-dependent subglacial discharge vertical vel at point source, default to 1.d0 m/s
 
       COMMON /ICEPLUME_PARM_R/
      &     E_0,
-     &     Q_sg, T_sg, S_sg, r_sg, w_sg,
-     &     theta_sg,
+     &     Q_sg, T_sg_0, S_sg_0, r_sg, w_sg,
+     &     Angle_sg_0,
      &     dLnormal, dLtangential,
      &     RTOL, ATOL,
      &     iceTemp,
@@ -142,12 +148,12 @@ C     dLtangential :: the model grid d[x,y]G that is parallel to (i.e., along) t
      &     ptracerfluxSum,
      &     maxDepth
       _RS E_0
+      _RL Angle_sg_0
+      _RL T_sg_0
+      _RL S_sg_0
       _RS Q_sg
-      _RL T_sg
-      _RL S_sg
       _RL w_sg
       _RL r_sg
-      _RL theta_sg
       _RL dLnormal
       _RL dLtangential
       _RL RTOL

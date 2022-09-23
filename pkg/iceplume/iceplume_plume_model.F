@@ -82,13 +82,31 @@ C For ODEPACK solver. See ODEPACK documentation for definitions.
       IWORK(7) = 2 ! To limit number of times repeat error messages are printed
 
 C Initial conditions
-      Y(2) = w_sg          ! initial vertical velocity
-      Y(3) = T_sg          ! initial temperature
-      Y(4) = S_sg          ! initial salinity
+catn ============
+catn A few notes on "initial" as inputs: 
+catn Time constant:
+catn T_sg_0, S_sg_0, Angle_sg_0: read in from namelist or initialized
+catn                             in readparms and are NEVER CHANGED.
+catn Time dependent:
+catn The pair w_sg,r_sg or Q_sg are forcing values and geometry at the 
+catn point source, and are typically read in from file(s).
+catn If these files not available, then they take values assigned
+catn from namelist or initialized from readparms.  If read in the pair
+catn w_sg and r_sg, note that their individual values are not important
+catn but rather their combination to produce the intended Q_sg, with the
+catn relation done in iceplume_calc.F.  If read in Q_sg, then we typically
+catn fix w_sg and compute r_sg (done in iceplume_calc.F).
+catn Outputs:
+catn This takes inputs [w,r,Q]_sg, [T,S,Angle]_sg_0 to compute updated Y(9)
+catn (replacing input dLtangential) to update [r,w,t,s,a,mInt]ProfPlume(iout)
+catn ============
+      Y(2) = w_sg          ! time-dependent vertical velocity at point source
+      Y(3) = T_sg_0        ! initial temperature at point source
+      Y(4) = S_sg_0        ! initial salinity at point source
       Y(5) = 0.0           ! integrated contact area
       Y(6) = 0.0           ! integrated melt rate
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
-      Y(7) = theta_sg          ! initial angle -- make nearly horizontal
+      Y(7) = Angle_sg_0    ! initial angle at point source -- make nearly horizontal
       Y(8) = 0.0
       Y(9) = dLtangential
       IF (useDetachPlume) THEN

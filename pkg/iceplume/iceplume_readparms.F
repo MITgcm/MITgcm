@@ -34,8 +34,8 @@ CEOP
 
 C    PARMO1 - ICEPLUME inputs
       NAMELIST /ICEPLUME_PARM01/
-     &     runoffVelfile, runoffRadfile, plumeMaskFile,
-     &     T_sg, S_sg, E_0, w_sg, r_sg, theta_sg,
+     &     runoffVelfile, runoffRadfile, plumeMaskFile, r_sg,
+     &     T_sg_0, S_sg_0, E_0, Angle_sg_0,
      &     RTOL, ATOL,
      &     IceTemp,
      &     usePlumeDiagnostics,
@@ -73,11 +73,12 @@ C    PARM03 - inputs relating to passive tracers
 
 C     Default values for PARM01
       E_0      = 0.1D0
-      T_sg     = 1.0D-3
-      S_sg     = 1.0D-3
-      w_sg     = 1.0D-2
+      T_sg_0   = 1.0D-3
+      S_sg_0   = 1.0D-3
       r_sg     = 1.0D-2
-      theta_sg = PI/twoRL
+catn: instead of reading in two fields (w,r)_sg, here we default w_sg
+      w_sg     = 1.0D-2
+      Angle_sg_0= PI/twoRL
       RTOL     = 1.0D-5
       ATOL     = 1.0D-5
       iceTemp  = 0.
@@ -141,8 +142,8 @@ C Close the open data file
       CLOSE(iUnit)
 
 C Zero values for T_sg and S_sg can cause the routine to crash
-      IF ( T_sg.EQ.0.D0 ) T_sg = 1.0D-3
-      IF ( S_sg.EQ.0.D0 ) S_sg = 1.0D-3
+      IF ( T_sg_0.EQ.0.D0 ) T_sg_0 = 1.0D-3
+      IF ( S_sg_0.EQ.0.D0 ) S_sg_0 = 1.0D-3
 
       _END_MASTER(myThid)
 C--   Everyone else must wait for the parameters to be loaded

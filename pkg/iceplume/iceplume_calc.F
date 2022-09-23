@@ -124,9 +124,6 @@ C Enter into loops
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 catn: Initialize tendencies for plume
-catn: Most of these are local, so will be removed from ICEPLUME.h 
-catn  and remove bi,bj.  This is why they are moved from
-catn  iceplume_init_varia.F into here
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
@@ -134,22 +131,6 @@ catn  iceplume_init_varia.F into here
            gS_icefront(i,j,k)=0. _d 0
            mass_iceplume(i,j,k)=0. _d 0
            mass_icefront(i,j,k)=0. _d 0
-           AddMass3Dplume(i,j,k,bi,bj)=0. _d 0
-           AddMass3Dbg(i,j,k,bi,bj)=0. _d 0
-           temp_AddMass3D(i,j,k,bi,bj)=0. _d 0
-           salt_AddMass3D(i,j,k,bi,bj)=0. _d 0
-           Fwflux3D(i,j,k,bi,bj)=0. _d 0
-           Heatflux3D(i,j,k,bi,bj)=0. _d 0
-           rProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           wProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           tProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           sProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           mProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           mProfAv3D(i,j,k,bi,bj)=0. _d 0
-#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-           thetaProfPlume3D(i,j,k,bi,bj)=0. _d 0
-           distanceProfPlume3D(i,j,k,bi,bj)=0. _d 0
-#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
           ENDDO
          ENDDO
         ENDDO
