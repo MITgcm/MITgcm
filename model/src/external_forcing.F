@@ -384,10 +384,50 @@ C--   Forcing term
 
 #ifdef ALLOW_ADDFLUID
 
+catn: Note tendency included in addMass3Dplume here is from the plume.
+catn: The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
-       temp_addMass = 1 ! force loop entry
-#endif /* ALLOW_ICEPLUME */
+catn initialize
+      DO j=1,sNy
+       DO i=1,sNx
+        tmpVar(i,j)=0. _d 0
+       ENDDO
+      ENDDO
 
+      IF ( useICEPLUME ) THEN
+       IF ( selectAddFluid.NE.0 ) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpVar(i,j)=
+     &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
+     &        *(temp_addMass3D(I,J,Klev,bi,bj)-theta(i,j,kLev,bi,bj) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+
+            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)+tmpVar(i,j)
+
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpVar(i,j) = 
+     &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( temp_addMass3D(I,J,Klev,bi,bj) - tRef(kLev) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+
+            gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)+tmpVar(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+      ENDIF
+
+#else
+catn: make sure (temp,salt)_addMass are unset so we do not enter here
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
@@ -395,36 +435,33 @@ C--   Forcing term
          DO j=1,sNy
           DO i=1,sNx
 
-#ifdef ALLOW_ICEPLUME
-       temp_addMass = temp_addMass3D(I,J,Klev,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+            tmpVar(i,j) = 
+     &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( temp_addMass - theta(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)+tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
 
-#ifdef ALLOW_ICEPLUME
-       temp_addMass = temp_addMass3D(I,J,Klev,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
-            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+            tmpVar(i,j) = 
+     &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)+tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
       ENDIF
+#endif /* ALLOW_ICEPLUME */
 #endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_FRICTION_HEATING
@@ -733,45 +770,80 @@ C--   Forcing term
 #ifdef ALLOW_ADDFLUID
 
 #ifdef ALLOW_ICEPLUME
-       salt_addMass = 1 ! force loop entry
-#endif /* ALLOW_ICEPLUME */
+catn initialize
+      DO j=0,sNy+1
+       DO i=0,sNx+1
+        tmpVar(i,j)=0. _d 0
+       ENDDO
+      ENDDO
 
+      IF ( useICEPLUME ) THEN
+       IF ( selectAddFluid.NE.0 ) THEN
+        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpVar(i,j) = 
+     &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
+     &        *( salt_addMass3D(I,J,Klev,bi,bj) - salt(i,j,kLev,bi,bj) )
+     &        *recip_rA(i,j,bi,bj)
+     &        *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+
+            gS(i,j,klev,bi,bj)=gS(i,j,k,bi,bj)+tmpVar(i,j)
+
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            tmpVar(i,j)=
+     &        addMass3Dplume(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( salt_addMass3D(I,J,Klev,bi,bj) - sRef(kLev) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+
+            gS(i,j,klev,bi,bj)=gS(i,j,klev,bi,bj)+tmpVar(i,j)
+
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+      ENDIF
+#else
+catn: make sure (temp,salt)_addMass are unset so we do not enter here
       IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
 
-#ifdef ALLOW_ICEPLUME
-       salt_addMass = salt_addMass3D(I,J,Klev,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+            tmpVar(i,j) = 
+     &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,kLev,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
          DO j=1,sNy
           DO i=1,sNx
 
-#ifdef ALLOW_ICEPLUME
-       salt_addMass = salt_addMass3D(I,J,Klev,bi,bj) ! get real value
-#endif /* ALLOW_ICEPLUME */
-
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+            tmpVar(i,j) = 
+     &          addMass(i,j,kLev,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(kLev) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
 C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)+tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
       ENDIF
+#endif /* ALLOW_ICEPLUME */
 #endif /* ALLOW_ADDFLUID */
 
 C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level

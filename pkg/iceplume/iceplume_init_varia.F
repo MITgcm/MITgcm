@@ -158,7 +158,9 @@ catn: because there are other processes that also contrib to addMass.
 catn: Cannot initialize the global addMass field here just in case there 
 catn: are other processes that also adds mass. So we must define independent
 catn: addMass* specific to the process of plume or background melt.
-            addMass(I,j,k,bi,bj) = 0.D0
+catn: After introduce process-specific, note they were already reinit above.
+catn            addMass3Dplume(I,j,k,bi,bj) = 0.D0
+catn            addMass3Dbg(I,j,k,bi,bj) = 0.D0
 
           ENDDO
          ENDDO

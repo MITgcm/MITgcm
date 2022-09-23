@@ -66,21 +66,27 @@ C     maxDepth :: vertical extent of domain (m)
 C     plumeAreaInCell :: surface area of plume in contact with ice in that cell (m^2)
 C     negSum, posSum :: sum of negative and positive contributions to the plume volume
 C     posNegRatio    :: ratio of the above
-C     wVelCell, vVelCell, uVelCell :: velocities at cell centres
+C     wVelCell       :: vertical velocity component at cell centres
+C     hVelCell_tangential :: horizontal velocity component at cell centres
 C     meanVel :: ice tangental velocity
 catnC rho_0 :: average density of seawater
 catnC lhfusion :: latent heat of fusion for solid to liquid phase, Joule
 catn              = ICEFRONTlatentHeat, so we use that.
 C     rho_shelfice :: 917. kg/m3
 C     secInday :: number of seconds in a day 
+catn: introducing a new flag below to avoid confusion between where pos(neg) 
+catn: mask is NorthSouth or EastWest oriented glacier front
+C     GlacierFront_is_NorthSouth :: 1 for the glacier oriented NorthSouth
+C                                :: 0 for EastWest, default is -9999
 
       INTEGER bi, bj
       INTEGER J, K, I
+      INTEGER GlacierFront_is_NorthSouth
 
       _RL eps5
       _RL plumeAreaInCell
       _RL negSum, posSum, posNegRatio
-      _RL wVelCell, vVelCell, uVelCell, meanVel
+      _RL wVelCell, hVelCell_tangential, meanVel
       _RL sw_temp, sw_ptmp
 catn: Many loose rhos being defined.  Here we make rho_0 = rhoConst
 catn: Second, make rho_shelfice a readable param to avoid hardcoding.
@@ -162,6 +168,9 @@ C Clear local plume ptracer variables
 
 #endif /* ALLOW_PTRACERS */
 
+catn initialize  
+          GlacierFront_is_NorthSouth = -9999
+
 C Check to see if there is ice in that cell. If not, skip to end.
 
           IF ( plumeMask(I,J,bi,bj) .NE. 0 ) THEN
@@ -182,7 +191,7 @@ C If there is subglacial discharge but no plume type defined, there will be no
 C plume.
 
 catn: This definition must go before the Q_sg, moved here from below.
-catn: Also, we must avoid hardcoding delta_x and delta_y to [x,y] of
+catn: Also, we must avoid hardcoding delta_x and dLtangential to [x,y] of
 catn: model grid because it depends on the geometry of the plume, which
 catn: is including in the sign of the plumeMask.  So, since we are
 catn: looping through I,J starting at the entry of this call, best to
@@ -193,13 +202,15 @@ catn: glacier and dxG is down the fjord toward open ocean. So
 catn: we first define using that assumption:
 C         Cell resolution
           IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
-            delta_x = dxG(I,J,bi,bj)
-            delta_y = dyG(I,J,bi,bj)
+            GlacierFront_is_NorthSouth = 1
+            dLnormal = dxG(I,J,bi,bj)
+            dLtangential = dyG(I,J,bi,bj)
           ELSEIF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+            GlacierFront_is_NorthSouth = 0
 catn: but now we check, if the plume geometry is such that dxG is across
 catn: the glacier and dyG along the fjord toward open ocean:
-            delta_x = dyG(I,J,bi,bj)
-            delta_y = dxG(I,J,bi,bj)
+            dLnormal = dyG(I,J,bi,bj)
+            dLtangential = dxG(I,J,bi,bj)
           ENDIF
 
           IF ( plumeMask(I,J,bi,bj) .EQ. -1
@@ -252,10 +263,11 @@ C (only the lowermost cell in column is read)
 
 catn: There is a potential error for delta_y here because it is yet
 catn initialized, and yet plays a role in Q_sg calc.  Then after that we
-catn define delta_y, and then compute (further down) volumeFlux based on
-catn the redefined delta_y.  atn has now moved defn of delta_[x,y] above.
+catn define dLtangential, and then compute (further down) volumeFlux based on
+catn the redefined dLtangential.  atn has now moved defn of delta_[x,y] above.
+catn Lastly, [x,y] has now been moved to normal/tangential to glacier front.
            IF ( useSheetPlume ) THEN
-           Q_sg = w_sg*r_sg*delta_y
+           Q_sg = w_sg*r_sg*dLtangential
            ELSEIF ( useConePlume ) THEN
            Q_sg = w_sg*((pi*r_sg**2.)/2.)
            ELSEIF ( useDetachPlume ) THEN
@@ -348,7 +360,7 @@ C ... after checking to see if we are above the base of the ice face...
              IF ( K .LT. iceDepthK ) THEN
 C ... assuming specified plume horizontal extent (for sheet flow)...
               IF ( useSheetPlume ) THEN
-               volFlux(k) = wProfPlume(k)*rProfPlume(k)*delta_y
+               volFlux(k) = wProfPlume(k)*rProfPlume(k)*dLtangential
 C ... or assuming half-conical form
               ELSEIF ( useConePlume ) THEN
                volFlux(k)=pi*(rProfPlume(k)**twoRL)*wProfPlume(k)/twoRL
@@ -540,10 +552,18 @@ C Velocities are calculated at cell faces - find averages for cell centres.
 C Does not include velocity perpendicular to ice - this differs depending on 
 C orientation of ice front
 
-             vVelCell = (ABS(vVel(I,J,K,bi,bj))
+catn: Compute only one horz tangential vel based on ice front orientation:
+catn: If North-South (East-West), we use vvel (uvel)
+             IF ( GlacierFront_is_NorthSouth .EQ. 1 ) THEN
+              hVelCell_tangential = (ABS(vVel(I,J,K,bi,bj))
      &                 +ABS(vVel(I,J+1,K,bi,bj))) / twoRL
-             uVelCell = (ABS(uVel(I,J,K,bi,bj))
+             ELSEIF ( GlacierFront_is_NorthSouth .EQ. 0 ) THEN
+              hVelCell_tangential = (ABS(uVel(I,J,K,bi,bj))
      &                 +ABS(uVel(I+1,J,K,bi,bj))) / twoRL
+             ELSE
+catn: for adjoint
+              hVelCell_tangential = 0. _d 0
+             ENDIF
 
              IF ( K .LT. Nr ) THEN
               wVelCell = (ABS(wVel(I,J,K,bi,bj))
@@ -552,13 +572,25 @@ C orientation of ice front
               wVelCell = ABS(wVel(I,J,K,bi,bj)) / twoRL
              ENDIF
 
-             IF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
-C Negative mask values indicate north-south ice front orientation
-              meanVel = ((wVelCell**twoRL)+(uVelCell**twoRL))**HalfRL
-             ELSEIF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
-C Positive mask values indicate east-west ice front orientation
-              meanVel = ((wVelCell**twoRL)+(vVelCell**twoRL))**HalfRL
-             ENDIF
+catn: From above:
+C POSITIVE values indicate ice front is orientated north-south
+C NEGATIVE values indicate ice front is orientated east-west
+catn: So there is a discrepancy between above and below.  The importance
+catn: is to settle on one convention and remain consistent.  For now, we
+catn: stay with convention established above, now improved with the new 
+catn: flag GlacierFront_is_NorthSouth
+catn            IF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+catn-C Negative mask values indicate east-west ice front orientation
+catn             IF ( GlacierFront_is_Northsouth .EQ. 0 ) THEN
+catn              meanVel = ((wVelCell**twoRL)+(uVelCell**twoRL))**HalfRL
+catn-            ELSEIF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+catn-C Positive mask values indicate north-south ice front orientation
+catn             ELSEIF ( GlacierFront_is_NorthSouth .EQ. 1 ) THEN
+catn              meanVel = ((wVelCell**twoRL)+(vVelCell**twoRL))**HalfRL
+catn             ENDIF
+catn: From Tom: what we want here is meanVel tangential to the ice front.
+              meanVel = ((wVelCell**twoRL)
+     &                  +(hVelCell_tangential**twoRL))**HalfRL
 
              CALL ICEPLUME_MELTRATE(
      I            tProf(k),sProf(k),meanVel,rC(k),
@@ -573,28 +605,28 @@ C the following should apply to both conical and sheet plume models
 catn: This is problematic here that delta_y is entering as if
 catn: this geometry is strictly applied for only ice front aligning
 catn: along u-direction such that the cross-sectional dlength is delta_y
-catn: Need to change delta_y to dLtangential
-              IF ( plumeAreaInCell .LE. delta_y*delta_z(k) ) THEN
+catn: Now we change delta_y to dLtangential
+              IF ( plumeAreaInCell .LE. dLtangential*delta_z(k) ) THEN
                IF ( plumeAreaInCell .LE. 0 ) THEN
 C If there is no plume in cell, then the melt rate is equal to the background melt rate.
                 mprofAv(k) = mProf(K)
                ELSE
 C If there is a plume in cell, calculate average melt rate
 catn: Again the problematic assumption of geometry with delta_y below;
-catn: we will need to switch this delta_y to some delta_length later
+catn: We now change delta_y to dLtangential
                 mProfAv(k) = (mProfPlume(k)*plumeAreaInCell
-     &              +mProf(k)*(delta_y*delta_z(k)-plumeAreaInCell)) /
-     &              (delta_y * delta_z(k))
+     &              +mProf(k)*(dLtangential*delta_z(k)-plumeAreaInCell))
+     &              / (dLtangential * delta_z(k))
 C Scale down background melt rate to account for area occupied by plume
 C (necessary so that tendency terms aren't over estimated)
                 mProf(k) = mProf(k)*(1-plumeAreaInCell/
-     &                  (delta_y*delta_z(k)))
+     &                  (dLtangential*delta_z(k)))
                ENDIF
               ELSE
 C if the plume contact area is larger than the cell area, we assume there is
 C no background melting
                mProfAv(k) = mProfPlume(k)*plumeAreaInCell / 
-     &                     (delta_y*delta_z(k))
+     &                     (dLtangential*delta_z(k))
                mProf(k) = 0.
               ENDIF
              ELSE ! Q_sg eq 0, not coneplume or sheet plume
@@ -639,13 +671,13 @@ catn: this is using mProf, so it is background melt only
             FwFlux(k) = -mProf(k)*rUnit2Mass/secInday
 catn  Now: m/day*day/sec*kg/m3=kg/m2/s
 catn: Lastly, to convert this FwFlux (kg/m2/s) to addMass3Dbg [kg/s], mult by the vertical
-catn: area (delta_y*dz).  Note we have already taken care at this point to ensure 
-catn: delta_y is along the glacier front.  In addition, we've already taken care to
+catn: area (dLtangential*dz).  Note we have already taken care at this point to ensure 
+catn: dLtangential is along the glacier front.  In addition, we've already taken care to
 catn: reduce this addmass3dbg to zero if the whole cell is plume.
-catn      addMass3Dbg(I,j,k,bi,bj)=Fwflux3D(I,J,k,bi,bj)*delta_y*delta_z(k)*rUnit2mass 
+catn      addMass3Dbg(I,j,k,bi,bj)=Fwflux3D(I,J,k,bi,bj)*dLtangential*delta_z(k)*rUnit2mass 
 catn: pay attention to sign! addMass is minus FwFlux!! (following pkg/shelfice of eccov4r5)
 catn: kg/m2/s*m2=kg/s
-            addMass3Dbg(I,J,k,bi,bj)=-FwFlux(k)*delta_y*delta_z(k)
+            addMass3Dbg(I,J,k,bi,bj)=-FwFlux(k)*dLtangential*delta_z(k)
 
 C Heat required to melt that much ice (W m^-2)
 catn: 333.55 x 10^3 is the Latent heat of fusion: When melting 1kg of ice, 333.55 kJ of 
@@ -666,9 +698,18 @@ catn This is based on mprof, so it is background fluxes
 
 C Create local (no overlap) arrays of heat and freshwater flux from background melting
 catn FwFlux kg/s/m2 , HeatFlux: W/m2
-            IF ( ( J .GT. 0 ) .AND. ( J .LT. sNy+1 ) ) THEN
-             Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
-             HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
+catn: More problematic assumption about I vs J and geometry of glacier front
+catn  Now addressed with GlacierFront_is_NorthSouth flag
+            IF (GlacierFront_is_NorthSouth .eq. 1) THEN
+              IF ( ( J .GT. 0 ) .AND. ( J .LT. sNy+1 ) ) THEN
+               Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
+               HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
+              ENDIF
+            ELSEIF (GlacierFront_is_NorthSouth .eq. 0) THEN
+              IF ( ( I .GT. 0 ) .AND. ( I .LT. sNx+1 ) ) THEN
+               Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
+               HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
+              ENDIF
             ENDIF
 
 C     Compute tendencies (as for pkg/icefront)
@@ -683,13 +724,15 @@ C     Scale by icefrontlength, which is the ratio of the horizontal length
 C     of the ice front in each model grid cell divided by the grid cell area.
 C     (icefrontlength = dy / dxdy = 1 / dx)
 catn: More problematic assumption of geometry of delta_x and delta_y
+catn: Solved now by rename to dLtangential and dLnormal
+catn: Scale factor: dLtangential/(dLnormal*dLtantengial) = 1/dLnormal
 catn degC/s.m/m = degC/s; g/kg/s.m/m=g/kg/s
             icefront_TendT(I,j,K,bi,bj) = 
      &            icefront_TendT(I,j,K,bi,bj)
-     &            * 1./delta_x
+     &            * 1./dLnormal
             icefront_TendS(I,j,K,bi,bj) = 
      &            icefront_TendS(I,j,K,bi,bj)
-     &            * 1./delta_x
+     &            * 1./dLnormal
            ENDDO !the big k-loop
 
 catn: Note: currently we're not taking care of the mass added from FwFlux (background melt).
@@ -702,6 +745,8 @@ catn: background melt vs plume-induced entrainment vs Qsg
 C The plume transport is undertaken using the addMass terms.
 C addMass terms for volume (kg/s), pot. temperature, salinity and ptracers are input 
 C into the correct locations in 3D arrays
+catn: Need to first compute addMass specific to plume and store it independently IFF we
+catn: want to use separate processes to treat Tendencies at different places in the code
            IF ( Q_sg.NE.0. _d 0 ) THEN
 C Find temperature and salinity of plume outflow
              DO k = 1,Nr        !second kloop
@@ -726,6 +771,10 @@ catn: volFluxDiff entering here: when there's net convergence at this k
                 ENDDO
 #endif /* ALLOW_PTRACERS */
                ENDIF
+
+catn: Now also filling out array for background melt, although not needed for 
+catn: tendency because we already take care of it in here with tend[T,S]
+
 C Convert m3/s into kg/s
 catn: volFluxDiff is now converted to addMass, so already taken care of massflux into ocean at depth
 catn: Need to avoid hardcoded 1000 (missing decimal), will use rhoConstFresh
@@ -742,8 +791,8 @@ catn: rUnit2mass = rhoConst, this is how mitgcm converts between volume and mass
              DO K = 1,Nr
               temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
               salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
-catn: Cannot reset a global field in here, will need to make process-specfic field
-              addMass(I,j,k,bi,bj) = 0.D0
+catn: Cannot reset a global field in here, now change to process-specfic field
+catn              addMass(I,j,k,bi,bj) = 0.D0
               addMass3Dplume(I,j,k,bi,bj) = 0. _d 0
              ENDDO
 

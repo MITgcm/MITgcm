@@ -122,14 +122,14 @@ C Header file pkg/ICEPLUME
       _RL distanceProfPlume3DLocal (sNx,sNy,Nr)
 #endif      
 
-catn Take these params from eccov4r5 merged pkg/shelfice and pkg/icefront
-C     rhoShelfIce              :: density of ice shelf (def: 917.0 kg/m^3)
+C     dLnormal     :: the model grid d[x,y]G that is normal to the glacier wall
+C     dLtangential :: the model grid d[x,y]G that is parallel to (i.e., along) the glacier wall
 
       COMMON /ICEPLUME_PARM_R/
      &     E_0,
      &     Q_sg, T_sg, S_sg, r_sg, w_sg,
      &     theta_sg,
-     &     delta_x, delta_y,
+     &     dLnormal, dLtangential,
      &     RTOL, ATOL,
      &     iceTemp,
      &     outputThickness,
@@ -148,8 +148,8 @@ C     rhoShelfIce              :: density of ice shelf (def: 917.0 kg/m^3)
       _RL w_sg
       _RL r_sg
       _RL theta_sg
-      _RL delta_x
-      _RL delta_y
+      _RL dLnormal
+      _RL dLtangential
       _RL RTOL
       _RL ATOL
       _RL iceTemp

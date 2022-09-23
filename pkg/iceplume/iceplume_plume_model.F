@@ -90,7 +90,7 @@ C Initial conditions
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
       Y(7) = theta_sg          ! initial angle -- make nearly horizontal
       Y(8) = 0.0
-      Y(9) = delta_y
+      Y(9) = dLtangential
       IF (useDetachPlume) THEN
       Y(1) = HalfRL * PI*r_sg**twoRL ! initial area
                               ! value set for consistency with half-cone
@@ -99,7 +99,7 @@ C Initial conditions
       ENDIF
 #else
       Y(1) = r_sg          ! intial plume thickness
-      Y(7) = delta_y
+      Y(7) = dLtangential
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
 
@@ -162,9 +162,9 @@ C Check to make sure plume hasn't reached neutral buoyancy in a lower layer
 
 C Decide which plume model to use
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
-        Y(9) = delta_y
+        Y(9) = dLtangential
 #else
-        Y(7) = delta_y
+        Y(7) = dLtangential
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
         IF ( useSheetPlume ) THEN
