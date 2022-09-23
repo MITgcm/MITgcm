@@ -45,6 +45,7 @@ C Header file pkg/ICEPLUME
      &     tProfPlume3DLocal, sProfPlume3DLocal,
      &     mProfPlume3DLocal, mProfAv3DLocal,
      &     temp_addMass3D, salt_addMass3D,
+     &     addMass3Dplume, addMass3Dbg,
      &     volFluxDiff3D,
      &     Qin
       _RL runoffVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -64,6 +65,8 @@ C Header file pkg/ICEPLUME
       _RS mProfAv3D       (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL temp_addMass3D  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL salt_addMass3D  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL addMass3Dbg     (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL volFluxDiff3D   (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS rProfPlume3DLocal    (sNx,sNy,Nr)
       _RS wProfPlume3DLocal    (sNx,sNy,Nr)
@@ -119,6 +122,9 @@ C Header file pkg/ICEPLUME
       _RL distanceProfPlume3DLocal (sNx,sNy,Nr)
 #endif      
 
+catn Take these params from eccov4r5 merged pkg/shelfice and pkg/icefront
+C     rhoShelfIce              :: density of ice shelf (def: 917.0 kg/m^3)
+
       COMMON /ICEPLUME_PARM_R/
      &     E_0,
      &     Q_sg, T_sg, S_sg, r_sg, w_sg,
@@ -127,7 +133,7 @@ C Header file pkg/ICEPLUME
      &     RTOL, ATOL,
      &     iceTemp,
      &     outputThickness,
-     &     kap, rho_ref, g, c_w, c_i, L,
+     &     kap, c_i,
      &     gam, lambda1, lambda2, lambda3,
      &     GamT, GamS, Cd,
      &     sOutPlume, tOutPlume,
@@ -149,11 +155,11 @@ C Header file pkg/ICEPLUME
       _RL iceTemp
       _RL outputThickness
       _RL kap
-      _RL rho_ref
-      _RL g
-      _RL c_w
+catn      _RL rho_ref
+catn      _RL g
+catn      _RL c_w
       _RL c_i
-      _RL L
+catn      _RL L
       _RL gam
       _RL lambda1
       _RL lambda2
@@ -180,6 +186,8 @@ C Again, doesn't like MAX_LEN_FNAM
 
 C-----------------------------------------
 C Parameters relating to the icefront package
+C     ICEFRONTlatentHeat       :: latent heat of fusion (def: 334000 J/kg)
+C     ICEFRONTheatCapacity_Cp  :: Heat Capacity of shelfice (def: 2000. J/kg)
 
       COMMON /ICEPLUME_ICEFRONT_PARMS_R/
      &     ICEFRONTlatentHeat, 
@@ -192,12 +200,6 @@ C Parameters relating to the icefront package
      &     icefront_TendS
       _RL icefront_TendT (1:sNx,1:sNy,Nr,nSx,nSy)
       _RL icefront_TendS (1:sNx,1:sNy,Nr,nSx,nSy)
-
-      COMMON /ICEPLUME_ICEFRONT_FIELDS_RS/
-     &     R_icefront,
-     &     icefrontlength
-      _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C      LOGICAL ICEFRONTisOn
       LOGICAL applyIcefrontTendT

@@ -507,8 +507,16 @@ C--   Forcing term
      I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        tmpVar(i,j)=0. _d 0
+       ENDDO
+      ENDDO
+
 #ifdef ALLOW_ADDFLUID
 
+catn: Note tendency included in addMass3Dplume here is from the plume.
+catn: The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
        temp_addMass = 1 ! force loop entry
 #endif /* ALLOW_ICEPLUME */
@@ -523,12 +531,14 @@ C--   Forcing term
        temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
 #endif /* ALLOW_ICEPLUME */
 
-            gT_arr(i,j) = gT_arr(i,j)
-     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+           tmpVar(i,j)=
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - theta(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+           gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
@@ -539,16 +549,24 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        temp_addMass = temp_addMass3D(I,J,k,bi,bj) ! get real value
 #endif /* ALLOW_ICEPLUME */
 
-            gT_arr(i,j) = gT_arr(i,j)
-     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+            tmpVar(i,j) =
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+            gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
       ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL(tmpVar,
+     &                     'gTaddMas',k,1,2,bi,bj,myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_ADDFLUID */
 
 #ifdef ALLOW_FRICTION_HEATING
@@ -855,6 +873,7 @@ C     myThid    :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     !LOCAL VARIABLES:
 C     i,j       :: Loop counters
@@ -920,8 +939,16 @@ C--   Forcing term
      I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        tmpVar(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
+
 #ifdef ALLOW_ADDFLUID
 
+catn: Note tendency included in addMass3Dplume here is from the plume.
+catn: The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
        salt_addMass = 1 ! force loop entry
 #endif /* ALLOW_ICEPLUME */
@@ -936,12 +963,14 @@ C--   Forcing term
        salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
 #endif /* ALLOW_ICEPLUME */
 
-            gS_arr(i,j) = gS_arr(i,j)
-     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+            tmpVar(i,j) = 
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - salt(i,j,k,bi,bj) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+            gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
        ELSE
@@ -952,16 +981,26 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        salt_addMass = salt_addMass3D(I,J,k,bi,bj) ! get real value
 #endif /* ALLOW_ICEPLUME */
 
-            gS_arr(i,j) = gS_arr(i,j)
-     &        + addMass(i,j,k,bi,bj)*mass2rUnit
+            tmpVar(i,j) =
+     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
      &          *( salt_addMass - sRef(k) )
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+
+            gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
        ENDIF
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+C     conversion to g/kg/s
+          CALL DIAGNOSTICS_FILL(tmpVar,
+     &                     'gSaddMas',k,1,2,bi,bj,myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_ADDFLUID */
 
 C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level

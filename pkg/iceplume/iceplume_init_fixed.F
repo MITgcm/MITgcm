@@ -63,7 +63,7 @@ C Load runoff
 C If periodic external forcing is used, this is read in S/R external_fields_load
 
 #ifndef ALLOW_MDSIO
-         STOP 'ABNORMAL END: OBCS_FIELDS_LOAD: NEEDS MSDIO PKG'
+         STOP 'ABNORMAL END: ICEPLUME_INIT_FIXED: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
         _BARRIER
 

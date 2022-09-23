@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: ICEPLUME_CALC
 C     !INTERFACE:
       SUBROUTINE ICEPLUME_CALC(
-     I     futureTime, futureIter,
+     I     myTime, myIter,
      I     myThid )
 
 C     !DESCRIPTION: \bv
@@ -13,10 +13,17 @@ C     | SUBROUTINE ICEPLUME_CALC
 C     | o Send ambient conditions to plume model
 C     | o Calculate source/sink terms to parameterise movement of
 C     |   water and tracers between vertical layers by resulting plume
-C     | o Calcualte melt rates and tendencies due to melting of
+C     | o Calculate melt rates and tendencies due to melting of
 C     |   ice front in none-plume locations
 C     |   
 C     *==========================================================*
+
+C     | atn 09.Oct.2021: added notes
+C     | Because the thermodynamic tendencies code was copied from
+C     | pkg/icefront , the sign conventions are as follows:
+C     | Outward (pos) = leaving the ocean, inward (neg) = entering ocean.
+C     | Freshwater (kg/m2/s): inward (negative) freshwater flux implies 
+C     | glacier melting due to outward (positive) heat flux (W/m^2)
 
 C     \ev
 C     !USES:
@@ -38,8 +45,8 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      _RL futureTime
-      INTEGER futureIter
+      _RL myTime
+      INTEGER myIter
       INTEGER myThid
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -61,7 +68,11 @@ C     negSum, posSum :: sum of negative and positive contributions to the plume 
 C     posNegRatio    :: ratio of the above
 C     wVelCell, vVelCell, uVelCell :: velocities at cell centres
 C     meanVel :: ice tangental velocity
-C     rho_0 :: average density of seawater
+catnC rho_0 :: average density of seawater
+catnC lhfusion :: latent heat of fusion for solid to liquid phase, Joule
+catn              = ICEFRONTlatentHeat, so we use that.
+C     rho_shelfice :: 917. kg/m3
+C     secInday :: number of seconds in a day 
 
       INTEGER bi, bj
       INTEGER J, K, I
@@ -71,11 +82,22 @@ C     rho_0 :: average density of seawater
       _RL negSum, posSum, posNegRatio
       _RL wVelCell, vVelCell, uVelCell, meanVel
       _RL sw_temp, sw_ptmp
-      _RL rho_0
+catn: Many loose rhos being defined.  Here we make rho_0 = rhoConst
+catn: Second, make rho_shelfice a readable param to avoid hardcoding.
+catn      _RL rho_0
+catn      _RL rho_shelfice
+      _RL secInday
       external SW_TEMP
       external SW_PTMP
 
-      PARAMETER(rho_0=1027.0D0)
+catn      PARAMETER(rho_0=1027.0D0)
+      PARAMETER(secInday=86400.0D0)
+catn      PARAMETER(rho_shelfice=917.0D0)
+catn      PARAMETER(lhfusion=333.55E+3)
+      _RL gT_icefront         (1:sNx,1:sNy,Nr)
+      _RL gS_icefront         (1:sNx,1:sNy,Nr)
+      _RL mass_icefront       (1:sNx,1:sNy,Nr)
+      _RL mass_iceplume       (1:sNx,1:sNy,Nr)
 
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
@@ -84,27 +106,65 @@ C     rho_0 :: average density of seawater
       _RL ptrProf  (Nr,PTRACERS_num)
 #endif
 
+catn: brought out of do-loop, factor for heat tendency
+catn: mass2rUnit=1/rhoConst (set in data), e.g., 1/1029. [m3/kg]
+catn: HeatCapacity_Cp = 3994. [J/kg/degC]
+cat:  so eps5 = 1/1029./3994. = 2.433193035422911e-07 [degC m3 / J]
+      eps5 = mass2rUnit/HeatCapacity_Cp
+
 C -----------------------------------------
 C Enter into loops
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO I = 1-OLx,sNx+Olx
-         DO J = 1-OLy,sNy+OLy
+
+catn: Initialize tendencies for plume
+catn: Most of these are local, so will be removed from ICEPLUME.h 
+catn  and remove bi,bj.  This is why they are moved from
+catn  iceplume_init_varia.F into here
+        DO k=1,Nr
+         DO j=1,sNy
+          DO i=1,sNx
+           gT_icefront(i,j,k)=0. _d 0
+           gS_icefront(i,j,k)=0. _d 0
+           mass_iceplume(i,j,k)=0. _d 0
+           mass_icefront(i,j,k)=0. _d 0
+           AddMass3Dplume(i,j,k,bi,bj)=0. _d 0
+           AddMass3Dbg(i,j,k,bi,bj)=0. _d 0
+           temp_AddMass3D(i,j,k,bi,bj)=0. _d 0
+           salt_AddMass3D(i,j,k,bi,bj)=0. _d 0
+           Fwflux3D(i,j,k,bi,bj)=0. _d 0
+           Heatflux3D(i,j,k,bi,bj)=0. _d 0
+           rProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           wProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           tProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           sProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           mProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           mProfAv3D(i,j,k,bi,bj)=0. _d 0
+#ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
+           thetaProfPlume3D(i,j,k,bi,bj)=0. _d 0
+           distanceProfPlume3D(i,j,k,bi,bj)=0. _d 0
+#endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
+          ENDDO
+         ENDDO
+        ENDDO
+
+        DO J = 1-OLy,sNy+OLy
+         DO I = 1-OLx,sNx+Olx
 
 #ifdef ALLOW_PTRACERS
 
 C Clear local plume ptracer variables
 
-      DO iTracer = 1,PTRACERS_num
-       ptrPlume(iTracer)    = 0.D0
-       ptrPlumeCum(iTracer) = 0.D0
-      ENDDO
+          DO iTracer = 1,PTRACERS_num
+           ptrPlume(iTracer)    = 0.D0
+           ptrPlumeCum(iTracer) = 0.D0
+          ENDDO
 
 #endif /* ALLOW_PTRACERS */
 
 C Check to see if there is ice in that cell. If not, skip to end.
 
-           IF ( plumeMask(I,J,bi,bj) .NE. 0 ) THEN
+          IF ( plumeMask(I,J,bi,bj) .NE. 0 ) THEN
 
 C Read from the plume mask which type of plume should be used in this cell.
 
@@ -116,59 +176,84 @@ C 5 = detaching conical plume (Goldberg)
 
 C POSITIVE values indicate ice front is orientated north-south
 C NEGATIVE values indicate ice front is orientated east-west
+catn: must use the sign as above to determine delta_[x,y]
 
 C If there is subglacial discharge but no plume type defined, there will be no
 C plume.
 
+catn: This definition must go before the Q_sg, moved here from below.
+catn: Also, we must avoid hardcoding delta_x and delta_y to [x,y] of
+catn: model grid because it depends on the geometry of the plume, which
+catn: is including in the sign of the plumeMask.  So, since we are
+catn: looping through I,J starting at the entry of this call, best to
+catn: move defn of delta_[x,y] to above when we're checking plumeMask.
 
-            IF ( plumeMask(I,J,bi,bj) .EQ. -1
-     &           .OR. plumeMask(I,J,bi,bj) .EQ. 1) THEN
-                useSheetPlume = .FALSE.
-                useConePlume = .FALSE.
-                useDetachPlume = .FALSE.
-            ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -2
-     &           .OR. plumeMask(I,J,bi,bj) .EQ. 2) THEN
-                useSheetPlume = .TRUE.
-                useConePlume = .FALSE.
-                useDetachPlume = .FALSE.
-            ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -3
-     &           .OR. plumeMask(I,J,bi,bj) .EQ. 3) THEN
-                useSheetPlume = .FALSE.
-                useConePlume = .TRUE.
-                useDetachPlume = .FALSE.
-            ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -4
-     &           .OR. plumeMask(I,J,bi,bj) .EQ. 4) THEN
-                useSheetPlume = .TRUE.
-                useConePlume = .TRUE.
-                useDetachPlume = .FALSE.
-            ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -5
-     &           .OR. plumeMask(I,J,bi,bj) .EQ. 5) THEN
+catn: In original code, it has been assummed that dyG is across the
+catn: glacier and dxG is down the fjord toward open ocean. So
+catn: we first define using that assumption:
+C         Cell resolution
+          IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+            delta_x = dxG(I,J,bi,bj)
+            delta_y = dyG(I,J,bi,bj)
+          ELSEIF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+catn: but now we check, if the plume geometry is such that dxG is across
+catn: the glacier and dyG along the fjord toward open ocean:
+            delta_x = dyG(I,J,bi,bj)
+            delta_y = dxG(I,J,bi,bj)
+          ENDIF
+
+          IF ( plumeMask(I,J,bi,bj) .EQ. -1
+     &         .OR. plumeMask(I,J,bi,bj) .EQ. 1) THEN
+            useSheetPlume = .FALSE.
+            useConePlume = .FALSE.
+            useDetachPlume = .FALSE.
+          ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -2
+     &         .OR. plumeMask(I,J,bi,bj) .EQ. 2) THEN
+            useSheetPlume = .TRUE.
+            useConePlume = .FALSE.
+            useDetachPlume = .FALSE.
+          ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -3
+     &         .OR. plumeMask(I,J,bi,bj) .EQ. 3) THEN
+            useSheetPlume = .FALSE.
+            useConePlume = .TRUE.
+            useDetachPlume = .FALSE.
+          ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -4
+     &         .OR. plumeMask(I,J,bi,bj) .EQ. 4) THEN
+            useSheetPlume = .TRUE.
+            useConePlume = .TRUE.
+            useDetachPlume = .FALSE.
+          ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -5
+     &         .OR. plumeMask(I,J,bi,bj) .EQ. 5) THEN
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME          
-                useSheetPlume = .FALSE.
-                useConePlume = .FALSE.
-                useDetachPlume = .TRUE.
+            useSheetPlume = .FALSE.
+            useConePlume = .FALSE.
+            useDetachPlume = .TRUE.
 #else
-                WRITE(msgBuf,'(2A)')
-     &          'cannot use detaching plume without ',
-     &          '#define ICEPLUME_ALLOW_DETACHED_PLUME'
-                CALL PRINT_ERROR( msgBuf, myThid )
-                STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
+            WRITE(msgBuf,'(2A)')
+     &      'cannot use detaching plume without ',
+     &      '#define ICEPLUME_ALLOW_DETACHED_PLUME'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
 #endif
 
-            ELSE
+          ELSE
 
-                WRITE(msgBuf,'(2A)')
-     &         'Plume mask value must be between -5 and 5'
-                CALL PRINT_ERROR( msgBuf, myThid )
-                STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
+            WRITE(msgBuf,'(2A)')
+     &      'Plume mask value must be between -5 and 5'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
 
-            ENDIF
+          ENDIF
 
 C Read in the subglacial discharge for this place and time
 C (only the lowermost cell in column is read)
            w_sg = runoffVel(I,J,bi,bj)
            r_sg = runoffRad(I,J,bi,bj)
 
+catn: There is a potential error for delta_y here because it is yet
+catn initialized, and yet plays a role in Q_sg calc.  Then after that we
+catn define delta_y, and then compute (further down) volumeFlux based on
+catn the redefined delta_y.  atn has now moved defn of delta_[x,y] above.
            IF ( useSheetPlume ) THEN
            Q_sg = w_sg*r_sg*delta_y
            ELSEIF ( useConePlume ) THEN
@@ -176,19 +261,17 @@ C (only the lowermost cell in column is read)
            ELSEIF ( useDetachPlume ) THEN
            Q_sg = w_sg*((pi*r_sg**2.)/2.)
            ELSE
-           Q_sg = 0.D0
+           Q_sg = 0. _d 0
            ENDIF
 
-C         Cell resolution
-          delta_x = dxG(I,J,bi,bj)
-          delta_y = dyG(I,J,bi,bj)
 
 C Create variables with temperature, salinity
 C and velocity profiles for that column
 
-	   DO K = 1,Nr
+           DO K = 1,Nr
 C           Tracers
-            prProf(k) = ABS(rC(k))*rho_0*9.81*1.0E-6 ! Pressure (dbar)
+catn            prProf(k) = ABS(rC(k))*rho_0*9.81*1.0E-6 ! Pressure (dbar)
+            prProf(k) = ABS(rC(k))*rhoConst*gravity*1.0E-6 ! Pressure (dbar)
             sProf(K)  = salt(I,J,K,bi,bj)         ! Salinity
             ptProf(K) = theta(I,J,K,bi,bj)        ! Potential Temperature
             tProf(k)  = 
@@ -206,50 +289,50 @@ C           Velocities
 
             delta_z(k) = drF(K)
 
-	   ENDDO
+           ENDDO
 
 C Vertical extent of domain
-           maxDepth = rF(Nr+1)
+          maxDepth = rF(Nr+1)
 C Depth of seabed at glacer front
-           iceDepth = R_low(I,J,bi,bj)
+          iceDepth = R_low(I,J,bi,bj)
 
 
-      IF ( iceDepth .EQ. 0 ) THEN
-                WRITE(msgBuf,'(2A)')
-     &          'Plume specified in cell I = ', I, ', J = ', J,
-     &          ', but depth of this cell = 0'
-                CALL PRINT_ERROR( msgBuf, myThid )
-                STOP 'ABNORMAL END: S/R ICEPLUME_CALC III'
-       endif
+          IF ( iceDepth .EQ. 0 ) THEN
+            WRITE(msgBuf,'(2A)')
+     &      'Plume specified in cell I = ', I, ', J = ', J,
+     &      ', but depth of this cell = 0'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R ICEPLUME_CALC III'
+          ENDIF
 
 C Find grid layer at depth of ice face (move this to initialisation)
-       icedepthK = 0
-       DO K=1,Nr+1
-        IF ( rF(K) .EQ. iceDepth ) iceDepthK = K
-       ENDDO
+          icedepthK = 0
+          DO K=1,Nr+1
+           IF ( rF(K) .EQ. iceDepth ) iceDepthK = K
+          ENDDO
 
 C If a matching grid layer is not found, this may be because the bottom layer is a partial cell
 C In this case, start in cell above partial cell
-      IF ( iceDepthK .EQ. 0 ) THEN
-       DO K=1,Nr+1
-        IF ( rF(K) .GT. iceDepth ) THEN
-          IF ( rF(K+1) .LT. iceDepth ) THEN
-           iceDepthK = K
+          IF ( iceDepthK .EQ. 0 ) THEN
+           DO K=1,Nr+1
+            IF ( rF(K) .GT. iceDepth ) THEN
+              IF ( rF(K+1) .LT. iceDepth ) THEN
+               iceDepthK = K
+              ENDIF
+            ENDIF
+           ENDDO
           ENDIF
-        ENDIF
-       ENDDO
-      ENDIF
 
 C If we still cannot find the bottom cell
 
-      IF ( iceDepthK .EQ. 0 ) THEN
-                WRITE(msgBuf,'(2A)')
-     &          'Unable to identify index of cell',
-     &          'at grounding line.',
-     &          'This may be because this is a partial cell.'
-                CALL PRINT_ERROR( msgBuf, myThid )
-                STOP 'ABNORMAL END: S/R ICEPLUME_CALC IV'
-       endif
+          IF ( iceDepthK .EQ. 0 ) THEN
+             WRITE(msgBuf,'(2A)')
+     &       'Unable to identify index of cell',
+     &       'at grounding line.',
+     &       'This may be because this is a partial cell.'
+             CALL PRINT_ERROR( msgBuf, myThid )
+             STOP 'ABNORMAL END: S/R ICEPLUME_CALC IV'
+          ENDIF
 
 C --- If there is subglacial outflow in that column, then parameterise plume ---
 
@@ -262,65 +345,82 @@ C Calculate vertical plume volume flux...
 
             DO k=1,Nr
 C ... after checking to see if we are above the base of the ice face...
-            IF ( K .LT. iceDepthK ) THEN
+             IF ( K .LT. iceDepthK ) THEN
 C ... assuming specified plume horizontal extent (for sheet flow)...
               IF ( useSheetPlume ) THEN
-              volFlux(k) = wProfPlume(k)*rProfPlume(k)*delta_y
+               volFlux(k) = wProfPlume(k)*rProfPlume(k)*delta_y
 C ... or assuming half-conical form
               ELSEIF ( useConePlume ) THEN
-              volFlux(k)=pi*(rProfPlume(k)**2)*wProfPlume(k)/2.
+               volFlux(k)=pi*(rProfPlume(k)**twoRL)*wProfPlume(k)/twoRL
 C ... assuming detached-conical form
               ELSEIF ( useDetachPlume ) THEN
-              volFlux(k)=rProfPlume(k)*wProfPlume(k)
+               volFlux(k)=rProfPlume(k)*wProfPlume(k)
               ENDIF
-            ELSE
-            volFlux(k) = 0.D0
-            ENDIF
+             ELSE
+              volFlux(k) = 0. _d 0
+             ENDIF
             ENDDO
                                 
 C A couple of corrections:
 C - even if plume is still buoyant, it cannot flow through the fjord surface
-            volFlux(1) = 0.D0
-C - the initial volume flux is equal to runoff
+            volFlux(1) = 0. _d 0
+C - the initial volume flux is equal to runoff [m3/s]
             volflux(iceDepthK) = Q_sg
 
-
-C Calculate volume flux differential to give entrainment / extrainment
+C Calculate volume flux differential to give entrainment / extrainment, [m3/s]
 C First clear volfluxdiff
 
             DO K = 1,Nr
-             volfluxdiff(K) = 0.D0
+             volfluxdiff(K) = 0. _d 0
             ENDDO
 
             DO k=1,iceDepthK-1
              volFluxDiff(k) = volFlux(k+1) - volFlux(k)
             ENDDO
 
+catn: The loop below indicates that when conserveMass is true, then we
+catn: scale the volume flux total to reduce the effect of Q_sg into the
+catn: domain.  An external test shows that before entering this loop, we
+catn: have a non-zero sum(volFluxDiff), but after entering and getting
+catn: scaled, sum(volFluxDiff) = 0 (within precision), and any posSum at
+catn: any particular klev is scaled while all negSum were untouched.
             IF ( conserveMass ) THEN
 C Scale output to compensate for entrainment lost in expanding of output layer
 C i.e. so that there is no net flow over boundary
 
-              negSum = 0.D0
-              posSum = 0.D0
+catn: Sign convention: if volFluxDiff(k) is less than 1, there is a net
+catn: divergence == volume loss at the klev, and will contrib to negSum
+             negSum = 0. _d 0
+             posSum = 0. _d 0
 
-              DO K = 1,Nr
-               IF ( volFluxDiff(K) .LT. 0 ) THEN
-                negSum = volFluxDiff(K) + negSum
-               ELSE
-                posSum = volFluxDiff(K) + posSum
-               ENDIF
-              ENDDO
+             DO K = 1,Nr
+              IF ( volFluxDiff(K) .LT. 0 ) THEN
+               negSum = volFluxDiff(K) + negSum
+              ELSE
+               posSum = volFluxDiff(K) + posSum
+              ENDIF
+             ENDDO
 
-              IF ( posSum .NE. 0 ) THEN
+catn: The check of posSum not eq 0 implies there is at least ONE klev where
+catn: there is a net CONVERGENCE into the cell in one or more klev.  So we
+catn: take the ratio of -negSum/posSum to check for the total columm
+catn: what the net convergence is.  If this ratio is one, negSum=posSum
+catn: and there is no net water excess.  If posSum>negSum, there is
+catn: excess water input that needs to be taken care of under the
+catn: scenario where ocean volume cannot be changed.  So take the
+catn: example negSum = 4 and posSum = 5, ratio is 4/5.  This ratio will
+catn: now be mult across all volFluxDiff>0, such that after scaling the
+catn: net column convergence is zero
+             IF ( posSum .NE. 0 ) THEN
               posNegRatio = -negSum / posSum
 
               DO K = 1,Nr
-                IF ( volFluxDiff(K) .GT. 0 )
+               IF ( volFluxDiff(K) .GT. 0 )
      &            volFluxDiff(K) = volFluxDiff(K) * posNegRatio
               ENDDO
-              ENDIF
+             ENDIF
 
-            ENDIF
+            ENDIF  !conserveMass
 
 #ifdef ALLOW_PTRACERS
 
@@ -352,14 +452,14 @@ C Add ptracers in runoff
             ENDIF
 
 C Calculate concentration of tracer in outflow 
-             DO K=1,iceDepthK-1
-              IF (volFluxDiff(k) .GT. 0. ) THEN
-               DO iTracer = 1,PTRACERS_num
-                ptrPlume(iTracer)
-     &           = ptrPlumeCum(iTracer) / volFluxDiff(k)
-               ENDDO
-              ENDIF
-             ENDDO        
+            DO K=1,iceDepthK-1
+             IF (volFluxDiff(k) .GT. 0. ) THEN
+              DO iTracer = 1,PTRACERS_num
+               ptrPlume(iTracer)
+     &          = ptrPlumeCum(iTracer) / volFluxDiff(k)
+              ENDDO
+             ENDIF
+            ENDDO        
 
 
 #endif /* ALLOW_PTRACERS */
@@ -368,15 +468,15 @@ C Calculate concentration of tracer in outflow
 
 C If no subglacial output, then there is no plume
             DO k = 1,Nr
-            rProfPlume(K) = 0.D0
-            wProfPlume(K) = 0.D0
-            tProfPlume(K) = 0.D0
-            sProfPlume(K) = 0.D0
-            aProfPlume(K) = 0.D0
-            mIntProfPlume(K) = 0.D0
+             rProfPlume(K) = 0.D0
+             wProfPlume(K) = 0.D0
+             tProfPlume(K) = 0.D0
+             sProfPlume(K) = 0.D0
+             aProfPlume(K) = 0.D0
+             mIntProfPlume(K) = 0.D0
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-            thetaProfPlume(k) = 0.D0
-            distanceProfPlume(k) = 0.D0
+             thetaProfPlume(k) = 0.D0
+             distanceProfPlume(k) = 0.D0
 #endif
             ENDDO
            ENDIF ! ( Q_sg.NE.0 ) THEN
@@ -384,15 +484,13 @@ C If no subglacial output, then there is no plume
 C Send outputs to 3D grid for diagnostics
            IF ( usePlumeDiagnostics ) THEN
             DO K = 1,Nr
-            rProfPlume3D(I,J,K,bi,bj) = rProfPlume(k)
-            wProfPlume3D(I,J,K,bi,bj) = wProfPlume(k)
-            tProfPlume3D(I,J,K,bi,bj) = tProfPlume(k)
-            sProfPlume3D(I,J,K,bi,bj) = sProfPlume(k)
+             rProfPlume3D(I,J,K,bi,bj) = rProfPlume(k)
+             wProfPlume3D(I,J,K,bi,bj) = wProfPlume(k)
+             tProfPlume3D(I,J,K,bi,bj) = tProfPlume(k)
+             sProfPlume3D(I,J,K,bi,bj) = sProfPlume(k)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-            thetaProfPlume3D
-     &       (I,J,K,bi,bj) = thetaProfPlume(k)
-            distanceProfPlume3D
-     &       (I,J,K,bi,bj) = distanceProfPlume(k)
+             thetaProfPlume3D(I,J,K,bi,bj) = thetaProfPlume(k)
+             distanceProfPlume3D(I,J,K,bi,bj) = distanceProfPlume(k)
 #endif
             ENDDO
            ENDIF
@@ -403,234 +501,271 @@ C-------- Calculate melt rates ----------------------------
 
 C Check to see if we are above the sea bed
             IF ( K .GE. iceDepthK ) THEN
-
 C If not then there is no melting             
              mProfAv(k) = 0.D0
              mProfPlume(k) = 0.D0
              mProf(k)      = 0.D0
+            ELSE !k le iceDepthK
 
-            ELSE
-
-C If there is a plume in that cell, then need to calculate plume melt rate
+C If there is a plume in that cell, then need to calculate plume melt rate [m/time]
 C distinct to background melt rate. Plume melt rate is already encorporated in 
 C the plrume model, and taken into account in the temperature and salinity of the
 C plume outflow. It is useful though to have it available as a diagnostic.
-
              plumeAreaInCell = 0.0
-            
-            IF ( ( Q_sg .NE. 0 ) .AND. 
-     &       (useConePlume .OR. useSheetPlume.OR.useDetachPlume) )
+
+catn: note that mProfPlume below is not impacted by scaling of volFluxDiff
+             IF ( ( Q_sg .NE. 0 ) .AND. 
+     &        (useConePlume .OR. useSheetPlume.OR.useDetachPlume) )
      &                                                             THEN
-
+catn: aProfPlume(k): integrated contact area, calc in iceplume_plume_model [m2]
               plumeAreaInCell = aProfPlume(k) - aProfPlume(k+1)
-              
+catn: if the area above is bigger than below, implying plume area expands
               IF (plumeAreaInCell .gt. 0.0) then
-
+catn: mIntProfPlume: integrated melt rate [m/day]
                mProfPlume(k) =(mIntProfPlume(k)-mIntProfPlume(k+1))/ 
      &                           plumeAreaInCell
-     &                           * 86400.
-
+     &                           * secInday
               ELSE
-
                mProfPlume (k) = 0.0
+              ENDIF
 
-              ENDIF               
-
-            ELSE
-
+             ELSE  !Q_sg eq 0
 C If there is no plume in that cell, set plume melt rate to zero
+              mProfPlume(k) = 0.D0
+             ENDIF
 
-             mProfPlume(k) = 0.D0
-
-            ENDIF
-
-C Calculate the background melt rate (i.e. not generated by plumes). This will then be 
-C used to update the temperature and salinity in the adjacent cells.
+C Calculate the background melt rate (i.e. not generated by plumes). This will 
+C then be used to update the temperature and salinity in the adjacent cells.
 C Velocities are calculated at cell faces - find averages for cell centres.
 C Does not include velocity perpendicular to ice - this differs depending on 
 C orientation of ice front
 
-            vVelCell = (ABS(vVel(I,J,K,bi,bj))
-     &                 +ABS(vVel(I,J+1,K,bi,bj))) / 2.
+             vVelCell = (ABS(vVel(I,J,K,bi,bj))
+     &                 +ABS(vVel(I,J+1,K,bi,bj))) / twoRL
+             uVelCell = (ABS(uVel(I,J,K,bi,bj))
+     &                 +ABS(uVel(I+1,J,K,bi,bj))) / twoRL
 
-            uVelCell = (ABS(uVel(I,J,K,bi,bj))
-     &                 +ABS(uVel(I+1,J,K,bi,bj))) / 2.
+             IF ( K .LT. Nr ) THEN
+              wVelCell = (ABS(wVel(I,J,K,bi,bj))
+     &                 +ABS(wVel(I,J,K+1,bi,bj))) / twoRL
+             ELSE
+              wVelCell = ABS(wVel(I,J,K,bi,bj)) / twoRL
+             ENDIF
 
-            IF ( K .LT. Nr ) THEN
-            wVelCell = (ABS(wVel(I,J,K,bi,bj))
-     &                 +ABS(wVel(I,J,K+1,bi,bj))) / 2.
-
-            ELSE
-
-            wVelCell = ABS(wVel(I,J,K,bi,bj)) / 2.
-
-            ENDIF
-
-            IF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+             IF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
 C Negative mask values indicate north-south ice front orientation
-            meanVel = ((wVelCell**2.)+(uVelCell**2.))**0.5
-            ELSEIF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+              meanVel = ((wVelCell**twoRL)+(uVelCell**twoRL))**HalfRL
+             ELSEIF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
 C Positive mask values indicate east-west ice front orientation
-            meanVel = ((wVelCell**2.)+(vVelCell**2.))**0.5
-            ENDIF
+              meanVel = ((wVelCell**twoRL)+(vVelCell**twoRL))**HalfRL
+             ENDIF
 
-            CALL ICEPLUME_MELTRATE(
+             CALL ICEPLUME_MELTRATE(
      I            tProf(k),sProf(k),meanVel,rC(k),
      O            mProf(k) )
 
 C Get average melt rate. This is useful for visualling melt patterns and 
-C assessing overall melt rate of glacier.
+C assessing overall melt rate of glacier. Unit: [m/time]
 
 C the following should apply to both conical and sheet plume models
-            IF ( ( Q_sg .NE. 0 ) ) THEN
-
-             plumeAreaInCell = aProfPlume(k) - aProfPlume(k+1)
-
-             IF ( plumeAreaInCell .LE. delta_y*delta_z(k) ) THEN
-
-              IF ( plumeAreaInCell .LE. 0 ) THEN
- 
+             IF ( ( Q_sg .NE. 0 ) ) THEN
+              plumeAreaInCell = aProfPlume(k) - aProfPlume(k+1)
+catn: This is problematic here that delta_y is entering as if
+catn: this geometry is strictly applied for only ice front aligning
+catn: along u-direction such that the cross-sectional dlength is delta_y
+catn: Need to change delta_y to dLtangential
+              IF ( plumeAreaInCell .LE. delta_y*delta_z(k) ) THEN
+               IF ( plumeAreaInCell .LE. 0 ) THEN
 C If there is no plume in cell, then the melt rate is equal to the background melt rate.
-
-               mprofAv(k) = mProf(K)
-
-             ELSE
-
+                mprofAv(k) = mProf(K)
+               ELSE
 C If there is a plume in cell, calculate average melt rate
-
-              mProfAv(k) = (mProfPlume(k)*plumeAreaInCell
+catn: Again the problematic assumption of geometry with delta_y below;
+catn: we will need to switch this delta_y to some delta_length later
+                mProfAv(k) = (mProfPlume(k)*plumeAreaInCell
      &              +mProf(k)*(delta_y*delta_z(k)-plumeAreaInCell)) /
      &              (delta_y * delta_z(k))
-
-
 C Scale down background melt rate to account for area occupied by plume
 C (necessary so that tendency terms aren't over estimated)
-
-              mProf(k) = mProf(k)*(1-plumeAreaInCell/
+                mProf(k) = mProf(k)*(1-plumeAreaInCell/
      &                  (delta_y*delta_z(k)))
-
-             ENDIF
-
-             ELSE
-
+               ENDIF
+              ELSE
 C if the plume contact area is larger than the cell area, we assume there is
 C no background melting
-
-              mProfAv(k) = mProfPlume(k)*plumeAreaInCell / 
+               mProfAv(k) = mProfPlume(k)*plumeAreaInCell / 
      &                     (delta_y*delta_z(k))
-
-
-              mProf(k) = 0.
-
-
-             ENDIF
-
-
-            ELSE ! not coneplume or sheet plume
+               mProf(k) = 0.
+              ENDIF
+             ELSE ! Q_sg eq 0, not coneplume or sheet plume
 
 C If it is not a plume cell, then no plume melting.
-             mProfPlume(k) = 0.D0
-             mProfAv(k) = mProf(k)
-
-            ENDIF ! plume type
+              mProfPlume(k) = 0. _d 0
+              mProfAv(k) = mProf(k)
+             ENDIF ! Q_sg
             ENDIF ! are we above sea bed?
 
 C Send outputs to 3D grid for diagnostics
+catn: Since we're saving these 3D diags, should know how to calc offline
+catn: their contributions to addMass3D(plume,bg)
             IF ( usePlumeDiagnostics ) THEN
              mProfPlume3D(I,J,K,bi,bj) = mProfPlume(k)
              mProfAv3D(I,J,K,bi,bj) = mProfAv(k)
             ENDIF
 
-
 C ------------Tendencies------------------------------
-C These are applied in cells where there is no plume. The idea is that in these areas there are likely to be local subgrid convection cells. As such, it is most realistic to apply changes in T and S to ice edge cell. Where there is a plume, products of melt are transported upwards so no local changes applied.
+C These are applied in cells where there is no plume. The idea is that in these areas there are likely to be 
+C local subgrid convection cells. As such, it is most realistic to apply changes in T and S to ice edge cell. 
+C Where there is a plume, products of melt are transported upwards so no local changes applied.
 C The thermodynamics in this section are taken from pkg/icefront
 C Tendencies are applied in S/R EXTERNAL_FORCING
 
 C To convert from melt rate (m d^-1) to freshwater flux (kg m^-2 d^-1)
-              FwFlux(k) = -mProf(k)/94.22
+catn: m/day * kg/m3 = kg / day / m^2. Where does 94.22 come from? I also think the 
+catn: quoted unit above is incorrect and fwflux is in kg/m2/s, same as in icefront.  
+catn: rhoshelfice/secInday = 917./(24*3600) = 0.0106 = 1/94.22
+catn: Sign convention from pkg/icefront: inward (negative, into the ocean) fwFlux 
+catn: implies glacier melting due to outward (positive, leaving the ocean) heatflux
+catn: The last step we need to take care of is that FwFlux(k) is actually computed 
+catn: using rhoShelfIce, but outside of this addMass* is converted to Eta using 
+catn: rUnit2mass = rhoConst.  How to reconcile this?  Do we mult FwFlux back by 
+catn: rhoShelfIce to convert to m3/s, then rUnit2mass? If we look at how eccov4r5 
+catn: pkg/shelfice is treating fwflux from background melt, they use rUnit2mass and 
+catn: NOT rhoShelfIce.  In light of this, we REMOVE rhoShelfIce from the calculation 
+catn: of FWflux and use rUnit2Mass=rhoConst.
+catn            FwFlux(k) = -mProf(k)/94.22
+catn            FwFlux(k) = -mProf(k)*rhoShelfIce/secInday
+catn: this is using mProf, so it is background melt only
+            FwFlux(k) = -mProf(k)*rUnit2Mass/secInday
+catn  Now: m/day*day/sec*kg/m3=kg/m2/s
+catn: Lastly, to convert this FwFlux (kg/m2/s) to addMass3Dbg [kg/s], mult by the vertical
+catn: area (delta_y*dz).  Note we have already taken care at this point to ensure 
+catn: delta_y is along the glacier front.  In addition, we've already taken care to
+catn: reduce this addmass3dbg to zero if the whole cell is plume.
+catn      addMass3Dbg(I,j,k,bi,bj)=Fwflux3D(I,J,k,bi,bj)*delta_y*delta_z(k)*rUnit2mass 
+catn: pay attention to sign! addMass is minus FwFlux!! (following pkg/shelfice of eccov4r5)
+catn: kg/m2/s*m2=kg/s
+            addMass3Dbg(I,J,k,bi,bj)=-FwFlux(k)*delta_y*delta_z(k)
 
 C Heat required to melt that much ice (W m^-2)
-              heatflux(k) = -FwFlux(k)*333.55E+3
+catn: 333.55 x 10^3 is the Latent heat of fusion: When melting 1kg of ice, 333.55 kJ of 
+catn: energy is absorbed with no temperature change.  While melting, the heat energy 
+catn: needed to change a substance from solid to liquid at atm pressure is the latent 
+catn: heat of fusion. The liquid phase has a higher internal energy than the solid phase.
+catn: From statement above, in an ocean-ice system, when there is an dheff ice melt, implying 
+catn: -dheff*rhoi/rhosw=fwflux (negative) to the ocean, the ocean first needs to put energy 
+catn: into raising the ice temperature to freezing, then put more energy into solid->liquid 
+catn: phase change. Thus, from the ocean perspective, it loses dheat to raise ice temp plus 
+catn: dheat_Latent convert solid->liquid.  So a +dheff gives -fwflx (neg, inward, into ocean),
+catn: the ice system gains energy and the ocean loses energy and cools down 
+catn: (outward, postive=leaving ocean). dheat_lost_by_ocean is opposite sign of fwflux. 
+catn: kg/s/m2*J/kg=J/s/m2=W/m2
+catn            heatflux(k) = -FwFlux(k)*333.55E+3
+catn This is based on mprof, so it is background fluxes
+            heatflux(k) = -FwFlux(k)*ICEFRONTlatentHeat
 
-C Create local (no overlap) arrays of heat and freshwater flux from background
-C melting
-
+C Create local (no overlap) arrays of heat and freshwater flux from background melting
+catn FwFlux kg/s/m2 , HeatFlux: W/m2
             IF ( ( J .GT. 0 ) .AND. ( J .LT. sNy+1 ) ) THEN
              Fwflux3D(I,J,k,bi,bj) = FwFlux(k)
              HeatFlux3D(I,J,k,bi,bj) = HeatFlux(k)
             ENDIF
-    
+
 C     Compute tendencies (as for pkg/icefront)
-      eps5 = mass2rUnit/HeatCapacity_Cp
-
-             icefront_TendT(I,J,K,bi,bj) =
-     &               - HeatFlux3D(I,J,K,bi,bj)*eps5
-             icefront_TendS(I,J,K,bi,bj) = 
-     &                FWFlux3D(I,J,K,bi,bj)*
+catn: In ini_parms.F: mass2rUnit = recip_rhoConst, e.g., 1/999.8=1.0002e-3, HeatCapacity_Cp=3994
+catn: Sign convention: using pkg/icefront as a guide: ocean will take the negative of the 
+catn: heatflux and positive of fwflux above, i.e., opposite sign of what was computed above.  
+catn: J/s/m2 * degC.m3/J = degC/s.m ; kg/s/m2 m3/kg g/kg = g/kg/s.m
+            icefront_TendT(I,J,K,bi,bj) = - HeatFlux3D(I,J,K,bi,bj)*eps5
+            icefront_TendS(I,J,K,bi,bj) = FWFlux3D(I,J,K,bi,bj)*
      &                mass2rUnit * sProf(k)
-
 C     Scale by icefrontlength, which is the ratio of the horizontal length
 C     of the ice front in each model grid cell divided by the grid cell area.
 C     (icefrontlength = dy / dxdy = 1 / dx)
- 
-             icefront_TendT(I,j,K,bi,bj) = 
+catn: More problematic assumption of geometry of delta_x and delta_y
+catn degC/s.m/m = degC/s; g/kg/s.m/m=g/kg/s
+            icefront_TendT(I,j,K,bi,bj) = 
      &            icefront_TendT(I,j,K,bi,bj)
      &            * 1./delta_x
-             icefront_TendS(I,j,K,bi,bj) = 
+            icefront_TendS(I,j,K,bi,bj) = 
      &            icefront_TendS(I,j,K,bi,bj)
      &            * 1./delta_x
-           ENDDO
+           ENDDO !the big k-loop
 
+catn: Note: currently we're not taking care of the mass added from FwFlux (background melt).
+catn: To fully take into account all fw added to the ocean, we will need to either add it
+catn: to addMass array, or create yet another 3D field specific to iceplume where we store
+catn: it there.  The latter, though not desirable as we're carrying more 3d fields around,
+catn: is very good for diagnostic purpose, as we can for sure compute the ratio of 
+catn: background melt vs plume-induced entrainment vs Qsg
 
 C The plume transport is undertaken using the addMass terms.
 C addMass terms for volume (kg/s), pot. temperature, salinity and ptracers are input 
 C into the correct locations in 3D arrays
-           IF ( Q_sg.NE.0 ) THEN
+           IF ( Q_sg.NE.0. _d 0 ) THEN
 C Find temperature and salinity of plume outflow
-             DO k = 1,Nr
-               IF ( volFluxDiff(k) .GT. 0 ) THEN
-               temp_AddMass3D(I,J,K,bi,bj) = ! convert to potential temp
-     &          SW_PTMP(sProfPlume(k),tProfPlume(k),prProf(k),0. _d 0)
-               salt_AddMass3D(I,J,K,bi,bj) = sProfPlume(k)
+             DO k = 1,Nr        !second kloop
+catn: volFluxDiff entering here: when there's net convergence at this k
+               IF ( volFluxDiff(k) .GT. 0. _d 0 ) THEN
+                temp_AddMass3D(I,J,K,bi,bj) = ! convert to potential temp
+     &           SW_PTMP(sProfPlume(k),tProfPlume(k),prProf(k),0. _d 0)
+                salt_AddMass3D(I,J,K,bi,bj) = sProfPlume(k)
 #ifdef ALLOW_PTRACERS
-               DO iTracer = 1,PTRACERS_num
-                ptr_AddMass3D(I,J,K,bi,bj,iTracer)
-     &                            = ptrPlume(iTracer)
-               ENDDO
+                DO iTracer = 1,PTRACERS_num
+                 ptr_AddMass3D(I,J,K,bi,bj,iTracer)
+     &                             = ptrPlume(iTracer)
+                ENDDO
 #endif /* ALLOW_PTRACERS */
                ELSE 
-               temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
-               salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
+                temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
+                salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
 #ifdef ALLOW_PTRACERS
-               DO iTracer = 1,PTRACERS_num
-               ptr_AddMass3D(I,J,K,bi,bj,iTracer) 
-     &                            = ptrProf(k,iTracer)
-               ENDDO
+                DO iTracer = 1,PTRACERS_num
+                 ptr_AddMass3D(I,J,K,bi,bj,iTracer) 
+     &                             = ptrProf(k,iTracer)
+                ENDDO
 #endif /* ALLOW_PTRACERS */
                ENDIF
 C Convert m3/s into kg/s
-             addMass(I,j,k,bi,bj) = volFLuxDiff(k)*1000 
-            ENDDO
+catn: volFluxDiff is now converted to addMass, so already taken care of massflux into ocean at depth
+catn: Need to avoid hardcoded 1000 (missing decimal), will use rhoConstFresh
+catn: Note: in integr_continuity, we convert addMass to volume using rhoConst=1029, so we'll need to 
+catn: use that here to avoid a difference in "mass" effect between what's computed in here and outside
+catn             addMass(I,j,k,bi,bj) = volFLuxDiff(k)*1000 
+catn              addMass(I,j,k,bi,bj) = volFLuxDiff(k)*rhoConstFresh 
+catn: rUnit2mass = rhoConst, this is how mitgcm converts between volume and mass
+              addMass3Dplume(I,j,k,bi,bj) = volFLuxDiff(k)*rUnit2mass
+             ENDDO      !kloop
 
-           ELSE
+           ELSE !Q_sg eq 0
 
-           DO K = 1,Nr
-            temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
-            salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
-            addMass(I,j,k,bi,bj) = 0.D0
-           ENDDO
+             DO K = 1,Nr
+              temp_AddMass3D(I,J,K,bi,bj) = ptProf(k)
+              salt_AddMass3D(I,J,K,bi,bj) = sProf(k)
+catn: Cannot reset a global field in here, will need to make process-specfic field
+              addMass(I,j,k,bi,bj) = 0.D0
+              addMass3Dplume(I,j,k,bi,bj) = 0. _d 0
+             ENDDO
 
            ENDIF
 
          ENDIF ! plumeMask .NE. 0
 
 C DO J loop
-	 ENDDO
+         ENDDO
 
 C DO I loop
          ENDDO
 
+catn: here we calc fields that live outside this routine
+        DO K = 1,Nr
+         DO J = 1,sNy
+          DO I = 1,sNx
+             addMass(I,J,K,bi,bj) = addMass(I,J,K,bi,bj) +
+     &         addMass3Dplume(i,j,k,bi,bj)+addMass3Dbg(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
 C-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 C Save plume values
@@ -641,9 +776,9 @@ C Save plume values
 C Transfer to local (no bi,bj indices) and interior only arrays
 C (can't seem to get the diagnostics to output properly with the
 C other options!)
-        DO I = 1,sNx
+        DO K = 1,Nr
          DO J = 1,sNy
-          DO K = 1,Nr
+          DO I = 1,sNx
            wProfPlume3dLocal(I,J,K) =
      &      wProfPlume3D(I,J,K,bi,bj)
            tProfPlume3dLocal(I,J,K) =
@@ -662,9 +797,14 @@ C other options!)
            distanceProfPlume3dLocal(I,J,K) =
      &      distanceProfPlume3D(I,J,K,bi,bj)
 #endif
-           ENDDO
-          ENDDO
-         ENDDO
+            mass_icefront(i,j,k)=addMass3Dbg(i,j,k,bi,bj)
+            mass_iceplume(i,j,k)=addMass3Dplume(i,j,k,bi,bj)
+            gT_icefront(i,j,k)=icefront_tendT(i,j,k,bi,bj)
+            gS_icefront(i,j,k)=icefront_tendS(i,j,k,bi,bj)
+
+           ENDDO !I
+          ENDDO  !J
+         ENDDO   !K
 
 C Output diagnostics
           DO K=1,Nr
@@ -688,12 +828,20 @@ C and the second k is layer from which this data is taken in the original field
           CALL DIAGNOSTICS_FILL_RS(distanceProfPlume3dLocal,'PlumDist',
      &         k,k,3,bi,bj,myThid)
 #endif
+          CALL DIAGNOSTICS_FILL_RS(gT_icefront,'IP_gTbg ',
+     &         k,k,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL_RS(gS_icefront,'IP_gSbg ',
+     &         k,k,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL_RS(mass_iceplume,'IPmasspl',
+     &         k,k,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL_RS(mass_icefront,'IPmassbg',
+     &         k,k,3,bi,bj,myThid)
           ENDDO
 
 C Clear local arrays otherwise results replicate on other tiles
-        DO I = 1,sNx
+        DO K = 1,Nr
          DO J = 1,sNy
-          DO K = 1,Nr
+          DO I = 1,sNx
            wProfPlume3dLocal(I,J,K) = 0.d0
            tProfPlume3dLocal(I,J,K) = 0.d0
            sProfPlume3dLocal(I,J,K) = 0.d0
@@ -704,9 +852,13 @@ C Clear local arrays otherwise results replicate on other tiles
            thetaProfPlume3dLocal(I,J,K) = 0.d0
            distanceProfPlume3dLocal(I,J,K) = 0.d0
 #endif
-           ENDDO
+           gT_icefront(i,j,k)=0. _d 0
+           gS_icefront(i,j,k)=0. _d 0
+           mass_iceplume(i,j,k)=0. _d 0
+           mass_icefront(i,j,k)=0. _d 0
           ENDDO
          ENDDO
+        ENDDO
 
          ENDIF
 

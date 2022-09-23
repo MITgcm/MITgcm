@@ -92,7 +92,7 @@ C Initial conditions
       Y(8) = 0.0
       Y(9) = delta_y
       IF (useDetachPlume) THEN
-      Y(1) = 0.5 * PI*r_sg**2 ! initial area
+      Y(1) = HalfRL * PI*r_sg**twoRL ! initial area
                               ! value set for consistency with half-cone
       ELSE
       Y(1) = r_sg
@@ -324,8 +324,8 @@ C Interpolate from imposed ambient profiles
        CALL linint(Nr,zProfAbs,sProf,abs(T),Sambient)
       ENDIF
 
-	  Tin = T
-	  
+      Tin = T
+
 C Plume density
       rho_1   = RHO(Y(3),Y(4),Tin)
 C Ambient density
@@ -333,13 +333,14 @@ C Ambient density
 
 C Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*c_w-GamS*c_i)
+      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(L/c_i))
-     &        -GamT*c_w*(Y(3)-lambda2-lambda3*Tin)
+     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)+L)
+      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
+     &        +ICEFRONTlatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
@@ -347,12 +348,14 @@ C Equations for Sb, Tb and mdot
 
 C Differential equations
 C Plume thickness
-      YDOT(1)=2*E_0+Cd-(g*Y(1)/(Y(2)**2))*(rho_0-rho_1)
-     &  /rho_ref+2*mdot/Y(2)
+      YDOT(1)=2*E_0+Cd-(gravity*Y(1)/(Y(2)**2))*(rho_0-rho_1)
+     &  /rhoConst+2*mdot/Y(2)
+catn     &  /rho_ref+2*mdot/Y(2)
 
 C Plume vertical velocity
       YDOT(2)=-(Y(2)/Y(1))*(E_0+Cd+mdot/Y(2))
-     &  +(g/Y(2))*(rho_0-rho_1)/rho_ref
+     &  +(gravity/Y(2))*(rho_0-rho_1)/rhoConst
+catn     &  +(gravity/Y(2))*(rho_0-rho_1)/rho_ref
 
 C Plume temperature
       YDOT(3)=E_0*(Tambient-Y(3))/Y(1)
@@ -421,23 +424,26 @@ C     Interpolate from imposed ambient profiles
 
 C     Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*c_w-GamS*c_i)
+      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(L/c_i))
-     &        -GamT*c_w*(Y(3)-lambda2-lambda3*Tin)
+     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)+L)
+      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
+     &       +ICEFRONTlatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
       mdot = GamS*(Cd**0.5)*Y(2)*(Y(4)-Sb)/Sb ! mdot
 
-      YDOT(1) = 2.*E_0+4.*mdot/(pi*Y(2))-Y(1)*g*
-     &          (rho_0-rho_1)/(2.*Y(2)*Y(2)*rho_ref)+2.*Cd/pi
+      YDOT(1) = 2.*E_0+4.*mdot/(pi*Y(2))-Y(1)*gravity*
+     &          (rho_0-rho_1)/(2.*Y(2)*Y(2)*rhoConst)+2.*Cd/pi
+catn     &          (rho_0-rho_1)/(2.*Y(2)*Y(2)*rho_ref)+2.*Cd/pi
 
-      YDOT(2) = -2.*E_0*Y(2)/Y(1)-4.*mdot/(pi*Y(1))+g*
-     &          (rho_0-rho_1)/(Y(2)*rho_ref)-4.*Cd*Y(2)/(pi*Y(1))
+      YDOT(2) = -2.*E_0*Y(2)/Y(1)-4.*mdot/(pi*Y(1))+gravity*
+     &          (rho_0-rho_1)/(Y(2)*rhoConst)-4.*Cd*Y(2)/(pi*Y(1))
+catn     &          (rho_0-rho_1)/(Y(2)*rho_ref)-4.*Cd*Y(2)/(pi*Y(1))
 
       YDOT(3) = 2.*E_0*(TAMBIENT-Y(3))/Y(1)+4.*mdot*
      &           (Tb-Y(3))/(pi*Y(1)*Y(2))-4.*
@@ -506,13 +512,14 @@ C     Interpolate from imposed ambient profiles
 
 C     Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*c_w-GamS*c_i)
+      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(L/c_i))
-     &        -GamT*c_w*(Y(3)-lambda2-lambda3*Tin)
+     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
 
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)+L)
+      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
+     &         +ICEFRONTlatentHeat)
 
       Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
@@ -524,13 +531,15 @@ C     Equations for Sb, Tb and mdot
 
       YDOT(1) = 2*E_0*Cplume/sin(Y(7))+
      &          2*Wplume*mdot/(sin(Y(7))*Y(2))-
-     &          Y(1)*gravity*(rho_0-rho_1)/(Y(2)*Y(2)*rho_ref)+
+     &          Y(1)*gravity*(rho_0-rho_1)/(Y(2)*Y(2)*rhoConst)+
      &          Cd*Wplume
+catn     &          Y(1)*gravity*(rho_0-rho_1)/(Y(2)*Y(2)*rho_ref)+
 
       YDOT(2) = -E_0*Cplume*Y(2)/Y(1)/sin(Y(7))-
      &          Wplume*mdot/(Y(1)*sin(Y(7)))+
-     &          gravity*(rho_0-rho_1)/(Y(2)*rho_ref)-
+     &          gravity*(rho_0-rho_1)/(Y(2)*rhoConst)-
      &          Cd*Wplume*Y(2)/Y(1)
+catn     &          gravity*(rho_0-rho_1)/(Y(2)*rho_ref)-
 
       YDOT(3) = (E_0*Cplume*(Tambient-Y(3))/Y(1)+
      &           Wplume*mdot*(Tb-Y(3))/(Y(1)*Y(2))-
@@ -573,7 +582,7 @@ C ---------------------------------------------------------------------
 C Equation of state (UNESCO 1983)
 
 C     T = temperature (deg C)
-C     S = salinity (PSU)
+C     S = salinity (g/kg)
 C     z = depth (m)
 
       DOUBLE PRECISION T,S,z

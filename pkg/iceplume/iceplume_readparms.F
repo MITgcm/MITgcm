@@ -40,11 +40,7 @@ C    PARMO1 - ICEPLUME inputs
      &     IceTemp,
      &     usePlumeDiagnostics,
      &     conserveMass,
-     &     rho_ref,
-     &     g,
-     &     c_w,
      &     c_i,
-     &     L,
      &     lambda1,
      &     lambda2,
      &     lambda3,
@@ -55,6 +51,11 @@ C    PARMO1 - ICEPLUME inputs
      &     useConePlume,
      &     maxDepth,
      &     backgroundVel
+catn     &     rho_ref,
+catn     &     rhoShelfIce,
+catn     &     g,
+catn     &     L,
+catn     &     c_w,
 
 C    PARMO2 - icefront inputs required for thermodynamics
       NAMELIST /ICEPLUME_PARM02/
@@ -76,7 +77,7 @@ C     Default values for PARM01
       S_sg     = 1.0D-3
       w_sg     = 1.0D-2
       r_sg     = 1.0D-2
-      theta_sg = PI/2.
+      theta_sg = PI/twoRL
       RTOL     = 1.0D-5
       ATOL     = 1.0D-5
       iceTemp  = 0.
@@ -87,11 +88,17 @@ C     Default values for PARM01
       conserveMass    = .FALSE.
       useSheetPlume   = .FALSE.
       useConePlume    = .FALSE.
-      rho_ref= 1020.D0
-      g      = 9.81D0
-      c_w    = 3994.D0
+catn  Will use rhoConst instead of setting yet another rho_ref
+catn  In addition, inside iceplume_calc.F there is another rho_0=1027.
+catn  which will also now be set to rhoConst.
+catn      rho_ref= 1020.D0
+catn      rhoShelfIce = 917.D0
+catn: Use default values for gravity and HeatCapacity_Cp
+catn      g      = 9.81D0
+catn      c_w    = 3994.D0
       c_i    = 2009.D0
-      L      = 334000D0
+catn: Should not redefine Latent heat of fusion, use mitgcm parms
+catn      L      = 334000D0
       lambda1= -0.0573D0
       lambda2= 0.0832D0
       lambda3= 0.000761D0

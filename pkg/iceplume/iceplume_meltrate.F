@@ -22,6 +22,9 @@ C Local variables
       _RL depth
       _RL absVelocity
       _RL a,b,c, tb, sb, mdot
+      _RL secInday
+
+       secInday = 86400 . _d 0 
 
 #ifdef ALLOW_ICEPLUME
 
@@ -35,20 +38,21 @@ C Calculate melt rate from 3 equation formualtion (as for plume models)
 
 C     Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*c_w-GamS*c_i)
+      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
 
       b = GamS*c_i*(lambda1*salinity-lambda2-lambda3*depth+
-     &         iceTemp-(L/c_i))
-     &        -GamT*c_w*(temperature-lambda2-lambda3*depth)
+     &         iceTemp-(ICEFRONTlatentHeat/c_i))
+     &        -GamT*HeatCapacity_Cp*(temperature-lambda2-lambda3*depth)
 
-      c = GamS*salinity*(c_i*(lambda2+lambda3*depth-iceTemp)+L)
+      c = GamS*salinity*(c_i*(lambda2+lambda3*depth-iceTemp)
+     &       +ICEFRONTlatentHeat)
 
-      Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
+      Sb   = (oneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL)) !Sb
       Tb   = lambda1*Sb+lambda2+lambda3*depth !Tb
-      mdot = GamS*(Cd**0.5)*absVelocity*(salinity-Sb)/Sb ! mdot
+      mdot = GamS*(Cd**HalfRL)*absVelocity*(salinity-Sb)/Sb ! mdot
 
 C Meltrate is in m d^-1
-       meltrate = 86400.*mdot
+       meltrate = secInday*mdot
 
 #endif /* ALLOW_ICEPLUME */
 
