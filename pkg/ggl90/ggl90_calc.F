@@ -272,14 +272,20 @@ C     Initialize local fields
 #endif
          Nsquare(i,j,k) = 0. _d 0
          SQRTTKE(i,j,k) = 0. _d 0
-#ifdef ALLOW_GGL90_LANGMUIR
-         IF (useLANGMUIR) THEN
-          LCmixingLength(i,j,k) = GGL90mixingLengthMin
-         ENDIF
-#endif
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_GGL90_LANGMUIR
+      IF (useLANGMUIR) THEN
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          LCmixingLength(i,j,k) = GGL90mixingLengthMin
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
 #endif
@@ -307,15 +313,19 @@ c       rMixingLength(i,j,1)  = 0. _d 0
         dfy(i,j) = 0. _d 0
         gTKE(i,j) = 0. _d 0
 #endif /* ALLOW_GGL90_HORIZDIFF */
+       ENDDO
+      ENDDO
 #ifdef ALLOW_GGL90_LANGMUIR
-        IF (useLANGMUIR) THEN
+      IF (useLANGMUIR) THEN
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
          stokesterm(i,j) = 0. _d 0
          dstokesUdR(i,j) = 0. _d 0
          dstokesVdR(i,j) = 0. _d 0
-        ENDIF
-#endif
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
+#endif
 
       DO k = 2, Nr
        DO j=jMin,jMax
@@ -610,8 +620,8 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
 
 #ifdef ALLOW_GGL90_LANGMUIR
       IF (useLANGMUIR) THEN
-C      Compute the mixing length scale with Langmuir circulation. 
-C      The calculation closely follows that for GGL90mixingLength. 
+C      Compute the mixing length scale with Langmuir circulation.
+C      The calculation closely follows that for GGL90mixingLength.
        IF ( mxlMaxFlag .EQ. 1 ) THEN
 
         DO k=2,Nr
@@ -804,7 +814,7 @@ C     ... across x-faces
          ENDDO
         ENDDO
 C     ... across y-faces
-        
+
          dfy(i,1-OLy)=0. _d 0
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -831,14 +841,25 @@ C     end if GGL90diffTKEh .eq. 0.
 #endif /* ALLOW_GGL90_HORIZDIFF */
 
 C     viscosity and diffusivity
+#ifdef ALLOW_GGL90_LANGMUIR
+       IF (useLANGMUIR) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          KappaM(i,j) = GGL90ck*LCmixingLength(i,j,k)*SQRTTKE(i,j,k)
+         ENDDO
+        ENDDO
+       ELSE
+#endif
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
+#ifdef ALLOW_GGL90_LANGMUIR
+         ENDDO
+        ENDDO
+       ENDIF
        DO j=jMin,jMax
         DO i=iMin,iMax
-         KappaM(i,j) = GGL90ck*GGL90mixingLength(i,j,k)*SQRTTKE(i,j,k)
-#ifdef ALLOW_GGL90_LANGMUIR
-         IF (useLANGMUIR) THEN        
-          KappaM(i,j) = GGL90ck*LCmixingLength(i,j,k)*SQRTTKE(i,j,k)
-         ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
+#endif
          GGL90visctmp(i,j,k) = MAX( KappaM(i,j),diffKrNrS(k)
      &                            * recip_coordFac*recip_coordFac )
      &        * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
@@ -936,6 +957,9 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
          ENDDO
         ENDIF
        ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE stokesterm = comlev1_bibj, key=ikeyLoc, kind=isbyte
+# endif
 #endif /* ALLOW_GGL90_LANGMUIR */
 
 
