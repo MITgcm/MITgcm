@@ -84,13 +84,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
-       recip_Lasq = 1 / LC_num
+       recip_Lasq = 1. _d 0 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
      &               surfaceForcingU(i,j,bi,bj)) * recip_Lasq
-         stokesU(i,j) = Usfc * EXP(4*PI/LC_lambda*rC(k))
+         stokesU(i,j) = Usfc * EXP(4. *PI/LC_lambda*rC(k))
         ENDDO
        ENDDO
       ENDIF

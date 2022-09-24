@@ -81,7 +81,7 @@ C Original discretization
 
 #if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
-       recip_Lasq = 1 / LC_num
+       recip_Lasq = 1. _d 0 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -114,7 +114,7 @@ C Original discretization
          ENDDO
         ENDDO
        ENDIF
- 
+
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          vCoriolisTerm(i,j)=vCoriolisTerm(i,j)+vStokesTerm(i,j)

@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: MOM_VI_U_CORIOLIS
 C     !INTERFACE:
       SUBROUTINE MOM_VI_U_CORIOLIS(
-     I                     bi, bj, k, 
+     I                     bi, bj, k,
      I                     selectVortScheme, useJamartMomAdv,
      I                     vFld, omega3, hFacZ, r_hFacZ,
      O                     uCoriolisTerm,
@@ -70,13 +70,13 @@ c     oneThird = 1. _d 0 / ( 1. _d 0 + 2.*tmpFac )
 
 #if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR) THEN
-       recip_Lasq = 1 / LC_num
+       recip_Lasq = 1. _d 0 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
      &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-         stokesV(i,j) = Vsfc * EXP(4*PI/LC_lambda*rC(k))
+         stokesV(i,j) = Vsfc * EXP(4.*PI/LC_lambda*rC(k))
         ENDDO
        ENDDO
       ENDIF
