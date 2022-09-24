@@ -34,8 +34,8 @@ CEOP
 
 C    PARMO1 - ICEPLUME inputs
       NAMELIST /ICEPLUME_PARM01/
-     &     runoffVelfile, runoffRadfile, plumeMaskFile,
-     &     T_sg_0, S_sg_0, E_0, Angle_sg_0,
+     &     runoffQsgfile, plumeMaskFile,
+     &     T_sg_0, S_sg_0, E_0, Angle_sg_0, wVel_sg_0,
      &     RTOL, ATOL,
      &     IceTemp,
      &     usePlumeDiagnostics,
@@ -51,6 +51,7 @@ C    PARMO1 - ICEPLUME inputs
      &     useConePlume,
      &     maxDepth,
      &     backgroundVel
+catn runoffVelfile, runoffRadfile, 
 
 C    PARMO2 - iceplume inputs required for thermodynamics
 catn change icefront to iceplume in case we ever run with icefront and
@@ -89,11 +90,13 @@ C     Default values for PARM01
       T_sg_0   = 1.0D-3
       S_sg_0   = 1.0D-3
       Angle_sg_0= PI/twoRL
+      wVel_sg_0= 1.0D0
       RTOL     = 1.0D-5
       ATOL     = 1.0D-5
       iceTemp  = 0.
-      runoffVelfile = ' '
-      runoffRadfile = ' '
+      runoffQsgfile = ' '
+catn      runoffVelfile = ' '
+catn      runoffRadfile = ' '
       plumeMaskFile = ' '
       usePlumeDiagnostics = .FALSE.
       conserveMass    = .FALSE.

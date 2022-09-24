@@ -216,18 +216,24 @@ C-    Qnet is now (after c54) the net Heat Flux (including SW)
 
 # ifdef ALLOW_ICEPLUME
       IF ( useICEPLUME ) THEN
-      IF ( runoffVelfile .NE. ' ') THEN
+      IF ( runoffQsgfile .NE. ' ') THEN
       CALL READ_REC_XY_RL(
-     &     runoffVelFile,runoffVel0,inTime0,myIter,myThid)
+     &     runoffQsgFile,runoffQsg0,inTime0,myIter,myThid)
       CALL READ_REC_XY_RL(
-     &     runoffVelFile,runoffVel1,inTime1,myIter,myThid)
+     &     runoffQsgFile,runoffQsg1,inTime1,myIter,myThid)
       ENDIF
-      IF ( runoffRadFile .NE. ' ') THEN
-      CALL READ_REC_XY_RL(
-     &     runoffRadFile,runoffRad0,inTime0,myIter,myThid)
-      CALL READ_REC_XY_RL(
-     &     runoffRadFile,runoffRad1,inTime1,myIter,myThid)
-      ENDIF
+catn      IF ( runoffVelfile .NE. ' ') THEN
+catn      CALL READ_REC_XY_RL(
+catn     &     runoffVelFile,runoffVel0,inTime0,myIter,myThid)
+catn      CALL READ_REC_XY_RL(
+catn     &     runoffVelFile,runoffVel1,inTime1,myIter,myThid)
+catn      ENDIF
+catn      IF ( runoffRadFile .NE. ' ') THEN
+catn      CALL READ_REC_XY_RL(
+catn     &     runoffRadFile,runoffRad0,inTime0,myIter,myThid)
+catn      CALL READ_REC_XY_RL(
+catn     &     runoffRadFile,runoffRad1,inTime1,myIter,myThid)
+catn      ENDIF
       ENDIF
 # endif /* ALLOW_ICEPLUME */
 
@@ -354,22 +360,30 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDIF
 #endif
 #ifdef ALLOW_ICEPLUME
-        IF ( runoffVelFile .NE. ' '  ) THEN
+        IF ( runoffQsgFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            runoffVel(i,j,bi,bj) = bWght*runoffVel0(i,j,bi,bj)
-     &                        + aWght*runoffVel1(i,j,bi,bj)
+            runoffQsg(i,j,bi,bj) = bWght*runoffQsg0(i,j,bi,bj)
+     &                        + aWght*runoffQsg1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
-        IF ( runoffRadFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            runoffRad(i,j,bi,bj) = bWght*runoffRad0(i,j,bi,bj)
-     &                        + aWght*runoffRad1(i,j,bi,bj)
-           ENDDO
-          ENDDO
-        ENDIF
+catn        IF ( runoffVelFile .NE. ' '  ) THEN
+catn          DO j=1-Oly,sNy+Oly
+catn           DO i=1-Olx,sNx+Olx
+catn            runoffVel(i,j,bi,bj) = bWght*runoffVel0(i,j,bi,bj)
+catn     &                        + aWght*runoffVel1(i,j,bi,bj)
+catn           ENDDO
+catn          ENDDO
+catn        ENDIF
+catn        IF ( runoffRadFile .NE. ' '  ) THEN
+catn          DO j=1-Oly,sNy+Oly
+catn           DO i=1-Olx,sNx+Olx
+catn            runoffRad(i,j,bi,bj) = bWght*runoffRad0(i,j,bi,bj)
+catn     &                        + aWght*runoffRad1(i,j,bi,bj)
+catn           ENDDO
+catn          ENDDO
+catn        ENDIF
 #endif
        ENDDO
       ENDDO

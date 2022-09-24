@@ -12,8 +12,8 @@ C !INTERFACE:
      I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     As for S/R ICEFRONT_TENDENCY_APPLY_T
-C     Add icefront tendency terms to T (theta) tendency.
+C     As for S/R ICEPLUME_TENDENCY_APPLY_T
+C     Add iceplume tendency terms to T (theta) tendency.
 C     Routine works for one level at a time.
 
 C     !USES:
@@ -45,7 +45,7 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_ICEPLUME
 
 catn: this is the background melt tendency
-      IF ( applyIceplumeBGTendT ) THEN
+      IF ( applyIcePlumeBGTendT ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
           gT_arr(i,j) = gT_arr(i,j)
@@ -70,8 +70,8 @@ C !INTERFACE:
      I                    k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     As for S/R ICEFRONT_TENDENCY_APPLY_S
-C     Add icefront tendency terms to S tendency.
+C     As for S/R ICEPLUME_TENDENCY_APPLY_S
+C     Add iceplume tendency terms to S tendency.
 C     Routine works for one level at a time.
 
 C     !INPUT PARAMETERS:
@@ -103,7 +103,7 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_ICEPLUME
 
 catn: this is the background melt tendency
-      IF ( applyIceplumeBGTendS ) THEN
+      IF ( applyIcePlumeBGTendS ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
           gS_arr(i,j) = gS_arr(i,j)

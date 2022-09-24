@@ -76,15 +76,20 @@ C      Read constant runoff input only for myIter = nIter0
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid)
 
-        IF ( runoffVelFile .NE. ' ') THEN
+        IF ( runoffQsgFile .NE. ' ') THEN
        CALL READ_REC_XY_RL(
-     &      runoffVelFile,runoffVel,iRec0,myIter,myThid)
+     &      runoffQsgFile,runoffQsg,iRec0,myIter,myThid)
         ENDIF
 
-        IF ( runoffRadFile .NE. ' ') THEN
-       CALL READ_REC_XY_RL(
-     &      runoffRadFile,runoffRad,iRec0,myIter,myThid)
-        ENDIF
+catn        IF ( runoffVelFile .NE. ' ') THEN
+catn       CALL READ_REC_XY_RL(
+catn     &      runoffVelFile,runoffVel,iRec0,myIter,myThid)
+catn        ENDIF
+catn
+catn        IF ( runoffRadFile .NE. ' ') THEN
+catn       CALL READ_REC_XY_RL(
+catn     &      runoffRadFile,runoffRad,iRec0,myIter,myThid)
+catn        ENDIF
 
        ENDIF ! not periodicExternalForcing
 

@@ -34,18 +34,22 @@ C Header file pkg/ICEPLUME
       LOGICAL useInputPtracers
 
       COMMON /ICEPLUME_FIELDS/
-     &     runoffVel, runoffVel0, runoffVel1,
-     &     runoffRad, runoffRad0, runoffRad1,
+     &     runoffQsg,runoffQsg0,runoffQsg1,
      &     plumeMask, 
      &     temp_addMass3Dplume, salt_addMass3Dplume,
      &     addMass3Dplume,
      &     Qin
-      _RL runoffVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL runoffVel0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL runoffVel1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL runoffRad  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL runoffRad0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn     &     runoffVel, runoffVel0, runoffVel1,
+catn     &     runoffRad, runoffRad0, runoffRad1,
+      _RL runoffQsg  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL runoffQsg0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL runoffQsg1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffVel0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffVel1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffRad  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffRad0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL plumeMask  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL temp_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL salt_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -98,11 +102,12 @@ C     S_sg_0       :: initial salinity of subglacial discharge, default to 1.d-3
 C     Q_sg         :: time-dependent subglacial discharge volume flux rate at point source, default to 1.d-3 m3/s
 C     r_sg         :: time-dependent subglacial discharge radius at point source, default to 1.d-2 m
 C     w_sg         :: time-dependent subglacial discharge vertical vel at point source, default to 1.d0 m/s
+C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, use to convert Q_sg to r_sg,w_sg
 
       COMMON /ICEPLUME_PARM_R/
      &     E_0,
      &     Q_sg, T_sg_0, S_sg_0, r_sg, w_sg,
-     &     Angle_sg_0,
+     &     Angle_sg_0, wVel_sg_0,
      &     dLnormal, dLtangential,
      &     RTOL, ATOL,
      &     iceTemp,
@@ -117,6 +122,7 @@ C     w_sg         :: time-dependent subglacial discharge vertical vel at point 
      &     maxDepth
       _RS E_0
       _RL Angle_sg_0
+      _RL wVel_sg_0
       _RL T_sg_0
       _RL S_sg_0
       _RS Q_sg
@@ -145,14 +151,16 @@ C     w_sg         :: time-dependent subglacial discharge vertical vel at point 
       _RL maxDepth
 
       COMMON /ICEPLUME_FILES/
-     &	    runoffVelfile,
-     &	    runoffRadfile,
+     &	    runoffQsgfile,
      &      plumeMaskFile
+catn     &	    runoffVelfile,
+catn     &	    runoffRadfile,
 C Again, doesn't like MAX_LEN_FNAM
       CHARACTER*(512)
-     &	    runoffVelfile,
-     &	    runoffRadfile,
+     &	    runoffQsgfile,
      &      plumeMaskFile
+catn     &	    runoffVelfile,
+catn     &	    runoffRadfile,
 
 C-----------------------------------------
 C Parameters relating to the icefront package

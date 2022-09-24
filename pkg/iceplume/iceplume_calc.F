@@ -112,6 +112,8 @@ catn: be careful about overlap, i think these will all need them.
       _RL sProfPlume3D        (1:sNx,1:sNy,Nr)
       _RL mProfPlume3D        (1:sNx,1:sNy,Nr)
       _RL mProfAv3D           (1:sNx,1:sNy,Nr)
+      _RL runoffVel           (1:sNx,1:sNy)
+      _RL runoffRad           (1:sNx,1:sNy)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
       _RL thetaProfPlume3D    (1:sNx,1:sNy,Nr)
       _RL distanceProfPlume3D (1:sNx,1:sNy,Nr)
@@ -158,9 +160,46 @@ catn: Initialize tendencies for plume
          ENDDO
         ENDDO
 
+c when read in Qsg, initialize LOCAL runoff[Vel,Rad] array, no bibj
+        DO j=1,sNy
+         DO i=1,sNx
+          runoffVel(i,j)=0. _d 0
+          runoffRad(i,j)=0. _d 0
+         ENDDO
+        ENDDO
+
+catn: When read in Qsg, 
+catn: add a loop outside to calculate the 2d fields runoff(Vel,Rad), 
+catn: which depends on geometry dLtangential
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+            dLtangential = dyG(I,J,bi,bj)
+          ELSEIF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+            dLtangential = dxG(I,J,bi,bj)
+          ENDIF
+          IF(runoffQsg(I,J,bi,bj) .GT. 0. _d 0) THEN
+           runoffVel(i,j) = wVel_sg_0
+           IF ( useSheetPlume ) THEN
+            runoffRad(i,j)=runoffQsg(I,J,bi,bj)/
+     &                     (dLtangential*runoffVel(i,j))
+           ELSEIF (useConePlume .OR. useDetachPlume) THEN
+            runoffRad(i,j)=(twoRL*runoffQsg(I,J,bi,bj)/
+     &                     (runoffVel(i,j)*pi))**halfRL
+           ENDIF
+          ELSE
+           runoffVel(i,j) = 0. _d 0
+           runoffRad(i,j) = 0. _d 0
+          ENDIF
+         ENDDO
+        ENDDO
+
 catn: need to be careful here: the I,J are with overlaps
         DO J = 1-OLy,sNy+OLy
          DO I = 1-OLx,sNx+Olx
+catn: check if we need overlap at all? if not we do without
+catn        DO J = 1,sNy
+catn         DO I = 1,sNx
 
 #ifdef ALLOW_PTRACERS
 
@@ -263,23 +302,38 @@ catn: the glacier and dyG along the fjord toward open ocean:
 
 C Read in the subglacial discharge for this place and time
 C (only the lowermost cell in column is read)
-           w_sg = runoffVel(I,J,bi,bj)
-           r_sg = runoffRad(I,J,bi,bj)
+catn: when read in Qsg, runoff[Vel,Rad] are local, no bibj
+catn           w_sg = runoffVel(I,J,bi,bj)
+catn           r_sg = runoffRad(I,J,bi,bj)
+           w_sg = runoffVel(I,J)
+           r_sg = runoffRad(I,J)
+catn: changed 2 files into 1 since the only thing we need is Qsg
 
 catn: There is a potential error for delta_y here because it is yet
 catn initialized, and yet plays a role in Q_sg calc.  Then after that we
 catn define dLtangential, and then compute (further down) volumeFlux based on
 catn the redefined dLtangential.  atn has now moved defn of delta_[x,y] above.
 catn Lastly, [x,y] has now been moved to normal/tangential to glacier front.
-           IF ( useSheetPlume ) THEN
-           Q_sg = w_sg*r_sg*dLtangential
-           ELSEIF ( useConePlume ) THEN
-           Q_sg = w_sg*((pi*r_sg**2.)/2.)
-           ELSEIF ( useDetachPlume ) THEN
-           Q_sg = w_sg*((pi*r_sg**2.)/2.)
-           ELSE
-           Q_sg = 0. _d 0
-           ENDIF
+catn           IF ( useSheetPlume ) THEN
+catn           Q_sg = w_sg*r_sg*dLtangential
+catn           ELSEIF ( useConePlume ) THEN
+catn           Q_sg = w_sg*((pi*r_sg**2.)/2.)
+catn           ELSEIF ( useDetachPlume ) THEN
+catn           Q_sg = w_sg*((pi*r_sg**2.)/2.)
+catn           ELSE
+catn           Q_sg = 0. _d 0
+catn           ENDIF
+          IF (runoffQsg(I,J,bi,bj) .GT. 0. _d 0 .AND. 
+     &               w_sg .GT. 0. _d 0) THEN
+            Q_sg=runoffQsg(I,J,bi,bj)
+            IF ( useSheetPlume ) THEN
+             r_sg=Q_sg/(dLtangential*w_sg)
+            ELSEIF (useConePlume .OR. useDetachPlume) THEN
+             r_sg=(twoRL*Q_sg/(w_sg*pi))**halfRL
+            ENDIF
+          ELSE
+            Q_sg = 0. _d 0
+          ENDIF
 
 
 C Create variables with temperature, salinity
