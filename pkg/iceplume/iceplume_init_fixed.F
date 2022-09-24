@@ -1,5 +1,7 @@
-
 #include "ICEPLUME_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif /* ALLOW_EXF */
 
       SUBROUTINE ICEPLUME_INIT_FIXED( myThid )
 C     *============================================================*
@@ -16,6 +18,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ICEPLUME.h"
+#ifdef ALLOW_EXF
+#include "EXF_PARAM.h"
+#endif /* ALLOW_EXF */
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
@@ -24,6 +29,10 @@ C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
       INTEGER fp, iRec0, iRec1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     myTime
+
+#ifdef ALLOW_EXF
+      INTEGER errCount
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_ICEPLUME
 C     === Local variables ===
@@ -59,6 +68,31 @@ C      Read plume mask data
 
 C Load runoff
 
+#ifdef ALLOW_EXF
+      IF ( useEXF .AND. runoffQsgfile .NE. ' ' ) THEN
+       _BEGIN_MASTER( myThid )
+       errCount = 0
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START runoffQsg',myThid)
+# endif
+catn useExfYearlyFields is a twoDigitYear to identify year or undef if have
+catn cycle. Note the double "FF" in getffield, which is the newer version
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'iceplume', 'runoffQsg', runoffQsgperiod,
+     I                    runoffQsgstartdate1, runoffQsgstartdate2,
+     U                    runoffQsgStartTime, errCount,
+     I                    myThid )
+       IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &     'ICEPLUME_INIT_FIXED: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R ICEPLUME_INIT_FIXED'
+       ENDIF
+       _END_MASTER( myThid )
+       _BARRIER
+      ENDIF
+#else
       IF ( .NOT. periodicExternalForcing ) THEN
 C If periodic external forcing is used, this is read in S/R external_fields_load
 
@@ -92,6 +126,7 @@ catn     &      runoffRadFile,runoffRad,iRec0,myIter,myThid)
 catn        ENDIF
 
        ENDIF ! not periodicExternalForcing
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_PTRACERS
 C      Read ptracer mask data

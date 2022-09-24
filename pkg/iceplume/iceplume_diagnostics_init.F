@@ -99,14 +99,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
       diagName  = 'IP_gTbg '
-      diagTitle = 'Temperature tend from icefront, >0 incr ocn T'
+      diagTitle = 'Temperature tend from iceplumeBG, >0 incr ocn T'
       diagUnits = 'degC/s        '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'IP_gSbg '
-      diagTitle = 'Salinity tend from icefront, >0 incr ocn S'
+      diagTitle = 'Salinity tend from iceplumeBG, >0 incr ocn S'
       diagUnits = 'g/kg/s       '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -134,7 +134,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'IPmassbg'
-      diagTitle = 'addMass from icefront, >0 incr ocn mass'
+      diagTitle = 'addMass from iceplumeBG, >0 incr ocn mass'
       diagUnits = 'kg/s        '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

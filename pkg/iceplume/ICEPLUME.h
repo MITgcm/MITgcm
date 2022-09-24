@@ -1,6 +1,10 @@
 
 #include "ICEPLUME_OPTIONS.h"
 
+#ifdef ALLOW_EXF
+#include "EXF_OPTIONS.h"
+#endif
+
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #endif /* ALLOW_PTRACERS */
@@ -55,6 +59,60 @@ catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL salt_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS Qin (100)
+
+      COMMON /ICEPLUME_FILES/
+     &	    runoffQsgfile,
+     &      plumeMaskFile
+#ifdef ALLOW_EXF
+     &     ,runoffQsgmask
+#endif /* ALLOW_EXF */
+      CHARACTER*(MAX_LEN_FNAM)
+     &	    runoffQsgfile,
+     &      plumeMaskFile
+#ifdef ALLOW_EXF
+      CHARACTER*1 runoffQsgmask
+c runoffQsgmask will be 'c'
+#endif /* ALLOW_EXF */
+
+#ifdef ALLOW_EXF
+C     the following variables are used in conjunction
+C     with pkg/exf to specify sub-glacial runoff
+      INTEGER runoffQsgstartdate1
+      INTEGER runoffQsgstartdate2
+      _RL     runoffQsgStartTime
+      _RL     runoffQsgperiod
+      _RL     runoffQsgRepCycle
+      _RL     runoffQsgconst
+      _RL     runoffQsg_inscal
+      _RL     runoffQsg_remov_intercept
+      _RL     runoffQsg_remov_slope
+#ifdef USE_EXF_INTERPOLATION
+      _RL     runoffQsg_lon0
+      _RL     runoffQsg_lon_inc
+      INTEGER runoffQsg_nlon
+      _RL     runoffQsg_lat0
+c MAX_LAT_INC=1279 in exf_interp_size
+      _RL     runoffQsg_lat_inc(1279)
+      INTEGER runoffQsg_nlat
+      INTEGER runoffQsg_interpMethod
+#endif /* USE_EXF_INTERPOLATION */
+
+      COMMON /ICEPLUME_EXF_PAR_I/
+     &       runoffQsgstartdate1, runoffQsgstartdate2
+#ifdef USE_EXF_INTERPOLATION
+     &      ,runoffQsg_nlon,runoffQsg_nlat
+     &      ,runoffQsg_interpMethod
+#endif /* USE_EXF_INTERPOLATION */
+      COMMON /ICEPLUME_EXF_PAR_R/
+     &       runoffQsgStartTime,runoffQsgperiod,
+     &       runoffQsgRepCycle,runoffQsgconst,runoffQsg_inscal,
+     &       runoffQsg_remov_intercept, runoffQsg_remov_slope
+#ifdef USE_EXF_INTERPOLATION
+     &      ,runoffQsg_lon0,runoffQsg_lon_inc
+     &      ,runoffQsg_lat0,runoffQsg_lat_inc
+#endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
+
 
       COMMON /ICEPLUME_FIELDS_PROFILES/
      &     sProf, tProf, ptProf, prProf, uProf, vProf,
@@ -125,7 +183,7 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
       _RL wVel_sg_0
       _RL T_sg_0
       _RL S_sg_0
-      _RS Q_sg
+      _RL Q_sg
       _RL w_sg
       _RL r_sg
       _RL dLnormal
@@ -149,18 +207,6 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
       _RL backgroundVel
       _RL ptracerFluxSum
       _RL maxDepth
-
-      COMMON /ICEPLUME_FILES/
-     &	    runoffQsgfile,
-     &      plumeMaskFile
-catn     &	    runoffVelfile,
-catn     &	    runoffRadfile,
-C Again, doesn't like MAX_LEN_FNAM
-      CHARACTER*(512)
-     &	    runoffQsgfile,
-     &      plumeMaskFile
-catn     &	    runoffVelfile,
-catn     &	    runoffRadfile,
 
 C-----------------------------------------
 C Parameters relating to the icefront package

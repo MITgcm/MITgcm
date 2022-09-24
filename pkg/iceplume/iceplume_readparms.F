@@ -15,6 +15,16 @@ C     Initialize ICEPLUME parameters, read in data.iceplume
 #include "ICEPLUME.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_EXF
+# ifdef USE_EXF_INTERPOLATION
+#  include "EXF_INTERP_SIZE.h"
+#  include "SET_GRID.h"
+# endif
+#endif
+# ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+c# include "W2_EXCH2_TOPOLOGY.h"
+# endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -28,6 +38,11 @@ C  bi,bj,i,j,k		:: loop indices
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj, j, i, k
+#ifdef ALLOW_EXF
+#ifdef USE_EXF_INTERPOLATION
+      INTEGER inp_gNx,inp_gNy
+#endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
 
 CEOP
 #ifdef ALLOW_ICEPLUME
@@ -68,6 +83,20 @@ C    PARM03 - inputs relating to passive tracers
      &     useInputPtracers
 #endif /* ALLOW_PTRACERS */ 
 
+#ifdef ALLOW_EXF
+      NAMELIST /ICEPLUME_EXF_PARM04/
+     &     runoffQsgperiod,   runoffQsgStartTime,
+     &     runoffQsgstartdate1, runoffQsgstartdate2,
+     &     runoffQsgconst,      runoffQsg_inscal,
+     &     runoffQsg_remov_intercept, runoffQsg_remov_slope
+     &    ,runoffQsgRepCycle
+#ifdef USE_EXF_INTERPOLATION
+     &    ,runoffQsg_interpMethod
+     &    ,runoffQsg_lon0,runoffQsg_lon_inc,runoffQsg_nlon
+     &    ,runoffQsg_lat0,runoffQsg_lat_inc,runoffQsg_nlat
+#endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
+
       IF ( .NOT.useICEPLUME ) THEN
 C-    pkg ICEPLUME is not used
         _BEGIN_MASTER(myThid)
@@ -94,9 +123,65 @@ C     Default values for PARM01
       RTOL     = 1.0D-5
       ATOL     = 1.0D-5
       iceTemp  = 0.
-      runoffQsgfile = ' '
+
 catn      runoffVelfile = ' '
 catn      runoffRadfile = ' '
+#ifdef ALLOW_EXF
+      runoffQsgstartdate1       = 0
+      runoffQsgstartdate2       = 0
+      runoffQsgStartTime        = UNSET_RL
+C fieldperiod=0 means input file is one time-constant field
+C fieldperiod=-12 means input file contains 12 monthly means
+      runoffQsgperiod           = 0.0 _d 0
+C     Repeat period for forcing fields (s)
+C     For example, for yearly repeat period: repeatPeriod=31556925.
+      runoffQsgRepCycle         = 0.0 _d 0
+      runoffQsgconst            = 0.0 _d 0
+      runoffQsg_remov_intercept = 0.0 _d 0
+      runoffQsg_remov_slope     = 0.0 _d 0
+      runoffQsg_inscal          = 1.0 _d 0
+#ifdef USE_EXF_INTERPOLATION
+c in exf_init_interp:
+c inp_gNx = exch2_mydNx(1) or Nx
+c inp_gNy = exch2_mydNy(1) or Ny
+c inp_lon0 = xgOrigin + delX(1)*halfRL
+c inp_lat0 = ygOrigin + delY(1)*halfRL
+c inp_dLon = delX(1)
+c      DO j=1,MAX_LAT_INC
+c        IF (j.LT.inp_gNy) THEN
+c          inp_dLat(j) = (delY(j) + delY(j+1))*halfRL
+c        ELSE
+c          inp_dLat(j) = 0.
+c        ENDIF
+c      ENDDO
+#ifdef ALLOW_EXCH2
+      inp_gNx = exch2_mydNx(1)
+      inp_gNy = exch2_mydNy(1)
+#else
+      inp_gNx = Nx
+      inp_gNy = Ny
+#endif /* ALLOW_EXCH2 */
+
+      runoffQsg_lon0            = xgOrigin + delX(1)*halfRL
+      runoffQsg_lon_inc         = delX(1)
+      runoffQsg_nlon            = inp_gNx
+      runoffQsg_lat0            = ygOrigin + delY(1)*halfRL
+      DO j=1,MAX_LAT_INC
+        IF (j.LT.inp_gNy) THEN
+          runoffQsg_lat_inc(j)  = (delY(j) + delY(j+1))*halfRL
+        ELSE
+          runoffQsg_lat_inc(j)  = 0.
+        ENDIF
+      ENDDO
+      runoffQsg_nlat            = inp_gNy
+catn default interpmethod=0 implies no interpolation
+      runoffQsg_interpMethod    = 0
+#endif /* USE_EXF_INTERPOLATION */
+#endif /* ALLOW_EXF */
+      runoffQsgfile = ' '
+C-    internal parameters (not in namelist):
+      runoffQsgmask = 'c'
+c-
       plumeMaskFile = ' '
       usePlumeDiagnostics = .FALSE.
       conserveMass    = .FALSE.
@@ -146,6 +231,15 @@ C Open and read the data.icefront file
 #ifdef ALLOW_PTRACERS
       READ(UNIT=iUnit,NML=ICEPLUME_PARM03)
 #endif /* ALLOW_PTRACERS */
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+       WRITE(msgBuf,'(A)')
+     &     ' ICEPLUME_READPARMS: reading ICEPLUME_EXF_PARM04'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       READ(UNIT=iUnit,NML=ICEPLUME_EXF_PARM04)
+      ENDIF
+#endif /* ALLOW_EXF */
       WRITE(msgBuf,'(A)')
      &  ' ICEPLUME_READPARMS: finished reading data.iceplume'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,

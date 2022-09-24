@@ -71,7 +71,7 @@ C     hVelCell_tangential :: horizontal velocity component at cell centres
 C     meanVel :: ice tangental velocity
 catnC rho_0 :: average density of seawater
 catnC lhfusion :: latent heat of fusion for solid to liquid phase, Joule
-catn              = ICEFRONTlatentHeat, so we use that.
+catn              = ICEPLUMElatentHeat, so we use that.
 C     rho_shelfice :: 917. kg/m3
 C     secInday :: number of seconds in a day 
 catn: introducing a new flag below to avoid confusion between where pos(neg) 
@@ -168,9 +168,8 @@ c when read in Qsg, initialize LOCAL runoff[Vel,Rad] array, no bibj
          ENDDO
         ENDDO
 
-catn: When read in Qsg, 
-catn: add a loop outside to calculate the 2d fields runoff(Vel,Rad), 
-catn: which depends on geometry dLtangential
+catn: When read in Qsg, add a loop outside to calculate the 2d fields
+catn: runoff(Vel,Rad), which depends on geometry dLtangential
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
