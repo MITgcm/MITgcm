@@ -40,7 +40,6 @@ C     === Global variables ===
       integer n_dofs_proc_loc (0:nPx*nPy-1)
       integer n_dofs_cum_sum (0:nPx*nPy-1)
 
-
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
@@ -57,7 +56,6 @@ C     === Global variables ===
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-
 
 C   DOFS ARE NUMBERED AS FOLLOWS ON PROCESSOR DOMAIN:
 C    grid is stepped through in order bj, bi, j, i
@@ -140,9 +138,7 @@ C    NOTE THESE NUMBERING ARRAYS ARE USED TO CONSTRUCT PETSC VECTORS AND MATRIX
       _EXCH_XY_RS(streamice_petsc_dofs_u,myThid)
       _EXCH_XY_RS(streamice_petsc_dofs_v,myThid)
 
-
 #endif /* ALLOW_PETSC */
-
 
 #endif
       RETURN

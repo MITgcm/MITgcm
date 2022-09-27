@@ -3,22 +3,20 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_PETSCMATDESTROY( 
+      SUBROUTINE STREAMICE_PETSCMATDESTROY(
      I                               myThid )
 
 C     /============================================================\
-C     | SUBROUTINE                                                 |   
+C     | SUBROUTINE                                                 |
 C     | o                                                          |
 C     |============================================================|
 C     |                                                            |
 C     \============================================================/
 
-
-
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-C assumes paths 
-C {petsc_dir}/include/petsc/finclude/ 
+C assumes paths
+C {petsc_dir}/include/petsc/finclude/
 C {petsc_dir}/include
 C in the include statement
 #include "petsc/finclude/petsc.h"
@@ -39,10 +37,8 @@ C in the include statement
 #endif
 #endif
 
-
 C     === Global variables ===
 
-      
 C     !INPUT/OUTPUT ARGUMENTS
 C     cg_Uin, cg_Vin - input and output velocities
 C     cg_Bu, cg_Bv - driving stress
@@ -52,7 +48,6 @@ C     cg_Bu, cg_Bv - driving stress
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
 #endif
-
 
       RETURN
       END

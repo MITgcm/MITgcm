@@ -3,7 +3,7 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-      SUBROUTINE STREAMICE_INITIALIZE_PETSC 
+      SUBROUTINE STREAMICE_INITIALIZE_PETSC
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "finclude/petsc.h"
 #endif
 #endif
-
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid

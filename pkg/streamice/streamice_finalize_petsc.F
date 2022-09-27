@@ -14,8 +14,8 @@ C     \============================================================/
 C     === Global variables ===
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-C assumes paths 
-C {petsc_dir}/include/petsc/finclude/ 
+C assumes paths
+C {petsc_dir}/include/petsc/finclude/
 C {petsc_dir}/include
 C in the include statement
 #include "petsc/finclude/petsc.h"
@@ -41,7 +41,6 @@ C in the include statement
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STREAMICE.h"
-
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid

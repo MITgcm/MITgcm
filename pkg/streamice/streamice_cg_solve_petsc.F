@@ -24,11 +24,10 @@ C     |============================================================|
 C     |                                                            |
 C     \============================================================/
 
-
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-C assumes paths 
-C {petsc_dir}/include/petsc/finclude/ 
+C assumes paths
+C {petsc_dir}/include/petsc/finclude/
 C {petsc_dir}/include
 C in the include statement
 #include "petsc/finclude/petsc.h"
@@ -54,7 +53,7 @@ C in the include statement
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
-      
+
 C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
@@ -115,7 +114,6 @@ c      PC  pc
       integer mpiRC, mpiMyWid
 #endif
 
-
 #ifdef ALLOW_USE_MPI
 
       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
@@ -163,7 +161,6 @@ c----------------------
       enddo
 
 c gather rhs and initial guess values to populate petsc vectors
-
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -339,7 +336,6 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
       call KSPSetOperators(ksp, matrix, matrix,
      &                     DIFFERENT_NONZERO_PATTERN,ierr)
 #endif
-
 
       IF (PETSC_PRECOND_TYPE.eq.'MUMPS') then
        call KSPSetType(ksp,KSPPREONLY,ierr)

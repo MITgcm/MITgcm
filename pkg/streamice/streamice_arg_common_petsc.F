@@ -3,11 +3,9 @@
       MODULE STREAMICE_PETSC_mod
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
-
 
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
@@ -19,7 +17,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "petsc/finclude/petscpc.h"
       use petscpc
 
-      Mat matrix 
+      Mat matrix
       Mat mumpsFac
 C      COMMON /STREAMICE_PETSC_MATRIX/
 C     & matrix, mumpsFac
