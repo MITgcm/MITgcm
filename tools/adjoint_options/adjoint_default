@@ -54,12 +54,12 @@ else
     TAF_COMPILER=-f95
 fi
 
-#- TAF_SERVER can be specified in genmake_local, e.g. TAF_SERVER=fastopt.net
-#- instead of default fastopt.de, or one can modify the staf-script to
-#- use SERVER2=fastopt.net instead of SERVER1=fastopt.de
-if test -z "$TAF_SERVER" ; then
-    # TAF_SERVER is unset, use default server
-else
+#- Instead of using staf default server (SERVER1, currently fastopt.de),
+#  one can either specify which server to use by setting TAF_SERVER in
+#  genmake_local (e.g. TAF_SERVER=fastopt.net) or by changing the staf default
+#  server (e.g., in staf version 4.0, changing line 188
+#  from SERVER=${SERVER1} to SERVER=${SERVER2} )
+if test "x$TAF_SERVER" != x ; then
     TAF_COMMON_FLAGS="-server $TAF_SERVER $TAF_COMMON_FLAGS"
 fi
 
