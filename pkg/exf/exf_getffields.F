@@ -48,9 +48,6 @@ C     == global variables ==
 #  include "CTRL_GENARR.h"
 # endif
 #endif
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-#  include "ecco_cost.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -62,11 +59,6 @@ C     == routine arguments ==
 
 C     == local variables ==
       INTEGER i, j, bi, bj
-#ifdef ALLOW_CTRL
-# if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
-      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-# endif
-#endif
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     tmpVN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -490,209 +482,8 @@ C-    Salt flux
       ENDIF
 #endif
 
-# if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
-
-C-- Control variables for atmos. state
-#ifdef ALLOW_CTRL
-      IF (.NOT.ctrlUseGen) THEN
-
-#ifdef ALLOW_ATEMP_CONTROL
-      CALL CTRL_GET_MASK2D( xx_atemp_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
-     &     mask2D, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
-     &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
-     &     watemp, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_AQH_CONTROL
-      CALL CTRL_GET_MASK2D( xx_aqh_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
-     &     mask2D, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
-     &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
-     &     waqh, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_PRECIP_CONTROL
-      CALL CTRL_GET_MASK2D( xx_precip_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
-     &     mask2D, precip, xx_precip0, xx_precip1, xx_precip_dummy,
-     &     xx_precip_remo_intercept, xx_precip_remo_slope,
-     &     wprecip, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_SWDOWN_CONTROL
-      CALL CTRL_GET_MASK2D( xx_swdown_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
-     &     mask2D, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
-     &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
-     &     wswdown, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_LWDOWN_CONTROL
-      CALL CTRL_GET_MASK2D( xx_lwdown_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
-     &     mask2D, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
-     &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
-     &     wlwdown, myTime, myIter, myThid )
-#endif
-
-      ENDIF !if (.NOT.ctrlUseGen) then
-
-#ifdef ALLOW_SWFLUX_CONTROL
-      CALL CTRL_GET_MASK2D( xx_swflux_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
-     &     mask2D, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
-     &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &     wswflux, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_LWFLUX_CONTROL
-      CALL CTRL_GET_MASK2D( xx_lwflux_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
-     &     mask2D, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
-     &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
-     &     wswflux, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_EVAP_CONTROL
-      CALL CTRL_GET_MASK2D( xx_evap_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_evap_file, xx_evapstartdate, xx_evapperiod,
-     &     mask2D, evap, xx_evap0, xx_evap1, xx_evap_dummy,
-     &     xx_evap_remo_intercept, xx_evap_remo_slope,
-     &     wevap, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_SNOWPRECIP_CONTROL
-      CALL CTRL_GET_MASK2D( xx_snowprecip_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_snowprecip_file, xx_snowprecipstartdate,
-     &     xx_snowprecipperiod,
-     &     mask2D, snowprecip, xx_snowprecip0, xx_snowprecip1,
-     &     xx_snowprecip_dummy,
-     &     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
-     &     wsnowprecip, myTime, myIter, myThid )
-#endif
-
-#ifdef ALLOW_APRESSURE_CONTROL
-      CALL CTRL_GET_MASK2D( xx_apressure_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_apressure_file, xx_apressurestartdate,
-     &     xx_apressureperiod,
-     &     mask2D, apressure, xx_apressure0, xx_apressure1,
-     &     xx_apressure_dummy,
-     &     xx_apressure_remo_intercept, xx_apressure_remo_slope,
-     &     wapressure, myTime, myIter, myThid )
-#endif
-
-      IF ( useAtmWind ) THEN
-#ifndef ALLOW_ROTATE_UV_CONTROLS
-
-#ifdef ALLOW_UWIND_CONTROL
-      CALL CTRL_GET_MASK2D( xx_uwind_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     mask2D, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
-     &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &     wuwind, myTime, myIter, myThid )
-#endif /* ALLOW_UWIND_CONTROL */
-
-#ifdef ALLOW_VWIND_CONTROL
-      CALL CTRL_GET_MASK2D( xx_vwind_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     mask2D, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
-     &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &     wvwind, myTime, myIter, myThid )
-#endif /* ALLOW_VWIND_CONTROL */
-
-#else
-
-#if defined(ALLOW_UWIND_CONTROL) && defined(ALLOW_VWIND_CONTROL)
-      CALL CTRL_GET_MASK2D( xx_uwind_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     mask2D, tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
-     &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &     wuwind, myTime, myIter, myThid )
-
-      CALL CTRL_GET_MASK2D( xx_vwind_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     mask2D, tmpVN, xx_vwind0, xx_vwind1, xx_vwind_dummy,
-     &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &     wvwind, myTime, myIter, myThid )
-
-      CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
-     &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
-
-        DO bj = myByLo(myThid),myByHi(myThid)
-         DO bi = myBxLo(myThid),myBxHi(myThid)
-          DO j = 1,sNy
-           DO i = 1,sNx
-             uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+tmpUX(i,j,bi,bj)
-             vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+tmpVY(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-#endif
-
-#endif /* ALLOW_ROTATE_UV_CONTROLS */
-      ENDIF
-
-#ifdef ALLOW_ATM_MEAN_CONTROL
-      DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid),myBxHi(myThid)
-        DO j = 1,sNy
-         DO i = 1,sNx
-# ifdef ALLOW_ATEMP_CONTROL
-          atemp(i,j,bi,bj) =atemp(i,j,bi,bj) +xx_atemp_mean(i,j,bi,bj)
-# endif
-# ifdef ALLOW_AQH_CONTROL
-          aqh(i,j,bi,bj)   =aqh(i,j,bi,bj)   +xx_aqh_mean(i,j,bi,bj)
-# endif
-# ifdef ALLOW_PRECIP_CONTROL
-          precip(i,j,bi,bj)=precip(i,j,bi,bj)+xx_precip_mean(i,j,bi,bj)
-# endif
-# ifdef ALLOW_SWDOWN_CONTROL
-          swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+xx_swdown_mean(i,j,bi,bj)
-# endif
-# ifdef ALLOW_UWIND_CONTROL
-          uwind(i,j,bi,bj) =uwind(i,j,bi,bj) +xx_uwind_mean(i,j,bi,bj)
-# endif
-# ifdef ALLOW_VWIND_CONTROL
-          vwind(i,j,bi,bj) =vwind(i,j,bi,bj) +xx_vwind_mean(i,j,bi,bj)
-# endif
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_ATM_MEAN_CONTROL */
-
-cdm transferred from exf_init_runoff.F
-cdm functionality needs to be checked before turning on
-cdm #ifdef ALLOW_RUNOFF_CONTROL
-cdm       CALL CTRL_GET_GEN (
-cdm      &     xx_runoff_file, xx_runoffstartdate, xx_runoffperiod,
-cdm      &     runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
-cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
-cdm      &     wrunoff, 0., 0., myThid )
-cdm #endif
-
-#endif /* ALLOW_CTRL */
-
-#endif /* undef ALLOW_ECCO) || def ECCO_CTRL_DEPRECATED */
-
 #if (defined (ALLOW_CTRL) && defined (ALLOW_GENTIM2D_CONTROL))
-      IF ( useCTRL.AND.ctrlUseGen ) THEN
+      IF ( useCTRL ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy
@@ -784,7 +575,7 @@ cdm #endif
        ENDDO
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
 
-      ENDIF !if (ctrlUseGen) then
+      ENDIF !if (useCTRL) then
 #endif
 
       RETURN

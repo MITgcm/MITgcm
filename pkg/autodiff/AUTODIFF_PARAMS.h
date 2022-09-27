@@ -34,7 +34,6 @@ C                        the approximate lineared form (def=F)
       LOGICAL useSALT_PLUMEinAdMode, useSALT_PLUMEInFwdMode
       LOGICAL SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode
       LOGICAL SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode
-      LOGICAL useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode
       LOGICAL cg2dFullAdjoint
 
 C-    Logical for ad dump format (if true then write all records
@@ -51,7 +50,6 @@ C       to one file per variable; else write one file per record)
      &       useSALT_PLUMEinAdMode, useSALT_PLUMEInFwdMode,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode,
      &       SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode,
-     &       useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode,
      &       cg2dFullAdjoint,
      &       dumpAdByRec
 

@@ -1,6 +1,33 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68k (2022/08/17)
+o pkg/ctrl, ecco, ... :
+  Remove untested and obsolete ECCO_CTRL_DEPRECATED code: From now on it is
+  only possible to specify control parameters through generic controls.
+  - retire associated pkg/ctrl and pkg/autodiff flags, such as: ctrlUseGen,
+    xx_hflux_file, xx_hflux_startdate1, ..., ctrlSmoothCorrel2D/3D,
+    useSmoothCorrel2DinAdMode. Most of these did not have any effect with
+    undefined ECCO_CTRL_DEPRECATED, but were still allowed in data.ctrl.
+    Now specifying them is an error and stops the run.
+  - remove code that assumes ctrlUseGen=F
+  - remove empty and unused subroutines:
+    * pkg/ctrl: ctrl_weights.h, ctrl_map_ini_gen.F, ctrl_smooth.F,
+        ctrl_map_ini.F, ctrl_map_ini_ecco.F, ctrl_map_ini.F, ctrl_map_ini_ecco.F
+    * pkg/ecco: cost_forcing.F, cost_hyd.F, cost_internal_params.F, cost_ssh.F
+        ecco_cost_summary.F
+    * pkg/smooth: smooth_correl2dw.F
+    * pkg/seaice: seaice_cost_areasst.F
+  - adjust parameters in verification experiment that still contained retired
+    parameters
+  - switch global_ocean.cs32x15.thsice to using generic control variables
+  Note: some untested code (notably pkg/admtlm, which did not compile before)
+    will be more difficult to resurrect without the ECCO_CTRL_DEPRECATED code.
+o pkg/ggl90:
+  - adjust code to also work under an ice-shelf (with pkg/shelfice); idemix
+    under ice-shelf not fixed yet.
+  - turn on ggl90 in isomip experiment secondary test "obcs" and update
+    reference output file.
 o pkg/gmredi:
   - allow to read-in 3-D background isopycnal (Redi) and thickness (GM)
     diffusivity without pkg/ctrl: new 3-D arrays, new CPP options:

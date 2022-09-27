@@ -3,34 +3,43 @@ c#ifdef ALLOW_CTRL
 c# include "CTRL_OPTIONS.h"
 c#endif
 
+CBOP
+C     !ROUTINE: COST_TEMP
+C     !INTERFACE:
       SUBROUTINE COST_TEMP( myThid )
 C     *==========================================================*
 C     | SUBROUTINE COST_TEMP
 C     | o the subroutine computes the sum of the squared errors
 C     |   relatively to the Levitus climatology
 C     *==========================================================*
-
+C
+C     \ev
+C     !USES:
        IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "cost.h"
-#include "ctrl_weights.h"
+#ifdef ALLOW_OPENAD
+# include "FFIELDS.h"
+#else
+# include "cost_local.h"
+#endif
 
-C     ======== Routine arguments ======================
+C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_COST_TEMP
-C     ========= Local variables =========================
+C     !LOCAL VARIABLES:
       INTEGER i, j, k
       INTEGER bi, bj
       INTEGER Nk
       _RL locfc,tmp
       _RL thetalev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+CEOP
 
       Nk = 2
 C Read annual mean Levitus temperature
