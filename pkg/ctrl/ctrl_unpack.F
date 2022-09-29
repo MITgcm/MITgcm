@@ -2,9 +2,6 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
@@ -60,14 +57,6 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-# include "ecco_cost.h"
-#else
-# include "ctrl_weights.h"
-#endif
-#ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-#endif
 
 c     == routine arguments ==
 
@@ -84,7 +73,9 @@ c     == local variables ==
       logical lxxadxx
       character*(128) cfile
 
-#if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
+#if (defined ALLOW_GENARR2D_CONTROL) \
+      || (defined ALLOW_GENARR3D_CONTROL) \
+      || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_unpack,
 C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
@@ -96,56 +87,8 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       character*( 9) mskNameForSetUnpack
 #endif
 
-#ifdef ECCO_CTRL_DEPRECATED
-      character*( 80)   fname_theta(3)
-      character*( 80)   fname_salt(3)
-      character*( 80)   fname_hflux(3)
-      character*( 80)   fname_sflux(3)
-      character*( 80)   fname_tauu(3)
-      character*( 80)   fname_tauv(3)
-      character*( 80)   fname_atemp(3)
-      character*( 80)   fname_aqh(3)
-      character*( 80)   fname_precip(3)
-      character*( 80)   fname_swflux(3)
-      character*( 80)   fname_swdown(3)
-      character*( 80)   fname_snowprecip(3)
-      character*( 80)   fname_lwflux(3)
-      character*( 80)   fname_lwdown(3)
-      character*( 80)   fname_evap(3)
-      character*( 80)   fname_apressure(3)
-      character*( 80)   fname_runoff(3)
-      character*( 80)   fname_uwind(3)
-      character*( 80)   fname_vwind(3)
-      character*( 80)   fname_diffkr(3)
-      character*( 80)   fname_kapgm(3)
-      character*( 80)   fname_kapredi(3)
-      character*( 80)   fname_tr1(3)
-      character*( 80)   fname_sst(3)
-      character*( 80)   fname_sss(3)
-      character*( 80)   fname_depth(3)
-      character*( 80)   fname_efluxy(3)
-      character*( 80)   fname_efluxp(3)
-      character*( 80)   fname_bottomdrag(3)
-      character*( 80)   fname_edtaux(3)
-      character*( 80)   fname_edtauy(3)
-      character*( 80)   fname_uvel(3)
-      character*( 80)   fname_vvel(3)
-      character*( 80)   fname_etan(3)
-      character*( 80)   fname_relaxsst(3)
-      character*( 80)   fname_relaxsss(3)
-      character*( 80)   fname_siarea(3)
-      character*( 80)   fname_siheff(3)
-      character*( 80)   fname_sihsnow(3)
-cHFLUXM_CONTROL
-      character*( 80)   fname_hfluxm(3)
-cHFLUXM_CONTROL
-      character*( 80)   fname_shifwflx(3)
-#endif /* ECCO_CTRL_DEPRECATED */
-
-#if (defined ALLOW_OBCS || defined ECCO_CTRL_DEPRECATED)
+#ifdef ALLOW_OBCS
       character*(80) weighttype
-#endif
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       character*(80) fname_obcsn(3)
       character*(80) fname_obcss(3)
       character*(80) fname_obcsw(3)
@@ -165,7 +108,7 @@ cgg(  Add OBCS mask names.
 #endif
       integer iobcs
 cgg)
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
+#endif /* ALLOW_OBCS */
 
 c     == end of interface ==
 
@@ -174,58 +117,12 @@ c--   Initialise
 
 c--   Assign file names.
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#ifdef ALLOW_OBCS
       call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
       call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
       call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
       call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
-
-#ifdef ECCO_CTRL_DEPRECATED
-      call ctrl_set_fname(xx_theta_file, fname_theta, mythid)
-      call ctrl_set_fname(xx_salt_file, fname_salt, mythid)
-      call ctrl_set_fname(xx_hflux_file, fname_hflux, mythid)
-      call ctrl_set_fname(xx_sflux_file, fname_sflux, mythid)
-      call ctrl_set_fname(xx_tauu_file, fname_tauu, mythid)
-      call ctrl_set_fname(xx_tauv_file, fname_tauv, mythid)
-      call ctrl_set_fname(xx_atemp_file, fname_atemp, mythid)
-      call ctrl_set_fname(xx_aqh_file, fname_aqh, mythid)
-      call ctrl_set_fname(xx_precip_file, fname_precip, mythid)
-      call ctrl_set_fname(xx_swflux_file, fname_swflux, mythid)
-      call ctrl_set_fname(xx_swdown_file, fname_swdown, mythid)
-      call ctrl_set_fname(xx_lwflux_file, fname_lwflux, mythid)
-      call ctrl_set_fname(xx_lwdown_file, fname_lwdown, mythid)
-      call ctrl_set_fname(xx_evap_file, fname_evap, mythid)
-      call ctrl_set_fname(xx_snowprecip_file, fname_snowprecip, mythid)
-      call ctrl_set_fname(xx_apressure_file, fname_apressure, mythid)
-      call ctrl_set_fname(xx_runoff_file, fname_runoff, mythid)
-      call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
-      call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
-      call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
-      call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
-      call ctrl_set_fname(xx_kapredi_file, fname_kapredi, mythid)
-      call ctrl_set_fname(xx_tr1_file, fname_tr1, mythid)
-      call ctrl_set_fname(xx_sst_file, fname_sst, mythid)
-      call ctrl_set_fname(xx_sss_file, fname_sss, mythid)
-      call ctrl_set_fname(xx_depth_file, fname_depth, mythid)
-      call ctrl_set_fname(xx_efluxy_file, fname_efluxy, mythid)
-      call ctrl_set_fname(xx_efluxp_file, fname_efluxp, mythid)
-      call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
-      call ctrl_set_fname(xx_edtaux_file, fname_edtaux, mythid)
-      call ctrl_set_fname(xx_edtauy_file, fname_edtauy, mythid)
-      call ctrl_set_fname(xx_uvel_file, fname_uvel, mythid)
-      call ctrl_set_fname(xx_vvel_file, fname_vvel, mythid)
-      call ctrl_set_fname(xx_etan_file, fname_etan, mythid)
-      call ctrl_set_fname(xx_relaxsst_file, fname_relaxsst, mythid)
-      call ctrl_set_fname(xx_relaxsss_file, fname_relaxsss, mythid)
-      call ctrl_set_fname(xx_siarea_file, fname_siarea, mythid)
-      call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
-      call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
-      call ctrl_set_fname(xx_shifwflx_file, fname_shifwflx, mythid)
-cHFLUXM_CONTROL
-      call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
-cHFLUXM_CONTROL
-#endif /* ECCO_CTRL_DEPRECATED */
+#endif
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -285,7 +182,7 @@ c--       Header information.
 c         read(cunit) filenWetiGlobal(1)
 #endif
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#ifdef ALLOW_OBCS
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
           read(cunit) ((filenWetobcsnGlo(k,iobcs),
@@ -304,7 +201,7 @@ cgg(     Add OBCS mask information to the header.
      &         k=1,nr), iobcs= 1,nobcs)
 #endif
 cgg)
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
+#endif /* ALLOW_OBCS */
 
           read(cunit) (filencvarindex(i), i=1,maxcvars)
           read(cunit) (filencvarrecs(i),  i=1,maxcvars)
@@ -343,7 +240,7 @@ c
           enddo
 #endif /* ALLOW_SHELFICE */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#ifdef ALLOW_OBCS
 cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
@@ -390,7 +287,7 @@ cgg(   Lets also check the OBCS mask info in the header.
        end do
 #endif
 cgg)  End OBCS mask check.
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
+#endif /* ALLOW_OBCS */
 
 #endif /* ndef ALLOW_ADMTLM */
 
@@ -402,7 +299,7 @@ cgg)  End OBCS mask check.
 
 c----------------------------------------------------------------------
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype    = 11
           write(weighttype(1:80),'(80a)') ' '
@@ -435,431 +332,7 @@ c----------------------------------------------------------------------
      &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
      &         weighttype, wobcse, nWetobcseGlo, mythid)
 #endif
-#endif /* ALLOW_CTRL and ALLOW_OBCS */
-
-#ifdef ECCO_CTRL_DEPRECATED
-
-#ifdef ALLOW_THETA0_CONTROL
-          ivartype = 1
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wthetaLev"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_theta(ictrlgrad), "maskCtrlC",
-     &         weighttype, wtheta, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SALT0_CONTROL
-          ivartype = 2
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsaltLev"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_salt(ictrlgrad), "maskCtrlC",
-     &         weighttype, wsalt, nwetcglobal, mythid)
-#endif
-
-#if (defined (ALLOW_HFLUX_CONTROL) || defined (ALLOW_HFLUX0_CONTROL))
-          ivartype    = 3
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "whflux"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_hflux(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#if (defined (ALLOW_SFLUX_CONTROL) || defined (ALLOW_SFLUX0_CONTROL))
-          ivartype = 4
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsflux"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_sflux(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#if (defined (ALLOW_USTRESS_CONTROL) || defined (ALLOW_TAUU0_CONTROL))
-#ifdef ALLOW_EXF
-      IF ( .NOT.useAtmWind ) THEN
-#endif
-          ivartype = 5
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtauu"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-#ifndef ALLOW_ROTATE_UV_CONTROLS
-     &         fname_tauu(ictrlgrad), "maskCtrlW",
-     &         weighttype, nwetwglobal, mythid)
-#else
-     &         fname_tauu(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-#ifdef ALLOW_EXF
-      ENDIF
-#endif
-#endif
-
-#if (defined (ALLOW_VSTRESS_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
-#ifdef ALLOW_EXF
-      IF ( .NOT.useAtmWind ) THEN
-#endif
-          ivartype = 6
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtauv"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-#ifndef ALLOW_ROTATE_UV_CONTROLS
-     &         fname_tauv(ictrlgrad), "maskCtrlS",
-     &         weighttype, nwetsglobal, mythid)
-#else
-     &         fname_tauv(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-#ifdef ALLOW_EXF
-      ENDIF
-#endif
-#endif
-
-#ifdef ALLOW_ATEMP_CONTROL
-          ivartype    = 7
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "watemp"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_atemp(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_AQH_CONTROL
-          ivartype    = 8
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "waqh"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_aqh(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_UWIND_CONTROL
-#ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN
-#endif
-          ivartype    = 9
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wuwind"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_uwind(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#ifdef ALLOW_EXF
-      ENDIF
-#endif
-#endif
-
-#ifdef ALLOW_VWIND_CONTROL
-#ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN
-#endif
-          ivartype    = 10
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wvwind"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_vwind(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#ifdef ALLOW_EXF
-      ENDIF
-#endif
-#endif
-
-#ifdef ALLOW_DIFFKR_CONTROL
-          ivartype    = 15
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wdiffkr"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_diffkr(ictrlgrad), "maskCtrlC",
-     &         weighttype, wdiffkr, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_KAPGM_CONTROL
-          ivartype    = 16
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wkapgm"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_kapgm(ictrlgrad), "maskCtrlC",
-     &         weighttype, wkapgm, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_TR10_CONTROL
-          ivartype    = 17
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wtr1"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_tr1(ictrlgrad), "maskCtrlC",
-     &         weighttype, wunit, nwetcglobal, mythid)
-#endif
-
-#if (defined (ALLOW_SST_CONTROL) || defined (ALLOW_SST0_CONTROL))
-          ivartype    = 18
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsst"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_sst(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#if (defined (ALLOW_SSS_CONTROL) || defined (ALLOW_SSS0_CONTROL))
-          ivartype    = 19
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsss"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_sss(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_DEPTH_CONTROL
-          ivartype    = 20
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wdepth"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_depth(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif /* ALLOW_DEPTH_CONTROL */
-
-#ifdef ALLOW_EFLUXY0_CONTROL
-          ivartype    = 21
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wefluxy0"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_efluxy(ictrlgrad), "maskCtrlS",
-     &         weighttype, wefluxy, nwetsglobal, mythid)
-#endif
-
-#ifdef ALLOW_EFLUXP0_CONTROL
-          ivartype    = 22
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wefluxp0"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_efluxp(ictrlgrad), "maskhFacV",
-     &         weighttype, wefluxp, nwetvglobal, mythid)
-#endif
-
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-          ivartype    = 23
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wbottomdrag"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_bottomdrag(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_HFLUXM_CONTROL
-          ivartype    = 24
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "whfluxm"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_hfluxm(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_EDDYPSI_CONTROL
-          ivartype    = 25
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wedtaux"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_edtaux(ictrlgrad), "maskCtrlW",
-     &         weighttype, wedtaux, nwetwglobal, mythid)
-
-          ivartype    = 26
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wedtauy"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_edtauy(ictrlgrad), "maskCtrlS",
-     &         weighttype, wedtauy, nwetsglobal, mythid)
-#endif
-
-#ifdef ALLOW_UVEL0_CONTROL
-          ivartype = 27
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wuvel"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_uvel(ictrlgrad), "maskCtrlW",
-     &         weighttype, wuvel, nwetwglobal, mythid)
-#endif
-
-#ifdef ALLOW_VVEL0_CONTROL
-          ivartype = 28
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wvvel"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_vvel(ictrlgrad), "maskCtrlS",
-     &         weighttype, wvvel, nwetsglobal, mythid)
-#endif
-
-#ifdef ALLOW_ETAN0_CONTROL
-          ivartype = 29
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wetan"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_etan(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_RELAXSST_CONTROL
-          ivartype = 30
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wrelaxsst"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_relaxsst(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_RELAXSSS_CONTROL
-          ivartype = 31
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wrelaxsss"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_relaxsss(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_PRECIP_CONTROL
-          ivartype    = 32
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wprecip"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_precip(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SWFLUX_CONTROL
-          ivartype    = 33
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wswflux"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_swflux(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SWDOWN_CONTROL
-          ivartype    = 34
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wswdown"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_swdown(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_LWFLUX_CONTROL
-          ivartype    = 35
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wlwflux"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_lwflux(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_LWDOWN_CONTROL
-          ivartype    = 36
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wlwdown"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_lwdown(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_EVAP_CONTROL
-          ivartype    = 37
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wevap"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_evap(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SNOWPRECIP_CONTROL
-          ivartype    = 38
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wsnowprecip"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_snowprecip(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_APRESSURE_CONTROL
-          ivartype    = 39
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wapressure"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_apressure(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_RUNOFF_CONTROL
-          ivartype    = 40
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wrunoff"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_runoff(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SIAREA_CONTROL
-          ivartype    = 41
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_siarea(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SIHEFF_CONTROL
-          ivartype    = 42
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_siheff(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_SIHSNOW_CONTROL
-          ivartype    = 43
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wunit"
-          call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, forcingPrecond,
-     &         fname_sihsnow(ictrlgrad), "maskCtrlC",
-     &         weighttype, nwetcglobal, mythid)
-#endif
-
-#ifdef ALLOW_KAPREDI_CONTROL
-          ivartype    = 44
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wkapredi"
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_kapredi(ictrlgrad), "maskCtrlC",
-     &         weighttype, wkapredi, nwetcglobal, mythid)
-#endif
-
-#endif /* ECCO_CTRL_DEPRECATED */
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D

@@ -13,7 +13,6 @@ CTRL_OBCS
 ctrl_dummy
 ctrl
 ctrl_local_params
-ctrl_weights
 DYNVARS
 EESUPPORT
 EOS

@@ -12,60 +12,6 @@ c     xx_hflux_file - control vector surface heat flux file.
 c     xx_sflux_file - control vector surface salt flux file.
 c     xx_tauu_file  - control vector zonal wind stress file.
 c     xx_tauv_file  - control vector meridional wind stress file.
-      common /controlfiles_c/
-     &                      xx_theta_file
-     &                    , xx_salt_file
-     &                    , xx_hflux_file
-     &                    , xx_sflux_file
-     &                    , xx_tauu_file
-     &                    , xx_tauv_file
-     &                    , xx_atemp_file
-     &                    , xx_aqh_file
-     &                    , xx_precip_file
-     &                    , xx_swflux_file
-     &                    , xx_swdown_file
-     &                    , xx_lwflux_file
-     &                    , xx_lwdown_file
-     &                    , xx_evap_file
-     &                    , xx_snowprecip_file
-     &                    , xx_apressure_file
-     &                    , xx_runoff_file
-     &                    , xx_uwind_file
-     &                    , xx_vwind_file
-     &                    , xx_atemp_mean_file
-     &                    , xx_aqh_mean_file
-     &                    , xx_precip_mean_file
-     &                    , xx_swdown_mean_file
-     &                    , xx_uwind_mean_file
-     &                    , xx_vwind_mean_file
-     &                    , xx_diffkr_file
-     &                    , xx_kapgm_file
-     &                    , xx_kapredi_file
-     &                    , xx_tr1_file
-     &                    , xx_sst_file
-     &                    , xx_sss_file
-     &                    , xx_depth_file
-     &                    , xx_efluxy_file
-     &                    , xx_efluxp_file
-     &                    , xx_bottomdrag_file
-     &                    , xx_edtaux_file
-     &                    , xx_edtauy_file
-     &                    , xx_uvel_file
-     &                    , xx_vvel_file
-     &                    , xx_etan_file
-     &                    , xx_relaxsst_file
-     &                    , xx_relaxsss_file
-     &                    , xx_theta_ini_fin_file
-     &                    , xx_salt_ini_fin_file
-     &                    , xx_siarea_file
-     &                    , xx_siheff_file
-     &                    , xx_sihsnow_file
-     &                    , xx_gen2d_file
-     &                    , xx_gen3d_file
-cHFLUXM_CONTROL
-     &                    , xx_hfluxm_file
-cHFLUXM_CONTROL
-     &                    , xx_shifwflx_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
@@ -107,10 +53,10 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_uvel_file
       character*(MAX_LEN_FNAM) xx_vvel_file
       character*(MAX_LEN_FNAM) xx_etan_file
-      character*(MAX_LEN_FNAM) xx_relaxsst_file
-      character*(MAX_LEN_FNAM) xx_relaxsss_file
-      character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
-      character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
+CML      character*(MAX_LEN_FNAM) xx_relaxsst_file
+CML      character*(MAX_LEN_FNAM) xx_relaxsss_file
+CML      character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
+CML      character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
       character*(MAX_LEN_FNAM) xx_siarea_file
       character*(MAX_LEN_FNAM) xx_siheff_file
       character*(MAX_LEN_FNAM) xx_sihsnow_file
@@ -143,27 +89,6 @@ c     xx_tauvperiod  - sampling interval for the meridional wind
 c                      stress control part.
 c     ...
 
-      common /controltimes_r/
-     &                        xx_hfluxperiod
-     &                      , xx_sfluxperiod
-     &                      , xx_tauuperiod
-     &                      , xx_tauvperiod
-     &                      , xx_atempperiod
-     &                      , xx_aqhperiod
-     &                      , xx_precipperiod
-     &                      , xx_swfluxperiod
-     &                      , xx_swdownperiod
-     &                      , xx_lwfluxperiod
-     &                      , xx_lwdownperiod
-     &                      , xx_evapperiod
-     &                      , xx_snowprecipperiod
-     &                      , xx_apressureperiod
-     &                      , xx_runoffperiod
-     &                      , xx_uwindperiod
-     &                      , xx_vwindperiod
-     &                      , xx_sstperiod
-     &                      , xx_sssperiod
-     &                      , xx_shifwflxperiod
       _RL     xx_hfluxperiod
       _RL     xx_sfluxperiod
       _RL     xx_tauuperiod
@@ -185,29 +110,6 @@ c     ...
       _RL     xx_sssperiod
       _RL     xx_shifwflxperiod
 
-      common /ctrl_param_trend_removal/
-     &       xx_hflux_remo_intercept, xx_hflux_remo_slope,
-     &       xx_sflux_remo_intercept, xx_sflux_remo_slope,
-     &       xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &       xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &       xx_atemp_remo_intercept, xx_atemp_remo_slope,
-     &       xx_aqh_remo_intercept, xx_aqh_remo_slope,
-     &       xx_precip_remo_intercept, xx_precip_remo_slope,
-     &       xx_swflux_remo_intercept, xx_swflux_remo_slope,
-     &       xx_swdown_remo_intercept, xx_swdown_remo_slope,
-     &       xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
-     &       xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
-     &       xx_evap_remo_intercept, xx_evap_remo_slope,
-     &       xx_snowprecip_remo_intercept,
-     &       xx_snowprecip_remo_slope,
-     &       xx_apressure_remo_intercept,
-     &       xx_apressure_remo_slope,
-     &       xx_sst_remo_intercept, xx_sst_remo_slope,
-     &       xx_sss_remo_intercept, xx_sss_remo_slope,
-     &       xx_runoff_remo_intercept, xx_runoff_remo_slope,
-     &       xx_uwind_remo_intercept, xx_uwind_remo_slope,
-     &       xx_vwind_remo_intercept, xx_vwind_remo_slope,
-     &       xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope
 
       _RL xx_hflux_remo_intercept, xx_hflux_remo_slope
       _RL xx_sflux_remo_intercept, xx_sflux_remo_slope
@@ -239,67 +141,6 @@ c                         control part.
 c     xx_tauvstartdate  - start date for the meridional wind stress
 c                         control part.
 
-      common /controltimes_i/
-     &                        xx_hfluxstartdate1
-     &                      , xx_hfluxstartdate2
-     &                      , xx_sfluxstartdate1
-     &                      , xx_sfluxstartdate2
-     &                      , xx_tauustartdate1
-     &                      , xx_tauustartdate2
-     &                      , xx_tauvstartdate1
-     &                      , xx_tauvstartdate2
-     &                      , xx_atempstartdate1
-     &                      , xx_atempstartdate2
-     &                      , xx_aqhstartdate1
-     &                      , xx_aqhstartdate2
-     &                      , xx_precipstartdate1
-     &                      , xx_precipstartdate2
-     &                      , xx_swfluxstartdate1
-     &                      , xx_swfluxstartdate2
-     &                      , xx_swdownstartdate1
-     &                      , xx_swdownstartdate2
-     &                      , xx_snowprecipstartdate1
-     &                      , xx_snowprecipstartdate2
-     &                      , xx_lwfluxstartdate1
-     &                      , xx_lwfluxstartdate2
-     &                      , xx_lwdownstartdate1
-     &                      , xx_lwdownstartdate2
-     &                      , xx_evapstartdate1
-     &                      , xx_evapstartdate2
-     &                      , xx_apressurestartdate1
-     &                      , xx_apressurestartdate2
-     &                      , xx_runoffstartdate1
-     &                      , xx_runoffstartdate2
-     &                      , xx_uwindstartdate1
-     &                      , xx_uwindstartdate2
-     &                      , xx_vwindstartdate1
-     &                      , xx_vwindstartdate2
-     &                      , xx_sststartdate1
-     &                      , xx_sststartdate2
-     &                      , xx_sssstartdate1
-     &                      , xx_sssstartdate2
-     &                      , xx_hfluxstartdate
-     &                      , xx_sfluxstartdate
-     &                      , xx_tauustartdate
-     &                      , xx_tauvstartdate
-     &                      , xx_atempstartdate
-     &                      , xx_aqhstartdate
-     &                      , xx_precipstartdate
-     &                      , xx_swfluxstartdate
-     &                      , xx_swdownstartdate
-     &                      , xx_uwindstartdate
-     &                      , xx_snowprecipstartdate
-     &                      , xx_lwfluxstartdate
-     &                      , xx_lwdownstartdate
-     &                      , xx_evapstartdate
-     &                      , xx_apressurestartdate
-     &                      , xx_runoffstartdate
-     &                      , xx_vwindstartdate
-     &                      , xx_sststartdate
-     &                      , xx_sssstartdate
-     &                      , xx_shifwflxstartdate1
-     &                      , xx_shifwflxstartdate2
-     &                      , xx_shifwflxstartdate
       integer xx_hfluxstartdate1
       integer xx_hfluxstartdate2
       integer xx_sfluxstartdate1
@@ -341,28 +182,27 @@ c                         control part.
       integer xx_shifwflxstartdate1
       integer xx_shifwflxstartdate2
 
-      integer xx_hfluxstartdate(4)
-      integer xx_sfluxstartdate(4)
-      integer xx_tauustartdate(4)
-      integer xx_tauvstartdate(4)
-      integer xx_atempstartdate(4)
-      integer xx_aqhstartdate(4)
-      integer xx_precipstartdate(4)
-      integer xx_swfluxstartdate(4)
-      integer xx_swdownstartdate(4)
-      integer xx_snowprecipstartdate(4)
-      integer xx_lwfluxstartdate(4)
-      integer xx_lwdownstartdate(4)
-      integer xx_evapstartdate(4)
-      integer xx_apressurestartdate(4)
-      integer xx_runoffstartdate(4)
-      integer xx_uwindstartdate(4)
-      integer xx_vwindstartdate(4)
-      integer xx_sststartdate(4)
-      integer xx_sssstartdate(4)
-      integer xx_shifwflxstartdate(4)
+CML      integer xx_hfluxstartdate(4)
+CML      integer xx_sfluxstartdate(4)
+CML      integer xx_tauustartdate(4)
+CML      integer xx_tauvstartdate(4)
+CML      integer xx_atempstartdate(4)
+CML      integer xx_aqhstartdate(4)
+CML      integer xx_precipstartdate(4)
+CML      integer xx_swfluxstartdate(4)
+CML      integer xx_swdownstartdate(4)
+CML      integer xx_snowprecipstartdate(4)
+CML      integer xx_lwfluxstartdate(4)
+CML      integer xx_lwdownstartdate(4)
+CML      integer xx_evapstartdate(4)
+CML      integer xx_apressurestartdate(4)
+CML      integer xx_runoffstartdate(4)
+CML      integer xx_uwindstartdate(4)
+CML      integer xx_vwindstartdate(4)
+CML      integer xx_sststartdate(4)
+CML      integer xx_sssstartdate(4)
+CML      integer xx_shifwflxstartdate(4)
 
 c     ==================================================================
-c     END OF HEADER CONTROLVARS ctrl.h
+c     END OF HEADER CONTROLVARS ctrl_local_params.h
 c     ==================================================================
-

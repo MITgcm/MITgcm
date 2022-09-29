@@ -2,6 +2,8 @@
 
 #  This is the local options file for the "new" version of genmake
 
+#- switch to F90 compiler (needed for some MITgcm src code, e.g., pkg/streamice):
 ALWAYS_USE_F90=1
 
-AD_OPTFILE='../../../tools/adjoint_options/adjoint_f95'
+#- specify which Fortran version src code is sent to TAF
+TAF_FORTRAN_VERS='F95'
