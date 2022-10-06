@@ -4,7 +4,7 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef= 29., 28., 27., 26., 25., 24., 23., 22., 21., 20., 19., 18., 17., 16., 15., 10*0.,
+ tRef= 25*17.5,
  viscAr=2.E-4,
  viscAh=3.E+2,
  no_slip_sides=.FALSE.,
@@ -31,6 +31,7 @@
  staggerTimeStep=.TRUE.
  tempAdvScheme=20,
  saltAdvScheme=20,
+#momStepping=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  globalFiles=.TRUE.,
