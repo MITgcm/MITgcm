@@ -331,11 +331,11 @@ C--   End bi,bj loops
        ENDDO
       ENDDO
 
-#if (defined ALLOW_AUTODIFF_MONITOR) && (defined ALLOW_ADJOINT_RUN)
+#if (defined ALLOW_AUTODIFF_MONITOR)
 C     In reverse, print adjoint variable for etaN
       CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
       _EXCH_XY_RL( etaN , myThid )
-#else /* ALLOW_AUTODIFF_MONITOR && ALLOW_ADJOINT_RUN */
+#else /* ALLOW_AUTODIFF_MONITOR */
       IF ( exactConserv .AND. myIter.NE.nIter0
      &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
      &    _EXCH_XY_RL( etaN , myThid )
