@@ -85,23 +85,6 @@ C     Close the open data file
 C     Now set-up any remaining parameters that result from the input
 C     parameters
 
-C--   Print a summary of longstep parameter values:
-      iUnit = standardMessageUnit
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// longstep parameters '
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      CALL WRITE_0D_I( LS_nIter, INDEX_NONE,
-     &   'LS_nIter =',
-     &   ' /* number of dynamics steps between ptracer steps */')
-      CALL WRITE_0D_I( LS_whenToSample, INDEX_NONE,
-     &   'LS_whenToSample =',
-     &   ' /* 0: before; 1: after TD, before DYN; 2: after */')
-      WRITE(msgBuf,'(A)') ' -----------------------------------'
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
-
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded
       _BARRIER
