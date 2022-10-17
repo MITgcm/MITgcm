@@ -69,8 +69,10 @@ c     == local variables ==
 #endif
 
 c     == external ==
+#ifdef ALLOW_GENTIM2D_CONTROL
       integer  ilnblnk
       external ilnblnk
+#endif
 
 c     == end of interface ==
 
