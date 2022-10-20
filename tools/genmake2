@@ -3049,7 +3049,7 @@ else
 fi
 
 # extract default cpp search path so we can pass it to makedepend
-CPPINCLUDES=`cat /dev/null | $CPP -v 2>&1 | awk '/^End of search/{f=0}!/^\#/{if(f){printf " -I%s", $1;}}/^\#include "..." search start/{f=1}'`
+CPPINCLUDES=`cat /dev/null | $CPP -v 2>&1 | awk '/^End of search/{f=0}!/^#/{if(f){printf " -I%s", $1;}}/^#include "..." search start/{f=1}'`
 
 cat >>$MAKEFILE <<EOF
 # Unix ln (link)
