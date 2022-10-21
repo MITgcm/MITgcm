@@ -190,9 +190,9 @@ CEOP
 
 #ifdef ALLOW_GGL90_LANGMUIR
       IF (useLANGMUIR) THEN
-       recip_Lasq = 1 / LC_num
+       recip_Lasq = 1. _d 0 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
-       recip_LD = 1/LC_lambda
+       recip_LD   = 1. _d 0 / LC_lambda
       ENDIF
 #endif
       IF ( usingPCoords ) THEN
