@@ -754,20 +754,6 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
            ENDDO
           ENDDO
          ENDDO
-C     Upward sweep, extra treatment of k=Nr for z-coordinates
-C         DO k=Nr-1,2,-1
-C#ifdef ALLOW_AUTODIFF_TAMC
-C          kkeyLoc = (ikeyLoc-1)*Nr + k
-CCADJ STORE GGL90mixingLength(:,:,k-1)
-CCADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
-C#endif /* ALLOW_AUTODIFF_TAMC */
-C          DO j=jMin,jMax
-C           DO i=iMin,iMax
-C            LCmixingLength(i,j,k) = MIN(LCmixingLength(i,j,k),
-C     &          LCmixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-C           ENDDO
-C          ENDDO
-C         ENDDO
         ENDIF
 
        ELSE
