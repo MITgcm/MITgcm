@@ -394,7 +394,7 @@ CADJ INCOMPLETE GGL90mixingLength
      &         * recip_coordFac
 c         MaxLength=MAX(MaxLength,20. _d 0)
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &                                    MaxLength)
+     &                                   MaxLength)
          ENDDO
         ENDDO
        ENDDO
