@@ -1455,10 +1455,12 @@ C     ===============================
          CALL DIAGNOSTICS_FILL( LCmixingLength,'GGL90Lmx',
      &                          0,Nr, 2, bi, bj, myThid )
         ELSE
+#else
+        IF (.TRUE.) THEN
+#endif /* ALLOW_GGL90_LANGMUIR */
          CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
      &                          0,Nr, 2, bi, bj, myThid )
         ENDIF
-#endif /* ALLOW_GGL90_LANGMUIR */
 
 C     diagnose surface flux of TKE
         IF ( usingPCoords ) THEN
