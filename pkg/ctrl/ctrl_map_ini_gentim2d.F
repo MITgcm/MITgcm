@@ -58,7 +58,7 @@ C     == local variables ==
       integer startrec
       integer endrec
       integer diffrec
-      integer irec, jrec, krec
+      integer irec, jrec, krec, lrec
       integer replicated_nrec
       integer replicated_ntimes
       logical doglobalread
@@ -77,6 +77,9 @@ C     == local variables ==
       integer i,j,k2
       integer ilgen
 CEOP
+
+      IF (debugMode)
+     &   CALL DEBUG_CALL('CTRL_MAP_INI_GENTIM2D',myThid)
 
 c--   Now, read the control vector.
       doglobalread = .false.
@@ -117,6 +120,20 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
+catn: there is a copy of this code as ctrl_map_ini_gentim2dmd
+catn: so that this code is actually not called but a version of
+catn: it is found in ad_taf_output.  At the end of the above
+catn: ctrl_init_rec call, we get [start,end,diff]rec. So what
+catn: we need to make sure next is that when we read from
+catn: xx_atemp.0000000001.data, read from startrec:endrec, then
+catn: write out to xx_atemp.effective.0000000001.data as as
+catn: 1:diffrec. Note that the version of this in ad_taf_output.f
+catn: strips all the misc write statements so it appears as if
+catn: we did not go past here, but we did.
+catn
+catn        write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
+catn     &              iarr,xx_gentim2d_startdate(1,iarr)
+catn
         dosmooth=.false.
         dowc01  = .false.
         doscaling=.true.
@@ -166,21 +183,46 @@ c--   docycle
          endif
         enddo
 
-        DO jrec = 1,replicated_ntimes+1
-         DO irec = 1,replicated_nrec
+catn        write(*,'(A,1x,5I6)') 
+catn     &   'AD:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
+catn     &              startrec, endrec, diffrec, 
+catn     &              replicated_nrec,replicated_ntimes
+catn
+        DO jrec = 1, replicated_ntimes+1
+         DO irec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
           krec=replicated_nrec*(jrec-1)+irec
+          lrec=startrec+irec-1
           IF (krec.LE.endrec) THEN
+catn         ilgen=ilnblnk( fnamegenIn )
+catn         write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
+catn         write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
+catn: fnamegenIn is xx_atemp.0000000001, so we need to read
+catn: from startrec+irec-1 instead of irec in the call below
+catn: HOWEVER, the problem is that in the adjoint mode, the function
+catn  adactive_read_xy is called to read in adxx_atemp.0000000001
+catn  instead xx_atemp.0000000001, in which case the records need to
+catn  be diffrec:-1:1 instead of of endrec:-1:startrec.  The question 
+catn  is how can we separate that out? Can we make use of the flag 
+catn  FORWARD_SIMULATION and REVERSE_SIMULATION?
+catn  The solution now is that we make adxx file of length 1:endrec,
+catn  so that we can access record endrec:-1:startrec. The rest of
+catn  the records startec-1:-1:1 should be all zeros.
 #ifdef ALLOW_AUTODIFF
-           CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, irec,
+           CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, lrec,
      &          doglobalread, ladinit, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenIn, xx_gen, iRec, 1, myThid )
+           CALL READ_REC_XY_RL( fnamegenIn, xx_gen, lRec, 1, myThid )
 #endif
+catn: now here, we write xx_atemp.effective.0000000001, so 
+catn: the krec is the correct record, no mod here
 #ifdef ALLOW_AUTODIFF
+catn         ilgen=ilnblnk( fnamegenOut )
+catn         write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+catn         write(*,*) 'AH: fnamegenOut: ', fnamegenOut(1:ilgen)
            CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
@@ -208,7 +250,9 @@ c--   rmcycle
          endif
         enddo
 
-c     print*,'endrec',endrec,replicated_ntimes,replicated_nrec
+catn        write(*,'(A,1x,5I6)'),
+catn     &  'AI:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
+catn     &      startrec,endrec,diffrec,replicated_nrec,replicated_ntimes
 
         IF (replicated_ntimes.GT.0) THEN
 
@@ -217,7 +261,7 @@ c     create cyclic average
          nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
          recip_nyearsRL=1. _d 0/float(nyearsINT)
 
-c     print*,'nyearsINT',nyearsINT,nyearsRL
+catn        write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
 
          DO irec = 1, replicated_nrec
 
@@ -236,6 +280,9 @@ c     print*,'nyearsINT',nyearsINT,nyearsRL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
+catn           write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+catn           ilgen=ilnblnk( fnamegenOut )
+catn           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(1:ilgen)
 #ifdef ALLOW_AUTODIFF
            call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
      &          doglobalread, ladinit, optimcycle,
@@ -287,6 +334,9 @@ c     subtract cyclic average
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=replicated_nrec*(jrec-1)+irec
+catn        write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+catn        ilgen=ilnblnk( fnamegenOut )
+catn        write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
            IF (krec.LE.endrec) THEN
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenOut, xx_gen, kRec,
@@ -329,11 +379,19 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 c--   scaling and smoothing
 
+catn: so, the fix for xx_atemp.0000000001 was already above
+catn: From now on, we read in from xx_atemp.effective.0000000001
+catn: so we no longer need to fix any record from here on out
         DO irec = 1, diffrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
+catn        ilgen=ilnblnk( fnamegenOut )
+catn        lrec=startrec+irec-1
+catn        write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, irec,lrec ',
+catn     &      fnamegenOut(1:ilgen),irec,lrec
+catn
 #ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenOut, xx_gen, irec,
      &        doglobalread, ladinit, optimcycle,
@@ -344,8 +402,14 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 #ifndef ALLOW_OPENAD
          jrec=1
+catn: what should we do with the timevariable weights? do we ever
+catn: have this situation?  not sure how to fix this.  The fix
+catn: needs to be inside the do k2 loop
          do k2 = 1, maxCtrlProc
-          if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
+          if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') then
+catn            jrec=irec
+            jrec=startrec+irec-1
+          endif
          enddo
          CALL READ_REC_3D_RL( xx_gentim2d_weight(iarr), ctrlprec, 1,
      &             wgentim2d(1-OLx,1-OLy,1,1,iarr), jrec, 1, myThid )
@@ -384,6 +448,9 @@ C--   Get appropriate mask
 
          CALL EXCH_XY_RL ( xx_gen , myThid )
 
+catn        ilgen=ilnblnk( fnamegenOut )
+catn        write(*,'(A,1x,I6,1x,A)') 
+catn     &     'AQ: irec,fnamegenOut: ',irec,fnamegenOut(1:ilgen)
 #ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
      &        myThid, xx_gentim2d_dummy(iarr) )
@@ -402,6 +469,8 @@ c--   end iarr loop
       ENDDO
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
+      IF (debugMode)
+     &   CALL DEBUG_LEAVE('CTRL_MAP_INI_GENTIM2D',myThid)
 
       RETURN
       END

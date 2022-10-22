@@ -67,7 +67,9 @@ C     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
-c     integer startrec
+#ifdef ECCO_VERBOSE
+      integer startrec
+#endif
 
       integer year0
       integer year1
@@ -129,12 +131,16 @@ C     fldperiod .ne. 0
 C--   Determine the current date.
        call cal_GetDate( myiter, mytime, mydate, mythid )
 
-C     Determine first record:
-c      call cal_TimePassed( fldstartdate, modelstartdate,
-c    &                      difftime, mythid )
-c      call cal_ToSeconds ( difftime, fldsecs, mythid )
-c      startrec = int((modelstart + startTime - fldsecs)/
-c    &                fldperiod) + 1
+#ifdef ECCO_VERBOSE
+catn this block was commented out as we no longer use startrec,
+catn but put back as the number is useful for debugging
+c     Determine first record:
+      call cal_TimePassed( fldstartdate, modelstartdate,
+     &                      difftime, mythid )
+      call cal_ToSeconds ( difftime, fldsecs, mythid )
+      startrec = int((modelstart + startTime - fldsecs)/
+     &                fldperiod) + 1
+#endif /* ECCO_VERBOSE */
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
@@ -165,8 +171,11 @@ C     Set switches for reading new records.
         endif
        endif
 
-       count0 = fldcount
-       count1 = fldcount + 1
+catn: undoing ts PR260
+c      count0 = fldcount
+c      count1 = fldcount + 1
+       count0 = fldcount - startrec + 1
+       count1 = fldcount - startrec + 2
 
        call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
        call cal_AddTime( fldstartdate, difftime, flddate, mythid )
@@ -231,6 +240,10 @@ C     Do some printing for the protocol.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a)') ' '
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,1x,i10)') 
+     &               'CTRL_GET_GEN_REC startrec: ',startrec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
       _END_MASTER( mythid )
