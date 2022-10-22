@@ -91,6 +91,10 @@ C     == Global variables ==
 # include "GRID.h"
 # include "FFIELDS.h"
 # include "CTRL_FIELDS.h"
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 #  include "SHELFICE.h"
 # endif
@@ -182,6 +186,10 @@ C--   Initialize variable data for packages
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_SEAICE
+CADJ STORE area = tapelev_init, key = 1
+CADJ STORE heff = tapelev_init, key = 1
 # endif
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1

@@ -118,6 +118,18 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
       _RL  adBottomDragFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
+#ifdef ALLOW_SEAICE
+      COMMON /ADCTRL_FIELDS_SIHEFF/
+     &                adsihefffld
+      _RL  adsihefffld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /ADCTRL_FIELDS_SIAREA/
+     &                adsiareafld
+      _RL  adsiareafld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /ADCTRL_FIELDS_SIHSNOW/
+     &                adsihsnowfld
+      _RL  adsihsnowfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
 #ifdef ALLOW_EXF
 
       _RL adustress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

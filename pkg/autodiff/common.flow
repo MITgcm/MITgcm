@@ -104,3 +104,12 @@ c$taf COMMON GM_INP_K3D_REDI FTLNAME = g_GM_INP_K3D_REDI
 
 c$taf COMMON ctrl_fields_bottomdrag  ADNAME = adctrl_fields_bottomdrag
 c$taf COMMON ctrl_fields_bottomdrag FTLNAME = g_ctrl_fields_bottomdrag
+
+c$taf COMMON ctrl_fields_siheff  ADNAME = adctrl_fields_siheff
+c$taf COMMON ctrl_fields_siheff FTLNAME = g_ctrl_fields_siheff
+
+c$taf COMMON ctrl_fields_siarea  ADNAME = adctrl_fields_siarea
+c$taf COMMON ctrl_fields_siarea FTLNAME = g_ctrl_fields_siarea
+
+c$taf COMMON ctrl_fields_sihsnow  ADNAME = adctrl_fields_sihsnow
+c$taf COMMON ctrl_fields_sihsnow FTLNAME = g_ctrl_fields_sihsnow
