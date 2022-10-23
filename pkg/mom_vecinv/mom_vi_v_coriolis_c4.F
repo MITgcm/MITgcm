@@ -29,13 +29,6 @@ C     == Global variables ==
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
-#ifdef ALLOW_GGL90
-# include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "GGL90.h"
-#  include "FFIELDS.h"
-# endif
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -68,11 +61,6 @@ C     msgBuf :: Informational/error meesage buffer
 C jmc: not sure about these 1/6 & 1/12 factors (should use the same)
       PARAMETER(oneSixth=1.D0/6.D0 , oneTwelve=1.D0/12.D0)
       PARAMETER(fourthVort3=.TRUE. )
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      _RL Usfc, PI, recip_Lasq
-      _RL stokesU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      PARAMETER ( PI    = 3.14159265358979323844D0   )
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -81,20 +69,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          vort3r(i,j) = r_hFacZ(i,j)*omega3(i,j)
        ENDDO
       ENDDO
-
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR) THEN
-       recip_Lasq = 1. _d 0 / LC_num
-       recip_Lasq = recip_Lasq * recip_Lasq
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
-     &               surfaceForcingU(i,j,bi,bj)) * recip_Lasq
-         stokesU(i,j) = Usfc * EXP(4. *PI/LC_lambda*rC(k))
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
 
 C--   Special stuff for Cubed Sphere
       IF ( useCubedSphereExchange.AND.highOrderVorticity ) THEN
@@ -177,16 +151,7 @@ c       DO i=2-Olx,sNx+Olx-2
          ELSE
           vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j) )
          ENDIF
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-         IF (useLANGMUIR) THEN
-          uBarXY=uBarXY+0.25*(
-     &     (stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
-     &    +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
-     &               )
-         ENDIF
-#endif
+
          vCoriolisTerm(i,j) = -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
      &                               * _maskS(i,j,k,bi,bj)
 
@@ -209,39 +174,11 @@ c       DO i=2-Olx,sNx+Olx-2
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
          IF (upwindVorticity) THEN
           IF ( (uBarYm+uBarYp) .GT.0.) THEN
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-           IF (useLANGMUIR) THEN
-            uBarYm=uBarYm+0.5*(
-     &       stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &      +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj)
-     &       )
-           ENDIF
-#endif
            vort3v=uBarYm*vort3r( i ,j)
           ELSE
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-           IF (useLANGMUIR) THEN
-            uBarYp=uBarYp+0.5*(
-     &       stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &      +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj)
-     &       )
-           ENDIF
-#endif
            vort3v=uBarYp*vort3r(i+1,j)
           ENDIF
          ELSEIF (fourthVort3) THEN
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-          IF (useLANGMUIR) THEN
-           uBarYm=uBarYm+0.5*(
-     &       stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &      +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj)
-     &       )
-           uBarYp=uBarYp+0.5*(
-     &       stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &      +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj)
-     &       )
-          ENDIF
-#endif
 #ifdef ALLOW_OBCS
           Rjp = ( vort3r(i+2,j) - vort3r(i+1,j) )*maskInS(i+1,j,bi,bj)
           Rjm = ( vort3r( i ,j) - vort3r(i-1,j) )*maskInS(i-1,j,bi,bj)
