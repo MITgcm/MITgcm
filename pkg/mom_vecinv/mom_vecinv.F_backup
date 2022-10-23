@@ -671,10 +671,10 @@ c    &    .AND. .NOT. useAbsVorticity) THEN
 C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvection=F
 #if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
       IF (useLANGMUIR .AND. useAbsVorticity ) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'MOM_VECINV: Langmuir Parameterization with ',
-     &  'useAbsVorticity is not implemented.'
-       CALL PRINT_ERROR( msgBuf, myThid )
+C       WRITE(msgBuf,'(A,I5,A)')
+C     &  'MOM_VECINV: Langmuir Circ. Parameterization with ',
+C     &  ' useAbsVorticity is not implemented.'
+C       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R MOM_VECINV'
       ENDIF
 #endif

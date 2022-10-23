@@ -43,7 +43,7 @@ C                     - Olbers, D. and Eden, C. (2013), J. Phys. Oceano.
 C                       doi:10.1175/JPO-D-12-0207.1
 C
 C     useLANGMUIR     - turn on the parameterization of Langmuir circulation  
-C                       by Tak et al. (2022), Ocean Modelling
+C                       by Tak, Song et al. (2022), Ocean Modelling
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
