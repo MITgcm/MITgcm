@@ -27,6 +27,7 @@
  tempAdvScheme=33,
  momAdvection=.FALSE.,
  readBinaryPrec=64,
+ vectorInvariantMomentum=.TRUE.,
 #debugLevel=1,
  &
 
