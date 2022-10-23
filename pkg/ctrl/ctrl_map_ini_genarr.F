@@ -11,9 +11,6 @@
 #ifdef ALLOW_DIC
 # include "DIC_OPTIONS.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -62,12 +59,6 @@ C     == global variables ==
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
 # include "DIC_VARS.h"
 #endif
-CAB
-#ifdef ALLOW_SEAICE 
-#  include "SEAICE_SIZE.h"
-#  include "SEAICE.h"
-#endif
-CAB
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -100,9 +91,6 @@ C     == local variables ==
 # if (defined ALLOW_DIC && defined DIC_BIOTIC)
       INTEGER igen_alpha
 # endif
-# ifdef ALLOW_SEAICE
-      INTEGER igen_siarea,igen_siheff
-# endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
       INTEGER igen_theta0, igen_salt0
@@ -132,12 +120,6 @@ C--   generic 2D control variables
       igen_b_glen=0
       igen_h_streamice=0
 #endif
-CAB
-#ifdef ALLOW_SEAICE
-      igen_siarea=0
-      igen_siheff=0
-#endif
-CAB
       DO iarr = 1, maxCtrlArr2D
        IF (xx_genarr2d_weight(iarr).NE.' ') THEN
         IF (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
@@ -167,14 +149,6 @@ CAB
         IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_alpha')
      &     igen_alpha=iarr
 #endif
-CAB
-#ifdef ALLOW_SEAICE
-        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_siarea')
-     &     igen_siarea=iarr
-        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_siheff')
-     &     igen_siheff=iarr
-#endif
-CAB
        ENDIF
       ENDDO
 
@@ -256,15 +230,6 @@ C--      u* drag coefficient
       IF (igen_alpha.GT.0)
      &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )
 #endif
-
-CAB
-#ifdef ALLOW_SEAICE
-      IF (igen_siarea.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(AREA,igen_siarea,myThid)
-      IF (igen_siheff.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
-#endif
-CAB
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
