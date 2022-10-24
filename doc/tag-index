@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - Remove unnecessary awk escape sequence ; this avoids a warning with recent
+    GNU awk (5.0.1 and newer).
 o tools/adjoint_options:
   - merge five ad-optfiles into single one with compact list of generic control
     variables and obcs-control variables ;
