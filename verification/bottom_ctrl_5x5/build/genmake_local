@@ -1,2 +1,7 @@
-AD_OPTFILE='../code_ad/ad_optfile.local'
+#!/usr/bash
+# This flag is necessary because in this experiment the preprocessed
+# source lines extend beyond column 72
 USE_EXTENDED_SRC='t'
+# The following line is here to demonstrate how to include a specific
+# options filo for AD. In this example, it just points to the default.
+AD_OPTFILE='../../../tools/adjoint_options/adjoint_default'

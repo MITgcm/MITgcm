@@ -585,9 +585,11 @@ makemodel()
 	fi
     fi
     if test $KIND = 1 -a -f taf_ftl.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ftl.log >> $CDIR"/summary.txt"
     fi
     if test $KIND = 2 -a -f taf_ad.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ad.log >> $CDIR"/summary.txt"
 	nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
 	nwar=`grep -c '^TAF *.* RECOMPUTATION *.* WARNING ' taf_ad.log`
