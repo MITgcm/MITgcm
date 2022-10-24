@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix ocean r-star pressure gradient in case model top is not uniformly at r=0
+  - update ref output of secondary test "isomip.obcs".
 o tools/genmake2:
   - Remove unnecessary awk escape sequence ; this avoids a warning with recent
     GNU awk (5.0.1 and newer).
