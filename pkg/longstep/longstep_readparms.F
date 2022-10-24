@@ -14,8 +14,8 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "LONGSTEP_PARAMS.h"
 #include "PARAMS.h"
+#include "LONGSTEP_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -85,6 +85,14 @@ C     Close the open data file
 C     Now set-up any remaining parameters that result from the input
 C     parameters
 
+C     whether to average EmPmR or PmEpR in LS_fwFlux
+#ifdef EXACT_CONSERV
+      LS_usePmEpR = (nonlinFreeSurf.GT.0 .OR. usingPCoords)
+     &              .AND. useRealFreshWaterFlux
+#else /* EXACT_CONSERV */
+      LS_usePmEpR = .FALSE.
+#endif /* EXACT_CONSERV */
+
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded
       _BARRIER
@@ -93,4 +101,3 @@ C     Everyone else must wait for the parameters to be loaded
 
       RETURN
       END
-
