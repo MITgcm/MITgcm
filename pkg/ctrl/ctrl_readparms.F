@@ -128,7 +128,7 @@ C--   Read the namelist input.
      &  doMainUnpack, doMainPack,
      &  doSinglePrecTapelev,
      &  doAdmtlmBypassAD,
-     &  delZexp, forcingPrecond ,ctrlprec, ctrlDir
+     &  delZexp, forcingPrecond, ctrlprec, ctrlDir
 cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL

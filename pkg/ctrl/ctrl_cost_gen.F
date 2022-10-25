@@ -119,7 +119,7 @@ c--   Find ctrlDir length
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_gen_file )
-        write(fnamefld(1:80),'(2a,i10.10)')
+        write(fnamefld,'(2a,i10.10)')
      &       ctrlDir(1:ilDir)//xx_gen_file(1:ilfld),'.',optimcycle
       endif
 
@@ -280,7 +280,7 @@ c--   Find ctrlDir length
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_gen_file )
-        write(fnamefld(1:80),'(2a,i10.10)')
+        write(fnamefld,'(2a,i10.10)')
      &       ctrlDir(1:ilDir)//xx_gen_file(1:ilfld),'.',optimcycle
       endif
 
@@ -299,17 +299,17 @@ c--   >>> Loop 1 to compute mean forcing:
      &      fnamefld, tmpfld3d, irec, doglobalread,
      &      ladinit, optimcycle, myThid, xx_gen_dummy )
 #else
-        CALL READ_REC_XYZ_RL( fnamefld, tmpfld3d, iRec, 1, myThid )
+      CALL READ_REC_XYZ_RL( fnamefld, tmpfld3d, iRec, 1, myThid )
 #endif
 
-c--     Loop over this thread tiles.
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
+c--   Loop over this thread tiles.
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
 
-            num_gen(bi,bj)  = 0. _d 0
-            objf_gen(bi,bj) = 0. _d 0
+          num_gen(bi,bj)  = 0. _d 0
+          objf_gen(bi,bj) = 0. _d 0
 
-            do k = 1,Nr
+          do k = 1,Nr
             do j = jmin,jmax
               do i = imin,imax
                 if (xx_gen_mask(i,j,k,bi,bj) .ne. 0. _d 0) then
@@ -326,10 +326,10 @@ c--     Loop over this thread tiles.
                 endif
               enddo
             enddo
-            enddo
-
           enddo
+
         enddo
+      enddo
 
 #endif /* ALLOW_CTRL */
 

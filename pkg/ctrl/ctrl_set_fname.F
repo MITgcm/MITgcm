@@ -71,6 +71,8 @@ c--   Only the master thread will do I/O.
          write(fname(3)(1:80),'(3a,i10.10)')
      &        xx_fname(1:ll)//'hn', xx_fname(ll+1:il), '.', 
      &        optimcycle
+      else
+         STOP 'ABNORMAL END: S/R CTRL_SET_FNAME'
       endif
 
       _END_MASTER( mythid )

@@ -33,7 +33,7 @@ c     == functions ==
       IL = ILNBLNK( smoothDir )
 
 c read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &    'smooth2Doperator',smoothOpNb
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
@@ -44,7 +44,7 @@ c read smoothing [i.e diffusion] operator:
       CALL EXCH_XY_RL( smooth2D_Kvy, myThid )
 
 c read normalization field [i.e. 1/sqrt(var(filter))]:
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &     'smooth2Dnorm',smoothOpNb
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,

@@ -86,7 +86,7 @@ c so this routine does not do anything
       nbt_in=smooth2Dnbt(smoothOpNb)/2
 
 c read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &      'smooth2Doperator',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
@@ -266,7 +266,7 @@ c compute variance and convert it to normalization factor:
       ENDIF
 
 c write smooth2Dnorm to file:
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &      'smooth2Dnorm',smoothOpNb
       CALL WRITE_REC_3D_RL(fnamegeneric,smoothprec,

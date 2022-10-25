@@ -94,7 +94,7 @@ c--   Now, read the control vector.
 
       if ( optimcycle .ge. 0 ) then
         ilgen=ilnblnk( xx_gen_file )
-        write(fnamegen(1:80),'(2a,i10.10)')
+        write(fnamegen,'(2a,i10.10)')
      &    ctrlDir(1:il)//xx_gen_file(1:ilgen),'.effective.',optimcycle
       endif
 
@@ -128,7 +128,7 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
-        write(fnamegeneric(1:80),'(2a,i10.10)')
+        write(fnamegeneric,'(2a,i10.10)')
      &    ctrlDir(1:il)//xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &             xx_gen1, gencount1, optimcycle, mythid )
@@ -157,7 +157,7 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
-        write(fnamegeneric(1:80),'(2a,i10.10)')
+        write(fnamegeneric,'(2a,i10.10)')
      &     ctrlDir(1:il)//xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
      &             xx_gen1, gencount0, optimcycle, mythid )

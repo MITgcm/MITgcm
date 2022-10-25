@@ -30,7 +30,7 @@ c     == functions ==
       IL = ILNBLNK( smoothDir )
 
 C read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &      'smooth3Doperator', smoothOpNb
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,

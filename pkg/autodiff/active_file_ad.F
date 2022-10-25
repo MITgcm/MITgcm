@@ -829,7 +829,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(*) actvarf
-      CHARACTER*(80) fname
+      CHARACTER*(*) fname
       INTEGER il,ll,l
 
       adpref = 'ad'
@@ -844,6 +844,8 @@ C     !LOCAL VARIABLES:
           endif
          enddo
  11      continue
+      else 
+         STOP 'ABNORMAL END: S/R ADD_ADPREFIX'
       endif
       WRITE(fname(1:2+il),'(2A)') actvarf(1:ll)//adpref, 
      &                 actvarf(ll+1:il)

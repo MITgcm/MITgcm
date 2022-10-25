@@ -35,7 +35,7 @@ c     == functions ==
 
       IF ( (smooth2Dtype(smoothOpNb).NE.0).AND.
      &     (smooth2Dsize(smoothOpNb).EQ.2) ) THEN
-        WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+        WRITE(fnamegeneric,'(2A,I3.3)')
      &        smoothDir(1:IL),
      &        'smooth2Dscales',smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
@@ -74,7 +74,7 @@ c     == functions ==
       CALL EXCH_XY_RL( smooth2D_Kvy, myThid )
 
 C write diffusion operator to file
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &      'smooth2Doperator', smoothOpNb
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,

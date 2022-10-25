@@ -42,7 +42,7 @@ c     == functions ==
 C vertical smoothing:
 
       IF ( smooth3DsizeZ(smoothOpNb).EQ.3 ) THEN
-        WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+        WRITE(fnamegeneric,'(2A,I3.3)')
      &        smoothDir(1:IL),
      &        'smooth3DscalesZ', smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
@@ -100,7 +100,7 @@ C avoid excessive vertical smoothing:
 C horizontal smoothing:
 
       IF ( smooth3DsizeH(smoothOpNb).EQ.3 ) THEN
-        WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+        WRITE(fnamegeneric,'(2A,I3.3)')
      &        smoothDir(1:IL),
      &        'smooth3DscalesH', smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
@@ -161,7 +161,7 @@ C is exchange useful here?
 
 C write diffusion operator to file
 
-      WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
      &      smoothDir(1:IL),
      &      'smooth3Doperator', smoothOpNb
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,
