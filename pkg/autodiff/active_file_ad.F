@@ -829,7 +829,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(*) actvarf
-      CHARACTER*(80) fname
+      CHARACTER*(*) fname
       INTEGER il,ll,l
 
       adpref = 'ad'
