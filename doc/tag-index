@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/longstep:
+  - fix initialization of LS_fwFlux ;
+  - move params report & check to new S/R LONGSTEP_CHECK.
 o model/src:
   - fix ocean r-star pressure gradient in case model top is not uniformly at r=0
   - update ref output of secondary test "isomip.obcs".
