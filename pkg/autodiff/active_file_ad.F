@@ -831,22 +831,23 @@ C     !LOCAL VARIABLES:
       CHARACTER*(*) actvarf
       CHARACTER*(*) fname
       INTEGER il,ll,l
+CEOP
 
       adpref = 'ad'
       il   = ILNBLNK( actvarf )
       WRITE(fname(1:80),'(A)') ' '
       ll = 0
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         do l = il, 1, -1
-          if ( actvarf(l:l) .eq. '/' ) then
+      IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
+         DO l = il, 1, -1
+          IF ( actvarf(l:l) .EQ. '/' ) THEN
            ll = l
-           go to 11
-          endif
-         enddo
- 11      continue
-      else 
+           GO TO 11
+          ENDIF
+         ENDDO
+ 11      CONTINUE
+      ELSE 
          STOP 'ABNORMAL END: S/R ADD_ADPREFIX'
-      endif
+      ENDIF
       WRITE(fname(1:2+il),'(2A)') actvarf(1:ll)//adpref, 
      &                 actvarf(ll+1:il)
       RETURN
