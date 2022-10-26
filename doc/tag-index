@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68l (2022/10/26)
 o pkg/longstep:
   - fix initialization of LS_fwFlux ;
   - move params report & check to new S/R LONGSTEP_CHECK.
