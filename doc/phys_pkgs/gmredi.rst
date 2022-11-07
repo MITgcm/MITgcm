@@ -338,7 +338,7 @@ horizontal surface.
 With this approxmation, the expression of the bolus transport simplifies
 and becomes "isomorphic" to the :math:`z-`\ coordinate form :eq:`GM_bolus_psi`,
 with the sign reversal of all three components of the bolus transport,
-due to the expression of rotation in a left-handed coordinate system.
+due to the expression of the curl in a left-handed coordinate system.
 
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
