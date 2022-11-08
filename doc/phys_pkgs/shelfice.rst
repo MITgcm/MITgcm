@@ -490,7 +490,7 @@ non-negative root is used. In the MITgcm code, the ice shelf salinity
    + (\epsilon_{q}  - \epsilon_{2}) \,S_{b} + \epsilon_{2}\,S \\
      S_{b} &= \frac{\epsilon_{2} - \epsilon_{q}\mp
      \sqrt{(\epsilon_{q}  - \epsilon_{2})^2
-     - 4\, a_{0}\,(\epsilon_{1} + \epsilon_{3})\,\epsilon_{2}}}
+     - 4\, a_{0}\,(\epsilon_{1} + \epsilon_{3})\,\epsilon_{2}\,S}}
      {2\,a_{0}\,(\epsilon_{1} + \epsilon_{3})}
    \end{aligned}
 

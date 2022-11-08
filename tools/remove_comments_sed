@@ -1,8 +1,14 @@
 /^$/d
+/^C$/d
+/^c$/d
 /^C\ /d
 /^c\ /d
+/^CC/d
+/^cc/d
 /^C-/d
 /^c-/d
+/^C+/d
+/^c+/d
 /^C=/d
 /^c=/d
 /^C\*/d
@@ -25,14 +31,19 @@
 /^Cdm/d
 /^crg/d
 /^Crg/d
+/^cts/d
+/^Cts/d
 /^cgg/d
+/^\!$/d
+/^\!\ /d
+/^\!\!/d
 
 # This is a growing list of which comments lines to remove from a file
 # in order to reduce the file size of ad_input_code.f. The first one is
 # for empty lines.
-# We want to remove all comments (=lines starting with C,c,*), but
-# compiler directives also start with a C, in particular CADJ/cadj/Cadj/cADJ,
-# and absolutely must remain in the file.
+# We want to remove all comments (=lines starting with C,c,*,!), but
+# compiler directives also start with a C, in particular
+# CADJ/cadj/Cadj/cADJ/!CDIR/!$TAF, and absolutely must remain in the file.
 
 #- A hack for recent OpenMPI (v1.8.8, shipped with FC.23) version of 'mpif.h'
 #  which now contains a new header file: mpif-sizeof.h that relies on module

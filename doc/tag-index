@@ -1,6 +1,37 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68l (2022/10/26)
+o pkg/longstep:
+  - fix initialization of LS_fwFlux ;
+  - move params report & check to new S/R LONGSTEP_CHECK.
+o model/src:
+  - fix ocean r-star pressure gradient in case model top is not uniformly at r=0
+  - update ref output of secondary test "isomip.obcs".
+o tools/genmake2:
+  - Remove unnecessary awk escape sequence ; this avoids a warning with recent
+    GNU awk (5.0.1 and newer).
+o tools/adjoint_options:
+  - merge five ad-optfiles into single one with compact list of generic control
+    variables and obcs-control variables ;
+  - to use divided adjoint (DIVA), in genmake_local, set new flag USE_DIVA=1
+    (replacing "adjoint_diva");
+  - select which Fortran version is sent to TAF by setting TAF_FORTRAN_VERS
+    to either F77, F90, or F95 (replacing "adjoint_f95") ;
+  - to replace "adjoint_tamc_compatibility", in genmake_local, set new flag
+    TAMC_COMPATIBILITY_MODE=1 ;
+  - remove "-server fastopt.net" to use the default server (fastopt.de)
+  - use the staf default server (currently "fastopt.de") instead of specific
+    server "fastopt.net" ;
+  - remove more commented lines (remove_comments_sed) in src code sent to TAF ;
+  - remove obsolete "ad_taf_output.f.*" diff-patches in tools/ ;
+  - remove "ad_optfile.local" files from some verification experiments ; keep
+    example how to specify local optfile in verification/bottom_ctrl_5x5 ;
+o pkg/streamice:
+  - changes related to PETc solver interface to be compatible with PETSc
+    version 3.8 and above and also available without MPI;
+  - also make sure PETSc is not used at runtime by default.
+
 checkpoint68k (2022/08/17)
 o pkg/ctrl, ecco, ... :
   Remove untested and obsolete ECCO_CTRL_DEPRECATED code: From now on it is

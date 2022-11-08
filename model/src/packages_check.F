@@ -41,6 +41,8 @@ C       |-- BBL_CHECK
 C       |
 C       |-- EXF_CHECK
 C       |
+C       |-- LONGSTEP_CHECK
+C       |
 C       |-- PTRACERS_CHECK
 C       |
 C       |-- GCHEM_CHECK
@@ -292,6 +294,10 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifndef ALLOW_FLT
       IF (useFLT) CALL PACKAGES_ERROR_MSG('FLT',' ',myThid)
+#endif
+
+#ifdef ALLOW_LONGSTEP
+      IF (usePTRACERS) CALL LONGSTEP_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS

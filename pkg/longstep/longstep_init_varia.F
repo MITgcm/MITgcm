@@ -51,6 +51,7 @@ C     initialize longstep averages to zero
 #ifdef SHORTWAVE_HEATING
       CALL LONGSTEP_RESET_3D(LS_QswCount, LS_Qsw, 1, myThid)
 #endif
+      CALL LONGSTEP_RESET_3D(LS_fwFluxCount,LS_fwFlux,1,myThid)
 #ifdef ALLOW_GMREDI
       IF ( useGMRedi ) THEN
        CALL LONGSTEP_RESET_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
