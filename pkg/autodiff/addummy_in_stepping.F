@@ -17,9 +17,6 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
-#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -160,11 +157,6 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
-# ifdef ALLOW_SEAICE
-        call adexch_xy_rl( myThid,adsihefffld)
-        call adexch_xy_rl( myThid,adsiareafld)
-        call adexch_xy_rl( myThid,adsihsnowfld)
-# endif
 # else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
 
 #  ifndef ALLOW_BULK_OFFLINE
@@ -213,12 +205,6 @@ C     problem occurs
 #  else
         CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
 #  endif
-# endif
-
-# ifdef ALLOW_SEAICE
-        call ADEXCH_XY_RL( adsiheffFld, myThid )
-        call ADEXCH_XY_RL( adsiareaFld, myThid )
-        call ADEXCH_XY_RL( adsihsnowFld, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -326,17 +312,6 @@ C-----------------------------------------------------------------------
      &                 'ADJshicd','ADJshicd.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
-# endif
-# ifdef ALLOW_SEAICE
-        call DUMP_ADJ_XY(dumRS, adsiheffFld,
-     &                 'ADJsihef','ADJsihef.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        call DUMP_ADJ_XY(dumRS, adsiareaFld,
-     &                 'ADJsiare','ADJsiare.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        call DUMP_ADJ_XY(dumRS, adsihsnowFld,
-     &                 'ADJsihsn','ADJsihsn.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
@@ -451,17 +426,6 @@ C-----------------------------------------------------------------------
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
 # endif
-# ifdef ALLOW_SEAICE
-        call DUMP_ADJ_XY(dumRS, adsiheffFld%d,
-     &                 'ADJsihef','ADJsihef.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        call DUMP_ADJ_XY(dumRS, adsiareaFld%d,
-     &                 'ADJsiare','ADJsiare.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-        call DUMP_ADJ_XY(dumRS, adsihsnowFld%d,
-     &                 'ADJsihsn','ADJsihsn.',
-     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
 
 # ifdef ALLOW_DEPTH_CONTROL
       CALL DUMP_ADJ_XYZ(
@@ -530,20 +494,6 @@ C=======================================================================
      &                                        var2Du, 1, 12, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adBottomDrag', var2Du, myThid)
-#endif
-#ifdef ALLOW_SEAICE
-          CALL COPY_ADVAR_OUTP( dumRS, adsiheffFld,
-     &                                        var2Du, 1, 13, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,
-     &                     'adsiheff', var2Du, myThid)
-          CALL COPY_ADVAR_OUTP( dumRS, adsiareaFld,
-     &                                        var2Du, 1, 14, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,
-     &                     'adsiarea', var2Du, myThid)
-          CALL COPY_ADVAR_OUTP( dumRS, adsihsnowFld,
-     &                                        var2Du, 1, 15, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,
-     &                     'adsihsnow', var2Du, myThid)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adDiffKr,var3Du, Nr, 12,myThid )
