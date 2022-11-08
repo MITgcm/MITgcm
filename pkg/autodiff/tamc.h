@@ -71,12 +71,12 @@ C     and writing data.
 
       COMMON /TAMC_KEYS_I/
      &                     ikey_dynamics
-
-      INTEGER IKEY_DYNAMICS
+      INTEGER ikey_dynamics
 
       INTEGER    isbyte
 C     For smaller tapes replace 8 by 4.
       PARAMETER( isbyte      = 8 )
+
 C     maxpass :: maximum number of (active + passive) tracers
 #ifndef ALLOW_PTRACERS
       INTEGER    maxpass
