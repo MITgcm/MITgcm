@@ -36,21 +36,24 @@ C
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
-      integer    nchklev_1
-      parameter( nchklev_1      =    5 )
-      integer    nchklev_2
-      parameter( nchklev_2      =    2 )
-c      parameter( nchklev_2      =  150 )
-      integer    nchklev_3
-      parameter( nchklev_3      =    3 )
-c      parameter( nchklev_3      =  150 )
+      INTEGER    nchklev_1
+      PARAMETER( nchklev_1      =    5 )
+      INTEGER    nchklev_2
+      PARAMETER( nchklev_2      =    2 )
+C     PARAMETER( nchklev_2      =  150 )
+      INTEGER    nchklev_3
+      PARAMETER( nchklev_3      =    3 )
+C     PARAMETER( nchklev_3      =  150 )
 
 C--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
-      integer    nchklev_1
-      parameter( nchklev_1      =  64800 )
+C     Without ALLOW_TAMC_CHECKPOINTING, nchklev_1 needs to be at least
+C     equal to nTimeSteps. This (arbitrary) setting would accomodate a
+C     short run (e.g., 10.d with deltaT=10.mn)
+      INTEGER    nchklev_1
+      PARAMETER( nchklev_1      =  1500 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -66,10 +69,10 @@ C
 C     which means that this key is used in routine <name> for reading
 C     and writing data.
 
-      common /tamc_keys_i/
+      COMMON /TAMC_KEYS_I/
      &                     ikey_dynamics
 
-      integer ikey_dynamics
+      INTEGER IKEY_DYNAMICS
 
       INTEGER    isbyte
 C     For smaller tapes replace 8 by 4.
