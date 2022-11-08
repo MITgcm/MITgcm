@@ -177,10 +177,10 @@ c      ENDDO
 catn default interpmethod=0 implies no interpolation
       runoffQsg_interpMethod    = 0
 #endif /* USE_EXF_INTERPOLATION */
-#endif /* ALLOW_EXF */
       runoffQsgfile = ' '
 C-    internal parameters (not in namelist):
       runoffQsgmask = 'c'
+#endif /* ALLOW_EXF */
 c-
       plumeMaskFile = ' '
       usePlumeDiagnostics = .FALSE.

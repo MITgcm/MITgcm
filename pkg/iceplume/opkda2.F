@@ -624,6 +624,8 @@ C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920310  Corrected definition of LX in DESCRIPTION.  (WRB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  DAXPY
+      IMPLICIT NONE
+      INTEGER n, incx, incy, i, ix, iy, m, mp1, ns
       DOUBLE PRECISION DX(*), DY(*), DA
 C***FIRST EXECUTABLE STATEMENT  DAXPY
       IF (N.LE.0 .OR. DA.EQ.0.0D0) RETURN
@@ -713,6 +715,8 @@ C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920310  Corrected definition of LX in DESCRIPTION.  (WRB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  DCOPY
+      IMPLICIT NONE
+      INTEGER n, incx, incy, i, ix, iy, m, mp1, ns
       DOUBLE PRECISION DX(*), DY(*)
 C***FIRST EXECUTABLE STATEMENT  DCOPY
       IF (N .LE. 0) RETURN
@@ -805,6 +809,8 @@ C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920310  Corrected definition of LX in DESCRIPTION.  (WRB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  DDOT
+      IMPLICIT NONE
+      INTEGER n, incx, incy, i, ix, iy, m, mp1, ns
       DOUBLE PRECISION DX(*), DY(*)
 C***FIRST EXECUTABLE STATEMENT  DDOT
       DDOT = 0.0D0
@@ -923,6 +929,8 @@ C   890831  REVISION DATE from Version 3.2
 C   891214  Prologue converted to Version 4.0 format.  (BAB)
 C   920501  Reformatted the REFERENCES section.  (WRB)
 C***END PROLOGUE  DNRM2
+      IMPLICIT NONE
+      INTEGER n, incx, i, j, nn
       INTEGER NEXT
       DOUBLE PRECISION DX(*), CUTLO, CUTHI, HITEST, SUM, XMAX, ZERO,
      +                 ONE

@@ -2125,6 +2125,14 @@ c    declarations.
 c
 c-----------------------------------------------------------------------
 c
+      IMPLICIT NONE
+      INTEGER n, nsp, np1
+      INTEGER i, il, i1, i2, ijl, bijl, iju, ira, irac, irl, iru, iu,
+     * iak, irai, irll, irul
+      INTEGER j, jl, ju, jlmin, jlmax, jumax, jra, jral, jutmp,
+     * jmax, jmin, jlptr, jairai, jaiak,  jtmp, jumin, juptr, newj
+      INTEGER lmax, lasti, lastid, long, luk
+      INTEGER k, m, mu, lratio, max, next
       integer  ia(*), ja(*),  p(*), ip(*),  isp(*),  path,  flag,
      *   v, l, head,  tmp, q
 c...  real  a(*)
@@ -2254,6 +2262,8 @@ c             -       .lt. mark(vk)         -
 c
 c-----------------------------------------------------------------------
 c
+      IMPLICIT NONE
+      INTEGER n, k, max
       integer  ia(*), ja(*),  v(*), l(*),  head(*), last(*), next(*),
      *   mark(*),  flag,  tag, dmin, vk,ek, tail
       equivalence  (vk,ek)
@@ -2313,6 +2323,8 @@ c
 c***********************************************************************
 c  mdi -- initialization
 c***********************************************************************
+      IMPLICIT NONE
+      INTEGER max, j, jmax, jmin, k, kmax, lvk, nextvi, i, n
       integer  ia(*), ja(*),  v(*), l(*),  head(*), last(*), next(*),
      *   mark(*), tag,  flag,  sfs, vi,dvi, vj
 c
@@ -2437,6 +2449,8 @@ c
 c***********************************************************************
 c  mdp -- purge inactive elements and do mass elimination
 c***********************************************************************
+      IMPLICIT NONE
+      INTEGER k, i
       integer  ek, tail,  v(*), l(*),  head(*), last(*), next(*),
      *   mark(*),  tag, free, li,vi,lvi,evi, s,ls,es, ilp,ilpmax
 c
@@ -2526,6 +2540,8 @@ c
 c***********************************************************************
 c  mdu -- update degrees of uneliminated vertices in ek
 c***********************************************************************
+      IMPLICIT NONE
+      INTEGER i, k
       integer  ek, dmin,  v(*), l(*),  head(*), last(*), next(*),
      *   mark(*),  tag, vi,evi,dvi, s,vs,es, b,vb, ilp,ilpmax,
      *   blp,blpmax
@@ -2638,6 +2654,8 @@ c            diagonal elements at the beginning of the row
 c
 c-----------------------------------------------------------------------
 c
+      IMPLICIT NONE
+      INTEGER n, i, ilast, j, jummy, jmax, jmin, k, jak, jdummy
       integer  ip(*),  ia(*), ja(*),  q(*), r(*)
 c...  real  a(*),  ak
       double precision  a(*),  ak
@@ -2876,6 +2894,10 @@ c    in subroutine cdrv, as indicated below.
 c    (3) change e0 to d0 in the constants in statement number 10
 c    in subroutine nnfc and the line following that.
 c
+      IMPLICIT NONE
+      INTEGER n, nsp, i, ijl, iju, il, ira, irac, irl, iru, iu,
+     * j, jl, jlmax, jra, jrl, jru, ju, jumax, jutmp
+      INTEGER l, lmax, lratio, max
       integer  r(*), c(*), ic(*),  ia(*), ja(*),  isp(*), esp,  path,
      *   flag,  d, u, q, row, tmp, ar,  umax
 c     real  a(*), b(*), z(*), rsp(*)
@@ -3177,6 +3199,8 @@ c fia   - ar    - at the kth step, ar contains the elements of the
 c       -           reordered row of a.
 c       -           size = n.
 c
+      IMPLICIT NONE
+      INTEGER n, i, j, jmin, jmax, k, newj
       integer  ic(*), ia(*), ja(*), jar(*), p(*), flag
 c     real  a(*), ar(*)
       double precision  a(*), ar(*)
@@ -3269,6 +3293,11 @@ c    jmin,jmax - are the indices in  a or u  of the first and last
 c                elements to be examined in a given row.
 c                for example,  jmin=ia(k), jmax=ia(k+1)-1.
 c
+      IMPLICIT NONE
+      INTEGER i, i1, iak, irai, irll, irul
+      INTEGER j, jlmin, jlmax, jlptr, jmin, jmax, jtmp, jumin, jumax,
+     * juptr, jaiak, jairai
+      INTEGER k, lasti, lastid, long, luk, np1, m, n
       integer cend, qm, rend, rk, vj
       integer ia(*), ja(*), ira(*), jra(*), il(*), jl(*), ijl(*)
       integer iu(*), ju(*), iju(*), irl(*), jrl(*), iru(*), jru(*)
@@ -3574,6 +3603,8 @@ c    jmin, jmax - indices of the first and last positions in a row to
 c      be examined.
 c    sum - used in calculating  tmp.
 c
+      IMPLICIT NONE
+      INTEGER n, lmax, i, i1, i2, ijlb, j, jmin, jmax, k, mu
       integer rk,umax
       integer  r(*), c(*), ic(*), ia(*), ja(*), il(*), jl(*), ijl(*)
       integer  iu(*), ju(*), iju(*), irl(*), jrl(*), flag
@@ -3713,6 +3744,8 @@ c  internal variables..
 c    jmin, jmax - indices of the first and last positions in a row of
 c      u or l  to be used.
 c
+      IMPLICIT NONE
+      INTEGER n, i, j, jmax, jmin, k, ml, mu
       integer r(*), c(*), il(*), jl(*), ijl(*), iu(*), ju(*), iju(*)
 c     real l(*), d(*), u(*), b(*), z(*), tmp(*), tmpk, sum
       double precision  l(*), d(*), u(*), b(*), z(*), tmp(*), tmpk,sum
@@ -3766,6 +3799,8 @@ c  internal variables..
 c    jmin, jmax - indices of the first and last positions in a row of
 c      u or l  to be used.
 c
+      IMPLICIT NONE
+      INTEGER n, i, j, jmax, jmin, k, ml, mu
       integer r(*), c(*), il(*), jl(*), ijl(*), iu(*), ju(*), iju(*)
 c     real l(*), d(*), u(*), b(*), z(*), tmp(*), tmpk,sum
       double precision l(*), d(*), u(*), b(*), z(*), tmp(*), tmpk,sum

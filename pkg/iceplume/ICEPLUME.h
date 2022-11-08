@@ -39,7 +39,7 @@ C Header file pkg/ICEPLUME
 
       COMMON /ICEPLUME_FIELDS/
      &     runoffQsg,runoffQsg0,runoffQsg1,
-     &     plumeMask, 
+     &     plumeMask,
      &     temp_addMass3Dplume, salt_addMass3Dplume,
      &     addMass3Dplume,
      &     Qin
@@ -54,10 +54,10 @@ catn      _RL runoffVel1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 catn      _RL runoffRad  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 catn      _RL runoffRad0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL plumeMask  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL temp_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL salt_addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL addMass3Dplume  (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL plumeMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL temp_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL salt_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RS Qin (100)
 
       COMMON /ICEPLUME_FILES/
@@ -133,7 +133,7 @@ c MAX_LAT_INC=1279 in exf_interp_size
       _RL sProfPlume (Nr+1)
       _RL aProfPlume (Nr+1)   ! integrated area of plume from bottom
       _RL mIntProfPlume (Nr+1)   ! integrated melt of plume from bottom
-      _RL uProfPlume (Nr)     
+      _RL uProfPlume (Nr)
       _RL mProfPlume (Nr)
       _RL mProfAv    (Nr)
       _RL mProf      (Nr)
@@ -144,13 +144,13 @@ c MAX_LAT_INC=1279 in exf_interp_size
       _RL HeatFlux(Nr)
       _RL FwFlux(Nr)
       _RL delta_z(Nr)
-      
-#ifdef ICEPLUME_ALLOW_DETACHED_PLUME      
+
+#ifdef ICEPLUME_ALLOW_DETACHED_PLUME
       COMMON /ICEPLUME_FIELDS_DETACHED/
      & thetaProfPlume, distanceProfPlume
       _RL thetaProfPlume (Nr+1)
       _RL distanceProfPlume (Nr+1)
-#endif      
+#endif
 
 C     dLnormal     :: the model grid d[x,y]G that is normal to the glacier wall
 C     dLtangential :: the model grid d[x,y]G that is parallel to (i.e., along) the glacier wall
@@ -214,7 +214,7 @@ C     ICEPLUMElatentHeat       :: latent heat of fusion (def: 334000 J/kg)
 C     ICEPLUMEheatCapacity_Cp  :: Heat Capacity of shelfice (def: 2000. J/kg)
 
       COMMON /ICEPLUME_PARMS_R/
-     &     ICEPLUMElatentHeat, 
+     &     ICEPLUMElatentHeat,
      &     ICEPLUMEheatCapacity_Cp
       _RL ICEPLUMElatentHeat
       _RL ICEPLUMEheatCapacity_Cp
@@ -246,12 +246,12 @@ C Parameters relating to PTRACERS
      &     (1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy,PTRACERS_num)
       _RL ptracerMask
      &     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num,nSx,nSy)
-   
+
       COMMON /ICEPLUME_PTRACERS_FILES/
      &     ptracerMaskFile
-      CHARACTER*(512) 
+      CHARACTER*(512)
      &     ptracerMaskFile
 
 #endif /* ALLOW_PTRACERS */
 
-# endif /* ALLOW_ICEPLUME */ 
+# endif /* ALLOW_ICEPLUME */

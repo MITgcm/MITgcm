@@ -864,6 +864,7 @@ C DO I loop
          ENDDO
 
 catn: here we calc fields that live outside this routine
+#ifdef ALLOW_ADDFLUID
         DO K = 1,Nr
          DO J = 1,sNy
           DO I = 1,sNx
@@ -872,6 +873,7 @@ catn: here we calc fields that live outside this routine
           ENDDO
          ENDDO
         ENDDO
+#endif
 C-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 C Save plume values
