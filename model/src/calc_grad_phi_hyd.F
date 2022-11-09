@@ -53,7 +53,8 @@ C     i,j :: Loop counters
       INTEGER i,j
       _RL varLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef NONLIN_FRSURF
-      _RL factorZ, factorP, factPI
+      LOGICAL generalForm
+      _RL factorP, factPI
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 CEOP
@@ -155,19 +156,40 @@ C--   Zonal & Meridional gradient of potential anomaly
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_RSTAR_CODE
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
-       IF ( fluidIsWater .AND. usingZCoords ) THEN
+C-     need to use general form anytime r* @ Top is not uniformly zero:
+       generalForm = useShelfIce .OR.
+     &  ( usingPCoords .AND. ( rF(Nr+1).NE.zeroRS ) ) .OR.
+     &  ( usingZCoords .AND. ( topoFile.NE.' ' .OR. rF(1).NE.zeroRS ) )
+c      generalForm = .TRUE.
+       IF ( fluidIsWater .AND. ( usingZCoords .OR. generalForm ) ) THEN
+        IF ( usingZCoords ) THEN
 C--    z* coordinate slope term: rho_prime/rho0 * Grad_r(g.z)
-        factorZ = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          varLoc(i,j) = etaH(i,j,bi,bj)
-     &                *(1. _d 0 + rC(k)*recip_Rcol(i,j,bi,bj))
+         factorP = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
+        ELSE
+C--    p* coordinate slope term: alpha_prime * Grad_r( p )
+         factorP = 0.5 _d 0
+        ENDIF
+        IF ( generalForm ) THEN
+C-     general case, works for both P & Z coordinates:
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           varLoc(i,j) = etaH(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
+     &                 *( rC(k) - R_low(i,j,bi,bj) )
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+C-     Z-coordinate with flat top at z = 0:
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           varLoc(i,j) = etaH(i,j,bi,bj)
+     &                 *(1. _d 0 + rC(k)*recip_Rcol(i,j,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
         DO j=jMin,jMax
          DO i=iMin+1,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
-     &     +factorZ*(alphRho(i-1,j)+alphRho(i,j))
+     &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i-1,j))
      &             *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
@@ -175,13 +197,14 @@ C--    z* coordinate slope term: rho_prime/rho0 * Grad_r(g.z)
         DO j=jMin+1,jMax
          DO i=iMin,iMax
           dPhiHydY(i,j) = dPhiHydY(i,j)
-     &     +factorZ*(alphRho(i,j-1)+alphRho(i,j))
+     &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i,j-1))
      &             *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
        ELSEIF ( fluidIsWater ) THEN
 C--    p* coordinate slope term: alpha_prime * Grad_r( p )
+C-     requires top to be at p = 0:
         factorP = 0.5 _d 0
         DO j=jMin,jMax
          DO i=iMin+1,iMax
