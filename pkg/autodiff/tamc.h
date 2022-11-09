@@ -12,6 +12,8 @@ C     |   or the Transformations in Fortran tool (TAF).
 C     |
 C     | started: Christian Eckert eckert@mit.edu  04-Feb-1999
 C     | changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
+C     | cleanup: Martin Losch Martin.Losch@awi.de Nov-2022
+C     |          remove unused variables and adjust formatting
 C     *================================================================*
 CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
