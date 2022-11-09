@@ -621,9 +621,13 @@ C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + deltaTClock*(iloop-1)
 # ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_TAMC_CHECKPOINTING
       ikey_dynamics = ilev_1
+#  else
+      ikey_dynamics = iloop
+#  endif
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_ECCO
       IF ( useECCO ) then
