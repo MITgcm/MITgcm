@@ -17,7 +17,7 @@ C     o  adactive_write_xz        - Adjoint of active_write_xz
 C     o  adactive_write_yz        - Adjoint of active_write_yz
 C     o  adactive_write_1d        - Adjoint of active_write_1d
 C
-C     o  add_adprefix             - Helper S/R to add "ad" prefix 
+C     o  add_adprefix             - Helper S/R to add "ad" prefix
 C
 C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 C                 - Added routines that do active writes on tiles
@@ -30,7 +30,7 @@ C                 - added active file handling of xz-/yz-arrays
 C        changed: tsmith@oden.utexas.edu 22-Oct-2019
 C                 - added 1D vectors
 C        changed: ou.wang@jpl.nasa.gov 24-Aug-2022
-C                 - added helper S/R capable of handling 
+C                 - added helper S/R capable of handling
 C                   active_var_file containing directory names
 C     ==================================================================
 
@@ -806,13 +806,13 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: add_adprefix
+C     !ROUTINE: ADD_ADPREFIX
 C     !INTERFACE:
-      SUBROUTINE add_adprefix(actvarf, fname)
+      SUBROUTINE ADD_ADPREFIX( actvarf, fname )
 
 C     !DESCRIPTION: \bv
 C     ==================================================================
-C     SUBROUTINE add_adprefix
+C     SUBROUTINE ADD_ADPREFIX
 C     ==================================================================
 C     o Helper S/R to add "ad" prefix
 C     started: ou.wang@jpl.nasa.gov 24-Aug-2022
@@ -822,33 +822,34 @@ C     \ev
 C     !USES:
       IMPLICIT NONE
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     actvarf :: (input)  active-variable file-name
+C     fname   :: (output) file-name with added prefix
+      CHARACTER*(*) actvarf
+      CHARACTER*(*) fname
+
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(*) actvarf
-      CHARACTER*(*) fname
-      INTEGER il,ll,l
+      INTEGER il, ll, l
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( actvarf )
-      WRITE(fname(1:80),'(A)') ' '
+      il = ILNBLNK( actvarf )
       ll = 0
       IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
-         DO l = il, 1, -1
-          IF ( actvarf(l:l) .EQ. '/' ) THEN
-           ll = l
-           GO TO 11
-          ENDIF
-         ENDDO
- 11      CONTINUE
-      ELSE 
-         STOP 'ABNORMAL END: S/R ADD_ADPREFIX'
+        l = il
+        DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )
+          IF ( actvarf(l:l) .EQ. '/' ) ll = l
+          l = l -1
+        ENDDO
+      ELSE
+        STOP 'ABNORMAL END: S/R ADD_ADPREFIX'
       ENDIF
-      WRITE(fname(1:2+il),'(2A)') actvarf(1:ll)//adpref, 
-     &                 actvarf(ll+1:il)
+      WRITE(fname,'(2A)') actvarf(1:ll)//adpref, actvarf(ll+1:il)
+
       RETURN
       END
