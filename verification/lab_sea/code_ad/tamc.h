@@ -1,119 +1,91 @@
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
-c
-c     o Header for the use of the Tangent Linear and Adjoint Model
-c       Compiler (TAMC).
-c
-c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - New parameter nlevchk_0 for dimensionalising common
-c                blocks in the undef ALLOW_TAMC_CHECKPOINTING case
-c              - nhreads_chkpt was declared at the wrong place
-c
-c
-c     ================================================================
-c     HEADER TAMC
-c     ================================================================
+CBOP
+C     !ROUTINE: tamc.h
+C     !INTERFACE:
+C     #include "tamc.h"
 
-c     TAMC checkpointing parameters:
-c     ==============================
-c
-c     The checkpointing parameters have to be consistent with other model
-c     parameters and variables. This has to be checked before the model is
-c     run.
-c
-c     nyears_chkpt   - Number of calendar years affected by the assimilation
-c                      experiment; nyears_chkpt has to be at least equal to
-c                      the result of cal_IntYears(mythid).
-c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to
-c                      be at least equal to nmonthyear.
-c     ndays_chkpt    - Number of days per month; nday_chkpt has to be
-c                      at least equal to nmaxdaymonth.
-c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to
-c                      be at least equal to cal_nStepDay(mythid)
-c     ncheck_chkpt   - Number of innermost checkpoints.
-c
-c     ngeom_chkpt    - Geometry factor.
-c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
+C     !DESCRIPTION:
+C     *================================================================*
+C     | tamc.h
+C     | o Header file defining parameters and variables for the use of
+C     |   the Tangent Linear and Adjoint Model Compiler (TAMC)
+C     |   or the Transformations in Fortran tool (TAF).
+C     |
+C     | started: Christian Eckert eckert@mit.edu  04-Feb-1999
+C     | changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
+C     | cleanup: Martin Losch Martin.Losch@awi.de Nov-2022
+C     *================================================================*
+CEOP
+#ifdef ALLOW_AUTODIFF_TAMC
 
-      integer nyears_chkpt
-      integer nmonths_chkpt
-      integer ndays_chkpt
-      integer ngeom_chkpt
-      integer ncheck_chkpt
-      integer nthreads_chkpt
-
-      parameter (nyears_chkpt   =          1 )
-      parameter (nmonths_chkpt  =         12 )
-      parameter (ndays_chkpt    =         31 )
-      parameter (ngeom_chkpt    = nr*nsx*nsy )
-      parameter (ncheck_chkpt   =          6 )
-      parameter ( nthreads_chkpt = 1 )
+C     TAMC checkpointing parameters:
+C     ==============================
+C
+C     The checkpointing parameters have to be consistent with other model
+C     parameters and variables. This has to be checked before the model is
+C     run.
+C
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
-      integer    nchklev_1
-      parameter( nchklev_1      =   2 )
-      integer    nchklev_2
-      parameter( nchklev_2      =   2 )
-      integer    nchklev_3
-      parameter( nchklev_3      =   4 )
-cph      integer    nchklev_4
-cph      parameter( nchklev_4      =   4 )
+      INTEGER    nchklev_1
+      PARAMETER( nchklev_1      =   2 )
+      INTEGER    nchklev_2
+      PARAMETER( nchklev_2      =   2 )
+      INTEGER    nchklev_3
+      PARAMETER( nchklev_3      =   4 )
+cph   INTEGER    nchklev_4
+cph   PARAMETER( nchklev_4      =   4 )
 
-c--   Note always check for the correct sizes of the common blocks!
+C--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
-      integer    nchklev_0
-      parameter( nchklev_0      =   48 )
+C     Without ALLOW_TAMC_CHECKPOINTING, nchklev_1 needs to be at least
+C     equal to nTimeSteps. This (arbitrary) setting would accomodate a
+C     short run (e.g., 10.d with deltaT=10.mn)
+      INTEGER    nchklev_1
+      PARAMETER( nchklev_1      =  2*2*4 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
-c     TAMC keys:
-c     ==========
-c
-c     The keys are used for storing and reading data of the reference
-c     trajectory.
-c
-c     The convention used here is:
-c                                    ikey_<name>
-c
-c     which means that this key is used in routine <name> for reading
-c     and writing data.
+C     TAMC keys:
+C     ==========
+C
+C     The keys are used for storing and reading data of the reference
+C     trajectory.
+C
+C     The convention used here is:
+C                                    ikey_<name>
+C
+C     which means that this key is used in routine <name> for reading
+C     and writing data.
 
-      common /tamc_keys_i/
-     &                     ikey_dynamics,
-     &                     ikey_yearly,
-     &                     ikey_daily_1,
-     &                     ikey_daily_2,
-     &                     iloop_daily
-
-      integer ikey_dynamics
-      integer ikey_yearly
-      integer ikey_daily_1
-      integer ikey_daily_2
-      integer iloop_daily
+      COMMON /TAMC_KEYS_I/
+     &                     ikey_dynamics
+      INTEGER ikey_dynamics
 
       INTEGER    isbyte
 C     For smaller tapes replace 8 by 4.
-      PARAMETER( isbyte    = 8 )
+      PARAMETER( isbyte      = 8 )
 
-      INTEGER    maximpl
-      PARAMETER( maximpl   = 6 )
-#ifdef ALLOW_PTRACERS
-cph moved this to PTRACERS_SIZE.h
-cph      INTEGER    maxpass
-cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
-#else
+C     maxpass :: maximum number of (active + passive) tracers
+#ifndef ALLOW_PTRACERS
       INTEGER    maxpass
-      PARAMETER( maxpass   = 2 )
+      PARAMETER( maxpass     = 2 )
 #endif
+C     maxcube :: for Multi-Dim advection, max number of horizontal directions
       INTEGER    maxcube
-      PARAMETER( maxcube   = 2 )
+      PARAMETER( maxcube     = 2 )
 
-c     ================================================================
-c     END OF HEADER TAMC
-c     ================================================================
+#ifdef ALLOW_CG2D_NSA
+C     Parameter that is needed for the tape complev_cg2d_iter
+C     cannot be smaller than the allowed number of iterations in cg2d
+C     (numItersMax >= cg2dMaxIters in data-file)
+      INTEGER numItersMax
+      PARAMETER ( numItersMax = 100 )
+#endif
+
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     ================================================================
+C     END OF HEADER TAMC
+C     ================================================================
