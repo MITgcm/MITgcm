@@ -74,8 +74,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
-#if (defined (ALLOW_COST) && defined (ALLOW_COST))
-#ifdef ALLOW_SEAICE_COST_SMR_AREA
+#if (defined ALLOW_COST && defined ALLOW_SEAICE_COST_SMR_AREA)
 
 c     == local variables ==
 
@@ -364,8 +363,7 @@ c--   End of second loop over records.
 c--   End of mult_local or localobsfile
       endif
 
-#endif /* ALLOW_SEAICE_COST_SMR_AREA */
-#endif /* ifdef ALLOW_COST */
+#endif /* ifdef ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
 
       RETURN
       END

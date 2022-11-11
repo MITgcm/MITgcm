@@ -64,7 +64,7 @@ c     objf_ice    - sea-ice volume
 
 c     cost_ice_flag  - cost_ice flag (see cost_ice.F)
 
-      common /ecco_cost_ice_i/
+      common /seaice_cost_i/
      &                           cost_ice_flag
       integer cost_ice_flag
 
