@@ -29,7 +29,7 @@ c     == routine arguments ==
       integer myThid
 
 #ifdef ALLOW_COST
-#if (defined(ALLOW_SEAICE_COST_SMR_AREA) || defined(ALLOW_COST_ICE))
+#if (defined ALLOW_SEAICE_COST_SMR_AREA || defined ALLOW_COST_ICE)
 
 c     == local variables ==
       integer bi,bj

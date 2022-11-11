@@ -79,7 +79,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localobsfile
 
 #ifdef ALLOW_COST
-#if (defined(ALLOW_SEAICE_COST_SMR_AREA) || defined(ALLOW_COST_ICE))
+#if (defined ALLOW_SEAICE_COST_SMR_AREA || defined ALLOW_COST_ICE)
 
 c     == local variables ==
 
