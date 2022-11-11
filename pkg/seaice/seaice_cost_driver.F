@@ -1,6 +1,6 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -26,7 +26,7 @@ c     ==================================================================
 
 c     == global variables ==
 #include "EEPARAMS.h"
-#if (defined (ALLOW_ECCO) && \
+#if (defined (ALLOW_COST) && \
      defined (ALLOW_SEAICE_COST_SMR_AREA))
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -40,11 +40,8 @@ c     == global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ecco_cost.h"
-#endif
 #include "SEAICE_COST.h"
-#endif /* ALLOW_ECCO and ALLOW_SEAICE_COST_SMR_AREA */
+#endif /* ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
 
 c     == routine arguments ==
 
@@ -52,7 +49,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
-#if (defined (ALLOW_ECCO) && \
+#if (defined (ALLOW_COST) && \
      defined (ALLOW_SEAICE_COST_SMR_AREA))
 
 c     == local variables ==
@@ -66,6 +63,11 @@ c     == local variables ==
       _RL spzeroloc
       _RL localperiod
 
+c     == external functions ==
+
+      integer  cal_IntDays
+      external cal_IntDays
+
 c     == end of interface ==
 
       if (useSEAICE) then
@@ -76,7 +78,8 @@ c     == end of interface ==
       nnzbar = 1
       nnzobs = 1
 
-      nrecloc = ndaysrec
+c     copied from ecco_cost_init_fixed.F
+      nrecloc = cal_IntDays( myThid )
       spminloc = 0.0
       spmaxloc = 1.0
       spzeroloc = -1.
@@ -118,38 +121,8 @@ c read the area dat file and compare against the averaged salinity file
       print *,' SICD num points smrarea/sst/sss ',num_smrarea,
      &          num_smrsst,num_smrsss
 
-# ifndef ALLOW_SEAICE_COST_AREASST
-c--      write(msgbuf,'(a)') 'ph-cost call cost_smrarea'
-c--      call print_message( msgbuf, standardmessageunit,
-c--     &     SQUEEZE_RIGHT , mythid)
-c--      nnzbar = 1
-c--      nnzobs = 1
-c--cph(
-c--      nrecloc = ndaysrec
-c--cph hard-coding for ECCO
-c--cph      nrecloc = 4383
-c--cph)
-c--      spminloc = 0.
-c--      spmaxloc = 1.
-c--      spzeroloc = -9999.
-c--      localperiod = 86400.
-c--      call cost_generic(
-c--     &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
-c--     &     nnzobs, smrareadatfile, mult_smrarea,
-c--     &     nrecloc, nrecloc, modelstartdate, localperiod,
-c--     &     'C', wsmrarea, spminloc, spmaxloc, spzeroloc,
-c--     &     no_preproc, no_posproc, no_scalefile,
-c--     &     0, smrareadatfile, objf_smrarea, num_smrarea,
-c--     &     myiter, mytime, mythid )
-
-c--      write(msgbuf,'(a,1P2E18.10)')
-c--     &     'ph-cost smrarea ', objf_smrarea(1,1), num_smrarea(1,1)
-c--      call print_message( msgbuf, standardmessageunit,
-c--     &     SQUEEZE_RIGHT , mythid)
-# endif /* ALLOW_SEAICE_COST_AREASST */
-
       endif
 
-#endif /* ALLOW_ECCO and ALLOW_SEAICE_COST_SMR_AREA */
+#endif /* ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
 
       end

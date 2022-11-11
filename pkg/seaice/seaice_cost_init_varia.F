@@ -61,6 +61,7 @@ c
                uHeffExportCell(i,j,bi,bj) = 0. _d 0
                vHeffExportCell(i,j,bi,bj) = 0. _d 0
 #endif
+               cosphi         (i,j,bi,bj) = 1. _d 0
             enddo
           enddo
         enddo

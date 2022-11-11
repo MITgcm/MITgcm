@@ -101,7 +101,6 @@ c--   Initialize the tiled cost function contributions.
           do j = jmin,jmax
             do i = imin,imax
               frame(i,j)        = 1. _d 0
-              cosphi(i,j,bi,bj) = 1. _d 0
             enddo
           enddo
 

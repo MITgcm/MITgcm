@@ -1,6 +1,6 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_ECCO
-#include "ECCO_OPTIONS.h"
+#ifdef ALLOW_COST
+#include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 #include "CTRL_OPTIONS.h"
@@ -26,16 +26,15 @@ c     == global variables ==
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
 #endif
-#ifdef ALLOW_ECCO
-# include "ECCO_SIZE.h"
-# include "ECCO.h"
+#ifdef ALLOW_COST
+# include "cost.h"
 #endif
 #include "SEAICE_COST.h"
 
 c     == routine arguments ==
       integer  myThid
 
-#ifdef ALLOW_ECCO
+#ifdef ALLOW_COST
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 c     == local variables ==
       integer bi,bj
@@ -45,6 +44,8 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec,nnz
+      integer cost_iprec
+      _RL frame(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 c     == end of interface ==
 
@@ -56,6 +57,7 @@ c     == end of interface ==
       jmax = sNy+OLy
       imin = 1-OLx
       imax = sNx+OLx
+      cost_iprec = precFloat32
 
 c--   Define frame.
       do j = jmin,jmax
@@ -122,7 +124,7 @@ c--
       enddo
 #endif /* ALLOW_SEAICE_COST_SMR_AREA */
 
-#endif /* ALLOW_ECCO */
+#endif /* ALLOW_COST */
 
       RETURN
       END

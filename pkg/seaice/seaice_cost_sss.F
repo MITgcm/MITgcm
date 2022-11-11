@@ -1,6 +1,6 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -36,9 +36,8 @@ c     == global variables ==
 # ifdef ALLOW_CTRL
 #  include "optim.h"
 # endif
-# ifdef ALLOW_ECCO
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
+# ifdef ALLOW_COST
+#  include "cost.h"
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_COST.h"
@@ -55,6 +54,7 @@ c     == routine arguments ==
       integer myIter
       integer myThid
       integer localstartdate(4)
+      integer cost_iprec
 
       _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
       _RL areabar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
@@ -77,7 +77,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
-#if (defined (ALLOW_ECCO) && defined (ALLOW_COST))
+#if (defined (ALLOW_COST) && defined (ALLOW_COST))
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 
 c     == local variables ==
@@ -133,6 +133,7 @@ c     == end of interface ==
       jmax = sNy
       imin = 1
       imax = sNx
+      cost_iprec = precFloat32
 
 c--   Initialise local variables.
 

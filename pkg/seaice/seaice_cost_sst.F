@@ -1,6 +1,6 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_ECCO
-# include "ECCO_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -34,9 +34,8 @@ c     == global variables ==
 # ifdef ALLOW_CTRL
 #  include "optim.h"
 # endif
-# ifdef ALLOW_ECCO
-#  include "ECCO_SIZE.h"
-#  include "ECCO.h"
+# ifdef ALLOW_COST
+#  include "cost.h"
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_COST.h"
@@ -75,7 +74,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
-#if (defined (ALLOW_ECCO) && defined (ALLOW_COST))
+#if (defined (ALLOW_COST) && defined (ALLOW_COST))
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 
 c     == local variables ==
@@ -90,6 +89,7 @@ c     == local variables ==
       integer  il
       integer localrec
       integer obsrec
+      integer cost_iprec
 
       logical doglobalread
       logical ladinit
@@ -136,6 +136,7 @@ C       who knows what this cost-cointribution means fix it.
       jmax = sNy
       imin = 1
       imax = sNx
+      cost_iprec = precFloat32
 
 c--   Initialise local variables.
 
