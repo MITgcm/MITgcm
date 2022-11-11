@@ -26,7 +26,7 @@ seaice_cost_sensi.f
 seaice_cost_sss.f
 seaice_cost_sst.f
 seaice_ctrl_map_ini.f
-cost_ice_test.f
+seaice_cost_test.f
 seaice_calc_strainrates.f
 seaice_calc_viscosities.f
 seaice_dynsolver.f
