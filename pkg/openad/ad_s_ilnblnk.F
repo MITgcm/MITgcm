@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: ILNBLNK
 
 C     !INTERFACE:
-      subroutine oad_s_ILNBLNK( string, index )
+      SUBROUTINE oad_s_ILNBLNK( string, index )
       IMPLICIT NONE
 
 C     !DESCRIPTION:
@@ -16,18 +16,21 @@ C     *==========================================================*
 C     !INPUT PARAMETERS:
 C     string :: string to scan
       CHARACTER*(*) string
-      integer index
+      INTEGER index
 
 C     !LOCAL VARIABLES:
-C     L, LS :: Temps. used in scanning string
-      INTEGER L, LS
+C     L  :: Temp. used in scanning string
+      INTEGER L
 CEOP
-C
-      LS      = LEN(string)
+
       index = 0
-      L=LS
-      DO while ((L.gt.0).and.(string(L:L) .eq. ' '))
-        L=L-1
-      end do
-      index = L
+      L = LEN(string)
+      DO WHILE ( L .GT. 0 )
+        IF ( string(L:L) .NE. ' ' ) THEN
+          index = L
+          L = 0
+        ELSE
+          L = L - 1
+        ENDIF
+      ENDDO
       END
