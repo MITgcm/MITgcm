@@ -116,8 +116,6 @@ C     == Local variables ==
       _RL slopeSqTmp, slopeTmp, slopeMax
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER ikey
 #endif
 
@@ -131,16 +129,7 @@ C     While this does not make the adjoint code wrong, the resulting
 C     code inhibits vectorization in some cases so we tell TAF here
 C     that depthZ is actually a passive grid variable that needs no adjoint
 CADJ PASSIVE depthz
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ikey = (act1 + 1) + act2*max1
-     &                  + act3*max1*max2
-     &                  + act4*max1*max2*max3
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.

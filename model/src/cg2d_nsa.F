@@ -278,7 +278,7 @@ CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE eta_qrNM1 = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
-CADJ STORE recip_eta_qrNM1 = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE recip_eta_qrNM1 = comlev1_cg2d_iter,key=icg2dkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 CML       cgBeta   = eta_qrN/eta_qrNM1
        cgBeta   = eta_qrN*recip_eta_qrNM1
