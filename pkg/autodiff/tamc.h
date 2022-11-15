@@ -59,7 +59,7 @@ C     nTimeSteps.
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
 C     Without ALLOW_TAMC_CHECKPOINTING, nchklev_1 needs to be at least
-C     equal to nTimeSteps. This (arbitrary) setting would accomodate a
+C     equal to nTimeSteps. This (arbitrary) setting would accommodate a
 C     short run (e.g., 10.d with deltaT=10.mn)
       INTEGER    nchklev_1
       PARAMETER( nchklev_1 = 1500 )
