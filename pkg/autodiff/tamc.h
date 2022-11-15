@@ -24,7 +24,7 @@ CEOP
   You need to place you own copy of tamc.h in the include path for the
   model (e.g., where your SIZE.h is), and comment out these lines.
   In particular the parameters nchklev_1/2/3 (and possibly also maxpass
-  and maxcube in case you are using passive tracers seaice or cubed sphere
+  and maxcube in case you are using seaice passive tracers or cubed sphere
   grid) need to be set correctly.
 
 C     TAMC checkpointing parameters:
@@ -37,16 +37,24 @@ C
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
+C     nchklev_1 :: length of inner loop (=size of storage in memory)
+C     nchklev_2 :: length of second loop (stored on disk)
+C     nchklev_3 :: length of outer loop of 3-level checkpointing
       INTEGER    nchklev_1
-      PARAMETER( nchklev_1      =    5 )
+      PARAMETER( nchklev_1 =   5 )
       INTEGER    nchklev_2
-      PARAMETER( nchklev_2      =    2 )
-C     PARAMETER( nchklev_2      =  150 )
+      PARAMETER( nchklev_2 =   2 )
       INTEGER    nchklev_3
-      PARAMETER( nchklev_3      =    3 )
-C     PARAMETER( nchklev_3      =  150 )
+      PARAMETER( nchklev_3 =   3 )
+#ifdef AUTODIFF_4_LEVEL_CHECKPOINT
+C     nchklev_4 :: length of outer loop of 4-level checkpointing
+      INTEGER    nchklev_4
+      PARAMETER( nchklev_4 =   1 )
+#endif
 
 C--   Note always check for the correct sizes of the common blocks!
+C     The product of the nchklev_X needs to be at least equal to
+C     nTimeSteps.
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
@@ -54,7 +62,7 @@ C     Without ALLOW_TAMC_CHECKPOINTING, nchklev_1 needs to be at least
 C     equal to nTimeSteps. This (arbitrary) setting would accomodate a
 C     short run (e.g., 10.d with deltaT=10.mn)
       INTEGER    nchklev_1
-      PARAMETER( nchklev_1      =  1500 )
+      PARAMETER( nchklev_1 = 1500 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -62,30 +70,26 @@ C     TAMC keys:
 C     ==========
 C
 C     The keys are used for storing and reading data of the reference
-C     trajectory.
-C
-C     The convention used here is:
-C                                    ikey_<name>
-C
-C     which means that this key is used in routine <name> for reading
-C     and writing data.
+C     trajectory. Currently there is only one global key.
+C     ikey_dynamics :: key for main time stepping loop
 
-      COMMON /TAMC_KEYS_I/
-     &                     ikey_dynamics
+      COMMON /TAMC_KEYS_I/ ikey_dynamics
       INTEGER ikey_dynamics
 
+C     isbyte :: precision of tapes (both memory and disk).
+C               For smaller tapes replace 8 by 4.
       INTEGER    isbyte
-C     For smaller tapes replace 8 by 4.
-      PARAMETER( isbyte      = 8 )
+      PARAMETER( isbyte    = 8 )
 
 C     maxpass :: maximum number of (active + passive) tracers
+C                Note: defined in PTRACERS_SIZE.h if compiling pkg/ptracers
 #ifndef ALLOW_PTRACERS
       INTEGER    maxpass
-      PARAMETER( maxpass     = 2 )
+      PARAMETER( maxpass   = 2 )
 #endif
 C     maxcube :: for Multi-Dim advection, max number of horizontal directions
       INTEGER    maxcube
-      PARAMETER( maxcube     = 2 )
+      PARAMETER( maxcube   = 2 )
 
 #ifdef ALLOW_CG2D_NSA
 C     Parameter that is needed for the tape complev_cg2d_iter
