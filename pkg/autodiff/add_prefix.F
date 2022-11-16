@@ -44,7 +44,7 @@ CEOP
       ELSE
         STOP 'ABNORMAL END: S/R ADD_PREFIX'
       ENDIF
-      WRITE(fname,'(2A)') actvarf(1:ll)//prefix, actvarf(ll+1:il)
+      WRITE(fname,'(3A)') actvarf(1:ll), prefix, actvarf(ll+1:il)
 
       RETURN
       END
