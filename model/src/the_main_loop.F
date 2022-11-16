@@ -240,16 +240,13 @@ C     == Local variables ==
 #endif /* STORE_LOADEDREC_TEST */
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilev_1
-      INTEGER ilev_2
+      INTEGER ilev_2, max_lev2
 # ifndef AUTODIFF_2_LEVEL_CHECKPOINT
-      INTEGER ilev_3
+      INTEGER ilev_3, max_lev3
 #  endif
 # ifdef AUTODIFF_4_LEVEL_CHECKPOINT
-      INTEGER ilev_4
+      INTEGER ilev_4, max_lev4
 # endif
-      INTEGER max_lev2
-      INTEGER max_lev3
-      INTEGER max_lev4
 #endif
 CEOP
 
@@ -400,8 +397,12 @@ c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  ifdef ALLOW_TAMC_CHECKPOINTING
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+#   ifdef AUTODIFF_4_LEVEL_CHECKPOINT
       max_lev4=nTimeSteps/(nchklev_1*nchklev_2*nchklev_3)+1
+#   endif
+#   ifndef AUTODIFF_2_LEVEL_CHECKPOINT
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
+#   endif
       max_lev2=nTimeSteps/nchklev_1+1
 
 c**************************************
