@@ -295,7 +295,7 @@ c--   >>> Loop 1 to compute mean forcing:
       irec = 1
 
 #ifdef ALLOW_AUTODIFF
-      call active_read_xyz( 
+      call active_read_xyz(
      &      fnamefld, tmpfld3d, irec, doglobalread,
      &      ladinit, optimcycle, myThid, xx_gen_dummy )
 #else

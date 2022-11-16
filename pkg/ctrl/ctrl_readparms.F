@@ -449,7 +449,7 @@ C--     Next, read the cost data file.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-C-- Create ctrlDir if necessary 
+C-- Create ctrlDir if necessary
       IF ( ctrlDir .NE. ' ' ) THEN
        IL = ILNBLNK( ctrlDir )
 C      append "/", if necessary

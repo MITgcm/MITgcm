@@ -101,16 +101,16 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       character*(80) fname_obcse(3)
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
-      integer        filenWetobcsnGlo(nr,nobcs)
+      integer        filenWetobcsnGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      integer        filenWetobcssGlo(nr,nobcs)
+      integer        filenWetobcssGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      integer        filenWetobcswGlo(nr,nobcs)
+      integer        filenWetobcswGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      integer        filenWetobcseGlo(nr,nobcs)
+      integer        filenWetobcseGlo(Nr,nobcs)
 #endif
       integer iobcs
 cgg)
@@ -127,13 +127,13 @@ c--   Find ctrlDir (w/o trailing blanks) length
 c--   Assign file names.
 
 #ifdef ALLOW_OBCS
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file,
      & fname_obcsn, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file,
      & fname_obcss, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file,
      & fname_obcsw, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file,
      & fname_obcse, mythid)
 #endif
 
@@ -184,14 +184,14 @@ c--       Header information.
           read(cunit) fileJg
           read(cunit) filensx
           read(cunit) filensy
-          read(cunit) (filenWetcGlobal(k),   k=1,nr)
-          read(cunit) (filenWetsGlobal(k),   k=1,nr)
-          read(cunit) (filenWetwGlobal(k),   k=1,nr)
+          read(cunit) (filenWetcGlobal(k),   k=1,Nr)
+          read(cunit) (filenWetsGlobal(k),   k=1,Nr)
+          read(cunit) (filenWetwGlobal(k),   k=1,Nr)
 #ifdef ALLOW_CTRL_WETV
-          read(cunit) (filenWetvGlobal(k),   k=1,nr)
+          read(cunit) (filenWetvGlobal(k),   k=1,Nr)
 #endif
 #ifdef ALLOW_SHELFICE
-          read(cunit) (filenWetiGlobal(k),   k=1,nr)
+          read(cunit) (filenWetiGlobal(k),   k=1,Nr)
 c         read(cunit) filenWetiGlobal(1)
 #endif
 
@@ -199,19 +199,19 @@ c         read(cunit) filenWetiGlobal(1)
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
           read(cunit) ((filenWetobcsnGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
           read(cunit) ((filenWetobcssGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
           read(cunit) ((filenWetobcswGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
           read(cunit) ((filenWetobcseGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 cgg)
 #endif /* ALLOW_OBCS */
@@ -235,7 +235,7 @@ c
      &            filensx, nSx, filensy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
-          do k = 1, nr
+          do k = 1, Nr
              if ( filenWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
      &            filenWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
      &            filenWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
@@ -257,7 +257,7 @@ c
 cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
@@ -268,7 +268,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
@@ -279,7 +279,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
@@ -290,7 +290,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k

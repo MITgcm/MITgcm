@@ -122,13 +122,13 @@ c--   Find ctrlDir (w/o trailing blanks) length
 c--   Assign file names.
 
 #ifdef ALLOW_OBCS
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file,
      & fname_obcsn, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file,
      & fname_obcss, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file,
      & fname_obcsw, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file, 
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file,
      & fname_obcse, mythid)
 #endif
 
@@ -180,31 +180,31 @@ C     place holder of obsolete variable iG
           write(cunit) 1
 C     place holder of obsolete variable jG
           write(cunit) 1
-          write(cunit) nsx
-          write(cunit) nsy
-          write(cunit) (nWetcGlobal(k), k=1,nr)
-          write(cunit) (nWetsGlobal(k), k=1,nr)
-          write(cunit) (nWetwGlobal(k), k=1,nr)
+          write(cunit) nSx
+          write(cunit) nSy
+          write(cunit) (nWetcGlobal(k), k=1,Nr)
+          write(cunit) (nWetsGlobal(k), k=1,Nr)
+          write(cunit) (nWetwGlobal(k), k=1,Nr)
 #ifdef ALLOW_CTRL_WETV
-          write(cunit) (nWetvGlobal(k), k=1,nr)
+          write(cunit) (nWetvGlobal(k), k=1,Nr)
 #endif
 #ifdef ALLOW_SHELFICE
-          write(cunit) (nWetiGlobal(k), k=1,nr)
+          write(cunit) (nWetiGlobal(k), k=1,Nr)
 c          write(cunit) nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCSN_CONTROL
-          write(cunit) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+          write(cunit) ((nWetobcsnGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-          write(cunit) ((nWetobcssGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+          write(cunit) ((nWetobcssGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-          write(cunit) ((nWetobcswGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+          write(cunit) ((nWetobcswGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-          write(cunit) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+          write(cunit) ((nWetobcseGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #endif
 

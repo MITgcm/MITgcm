@@ -67,13 +67,13 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       character*(80) fname
 
 c--   == end of interface ==
