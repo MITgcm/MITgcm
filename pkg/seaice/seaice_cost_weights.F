@@ -34,8 +34,7 @@ c     == global variables ==
 c     == routine arguments ==
       integer  myThid
 
-#ifdef ALLOW_COST
-#ifdef ALLOW_SEAICE_COST_SMR_AREA
+#if (defined ALLOW_COST && defined ALLOW_SEAICE_COST_SMR_AREA)
 c     == local variables ==
       integer bi,bj
       integer i,j,k
@@ -122,9 +121,7 @@ c--
           enddo
         enddo
       enddo
-#endif /* ALLOW_SEAICE_COST_SMR_AREA */
-
-#endif /* ALLOW_COST */
+#endif /* ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
 
       RETURN
       END

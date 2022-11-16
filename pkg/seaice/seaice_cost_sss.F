@@ -5,9 +5,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_COST
-# include "COST_OPTIONS.h"
-#endif
 
 c read the area dat file and compare against the averaged salinity file
 

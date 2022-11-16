@@ -2,9 +2,6 @@
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
-#ifdef ALLOW_COST
-# include "COST_OPTIONS.h"
-#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif

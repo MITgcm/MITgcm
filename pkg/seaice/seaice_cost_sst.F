@@ -5,9 +5,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_COST
-# include "COST_OPTIONS.h"
-#endif
 
       subroutine seaice_cost_sst(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
