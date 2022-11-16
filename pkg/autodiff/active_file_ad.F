@@ -17,8 +17,6 @@ C     o  adactive_write_xz        - Adjoint of active_write_xz
 C     o  adactive_write_yz        - Adjoint of active_write_yz
 C     o  adactive_write_1d        - Adjoint of active_write_1d
 C
-C     o  add_adprefix             - Helper S/R to add "ad" prefix
-C
 C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 C                 - Added routines that do active writes on tiles
 C                   instead of a whole thread.
@@ -97,12 +95,14 @@ C                       variable and write to active file
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       useCurrentDir = .FALSE.
 
@@ -177,12 +177,14 @@ C                       variable and write to active file
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -257,12 +259,14 @@ C                       variable and write to active file
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -337,12 +341,14 @@ C                       variable and write to active file
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -491,13 +497,15 @@ C     myThid         :: thread number for this instance
       _RL     dummy
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -563,13 +571,15 @@ C     myThid         :: thread number for this instance
       _RL dummy
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -635,13 +645,15 @@ C     myThid         :: thread number for this instance
       _RL dummy
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -707,13 +719,15 @@ C     myThid         :: thread number for this instance
       _RL dummy
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(2) adpref
       CHARACTER*(80) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
-      CALL ADD_ADPREFIX(active_var_file, fname)
+      adpref = 'ad'
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -800,56 +814,6 @@ CEOP
       CALL ACTIVE_WRITE_1D_RL(
      &                 fname, adactive_var, active_var_length,
      &                 iRec, REVERSE_SIMULATION, myIter, myThid )
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
-C     !ROUTINE: ADD_ADPREFIX
-C     !INTERFACE:
-      SUBROUTINE ADD_ADPREFIX( actvarf, fname )
-
-C     !DESCRIPTION: \bv
-C     ==================================================================
-C     SUBROUTINE ADD_ADPREFIX
-C     ==================================================================
-C     o Helper S/R to add "ad" prefix
-C     started: ou.wang@jpl.nasa.gov 24-Aug-2022
-C     ==================================================================
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     actvarf :: (input)  active-variable file-name
-C     fname   :: (output) file-name with added prefix
-      CHARACTER*(*) actvarf
-      CHARACTER*(*) fname
-
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !LOCAL VARIABLES:
-      CHARACTER*(2) adpref
-      INTEGER il, ll, l
-CEOP
-
-      adpref = 'ad'
-      il = ILNBLNK( actvarf )
-      ll = 0
-      IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
-        l = il
-        DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )
-          IF ( actvarf(l:l) .EQ. '/' ) ll = l
-          l = l -1
-        ENDDO
-      ELSE
-        STOP 'ABNORMAL END: S/R ADD_ADPREFIX'
-      ENDIF
-      WRITE(fname,'(2A)') actvarf(1:ll)//adpref, actvarf(ll+1:il)
 
       RETURN
       END
