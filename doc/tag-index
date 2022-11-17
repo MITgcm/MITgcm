@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - add run-time variable ctrlDir to specify a directory different from default
+    current directory for I/O of controls adjustment and adjoint gradient (xx
+    and adxx), and other active files; used (as example) in lab_sea experiment.
+o pkg/smooth:
+  - add run-time variable smoothDir to specify a directory different from
+    default current directory for I/O of smoothing operators.
+
 checkpoint68l (2022/10/26)
 o pkg/longstep:
   - fix initialization of LS_fwFlux ;
