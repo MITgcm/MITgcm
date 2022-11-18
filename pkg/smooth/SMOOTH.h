@@ -40,9 +40,10 @@ C parameters:
      & smooth2D_Lx0(smoothOpNbMax), smooth2D_Ly0(smoothOpNbMax)
 
       COMMON /smooth_flds_c/
-     & smooth3DmaskName, smooth2DmaskName
+     & smooth3DmaskName, smooth2DmaskName, smoothDir
       CHARACTER*(5) smooth3DmaskName(smoothOpNbMax)
       CHARACTER*(5) smooth2DmaskName(smoothOpNbMax)
+      CHARACTER*(MAX_LEN_FNAM) smoothDir
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C fields:
