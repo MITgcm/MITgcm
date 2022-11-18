@@ -17,13 +17,34 @@ CBOP
      I                               maxIter,
      I                               myThid )
 
-C     /============================================================\
+C     *============================================================*
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
-C     |                                                            |
-C     \============================================================/
+C     *============================================================*
+
+#ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_3_8
+C assumes paths
+C {petsc_dir}/include/petsc/finclude/
+C {petsc_dir}/include
+C in the include statement
+#include "petsc/finclude/petsc.h"
+#include "petsc/finclude/petscvec.h"
+      use petscvec
+#include "petsc/finclude/petscmat.h"
+      use petscmat
+#include "petsc/finclude/petscksp.h"
+      use petscksp
+#include "petsc/finclude/petscpc.h"
+      use petscpc
+      use STREAMICE_PETSC_mod
       IMPLICIT NONE
+# else
+      IMPLICIT NONE
+#include "finclude/petsc.h"
+#include "STREAMICE_PETSC.h"
+#endif
+#endif
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -31,15 +52,6 @@ C     \============================================================/
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-#ifdef ALLOW_PETSC
-#include "finclude/petsc.h"
-#include "STREAMICE_PETSC.h"
-c UNCOMMENT IF V3.0
-c#include "finclude/petscvec.h"
-c#include "finclude/petscmat.h"
-c#include "finclude/petscksp.h"
-c#include "finclude/petscpc.h"
-#endif
 C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
@@ -81,11 +93,18 @@ c      _RL mat_values (2*Nx*Ny,2*(sNx*nSx*sNy*nSy))
       INTEGER indices_col(18)
       INTEGER local_dofs, global_dofs, dof_index, dof_index_col
       INTEGER local_offset
+#ifdef STREAMICE_PETSC_3_8
+      INTEGER local_null
+#endif
 c      Mat matrix
 c      KSP ksp
 c      PC  pc
       PC  subpc
+#ifdef STREAMICE_PETSC_3_8
+      KSP subksp
+#else
       KSP subksp(1)
+#endif
       Vec rhs
       Vec solution
       PetscErrorCode ierr
@@ -243,7 +262,11 @@ c     &              A_uv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
             ENDDO
            ENDDO
 
-           call matSetValues (matrix, 1, dof_index, k, indices_col,
+#ifdef STREAMICE_PETSC_3_8
+           call MatSetValues1n (matrix, 1, dof_index, k, indices_col,
+#else
+           call MatSetValues (matrix, 1, dof_index, k, indices_col,
+#endif
      &                        mat_values,INSERT_VALUES,ierr)
 
           ENDIF
@@ -287,7 +310,11 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
             ENDDO
            ENDDO
 
-           call matSetValues (matrix, 1, dof_index, k, indices_col,
+#ifdef STREAMICE_PETSC_3_8
+           call MatSetValues1n (matrix, 1, dof_index, k, indices_col,
+#else
+           call MatSetValues (matrix, 1, dof_index, k, indices_col,
+#endif
      &                        mat_values,INSERT_VALUES,ierr)
           ENDIF
 
@@ -300,8 +327,13 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
       call MatAssemblyEnd(matrix,MAT_FINAL_ASSEMBLY,ierr)
 
       call KSPCreate(PETSC_COMM_WORLD, ksp, ierr)
+#ifdef STREAMICE_PETSC_3_8
       call KSPSetOperators(ksp, matrix, matrix,
-     &                     DIFFERENT_NONZERO_PATTERN, ierr)
+     &                      ierr)
+#else
+      call KSPSetOperators(ksp, matrix, matrix,
+     &                     DIFFERENT_NONZERO_PATTERN,ierr)
+#endif
 
       IF (PETSC_PRECOND_TYPE.eq.'MUMPS') then
        call KSPSetType(ksp,KSPPREONLY,ierr)
@@ -333,8 +365,13 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
        PRINT *, "PETSC PRECOND: SELECTED BJACOBI"
        call PCSetType(pc, PCBJACOBI, ierr)
        call kspsetup (ksp, ierr)
-       call PCBJacobiGetSubKSP (pc,PETSC_NULL_INTEGER,
-     &                             PETSC_NULL_INTEGER,
+#ifdef STREAMICE_PETSC_3_8
+       local_null =0 !PETSC_NULL_INTEGER
+       call PCBJacobiGetSubKSP1 (pc,local_null,local_null,
+#else
+       call PCBJacobiGetSubKSP1 (pc,PETSC_NULL_INTEGER,
+     &                           PETSC_NULL_INTEGER,
+#endif
      &                             subksp,ierr);
        call KSPGetPC (subksp, subpc, ierr)
        call PCSetType (subpc, PCICC, ierr)
@@ -353,19 +390,17 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
        call PCGAMGSetCoarseEqLim(pc,10000,ierr)
        call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
        call PCGAMGSetNSmooths(pc, 0,ierr)
-       call PCGAMGSetThreshold(pc, .001,ierr)
-c       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
+C       call PCGAMGSetThreshold(pc, .001,ierr)
+C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        call kspsetup (ksp, ierr)
 
        CASE ('MUMPS')
        PRINT *, "PETSC PRECOND: SELECTED MUMPS"
        call PCSetType(pc,PCLU,ierr)
-       call PCFactorSetMatSolverPackage(pc,MATSOLVERMUMPS,ierr)
-       call PCFactorSetUpMatSolverPackage(pc,ierr)
+       call PCFactorSetMatSolverType(pc,MATSOLVERMUMPS,ierr)
+       call PCFactorSetUpMatSolverType(pc,ierr)
        call PCFactorGetMatrix(pc,mumpsFac,ierr)
-       call MatMumpsSetIcntl(mumpsfac,7,2,ierr)
        call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
-c       call MatMumpsSetCntl(mumpsfac,3,2.e-6,ierr)
        call kspsetup (ksp, ierr)
 
        CASE DEFAULT

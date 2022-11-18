@@ -64,6 +64,11 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
 c     == local variables ==
 
       integer i, k
@@ -72,6 +77,7 @@ c     == local variables ==
       integer cunit
       logical lxxadxx
       character*(128) cfile
+      integer ilDir
 
 #if (defined ALLOW_GENARR2D_CONTROL) \
       || (defined ALLOW_GENARR3D_CONTROL) \
@@ -95,16 +101,16 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       character*(80) fname_obcse(3)
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
-      integer        filenWetobcsnGlo(nr,nobcs)
+      integer        filenWetobcsnGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      integer        filenWetobcssGlo(nr,nobcs)
+      integer        filenWetobcssGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      integer        filenWetobcswGlo(nr,nobcs)
+      integer        filenWetobcswGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      integer        filenWetobcseGlo(nr,nobcs)
+      integer        filenWetobcseGlo(Nr,nobcs)
 #endif
       integer iobcs
 cgg)
@@ -115,13 +121,20 @@ c     == end of interface ==
 c--   Initialise
       nbuffGlobal = 0
 
+c--   Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+
 c--   Assign file names.
 
 #ifdef ALLOW_OBCS
-      call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
-      call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
-      call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
-      call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file,
+     & fname_obcsn, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file,
+     & fname_obcss, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file,
+     & fname_obcsw, mythid)
+      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file,
+     & fname_obcse, mythid)
 #endif
 
 c--     Only the master thread will do I/O.
@@ -171,14 +184,14 @@ c--       Header information.
           read(cunit) fileJg
           read(cunit) filensx
           read(cunit) filensy
-          read(cunit) (filenWetcGlobal(k),   k=1,nr)
-          read(cunit) (filenWetsGlobal(k),   k=1,nr)
-          read(cunit) (filenWetwGlobal(k),   k=1,nr)
+          read(cunit) (filenWetcGlobal(k),   k=1,Nr)
+          read(cunit) (filenWetsGlobal(k),   k=1,Nr)
+          read(cunit) (filenWetwGlobal(k),   k=1,Nr)
 #ifdef ALLOW_CTRL_WETV
-          read(cunit) (filenWetvGlobal(k),   k=1,nr)
+          read(cunit) (filenWetvGlobal(k),   k=1,Nr)
 #endif
 #ifdef ALLOW_SHELFICE
-          read(cunit) (filenWetiGlobal(k),   k=1,nr)
+          read(cunit) (filenWetiGlobal(k),   k=1,Nr)
 c         read(cunit) filenWetiGlobal(1)
 #endif
 
@@ -186,19 +199,19 @@ c         read(cunit) filenWetiGlobal(1)
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
           read(cunit) ((filenWetobcsnGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
           read(cunit) ((filenWetobcssGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
           read(cunit) ((filenWetobcswGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
           read(cunit) ((filenWetobcseGlo(k,iobcs),
-     &         k=1,nr), iobcs= 1,nobcs)
+     &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 cgg)
 #endif /* ALLOW_OBCS */
@@ -222,7 +235,7 @@ c
      &            filensx, nSx, filensy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
-          do k = 1, nr
+          do k = 1, Nr
              if ( filenWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
      &            filenWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
      &            filenWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
@@ -244,7 +257,7 @@ c
 cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
@@ -255,7 +268,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
@@ -266,7 +279,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
@@ -277,7 +290,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
-         do k = 1, nr
+         do k = 1, Nr
            if (filenWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k
@@ -350,7 +363,7 @@ c----------------------------------------------------------------------
           ENDDO
          endif
 # endif
-          call ctrl_set_fname( xx_genarr2d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
 cc          write(weighttype(1:80),'(80a)') ' '
@@ -367,7 +380,7 @@ cc          write(weighttype(1:80),'(a)') "wunit"
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
         if (xx_genarr3d_weight(iarr).NE.' ') then
-          call ctrl_set_fname( xx_genarr3d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
 c          write(weighttype(1:80),'(80a)') ' '
@@ -395,7 +408,7 @@ c          write(weighttype(1:80),'(a)') "wunit"
            ENDDO
          endif
 # endif
-          call ctrl_set_fname( xx_gentim2d_file(iarr),
+          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
 c          write(weighttype(1:80),'(80a)') ' '
