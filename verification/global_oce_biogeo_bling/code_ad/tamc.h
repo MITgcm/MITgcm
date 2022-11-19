@@ -27,9 +27,6 @@ C
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
-C run  87630 time steps
-C 16 usually runs OK
-C
 C     nchklev_1 :: length of inner loop (=size of storage in memory)
 C     nchklev_2 :: length of second loop (stored on disk)
 C     nchklev_3 :: length of outer loop of 3-level checkpointing
