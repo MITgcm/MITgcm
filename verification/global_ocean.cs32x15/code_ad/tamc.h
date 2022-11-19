@@ -86,7 +86,7 @@ C     Parameter that is needed for the tape complev_cg2d_iter
 C     cannot be smaller than the allowed number of iterations in cg2d
 C     (numItersMax >= cg2dMaxIters in data-file)
       INTEGER numItersMax
-      PARAMETER ( numItersMax = 100 )
+      PARAMETER ( numItersMax = 200 )
 #endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */

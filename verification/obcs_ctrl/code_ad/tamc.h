@@ -67,7 +67,7 @@ C     ikey_dynamics :: key for main time stepping loop
       INTEGER ikey_dynamics
 
 C     isbyte :: precision of tapes (both memory and disk).
-C               For smaller tapes replace 8 by 4.
+C               For more accurate but larger tapes replace 4 by 8.
       INTEGER    isbyte
       PARAMETER( isbyte    = 4 )
 
