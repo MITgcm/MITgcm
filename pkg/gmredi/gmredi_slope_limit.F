@@ -114,9 +114,9 @@ C     == Local variables ==
 #endif
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeSqTmp, slopeTmp, slopeMax
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ikey
+# endif
 #endif
 
 C-   need to put this one in GM namelist :
@@ -129,15 +129,6 @@ C     While this does not make the adjoint code wrong, the resulting
 C     code inhibits vectorization in some cases so we tell TAF here
 C     that depthZ is actually a passive grid variable that needs no adjoint
 CADJ PASSIVE depthz
-# ifdef GMREDI_WITH_STABLE_ADJOINT
-C     This key is most likely wrong because the routine is called from
-C     gmredi_calc_tensor three times for each level k, neither of which
-C     is taken into account with this key. Including the level k is
-C     simple (see commented code), but the call number requires an extra
-C     argument to be passed to this routine.
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-C     ikey = k + (ikey - 1)*Nr
-# endif
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
@@ -598,8 +589,18 @@ C (~ strong clipping, reducing non linearity of kw=f(K))
 
         slopeMax= 2. _d -3
 
+# ifdef ALLOW_AUTODIFF_TAMC
+C     This key is most likely wrong because the routine is called from
+C     gmredi_calc_tensor three times for each level k, neither of which
+C     is taken into account with this key. Including the level k is
+C     simple (see commented code), but the call number requires an extra
+C     argument to be passed to this routine.
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+C     ikey = k + (ikey - 1)*Nr
+
 CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+# endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
