@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: SEAICE_MOM_ADVECTION
@@ -29,9 +26,6 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C     == Routine arguments ==
 C     bi,bj   :: current tile indices
@@ -77,16 +71,8 @@ C     later these will be run time parameters
 CML      LOGICAL SEAICEhighOrderVorticity, SEAICEupwindVorticity
 CML      LOGICAL SEAICEuseAbsVorticity,
       LOGICAL vorticityFlag
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER imomkey
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_AUTODIFF_TAMC
-      imomkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      imomkey = k + (imomkey-1)*Nr
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 CML      SEAICEselectKEscheme     = selectKEscheme
 CML      SEAICEselectVortScheme   = selectVortScheme
@@ -122,17 +108,6 @@ C     Make local copies of horizontal flow field
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ufld(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE vfld(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE hFacZ(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE r_hFacZ(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-#endif
-
       CALL MOM_CALC_KE(bi,bj,k,SEAICEselectKEscheme,uFld,vFld,KE,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
@@ -146,21 +121,7 @@ CML        ENDDO
 CML       ENDDO
 CML      ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ke(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-#endif
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ucf(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE vcf(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-#endif
 
 C--   Horizontal advection of relative (or absolute) vorticity
       vorticityFlag = SEAICEhighOrderVorticity.OR.SEAICEupwindVorticity
@@ -198,13 +159,6 @@ C--   Horizontal advection of relative (or absolute) vorticity
         gV(i,j) = gV(i,j)+vCf(i,j)
        ENDDO
       ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ucf(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-CADJ STORE vcf(:,:) =
-CADJ &     comlev1_bibj_lsr, key = imomkey, byte = isbyte
-#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
