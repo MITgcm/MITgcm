@@ -273,18 +273,17 @@ non-zero elements in the :math:`z`-row.
 Redi and GM schemes in pressure coordinate
 ------------------------------------------
 
-When using pressure as vertical coordinate (see :numref:`isomorphic-equations`)
-the Redi scheme can be applied in the same way as in z-coordinate,
+When using pressure as a vertical coordinate (see :numref:`isomorphic-equations`),
+the Redi scheme can be applied in the same way as in :math:`z-`\coordinates,
 considering the slope of isoneutral surface relative to the model isobaric
-surface,
-to rotate the diffusion operator along isoneutral surface.
+surface, to rotate the diffusion operator along isoneutral surfaces.
 
-The two components of the slope relative to p-coordinate are
+The two components of the slope relative to :math:`p-`\ coordinates are
 :math:`S_x^p = \partial_x \sigma / \partial_p \sigma`,
 :math:`S_y^p = \partial_y \sigma / \partial_p \sigma`.
-Note that, for convienience and also to reflect current implementation,
-the sign of the slope in "z" or "p" coordinate is kept unchanged, i.e.,
-identical to the sign of horizontal density dradient.
+Note that for convienience and consistency with the current implementation,
+the sign of the slope in :math:`z-` or :math:`p-` coordinates is kept unchanged, i.e.,
+identical to the sign of horizontal density gradient.
 The negative sign is added back in the Redi tensor expression:
 
 .. math::
@@ -296,9 +295,9 @@ The negative sign is added back in the Redi tensor expression:
    \end{pmatrix}
 
 In contrast, the GM scheme should instead consider the slope of isoneutral
-surface relative to geopotential surface (constant "z" surface), so that its
-effect will decreace the available potential energy and flatten the isopycnal.
-Since :math:`dp = -(\rho g) dz`, the slope to consider would be, in 2 dimension:
+surface relative to geopotential surface (constant :math:`z-`\ surface), so that its
+effect will decrease the available potential energy and flatten the isopycnal.
+Since :math:`dp = -(\rho g) dz`, the slope to consider would be, in two dimensions:
 
 .. math:: S_x^z = \partial_x \sigma / (- \partial_z \sigma) = \frac{1}{\rho g} S_x^p
 
@@ -330,16 +329,16 @@ advection would be:
 .. :label: GM_bolus_in_p (note to me: this is commented out)
 
 This formulation above has not been implemented yet and instead only a simplified
-version is available that ignores the difference between isobaric surface and
-horizontal surface, as if, in the above expression, the density :math:`\rho` was
+version is available that ignores the difference between isobaric surfaces and
+horizontal surfaces, as if in the above expression, the density :math:`\rho` were
 uniform. This approximation seems valid for the ocean where the
 isopycnal slope is generally much larger than the isobaric slope relative to
 horizontal surface.
 
-With this approxmation, the expression of the bollus transport simplifies
-and becomes "isomorphic" to the z-coordinate form :eq:`GM_bolus_psi`,
-with the sign reversal of all 3 components of the bolus transport
-due to the expression of rotational in a left-handed coordinate system.
+With this approxmation, the expression of the bolus transport simplifies
+and becomes "isomorphic" to the :math:`z-`\ coordinate form :eq:`GM_bolus_psi`,
+with the sign reversal of all three components of the bolus transport,
+due to the expression of the curl in a left-handed coordinate system.
 
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
