@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - cleanup tamc.h: remove unused parameters and nthreads_chkpkt as it is (and
+    should be) always one; update all verification exp. code_ad versions.
+  - simplify tape-key dependence on tile indices (remove thread grouping).
 o pkg/ctrl:
   - add run-time variable ctrlDir to specify a directory different from default
     current directory for I/O of controls adjustment and adjoint gradient (xx
