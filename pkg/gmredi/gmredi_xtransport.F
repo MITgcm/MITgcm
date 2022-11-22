@@ -79,26 +79,13 @@ C     i, j       :: Loop counters
 #endif
 #endif /* GM_BOLUS_ADVEC */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
       INTEGER igadkey, kkey
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act0 = trIdentity - 1
-      max0 = maxpass
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      igadkey = (act0 + 1) + act1*max0
-     &                     + act2*max0*max1
-     &                     + act3*max0*max1*max2
-     &                     + act4*max0*max1*max2*max3
-      kkey = (igadkey-1)*Nr + k
+      igadkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      igadkey = trIdentity + (igadkey-1)*maxpass
+      kkey    = k + (igadkey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
        PRINT *, 'ph-pass gmredi_xtrans ', maxpass, trIdentity
        STOP 'maxpass seems smaller than trIdentity'

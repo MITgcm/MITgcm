@@ -201,23 +201,10 @@ cph(
 cph)
       integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
       integer ikppkey
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ikppkey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      ikppkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #else /* ALLOW_AUTODIFF_TAMC */
       ikppkey = 0
 #endif /* ALLOW_AUTODIFF_TAMC */
