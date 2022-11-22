@@ -13,7 +13,7 @@ C     !INTERFACE:
      U             dSigmaDr,
      I             dSigmaDx, dSigmaDy,
      I             Lrho, hMixLay, rDepth, depthZ, kLow,
-     I             k, bi, bj, myTime, myIter, myThid )
+     I             kPos, k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -61,6 +61,7 @@ C     hMixLay  :: mixed layer thickness (> 0) [m]
 C     rDepth   :: depth (> 0) in r-Unit from the surface
 C     depthZ   :: model discretized depth (< 0) [m]
 C     kLow     :: bottom level index 2-D array
+C     kPos     :: grid-cell location: 1,2,3 : at U,V,W location
 C     k        :: level index
 C     bi, bj   :: tile indices
 C     myTime   :: time in simulation
@@ -90,7 +91,7 @@ C     dSigmaDr    :: downward gradient of neutral density
       _RL rDepth
       _RS depthZ(*)
       INTEGER kLow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER k, bi,bj
+      INTEGER kPos, k, bi, bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -102,7 +103,7 @@ C     !LOCAL VARIABLES:
       INTEGER i, j
       _RL f1, Smod, f2, Rnondim
       _RL maxSlopeSqr
-      _RL conv2pUnit, convSlopeUnit, loc_rMaxSlope
+      _RL convSlopeUnit, loc_rMaxSlope
       _RL dSigmMod   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -126,17 +127,18 @@ C-   need to put this one in GM namelist :
       GM_bigSlope = 1. _d +02
 CEOP
 
-      conv2pUnit = 1. _d 0
-      convSlopeUnit = 1. _d 0
-      IF ( usingPcoords ) THEN
-       conv2pUnit = rhoConst*gravity
-       convSlopeUnit = recip_rhoConst*recip_gravity
+      IF (kPos.EQ.3 ) THEN
+       GM_bigSlope   = GM_bigSlope*wUnit2rVel(k)
+       maxSlopeSqr   = GM_maxSlope*GM_maxSlope
+     &                *wUnit2rVel(k)*wUnit2rVel(k)
+       convSlopeUnit = rVel2wUnit(k)
+      ELSE
+       GM_bigSlope   = GM_bigSlope*z2rUnit(k)
+       maxSlopeSqr   = GM_maxSlope*GM_maxSlope
+     &                *z2rUnit(k)*z2rUnit(k)
+       convSlopeUnit = rUnit2z(k)
       ENDIF
-c     loc_maxSlope  = GM_maxSlope*conv2pUnit
-      maxSlopeSqr   = GM_maxSlope*GM_maxSlope
-     &                *conv2pUnit*conv2pUnit
-      GM_bigSlope   = GM_bigSlope*conv2pUnit
-      loc_rMaxSlope = GM_rMaxSlope*convSlopeUnit
+      loc_rMaxSlope  = GM_rMaxSlope*convSlopeUnit
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     TAF thinks for some reason that rDepth is an active variable.

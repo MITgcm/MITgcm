@@ -62,7 +62,7 @@ C     !LOCAL VARIABLES:
       _RL f1, Smod, f2, Rnondim
       _RL maxSlopeSqr
       _RL slopeCutoff
-      _RL convSlopeUnit, loc_maxSlope, loc_rMaxSlope
+      _RL loc_maxSlope, loc_rMaxSlope
       _RL fpi
       PARAMETER( fpi = PI )
       INTEGER i, j
@@ -85,13 +85,8 @@ C     However, with default GM_Small_Number (=1.E-20) and default value of
 C     GM_slopeSqCutoff (=1.E+48), this is unlikely to occur as it would require
 C     |sigmaX/Y| > 1.e+4
 
-      convSlopeUnit = 1. _d 0
-      loc_maxSlope  = GM_maxSlope
-      IF ( usingPcoords ) THEN
-       convSlopeUnit = recip_rhoConst*recip_gravity
-       loc_maxSlope  = GM_maxSlope*rhoConst*gravity
-      ENDIF
-      loc_rMaxSlope = GM_rMaxSlope*convSlopeUnit
+      loc_maxSlope  = GM_maxSlope*wUnit2rVel(k)
+      loc_rMaxSlope = GM_rMaxSlope*rVel2wUnit(k)
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -331,13 +326,13 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
 C-      Danabasoglu and McWilliams, J. Clim. 1995
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          Smod = ABS(SlopeX(i,j))*convSlopeUnit
+          Smod = ABS(SlopeX(i,j))*rVel2wUnit(k)
           taperX(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ))
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          Smod = ABS(SlopeY(i,j))*convSlopeUnit
+          Smod = ABS(SlopeY(i,j))*rVel2wUnit(k)
           taperY(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ))
          ENDDO
         ENDDO
@@ -351,7 +346,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           Smod = ABS(SlopeX(i,j))
           IF ( Smod .LT. slopeCutoff ) THEN
             f1 = op5*( oneRL
-     &               + TANH( (GM_Scrit-Smod*convSlopeUnit)/GM_Sd ) )
+     &               + TANH( (GM_Scrit-Smod*rVel2wUnit(k))/GM_Sd ) )
             IF ( Smod.NE.zeroRL ) THEN
               Rnondim = rDepth/( LrhoW(i,j)*Smod )
             ELSE
@@ -372,7 +367,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .LT. slopeCutoff ) THEN
             f1 = op5*( oneRL
-     &               + TANH( (GM_Scrit-Smod*convSlopeUnit)/GM_Sd ) )
+     &               + TANH( (GM_Scrit-Smod*rVel2wUnit(k))/GM_Sd ) )
             IF ( Smod.NE.zeroRL ) THEN
               Rnondim = rDepth/( LrhoS(i,j)*Smod )
             ELSE

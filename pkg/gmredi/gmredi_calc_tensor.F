@@ -458,7 +458,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoC, locMixLayer, rDepth, rF,
      I             kLowC(1-OLx,1-OLy,bi,bj),
-     I             k, bi, bj, myTime, myIter, myThid )
+     I             3, k, bi, bj, myTime, myIter, myThid )
 
 #ifdef GMREDI_MASK_SLOPES
        DO j=1-OLy+1,sNy+OLy-1
@@ -744,7 +744,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoW, locMixLayer, rDepth, rC,
      I             kLow_W,
-     I             k, bi, bj, myTime, myIter, myThid )
+     I             1, k, bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -971,7 +971,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoS, locMixLayer, rDepth, rC,
      I             kLow_S,
-     I             k, bi, bj, myTime, myIter, myThid )
+     I             2, k, bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
