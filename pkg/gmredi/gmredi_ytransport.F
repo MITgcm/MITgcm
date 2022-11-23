@@ -79,16 +79,20 @@ C     i, j       :: Loop counters
 #endif
 #endif /* GM_BOLUS_ADVEC */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igadkey, kkey
+      INTEGER ikey, kkey
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igadkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      igadkey = trIdentity + (igadkey-1)*maxpass
-      kkey    = k + (igadkey-1)*Nr
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ikey = trIdentity + (ikey-1)*maxpass
+      kkey    = k + (ikey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
-       PRINT *, 'ph-pass gmredi_ytrans ', maxpass, trIdentity
-       STOP 'maxpass seems smaller than trIdentity'
+       WRITE(msgBuf,'(A,2I5)')
+     &      'GMREDI_YTRANSPORT: trIdentity > maxpass ',
+     &      trIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_YTRANSPORT'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 

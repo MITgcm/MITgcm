@@ -92,7 +92,7 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       INTEGER i, j, it2d
       INTEGER actualIts
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER icg2dkey
+      INTEGER ikey
 #else
       _RL    rhsNorm
 #endif
@@ -245,8 +245,8 @@ CML      it2d = it2d+1
 #endif /* ALLOW_LOOP_DIRECTIVE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       icg2dkey = (ikey_dynamics-1)*numItersMax + it2d
-CADJ STORE err_sq = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+       ikey = (ikey_dynamics-1)*numItersMax + it2d
+CADJ STORE err_sq = comlev1_cg2d_iter, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( it2d .LE. cg2dMinItersNSA .OR.
      &      err_sq .GE. cg2dTolerance_sq ) THEN
@@ -254,8 +254,8 @@ CADJ STORE err_sq = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
-CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_r = comlev1_cg2d_iter, key = ikey, byte = isbyte
+CADJ STORE cg2d_s = comlev1_cg2d_iter, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -277,8 +277,8 @@ CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE eta_qrNM1 = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
-CADJ STORE recip_eta_qrNM1 = comlev1_cg2d_iter,key=icg2dkey,byte=isbyte
+CMLCADJ STORE eta_qrNM1 = comlev1_cg2d_iter, key = ikey, byte = isbyte
+CADJ STORE recip_eta_qrNM1 = comlev1_cg2d_iter, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 CML       cgBeta   = eta_qrN/eta_qrNM1
        cgBeta   = eta_qrN*recip_eta_qrNM1
@@ -308,7 +308,7 @@ C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
-CADJ STORE cg2d_s = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_s = comlev1_cg2d_iter, key = ikey, byte = isbyte
 #endif /* not ALLOW_LOOP_DIRECTIVE */
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -336,7 +336,7 @@ C==    Update simultaneously solution and residual vectors (and Iter number)
 C      Now compute "interior" points.
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef ALLOW_LOOP_DIRECTIVE
-CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
+CADJ STORE cg2d_r = comlev1_cg2d_iter, key = ikey, byte = isbyte
 #endif /* ALLOW_LOOP_DIRECTIVE */
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)

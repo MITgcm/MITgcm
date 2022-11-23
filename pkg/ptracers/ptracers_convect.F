@@ -43,7 +43,7 @@ C !LOCAL VARIABLES: ====================================================
 C  iTracer :: tracer index
       INTEGER iTracer
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER iptrkey, kkey
+      INTEGER ikey, kkey
 #endif
 CEOP
 
@@ -52,9 +52,9 @@ C Loop over tracers
        IF ( PTRACERS_StepFwd(iTracer) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        iptrkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-        iptrkey = iTracer + (iptrkey-1)*PTRACERS_num
-        kkey    = (iptrkey-1)*Nr + k
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        ikey = iTracer + (ikey-1)*PTRACERS_num
+        kkey = (ikey-1)*Nr + k
 CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */

@@ -117,13 +117,13 @@ c     _RL M2loc
 #endif
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+      INTEGER ikey, kkey
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -419,7 +419,7 @@ c            M2loc = gravity*recip_rhoConst*dSigmaH
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = (ikey-1)*Nr + k
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -510,7 +510,7 @@ C-- end 1rst loop on vertical level index k
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
       IF ( GM_Visbeck_alpha.GT.0. ) THEN
 C-     Limit range that Kappa-GM can take
@@ -523,7 +523,7 @@ C-     Limit range that Kappa-GM can take
        ENDDO
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 #endif /* GM_VISBECK_VARIABLE_K */
 
@@ -531,7 +531,7 @@ C-    express the Tensor in term of Diffusivity (= m**2 / s )
       DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
 C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
-       kkey = (igmkey-1)*Nr + k
+       kkey = (ikey-1)*Nr + k
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -680,7 +680,7 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = (ikey-1)*Nr + k
 #endif
 
 C     Gradient of Sigma at U points
@@ -901,7 +901,7 @@ C     Gradient of Sigma at V points
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = (ikey-1)*Nr + k
 #endif
 
        DO j=1-OLy+1,sNy+OLy-1

@@ -164,7 +164,7 @@ C     gTKE     :: right hand side of diffusion equation
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikeyLoc, kkeyLoc
+      INTEGER ikey, kkey
 #endif
 CEOP
 
@@ -190,7 +190,7 @@ CEOP
       recip_coordFac = 1./coordFac
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikeyLoc = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     explicit/implicit timestepping weights for dissipation
@@ -248,7 +248,7 @@ C     Initialize local fields
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikey, kind=isbyte
 #endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -354,7 +354,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = ikey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep, extra treatment of k=Nr for p-coordinates
 C     because level Nr+1 is not available
@@ -366,9 +366,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -380,9 +380,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -394,14 +394,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = ikey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -420,9 +420,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -438,7 +438,7 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = ikey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep, extra treatment of k=Nr for p-coordinates
 C     because level Nr+1 is not available
@@ -450,9 +450,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE mxLength_Dn(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -464,9 +464,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -478,14 +478,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = ikey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE mxLength_Dn(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -504,9 +504,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -524,7 +524,7 @@ C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
       IF ( mxlMaxFlag.EQ.3 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO k=2,Nr
         DO j=jMin,jMax
@@ -547,7 +547,7 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
        ENDDO
       ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikey, kind=isbyte
 #endif
        DO k=2,Nr
         DO j=jMin,jMax
@@ -1029,7 +1029,7 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikey, kind=isbyte
 #endif
 C     solve tri-diagonal system
       errCode = -1
@@ -1040,7 +1040,7 @@ C     solve tri-diagonal system
      I                        bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikey, kind=isbyte
 #endif
       DO k=2,Nr
        DO j=jMin,jMax

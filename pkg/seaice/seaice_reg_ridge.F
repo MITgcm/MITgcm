@@ -74,7 +74,7 @@ C     Helper variables for diagnostics
       _RL DIAGarrayA    (1:sNx,1:sNy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER iicekey
+      INTEGER ikey
 #endif
 CEOP
 
@@ -87,7 +87,7 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        iicekey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO J=1-OLy,sNy+OLy
@@ -114,8 +114,8 @@ Cgf no dependency through pathological cases treatment
 #endif
 
 #ifdef EXF_SEAICE_FRACTION
-CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
 C--   (0) relax sea ice concentration towards observation
         IF ( SEAICE_tauAreaObsRelax .GT. zeroRL ) THEN
          DO J=1,sNy
@@ -168,9 +168,9 @@ C     concentration AREA to match single category values
         CALL SEAICE_ITD_SUM   ( bi, bj, myTime, myIter, myThid )
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
@@ -203,7 +203,7 @@ C     Let us keep our fingers crossed, that the model will be benign!
         ENDDO
 #endif /* SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
 C     The following statement helps TAF to understand that TICES is not
 C     modified/reset everywhere so that it is correctly stored in the
 C     outer checkpoint levels. This is a TAF bug and this statement can
@@ -243,8 +243,8 @@ C--   (3) treat the case of area but no ice/snow:
         ENDDO
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO J=1,sNy
           DO I=1,sNx
@@ -275,7 +275,7 @@ C     (or install a warning in e.g. seaice_readparms.F)
        ENDDO
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO J=1,sNy
         DO I=1,sNx
@@ -290,8 +290,8 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 C     (5) treat sea ice salinity pathological cases
 #ifdef SEAICE_VARIABLE_SALINITY
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, key = ikey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
@@ -361,7 +361,7 @@ C     concentration AREA to match single category values
 #else /* ifndef SEAICE_ITD */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = ikey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx

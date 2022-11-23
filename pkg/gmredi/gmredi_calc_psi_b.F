@@ -59,7 +59,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k, km1
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+      INTEGER ikey, kkey
 #endif
       _RL half_K
       _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -72,12 +72,12 @@ C     == Local variables ==
 C-    Initialization : <= done in S/R gmredi_init
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 # endif
 #endif
       IF (GM_AdvForm) THEN
@@ -122,7 +122,7 @@ C      Calculate slopes , taper and/or clip
      I              bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (igmkey-1)*Nr + k
+        kkey = (ikey-1)*Nr + k
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

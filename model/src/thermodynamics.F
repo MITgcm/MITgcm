@@ -106,7 +106,7 @@ C     i, j, k        :: loop indices
       _RL trAdvCFL(3,nSx,nSy)
 # endif /* ALLOW_MONITOR */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, itdkey
+      INTEGER ikey
 #endif
 CEOP
 
@@ -127,7 +127,6 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
       ikey = 1
-      itdkey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -172,7 +171,7 @@ CADJ STORE ptracer = comlev1, key = ikey_dynamics, byte=isbyte
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        itdkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -279,25 +278,23 @@ c    &     ' , CFL =', (trAdvCFL(i,bi,bj),i=1,3)
 C-    Apply AB on T,S : moved inside TEMP/SALT_INTEGRATE
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE uFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE vFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE wFld (:,:,:)       = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE recip_hFacNew(:,:,:) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uFld (:,:,:)         = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vFld (:,:,:)         = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE wFld (:,:,:)         = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
 # ifdef ALLOW_SALT_PLUME
-CADJ STORE saltPlumeFlux(:,:,bi,bj)   =
-CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
-CADJ STORE saltPlumeDepth(:,:,bi,bj)   =
-CADJ &     comlev1_bibj, key=itdkey,kind = isbyte
+CADJ STORE saltPlumeFlux(:,:,bi,bj)  = comlev1_bibj,key=ikey,kind=isbyte
+CADJ STORE saltPlumeDepth(:,:,bi,bj) = comlev1_bibj,key=ikey,kind=isbyte
 # endif
 # if (defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL) \
         && defined ALLOW_GMREDI
-CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kux(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE kvy(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #  ifdef GM_EXTRA_DIAGONAL
-CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE kuz(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE kvz(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */

@@ -187,7 +187,7 @@ C     dt           :: timestep
       _RL  netSW
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ticekey, kkey
+      INTEGER ikey, kkey
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -199,9 +199,9 @@ C-    Define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ticekey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE flxsw  = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE hSnow  = comlev1_bibj, key = ticekey, kind = isbyte
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE flxsw  = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE hSnow  = comlev1_bibj, key = ikey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF
@@ -395,7 +395,7 @@ C
         IF ( useBlkFlx ) THEN
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (ticekey-1)*MaxTsf + k
+         kkey = (ikey-1)*MaxTsf + k
 CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE tSrf     = comlev1_thsice_s4t, key = kkey, kind = isbyte
 CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
@@ -542,11 +542,11 @@ C--- end loop DO k = 1,iterMax
 C ------ end iteration ------------
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
 C     avoid calling thsice_get_exf in ad-code
-CADJ STORE tIc1   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE dTsrf  = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE tSrf   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE dFlxdT = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE dEvdT  = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ STORE tIc1   = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE dTsrf  = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE tSrf   = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE dFlxdT = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE dEvdT  = comlev1_bibj, key = ikey, kind = isbyte
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

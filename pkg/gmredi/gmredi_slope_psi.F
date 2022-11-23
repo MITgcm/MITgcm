@@ -65,7 +65,7 @@ C     == Local variables ==
       _RL slopeTmpSpec,slopeMaxSpec
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+      INTEGER ikey, kkey
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -73,8 +73,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       slopeCutoff = SQRT( GM_slopeSqCutoff )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      kkey   = (igmkey-1)*Nr + k
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey   = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (GM_taper_scheme.EQ.'orig' .OR.

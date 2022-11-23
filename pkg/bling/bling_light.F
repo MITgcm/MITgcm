@@ -96,7 +96,7 @@ C     === Local variables ===
       _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itdkey
+      INTEGER ikey
 #endif
 #endif /* PHYTO_SELF_SHADING */
       INTEGER i,j,k
@@ -105,7 +105,7 @@ CEOP
 
 #ifdef PHYTO_SELF_SHADING
 # ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+      ikey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* PHYTO_SELF_SHADING */
 
@@ -207,8 +207,8 @@ c  taken into account
 
 #ifdef PHYTO_SELF_SHADING
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE irr_bg = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE irr_rd = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE irr_bg = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE irr_rd = comlev1_bibj, key=ikey, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* PHYTO_SELF_SHADING */
 
