@@ -499,6 +499,8 @@ c          SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDr(i,j)
 #ifdef ALLOW_AUTODIFF_TAMC
 cnostore CADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
 cnostore CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1
@@ -506,6 +508,13 @@ cnostore CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+         ENDDO
+        ENDDO
+CADJ STORE SlopeSqr = loctape_gm
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+#endif
           IF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
             slopeSqr(i,j) = GM_slopeSqCutoff
             taperFct(i,j) = 0. _d 0
@@ -598,10 +607,11 @@ C (~ strong clipping, reducing non linearity of kw=f(K))
         slopeMax= 2. _d -3
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-# endif
-
+CMLCADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CMLCADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
+#endif
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           slopeSqTmp = SlopeX(i,j)*SlopeX(i,j)
@@ -615,7 +625,7 @@ CADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
-C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
+C move the assignment of SlopeSqr to its own do-loop block from the do-loop
 C block above to reduce TAF recomputations. The assignment of taperFct is
 C also moved to keep the original order of operations.
         DO j=1-OLy+1,sNy+OLy-1
