@@ -485,6 +485,7 @@ CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nSx*nSy*Nr
 c--
 #   ifdef ALLOW_GMREDI
 CADJ INIT comlev1_gmredi_k_gad = COMMON,nchklev_1*nSx*nSy*Nr*maxpass
+CADJ INIT comlev1_gmredi_slope = COMMON,nchklev_1*nSx*nSy*Nr*3
 #   endif /* ALLOW_GMREDI */
 c--
 #   ifdef ALLOW_PTRACERS

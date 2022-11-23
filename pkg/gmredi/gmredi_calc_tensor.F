@@ -439,6 +439,9 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoC, locMixLayer, rF,
      I             kLowC(1-OLx,1-OLy,bi,bj),
+#ifdef ALLOW_AUTODIFF_TAMC
+     I             1,
+#endif
      I             k, bi, bj, myTime, myIter, myThid )
 
 #ifdef GMREDI_MASK_SLOPES
@@ -717,6 +720,9 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoW, locMixLayer, rC,
      I             kLow_W,
+#ifdef ALLOW_AUTODIFF_TAMC
+     I             2,
+#endif
      I             k, bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -937,6 +943,9 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmaDx, dSigmaDy,
      I             ldd97_LrhoS, locMixLayer, rC,
      I             kLow_S,
+#ifdef ALLOW_AUTODIFF_TAMC
+     I             3,
+#endif
      I             k, bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
