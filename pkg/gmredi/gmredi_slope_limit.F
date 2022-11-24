@@ -131,6 +131,7 @@ C-   need to put this one in GM namelist :
       GM_bigSlope = 1. _d +02
 
 #ifdef ALLOW_AUTODIFF_TAMC
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
       ikey = icall + (k - 1  + (ikey - 1)*Nr)*3
 C     TAF thinks for some reason that depthZ is an active variable.
 C     While this does not make the adjoint code wrong, the resulting
@@ -497,10 +498,10 @@ c          SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDr(i,j)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CADJ STORE SlopeX = loctape_gm
-CADJ STORE SlopeY = loctape_gm
+CADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CMLCADJ STORE SlopeX = loctape_gm
+CMLCADJ STORE SlopeY = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1
@@ -511,7 +512,8 @@ CADJ STORE SlopeY = loctape_gm
 #ifdef ALLOW_AUTODIFF_TAMC
          ENDDO
         ENDDO
-CADJ STORE SlopeSqr = loctape_gm
+CADJ STORE SlopeSqr = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CMLCADJ STORE SlopeSqr = loctape_gm
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 #endif
@@ -604,13 +606,14 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 C special choice for adjoint/optimization of parameters
 C (~ strong clipping, reducing non linearity of kw=f(K))
 
+C this variable could be relaced by the runtime parameter GM_maxSlope
         slopeMax= 2. _d -3
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CMLCADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CADJ STORE SlopeX = loctape_gm
-CADJ STORE SlopeY = loctape_gm
+CADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CMLCADJ STORE SlopeX = loctape_gm
+CMLCADJ STORE SlopeY = loctape_gm
 #endif
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
