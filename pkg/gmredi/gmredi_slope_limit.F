@@ -14,7 +14,7 @@ C     !INTERFACE:
      I             dSigmaDx, dSigmaDy,
      I             Lrho, hMixLay, depthZ, kLow,
 #ifdef ALLOW_AUTODIFF_TAMC
-     I             icall,
+     I             kpos,
 #enif
      I             k, bi, bj, myTime, myIter, myThid )
 
@@ -91,11 +91,7 @@ C     dSigmaDr    :: vertical gradient of density
       _RL hMixLay    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS depthZ(*)
       INTEGER kLow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_AUTODIFF_TAMC
-C     Call number (1 to 3) for tape computations
-      INTEGER icall
-#enif
-      INTEGER k, bi,bj
+      INTEGER kPos, k, bi, bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -132,7 +128,7 @@ C-   need to put this one in GM namelist :
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      ikey = icall + (k - 1  + (ikey - 1)*Nr)*3
+      ikey = kPos + (k - 1  + (ikey - 1)*Nr)*3
 C     TAF thinks for some reason that depthZ is an active variable.
 C     While this does not make the adjoint code wrong, the resulting
 C     code inhibits vectorization in some cases so we tell TAF here
@@ -142,7 +138,8 @@ C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
 CADJ INIT loctape_gm = COMMON, 1
-CADJ STORE dSigmaDr = loctape_gm
+CADJ STORE dSigmaDr = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CMLCADJ STORE dSigmaDr = loctape_gm
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy+1,sNy+OLy-1
