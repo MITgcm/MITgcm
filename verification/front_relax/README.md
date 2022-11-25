@@ -19,10 +19,10 @@ The **primary** test, using input files from `input/` dir, is the simplest
 one, with flat bottom, non-uniform resolution in both direction (15 levels
 from 50 m to 400 m thick near the bottom and, in Y-direction, 32 grid-points
 with about 10 km spacing) and stratified every-where (background
-$N = 2\times 10^{-3}$ s $^{-1}$, see matlab script `input/gendata.m`),
+$N = 2\times 10^{-3} ~s^{-1}$, see matlab script `input/gendata.m`),
 avoiding the need for tapering or clipping.<br>
 It uses the skew-flux formulation of GM with same Redi and GM diffusivity (
-`GM_background_K` = 1000 m $^2$/s, see: `input/data.gmredi`). Note that 10 dead
+`GM_background_K` = 1000 $m^2/s$, see: `input/data.gmredi`). Note that 10 dead
 levels were added (below the bottom) to allow to use the same executable
 (compiled with `Nr = 25`) for all 5 set-ups.
 
@@ -38,7 +38,7 @@ similar, sharing the same binary input files from `input.mxl/` dir ; they use
 the full 25 level model to represent a 10 level, 200 m thick mixed layer on
 top of a stratified warm bowl of water.  The `input.mxl/` illustrates the use
 of the transition-layer tapering scheme 'fm07' with the skew-flux formulation
-of GM with same Redi and GM diffusivity ( `GM_background_K` = 1000 m $^2$/s,
+of GM with same Redi and GM diffusivity ( `GM_background_K` = 1000 $m^2/s$,
 see: `input.mxl/data.gmredi`) and a flat bottom while the secondary test
 `input.bvp/` has a sloping bottom and uses the Boundary-Value Problem
 (`GM_useBVP=T,` with 5 modes: `GM_BVP_modeNumber=5,`) of the GM advective form
@@ -50,7 +50,7 @@ The **last secondary** test `input.top/` shares some similarity with the previou
 one (similar warm bowl, use BVP with GM advective form) except that the model
 top is depressed by 50 m near the center, as it would under, e.g., a floating
 ice-shelf. Also the mixed layer is thinner (60 m only) and very weakly
-stratified ( $N = 10^{-6}$ s $^{-1}$ ) and vertical resolution is slightly
+stratified ( $N = 10^{-6} ~s^{-1}$ ) and vertical resolution is slightly
 different, reaching a maximum depth of 2.5 km (vs only 2 km in the previous 2
 set-ups).
 
@@ -134,7 +134,7 @@ There is comparison output in the directory:
     Since none of the 5 set-up use any feature specific to Y-direction, all
     using 'f-plane' (`f0 = 1.E-4, beta=0`), the same set of input files could
     be used by the X-Z model instead of the current Y-Z model (simply
-    switching sNx,nSx,nPx <-> sNy,nSy,nPy in `SIZE.h`) to produce similar
+    switching `sNx,nSx,nPx` <-> `sNy,nSy,nPy` in `SIZE.h`) to produce similar
     results (flipping U & V with 1 minus sign). The only minor adjustment to
     input files is related to the setting of delX, delY in the parameter file
     `data`, which also need to be switched, e.g., for the primary set-up:
