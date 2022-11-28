@@ -60,20 +60,20 @@ c--   == external ==
 
 c     == local variables ==
       integer iarr
-      integer il
+      integer il, ilDir
       integer dumiter
       _RL     dumtime
       _RL     dummy
       logical doglobalread
       logical ladinit
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       character*(80) fname
 
 c--   == end of interface ==
@@ -82,7 +82,9 @@ c--   == end of interface ==
       ladinit      = .false.
       dumiter      = 0
       dumtime      = 0. _d 0
-      write(fname(1:80),'(80a)') ' '
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+      write(fname,'(80a)') ' '
 
       if ( grdchkvarindex .eq. 0 ) then
          STOP 'GRDCHK INDEX 0 NOT ALLOWED'
@@ -91,10 +93,10 @@ c--   == end of interface ==
       else if ( grdchkvarindex .eq. 11 ) then
          il=ilnblnk( xx_obcsn_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_obcsn_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_obcsn_file(1:il),'.',optimcycle
          end if
 #endif /* ALLOW_OBCSN_CONTROL */
@@ -103,10 +105,10 @@ c--   == end of interface ==
       else if ( grdchkvarindex .eq. 12 ) then
          il=ilnblnk( xx_obcss_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_obcss_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_obcss_file(1:il),'.',optimcycle
          end if
 
@@ -116,10 +118,10 @@ c--   == end of interface ==
       else if ( grdchkvarindex .eq. 13 ) then
          il=ilnblnk( xx_obcsw_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_obcsw_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_obcsw_file(1:il),'.',optimcycle
          end if
 
@@ -129,10 +131,10 @@ c--   == end of interface ==
       else if ( grdchkvarindex .eq. 14 ) then
          il=ilnblnk( xx_obcse_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_obcse_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_obcse_file(1:il),'.',optimcycle
          end if
 
@@ -145,10 +147,10 @@ c--   == end of interface ==
         if ( grdchkvarindex .eq. 100+iarr ) then
          il=ilnblnk( xx_genarr2d_file(iarr) )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_genarr2d_file(iarr)(1:il),'.',optimcycle
          end if
         endif
@@ -162,10 +164,10 @@ c--   == end of interface ==
         if ( grdchkvarindex .eq. 200+iarr ) then
          il=ilnblnk( xx_genarr3d_file(iarr) )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_genarr3d_file(iarr)(1:il),'.',optimcycle
          end if
         endif
@@ -179,10 +181,10 @@ c--   == end of interface ==
         if ( grdchkvarindex .eq. 300+iarr ) then
          il=ilnblnk( xx_gentim2d_file(iarr) )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
-            write(fname(1:80),'(3a,i10.10)')
+            write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &           yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
-            write(fname(1:80),'(2a,i10.10)')
+            write(fname,'(2a,i10.10)') ctrlDir(1:ilDir)//
      &           xx_gentim2d_file(iarr)(1:il),'.',optimcycle
          end if
         endif

@@ -76,10 +76,9 @@ tensor is:
    S_x & S_y & |{\bf S}|^2 \\
    \end{pmatrix}
 
-Here, :math:`S_x = -\partial_x \sigma / \partial_z \sigma`,
-:math:`S_y =
--\partial_y \sigma / \partial_z \sigma` are the components of the
-isoneutral slope, and :math:`|{\bf S}|^2 = S_x^2 + S_y^2`.
+Here, :math:`S_x = \partial_x \sigma / (- \partial_z \sigma)`,
+:math:`S_y = \partial_y \sigma / (- \partial_z \sigma)` are the components
+of the isoneutral slope, and :math:`|{\bf S}|^2 = S_x^2 + S_y^2`.
 
 The first point to note is that a typical slope in the ocean interior is
 small, say of the order :math:`10^{-4}`. A maximum slope might be of
@@ -164,7 +163,7 @@ Note that in MITgcm, the variables for the GM bolus
 streamfunction :varlink:`GM_PsiX` and :varlink:`GM_PsiY` are defined:
 
 .. math::
-
+   \begin{aligned}
    \begin{pmatrix}
    \sf{GM\_PsiX} \\
    \sf{GM\_PsiY}
@@ -177,6 +176,8 @@ streamfunction :varlink:`GM_PsiX` and :varlink:`GM_PsiY` are defined:
    F_y^\star \\
    -F_x^\star
    \end{pmatrix}
+   \end{aligned}
+   :label: GM_bolus_psi
 
 .. _sub_gmredi_skewflux:
 
@@ -261,15 +262,83 @@ non-zero elements in the :math:`z`-row.
 
   S/R GMREDI_CALC_TENSOR (:filelink:`pkg/gmredi/gmredi_calc_tensor.F`)
 
-  :math:`\sigma_x`: **SlopeX** (argument on entry)
+  :math:`\sigma_x`: **sigmaX** (argument on entry)
 
-  :math:`\sigma_y`: **SlopeY** (argument on entry)
+  :math:`\sigma_y`: **sigmaY** (argument on entry)
 
-  :math:`\sigma_z`: **SlopeY** (argument)
+  :math:`\sigma_z`: **sigmaR** (argument on entry)
 
-  :math:`S_x`: **SlopeX** (argument on exit)
+.. _sub_gmredi_in_P:
 
-  :math:`S_y`: **SlopeY** (argument on exit)
+Redi and GM schemes in pressure coordinate
+------------------------------------------
+
+When using pressure as a vertical coordinate (see :numref:`isomorphic-equations`),
+the Redi scheme can be applied in the same way as in :math:`z-`\coordinates,
+considering the slope of isoneutral surface relative to the model isobaric
+surface, to rotate the diffusion operator along isoneutral surfaces.
+
+The two components of the slope relative to :math:`p-`\ coordinates are
+:math:`S_x^p = \partial_x \sigma / \partial_p \sigma`,
+:math:`S_y^p = \partial_y \sigma / \partial_p \sigma`.
+Note that for convienience and consistency with the current implementation,
+the sign of the slope in :math:`z-` or :math:`p-` coordinates is kept unchanged, i.e.,
+identical to the sign of horizontal density gradient.
+The negative sign is added back in the Redi tensor expression:
+
+.. math::
+   {\bf K}_{\rm Redi}^p =
+   \begin{pmatrix}
+      1   &    0   & -S_x^p \\
+      0   &    1   & -S_y^p \\
+   -S_x^p & -S_y^p & |{\bf S^p}|^2 \\
+   \end{pmatrix}
+
+In contrast, the GM scheme should instead consider the slope of isoneutral
+surface relative to geopotential surface (constant :math:`z-`\ surface), so that its
+effect will decrease the available potential energy and flatten the isopycnal.
+Since :math:`dp = -(\rho g) dz`, the slope to consider would be, in two dimensions:
+
+.. math:: S_x^z = \partial_x \sigma / (- \partial_z \sigma) = \frac{1}{\rho g} S_x^p
+
+The effect on tracer :math:`\tau` from the bolus transport (:math:`{\bf u}^\star`)
+advection would be:
+
+.. math:: [ {\bf u}^\star \cdot \nabla \tau ]^z
+   & = u^\star \partial_x \tau + w^\star \partial_z \tau
+   \\
+   & = \rho g \partial_p (\kappa_{\rm GM} \frac{1}{\rho g} S_x^p) \partial_x \tau
+     - \partial_x (\kappa_{\rm GM} \frac{1}{\rho g} S_x^p) (\rho g) \partial_p \tau
+   \\
+   & =  {\bf u}^{\star p} \cdot \nabla^p \tau
+
+.. math::
+   {\rm with:}~~
+   {\bf u}^{\star p} =
+   \begin{pmatrix}
+   u^{\star p} \\
+   v^{\star p} \\
+   \omega^{\star p}
+   \end{pmatrix} =
+   \begin{pmatrix}
+     \rho g \partial_p (\kappa_{\rm GM} \frac{1}{\rho g} S_x^p) \\
+     \rho g \partial_p (\kappa_{\rm GM} \frac{1}{\rho g} S_y^p) \\
+   - \rho g \partial_x (\kappa_{\rm GM} \frac{1}{\rho g} S_x^p)
+   - \rho g \partial_y (\kappa_{\rm GM} \frac{1}{\rho g} S_y^p)
+   \end{pmatrix}
+.. :label: GM_bolus_in_p (note to me: this is commented out)
+
+This formulation above has not been implemented yet and instead only a simplified
+version is available that ignores the difference between isobaric surfaces and
+horizontal surfaces, as if in the above expression, the density :math:`\rho` were
+uniform. This approximation seems valid for the ocean where the
+isopycnal slope is generally much larger than the isobaric slope relative to
+horizontal surface.
+
+With this approxmation, the expression of the bolus transport simplifies
+and becomes "isomorphic" to the :math:`z-`\ coordinate form :eq:`GM_bolus_psi`,
+with the sign reversal of all three components of the bolus transport,
+due to the expression of the curl in a left-handed coordinate system.
 
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
