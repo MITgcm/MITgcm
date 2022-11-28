@@ -1,6 +1,19 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - update Redi diffusion and GM (skew-flux or advective form) to also work with
+    P-coordinates and most current tapering schemes ; change sign of sigmaR (for
+    now, only within pkg/gmredi) to always be the same as stratification, i.e.,
+    positive if stratified ; add 2 arguments to GMREDI_SLOPE_LIMIT for 'ldd97'.
+  - with p-coord, keep sign of slope component unchanged (same as dSigmaX,Y)
+    and flip sign (-gravitySign) of Redi-tensor extra-diagonal terms ; also keep
+    stream-function components GM_PsiX & GM_PsiY unchanged and flip sign when
+    computing bolus-transport (left handed coord).
+  - add unit conversion factor between p and z coord. at level center, function of
+    vertical profile of ref. density ; used inside slope-limiter and tapering function.
+  - stop if trying to use P-coord with not yet updated gmredi pieces of code.
+  - add a simple secondary test in front_relax exp. using GM and p-coord.
 o pkg/autodiff:
   - cleanup tamc.h: remove unused parameters and nthreads_chkpkt as it is (and
     should be) always one; update all verification exp. code_ad versions.
