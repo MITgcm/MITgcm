@@ -112,6 +112,8 @@ C   alpha       :: timescale for biological activity
 C                  read in alphaUniform and filled in 2d array alpha
 C   rain_ratio  :: inorganic/organic carbon rain ratio
 C                  read in rainRatioUniform and filled in 2d array rain_ratio
+C   nCALCITEstep:: interval (s) to update deep ocean carbonate saturation if 
+C                  using CAR_DISS to dissolve carbonate below saturation horizon
 
       NAMELIST /BIOTIC_PARMS/
      & DOPfraction, KDOPRemin, KRemin, zcrit,
@@ -119,7 +121,8 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
      & parfrac, k0, lit0, KPO4, KFE, kchl,
      & alpfe, fesedflux_pcm, FeIntSec, freefemax,
      & KScav, ligand_stab, ligand_tot,
-     & alphaUniform, rainRatioUniform
+     & alphaUniform, rainRatioUniform,
+     & nCALCITEstep
 #endif
 
       NAMELIST /DIC_FORCING/
@@ -168,6 +171,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ligand_tot  = 1. _d -6
        alphaUniform     = 2. _d -3/(360. _d 0 * 86400. _d 0)
        rainRatioUniform = 7. _d -2
+c default periodic forcing to same as for physics
+       nCALCITEstep = externForcingPeriod
 #endif
        DIC_windFile  = ' '
        DIC_atmospFile= ' '
@@ -400,6 +405,10 @@ C- namelist BIOTIC_PARMS
      &  ' /* Timescale for biological activity */')
        CALL WRITE_0D_RL(rainRatioUniform,INDEX_NONE,'rainRatioUniform=',
      &  ' /* Inorganic/organic carbon rain ratio */')
+#ifdef CAR_DISS
+       CALL WRITE_0D_RL(nCALCITEstep,INDEX_NONE,'nCALCITEstep=',
+     &  ' /* interval (s) to update deep ocean CO3 saturation */')
+#endif     
        CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
      &  '  /* Flag for Qsw under Sea-Ice (i.e. SI fract included) */')
 #endif /* DIC_BIOTIC */
