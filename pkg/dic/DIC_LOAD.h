@@ -5,7 +5,8 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
       COMMON /DIC_LOAD_I/ DIC_ldRec
       COMMON /DIC_LOAD_RS/
      &    dicwind0, dicwind1, ice0, ice1, atmosp0,
-     &    atmosp1, silica0, silica1,silicaSurf0,silicaSurf1
+     &    atmosp1, silicaSurf0,silicaSurf1,
+     &    silicaDeep0,silicaDeep1
 #ifdef READ_PAR
      &    ,par0, par1
 #endif
@@ -23,10 +24,10 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
       _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS silica0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS silica1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS silicaSurf0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS silicaSurf1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS silicaDeep0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS silicaDeep1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef READ_PAR
       _RS par0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS par1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

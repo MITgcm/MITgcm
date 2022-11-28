@@ -17,15 +17,15 @@ C                       flux calculations (m/s).
 C     FIce        :: Fraction of sea ice cover loaded from file
 C                       (or set by thice/seaice)
 C                       for air-sea flux calculations.
-C     SILICAsurf      :: Surface ocean concentration of silicate for
+C     SILICAsurf  :: Surface ocean concentration of silicate for
 C                       pCO2 calculations. Read in from file (mol/m3).
-C     Silica      :: 3d-field of silicate concentration for
-C                       pH calculations. Read in from file (mol/m3).
+C     SILICAdeep  :: 3d-field of silicate concentration for pH and 
+C                       carbonate calculations. Read in from file (mol/m3).
 C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
-     &              wind, FIce, Silica, Kwexch_Pre,SILICAsurf
+     &              wind, FIce, Kwexch_Pre, SILICAsurf, SILICAdeep
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -33,9 +33,9 @@ C                       for air-sea CO2 and O2 flux calculations.
       _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  SILICAsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  SILICAsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  SILICAdeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C Store dissociation and carbon chemistry coefficients for
 C    pCO2 solvers (see carbon_chem.F).

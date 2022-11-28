@@ -56,7 +56,7 @@ C  i,j,k                  :: loop indices
 CEOP
 
 Cmick...................................................
-c       write(6,*)'myIter ',myIter,'  CALLED CALCITEcd_SATURATION'
+c       write(6,*)'myIter ',myIter,'  CALLED CALCITE_SATURATION'
 c      write(6,*)'WARNING calcite_sat needs 3d silica & H0 set=7.9'
 c       write(6,*)'        - & Fixed first guess of deep pH to 7.9'
 Cmick....................................................
@@ -108,7 +108,7 @@ C Now correct the coefficients for pressure dependence
 #endif
 
 c 30 micromol = 0.03 mol m-3
-             silicalocal = SILICA(i,j,k,bi,bj)
+             silicalocal = SILICAdeep(i,j,k,bi,bj)
              po4local = PTR_PO4(i,j,k)
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)

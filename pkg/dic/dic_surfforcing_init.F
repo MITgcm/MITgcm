@@ -62,7 +62,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccc
       IF ( periodicExternalForcing ) THEN
 
-c read in silica field
+c read in surface silica field
          CALL LEF_ZERO( silicaSurf0,myThid )
          CALL LEF_ZERO( silicaSurf1,myThid )
 
@@ -101,7 +101,7 @@ c#endif
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-
+C If file provided for surface silicate, read it in
              SILICAsurf(i,j,bi,bj)= bWght*silicaSurf0(i,j,bi,bj)
      &                        + aWght*silicaSurf1(i,j,bi,bj)
 
@@ -114,8 +114,8 @@ c#endif
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-
-             SILICAsurf(i,j,bi,bj)= SILICA(i,j,klev,bi,bj)
+C If no surface silicate file but deep (3d) silicate provided, use top level
+             SILICAsurf(i,j,bi,bj)= SILICAdeep(i,j,klev,bi,bj)
 
            ENDDO
           ENDDO
@@ -126,7 +126,7 @@ c#endif
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-
+C If neither surface nor deep silicate (3d) provided, set to constant value
              SILICAsurf(i,j,bi,bj)=7.6838 _d -3*maskC(i,j,klev,bi,bj)
 
            ENDDO

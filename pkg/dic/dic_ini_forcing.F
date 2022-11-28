@@ -42,10 +42,23 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( dicwind1,myThid )
       CALL LEF_ZERO( atmosp0,myThid )
       CALL LEF_ZERO( atmosp1,myThid )
-      CALL LEF_ZERO( silica0,myThid )
-      CALL LEF_ZERO( silica1,myThid )
+C      CALL LEF_ZERO( silica0,myThid )
+C      CALL LEF_ZERO( silica1,myThid )
       CALL LEF_ZERO( ice0,myThid )
       CALL LEF_ZERO( ice1,myThid )
+      
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx      
+          DO k=1,Nr
+           SILICAdeep(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+       
 #ifdef READ_PAR
       CALL LEF_ZERO( par0,myThid )
       CALL LEF_ZERO( par1,myThid )
@@ -89,7 +102,7 @@ C If the chlorophyll climatology is not provided, use this default value.
              InputFe(i,j,bi,bj)= 1. _d -11*maskC(i,j,1,bi,bj)
 #endif 
             DO k=1,Nr
-            SILICA(i,j,k,bi,bj) = 3 _d -2*maskC(i,j,k,bi,bj)
+             SILICAdeep(i,j,k,bi,bj) = 3 _d -2*maskC(i,j,k,bi,bj)
             ENDDO
           ENDDO
          ENDDO
