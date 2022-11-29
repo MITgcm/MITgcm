@@ -34,7 +34,7 @@
 #momStepping=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- globalFiles=.TRUE.,
+ useSingleCpuIO=.TRUE.,
  debugLevel=2,
  plotLevel=0,
  &

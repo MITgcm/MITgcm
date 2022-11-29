@@ -113,6 +113,10 @@ C     i, k   :: Loop counters.
      & '   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
      & '   /* Reference salinity profile ( g/kg ) */')
+      CALL WRITE_1D_RL( rhoRef, Nr, INDEX_K, 'rhoRef =',
+     & '   /* Density vertical profile from (Ref,sRef)( kg/m^3 ) */')
+      CALL WRITE_1D_RL( dBdrRef,  Nr,   INDEX_K, 'dBdrRef =',
+     & ' /* Vertical grad. of reference buoyancy [(m/s/r)^2] */')
 C-    Horizontal viscosity parameters:
 #ifdef ALLOW_MOM_COMMON
       CALL WRITE_0D_L( useStrainTensionVisc, INDEX_NONE,
@@ -937,12 +941,16 @@ c    &     'pickup_write_immed =','   /* Model IO flag. */')
      &  ' /* deep-model grid factor @ cell-Center (-) */')
       CALL WRITE_1D_RL( deepFacF, Nr+1, INDEX_K, 'deepFacF = ',
      &  ' /* deep-model grid factor @ W-Interface (-) */')
-      CALL WRITE_1D_RL(rVel2wUnit,Nr+1, INDEX_K,'rVel2wUnit =',
-     &  ' /* convert units: rVel -> wSpeed (=1 if z-coord)*/')
-      CALL WRITE_1D_RL(wUnit2rVel,Nr+1, INDEX_K,'wUnit2rVel =',
-     &  ' /* convert units: wSpeed -> rVel (=1 if z-coord)*/')
-      CALL WRITE_1D_RL( dBdrRef,  Nr,   INDEX_K, 'dBdrRef =',
-     & ' /* Vertical grad. of reference buoyancy [(m/s/r)^2] */')
+      IF ( usingPCoords ) THEN
+       CALL WRITE_1D_RL( rVel2wUnit, Nr+1, INDEX_K, 'rVel2wUnit =',
+     &  ' /* convert units: rVel [Pa/s] -> wSpeed [m/s] */')
+       CALL WRITE_1D_RL( wUnit2rVel, Nr+1, INDEX_K, 'wUnit2rVel =',
+     &  ' /* convert units: wSpeed [m/s] -> rVel [Pa/s] */')
+       CALL WRITE_1D_RL( rUnit2z, Nr, INDEX_K, 'rUnit2z =',
+     &  ' /* convert units (@ center): dr [Pa] -> dz [m] */')
+       CALL WRITE_1D_RL( z2rUnit, Nr, INDEX_K, 'z2rUnit =',
+     &  ' /* convert units (@ center): dz [m] -> dr [Pa] */')
+      ENDIF
       CALL WRITE_0D_L( rotateGrid, INDEX_NONE,
      & 'rotateGrid =',' /* use rotated grid ( True/False ) */')
       CALL WRITE_0D_RL( phiEuler, INDEX_NONE,'phiEuler =',

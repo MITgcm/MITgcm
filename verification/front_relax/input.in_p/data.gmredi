@@ -1,6 +1,6 @@
 # GM-Redi parameters
  &GM_PARM01
-# GM_AdvForm=.TRUE.,
+  GM_AdvForm=.TRUE.,
   GM_background_K=1000.,
 # GM_isopycK    = 0.,
 # GM_taper_scheme='orig',
