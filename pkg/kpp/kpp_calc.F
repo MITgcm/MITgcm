@@ -537,23 +537,23 @@ C     and salt are not passed to kppmix and are thus not available there.
          ENDDO
       ENDDO
       CALL KPPMIX (
-     I       work1, shsq, dVsq, ustar
-     I     , maskC(1-OLx,1-OLy,1,bi,bj)
-     I     , bo, bosol
+     I       work1, shsq, dVsq, ustar,
+     I       maskC(1-OLx,1-OLy,1,bi,bj),
+     I       bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume, SaltPlumeDepth(1-OLx,1-OLy,bi,bj)
+     I       boplume, SaltPlumeDepth(1-OLx,1-OLy,bi,bj),
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , XC(1-OLx,1-OLy,bi,bj), YC(1-OLx,1-OLy,bi,bj)
+     I       XC(1-OLx,1-OLy,bi,bj), YC(1-OLx,1-OLy,bi,bj),
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , dbloc, Ritop, work2
-     I     , KPPdiffKzS(1-OLx,1-OLy,1,bi,bj)
-     I     , KPPdiffKzT(1-OLx,1-OLy,1,bi,bj)
-     I     , ikey
-     O     , vddiff
-     U     , ghat
-     O     , hbl
-     I     , bi, bj, myTime, myIter, myThid )
+     I       dbloc, Ritop, work2,
+     I       KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
+     I       KPPdiffKzT(1-OLx,1-OLy,1,bi,bj),
+     I       ikey,
+     O       vddiff,
+     U       ghat,
+     O       hbl,
+     I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables

@@ -86,7 +86,7 @@ C     i, j       :: Loop counters
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
       ikey = trIdentity + (ikey-1)*maxpass
-      kkey    = k + (ikey-1)*Nr
+      kkey = k + (ikey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
        WRITE(msgBuf,'(A,2I5)')
      &      'GMREDI_XTRANSPORT: trIdentity > maxpass ',

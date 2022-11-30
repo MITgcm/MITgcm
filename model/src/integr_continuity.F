@@ -155,7 +155,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
           DO j=1,sNy
            DO i=1,sNx
             dEtaHdt(i,j,bi,bj) = (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &                         / (implicDiv2Dflow*deltaTfreesurf)
+     &                         / (implicDiv2Dflow*deltaTFreeSurf)
            ENDDO
           ENDDO
          ENDIF
@@ -171,7 +171,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
        ELSEIF ( myIter.EQ.nIter0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            ks = kSurfC(I,J,bi,bj)
+            ks = kSurfC(i,j,bi,bj)
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                         *recip_deepFac2F(ks)
@@ -226,7 +226,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
         DO j=1,sNy
          DO i=1,sNx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTFreeSurf
          ENDDO
         ENDDO
        ENDIF

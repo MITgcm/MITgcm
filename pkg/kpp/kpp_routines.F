@@ -26,21 +26,21 @@ C--  o KPP_DOUBLEDIFF - Compute double diffusive contribution to diffusivities
 c***********************************************************************
 
       SUBROUTINE KPPMIX (
-     I       kmtj, shsq, dvsq, ustar, msk
-     I     , bo, bosol
+     I       kmtj, shsq, dvsq, ustar, msk,
+     I       bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , dbloc, Ritop, coriol
-     I     , diffusKzS, diffusKzT
-     I     , ikey
-     O     , diffus
-     U     , ghat
-     O     , hbl
-     I     , bi, bj, myTime, myIter, myThid )
+     I       dbloc, Ritop, coriol,
+     I       diffusKzS, diffusKzT,
+     I       ikey,
+     O       diffus,
+     U       ghat,
+     O       hbl,
+     I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c
@@ -166,10 +166,10 @@ CADJ STORE dbloc = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
       CALL Ri_iwmix (
-     I       kmtj, shsq, dbloc, ghat
-     I     , diffusKzS, diffusKzT
-     I     , ikey
-     O     , diffus, myThid )
+     I       kmtj, shsq, dbloc, ghat,
+     I       diffusKzS, diffusKzT,
+     I       ikey,
+     O       diffus, myThid )
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix
@@ -202,18 +202,18 @@ c diagnose the new boundary layer depth
 c-----------------------------------------------------------------------
 
       CALL bldepth (
-     I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+     I       kmtj,
+     I       dvsq, dbloc, Ritop, ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , coriol
-     I     , ikey
-     O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , bi, bj, myTime, myIter, myThid )
+     I       coriol,
+     I       ikey,
+     O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
+     I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp,
@@ -225,9 +225,9 @@ c compute boundary layer diffusivities
 c-----------------------------------------------------------------------
 
       CALL blmix (
-     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikey
-     I     , myThid )
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
+     O       dkm1, blmc, ghat, sigma, ikey,
+     I       myThid )
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dkm1,blmc,ghat = comlev1_kpp,
@@ -242,10 +242,10 @@ c enhance diffusivity at interface kbl - 1
 c-----------------------------------------------------------------------
 
       CALL enhance (
-     I       dkm1, hbl, kbl, diffus, casea
-     U     , ghat
-     O     , blmc
-     I     , myThid )
+     I       dkm1, hbl, kbl, diffus, casea,
+     U       ghat,
+     O       blmc,
+     I       myThid )
 
 cph(
 cph avoids recomp. of enhance
@@ -290,18 +290,18 @@ C     mixing coefficients blmc to pure Ri-number based mixing
 c*************************************************************************
 
       subroutine bldepth (
-     I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+     I       kmtj,
+     I       dvsq, dbloc, Ritop, ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , coriol
-     I     , ikey
-     O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , bi, bj, myTime, myIter, myThid )
+     I       coriol,
+     I       ikey,
+     O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
+     I       bi, bj, myTime, myIter, myThid )
 
 c     the oceanic planetary boundary layer depth, hbl, is determined as
 c     the shallowest depth where the bulk Richardson number is
@@ -1300,9 +1300,9 @@ c     transfer smoothed field to output array
 c*************************************************************************
 
       subroutine blmix (
-     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikey
-     I     , myThid )
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
+     O       dkm1, blmc, ghat, sigma, ikey,
+     I       myThid )
 
 c     mixing coefficients within boundary layer depend on surface
 c     forcing and the magnitude and gradient of interior mixing below
@@ -1600,10 +1600,10 @@ CADJ STORE ws = comlev1_kpp, key=ikey, kind=isbyte
 c*************************************************************************
 
       subroutine enhance (
-     I       dkm1, hbl, kbl, diffus, casea
-     U     , ghat
-     O     , blmc
-     &     , myThid )
+     I       dkm1, hbl, kbl, diffus, casea,
+     U       ghat,
+     O       blmc,
+     &       myThid )
 
 c enhance the diffusivity at the kbl-.5 interface
 
