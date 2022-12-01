@@ -33,7 +33,16 @@ c     == local variables ==
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS smooth3Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+      INTEGER IL
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 c     == end of interface ==
+
+      IL = ILNBLNK( smoothDir )
 
 c--   allow a mask other than maskC
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -63,7 +72,8 @@ c so this routine does not do anything
        nbt_in = smooth3Dnbt(smoothOpNb)/2
 
 c read smoothing [i.e diffusion] operator:
-       WRITE(fnamegeneric(1:80),'(1A,I3.3)')
+       WRITE(fnamegeneric,'(2A,I3.3)')
+     &       smoothDir(1:IL),
      &       'smooth3Doperator', smoothOpNb
        CALL READ_REC_3D_RL( fnamegeneric, smoothprec, Nr, smooth3D_Kwx,
      &                      1, 1, myThid )
@@ -290,7 +300,8 @@ C      end smooth3Dfilter() if block
        ENDIF
 
 c write smooth3Dnorm_3D to file:
-       WRITE(fnamegeneric(1:80),'(1A,I3.3)')
+       WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+     &       smoothDir(1:IL),
      &       'smooth3Dnorm', smoothOpNb
        CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,
      &                       Nr, smooth3Dnorm, 1, 1, myThid )

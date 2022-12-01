@@ -38,12 +38,21 @@ C     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
+C     == EXTERNAL FUNCTIONS ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
       INTEGER iUnit
       INTEGER nRetired
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr,jarr
+#endif
+      CHARACTER*(MAX_LEN_FNAM) namBuf
+      INTEGER IL
+#ifdef HAVE_SYSTEM
+      INTEGER pIL
 #endif
 C     retired parameters (others are in ctrl_local_params.h)
       LOGICAL ctrlUseGen
@@ -119,7 +128,7 @@ C--   Read the namelist input.
      &  doMainUnpack, doMainPack,
      &  doSinglePrecTapelev,
      &  doAdmtlmBypassAD,
-     &  delZexp, forcingPrecond ,ctrlprec
+     &  delZexp, forcingPrecond, ctrlprec, ctrlDir
 cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL
@@ -198,6 +207,8 @@ C     flag is defined
 #else
         ctrlprec = 64
 #endif
+
+        ctrlDir = ' '
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
@@ -438,6 +449,42 @@ C--     Next, read the cost data file.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
+C-- Create ctrlDir if necessary
+      IF ( ctrlDir .NE. ' ' ) THEN
+       IL = ILNBLNK( ctrlDir )
+C      append "/", if necessary
+       IF ( IL.LT.MAX_LEN_FNAM .AND. ctrlDir(IL:IL).NE.'/' ) THEN
+        namBuf(1:IL) = ctrlDir(1:IL)
+        WRITE(ctrlDir(1:IL+1),'(2A)') namBuf(1:IL),'/'
+       ENDIF
+#ifdef HAVE_SYSTEM
+C      create directory
+       IL = ILNBLNK( ctrlDir ) -1
+       WRITE(namBuf,'(2A)') ' mkdir -p ', ctrlDir(1:IL)
+       pIL = 1 + ILNBLNK( namBuf )
+       WRITE(standardMessageUnit,'(3A)')
+     &  '==> SYSTEM CALL (from CTRL_READPARMS): >',
+     &                                 namBuf(1:pIL), '<'
+       CALL SYSTEM( namBuf(1:pIL) )
+#else
+       WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_READPARMS: ',
+     &       'cannot call mkdir -> please create ctrlDir manually'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
+      ENDIF
+
+      IF (ctrlDir .NE. ' ') THEN
+       WRITE(msgBuf,'(2A)')
+     & 'read-write ctrl files from ', ctrlDir(1:IL)
+      ELSE
+       WRITE(msgBuf,'(A)')
+     & 'read-write ctrl files from current run directory'
+      ENDIF
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+C-- Check retired parameters
       nRetired = 0
       IF ( ctrlSmoothCorrel2D ) THEN
        WRITE(msgBuf,'(2A)') 'S/R CTRL_READPARMS: ',

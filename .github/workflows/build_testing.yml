@@ -67,7 +67,7 @@ jobs:
      matrix:
       include:
         - exp: "global_ocean.90x40x15"
-          precs: "16"
+          precs: "14"
 
    continue-on-error: true
 
