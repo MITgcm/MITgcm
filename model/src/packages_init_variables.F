@@ -6,6 +6,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -114,10 +117,14 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "DYNVARS.h"
-# ifdef ALLOW_AUTODIFF_TAMC
-#  include "tamc.h"
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
 # endif
 #endif
 
@@ -337,6 +344,16 @@ C--   Initialise float position
 #endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_SHELFICE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
+CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
+#  ifndef SHI_ALLOW_GAMMAFRICT
+CADJ STORE shiTransCoeffT = tapelev_init, key = 1
+CADJ STORE shiTransCoeffS = tapelev_init, key = 1
+#  else
+CADJ STORE shiCDragFld = tapelev_init, key = 1
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC */
       IF (useShelfIce) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
@@ -364,6 +381,10 @@ C--   Initialise float position
 #endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SEAICE
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area = tapelev_init, key = 1
+CADJ STORE heff = tapelev_init, key = 1
+# endif
 C--   Initialize SEAICE model.
       IF (useSEAICE) THEN
 # ifdef ALLOW_DEBUG
