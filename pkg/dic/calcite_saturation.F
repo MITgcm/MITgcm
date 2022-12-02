@@ -64,15 +64,14 @@ Cmick....................................................
        DO k=1,Nr
 c determine carbonate ion concentration through full domain
 c determine calcite saturation state
-C Set diagnostic fields to zero
-        CALL LEF_ZERO( carbonate,myThid )
-        CALL LEF_ZERO( pCO2local,myThid )
-        CALL LEF_ZERO( pHlocal  ,myThid )
-
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
             locTemp(i,j) = theta(i,j,k,bi,bj)
-            locSalt(i,j) = salt (i,j,k,bi,bj)           
+            locSalt(i,j) = salt (i,j,k,bi,bj)
+            
+            carbonate(i,j) = 0. _d 0
+            pCO2local(i,j) = 0. _d 0
+            pHlocal(i,j)   = 0. _d 0
          ENDDO
         ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
