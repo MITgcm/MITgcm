@@ -53,6 +53,8 @@ c     == local variables ==
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+      integer ilDir
+
 c     == external ==
       integer  ilnblnk
       external ilnblnk
@@ -71,6 +73,9 @@ CEOP
 
       doglobalread = .false.
       ladinit      = .false.
+
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       equal = .true.
 
@@ -126,7 +131,7 @@ C     this will be no longer necessary
 C--
       il=ilnblnk( xx_hfacc_file )
       write(fnamehfacc(1:80),'(2a,i10.10)')
-     &     xx_hfacc_file(1:il),'.',optimcycle
+     &     ctrlDir(1:ilDir)//xx_hfacc_file(1:il),'.',optimcycle
 #ifdef ALLOW_HFACC3D_CONTROL
       call active_read_xyz( fnamehfacc, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,

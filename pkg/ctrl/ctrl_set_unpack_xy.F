@@ -44,7 +44,6 @@ c     == external ==
       external ilnblnk
 
 c     == local variables ==
-      LOGICAL doPackOld
       integer bi,bj
       integer i,j,k
       integer ii, irec
@@ -96,7 +95,6 @@ c     == end of interface ==
       imax = sNx
 
       nbuffGlobal = nbuffGlobal + 1
-      doPackOld = (.NOT.ctrlSmoothCorrel2D).AND.(.NOT.ctrlUseGen)
 
 c     Initialise temporary file
       do k = 1,Nr
@@ -235,23 +233,6 @@ cph(
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
-                     IF ( doPackOld ) THEN
-                      if ( lxxadxx ) then
-                        globfld3d(i,bi,ip,j,bj,jp,k) =
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-     &                       / sqrt(weightfld2d(i,bi,ip,j,bj,jp))
-#endif
-     &                       * precondScalar
-                      else
-                        globfld3d(i,bi,ip,j,bj,jp,k) =
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-     &                       * sqrt(weightfld2d(i,bi,ip,j,bj,jp))
-#endif
-     &                       / precondScalar
-                      endif
-                     ELSE !IF ( doPackOld ) THEN
                       if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -261,7 +242,6 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / precondScalar
                       endif
-                     ENDIF !IF ( doPackOld ) THEN
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -345,23 +325,6 @@ cph(
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
-                     IF ( doPackOld ) THEN
-                      if ( lxxadxx ) then
-                        globfld3d(i,bi,ip,j,bj,jp,k) =
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-     &                       / sqrt(weightfld2d(i,bi,ip,j,bj,jp))
-#endif
-     &                       * precondScalar
-                      else
-                        globfld3d(i,bi,ip,j,bj,jp,k) =
-     &                       globfld3d(i,bi,ip,j,bj,jp,k)
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-     &                       * sqrt(weightfld2d(i,bi,ip,j,bj,jp))
-#endif
-     &                       / precondScalar
-                      endif
-                     ELSE !IF ( doPackOld ) THEN
                       if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
@@ -371,7 +334,6 @@ cph)
      &                       globfld3d(i,bi,ip,j,bj,jp,k)
      &                       / precondScalar
                       endif
-                     ENDIF !IF ( doPackOld ) THEN
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -409,8 +371,6 @@ cph)
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
 c-- part 1: preliminary reads and definitions
-
-      doPackOld = (.NOT.ctrlSmoothCorrel2D).AND.(.NOT.ctrlUseGen)
 
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
 #ifdef ALLOW_AUTODIFF
@@ -531,7 +491,6 @@ c-- 2.2: normalize field if needed
             nveccount = nveccount + 1
             fld2dNodim(i,j,bi,bj)=phtmpadmtlm(nveccount)
 #endif
-           IF ( .NOT.doPackOld ) THEN
             if (lxxadxx) then
                fld2dDim(i,j,bi,bj) =
      &              fld2dNodim(i,j,bi,bj) * precondScalar
@@ -539,27 +498,6 @@ c-- 2.2: normalize field if needed
                fld2dDim(i,j,bi,bj) =
      &              fld2dNodim(i,j,bi,bj) / precondScalar
             endif
-           ELSE !IF ( .NOT.doPackOld ) THEN
-# ifndef ALLOW_NONDIMENSIONAL_CONTROL_IO
-            if (lxxadxx) then
-               fld2dDim(i,j,bi,bj) = fld2dNodim(i,j,bi,bj)
-     &                       * precondScalar
-            else
-               fld2dDim(i,j,bi,bj) = fld2dNodim(i,j,bi,bj)
-     &                       / precondScalar
-            endif
-# else
-            if (lxxadxx) then
-               fld2dDim(i,j,bi,bj) =
-     &              fld2dNodim(i,j,bi,bj) / sqrt(wei2d(i,j,bi,bj))
-     &                       * precondScalar
-            else
-               fld2dDim(i,j,bi,bj) =
-     &              fld2dNodim(i,j,bi,bj) * sqrt(wei2d(i,j,bi,bj))
-     &                       / precondScalar
-            endif
-# endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
-           ENDIF !IF ( .NOT.doPackOld ) THEN
            endif
           ENDDO
          ENDDO

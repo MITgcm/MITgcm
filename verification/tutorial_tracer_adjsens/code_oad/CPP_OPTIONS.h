@@ -53,10 +53,20 @@ C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
+C o Include/exclude sound speed calculation code
+C o (Note that this is a diagnostic from Del Grasso algorithm, not derived
+C    from EOS)
+#undef INCLUDE_SOUNDSPEED_CALC_CODE
+
 C-- Vertical mixing code options:
 
-C o Include/exclude call to S/R CONVECT
+C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT
 #define INCLUDE_CONVECT_CALL
+
+C o Include/exclude calling S/R CONVECTIVE_ADJUSTMENT_INI, turned off by
+C   default because it is an unpopular historical left-over, here we
+C   turn it on to reproduce old results
+#define INCLUDE_CONVECT_INI_CALL
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -73,6 +83,10 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #define EXCLUDE_PCELL_MIX_CODE
 
+C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
+C   for tracers (after scaling by constant Prandtl number)
+#undef ALLOW_SMAG_3D_DIFFUSIVITY
+
 C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
@@ -84,6 +98,9 @@ C o Include/exclude Implicit vertical advection code
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
 
+C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
+#undef ALLOW_QHYD_STAGGER_TS
+
 C-- Model formulation options:
 
 C o Allow/exclude "Exact Convervation" of fluid in Free-Surface formulation
@@ -93,6 +110,7 @@ C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that grid-cell thickness (hFactors) varies with time
 #define NONLIN_FRSURF
+C o Disable code for rStar coordinate and/or code for Sigma coordinate
 #undef  DISABLE_RSTAR_CODE
 #define DISABLE_SIGMA_CODE
 
@@ -104,7 +122,7 @@ C o Include/exclude GM-like eddy stress in momentum code
 
 C-- Algorithm options:
 
-C o Use Non Self-Adjoint (NSA) conjugate-gradient solver
+C o Include/exclude code for Non Self-Adjoint (NSA) conjugate-gradient solver
 #undef ALLOW_CG2D_NSA
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver

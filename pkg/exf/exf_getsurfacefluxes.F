@@ -54,9 +54,6 @@ C     == Global variables ==
 # include "ctrl_dummy.h"
 # include "CTRL_GENARR.h"
 #endif
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
-#  include "ecco_cost.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -70,9 +67,6 @@ C     myThid :: Thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     == Local variables
 #ifdef ALLOW_CTRL
-# ifdef ECCO_CTRL_DEPRECATED
-      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-# endif
 # ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -108,7 +102,7 @@ CEOP
 
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
-      IF ( useCTRL.AND.ctrlUseGen) THEN
+      IF ( useCTRL) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),mybxhi(myThid)
          DO j = 1,sNy
@@ -140,78 +134,10 @@ CEOP
          ENDDO
         ENDDO
        ENDDO
-      ENDIF !if (ctrlUseGen) then
+      ENDIF !if (useCTRL) then
 #endif
 
-CML#if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
-#ifdef ECCO_CTRL_DEPRECATED
-
-#ifdef ALLOW_HFLUX_CONTROL
-      CALL CTRL_GET_MASK2D( xx_hflux_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
-     &     mask2D, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
-     &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
-     &     whflux, mytime, myiter, mythid )
-#endif
-
-#ifdef ALLOW_SFLUX_CONTROL
-      CALL CTRL_GET_MASK2D( xx_sflux_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
-     &     mask2D, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
-     &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
-     &     wsflux, mytime, myiter, mythid )
-#endif
-
-      IF ( .NOT.useAtmWind ) THEN
-
-      IF ( .NOT.ctrlUseGen ) THEN
-#ifndef ALLOW_ROTATE_UV_CONTROLS
-
-#ifdef ALLOW_USTRESS_CONTROL
-      CALL CTRL_GET_MASK2D( xx_tauu_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     mask2D, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
-     &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &     wtauu, mytime, myiter, mythid )
-#endif
-
-#ifdef ALLOW_VSTRESS_CONTROL
-      CALL CTRL_GET_MASK2D( xx_tauv_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     mask2D, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
-     &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &     wtauv, mytime, myiter, mythid )
-#endif
-
-#else
-
-#if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_VSTRESS_CONTROL))
-      CALL CTRL_GET_MASK2D( xx_tauu_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     mask2D, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
-     &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
-     &     wtauu, mytime, myiter, mythid )
-
-      CALL CTRL_GET_MASK2D( xx_tauv_file, mask2D, myThid )
-      CALL CTRL_GET_GEN (
-     &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     mask2D, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
-     &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
-     &     wtauv, mytime, myiter, mythid )
-
-#endif /* ALLOW_USTRESS_CONTROL and ALLOW_VSTRESS_CONTROL */
-
-#endif /* ALLOW_ROTATE_UV_CONTROLS */
-      ENDIF ! (.NOT.ctrlUseGen)
-
-#else
       IF ( (useCTRL).AND.(.NOT.useAtmWind) ) THEN
-#endif /* undef ALLOW_ECCO || def ECCO_CTRL_DEPRECATED */
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _EXCH_XY_RL(tmpUE,myThid)

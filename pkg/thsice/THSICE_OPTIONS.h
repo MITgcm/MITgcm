@@ -17,6 +17,10 @@ C- only to check conservation
 C  (change content of ICE_qleft,fresh,salFx-T files)
 #undef CHECK_ENERGY_CONSERV
 
+C- replace MIN/MAX by smooth functions, avoid divisions by zero and
+C  sqrt of zero mostly to help AD code generation, changes results
+#undef THSICE_REGULARIZE_CALC_THICKN
+
 C CPP Macros go here
 
 #endif /* ALLOW_THSICE */

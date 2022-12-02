@@ -46,7 +46,8 @@ C     adjust_volum :: adjustment effect on the volume (domain size)
 C     numbWrite    :: count the Number of warning written on STD-ERR file
 C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       INTEGER i,j,bi,bj
-      INTEGER ks, numbWrite, numbWrMax
+      INTEGER ks, nTmp
+      INTEGER numbWrite, numbWrMax
       _RL hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
@@ -202,9 +203,11 @@ C-- Global diagnostic :
       IF ( adjust_nb_pt.GE.1. ) THEN
         _GLOBAL_SUM_RL( adjust_volum , myThid )
         _BEGIN_MASTER( myThid )
+C   just to avoid issue with OpenAD: copy to integer nTmp before printing
+        nTmp = NINT(adjust_nb_pt)
         WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
      &    ' SURF_ADJUSTMENT: Iter=', myIter,
-     &    ' Nb_pts,Vol=', nint(adjust_nb_pt), adjust_volum
+     &    ' Nb_pts,Vol=', nTmp, adjust_volum
         _END_MASTER( myThid )
       ENDIF
 

@@ -4,6 +4,8 @@
 # ECCO controlvariables
 # *********************
  &CTRL_NML
+# write control variables into a separate directory
+ ctrlDir = './ctrl_variables',
  &
 #
 # *********************
