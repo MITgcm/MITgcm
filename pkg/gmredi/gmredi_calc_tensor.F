@@ -100,7 +100,7 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
 #else
       INTEGER ks
       _RL dSigmaH, dSigmaR, Sloc, rTop
-c     _RL M2loc
+      _RL M2loc
 #endif
       _RL recipMaxSlope
       _RL deltaH, integrDepth
@@ -293,6 +293,25 @@ C   Use Leith QG viscosity in GMRedi scheme
      I                bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_GM_LEITH_QG */
+
+#ifdef GM_GEOM_VARIABLE_K
+C     Calculate the kgm as per the GEOMETRIC formulation
+C        (e.g. Mak et al, 2018; see also Marshall et al, 2012)
+      IF (GM_useGEOM) THEN
+        IF ( GEOM_alpha.NE.0. ) THEN
+          DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+                GEOMK(i,j,k,bi,bj) = 0. _d 0
+              ENDDO
+            ENDDO
+          ENDDO
+          CALL GMREDI_CALC_GEOM(
+     I                sigmaX, sigmaY, sigmaR,
+     I                bi, bj, myTime, myIter, myThid )
+        ENDIF
+      ENDIF
+#endif /* GM_GEOM_VARIABLE_K */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
@@ -568,6 +587,10 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+     &           + GM_skewflx*GEOMK(i,j,k,bi,bj)
+     &            *GM_bolFac2d(i,j,bi,bj)
+#endif
 #ifdef ALLOW_GM_LEITH_QG
      &           + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
      &                 + GM_LeithQG_K(i,j,k,bi,bj) )
@@ -589,6 +612,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
 #endif
+C no GM_GEOM_VARIABLE here because this is the Redi part
 #ifdef ALLOW_GM_LEITH_QG
      &                     + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
      &                           + GM_LeithQG_K(i,j,k,bi,bj) )
@@ -754,6 +778,7 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+C no GM_GEOM_VARIABLE here because this is the Redi part
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*(GM_LeithQG_K(i-1,j,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
 #endif
@@ -839,6 +864,7 @@ C         store in tmp1k Kuz_Redi
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+C no GM_GEOM_VARIABLE here because this is the Redi part
 #ifdef ALLOW_GM_LEITH_QG
      &      + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
      &            + GM_LeithQG_K(i,j,k,bi,bj) )
@@ -981,6 +1007,7 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+C no GM_GEOM_VARIABLE here because this is the Redi part
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*(GM_LeithQG_K(i,j-1,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
 #endif
@@ -1066,6 +1093,7 @@ C         store in tmp1k Kvz_Redi
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+C no GM_GEOM_VARIABLE here because this is the Redi part
 #ifdef ALLOW_GM_LEITH_QG
      &      + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)
      &            + GM_LeithQG_K(i,j,k,bi,bj) )

@@ -77,6 +77,9 @@ C-    Initialization : <= done in S/R gmredi_init
 # ifdef GM_VISBECK_VARIABLE_K
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 # endif
+# ifdef GM_GEOM_VARIABLE_K
+CADJ STORE GEOMK(:,:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+# endif
 #endif
       IF (GM_AdvForm) THEN
 C     change sign of vertical Sigma gradient to match stratification sign
@@ -180,6 +183,9 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+     &      +op5*(GEOMK(i,j-1,k,bi,bj)+GEOMK(i,j,k,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)

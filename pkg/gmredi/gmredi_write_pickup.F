@@ -32,7 +32,7 @@ C     myThid          :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef GM_BATES_K3D
+#ifdef GM_K3D
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -53,14 +53,14 @@ C     msgBuf      :: Informational/error message buffer
       _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 2+2*GM_Bates_NModes )
+      PARAMETER( listDim = 2+2*GM_K3D_NModes )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vec(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
 CEOP
 
-      IF ( .NOT.GM_useBatesK3d ) RETURN
+      IF (.NOT. GM_useK3D) RETURN
 
       lChar = ILNBLNK(suff)
       IF ( lChar.EQ.0 ) THEN
@@ -77,8 +77,8 @@ C     Centre mode
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            vec(i,j,k,bi,bj) = modesC(1,i,j,k,bi,bj)
           ENDDO
          ENDDO
@@ -92,12 +92,12 @@ C     Centre mode
       IF (m.LE.listDim) wrFldList(m) = fieldname
 
 C     Western Mode
-      DO n=1,GM_Bates_NModes
+      DO n=1,GM_K3D_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
             vec(i,j,k,bi,bj) = modesW(n,i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -112,12 +112,12 @@ C     Western Mode
       ENDDO
 
 C     Southern Mode
-      DO n=1,GM_Bates_NModes
+      DO n=1,GM_K3D_NModes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
             vec(i,j,k,bi,bj) = modesS(n,i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -142,7 +142,7 @@ C     The deformation radius (2D field)
      &     Rdef, nm, myIter, myThid )
       fieldname = 'Rdef'
       IF (m.LE.listDim) wrFldList(m) = fieldname
-
+      
       nWrFlds = m
       IF ( nWrFlds.GT.listDim ) THEN
         WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
@@ -172,7 +172,138 @@ C     uses this specific S/R to write (with more informations) only meta files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
-#endif /* GM_BATES_K3D */
+#endif /* GM_K3D */
+
+#ifdef GM_GEOM_VARIABLE_K
+
+C     === Functions ====
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C !LOCAL VARIABLES: ====================================================
+C     m           :: loop index / field number
+C     nm          :: record number
+C     fp          :: pickup-file precision
+C     glf         :: local flag for "globalFiles"
+C     fn          :: character buffer for creating filename
+C     nWrFlds     :: number of fields being written
+C     listDim     :: dimension of "wrFldList" local array
+C     wrFldList   :: list of written fields
+C     msgBuf      :: Informational/error message buffer
+      INTEGER m, nm, fp, lChar
+      LOGICAL glf
+      _RL     timList(1)
+      CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER listDim, nWrFlds
+      PARAMETER( listDim = 4 )
+      CHARACTER*(8) wrFldList(listDim)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(8) fieldname
+CEOP
+
+      IF (.NOT. GM_useGEOM) RETURN
+      
+C--------------------------
+#ifdef ALLOW_MDSIO
+      
+      IF ( GEOM_pickup_write_mdsio ) THEN
+
+        lChar = ILNBLNK(suff)
+        IF ( lChar.EQ.0 ) THEN
+          WRITE(fn,'(2A)') 'pickup_gmredi'
+        ELSE
+          WRITE(fn,'(2A)') 'pickup_gmredi.',suff(1:lChar)
+        ENDIF
+        fp = precFloat64
+        m  = 0
+        
+        nm = -m*Nr
+        m = m + 1
+        nm = nm-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_ene,nm,myIter,myThid )
+        fieldname = 'GEOM_ene'
+        IF (m.LE.listDim) wrFldList(m) = fieldname
+        
+        m = m + 1
+        nm = nm-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_now,nm,myIter,myThid )
+        fieldname = 'erhs_now'
+        IF (m.LE.listDim) wrFldList(m) = fieldname
+        
+        m = m + 1
+        nm = nm-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm1,nm,myIter,myThid )
+        fieldname = 'erhs_nm1'
+        IF (m.LE.listDim) wrFldList(m) = fieldname
+        
+        m = m + 1
+        nm = nm-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm2,nm,myIter,myThid )
+        fieldname = 'erhs_nm2'
+        IF (m.LE.listDim) wrFldList(m) = fieldname
+        
+        
+        nWrFlds = m
+        IF ( nWrFlds.GT.listDim ) THEN
+          WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
+     &         'trying to write ',nWrFlds,' fields'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
+     &         'field-list dimension (listDim=',listDim,') too small'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
+          STOP 'ABNORMAL END: S/R GMREDI_WRITE_PICKUP (list-size Pb)'
+        ENDIF
+C     uses this specific S/R to write (with more informations) only meta files
+        m  = 1
+        nm = ABS(nm)
+        IF ( nWrFlds*Nr .EQ. nm ) THEN
+          m  = Nr
+          nm = nWrFlds
+        ENDIF
+        glf  = globalFiles
+        timList(1) = myTime
+        CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
+     &       0, 0, m, ' ',
+     &       nWrFlds, wrFldList,
+     &       1, timList, oneRL,
+     &       nm, myIter, myThid )
+     
+        WRITE(*,'(2A)') 'GMREDI_WRITE_PICKUP: ',
+     &       'writing GEOM msdio pickup'
+
+      ENDIF
+#endif /* ALLOW_MDSIO */
+C--------------------------
+#ifdef ALLOW_MNC
+      IF ( GEOM_pickup_write_mnc ) THEN
+
+        IF ( permPickup ) THEN
+          WRITE(fn,'(A)') 'pickup_gmredi'
+        ELSE
+          WRITE(fn,'(A,A)') 'pickup_gmredi.',suff
+        ENDIF
+C       First ***define*** the file group name
+        CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+        IF ( permPickup ) THEN
+          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+        ELSE
+          CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
+        ENDIF
+C       Then set the actual unlimited dimension
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'GEOM_ene',   GEOM_ene,   myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_now',ene_rhs_now,myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
+
+        WRITE(*,'(2A)') 'GMREDI_WRITE_PICKUP: ',
+     &       'writing GEOM mnc pickup'
+      ENDIF
+#endif /* ALLOW_MNC */
+C--------------------------
+#endif /* GM_GEOM_VARIABLE_K */
 
       RETURN
       END

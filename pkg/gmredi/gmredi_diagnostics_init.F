@@ -48,6 +48,103 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c     IF ( useDiagnotics ) THEN
 
+#ifdef GM_GEOM_VARIABLE_K
+        diagName  = 'GM_GEOMK'
+        diagTitle = 'GEOM 3d kgm field'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMkap0'
+        diagTitle = 'GEOM 2d kgm field'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+CCCCCCCCCCCCCCCCCCCCCCC
+C  stuff here probably can be removed, aux variables for checking purposes
+        diagName  = 'depthC'
+        diagTitle = 'depthC'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'd_taper'
+        diagTitle = 'depth_taper     '
+        diagUnits = '--              '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+CCCCCCCCCCCCCCCCCCCCCCC
+
+        diagName  = 'GEOMeE  '
+        diagTitle = 'GEOM parameterised depth-int eddy energy'
+        diagUnits = 'm^3/s^2         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMstru'
+        diagTitle = 'spatial structure function'
+        diagUnits = '                '
+        diagCode  = 'SMRP    MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEgen'
+        diagTitle = 'GEOM eddy energy generation tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEdis'
+        diagTitle = 'GEOM eddy energy dissipation tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEadv'
+        diagTitle = 'GEOM eddy energy advective tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMEwav'
+        diagTitle = 'GEOM eddy energy wave advection tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMElap'
+        diagTitle = 'GEOM eddy energy diffusion tendency'
+        diagUnits = 'm^3/s^3         '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOM_c1 '
+        diagTitle = 'first baroclinic wave phase speed'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GEOMcros'
+        diagTitle = 'signed long Rossby wave phase speed'
+        diagUnits = 'm/s             '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#endif
+
         diagName  = 'GM_VisbK'
         diagTitle =
      &     'Mixing coefficient from Visbeck etal parameterization'

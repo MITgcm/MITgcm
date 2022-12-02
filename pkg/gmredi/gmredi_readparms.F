@@ -80,7 +80,14 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Bates_surfMinDepth, GM_Bates_vecFreq,
      &          GM_Bates_minRenorm, GM_Bates_maxRenorm,
      &          GM_useLeithQG,
-     &          GM_MNC
+     &          GM_MNC,
+     &          GM_useGEOM,
+     &          GEOM_lmbda, GEOM_alpha, ene_init,
+     &          ene_kappa, ene_local,
+     &          vert_struc, vert_struc_min, vert_struc_max,
+     &          GEOM_minval_K, GEOM_maxval_K,
+     &          GEOM_pickup_write_mdsio, GEOM_pickup_write_mnc,
+     &          GEOM_pickup_read_mdsio, GEOM_pickup_read_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -145,6 +152,23 @@ C--   Default values Visbeck
       GM_Visbeck_maxSlope = UNSET_RL
       GM_Visbeck_minVal_K =    0. _d 0
       GM_Visbeck_maxVal_K = 2500. _d 0
+
+C--   Default values GEOMETRIC
+      GM_useGEOM              = .FALSE.
+      GEOM_lmbda              = 2. _d -7
+      GEOM_alpha              = 1. _d -1
+      ene_init                = 1. _d -6
+      ene_kappa               = 1. _d +3
+      ene_local               = .FALSE.
+      vert_struc              = .FALSE.
+      vert_struc_min          = 1. _d -1
+      vert_struc_max          = 1. _d 0
+      GEOM_minVal_K           = 0. _d 0
+      GEOM_maxVal_K           = 2500. _d 0
+      GEOM_pickup_write_mdsio = .FALSE.
+      GEOM_pickup_write_mnc   = .FALSE.
+      GEOM_pickup_read_mdsio  = .FALSE.
+      GEOM_pickup_read_mnc    = .FALSE.
 
 C--   Default values for BatesK3d
       GM_useBatesK3d     = .FALSE.
@@ -212,10 +236,12 @@ C     Some constants
         GM_skewflx = 0.
         GM_advect  = 1.
         GM_ExtraDiag = GM_Visbeck_alpha.NE.0. .OR. GM_isopycK.NE.0.
+     &                 .OR. GEOM_alpha.NE.0.
       ELSE
         GM_skewflx = 1.
         GM_advect  = 0.
         GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+     &                 .OR. GEOM_alpha.NE.0.
       ENDIF
       IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
      &     GM_iso1dFile .NE. GM_bol1dFile ) THEN

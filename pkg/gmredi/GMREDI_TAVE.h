@@ -25,6 +25,13 @@ C     Storage arrays for time-averages
      &                       Visbeck_K_T
 #endif
 
+#ifdef GM_GEOM_VARIABLE_K
+      _RL GEOM_K_T   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_ene_T (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /GEOM_TAVE/
+     &                       GEOM_K_T, GEOM_ene_T
+#endif
+
 #ifdef GM_BOLUS_ADVEC
       _RL GM_PsiXtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GM_PsiYtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

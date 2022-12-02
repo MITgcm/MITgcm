@@ -227,5 +227,209 @@ C--    Update overlap regions:
 C        CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
 #endif /* GM_BATES_K3D */
 
+#ifdef GM_GEOM_VARIABLE_K
+
+C     !LOCAL VARIABLES:
+C     fn          :: character buffer for creating filename
+C     fp          :: precision of pickup files
+C     filePrec    :: pickup-file precision (read from meta file)
+C     nbFields    :: number of fields in pickup file (read from meta file)
+C     missFldList :: List of missing fields   (attempted to read but not found)
+C     missFldDim  :: Dimension of missing fields list array: missFldList
+C     nMissing    :: Number of missing fields (attempted to read but not found)
+C     j           :: loop index
+C     nj          :: record number
+C     ioUnit      :: temp for writing msg unit
+C     msgBuf      :: Informational/error message buffer
+      INTEGER fp
+      INTEGER filePrec, nbFields
+      INTEGER missFldDim, nMissing
+      INTEGER i,j,k,n,nm,ioUnit,bi,bj
+      PARAMETER( missFldDim = 4 )
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(8) missFldList(missFldDim)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      CHARACTER*(8) fieldname
+CEOP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF (.NOT. GM_useGEOM) RETURN
+      
+      IF ( .NOT. (GEOM_pickup_read_mnc .OR.
+     &            GEOM_pickup_read_mdsio ) ) THEN
+        WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &      'in routine but no pickup option specified!'
+        WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &        'WARNING! going to (re)initialise ene_old!'
+
+      ENDIF
+      
+C--------------------------
+#ifdef ALLOW_MDSIO
+      
+      IF ( GEOM_pickup_read_mdsio ) THEN
+
+        IF ( pickupSuff.EQ.' ' ) THEN
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_gmredi.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+            WRITE(fn,'(A,A)') 'pickup_gmredi.', suff
+          ENDIF
+        ELSE
+          WRITE(fn,'(A,A10)') 'pickup_gmredi.', pickupSuff
+        ENDIF
+        fp = precFloat64
+
+        CALL READ_MFLDS_SET(
+     I                      fn,
+     O                      nbFields, filePrec,
+     I                      Nr, myIter, myThid )
+        _BEGIN_MASTER( myThid )
+        IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
+          WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &      'pickup-file binary precision do not match !'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,2(A,I4))') 'GMREDI_READ_PICKUP: ',
+     &      'file prec.=', filePrec, ' but expecting prec.=', fp
+          CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( 0 )
+          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (data-prec Pb)'
+        ENDIF
+        _END_MASTER( myThid )
+
+        IF ( nbFields.LE.0 ) THEN
+C-      No meta-file or old meta-file without List of Fields
+          ioUnit = errorMessageUnit
+          IF ( pickupStrictlyMatch ) THEN
+            WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &        'no field-list found in meta-file',
+     &        ' => cannot check for strick-matching'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &        'try with " pickupStrictlyMatch=.FALSE.,"',
+     &        ' in file: "data", NameList: "PARM03"'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+          ELSE
+            WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
+     &        ' no field-list found'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+            IF ( nbFields.EQ.-1 ) THEN
+C-      No meta-file
+              WRITE(msgBuf,'(4A)') 'WARNING >> ',
+     &          ' try to read pickup as currently written'
+              CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid)
+            ELSE
+              WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &          'no field-list found in meta-file'
+                CALL PRINT_ERROR( msgBuf, myThid )
+                CALL ALL_PROC_DIE( myThid )
+                STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+            ENDIF
+          ENDIF
+        ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+        IF ( nbFields.EQ.0 ) THEN
+C---    Old way to read pickup:
+
+        ELSE
+
+C---    read GMREDI fields for restart
+          nm = nm*Nr
+C         ---2D fields---
+C         GEOMETRIC energy
+          fieldname='GEOM_ene'
+          CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene,
+     &         nm, fp, 1, myIter, myThid )
+          CALL EXCH_XY_RL(GEOM_ene, myThid)
+          CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene_old,
+     &         nm, fp, 1, myIter, myThid )
+          CALL EXCH_XY_RL(GEOM_ene_old, myThid)
+          
+          fieldname='erhs_now'
+          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_now,
+     &         nm, fp, 1, myIter, myThid )
+          CALL EXCH_XY_RL(ene_rhs_now, myThid)
+          
+          fieldname='erhs_nm1'
+          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
+     &         nm, fp, 1, myIter, myThid )
+          CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
+          
+          fieldname='erhs_nm2'
+          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm2,
+     &         nm, fp, 1, myIter, myThid )
+          CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
+
+        ENDIF
+
+C--     Check for missing fields:
+        nMissing = missFldDim
+        CALL READ_MFLDS_CHECK(
+     O       missFldList,
+     U       nMissing,
+     I       myIter, myThid )
+        IF ( nMissing.GT.missFldDim ) THEN
+          WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &         'missing fields list has been truncated to', missFldDim
+          CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
+          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (list-size Pb)'
+        ENDIF
+        IF ( nMissing.GE.1 ) THEN
+          ioUnit = errorMessageUnit
+          DO j=1,nMissing
+          WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &          'cannot restart without field "',missFldList(nm),'"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          ENDDO
+          CALL ALL_PROC_DIE( myThid )
+          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+        ENDIF
+        
+        WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
+     &        'reading mdsio pickup'
+
+      ENDIF
+#endif /* ALLOW_MDSIO */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_MNC
+
+      IF ( GEOM_pickup_read_mnc ) THEN
+        IF ( GEOM_pickup_read_mdsio ) THEN
+          WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
+     &         'GEOM mdsio and mnc read both on, skipping mnc read'
+        ELSE
+          WRITE(fn,'(A)') 'pickup_gmredi'
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+          CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'GEOM_ene',GEOM_ene,    myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'GEOM_ene',GEOM_ene_old,myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_now',ene_rhs_now,myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
+          CALL EXCH_XY_RL(GEOM_ene, myThid)
+          CALL EXCH_XY_RL(GEOM_ene_old, myThid)
+          CALL EXCH_XY_RL(ene_rhs_now, myThid)
+          CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
+          CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
+          
+          WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
+     &        'reading mnc pickup'
+        ENDIF
+      ENDIF
+#endif  /* ALLOW_MNC */
+
+#endif /* GM_GEOM_VARIABLE_K */
+
       RETURN
       END

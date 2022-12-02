@@ -110,6 +110,11 @@ C      Normalize by integrated time
      &   CALL TIMEAVE_NORMALIZE( Visbeck_K_T, GM_timeAve,
      &                           1 , bi, bj, myThid )
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+        IF (GEOM_alpha.NE.0.)
+     &   CALL TIMEAVE_NORMALIZE( GEOM_K_T, GM_timeAve,
+     &                           Nr , bi, bj, myThid )
+#endif
 #ifdef GM_BOLUS_ADVEC
         IF (GM_AdvForm) THEN
          CALL TIMEAVE_NORMALIZE( GM_PsiXtave, GM_timeAve,
@@ -133,6 +138,11 @@ C      Normalize by integrated time
 #ifdef GM_VISBECK_VARIABLE_K
          IF (GM_Visbeck_alpha.NE.0.)
      &        CALL WRITE_FLD_XY_RL('Visbeck_K-T.',suff,Visbeck_K_T,
+     &                             myIter,myThid)
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+         IF (GEOM_alpha.NE.0.)
+     &        CALL WRITE_FLD_XY_RL('GEOM_K-T.',suff,GEOM_K_T,
      &                             myIter,myThid)
 #endif
 #ifdef GM_BOLUS_ADVEC
@@ -165,6 +175,12 @@ C      Normalize by integrated time
      &          Visbeck_K_T, myThid)
          ENDIF
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+         IF (GEOM_alpha.NE.0.) THEN
+           CALL MNC_CW_RL_W(pf,'gm_tave',0,0,'GEOMK',
+     &          GEOM_K_T, myThid)
+         ENDIF
+#endif
 #ifdef GM_BOLUS_ADVEC
          IF (GM_AdvForm) THEN
            CALL MNC_CW_RL_W(
@@ -185,6 +201,10 @@ C      Reset averages to zero
 #ifdef GM_VISBECK_VARIABLE_K
          IF (GM_Visbeck_alpha.NE.0.)
      &    CALL TIMEAVE_RESET( Visbeck_K_T, 1, bi, bj, myThid )
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+         IF (GEOM_alpha.NE.0.)
+     &    CALL TIMEAVE_RESET( GEOM_K_T, Nr, bi, bj, myThid )
 #endif
 #ifdef GM_BOLUS_ADVEC
          IF (GM_AdvForm) THEN

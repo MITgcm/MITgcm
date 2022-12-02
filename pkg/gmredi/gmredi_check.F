@@ -15,7 +15,7 @@ C     | o Check consistency with model configuration
 C     *==========================================================*
 C     \ev
 
-C     !USES:
+!C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -129,6 +129,12 @@ C- print out some kee parameters :
        CALL WRITE_0D_L( GM_useLeithQG, INDEX_NONE,
      &  'GM_useLeithQG =',
      &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
+       CALL WRITE_0D_L( GM_useGEOM, INDEX_NONE,
+     &  'GM_useGEOM =', ' /* using GEOMETRIC */')
+       CALL WRITE_0D_RL( GEOM_alpha, INDEX_NONE,
+     &  'GEOM_alpha =', ' /* GEOM alpha coeff. [-] */')
+       CALL WRITE_0D_RL( GEOM_lmbda, INDEX_NONE,
+     &  'GEOM_lmbda =', ' /* GEOM energy diss time-scale [/s] */')
 
 C--  Check parameters:
 
@@ -172,6 +178,19 @@ C     Make sure we are not trying to use something that is unavailable
      &   'GMREDI_CHECK: without #define GM_VISBECK_VARIABLE_K'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef GM_GEOM_VARIABLE_K
+C     Make sure we are not trying to use something that is unavailable
+      IF ( GM_useGEOM ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GEOM variables used in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: without #define GM_GEOM_VARIABLE_K'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
 #endif
 
@@ -455,6 +474,7 @@ C-    end special check for dry cell @ top
 C     Check size of overlap region
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
      &       .AND. GM_Visbeck_alpha.NE.0.
+     &       .AND. GEOM_alpha.NE.0.
      &       .AND. useMultiDimAdvec ) THEN
 C       Visbeck variable K requires 1 more row/column in the overlap:
 C       might need to increase OLx,OLy from 2 to 3 if GM advective

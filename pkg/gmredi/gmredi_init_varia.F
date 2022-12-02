@@ -116,6 +116,14 @@ C     Initialize arrays in common blocks :
 #ifdef GM_VISBECK_VARIABLE_K
            VisbeckK(i,j,bi,bj) = 0. _d 0
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+           GEOMK(i,j,k,bi,bj)      = 0. _d 0
+           GEOM_ene(i,j,bi,bj)     = 0. _d 0
+           GEOM_ene_old(i,j,bi,bj) = 0. _d 0
+           ene_rhs_now(i,j,bi,bj)  = 0. _d 0
+           ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
+           ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
+#endif
 #ifdef ALLOW_GM_LEITH_QG
            GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
 #endif
@@ -134,6 +142,10 @@ C     Initialize averages to zero
         GM_timeAve(bi,bj) = 0. _d 0
 #ifdef GM_VISBECK_VARIABLE_K
         CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+        CALL TIMEAVE_RESET(GEOM_K_T,  Nr, bi,bj,myThid)
+        CALL TIMEAVE_RESET(GEOM_ene_T, 1, bi,bj,myThid)
 #endif
 #ifdef GM_BOLUS_ADVEC
         CALL TIMEAVE_RESET(GM_PsiXtave,Nr, bi,bj,myThid)

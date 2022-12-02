@@ -26,6 +26,7 @@ C     GM_Bates_use_constK:: Imposes a constant K for the eddy transport
 C     GM_Bates_smooth    :: Expand PV closure in terms of baroclinic modes
 C                           (=.FALSE. for debugging only!)
 C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
+C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -42,6 +43,13 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
       LOGICAL GM_Bates_beta_eq_0
       LOGICAL GM_Bates_smooth
       LOGICAL GM_useLeithQG
+      LOGICAL GM_useGEOM
+      LOGICAL ene_local
+      LOGICAL vert_struc
+      LOGICAL GEOM_pickup_write_mdsio
+      LOGICAL GEOM_pickup_write_mnc
+      LOGICAL GEOM_pickup_read_mdsio
+      LOGICAL GEOM_pickup_read_mnc
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -51,7 +59,12 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
      &                   GM_Bates_use_constK, GM_Bates_beta_eq_0,
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
-     &                   GM_useLeithQG
+     &                   GM_useLeithQG, 
+     &                   GM_useGEOM, ene_local, vert_struc,
+     &                   GEOM_pickup_write_mdsio, 
+     &                   GEOM_pickup_write_mnc,
+     &                   GEOM_pickup_read_mdsio,
+     &                   GEOM_pickup_read_mnc
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -145,6 +158,14 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Visbeck_maxSlope
       _RL GM_Visbeck_minVal_K
       _RL GM_Visbeck_maxVal_K
+      _RL GEOM_alpha
+      _RL GEOM_lmbda
+      _RL ene_init
+      _RL ene_kappa
+      _RL GEOM_minval_K
+      _RL GEOM_maxval_K
+      _RL vert_struc_min
+      _RL vert_struc_max
       _RL GM_Bates_gamma
       _RL GM_Bates_b1
       _RL GM_Bates_EadyMinDepth
@@ -175,6 +196,9 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_depth,
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
+     &                 GEOM_alpha, GEOM_lmbda, ene_init,
+     &                 ene_kappa, GEOM_minval_K, GEOM_maxval_K,
+     &                 vert_struc_min, vert_struc_max,
      &                 GM_Bates_gamma, GM_Bates_b1,
      &                 GM_Bates_EadyMinDepth, GM_Bates_EadyMaxDepth,
      &                 GM_Bates_Lambda, GM_Bates_smallK, GM_Bates_maxK,
@@ -289,6 +313,26 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
      &                 GM_BatesK3d,
      &                 modesC, modesW, modesS,
      &                 Rdef, gradf
+#endif
+
+#ifdef GM_GEOM_VARIABLE_K
+C     GEOMK    :: mixing/stirring coefficient (spatially variable in horizontal
+C                 for Marshall et al. (2012) parameterization)
+C     GEOM_ene :: parameterised total eddy energy in GEOMETRIC
+C
+C     TODO: add in the comments accordingly
+C
+      _RL GEOMK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_ene(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_ene_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ene_rhs_now(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON /GM_GEOM/ GEOMK,
+     &                 GEOM_ene, GEOM_ene_old, 
+     &                 ene_rhs_now, ene_rhs_nm1, ene_rhs_nm2
+      INTEGER energy_init
 #endif
 
 #ifdef ALLOW_GM_LEITH_QG
