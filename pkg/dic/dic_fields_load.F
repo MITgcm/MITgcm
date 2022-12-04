@@ -26,7 +26,7 @@ C  myThid               :: thread number
       INTEGER myIter
       _RL myTime
       INTEGER myThid
-      
+
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
@@ -97,13 +97,13 @@ C     data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( DIC_silicaFile .NE. ' '  ) THEN 
+        IF ( DIC_silicaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
      &        myIter,myThid )
         ENDIF
-        IF ( DIC_deepSilicaFile .NE. ' '  ) THEN 
+        IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
          CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silicaDeep0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XYZ_RS( DIC_deepSilicaFile,silicaDeep1,intime1,
@@ -172,7 +172,6 @@ C-    save newly loaded time-record
 C-     end if-bloc (time to load new fields)
        ENDIF
 
-
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          IF ( DIC_windFile .NE. ' '  ) THEN
@@ -199,36 +198,33 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #endif
          IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+          DO k=1,Nr
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             DO k=1,Nr
-
-             SILICAdeep(i,j,k,bi,bj) = 
-     &                           bWght*silicaDeep0(i,j,k,bi,bj)
-     &                         + aWght*silicaDeep1(i,j,k,bi,bj)
-             ENDDO
+             silicaDeep(i,j,k,bi,bj) = bWght*silicaDeep0(i,j,k,bi,bj)
+     &                               + aWght*silicaDeep1(i,j,k,bi,bj)
             ENDDO
            ENDDO
-        
+          ENDDO
          ENDIF
 
          IF ( DIC_silicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
 C If file provided for surface silicate, read it in
-             SILICAsurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
-     &                         + aWght*silicaSurf1(i,j,bi,bj)
-
-             ENDDO
+             silicaSurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
+     &                             + aWght*silicaSurf1(i,j,bi,bj)
             ENDDO
+           ENDDO
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
 C If no surface silicate file but deep (3d) silicate provided, use top level
-             SILICAsurf(i,j,bi,bj)= SILICAdeep(i,j,1,bi,bj)
-
+             silicaSurf(i,j,bi,bj) = silicaDeep(i,j,1,bi,bj)
             ENDDO
            ENDDO
+#endif
          ENDIF
 
          IF ( DIC_iceFile .NE. ' '  ) THEN
@@ -249,11 +245,11 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
             ENDDO
            ENDDO
          ELSE
-            WRITE(msgBuf,'(2A)')
+           WRITE(msgBuf,'(2A)')
      &       ' DIC_FIELDS_LOAD: You need to provide ',
      &       ' a file if you want to use READ_PAR'
-            CALL PRINT_ERROR( msgBuf, myThid )
-            STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
          ENDIF
 #endif
 #ifdef LIGHT_CHL
