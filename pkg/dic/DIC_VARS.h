@@ -14,28 +14,28 @@ C     pCO2        :: surface ocean partial pressure of CO2 (atm).
 C     FluxCO2     :: Air-sea flux of CO2 (mol/m2/s).
 C     wind        :: Wind speed loaded from file for air-sea
 C                       flux calculations (m/s).
-C     FIce        :: Fraction of sea ice cover loaded from file
+C     fIce        :: Fraction of sea ice cover loaded from file
 C                       (or set by thice/seaice)
 C                       for air-sea flux calculations.
-C     SILICAsurf  :: Surface ocean concentration of silicate for
+C     silicaSurf  :: Surface ocean concentration of silicate for
 C                       pCO2 calculations. Read in from file (mol/m3).
-C     SILICAdeep  :: 3d-field of silicate concentration for pH and 
+C     silicaDeep  :: 3d-field of silicate concentration for pH and
 C                       carbonate calculations. Read in from file (mol/m3).
 C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
-     &              wind, FIce, Kwexch_Pre, SILICAsurf, SILICAdeep
+     &              wind, fIce, Kwexch_Pre, silicaSurf, silicaDeep
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  SILICAsurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  SILICAdeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C Store dissociation and carbon chemistry coefficients for
 C    pCO2 solvers (see carbon_chem.F).
@@ -216,20 +216,20 @@ C  dic_int3          :: start timestep
 C  dic_int4          :: timestep between file entries
 C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       COMMON /DIC_FILENAMES/
-     &        DIC_windFile, DIC_atmospFile, DIC_iceFile,
-     &        DIC_ironFile, DIC_silicaFile, DIC_parFile,
-     &        DIC_chlaFile, DIC_deepSilicaFile,
+     &        DIC_windFile, DIC_atmospFile, DIC_silicaFile,
+     &        DIC_deepSilicaFile, DIC_iceFile, DIC_parFile,
+     &        DIC_chlaFile, DIC_ironFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 
       CHARACTER*(MAX_LEN_FNAM) DIC_windFile
       CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
-      CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
-      CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
       CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
       CHARACTER*(MAX_LEN_FNAM) DIC_deepSilicaFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
       CHARACTER*(MAX_LEN_FNAM) DIC_parFile
       CHARACTER*(MAX_LEN_FNAM) DIC_chlaFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
       _RL     DIC_forcingPeriod
       _RL     DIC_forcingCycle
       _RL     dic_pCO2

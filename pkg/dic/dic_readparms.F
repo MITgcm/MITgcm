@@ -112,7 +112,7 @@ C   alpha       :: timescale for biological activity
 C                  read in alphaUniform and filled in 2d array alpha
 C   rain_ratio  :: inorganic/organic carbon rain ratio
 C                  read in rainRatioUniform and filled in 2d array rain_ratio
-C   nCALCITEstep:: interval (s) to update deep ocean carbonate saturation if 
+C   nCALCITEstep:: interval (s) to update deep ocean carbonate saturation if
 C                  using CAR_DISS to dissolve carbonate below saturation horizon
 
       NAMELIST /BIOTIC_PARMS/
@@ -126,9 +126,9 @@ C                  using CAR_DISS to dissolve carbonate below saturation horizon
 #endif
 
       NAMELIST /DIC_FORCING/
-     &          DIC_windFile, DIC_atmospFile, DIC_iceFile,
-     &          DIC_ironFile, DIC_silicaFile, DIC_parFile,
-     &          DIC_chlaFile, DIC_deepSilicaFile,
+     &          DIC_windFile, DIC_atmospFile, DIC_silicaFile,
+     &          DIC_deepSilicaFile, DIC_iceFile, DIC_parFile,
+     &          DIC_chlaFile, DIC_ironFile,
      &          DIC_forcingPeriod, DIC_forcingCycle,
      &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
 
@@ -174,14 +174,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c default periodic forcing to same as for physics
        nCALCITEstep = externForcingPeriod
 #endif
-       DIC_windFile  = ' '
-       DIC_atmospFile= ' '
-       DIC_iceFile   = ' '
-       DIC_ironFile  = ' '
-       DIC_silicaFile= ' '
-       DIC_deepSilicaFile= ' '
-       DIC_parFile   = ' '
-       DIC_chlaFile  = ' '
+       DIC_windFile   = ' '
+       DIC_atmospFile = ' '
+       DIC_silicaFile = ' '
+       DIC_deepSilicaFile = ' '
+       DIC_iceFile    = ' '
+       DIC_parFile    = ' '
+       DIC_chlaFile   = ' '
+       DIC_ironFile   = ' '
        dic_int1    = 0
        dic_int2    = 0
        dic_int3    = 0
@@ -408,7 +408,7 @@ C- namelist BIOTIC_PARMS
 #ifdef CAR_DISS
        CALL WRITE_0D_RL(nCALCITEstep,INDEX_NONE,'nCALCITEstep=',
      &  ' /* interval (s) to update deep ocean CO3 saturation */')
-#endif     
+#endif
        CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
      &  '  /* Flag for Qsw under Sea-Ice (i.e. SI fract included) */')
 #endif /* DIC_BIOTIC */
@@ -418,18 +418,18 @@ C- namelist DIC_FORCING
      & '  /* File name of wind speeds */')
        CALL WRITE_0D_C( DIC_atmospFile, -1,INDEX_NONE,'DIC_atmospFile=',
      & '  /* File name of atmospheric pressure*/')
-       CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
-     & '  /* File name of seaice fraction */')
-       CALL WRITE_0D_C( DIC_ironFile, -1, INDEX_NONE, 'DIC_ironFile =',
-     & '  /* File name of aeolian iron flux */')
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
      & 'DIC_silicaFile=','  /* File name of surface silica */')
        CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
      & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
+       CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
+     & '  /* File name of seaice fraction */')
        CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
      & '  /* File name of photosynthetically available radiation */')
        CALL WRITE_0D_C( DIC_chlaFile, -1,INDEX_NONE,'DIC_chlaFile=',
      & '  /* File name of chlorophyll climatology */')
+       CALL WRITE_0D_C( DIC_ironFile, -1, INDEX_NONE, 'DIC_ironFile =',
+     & '  /* File name of aeolian iron flux */')
        CALL WRITE_0D_RL( DIC_forcingPeriod,
      &   INDEX_NONE,'DIC_forcingPeriod =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')

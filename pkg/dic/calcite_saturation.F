@@ -68,7 +68,7 @@ c determine calcite saturation state
          DO i=1-OLx,sNx+OLx
             locTemp(i,j) = theta(i,j,k,bi,bj)
             locSalt(i,j) = salt (i,j,k,bi,bj)
-            
+
             carbonate(i,j) = 0. _d 0
             pCO2local(i,j) = 0. _d 0
             pHlocal(i,j)   = 0. _d 0
@@ -112,7 +112,7 @@ C Now correct the coefficients for pressure dependence
 #endif
 
 c 30 micromol = 0.03 mol m-3
-             sitlocal = SILICAdeep(i,j,k,bi,bj)
+             sitlocal = silicaDeep(i,j,k,bi,bj)
              po4local = PTR_PO4(i,j,k)
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)
@@ -173,7 +173,7 @@ CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal(i,j),pCO2local(i,j),carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
-       
+
 c........................................................
 c               if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
 c                 write(6,*)'Iteration, pH = ',CO3iter,pHlocal
@@ -187,7 +187,6 @@ c........................................................
 
              omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j) /
      &                          Ksp_TP_Calc(i,j,bi,bj)
-     
 
 Cmick...................................................
 c            if(omegaC(i,j,k,bi,bj) .eq. 0.) then
@@ -219,7 +218,7 @@ Cmick....................................................
            ENDIF
 
          ENDDO
-        ENDDO       
+        ENDDO
 
 C Write out some diagnostics of deep pH, pCO2, and carbonate local arrays
 #ifdef ALLOW_DIAGNOSTICS
@@ -236,7 +235,7 @@ C-     end k loop
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(omegaC    ,'OMEGAC  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(SILICAdeep,'DIC3DSIT',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(silicaDeep,'DIC3DSIT',0,Nr,1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIC_BIOTIC */
