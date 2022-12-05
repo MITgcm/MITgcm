@@ -6,6 +6,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -117,7 +120,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
 # ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
@@ -126,10 +129,9 @@ C     === Global variables ===
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
@@ -347,11 +349,11 @@ C--   Initialise float position
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
 CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
-#  ifndef SHI_ALLOW_GAMMAFRICT
+#  ifdef SHI_ALLOW_GAMMAFRICT
+CADJ STORE shiCDragFld = tapelev_init, key = 1
+#  else
 CADJ STORE shiTransCoeffT = tapelev_init, key = 1
 CADJ STORE shiTransCoeffS = tapelev_init, key = 1
-#  else
-CADJ STORE shiCDragFld = tapelev_init, key = 1
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
       IF (useShelfIce) THEN
