@@ -14,8 +14,8 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "LONGSTEP_PARAMS.h"
 #include "PARAMS.h"
+#include "LONGSTEP_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -85,22 +85,13 @@ C     Close the open data file
 C     Now set-up any remaining parameters that result from the input
 C     parameters
 
-C--   Print a summary of longstep parameter values:
-      iUnit = standardMessageUnit
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// longstep parameters '
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , myThid )
-      CALL WRITE_0D_I( LS_nIter, INDEX_NONE,
-     &   'LS_nIter =',
-     &   ' /* number of dynamics steps between ptracer steps */')
-      CALL WRITE_0D_I( LS_whenToSample, INDEX_NONE,
-     &   'LS_whenToSample =',
-     &   ' /* 0: before; 1: after TD, before DYN; 2: after */')
-      WRITE(msgBuf,'(A)') ' -----------------------------------'
-      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+C     whether to average EmPmR or PmEpR in LS_fwFlux
+#ifdef EXACT_CONSERV
+      LS_usePmEpR = (nonlinFreeSurf.GT.0 .OR. usingPCoords)
+     &              .AND. useRealFreshWaterFlux
+#else /* EXACT_CONSERV */
+      LS_usePmEpR = .FALSE.
+#endif /* EXACT_CONSERV */
 
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded
@@ -110,4 +101,3 @@ C     Everyone else must wait for the parameters to be loaded
 
       RETURN
       END
-
