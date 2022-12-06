@@ -147,7 +147,7 @@ jobs:
      - name: Set up Python
        uses: actions/setup-python@v2
        with:
-         python-version: 3.6
+         python-version: 3.11
 
      - name: install dependencies
        run: tools/ci/install_doc_dependencies.sh
@@ -169,7 +169,7 @@ jobs:
      - name: Set up Python
        uses: actions/setup-python@v2
        with:
-         python-version: 3.6
+         python-version: 3.11
 
      - name: install dependencies
        run: tools/ci/install_doc_dependencies.sh
