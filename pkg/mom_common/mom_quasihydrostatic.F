@@ -78,12 +78,10 @@ c         scalingFactor=gravitySign*recip_gravity
         ELSEIF ( fluidIsWater ) THEN
 C--   P-coordinate, oceanic case: Input is specific-volume anomaly
 
-          scalingFactor = recip_rhoConst*recip_gravity
-c         scalingFactor = rVel2wUnit(k) <-- @ interface = wrong location
-C-    should use expression below (consistent with omega <-> w-velocity
-C      conversion) but rhoRef(k) = rho(tRef,sRef,p) is computed
-C     in S/R SET_REF_STATE but is not stored:
-c         scalingFactor = ( oneRL / rhoRef(k) )*recip_gravity
+c         scalingFactor = recip_rhoConst*recip_gravity
+C     better to use rhoRef = rho(tRef,sRef,p) and consistent with
+C-    omega <-> w-velocity conversion:
+          scalingFactor = ( oneRL / rhoRef(k) )*recip_gravity
 
         ELSE
 C--   P-coord., Ideal-Gas case: Input is virtual potential temp. anomaly
