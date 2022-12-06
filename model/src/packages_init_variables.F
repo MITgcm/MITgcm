@@ -6,9 +6,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_OPTIONS.h"
-#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -122,10 +119,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
-# ifdef ALLOW_SEAICE
-#  include "SEAICE_SIZE.h"
-#  include "SEAICE.h"
-# endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 # endif
@@ -383,17 +376,20 @@ CADJ STORE shiTransCoeffS = tapelev_init, key = 1
 #endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SEAICE
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area = tapelev_init, key = 1
-CADJ STORE heff = tapelev_init, key = 1
-# endif
 C--   Initialize SEAICE model.
+# ifdef ALLOW_AUTODIFF
+C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
+C     compiling pkg/autodiff (with "If useSEAICE" inside seaice_init_varia.F)
+# else
       IF (useSEAICE) THEN
+# endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 # endif
        CALL SEAICE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_SALT_PLUME
