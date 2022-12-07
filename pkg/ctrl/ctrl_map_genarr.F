@@ -42,9 +42,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_GENARR2D_CONTROL
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
-#endif
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -70,6 +67,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
@@ -154,10 +154,10 @@ C     this is faster, especially if log(10) has been evaluated before
 c            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
              xx_gen(i,j,bi,bj) = EXP(ln10 * xx_gen(i,j,bi,bj))
             ENDIF ! dolog10ctrls
-           ENDIF
+           ENDIF ! doscaling
           ELSE
            xx_gen(i,j,bi,bj) = 0. _d 0
-          ENDIF ! doscaling
+          ENDIF
          ENDDO
         ENDDO
 C add to model parameter
@@ -235,9 +235,6 @@ C     !INPUT/OUTPUT PARAMETERS:
       STOP 'ABNORMAL END: CTRL_MAP_GENARR3D is empty'
 #else /* ALLOW_OPENAD */
 #ifdef ALLOW_GENARR3D_CONTROL
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
-#endif
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -263,6 +260,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
