@@ -5,6 +5,9 @@
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
 
       SUBROUTINE MOM_VECINV(
      I        bi,bj,k,iMin,iMax,jMin,jMax,
@@ -41,6 +44,9 @@ C     == Global variables ==
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+# include "GGL90.h"
+#endif
 #ifdef ALLOW_TIMEAVE
 # include "TIMEAVE_STATV.h"
 #endif
@@ -49,12 +55,6 @@ C     == Global variables ==
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#endif
-#ifdef ALLOW_GGL90
-# include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "GGL90.h"
-# endif
 #endif
 
 C     == Routine arguments ==
@@ -105,6 +105,10 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+      _RL uRes    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vRes    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL del2u   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -194,6 +198,10 @@ C--   Initialise intermediate terms
         zStar(i,j) = 0.
         guDiss(i,j)= 0.
         gvDiss(i,j)= 0.
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+c       uRes(i,j)  = 0.
+c       vRes(i,j)  = 0.
+#endif
         vort3(i,j) = 0.
         omega3(i,j)= 0.
         KE(i,j)    = 0.
@@ -642,6 +650,15 @@ c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
+      IF (useLANGMUIR .AND. useAbsVorticity ) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'MOM_VECINV: Langmuir Parameterization with ',
+     &  'useAbsVorticity is not implemented.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R MOM_VECINV'
+      ENDIF
+#endif
 C---  Prepare for Advection & Coriolis terms:
 C-    calculate absolute vorticity
       IF (useAbsVorticity)
@@ -656,15 +673,6 @@ C--   Horizontal Coriolis terms
 c     IF (useCoriolis .AND. .NOT.useCDscheme
 c    &    .AND. .NOT. useAbsVorticity) THEN
 C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvection=F
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR .AND. useAbsVorticity ) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'MOM_VECINV: Langmuir Parameterization with ',
-     &  'useAbsVorticity is not implemented.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R MOM_VECINV'
-      ENDIF
-#endif
       IF ( useCoriolis .AND.
      &     .NOT.( useCDscheme .OR. useAbsVorticity.AND.momAdvection )
      &   ) THEN
@@ -675,6 +683,14 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
         CALL MOM_VI_V_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
      &                         uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+       ELSEIF ( useLANGMUIR ) THEN
+        CALL GGL90_ADD_STOKESDRIFT(
+     O                 uRes, vRes,
+     I                 uFld, vFld, k, bi, bj, myThid )
+        CALL MOM_VI_CORIOLIS(bi,bj,k,uRes,vRes,hFacZ,r_hFacZ,
+     &                       uCf,vCf,myThid)
+#endif
        ELSE
         CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,hFacZ,r_hFacZ,
      &                       uCf,vCf,myThid)
