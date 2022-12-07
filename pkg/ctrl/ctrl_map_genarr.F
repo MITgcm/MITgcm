@@ -42,6 +42,9 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_GENARR2D_CONTROL
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
+#endif
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -137,11 +140,11 @@ C --- Do any smoothing
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        IF (doscaling) THEN
-         DO j = 1,sNy
-          DO i = 1,sNx
+        DO j = 1,sNy
+         DO i = 1,sNx
 C scale param adjustment
-           IF ( wgenarr2d(i,j,bi,bj,iarr).GT.0. ) THEN
+          IF ( wgenarr2d(i,j,bi,bj,iarr).GT.0. ) THEN
+           IF (doscaling) THEN
             xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
      &               / SQRT( wgenarr2d(i,j,bi,bj,iarr) )
             IF (dolog10ctrl) THEN
@@ -151,12 +154,12 @@ C     this is faster, especially if log(10) has been evaluated before
 c            xx_gen(i,j,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,bi,bj))
              xx_gen(i,j,bi,bj) = EXP(ln10 * xx_gen(i,j,bi,bj))
             ENDIF ! dolog10ctrls
-           ELSE
-            xx_gen(i,j,bi,bj) = 0. _d 0
            ENDIF
-          ENDDO
+          ELSE
+           xx_gen(i,j,bi,bj) = 0. _d 0
+          ENDIF ! doscaling
          ENDDO
-        ENDIF ! doscaling
+        ENDDO
 C add to model parameter
 C or in case of log10ctrl, fld = 10^(xx_gen)
         IF (dolog10ctrl) THEN
@@ -184,6 +187,9 @@ C avoid param out of [boundsVec(1) boundsVec(4)]
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
      &                      fld, 1, optimcycle, myThid )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR2D', myThid )
+#endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
@@ -229,6 +235,9 @@ C     !INPUT/OUTPUT PARAMETERS:
       STOP 'ABNORMAL END: CTRL_MAP_GENARR3D is empty'
 #else /* ALLOW_OPENAD */
 #ifdef ALLOW_GENARR3D_CONTROL
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
+#endif
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -324,20 +333,22 @@ C --- Do any smoothing
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        IF (doscaling) THEN
 C     scale param adjustment
          DO k = 1,Nr
           DO j = 1,sNy
            DO i = 1,sNx
             IF ( wgenarr3d(i,j,k,bi,bj,iarr).GT.0. ) THEN
-             xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj)
+             IF (doscaling) THEN
+              xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj)
      &                / SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
-             IF (dolog10ctrl) THEN
-              xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
-c             xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+              IF (dolog10ctrl) THEN
+               xx_gen(i,j,k,bi,bj) = xx_gen(i,j,k,bi,bj) + log10initval
+c              xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
 C     this is faster, especially if log(10) has been evaluated before
-c             xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
-              xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
+c              xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
+               xx_gen(i,j,k,bi,bj) = EXP(ln10 * xx_gen(i,j,k,bi,bj))
+C     doscaling
+              ENDIF
              ENDIF
             ELSE
              xx_gen(i,j,k,bi,bj) = 0. _d 0
@@ -345,8 +356,6 @@ c             xx_gen(i,j,k,bi,bj) = EXP(LOG(10.0) * xx_gen(i,j,k,bi,bj))
            ENDDO
           ENDDO
          ENDDO
-C     doscaling
-        ENDIF
 C     add to model parameter
 C     or in case of log10ctrl, fld = 10^(xx_gen)
         IF ( dolog10ctrl ) THEN
@@ -384,6 +393,9 @@ C  xx_uvel and xx_vvel are read in.
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
      &                      fld, 1, optimcycle, myThid )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR3D', myThid )
+#endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
 
