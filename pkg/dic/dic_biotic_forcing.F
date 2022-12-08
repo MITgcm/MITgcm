@@ -98,9 +98,9 @@ C  freefe                 :: iron not bound to ligand
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER i,j,k
-C#ifdef CAR_DISS
-C      INTEGER nCALCITEstep
-C#endif
+#ifdef CAR_DISS
+      INTEGER nCALCITEstep
+#endif
 #ifdef ALLOW_FE
 # ifdef SEDFE
       INTEGER kBottom
@@ -233,10 +233,9 @@ C carbonate
 #ifdef CAR_DISS
 C dissolution only below saturation horizon
 C code following method by Karsten Friis
-C        nCALCITEstep = 3600
+        nCALCITEstep = 3600
         IF(myIter .lt. (nIter0+5) .or.
-C    &               mod(myIter,nCALCITEstep) .eq. 0)THEN
-     &               mod(myTime,nCALCITEstep) .eq. 0)THEN 
+     &               mod(myIter,nCALCITEstep) .eq. 0)THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('CALCITE_SATURATION',myThid)
 #endif

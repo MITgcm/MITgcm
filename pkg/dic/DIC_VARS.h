@@ -328,7 +328,7 @@ C  QSW_underice      :: is Qsw is masked by ice fraction?
      &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
      &     freefemax, fesedflux_pcm, FeIntSec,
      &     parfrac, k0, kchl, lit0,
-     &     alphaUniform, rainRatioUniform, nCALCITEstep,
+     &     alphaUniform, rainRatioUniform,
      &     nlev, QSW_underice
 
 c    &     alphamax, alphamin,
@@ -361,7 +361,7 @@ c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
       _RL freefemax
       _RL k0, kchl, parfrac, lit0
       _RL alphaUniform
-      _RL rainRatioUniform, nCALCITEstep
+      _RL rainRatioUniform
 c     _RL alphamax, alphamin
 c     _RL calpha
 c     _RL crain_ratio
