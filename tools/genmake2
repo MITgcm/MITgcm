@@ -17,6 +17,9 @@ Usage: "$0" [OPTIONS]
     -help | --help | -h | --h
 	  Print this help message and exit.
 
+    -tap | --tap
+          Generate a Makefile for a Tapenade build
+
     -oad | --oad
 	  Generate a Makefile for an OpenAD built
 
@@ -1417,6 +1420,7 @@ FS=
 FS90=
 
 AUTODIFF_PKG_USED=f
+TAPENADE=
 OPENAD=
 AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
@@ -1449,7 +1453,7 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
 gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
@@ -1510,6 +1514,9 @@ for ac_option in "$@" ; do
 	    ac_prev=OPTFILE ;;
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
+
+	-tap | --tap)
+	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
 	-oad | --oad)
 	    OPENAD="true" ; ALWAYS_USE_F90=1 ;;
@@ -1793,10 +1800,12 @@ echo "  getting AD_OPTFILE information:"
 if test "x${AD_OPTFILE}" = x ; then
     if test "x$MITGCM_AD_OF" != x ; then
 	AD_OPTFILE=$MITGCM_AD_OF
-    elif test "x$OPENAD" = x ; then
-	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
-    else
+    elif test "x$TAPENADE" != x ; then
+	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_tapad
+    elif test "x$OPENAD" != x ; then
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_oad
+    else
+	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
     fi
 fi
 if test "x${AD_OPTFILE}" != xNONE ; then
@@ -2526,6 +2535,23 @@ EOF
     fi
 fi
 
+#  Make sure the tapenade package is enabled if using TAPENADE
+if test "x$TAPENADE" != x ; then
+    echo " $PACKAGES " | grep ' tapenade ' > /dev/null 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	cat <<EOF
+
+*********************************************************************
+ERROR: when generating an adjoint with TAPENADE, the tapenade package
+  must be enabled.  Please add it to packages.conf.
+*********************************************************************
+
+EOF
+        exit 1
+    fi
+fi
+
 #  Make sure the openad package is enabled if using OpenAD
 if test "x$OPENAD" != x ; then
     echo " $PACKAGES " | grep ' openad ' > /dev/null 2>&1
@@ -2802,6 +2828,48 @@ if test ! -r "$TMP.links/foo" ; then
 fi
 rm -f $TMP.links/foo
 
+if test "x$TAPENADE" != x ; then
+    TAP_DONT_COMPILE="/dev/null"
+    TAP_DONT_TRANSFORM="/dev/null"
+    TAP_KEEP_ORIGINAL="/dev/null"
+    TAP_CB2M_FILES="/dev/null"
+    TAPTOOLS="$TOOLSDIR/TAPAD_support"
+    TAPTOOLSMK='$(TOOLSDIR)/TAPAD_support'
+    echo "  looking for dontCompile file:  "
+    for i in "." $MODS $TAPTOOLS ; do
+	if test -r $i"/dontCompile" ; then
+	    TAP_DONT_COMPILE=$i"/dontCompile"
+	    echo "     found $TAP_DONT_COMPILE"
+	    break
+	fi
+    done
+    echo "  looking for dontTransform file:  "
+    for i in "." $MODS $TAPTOOLS ; do
+	if test -r $i"/dontTransform" ; then
+	    TAP_DONT_TRANSFORM=$i"/dontTransform"
+	    echo "     found $TAP_DONT_TRANSFORM"
+	    break
+	fi
+    done
+    echo "  looking for keepOriginal file:  "
+    for i in "." $MODS $TAPTOOLS ; do
+	if test -r $i"/keepOriginal" ; then
+	    TAP_KEEP_ORIGINAL=$i"/keepOriginal"
+	    echo "     found $TAP_KEEP_ORIGINAL"
+	    break
+	fi
+    done
+    echo "  looking for cb2mFiles:  "
+    for i in "." $MODS $TAPTOOLS ; do
+	if test -r $i"/cb2mFiles" ; then
+	    TAP_CB2M_FILES=$i"/cb2mFiles"
+	    echo "     found $TAP_CB2M_FILES"
+	    break
+	fi
+    done
+    echo "   TAPENADE exceptions:  "
+fi
+
 if test "x$OPENAD" != x ; then
     OAD_DONT_COMPILE="/dev/null"
     OAD_DONT_TRANSFORM="/dev/null"
@@ -2861,6 +2929,9 @@ for d in $alldirs ; do
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] *.flow )`
     sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
+    if test "x$TAPENADE" != x ; then
+	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
+    fi
     if test "x$OPENAD" != x ; then
 	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
     fi
@@ -2901,6 +2972,42 @@ for d in $alldirs ; do
 		      F)
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
+
+			if test "x$TAPENADE" = x ; then
+			    basename=${sf%%.F}
+			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    if test -z "$isAD" ; then
+				echo    " \\"  >> $TMP.nonADF77srclist
+				printf " $sf" >> $TMP.nonADF77srclist
+			    fi
+			else #- TAPENADE case:
+			    basename=${sf%%.F}
+			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			    if test -z "$isAD" ; then
+				toBeIgnored=`egrep ^$basename'[      ]*' ${TAP_DONT_COMPILE}`
+				if test -z "$toBeIgnored" ; then
+				    echo    " \\"  >> $TMP.nonADF77srclist
+				    printf " $sf" >> $TMP.nonADF77srclist
+				else
+				    echo "    not to be compiled   :  $sf"
+				fi
+			    else # file is initially listed as an AD file we want to exclude it
+				 # or we want to retain the untransformed version
+				notToBeTransformed=`egrep ^$basename'[      ]*' ${TAP_DONT_TRANSFORM}`
+				untransformedVersionToBeKept=`egrep ^$basename'[      ]*' ${TAP_KEEP_ORIGINAL}`
+				if test -n "$notToBeTransformed"; then
+				    echo "    not to be transformed:  $sf"
+				fi
+				if test -n "$untransformedVersionToBeKept" ; then
+				    echo "    original to be kept  :  $sf"
+				fi
+				if test -n "$notToBeTransformed" -o -n "$untransformedVersionToBeKept" ; then
+				    echo    " \\"  >> $TMP.nonADF77srclist
+				    printf " $sf" >> $TMP.nonADF77srclist
+				fi
+			    fi
+			fi
+
 			if test "x$OPENAD" = x ; then
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
@@ -3117,6 +3224,16 @@ echo >> $MAKEFILE
 echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'      >> $MAKEFILE
 echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES= $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o) $(F90_SRC_FILES:.F90=.o)' >> $MAKEFILE
+
+if test "x$TAPENADE" != x ; then
+cat >>$MAKEFILE <<EOF
+TAPENADE_SUPPORT_C_SRC_FILES = \
+${TAPTOOLS}/pop_push/adStack.c \
+${TAPTOOLS}/pop_push/adBinomial.c
+EOF
+echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
+fi
+
 echo 'FLOWFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
@@ -3270,6 +3387,7 @@ EOF
 #===  Automatic Differentiation Rules  ===
 #===  for TAMC/TAF  ======================
 
+if test "x$TAPENADE" = x ; then
 if test "x$OPENAD" = x ; then
 
 cat >>$MAKEFILE <<EOF
@@ -3505,6 +3623,92 @@ svd_touch:
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "SVD version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
+
+EOF
+
+fi
+fi
+
+#===  for TAPENADE  ========================
+
+if test "x$TAPENADE" != x ; then
+
+# ============ begin TAPENADE specific section ==============
+
+EXECUTABLE_AD=$EXECUTABLE"_tap_ad"
+EXECUTABLE_TLM=$EXECUTABLE"_tap_tlm"
+
+cat >>$MAKEFILE <<EOF
+# ... TAPENADE ...
+
+EOF
+
+echo "  Add the source list for AD code generation"
+echo >> $MAKEFILE
+printf "AD_FILES = " >> $MAKEFILE
+AD_FILES=`cat $TMP.adSrcFiles`
+for i in $AD_FILES ; do
+  basename=${i%%.f}
+  toBeIgnored=`egrep ^$basename'[      ]*' ${TAP_DONT_COMPILE} ${TAP_DONT_TRANSFORM}`
+  if test -z "$toBeIgnored" ; then
+    echo    " \\" >> $MAKEFILE
+    printf " $i" >> $MAKEFILE
+  fi
+done
+echo >> $MAKEFILE
+rm -f $TMP.adSrcFiles
+
+cat >>$MAKEFILE <<EOF
+
+TAPENADE_SUPPORT_F90_SRC_FILES = \
+${TAPTOOLS}/diffsizes.F90
+
+f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
+	cat \$^ > \$@
+#
+AD_FILES_ADJ=\$(AD_FILES:.f=_b.f)
+AD_FILES_TLM=\$(AD_FILES:.f=_d.f)
+#
+.PHONY: TAP_TLM_FILES
+TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
+	touch \$(AD_FILES_TLM)
+	tapenade -d -ext "${TAPTOOLS}/flow_tapad" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+#
+.PHONY: TAP_ADJ_FILES
+TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
+	touch \$(AD_FILES_ADJ)
+	tapenade -b -ext "${TAPTOOLS}/flow_tapad" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+
+EXECUTABLE_AD=${EXECUTABLE_AD}
+EXECUTABLE_TLM=${EXECUTABLE_TLM}
+
+adAll: ad_exe_target
+.PHONY: adAll
+
+tap_ad: ad_exe_target
+ad_exe_target:
+	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
+	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
+	@-rm -f ad_config.template
+	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_AD)
+
+tap_tlm: tlm_exe_target
+tlm_exe_target:
+	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Tangent linear version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
+	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
+	@-rm -f ad_config.template
+	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_TLM)
+
+\$(EXECUTABLE_AD): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES) \$(LIBS) 
+\$(EXECUTABLE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES) \$(LIBS) 
+
+# ============ end TAPENADE specific section ==============
 
 EOF
 

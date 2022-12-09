@@ -1,0 +1,61 @@
+#include "CPP_EEOPTIONS.h"
+
+      SUBROUTINE GLOBAL_SUM_TILE_RL_B(phiTile, phiTileb,
+     &     sumPhi, sumPhib, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL     phiTile(nSx,nSy)
+      _RL     phiTileb(nSx,nSy)
+      _RL     sumPhib
+      _RL     sumPhi
+      INTEGER myThid
+
+      CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
+      END
+
+
+!     Adjoint of global_sum_r8 for arguments Arg1=(in;out)
+      SUBROUTINE GLOBAL_SUM_R8_B(sumPhi, sumPhib, myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
+      _RL sumPhi
+      _RL sumPhib
+      INTEGER myThid
+
+      CALL GLOBAL_ADSUM_R8(sumPhib, myThid)
+      END
+
+      SUBROUTINE CG2D_B0(cg2d_b, cg2d_bb, cg2d_x, 
+     &                cg2d_xb, firstResidual, minResidualSq,
+     &                lastResidual,numIters, nIterMin,myThid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "CG2D.h"
+      _RL  cg2d_b(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  cg2d_bb(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  cg2d_x(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  cg2d_xb(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  firstResidual
+      _RL  minResidualSq
+      _RL  lastResidual
+      INTEGER numIters
+      INTEGER nIterMin
+      INTEGER myThid
+
+! [llh] we assume the downstream cg2d_b is passive, which helps us
+!    because it seems the input 2nd arg of cg2d() pollutes its output value:
+      cg2d_bb = 0.d0
+      CALL CG2D(cg2d_xb, cg2d_bb, firstResidual,
+     +        minResidualSq, lastResidual, numIters,
+     +        nIterMin, myThid)
+! [llh] the upstream cg2d_x is passive:
+      cg2d_xb = 0.d0
+      END
