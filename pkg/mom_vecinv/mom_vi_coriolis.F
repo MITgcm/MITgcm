@@ -20,13 +20,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "PARAMS.h"
-#ifdef ALLOW_GGL90
-# include "GGL90_OPTIONS.h"
-# ifdef ALLOW_GGL90_LANGMUIR
-#  include "GGL90.h"
-#  include "FFIELDS.h"
-# endif
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C   bi, bj         :: current tile indices
@@ -58,32 +51,9 @@ C   epsil          :: small number
       _RL uBarXY, vBarXY
       _RL uBarYm, uBarYp, vBarXm, vBarXp
       _RS epsil
-
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      _RL Usfc, Vsfc, recip_Lasq
-      _RL stokesU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL stokesV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
-
 CEOP
-      epsil = 1. _d -9
 
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR) THEN
-       recip_Lasq = 1. _d 0 / LC_num
-       recip_Lasq = recip_Lasq * recip_Lasq
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
-     &               surfaceForcingU(i,j,bi,bj)) * recip_Lasq
-         stokesU(i,j) = Usfc * EXP(4. *PI/LC_lambda*rC(k))
-         Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
-     &               surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-         stokesV(i,j) = Vsfc * EXP(4. *PI/LC_lambda*rC(k))
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
+      epsil = 1. _d -9
 
       IF ( selectCoriScheme .EQ. 0 ) THEN
 C- Simple average, no hFac :
@@ -100,23 +70,6 @@ C- Simple average, no hFac :
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR) THEN
-       DO j=1-OLy,sNy+OLy-1
-        DO i=2-OLx,sNx+OLx
-          vBarXY=0.25*(
-     &       (stokesV( i , j )*dxG( i , j ,bi,bj)
-     &       +stokesV(i-1, j )*dxG(i-1, j ,bi,bj))
-     &      +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)
-     &       +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj))
-     &                )
-          uCoriolisTerm(i,j)=uCoriolisTerm(i,j)
-     &     +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
-     &          )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 1 ) THEN
 C- Partial-cell generalization of the Wet-point average method :
 C     (formerly called: useJamartWetPoints)
@@ -134,25 +87,6 @@ C     (formerly called: useJamartWetPoints)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=1-OLy,sNy+OLy-1
-         DO i=2-OLx,sNx+OLx
-          vBarXY =(
-     &     (stokesV( i ,j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
-     &     +stokesV(i-1,j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
-     &    +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
-     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
-     &      )
-     &     / MAX( epsil,(_hFacS(i, j ,k,bi,bj)+_hFacS(i-1, j ,k,bi,bj))
-     &                +(_hFacS(i,j+1,k,bi,bj)+_hFacS(i-1,j+1,k,bi,bj)) )
-          uCoriolisTerm(i,j)=uCoriolisTerm(i,j)
-     &     +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
-     &          )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
 C- hFac weighted average :
        DO j=1-OLy,sNy+OLy-1
@@ -168,23 +102,6 @@ C- hFac weighted average :
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=1-OLy,sNy+OLy-1
-         DO i=2-OLx,sNx+OLx
-          vBarXY=0.25*(
-     &     (stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
-     &     +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
-     &    +(stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
-     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
-     &               )
-          uCoriolisTerm(i,j)=uCoriolisTerm(i,j)
-     &     +0.5*( fCoriG(i,j,bi,bj)+fCoriG(i,j+1,bi,bj)
-     &          )*vBarXY*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 3 ) THEN
 C- Energy-conserving discretisation with hFac weighted average :
        DO j=1-OLy,sNy+OLy-1
@@ -201,25 +118,6 @@ C- Energy-conserving discretisation with hFac weighted average :
      &         )*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=1-OLy,sNy+OLy-1
-         DO i=2-OLx,sNx+OLx
-          vBarXm = halfRL *(
-     &      stokesV( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
-     &     +stokesV(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj))
-          vBarXp = halfRL *(
-     &      stokesV( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
-     &     +stokesV(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj))
-          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)+0.5 _d 0
-     &         *( vBarXm*fCoriG(i, j ,bi,bj)
-     &           +vBarXp*fCoriG(i,j+1,bi,bj)
-     &          )*recip_dxC(i,j,bi,bj)*_recip_hFacW(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
       ELSE
         STOP 'MOM_VI_CORIOLIS: invalid selectCoriScheme'
       ENDIF
@@ -239,23 +137,6 @@ C- Simple average, no hFac :
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=2-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx-1
-          uBarXY=0.25*(
-     &      (stokesU( i , j )*dyG( i , j ,bi,bj)
-     &      +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj))
-     &     +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)
-     &      +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj))
-     &               )
-          vCoriolisTerm(i,j)=vCoriolisTerm(i,j)
-     &     -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
-     &          )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 1 ) THEN
 C- Partial-cell generalization of the Wet-point average method :
 C     (formerly called: useJamartWetPoints)
@@ -273,25 +154,6 @@ C     (formerly called: useJamartWetPoints)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=2-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx-1
-          uBarXY=(
-     &     (stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
-     &    +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
-     &     )
-     &    / MAX( epsil,(_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
-     &                +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj)) )
-          vCoriolisTerm(i,j)=vCoriolisTerm(i,j)
-     &     -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
-     &          )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
 C- hFac weighted average :
        DO j=2-OLy,sNy+OLy
@@ -307,23 +169,6 @@ C- hFac weighted average :
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_recip_hFacS(i,j,k,bi,bj)
         ENDDO
        ENDDO
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=2-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx-1
-          uBarXY=0.25*(
-     &     (stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
-     &    +(stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
-     &               )
-          vCoriolisTerm(i,j)=vCoriolisTerm(i,j)
-     &     -0.5*( fCoriG(i,j,bi,bj)+fCoriG(i+1,j,bi,bj)
-     &          )*uBarXY*recip_dyC(i,j,bi,bj)*_recip_hFacS(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
       ELSEIF ( selectCoriScheme .EQ. 3 ) THEN
 C- Energy-conserving discretisation with hFac weighted average :
        DO j=2-OLy,sNy+OLy
@@ -340,26 +185,6 @@ C- Energy-conserving discretisation with hFac weighted average :
      &         )*recip_dyC(i,j,bi,bj)*_recip_hFacS(i,j,k,bi,bj)
         ENDDO
        ENDDO
-
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-       IF (useLANGMUIR) THEN
-        DO j=2-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx-1
-          uBarYm = halfRL *(
-     &      stokesU( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &     +stokesU( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
-          uBarYp = halfRL *(
-     &      stokesU(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &     +stokesU(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
-          vCoriolisTerm(i,j) = vCoriolisTerm(i,j)-0.5 _d 0
-     &         *( uBarYm*fCoriG( i ,j,bi,bj)
-     &           +uBarYp*fCoriG(i+1,j,bi,bj)
-     &          )*recip_dyC(i,j,bi,bj)*_recip_hFacS(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDIF
-#endif
-
       ELSE
         STOP 'MOM_VI_CORIOLIS: invalid selectCoriScheme'
       ENDIF
