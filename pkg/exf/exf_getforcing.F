@@ -130,6 +130,13 @@ C     == global variables ==
 # include "tamc.h"
 #endif
 
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_EXF
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_INTERP_PARAM.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
       _RL     myTime

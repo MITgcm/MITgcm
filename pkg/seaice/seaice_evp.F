@@ -103,7 +103,9 @@ C     betaFacU/V     :: analog betaFacP1U/V
       INTEGER max1, max2, max3
       INTEGER ikeyloc, iicekey
 #else
+# ifndef ALLOW_TAPENADE
       INTEGER nEVPstepMax
+# endif
 #endif
 
       _RL COSWAT
@@ -243,7 +245,9 @@ C
       betaFacP1U = betaFacP1
       betaFacP1V = betaFacP1
 #ifndef ALLOW_AUTODIFF_TAMC
+# ifndef ALLOW_TAPENADE
       nEVPstepMax = nEVPstep
+# endif
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)

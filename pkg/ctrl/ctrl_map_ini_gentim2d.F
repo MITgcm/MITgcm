@@ -51,10 +51,17 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
       integer numsmo
+#ifndef ALLOW_TAPENADE
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamegenTmp
       character*(80) fnamebase
+#else
+      character*(80) fnamegenIn(1:maxCtrlTim2D)
+      character*(80) fnamegenOut(1:maxCtrlTim2D)
+      character*(80) fnamegenTmp(1:maxCtrlTim2D)
+      character*(80) fnamebase(1:maxCtrlTim2D)
+#endif
       integer startrec
       integer endrec
       integer diffrec
@@ -107,8 +114,17 @@ C--   generic 2D control variables
 #endif
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+#ifndef ALLOW_TAPENADE
         fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
+#else
+        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
+#endif
+
+#ifndef ALLOW_TAPENADE
         call ctrl_init_rec ( fnamebase,
+#else 
+        call ctrl_init_rec ( fnamebase(iarr),
+#endif
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -140,6 +156,7 @@ C--   generic 2D control variables
         enddo
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+#ifndef ALLOW_TAPENADE
         fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
         write(fnamegenIn(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.',optimcycle
@@ -147,7 +164,15 @@ C--   generic 2D control variables
      &       fnamebase(1:ilgen),'.effective.',optimcycle
         write(fnamegenTmp(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.tmp.',optimcycle
-
+#else
+        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
+        write(fnamegenIn(iarr)(1:80),'(2a,i10.10)')
+     &       fnamebase(iarr)(1:ilgen),'.',optimcycle
+        write(fnamegenOut(iarr)(1:80),'(2a,i10.10)')
+     &       fnamebase(iarr)(1:ilgen),'.effective.',optimcycle
+        write(fnamegenTmp(iarr)(1:80),'(2a,i10.10)')
+     &       fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
+#endif
 c--   docycle
 
         replicated_nrec=diffrec
@@ -173,6 +198,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
           krec=replicated_nrec*(jrec-1)+irec
           IF (krec.LE.endrec) THEN
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, irec,
      &          doglobalread, ladinit, optimcycle,
@@ -186,6 +212,24 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #else
            CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
+#else /* ALLOW_TAPENADE */
+#ifdef ALLOW_AUTODIFF
+           CALL ACTIVE_READ_XY( fnamegenIn(iarr), xx_gen, irec, 
+     &          doglobalread, ladinit, optimcycle,
+     &          myThid, xx_gentim2d_dummy(iarr) )
+#else
+           CALL READ_REC_XY_RL( fnamegenIn(iarr), 
+     &          xx_gen, iRec, 1, myThid )
+#endif
+#ifdef ALLOW_AUTODIFF
+           CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), 
+     &          xx_gen, krec, optimcycle,
+     &          myThid, xx_gentim2d_dummy(iarr) )
+#else
+           CALL WRITE_REC_XY_RL( fnamegenOut(iarr), 
+     &          xx_gen, iRec, 1, myThid )
+#endif
+#endif /* ALLOW_TAPENADE */
           ENDIF
          ENDDO
         ENDDO

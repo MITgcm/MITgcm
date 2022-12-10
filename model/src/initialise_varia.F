@@ -9,6 +9,20 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+# endif
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
+# ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+# endif
+c# ifdef ALLOW_THSICE
+c# include "THSICE_OPTIONS.h"
+c# endif
+#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: INITIALISE_VARIA
@@ -87,7 +101,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_AUTODIFF
+#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
 # include "GRID.h"
 # include "FFIELDS.h"
 # include "CTRL_FIELDS.h"
@@ -95,6 +109,51 @@ C     == Global variables ==
 #  include "SHELFICE.h"
 # endif
 #endif
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+# endif
+# ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "optim.h"
+# include "ctrl.h"
+# include "CTRL_GENARR.h"
+# include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_CD_CODE
+# include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_DIC
+# include "DIC_VARS.h"
+# include "DIC_ATMOS.h"
+# include "DIC_LOAD.h"
+# endif
+# ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_FIELDS.h"
+# endif
+# ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_SOM_VARS.h"
+# endif
+# ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_INTERP_PARAM.h"
+# include "EXF_FIELDS.h"
+# endif
+# ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+# include "STREAMICE_CG.h"
+# endif
+# ifdef ALLOW_THSICE
+# include "THSICE_VARS.h"
+# endif
+# ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid

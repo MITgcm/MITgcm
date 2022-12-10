@@ -70,7 +70,9 @@ C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
+#ifndef ALLOW_TAPENADE
       CALL CTRL_ASSIGN(xx_gen, 1, zeroRL, myThid)
+#endif
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.
@@ -178,8 +180,12 @@ C avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, myThid )
 
+Cssg For TAPENADE
+C$AD DO-NOT-DIFF
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
      &                      fld, 1, optimcycle, myThid )
+Cssg For TAPENADE
+C$AD END-DO-NOT-DIFF
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -253,9 +259,9 @@ CEOP
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
-
+#ifndef ALLOW_TAPENADE
       CALL CTRL_ASSIGN(xx_gen, Nr, zeroRL, myThid)
-
+#endif
       dosmooth=.FALSE.
       dowc01  = .FALSE.
       doscaling=.TRUE.
@@ -375,8 +381,12 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, myThid )
 
+Cssg For TAPENADE
+C$AD DO-NOT-DIFF 
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
      &                      fld, 1, optimcycle, myThid )
+Cssg For TAPENADE
+C$AD END-DO-NOT-DIFF
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */

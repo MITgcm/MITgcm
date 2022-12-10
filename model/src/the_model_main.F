@@ -660,6 +660,8 @@ C--   Set model configuration (fixed arrays)
 
 # if defined( ALLOW_TANGENTLINEAR_RUN )
 
+# if !defined( ALLOW_TAPENADE)
+
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
 #  endif
@@ -667,7 +669,13 @@ C--   Set model configuration (fixed arrays)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
 
+#endif /* ALLOW_TAPENADE */
+
 # elif defined( ALLOW_ADJOINT_RUN )
+
+#ifdef ALLOW_TAPENADE
+        CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
+#else
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'
@@ -698,6 +706,7 @@ C-- The following assumes the TAF option '-pure'
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
+#endif /* ALLOW_TAPENADE */
 
 # else /* forward run only within AD setting */
 

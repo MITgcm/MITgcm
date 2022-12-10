@@ -147,7 +147,7 @@ C     == Global variables ===
 # include "OFFLINE_SWITCH.h"
 #endif
 
-#ifdef ALLOW_AUTODIFF
+#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
 # include "AUTODIFF_MYFIELDS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
@@ -190,7 +190,21 @@ C     == Global variables ===
 #   include "ecco_cost.h"
 #  endif
 # endif
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF or ALLOW_TAPENADE */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_KPP
+#  ifndef ALLOW_SEAICE
+#  include "KPP_PARAMS.h"
+#  endif
+# endif
+# ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+# endif
+      COMMON/WIND_STRESS_ICE/TAUX,TAUY
+      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

@@ -399,6 +399,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_TAPENADE
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
@@ -415,6 +416,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
           CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
+#endif
 #endif
          ELSE
            WRITE(msgBuf,'(A,I3,A)')
@@ -613,6 +615,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_TAPENADE
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
@@ -629,6 +632,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
           CALL GAD_PQM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
      O         af, myThid )
+#endif
 #endif
          ELSE
            WRITE(msgBuf,'(A,I3,A)')

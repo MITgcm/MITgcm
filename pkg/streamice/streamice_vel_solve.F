@@ -152,7 +152,8 @@ c$TAF STORE err_init = comlev1, key=ikey_dynamics
 
 C START NL ITER. LOOP
 C-------------------------------------------------------------------
-
+Cssg - Tapenade Pragma for fixed point iters
+C$NOAD FP-LOOP
       DO iter=1,maxNLIter
 
 C     To avoid using "exit", loop goes through all iterations

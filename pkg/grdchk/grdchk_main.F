@@ -85,6 +85,12 @@ C     == global variables ==
 #include "ctrl.h"
 #include "g_cost.h"
 
+#ifdef ALLOW_TAPENADE
+#include "tap_tlm_cost.h"
+C#include "CTRL_SIZE.h"
+C#include "ctrl_dummy.h"
+#endif
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
       INTEGER myThid
@@ -160,6 +166,18 @@ Cph   assuming all xx_ fields are initialised to zero.
       ierr_grdchk = 0
       adxxmemo  = 0.
       ftlxxmemo = 0.
+
+#ifdef ALLOW_TAPENADE
+C--   forward run with unperturbed control vector
+            myTime = startTime
+            myIter = nIter0
+#ifdef ALLOW_OPENAD
+            CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
+#else
+            CALL THE_MAIN_LOOP( myTime, myIter, myThid )
+#endif
+#endif
+
 #if (defined  (ALLOW_ADMTLM))
       fcref = objf_state_final(idep,jdep,1,1,1)
 #elif (defined (ALLOW_OPENAD))
@@ -293,12 +311,24 @@ C--   2. perform tangent linear run
           g_fc = 0.
 #endif
 
+#ifndef ALLOW_TAPENADE
+
           CALL G_THE_MAIN_LOOP( myTime, myIter, myThid )
 #ifdef ALLOW_ADMTLM
           ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
 #else
           ftlxxmemo = g_fc
 #endif
+
+#else /* ALLOW_TAPENADE */
+          CALL THE_MAIN_LOOP_D( myTime, myIter, myThid )
+#ifdef ALLOW_ADMTLM
+          ftlxxmemo = objf_state_finald(idep,jdep,1,1,1)
+#else
+          ftlxxmemo = fcd
+#endif
+
+#endif /* ALLOW_TAPENADE */
 
 C--   3. reset control vector
           CALL GRDCHK_SETXX( icvrec, TANGENT_SIMULATION,
@@ -353,6 +383,11 @@ C--   Reset control vector.
           IF ( useCentralDiff ) THEN
 C--   (C-2) repeat the proceedure for a negative perturbation:
             localEps = - ABS(grdchk_eps)
+          ELSE
+            localEps = 0.0
+
+C-- end of if useCentralDiff ...
+          END IF
 
 C--   get control vector component from file
 C--   perturb it and write back to file
@@ -387,9 +422,6 @@ C--   Reset control vector.
      &                 itile, jtile, layer,
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, ierr, myThid )
-
-C-- end of if useCentralDiff ...
-          ENDIF
 
 C******************************************************
 C--   (D): calculate relative differences between gradients

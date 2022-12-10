@@ -2,7 +2,11 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# endif
+#endif
 CBOP
 C !ROUTINE: SEAICE_MODEL
 
@@ -42,6 +46,11 @@ C !USES: ===============================================================
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
+#endif
+#ifdef ALLOW_TAPENADE
+      COMMON/WIND_STRESS_ICE/TAUX,TAUY
+      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C !INPUT PARAMETERS: ===================================================

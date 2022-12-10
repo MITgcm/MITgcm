@@ -12,6 +12,11 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_TAPENADE
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
+#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
@@ -70,6 +75,14 @@ C     == Global variables ==
 #  include "EXF_CONSTANTS.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_INTERP_PARAM.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread

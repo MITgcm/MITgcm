@@ -23,7 +23,9 @@ c     == global variables ==
 
 #include "cost.h"
 #include "adcost.h"
-
+#ifdef ALLOW_TAPENADE
+#include "tap_adj_cost.h"
+#endif
 c     == routine arguments ==
 
       integer mythid
@@ -47,6 +49,14 @@ c     == end of interface ==
 #endif
 
 #ifdef ALLOW_AUTODIFF
+
+#ifdef ALLOW_TAPENADE
+      fcb = 1.0
+#else
+      if ( myProcId .EQ. 0 ) then
+       fcb = 1. _d 0
+      endif
+#endif
 
 #ifdef ALLOW_OPENAD
       adfc = 1.0

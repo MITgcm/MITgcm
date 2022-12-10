@@ -32,6 +32,13 @@ C     == Global data ==
 #include "tamc.h"
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_FIELDS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     bi,bj  :: tile indices
 C     myTime :: Current time in simulation

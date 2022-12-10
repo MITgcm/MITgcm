@@ -6,6 +6,11 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -114,12 +119,35 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
 # include "DYNVARS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif
 #endif
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+# endif
+# ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
+# include "optim.h"
+# include "ctrl.h"
+# include "CTRL_GENARR.h"
+# include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_FIELDS.h"
+# endif
+# ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+# endif
+# ifdef ALLOW_STREAMICE
+# include "STREAMICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
