@@ -83,11 +83,15 @@ C     == local variables ==
       integer bi,bj
       integer i,j,k2
       integer ilgen
+      integer ilDir
 CEOP
 
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
+
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -159,11 +163,11 @@ C--   generic 2D control variables
 #ifndef ALLOW_TAPENADE
         fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
         write(fnamegenIn(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
         write(fnamegenOut(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.effective.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
         write(fnamegenTmp(1:80),'(2a,i10.10)')
-     &       fnamebase(1:ilgen),'.tmp.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.tmp.',optimcycle
 #else
         fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
         write(fnamegenIn(iarr)(1:80),'(2a,i10.10)')
@@ -171,8 +175,9 @@ C--   generic 2D control variables
         write(fnamegenOut(iarr)(1:80),'(2a,i10.10)')
      &       fnamebase(iarr)(1:ilgen),'.effective.',optimcycle
         write(fnamegenTmp(iarr)(1:80),'(2a,i10.10)')
-     &       fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
 #endif
+
 c--   docycle
 
         replicated_nrec=diffrec

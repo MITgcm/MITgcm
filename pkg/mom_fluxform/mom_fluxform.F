@@ -109,8 +109,6 @@ C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
       INTEGER i,j
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
       INTEGER imomkey
 #endif
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -183,20 +181,8 @@ CEOP
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = k - 1
-          max0 = Nr
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          imomkey = (act0 + 1)
-     &                    + act1*max0
-     &                    + act2*max0*max1
-     &                    + act3*max0*max1*max2
-     &                    + act4*max0*max1*max2*max3
+          imomkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+          imomkey = k  + (imomkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Initialise intermediate terms
