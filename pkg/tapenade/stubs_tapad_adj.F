@@ -59,3 +59,45 @@
 ! [llh] the upstream cg2d_x is passive:
       cg2d_xb = 0.d0
       END
+
+      SUBROUTINE ADEXCH_3D_RL( adVar, Nr, myThid )
+      IMPLICIT NONE
+      Real*8 adVar
+      INTEGER Nr
+      INTEGER myThid
+      WRITE(*,*) "Called not yet defined"
+      END
+
+      SUBROUTINE ADEXCH_UV_XY_RS( adU, adV, bool, myThid )
+      IMPLICIT NONE
+      Real*8 adU
+      Real*8 adV
+      LOGICAL bool
+      INTEGER myThid
+      WRITE(*,*) "Called not yet defined"
+      END
+
+      SUBROUTINE ADEXCH_UV_3D_RL( aduVel,advVel, bool, Nr, myThid )
+      IMPLICIT NONE
+      LOGICAL bool
+      Real*8 aduVel
+      Real*8 advVel
+      INTEGER Nr
+      INTEGER myThid
+      WRITE(*,*) "Called not yet defined"
+      END
+ 
+      SUBROUTINE ADEXCH_XY_RS( adVar, myThid )
+      IMPLICIT NONE
+      Real*8 adVar
+      INTEGER myThid
+      WRITE(*,*) "Called not yet defined"
+      END
+
+      SUBROUTINE ADEXCH_XY_RL( adVar, myThid )
+      IMPLICIT NONE
+      Real*8 adVar
+      INTEGER myThid
+      WRITE(*,*) "Called not yet defined"
+      END
+
