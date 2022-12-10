@@ -1,5 +1,19 @@
 #include "CPP_EEOPTIONS.h"
 
+      SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, mythid)
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "GLOBAL_MAX.h"
+      _RL     rhsmax
+      _RL     rhsmaxb
+      INTEGER myThid
+      
+      CALL GLOBAL_ADMAX_R8(rhsmax, rhsmaxb, mythid)
+      RETURN
+      END
+
       SUBROUTINE GLOBAL_SUM_TILE_RL_B(phiTile, phiTileb,
      &     sumPhi, sumPhib, myThid)
       IMPLICIT NONE
