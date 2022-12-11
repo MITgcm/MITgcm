@@ -141,7 +141,6 @@ C     xxxFac :: On-off tracer parameters used for switching terms off.
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER imomkey
 #endif
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_MNC
       INTEGER offsets(9)
@@ -650,15 +649,6 @@ c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#if (defined (ALLOW_GGL90) && defined (ALLOW_GGL90_LANGMUIR))
-      IF (useLANGMUIR .AND. useAbsVorticity ) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'MOM_VECINV: Langmuir Parameterization with ',
-     &  'useAbsVorticity is not implemented.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R MOM_VECINV'
-      ENDIF
-#endif
 C---  Prepare for Advection & Coriolis terms:
 C-    calculate absolute vorticity
       IF (useAbsVorticity)
