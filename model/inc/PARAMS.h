@@ -614,18 +614,25 @@ C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     thetaConst :: Constant reference for potential temperature
 C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
-C     surf_pRef  :: surface reference pressure ( Pa )
-C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
-C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
+C     rhoRef     :: density vertical profile from (tRef,sRef) [kg/m^3]
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
 C                :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C                :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
+C     surf_pRef  :: surface reference pressure ( Pa )
+C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
+C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
 C     rVel2wUnit :: units conversion factor (Non-Hydrostatic code),
 C                :: from r-coordinate vertical velocity to vertical velocity [m/s].
 C                :: z-coord: = 1 ; p-coord: wSpeed [m/s] = rVel [Pa/s] * rVel2wUnit
 C     wUnit2rVel :: units conversion factor (Non-Hydrostatic code),
 C                :: from vertical velocity [m/s] to r-coordinate vertical velocity.
 C                :: z-coord: = 1 ; p-coord: rVel [Pa/s] = wSpeed [m/s] * wUnit2rVel
+C     rUnit2z    :: units conversion factor (for ocean in P-coord, only fct of k),
+C                :: from r-coordinate to z [m] (at level center):
+C                :: z-coord: = 1 ; p-coord: dz [m] = dr [Pa] * rUnit2z
+C     z2rUnit    :: units conversion factor (for ocean in P-coord, only fct of k),
+C                :: from z [m] to r-coordinate (at level center):
+C                :: z-coord: = 1 ; p-coord: dr [Pa] = dz [m] * z2rUnit
 C     mass2rUnit :: units conversion factor (surface forcing),
 C                :: from mass per unit area [kg/m2] to vertical r-coordinate unit.
 C                :: z-coord: = 1/rhoConst ( [kg/m2] / rho = [m] ) ;
@@ -837,8 +844,9 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
      & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
-     & thetaConst, tRef, sRef, surf_pRef, pRef4EOS, phiRef, dBdrRef,
-     & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
+     & thetaConst, tRef, sRef, rhoRef, dBdrRef,
+     & surf_pRef, pRef4EOS, phiRef,
+     & rVel2wUnit, wUnit2rVel, rUnit2z, z2rUnit, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -948,10 +956,12 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL thetaConst
       _RL tRef(Nr)
       _RL sRef(Nr)
+      _RL rhoRef(Nr)
+      _RL dBdrRef(Nr)
       _RL surf_pRef, pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
-      _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
+      _RL rUnit2z(Nr), z2rUnit(Nr)
       _RL mass2rUnit, rUnit2mass
       _RL baseTime
       _RL startTime

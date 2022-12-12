@@ -73,27 +73,29 @@ grid;
 % a) forcing (2-D bin file, sng or 12 Rec):
 namInpF={'bathy','lev_monthly_salt','lev_monthly_temp', ...
          'shi_empmr_year','shi_qnet','tren_taux','tren_tauy', ...
-         'tren_speed','fice','sillev1'};
+         'tren_speed','fice','sillev1','silicate_3D_12m'};
 if kwr(2) > 0
  fprintf('==== Processing Forcing Files ====\n');
 
  for n=1:length(namInpF),
   namfg=[char(namInpF(n)),'.bin'];
   namfb=[char(namInpF(n)),'_box.bin'];
-  fprintf(' process file: %-21s',namfg);
-  nRec=12; if n ==1, nRec=1; end
-  vv1=rdda([iDir,namfg],[nx ny nRec],1,prec,'b');
-  vv2=vv1(ib1:ib2,jb1:jb2,:);
- %size(vv1),size(vv2)
-  if kwr(2) > 1,
-    if nRec == 1,
-      fprintf(' --> %-25s (%i %i)',namfb,size(vv2));
-    else
-      fprintf(' --> %-25s (%i %i %i)',namfb,size(vv2));
-    end
+  if isempty(dir([iDir,namfg])),
+   fprintf(' => skip file: %-21s (not found)\n',namfg);
+  else
+   fprintf(' process file: %-21s',namfg);
+   nRec=12;
+   if strcmp(char(namInpF(n)),'bathy'), nRec=1; end
+   if strcmp(char(namInpF(n)),'silicate_3D_12m'), nRec=nr*nRec; end
+   vv1=rdda([iDir,namfg],[nx ny nRec],1,prec,'b');
+   vv2=vv1(ib1:ib2,jb1:jb2,:);
+  %size(vv1),size(vv2)
+   if kwr(2) > 1,
+    fprintf(' --> %-25s (',namfb); fprintf(' %i',size(vv2)); fprintf(' )');
     fid=fopen(namfb,'w','b'); fwrite(fid,vv2,prec); fclose(fid);
+   end
+   fprintf('\n');
   end
-  fprintf('\n');
  end
 end %- if kwr(2) > 0
 

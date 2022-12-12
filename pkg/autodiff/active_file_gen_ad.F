@@ -88,20 +88,13 @@ C     dummy          :: (needed for 2nd derivative code)
       INTEGER myThid
       _RL     dummy, addummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
       CHARACTER*(80) fName
-      INTEGER il
 CEOP
 
       pref = 'ad'
-      il   = ILNBLNK( activeVar_file )
-      WRITE(fName(1:80),'(A)') ' '
-      WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
+      CALL ADD_PREFIX( pref, activeVar_file, fName )
 
       IF ( arrShape.EQ.'XY' ) THEN
 
@@ -205,20 +198,13 @@ C     dummy          :: (needed for 2nd derivative code)
       INTEGER myThid
       _RS     dummy, addummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
       CHARACTER*(80) fName
-      INTEGER il
 CEOP
 
       pref = 'ad'
-      il   = ILNBLNK( activeVar_file )
-      WRITE(fName(1:80),'(A)') ' '
-      WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
+      CALL ADD_PREFIX( pref, activeVar_file, fName )
 
       IF ( arrShape.EQ.'XY' ) THEN
 
@@ -312,22 +298,15 @@ C     dummy          :: (needed for 2nd derivative code)
       INTEGER myThid
       _RL     dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
       CHARACTER*(80) fName
-      INTEGER il
       LOGICAL globalFile
 CEOP
 
       pref = 'ad'
-      il   = ILNBLNK( activeVar_file )
-      WRITE(fName(1:80),'(A)') ' '
-      WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
+      CALL ADD_PREFIX( pref, activeVar_file, fName )
       globalFile = .FALSE.
 
       IF ( arrShape.EQ.'XY' ) THEN
@@ -422,22 +401,15 @@ C     dummy          :: (needed for 2nd derivative code)
       INTEGER myThid
       _RS     dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
       CHARACTER*(80) fName
-      INTEGER il
       LOGICAL globalFile
 CEOP
 
       pref = 'ad'
-      il   = ILNBLNK( activeVar_file )
-      WRITE(fName(1:80),'(A)') ' '
-      WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
+      CALL ADD_PREFIX( pref, activeVar_file, fName )
       globalFile = .FALSE.
 
       IF ( arrShape.EQ.'XY' ) THEN

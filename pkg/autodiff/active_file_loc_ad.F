@@ -87,22 +87,15 @@ C                      variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       useCurrentDir = .TRUE.
 
@@ -176,22 +169,15 @@ C                      variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .TRUE.
 
@@ -265,22 +251,15 @@ C                      variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .TRUE.
 
@@ -354,22 +333,15 @@ C                      variable and write to active file
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .TRUE.
 
@@ -405,7 +377,6 @@ C     !INTERFACE:
      &                            )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_xy_loc
@@ -434,23 +405,16 @@ C     myThid:          thread number for this instance
       INTEGER myIter,myThid
       _RL     dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .TRUE.
@@ -487,7 +451,6 @@ C     !INTERFACE:
      &                             )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_xyz_loc
@@ -516,23 +479,16 @@ C     myThid:          thread number for this instance
       INTEGER myIter,myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .TRUE.
@@ -597,23 +553,16 @@ C     myThid:          thread number for this instance
       INTEGER myIter,myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .TRUE.
@@ -650,7 +599,6 @@ C     !INTERFACE:
      &                             )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_yz_loc
@@ -679,23 +627,16 @@ C     myThid:          thread number for this instance
       INTEGER myIter,myThid
       _RL dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .TRUE.
