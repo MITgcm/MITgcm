@@ -58,6 +58,7 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
             rain_ratio(i,j,bi,bj) = rainRatioUniform
           ENDDO
         ENDDO
+#ifdef CAR_DISS
         DO k = 1, Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -65,6 +66,7 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
           ENDDO
          ENDDO
         ENDDO
+#endif /* CAR_DISS */
        ENDDO
       ENDDO
 #endif /* DIC_BIOTIC */

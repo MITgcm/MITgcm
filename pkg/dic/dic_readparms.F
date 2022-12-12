@@ -411,8 +411,10 @@ C- namelist DIC_FORCING
      & '  /* File name of atmospheric pressure*/')
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
      & 'DIC_silicaFile=','  /* File name of surface silica */')
+#ifdef CAR_DISS
        CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
      & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
+#endif
        CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
        CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
@@ -508,6 +510,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
       ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
+
+#ifndef CAR_DISS
+      IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: DIC_deepSilicaFile (3d silicate input)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define CAR_DISS" in "DIC_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1      
+      ENDIF
+#endif /* CAR_DISS */
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')

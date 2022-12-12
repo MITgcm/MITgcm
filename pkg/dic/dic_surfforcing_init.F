@@ -104,6 +104,7 @@ C If file provided for surface silicate, read it in
          ENDDO
         ENDDO
 #ifndef ALLOW_AUTODIFF
+#ifdef CAR_DISS
        ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -115,7 +116,8 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* CAR_DISS */
+#endif /* not ALLOW_AUTODIFF */
        ENDIF
 
 C end periodicExternalForcing

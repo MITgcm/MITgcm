@@ -263,7 +263,7 @@ C old OCMIP way
      U                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
-#endif
+#endif /* CAR_DISS */
 
 C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
@@ -388,8 +388,10 @@ C save averages
      &                             BIOac(i,j,k)*deltaTClock
             CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
      &                             CAR(i,j,k)*deltaTClock
+#ifdef CAR_DISS
             OmegaCave(i,j,k,bi,bj)=OmegaCave(i,j,k,bi,bj)+
      &                             OmegaC(i,j,k,bi,bj)*deltaTClock
+#endif
             pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
      &                             pflux(i,j,k)*deltaTClock
             epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +

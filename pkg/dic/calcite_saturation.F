@@ -34,7 +34,8 @@ C  myThid               :: thread number
 
 C !OUTPUT PARAMETERS: ===================================================
 
-#ifdef DIC_BIOTIC
+#if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
+#ifdef CAR_DISS
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
@@ -236,6 +237,7 @@ C-     end k loop
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#endif /* DIC_BIOTIC */
+#endif /* CAR_DISS */
+#endif /* defined ALLOW_PTRACERS && defined DIC_BIOTIC */
        RETURN
        END

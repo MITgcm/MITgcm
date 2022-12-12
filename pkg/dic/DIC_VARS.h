@@ -25,7 +25,10 @@ C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
-     &              wind, fIce, Kwexch_Pre, silicaSurf, silicaDeep
+     &              wind, fIce, Kwexch_Pre, silicaSurf
+#ifdef CAR_DISS
+     &            , silicaDeep
+#endif
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -35,7 +38,9 @@ C                       for air-sea CO2 and O2 flux calculations.
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef CAR_DISS
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 
 C Store dissociation and carbon chemistry coefficients for
 C    pCO2 solvers (see carbon_chem.F).
@@ -217,7 +222,8 @@ C  dic_int4          :: timestep between file entries
 C  dic_pCO2          :: atmospheric pCO2 to be read from data.dic
       COMMON /DIC_FILENAMES/
      &        DIC_windFile, DIC_atmospFile, DIC_silicaFile,
-     &        DIC_deepSilicaFile, DIC_iceFile, DIC_parFile,
+     &        DIC_deepSilicaFile, 
+     &        DIC_iceFile, DIC_parFile,
      &        DIC_chlaFile, DIC_ironFile,
      &        DIC_forcingPeriod, DIC_forcingCycle,
      &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
@@ -261,7 +267,10 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
 
       COMMON /BIOTIC_TAVE/
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
-     &     fluxCO2ave, omegaCave, pfluxave, epfluxave, cfluxave,
+     &     fluxCO2ave, pfluxave, epfluxave, cfluxave, 
+#ifdef CAR_DISS
+     &     omegaCave,
+#endif
      &     DIC_timeAve
 
       _RL BIOave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -271,7 +280,9 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
       _RL pCO2ave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef CAR_DISS
       _RL OmegaCave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       _RL pfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL epfluxave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -322,15 +333,17 @@ C  cfeload           :: not used (legacy adjoint param)
 C  QSW_underice      :: is Qsw is masked by ice fraction?
 
       COMMON /BIOTIC_NEEDS/
-     &     par, alpha, rain_ratio, InputFe, omegaC, CHL,
+     &     par, alpha, rain_ratio, InputFe, CHL,
      &     Kpo4, DOPfraction, zcrit, KRemin,
      &     KDOPremin,zca,R_op,R_cp,R_NP, R_FeP,
      &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
      &     freefemax, fesedflux_pcm, FeIntSec,
      &     parfrac, k0, kchl, lit0,
      &     alphaUniform, rainRatioUniform,
+#ifdef CAR_DISS
+     &     omegaC,
+#endif
      &     nlev, QSW_underice
-
 c    &     alphamax, alphamin,
 c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
 
@@ -338,7 +351,9 @@ c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef CAR_DISS
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       _RL CHL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Kpo4
       _RL DOPfraction
@@ -357,7 +372,7 @@ c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
       _RL KScav
       _RL ligand_stab
       _RL ligand_tot
-      _RL  KFe
+      _RL KFe
       _RL freefemax
       _RL k0, kchl, parfrac, lit0
       _RL alphaUniform

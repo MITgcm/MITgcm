@@ -37,9 +37,8 @@ C !OUTPUT PARAMETERS: ===================================================
 C cflux                :: carbonate flux
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef ALLOW_PTRACERS
-#ifdef DIC_BIOTIC
-
+#if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
+#ifdef CAR_DISS
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
 c  ko                     :: loop-within-loop index
@@ -197,7 +196,7 @@ c end diagnostic
         ENDDO
        ENDDO
 c
-#endif
-#endif
+#endif /* CAR_DISS */
+#endif /* defined ALLOW_PTRACERS && defined DIC_BIOTIC */
        RETURN
        END
