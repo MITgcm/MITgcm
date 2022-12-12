@@ -6,9 +6,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -119,9 +116,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
-# ifdef ALLOW_SHELFICE
-#  include "SHELFICE.h"
-# endif
 #endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -339,22 +333,19 @@ C--   Initialise float position
 #endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_SHELFICE
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
-CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
-#  ifdef SHI_ALLOW_GAMMAFRICT
-CADJ STORE shiCDragFld = tapelev_init, key = 1
-#  else
-CADJ STORE shiTransCoeffT = tapelev_init, key = 1
-CADJ STORE shiTransCoeffS = tapelev_init, key = 1
-#  endif
-# endif /* ALLOW_AUTODIFF_TAMC */
+# ifdef ALLOW_AUTODIFF
+C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
+C  compiling pkg/autodiff (with "If useShelfIce" inside shelfice_init_varia.F)
+# else
       IF (useShelfIce) THEN
+# endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
 # endif
        CALL SHELFICE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
