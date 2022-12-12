@@ -1,3 +1,4 @@
+#include "CPP_EEOPTIONS.h"
 C--   File active_read_tapad.F: Active read with Tapenade.
 C--    Contents:
 C--    o ACTIVE_READ_XY_D
@@ -11,9 +12,9 @@ CBOP
 C     !ROUTINE: ACTIVE_READ_XY_D
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_XY_D(active_var_file,
-     +                 active_var, active_vard,
-     +                 iRec, doglobalread, lAdInit,
-     +                 myOptimIter, myThid, dummy, dummyd)
+     &                 active_var, active_vard,
+     &                 iRec, doglobalread, lAdInit,
+     &                 myOptimIter, myThid, dummy, dummyd)
 
 C     *==========================================================*
 C     | SUBROUTINE ACTIVE_READ_XY_D
@@ -28,7 +29,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "SIZE.h"
-
+#include "EEPARAMS.h"
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     active_var_file:: filename
@@ -42,15 +43,15 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid     :: my Thread Id. number
       CHARACTER*(*) active_var_file
-      Real*8     active_vard(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_vard(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter 
       INTEGER myThid
-      Real*8  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      Real*8 dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -66,8 +67,8 @@ CEOP
       WRITE(fname(1:il+2),'(2A)') tlmpref,active_var_file(1:il)
 
       call active_read_xy(active_var_file, active_var,
-     +                    iRec, doglobalread, lAdInit,
-     +                    myOptimIter, myThid, dummy)
+     &                    iRec, doglobalread, lAdInit,
+     &                    myOptimIter, myThid, dummy)
       call active_read_xy(fname, dummyd, iRec,
      &                    doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
@@ -83,9 +84,9 @@ CBOP
 C     !ROUTINE: ACTIVE_READ_XYZ_D
 C     !INTERFACE:
       subroutine ACTIVE_READ_XYZ_D(active_var_file,
-     +                 active_var, active_vard,
-     +                 iRec, doglobalread, lAdInit,
-     +                 myOptimIter, myThid, dummy, dummyd)
+     &                 active_var, active_vard,
+     &                 iRec, doglobalread, lAdInit,
+     &                 myOptimIter, myThid, dummy, dummyd)
 
 C     *==========================================================*
 C     | SUBROUTINE ACTIVE_READ_XYZ_D
@@ -100,7 +101,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "SIZE.h"
-
+#include "EEPARAMS.h"
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     active_var_file:: filename
@@ -114,15 +115,15 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid     :: my Thread Id. number
       CHARACTER*(*) active_var_file
-      Real*8     active_vard(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_vard(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter
       INTEGER myThid
-      Real*8  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8 dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
@@ -138,8 +139,8 @@ CEOP
       WRITE(fname(1:il+2),'(2A)') tlmpref,active_var_file(1:il)
 
       call active_read_xyz(active_var_file, active_var,
-     +                    iRec, doglobalread, lAdInit,
-     +                    myOptimIter, myThid, dummy)
+     &                    iRec, doglobalread, lAdInit,
+     &                    myOptimIter, myThid, dummy)
       call active_read_xyz(fname, dummyd, iRec,
      &                    doglobalread, lAdInit,
      &                    myOptimIter, myThid, dummy)
@@ -155,9 +156,9 @@ CBOP
 C     !ROUTINE: ACTIVE_READ_XY_B
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_XY_B(active_var_file, 
-     +                 active_var, active_varb,
-     +                 iRec, doglobalread, lAdInit, 
-     +                 myOptimIter, myThid, dummy, dummyb)
+     &                 active_var, active_varb,
+     &                 iRec, doglobalread, lAdInit, 
+     &                 myOptimIter, myThid, dummy, dummyb)
 
 C     *==========================================================*
 C     | SUBROUTINE ACTIVE_READ_XY_B
@@ -172,7 +173,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "SIZE.h"
-
+#include "EEPARAMS.h"
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     active_var_file:: filename
@@ -186,41 +187,33 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid     :: my Thread Id. number
       CHARACTER*(*) active_var_file
-      Real*8     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter
-      INTEGER myThid
-      Real*8  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      Real*8 dummyb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dummy, dummyb ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
 CEOP
 
-      dummyb = dummyb + active_varb
-      active_varb = 0.d0
-
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:il+2),'(2A)') adpref,active_var_file(1:il)
-
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       useCurrentDir = .FALSE.
 
-      call active_read_3d_rl(
-     &                 fname, dummyb, doglobalread,
+      CALL ACTIVE_READ_3D_RL(
+     &                 fname, active_varb, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 1, myOptimIter, myThid )
+     &                 REVERSE_SIMULATION, myIter, myThid )
+
+      RETURN
 
       END
 
@@ -230,9 +223,9 @@ CBOP
 C     !ROUTINE: ACTIVE_READ_XYZ_B
 C     !INTERFACE:
       SUBROUTINE ACTIVE_READ_XYZ_B(active_var_file, 
-     +                 active_var, active_varb,
-     +                 iRec, doglobalread, lAdInit, 
-     +                 myOptimIter, myThid, dummy, dummyb)
+     &                 active_var, active_varb,
+     &                 iRec, doglobalread, lAdInit, 
+     &                 myOptimIter, myThid, dummy, dummyb)
 
 C     *==========================================================*
 C     | SUBROUTINE ACTIVE_READ_XYZ_B
@@ -247,7 +240,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "SIZE.h"
-
+#include "EEPARAMS.h"
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     active_var_file:: filename
@@ -261,41 +254,31 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid     :: my Thread Id. number
       CHARACTER*(*) active_var_file
-      Real*8     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     active_varb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter
-      INTEGER myThid
-      Real*8  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8 dummyb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dummy, dummyb ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL useCurrentDir
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
 CEOP
 
-      dummyb = dummyb + active_varb
-      active_varb = 0.d0
-
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:il+2),'(2A)') adpref,active_var_file(1:il)
-
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
-      call active_read_3d_rl(
-     &                 fname, dummyb, doglobalread,
+      CALL ACTIVE_READ_3D_RL(
+     &                 fname, active_varb, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 1, myOptimIter, myThid )
+     &                 REVERSE_SIMULATION, myIter, myThid )
 
       RETURN
       END
