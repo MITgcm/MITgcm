@@ -518,7 +518,7 @@ c--   smooth mean_slaobs_mdt:
 
 #ifdef ALLOW_SMOOTH
        if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
-     &  call smooth_hetero2d(mean_slaobs_mdt,maskInC,
+        call smooth_hetero2d(mean_slaobs_mdt,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
@@ -871,7 +871,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
        if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
-     &  call smooth_hetero2d(mean_psMssh_all,maskInC,
+        call smooth_hetero2d(mean_psMssh_all,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
@@ -891,7 +891,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
        if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
-     &  call smooth_hetero2d(mean_slaobs_model,maskInC,
+        call smooth_hetero2d(mean_slaobs_model,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
@@ -1205,7 +1205,7 @@ c ----------------------------------------
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_lsc.GT.0) ) then
-     &  call smooth_hetero2d(anom_psMslaobs,maskInC,
+        call smooth_hetero2d(anom_psMslaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
      &  call smooth_hetero2d(anom_slaobs,maskInC,
