@@ -62,6 +62,8 @@ C       |
 C       |-- CPL_WRITE_PICKUP
 C       |
 C       |-- MYPACKAGE_WRITE_PICKUP
+C       |
+C       |-- ECCO_WRITE_PICKUP
 
 C     !USES:
       IMPLICIT NONE
@@ -237,6 +239,13 @@ C     Write pickup file for diagnostics package
      I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
+
+#ifdef ALLOW_ECCO
+      IF (useECCO) THEN
+        CALL ECCO_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_ECCO */
 
 C--   Every one else must wait until writing is done.
 C     this is done within IO routines => no longer needed

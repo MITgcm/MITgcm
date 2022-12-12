@@ -37,6 +37,11 @@ c     == end of interface ==
 #ifdef ALLOW_PSBAR_STERIC
       RHOsumGlob_0=0. _d 0
       VOLsumGlob_0=0. _d 0
+
+      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ') ) THEN
+       CALL ECCO_READ_PICKUP ( nIter0, myThid )
+      ENDIF
 #endif
 
       CALL ECCO_PHYS( startTime, -1, myThid )
