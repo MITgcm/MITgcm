@@ -6,7 +6,7 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
       COMMON /DIC_LOAD_RS/
      &    dicwind0, dicwind1, ice0, ice1, atmosp0, atmosp1,
      &    silicaSurf0, silicaSurf1
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
      &    , silicaDeep0, silicaDeep1
 #endif
 #ifdef READ_PAR
@@ -28,7 +28,7 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
       _RS atmosp1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS silicaSurf0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS silicaSurf1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       _RS silicaDeep0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS silicaDeep1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif

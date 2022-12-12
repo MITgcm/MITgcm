@@ -57,7 +57,7 @@ C First call requires that we initialize everything to zero for safety
 #ifdef LIGHT_CHL
       CALL LEF_ZERO( chlinput,myThid )
 #endif
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
@@ -104,7 +104,7 @@ C If the chlorophyll climatology is not provided, use this default value.
 #endif
           ENDDO
          ENDDO       
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx

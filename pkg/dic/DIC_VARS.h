@@ -26,7 +26,7 @@ C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
      &            , silicaDeep
 #endif
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -38,7 +38,7 @@ C                       for air-sea CO2 and O2 flux calculations.
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
@@ -268,7 +268,7 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
       COMMON /BIOTIC_TAVE/
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
      &     fluxCO2ave, pfluxave, epfluxave, cfluxave, 
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
      &     omegaCave,
 #endif
      &     DIC_timeAve
@@ -280,7 +280,7 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
       _RL pCO2ave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       _RL OmegaCave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
       _RL pfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -340,7 +340,7 @@ C  QSW_underice      :: is Qsw is masked by ice fraction?
      &     freefemax, fesedflux_pcm, FeIntSec,
      &     parfrac, k0, kchl, lit0,
      &     alphaUniform, rainRatioUniform,
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
      &     omegaC,
 #endif
      &     nlev, QSW_underice
@@ -351,7 +351,7 @@ c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
       _RL CHL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

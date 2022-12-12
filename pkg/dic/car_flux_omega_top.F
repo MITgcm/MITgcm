@@ -38,7 +38,7 @@ C cflux                :: carbonate flux
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
 c  ko                     :: loop-within-loop index
@@ -196,7 +196,7 @@ c end diagnostic
         ENDDO
        ENDDO
 c
-#endif /* CAR_DISS */
+#endif /* DIC_CALCITE_SAT */
 #endif /* defined ALLOW_PTRACERS && defined DIC_BIOTIC */
        RETURN
        END

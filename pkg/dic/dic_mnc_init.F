@@ -75,7 +75,7 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('dic_fluxCO2_ave','description',
      &     '', myThid)
 
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       CALL MNC_CW_ADD_VNAME(
      &     'dic_OmegaC_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT(

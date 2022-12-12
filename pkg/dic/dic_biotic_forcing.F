@@ -98,7 +98,7 @@ C  freefe                 :: iron not bound to ligand
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER i,j,k
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       INTEGER nCALCITEstep
 #endif
 #ifdef ALLOW_FE
@@ -230,7 +230,7 @@ C- Carbonate sink
        ENDDO
 
 C carbonate
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
 C dissolution only below saturation horizon
 C code following method by Karsten Friis
         nCALCITEstep = 3600
@@ -263,7 +263,7 @@ C old OCMIP way
      U                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
-#endif /* CAR_DISS */
+#endif /* DIC_CALCITE_SAT */
 
 C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
@@ -388,7 +388,7 @@ C save averages
      &                             BIOac(i,j,k)*deltaTClock
             CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
      &                             CAR(i,j,k)*deltaTClock
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
             OmegaCave(i,j,k,bi,bj)=OmegaCave(i,j,k,bi,bj)+
      &                             OmegaC(i,j,k,bi,bj)*deltaTClock
 #endif

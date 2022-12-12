@@ -78,7 +78,7 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
       diagName  = 'DIC3DSIT'
       diagTitle = 'Three dimensional silicate concentration (mol/m3)'
       diagUnits = 'mol/m3          '

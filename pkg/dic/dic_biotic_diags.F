@@ -58,7 +58,7 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZE(fluxCO2ave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
          CALL TIMEAVE_NORMALIZE(OmegaCave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
 #endif
@@ -91,7 +91,7 @@ C      Normalize by integrated time
      &        myIter,myThid)
          CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
      &        myIter,myThid)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
          CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
      &        myIter,myThid)
 #endif
@@ -128,7 +128,7 @@ C      Normalize by integrated time
      &        pf,'dic_tave',0,0,'dic_pCO2_ave',pCO2ave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
 #endif
@@ -151,7 +151,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
-#ifdef CAR_DISS
+#ifdef DIC_CALCITE_SAT
          CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
 #endif
          CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
