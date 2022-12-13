@@ -36,13 +36,11 @@ C     == Global variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
+# include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
       _RL sigmaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -56,14 +54,12 @@ CEOP
 #ifdef GM_BOLUS_ADVEC
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i,j,k, km1
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER igmkey, kkey
 #endif
-      _RL half_K
+      _RL halfSign
+      _RL rDepth, half_K
       _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDrW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -74,16 +70,7 @@ C     == Local variables ==
 C-    Initialization : <= done in S/R gmredi_init
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      igmkey = (act1 + 1) + act2*max1
-     &                    + act3*max1*max2
-     &                    + act4*max1*max2*max3
+      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -92,6 +79,9 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 # endif
 #endif
       IF (GM_AdvForm) THEN
+C     change sign of vertical Sigma gradient to match stratification sign
+       halfSign = halfRL*gravitySign
+
        DO k=2,Nr
         km1 = k-1
 
@@ -109,27 +99,33 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 C      Gradient of Sigma below U and V points
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
+          SlopeX(i,j) = ( sigmaX(i,j,km1)+sigmaX(i,j,k) )*halfRL
      &                   *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
-          dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
+          dSigmaDrW(i,j) = ( sigmaR(i-1,j,k)+sigmaR(i,j,k) )*halfSign
      &                   *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
+          SlopeY(i,j) = ( sigmaY(i,j,km1)+sigmaY(i,j,k) )*halfRL
      &                   *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
-          dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
+          dSigmaDrS(i,j) = ( sigmaR(i,j-1,k)+sigmaR(i,j,k) )*halfSign
      &                   *maskS(i,j,km1,bi,bj)*maskS(i,j,k,bi,bj)
          ENDDO
         ENDDO
 
+C      set "rDepth" (= depth from the surface, in rUnit) for 'ldd97' tapering
+        IF ( usingZcoords ) THEN
+         rDepth = rF(1) - rF(k)
+        ELSE
+         rDepth = rF(k) - rF(Nr+1)
+        ENDIF
 C      Calculate slopes , taper and/or clip
         CALL GMREDI_SLOPE_PSI(
      O              taperX, taperY,
      U              SlopeX, SlopeY,
      U              dSigmaDrW, dSigmaDrS,
-     I              ldd97_LrhoW, ldd97_LrhoS, rF(k), k,
+     I              ldd97_LrhoW, ldd97_LrhoS, rDepth, k,
      I              bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC

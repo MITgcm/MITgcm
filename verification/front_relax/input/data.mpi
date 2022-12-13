@@ -1,0 +1,84 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 25*17.5,
+ viscAr=2.E-4,
+ viscAh=3.E+2,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKrT=3.E-5,
+ diffKrS=3.E-5,
+ diffKhT=0.E3,
+ diffKhS=0.E3,
+#ivdc_kappa=1.,
+ beta=0.E-11,
+ f0  =1.E-4,
+ selectCoriScheme=1,
+ gravity= 10.,
+ buoyancyRelation='OCEANIC',
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ rhoConst=1000.,
+ rhoNil=1000.,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ implicitDiffusion=.TRUE.,
+ staggerTimeStep=.TRUE.
+ tempAdvScheme=20,
+ saltAdvScheme=20,
+#momStepping=.FALSE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+ debugLevel=2,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+ deltaT=1800.,
+ abEps=0.1,
+ momDissip_In_AB=.FALSE.,
+ pChkptFreq=0.,
+ chkptFreq =0.,
+ dumpFreq=864000.,
+ monitorSelect=1,
+#- very short run:
+ nTimeSteps=20,
+ monitorFreq=1.,
+#- longer run:
+#nTimeSteps=4321,
+#monitorFreq=86400.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+#delR= 50., 50., 55., 60., 65., 70., 80., 95.,
+#      120., 155., 200., 260., 320., 400., 480., 10*1.,
+ delRc= 25., 50., 52.5, 57.5, 62.5, 67.5, 75., 87.5,
+      107.5, 137.5, 177.5, 230., 290., 360., 440., 480., 10*400.,
+ delX=1*10.E3,
+#delY=32*10.E3,
+ delYfile='dy.bin',
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='bathy_inZ.bin',
+ hydrogThetaFile='Tini_+10l.bin',
+ hydrogSaltFile ='Sini_Ydir.bin',
+#hydrogSaltFile ='Sini_Patch.bin',
+ &

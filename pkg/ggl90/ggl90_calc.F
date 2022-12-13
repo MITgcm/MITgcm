@@ -164,8 +164,6 @@ C     gTKE     :: right hand side of diffusion equation
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER ikeyLoc, kkeyLoc
 #endif
 CEOP
@@ -192,16 +190,7 @@ CEOP
       recip_coordFac = 1./coordFac
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ikeyLoc = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      ikeyLoc = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     explicit/implicit timestepping weights for dissipation

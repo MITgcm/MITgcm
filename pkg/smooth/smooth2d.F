@@ -23,9 +23,18 @@ C     *==========================================================*
       INTEGER nbt_in
       CHARACTER*(80) fnamegeneric
 
+      INTEGER IL
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      IL = ILNBLNK( smoothDir )
+
 C read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
-     &    'smooth2Doperator',smoothOpNb
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
+     &      'smooth2Doperator',smoothOpNb
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
      &                     1, smooth2D_Kux, 1, 1, myThid )
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,

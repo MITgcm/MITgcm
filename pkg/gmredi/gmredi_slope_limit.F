@@ -12,8 +12,8 @@ C     !INTERFACE:
      U             hTransLay, baseSlope, recipLambda,
      U             dSigmaDr,
      I             dSigmaDx, dSigmaDy,
-     I             Lrho, hMixLay, depthZ, kLow,
-     I             k, bi, bj, myTime, myIter, myThid )
+     I             Lrho, hMixLay, rDepth, depthZ, kLow,
+     I             kPos, k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -21,15 +21,16 @@ C     | SUBROUTINE GMREDI_SLOPE_LIMIT
 C     | o Calculate slopes for use in GM/Redi tensor
 C     *==========================================================*
 C     | On entry:
-C     |            dSigmaDr     contains the d/dz Sigma
+C     |            dSigmaDr     contains the downward d/dz Sigma
 C     |            dSigmaDx/Dy  contains X/Y gradients of sigma
-C     |            depthZ       contains the depth (< 0 !) [m]
 C     |            Lrho
 C     |            hMixLay      mixed layer depth (> 0)
+C     |            rDepth       depth (> 0) in r-Unit from the surface
+C     |            depthZ       contains the depth (< 0 !) [m]
 C    U             hTransLay    transition layer depth (> 0)
 C    U             baseSlope, recipLambda,
 C     | On exit:
-C     |            dSigmaDr     contains the effective dSig/dz
+C     |            dSigmaDr     contains the effective downward dSig/dz
 C     |            SlopeX/Y     contains X/Y slopes
 C     |            SlopeSqr     contains Sx^2+Sy^2
 C     |            taperFct     contains tapering funct. value ;
@@ -52,14 +53,15 @@ C     == Global variables ==
 #include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     == Routine arguments ==
 C     !INPUT PARAMETERS:
 C     dSigmaDx :: zonal      gradient of density
 C     dSigmaDy :: meridional gradient of density
 C     Lrho     ::
 C     hMixLay  :: mixed layer thickness (> 0) [m]
+C     rDepth   :: depth (> 0) in r-Unit from the surface
 C     depthZ   :: model discretized depth (< 0) [m]
 C     kLow     :: bottom level index 2-D array
+C     kPos     :: grid-cell location: 1,2,3 : at U,V,W location
 C     k        :: level index
 C     bi, bj   :: tile indices
 C     myTime   :: time in simulation
@@ -73,7 +75,7 @@ C     taperFct    :: tapering function
 C     hTransLay   :: depth of the base of the transition layer (> 0) [m]
 C     baseSlope   :: slope at the the base of the transition layer
 C     recipLambda :: Slope vertical gradient at Trans. Layer Base (=recip.Lambda)
-C     dSigmaDr    :: vertical gradient of density
+C     dSigmaDr    :: downward gradient of neutral density
       _RL SlopeX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeSqr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -86,22 +88,22 @@ C     dSigmaDr    :: vertical gradient of density
       _RL dSigmaDy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Lrho       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hMixLay    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rDepth
       _RS depthZ(*)
       INTEGER kLow   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER k, bi,bj
+      INTEGER kPos, k, bi, bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
 
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       _RL fpi
       PARAMETER( fpi = PI )
       INTEGER i, j
       _RL f1, Smod, f2, Rnondim
       _RL maxSlopeSqr
+      _RL convSlopeUnit, loc_rMaxSlope
       _RL dSigmMod   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dRdSigmaLtd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -114,33 +116,34 @@ C     == Local variables ==
 #endif
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeSqTmp, slopeTmp, slopeMax
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
+# ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ikey
+# endif
 #endif
-
 C-   need to put this one in GM namelist :
       _RL GM_bigSlope
       GM_bigSlope = 1. _d +02
+CEOP
+
+      IF (kPos.EQ.3 ) THEN
+       GM_bigSlope   = GM_bigSlope*wUnit2rVel(k)
+       maxSlopeSqr   = GM_maxSlope*GM_maxSlope
+     &                *wUnit2rVel(k)*wUnit2rVel(k)
+       convSlopeUnit = rVel2wUnit(k)
+      ELSE
+       GM_bigSlope   = GM_bigSlope*z2rUnit(k)
+       maxSlopeSqr   = GM_maxSlope*GM_maxSlope
+     &                *z2rUnit(k)*z2rUnit(k)
+       convSlopeUnit = rUnit2z(k)
+      ENDIF
+      loc_rMaxSlope  = GM_rMaxSlope*convSlopeUnit
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C     TAF thinks for some reason that depthZ is an active variable.
+C     TAF thinks for some reason that rDepth is an active variable.
 C     While this does not make the adjoint code wrong, the resulting
 C     code inhibits vectorization in some cases so we tell TAF here
-C     that depthZ is actually a passive grid variable that needs no adjoint
-CADJ PASSIVE depthz
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ikey = (act1 + 1) + act2*max1
-     &                  + act3*max1*max2
-     &                  + act4*max1*max2*max3
+C     that rDepth is actually a passive grid variable that needs no adjoint
+CADJ PASSIVE rDepth
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
@@ -172,7 +175,7 @@ C-      Cox 1987 "Slope clipping"
          DO i=1-OLx+1,sNx+OLx-1
           tmpFld(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
      &                + dSigmaDy(i,j)*dSigmaDy(i,j)
-          IF ( tmpFld(i,j) .EQ. 0. ) THEN
+          IF ( tmpFld(i,j) .EQ. zeroRL ) THEN
            dSigmMod(i,j) = 0. _d 0
           ELSE
            dSigmMod(i,j) = SQRT( tmpFld(i,j) )
@@ -187,9 +190,9 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          IF (dSigmMod(i,j) .NE. 0.) THEN
-           tmpFld(i,j) = -dSigmMod(i,j)*GM_rMaxSlope
-           IF ( dSigmaDr(i,j) .GE. tmpFld(i,j) )
+          IF ( dSigmMod(i,j) .NE. zeroRL ) THEN
+           tmpFld(i,j) = dSigmMod(i,j)*loc_rMaxSlope
+           IF ( dSigmaDr(i,j) .LE. tmpFld(i,j) )
      &          dSigmaDr(i,j) = tmpFld(i,j)
           ENDIF
          ENDDO
@@ -203,13 +206,13 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          IF (dSigmMod(i,j) .EQ. 0.) THEN
+          IF ( dSigmMod(i,j) .EQ. zeroRL ) THEN
            SlopeX(i,j) = 0. _d 0
            SlopeY(i,j) = 0. _d 0
           ELSE
            dRdSigmaLtd(i,j) = 1. _d 0/( dSigmaDr(i,j) )
-           SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j) = -dSigmaDy(i,j)*dRdSigmaLtd(i,j)
+           SlopeX(i,j) = dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j) = dSigmaDy(i,j)*dRdSigmaLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -250,15 +253,15 @@ C-        Bottom or below:
             taperFct(i,j) = 0. _d 0
           ELSE
 C-        Above bottom:
-           IF ( dSigmaDr(i,j).GE. -GM_Small_Number )
-     &          dSigmaDr(i,j) = -GM_Small_Number
+           IF ( dSigmaDr(i,j).LE. GM_Small_Number )
+     &          dSigmaDr(i,j) = GM_Small_Number
            tmpFld(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
      &                 + dSigmaDy(i,j)*dSigmaDy(i,j)
-           IF ( tmpFld(i,j).GT.0. ) THEN
+           IF ( tmpFld(i,j).GT.zeroRL ) THEN
             locVar(i,j) = SQRT( tmpFld(i,j) )
             SlopeX  (i,j) = dSigmaDx(i,j)/locVar(i,j)
             SlopeY  (i,j) = dSigmaDy(i,j)/locVar(i,j)
-            SlopeMod(i,j) = -locVar(i,j)/dSigmaDr(i,j)
+            SlopeMod(i,j) = locVar(i,j)/dSigmaDr(i,j)
             taperFct(i,j) = 1. _d 0
            ELSE
             SlopeX  (i,j) = 0. _d 0
@@ -293,18 +296,18 @@ C-     bottom & below & 1rst level above the bottom :
 C-- note: do not catch the 1rst level/interface (k=kLow) above the bottom
 C         since no baseSlope has yet been stored (= 0); but might fit
 C         well into transition layer criteria (if locally not stratified)
-            ELSEIF ( dTransLay+hMixLay(i,j)+depthZ(k) .GE. 0. ) THEN
+            ELSEIF ( dTransLay+hMixLay(i,j)+depthZ(k) .GE. zeroRL ) THEN
 C-     Found the transition Layer : set depth of base of Transition layer
               hTransLay(i,j) = -depthZ(k+1)
 C      and compute inverse length scale "1/Lambda" from slope vert. grad
-              IF ( baseSlope(i,j).GT.0. ) THEN
+              IF ( baseSlope(i,j).GT.zeroRL ) THEN
                 recipLambda(i,j) = recipLambda(i,j)
      &                           / MIN( baseSlope(i,j), GM_maxSlope )
               ELSE
                 recipLambda(i,j) = 0. _d 0
               ENDIF
 C      slope^2 & Kwz should remain > 0 : prevent too large negative D/lambda
-              IF ( hMixLay(i,j)+depthZ(k+1).LT.0. ) THEN
+              IF ( hMixLay(i,j)+depthZ(k+1).LT.zeroRL ) THEN
                 rLambMin = 1. _d 0 /( hMixLay(i,j)+depthZ(k+1) )
                 recipLambda(i,j) = MAX( recipLambda(i,j), rLambMin )
               ENDIF
@@ -405,23 +408,23 @@ C-      New Scheme (A. & C. 2002): relax part of the small slope approximation
 C         compute the true slope (no approximation)
 C         but still neglect Kxy & Kyx (assumed to be zero)
 
-        maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          dRdSigmaLtd(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
-     &                     + dSigmaDy(i,j)*dSigmaDy(i,j)
-     &                     + dSigmaDr(i,j)*dSigmaDr(i,j)
+          dRdSigmaLtd(i,j) = ( dSigmaDx(i,j)*dSigmaDx(i,j)
+     &                       + dSigmaDy(i,j)*dSigmaDy(i,j)
+     &                       )*convSlopeUnit*convSlopeUnit
+     &                       + dSigmaDr(i,j)*dSigmaDr(i,j)
           taperFct(i,j) = 1. _d 0
 
-          IF (dRdSigmaLtd(i,j).NE.0.) THEN
+          IF ( dRdSigmaLtd(i,j).NE.zeroRL ) THEN
              dRdSigmaLtd(i,j) = 1. _d 0 / ( dRdSigmaLtd(i,j) )
              SlopeSqr(i,j) = ( dSigmaDx(i,j)*dSigmaDx(i,j)
      &                       + dSigmaDy(i,j)*dSigmaDy(i,j)
      &                       )*dRdSigmaLtd(i,j)
-             SlopeX(i,j) = -dSigmaDx(i,j)
-     &                     *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
-             SlopeY(i,j) = -dSigmaDy(i,j)
-     &                     *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
+             SlopeX(i,j) = dSigmaDx(i,j)
+     &                    *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
+             SlopeY(i,j) = dSigmaDy(i,j)
+     &                    *dRdSigmaLtd(i,j)*dSigmaDr(i,j)
           ELSE
              SlopeSqr(i,j) = 0. _d 0
              SlopeX(i,j) = 0. _d 0
@@ -452,7 +455,7 @@ cph-- this part does not adjoint well
 C----------------------------------------------------------------------
 
 C- Compute the slope, no clipping, but avoid reverse slope in negatively
-C                                  stratified (Sigma_Z > 0) region :
+C                                  stratified (dSigmaDr < 0) region :
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
@@ -464,9 +467,9 @@ CADJ STORE dSigmaDr = loctape_gm
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          IF ( dSigmaDr(i,j) .NE. 0. ) THEN
-           IF (dSigmaDr(i,j).GE.(-GM_Small_Number))
-     &         dSigmaDr(i,j) = -GM_Small_Number
+          IF ( dSigmaDr(i,j) .NE. zeroRL ) THEN
+           IF ( dSigmaDr(i,j) .LE. GM_Small_Number )
+     &         dSigmaDr(i,j) = GM_Small_Number
           ENDIF
          ENDDO
         ENDDO
@@ -479,23 +482,23 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          IF ( dSigmaDr(i,j) .EQ. 0. ) THEN
-           IF ( dSigmaDx(i,j) .NE. 0. ) THEN
+          IF ( dSigmaDr(i,j) .EQ. zeroRL ) THEN
+           IF ( dSigmaDx(i,j) .NE. zeroRL ) THEN
             SlopeX(i,j) = SIGN( GM_bigSlope, dSigmaDx(i,j) )
            ELSE
             SlopeX(i,j) = 0. _d 0
            ENDIF
-           IF ( dSigmaDy(i,j) .NE. 0. ) THEN
+           IF ( dSigmaDy(i,j) .NE. zeroRL ) THEN
             SlopeY(i,j) = SIGN( GM_bigSlope, dSigmaDy(i,j) )
            ELSE
             SlopeY(i,j) = 0. _d 0
            ENDIF
           ELSE
            dRdSigmaLtd(i,j) = 1. _d 0 / dSigmaDr(i,j)
-           SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j) = -dSigmaDy(i,j)*dRdSigmaLtd(i,j)
-c          SlopeX(i,j) = -dSigmaDx(i,j)/dSigmaDr(i,j)
-c          SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDr(i,j)
+           SlopeX(i,j) = dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j) = dSigmaDy(i,j)*dRdSigmaLtd(i,j)
+c          SlopeX(i,j) = dSigmaDx(i,j)/dSigmaDr(i,j)
+c          SlopeY(i,j) = dSigmaDy(i,j)/dSigmaDr(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -522,11 +525,10 @@ C- Compute the tapering function for the GM+Redi tensor :
        IF (GM_taper_scheme.EQ.'linear') THEN
 
 C-      Simplest adiabatic tapering = Smax/Slope (linear)
-        maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 
-          IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
+          IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff )  THEN
@@ -540,11 +542,10 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
        ELSEIF (GM_taper_scheme.EQ.'gkw91') THEN
 
 C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
-        maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 
-          IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
+          IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
@@ -560,10 +561,10 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 
-          IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
+          IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
-           Smod = SQRT(SlopeSqr(i,j))
+           Smod = SQRT(SlopeSqr(i,j))*convSlopeUnit
            taperFct(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ) )
           ENDIF
          ENDDO
@@ -575,12 +576,13 @@ C-      Large, Danabasoglu and Doney, JPO 1997
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 
-          IF (SlopeSqr(i,j) .EQ. 0.) THEN
+          IF ( SlopeSqr(i,j) .EQ. zeroRL ) THEN
            taperFct(i,j) = 1. _d 0
           ELSEIF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            Smod = SQRT(SlopeSqr(i,j))
-           f1 = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ) )
-           Rnondim = -depthZ(k)/(Lrho(i,j)*Smod)
+           f1 = op5*( oneRL
+     &              + TANH( (GM_Scrit-Smod*convSlopeUnit)/GM_Sd ) )
+           Rnondim = rDepth/(Lrho(i,j)*Smod)
            IF ( Rnondim.GE.1. _d 0 ) THEN
              f2 = 1. _d 0
            ELSE
@@ -601,8 +603,18 @@ C (~ strong clipping, reducing non linearity of kw=f(K))
 
         slopeMax= 2. _d -3
 
+# ifdef ALLOW_AUTODIFF_TAMC
+C     This key is most likely wrong because the routine is called from
+C     gmredi_calc_tensor three times for each level k, neither of which
+C     is taken into account with this key. Including the level k is
+C     simple (see commented code), but the call number requires an extra
+C     argument to be passed to this routine.
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+C     ikey = k + (ikey - 1)*Nr
+
 CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+# endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1

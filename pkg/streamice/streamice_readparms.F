@@ -298,7 +298,7 @@ c      streamice_n_sub_regularize = 4
 #ifdef ALLOW_PETSC
       PETSC_PRECOND_TYPE = 'PCBJACOBI'
       PETSC_SOLVER_TYPE = 'KSPCG'
-      streamice_use_petsc = .true.
+      streamice_use_petsc = .false.
 #endif
       STREAMICE_ADV_SCHEME = ''
 
