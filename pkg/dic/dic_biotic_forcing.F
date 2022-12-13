@@ -106,6 +106,10 @@ C  freefe                 :: iron not bound to ligand
       INTEGER kBottom
 # endif
 #endif
+
+C !FUNCTIONS:       ====================================================
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -236,7 +240,7 @@ C    code follwing the old OCMIP way
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
 #endif
-        CALL CAR_FLUX(
+         CALL CAR_FLUX(
      I                    CAR_S,
      U                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
@@ -245,9 +249,10 @@ C    code follwing the old OCMIP way
        ELSE       
 C calcite dissolution occurs only below saturation horizon
 C    code following method by Karsten Friis
-        nCALCITEstep = 3600
-        IF(myIter .lt. (nIter0+5) .or.
-     &               mod(myIter,nCALCITEstep) .eq. 0)THEN
+C could be expensive, so find out if it is time to update the omega calcite
+C    field (requires 3-d computation of pH).
+        IF ( DIFFERENT_MULTIPLE(calcOmegaCalciteFreq, myTime,
+     &                                    deltaTClock) ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('CALCITE_SATURATION',myThid)
 #endif

@@ -138,7 +138,6 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I          sitlocal, alklocal,
      U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
-            debugPrt = .FALSE.
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate(i,j) = carbonate(i,j)*permil
@@ -185,6 +184,7 @@ c........................................................
 
            omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j)
      &                         / Ksp_TP_Calc(i,j,bi,bj)
+           debugPrt = .FALSE.
 
 Cmick...................................................
 c            if(omegaC(i,j,k,bi,bj) .eq. 0.) then

@@ -75,7 +75,9 @@ C     =2 :: use SEC solver  from Munhoven (2013);
 C     =3 :: use FAST solver from Munhoven (2013);
 C  useCalciteSaturation :: dissolve calcium carbonate below the calcite saturation
 C          horizon following method by Karsten Friis
-C   zca         :: scale depth for CaCO3 remineralization (m)
+C  calcOmegaCalciteFreq :: Frequency that 3d calcite saturation state, omegaC,
+C          is calculated. 
+C   zca         :: scale depth for CaCO3 remineralization power law (m)
 C----
 
       NAMELIST /ABIOTIC_PARMS/
@@ -83,7 +85,11 @@ C----
      &  selectBTconst, selectFTconst,
      &  selectHFconst, selectK1K2const,
      &  selectPHsolver,
-     &  useCalciteSaturation, zca
+     &  useCalciteSaturation, 
+#ifdef DIC_CALCITE_SAT
+     &  calcOmegaCalciteFreq,
+#endif
+     &  zca
 
 #ifdef DIC_BIOTIC
 C-- Biotic dic parameters:
@@ -145,6 +151,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        selectK1K2const = UNSET_I
        selectPHsolver  = UNSET_I
        useCalciteSaturation = .FALSE.
+#ifdef DIC_CALCITE_SAT
+C set calcite saturation calculation to every timestep - could be expensive       
+       calcOmegaCalciteFreq = deltaTClock
+#endif
        zca             = 3500. _d 0
 
 #ifdef DIC_BIOTIC
@@ -356,7 +366,14 @@ C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_L( useCalciteSaturation, INDEX_NONE, 
      &  'useCalciteSaturation  =',
      &  '  /* Flag for omegaC calculation on/off */')
-     
+#ifdef DIC_CALCITE_SAT
+      IF ( useCalciteSaturation ) THEN 
+       CALL WRITE_0D_RL( calcOmegaCalciteFreq, INDEX_NONE,
+     &  'calcOmegaCalciteFreq =',
+     &  ' /* Frequency of calcite saturation calculation (s) */')
+      ENDIF
+#endif
+
 #ifdef DIC_BIOTIC
 C- namelist BIOTIC_PARMS
        CALL WRITE_0D_RL( DOPfraction, INDEX_NONE,'DOPfraction =',
@@ -521,8 +538,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
-C Issue a soft message if a deepSilicaFile is supplied but will not be used
-C    because useCalciteSaturation is FALSE
+C Issue a soft message if a deepSilicaFile is supplied 
+C    but will not be used because useCalciteSaturation is FALSE
       IF ( DIC_deepSilicaFile .NE. ' ' .AND. 
      &                        .NOT. useCalciteSaturation ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',

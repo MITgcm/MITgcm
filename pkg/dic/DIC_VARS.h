@@ -24,14 +24,16 @@ C                       pCO2 calculations. Read in from file (mol/m3).
 C     silicaDeep  :: 3d-field of silicate concentration for pH and
 C                       carbonate calculations. Read in from file (mol/m3).
 C     useCalciteSaturation :: Dissolve calcium carbonate only below saturation horizon
-C     zca         :: Scale depth for CaCO3 remineralization [m]
+C     calcOmegaCalciteFreq :: Frequency that 3d calcite saturation state, omegaC,
+C                       is calculated. 
 C     omegaC      :: Local saturation state with respect to calcite
+C     zca         :: Scale depth for CaCO3 remineralization [m]
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
 #ifdef DIC_CALCITE_SAT
-     &              silicaDeep, omegaC,
+     &              silicaDeep, calcOmegaCalciteFreq, omegaC, 
 #endif
      &              zca, useCalciteSaturation
 
@@ -47,9 +49,10 @@ C     omegaC      :: Local saturation state with respect to calcite
 #ifdef DIC_CALCITE_SAT
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  calcOmegaCalciteFreq
 #endif
+      _RL  zca
       LOGICAL useCalciteSaturation
-      _RL zca
       
 C Store dissociation and carbon chemistry coefficients for
 C    pCO2 solvers (see carbon_chem.F).
