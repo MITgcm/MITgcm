@@ -32,7 +32,7 @@ C   Adjoint Model Compiler (TAMC).
 #define ALLOW_AUTODIFF_TAMC
 
 C       >>> Checkpointing as handled by TAMC
-#define ALLOW_TAMC_CHECKPOINTING
+#undef ALLOW_TAMC_CHECKPOINTING
 
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR

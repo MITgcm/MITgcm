@@ -89,8 +89,7 @@ CADJ STORE gTm1_in = tape_smooth_lev2 ,
 CADJ & key = key_in*nchklev_2 + ilev_2
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT tape_smooth_lev1  = COMMON,
-CADJ & nchklev_1*nsx*nsy*nthreads_chkpt
+CADJ INIT tape_smooth_lev1  = COMMON, nchklev_1*nsx*nsy
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO ilev_1 = 1,nchklev_1
            iloop = (ilev_2 - 1)*nchklev_1 + ilev_1

@@ -137,9 +137,7 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER myTile
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER ticekey, ipasskey
+      INTEGER act0, ticekey, ipasskey
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 #ifdef ALLOW_DBUG_THSICE
@@ -154,19 +152,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       k = 1
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tracerIdentity has negative values from GAD_SI_FRAC=-5 to GAD_SI_QICE2=-9
-      act0 = GAD_SI_FRAC - tracerIdentity
-      max0 = thSIce_nAdv
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ticekey = (act0 + 1) + act1*max0
-     &                     + act2*max0*max1
-     &                     + act3*max0*max1*max2
-     &                     + act4*max0*max1*max2*max3
+      act0    = GAD_SI_FRAC - tracerIdentity
+      ticekey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ticekey = act0 + 1 + (ticekey-1)*thSIce_nAdv
       IF ( act0 .LT. 0 .OR. act0+1 .GT. thSIce_nAdv) THEN
        WRITE(msgBuf,'(A,2(I3,A))')
      &      'THSICE_ADVECTION: tracerIdentity =', tracerIdentity,

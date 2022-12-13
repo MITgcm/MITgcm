@@ -50,7 +50,7 @@ c     == routine arguments ==
       character ncvargrd_loc*1
       character whichxyz*2
       integer mythid
-      integer il
+      integer il,ilDir
 
 c     == local variables ==
       character*( 80) fname(3), gfname
@@ -76,7 +76,8 @@ c     _END_MASTER( mythid )
 cph add following flag to make pack/unpack only less error-prone
 #ifndef CTRL_DO_PACK_UNPACK_ONLY
 
-      call ctrl_set_fname( xx_fname, fname, mythid )
+      ilDir=ilnblnk( ctrlDir )
+      call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, mythid )
 
 c     _BEGIN_MASTER( mythid )
       inquire( file='costfinal', exist=exst )
