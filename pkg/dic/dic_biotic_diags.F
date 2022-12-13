@@ -59,8 +59,10 @@ C      Normalize by integrated time
          CALL TIMEAVE_NORMALIZE(fluxCO2ave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
 #ifdef DIC_CALCITE_SAT
-         CALL TIMEAVE_NORMALIZE(OmegaCave, DIC_timeAve, Nr ,
+         IF ( useCalciteSaturation ) THEN
+          CALL TIMEAVE_NORMALIZE(OmegaCave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
+         ENDIF
 #endif
          CALL TIMEAVE_NORMALIZE(pfluxave,DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
@@ -92,8 +94,10 @@ C      Normalize by integrated time
          CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
      &        myIter,myThid)
 #ifdef DIC_CALCITE_SAT
-         CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
+         IF ( useCalciteSaturation ) THEN
+          CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
      &        myIter,myThid)
+         ENDIF
 #endif
          CALL WRITE_FLD_XYZ_RL('DIC_pfluxtave.',suff,pfluxave,
      &        myIter,myThid)
@@ -129,8 +133,10 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
 #ifdef DIC_CALCITE_SAT
-         CALL MNC_CW_RL_W(
+         IF ( useCalciteSaturation ) THEN
+          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
+         ENDIF
 #endif
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_pflux_ave',pfluxave,myThid)
@@ -152,7 +158,9 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
 #ifdef DIC_CALCITE_SAT
-         CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
+         IF ( useCalciteSaturation ) THEN
+          CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
+         ENDIF
 #endif
          CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(epfluxave,Nr,bi,bj,myThid)

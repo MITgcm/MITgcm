@@ -105,7 +105,8 @@ C If file provided for surface silicate, read it in
         ENDDO
 #ifndef ALLOW_AUTODIFF
 #ifdef DIC_CALCITE_SAT
-       ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+       ELSEIF ( useCalciteSaturation .AND. 
+     &            DIC_deepSilicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy

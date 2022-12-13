@@ -59,13 +59,15 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
           ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
-        DO k = 1, Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            omegaC(i,j,k,bi,bj) =  0. _d 0
+        IF ( useCalciteSaturation ) THEN
+          DO k = 1, Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              omegaC(i,j,k,bi,bj) =  0. _d 0
+            ENDDO
+           ENDDO
           ENDDO
-         ENDDO
-        ENDDO
+        ENDIF
 #endif /* DIC_CALCITE_SAT */
        ENDDO
       ENDDO

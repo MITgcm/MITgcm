@@ -15,6 +15,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DIC_VARS.h"
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -76,12 +77,14 @@ CEOP
      &     '', myThid)
 
 #ifdef DIC_CALCITE_SAT
-      CALL MNC_CW_ADD_VNAME(
+      IF ( useCalciteSaturation ) THEN
+       CALL MNC_CW_ADD_VNAME(
      &     'dic_OmegaC_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT(
+       CALL MNC_CW_ADD_VATTR_TEXT(
      &     'dic_OmegaC_ave','units','--', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('dic_OmegaC_ave','description',
+       CALL MNC_CW_ADD_VATTR_TEXT('dic_OmegaC_ave','description',
      &     '', myThid)
+      ENDIF
 #endif
 
       CALL MNC_CW_ADD_VNAME(

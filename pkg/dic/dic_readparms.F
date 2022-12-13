@@ -73,13 +73,17 @@ C     =0 :: use Follows et al., (2006) solver;
 C     =1 :: use the GENERAL solver from Munhoven (2013);
 C     =2 :: use SEC solver  from Munhoven (2013);
 C     =3 :: use FAST solver from Munhoven (2013);
+C  useCalciteSaturation :: dissolve calcium carbonate below the calcite saturation
+C          horizon following method by Karsten Friis
+C   zca         :: scale depth for CaCO3 remineralization (m)
 C----
 
       NAMELIST /ABIOTIC_PARMS/
      &  permil, Pa2Atm,
      &  selectBTconst, selectFTconst,
      &  selectHFconst, selectK1K2const,
-     &  selectPHsolver
+     &  selectPHsolver,
+     &  useCalciteSaturation, zca
 
 #ifdef DIC_BIOTIC
 C-- Biotic dic parameters:
@@ -92,7 +96,6 @@ C                  first layer deeper than -zcrit
 C   O2crit      :: critical oxygen level (mol/m3)
 C   R_OP, R_CP  :: stochiometric ratios
 C   R_NP, R_FeP
-C   zca         :: scale depth for CaCO3 remineralization (m)
 CC Parameters for light/nutrient limited bioac
 C   parfrac     :: fraction of Qsw that is PAR
 C   k0          :: light attentuation coefficient (1/m)
@@ -115,7 +118,7 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
 
       NAMELIST /BIOTIC_PARMS/
      & DOPfraction, KDOPRemin, KRemin, zcrit,
-     & O2crit, R_OP, R_CP, R_NP, R_FeP, zca,
+     & O2crit, R_OP, R_CP, R_NP, R_FeP, 
      & parfrac, k0, lit0, KPO4, KFE, kchl,
      & alpfe, fesedflux_pcm, FeIntSec, freefemax,
      & KScav, ligand_stab, ligand_tot,
@@ -141,6 +144,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        selectHFconst   = UNSET_I
        selectK1K2const = UNSET_I
        selectPHsolver  = UNSET_I
+       useCalciteSaturation = .FALSE.
+       zca             = 3500. _d 0
 
 #ifdef DIC_BIOTIC
        DOPfraction = 0.67 _d 0
@@ -152,7 +157,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        R_CP        = 117. _d 0
        R_NP        = 16. _d 0
        R_FeP       = 0.000468 _d 0
-       zca         = 3500. _d 0
        parfrac     = 0.4 _d 0
        k0          = 0.02 _d 0
        kchl        = 0.02 _d 0
@@ -347,7 +351,12 @@ C- namelist ABIOTIC_PARMS
      &  ' /* Ref. density to convert mol/m3 to mol/kg */')
        CALL WRITE_0D_RL( Pa2Atm, INDEX_NONE,'Pa2Atm =',
      &  ' /* Atmosph. pressure conversion coeff (to Atm) */')
-
+       CALL WRITE_0D_RL( zca, INDEX_NONE,'zca =',
+     &  ' /* Scale depth for CaCO3 remineralization (m) */')
+       CALL WRITE_0D_L( useCalciteSaturation, INDEX_NONE, 
+     &  'useCalciteSaturation  =',
+     &  '  /* Flag for omegaC calculation on/off */')
+     
 #ifdef DIC_BIOTIC
 C- namelist BIOTIC_PARMS
        CALL WRITE_0D_RL( DOPfraction, INDEX_NONE,'DOPfraction =',
@@ -368,8 +377,6 @@ C- namelist BIOTIC_PARMS
      &  ' /* Stochiometric ratio R_NP */')
        CALL WRITE_0D_RL( R_FeP, INDEX_NONE,'R_FeP =',
      &  ' /* Stochiometric ratio R_FeP */')
-       CALL WRITE_0D_RL( zca, INDEX_NONE,'zca =',
-     &  ' /* Scale depth for CaCO3 remineralization (m) */')
        CALL WRITE_0D_RL( parfrac, INDEX_NONE,'parfrac =',
      &  ' /* Fraction of Qsw that is PAR */')
        CALL WRITE_0D_RL( k0, INDEX_NONE,'k0 =',
@@ -412,8 +419,10 @@ C- namelist DIC_FORCING
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
      & 'DIC_silicaFile=','  /* File name of surface silica */')
 #ifdef DIC_CALCITE_SAT
+      IF ( useCalciteSaturation ) THEN
        CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
      & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
+      ENDIF
 #endif
        CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
@@ -511,7 +520,33 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
 
-#ifndef DIC_CALCITE_SAT
+#ifdef DIC_CALCITE_SAT
+C Issue a soft message if a deepSilicaFile is supplied but will not be used
+C    because useCalciteSaturation is FALSE
+      IF ( DIC_deepSilicaFile .NE. ' ' .AND. 
+     &                        .NOT. useCalciteSaturation ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: DIC_deepSilicaFile (3d silicate input)'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "useCalciteSaturation=.TRUE." in "data.dic"'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+#else
+C Issue an error and stop if useCalciteSaturation is TRUE but 
+C    DIC_CALCITE_SATURATION code is not compiled
+      IF ( useCalciteSaturation ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to enable: useCalciteSaturation'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define DIC_CALCITE_SAT" in "DIC_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+C Issue an error and stop if deepSilicaFile is supplied but 
+C    DIC_CALCITE_SATURATION code is not compiled
       IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &    'to use: DIC_deepSilicaFile (3d silicate input)'
@@ -519,7 +554,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &    'needs: "#define DIC_CALCITE_SAT" in "DIC_OPTIONS.h"'
         CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1      
+        errCount = errCount + 1
       ENDIF
 #endif /* DIC_CALCITE_SAT */
 

@@ -39,7 +39,9 @@ C set arrays to zero if first timestep
           CALL TIMEAVE_RESET(pHave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(fluxCO2ave,   1,  bi, bj, myThid)
 #ifdef DIC_CALCITE_SAT
-          CALL TIMEAVE_RESET(OmegaCave,   Nr,  bi, bj, myThid)
+          IF ( useCalciteSaturation ) THEN
+           CALL TIMEAVE_RESET(OmegaCave,   Nr,  bi, bj, myThid)
+          ENDIF
 #endif
           CALL TIMEAVE_RESET(pfluxave,   Nr,  bi, bj, myThid)
           CALL TIMEAVE_RESET(epfluxave,   Nr,  bi, bj, myThid)

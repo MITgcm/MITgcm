@@ -58,18 +58,20 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( chlinput,myThid )
 #endif
 #ifdef DIC_CALCITE_SAT
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           silicaDeep0(i,j,k,bi,bj) = 0. _d 0
-           silicaDeep1(i,j,k,bi,bj) = 0. _d 0
+      IF ( useCalciteSaturation ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            silicaDeep0(i,j,k,bi,bj) = 0. _d 0
+            silicaDeep1(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 #endif
 
 #ifdef READ_PAR
@@ -105,13 +107,15 @@ C If the chlorophyll climatology is not provided, use this default value.
           ENDDO
          ENDDO       
 #ifdef DIC_CALCITE_SAT
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
+         IF ( useCalciteSaturation ) THEN
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF 
 #endif
 C-    end bi,bj loops
         ENDDO

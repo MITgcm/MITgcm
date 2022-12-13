@@ -65,7 +65,10 @@ c     _RL   tmp
 
 
 CEOP
-
+C initialize fluxes
+      flux_u = 0. _d 0
+      flux_l = 0. _d 0
+      
 c flag to either remineralize in bottom or top layer if flux
 c reaches bottom layer 0=bottom, 1=top
       iflx=1

@@ -230,9 +230,21 @@ C- Carbonate sink
        ENDDO
 
 C carbonate
+       IF ( .NOT. useCalciteSaturation ) THEN
+C calcite dissolution occurs according to a power law scaled by zca 
+C    code follwing the old OCMIP way
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
+#endif
+        CALL CAR_FLUX(
+     I                    CAR_S,
+     U                    cflux,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )       
 #ifdef DIC_CALCITE_SAT
-C dissolution only below saturation horizon
-C code following method by Karsten Friis
+       ELSE       
+C calcite dissolution occurs only below saturation horizon
+C    code following method by Karsten Friis
         nCALCITEstep = 3600
         IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN
@@ -253,18 +265,9 @@ C code following method by Karsten Friis
      O                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
-#else
-C old OCMIP way
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
-#endif
-        CALL CAR_FLUX(
-     I                    CAR_S,
-     U                    cflux,
-     I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
 #endif /* DIC_CALCITE_SAT */
-
+       ENDIF
+       
 C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jMin,jMax
