@@ -52,8 +52,6 @@ c flux_u, flux_l          :: flux through upper and lower interfaces
 c variables for calcium carbonate dissolution
        _RL KierRate
        _RL DissolutionRate
-       _RL WsinkPIC
-       INTEGER iflx
        _RL dumrate
 
 c diagnostics
@@ -71,10 +69,10 @@ C initialize fluxes
       
 c flag to either remineralize in bottom or top layer if flux
 c reaches bottom layer 0=bottom, 1=top
-      iflx=1
+C      selectCalciteBottomRemin=1
 c set some nominal particulate sinking rate
 c try 100m/day
-       WsinkPIC = 100. _d 0/86400. _d 0
+C       WsinkPIC = 100. _d 0/86400. _d 0
 c calculate carbonate flux from base of each nlev
        DO j=jmin,jmax
         DO i=imin,imax
@@ -107,7 +105,7 @@ C flux through lower face of cell
 
 c if at bottom, remineralize remaining flux
                 if (ko.eq.kBottom) then
-                  if (iflx.eq.1) then
+                  if (selectCalciteBottomRemin.eq.1) then
 c ... at surface
                      cflux(i,j,1)=cflux(i,j,1)+
      &                  ( (flux_l)/(drF(1)*hFacC(i,j,1,bi,bj)) )
@@ -120,8 +118,8 @@ c ... at bottom
               else
 c if dissolution, then use rate from Kier (1980) Geochem. Cosmochem. Acta
 c Kiers dissolution rate in %  per day
-                 KierRate = 7.177 _d 0* 
-     &             ((1. _d 0-omegaC(i,j,ko,bi,bj))**4.54 _d 0)
+                 KierRate = KierRateK* 
+     &             ((1. _d 0-omegaC(i,j,ko,bi,bj))**KierRateExp)
 c convert to per s
 c Karsten finds Kier value not in 0/0 after all... therefore drop 100 factor
 c                DissolutionRate = KierRate/(100.0*86400.0)
@@ -159,7 +157,8 @@ c TEST ............................
            else
 c if no layer below initial layer, remineralize
                if (ko.eq.k+1) then
-                if (iflx.eq.1.and.omegaC(i,j,k,bi,bj) .gt. 1. _d 0) then
+                if (selectCalciteBottomRemin.eq.1.and.
+     &                  omegaC(i,j,k,bi,bj) .gt. 1. _d 0) then
 c ... at surface
                    cflux(i,j,1)=cflux(i,j,1)
      &                  +bioac(i,j,k)*(1. _d 0-DOPfraction)*

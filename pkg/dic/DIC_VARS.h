@@ -26,16 +26,26 @@ C                       carbonate calculations. Read in from file (mol/m3).
 C     useCalciteSaturation :: Dissolve calcium carbonate only below saturation horizon
 C     calcOmegaCalciteFreq :: Frequency that 3d calcite saturation state, omegaC,
 C                       is calculated. 
+C     KierRateK            :: Rate constant (%) for calcite dissolution from  
+C                       Kier (1980) Geochem. Cosmochem. Acta.
+C     KierRateExp          :: Rate exponent for calcite dissolution from
+C                       Kier (1980) Geochem. Cosmochem. Acta.
+C     WsinkPIC             :: sinking speed (m/s) of particulate inorganic carbon
+C                       for calculation of calcite dissolution through the watercolumn
+C     selectCalciteBottomRemin :: flag to either remineralize in bottom or top layer if flux
+c                       reaches bottom layer 0=bottom, 1=top 
 C     omegaC      :: Local saturation state with respect to calcite
 C     zca         :: Scale depth for CaCO3 remineralization [m]
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
-     &              wind, fIce, Kwexch_Pre, silicaSurf,
+     &              wind, fIce, Kwexch_Pre, silicaSurf, zca, 
 #ifdef DIC_CALCITE_SAT
      &              silicaDeep, calcOmegaCalciteFreq, omegaC, 
+     &              KierRateK, KierRateExp, WsinkPIC, 
+     &              selectCalciteBottomRemin,
 #endif
-     &              zca, useCalciteSaturation
+     &              useCalciteSaturation
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -46,12 +56,16 @@ C     zca         :: Scale depth for CaCO3 remineralization [m]
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  zca
 #ifdef DIC_CALCITE_SAT
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  calcOmegaCalciteFreq
+      _RL  KierRateK
+      _RL  KierRateExp 
+      _RL  WsinkPIC
+      INTEGER selectCalciteBottomRemin
 #endif
-      _RL  zca
       LOGICAL useCalciteSaturation
       
 C Store dissociation and carbon chemistry coefficients for
