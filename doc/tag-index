@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - enable initial sea ice area/heff controls with correct definition of control
+    indices;
+  - move condition on useSEAICE inside seaice_init_varia.F (always initialize to
+    zero) when compiling pkg/autodiff. Similar changes to shelfice_init_varia.F;
+  - fix out-of-bounds index issue in ctrl_map_ini_genarr.F (igen_shiCDrag=0).
 o pkg/dic:
   - enable to read in prescribed 3d silicate fields for calcite-saturation
     calculation and 3-D pH calculation (#define CAR_DISS).

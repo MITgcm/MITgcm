@@ -334,11 +334,7 @@ CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_SHELFICE
-CADJ STORE shelficeLoadAnomaly    = tapelev_init, key=1, kind=isbyte
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1, kind=isbyte
-CADJ STORE shelficeHeatFlux       = tapelev_init, key=1, kind=isbyte
-CADJ STORE shiTransCoeffT         = tapelev_init, key=1, kind=isbyte
-CADJ STORE shiTransCoeffS         = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE
 CADJ STORE H_streamice = tapelev_init, key=1
