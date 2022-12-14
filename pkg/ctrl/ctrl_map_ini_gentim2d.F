@@ -51,6 +51,7 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
       integer numsmo
+
 #ifndef ALLOW_TAPENADE
       character*(80) fnamegenIn
       character*(80) fnamegenOut
@@ -171,9 +172,10 @@ C--   generic 2D control variables
 #else
         fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
         write(fnamegenIn(iarr)(1:80),'(2a,i10.10)')
-     &       fnamebase(iarr)(1:ilgen),'.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.',optimcycle
         write(fnamegenOut(iarr)(1:80),'(2a,i10.10)')
-     &       fnamebase(iarr)(1:ilgen),'.effective.',optimcycle
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen)
+     &   ,'.effective.',optimcycle
         write(fnamegenTmp(iarr)(1:80),'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
 #endif
@@ -217,24 +219,24 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #else
            CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
-#else /* ALLOW_TAPENADE */
+#else
 #ifdef ALLOW_AUTODIFF
-           CALL ACTIVE_READ_XY( fnamegenIn(iarr), xx_gen, irec, 
+           CALL ACTIVE_READ_XY( fnamegenIn(iarr), xx_gen, irec,
      &          doglobalread, ladinit, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenIn(iarr), 
-     &          xx_gen, iRec, 1, myThid )
+           CALL READ_REC_XY_RL( fnamegenIn(iarr)
+     &          , xx_gen, iRec, 1, myThid )
 #endif
 #ifdef ALLOW_AUTODIFF
-           CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), 
-     &          xx_gen, krec, optimcycle,
+           CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, krec
+     &          , optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL WRITE_REC_XY_RL( fnamegenOut(iarr), 
-     &          xx_gen, iRec, 1, myThid )
+           CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, iRec, 1
+     &          , myThid )
 #endif
-#endif /* ALLOW_TAPENADE */
+#endif
           ENDIF
          ENDDO
         ENDDO
@@ -285,6 +287,7 @@ c     print*,'nyearsINT',nyearsINT,nyearsRL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
            call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
      &          doglobalread, ladinit, optimcycle,
@@ -292,6 +295,16 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #else
            CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
      &          1, myThid )
+#endif
+#else
+#ifdef ALLOW_AUTODIFF
+           call active_read_xy( fnamegenOut(iarr), xx_gen_tmp, krec,
+     &          doglobalread, ladinit, optimcycle,
+     &          myThid, xx_gentim2d_dummy(iarr) )
+#else
+           CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen_tmp, krec,
+     &          1, myThid )
+#endif
 #endif
            DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -320,11 +333,21 @@ C     end jrec
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
           call active_write_xy( fnamegenTmp, xx_gen, iRec, optimcycle,
      &         myThid, xx_gentim2d_dummy(iarr) )
 #else
           CALL WRITE_REC_XY_RL( fnamegenTmp, xx_gen, iRec, 1, myThid )
+#endif
+#else
+#ifdef ALLOW_AUTODIFF
+          call active_write_xy( fnamegenTmp(iarr), xx_gen, iRec
+     &         , optimcycle,
+     &         myThid, xx_gentim2d_dummy(iarr) )
+#else
+          CALL WRITE_REC_XY_RL( fnamegenTmp(iarr), xx_gen, iRec, 1, myThid )
+#endif
 #endif
 
          ENDDO
@@ -337,6 +360,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=replicated_nrec*(jrec-1)+irec
            IF (krec.LE.endrec) THEN
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenOut, xx_gen, kRec,
      &           doglobalread, ladinit, optimcycle,
@@ -352,6 +376,24 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
             CALL READ_REC_XY_RL( fnamegenTmp, xx_gen_tmp, iRec, 1,
      &           myThid )
 #endif
+#else
+#ifdef ALLOW_AUTODIFF
+            CALL active_read_xy( fnamegenOut(iarr), xx_gen, kRec,
+     &           doglobalread, ladinit, optimcycle,
+     &           myThid, xx_gentim2d_dummy(iarr) )
+#else
+            CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen, kRec, 1
+     &           , myThid )
+#endif
+#ifdef ALLOW_AUTODIFF
+            CALL active_read_xy( fnamegenTmp(iarr), xx_gen_tmp, iRec,
+     &           doglobalread, ladinit, optimcycle,
+     &           myThid, xx_gentim2d_dummy(iarr) )
+#else
+            CALL READ_REC_XY_RL( fnamegenTmp(iarr), xx_gen_tmp, iRec, 1,
+     &           myThid )
+#endif
+#endif
             DO bj=myByLo(myThid),myByHi(myThid)
              DO bi=myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
@@ -362,12 +404,22 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
               ENDDO
              ENDDO
             ENDDO
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
             CALL active_write_xy( fnamegenOut, xx_gen, kRec,
      &           optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
             CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1,
      &           myThid )
+#endif
+#else
+#ifdef ALLOW_AUTODIFF
+            CALL active_write_xy( fnamegenOut(iarr), xx_gen, kRec,
+     &           optimcycle, myThid, xx_gentim2d_dummy(iarr) )
+#else
+            CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, kRec, 1,
+     &           myThid )
+#endif
 #endif
            ENDIF
           ENDDO
@@ -382,13 +434,23 @@ c--   scaling and smoothing
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
-
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenOut, xx_gen, irec,
      &        doglobalread, ladinit, optimcycle,
      &        myThid, xx_gentim2d_dummy(iarr) )
 #else
          CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+#endif
+#else
+#ifdef ALLOW_AUTODIFF
+         call active_read_xy( fnamegenOut(iarr), xx_gen, irec,
+     &        doglobalread, ladinit, optimcycle,
+     &        myThid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen, iRec, 1
+     &        , myThid )
+#endif
 #endif
 
 #ifndef ALLOW_OPENAD
@@ -432,14 +494,23 @@ C--   Get appropriate mask
      &        xx_gentim2d_bounds(1,iarr),myThid)
 
          CALL EXCH_XY_RL ( xx_gen , myThid )
-
+#ifndef ALLOW_TAPENADE
 #ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
      &        myThid, xx_gentim2d_dummy(iarr) )
 #else
          CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
 #endif
-
+#else
+#ifdef ALLOW_AUTODIFF
+         call active_write_xy( fnamegenOut(iarr), xx_gen, irec
+     &        , optimcycle,
+     &        myThid, xx_gentim2d_dummy(iarr) )
+#else
+         CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, iRec, 1
+     &        , myThid )
+#endif
+#endif
 c--   end irec loop
         ENDDO
 

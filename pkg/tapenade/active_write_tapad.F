@@ -51,23 +51,16 @@ C     myThid         :: thread number for this instance
       Real*8     dummy
       Real*8     dummyd
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -131,23 +124,16 @@ C     myThid         :: thread number for this instance
       Real*8     dummy
       Real*8     dummyd
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -211,23 +197,15 @@ C     myThid         :: thread number for this instance
       Real*8     dummy
       Real*8     dummyb
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
       CHARACTER*(80) fname
-      INTEGER il
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
-
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -296,11 +274,8 @@ C     !LOCAL VARIABLES:
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
-
       adpref = 'ad'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      CALL ADD_PREFIX( adpref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.

@@ -56,15 +56,10 @@ C     myThid     :: my Thread Id. number
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
       CHARACTER*(2) tlmpref
-      INTEGER il
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
 CEOP
 
       tlmpref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:il+2),'(2A)') tlmpref,active_var_file(1:il)
+      call ADD_PREFIX( tlmpref, active_var_file, fname )
 
       call active_read_xy(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
@@ -128,15 +123,10 @@ C     myThid     :: my Thread Id. number
 C     !LOCAL VARIABLES:
       CHARACTER*(80) fname
       CHARACTER*(2) tlmpref
-      INTEGER il
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
 CEOP
 
       tlmpref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
-      WRITE(fname(1:il+2),'(2A)') tlmpref,active_var_file(1:il)
+      call ADD_PREFIX( tlmpref, active_var_file, fname )
 
       call active_read_xyz(active_var_file, active_var,
      &                    iRec, doglobalread, lAdInit,
