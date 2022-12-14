@@ -1,8 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_sshv4(
-     I                     myThid
-     &                   )
+     I                        myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_sshv4
@@ -49,7 +48,6 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -57,6 +55,8 @@ c     == routine arguments ==
 c     == functions ==
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == local variables ==
 
@@ -163,11 +163,6 @@ c for PART 4/5: compute smooth/raw anomalies
 
       LOGICAL doReference
       LOGICAL useEtaMean
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -376,12 +371,12 @@ c--   Read mean field and mask
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if ( (maskInC(i,j,bi,bj) .eq. 0.).OR.
+              if ( (maskInC(i,j,bi,bj) .EQ. 0.).OR.
 #ifndef ALLOW_SHALLOW_ALTIMETRY
      &             (R_low(i,j,bi,bj).GT.-200.).OR.
 #endif
-     &             (mdtob(i,j,bi,bj) .lt. spval ).OR.
-     &             (mdtob(i,j,bi,bj) .eq. 0. _d 0) ) then
+     &             (mdtob(i,j,bi,bj) .LT. spval ).OR.
+     &             (mdtob(i,j,bi,bj) .EQ. 0. _d 0) ) then
                 mdtma(i,j,bi,bj) = 0. _d 0
                 mdtob(i,j,bi,bj) = 0. _d 0
               else
@@ -783,7 +778,7 @@ c       due to having less data points that hardcoded num0
             enddo
           enddo
         enddo
-      if(num0total.lt.1. _d 0) then
+      if(num0total.LT.1. _d 0) then
         write(msgbuf,'(A,i5,A)')
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are <',num0,' pts'
       call print_message( msgbuf, errormessageunit,
@@ -800,7 +795,7 @@ c       due to having less data points that hardcoded num0
 catn-------
 
       if (igen_gmsl.GT.0) then
-       if (offset_sum .eq. 0.0) then
+       if (offset_sum .EQ. 0.0) then
         if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( myThid )
         write(msgbuf,'(a)') ' sshv4: offset_sum = zero!'
@@ -927,7 +922,7 @@ cgf =======================================================
        endif
        objf_gencost(bi,bj,igen_mdt) = objf_gencost(bi,bj,igen_mdt)
      &      + junk*junk*junkweight
-       if ( junkweight .ne. 0. ) num_gencost(bi,bj,igen_mdt) =
+       if ( junkweight .NE. 0. ) num_gencost(bi,bj,igen_mdt) =
      &      num_gencost(bi,bj,igen_mdt) + 1. _d 0
        diagnosfld(i,j,bi,bj) = junk*junk*junkweight
           enddo
@@ -952,7 +947,7 @@ cgf =======================================================
 
 catn add a warning if have less nrecday than the hardcoded 35days
       tempinteger=ndaysrec-ndaysave+1
-      if(tempinteger.lt.1) then
+      if(tempinteger.LT.1) then
         write(msgbuf,'(A,i5)')
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are < ',ndaysave
       call print_message( msgbuf, errormessageunit,
@@ -1115,7 +1110,7 @@ c ----------------------------------------
       slaoffset_sum = 0. _d 0
       slaoffset_weight = 0. _d 0
 
-      if (igen_lsc.gt.0) then
+      if (igen_lsc.GT.0) then
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -1141,7 +1136,7 @@ c Since slaoffset is itself area weighted, however, the total weight is only app
       _GLOBAL_SUM_RL( slaoffset_sum , myThid )
 
        if (igen_gmsl.GT.0) then
-        if (slaoffset_sum .eq. 0.0) then
+        if (slaoffset_sum .EQ. 0.0) then
          if (gencost_outputlevel(igen_gmsl).GT.0) then
          _BEGIN_MASTER( myThid )
          write(msgbuf,'(a)') ' sshv4: slaoffset_sum = zero!'
@@ -1208,7 +1203,7 @@ c ----------------------------------------
         call smooth_hetero2d(anom_psMslaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
-     &  call smooth_hetero2d(anom_slaobs,maskInC,
+        call smooth_hetero2d(anom_slaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 
@@ -1266,8 +1261,8 @@ c     endif igen_lsc .gt. 0
 c PART 4.4: compute cost function term for global mean sea level
 c --------------------------------------------------------------
 
-      IF ( ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.GT.0) ).AND.
-     &     ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
+      IF ( MASTER_CPU_THREAD(myThid) .AND. ( igen_gmsl.GT.0 )
+     &     .AND. ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
           junk=slaoffset
           junkweight=1. _d 0
           objf_gencost(1,1,igen_gmsl) = objf_gencost(1,1,igen_gmsl)
@@ -1422,7 +1417,7 @@ c--             The array psobs contains SSH anomalies.
                 junk = anom_psMtpobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_tp) =
      &              objf_gencost(bi,bj,igen_tp)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_tp) =
      &              num_gencost(bi,bj,igen_tp) + 1. _d 0
           enddo
@@ -1442,7 +1437,7 @@ c--             The array ersobs contains SSH anomalies.
                 junk = anom_psMersobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_ers) =
      &               objf_gencost(bi,bj,igen_ers)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_ers) =
      &              num_gencost(bi,bj,igen_ers) + 1. _d 0
           enddo
@@ -1462,7 +1457,7 @@ c--             The array gfoobs contains SSH anomalies.
                 junk = anom_psMgfoobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_gfo) =
      &              objf_gencost(bi,bj,igen_gfo)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_gfo) =
      &              num_gencost(bi,bj,igen_gfo) + 1. _d 0
           enddo
