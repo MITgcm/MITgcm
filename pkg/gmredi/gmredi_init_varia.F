@@ -143,10 +143,6 @@ C     Initialize averages to zero
 #ifdef GM_VISBECK_VARIABLE_K
         CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
 #endif
-#ifdef GM_GEOM_VARIABLE_K
-        CALL TIMEAVE_RESET(GEOM_K_T,  Nr, bi,bj,myThid)
-        CALL TIMEAVE_RESET(GEOM_ene_T, 1, bi,bj,myThid)
-#endif
 #ifdef GM_BOLUS_ADVEC
         CALL TIMEAVE_RESET(GM_PsiXtave,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_PsiYtave,Nr, bi,bj,myThid)

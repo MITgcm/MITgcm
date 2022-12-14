@@ -50,7 +50,28 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) fieldname
 CEOP
 
+#endif /* GM_BATES_K3D */
+
+#ifdef GM_GEOM_VARIABLE_K
+
+      INTEGER fp
+      INTEGER filePrec, nbFields
+      INTEGER missFldDim, nMissing
+      INTEGER i,j,k,n,nm,ioUnit,bi,bj
+      PARAMETER( missFldDim = 4 )
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(8) missFldList(missFldDim)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      CHARACTER*(8) fieldname
+CEOP
+
+#endif /* GM_GEOM_VARIABLE_K */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef GM_BATES_K3D
 
        IF ( pickupSuff.EQ.' ' ) THEN
         IF ( rwSuffixType.EQ.0 ) THEN
@@ -227,45 +248,20 @@ C--    Update overlap regions:
 C        CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
 #endif /* GM_BATES_K3D */
 
-#ifdef GM_GEOM_VARIABLE_K
-
-C     !LOCAL VARIABLES:
-C     fn          :: character buffer for creating filename
-C     fp          :: precision of pickup files
-C     filePrec    :: pickup-file precision (read from meta file)
-C     nbFields    :: number of fields in pickup file (read from meta file)
-C     missFldList :: List of missing fields   (attempted to read but not found)
-C     missFldDim  :: Dimension of missing fields list array: missFldList
-C     nMissing    :: Number of missing fields (attempted to read but not found)
-C     j           :: loop index
-C     nj          :: record number
-C     ioUnit      :: temp for writing msg unit
-C     msgBuf      :: Informational/error message buffer
-      INTEGER fp
-      INTEGER filePrec, nbFields
-      INTEGER missFldDim, nMissing
-      INTEGER i,j,k,n,nm,ioUnit,bi,bj
-      PARAMETER( missFldDim = 4 )
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(8) missFldList(missFldDim)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(8) fieldname
-CEOP
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (.NOT. GM_useGEOM) RETURN
-      
-      IF ( .NOT. (GEOM_pickup_read_mnc .OR.
-     &            GEOM_pickup_read_mdsio ) ) THEN
-        WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &      'in routine but no pickup option specified!'
-        WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &        'WARNING! going to (re)initialise ene_old!'
+#ifdef GM_GEOM_VARIABLE_K
 
-      ENDIF
+      IF (GM_useGEOM) THEN
+      
+        IF (.NOT. (GEOM_pickup_read_mnc .OR.
+     &             GEOM_pickup_read_mdsio ) ) THEN
+          WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &         'in routine but no pickup option specified!'
+          WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &         'WARNING! going to (re)initialise ene_old!'
+
+        ENDIF
       
 C--------------------------
 #ifdef ALLOW_MDSIO
@@ -428,7 +424,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
       ENDIF
 #endif  /* ALLOW_MNC */
-
+      ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 
       RETURN

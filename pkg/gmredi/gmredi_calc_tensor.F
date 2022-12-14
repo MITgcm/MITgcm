@@ -100,7 +100,7 @@ C     maskFk    :: 2-D mask for vertical interface k (between level k-1 & k)
 #else
       INTEGER ks
       _RL dSigmaH, dSigmaR, Sloc, rTop
-      _RL M2loc
+c     _RL M2loc
 #endif
       _RL recipMaxSlope
       _RL deltaH, integrDepth
@@ -297,19 +297,17 @@ C   Use Leith QG viscosity in GMRedi scheme
 #ifdef GM_GEOM_VARIABLE_K
 C     Calculate the kgm as per the GEOMETRIC formulation
 C        (e.g. Mak et al, 2018; see also Marshall et al, 2012)
-      IF (GM_useGEOM) THEN
-        IF ( GEOM_alpha.NE.0. ) THEN
-          DO k=1,Nr
-            DO j=1-OLy,sNy+OLy
-              DO i=1-OLx,sNx+OLx
-                GEOMK(i,j,k,bi,bj) = 0. _d 0
-              ENDDO
+      IF ( GM_useGEOM .AND. GEOM_alpha.NE.0. ) THEN
+        DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              GEOMK(i,j,k,bi,bj) = 0. _d 0
             ENDDO
           ENDDO
-          CALL GMREDI_CALC_GEOM(
-     I                sigmaX, sigmaY, sigmaR,
-     I                bi, bj, myTime, myIter, myThid )
-        ENDIF
+        ENDDO
+        CALL GMREDI_CALC_GEOM(
+     I              sigmaX, sigmaY, sigmaR,
+     I              bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 

@@ -15,7 +15,7 @@ C     | o Check consistency with model configuration
 C     *==========================================================*
 C     \ev
 
-!C     !USES:
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===

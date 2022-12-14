@@ -87,46 +87,6 @@ C    &       'coordinates','XC YC RC iter', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('PsiY','description',
      &       'GM bolus velocity streamfunction in Y', 
      &       myThid)
-     
-#ifdef GM_GEOM_VARIABLE_K
-
-        CALL MNC_CW_ADD_VNAME('GEOMK','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('GEOMK','units','m^2/s', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('GEOMK','description',
-     &       'GM mixing/stirring coef after Marshall et al. (2012)',
-     &       myThid)
-
-        CALL MNC_CW_ADD_VNAME('GEOM_ene','Cen_xy_Hn__-__t',3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('GEOM_ene','units','m^3/s^2', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('GEOM_ene','description',
-     &       'GEOM depth-int parameterised eddy energy', 
-     &       myThid)
-     
-        CALL MNC_CW_ADD_VNAME('ene_rhs_now','Cen_xy_Hn__-__t',3,4,
-     &                        myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_now','units','m^3/s',
-     &                             myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_now','description',
-     &       'GEOM energy tendency at now time-step', 
-     &       myThid)
-     
-        CALL MNC_CW_ADD_VNAME('ene_rhs_nm1','Cen_xy_Hn__-__t',3,4,
-     &                        myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_nm1','units','m^3/s',
-     &                             myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_now','description',
-     &       'GEOM energy tendency at nm1 time-step', 
-     &       myThid)
-     
-        CALL MNC_CW_ADD_VNAME('ene_rhs_nm2','Cen_xy_Hn__-__t',3,4,
-     &                        myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_nm2','units','m^3/s',
-     &                             myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('ene_rhs_nm2','description',
-     &       'GEOM energy tendency at nm2 time-step', 
-     &       myThid)
-
-#endif /* GM_GEOM_VARIABLE_K */
 
       ENDIF
 

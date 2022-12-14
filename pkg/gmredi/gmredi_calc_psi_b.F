@@ -185,7 +185,7 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
      &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &      +op5*(GEOMK(i,j-1,k,bi,bj)+GEOMK(i,j,k,bi,bj))
+     &      + op5*(GEOMK(i,j-1,k,bi,bj)+GEOMK(i,j,k,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)

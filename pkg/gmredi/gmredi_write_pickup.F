@@ -32,7 +32,7 @@ C     myThid          :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -59,6 +59,31 @@ C     msgBuf      :: Informational/error message buffer
       _RL vec(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
 CEOP
+
+#endif /* GM_BATES_K3D */
+
+#ifdef GM_GEOM_VARIABLE_K
+
+C     === Functions ====
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      INTEGER m, nm, fp, lChar
+      LOGICAL glf
+      _RL     timList(1)
+      CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER listDim, nWrFlds
+      PARAMETER( listDim = 4 )
+      CHARACTER*(8) wrFldList(listDim)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(8) fieldname
+CEOP
+
+#endif /* GM_GEOM_VARIABLE_K */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef GM_BATES_K3D
 
       IF (.NOT. GM_useK3D) RETURN
 
@@ -172,36 +197,13 @@ C     uses this specific S/R to write (with more informations) only meta files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
 
-C     === Functions ====
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C !LOCAL VARIABLES: ====================================================
-C     m           :: loop index / field number
-C     nm          :: record number
-C     fp          :: pickup-file precision
-C     glf         :: local flag for "globalFiles"
-C     fn          :: character buffer for creating filename
-C     nWrFlds     :: number of fields being written
-C     listDim     :: dimension of "wrFldList" local array
-C     wrFldList   :: list of written fields
-C     msgBuf      :: Informational/error message buffer
-      INTEGER m, nm, fp, lChar
-      LOGICAL glf
-      _RL     timList(1)
-      CHARACTER*(MAX_LEN_FNAM) fn
-      INTEGER listDim, nWrFlds
-      PARAMETER( listDim = 4 )
-      CHARACTER*(8) wrFldList(listDim)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(8) fieldname
-CEOP
-
-      IF (.NOT. GM_useGEOM) RETURN
+      IF (GM_useGEOM) THEN
       
 C--------------------------
 #ifdef ALLOW_MDSIO
@@ -303,6 +305,7 @@ C       Then set the actual unlimited dimension
       ENDIF
 #endif /* ALLOW_MNC */
 C--------------------------
+      ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 
       RETURN
