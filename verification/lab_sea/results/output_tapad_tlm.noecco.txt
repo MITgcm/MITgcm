@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint68m
 (PID.TID 0000.0001) // Build user:        shreyas
 (PID.TID 0000.0001) // Build host:        sverdrup.ices.utexas.edu
-(PID.TID 0000.0001) // Build date:        Tue Dec 13 20:08:46 CST 2022
+(PID.TID 0000.0001) // Build date:        Tue Dec 13 09:31:12 CST 2022
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -703,8 +703,6 @@
 (PID.TID 0000.0001) ># ECCO controlvariables
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) > &CTRL_NML
-(PID.TID 0000.0001) ># write control variables into a separate directory
-(PID.TID 0000.0001) > ctrlDir = './ctrl_variables',
 (PID.TID 0000.0001) > &
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
@@ -743,7 +741,7 @@
 (PID.TID 0000.0001) > xx_gentim2d_startdate2(1) = 000000,
 (PID.TID 0000.0001) > xx_gentim2d_period(1)     = 864000.0,
 (PID.TID 0000.0001) >#mult_gentim2d(9)          = 1.0,
-(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) >
 (PID.TID 0000.0001) > xx_gentim2d_file(2)       = 'xx_aqh',
 (PID.TID 0000.0001) > xx_gentim2d_weight(2)     = 'ones_64b.bin',
 (PID.TID 0000.0001) > xx_gentim2d_startdate1(2) = 19790101,
@@ -803,8 +801,7 @@
 (PID.TID 0000.0001) > &
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) CTRL_READPARMS: finished reading data.ctrl
-==> SYSTEM CALL (from CTRL_READPARMS): > mkdir -p ./ctrl_variables <
-(PID.TID 0000.0001) read-write ctrl files from ./ctrl_variables
+(PID.TID 0000.0001) read-write ctrl files from current run directory
 (PID.TID 0000.0001) COST_READPARMS: opening data.cost
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.cost
 (PID.TID 0000.0001) // =======================================================
@@ -1533,8 +1530,6 @@
 (PID.TID 0000.0001) usePW79thermodynamics  = /* default 0-layer TD */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) SEAICE_USE_GROWTH_ADX defined, using seaice_growth_adx code
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) SEAICE_lhEvap     = /* latent heat of evaporation */
 (PID.TID 0000.0001)                 2.500000000000000E+06
 (PID.TID 0000.0001)     ;
@@ -1750,67 +1745,67 @@
 (PID.TID 0000.0001) // Seaice configuration (SEAICE_PARM01) >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_siarea.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_siarea.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_siheff.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_siheff.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_theta.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_theta.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_salt.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_salt.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_atemp.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_atemp.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_atemp.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_atemp.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_atemp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_atemp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_aqh.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_aqh.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_aqh.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_aqh.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_aqh.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_aqh.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_precip.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_precip.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_precip.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_precip.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_precip.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_precip.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_snowprecip.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_snowprecip.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_snowprecip.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_snowprecip.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_snowprecip.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_snowprecip.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_swdown.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_swdown.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_swdown.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_swdown.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_swdown.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_swdown.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_lwdown.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_lwdown.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_lwdown.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_lwdown.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_lwdown.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_lwdown.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_uwind.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_uwind.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_uwind.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_uwind.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_uwind.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_uwind.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_vwind.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_vwind.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_vwind.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_vwind.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_vwind.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_vwind.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_apressure.effective.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_apressure.effective.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_apressure.tmp.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_apressure.tmp.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
-** WARNING ** CTRL_INIT_CTRLVAR: could not find ./ctrl_variables/g_xx_apressure.0000000000.data
+** WARNING ** CTRL_INIT_CTRLVAR: could not find g_xx_apressure.0000000000.data
 ** WARNING ** for TLM perturbation so will initialize this file with all zeros
 (PID.TID 0000.0001) ctrl-wet 1:    nvarlength =         6720
 (PID.TID 0000.0001) ctrl-wet 2: surface wet C =           14
@@ -3636,22 +3631,22 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.22124532708767E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   7.93809462606987E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   2.22911966663020E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.47024622979097E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   6.85562717706034E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   3.20576898360514E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
-(PID.TID 0000.0001) grdchk reference fc: fcref       =  3.04251158696451E+03
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
+(PID.TID 0000.0001) grdchk reference fc: fcref       =  5.42416006820592E+02
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc       fc ref            fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc      tlm grad            fd grad          1 - fd/tlm
@@ -3673,24 +3668,24 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.91433543964104E-16  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   9.51154472295535E-17  8.05737835154032E-09
- cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =  -7.25548093827300E-16  3.19577011618648E-08
- cg2d: Sum(rhs),rhsMax =   7.56339435525888E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =  -6.48526371493929E-15  7.29126418052288E-08
- cg2d: Sum(rhs),rhsMax =   4.08700850940136E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.44284301988140E-17  8.08473509515631E-08
+ cg2d: Sum(rhs),rhsMax =   2.17187379192296E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.55218673656566E-16  2.02622562158861E-07
+ cg2d: Sum(rhs),rhsMax =   6.70297151117438E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =  -9.91914883563538E-15  3.42462573171977E-07
+ cg2d: Sum(rhs),rhsMax =   2.49453235845465E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3700,22 +3695,22 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.19348975147204E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   8.45851166886291E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   3.75220687853783E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.68535194081210E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   5.52162482403418E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   6.93889390390723E-16  1.20525368718144E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151660D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.04251158696451E+03
+ --> objf_test(bi,bj)        =  0.349659435847586D+02
+ --> objf_test(bi,bj)        =  0.268086117616881D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795524D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820468D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820468D+03
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  5.42416006820468E+02
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3725,28 +3720,28 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.60982338570648E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   7.21644966006352E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   3.23525928269675E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.50494069931051E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   6.78797296149725E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   4.30905311432639E-15  1.20525368718149E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151664D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.04251158696451E+03
+ --> objf_test(bi,bj)        =  0.349659435850156D+02
+ --> objf_test(bi,bj)        =  0.268086117616875D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795509D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820716D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820716D+03
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  5.42416006820716E+02
 grad-res -------------------------------
- grad-res     0    1    6    8    1    1    1    1   3.04251158696E+03  3.04251158696E+03  3.04251158696E+03
- grad-res     0    1    1   10    0    1    1    1  -2.11502297141E-08 -2.04636307899E-08  3.24629535243E-02
-(PID.TID 0000.0001)  TLM  ref_cost_function      =  3.04251158696451E+03
-(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -2.11502297141282E-08
-(PID.TID 0000.0001)  TLM  finite-diff_grad       = -2.04636307898909E-08
+ grad-res     0    1    6    8    1    1    1    1   5.42416006821E+02  5.42416006820E+02  5.42416006821E+02
+ grad-res     0    1    1   10    0    1    1    1  -1.24304070535E-06 -1.24259713630E-06  3.56841936429E-04
+(PID.TID 0000.0001)  TLM  ref_cost_function      =  5.42416006820592E+02
+(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -1.24304070534962E-06
+(PID.TID 0000.0001)  TLM  finite-diff_grad       = -1.24259713629726E-06
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum           11         300           2
@@ -3764,24 +3759,24 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.91433543964104E-16  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =  -1.12860575716294E-16  7.64815709625978E-09
- cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   2.32452945780892E-16  3.99284724263824E-08
- cg2d: Sum(rhs),rhsMax =   7.56339435525888E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   1.67227343084164E-15  1.10329741794821E-07
- cg2d: Sum(rhs),rhsMax =   4.08700850940136E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.03132053278737E-16  1.67208802358457E-07
+ cg2d: Sum(rhs),rhsMax =   2.17187379192296E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   2.35076715038307E-15  3.95057756425359E-07
+ cg2d: Sum(rhs),rhsMax =   6.70297151117438E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   9.34582272682505E-16  6.49549535492270E-07
+ cg2d: Sum(rhs),rhsMax =   2.49453235845465E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3791,22 +3786,22 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.16573417585641E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   7.66053886991358E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   2.67841304690819E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   2.51187959321442E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.11156697366755E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   3.85108611666851E-15  1.20525368718146E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151666D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696452D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696452D+04
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.04251158696452E+03
+ --> objf_test(bi,bj)        =  0.349659435847994D+02
+ --> objf_test(bi,bj)        =  0.268086117616881D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795524D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820508D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820508D+03
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  5.42416006820508E+02
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3816,28 +3811,28 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.05471187339390E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   8.40993941153556E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   3.49720252756924E-15  1.22862409343697E+00
+ cg2d: Sum(rhs),rhsMax =   2.61596300177303E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.47932835057463E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   2.75127143289922E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151658D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.04251158696451E+03
+ --> objf_test(bi,bj)        =  0.349659435849749D+02
+ --> objf_test(bi,bj)        =  0.268086117616874D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795509D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820675D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820675D+03
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  5.42416006820675E+02
 grad-res -------------------------------
- grad-res     0    2    7    8    1    1    1    1   3.04251158696E+03  3.04251158696E+03  3.04251158696E+03
- grad-res     0    2    2   11    0    1    1    1   4.11936628344E-08  4.54747350886E-08 -1.03925506004E-01
-(PID.TID 0000.0001)  TLM  ref_cost_function      =  3.04251158696451E+03
-(PID.TID 0000.0001)  TLM  tangent-lin_grad       =  4.11936628344216E-08
-(PID.TID 0000.0001)  TLM  finite-diff_grad       =  4.54747350886464E-08
+ grad-res     0    2    7    8    1    1    1    1   5.42416006821E+02  5.42416006821E+02  5.42416006821E+02
+ grad-res     0    2    2   11    0    1    1    1  -8.34455767057E-07 -8.35029823065E-07 -6.87940609211E-04
+(PID.TID 0000.0001)  TLM  ref_cost_function      =  5.42416006820592E+02
+(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -8.34455767056521E-07
+(PID.TID 0000.0001)  TLM  finite-diff_grad       = -8.35029823065270E-07
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum           12         300           3
@@ -3855,24 +3850,24 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.91433543964104E-16  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  8.63841739934049E-09
- cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   3.12250225675825E-16  3.42415788864635E-08
- cg2d: Sum(rhs),rhsMax =   7.56339435525888E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   9.99200722162641E-16  1.01863771976454E-07
- cg2d: Sum(rhs),rhsMax =   4.08700850940136E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   1.50053580671994E-16  1.76501608296648E-07
+ cg2d: Sum(rhs),rhsMax =   2.17187379192296E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =  -3.35842464949110E-15  4.39606759076185E-07
+ cg2d: Sum(rhs),rhsMax =   6.70297151117438E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   1.90819582357449E-16  7.47032224742720E-07
+ cg2d: Sum(rhs),rhsMax =   2.49453235845465E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3882,22 +3877,22 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.22124532708767E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   7.07073288808147E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   1.43461631463282E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   1.50573997714787E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.54524784266175E-15  1.20987150232988E+00
+ cg2d: Sum(rhs),rhsMax =   2.04697370165263E-15  1.20525368718143E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151674D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732190D+03
- --> objf_test(bi,bj)        =  0.141454055275498D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696452D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696452D+04
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.04251158696452E+03
+ --> objf_test(bi,bj)        =  0.349659435848459D+02
+ --> objf_test(bi,bj)        =  0.268086117616884D+03
+ --> objf_test(bi,bj)        =  0.155775575539276D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820557D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820557D+03
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  5.42416006820557E+02
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3907,28 +3902,28 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.22124532708767E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   8.04911692853238E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   2.68361721733612E-15  1.22862409343697E+00
+ cg2d: Sum(rhs),rhsMax =   1.75554015768853E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   6.29010732389190E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   1.79717352111197E-15  1.20525368718150E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151650D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732188D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696450D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696450D+04
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.04251158696450E+03
+ --> objf_test(bi,bj)        =  0.349659435849284D+02
+ --> objf_test(bi,bj)        =  0.268086117616871D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795517D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820626D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820626D+03
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  5.42416006820626E+02
 grad-res -------------------------------
- grad-res     0    3    8    8    1    1    1    1   3.04251158696E+03  3.04251158696E+03  3.04251158696E+03
- grad-res     0    3    3   12    0    1    1    1   9.99679752878E-08  1.09139364213E-07 -9.17432697678E-02
-(PID.TID 0000.0001)  TLM  ref_cost_function      =  3.04251158696451E+03
-(PID.TID 0000.0001)  TLM  tangent-lin_grad       =  9.99679752877852E-08
-(PID.TID 0000.0001)  TLM  finite-diff_grad       =  1.09139364212751E-07
+ grad-res     0    3    8    8    1    1    1    1   5.42416006821E+02  5.42416006821E+02  5.42416006821E+02
+ grad-res     0    3    3   12    0    1    1    1  -3.45298405089E-07 -3.44471118296E-07  2.39586045146E-03
+(PID.TID 0000.0001)  TLM  ref_cost_function      =  5.42416006820592E+02
+(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -3.45298405089203E-07
+(PID.TID 0000.0001)  TLM  finite-diff_grad       = -3.44471118296497E-07
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum           13         300           4
@@ -3946,24 +3941,24 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.91433543964104E-16  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =  -3.63817591504667E-17  1.31537322761263E-08
- cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =  -3.07913416985883E-16  7.86087945676835E-08
- cg2d: Sum(rhs),rhsMax =   7.56339435525888E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =  -6.74156910851487E-16  2.35335489831098E-07
- cg2d: Sum(rhs),rhsMax =   4.08700850940136E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =  -1.29020058525775E-16  3.03545444120455E-07
+ cg2d: Sum(rhs),rhsMax =   2.17187379192296E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   4.23619472833536E-15  7.71642365859557E-07
+ cg2d: Sum(rhs),rhsMax =   6.70297151117438E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =   6.71251249029226E-15  1.34524016557373E-06
+ cg2d: Sum(rhs),rhsMax =   2.49453235845465E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3973,22 +3968,22 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.31838984174237E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   6.54337695138452E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   3.70710406816244E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =   1.72778458207290E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   6.36643515683488E-15  1.20987150232987E+00
+ cg2d: Sum(rhs),rhsMax =   2.52228793407028E-15  1.20525368718142E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151690D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732191D+03
- --> objf_test(bi,bj)        =  0.141454055275498D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696454D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696454D+04
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.04251158696454E+03
+ --> objf_test(bi,bj)        =  0.349659435843656D+02
+ --> objf_test(bi,bj)        =  0.268086117616888D+03
+ --> objf_test(bi,bj)        =  0.155775575539276D+03
+ --> objf_test(bi,bj)        =  0.835883700795523D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820082D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820082D+03
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  5.42416006820082E+02
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -3998,28 +3993,28 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.59594559789866E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   6.63358257213531E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   1.75380543421255E-15  1.22862409343697E+00
+ cg2d: Sum(rhs),rhsMax =   2.43555176027144E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.72045491373541E-15  1.20987150232985E+00
+ cg2d: Sum(rhs),rhsMax =   3.32026073301961E-15  1.20525368718151E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151634D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732187D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696448D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696448D+04
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.04251158696448E+03
+ --> objf_test(bi,bj)        =  0.349659435854087D+02
+ --> objf_test(bi,bj)        =  0.268086117616868D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795510D+02
+(PID.TID 0000.0001)   local fc =  0.542416006821102D+03
+(PID.TID 0000.0001)  global fc =  0.542416006821102D+03
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  5.42416006821102E+02
 grad-res -------------------------------
- grad-res     0    4    9    8    1    1    1    1   3.04251158696E+03  3.04251158696E+03  3.04251158696E+03
- grad-res     0    4    4   13    0    1    1    1   2.80795529901E-07  2.88764567813E-07 -2.83802164334E-02
-(PID.TID 0000.0001)  TLM  ref_cost_function      =  3.04251158696451E+03
-(PID.TID 0000.0001)  TLM  tangent-lin_grad       =  2.80795529900787E-07
-(PID.TID 0000.0001)  TLM  finite-diff_grad       =  2.88764567812905E-07
+ grad-res     0    4    9    8    1    1    1    1   5.42416006821E+02  5.42416006820E+02  5.42416006821E+02
+ grad-res     0    4    4   13    0    1    1    1  -5.10293168880E-06 -5.10283371113E-06  1.92002701006E-05
+(PID.TID 0000.0001)  TLM  ref_cost_function      =  5.42416006820592E+02
+(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -5.10293168880147E-06
+(PID.TID 0000.0001)  TLM  finite-diff_grad       = -5.10283371113474E-06
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   5 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum           14         300           5
@@ -4037,24 +4032,24 @@ grad-res -------------------------------
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.91433543964104E-16  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =  -5.55111512312578E-16  2.66631784450462E-08
- cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =  -7.21644966006352E-16  1.98093495534720E-07
- cg2d: Sum(rhs),rhsMax =   7.56339435525888E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =  -3.05311331771918E-16  5.84528464112581E-07
- cg2d: Sum(rhs),rhsMax =   4.08700850940136E-15  1.22862409343696E+00
+ cg2d: Sum(rhs),rhsMax =  -8.67361737988404E-17  6.35566731975651E-07
+ cg2d: Sum(rhs),rhsMax =   2.17187379192296E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =  -9.97465998686664E-16  1.67502799998906E-06
+ cg2d: Sum(rhs),rhsMax =   6.70297151117438E-15  1.20987150232984E+00
+ cg2d: Sum(rhs),rhsMax =  -1.71477415600307E-15  3.03204510777355E-06
+ cg2d: Sum(rhs),rhsMax =   2.49453235845465E-15  1.20525368718148E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151662D+03
- --> objf_test(bi,bj)        =  0.247079463080516D+04
- --> objf_test(bi,bj)        =  0.116937312732189D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696451D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696451D+04
+ --> objf_test(bi,bj)        =  0.349659435848871D+02
+ --> objf_test(bi,bj)        =  0.268086117616878D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795516D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820592D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820592D+03
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -4064,22 +4059,22 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.20736753927986E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   6.87297441182011E-15  1.23176561042057E+00
- cg2d: Sum(rhs),rhsMax =   4.18935719448399E-15  1.22862409343695E+00
+ cg2d: Sum(rhs),rhsMax =   2.08860706507608E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.31799906730879E-15  1.20987150232987E+00
+ cg2d: Sum(rhs),rhsMax =   1.90819582357449E-15  1.20525368718140E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151705D+03
- --> objf_test(bi,bj)        =  0.247079463080517D+04
- --> objf_test(bi,bj)        =  0.116937312732194D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696457D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696457D+04
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  3.04251158696457E+03
+ --> objf_test(bi,bj)        =  0.349659435843839D+02
+ --> objf_test(bi,bj)        =  0.268086117616893D+03
+ --> objf_test(bi,bj)        =  0.155775575539276D+03
+ --> objf_test(bi,bj)        =  0.835883700795514D+02
+(PID.TID 0000.0001)   local fc =  0.542416006820104D+03
+(PID.TID 0000.0001)  global fc =  0.542416006820104D+03
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  =  5.42416006820104E+02
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
 (PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
 (PID.TID 0000.0001) 
@@ -4089,28 +4084,28 @@ grad-res -------------------------------
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
  cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  9.91122157633463E-01
- cg2d: Sum(rhs),rhsMax =   1.65145674912992E-15  1.20958866293734E+00
- cg2d: Sum(rhs),rhsMax =   7.55645546135497E-15  1.23176561042058E+00
- cg2d: Sum(rhs),rhsMax =   3.39832328943857E-15  1.22862409343698E+00
+ cg2d: Sum(rhs),rhsMax =   2.28983498828939E-15  1.19111702562865E+00
+ cg2d: Sum(rhs),rhsMax =   8.88004947352528E-15  1.20987150232985E+00
+ cg2d: Sum(rhs),rhsMax =   4.09741685025722E-15  1.20525368718154E+00
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
  --> f_ice     = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
  --> f_smrarea = 0.000000000000000D+00
 (PID.TID 0000.0001)   early fc =  0.000000000000000D+00
- --> objf_test(bi,bj)        =  0.313325588151619D+03
- --> objf_test(bi,bj)        =  0.247079463080515D+04
- --> objf_test(bi,bj)        =  0.116937312732184D+03
- --> objf_test(bi,bj)        =  0.141454055275499D+03
-(PID.TID 0000.0001)   local fc =  0.304251158696445D+04
-(PID.TID 0000.0001)  global fc =  0.304251158696445D+04
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  3.04251158696445E+03
+ --> objf_test(bi,bj)        =  0.349659435853904D+02
+ --> objf_test(bi,bj)        =  0.268086117616862D+03
+ --> objf_test(bi,bj)        =  0.155775575539275D+03
+ --> objf_test(bi,bj)        =  0.835883700795518D+02
+(PID.TID 0000.0001)   local fc =  0.542416006821079D+03
+(PID.TID 0000.0001)  global fc =  0.542416006821079D+03
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus =  5.42416006821079E+02
 grad-res -------------------------------
- grad-res     0    5   10    8    1    1    1    1   3.04251158696E+03  3.04251158696E+03  3.04251158696E+03
- grad-res     0    5    5   14    0    1    1    1   5.69244542258E-07  5.70707925363E-07 -2.57074595601E-03
-(PID.TID 0000.0001)  TLM  ref_cost_function      =  3.04251158696451E+03
-(PID.TID 0000.0001)  TLM  tangent-lin_grad       =  5.69244542257524E-07
-(PID.TID 0000.0001)  TLM  finite-diff_grad       =  5.70707925362512E-07
+ grad-res     0    5   10    8    1    1    1    1   5.42416006821E+02  5.42416006820E+02  5.42416006821E+02
+ grad-res     0    5    5   14    0    1    1    1  -4.87335131919E-06 -4.87432316731E-06 -1.99420903550E-04
+(PID.TID 0000.0001)  TLM  ref_cost_function      =  5.42416006820592E+02
+(PID.TID 0000.0001)  TLM  tangent-lin_grad       = -4.87335131919090E-06
+(PID.TID 0000.0001)  TLM  finite-diff_grad       = -4.87432316731429E-06
 (PID.TID 0000.0001) ====== End of gradient-check number   5 (ierr=  0) =======
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -4124,209 +4119,209 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      TLM GRAD(FC)        1-FDGRD/TLMGRD
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1     6     8     1    1    1   0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   1  3.0425115869645E+03  3.0425115869645E+03  3.0425115869645E+03
-(PID.TID 0000.0001) grdchk output (g):   1    -2.0463630789891E-08 -2.1150229714128E-08  3.2462953524268E-02
+(PID.TID 0000.0001) grdchk output (c):   1  5.4241600682059E+02  5.4241600682047E+02  5.4241600682072E+02
+(PID.TID 0000.0001) grdchk output (g):   1    -1.2425971362973E-06 -1.2430407053496E-06  3.5684193642882E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2     7     8     1    1    1   0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   2  3.0425115869645E+03  3.0425115869645E+03  3.0425115869645E+03
-(PID.TID 0000.0001) grdchk output (g):   2     4.5474735088646E-08  4.1193662834422E-08 -1.0392550600398E-01
+(PID.TID 0000.0001) grdchk output (c):   2  5.4241600682059E+02  5.4241600682051E+02  5.4241600682068E+02
+(PID.TID 0000.0001) grdchk output (g):   2    -8.3502982306527E-07 -8.3445576705652E-07 -6.8794060921085E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3     8     8     1    1    1   0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   3  3.0425115869645E+03  3.0425115869645E+03  3.0425115869645E+03
-(PID.TID 0000.0001) grdchk output (g):   3     1.0913936421275E-07  9.9967975287785E-08 -9.1743269767782E-02
+(PID.TID 0000.0001) grdchk output (c):   3  5.4241600682059E+02  5.4241600682056E+02  5.4241600682063E+02
+(PID.TID 0000.0001) grdchk output (g):   3    -3.4447111829650E-07 -3.4529840508920E-07  2.3958604514623E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4     9     8     1    1    1   0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   4  3.0425115869645E+03  3.0425115869645E+03  3.0425115869645E+03
-(PID.TID 0000.0001) grdchk output (g):   4     2.8876456781290E-07  2.8079552990079E-07 -2.8380216433406E-02
+(PID.TID 0000.0001) grdchk output (c):   4  5.4241600682059E+02  5.4241600682008E+02  5.4241600682110E+02
+(PID.TID 0000.0001) grdchk output (g):   4    -5.1028337111347E-06 -5.1029316888015E-06  1.9200270100606E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   5    10     8     1    1    1   0.000000000E+00 -1.000000000E-04
-(PID.TID 0000.0001) grdchk output (c):   5  3.0425115869645E+03  3.0425115869646E+03  3.0425115869645E+03
-(PID.TID 0000.0001) grdchk output (g):   5     5.7070792536251E-07  5.6924454225752E-07 -2.5707459560078E-03
+(PID.TID 0000.0001) grdchk output (c):   5  5.4241600682059E+02  5.4241600682010E+02  5.4241600682108E+02
+(PID.TID 0000.0001) grdchk output (g):   5    -4.8743231673143E-06 -4.8733513191909E-06 -1.9942090354963E-04
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    5 ratios =  6.4935702224530E-02
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    5 ratios =  1.1296798749576E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.16810003528371
+(PID.TID 0000.0001)           User time:   2.35520300921053
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   9.79118895530701
+(PID.TID 0000.0001)     Wall clock time:   9.82058286666870
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  9.864900307729840E-002
+(PID.TID 0000.0001)           User time:  9.998199716210365E-002
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   1.52838420867920
+(PID.TID 0000.0001)     Wall clock time:   1.10120916366577
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  6.167002022266388E-003
+(PID.TID 0000.0001)           User time:  8.588999509811401E-003
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  3.826904296875000E-002
+(PID.TID 0000.0001)     Wall clock time:  3.889298439025879E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  7.063001394271851E-003
+(PID.TID 0000.0001)           User time:  1.380600780248642E-002
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  3.605389595031738E-002
+(PID.TID 0000.0001)     Wall clock time:  3.675794601440430E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   2.05616797506809
+(PID.TID 0000.0001)           User time:   2.23276990652084
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   8.18833494186401
+(PID.TID 0000.0001)     Wall clock time:   8.64357590675354
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.415095895528793
+(PID.TID 0000.0001)           User time:  0.469751968979836
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   5.90207862854004
+(PID.TID 0000.0001)     Wall clock time:   6.24631690979004
 (PID.TID 0000.0001)          No. starts:          16
 (PID.TID 0000.0001)           No. stops:          16
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.61463569104671
+(PID.TID 0000.0001)           User time:   1.74045497179031
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   1.97822117805481
+(PID.TID 0000.0001)     Wall clock time:   2.12116360664368
 (PID.TID 0000.0001)          No. starts:          16
 (PID.TID 0000.0001)           No. stops:          16
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.60516487061977
+(PID.TID 0000.0001)           User time:   1.73148968815804
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   1.94195556640625
+(PID.TID 0000.0001)     Wall clock time:   2.08594393730164
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   1.60438837110996
+(PID.TID 0000.0001)           User time:   1.73061667382717
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:   1.94107460975647
+(PID.TID 0000.0001)     Wall clock time:   2.08501315116882
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.121141061186790
+(PID.TID 0000.0001)           User time:  0.129084840416908
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.434088706970215
+(PID.TID 0000.0001)     Wall clock time:  0.476074695587158
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  5.309967696666718E-002
+(PID.TID 0000.0001)           User time:  5.366495251655579E-002
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  7.684040069580078E-002
+(PID.TID 0000.0001)     Wall clock time:  8.366441726684570E-002
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  4.161000251770020E-004
+(PID.TID 0000.0001)           User time:  4.453361034393311E-004
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  5.068778991699219E-004
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "CTRL_MAP_FORCING  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  8.416116237640381E-003
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  9.682178497314453E-003
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.091318368911743E-003
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  2.330780029296875E-003
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.912766665220261
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.917935848236084
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
+(PID.TID 0000.0001)           User time:  0.236656919121742
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.238134145736694
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
+(PID.TID 0000.0001)           User time:  0.203253298997879
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.204437255859375
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
+(PID.TID 0000.0001)           User time:  0.398495063185692
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.401038646697998
+(PID.TID 0000.0001)          No. starts:         256
+(PID.TID 0000.0001)           No. stops:         256
+(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.309364452958107
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.309405565261841
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  3.662015497684479E-002
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  3.664422035217285E-002
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  1.053526997566223E-002
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  1.057076454162598E-002
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  4.648208618164062E-003
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  4.746675491333008E-003
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.693767845630646E-002
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  2.697372436523438E-002
+(PID.TID 0000.0001)          No. starts:         128
+(PID.TID 0000.0001)           No. stops:         128
+(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.275038078427315
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  0.275499343872070
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  4.355013370513916E-004
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  4.463195800781250E-004
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  4.428774118423462E-004
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  4.384517669677734E-004
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  5.355790257453918E-003
+(PID.TID 0000.0001)         System time:  0.000000000000000E+000
+(PID.TID 0000.0001)     Wall clock time:  5.376338958740234E-003
+(PID.TID 0000.0001)          No. starts:          64
+(PID.TID 0000.0001)           No. stops:          64
+(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  4.850476980209351E-004
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
 (PID.TID 0000.0001)     Wall clock time:  4.811286926269531E-004
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "CTRL_MAP_FORCING  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  7.991045713424683E-003
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  8.990287780761719E-003
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.886919140815735E-003
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  2.074241638183594E-003
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.852422937750816
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.864729404449463
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.237206861376762
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.238856315612793
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "SEAICE_DYNSOLVER   [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.202495023608208
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.203672409057617
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.360703438520432
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.367053985595703
-(PID.TID 0000.0001)          No. starts:         256
-(PID.TID 0000.0001)           No. stops:         256
-(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.289026305079460
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.290443420410156
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.223402798175812E-002
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  3.448247909545898E-002
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  9.257614612579346E-003
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  9.816884994506836E-003
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.224330186843872E-003
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  4.465818405151367E-003
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.388991415500641E-002
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  2.502059936523438E-002
-(PID.TID 0000.0001)          No. starts:         128
-(PID.TID 0000.0001)           No. stops:         128
-(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.248438104987144
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.252385139465332
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.995001316070557E-004
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  4.215240478515625E-004
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.882050514221191E-004
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  4.057884216308594E-004
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.124896764755249E-003
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  5.384206771850586E-003
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
-(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.377365112304688E-004
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  4.603862762451172E-004
-(PID.TID 0000.0001)          No. starts:          64
-(PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  6.195753812789917E-004
+(PID.TID 0000.0001)           User time:  6.920248270034790E-004
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  6.608963012695312E-004
+(PID.TID 0000.0001)     Wall clock time:  6.964206695556641E-004
 (PID.TID 0000.0001)          No. starts:          64
 (PID.TID 0000.0001)           No. stops:          64
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  3.299593925476074E-003
+(PID.TID 0000.0001)           User time:  3.436446189880371E-003
 (PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  2.386593818664551E-002
+(PID.TID 0000.0001)     Wall clock time:  2.371120452880859E-002
 (PID.TID 0000.0001)          No. starts:          16
 (PID.TID 0000.0001)           No. stops:          16
 (PID.TID 0000.0001) // ======================================================
@@ -4377,10 +4372,10 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          42110
+(PID.TID 0000.0001) //            No. barriers =          40656
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          42110
+(PID.TID 0000.0001) //     Total barrier spins =          40656
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
 NORMAL END
