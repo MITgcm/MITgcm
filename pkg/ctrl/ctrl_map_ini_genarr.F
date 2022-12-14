@@ -2,6 +2,9 @@
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -50,6 +53,10 @@ C     == global variables ==
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
+#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
@@ -76,7 +83,10 @@ C     == local variables ==
       INTEGER iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-      INTEGER igen_etan,igen_bdrag,igen_geoth
+      INTEGER igen_etan, igen_bdrag, igen_geoth
+# ifdef ALLOW_SEAICE
+      INTEGER igen_siarea, igen_siheff
+# endif
 # ifdef ALLOW_SHELFICE
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       INTEGER i, j, bi, bj
@@ -111,6 +121,10 @@ C--   generic 2D control variables
       igen_etan=0
       igen_bdrag=0
       igen_geoth=0
+#ifdef ALLOW_SEAICE
+      igen_siarea=0
+      igen_siheff=0
+#endif
 #ifdef ALLOW_SHELFICE
       igen_shiCoeffT=0
       igen_shiCoeffS=0
@@ -128,6 +142,12 @@ C--   generic 2D control variables
      &     igen_bdrag=iarr
         IF (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
+#ifdef ALLOW_SEAICE
+        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_siarea')
+     &     igen_siarea=iarr
+        IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_siheff')
+     &     igen_siheff=iarr
+#endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
         IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
@@ -162,6 +182,13 @@ C--   generic 2D control variables
 #ifdef ALLOW_GEOTHERMAL_FLUX
       IF (igen_geoth.GT.0)
      &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
+#endif
+
+#ifdef ALLOW_SEAICE
+      IF (igen_siarea.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(AREA,igen_siarea,myThid)
+      IF (igen_siheff.GT.0)
+     &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
@@ -198,15 +225,15 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
       ENDIF
 # else /* SHI_ALLOW_GAMMAFRICT */
       dragThermoEqualMom = .FALSE.
-      IF (igen_shiCDrag.GT.0)
-     &  CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
+      IF (igen_shiCDrag.GT.0) THEN
+        CALL CTRL_MAP_GENARR2D(shiCDragFld,igen_shiCDrag,myThid)
 C--     Set drag coefficient used in momentum equal to thermodynamic,
 C--      u* drag coefficient
-      DO k2 = 1, maxCtrlProc
-
-       IF (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).EQ.'mom')
-     &    dragThermoEqualMom = .TRUE.
-      ENDDO
+        DO k2 = 1, maxCtrlProc
+         IF (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).EQ.'mom')
+     &      dragThermoEqualMom = .TRUE.
+        ENDDO
+      ENDIF
       IF (dragThermoEqualMom) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
