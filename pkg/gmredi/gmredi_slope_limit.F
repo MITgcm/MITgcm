@@ -116,9 +116,9 @@ C     !LOCAL VARIABLES:
 #endif
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeSqTmp, slopeTmp, slopeMax
-# ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey
-# endif
+c# ifdef ALLOW_AUTODIFF_TAMC
+c      INTEGER ikey
+c# endif
 #endif
 C-   need to put this one in GM namelist :
       _RL GM_bigSlope
@@ -139,8 +139,6 @@ CEOP
       loc_rMaxSlope  = GM_rMaxSlope*convSlopeUnit
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      ikey = kPos + (k - 1  + (ikey - 1)*Nr)*3
 C     TAF thinks for some reason that rDepth is an active variable.
 C     While this does not make the adjoint code wrong, the resulting
 C     code inhibits vectorization in some cases so we tell TAF here
@@ -150,8 +148,11 @@ C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
 CADJ INIT loctape_gm = COMMON, 1
-CADJ STORE dSigmaDr = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CMLCADJ STORE dSigmaDr = loctape_gm
+CADJ STORE dSigmaDr = loctape_gm
+C     alternatively one can use a global tape
+c      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+c      ikey = kPos + (k - 1  + (ikey - 1)*Nr)*3
+cCADJ STORE dSigmaDr = comlev1_gmredi_slope, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy+1,sNy+OLy-1
@@ -507,10 +508,10 @@ c          SlopeY(i,j) = dSigmaDy(i,j)/dSigmaDr(i,j)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CMLCADJ STORE SlopeX = loctape_gm
-CMLCADJ STORE SlopeY = loctape_gm
+cCADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+cCADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1
@@ -521,8 +522,8 @@ CMLCADJ STORE SlopeY = loctape_gm
 #ifdef ALLOW_AUTODIFF_TAMC
          ENDDO
         ENDDO
-CADJ STORE SlopeSqr = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CMLCADJ STORE SlopeSqr = loctape_gm
+cCADJ STORE SlopeSqr = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeSqr = loctape_gm
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
 #endif
@@ -618,10 +619,10 @@ C this variable could be relaced by the runtime parameter GM_maxSlope
         slopeMax= 2. _d -3
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-CMLCADJ STORE SlopeX = loctape_gm
-CMLCADJ STORE SlopeY = loctape_gm
+cCADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+cCADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
 #endif
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
