@@ -35,6 +35,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       INTEGER bi, bj
       INTEGER i, j, k
+C     LOGICAL exst
 CEOP
 
 C--   Initialise adjoint of monthly mean files calculated
@@ -47,10 +48,10 @@ cph(
 cph   The following init. shoud not be applied if in the middle
 cph   of a divided adjoint run
 cph)
-c      inquire( file='costfinal', exist=exst )
-c      if ( .NOT. exst) then
-c         CALL ecco_cost_init_barfiles( myThid )
-c      endif
+c      INQUIRE( FILE='costfinal', EXIST=exst )
+c      IF ( .NOT. exst) THEN
+c        CALL ECCO_COST_INIT_BARFILES( myThid )
+c      ENDIF
 #endif
 
 C--   Initialize the tiled cost function contributions.
@@ -86,16 +87,19 @@ C--   Initialize the tiled cost function contributions.
         ENDDO
       ENDDO
 
+      _BEGIN_MASTER( myThid )
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          frame(i,j) = 1. _d 0
+        ENDDO
+      ENDDO
+      _END_MASTER( myThid )
+
 C--   Initialise the "global" parts of the cost function.
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       _BEGIN_MASTER( myThid )
         objf_obcsvol = 0. _d 0
         num_obcsvol = 0. _d 0
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            frame(i,j) = 1. _d 0
-          ENDDO
-        ENDDO
       _END_MASTER( myThid )
 #endif
 
