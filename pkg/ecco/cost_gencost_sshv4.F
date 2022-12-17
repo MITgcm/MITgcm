@@ -869,11 +869,17 @@ c--    smooth mean_psMssh_all
         call smooth_hetero2d(mean_psMssh_all,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
+        call smooth_hetero2d(mean_slaobs_model,maskInC,
+     &     gencost_posproc_c(k2_mdt,igen_mdt),
+     &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
         if (gencost_outputlevel(igen_mdt).GT.0) then
          write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         mean_psMssh_all, 1, 1, myThid )
+         write(fname4test(1:80),'(1a)') 'sla2model_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         mean_slaobs_model, 1, 1, myThid )
         endif
        endif
 #endif
@@ -883,20 +889,6 @@ c--    smooth mean_psMssh_all
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_slaobs_model, 1, 1, myThid )
        endif
-
-#ifdef ALLOW_SMOOTH
-       if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
-        call smooth_hetero2d(mean_slaobs_model,maskInC,
-     &     gencost_posproc_c(k2_mdt,igen_mdt),
-     &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
-
-        if (gencost_outputlevel(igen_mdt).GT.0) then
-         write(fname4test(1:80),'(1a)') 'sla2model_smooth'
-         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                         mean_slaobs_model, 1, 1, myThid )
-        endif
-       endif
-#endif
 
 cgf at this point:
 cgf     1) mean_psMssh_all is the sample mean <etaday-slaobs-mdt-offset>,
