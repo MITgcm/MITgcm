@@ -166,6 +166,19 @@ c for PART 4/5: compute smooth/raw anomalies
 
 c     == end of interface ==
 
+C-    Initialise (again) gencost_weight
+      DO k = 1, NGENCOST
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gencost_weight(i,j,bi,bj,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       jtlo = myByLo(myThid)
       jthi = myByHi(myThid)
       itlo = myBxLo(myThid)
@@ -818,7 +831,11 @@ c     endif igen_gmsl .gt. 0
       endif
 
 c--   Compute (average) offset
-      offset = offset / offset_sum
+      if ( offset_sum.NE.0. _d 0 ) then
+        offset = offset / offset_sum
+      else
+        offset = 0. _d 0
+      endif
 
 c--   subtract offset from mean_psMssh_all and psmean
       do bj = jtlo,jthi
@@ -862,6 +879,9 @@ c--    smooth mean_psMssh_all
         write(fname4test(1:80),'(1a)') 'mdtdiff_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_psMssh_all, 1, 1, myThid )
+        write(fname4test(1:80),'(1a)') 'sla2model_raw'
+        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                        mean_slaobs_model, 1, 1, myThid )
        endif
 
 #ifdef ALLOW_SMOOTH
@@ -883,12 +903,6 @@ c--    smooth mean_psMssh_all
         endif
        endif
 #endif
-
-       if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sla2model_raw'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        mean_slaobs_model, 1, 1, myThid )
-       endif
 
 cgf at this point:
 cgf     1) mean_psMssh_all is the sample mean <etaday-slaobs-mdt-offset>,
@@ -1458,7 +1472,7 @@ c--             The array gfoobs contains SSH anomalies.
        enddo
       endif
 
-      enddo
+      enddo !do irec = 1, ndaysrec-ndaysave+1
 
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 
