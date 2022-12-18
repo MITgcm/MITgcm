@@ -333,6 +333,7 @@ C
      &                 GEOM_ene, GEOM_ene_old, 
      &                 ene_rhs_now, ene_rhs_nm1, ene_rhs_nm2
       INTEGER energy_init
+      COMMON /GM_GEOM_I/ energy_init
 #endif
 
 #ifdef ALLOW_GM_LEITH_QG
