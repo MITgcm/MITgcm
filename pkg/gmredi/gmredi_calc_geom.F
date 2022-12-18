@@ -734,10 +734,6 @@ C       time step and allocate it as a field with same entries
           ENDDO
         ENDDO
         energy_init = 1
-        IF(minval(GEOM_ene(1:sNx,1:sNy,bi,bj)) 
-     &    /= maxval(GEOM_ene(1:sNx,1:sNy,bi,bj))) THEN
-          STOP "Non constant energy in domain integrated case"
-        ENDIF
       ENDIF
       
       
