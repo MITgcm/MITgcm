@@ -63,17 +63,14 @@ C     trd_ene_*    :: trends for energy
 C                       gen, adv, lap, dis
 
       INTEGER i,j,k
-      _RL SlopeX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL SlopeY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       
       _RL dSigmaH, dSigmaR
-      _RL M2loc, N2loc, SNloc, Sloc
+      _RL N2loc, SNloc, Sloc
 
       _RL recipMaxSlope
-      _RL deltaH, integrDepth
       _RL c_ros_u, fm_ui, fp_ui
 
 C     metric variables, computed once only
