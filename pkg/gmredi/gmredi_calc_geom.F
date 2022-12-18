@@ -156,29 +156,20 @@ C       depths for doing depth-averaging
 
         DO k=1,Nr
           DO j=1-OLy, sNy+OLy
-            DO i=1-OLx+1, sNx+OLx
-              IF(maskW(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-                depthW(i,j) = depthW(i,j)
-     &                      + drF(k) * hFacW(i,j,k,bi,bj)
-              ENDIF
+            DO i=1-OLx, sNx+OLx
+              depthW(i,j) = depthW(i,j) + drF(k) * hFacW(i,j,k,bi,bj)
             ENDDO
           ENDDO
           
-          DO j=1-OLy+1, sNy+OLy
+          DO j=1-OLy, sNy+OLy
             DO i=1-OLx, sNx+OLx
-              IF(maskS(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-                depthS(i,j) = depthS(i,j)
-     &                      + drF(k) * hFacS(i,j,k,bi,bj)
-              ENDIF
+              depthS(i,j) = depthS(i,j) + drF(k) * hFacS(i,j,k,bi,bj)
             ENDDO
           ENDDO
 
-          DO j=1-OLy+1,sNy+OLy-1
-            DO i=1-OLx+1,sNx+OLx-1
-              IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-                depthC(i,j) = depthC(i,j)
-     &                      + drF(k) * hFacC(i,j,k,bi,bj)
-              ENDIF
+          DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              depthC(i,j) = depthC(i,j) + drF(k) * hFacC(i,j,k,bi,bj)
             ENDDO
           ENDDO
         ENDDO
