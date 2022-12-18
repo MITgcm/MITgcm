@@ -37,11 +37,11 @@ C     myThid    :: My Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-      
+
 #ifdef GM_GEOM_VARIABLE_K
 
 C !INOUT PARAMETERS: ==================================================
-C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC          in horizontal, 
+C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC          in horizontal,
 C                             structure function in vertical)
 C  GEOM_ene     :: GEOMETRIC parameterised energy
 C  GEOM_ene_old ::     -          -          -
@@ -66,7 +66,7 @@ C                       gen, adv, lap, dis
       _RL dSigmaDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSigmaDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      
+
       _RL dSigmaH, dSigmaR
       _RL N2loc, SNloc, Sloc
 
@@ -80,12 +80,12 @@ C     metric variables, computed once only
       _RL, save :: depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL, save :: depthC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL, save :: depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      
+
 C     general variables, overwritten every time step
       _RL :: energy_int, energy_avg
 
       _RL vert_struc_func(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
-      
+
       _RL SNloc_zint(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL  Nloc_zint(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL trd_ene_gen(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -93,13 +93,13 @@ C     general variables, overwritten every time step
       _RL trd_ene_adv(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL trd_ene_wav(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL trd_ene_lap(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      
+
       _RL U_depth_avg(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL V_depth_avg(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      
+
       _RL c1   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL c_ros(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      
+
       _RL ene_adv_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL ene_adv_y(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL ene_wav_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -123,19 +123,19 @@ C       surface area
         surface_area = 0.0 _d 0
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
-            surface_area = surface_area 
+            surface_area = surface_area
      &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
      &                   * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
-        
+
 C       domain volume
         domain_vol = 0.0 _d 0
         max_depth = 0.0 _d 0
         DO k=1,Nr
           DO j=1,sNy
             DO i=1,sNx
-              domain_vol = domain_vol 
+              domain_vol = domain_vol
      &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
      &                   * drF(k) * hFacC(i,j,k,bi,bj)
             ENDDO
@@ -154,7 +154,7 @@ C       depths for doing depth-averaging
               depthW(i,j) = depthW(i,j) + drF(k) * hFacW(i,j,k,bi,bj)
             ENDDO
           ENDDO
-          
+
           DO j=1-OLy, sNy+OLy
             DO i=1-OLx, sNx+OLx
               depthS(i,j) = depthS(i,j) + drF(k) * hFacS(i,j,k,bi,bj)
@@ -170,22 +170,22 @@ C       depths for doing depth-averaging
 
 C       temporary variable for depth tapering later
         depth_taper = 0.0 _d 0
-        
+
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
             depth_taper(i,j) = (0.5 _d 0 *
-     &          (1.0 _d 0 - TANH( 
+     &          (1.0 _d 0 - TANH(
      &                (-depthC(i,j) + 800.0 _d 0) / 300.0 _d 0
      &                          )
      &          )
      &                         ) ** 2
           ENDDO
         ENDDO
-       
+
         metric_init = .true.
-        
+
       ENDIF
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- TODO: potentially move the energy calculation into here given
 C         the dSigmaDx calculations are repeated
@@ -201,7 +201,7 @@ C     initialisations, put this in a loop if need be
 
 C-- 1st k loop : compute vertical structure to be used later
       DO k=Nr,2,-1
-      
+
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
             dSigmaDx(i,j) = op25 * (sigmaX(i+1,j,k-1) + sigmaX(i,j,k-1)
@@ -217,7 +217,7 @@ C-- 1st k loop : compute vertical structure to be used later
             dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
           ENDDO
         ENDDO
-       
+
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
@@ -256,7 +256,7 @@ C      Compute M^2 rho_0 / g on vertical interfaces
               ENDIF
             ENDIF
           ENDDO
-        ENDDO   
+        ENDDO
       ENDDO
 
 C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
@@ -276,7 +276,7 @@ C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
             dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
           ENDDO
         ENDDO
-       
+
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
@@ -307,46 +307,46 @@ C      Compute M^2 rho_0 / g on vertical interfaces
               ELSE
                 SNloc = 0.0 _d 0
               ENDIF
-              
+
               IF(vert_struc) THEN
 C      Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
-                vert_struc_func(i,j,k) = 
-     &           max(min(vert_struc_max, 
+                vert_struc_func(i,j,k) =
+     &           max(min(vert_struc_max,
      &                   vert_struc_func(i,j,k)/vert_struc_func(i,j,2)),
      &               vert_struc_min)
               ELSE
                 vert_struc_func(i,j,k) = 1.0 _d 0
               ENDIF
-              SNloc_zint(i,j) = SNloc_zint(i,j) 
+              SNloc_zint(i,j) = SNloc_zint(i,j)
      &                        + SNloc * drC(k) * hFacC(i,j,k,bi,bj)
      &                        * vert_struc_func(i,j,k)
               Nloc_zint(i,j)  = Nloc_zint(i,j) + sqrt(N2loc)
      &                        * drC(k) * hFacC(i,j,k,bi,bj)
             ENDIF
           ENDDO
-        ENDDO   
+        ENDDO
       ENDDO
-      
+
       IF(.not. ene_local) THEN
 C       Horizontal integral
         SNloc = 0.0 _d 0
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
-            SNLoc = SNLoc + SNloc_zint(i,j) 
+            SNLoc = SNLoc + SNloc_zint(i,j)
      &                    * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
      &                    * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
         SNloc_zint = SNloc / surface_area
       ENDIF
-      
+
 C     work out the implied long Rossby phase speeds at T pts
 C     average it onto U points later
       DO j=1-OLy, sNy+OLy
         DO i=1-OLx, sNx+OLx
 C         only compute the Rossby phase speed if deep enough
           IF (depthC(i,j) > 300.0 _d 0) THEN
-            c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI) 
+            c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI)
      &              * maskC(i,j,1,bi,bj)
           ELSE
             c1(i,j) = 0.0 _d 0
@@ -376,13 +376,15 @@ C   TODO: cap GEOM_ene_old from below?
 
 C     1. compute the 2d k_GEOM first
 C        bound the denominator from below (choice following NEMO)
-     
+
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+C     for cubed sphere setups, depthC can be zero in the halo, so we
+C     include in the masking
+          IF(maskC(i,j,k,bi,bj)*depthC(i,j) /= 0.0 _d 0) THEN
             GEOMK(i,j,1,bi,bj) = GEOM_alpha
-     &                         * GEOM_ene_old(i,j,bi,bj) 
-     &                         / max(        SNloc_zint(i,j), 
+     &                         * GEOM_ene_old(i,j,bi,bj)
+     &                         / max(        SNloc_zint(i,j),
      &                               1. _d -7 * depthC(i,j)
      &                               )
           ENDIF
@@ -391,40 +393,40 @@ C        bound the denominator from below (choice following NEMO)
           ENDIF
         ENDDO
       ENDDO
-      
+
 C     2. cap k_GEOM from above! (stop it being too big)
-       
+
       IF(GEOM_alpha /= 0.0 _d 0) THEN
         GEOMK(:,:,1,bi,bj) = min(GEOMK(:,:,1,bi,bj), GEOM_maxVal_K)
       ENDIF
-      
+
 C     3. taper it according to depth to kill k_GEOM in shallow regions
-     
+
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) * depth_taper(i,j)
      &                       * maskC(i,j,1,bi,bj)
         ENDDO
       ENDDO
-      
+
 C     4. extend the (tapered) k_GEOM in depth
 
       DO k=Nr,2,-1
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k) 
+            GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k)
      &                         * GEOMK(i,j,1,bi,bj)
      &                         * maskC(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
-      
-C     5. cap k_GEOM from below (don't strictly need this)
-       
+
+C     5. cap k_GEOM from below (do not strictly need this)
+
       IF(GEOM_alpha /= 0.0 _d 0) THEN
         GEOMK(:,:,:,bi,bj) = max(GEOMK(:,:,:,bi,bj),GEOM_minVal_K)
       ENDIF
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   time step the energy
 C     allocate and initialise
@@ -447,7 +449,7 @@ C     loop over k
             dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
           ENDDO
         ENDDO
-       
+
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
@@ -480,17 +482,17 @@ C      Compute M^2 rho_0 / g on vertical interfaces
                 SNloc = 0.0 _d 0
               ENDIF
               trd_ene_gen(i,j) = trd_ene_gen(i,j)
-     &                         + GEOMK(i,j,k,bi,bj) 
-     &                         * SNloc * SNloc 
+     &                         + GEOMK(i,j,k,bi,bj)
+     &                         * SNloc * SNloc
      &                         * drC(k) * hFacC(i,j,k,bi,bj)
             ENDIF
           ENDDO
         ENDDO
       ENDDO
-C ---------------------------------------------- 
+C ----------------------------------------------
 C ---- start advection of energy ---------------
 C ----------------------------------------------
-      
+
       trd_ene_dis = 0.0 _d 0
       trd_ene_adv = 0.0 _d 0
       trd_ene_wav = 0.0 _d 0
@@ -504,8 +506,8 @@ C ----------------------------------------------
       ene_wav_x = 0.0 _d 0
       ene_lap_x = 0.0 _d 0
       ene_lap_y = 0.0 _d 0
- 
-CCCCCCCCCCCCCCCCCCCCCCCCCC     
+
+CCCCCCCCCCCCCCCCCCCCCCCCCC
 C     TODO: note for the 1-pixel energy test for advection,
 C
 C           1. re-define GEOM_ene_old(idum,jdum,bi,bj), such as below
@@ -519,12 +521,12 @@ C              (so everything else still calculated, but only advection does any
 !        GEOM_ene_old(30, 17, bi, bj) = 1.0 _d 0
 !      endif
 CCCCCCCCCCCCCCCCCCCCCCCCCC
-      
+
       IF(ene_local) THEN
-       
-C       update energy field  
+
+C       update energy field
         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx     
+          DO i=1-OLx,sNx+OLx
             ene_rhs_nm2(i,j,bi,bj) = ene_rhs_nm1(i,j,bi,bj)
             ene_rhs_nm1(i,j,bi,bj) = ene_rhs_now(i,j,bi,bj)
           ENDDO
@@ -532,21 +534,21 @@ C       update energy field
 
 C ----  form the energy fluxes
 
-C       first: form the depth-AVG velocity 
-        DO k=Nr,2,-1     
+C       first: form the depth-AVG velocity
+        DO k=Nr,2,-1
           DO j=1-OLy, sNy+OLy
             DO i=1-OLx+1, sNx+OLx
-              IF(maskW(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+              IF(maskW(i,j,k,bi,bj)*depthW(i,j) /= 0.0 _d 0) THEN
                 U_depth_avg(i, j) = U_depth_avg(i,j)
      &                            + uVel(i,j,k,bi,bj) * drF(k)
      &                            * hFacW(i,j,k,bi,bj)
      &                            / depthW(i,j)
               ENDIF
             ENDDO
-          ENDDO      
+          ENDDO
           DO j=1-OLy, sNy+OLy
             DO i=1-OLx, sNx+OLx
-              IF(maskS(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+              IF(maskS(i,j,k,bi,bj)*depthS(i,j) /= 0.0 _d 0) THEN
                 V_depth_avg(i, j) = V_depth_avg(i,j)
      &                            + vVel(i,j,k,bi,bj) * drF(k)
      &                            * hFacS(i,j,k,bi,bj)
@@ -555,12 +557,12 @@ C       first: form the depth-AVG velocity
             ENDDO
           ENDDO
         ENDDO
-       
+
 C       second: form the tendencies
         DO j=1-OLy, sNy+OLy
           DO i=1-OLx+1, sNx+OLx
-            IF(    maskC(i-1,j,1,bi,bj) /= 0.0 _d 0
-     &       .AND. maskC(i  ,j,1,bi,bj) /= 0.0 _d 0) THEN
+            IF(    maskC(i-1,j,1,bi,bj)*dxG(i-1,j,bi,bj) /= 0.0 _d 0
+     &       .AND. maskC(i  ,j,1,bi,bj)*dxG(i,j,bi,bj) /= 0.0 _d 0) THEN
 C ---- second ordered centre difference
 !              ene_adv_x(i,j) = -U_depth_avg(i,j)
 !     &          * (dxG(i-1,j,bi,bj) * GEOM_ene_old(i  ,j,bi,bj)
@@ -583,16 +585,16 @@ C ---- 1st order upwinding wave stuff
             ENDIF
           ENDDO
         ENDDO
-       
+
         DO j=1-OLy+1, sNy+OLy
           DO i=1-OLx, sNx+OLx
-            IF(    maskC(i,j-1,1,bi,bj) /= 0.0 _d 0
-     &       .AND. maskC(i,j  ,1,bi,bj) /= 0.0 _d 0) THEN
-C ---- second ordered centre difference  
+            IF(    maskC(i,j-1,1,bi,bj)*dyG(i,j-1,bi,bj) /= 0.0 _d 0
+     &       .AND. maskC(i,j  ,1,bi,bj)*dyG(i,j,bi,bj) /= 0.0 _d 0) THEN
+C ---- second ordered centre difference
 !              ene_adv_y(i, j) = -V_depth_avg(i,j)
 !     &          * (dyG(i,j-1,bi,bj) * GEOM_ene_old(i,j  ,bi,bj)
 !     &          +  dyG(i,j  ,bi,bj) * GEOM_ene_old(i,j-1,bi,bj))
-!     &          / (dyG(i,j  ,bi,bj) + dyG(i,j-1,bi,bj)) 
+!     &          / (dyG(i,j  ,bi,bj) + dyG(i,j-1,bi,bj))
 C ---- 1st order upwinding
               fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
               fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
@@ -608,21 +610,25 @@ C ---- 1st order upwinding
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
             trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene_old(i,j,bi,bj)
-            trd_ene_adv(i,j) = 
-     &           (ene_adv_x(i+1,j) - ene_adv_x(i,j)) / dxG(i,j,bi,bj)
-     &          +(ene_adv_y(i,j+1) - ene_adv_y(i,j)) / dyG(i,j,bi,bj)
-C        add in a bit to take into account linear free surface         
+            trd_ene_adv(i,j) =
+     &           (ene_adv_x(i+1,j) - ene_adv_x(i,j))
+     &           * recip_dxG(i,j,bi,bj)
+     &          +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
+     &           * recip_dyG(i,j,bi,bj)
+C        add in a bit to take into account linear free surface
 c         IF(implicitFreeSurface) THEN
 c          IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
 c           trd_ene_adv(i,j) = wVel(i,j,1,bi,bj) * GEOM_ene_old(i,j)
-c     &                         / depthC(i,j) 
+c     &                         / depthC(i,j)
 c          ENDIF
 c         ENDIF
-            trd_ene_wav(i,j) = -(ene_wav_x(i+1,j) - ene_wav_x(i,j)) 
-     &                       / dxG(i,j,bi,bj)
-            trd_ene_lap(i,j) = 
-     &           (ene_lap_x(i+1,j) - ene_lap_x(i,j)) / dxG(i,j,bi,bj)
-     &          +(ene_lap_y(i,j+1) - ene_lap_y(i,j)) / dyG(i,j,bi,bj)
+            trd_ene_wav(i,j) = -(ene_wav_x(i+1,j) - ene_wav_x(i,j))
+     &                       * recip_dxG(i,j,bi,bj)
+            trd_ene_lap(i,j) =
+     &           (ene_lap_x(i+1,j) - ene_lap_x(i,j))
+     &           * recip_dxG(i,j,bi,bj)
+     &          +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
+     &           * recip_dyG(i,j,bi,bj)
 C           form the RHS
             ene_rhs_now(i,j,bi,bj) = trd_ene_gen(i,j)
      &                             + trd_ene_dis(i,j)
@@ -630,10 +636,10 @@ C           form the RHS
      &                             + trd_ene_wav(i,j)
      &                             + trd_ene_lap(i,j)
 !            ene_rhs_now(i,j,bi,bj) = - trd_ene_adv(i,j)
-     
+
           ENDDO
         ENDDO
-        
+
 C       call exchange to make sure transmission occurs in mpi runs
         _EXCH_XY_RL( ene_rhs_now , myThid )
 
@@ -650,7 +656,7 @@ C       third: time stepping
           case(1)
             DO j=1-OLy+1, sNy+OLy-1
               DO i=1-OLx+1, sNx+OLx-1
-                GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj) 
+                GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
      &             + deltaT * (
      &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j,bi,bj)
      &             -(1.0 _d 0 / 2.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
@@ -661,7 +667,7 @@ C       third: time stepping
           case default
             DO j=1-OLy+1, sNy+OLy-1
               DO i=1-OLx+1, sNx+OLx-1
-                GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj) 
+                GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
      &             + deltaT * (
      &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j,bi,bj)
      &             -( 4.0 _d 0 /  3.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
@@ -671,10 +677,10 @@ C       third: time stepping
             ENDDO
             energy_init = 3
         end select
-C ----------------------------------------------       
+C ----------------------------------------------
 C ---- end advection of energy -----------------
-C ---------------------------------------------- 
-      ELSE  
+C ----------------------------------------------
+      ELSE
 C       Horizontally integrate and time step the energy
 
 C       form integrand
@@ -682,7 +688,7 @@ C       form integrand
         DO j=1-OLy, sNy+OLy
           DO i=1-OLx, sNx+OLx
             energy_int = energy_int +
-     &                   trd_ene_gen(i,j) 
+     &                   trd_ene_gen(i,j)
      &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
      &                 * maskC(i,j,1,bi,bj)
           ENDDO
@@ -690,15 +696,15 @@ C       form integrand
 C       time step and allocate it as a field with same entries
         DO j=1-OLy, sNy+OLy
           DO i=1-OLx, sNx+OLx
-            GEOM_ene(i,j,bi,bj) = 
+            GEOM_ene(i,j,bi,bj) =
      &           (deltaT * energy_int + GEOM_ene_old(1,1,bi,bj))
      &           / (1.0 _d 0 + GEOM_lmbda * deltaT)
           ENDDO
         ENDDO
         energy_init = 1
       ENDIF
-      
-      
+
+
       DO j=1-OLy, sNy+OLy
         DO i=1-OLx, sNx+OLx
           GEOM_ene_old(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
@@ -711,7 +717,7 @@ C--   diagnostics and restarts
 C--   on screen diagnostics
       IF(mod(myTime, monitorFreq) == 0. _d 0) THEN
 
-C       estimate of domain AVERAGED energy 
+C       estimate of domain AVERAGED energy
 C       (m2/s2, but done per tile via multiplication by the number of tiles)
         energy_avg = 0. _d 0
         IF(ene_local) THEN
@@ -727,7 +733,7 @@ C       (m2/s2, but done per tile via multiplication by the number of tiles)
           energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
         ENDIF
 
-        write(*,'(a,3(x,a,f11.5,a))'), "GMREDI_CALC_GEOM: tile diag"
+        write(*,'(a,3(x,a,f11.5,a))') "GMREDI_CALC_GEOM: tile diag"
      &   , " t       = ", myTime / (3600 * 24 * 360), " yr, "
      &   , " kgm_max = ", maxval(GEOMK(1:sNx,1:sNy,1,bi,bj))
      &   ,                    " m2/s, "
@@ -738,27 +744,27 @@ C       (m2/s2, but done per tile via multiplication by the number of tiles)
       IF (useDiagnostics) THEN
        CALL DIAGNOSTICS_FILL(GEOMK(:,:,1,bi,bj),
      &                       'GEOMkap0', 0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(vert_struc_func, 
+       CALL DIAGNOSTICS_FILL(vert_struc_func,
      &                       'GEOMstru', 0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(depthC,
      &                       'depthC  ', 0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(depth_taper,
      &                       'd_taper ', 0,1,0,1,1,myThid)
        IF(ene_local) THEN
-         CALL DIAGNOSTICS_FILL(trd_ene_gen, 
+         CALL DIAGNOSTICS_FILL(trd_ene_gen,
      &                         'GEOMEgen', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(trd_ene_dis, 
+         CALL DIAGNOSTICS_FILL(trd_ene_dis,
      &                         'GEOMEdis', 0,1,0,1,1,myThid)
 C        advective trends are dE/dt + -(u - c) dot grad E
-         CALL DIAGNOSTICS_FILL(trd_ene_adv, 
+         CALL DIAGNOSTICS_FILL(trd_ene_adv,
      &                         'GEOMEadv', 0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(trd_ene_wav,
      &                         'GEOMEwav', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(trd_ene_lap, 
+         CALL DIAGNOSTICS_FILL(trd_ene_lap,
      &                         'GEOMElap', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(c1, 
+         CALL DIAGNOSTICS_FILL(c1,
      &                         'GEOM_c1 ', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(c_ros, 
+         CALL DIAGNOSTICS_FILL(c_ros,
      &                         'GEOMcros', 0,1,0,1,1,myThid)
        ENDIF
       ENDIF
