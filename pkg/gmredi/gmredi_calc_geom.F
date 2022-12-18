@@ -181,10 +181,6 @@ C       temporary variable for depth tapering later
      &                         ) ** 2
           ENDDO
         ENDDO
-        IF (usingCurvilinearGrid) THEN
-          WRITE(*,'(2A,I4)') 'GMREDI_CALC_GEOM: ',
-     &         'WARNING! grid opt for wav adv not supported...'
-        ENDIF
        
         metric_init = .true.
         
@@ -581,7 +577,6 @@ C ---- 1st order upwinding wave stuff
               fm_ui = c_ros_u - ABS( c_ros_u )
               ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene_old(i  ,j,bi,bj)
      &                             +  fp_ui * GEOM_ene_old(i-1,j,bi,bj))
-              
               ene_lap_x(i,j) = ene_kappa * (2.0 _d 0)
      &          * (GEOM_ene_old(i,j,bi,bj) - GEOM_ene_old(i-1,j,bi,bj))
      &          / (dxG(i,j,bi,bj) + dxG(i-1,j,bi,bj))

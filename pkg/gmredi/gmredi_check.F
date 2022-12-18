@@ -194,6 +194,19 @@ C     Make sure we are not trying to use something that is unavailable
       ENDIF
 #endif
 
+#ifdef GM_GEOM_VARIABLE_K
+      IF ( GM_useGEOM ) THEN
+       IF (usingCurvilinearGrid) THEN
+        WRITE(msgBuf,'(3A)') '** WARNING ** GMREDI_CHECK:',
+     &       ' grid opt for wav adv not supported, c_ros = 0.0 ',
+     &       ' forced in GMREDI_CALC_GEOM.F unless manual override'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
+#endif
+       
+
 #ifndef GM_BOLUS_ADVEC
 C     Make sure we are not trying to use some arrays that are unavailable
       IF ( GM_AdvForm ) THEN
