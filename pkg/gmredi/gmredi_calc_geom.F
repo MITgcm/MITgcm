@@ -392,6 +392,8 @@ C         only compute the Rossby phase speed if deep enough
           IF (depthC(i,j) > 300.0 _d 0) THEN
             c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI) 
      &              * maskC(i,j,1,bi,bj)
+          ELSE
+            c1(i,j) = 0.0 _d 0
           ENDIF
           IF (usingCartesianGrid) THEN
             c_ros(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
