@@ -130,6 +130,27 @@ C--   Read 3-D Thickness diffusivity from file
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef GM_GEOM_VARIABLE_K
+
+C     initialise GEOMETRIC energy or not
+      IF( (GEOM_pickup_read_mdsio .OR. GEOM_pickup_read_mnc) ) THEN
+        WRITE(*,'(2A,I4)') 'GMREDI_INIT_FIXED: ',
+     &      'read pickup option on, no init of GEOM_ene_old'
+        IF( nIter0.EQ.0 ) THEN
+          WRITE(*,'(2A,I4)') 'GMREDI_INIT_FIXED: ',
+     &       'WARNING! nIter0 = 0, force energy initialisation...'
+          energy_init = 0
+        ENDIF
+      ELSE
+        WRITE(*,'(2A,I4)') 'GMREDI_INIT_FIXED: ',
+     &      'initialising GEOM_ene_old'
+        energy_init = 0
+      ENDIF
+
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
         CALL GMREDI_MNC_INIT( myThid )

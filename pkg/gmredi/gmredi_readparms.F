@@ -157,7 +157,7 @@ C--   Default values GEOMETRIC
       GM_useGEOM              = .FALSE.
       GEOM_lmbda              = 2. _d -7
       GEOM_alpha              = 0. _d  0
-      ene_init                = 1. _d -6
+      ene_init                = 1. _d -3
       ene_kappa               = 1. _d +3
       ene_local               = .FALSE.
       vert_struc              = .FALSE.

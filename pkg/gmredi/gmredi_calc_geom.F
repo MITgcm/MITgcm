@@ -181,39 +181,6 @@ C       temporary variable for depth tapering later
      &                         ) ** 2
           ENDDO
         ENDDO
-        
-C       initialise energy or not
-        IF( (GEOM_pickup_read_mdsio .OR. GEOM_pickup_read_mnc) ) THEN
-          WRITE(*,'(2A,I4)') 'GMREDI_CALC_GEOM: ',
-     &        'read pickup option on, no init of GEOM_ene_old'
-          IF( nIter0.EQ.0 ) THEN
-            WRITE(*,'(2A,I4)') 'GMREDI_CALC_GEOM: ',
-     &         'WARNING! nIter0 = 0, force energy initialisation...'
-            energy_init = 0
-          ENDIF
-        ELSE
-          WRITE(*,'(2A,I4)') 'GMREDI_CALC_GEOM: ',
-     &        'initialising GEOM_ene_old'
-          energy_init = 0
-        ENDIF
-
-        IF( energy_init == 0 ) THEN
-          IF(ene_local) THEN
-            DO j=1-OLy, sNy+OLy
-              DO i=1-OLx, sNx+OLx
-                GEOM_ene_old(i,j,bi,bj) = ene_init * max_depth
-     &                                  * maskC(i,j,1,bi,bj)
-              ENDDO
-            ENDDO
-          ELSE
-            DO j=1-OLy, sNy+OLy
-              DO i=1-OLx, sNx+OLx
-                GEOM_ene_old(i,j,bi,bj) = ene_init * domain_vol
-     &                                  * maskC(i,j,1,bi,bj)
-              ENDDO
-            ENDDO
-         ENDIF
-        ENDIF
         IF (usingCurvilinearGrid) THEN
           WRITE(*,'(2A,I4)') 'GMREDI_CALC_GEOM: ',
      &         'WARNING! grid opt for wav adv not supported...'
