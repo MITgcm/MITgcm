@@ -123,10 +123,9 @@ C       surface area
         surface_area = 0.0 _d 0
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
-            IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-              surface_area = surface_area + 
-     &                       dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-            ENDIF
+            surface_area = surface_area 
+     &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+     &                   * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
         
@@ -136,11 +135,9 @@ C       domain volume
         DO k=1,Nr
           DO j=1,sNy
             DO i=1,sNx
-              IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-                domain_vol = domain_vol 
-     &                     + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                     * drF(k) * hFacC(i,j,k,bi,bj)
-              ENDIF
+              domain_vol = domain_vol 
+     &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+     &                   * drF(k) * hFacC(i,j,k,bi,bj)
             ENDDO
           ENDDO
           max_depth = max_depth + drF(k)
@@ -372,10 +369,9 @@ C       Horizontal integral
         SNloc = 0.0 _d 0
         DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
-            IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-              SNLoc = SNLoc +
-     &          SNloc_zint(i,j) * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-            ENDIF
+            SNLoc = SNLoc + SNloc_zint(i,j) 
+     &                    * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+     &                    * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
         SNloc_zint = SNloc / surface_area
@@ -425,7 +421,7 @@ C        bound the denominator from below (choice following NEMO)
      &                         * GEOM_ene_old(i,j,bi,bj) 
      &                         / max(        SNloc_zint(i,j), 
      &                               1. _d -7 * depthC(i,j)
-     &                              )
+     &                               )
           ENDIF
           IF(.not. ene_local) THEN
             GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) / surface_area
@@ -443,9 +439,8 @@ C     3. taper it according to depth to kill k_GEOM in shallow regions
      
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-            GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) * depth_taper(i,j)
-          ENDIF
+          GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) * depth_taper(i,j)
+     &                       * maskC(i,j,1,bi,bj)
         ENDDO
       ENDDO
       
@@ -454,10 +449,9 @@ C     4. extend the (tapered) k_GEOM in depth
       DO k=Nr,2,-1
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-              GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k) 
-     &                           * GEOMK(i,j,1,bi,bj)
-            ENDIF
+            GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k) 
+     &                         * GEOMK(i,j,1,bi,bj)
+     &                         * maskC(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
@@ -725,10 +719,10 @@ C       form integrand
         energy_int = 0.0 _d 0
         DO j=1-OLy, sNy+OLy
           DO i=1-OLx, sNx+OLx
-            IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-              energy_int = energy_int +
-     &          trd_ene_gen(i,j) * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-            ENDIF
+            energy_int = energy_int +
+     &                   trd_ene_gen(i,j) 
+     &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+     &                 * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
 C       time step and allocate it as a field with same entries
@@ -765,10 +759,9 @@ C       (m2/s2, but done per tile via multiplication by the number of tiles)
         IF(ene_local) THEN
           DO j=1, sNy
             DO i=1, sNx
-              IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-                energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
-     &                     * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-              ENDIF
+              energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
+     &                   * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+     &                   * maskC(i,j,1,bi,bj)
             ENDDO
           ENDDO
           energy_avg = energy_avg / domain_vol * (nPx * nPy)
