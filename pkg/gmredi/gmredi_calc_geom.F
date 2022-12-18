@@ -395,13 +395,8 @@ C         only compute the Rossby phase speed if deep enough
           IF (usingCartesianGrid) THEN
             c_ros(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
           ELSE IF (usingSphericalPolarGrid) THEN
-            c_ros(i,j) = c1(i,j) * c1(i,j) 
-     &                 * COS(deg2rad * yC(i,j,bi,bj))
-     &                 / (
-     &                   2.0 _d 0 * omega * rSphere 
-     &                   * SIN(deg2rad * yC(i,j,bi,bj)) 
-     &                   * SIN(deg2rad * yC(i,j,bi,bj))
-     &                   )
+            c_ros(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
+     &                 / ( rSphere * fCori(i,j,bi,bj) ** 2 )
           ELSE
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C switch off wave advection for now in curvilinear grid options
