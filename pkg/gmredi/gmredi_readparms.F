@@ -261,6 +261,25 @@ C     Fix to avoid running without getting any output:
 #endif
       GM_MDSIO = (.NOT. GM_MNC) .OR. outputTypesInclusive
 
+#ifdef GM_GEOM_VARIABLE_K
+
+C     initialise GEOMETRIC energy or not
+      IF( (GEOM_pickup_read_mdsio .OR. GEOM_pickup_read_mnc) ) THEN
+        WRITE(*,'(2A,I4)') 'GMREDI_READPARAMS: ',
+     &      'read pickup option on, no init of GEOM_ene_old'
+        IF( nIter0.EQ.0 ) THEN
+          WRITE(*,'(2A,I4)') 'GMREDI_READPARAMS: ',
+     &       'WARNING! nIter0 = 0, force energy initialisation...'
+          energy_init = 0
+        ENDIF
+      ELSE
+        WRITE(*,'(2A,I4)') 'GMREDI_READPARAMS: ',
+     &      'initialising GEOM_ene_old'
+        energy_init = 0
+      ENDIF
+
+#endif
+
 C     Check for retired parameters
       IF ( GM_background_K3dFile .NE. ' ' ) THEN
         nRetired = nRetired+1

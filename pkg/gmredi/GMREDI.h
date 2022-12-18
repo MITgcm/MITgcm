@@ -26,7 +26,17 @@ C     GM_Bates_use_constK:: Imposes a constant K for the eddy transport
 C     GM_Bates_smooth    :: Expand PV closure in terms of baroclinic modes
 C                           (=.FALSE. for debugging only!)
 C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
+CCCCCC
+C TODO: change variable namings probably
 C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
+C     ene_local     :: use the horizontally varying energy formulation
+C                      (so kgm = kgm(x,y,t))
+C     vert_struc    :: allow for kgm = kgm * Gamma(z,t) [N2 structure function]
+C     GM_pickup_write_mdsio :: write binary GEOM pickups
+C     GM_pickup_read_mdsio  :: read  binary GEOM pickups
+C     GM_pickup_write_mnc   :: write MNC GEOM pickups
+C     GM_pickup_read_mnc    :: read  MNC GEOM pickups
+CCCCCC
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -47,8 +57,8 @@ C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
       LOGICAL ene_local
       LOGICAL vert_struc
       LOGICAL GEOM_pickup_write_mdsio
-      LOGICAL GEOM_pickup_write_mnc
       LOGICAL GEOM_pickup_read_mdsio
+      LOGICAL GEOM_pickup_write_mnc
       LOGICAL GEOM_pickup_read_mnc
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
@@ -61,9 +71,9 @@ C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
      &                   GM_Bates_constRedi,
      &                   GM_useLeithQG, 
      &                   GM_useGEOM, ene_local, vert_struc,
-     &                   GEOM_pickup_write_mdsio, 
-     &                   GEOM_pickup_write_mnc,
+     &                   GEOM_pickup_write_mdsio,
      &                   GEOM_pickup_read_mdsio,
+     &                   GEOM_pickup_write_mnc,
      &                   GEOM_pickup_read_mnc
 
 C--   GM/Redi Integer-type parameters
@@ -316,11 +326,13 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 #endif
 
 #ifdef GM_GEOM_VARIABLE_K
-C     GEOMK    :: mixing/stirring coefficient (spatially variable in horizontal
-C                 for Marshall et al. (2012) parameterization)
-C     GEOM_ene :: parameterised total eddy energy in GEOMETRIC
-C
-C     TODO: add in the comments accordingly
+C     GEOMK       :: mixing/stirring coefficient (spatially variable in 
+C                    horizontal for Marshall et al. (2012) parameterization)
+C     GEOM_ene*   :: parameterised total eddy energy in GEOMETRIC at now/old
+C                    time (GEOM_ene_old is the one that is used to update GEOMK)
+C     ene_rhs*    :: RHS of eddy energy equation for time-stepping
+C     energy_init :: is 0/1/2 to control time-stepping routine of parameterised
+C                    eddy energy in gmredi_calc_geom.F
 C
       _RL GEOMK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GEOM_ene(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -675,7 +675,6 @@ C       third: time stepping
      &                        )
               ENDDO
             ENDDO
-            energy_init = 3
         end select
 C ----------------------------------------------
 C ---- end advection of energy -----------------
