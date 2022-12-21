@@ -8,6 +8,9 @@
 #ifdef ALLOW_DIAGNOSTICS
 # include "DIAG_OPTIONS.h"
 #endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
@@ -53,6 +56,9 @@ C     == Global variables ===
 C- Note: Since OpenAD uses modules, the ordering of included headers matters
 #  include "DYNVARS.h"
 #  include "FFIELDS.h"
+#  ifdef ALLOW_GMREDI
+#   include "GMREDI.h"
+#  endif
 #  ifdef ALLOW_GGL90
 #   include "GGL90.h"
 #  endif
@@ -137,10 +143,10 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
         call adexch_xyz_rl( myThid,addiffkr )
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-        call adexch_xyz_rl( myThid,adkapgm )
+        call adexch_xyz_rl( myThid, adKapGM )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-        call adexch_xyz_rl( myThid,adkapredi )
+        call adexch_xyz_rl( myThid, adKapRedi )
 # endif
 # ifdef ALLOW_SST0_CONTROL
         call adexch_xy_rl( myThid,adsst )
@@ -390,12 +396,13 @@ C-----------------------------------------------------------------------
       CALL DUMP_ADJ_XYZ(dumRS, DiffKr%d, 'ADJdifkr', 'ADJdiffkr.',
      &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_KAPGM_CONTROL
-      CALL DUMP_ADJ_XYZ(dumRS, KapGM%d, 'ADJkapgm', 'ADJkapgm.',
+# if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
+      CALL DUMP_ADJ_XYZ(dumRS, GM_inpK3dGM%d, 'ADJkapgm', 'ADJkapgm.',
      &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_KAPREDI_CONTROL
-      CALL DUMP_ADJ_XYZ(dumRS, KapRedi%d, 'ADJkapre', 'ADJkapredi.',
+# if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
+      CALL DUMP_ADJ_XYZ(dumRS, GM_inpK3dRedi%d, 'ADJkapre',
+     &                  'ADJkapredi.',
      &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
@@ -532,11 +539,11 @@ C     dumpAdVarExch.NE.2
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &                     'adkapgm', adkapgm, myThid)
+     &                     'adkapgm', adKapGM, myThid)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
-     &                     'adkapredi', adkapredi, myThid)
+     &                     'adkapredi', adKapRedi, myThid)
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT

@@ -57,8 +57,6 @@ C     ks     :: index of surface interface layer
       INTEGER i,j
       INTEGER ks
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER ikey
 #endif
       _RL recip_Cp
@@ -84,14 +82,25 @@ C     to oceanic surface forcing
 
 #ifdef ALLOW_BALANCE_FLUXES
 C     balance fluxes
+# ifdef ALLOW_AUTODIFF
       tmpVar(1) = oneRS
-      IF ( balanceEmPmR .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
-        CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA, tmpVar,
-     &                       'EmPmR', myTime, myIter, myThid )
+# endif
+      IF ( selectBalanceEmPmR.GE.1 .AND.
+     &     (.NOT.useSeaice .OR. useThSIce) ) THEN
+       IF ( selectBalanceEmPmR.EQ.1 ) THEN
+        tmpVar(1) = oneRS
+        CALL REMOVE_MEAN_RS( 1, EmPmR, maskInC, maskInC, rA,
+     &                       tmpVar, 'EmPmR', myTime, myIter, myThid )
+       ELSEIF ( selectBalanceEmPmR.EQ.2 ) THEN
+        tmpVar(1) = -oneRS
+        CALL REMOVE_MEAN_RS( 1, EmPmR, weight2BalanceFlx, maskInC, rA,
+     &                       tmpVar, 'EmPmR', myTime, myIter, myThid )
+       ENDIF
       ENDIF
       IF ( balanceQnet  .AND. (.NOT.useSeaice .OR. useThSIce) ) THEN
-        CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA, tmpVar,
-     &                       'Qnet ', myTime, myIter, myThid )
+        tmpVar(1) = oneRS
+        CALL REMOVE_MEAN_RS( 1, Qnet,  maskInC, maskInC, rA,
+     &                       tmpVar, 'Qnet ', myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_BALANCE_FLUXES */
 
@@ -184,16 +193,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = ikey_dynamics - 1
-        ikey = (act1 + 1) + act2*max1
-     &                    + act3*max1*max2
-     &                    + act4*max1*max2*max3
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -158,17 +158,23 @@ C--   Print general parameters:
       CALL WRITE_0D_RL( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
      &  ' /* extrapolation coeff from lev. 1 & 2 to surf [-] */')
       CALL WRITE_0D_RL( cdrag_1, INDEX_NONE, 'cDrag_1 =',
-     &  ' /* coef used in drag calculation [?] */')
+     &  ' /* coef used in drag calculation [m/s] */')
       CALL WRITE_0D_RL( cdrag_2, INDEX_NONE, 'cDrag_2 =',
-     &  ' /* coef used in drag calculation [?] */')
+     &  ' /* coef used in drag calculation [-] */')
       CALL WRITE_0D_RL( cdrag_3, INDEX_NONE, 'cDrag_3 =',
-     &  ' /* coef used in drag calculation [?] */')
+     &  ' /* coef used in drag calculation [s/m] */')
+      CALL WRITE_0D_RL( cdrag_8, INDEX_NONE, 'cDrag_8 =',
+     &  ' /* coef used in drag calculation [(s/m)^6] */')
+      CALL WRITE_0D_RL( cdragMax, INDEX_NONE, 'cDragMax =',
+     &  ' /* maximum drag (Large and Yeager, 2009) [-] */')
+      CALL WRITE_0D_RL( umax, INDEX_NONE, 'umax =',
+     &  ' /* at maximum wind (Large and Yeager, 2009) [m/s] */')
       CALL WRITE_0D_RL( cstanton_1, INDEX_NONE, 'cStanton_1 =',
-     &  ' /* coef used in Stanton number calculation [?] */')
+     &  ' /* coef used in Stanton number calculation [-] */')
       CALL WRITE_0D_RL( cstanton_2, INDEX_NONE, 'cStanton_2 =',
-     &  ' /* coef used in Stanton number calculation [?] */')
+     &  ' /* coef used in Stanton number calculation [-] */')
       CALL WRITE_0D_RL( cdalton, INDEX_NONE, 'cDalton =',
-     &  ' /* coef used in Dalton number calculation [?] */')
+     &  ' /* Dalton number [-] */')
       CALL WRITE_0D_RL( exf_scal_BulkCdn, INDEX_NONE,
      &  'exf_scal_BulkCdn=',
      &  ' /* Drag coefficient scaling factor [-] */')

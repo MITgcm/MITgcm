@@ -6,9 +6,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: INITIALISE_VARIA
@@ -90,17 +87,13 @@ C     == Global variables ==
 #ifdef ALLOW_AUTODIFF
 # include "GRID.h"
 # include "FFIELDS.h"
-# include "CTRL_FIELDS.h"
-# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
-#  include "SHELFICE.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-#ifndef ALLOW_AUTODIFF_WHTAPEIO
+#ifdef INCLUDE_CONVECT_INI_CALL
       INTEGER bi,bj
 #endif
 CEOP
@@ -183,16 +176,6 @@ C--   Initialize variable data for packages
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
-# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
-CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
-#  ifndef SHI_ALLOW_GAMMAFRICT
-CADJ STORE shiTransCoeffT = tapelev_init, key = 1
-CADJ STORE shiTransCoeffS = tapelev_init, key = 1
-#  else
-CADJ STORE shiCDragFld = tapelev_init, key = 1
-#  endif
-# endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
 
@@ -211,7 +194,7 @@ c      CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
 c     ENDIF
 c#endif
 
-#ifndef ALLOW_AUTODIFF_WHTAPEIO
+#ifdef INCLUDE_CONVECT_INI_CALL
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN
 #ifdef ALLOW_DEBUG
@@ -226,7 +209,7 @@ CADJ loop = parallel
          ENDDO
         ENDDO
       ENDIF
-#endif /* ALLOW_AUTODIFF_WHTAPEIO */
+#endif /* INCLUDE_CONVECT_INI_CALL */
 
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)

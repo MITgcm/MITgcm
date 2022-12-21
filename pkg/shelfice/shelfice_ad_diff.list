@@ -1,4 +1,3 @@
-shelfice_cost_shifwflx.f
 shelfice_cost_accumulate.f
 shelfice_cost_final.f
 shelfice_forcing.f

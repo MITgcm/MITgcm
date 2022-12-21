@@ -1,4 +1,7 @@
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GAD_DST3FL_IMPL_R
@@ -75,8 +78,14 @@ C     rC4km, rC4kp :: high order contributions
       _RL mskM, mskP, maskM2, maskP1
       _RL Rj, Rjh, cL1, cH3, cM2, th1, th2
       _RL deltaTcfl
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER ikey
+#endif
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_gad = COMMON, (sNx+2*OLx)*(sNy+2*OLy)
+#endif
 C--   process interior interface only:
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
 
@@ -96,6 +105,9 @@ C       is linearize arround the current value of theta(tFld) & cfl:
 C       lowFac & highFac are set such as Psi*Rj = lowFac*Rj + highFac*Rjh
        DO j=jMin,jMax
          DO i=iMin,iMax
+#ifdef ALLOW_AUTODIFF_TAMC
+           ikey = i + (sNx+2*OLx)*(j-1)
+#endif
            wCFL = deltaTcfl*ABS(rTrans(i,j))
      &           *recip_rA(i,j,bi,bj)*recip_drC(k)
      &           *recip_deepFac2F(k)*recip_rhoFacF(k)
@@ -115,6 +127,10 @@ C-         1rst case: theta < 0 (Rj & Rjh opposite sign) => Psi = 0
              lowFac(i,j) = 0. _d 0
              highFac(i,j)= 0. _d 0
            ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These stores to local tape avoid recomputations and associated warnings
+CADJ STORE Rjh, Rj = loctape_gad, key = ikey
+#endif
              Rj  = ABS(Rj)
              Rjh = ABS(Rjh)
              th1 = cL1*Rj+cH3*Rjh

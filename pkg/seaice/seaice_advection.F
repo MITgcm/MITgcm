@@ -152,8 +152,6 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER ioUnit
       _RL tmpFac
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
       INTEGER passkey, igadkey
 #endif
 CEOP
@@ -161,19 +159,8 @@ CEOP
 C     make local copy to be tampered with if necessary
       advectionScheme = advectionSchArg
 #ifdef ALLOW_AUTODIFF_TAMC
-      act0 = tracerIdentity - 1
-      max0 = maxpass
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      igadkey = (act0 + 1) + act1*max0
-     &                     + act2*max0*max1
-     &                     + act3*max0*max1*max2
-     &                     + act4*max0*max1*max2*max3
+      igadkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      igadkey = tracerIdentity + (igadkey-1)*maxpass
       IF (tracerIdentity.GT.maxpass) THEN
        WRITE(msgBuf,'(A,2I5)')
      &      'SEAICE_ADVECTION: tracerIdentity > maxpass ',

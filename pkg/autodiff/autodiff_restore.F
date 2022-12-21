@@ -252,59 +252,6 @@ C-      2D arrays
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ECCO_CTRL_DEPRECATED
-C--   Over all tiles
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-C-      2D arrays
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-# ifdef ALLOW_UWIND_CONTROL
-          xx_uwind0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,1)
-          xx_uwind1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,2)
-# endif
-# ifdef ALLOW_VWIND_CONTROL
-          xx_vwind0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,3)
-          xx_vwind1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,4)
-# endif
-# ifdef ALLOW_ATEMP_CONTROL
-          xx_atemp0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,5)
-          xx_atemp1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,6)
-# endif
-# ifdef ALLOW_AQH_CONTROL
-          xx_aqh0(I,J,bi,bj)       = StoreCTRLS1(I,J,bi,bj,7)
-          xx_aqh1(I,J,bi,bj)       = StoreCTRLS1(I,J,bi,bj,8)
-# endif
-# ifdef ALLOW_PRECIP_CONTROL
-          xx_precip0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,9)
-          xx_precip1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,10)
-# endif
-# ifdef ALLOW_SNOWPRECIP_CONTROL
-          xx_snowprecip0(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,11)
-          xx_snowprecip1(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,12)
-# endif
-# ifdef ALLOW_SWFLUX_CONTROL
-          xx_swflux0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,13)
-          xx_swflux1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,14)
-# endif
-# ifdef ALLOW_SWDOWN_CONTROL
-          xx_swdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,15)
-          xx_swdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,16)
-# endif
-# ifdef ALLOW_LWDOWN_CONTROL
-          xx_lwdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,17)
-          xx_lwdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,18)
-# endif
-# ifdef ALLOW_APRESSURE_CONTROL
-          xx_apressure0(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,19)
-          xx_apressure1(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,20)
-# endif
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ECCO_CTRL_DEPRECATED */
 #endif /* ALLOW_EXF */
 
 #ifdef ALLOW_SEAICE

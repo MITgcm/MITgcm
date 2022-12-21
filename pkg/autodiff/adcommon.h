@@ -103,12 +103,12 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
-      COMMON /adCTRL_FIELDS_KAPGM/
+      COMMON /adGM_INP_K3D_GM/
      &                       adKapGM
       _RL  adKapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
-      COMMON /adCTRL_FIELDS_KAPREDI/
+      COMMON /adGM_INP_K3D_REDI/
      &                       adKapRedi
       _RL  adKapRedi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif

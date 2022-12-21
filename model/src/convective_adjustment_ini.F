@@ -33,7 +33,6 @@ C     == Global data ==
 #endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     bi,bj  :: tile indices
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration in simulation
@@ -43,14 +42,13 @@ C     myThid :: My Thread Id number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef INCLUDE_CONVECT_CALL
+#ifdef INCLUDE_CONVECT_INI_CALL
 
 C     !FUNCTIONS:
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+c     EXTERNAL DIFFERENT_MULTIPLE
+c     LOGICAL  DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     iMin,iMax,jMin,jMax :: computation domain
 C     i,j,k        :: Loop counters
 C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
@@ -58,8 +56,6 @@ C     ConvectCount :: Convection mixing freq. counter.
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k, kTop, kBottom, kDir, deltaK
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER ikey, kkey
 #endif
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -70,8 +66,8 @@ C     ConvectCount :: Convection mixing freq. counter.
 CEOP
 
 C--   Check to see if should convect now
-      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
-     &   ) THEN
+c     IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
+c    &   ) THEN
 
 C--   Define computation domain
         iMin=1-OLx
@@ -95,16 +91,7 @@ C-      Initialisation of Convection Counter
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = 0
-        ikey = (act1 + 1) + act2*max1
-     &                    + act3*max1*max2
-     &                    + act4*max1*max2*max3
+        ikey = bi + (bj-1)*nSx
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         IF ( rkSign*gravitySign .GT. 0. ) THEN
@@ -184,9 +171,9 @@ C--       End DO k=1,Nr
         ENDDO
 
 C--   End IF (DIFFERENT_MULTIPLE)
-      ENDIF
+c     ENDIF
 
-#endif /* INCLUDE_CONVECT_CALL */
+#endif /* INCLUDE_CONVECT_INI_CALL */
 
       RETURN
       END

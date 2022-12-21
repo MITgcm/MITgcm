@@ -165,6 +165,14 @@ c "ice concentration" tracer that should remain .EQ.1.
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call SEAICE_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useSEAICE.
+C        Therefore, in this case, the "If useSEAICE" is added back here:
+      IF ( useSEAICE ) THEN
+#endif
+
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -523,6 +531,11 @@ C     on depth
        ENDDO
       ENDIF
 #endif /* SEAICE_CGRID */
+
+#ifdef ALLOW_AUTODIFF
+C-    end if useSEAICE block
+      ENDIF
+#endif
 
       RETURN
       END

@@ -6,7 +6,7 @@
 #ifdef ALLOW_BLING
 C     Package-specific Options & Macros go here
 
-C BLING+Nitrogen is the default model. It's a version
+C BLING+Nitrogen is the default model. It is a version
 C of BLING with 8 tracers and 3 phyto classes.
 C For the original 6-tracer model of Galbraith et al (2010),
 C define USE_BLING_V1 - but note the different order of tracers in data.ptracers
@@ -73,7 +73,7 @@ C For adjoint safe, do not call bling_dvm
 #endif
 
 C ABIOTIC OPTIONS
-C Compile Munhoven (2013)'s "Solvesaphe" package for pH/pCO2
+C Compile "Solvesaphe" package (Munhoven 2013) for pH/pCO2
 C  can still select Follows et al (2006) solver in data.bling,
 C  but will use solvesaphe dissociation coefficient options.
 #undef CARBONCHEM_SOLVESAPHE

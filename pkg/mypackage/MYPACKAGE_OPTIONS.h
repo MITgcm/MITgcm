@@ -1,5 +1,14 @@
-C CPP options file for MYPACKAGE
-C Use this file for selecting options within package "MyPackage"
+CBOP
+C !ROUTINE: MYPACKAGE_OPTIONS.h
+C !INTERFACE:
+C #include "MYPACKAGE_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for pkg "mypackage":
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifndef MYPACKAGE_OPTIONS_H
 #define MYPACKAGE_OPTIONS_H
@@ -20,7 +29,3 @@ C to reduce memory storage, disable unused array with those CPP flags :
 
 #endif /* ALLOW_MYPACKAGE */
 #endif /* MYPACKAGE_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
