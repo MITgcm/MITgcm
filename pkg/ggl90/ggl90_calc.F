@@ -186,13 +186,6 @@ CEOP
       p16 = 0.0625 _d 0
 #endif
 
-#ifdef ALLOW_GGL90_LANGMUIR
-      IF (useLANGMUIR) THEN
-       recip_Lasq = 1. _d 0 / LC_num
-       recip_Lasq = recip_Lasq * recip_Lasq
-       recip_LD   = 1. _d 0 / LC_lambda
-      ENDIF
-#endif
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
@@ -264,17 +257,6 @@ C     Initialize local fields
         ENDDO
        ENDDO
       ENDDO
-#ifdef ALLOW_GGL90_LANGMUIR
-      IF (useLANGMUIR) THEN
-       DO k=1,Nr
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          LCmixingLength(i,j,k) = GGL90mixingLengthMin
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
 #endif
@@ -304,13 +286,24 @@ c       rMixingLength(i,j,1)  = 0. _d 0
 #endif /* ALLOW_GGL90_HORIZDIFF */
        ENDDO
       ENDDO
+
 #ifdef ALLOW_GGL90_LANGMUIR
       IF (useLANGMUIR) THEN
+       recip_Lasq = 1. _d 0 / LC_num
+       recip_Lasq = recip_Lasq * recip_Lasq
+       recip_LD   = 1. _d 0 / LC_lambda
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          stokesterm(i,j) = 0. _d 0
          dstokesUdR(i,j) = 0. _d 0
          dstokesVdR(i,j) = 0. _d 0
+        ENDDO
+       ENDDO
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          LCmixingLength(i,j,k) = GGL90mixingLengthMin
+         ENDDO
         ENDDO
        ENDDO
       ENDIF
