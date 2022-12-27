@@ -3,6 +3,18 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: DIC_OPTIONS.h
+C !INTERFACE:
+C #include "DIC_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for pkg "dic":
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
+
 #ifdef ALLOW_DIC
 C     Package-specific Options & Macros go here
 
@@ -51,7 +63,3 @@ C For Adjoint built
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

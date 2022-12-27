@@ -97,6 +97,8 @@ C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
 C     enable Krylov code by defining the following flag
 # define SEAICE_ALLOW_KRYLOV
+C     to reproduce old verification results for JFNK
+# undef SEAICE_PRECOND_EXTRA_EXCHANGE
 C     enable LSR to use global (multi-tile) tri-diagonal solver
 # undef SEAICE_GLOBAL_3DIAG_SOLVER
 C     enable EVP code by defining the following flag
@@ -137,6 +139,9 @@ C     This modification improves the convergence of the vector code
 C     dramatically, so that is may actually be useful in general, but
 C     that needs to be tested. Can be used without vectorization options.
 # undef SEAICE_LSR_ZEBRA
+C     This flag is also required for an actual adjoint of seaice_lsr;
+C     increases memory requirements a lot.
+# undef SEAICE_LSR_ADJOINT_ITER
 C     Use parameterisation of grounding ice for a better representation
 C     of fastice in shallow seas
 # undef SEAICE_ALLOW_BOTTOMDRAG
@@ -172,6 +177,9 @@ C--   Use the adjointable sea-ice thermodynamic model
 C     in seaice_growth_adx.F instead of seaice_growth.F
 #undef SEAICE_USE_GROWTH_ADX
 
+C-    Special seaice flag for AD testing
+#undef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
+
 C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
 
@@ -186,7 +194,3 @@ C     (requires pkg/cost & ALLOW_COST_ICE defined)
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
