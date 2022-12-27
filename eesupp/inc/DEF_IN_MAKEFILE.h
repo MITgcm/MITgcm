@@ -26,7 +26,8 @@ C-- options set in Makefile by genmake2:
 #undef USE_GSL_IEEE
 #undef HAVE_SYSTEM
 #undef HAVE_FDATE
-#undef HAVE_ETIME
+#undef HAVE_ETIME_FCT
+#undef HAVE_ETIME_SBR
 #undef HAVE_CLOC
 #undef HAVE_SETRLSTK
 #undef HAVE_SIGREG
@@ -51,12 +52,17 @@ C-  platform specific options:
 C-  others options found in optfiles in dir tools/build_options:
 #undef _BYTESWAPIO
 #undef ALWAYS_USE_MPI
+#undef AUTODIFF_USE_MDSFINDUNITS
+#undef PROFILES_USE_MDSFINDUNITS
 #undef CG2D_OUTERLOOPITERS
 #undef CG3D_OUTERLOOPITERS
 #undef IFORT
+#undef INTEL_COMMITQQ
 #undef NML_EXTENDED_F77
 #undef NML_TERMINATOR
+#undef SEAICE_LSR_ZEBRA
 #undef SEAICE_VECTORIZE_LSR
+#undef SEAICE_VECTORIZE_LSR_ZEBRA
 #undef WORDLENGTH
 
 C-----  WARNING: DO NOT include this file in any source code -----
