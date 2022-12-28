@@ -38,7 +38,7 @@ C   myThid       :: my Thread Id number
 #ifdef ALLOW_GGL90_LANGMUIR
 C !LOCAL VARIABLES: ====================================================
 C   i, j         :: loop indices
-C   Usfc, Vsfc   :: Stokes velocity at the surface
+C   uStar, vStar :: frictional velocity component
       INTEGER i,j
       _RL uStar, vStar, recip_Lasq, depthFac
       _RL stokesU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -48,10 +48,9 @@ CEOP
       IF ( useLANGMUIR ) THEN
 
 C-    Calculate Stokes-Drift (fct of wind-stress)
+C     surface Stokes-Drift velocity is just (uStar,vStar)/ LC_num^2
         recip_Lasq = 1. _d 0 / LC_num
         recip_Lasq = recip_Lasq * recip_Lasq
-c       recip_LD   = 4. _d 0 * PI / LC_lambda
-c       depthFac = recip_Lasq * EXP( recip_LD*rC(k) )
         depthFac = recip_Lasq*EXP( 4. _d 0 *PI/LC_lambda*rC(k) )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
