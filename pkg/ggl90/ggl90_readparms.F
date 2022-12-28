@@ -54,12 +54,12 @@ C--   GGL90 vertical mixing parameters
      &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile,
      &     GGL90_dirichlet, calcMeanVertShear, useIDEMIX,
-     &     useLANGMUIR 
+     &     useLANGMUIR
 
 #ifdef ALLOW_GGL90_IDEMIX
-c-----------------------------------------------------------------------
-c  IDEMIX
-c-----------------------------------------------------------------------
+C-----------------------------------------------------------------------
+C  IDEMIX
+C-----------------------------------------------------------------------
       NAMELIST /GGL90_PARM02/
      & IDEMIX_tau_v, IDEMIX_tau_h, IDEMIX_gamma, IDEMIX_jstar,
      & IDEMIX_mu0,IDEMIX_tidal_file,IDEMIX_wind_file,
@@ -69,9 +69,9 @@ c-----------------------------------------------------------------------
 #endif /* ALLOW_GGL90_IDEMIX */
 
 #ifdef ALLOW_GGL90_LANGMUIR
-c-----------------------------------------------------------------------
-c  Langmuir circulation
-c-----------------------------------------------------------------------
+C-----------------------------------------------------------------------
+C  Langmuir circulation
+C-----------------------------------------------------------------------
       NAMELIST /GGL90_PARM03/
      & LC_Gamma, LC_num, LC_lambda
 #endif /* ALLOW_GGL90_LANGMUIR*/
@@ -173,19 +173,10 @@ C--   Read settings from model parameter file "data.ggl90".
       READ( UNIT=iUnit, NML=GGL90_PARM01 )
 c     READ( UNIT=iUnit, NML=GGL90_PARM01, IOSTAT=errIO )
       IF ( errIO .LT. 0 ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R GGL90_READPARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data.ggl90"'
-       CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist GGL90_PARM01'
-       CALL PRINT_ERROR( msgBuf , 1)
-       STOP 'ABNORMAL END: S/R GGL90_READPARMS'
+        WRITE(msgBuf,'(A)')
+     &   'S/R GGL90_READPARMS, Problem reading NML GGL90_PARM01'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
       WRITE(msgBuf,'(A)')
      &     ' GGL90_READPARMS: read GGL90_PARM01 : OK'
@@ -202,17 +193,8 @@ c     READ( UNIT=iUnit, NML=GGL90_PARM01, IOSTAT=errIO )
 c      READ( UNIT=iUnit, NML=GGL90_PARM02, IOSTAT=errIO )
        IF ( errIO .LT. 0 ) THEN
         WRITE(msgBuf,'(A)')
-     &   'S/R GGL90_READPARMS'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'Error reading numerical model '
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'parameter file "data.ggl90"'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'Problem in namelist GGL90_PARM02'
-        CALL PRINT_ERROR( msgBuf , 1)
+     &   'S/R GGL90_READPARMS, Problem reading NML GGL90_PARM02'
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GGL90_READPARMS'
        ENDIF
        WRITE(msgBuf,'(A)')
@@ -232,17 +214,8 @@ c      READ( UNIT=iUnit, NML=GGL90_PARM02, IOSTAT=errIO )
 c      READ( UNIT=iUnit, NML=GGL90_PARM03, IOSTAT=errIO )
        IF ( errIO .LT. 0 ) THEN
         WRITE(msgBuf,'(A)')
-     &   'S/R GGL90_READPARMS'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'Error reading numerical model '
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'parameter file "data.ggl90"'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'Problem in namelist GGL90_PARM03'
-        CALL PRINT_ERROR( msgBuf , 1)
+     &   'S/R GGL90_READPARMS, Problem reading NML GGL90_PARM03'
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GGL90_READPARMS'
        ENDIF
        WRITE(msgBuf,'(A)')
@@ -393,12 +366,11 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
      &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(GGL90_dirichlet,INDEX_NONE,
      & 'GGL90_dirichlet =', '   /* GGL90 Boundary condition flag */')
+
 #ifdef ALLOW_GGL90_IDEMIX
-c-----------------------------------------------------------------------
-c-----------------------------------------------------------------------
       CALL WRITE_0D_L(useIDEMIX,INDEX_NONE, 'useIDEMIX =',
      &     '   /* turn on IDEMIX contribution. */')
-C
+
       IF ( useIDEMIX ) THEN
        CALL WRITE_0D_RL( IDEMIX_tau_v, INDEX_NONE,'IDEMIX_tau_v =',
      &     '   /* IDEMIX vertical group speed parameter. */')
@@ -432,19 +404,18 @@ C
      &  'IDEMIX_wind_file  =', ' /* file name of wind energy field */')
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
+
 #ifdef ALLOW_GGL90_LANGMUIR
-c-----------------------------------------------------------------------
-c-----------------------------------------------------------------------
       CALL WRITE_0D_L(useLANGMUIR,INDEX_NONE, 'useLANGMUIR =',
      &     '   /* turn on Langmuir circulation effect. */')
-C
+
       IF ( useLANGMUIR ) THEN
-       CALL WRITE_0D_RL( LC_Gamma, INDEX_NONE,'LC_Gamma =',
-     &     '   /* Value for the Langmuir circulation effect (>=1) */')
-       CALL WRITE_0D_RL( LC_num, INDEX_NONE,'LC_num = ',
-     &     '   /* Value for the Langmuir number */')
-       CALL WRITE_0D_RL( LC_lambda, INDEX_NONE,'LC_lambda = ',
-     &     '   /* Vertical scale for Stokes velocity */')
+       CALL WRITE_0D_RL( LC_Gamma, INDEX_NONE,'LC_Gamma  =',
+     & ' /* Mix-Length Amplification fac. from Langmuir Circ. (>=1) */')
+       CALL WRITE_0D_RL( LC_num, INDEX_NONE,'LC_num    =',
+     &     ' /* Value for the Langmuir number (no units) */')
+       CALL WRITE_0D_RL( LC_lambda, INDEX_NONE,'LC_lambda =',
+     &     ' /* Vertical scale for Stokes velocity ( m ) */')
       ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
 
