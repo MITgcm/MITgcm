@@ -124,13 +124,13 @@ C                    (output of S/R GGL90_IDEMIX)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+C   uStar, vStar :: frictional velocity component
+      _RL uStar, vStar, depthFac
+      _RL MLtmp, recip_Lasq, recip_LD
       _RL LCmixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     Usfc, Vsfc: Stokes velocity at the surface
-      _RL Usfc, Vsfc
       _RL stokesterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dstokesUdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dstokesVdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL MLtmp, recip_Lasq, recip_LD
 #endif /* ALLOW_GGL90_LANGMUIR */
       _RL recip_hFacI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL hFac
@@ -291,7 +291,7 @@ c       rMixingLength(i,j,1)  = 0. _d 0
       IF (useLANGMUIR) THEN
        recip_Lasq = 1. _d 0 / LC_num
        recip_Lasq = recip_Lasq * recip_Lasq
-       recip_LD   = 1. _d 0 / LC_lambda
+       recip_LD   = 4. _d 0 * PI / LC_lambda
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          stokesterm(i,j) = 0. _d 0
@@ -875,16 +875,15 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
 #ifdef ALLOW_GGL90_LANGMUIR
        IF (useLANGMUIR) THEN
 C       compute (dStokesU/dz) and (dStokesV/dz)
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          Usfc = SIGN(SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
-     &                surfaceForcingU(i,j,bi,bj)) * recip_Lasq
-          dstokesUdR(i,j) = 4. *PI*recip_LD
-     &                     * Usfc * EXP(4. *PI*recip_LD*rF(k))
-          Vsfc = SIGN(SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
-     &                surfaceForcingV(i,j,bi,bj)) * recip_Lasq
-          dstokesVdR(i,j) = 4. *PI/LC_lambda
-     &                     * Vsfc * EXP(4. *PI*recip_LD*rF(k))
+        depthFac = recip_Lasq*EXP( recip_LD*rF(k) )
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          uStar = SIGN( SQRT(ABS(surfaceForcingU(i,j,bi,bj))),
+     &                  surfaceForcingU(i,j,bi,bj) )
+          dstokesUdR(i,j) = recip_LD * uStar * depthFac
+          vStar = SIGN( SQRT(ABS(surfaceForcingV(i,j,bi,bj))),
+     &                  surfaceForcingV(i,j,bi,bj) )
+          dstokesVdR(i,j) = recip_LD * vStar * depthFac
          ENDDO
         ENDDO
 
@@ -929,7 +928,6 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
 CADJ STORE stokesterm = comlev1_bibj, key=ikeyLoc, kind=isbyte
 # endif
 #endif /* ALLOW_GGL90_LANGMUIR */
-
 
 C     compute Prandtl number (always greater than 0)
 #ifdef ALLOW_GGL90_IDEMIX
