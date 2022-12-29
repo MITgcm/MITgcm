@@ -26,6 +26,16 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iUnit
       INTEGER smoothOpNb
 
+      CHARACTER*(MAX_LEN_FNAM) namBuf
+      INTEGER IL
+#ifdef HAVE_SYSTEM
+      INTEGER pIL
+#endif
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     == end of interface ==
 
 C--   Read the namelist input.
@@ -46,7 +56,8 @@ C--   Read the namelist input.
      &                   smooth3D_Ly0,
      &                   smooth3D_Lz0,
      &                   smooth3Dfilter,
-     &                   smooth3DmaskName
+     &                   smooth3DmaskName,
+     &                   smoothDir
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -83,6 +94,7 @@ C--   Set default values.
         smooth3Dfilter(smoothOpNb)=0
         smooth3DmaskName(smoothOpNb)(1:5) = 'maskC'
       ENDDO
+      smoothDir = ' '
 
 C--   Read settings from model parameter file "data.smooth".
       WRITE(msgBuf,'(A)') 'SMOOTH_READPARMS: opening data.smooth'
@@ -119,6 +131,30 @@ C--   Print pkg/smooth settings to standard output:
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+
+      IF ( smoothDir .NE. ' ' ) THEN
+       IL = ILNBLNK( smoothDir )
+C      append "/", if necessary
+       IF ( IL.LT.MAX_LEN_FNAM .AND. smoothDir(IL:IL).NE.'/' ) THEN
+        namBuf(1:IL) = smoothDir(1:IL)
+        WRITE(smoothDir(1:IL+1),'(2A)') namBuf(1:IL),'/'
+       ENDIF
+#ifdef HAVE_SYSTEM
+C      create directory
+       IL = ILNBLNK( smoothDir ) -1
+       WRITE(namBuf,'(2A)') ' mkdir -p ', smoothDir(1:IL)
+       pIL = 1 + ILNBLNK( namBuf )
+       WRITE(standardMessageUnit,'(3A)')
+     &  '==> SYSTEM CALL (from SMOOTH_READPARMS): >',
+     &                                 namBuf(1:pIL), '<'
+       CALL SYSTEM( namBuf(1:pIL) )
+#else
+       WRITE(msgBuf,'(2A)') '** WARNING ** SMOOTH_READPARMS: ',
+     &       'cannot call mkdir -> please create smoothDir manually'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
+      ENDIF
 
       DO smoothOpNb=1,smoothOpNbMax
         IF (smooth2Dtype(smoothOpNb).NE.0) THEN
