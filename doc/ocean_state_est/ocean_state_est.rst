@@ -853,6 +853,10 @@ the resulting new control vector to the model grid unless CPP-flag
   |                    |                       | requires to define             |
   |                    |                       | :varlink:`ALLOW_DEPTH_CONTROL` |
   +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_siheff``         | initial sea ice thickness      |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_siarea``         | initial sea ice area           |
+  +--------------------+-----------------------+--------------------------------+
   | 3D, time-invariant | ``genarr3d``          |                                |
   | controls           |                       |                                |
   +--------------------+-----------------------+--------------------------------+
