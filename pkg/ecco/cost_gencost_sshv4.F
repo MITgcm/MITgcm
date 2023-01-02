@@ -1,8 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_sshv4(
-     I                     myThid
-     &                   )
+     I                        myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_sshv4
@@ -49,7 +48,6 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -57,6 +55,8 @@ c     == routine arguments ==
 c     == functions ==
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 c     == local variables ==
 
@@ -164,12 +164,20 @@ c for PART 4/5: compute smooth/raw anomalies
       LOGICAL doReference
       LOGICAL useEtaMean
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
+
+C-    Initialise (again) gencost_weight
+      DO k = 1, NGENCOST
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gencost_weight(i,j,bi,bj,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       jtlo = myByLo(myThid)
       jthi = myByHi(myThid)
@@ -211,41 +219,41 @@ c-- detect the relevant gencost indices
       endif
 
       dosumsq = .TRUE.
-      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_mdt),
-     &                1, zeroRL, myThid )
-      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_lsc),
-     &                1, zeroRL, myThid )
-      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_tp),
-     &                1, zeroRL, myThid )
-      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_ers),
-     &                1, zeroRL, myThid )
-      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_gfo),
-     &                1, zeroRL, myThid )
       if (igen_mdt.GT.0) then
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_mdt),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(igen_mdt) .NE. ' ' )
      &   call ecco_readwei( gencost_errfile(igen_mdt),
      &     gencost_weight(1-OLx,1-OLy,1,1,igen_mdt),
      &     1, 1, 1, dosumsq, myThid )
       endif
       if (igen_lsc.GT.0) then
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_lsc),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(igen_lsc) .NE. ' ' )
      &   call ecco_readwei( gencost_errfile(igen_lsc),
      &     gencost_weight(1-OLx,1-OLy,1,1,igen_lsc),
      &     1, 1, 1, dosumsq, myThid )
       endif
       if (igen_tp.GT.0) then
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_tp),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(igen_tp) .NE. ' ' )
      &   call ecco_readwei( gencost_errfile(igen_tp),
      &     gencost_weight(1-OLx,1-OLy,1,1,igen_tp),
      &     1, 1, 1, dosumsq, myThid )
       endif
       if (igen_ers.GT.0) then
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_ers),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(igen_ers) .NE. ' ' )
      &   call ecco_readwei( gencost_errfile(igen_ers),
      &     gencost_weight(1-OLx,1-OLy,1,1,igen_ers),
      &     1, 1, 1, dosumsq, myThid )
       endif
       if (igen_gfo.GT.0) then
+       call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,igen_gfo),
+     &                 1, zeroRL, myThid )
        if ( gencost_errfile(igen_gfo) .NE. ' ' )
      &   call ecco_readwei( gencost_errfile(igen_gfo),
      &     gencost_weight(1-OLx,1-OLy,1,1,igen_gfo),
@@ -376,12 +384,12 @@ c--   Read mean field and mask
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if ( (maskInC(i,j,bi,bj) .eq. 0.).OR.
+              if ( (maskInC(i,j,bi,bj) .EQ. 0.).OR.
 #ifndef ALLOW_SHALLOW_ALTIMETRY
      &             (R_low(i,j,bi,bj).GT.-200.).OR.
 #endif
-     &             (mdtob(i,j,bi,bj) .lt. spval ).OR.
-     &             (mdtob(i,j,bi,bj) .eq. 0. _d 0) ) then
+     &             (mdtob(i,j,bi,bj) .LT. spval ).OR.
+     &             (mdtob(i,j,bi,bj) .EQ. 0. _d 0) ) then
                 mdtma(i,j,bi,bj) = 0. _d 0
                 mdtob(i,j,bi,bj) = 0. _d 0
               else
@@ -437,7 +445,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
      &                gfoob, gfoma,
      &                year, day, myThid )
 
-       if (igen_tp .NE. 0) then
+       if (igen_tp .GT. 0) then
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
@@ -453,7 +461,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
          enddo
         enddo
        endif
-       if (igen_ers .NE. 0) then
+       if (igen_ers .GT. 0) then
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
@@ -469,7 +477,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
          enddo
         enddo
        endif
-       if (igen_gfo .NE. 0) then
+       if (igen_gfo .GT. 0) then
         do bj = jtlo,jthi
          do bi = itlo,ithi
           do j = jmin,jmax
@@ -509,7 +517,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
 
 c--   smooth mean_slaobs_mdt:
 
-      if (igen_mdt.NE.0) then
+      if (igen_mdt.GT.0) then
        if (gencost_outputlevel(igen_mdt).GT.0) then
         write(fname4test(1:80),'(1a)') 'sla2mdt_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
@@ -517,17 +525,19 @@ c--   smooth mean_slaobs_mdt:
        endif
 
 #ifdef ALLOW_SMOOTH
-       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_mdt,maskInC,
+       if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
+        call smooth_hetero2d(mean_slaobs_mdt,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
-#endif
 
-       if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        mean_slaobs_mdt, 1, 1, myThid )
+        if (gencost_outputlevel(igen_mdt).GT.0) then
+         write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         mean_slaobs_mdt, 1, 1, myThid )
+        endif
        endif
+#endif
+c     endif igen_mdt .gt. 0
       endif
 
 c--   re-reference mdt:
@@ -632,7 +642,7 @@ cgf =======================================================
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
      &                etaday(i,j,bi,bj) / float(ndaysrec)
-                if ( igen_tp .NE. 0 ) then
+                if ( igen_tp .GT. 0 ) then
                   if ( tpma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_tp) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
@@ -644,7 +654,7 @@ cgf =======================================================
      &                 mean_psMtpobs_NUM(i,j,bi,bj) + 1. _d 0
                   endif
                 endif
-                if ( igen_ers .NE. 0 ) then
+                if ( igen_ers .GT. 0 ) then
                   if ( ersma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_ers) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
@@ -656,7 +666,7 @@ cgf =======================================================
      &                 mean_psMersobs_NUM(i,j,bi,bj) + 1. _d 0
                   endif
                 endif
-                if ( igen_gfo .NE. 0 ) then
+                if ( igen_gfo .GT. 0 ) then
                   if ( gfoma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_gfo) .NE. 0. ) then
                    mean_slaobs_model(i,j,bi,bj)=
@@ -771,7 +781,7 @@ c--   Do a global summation.
 
 catn--- add warning that written mean_slaobs_model is all zero
 c       due to having less data points that hardcoded num0
-      num0total=0. _d 0
+        num0total=0. _d 0
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -781,7 +791,7 @@ c       due to having less data points that hardcoded num0
             enddo
           enddo
         enddo
-      if(num0total.lt.1. _d 0) then
+      if(num0total.LT.1. _d 0) then
         write(msgbuf,'(A,i5,A)')
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are <',num0,' pts'
       call print_message( msgbuf, errormessageunit,
@@ -797,8 +807,8 @@ c       due to having less data points that hardcoded num0
       endif
 catn-------
 
-      if (igen_gmsl.NE.0) then
-       if (offset_sum .eq. 0.0) then
+      if (igen_gmsl.GT.0) then
+       if (offset_sum .EQ. 0.0) then
         if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( myThid )
         write(msgbuf,'(a)') ' sshv4: offset_sum = zero!'
@@ -806,7 +816,7 @@ catn-------
      &                          SQUEEZE_RIGHT , myThid)
         _END_MASTER( myThid )
         endif
-c        stop   '  ... stopped in cost_ssh.'
+c       stop   '  ... stopped in cost_ssh.'
        else
         if (gencost_outputlevel(igen_gmsl).GT.0) then
         _BEGIN_MASTER( myThid )
@@ -817,10 +827,15 @@ c        stop   '  ... stopped in cost_ssh.'
         _END_MASTER( myThid )
         endif
        endif
+c     endif igen_gmsl .gt. 0
       endif
 
 c--   Compute (average) offset
-      offset = offset / offset_sum
+      if ( offset_sum.NE.0. _d 0 ) then
+        offset = offset / offset_sum
+      else
+        offset = 0. _d 0
+      endif
 
 c--   subtract offset from mean_psMssh_all and psmean
       do bj = jtlo,jthi
@@ -859,44 +874,35 @@ c use the simpler approach
       enddo
 
 c--    smooth mean_psMssh_all
-      if (igen_mdt.NE.0) then
+      if (igen_mdt.GT.0) then
        if (gencost_outputlevel(igen_mdt).GT.0) then
         write(fname4test(1:80),'(1a)') 'mdtdiff_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_psMssh_all, 1, 1, myThid )
-       endif
-
-#ifdef ALLOW_SMOOTH
-       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_psMssh_all,maskInC,
-     &     gencost_posproc_c(k2_mdt,igen_mdt),
-     &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
-#endif
-
-       if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        mean_psMssh_all, 1, 1, myThid )
-       endif
-
-       if (gencost_outputlevel(igen_mdt).GT.0) then
         write(fname4test(1:80),'(1a)') 'sla2model_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_slaobs_model, 1, 1, myThid )
        endif
 
 #ifdef ALLOW_SMOOTH
-       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_model,maskInC,
+       if ( useSMOOTH.AND.(k2_mdt.GT.0) ) then
+        call smooth_hetero2d(mean_psMssh_all,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
-#endif
+        call smooth_hetero2d(mean_slaobs_model,maskInC,
+     &     gencost_posproc_c(k2_mdt,igen_mdt),
+     &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
-       if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sla2model_smooth'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        mean_slaobs_model, 1, 1, myThid )
+        if (gencost_outputlevel(igen_mdt).GT.0) then
+         write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         mean_psMssh_all, 1, 1, myThid )
+         write(fname4test(1:80),'(1a)') 'sla2model_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         mean_slaobs_model, 1, 1, myThid )
+        endif
        endif
+#endif
 
 cgf at this point:
 cgf     1) mean_psMssh_all is the sample mean <etaday-slaobs-mdt-offset>,
@@ -922,7 +928,7 @@ cgf =======================================================
        endif
        objf_gencost(bi,bj,igen_mdt) = objf_gencost(bi,bj,igen_mdt)
      &      + junk*junk*junkweight
-       if ( junkweight .ne. 0. ) num_gencost(bi,bj,igen_mdt) =
+       if ( junkweight .NE. 0. ) num_gencost(bi,bj,igen_mdt) =
      &      num_gencost(bi,bj,igen_mdt) + 1. _d 0
        diagnosfld(i,j,bi,bj) = junk*junk*junkweight
           enddo
@@ -935,7 +941,7 @@ cgf =======================================================
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        diagnosfld, 1, 1, myThid )
        endif
-c     endif igen_mdt .ne. 0
+c     endif igen_mdt .gt. 0
       endif
 
 cgf =======================================================
@@ -947,7 +953,7 @@ cgf =======================================================
 
 catn add a warning if have less nrecday than the hardcoded 35days
       tempinteger=ndaysrec-ndaysave+1
-      if(tempinteger.lt.1) then
+      if(tempinteger.LT.1) then
         write(msgbuf,'(A,i5)')
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are < ',ndaysave
       call print_message( msgbuf, errormessageunit,
@@ -1110,7 +1116,7 @@ c ----------------------------------------
       slaoffset_sum = 0. _d 0
       slaoffset_weight = 0. _d 0
 
-      if (igen_lsc.NE.0) then
+      if (igen_lsc.GT.0) then
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -1135,28 +1141,35 @@ c Since slaoffset is itself area weighted, however, the total weight is only app
       _GLOBAL_SUM_RL( slaoffset_weight , myThid )
       _GLOBAL_SUM_RL( slaoffset_sum , myThid )
 
-       if (slaoffset_sum .eq. 0.0) then
-        if (gencost_outputlevel(igen_gmsl).GT.0) then
-        _BEGIN_MASTER( myThid )
-        write(msgbuf,'(a)') ' sshv4: slaoffset_sum = zero!'
-        call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , myThid)
-        _END_MASTER( myThid )
-        endif
+       if (igen_gmsl.GT.0) then
+        if (slaoffset_sum .EQ. 0.0) then
+         if (gencost_outputlevel(igen_gmsl).GT.0) then
+         _BEGIN_MASTER( myThid )
+         write(msgbuf,'(a)') ' sshv4: slaoffset_sum = zero!'
+         call print_message( msgbuf, standardmessageunit,
+     &                           SQUEEZE_RIGHT , myThid)
+         _END_MASTER( myThid )
+         endif
 c        stop   '  ... stopped in cost_ssh.'
-       else
-        if (gencost_outputlevel(igen_gmsl).GT.0) then
-        _BEGIN_MASTER( myThid )
-        write(msgbuf,'(a,3d22.15)') ' sshv4:slaoffset,sum,weight=',
-     &         slaoffset,slaoffset_sum,slaoffset_weight
-        call print_message( msgbuf, standardmessageunit,
-     &                          SQUEEZE_RIGHT , myThid)
-        _END_MASTER( myThid )
+        else
+         if (gencost_outputlevel(igen_gmsl).GT.0) then
+         _BEGIN_MASTER( myThid )
+         write(msgbuf,'(a,3d22.15)') ' sshv4:slaoffset,sum,weight=',
+     &          slaoffset,slaoffset_sum,slaoffset_weight
+         call print_message( msgbuf, standardmessageunit,
+     &                           SQUEEZE_RIGHT , myThid)
+         _END_MASTER( myThid )
+         endif
         endif
+c      endif igen_gmsl .gt. 0
        endif
 
 c--   Compute (average) slaoffset
-       slaoffset = slaoffset / slaoffset_sum
+       if (slaoffset_sum.NE.0. _d 0) then
+        slaoffset = slaoffset / slaoffset_sum
+       else
+        slaoffset = 0. _d 0
+       endif
 
 c--   Subtract slaoffset from anom_psMslaobs
         do bj = jtlo,jthi
@@ -1192,26 +1205,24 @@ c ----------------------------------------
       endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_psMslaobs,maskInC,
+      if ( useSMOOTH.AND.(k2_lsc.GT.0) ) then
+        call smooth_hetero2d(anom_psMslaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
-#endif
+        call smooth_hetero2d(anom_slaobs,maskInC,
+     &     gencost_posproc_c(k2_lsc,igen_lsc),
+     &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 
-      if (gencost_outputlevel(igen_lsc).GT.0) then
-#ifdef ALLOW_SMOOTH
-        if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_slaobs,maskInC,
-     &     gencost_posproc_c(k2_lsc,igen_lsc),
-     &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
-#endif
-        write(fname4test(1:80),'(1a)') 'sladiff_smooth'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        anom_psMslaobs, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_smooth'
-        CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                        anom_slaobs, irec, 1, myThid )
+        if (gencost_outputlevel(igen_lsc).GT.0) then
+         write(fname4test(1:80),'(1a)') 'sladiff_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         anom_psMslaobs, irec, 1, myThid )
+         write(fname4test(1:80),'(1a)') 'slaobs_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         anom_slaobs, irec, 1, myThid )
+        endif
       endif
+#endif
 
 c PART 4.3: compute cost function term
 c ------------------------------------
@@ -1250,14 +1261,14 @@ c ------------------------------------
      &                        anom_slaobs_SUB, irec, 1, myThid )
        endif
 
-c     endif igen_lsc .ne. 0
+c     endif igen_lsc .gt. 0
       endif
 
 c PART 4.4: compute cost function term for global mean sea level
 c --------------------------------------------------------------
 
-      IF ( ( MASTER_CPU_THREAD(myThid).AND.(igen_gmsl.NE.0) ).AND.
-     &     ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
+      IF ( MASTER_CPU_THREAD(myThid) .AND. ( igen_gmsl.GT.0 )
+     &     .AND. ( slaoffset_sum.GT.0.25 _d 0 * globalArea ) ) THEN
           junk=slaoffset
           junkweight=1. _d 0
           objf_gencost(1,1,igen_gmsl) = objf_gencost(1,1,igen_gmsl)
@@ -1368,7 +1379,7 @@ c time associated with this ndaysrec mean
         enddo
        enddo
 
-      if ( igen_tp .NE. 0 ) then
+      if ( igen_tp .GT. 0 ) then
        if (gencost_outputlevel(igen_tp).GT.0) then
         write(fname4test(1:80),'(1a)') 'sladiff_tp_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
@@ -1379,7 +1390,7 @@ c time associated with this ndaysrec mean
        endif
       endif
 
-      if ( igen_ers .NE. 0 ) then
+      if ( igen_ers .GT. 0 ) then
        if (gencost_outputlevel(igen_ers).GT.0) then
         write(fname4test(1:80),'(1a)') 'sladiff_ers_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
@@ -1390,7 +1401,7 @@ c time associated with this ndaysrec mean
        endif
       endif
 
-      if ( igen_gfo .NE. 0 ) then
+      if ( igen_gfo .GT. 0 ) then
        if (gencost_outputlevel(igen_gfo).GT.0) then
         write(fname4test(1:80),'(1a)') 'sladiff_gfo_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
@@ -1400,7 +1411,7 @@ c time associated with this ndaysrec mean
      &                        anom_gfoobs, irec, 1, myThid )
        endif
       endif
-      if ( igen_tp .NE. 0 ) then
+      if ( igen_tp .GT. 0 ) then
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
@@ -1412,7 +1423,7 @@ c--             The array psobs contains SSH anomalies.
                 junk = anom_psMtpobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_tp) =
      &              objf_gencost(bi,bj,igen_tp)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_tp) =
      &              num_gencost(bi,bj,igen_tp) + 1. _d 0
           enddo
@@ -1420,7 +1431,7 @@ c--             The array psobs contains SSH anomalies.
         enddo
        enddo
       endif
-      if ( igen_ers .NE. 0 ) then
+      if ( igen_ers .GT. 0 ) then
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
@@ -1432,7 +1443,7 @@ c--             The array ersobs contains SSH anomalies.
                 junk = anom_psMersobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_ers) =
      &               objf_gencost(bi,bj,igen_ers)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_ers) =
      &              num_gencost(bi,bj,igen_ers) + 1. _d 0
           enddo
@@ -1440,7 +1451,7 @@ c--             The array ersobs contains SSH anomalies.
         enddo
        enddo
       endif
-      if ( igen_gfo .NE. 0 ) then
+      if ( igen_gfo .GT. 0 ) then
        do bj = jtlo,jthi
         do bi = itlo,ithi
          do j = jmin,jmax
@@ -1452,7 +1463,7 @@ c--             The array gfoobs contains SSH anomalies.
                 junk = anom_psMgfoobs(i,j,bi,bj)
                 objf_gencost(bi,bj,igen_gfo) =
      &              objf_gencost(bi,bj,igen_gfo)+junk*junk*junkweight
-                if ( junkweight .ne. 0. )
+                if ( junkweight .NE. 0. )
      &              num_gencost(bi,bj,igen_gfo) =
      &              num_gencost(bi,bj,igen_gfo) + 1. _d 0
           enddo
@@ -1461,7 +1472,7 @@ c--             The array gfoobs contains SSH anomalies.
        enddo
       endif
 
-      enddo
+      enddo !do irec = 1, ndaysrec-ndaysave+1
 
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 

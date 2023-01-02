@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix out-of-bound array index issue in cost_gencost_sshv4.F;
+  - fix a small bug in same S/R (skipping call to smooth_hetero2d(anom_slaobs, )
+    if gencost_outputlevel(igen_lsc)=0.);
+  - in same S/R, skip output of "_smooth" file  when smoothing is not applied.
 o pkg/ctrl:
   - enable initial sea ice area/heff controls with correct definition of control
     indices;
