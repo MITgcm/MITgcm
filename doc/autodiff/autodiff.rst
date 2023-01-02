@@ -1810,12 +1810,12 @@ While the MITgcm source files are prepared to generate adjoint sensitivities, th
 We detail the instructions here, but the latest instructions can always be found `here. <http://www-sop.inria.fr/ecuador/tapenade/distrib/README.html>`__
 
 Prerequisites for Linux or Mac OS X
-"""""""""""""""""""""""""""""""""""
+-----------------------------------
 
 Before installing Tapenade, you must check that an up-to-date Java Runtime Environment is installed. Tapenade will not run with older Java Runtime Environment.
 
 Steps for Linux or Mac OS X
-"""""""""""""""""""""""""""
+---------------------------
 
 1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
 
@@ -1830,12 +1830,12 @@ Steps for Linux or Mac OS X
 4. On Linux, depending on your distribution, Tapenade may require you to set the shell variable ``JAVA_HOME`` to your java installation directory. It is often ``JAVA_HOME=/usr/java/default``. You might also need to modify the ``PATH`` by adding the bin directory from the Tapenade installation. An example can be found :ref:`here <tapenade_bashrc_snippet>`.
 
 Prerequisites for Windows
-"""""""""""""""""""""""""
+-------------------------
 
 Before installing Tapenade, you must check that an up-to-date Java Runtime Environment is installed. Tapenade will not run with older Java Runtime Environment. The Fortran parser of Tapenade uses `cygwin <https://www.cygwin.com/>`__.
 
 Steps for Windows
-"""""""""""""""""
+-----------------
 
 1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
 
@@ -1875,7 +1875,7 @@ For more information on the tapenade command and its arguments, type :
     tapenade -?
 
 Building MITgcm adjoint with Tapenade
-"""""""""""""""""""""""""""""""""""""
+-------------------------------------
 
 .. rubric:: Footnotes
 
