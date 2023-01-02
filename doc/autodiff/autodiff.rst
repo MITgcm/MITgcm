@@ -1814,8 +1814,6 @@ Prerequisites for Linux or Mac OS X
 
 Before installing Tapenade, you must check that an up-to-date Java Runtime Environment is installed. Tapenade will not run with older Java Runtime Environment.
 
-**NOTE**: Alternatively, a Tapenade version that works correctly with SICOPOLIS-AD v2 is always available in the ``test_ad/tapenade_supported`` directory.
-
 Steps for Linux or Mac OS X
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1834,8 +1832,6 @@ Steps for Linux or Mac OS X
 Prerequisites for Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**NOTE**: Although Tapenade can be built on Windows, SICOPOLIS requires a Unix-like system (e.g., Linux), as mentioned :ref:`here <sico_prerequisites>`.
-
 Before installing Tapenade, you must check that an up-to-date Java Runtime Environment is installed. Tapenade will not run with older Java Runtime Environment. The Fortran parser of Tapenade uses `cygwin <https://www.cygwin.com/>`__.
 
 Steps for Windows
@@ -1844,8 +1840,6 @@ Steps for Windows
 1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
 
 2. Download `tapenade_3.16.zip <http://www-sop.inria.fr/ecuador/tapenade/distrib/tapenade_3.16.zip>`__ into your chosen installation directory *install_dir*.
-
-**NOTE**: Alternatively, a Tapenade version that works correctly with SICOPOLIS-AD v2 is always available in the ``test_ad/tapenade_supported`` directory.
 
 3. Go to your chosen installation directory *install_dir*, and extract Tapenade from the zip file.
 
@@ -1857,11 +1851,11 @@ replace ``BROWSER="C:\Program Files\Internet Explorer\iexplore.exe"`` by your cu
 
 .. _tapenade_bashrc_snippet:
 
-**NOTE**: Every time you wish to use the adjoint capability of SICOPOLIS-AD, you must re-source the environment. We recommend that this be done automatically in your bash or c-shell profile upon login. An example of an addition to a ``.bashrc`` file from a Linux server is given below. Luckily, shell variable ``JAVA_HOME`` was not required to be explicitly set for this particular Linux distribution, but might be necessary for some other distributions.
+**NOTE**: Every time you wish to use the AD capability with Tapenade, you must re-source the environment. We recommend that this be done automatically in your bash or c-shell profile upon login. An example of an addition to a ``.bashrc`` file from a Linux server is given below. Luckily, shell variable ``JAVA_HOME`` was not required to be explicitly set for this particular Linux distribution, but might be necessary for some other distributions.
 
 ::
 
-    ##set some env variables for SICOPOLIS tapenade
+    ##set some env variables for tapenade
 
     export TAPENADE_HOME="/home/shreyas/tapenade_3.16"
     export PATH="$PATH:$TAPENADE_HOME/bin"
