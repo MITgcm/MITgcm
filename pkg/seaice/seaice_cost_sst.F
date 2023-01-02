@@ -69,7 +69,8 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
-#if (defined ALLOW_COST && defined ALLOW_SEAICE_COST_SMR_AREA)
+#if (defined ALLOW_COST && defined ALLOW_CAL && \
+     defined ALLOW_SEAICE_COST_SMR_AREA)
 
 c     == local variables ==
 
@@ -120,6 +121,9 @@ c     == end of interface ==
 C- jmc: params SEAICE_freeze has been retired; set it locally until someone
 C       who knows what this cost-cointribution means fix it.
       _RL SEAICE_freeze
+C--   none of this works if the calendar packages is not used, so we add
+C--   this if statement
+      IF ( useCAL ) THEN
       SEAICE_freeze  = -1.96  _d 0
 
       jtlo = myByLo(myThid)
@@ -358,7 +362,10 @@ c--   End of second loop over records.
 c--   End of mult_local or localobsfile
       endif
 
-#endif /* ifdef ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
+C     End of useCAL
+      ENDIF
+
+#endif /* ifdef ALLOW_COST and ALLOW_CAL and ALLOW_SEAICE_COST_SMR_AREA */
 
       RETURN
       END

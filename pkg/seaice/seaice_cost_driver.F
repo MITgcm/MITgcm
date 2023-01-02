@@ -26,22 +26,20 @@ c     ==================================================================
 
 c     == global variables ==
 #include "EEPARAMS.h"
-#if (defined (ALLOW_COST) && \
-     defined (ALLOW_SEAICE_COST_SMR_AREA))
+#if (defined ALLOW_COST && defined ALLOW_CAL && \
+     defined ALLOW_SEAICE_COST_SMR_AREA)
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
+#include "cal.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif
 #include "SEAICE_COST.h"
-#endif /* ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
+#endif /* ALLOW_COST and ALLOW_CAL and ALLOW_SEAICE_COST_SMR_AREA */
 
 c     == routine arguments ==
 
@@ -49,8 +47,8 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
-#if (defined (ALLOW_COST) && \
-     defined (ALLOW_SEAICE_COST_SMR_AREA))
+#if (defined ALLOW_COST && defined ALLOW_CAL && \
+     defined ALLOW_SEAICE_COST_SMR_AREA)
 
 c     == local variables ==
       character*(max_len_mbuf) msgbuf
@@ -70,7 +68,7 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      if (useSEAICE) then
+      if (useSEAICE .AND. useCAL) then
 
       write(msgbuf,'(a)') 'ph-cost call cost_smrarea'
       call print_message( msgbuf, standardmessageunit,
@@ -123,6 +121,7 @@ c read the area dat file and compare against the averaged salinity file
 
       endif
 
-#endif /* ALLOW_COST and ALLOW_SEAICE_COST_SMR_AREA */
+#endif /* ALLOW_COST and ALLOW_CAL and ALLOW_SEAICE_COST_SMR_AREA */
+      return
 
       end

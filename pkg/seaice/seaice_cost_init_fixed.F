@@ -53,6 +53,7 @@ C     == end of interface ==
 
       _BEGIN_MASTER( myThid )
 
+      IF ( useCAL ) THEN
 C--   Sea-ice cost function start and stop times in model seconds.
         call cal_FullDate  ( costIceStart1 , costIceStart2,
      &                       tempDate1     , mythid )
@@ -77,6 +78,7 @@ C--
      &   call cal_FullDate( smrareastartdate1, smrareastartdate2,
      &                      smrareastartdate,  mythid )
 
+      ENDIF
       _END_MASTER( mythid )
 
 #endif /* ALLOW_CAL */

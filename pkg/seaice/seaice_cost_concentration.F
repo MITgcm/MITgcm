@@ -75,7 +75,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) localbarfile
       character*(MAX_LEN_FNAM) localobsfile
 
-#ifdef ALLOW_COST
+#if (defined ALLOW_COST && defined ALLOW_CAL)
 #if (defined ALLOW_SEAICE_COST_SMR_AREA || defined ALLOW_COST_ICE)
 
 c     == local variables ==
@@ -123,6 +123,10 @@ c     == external functions ==
       external ilnblnk
 
 c     == end of interface ==
+
+C--   none of this works if the calendar packages is not used, so we add
+C--   this if statement
+      IF ( useCAL ) THEN
 
       jtlo = myByLo(myThid)
       jthi = myByHi(myThid)
@@ -175,7 +179,6 @@ cnew(
 
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
       dayiter = hoursperday*(irec-1)+modeliter0
-
       call cal_getdate( dayiter, daytime, daydate, myThid )
       call cal_convdate( daydate,yday,md,dd,sd,ld,wd,myThid )
       ymod = smrareastartdate(1)/10000
@@ -396,8 +399,11 @@ c--   End of second loop over records.
 c--   End of mult_local or localobsfile
       endif
 
+C     End of useCAL
+      ENDIf
+
 #endif /* ifdef ALLOW_SEAICE_COST_SMR_AREA */
-#endif /* ifdef ALLOW_COST */
+#endif /* ifdef ALLOW_COST and ALLOW_CAL */
 
       RETURN
       END
