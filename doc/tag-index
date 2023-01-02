@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - Add code in pkg/ggl90 to parameterize Langmuir Circulation (LC) effects on
+    vertical mixing (useLANGMUIR=T); follows: Tak et al, Ocean Modelling, 2023;
+  - Primary effect is to increase mixing length scale due to LC ; the stokes
+    velocity term is also included in the momentum equation (Coriolis term);
+  - Tested in new secondary test "gglLC" in exp. "vermix".
 o pkg/ecco:
   - fix out-of-bound array index issue in cost_gencost_sshv4.F;
   - fix a small bug in same S/R (skipping call to smooth_hetero2d(anom_slaobs, )
