@@ -90,7 +90,6 @@ c     == local variables ==
       integer  il
       integer localrec
       integer obsrec
-      integer cost_iprec
 
       logical doglobalread
       logical ladinit
@@ -136,7 +135,6 @@ C--   this if statement
       jmax = sNy
       imin = 1
       imax = sNx
-      cost_iprec = precFloat32
 
 c--   Initialise local variables.
 
@@ -243,7 +241,7 @@ cnew(
           print *,'calling mdsreadfile',fname2,localrec
 #endif
 
-          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
+          CALL READ_REC_3D_RL( fname2, cost_ice_iprec, nnzobs,
      &                         localobs, localrec, 1, myThid )
         else
           do bj = jtlo,jthi

@@ -181,10 +181,10 @@ C--   SEAICE parameters
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
-     &          mult_ice_export, mult_ice, cost_ice_flag,
+     &          mult_ice_export, mult_ice,
      &          costIceStart1, costIceStart2,
      &          costIceEnd1, costIceEnd2,
-     &          cost_ice_flag,
+     &          cost_ice_flag, cost_ice_iprec,
      &          SEAICE_clamp_salt, SEAICE_clamp_theta,
      &          SEAICE_cutoff_area, SEAICE_cutoff_heff,
      &          mult_smrsst, smrsstbarfile,
@@ -596,6 +596,7 @@ C-    end retired parameters
       costIceEnd1       =  0
       costIceEnd2       =  0
       cost_ice_flag     =  1
+      cost_ice_iprec    =  precFloat32
       SEAICE_clamp_salt  = 27.5   _d 0
       SEAICE_clamp_theta = 0.0001 _d 0
       SEAICE_cutoff_area = 0.0001 _d 0

@@ -43,7 +43,6 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec,nnz
-      integer cost_iprec
       _RL frame(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 c     == end of interface ==
@@ -56,7 +55,6 @@ c     == end of interface ==
       jmax = sNy+OLy
       imin = 1-OLx
       imax = sNx+OLx
-      cost_iprec = precFloat32
 
 c--   Define frame.
       do j = jmin,jmax
@@ -85,7 +83,7 @@ c--
       irec  = 1
       k     = 1
       if ( smrarea_errfile .NE. ' ' ) then
-         CALL READ_REC_3D_RL( smrarea_errfile, cost_iprec, nnz,
+         CALL READ_REC_3D_RL( smrarea_errfile, cost_ice_iprec, nnz,
      &                        wsmrarea, irec, 0, myThid )
          do bj = jtlo,jthi
            do bi = itlo,ithi

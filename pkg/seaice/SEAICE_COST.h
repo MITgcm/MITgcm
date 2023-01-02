@@ -65,8 +65,10 @@ c     objf_ice    - sea-ice volume
 c     cost_ice_flag  - cost_ice flag (see cost_ice.F)
 
       common /seaice_cost_i/
-     &                           cost_ice_flag
+     &                           cost_ice_flag,
+     &                           cost_ice_iprec
       integer cost_ice_flag
+      integer cost_ice_iprec
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
       _RL smrareabar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
