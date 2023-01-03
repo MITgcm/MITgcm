@@ -782,7 +782,7 @@ C     ... across x-faces
          ENDDO
         ENDDO
 C     ... across y-faces
-
+        DO i=1-OLx,sNx+OLx
          dfy(i,1-OLy)=0. _d 0
         ENDDO
         DO j=1-OLy+1,sNy+OLy
