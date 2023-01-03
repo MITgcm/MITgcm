@@ -1,0 +1,238 @@
+# $Id: F95GeneralLib,v 1.1 10/.0/.1 .1:.2:.2 vmp Exp $
+
+function rank:
+  intrinsic:
+  shape: (param 1, 
+          result)
+  type:  (metavar array, integer())
+
+function associated:
+  intrinsic:
+  shape: (param 1, destofparam 1, result)
+  type: (pointerType(metavar target), none(), boolean())
+  ReadNotWritten:     (1, 0, 0)
+  ReadThenWritten:    (0, 0, 0)
+  NotReadThenWritten: (0, 0, 1)
+
+function associated:
+  intrinsic:
+  shape: (param 1, destofparam 1, param 2, result)
+  type: (pointerType(metavar target), none(), metavar target, boolean())
+  ReadNotWritten:     (1, 0, 0, 0)
+  ReadThenWritten:    (0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1)
+
+function allocated:
+  intrinsic:
+  shape: (param 1, destofparam 1, result)
+  type: (pointerType(metavar void), none(), boolean())
+  ReadNotWritten:     (1, 0, 0)
+  ReadThenWritten:    (0, 0, 0)
+  NotReadThenWritten: (0, 0, 1)
+
+function size:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(metavar type, dimColons()), integer())
+  derivative: binary(call(none(),ident size, expressions(metavar X)), none(), expressions())
+  ReadNotWritten:     (0, 0)
+  ReadThenWritten:    (0, 0)
+  NotReadThenWritten: (0, 1)        
+
+function size:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (arrayType(metavar type, dimColons()), integer(), integer())
+  derivative: binary(call(none(),ident size, expressions(metavar X, metavar Y)), none(), expressions())
+  ReadNotWritten:     (0, 1, 0)
+  ReadThenWritten:    (0, 0, 0)
+  NotReadThenWritten: (0, 0, 1)
+
+function present:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar arg, boolean())
+  ReadNotWritten: (0, 0)
+  NotReadThenWritten: (0, 1)
+  derivative: binary(call(none(),ident present, expressions(metavar X)),
+                 none(),
+                 none())
+
+function precision:
+  intrinsic:
+  shape: (param 1, result)
+  type: (float(), integer())
+  ReadNotWritten: (0, 0)
+  NotReadThenWritten: (0, 1)
+
+function range:
+  intrinsic:
+  shape: (param 1, result)
+  type: (float(), integer())
+  ReadNotWritten: (0, 0)
+  NotReadThenWritten: (0, 1)
+
+function spread:
+  intrinsic:
+  shape: (param 1, param 2, param 3, result)
+  type: (metavar type, integer(), integer(), arrayType(metavar type, dimColons()))
+  derivative : binary(call(none(), ident spread, 
+                           expressions(metavar X, metavar DIM, metavar MASK)),
+                      none(),
+                      expressions(binary(metavar X, none(), realCst 1.0)))
+
+function shape:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar array, arrayType(integer(), dimColons()))
+    ReadNotWritten:    (1 0)
+    NotReadThenWritten:(0 1)
+
+function reshape:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (arrayType(metavar float, dimColons()), arrayType(integer(), dimColons()), arrayType(metavar float, dimColons()))
+  NotReadNotWritten: (0 0 0)
+  ReadNotWritten:    (1 1 0)
+  NotReadThenWritten:(0 0 1)
+  ReadThenWritten:   (0 0 0)
+
+function trim:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(character(), dimColons(dimColon(none(), none()))),
+         arrayType(character(), dimColons(dimColon(none(), none()))))
+
+function adjustl:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(character(), dimColons(dimColon(none(), none()))),
+         arrayType(character(), dimColons(dimColon(none(), none()))))
+
+function adjustr:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(character(), dimColons(dimColon(none(), none()))),
+         arrayType(character(), dimColons(dimColon(none(), none()))))
+
+function count:
+  intrinsic:
+  shape: (param 1, result)
+  type:  (arrayType(boolean(), dimColons()),
+          integer())
+
+function all:
+  intrinsic:
+  shape: (param 1, result)
+  type:  (arrayType(boolean(), dimColons()),
+          boolean())
+
+function epsilon:
+  intrinsic:
+  shape: (param 1, result)
+  type:  (float(), float())
+
+function length:
+  intrinsic:
+  shape: (param 1, result)
+  type:  (arrayType(metavar array, dimColons()), integer())
+
+function product:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(metavar float, dimColons()),
+         metavar float)
+
+function iargc:
+  intrinsic:
+  shape: (result)
+  type: (integer())
+
+subroutine getarg:
+  intrinsic:
+  shape: (param 1, param 2)
+  type: (integer(), arrayType(character(), dimColons(dimColon(none(), none()))))
+
+function ior:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (arrayType(metavar integer, dimColons()),
+         metavar integer,
+         metavar integer)
+
+function scan:
+  intrinsic:
+  shape: (param 1, param 2, param 3,  result)
+  type: (arrayType(character(), dimColons(dimColon(none(), none()))),
+         arrayType(character(), dimColons(dimColon(none(), none()))),
+     boolean(),
+     metavar integer) 
+
+function null:
+  intrinsic:
+  shape: (result)
+  type: (pointerType(metavar void))
+  derivative: binary(call(none(),ident null, expressions()),
+       none(),
+       none())
+
+function iand:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (arrayType(metavar integer, dimColons()),
+         metavar integer,
+         metavar integer)
+
+function achar:
+  intrinsic:
+  shape: (param 1, result)
+  type: (integer(), character())
+
+function iachar:
+  intrinsic:
+  shape: (param 1, result)
+  type: (character(), integer()) 
+
+subroutine random_seed:
+  intrinsic:
+  shape: (param 1)
+  type: (integer())
+  derivative: binary(call(none(),ident size, expressions(metavar X)),
+        none(),
+        expressions())
+
+subroutine random_seed:
+  intrinsic:
+  shape: (param 1)
+  type: (arrayType(integer(), dimColons()))
+  derivative: binary(call(none(),ident size, expressions(metavar X)),
+        none(),
+        expressions())
+
+subroutine random_number:
+  intrinsic:
+  shape: (param 1)
+  type: (float())
+  NotReadNotWritten: (0)
+  ReadNotWritten: (0)
+  NotReadThenWritten: (1)
+  ReadThenWritten: (0)
+
+subroutine random_number:
+  intrinsic:
+  shape: (param 1)
+  type: (arrayType(float(), dimColons()))
+  NotReadNotWritten: (0)
+  ReadNotWritten: (0)
+  NotReadThenWritten: (1)
+  ReadThenWritten: (0)
+
+function merge:
+  intrinsic:
+  shape: (param 1, param 2, param 3, result)
+  type: (metavar arg, metavar arg, boolean(), metavar arg)
+
+subroutine exit:
+  intrinsic:
+  shape: (param 1)
+  type: (integer())

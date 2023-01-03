@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+if [ "$(uname)" = "Linux" ]
+then
+    UOPTION=-c
+else
+    UOPTION=-f
+fi
+
+function optionO() {
+  PREVIOUS=''
+  for OPTION in "${@}"
+  do
+      if [[ $PREVIOUS == "-O" ]]
+      then
+	  case $OPTION in
+              /*)
+		  VOLUME=$OPTION
+		  ;;
+	      *)
+		  SUBDIR=`find $PWD -wholename \*${OPTION}\* -and -type d`
+		  if [[ -z "$SUBDIR" ]]
+	          then
+		      VOLUME=${PWD}/${OPTION}
+		  fi
+		  ;;
+           esac
+      fi
+      PREVIOUS="${OPTION}"
+  done
+}
+
+optionO "$@"
+
+if [ -z "$VOLUME" ]
+then
+    docker container run --rm -u $(stat $UOPTION "%u:%g" ./) -v ${PWD}:${PWD} -w ${PWD} registry.gitlab.inria.fr/tapenade/tapenade "$@"
+else
+    docker container run --rm -u $(stat $UOPTION "%u:%g" ./) -v ${PWD}:${PWD} -v ${VOLUME}:${VOLUME} -w ${PWD} registry.gitlab.inria.fr/tapenade/tapenade "$@"
+fi

@@ -1,0 +1,1065 @@
+function sin:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident sin, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(), call(none(), ident cos, expressions(metavar X)))))
+
+function sinh:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident sinh, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), call(none(), ident cosh, expressions(metavar X)))))
+
+function asin:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident asin, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+		          div(realCst 1.0, call(none(), ident sqrt, expressions(sub(realCst 1.0, power(metavar X, intCst 2))))))))
+
+function cos:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident cos, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), minus(call(none(), ident sin, expressions(metavar X))))))
+
+function cosh:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident cosh, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), call(none(), ident sinh, expressions(metavar X)))))
+
+function acos:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident acos, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+		          div(realCst -1.0, call(none(), ident sqrt, expressions(sub(realCst 1.0, power(metavar X, intCst 2))))))))
+
+function tan:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident tan, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+                          add(realCst 1.0, power(call(none(), ident tan, expressions(metavar X)), intCst 2)))))
+
+function tanh:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident tanh, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+               sub(realCst 1.0,power(call(none(), ident tanh, expressions(metavar X)), intCst 2)))))
+
+function atan:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident atan, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+		          div(realCst 1.0, add(realCst 1.0, power(metavar X, intCst 2))))))
+
+function atan2:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident atan2, expressions(metavar X, metavar Y)),
+       div(realCst 1.0, add(power(metavar X, intCst 2), power(metavar Y, intCst 2))),
+       expressions(binary(metavar X, none(), metavar Y),
+		   binary(metavar Y, none(), minus(metavar X))))
+
+function sign:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  deps : (id,
+          id,
+          1,0,0)
+  type: (metavar float, metavar float, metavar float)
+  derivative : binary(call(none(), ident sign, expressions(metavar X, metavar Y)),
+       none(),
+       expressions(binary(metavar X, none(),
+                          call(none(), ident sign, expressions(realCst 1.0,
+                               mul(metavar X, metavar Y))))))
+
+function sngl:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, metavar float)
+  derivative : binary(call(none(), ident sngl, expressions(metavar X)),
+       none(),
+       expressions())
+
+function sqrt:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident sqrt, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(),
+                          div(realCst 1.0, mul(realCst 2.0, metavar TOP_EXPRESSION)))))
+
+function exp:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident exp, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), call(none(), ident exp, expressions(metavar X)))))
+
+function log:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident log, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), div(realCst 1.0, metavar X))))
+
+function log10:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident log10, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), div(realCst 1.0, mul(metavar X, call(none(), ident log, expressions(realCst 10.0)))))))
+
+function pow:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident pow, expressions(metavar X, metavar Y)),
+                      none(),
+                      expressions(binary(metavar X,none(),mul(metavar Y, call(none(), ident pow, expressions(metavar X, sub(metavar Y, intCst 1))))),
+                                  binary(metavar Y,none(),mul(call(none(), ident log, expressions(metavar X)), call(none(), ident pow, expressions(metavar X, metavar Y))))))
+
+function dprod:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident dprod, expressions(metavar X, metavar Y)),
+       none(),
+       expressions(binary(metavar X, none(), metavar Y),
+		   binary(metavar Y, none(), metavar X)))
+
+function float:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar integer, float())
+  derivative : binary(call(none(), ident float, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), realCst 1.0)))
+
+function dble:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar integer, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident dble, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), realCst 1.0)))
+
+function index:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  derivative : binary(call(none(), ident index, expressions(metavar X, metavar Y)),
+       none(),
+       expressions())
+
+function nint:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, integer())
+  derivative : binary(call(none(), ident nint, expressions(metavar X)),
+       none(),
+       expressions())
+
+function int:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, integer())
+  derivative : binary(call(none(), ident int, expressions(metavar X)),
+       none(),
+       expressions())
+
+function aint:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, integer())
+  derivative : binary(call(none(), ident aint, expressions(metavar X)),
+       none(),
+       expressions())
+
+function mod:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, metavar float)
+  derivative : binary(call(none(), ident mod, expressions(metavar X, metavar Y)),
+       none(),
+       expressions(binary(metavar X, none(), realCst 1.0),
+                   binary(metavar Y, none(), minus(call(none(), ident int,
+                                                        expressions(div(metavar X, metavar Y)))))))
+
+function fminf:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, metavar float)
+  inline :
+function
+modifiers
+endOfList
+metavar
+float
+none
+metavar
+fminf
+varDeclarations
+varDeclaration
+none
+metavar
+float
+declarators
+metavar
+x
+metavar
+y
+endOfList
+endOfList
+blockStatement
+assign
+metavar
+fminf
+ifExpression
+gt
+metavar
+x
+metavar
+y
+metavar
+y
+metavar
+x
+endOfList
+
+function fmin:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()))
+  inline :
+function
+modifiers
+endOfList
+metavar
+float
+none
+metavar
+fmin
+varDeclarations
+varDeclaration
+none
+metavar
+float
+declarators
+metavar
+x
+metavar
+y
+endOfList
+endOfList
+blockStatement
+assign
+metavar
+fmin
+ifExpression
+gt
+metavar
+x
+metavar
+y
+metavar
+y
+metavar
+x
+endOfList
+
+function fmaxf:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (metavar float, metavar float, metavar float)
+  inline :
+function
+modifiers
+endOfList
+metavar
+float
+none
+metavar
+fmaxf
+varDeclarations
+varDeclaration
+none
+metavar
+float
+declarators
+metavar
+x
+metavar
+y
+endOfList
+endOfList
+blockStatement
+assign
+metavar
+fmaxf
+ifExpression
+gt
+metavar
+x
+metavar
+y
+metavar
+x
+metavar
+y
+endOfList
+
+function fmax:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  type: (modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()))
+  inline :
+function
+modifiers
+endOfList
+metavar
+float
+none
+metavar
+fmax
+varDeclarations
+varDeclaration
+none
+metavar
+float
+declarators
+metavar
+x
+metavar
+y
+endOfList
+endOfList
+blockStatement
+assign
+metavar
+fmax
+ifExpression
+gt
+metavar
+x
+metavar
+y
+metavar
+x
+metavar
+y
+endOfList
+
+function fabs:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar float, metavar float)
+  inline :
+function
+modifiers
+endOfList
+metavar
+real
+none
+metavar
+fabs
+varDeclarations
+varDeclaration
+none
+metavar
+real
+declarators
+metavar
+x
+endOfList
+endOfList
+blockStatement
+if
+ge
+metavar
+x
+realCst
+0.0
+blockStatement
+assign
+metavar
+fabs
+metavar
+x
+endOfList
+blockStatement
+assign
+metavar
+fabs
+minus
+metavar
+x
+endOfList
+endOfList
+
+function real:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar integer, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident real, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), realCst 1.0)))
+
+subroutine exit:
+  intrinsic:
+  shape: (param 1)
+  type: (integer())
+
+function __builtin_isnan:
+  external:
+  shape: (param 1, result)
+  type:  (float(), integer())
+  ReadNotWritten:     (1, 0)
+  NotReadThenWritten: (0, 1)
+
+function __assert_fail:
+  external:
+  shape: (param 1, param 2, param 3, param 4, result)
+  type:  (pointerType(character()), pointerType(character()), integer(), metavar pointer1, integer())
+  ReadNotWritten:     (1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 1)
+
+function strlen:
+  external:
+  shape: (param 1, result)
+  type:  (pointerType(character()), modifiedType(modifiers(ident unsigned, ident long), integer()))
+  ReadNotWritten:     (1, 0)
+  NotReadThenWritten: (0, 1)
+
+function strcmp:
+  external:
+  shape: (param 1, param 2, result)
+  type:  (pointerType(character()), pointerType(character()), modifiedType(modifiers(ident unsigned, ident long), integer()))
+  ReadNotWritten:     (1, 1, 0)
+  NotReadThenWritten: (0, 0, 1)
+
+function strncmp:
+  external:
+  shape: (param 1, param 2, param 3, result)
+  type:  (pointerType(character()), pointerType(character()), integer(), modifiedType(modifiers(ident unsigned, ident long), integer()))
+  ReadNotWritten:     (1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 1)
+
+function MPI_Send:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, result)
+  type:  (metavar pointer1, none(), integer(), none(), integer(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0)
+          
+function AMPI_Send:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1,  none(),  none(),  none(),  none(),  none(),  none(),  none(), none())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,  
+          0,0,0,0,0,0,0,0,0)
+
+function MPI_Isend:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), integer(), none(), integer(), integer(), none(), metavar pointer2, integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 1, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0)
+          
+function AMPI_Isend:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1,  none(), none(),  none(),  none(),  none(),  none(),  none(),  none(),  none())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,          
+          0,0,0,0,0,0,0,0,0,0
+          0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Recv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), integer(), none(), integer(), integer(), none(), metavar pointer2, integer())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 1, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0)
+          
+function AMPI_Recv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1,  none(), none(),  none(),  none(),  none(),  none(),  none(),  none(),  none())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 1, 0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,0,0,0,0,0,0,0,0,0
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,   
+          0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Irecv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), integer(), none(), integer(), integer(), none(), metavar pointer2, integer())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 1, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0)
+
+function AMPI_Irecv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(),  none(),  none(),  none(),  none(),  none(),  none(),  none(),  none())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 1, 0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Reduce:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer(), none(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 0, 1, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          0,1,0,1,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0)
+          
+function AMPI_Reduce:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, param 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), none(),  none(),  none(),  none(),  none(),  none())
+  ReadNotWritten:     (1, 1, 1, 0, 1, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          0,1,0,1,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Init:
+  external:
+  shape: (param 1, param 2, result)
+  type:  (metavar pointer1, metavar pointer2, integer())
+  ReadNotWritten:     (0 0 0)
+  NotReadThenWritten: (0 0 1)
+  ReadThenWritten:    (1 1 0)
+  
+function AMPI_Init_NT:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer())
+  ReadNotWritten:     (1 1 1 1 0)
+  NotReadThenWritten: (0 0 0 0 1)
+
+function MPI_Finalize:
+  external:
+  shape: (result)
+  type:  (integer())
+  ReadNotWritten:     (0)
+  NotReadThenWritten: (1)
+  
+function AMPI_Finalize_NT:
+  external:
+  shape: (result)
+  type:  (integer())
+  ReadNotWritten:     (0)
+  NotReadThenWritten: (1)
+
+function MPI_Comm_size:
+  external:
+  shape: (param 1, param 2, destofparam 2, result)
+  type:  (none(), metavar pointer, none(), integer())
+  ReadNotWritten:     (1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 1)
+  
+function AMPI_Comm_size:
+  external:
+  shape: (param 1, param 2, destofparam 2, result)
+  type:  (integer(), metavar pointer, none(), integer())
+  ReadNotWritten:     (1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 1)
+
+function MPI_Comm_rank:
+  external:
+  shape: (param 1, param 2, destofparam 2, result)
+  type:  (none(), metavar pointer, none(), integer())
+  ReadNotWritten:     (1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 1)
+  
+function AMPI_Comm_rank:
+  external:
+  shape: (param 1, param 2, destofparam 2, result)
+  type:  (integer(), metavar pointer, none(), integer())
+  ReadNotWritten:     (1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 1)
+
+function MPI_Wait:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer())
+  ReadNotWritten:     (1, 0, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 1)
+  ReadThenWritten:    (0, 1, 0, 0, 0)
+  
+function AMPI_Wait:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer())
+  ReadNotWritten:     (1, 0, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 1)
+  ReadThenWritten:    (0, 1, 0, 0, 0)
+
+function MPI_Waitany:
+  external:
+  shape: (param 1, param 2, param 3, param 4, destofparam 4, result)
+  type:  (integer(), none(), arrayType(integer(), dimColons()), metavar pointer2, none(), integer())
+  ReadNotWritten:     (1, 0, 0, 0, 1, 0)
+  NotReadThenWritten: (0, 0, 1, 1, 0, 1)
+  ReadThenWritten:    (0, 1, 0, 0, 0, 0)
+
+function MPI_Test:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, destofparam 3, result)
+  type:  (metavar pointer1, none(), arrayType(integer(), dimColons()), metavar pointer2, none(), integer())
+  ReadNotWritten:     (1, 0, 0, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 0, 1, 1)
+  ReadThenWritten:    (0, 1, 0, 0, 0, 0)
+
+function MPI_Get_count:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, result)
+  type:  (metavar pointer1, none(), none(), arrayType(integer(), dimColons()), integer())
+  ReadNotWritten:     (1, 1, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 1, 1, 1)
+
+function MPI_Barrier:
+  external:
+  shape: (param 1, result)
+  type:  (none(), integer())
+  ReadNotWritten:     (1, 0)
+  NotReadThenWritten: (0, 1)
+
+function MPI_Bcast:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, result)
+  type:  (metavar pointer1, none(), integer(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 1, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,1,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0)
+
+function AMPI_Bcast:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, param 5, result)
+  type:  (metavar pointer1, none(), integer(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 1, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          0,1,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0)
+
+function MPI_Scatter:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), none(), metavar pointer2, none(), integer(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Scatter:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), integer(), metavar pointer2, none(), integer(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Gather:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), none(), metavar pointer2, none(), integer(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Gather:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), integer(), metavar pointer2, none(), integer(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Allgather:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), integer(), none(), metavar pointer2, none(), integer(), none(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Allgather:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, param 6, param 7, result)
+  type:  (metavar pointer1, none(), integer(), integer(), metavar pointer2, none(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Scatterv:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, destofparam 3, param 4, param 5, destofparam 5, param 6, param 7, param 8, param 9, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), metavar pointer3, none(), none(), metavar pointer4, none(), integer(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Scatterv:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, destofparam 3, param 4, param 5, destofparam 5, param 6, param 7, param 8, param 9, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), metavar pointer3, none(), integer(), metavar pointer4, none(), integer(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Gatherv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, destofparam 5, param 6, destofparam 6, param 7, param 8, param 9, result)
+  type:  (metavar pointer1, none(), integer(), none(), metavar pointer2, none(), metavar pointer3, none(), metavar pointer4, none(), none(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Gatherv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, destofparam 5, param 6, destofparam 6, param 7, param 8, param 9, result)
+  type:  (metavar pointer1, none(), integer(), integer(), metavar pointer2, none(), metavar pointer3, none(), metavar pointer4, none(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Allgatherv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, destofparam 5, param 6, destofparam 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), none(), metavar pointer2, none(), metavar pointer3, none(), metavar pointer4, none(), none(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function AMPI_Allgatherv:
+  external:
+  shape: (param 1, destofparam 1, param 2, param 3, param 4, destofparam 4, param 5, destofparam 5, param 6, destofparam 6, param 7, param 8, result)
+  type:  (metavar pointer1, none(), integer(), integer(), metavar pointer2, none(), metavar pointer3, none(), metavar pointer4, none(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          id,
+          id,
+          0,1,0,0,0,0,0,0,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+function MPI_Allreduce:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, param 4, param 5, param 6, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer(), none(), none(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 0, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 0, 0, 1, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          0,1,0,1,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0)
+
+function AMPI_Allreduce:
+  external:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, param 4, param 5, param 6, result)
+  type:  (metavar pointer1, none(), metavar pointer2, none(), integer(), integer(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 1, 1, 0, 1, 1, 1, 1, 0)
+  ReadThenWritten:    (0, 0, 0, 1, 0, 0, 0, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 0, 0, 0, 0, 1)
+  deps : (id,
+          id,
+          id,
+          0,1,0,1,0,0,0,0,0,
+          id,
+          id,
+          id,
+          id,
+          0,0,0,0,0,0,0,0,0)
+
+function MPI_Comm_split:
+  external:
+  shape: (param 1, param 2, param 3, param 4, result)
+  type:  (none(), integer(), integer(), metavar pointer1, integer())
+  ReadNotWritten:     (1, 1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 1, 1)
+
+function MPI_Get_processor_name:
+  external:
+  shape: (param 1, param 2, result)
+  type:  (arrayType(character(), dimColons()), arrayType(integer(), dimColons()), integer())
+  ReadNotWritten:     (0, 0, 0)
+  NotReadThenWritten: (1, 1, 1)
+
+function MPI_Request_free:
+  external:
+  shape: (param 1, result)
+  type:  (none(), integer())
+  ReadNotWritten:     (0, 0)
+  NotReadThenWritten: (0, 1)
+  ReadThenWritten:    (1, 0)
+
+function MPI_Intercomm_create:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, result)
+  type:  (none(), integer(), none(), integer(), integer(), none(), integer())
+  ReadNotWritten:     (1, 1, 1, 1, 1, 0, 0)
+  NotReadThenWritten: (0, 0, 0, 0, 0, 1, 1)

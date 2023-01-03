@@ -1,0 +1,62 @@
+constant cudaMemcpyHostToDevice:
+  type : integer()
+
+constant cudaMemcpyDeviceToHost:
+  type : integer()
+
+function cudaMemcpy:
+  intrinsic:
+  shape: (param 1, destofparam 1, param 2, destofparam 2, param 3, param 4, result)
+  type: (pointerType(metavar target), none(), pointerType(metavar target), none(), integer(), integer(), integer())
+  ReadNotWritten:     (1, 0, 1, 1, 1, 1, 0)
+  NotReadThenWritten: (0, 1, 0, 0, 0, 0, 1)
+  deps: (id,
+         0, 1, 0, 1, 0, 0, 0,
+         id,
+         id,
+         id,
+         id,
+         0, 0, 0, 0, 0, 0, 0)
+
+function dim3:
+  intrinsic:
+  shape: (param 1, param 2, param 3, result)
+  type: (integer(), integer(), integer(), metavar dim3)
+  ReadNotWritten:     (1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 1)
+
+
+function norm3d:
+  external:
+  shape: (param 1, param 2, param 3, result)
+  type: (modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()), modifiedType(modifiers(ident double), float()))
+  ReadNotWritten:     (1, 1, 1, 0)
+  NotReadThenWritten: (0, 0, 0, 1)
+
+function cudaGetErrorString:
+  external:
+  shape: (param 1, result)
+  type: (integer(), pointerType(character()))
+  ReadNotWritten:     (1, 0)
+  NotReadThenWritten: (0, 1)
+
+function cudaDeviceSynchronize:
+  external:
+  shape: (result)
+  type: (integer())
+  ReadNotWritten:     (0)
+  NotReadThenWritten: (1)
+
+subroutine checkCuda:
+  external:
+  shape: (param 1)
+  type: (integer())
+  ReadNotWritten:     (1)
+  NotReadThenWritten: (0)
+
+function cudaGetLastError:
+  external:
+  shape: (result)
+  type: (integer())
+  ReadNotWritten:     (0)
+  NotReadThenWritten: (1)

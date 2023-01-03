@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+if [ "$(uname)" = "Linux" ]; then
+  TAPENADE_HOME="$(dirname -- "$(readlink -f -- "$0")")"/..
+else
+  REFDIR="$(cd "$(dirname "$0")" && pwd)"
+  TAPENADE_HOME="$REFDIR"/..
+fi
+
+if [ -n "$JAVA_HOME" ]; then
+  JAVA_BIN="$JAVA_HOME"/bin/java
+else
+  JAVA_BIN=java
+fi
+
+# -java options:
+
+for PARAM in "$@"; do
+  if [ "$PARAM" = "-java" ]; then
+    JAVA_RANK="-java"
+  else
+    if [ "$JAVA_RANK" = "-java" ]; then
+      JAVA_OPTION="$PARAM"
+    fi
+    JAVA_RANK="undef"
+  fi
+done
+
+if [ -n "$BROWSER" ]; then
+  BROWSER=$BROWSER
+else
+  BROWSER=
+fi
+
+TJARPATH=$TAPENADE_HOME/build/libs/tapenade-3.16.jar
+
+# echo $0 $*
+
+"$JAVA_BIN" -ea $JAVA_OPTION -Dfile.encoding=ISO-8859-15 -Djava_home="$JAVA_HOME" -Dtapenade_home="$TAPENADE_HOME" -Dbrowser="$BROWSER" -jar "$TJARPATH" "$@"

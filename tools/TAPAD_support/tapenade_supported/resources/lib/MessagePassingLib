@@ -1,0 +1,27 @@
+fortran prefix: mpi_ ampi_ 
+
+c prefix: MPI_ PMPI_ AMPI_
+
+SEND:
+
+send
+isend
+rsend
+irsend
+ssend
+issend
+bsend
+ibsend
+scatter
+gather
+
+RECEIVE:
+
+recv
+irecv
+
+OTHER:
+
+reduce
+allreduce
+bcast
