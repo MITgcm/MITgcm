@@ -17,7 +17,7 @@ Usage: "$0" [OPTIONS]
     -help | --help | -h | --h
 	  Print this help message and exit.
 
-    -tap | --tap
+    -tapad | --tapad
           Generate a Makefile for a Tapenade build
 
     -oad | --oad
@@ -1515,7 +1515,7 @@ for ac_option in "$@" ; do
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
 
-	-tap | --tap)
+	-tapad | --tapad)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
 	-oad | --oad)
@@ -3635,8 +3635,8 @@ if test "x$TAPENADE" != x ; then
 
 # ============ begin TAPENADE specific section ==============
 
-EXECUTABLE_AD=$EXECUTABLE"_tap_ad"
-EXECUTABLE_TLM=$EXECUTABLE"_tap_tlm"
+EXECUTABLE_AD=$EXECUTABLE"_tapad_adj"
+EXECUTABLE_TLM=$EXECUTABLE"_tapad_tlm"
 
 cat >>$MAKEFILE <<EOF
 # ... TAPENADE ...
@@ -3685,7 +3685,7 @@ EXECUTABLE_TLM=${EXECUTABLE_TLM}
 adAll: ad_exe_target
 .PHONY: adAll
 
-tap_ad: ad_exe_target
+tapad_adj: ad_exe_target
 ad_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3693,7 +3693,7 @@ ad_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_AD)
 
-tap_tlm: tlm_exe_target
+tapad_tlm: tlm_exe_target
 tlm_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Tangent linear version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -4000,8 +4000,10 @@ if test $FC_CHECK = 5 ; then
 	echo "  > make adAll    (<-- adjoint executable)"
     elif test $ad != 0 ; then
 	echo "  > make depend"
-	echo "    > make adall  (<-- adjoint executable)"
-	echo " or > make ftlall (<-- tang-lin executable)"
+	echo "    > make adall  (<-- adjoint executable with TAF)"
+	echo " or > make ftlall (<-- tang-lin executable with TAF)"
+	echo "    > make tapad_adj  (<-- adjoint executable with Tapenade)"
+	echo " or > make tapad_tlm (<-- tang-lin executable with Tapenade)"
 	echo " or > make        (<-- forward executable)"
     else
 #	echo "  > make depend   (add dependencies to Makefile)"
