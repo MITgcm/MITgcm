@@ -1884,7 +1884,7 @@ For more information on the tapenade command and its arguments, type :
 Prerequisites for Tapenade setup
 --------------------------------
 
-The ``packages.conf`` file should include both the ``adjoint`` annd ``tapenade`` packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with Tapenade.
+The ``packages.conf`` file should include both the ``adjoint`` and ``tapenade`` packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with Tapenade. The users are referred to the ``code_tapad`` directories in the various verification experiments for reference. Pro tip - ``diff -qr dir1 dir2`` can help you see all the differences in the files of two directories.
 
 ``autodiff`` is not completely untangled from the Tapenade setup yet. In ``code_tapad/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is ``ALLOW_AUTODIFF_MONITOR``.
 
