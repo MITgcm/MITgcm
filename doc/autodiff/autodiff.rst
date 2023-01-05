@@ -1807,7 +1807,7 @@ Downloading and installing Tapenade
 
 While the MITgcm source files are prepared to generate adjoint sensitivities, they will not be able to do so without an operable installation of Tapenade. Fortunately the Tapenade installation procedure is straight forward.
 
-We detail the instructions here, but the latest instructions can always be found `here <http://www-sop.inria.fr/ecuador/tapenade/distrib/README.html>`__.
+We detail the instructions here, but the latest instructions can always be found `here <https://tapenade.gitlabpages.inria.fr/tapenade/distrib/README.html>`__.
 
 Prerequisites for Linux or Mac OS
 ---------------------------------
