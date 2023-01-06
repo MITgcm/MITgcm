@@ -2,6 +2,9 @@
     ==============================
 
 o pkg/ggl90:
+   - cleaning: remove maskS multiplication in ggl90_calc_visc.F (no equivalent
+     for KappaRU) and update "output_oadm.ggl90.txt" in OpenAD exp.
+o pkg/ggl90:
   - Add code in pkg/ggl90 to parameterize Langmuir Circulation (LC) effects on
     vertical mixing (useLANGMUIR=T); follows: Tak et al, Ocean Modelling, 2023;
   - Primary effect is to increase mixing length scale due to LC ; the stokes
