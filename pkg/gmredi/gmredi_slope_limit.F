@@ -149,7 +149,11 @@ C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
 CADJ INIT loctape_gm = COMMON, 1
 CADJ STORE dSigmaDr = loctape_gm
-C     alternatively one can use a global tape
+C
+C     Alternatively one can use a global tape, to be defined in
+C     the_main_loop.F. This option is still here but commented out with
+C     "c" (also in the_main_loop.F), in case we decide to go for larger
+C     memory overhead and fewer recomputations
 c      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 c      ikey = kPos + (k - 1  + (ikey - 1)*Nr)*3
 cCADJ STORE dSigmaDr = comlev1_gmredi_slope, key=ikey, byte=isbyte
@@ -187,11 +191,6 @@ C-      Cox 1987 "Slope clipping"
          ENDDO
         ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmMod(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-#endif
-
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( dSigmMod(i,j) .NE. zeroRL ) THEN
@@ -201,12 +200,6 @@ cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:)   = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:)   = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -220,11 +213,6 @@ cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -462,7 +450,6 @@ C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (dSigmaDr < 0) region :
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
@@ -477,12 +464,6 @@ CADJ STORE dSigmaDr = loctape_gm
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDx(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDy(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
