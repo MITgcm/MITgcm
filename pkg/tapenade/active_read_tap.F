@@ -1,5 +1,5 @@
 #include "CPP_EEOPTIONS.h"
-C--   File active_read_tapad.F: Active read with Tapenade.
+C--   File active_read_tap.F: Active read with Tapenade.
 C--    Contents:
 C--    o ACTIVE_READ_XY_D
 C--    o ACTIVE_READ_XYZ_D

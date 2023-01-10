@@ -17,7 +17,7 @@ Usage: "$0" [OPTIONS]
     -help | --help | -h | --h
 	  Print this help message and exit.
 
-    -tapad | --tapad
+    -tap | --tap
           Generate a Makefile for a Tapenade build
 
     -oad | --oad
@@ -1515,7 +1515,7 @@ for ac_option in "$@" ; do
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
 
-	-tapad | --tapad)
+	-tap | --tap)
 	    TAPENADE="true" ; ALWAYS_USE_F90=1 ;;
 
 	-oad | --oad)
@@ -1801,7 +1801,7 @@ if test "x${AD_OPTFILE}" = x ; then
     if test "x$MITGCM_AD_OF" != x ; then
 	AD_OPTFILE=$MITGCM_AD_OF
     elif test "x$TAPENADE" != x ; then
-	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_tapad
+	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_tap
     elif test "x$OPENAD" != x ; then
 	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_oad
     else
@@ -2833,8 +2833,8 @@ if test "x$TAPENADE" != x ; then
     TAP_DONT_TRANSFORM="/dev/null"
     TAP_KEEP_ORIGINAL="/dev/null"
     TAP_CB2M_FILES="/dev/null"
-    TAPTOOLS="$TOOLSDIR/TAPAD_support"
-    TAPTOOLSMK='$(TOOLSDIR)/TAPAD_support'
+    TAPTOOLS="$TOOLSDIR/TAP_support"
+    TAPTOOLSMK='$(TOOLSDIR)/TAP_support'
     echo "  looking for dontCompile file:  "
     for i in "." $MODS $TAPTOOLS ; do
 	if test -r $i"/dontCompile" ; then
@@ -3635,8 +3635,8 @@ if test "x$TAPENADE" != x ; then
 
 # ============ begin TAPENADE specific section ==============
 
-EXECUTABLE_AD=$EXECUTABLE"_tapad_adj"
-EXECUTABLE_TLM=$EXECUTABLE"_tapad_tlm"
+EXECUTABLE_AD=$EXECUTABLE"_tap_adj"
+EXECUTABLE_TLM=$EXECUTABLE"_tap_tlm"
 
 cat >>$MAKEFILE <<EOF
 # ... TAPENADE ...
@@ -3672,12 +3672,12 @@ AD_FILES_TLM=\$(AD_FILES:.f=_d.f)
 .PHONY: TAP_TLM_FILES
 TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_TLM)
-	tapenade -d -ext "${TAPTOOLS}/flow_tapad" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	tapenade -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 #
 .PHONY: TAP_ADJ_FILES
 TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_ADJ)
-	tapenade -b -ext "${TAPTOOLS}/flow_tapad" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	tapenade -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 
 EXECUTABLE_AD=${EXECUTABLE_AD}
 EXECUTABLE_TLM=${EXECUTABLE_TLM}
@@ -3685,7 +3685,7 @@ EXECUTABLE_TLM=${EXECUTABLE_TLM}
 adAll: ad_exe_target
 .PHONY: adAll
 
-tapad_adj: ad_exe_target
+tap_adj: ad_exe_target
 ad_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3693,7 +3693,7 @@ ad_exe_target:
 	@-rm -f ad_config.template
 	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_AD)
 
-tapad_tlm: tlm_exe_target
+tap_tlm: tlm_exe_target
 tlm_exe_target:
 	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Tangent linear version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -4002,8 +4002,8 @@ if test $FC_CHECK = 5 ; then
 	echo "  > make depend"
 	echo "    > make adall  (<-- adjoint executable with TAF)"
 	echo " or > make ftlall (<-- tang-lin executable with TAF)"
-	echo "    > make tapad_adj  (<-- adjoint executable with Tapenade)"
-	echo " or > make tapad_tlm (<-- tang-lin executable with Tapenade)"
+	echo "    > make tap_adj  (<-- adjoint executable with Tapenade)"
+	echo " or > make tap_tlm (<-- tang-lin executable with Tapenade)"
 	echo " or > make        (<-- forward executable)"
     else
 #	echo "  > make depend   (add dependencies to Makefile)"

@@ -1832,7 +1832,7 @@ Steps for Linux
 
     % tar xvfz tapenade_3.16.tar
 
-**NOTE**: Alternatively, a Tapenade version that works correctly with MITgcm is always available in the ``tools/TAPAD_support/tapenade_supported`` directory.
+**NOTE**: Alternatively, a Tapenade version that works correctly with MITgcm is always available in the ``tools/TAP_support/tapenade_supported`` directory.
 
 4. On Linux, depending on your distribution, Tapenade may require you to set the shell variable ``JAVA_HOME`` to your java installation directory. It is often ``JAVA_HOME=/usr/java/default``. You might also need to modify the ``PATH`` by adding the bin directory from the Tapenade installation. An example can be found :ref:`here <tapenade_bashrc_snippet>`.
 
@@ -1884,11 +1884,11 @@ For more information on the tapenade command and its arguments, type :
 Prerequisites for Tapenade setup
 --------------------------------
 
-The ``packages.conf`` file should include both the ``adjoint`` and ``tapenade`` packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with Tapenade. The users are referred to the ``code_tapad`` directories in the various verification experiments for reference. 
+The ``packages.conf`` file should include both the ``adjoint`` and ``tapenade`` packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with Tapenade. The users are referred to the ``code_tap`` directories in the various verification experiments for reference. 
 
 **Pro tip**: ``diff -qr dir1 dir2`` can help you see all the differences in the files of two directories.
 
-``autodiff`` is not completely untangled from the Tapenade setup yet. In ``code_tapad/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is ``ALLOW_AUTODIFF_MONITOR``.
+``autodiff`` is not completely untangled from the Tapenade setup yet. In ``code_tap/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is ``ALLOW_AUTODIFF_MONITOR``.
 
 Rest of the setup remains unchanged.
 
@@ -1905,20 +1905,20 @@ The setup remains similar to how one sets up the TLM with TAF. A typical flow wi
     make CLEAN
 
     ### Use your own optfile
-    ../../../tools/genmake2 -tapad -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tapad 
+    ../../../tools/genmake2 -tap -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tap 
     make depend
 
     ### Differentiate code to generate TLM code using Tapenade
-    ### Creates executable mitgcmuv_tapad_tlm
-    make -j 8 tapad_tlm
+    ### Creates executable mitgcmuv_tap_tlm
+    make -j 8 tap_tlm
 
     ### Rest of the setup is standard
     cd ../run
     rm -r *
-    ln -s ../input_tapad/* .
-    ../input_tapad/prepare_run
-    ln -s ../build/mitgcmuv_tapad_tlm .
-    ./mitgcmuv_tapad_tlm > output_tapad_tlm.txt 2>&1
+    ln -s ../input_tap/* .
+    ../input_tap/prepare_run
+    ln -s ../build/mitgcmuv_tap_tlm .
+    ./mitgcmuv_tap_tlm > output_tap_tlm.txt 2>&1
     
 Building MITgcm adjoint with Tapenade
 -------------------------------------
@@ -1932,21 +1932,21 @@ The setup remains similar to how one sets up the adjoint with TAF. A typical flo
     make CLEAN
 
     ### Use your own optfile
-    ../../../tools/genmake2 -tapad -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tapad 
+    ../../../tools/genmake2 -tap -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tap 
     make depend
 
     ### Differentiate code to generate adjoint code using Tapenade
-    ### Creates executable mitgcmuv_tapad_adj
-    make -j 8 tapad_adj
+    ### Creates executable mitgcmuv_tap_adj
+    make -j 8 tap_adj
 
     ### Rest of the setup is standard
     ### These commands are for a typical verification experiment
     cd ../run
     rm -r *
-    ln -s ../input_tapad/* .
-    ../input_tapad/prepare_run
-    ln -s ../build/mitgcmuv_tapad_adj . 
-    ./mitgcmuv_tapad_adj > output_tapad_adj.txt 2>&1
+    ln -s ../input_tap/* .
+    ../input_tap/prepare_run
+    ln -s ../build/mitgcmuv_tap_adj . 
+    ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
  
 .. rubric:: Footnotes
 
