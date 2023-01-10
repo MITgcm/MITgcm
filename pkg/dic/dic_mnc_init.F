@@ -76,17 +76,6 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('dic_fluxCO2_ave','description',
      &     '', myThid)
 
-#ifdef DIC_CALCITE_SAT
-      IF ( useCalciteSaturation ) THEN
-       CALL MNC_CW_ADD_VNAME(
-     &     'dic_OmegaC_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-       CALL MNC_CW_ADD_VATTR_TEXT(
-     &     'dic_OmegaC_ave','units','--', myThid)
-       CALL MNC_CW_ADD_VATTR_TEXT('dic_OmegaC_ave','description',
-     &     '', myThid)
-      ENDIF
-#endif
-
       CALL MNC_CW_ADD_VNAME(
      &     'dic_pflux_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT(
@@ -107,7 +96,6 @@ CEOP
      &     'dic_cflux_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dic_cflux_ave','description',
      &     '', myThid)
-
 
       ENDIF
 

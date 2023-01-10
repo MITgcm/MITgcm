@@ -56,8 +56,10 @@ C  myThid               :: thread number
       _RL myTime
       INTEGER myThid
 
-#ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
+C !FUNCTIONS:       ====================================================
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
@@ -98,18 +100,11 @@ C  freefe                 :: iron not bound to ligand
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER i,j,k
-#ifdef DIC_CALCITE_SAT
-      INTEGER nCALCITEstep
-#endif
 #ifdef ALLOW_FE
 # ifdef SEDFE
       INTEGER kBottom
 # endif
 #endif
-
-C !FUNCTIONS:       ====================================================
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -234,19 +229,8 @@ C- Carbonate sink
        ENDDO
 
 C carbonate
-       IF ( .NOT. useCalciteSaturation ) THEN
-C calcite dissolution occurs according to a power law scaled by zca 
-C    code follwing the old OCMIP way
-#ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
-#endif
-         CALL CAR_FLUX(
-     I                    CAR_S,
-     U                    cflux,
-     I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )       
 #ifdef DIC_CALCITE_SAT
-       ELSE       
+       IF ( useCalciteSaturation ) THEN
 C calcite dissolution occurs only below saturation horizon
 C    code following method by Karsten Friis
 C could be expensive, so find out if it is time to update the omega calcite
@@ -261,7 +245,6 @@ C    field (requires 3-d computation of pH).
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
         ENDIF
-
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('CAR_FLUX_OMEGA_TOP',myThid)
 #endif
@@ -270,9 +253,22 @@ C    field (requires 3-d computation of pH).
      O                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
      I                    myIter, myTime, myThid )
+       ELSE
 #endif /* DIC_CALCITE_SAT */
+C calcite dissolution occurs according to a power law scaled by zca
+C    code follwing the old OCMIP way
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CAR_FLUX',myThid)
+#endif
+         CALL CAR_FLUX(
+     I                    CAR_S,
+     U                    cflux,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myIter, myTime, myThid )
+#ifdef DIC_CALCITE_SAT
        ENDIF
-       
+#endif /* DIC_CALCITE_SAT */
+
 C add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jMin,jMax
@@ -396,10 +392,6 @@ C save averages
      &                             BIOac(i,j,k)*deltaTClock
             CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
      &                             CAR(i,j,k)*deltaTClock
-#ifdef DIC_CALCITE_SAT
-            OmegaCave(i,j,k,bi,bj)=OmegaCave(i,j,k,bi,bj)+
-     &                             OmegaC(i,j,k,bi,bj)*deltaTClock
-#endif
             pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
      &                             pflux(i,j,k)*deltaTClock
             epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +
@@ -450,7 +442,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 #endif /* DIC_BIOTIC */
-#endif /* ALLOW_PTRACERS */
 
        RETURN
        END
