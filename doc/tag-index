@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+   - in gmredi_slope_limit.F, fix tape keys by using local tapes.
 o pkg/ggl90:
    - cleaning: remove maskS multiplication in ggl90_calc_visc.F (no equivalent
      for KappaRU) and update "output_oadm.ggl90.txt" in OpenAD exp.
