@@ -73,18 +73,18 @@ C     =0 :: use Follows et al., (2006) solver;
 C     =1 :: use the GENERAL solver from Munhoven (2013);
 C     =2 :: use SEC solver  from Munhoven (2013);
 C     =3 :: use FAST solver from Munhoven (2013);
-C  useCalciteSaturation :: dissolve calcium carbonate below the calcite saturation
-C          horizon following method by Karsten Friis
+C  useCalciteSaturation :: dissolve calcium carbonate below the calcite
+C                          saturation horizon following method by Karsten Friis
 C  calcOmegaCalciteFreq :: Frequency that 3d calcite saturation state, omegaC,
-C          is calculated. 
-C  KierRateK            :: Rate constant (%) for calcite dissolution from  
-C          Kier (1980) Geochem. Cosmochem. Acta.
+C                          is calculated.
+C  KierRateK            :: Rate constant (%) for calcite dissolution from
+C                          Kier (1980) Geochem. Cosmochem. Acta.
 C  KierRateExp          :: Rate exponent for calcite dissolution from
-C          Kier (1980) Geochem. Cosmochem. Acta.
+C                          Kier (1980) Geochem. Cosmochem. Acta.
 C  WsinkPIC             :: sinking speed (m/s) of particulate inorganic carbon
-C          for calculation of calcite dissolution through the watercolumn
-C  selectCalciteBottomRemin :: flag to either remineralize in bottom or top layer if flux
-c          reaches bottom layer 0=bottom, 1=top 
+C                          for calcite dissolution through the watercolumn
+C  selectCalciteBottomRemin :: to either remineralize in bottom or top layer
+C                          if flux reaches bottom layer: =0 : bottom, =1 : top
 C   zca         :: scale depth for CaCO3 remineralization power law (m)
 C----
 
@@ -93,11 +93,9 @@ C----
      &  selectBTconst, selectFTconst,
      &  selectHFconst, selectK1K2const,
      &  selectPHsolver,
-     &  useCalciteSaturation, 
-#ifdef DIC_CALCITE_SAT
-     &  calcOmegaCalciteFreq, KierRateK, KierRateExp, 
+     &  useCalciteSaturation,
+     &  calcOmegaCalciteFreq, KierRateK, KierRateExp,
      &  WsinkPIC, selectCalciteBottomRemin,
-#endif
      &  zca
 
 #ifdef DIC_BIOTIC
@@ -133,7 +131,7 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
 
       NAMELIST /BIOTIC_PARMS/
      & DOPfraction, KDOPRemin, KRemin, zcrit,
-     & O2crit, R_OP, R_CP, R_NP, R_FeP, 
+     & O2crit, R_OP, R_CP, R_NP, R_FeP,
      & parfrac, k0, lit0, KPO4, KFE, kchl,
      & alpfe, fesedflux_pcm, FeIntSec, freefemax,
      & KScav, ligand_stab, ligand_tot,
@@ -160,20 +158,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        selectK1K2const = UNSET_I
        selectPHsolver  = UNSET_I
        useCalciteSaturation = .FALSE.
-#ifdef DIC_CALCITE_SAT
-C set calcite saturation calculation to every timestep - could be expensive       
+C-- Parameters used in Calcite Saturation calculation (useCalciteSaturation=T):
+C set calcite saturation calculation to every timestep - could be expensive
        calcOmegaCalciteFreq     = deltaTClock
-c flag to either remineralize in bottom or top layer if flux
-c reaches bottom layer 0=bottom, 1=top
+C flag to either remineralize in bottom or top layer if flux
+C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
-c set some nominal particulate sinking rate (m/s)
-c try 100m/day
+C set some nominal particulate sinking rate (m/s); try 100m/day:
        WsinkPIC                 = 100. _d 0/86400. _d 0
 C Kier rate exponent for calcite (4.2 for aragonite)
        KierRateExp              = 4.54 _d 0
 C Kier dissolution rate constant (%/day)
        KierRateK                = 7.177 _d 0
-#endif
+C-- setting default values for Calcite Saturation params ends here.
        zca                      = 3500. _d 0
 
 #ifdef DIC_BIOTIC
@@ -215,7 +212,7 @@ C Kier dissolution rate constant (%/day)
        dic_int3    = 0
        dic_int4    = 0
        dic_pCO2    = 278. _d -6
-c default periodic forcing to same as for physics
+C default periodic forcing to same as for physics
        DIC_forcingPeriod = externForcingPeriod
        DIC_forcingCycle  = externForcingCycle
 
@@ -382,25 +379,23 @@ C- namelist ABIOTIC_PARMS
      &  ' /* Atmosph. pressure conversion coeff (to Atm) */')
        CALL WRITE_0D_RL( zca, INDEX_NONE,'zca =',
      &  ' /* Scale depth for CaCO3 remineralization (m) */')
-       CALL WRITE_0D_L( useCalciteSaturation, INDEX_NONE, 
+       CALL WRITE_0D_L( useCalciteSaturation, INDEX_NONE,
      &  'useCalciteSaturation  =',
      &  '  /* Flag for omegaC calculation on/off */')
-#ifdef DIC_CALCITE_SAT
-      IF ( useCalciteSaturation ) THEN 
+      IF ( useCalciteSaturation ) THEN
        CALL WRITE_0D_RL( calcOmegaCalciteFreq, INDEX_NONE,
      &  'calcOmegaCalciteFreq =',
      &  ' /* Frequency of calcite saturation calculation (s) */')
        CALL WRITE_0D_RL( KierRateK, INDEX_NONE, 'KierRateK =',
-     &  ' /* Rate constant for calcite dissolution (%/day) */')     
+     &  ' /* Rate constant for calcite dissolution (%/day) */')
        CALL WRITE_0D_RL( KierRateExp, INDEX_NONE, 'KierRateExp =',
-     &  ' /* Rate exponent for calcite dissolution */')     
+     &  ' /* Rate exponent for calcite dissolution */')
        CALL WRITE_0D_RL( WsinkPIC, INDEX_NONE, 'WsinkPIC =',
      &  ' /* Sinking speed of particulate inorganic carbon (m/s) */')
-       CALL WRITE_0D_I( selectCalciteBottomRemin, INDEX_NONE, 
+       CALL WRITE_0D_I( selectCalciteBottomRemin, INDEX_NONE,
      &  'selectCalciteBottomRemin =',
-     &  ' /* Remineralize CO3 bottom flux (0) here or (1) top layer */')     
+     &  ' /* Remineralize CO3 bottom flux: =0: here, =1: top layer */')
       ENDIF
-#endif
 
 #ifdef DIC_BIOTIC
 C- namelist BIOTIC_PARMS
@@ -463,12 +458,10 @@ C- namelist DIC_FORCING
      & '  /* File name of atmospheric pressure*/')
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
      & 'DIC_silicaFile=','  /* File name of surface silica */')
-#ifdef DIC_CALCITE_SAT
       IF ( useCalciteSaturation ) THEN
        CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
      & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
       ENDIF
-#endif
        CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
        CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
@@ -566,9 +559,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* CARBONCHEM_SOLVESAPHE */
 
 #ifdef DIC_CALCITE_SAT
-C Issue a soft message if a deepSilicaFile is supplied 
+C Issue a soft message if a deepSilicaFile is supplied
 C    but will not be used because useCalciteSaturation is FALSE
-      IF ( DIC_deepSilicaFile .NE. ' ' .AND. 
+      IF ( DIC_deepSilicaFile .NE. ' ' .AND.
      &                        .NOT. useCalciteSaturation ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
      &    'to use: DIC_deepSilicaFile (3d silicate input)'
@@ -578,7 +571,7 @@ C    but will not be used because useCalciteSaturation is FALSE
          CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 #else
-C Issue an error and stop if useCalciteSaturation is TRUE but 
+C Issue an error and stop if useCalciteSaturation is TRUE but
 C    DIC_CALCITE_SATURATION code is not compiled
       IF ( useCalciteSaturation ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
@@ -590,7 +583,7 @@ C    DIC_CALCITE_SATURATION code is not compiled
         errCount = errCount + 1
       ENDIF
 
-C Issue an error and stop if deepSilicaFile is supplied but 
+C Issue an error and stop if deepSilicaFile is supplied but
 C    DIC_CALCITE_SATURATION code is not compiled
       IF ( DIC_deepSilicaFile .NE. ' '  ) THEN
         WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
