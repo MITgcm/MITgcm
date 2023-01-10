@@ -27,8 +27,12 @@ C     myThid               :: thread number
 CEOP
 
 #ifdef ALLOW_DIC
+#ifdef DIC_BIOTIC
       INTEGER i,j, bi,bj
+# ifdef DIC_CALCITE_SAT
       INTEGER k
+# endif
+#endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -59,15 +63,13 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
           ENDDO
         ENDDO
 #ifdef DIC_CALCITE_SAT
-        IF ( useCalciteSaturation ) THEN
-          DO k = 1, Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              omegaC(i,j,k,bi,bj) =  0. _d 0
-            ENDDO
-           ENDDO
+        DO k = 1, Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            omegaC(i,j,k,bi,bj) =  0. _d 0
           ENDDO
-        ENDIF
+         ENDDO
+        ENDDO
 #endif /* DIC_CALCITE_SAT */
        ENDDO
       ENDDO

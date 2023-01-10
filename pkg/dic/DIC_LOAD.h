@@ -7,7 +7,7 @@ C     chlinput      :: chlorophyll climatology input field [mg/m3]
      &    dicwind0, dicwind1, ice0, ice1, atmosp0, atmosp1,
      &    silicaSurf0, silicaSurf1
 #ifdef DIC_CALCITE_SAT
-     &    , silicaDeep0, silicaDeep1
+     &  , silicaDeep0, silicaDeep1
 #endif
 #ifdef READ_PAR
      &  , par0, par1

@@ -27,7 +27,10 @@ CEOP
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-       INTEGER bi,bj,i,j,k
+       INTEGER bi,bj,i,j
+#ifdef DIC_CALCITE_SAT
+      INTEGER k
+#endif
 #if (defined (READ_PAR) && defined (USE_QSW))
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
@@ -58,20 +61,18 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( chlinput,myThid )
 #endif
 #ifdef DIC_CALCITE_SAT
-      IF ( useCalciteSaturation ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            silicaDeep0(i,j,k,bi,bj) = 0. _d 0
-            silicaDeep1(i,j,k,bi,bj) = 0. _d 0
-           ENDDO
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           silicaDeep0(i,j,k,bi,bj) = 0. _d 0
+           silicaDeep1(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
+      ENDDO
 #endif
 
 #ifdef READ_PAR
@@ -105,7 +106,7 @@ C If the chlorophyll climatology is not provided, use this default value.
             InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
           ENDDO
-         ENDDO       
+         ENDDO
 #ifdef DIC_CALCITE_SAT
          IF ( useCalciteSaturation ) THEN
           DO k=1,Nr
@@ -115,7 +116,7 @@ C If the chlorophyll climatology is not provided, use this default value.
             ENDDO
            ENDDO
           ENDDO
-         ENDIF 
+         ENDIF
 #endif
 C-    end bi,bj loops
         ENDDO
