@@ -346,6 +346,41 @@ fields at output levels 1-5. The names of diagnostics quantities are
 does time averaging every 3600. seconds, includes fields with all
 levels, and the names of diagnostics quantities are ``THETA`` and ``SALT``.
 
+The :varlink:`fileflags` parameter is explained in
+:numref:`diagnostic_fileflags`.  Only the first three characters matter.  The
+first character determines the precision of the output files.  The default is
+to use :varlink:`writeBinaryPrec`.  The second character determines whether the
+fields are to be integrated or interpolated vertically or written as is (the
+default).  The third character is used to write hFac-weighted fields.  Whether
+this is permitted is determined by a diagnostic’s parsing code, see
+:numref:`diagnostic_parsing_array` and the file available_diagnostics.log for a
+given setup:  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
+``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.
+
+.. table:: Diagnostic fileflags
+   :name: diagnostic_fileflags
+
+   +---------------+-------+----------------------------------------------+
+   | Character pos | Value | Description                                  |
+   +===============+=======+==============================================+
+   | 1             | R     | precision: 32 bits                           |
+   +---------------+-------+----------------------------------------------+
+   |               | D     | precision: 64 bits                           |
+   +---------------+-------+----------------------------------------------+
+   |               |       | precision: writeBinaryPrec                   |
+   +---------------+-------+----------------------------------------------+
+   | 2             | I     | integrate vertically                         |
+   +---------------+-------+----------------------------------------------+
+   |               | P     | interpolate vertically                       |
+   +---------------+-------+----------------------------------------------+
+   |               |       | do not integrate or interpolate              |
+   +---------------+-------+----------------------------------------------+
+   | 3             | h     | cumulate hFac-weighted fields (if permitted) |
+   +---------------+-------+----------------------------------------------+
+   |               |       | do not include hFac                          |
+   +---------------+-------+----------------------------------------------+
+
+
 The user must assure that enough computer memory is allocated for the
 diagnostics and the output streams selected for a particular experiment.
 This is accomplished by modifying the file
