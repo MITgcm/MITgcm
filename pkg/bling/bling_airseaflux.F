@@ -110,6 +110,7 @@ C o2 solubility relation coefficients
       _RL stemp
       _RL oCnew
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (tile dependent)
       INTEGER ikey
 #endif
 CEOP

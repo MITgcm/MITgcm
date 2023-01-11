@@ -92,6 +92,7 @@ C                :: this field is superfluous if your cg2d is self-adjoint.
       INTEGER i, j, it2d
       INTEGER actualIts
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey       :: tape key (depends on iteration it2d)
       INTEGER ikey
 #else
       _RL    rhsNorm

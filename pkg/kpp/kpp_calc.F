@@ -200,6 +200,7 @@ cph(
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
       integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
+C     ikey :: tape key (depends on tiles)
       integer ikey
 CEOP
 

@@ -79,9 +79,8 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ikey
+C     tkey :: tape key (tile dependent)
+      INTEGER tkey
 # endif
 #else
       _RL rStarDhDt(1)
@@ -247,8 +246,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef NONLIN_FRSURF
 #  if (defined ALLOW_AUTODIFF_TAMC) && \
       (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE dEtaHdt(:,:,bi,bj) = comlev1_bibj, key = ikey, kind = isbyte
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE dEtaHdt(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
       IF (select_rStar .NE. 0) THEN
 #  ifndef DISABLE_RSTAR_CODE
@@ -266,7 +265,7 @@ C         except for deep-factor and rho factor.
       ENDIF
 #  if (defined ALLOW_AUTODIFF_TAMC) && \
       (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-CADJ STORE rStarDhDt = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE rStarDhDt = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
 # endif /* NONLIN_FRSURF */
 

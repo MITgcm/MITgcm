@@ -64,7 +64,8 @@ C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, kkey
+C     kkey :: tape key (depends on levels, tiles, and tracers)
+      INTEGER kkey
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -74,9 +75,9 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      ikey = trIdentity + (ikey-1)*maxpass
-      kkey = k + (ikey-1)*Nr
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = trIdentity + (kkey-1)*maxpass
+      kkey = k + (kkey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
        WRITE(msgBuf,'(A,2I5)')
      &      'GMREDI_RTRANSPORT: trIdentity > maxpass ',

@@ -54,6 +54,7 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, bi, bj
       INTEGER no_so
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (tile dependent)
       INTEGER ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
       _RL ReCountX(1-OLy:sNy+OLy,nSy)

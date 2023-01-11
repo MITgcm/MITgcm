@@ -106,6 +106,7 @@ C     i, j, k        :: loop indices
       _RL trAdvCFL(3,nSx,nSy)
 # endif /* ALLOW_MONITOR */
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (tile dependent)
       INTEGER ikey
 #endif
 CEOP

@@ -333,6 +333,8 @@ C
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey   :: tape key (tile dependent)
+C     ijkkey :: tape key (depends on i,j,k indices and tiles)
       INTEGER ikey, ijkkey
 #endif
 CEOP

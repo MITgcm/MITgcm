@@ -149,7 +149,10 @@ C     latent heat of evaporation or sublimation [J/kg]
       _RL qsat_fac
       _RL qsat_exp
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, ikey_exf, ikey_nb, ikey_ij
+C     ikey  :: tape key (depends on tiles and external iteration)
+C     nbkey :: tape key (depends on ikey and bulk formulae iteration)
+C     ijkey :: tape key (depends on nbkey,  and i,j indices)
+      INTEGER ikey, nbkey, ijkey
 #endif
 #ifdef ALLOW_DBUG_THSICE
       LOGICAL dBugFlag
@@ -201,8 +204,8 @@ C     initialisation of local arrays
       ENDDO
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey     = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      ikey_exf = (ikey-1)*MaxTsf + it2
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      ikey = (ikey-1)*MaxTsf + it2
 #endif
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -297,10 +300,10 @@ C--  calculate turbulent scales
 C     start iteration
        DO iter = 1,niter_bulk
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikey_nb = (ikey_exf-1)*niter_bulk + iter
-CADJ STORE ustar = comlev1_thsice_exf_niter, key = ikey_nb, kind=isbyte
-CADJ STORE qstar = comlev1_thsice_exf_niter, key = ikey_nb, kind=isbyte
-CADJ STORE tstar = comlev1_thsice_exf_niter, key = ikey_nb, kind=isbyte
+        nbkey = (ikey-1)*niter_bulk + iter
+CADJ STORE ustar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
+CADJ STORE qstar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
+CADJ STORE tstar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
 #endif
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -308,12 +311,10 @@ CADJ STORE tstar = comlev1_thsice_exf_niter, key = ikey_nb, kind=isbyte
      &         (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-           ikey_ij = iter
-     &             + niter_bulk*(i-1)
-     &             + niter_bulk*sNx*(j-1)
-     &             + (ikey_nb-1)*sNx*sNy
+           ijkey = iter + niter_bulk*(i-1) + niter_bulk*sNx*(j-1)
+     &                  + (nbkey-1)*sNx*sNy
 C     Not sure why this has to be done here and not outside the ij-loop.
-CADJ STORE rdn(i,j) = comlev1_thsice_5, key = ikey_ij, kind = isbyte
+CADJ STORE rdn(i,j) = comlev1_thsice_5, key = ijkey, kind = isbyte
 #endif
 
            t0     = atemp(i,j,bi,bj)*
@@ -397,11 +398,11 @@ C     end iteration loop
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing this routine in the ad-code (not
 C     strictly necessary)
-CADJ STORE rd    = comlev1_thsice_exf, key = ikey_exf, kind = isbyte
-CADJ STORE rh    = comlev1_thsice_exf, key = ikey_exf, kind = isbyte
-CADJ STORE re    = comlev1_thsice_exf, key = ikey_exf, kind = isbyte
-CADJ STORE qstar = comlev1_thsice_exf, key = ikey_exf, kind = isbyte
-CADJ STORE tstar = comlev1_thsice_exf, key = ikey_exf, kind = isbyte
+CADJ STORE rd    = comlev1_thsice_exf, key = ikey, kind = isbyte
+CADJ STORE rh    = comlev1_thsice_exf, key = ikey, kind = isbyte
+CADJ STORE re    = comlev1_thsice_exf, key = ikey, kind = isbyte
+CADJ STORE qstar = comlev1_thsice_exf, key = ikey, kind = isbyte
+CADJ STORE tstar = comlev1_thsice_exf, key = ikey, kind = isbyte
 #endif
        DO j=jMin,jMax
         DO i=iMin,iMax

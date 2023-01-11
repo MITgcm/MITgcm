@@ -201,6 +201,7 @@ C
       _RL tmp_ML
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (tile dependent)
       INTEGER ikey
 #endif
 CEOP

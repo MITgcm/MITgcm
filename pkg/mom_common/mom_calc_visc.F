@@ -106,7 +106,9 @@ C     !LOCAL VARIABLES:
       _RL shiftAh, shiftA4
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, kkey, ijkkey
+C     kkey   :: tape key (depends on levels and tiles)
+C     ijkkey :: tape key (depends on i,j-indices, levels, and tiles)
+      INTEGER kkey, ijkkey
 #endif
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
@@ -371,10 +373,10 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
-           ikey = i+OLx + (sNx+2*OLx)*(j+OLy-1)
-     &                  + (sNx+2*OLx)*(sNy+2*OLy)*(kkey-1)
-CADJ STORE viscA4_ZSmg(i,j) = comlev1_mom_ijk_loop,key=ikey,byte=isbyte
-CADJ STORE viscAh_ZSmg(i,j) = comlev1_mom_ijk_loop,key=ikey,byte=isbyte
+           ijkkey = i+OLx + (sNx+2*OLx)*(j+OLy-1)
+     &                    + (sNx+2*OLx)*(sNy+2*OLy)*(kkey-1)
+CADJ STORE viscA4_ZSmg(i,j)=comlev1_mom_ijk_loop,key=ijkkey,byte=isbyte
+CADJ STORE viscAh_ZSmg(i,j)=comlev1_mom_ijk_loop,key=ijkkey,byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

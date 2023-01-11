@@ -133,7 +133,10 @@ C     tendency due to advection of momentum
       _RL gVmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /*  SEAICE_ALLOW_MOM_ADVECTION */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, ikey2, ikey3
+C     nlkey :: tape key (depends on nonlinear iteration)
+C     lnkey :: tape key (depends on linear and nonlinear iteration)
+C     tkey  :: tape key (depends on tile indices and lnkey)
+      INTEGER nlkey, lnkey, tkey
 #endif
       _RL COSWAT
       _RS SINWAT
@@ -247,20 +250,20 @@ C     As a side effect, this avoids TAF recomputation warnings.
       DO ipass=1,nonLinIterLoc
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       ikey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
+       nlkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
 # ifdef SEAICE_ALLOW_FREEDRIFT
-CADJ STORE uice_fd, vice_fd = comlev1_dynsol, key = ikey, kind=isbyte
-CADJ STORE ures,vres        = comlev1_dynsol, key = ikey, kind=isbyte
+CADJ STORE uice_fd, vice_fd = comlev1_dynsol, key = nlkey, kind=isbyte
+CADJ STORE ures,vres        = comlev1_dynsol, key = nlkey, kind=isbyte
 # endif
-CADJ STORE utmp,vtmp        = comlev1_dynsol, key = ikey, kind=isbyte
+CADJ STORE utmp,vtmp        = comlev1_dynsol, key = nlkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( ipass .LE. nonLinIterLoc ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice    = comlev1_dynsol, key = ikey, kind=isbyte
-CADJ STORE vice    = comlev1_dynsol, key = ikey, kind=isbyte
-CADJ STORE uicenm1 = comlev1_dynsol, key = ikey, kind=isbyte
-CADJ STORE vicenm1 = comlev1_dynsol, key = ikey, kind=isbyte
+CADJ STORE uice    = comlev1_dynsol, key = nlkey, kind=isbyte
+CADJ STORE vice    = comlev1_dynsol, key = nlkey, kind=isbyte
+CADJ STORE uicenm1 = comlev1_dynsol, key = nlkey, kind=isbyte
+CADJ STORE vicenm1 = comlev1_dynsol, key = nlkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     surface level
@@ -325,12 +328,12 @@ C     bi/bj-loops
 #ifdef ALLOW_AUTODIFF_TAMC
 C     That is an important one! Note, that
 C     * lsr is called multiple times (twice by default), thus the
-C       ipass index is part of ikey
+C       ipass index is part of nlkey
 C     * this storing is still outside the lsr iteration loop
-CADJ STORE uice  = comlev1_dynsol, kind=isbyte, key = ikey
-CADJ STORE vice  = comlev1_dynsol, kind=isbyte, key = ikey
-CADJ STORE uicec = comlev1_dynsol, kind=isbyte, key = ikey
-CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = ikey
+CADJ STORE uice  = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE vice  = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE uicec = comlev1_dynsol, kind=isbyte, key = nlkey
+CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL SEAICE_CALC_STRAINRATES(
@@ -583,8 +586,8 @@ C--   Calculate initial residual of the linearised system
       ENDIF
       IF ( LSR_mixIniGuess.GE.2 ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice, vice = comlev1_dynsol, key = ikey, kind=isbyte
-CADJ STORE utmp, vtmp = comlev1_dynsol, key = ikey, kind=isbyte
+CADJ STORE uice, vice = comlev1_dynsol, key = nlkey, kind=isbyte
+CADJ STORE utmp, vtmp = comlev1_dynsol, key = nlkey, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -660,14 +663,14 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SEAICE_LSR_ADJOINT_ITER
-       ikey2 = (ikey-1)*SOLV_MAX_FIXED + MIN(m,SOLV_MAX_FIXED)
+       lnkey = (nlkey-1)*SOLV_MAX_FIXED + MIN(m,SOLV_MAX_FIXED)
 # else
-       ikey2 = ikey
+       lnkey = nlkey
 # endif /* SEAICE_LSR_ADJOINT_ITER */
 C     Storing these scalars and logicals is necessary to do an exact
 C     backward iteration
-CADJ STORE wfau, wfav = comlev1_lsr,  kind=isbyte, key = ikey2
-CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = ikey2
+CADJ STORE wfau, wfav = comlev1_lsr,  kind=isbyte, key = lnkey
+CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = lnkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( doIterate4u .OR. doIterate4v ) THEN
@@ -678,11 +681,11 @@ CADJ STORE doIterate4u, doIterate4v = comlev1_lsr, key = ikey2
         ENDIF
 
 # ifdef ALLOW_AUTODIFF_TAMC
-C     Note that ikey2 can get very large when SEAICE_LSR_ADJOINT_ITER
+C     Note that lnkey can get very large when SEAICE_LSR_ADJOINT_ITER
 C     is defined for an accurate adjoint, otherwise it is the same for
 C     each m, so that the tapes get overwritten for each iterate and
 C     the adjoint is necessarily wrong.
-CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = ikey2
+CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = lnkey
 # endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_GLOBAL_3DIAG_SOLVER
@@ -753,9 +756,9 @@ C     end bi,bj-loops
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          ikey3 = bi + (bj-1)*nSx + (ikey2-1)*nSx*nSy
-CADJ STORE uice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=ikey3
-CADJ STORE vice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=ikey3
+          tkey = bi + (bj-1)*nSx + (lnkey-1)*nSx*nSy
+CADJ STORE uice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=tkey
+CADJ STORE vice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=tkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-jmc: get fewer TAF warnings when always (no if doIterate) saving uIce,vIce:
 C     save u/vIce prior to iteration

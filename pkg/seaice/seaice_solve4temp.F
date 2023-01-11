@@ -153,6 +153,7 @@ C     local copies of global variables
 C     iceOrNot :: this is HICE_ACTUAL.GT.0.
       LOGICAL iceOrNot(1:sNx,1:sNy)
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (depends on iteration)
       INTEGER ikey
 #endif
 #ifdef SEAICE_DEBUG

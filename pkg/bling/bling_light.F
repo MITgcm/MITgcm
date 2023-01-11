@@ -96,6 +96,7 @@ C     === Local variables ===
       _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
+C     ikey :: tape key (tile dependent)
       INTEGER ikey
 #endif
 #endif /* PHYTO_SELF_SHADING */

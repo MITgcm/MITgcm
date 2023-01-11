@@ -71,6 +71,7 @@ c   bi, bj :: Array indices on which to apply calculations
 c   myTime :: Current time in simulation
 c   myIter :: Current iteration number in simulation
 c   myThid :: My Thread Id. number
+C     ikey :: tape key TAF-AD simulations (depends on tiles)
 c     kmtj   (imt)     - number of vertical layers on this row
 c     msk    (imt)     - surface mask (=1 if water, =0 otherwise)
 c     shsq   (imt,Nr)  - (local velocity shear)^2                     ((m/s)^2)

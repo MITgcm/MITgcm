@@ -70,7 +70,8 @@ C     !LOCAL VARIABLES:
       _RL slopeMaxSpec
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, kkey
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER kkey
 #endif
 CEOP
 
@@ -87,8 +88,8 @@ C     |sigmaX/Y| > 1.e+4
       loc_rMaxSlope = GM_rMaxSlope*rVel2wUnit(k)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      kkey   = (ikey-1)*Nr + k
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey   = (kkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
