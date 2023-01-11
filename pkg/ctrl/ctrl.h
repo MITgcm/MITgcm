@@ -45,6 +45,11 @@ cph set to 64 by default.
       _RL delZexp
       _RL forcingPrecond
 
+      common /controlparams_c/
+     &                       ctrlDir
+
+      CHARACTER*(MAX_LEN_FNAM) ctrlDir
+
 C     doInitXX            :: at iter 0 only, set ctrls to 0 and write
 C                            to xx*000.data
 C     doMainPack          :: pack adxx*data files into ecco_cost_* file
@@ -105,22 +110,22 @@ C                            (only used in pkg/autodiff ...)
       integer ncvarxmax     ( maxcvars )
       integer ncvarymax     ( maxcvars )
       integer ncvarnrmax    ( maxcvars )
-      integer nwetctile     ( nsx,nsy,nr )
-      integer nwetstile     ( nsx,nsy,nr )
-      integer nwetwtile     ( nsx,nsy,nr )
-      integer nwetvtile     ( nsx,nsy,nr )
-      integer nwetcglobal     ( nr )
-      integer nwetsglobal     ( nr )
-      integer nwetwglobal     ( nr )
-      integer nwetvglobal     ( nr )
+      integer nwetctile     ( nSx,nSy,Nr )
+      integer nwetstile     ( nSx,nSy,Nr )
+      integer nwetwtile     ( nSx,nSy,Nr )
+      integer nwetvtile     ( nSx,nSy,Nr )
+      integer nwetcglobal     ( Nr )
+      integer nwetsglobal     ( Nr )
+      integer nwetwglobal     ( Nr )
+      integer nwetvglobal     ( Nr )
       integer nbuffglobal
 
 #ifdef ALLOW_SHELFICE
       common /controlvars_i_shifwflx/
      &     nwetitile, nwetiglobal, filenWetiGlobal
-      integer nwetitile     ( nsx,nsy,nr )
-      integer nwetiglobal     ( nr )
-      integer filenWetiGlobal(nr)
+      integer nwetitile     ( nSx,nSy,Nr )
+      integer nwetiglobal     ( Nr )
+      integer filenWetiGlobal(Nr)
 #endif /* ALLOW_SHELFICE */
 
       common /controlvars_c/
@@ -161,10 +166,10 @@ C                            (only used in pkg/autodiff ...)
       integer        filensx
       integer        filensy
       integer        filek
-      integer        filenWetcGlobal(nr)
-      integer        filenWetsGlobal(nr)
-      integer        filenWetwGlobal(nr)
-      integer        filenWetvGlobal(nr)
+      integer        filenWetcGlobal(Nr)
+      integer        filenWetsGlobal(Nr)
+      integer        filenWetwGlobal(Nr)
+      integer        filenWetvGlobal(Nr)
       integer        filencvarindex(maxcvars)
       integer        filencvarrecs(maxcvars)
       integer        filencvarxmax(maxcvars)
@@ -184,7 +189,7 @@ C                            (only used in pkg/autodiff ...)
 c     Define unit weight as a placeholder
       common /ctrl_weights_unit_r/
      &                        wunit
-      _RL wunit     (nr,nsx,nsy)
+      _RL wunit     (Nr,nSx,nSy)
 
       common /packnames_c/
      &                      yadmark,
@@ -234,11 +239,11 @@ C
       _RL xx_place_holder
 
 # ifdef ALLOW_GENARR2D_CONTROL
-      _RL xx_genarr2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,
+      _RL xx_genarr2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
      &                maxCtrlArr2D)
 # endif
 # ifdef ALLOW_GENARR3D_CONTROL
-      _RL xx_genarr3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy,
+      _RL xx_genarr3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &                maxCtrlArr3D)
 # endif
 

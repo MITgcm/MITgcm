@@ -125,8 +125,6 @@ C     drKp1, recip_drLoc
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
       INTEGER ikey
 # endif
 #endif
@@ -270,16 +268,7 @@ CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = ikey_dynamics - 1
-        ikey = (act1 + 1) + act2*max1
-     &                    + act3*max1*max2
-     &                    + act4*max1*max2*max3
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
 

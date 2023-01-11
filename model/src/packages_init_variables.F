@@ -118,13 +118,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
-# ifdef ALLOW_AUTODIFF_TAMC
-#  include "tamc.h"
-# endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
@@ -339,12 +335,19 @@ C--   Initialise float position
 #endif /* ALLOW_STREAMICE */
 
 #ifdef ALLOW_SHELFICE
+# ifdef ALLOW_AUTODIFF
+C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
+C  compiling pkg/autodiff (with "If useShelfIce" inside shelfice_init_varia.F)
+# else
       IF (useShelfIce) THEN
+# endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
 # endif
        CALL SHELFICE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
@@ -376,12 +379,19 @@ C--   Initialise float position
 
 #ifdef ALLOW_SEAICE
 C--   Initialize SEAICE model.
+# ifdef ALLOW_AUTODIFF
+C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
+C     compiling pkg/autodiff (with "If useSEAICE" inside seaice_init_varia.F)
+# else
       IF (useSEAICE) THEN
+# endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 # endif
        CALL SEAICE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
       ENDIF
+# endif
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_SALT_PLUME
