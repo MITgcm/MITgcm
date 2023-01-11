@@ -13,7 +13,7 @@ C !INTERFACE: ==========================================================
      U                      PTR_FE,
 #endif
      I                      bi, bj, iMin, iMax, jMin, jMax,
-     I                      myIter, myTime, myThid )
+     I                      myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C updates all the tracers for the effects of air-sea exchange, biological
@@ -38,8 +38,8 @@ c  PTR_DOP              :: dissolve organic phosphurous
 c  PTR_O2               :: oxygen
 C  PTR_FE               :: iron
 c  bi, bj               :: current tile indices
-C  myIter               :: current timestep
 C  myTime               :: current time
+C  myIter               :: current timestep
 C  myThid               :: thread number
       _RL  PTR_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -52,8 +52,8 @@ C  myThid               :: thread number
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER bi, bj, iMin, iMax, jMin, jMax
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef DIC_BIOTIC
@@ -160,7 +160,7 @@ C carbon air-sea interaction
      I                    PTR_DIC, PTR_ALK, PTR_PO4,
      O                    SURC,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 
 C alkalinity air-sea interaction
 #ifdef ALLOW_DEBUG
@@ -170,7 +170,7 @@ C alkalinity air-sea interaction
      I                    PTR_ALK,
      O                    SURA,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 
 #ifdef ALLOW_O2
 C oxygen air-sea interaction
@@ -181,7 +181,7 @@ C oxygen air-sea interaction
      I                    PTR_O2,
      O                    SURO,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_FE
@@ -200,23 +200,23 @@ C biological activity
        IF (debugMode) CALL DEBUG_CALL('BIO_EXPORT',myThid)
 #endif
        CALL BIO_EXPORT(
-     I               PTR_PO4,
+     I                    PTR_PO4,
 #ifdef ALLOW_FE
-     I               PTR_FE,
+     I                    PTR_FE,
 #endif
-     O               BIOac,
-     I               bi, bj, iMin, iMax, jMin, jMax,
-     I               myIter, myTime, myThid )
+     O                    BIOac,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myTime, myIter, myThid )
 
 C flux of po4 from layers with biological activity
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('PHOS_FLUX',myThid)
 #endif
        CALL PHOS_FLUX(
-     I               BIOac,
-     U               pflux, exportflux,
-     I               bi, bj, iMin, iMax, jMin, jMax,
-     I               myIter, myTime, myThid )
+     I                    BIOac,
+     U                    pflux, exportflux,
+     I                    bi, bj, iMin, iMax, jMin, jMax,
+     I                    myTime, myIter, myThid )
 
 C- Carbonate sink
        DO k=1,Nr
@@ -235,15 +235,15 @@ C calcite dissolution occurs only below saturation horizon
 C    code following method by Karsten Friis
 C could be expensive, so find out if it is time to update the omega calcite
 C    field (requires 3-d computation of pH).
-        IF ( DIFFERENT_MULTIPLE(calcOmegaCalciteFreq, myTime,
-     &                                    deltaTClock) ) THEN
+        IF ( DIFFERENT_MULTIPLE( calcOmegaCalciteFreq, myTime,
+     &                                    deltaTClock ) ) THEN
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('CALCITE_SATURATION',myThid)
 #endif
           CALL CALCITE_SATURATION(
      I                    PTR_DIC, PTR_ALK, PTR_PO4,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
         ENDIF
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('CAR_FLUX_OMEGA_TOP',myThid)
@@ -252,7 +252,7 @@ C    field (requires 3-d computation of pH).
      I                    BIOac,
      O                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
        ELSE
 #endif /* DIC_CALCITE_SAT */
 C calcite dissolution occurs according to a power law scaled by zca
@@ -264,7 +264,7 @@ C    code follwing the old OCMIP way
      I                    CAR_S,
      U                    cflux,
      I                    bi, bj, iMin, iMax, jMin, jMax,
-     I                    myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 #ifdef DIC_CALCITE_SAT
        ENDIF
 #endif /* DIC_CALCITE_SAT */

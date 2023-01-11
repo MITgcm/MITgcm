@@ -5,7 +5,7 @@ C !ROUTINE: DIC_FIELDS_LOAD
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_FIELDS_LOAD (
-     I           myIter, myTime, myThid )
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Read in fields needed for CO2,O2 fluxterms, silica for pH calculation
@@ -20,11 +20,11 @@ C !USES: ===============================================================
 #include "DIC_LOAD.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myIter               :: current timestep
 C  myTime               :: current time
+C  myIter               :: current timestep
 C  myThid               :: thread number
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_DIC

@@ -1,12 +1,12 @@
 #include "DIC_OPTIONS.h"
 
 CBOP
-C !ROUTINE: CAR_FLUX
+C !ROUTINE: CAR_FLUX_OMEGA_TOP
 
 C !INTERFACE: ==========================================================
       SUBROUTINE CAR_FLUX_OMEGA_TOP( bioac, cflux,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Calculate carbonate fluxes
@@ -23,15 +23,15 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  bioac                :: biological productivity
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-       INTEGER imin, imax, jmin, jmax, bi, bj
+      INTEGER imin, imax, jmin, jmax, bi, bj
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ===================================================
 C cflux                :: carbonate flux

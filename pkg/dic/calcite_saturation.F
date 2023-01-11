@@ -6,7 +6,7 @@ C !ROUTINE: CALCITE_SATURATION
 C !INTERFACE: ==========================================================
       SUBROUTINE CALCITE_SATURATION( PTR_DIC, PTR_ALK, PTR_PO4,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid )
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Calculate carbonate fluxes
@@ -21,15 +21,15 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myIter               :: current timestep
 C  myTime               :: current time
+C  myIter               :: current timestep
 C  myThid               :: thread number
        _RL  PTR_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ===================================================

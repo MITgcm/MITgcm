@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
 #endif
      O           bioac,
      I           bi,bj,iMin,iMax,jMin,jMax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 c !DESCRIPTION:
 C  Calculate biological activity and export
@@ -28,19 +28,19 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  PTR_PO4              :: phosphate tracer field
 C  PTR_FE               :: iron tracer field
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER iMin, iMax, jMin, jMax, bi, bj
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  bioac               :: biological productivity (will be split
