@@ -411,7 +411,8 @@ where :math:`\gamma_S =` :varlink:`SHELFICEsaltToHeatRatio` :math:`*
 assumed that :math:`\kappa_{I,S} =0`; moreover, the salinity of the ice
 shelf is generally neglected (:math:`S_{I}=0`).
 
-The budget equations for temperature :eq:`dTdzdiffus` and salinity
+The budget equations for temperature :eq:`jenkinsheatbudget` (with
+:eq:`dTdzdiffus`) and salinity
 :eq:`hellmersaltbalance`, together with the freezing point temperature of
 sea-water :eq:`hellmerfreeze`, form the so-called three-equation-model
 (e.g., Hellmer and Olbers (1989) :cite:`hellmer:89`, Jenkins et al. (2001)

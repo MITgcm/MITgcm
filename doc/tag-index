@@ -1,6 +1,28 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+   - in gmredi_slope_limit.F, fix tape keys by using local tapes.
+o pkg/ggl90:
+   - cleaning: remove maskS multiplication in ggl90_calc_visc.F (no equivalent
+     for KappaRU) and update "output_oadm.ggl90.txt" in OpenAD exp.
+o pkg/ggl90:
+  - Add code in pkg/ggl90 to parameterize Langmuir Circulation (LC) effects on
+    vertical mixing (useLANGMUIR=T); follows: Tak et al, Ocean Modelling, 2023;
+  - Primary effect is to increase mixing length scale due to LC ; the stokes
+    velocity term is also included in the momentum equation (Coriolis term);
+  - Tested in new secondary test "gglLC" in exp. "vermix".
+o pkg/ecco:
+  - fix out-of-bound array index issue in cost_gencost_sshv4.F;
+  - fix a small bug in same S/R (skipping call to smooth_hetero2d(anom_slaobs, )
+    if gencost_outputlevel(igen_lsc)=0.);
+  - in same S/R, skip output of "_smooth" file  when smoothing is not applied.
+o pkg/ctrl:
+  - enable initial sea ice area/heff controls with correct definition of control
+    indices;
+  - move condition on useSEAICE inside seaice_init_varia.F (always initialize to
+    zero) when compiling pkg/autodiff. Similar changes to shelfice_init_varia.F;
+  - fix out-of-bounds index issue in ctrl_map_ini_genarr.F (igen_shiCDrag=0).
 o pkg/dic:
   - enable to read in prescribed 3d silicate fields for calcite-saturation
     calculation and 3-D pH calculation (#define CAR_DISS).

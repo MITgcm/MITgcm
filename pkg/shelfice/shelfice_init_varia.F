@@ -48,6 +48,14 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call SHELFICE_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useShelfIce.
+C        Therefore, in this case, the "If useShelfIce" is added back here:
+      IF ( useShelfIce ) THEN
+#endif
+
       IF ( .NOT. SHELFICEuseGammaFrict ) THEN
        IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( SHELFICETransCoeffTFile, ' ',
@@ -145,6 +153,11 @@ c--
        ENDDO
       ENDDO
 #endif /* ALLOW_COST */
+
+#ifdef ALLOW_AUTODIFF
+C-    end if useShelfIce block
+      ENDIF
+#endif
 
 #endif /* ALLOW_SHELFICE */
 
