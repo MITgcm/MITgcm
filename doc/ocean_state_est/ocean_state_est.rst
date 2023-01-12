@@ -1044,8 +1044,9 @@ These three variables are subsequently used to determine the length of the three
 pairs (1--3) of files above in the order as follows:  
 
 - First the ``adxx_$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b above
-are produced in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
-(with yadprefix="ad") and of sizes 1:endrec for 1b, 1:diffrec for 2b and 3b - see :numref: `adxx_creation`; 
+  are produced in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
+  (with yadprefix="ad") and of sizes 1:endrec for 1b, 1:diffrec for 2b and 3b --
+  see :numref:`adxx_creation`; 
 
   .. figure:: figs/adxx_creation.*
     :width: 80%
@@ -1055,10 +1056,11 @@ are produced in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
 
     adxx* are created first inside packages_init_fixed / ctrl_init.F
 
- - Second, records startrec:endrec of (1a) ``xx_$ctrvar.$iternumber.data`` are
-accessed in ctrl_get_gen_rec.F
-and (2a,3a) ``xx_$ctrlvar.{tmp,effective}.data`` of size 1:diffrec are produced in 
-initialise_variamd (inside call adthe_main_loop in taf_ad_output.F) - see :numref:`xx_creation`. 
+- Second, records startrec:endrec of (1a) ``xx_$ctrvar.$iternumber.data`` are
+  accessed in ctrl_get_gen_rec.F
+  and (2a,3a) ``xx_$ctrlvar.{tmp,effective}.data`` of size 1:diffrec are produced in 
+  initialize_variamd (inside call adthe_main_loop in taf_ad_output.F) --
+  see :numref:`xx_creation`. 
 
 The difference in length of records for 1[a,b] compared to 2[a,b] and 3[a,b] is due to
 the fact that we need to access records startrec:endrec in 1a, i.e., file 1a needs
