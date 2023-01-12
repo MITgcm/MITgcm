@@ -203,10 +203,6 @@ C     initialisation of local arrays
        ENDDO
       ENDDO
 C
-#ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      ikey = (ikey-1)*MaxTsf + it2
-#endif
       DO j=jMin,jMax
        DO i=iMin,iMax
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -265,6 +261,12 @@ C--   This is not yet the Net downward radiation excluding shortwave
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( useStabilityFct_overIce ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Storing is only necessary if useStabilityFct_overIce = T, so we
+C     compute the keys here, just before we need them.
+       ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+       ikey = (ikey-1)*(MaxTsf+1) + it2
+#endif
        DO j=jMin,jMax
         DO i=iMin,iMax
 C--
@@ -301,9 +303,9 @@ C     start iteration
        DO iter = 1,niter_bulk
 #ifdef ALLOW_AUTODIFF_TAMC
         nbkey = (ikey-1)*niter_bulk + iter
-CADJ STORE ustar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
-CADJ STORE qstar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
-CADJ STORE tstar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
+CADJ STORE ustar = comlev1_thsice_exf_niter, key = nbkey, kind = isbyte
+CADJ STORE qstar = comlev1_thsice_exf_niter, key = nbkey, kind = isbyte
+CADJ STORE tstar = comlev1_thsice_exf_niter, key = nbkey, kind = isbyte
 #endif
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -311,10 +313,9 @@ CADJ STORE tstar = comlev1_thsice_exf_niter, key = nbkey, kind=isbyte
      &         (atemp(i,j,bi,bj).NE.0. _d 0) ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-           ijkey = iter + niter_bulk*(i-1) + niter_bulk*sNx*(j-1)
-     &                  + (nbkey-1)*sNx*sNy
+           ijkey = i + sNx*(j-1) + (nbkey-1)*sNx*sNy
 C     Not sure why this has to be done here and not outside the ij-loop.
-CADJ STORE rdn(i,j) = comlev1_thsice_5, key = ijkey, kind = isbyte
+CADJ STORE rdn(i,j) = comlev1_thsice_exf_ij, key = ijkey, kind = isbyte
 #endif
 
            t0     = atemp(i,j,bi,bj)*
