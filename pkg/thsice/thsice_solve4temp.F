@@ -188,8 +188,8 @@ C     dt           :: timestep
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey  :: tape key (depends on tiles)
-C     kkey  :: tape key (depends on levels and tiles)
-      INTEGER tkey, kkey
+C     ikey  :: tape key (depends on iteration index and tiles)
+      INTEGER tkey, ikey
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -397,12 +397,12 @@ C
         IF ( useBlkFlx ) THEN
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*MaxTsf + k
-CADJ STORE iceflag  = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE tSrf     = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE dEvdT    = comlev1_thsice_s4t, key = kkey, kind = isbyte
+         ikey = (tkey-1)*MaxTsf + k
+CADJ STORE iceflag  = comlev1_thsice_s4t, key = ikey, kind = isbyte
+CADJ STORE tSrf     = comlev1_thsice_s4t, key = ikey, kind = isbyte
+CADJ STORE flxTexSW = comlev1_thsice_s4t, key = ikey, kind = isbyte
+CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = ikey, kind = isbyte
+CADJ STORE dEvdT    = comlev1_thsice_s4t, key = ikey, kind = isbyte
 #endif
 
 C--   Compute top surface flux.
@@ -439,8 +439,8 @@ C--- end if: IF ( useBlkFlx ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC_MORE
 C     avoid calling thsice_get_exf in ad-code
-CADJ STORE flxTexSW = comlev1_thsice_s4t, key = kkey, kind = isbyte
-CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = kkey, kind = isbyte
+CADJ STORE flxTexSW = comlev1_thsice_s4t, key = ikey, kind = isbyte
+CADJ STORE dFlxdT   = comlev1_thsice_s4t, key = ikey, kind = isbyte
 #endif
 C--   Compute new top layer and surface temperatures.
 C     If tSrf is computed to be > 0 C, fix tSrf = 0 and recompute tIc1
