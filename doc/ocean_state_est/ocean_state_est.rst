@@ -1048,19 +1048,19 @@ pairs (1--3) of files above in the order as follows:
   (with yadprefix="ad") and of sizes 1:endrec for 1b, 1:diffrec for 2b and 3b --
   see :numref:`adxx_creation`; 
 
-  .. figure:: figs/adxx_creation.*
-    :width: 80%
-    :align: center
-    :alt: adxx_creation
-    :name: adxx_creation
-
-    adxx* are created first inside packages_init_fixed / ctrl_init.F
-
 - Second, records startrec:endrec of (1a) ``xx_$ctrvar.$iternumber.data`` are
   accessed in ctrl_get_gen_rec.F
   and (2a,3a) ``xx_$ctrlvar.{tmp,effective}.data`` of size 1:diffrec are produced in 
   initialize_variamd (inside call adthe_main_loop in taf_ad_output.F) --
   see :numref:`xx_creation`. 
+
+  .. figure:: figs/adxx_creation.*
+    :width: 95%
+    :align: center
+    :alt: adxx_creation
+    :name: adxx_creation
+
+    adxx* are created first inside packages_init_fixed / ctrl_init.F
 
 The difference in length of records for 1[a,b] compared to 2[a,b] and 3[a,b] is due to
 the fact that we need to access records startrec:endrec in 1a, i.e., file 1a needs
@@ -1075,7 +1075,7 @@ After their file size initializations, 3a which has physical unit is passed on t
 pkg/exf for surface forcing application.
 
   .. figure:: figs/xx_creation.*
-    :width: 80%
+    :width: 95%
     :align: center
     :alt: xx_creation
     :name: xx_creation
