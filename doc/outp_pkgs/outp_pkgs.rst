@@ -326,11 +326,11 @@ the separate output files. A sample ``data.diagnostics`` namelist file:
      &DIAGNOSTICS_LIST
       fields(1:2,1) = 'UVEL    ','VVEL    ',
        levels(1:5,1) = 1.,2.,3.,4.,5.,
-       filename(1) = 'diagout1',
+       fileName(1) = 'diagout1',
       frequency(1) = 86400.,
       fields(1:2,2) = 'THETA   ','SALT    ',
-       filename(2) = 'diagout2',
-      fileflags(2) = ' P1     ',
+       fileName(2) = 'diagout2',
+      fileFlags(2) = ' P1     ',
       frequency(2) = 3600.,
      &
 
@@ -346,18 +346,22 @@ fields at output levels 1-5. The names of diagnostics quantities are
 does time averaging every 3600. seconds, includes fields with all
 levels, and the names of diagnostics quantities are ``THETA`` and ``SALT``.
 
-The :varlink:`fileflags` parameter is explained in
-:numref:`diagnostic_fileflags`.  Only the first three characters matter.  The
+The :varlink:`fileFlags` parameter is explained in
+:numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
 first character determines the precision of the output files.  The default is
 to use :varlink:`writeBinaryPrec`.  The second character determines whether the
 fields are to be integrated or interpolated vertically or written as is (the
-default).  The third character is used to write hFac-weighted fields.  Whether
+default).  The third character controls inclusion of an hFac factor.  Whether
 this is permitted is determined by a diagnostic’s parsing code, see
 :numref:`diagnostic_parsing_array` and the file available_diagnostics.log for a
 given setup:  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
 ``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.
+Including hFac is necessary for correct thickness weights when integrating
+vertically (second character ``'I'``) and shaved cells or the non-linear free
+surface are in use.  It can also be useful for computing budgets when not
+integrating vertically.
 
-.. table:: Diagnostic fileflags
+.. table:: Diagnostic fileFlags
    :name: diagnostic_fileflags
 
    +---------------+-------+----------------------------------------------+
@@ -375,7 +379,7 @@ given setup:  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
    +---------------+-------+----------------------------------------------+
    |               |       | do not integrate or interpolate              |
    +---------------+-------+----------------------------------------------+
-   | 3             | h     | cumulate hFac-weighted fields (if permitted) |
+   | 3             | h     | include hFac (if permitted)                  |
    +---------------+-------+----------------------------------------------+
    |               |       | do not include hFac                          |
    +---------------+-------+----------------------------------------------+
