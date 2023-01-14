@@ -1,11 +1,11 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_sla_read_yd(
-     I                sla_file, sla_startdate,
+     I                sla_file, sla_startdate, use_mon,
+     O                sla_obs, sla_mask,
+     I                year, irec, myThid )
 c     I                sla_startdate, sla_period,
 c     I                sla_intercept, sla_slope,
-     O                sla_obs, sla_mask,
-     I                year, day, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
@@ -40,7 +40,7 @@ c     _RL sla_intercept
 c     _RL sla_slope
       _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      integer year, day
+      integer year, irec
       integer myThid
 
 c     == external functions ==
@@ -63,6 +63,10 @@ cnew(
       character*(80) fnametmp
       logical exst
 cnew)
+catn
+      logical use_mon
+      logical read_rec
+catn
 
 c     == end of interface ==
 
@@ -78,21 +82,33 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-      if ( (day.GE.1).AND.( (
-     & (cal_IsLeap(year,myThid).eq.2).AND.(day.LE.366)
-     & ).OR.(day.LE.365) ) ) then
+catn
+      read_rec=.FALSE.
+      if (use_mon) then
+        if ( (irec.GE.1).AND.(irec.LE.12 ) ) then
+          read_rec = .TRUE.
+        endif
+      else
 
-      il=ilnblnk(sla_file)
-
-      write(fnametmp(1:80),'(2a,i4)')
-     &     sla_file(1:il), '_', year
-      inquire( file=fnametmp, exist=exst )
-      if (.NOT. exst) then
-         stop
+        if ( (irec.GE.1).AND.( (
+     &   (cal_IsLeap(year,myThid).eq.2).AND.(irec.LE.366)
+     &   ).OR.(irec.LE.365) ) ) then
+          read_rec = .TRUE.
+        endif
       endif
 
+      if (read_rec) then
+        il=ilnblnk(sla_file)
+
+        write(fnametmp(1:80),'(2a,i4)')
+     &     sla_file(1:il), '_', year
+        inquire( file=fnametmp, exist=exst )
+        if (.NOT. exst) then
+           stop
+        endif
+
       CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
-     &                   sla_obs, day, 1, myThid )
+     &                   sla_obs, irec, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -132,7 +148,7 @@ c     == end of interface ==
         enddo
       enddo
 
-      else !if ( (day.GE.1).AND...
+      else !if ( (irec.GE.1).AND...
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -145,7 +161,7 @@ c     == end of interface ==
         enddo
       enddo
 
-      endif !if ( (day.GE.1).AND...
+      endif !if ( (irec.GE.1).AND...
 
       RETURN
       END

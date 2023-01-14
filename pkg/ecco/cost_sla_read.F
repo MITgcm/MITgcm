@@ -1,7 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_sla_read(
-     I                sla_file, sla_startdate, sla_period,
+     I                sla_file, sla_startdate, sla_period, use_mon,
      I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
      I                irec, myThid )
@@ -71,6 +71,16 @@ cnew(
       logical exst
 cnew)
 
+catn: copy from cost_bp_read
+      logical use_mon
+      integer nobs
+      integer beginssh
+      integer beginrun
+      integer beginlocal, beginmodel, obsrec
+      integer mody, modm
+
+      _RL dayspermon
+catn
 c     == end of interface ==
 
       jtlo = myByLo(myThid)
@@ -85,6 +95,25 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
+catn
+
+      if (use_mon) then
+        beginlocal = sla_startdate(1)/10000
+        beginmodel = modelstartdate(1)/10000
+        obsrec =  ( beginmodel - beginlocal )*nmonthyear
+     &          + ( mod(modelstartdate(1)/100,100)
+     &             -mod(sla_startdate(1)/100,100) )
+     &          + irec
+
+        mody = modelstartdate(1)/10000
+        modm = modelstartdate(1)/100 - mody*100
+        yday = mody + INT((modm-1+irec-1)/12)
+        sshrec = 1 + MOD(modm-1+irec-1,12)
+        dayspermon = 30.5
+
+      else
+
+        dayspermon = 1.0
 c select data record to read
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
       dayiter = hoursperday*(irec-1)+modeliter0
@@ -103,6 +132,7 @@ c select data record to read
       call cal_ToSeconds( difftime, diffsecs, myThid )
 c      sshrec = floor(diffsecs/sla_period) + 1
       sshrec = int(diffsecs/sla_period) + 1
+      endif !use_mon
 
       il=ilnblnk(sla_file)
       write(fnametmp(1:80),'(2a,i4)')
@@ -157,7 +187,8 @@ c mask data:
               sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
               sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
      &             ( sla_obs(i,j,bi,bj) -
-     &               ( sla_intercept + sla_slope*irec*hoursperday ) )
+     &               ( sla_intercept + sla_slope*irec*hoursperday
+     &                *dayspermon  ) )
             enddo
           enddo
         enddo
