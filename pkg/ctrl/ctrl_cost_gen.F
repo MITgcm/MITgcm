@@ -66,7 +66,6 @@ c     == local variables ==
       integer imin,imax
       integer nrec
       integer irec
-      integer lrec
       integer ilfld,ilDir
 
       _RL fctile
@@ -135,15 +134,14 @@ c--   >>> Loop 1 to compute mean forcing:
 c--   >>> Loop over records.
 catn: this is the cost of xx_*.00 , so it needs to loop
 catn over the same records startrec:endrec and not 1:Nrec
-      do irec = 1,nrec
-        lrec=startrec+irec-1
+      do irec = startrec+irec-1,endrec
 
 #ifdef ALLOW_AUTODIFF
         call active_read_xy(
-     &        fnamefld, tmpfld2d, lrec, doglobalread,
+     &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, myThid, xx_gen_dummy )
 #else
-        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, lRec, 1, myThid )
+        CALL READ_REC_XY_RL( fnamefld, tmpfld2d, iRec, 1, myThid )
 #endif
 
 c--     Loop over this thread tiles.

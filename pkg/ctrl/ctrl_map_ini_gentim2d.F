@@ -134,10 +134,10 @@ catn: write out to xx_atemp.effective.0000000001.data as as
 catn: 1:diffrec. Note that the version of this in ad_taf_output.f
 catn: strips all the misc write statements so it appears as if
 catn: we did not go past here, but we did.
-catn
-catn        write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
-catn     &              iarr,xx_gentim2d_startdate(1,iarr)
-catn
+#ifdef ALLOW_CTRL_ATN_DEBUG
+        write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
+     &              iarr,xx_gentim2d_startdate(1,iarr)
+#endif
         dosmooth=.false.
         dowc01  = .false.
         doscaling=.true.
@@ -187,11 +187,12 @@ c--   docycle
          endif
         enddo
 
-catn        write(*,'(A,1x,5I6)') 
-catn     &   'AD:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
-catn     &              startrec, endrec, diffrec, 
-catn     &              replicated_nrec,replicated_ntimes
-catn
+#ifdef ALLOW_CTRL_ATN_DEBUG
+        write(*,'(A,1x,5I6)')
+     &   'AD:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
+     &              startrec, endrec, diffrec,
+     &              replicated_nrec,replicated_ntimes
+#endif
         DO jrec = 1, replicated_ntimes+1
          DO irec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -200,9 +201,11 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           krec=replicated_nrec*(jrec-1)+irec
           lrec=startrec+irec-1
           IF (krec.LE.endrec) THEN
-catn         ilgen=ilnblnk( fnamegenIn )
-catn         write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
-catn         write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
+#ifdef ALLOW_CTRL_ATN_DEBUG
+         ilgen=ilnblnk( fnamegenIn )
+         write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
+         write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
+#endif
 catn: fnamegenIn is xx_atemp.0000000001, so we need to read
 catn: from startrec+irec-1 instead of irec in the call below
 catn: HOWEVER, the problem is that in the adjoint mode, the function
@@ -224,9 +227,11 @@ catn  the records startec-1:-1:1 should be all zeros.
 catn: now here, we write xx_atemp.effective.0000000001, so 
 catn: the krec is the correct record, no mod here
 #ifdef ALLOW_AUTODIFF
-catn         ilgen=ilnblnk( fnamegenOut )
-catn         write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-catn         write(*,*) 'AH: fnamegenOut: ', fnamegenOut(1:ilgen)
+#ifdef ALLOW_CTRL_ATN_DEBUG
+           ilgen=ilnblnk( fnamegenOut )
+           write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+           write(*,*) 'AH: fnamegenOut: ', fnamegenOut(1:ilgen)
+#endif
            CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
@@ -254,9 +259,11 @@ c--   rmcycle
          endif
         enddo
 
-catn        write(*,'(A,1x,5I6)'),
-catn     &  'AI:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
-catn     &      startrec,endrec,diffrec,replicated_nrec,replicated_ntimes
+#ifdef ALLOW_CTRL_ATN_DEBUG
+        write(*,'(A,1x,5I6)'),
+     &  'AI:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
+     &      startrec,endrec,diffrec,replicated_nrec,replicated_ntimes
+#endif
 
         IF (replicated_ntimes.GT.0) THEN
 
@@ -265,7 +272,9 @@ c     create cyclic average
          nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
          recip_nyearsRL=1. _d 0/float(nyearsINT)
 
-catn        write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
+#ifdef ALLOW_CTRL_ATN_DEBUG
+         write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
+#endif
 
          DO irec = 1, replicated_nrec
 
@@ -284,9 +293,11 @@ catn        write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
-catn           write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-catn           ilgen=ilnblnk( fnamegenOut )
-catn           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(1:ilgen)
+#ifdef ALLOW_CTRL_ATN_DEBUG
+           write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+           ilgen=ilnblnk( fnamegenOut )
+           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(1:ilgen)
+#endif
 #ifdef ALLOW_AUTODIFF
            call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
      &          doglobalread, ladinit, optimcycle,
@@ -338,9 +349,11 @@ c     subtract cyclic average
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=replicated_nrec*(jrec-1)+irec
-catn        write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-catn        ilgen=ilnblnk( fnamegenOut )
-catn        write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
+#ifdef ALLOW_CTRL_ATN_DEBUG
+           write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
+           ilgen=ilnblnk( fnamegenOut )
+           write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
+#endif
            IF (krec.LE.endrec) THEN
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenOut, xx_gen, kRec,
@@ -391,11 +404,12 @@ catn: so we no longer need to fix any record from here on out
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
-catn        ilgen=ilnblnk( fnamegenOut )
-catn        lrec=startrec+irec-1
-catn        write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, irec,lrec ',
-catn     &      fnamegenOut(1:ilgen),irec,lrec
-catn
+#ifdef ALLOW_CTRL_ATN_DEBUG
+         ilgen=ilnblnk( fnamegenOut )
+         lrec=startrec+irec-1
+         write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, irec,lrec ',
+     &       fnamegenOut(1:ilgen),irec,lrec
+#endif
 #ifdef ALLOW_AUTODIFF
          call active_read_xy( fnamegenOut, xx_gen, irec,
      &        doglobalread, ladinit, optimcycle,
@@ -452,9 +466,11 @@ C--   Get appropriate mask
 
          CALL EXCH_XY_RL ( xx_gen , myThid )
 
-catn        ilgen=ilnblnk( fnamegenOut )
-catn        write(*,'(A,1x,I6,1x,A)') 
-catn     &     'AQ: irec,fnamegenOut: ',irec,fnamegenOut(1:ilgen)
+#ifdef ALLOW_CTRL_ATN_DEBUG
+         ilgen=ilnblnk( fnamegenOut )
+         write(*,'(A,1x,I6,1x,A)')
+     &      'AQ: irec,fnamegenOut: ',irec,fnamegenOut(1:ilgen)
+#endif
 #ifdef ALLOW_AUTODIFF
          call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
      &        myThid, xx_gentim2d_dummy(iarr) )

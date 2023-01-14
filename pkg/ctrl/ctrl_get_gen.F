@@ -180,11 +180,11 @@ cph Initial wind stress adjustments are too vigorous.
       xx_swdown_file     = 'xx_swdown'
 
       if ( gencount0 .LE. 2 .AND. (
-c OW edit
-#ifdef ALLOW_AUTODIFF
-     &   nIter0 .LE. 1 .AND. 
-#endif
-c OW
+cc OW edit
+c#ifdef ALLOW_AUTODIFF
+c     &   nIter0 .LE. 1 .AND.
+c#endif
+cc OW
 #ifdef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
      &       xx_gen_file(1:6) .EQ. xx_aqh_file  .OR.
      &       xx_gen_file(1:8) .EQ. xx_atemp_file .OR.

@@ -67,7 +67,9 @@ C     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
+#ifdef ECCO_VERBOSE
       integer startrec
+#endif
 
       integer year0
       integer year1
@@ -129,12 +131,19 @@ C     fldperiod .ne. 0
 C--   Determine the current date.
        call cal_GetDate( myiter, mytime, mydate, mythid )
 
+#ifdef ECCO_VERBOSE
+catn this block was commented out as we no longer use startrec,
+catn but put back as the number is useful for debugging
 c     Determine first record:
        call cal_TimePassed( fldstartdate, modelstartdate,
      &                      difftime, mythid )
        call cal_ToSeconds ( difftime, fldsecs, mythid )
        startrec = int((modelstart + startTime - fldsecs)/
      &                 fldperiod) + 1
+#ifdef ALLOW_CTRL_ATN_DEBUG
+       write(*,*) 'ctrl_get_gen_rec startrec: ',startrec
+#endif
+#endif /* ECCO_VERBOSE */
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
@@ -165,7 +174,9 @@ C     Set switches for reading new records.
         endif
        endif
 
-catn: undoing ts PR260
+catn because we changed lrec in ctrl_map_ini_gentim2d, here
+catn we need to subtract startrec again so that all will be
+catn looped over 1,diffrec
 c      count0 = fldcount
 c      count1 = fldcount + 1
        count0 = fldcount - startrec + 1
@@ -236,10 +247,12 @@ C     Do some printing for the protocol.
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
+#ifdef ALLOW_CTRL_ATN_DEBUG
         write(msgbuf,'(a,1x,i10)')
      &               'CTRL_GET_GEN_REC startrec: ',startrec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
+#endif
       _END_MASTER( mythid )
 #endif
 
