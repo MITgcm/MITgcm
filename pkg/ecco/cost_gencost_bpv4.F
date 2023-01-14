@@ -70,7 +70,7 @@ c     == local variables ==
       _RL offset
       _RL offset_sum
 
-      integer k, kgen
+      integer k, kgen, k2, k2_bp
       logical dosumsq
 
 c     == external functions ==
@@ -93,6 +93,15 @@ c     == end of interface ==
       enddo
 
       if (kgen.GT.0) then
+
+#ifdef ALLOW_SMOOTH
+        if ( useSMOOTH) then
+          k2_bp=0
+          do k2 = 1,ngenpproc
+            if (gencost_posproc(k2,kgen).eq.'smooth') k2_bp=k2
+          enddo
+        endif
+#endif
 
        dosumsq=.TRUE.
        call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen),
@@ -149,6 +158,11 @@ c--   ============
 c--   Mean values.
 c--   ============
 
+#ifdef ALLOW_ECCO_ATN_DEBUG
+      WRITE(msgBuf,'(A,1x,i10)') ' bpv4, nmonsrec: ', nmonsrec
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+#endif
        do irec = 1, nmonsrec
 
 c--     Compute the mean over all bpdat records.
@@ -164,6 +178,17 @@ c--     Compute the mean over all bpdat records.
         call cost_bp_read( gencost_datafile(kgen),
      &       gencost_startdate(1,kgen),
      &       locbpdat, locbpmask, irec, myThid )
+
+#ifdef ALLOW_ECCO_ATN_DEBUG
+      il=ilnblnk( gencost_datafile(kgen) )
+      WRITE(msgBuf,'(A,1x,A,1x,i10)') ' bpv4, datafile, irec: ',
+     &      gencost_datafile(kgen)(1:il), irec
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      write(fname4test(1:80),'(2a,i4.4)')
+     &     gencost_datafile(kgen)(1:il),'.',irec
+      call write_rec_xy_rl( fname4test, locbpdat, 1, 1, mythid)
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -286,14 +311,25 @@ c--    Smooth field of anomalies
         endif
 
 #ifdef ALLOW_SMOOTH
+catn The hardcoding numbers 300000. and 3000 are specific only to llc90/eccov4
+catn and can cause NaN for other grid horizontal resolution.  In addition, all
+catn other ecco costs that use smooth, e.g., sshv4, sstv4, generic, calls
+catn smooth_hetero2d instead of smooth_basic2D. So here we try to use the
+catn same syntax as well as make the call more general using runtime params.
         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,3000,myThid)
+     &   call smooth_hetero2d(bpdifanom,maskc,
+     &     gencost_posproc_c(k2_bp,kgen),
+     &     gencost_posproc_i(k2_bp,kgen),mythid)
+catn     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
          if ( useSMOOTH )
-     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,3000,myThid)
+     &   call smooth_hetero2d(bpdatanom,maskc,
+     &     gencost_posproc_c(k2_bp,kgen),
+     &     gencost_posproc_i(k2_bp,kgen),mythid)
+catn     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
