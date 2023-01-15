@@ -67,9 +67,7 @@ C     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
-#ifdef ECCO_VERBOSE
       integer startrec
-#endif
 
       integer year0
       integer year1
@@ -131,9 +129,8 @@ C     fldperiod .ne. 0
 C--   Determine the current date.
        call cal_GetDate( myiter, mytime, mydate, mythid )
 
-#ifdef ECCO_VERBOSE
-catn this block was commented out as we no longer use startrec,
-catn but put back as the number is useful for debugging
+catn this block was commented out as we no longer use startrec after
+catn PR260, but put back as startrec is now required for PR 664
 c     Determine first record:
        call cal_TimePassed( fldstartdate, modelstartdate,
      &                      difftime, mythid )
@@ -143,7 +140,6 @@ c     Determine first record:
 #ifdef ALLOW_CTRL_ATN_DEBUG
        write(*,*) 'ctrl_get_gen_rec startrec: ',startrec
 #endif
-#endif /* ECCO_VERBOSE */
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
