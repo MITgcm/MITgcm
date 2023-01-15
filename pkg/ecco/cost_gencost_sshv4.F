@@ -214,11 +214,17 @@ c-- detect the relevant gencost indices
        do k2 = 1, NGENPPROC
         if (gencost_posproc(k2,igen_mdt).EQ.'smooth') k2_mdt=k2
        enddo
+       write(msgbuf,'(a,i5)') ' sshv4: k2_mdt: ',k2_mdt
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , myThid)
       endif
       if (igen_lsc.GT.0) then
        do k2 = 1, NGENPPROC
         if (gencost_posproc(k2,igen_lsc).EQ.'smooth') k2_lsc=k2
        enddo
+       write(msgbuf,'(a,i5)') ' sshv4: k2_lsc: ',k2_mdt
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , myThid)
       endif
 
       dosumsq = .TRUE.
@@ -278,17 +284,9 @@ c data files are not defined.
       nrec_year=366
       nrec_total=ndaysrec
       IF (igen_tp.GT.0 .or. igen_ers.GT.0 .or. igen_gfo.GT.0) THEN
-        IF(gencost_period(igen_tp) .EQ. 0. ) THEN
-          use_mon=.TRUE.
-          nrec_year=12
-          nrec_total=nmonsrec
-
-        ELSEIF(gencost_period(igen_tp) .EQ. 0. .and. .not.use_mon ) THEN
-          use_mon=.TRUE.
-          nrec_year=12
-          nrec_total=nmonsrec
-
-        ELSEIF(gencost_period(igen_tp) .EQ. 0. .and. .not.use_mon) THEN
+        IF( gencost_avgperiod(igen_tp)(1:3) .EQ.'mon' .OR.
+     &      gencost_avgperiod(igen_ers)(1:3).EQ.'mon' .OR.
+     &      gencost_avgperiod(igen_gfo)(1:3).EQ.'mon' ) THEN
           use_mon=.TRUE.
           nrec_year=12
           nrec_total=nmonsrec
@@ -303,8 +301,9 @@ catn: should set to 3 and 12
         num0=100
         nrec_mdt_ref=365
       endif
-      write(msgbuf,'(a,i5,1x,i5)') ' sshv4: num0,nrec_mdt_ref: ',
-     &                                      num0,nrec_mdt_ref
+      write(msgbuf,'(a,L5,2(1x,i10),2(1x,i5))') 
+     & ' sshv4: use_mon, nrec_year, nrec_total, num0, nrec_mdt_ref: ',
+     &          use_mon, nrec_year, nrec_total, num0, nrec_mdt_ref
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , myThid)
 c determine whether or not to re-reference
@@ -316,13 +315,6 @@ catn: note also the hard-coded years 1992,2011 here that SHOULD BE REMOVED
       IF ((modelstartdate(1).GT.1992*10000).AND.
      &    (modelstartdate(1).LT.2011*10000).AND.
      &    (nrec_total.GE.nrec_mdt_ref))  doReference=.TRUE.
-      IF (use_mon) THEN
-        write(msgbuf,'(a)') ' sshv4: in use_mon bracket'
-      ELSE
-        write(msgbuf,'(a)') ' sshv4: in .not. use_mon bracket'
-      ENDIF
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , myThid)
 
       write(msgbuf,'(a,l)') ' sshv4:re-reference MDT=',doReference
       call print_message( msgbuf, standardmessageunit,
