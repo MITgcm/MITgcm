@@ -62,9 +62,6 @@ C generate more text in STDOUT.0000
 C allow cost function term for sigmaR
 #undef ALLOW_SIGMAR_COST_CONTRIBUTION
 
-C debug flag from ATN
-#undef ALLOW_ECCO_ATN_DEBUG
-
 C--  fake options (only used to be printed in S/R ECCO_SUMMARY):
 
 C allow ???
