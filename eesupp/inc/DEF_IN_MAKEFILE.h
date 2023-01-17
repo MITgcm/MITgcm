@@ -43,14 +43,21 @@ C-  platform specific options:
 #undef TARGET_CRAY_VECTOR
 #undef TARGET_CRAYXT
 #undef TARGET_DEC
+#undef TARGET_HP
 #undef TARGET_LAM
 #undef TARGET_NEC_SX
 #undef TARGET_NEC_VECTOR
 #undef TARGET_PWR3
 #undef TARGET_SGI
+#undef TARGET_SUN
 #undef TARGET_T3E
-C-  others options found in optfiles in dir tools/build_options:
+C-  compiler/platform I/O specific options:
 #undef _BYTESWAPIO
+#undef EXCLUDE_OPEN_ACTION
+#undef NML_EXTENDED_F77
+#undef NML_TERMINATOR
+#undef WORDLENGTH
+C-  others options found in optfiles in dir tools/build_options:
 #undef ALWAYS_USE_MPI
 #undef AUTODIFF_USE_MDSFINDUNITS
 #undef PROFILES_USE_MDSFINDUNITS
@@ -58,11 +65,5 @@ C-  others options found in optfiles in dir tools/build_options:
 #undef CG3D_OUTERLOOPITERS
 #undef IFORT
 #undef INTEL_COMMITQQ
-#undef NML_EXTENDED_F77
-#undef NML_TERMINATOR
-#undef SEAICE_LSR_ZEBRA
-#undef SEAICE_VECTORIZE_LSR
-#undef SEAICE_VECTORIZE_LSR_ZEBRA
-#undef WORDLENGTH
 
 C-----  WARNING: DO NOT include this file in any source code -----
