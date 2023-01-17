@@ -330,8 +330,9 @@ the separate output files. A sample ``data.diagnostics`` namelist file:
       frequency(1) = 86400.,
       fields(1:2,2) = 'THETA   ','SALT    ',
        fileName(2) = 'diagout2',
-      fileFlags(2) = ' P1     ',
+      fileFlags(2) = ' P      ',
       frequency(2) = 3600.,
+      levels(1:5,2) = 100000.0, 70000.0, 50000.0, 30000.0, 20000.0,
      &
 
      &DIAG_STATIS_PARMS
@@ -343,23 +344,26 @@ the prefix ``diagout1``, does time averaging every 86400. seconds,
 (frequency is 86400.), and will write fields which are multiple-level
 fields at output levels 1-5. The names of diagnostics quantities are
 ``UVEL`` and ``VVEL``. The second set of output files has the prefix diagout2,
-does time averaging every 3600. seconds, includes fields with all
-levels, and the names of diagnostics quantities are ``THETA`` and ``SALT``.
+does time averaging every 3600. seconds and the names of diagnostics quantities
+are ``THETA`` and ``SALT``.  It interpolates vertically to the pressure levels
+100000 Pa, ..., 20000 Pa.
 
 The :varlink:`fileFlags` parameter is explained in
 :numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
 first character determines the precision of the output files.  The default is
 to use :varlink:`writeBinaryPrec`.  The second character determines whether the
 fields are to be integrated or interpolated vertically or written as is (the
-default).  The third character controls inclusion of an hFac factor.  Whether
-this is permitted is determined by a diagnostic’s parsing code, see
-:numref:`diagnostic_parsing_array` and the file available_diagnostics.log for a
-given setup:  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
-``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.
-Including hFac is necessary for correct thickness weights when integrating
-vertically (second character ``'I'``) and shaved cells or the non-linear free
-surface are in use.  It can also be useful for computing budgets when not
-integrating vertically.
+default).  Interpolation is only available in the atmosphere.  The desired
+pressure levels need to be specified in ``levels``.  The third character is
+used to time average the product of a diagnostic with the appropriate
+thickness factor, hFacC, hFacW or hFacS.  This is mostly useful with a
+non-linear free surface where the thickness factors vary in time.  This will
+have an effect only for certain diagnostics, as determined by the parsing code
+(see :numref:`diagnostic_parsing_array` and the file available_diagnostics.log
+for a given setup):  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
+``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.  Note that the
+appropriate hFac factors are automatically included when integrating vertically
+(second character ``'I'``), so the 'h' is not needed in this case.
 
 .. table:: Diagnostic fileFlags
    :name: diagnostic_fileflags
@@ -379,9 +383,7 @@ integrating vertically.
    +---------------+-------+----------------------------------------------+
    |               |       | do not integrate or interpolate              |
    +---------------+-------+----------------------------------------------+
-   | 3             | h     | include hFac (if permitted)                  |
-   +---------------+-------+----------------------------------------------+
-   |               |       | do not include hFac                          |
+   | 3             | h     | multiply by hFac (if permitted) when filled  |
    +---------------+-------+----------------------------------------------+
 
 
