@@ -363,7 +363,9 @@ have an effect only for certain diagnostics, as determined by the parsing code
 for a given setup):  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
 ``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.  Note that the
 appropriate hFac factors are automatically included when integrating vertically
-(second character ``'I'``), so the 'h' is not needed in this case.
+(second character ``'I'``), so the 'h' is not needed in this case
+but could still improve accuracy of a time-averaged vertical integral when using
+non-linear free surface.
 
 .. table:: Diagnostic fileFlags
    :name: diagnostic_fileflags
@@ -468,7 +470,7 @@ Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
    225 |ADJkapgm| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKgm: Sensitivity to GM Intensity
    226 |ADJkapre| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKredi: Sensitivity to Redi Coefficient
 
-:: 
+::
 
    227 |TRAC01  | 15 |       |SMR     MR|mol C/m         |Dissolved Inorganic Carbon concentration
    241 |ADJptr01| 15 |       |SMRA    MR|dJ/mol C/m      |sensitivity to Dissolved Inorganic Carbon concentration
