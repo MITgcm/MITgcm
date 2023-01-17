@@ -28,7 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C o Include/exclude code in order to automatically differentiate MITgcm code
 C   using TAF (Transformation of Algorithms in Fortran, http://www.FastOpt.de)
-C   or using TAMC (Tangent Linear & Adjoint Model Compiler, need both defined):
+C   or using TAMC (Tangent Linear & Adjoint Model Compiler, needs both defined):
 #define ALLOW_AUTODIFF_TAMC
 #undef AUTODIFF_TAMC_COMPATIBILITY
 
