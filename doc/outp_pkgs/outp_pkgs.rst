@@ -331,8 +331,8 @@ the separate output files. A sample ``data.diagnostics`` namelist file:
       fields(1:2,2) = 'THETA   ','SALT    ',
        fileName(2) = 'diagout2',
       fileFlags(2) = ' P      ',
-      frequency(2) = 3600.,
       levels(1:5,2) = 100000.0, 70000.0, 50000.0, 30000.0, 20000.0,
+      frequency(2) = 3600.,
      &
 
      &DIAG_STATIS_PARMS
