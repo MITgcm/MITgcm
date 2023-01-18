@@ -627,14 +627,14 @@ C      The calculation closely follows that for GGL90mixingLength.
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -651,14 +651,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -674,9 +674,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
          ENDDO
          DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -693,14 +693,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -717,14 +717,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 CADJ STORE mxLength_Dn(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -927,7 +927,7 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
         ENDIF
        ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE stokesterm = comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE stokesterm = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif /* ALLOW_GGL90_LANGMUIR */
 
