@@ -116,9 +116,9 @@ C     !LOCAL VARIABLES:
 #endif
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeSqTmp, slopeTmp, slopeMax
-# ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey
-# endif
+c# ifdef ALLOW_AUTODIFF_TAMC
+c      INTEGER ikey
+c# endif
 #endif
 C-   need to put this one in GM namelist :
       _RL GM_bigSlope
@@ -149,6 +149,14 @@ C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
 CADJ INIT loctape_gm = COMMON, 1
 CADJ STORE dSigmaDr = loctape_gm
+C
+C     Alternatively one can use a global tape, to be defined in
+C     the_main_loop.F. This option is still here but commented out with
+C     "c" (also in the_main_loop.F), in case we decide to go for larger
+C     memory overhead and fewer recomputations
+c      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+c      ikey = kPos + (k - 1  + (ikey - 1)*Nr)*3
+cCADJ STORE dSigmaDr = comlev1_gmredi_slope, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy+1,sNy+OLy-1
@@ -183,11 +191,6 @@ C-      Cox 1987 "Slope clipping"
          ENDDO
         ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmMod(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-#endif
-
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           IF ( dSigmMod(i,j) .NE. zeroRL ) THEN
@@ -197,12 +200,6 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -216,11 +213,6 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -458,7 +450,6 @@ C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (dSigmaDr < 0) region :
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 C     Without this store directive, TAF generates an extra field anyway
 C     so we do it here explicitly with a local tape and live without the
 C     corresponding warning.
@@ -473,12 +464,6 @@ CADJ STORE dSigmaDr = loctape_gm
           ENDIF
          ENDDO
         ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE dSigmaDx(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDy(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-#endif
 
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -504,8 +489,10 @@ c          SlopeY(i,j) = dSigmaDy(i,j)/dSigmaDr(i,j)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cCADJ STORE slopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+cCADJ STORE slopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
 #endif
 
         DO j=1-OLy+1,sNy+OLy-1
@@ -513,6 +500,14 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+         ENDDO
+        ENDDO
+cCADJ STORE SlopeSqr = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeSqr = loctape_gm
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+#endif
           IF ( SlopeSqr(i,j) .GE. GM_slopeSqCutoff ) THEN
             slopeSqr(i,j) = GM_slopeSqCutoff
             taperFct(i,j) = 0. _d 0
@@ -601,21 +596,15 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 C special choice for adjoint/optimization of parameters
 C (~ strong clipping, reducing non linearity of kw=f(K))
 
+C this variable could be relaced by the runtime parameter GM_maxSlope
         slopeMax= 2. _d -3
 
 # ifdef ALLOW_AUTODIFF_TAMC
-C     This key is most likely wrong because the routine is called from
-C     gmredi_calc_tensor three times for each level k, neither of which
-C     is taken into account with this key. Including the level k is
-C     simple (see commented code), but the call number requires an extra
-C     argument to be passed to this routine.
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-C     ikey = k + (ikey - 1)*Nr
-
-CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-# endif
-
+cCADJ STORE SlopeX(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+cCADJ STORE SlopeY(:,:) = comlev1_gmredi_slope, key=ikey, byte=isbyte
+CADJ STORE SlopeX = loctape_gm
+CADJ STORE SlopeY = loctape_gm
+#endif
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
           slopeSqTmp = SlopeX(i,j)*SlopeX(i,j)
@@ -629,7 +618,7 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
-C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
+C move the assignment of SlopeSqr to its own do-loop block from the do-loop
 C block above to reduce TAF recomputations. The assignment of taperFct is
 C also moved to keep the original order of operations.
         DO j=1-OLy+1,sNy+OLy-1
