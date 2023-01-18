@@ -1453,11 +1453,11 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
       integer iseed
       real *8 seed,port_rand
       _RL random_numbx
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
       _RL ranf
       random_numbx = ranf()
 #else
-#ifdef TARGET_SGI
+#ifdef FIZHI_SGI
       _RL rand
       random_numbx = rand()
 #else
@@ -1471,10 +1471,10 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
       implicit none
       integer  iseed
       real *8 port_rand
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
       call ranset (iseed)
 #else
-#ifdef TARGET_SGI
+#ifdef FIZHI_SGI
       integer*4   seed
                   seed = iseed
       call srand (seed)
@@ -1655,7 +1655,7 @@ C
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
@@ -2397,7 +2397,7 @@ C
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
@@ -2620,7 +2620,7 @@ C***********************************************************************
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif

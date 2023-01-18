@@ -370,7 +370,7 @@ c ------------------------------------
       integer  i,n
       logical  ldqdt
       _RL tt(n), p(n), q(n), dqdt(n)
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif

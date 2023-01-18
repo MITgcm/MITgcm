@@ -642,7 +642,7 @@ C**** -----------------------------------------------------------
      &             .65, .38, .65, .38
      &            /
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (coeff)
 #endif

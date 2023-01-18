@@ -756,7 +756,7 @@ c**************************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif
@@ -1213,7 +1213,7 @@ c*************************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
@@ -1637,7 +1637,7 @@ c***********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
@@ -1966,7 +1966,7 @@ c*********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif
@@ -2090,7 +2090,7 @@ c*********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif

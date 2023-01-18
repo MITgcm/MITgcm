@@ -14,8 +14,8 @@ C     use new version of S/R GETPWHERE
 
 C     Compiler and Processor specific code
 #undef FIZHI_F77_COMPIL
-#undef TARGET_CRAY
-c #undef TARGET_SGI
+#undef FIZHI_CRAY
+#undef FIZHI_SGI
 
 #endif /* ALLOW_FIZHI */
 #endif /* FIZHI_OPTIONS_H */

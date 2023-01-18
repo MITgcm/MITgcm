@@ -256,7 +256,7 @@ C Set fmu and ed to zero for no background diffusion
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
 
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 #ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
@@ -3218,7 +3218,7 @@ C **************************************
  9014 CONTINUE
       IF(IBIT.LE.0)  GO TO 300
       indx = 0
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 CDIR$ NOVECTOR
 #endif
       DO 9016 I = 1,IRUN
@@ -3229,7 +3229,7 @@ CDIR$ NOVECTOR
         ARG1(indx) = VZH(I)
        ENDIF
  9016 CONTINUE
-#ifdef TARGET_CRAY
+#ifdef FIZHI_CRAY
 CDIR$ VECTOR
 #endif
 
