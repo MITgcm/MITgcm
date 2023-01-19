@@ -170,7 +170,7 @@ C-   end if not useCheapAML
      I                     myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C     this store directives avoid recomputation of this routine in ad-code
+C     These store directives avoid recomputation of this routine in ad-code.
 CADJ STORE flxCndBt(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE EmPmR   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Qnet    (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
@@ -181,7 +181,7 @@ CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE icFrwAtm(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 C     This part of the state is generally not necessary, but you never
-C     know so I leave it commented out.
+C     know so I leave it, but commented out.
 cCADJ STORE Qsw     (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 cCADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 cCADJ STORE Tice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
