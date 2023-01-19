@@ -135,8 +135,7 @@ c     Determine first record:
        call cal_TimePassed( fldstartdate, modelstartdate,
      &                      difftime, mythid )
        call cal_ToSeconds ( difftime, fldsecs, mythid )
-       startrec = int((modelstart + startTime - fldsecs)/
-     &                 fldperiod) + 1
+       startrec = int((modelstart - fldsecs)/fldperiod) + 1
 #ifdef ALLOW_CTRL_ATN_DEBUG
        write(*,*) 'ctrl_get_gen_rec startrec: ',startrec
 #endif
@@ -170,13 +169,8 @@ C     Set switches for reading new records.
         endif
        endif
 
-catn because we changed lrec in ctrl_map_ini_gentim2d, here
-catn we need to subtract startrec again so that all will be
-catn looped over 1,diffrec
-c      count0 = fldcount
-c      count1 = fldcount + 1
-       count0 = fldcount - startrec + 1
-       count1 = fldcount - startrec + 2
+       count0 = fldcount
+       count1 = fldcount + 1
 
        call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
        call cal_AddTime( fldstartdate, difftime, flddate, mythid )
