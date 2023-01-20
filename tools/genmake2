@@ -2973,14 +2973,15 @@ for d in $alldirs ; do
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
 
-			if test "x$TAPENADE" = x ; then
-			    basename=${sf%%.F}
-			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
-			    if test -z "$isAD" ; then
-				echo    " \\"  >> $TMP.nonADF77srclist
-				printf " $sf" >> $TMP.nonADF77srclist
-			    fi
-			else #- TAPENADE case:
+			#if test "x$TAPENADE" = x ; then
+			#    basename=${sf%%.F}
+			#    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
+			#    if test -z "$isAD" ; then
+			#	echo    " \\"  >> $TMP.nonADF77srclist
+			#	printf " $sf" >> $TMP.nonADF77srclist
+			#    fi
+			#else #- TAPENADE case:
+			if test "x$TAPENADE" != x ; then
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
 			    if test -z "$isAD" ; then
