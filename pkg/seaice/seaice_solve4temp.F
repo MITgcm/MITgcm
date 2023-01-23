@@ -380,6 +380,40 @@ C-    save tsurf from previous iter
           t3 = t2*t1
           t4 = t2*t2
 
+#ifdef SEAICE_USE_GROWTH_ADX
+C     include determining albedos based on current ice surface
+C     temperature in the iteration because tsurfLoc is reset to 0degC in
+C     seaice_growth_adx.F
+          IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 ) THEN
+           IF (t1 .GE. SurfMeltTemp) THEN
+            ALB_ICE (I,J)   = SEAICE_wetIceAlb_south
+            ALB_SNOW(I,J)   = SEAICE_wetSnowAlb_south
+           ELSE                 ! no surface melting
+            ALB_ICE (I,J)   = SEAICE_dryIceAlb_south
+            ALB_SNOW(I,J)   = SEAICE_drySnowAlb_south
+           ENDIF
+          ELSE                  !/ Northern Hemisphere
+           IF (t1 .GE. SurfMeltTemp) THEN
+            ALB_ICE (I,J)   = SEAICE_wetIceAlb
+            ALB_SNOW(I,J)   = SEAICE_wetSnowAlb
+           ELSE                 ! no surface melting
+            ALB_ICE (I,J)   = SEAICE_dryIceAlb
+            ALB_SNOW(I,J)   = SEAICE_drySnowAlb
+           ENDIF
+          ENDIF                 !/ Albedo for snow and ice
+C     If actual snow thickness exceeds the cutoff thickness, use snow albedo
+          IF (HSNOW_ACTUAL(I,J) .GT. HCUT) THEN
+           ALB(I,J) = ALB_SNOW(I,J)
+          ELSEIF ( HCUT.LE.ZERO ) THEN
+           ALB(I,J) = ALB_ICE(I,J)
+          ELSE
+C     otherwise, use linear transition between ice and snow albedo
+           ALB(I,J) = MIN( ALB_ICE(I,J) + HSNOW_ACTUAL(I,J)*recip_HCUT
+     &                                  *(ALB_SNOW(I,J) -ALB_ICE(I,J))
+     &                   , ALB_SNOW(I,J) )
+          ENDIF
+#endif
+
 C--   Calculate the specific humidity in the BL above the snow/ice
           IF ( useMaykutSatVapPoly ) THEN
 C-    Use the Maykut polynomial
