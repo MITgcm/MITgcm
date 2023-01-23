@@ -82,8 +82,8 @@ C--   Cumulate levels directly:
 
              DO k = 1,nlevels(listId)
               kLev = NINT(levs(k,listId))
-              DO j = 1-OLy,sNy+OLy
-               DO i = 1-OLx,sNx+OLx
+              DO j = 1,sNy+1
+               DO i = 1,sNx+1
                 tmpFld(i,j) = tmpFld(i,j) + fld3d(i,j,kLev,bi,bj)
                ENDDO
               ENDDO
@@ -105,8 +105,8 @@ C--   Cumulate the level-thickness product:
               ELSE
                 tmpFac = drF(kLev)
               ENDIF
-              DO j = 1-OLy,sNy+OLy
-               DO i = 1-OLx,sNx+OLx
+              DO j = 1,sNy+1
+               DO i = 1,sNx+1
                 tmpFld(i,j) = tmpFld(i,j)
      &                      + tmpFac*fld3d(i,j,kLev,bi,bj)
                ENDDO
@@ -129,8 +129,8 @@ C--   Cumulate the level-thickness & hFac product:
                ELSE
                  tmpFac = drF(kLev)
                ENDIF
-               DO j = 1-OLy,sNy+OLy
-                DO i = 1-OLx,sNx+OLx
+               DO j = 1,sNy+1
+                DO i = 1,sNx+1
                  tmpFld(i,j) = tmpFld(i,j)
      &                       + tmpFac*fld3d(i,j,kLev,bi,bj)
      &                               *hFacC(i,j,kLev,bi,bj)
@@ -145,8 +145,8 @@ C--   Cumulate the level-thickness & hFac product:
                ELSE
                  tmpFac = drF(kLev)
                ENDIF
-               DO j = 1-OLy,sNy+OLy
-                DO i = 1-OLx,sNx+OLx
+               DO j = 1,sNy+1
+                DO i = 1,sNx+1
                  tmpFld(i,j) = tmpFld(i,j)
      &                       + tmpFac*fld3d(i,j,kLev,bi,bj)
      &                               *hFacW(i,j,kLev,bi,bj)
@@ -161,8 +161,8 @@ C--   Cumulate the level-thickness & hFac product:
                ELSE
                  tmpFac = drF(kLev)
                ENDIF
-               DO j = 1-OLy,sNy+OLy
-                DO i = 1-OLx,sNx+OLx
+               DO j = 1,sNy+1
+                DO i = 1,sNx+1
                  tmpFld(i,j) = tmpFld(i,j)
      &                       + tmpFac*fld3d(i,j,kLev,bi,bj)
      &                               *hFacS(i,j,kLev,bi,bj)
@@ -177,8 +177,8 @@ C--   Cumulate the level-thickness & hFac product:
                ELSE
                  tmpFac = drF(kLev)
                ENDIF
-               DO j = 2-OLy,sNy+OLy
-                DO i = 2-OLx,sNx+OLx
+               DO j = 1,sNy+1
+                DO i = 1,sNx+1
                  hFacLoc = MIN(
      &                          hFacW( i, j, kLev,bi,bj),
      &                          hFacW( i,j-1,kLev,bi,bj),

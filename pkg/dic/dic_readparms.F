@@ -123,9 +123,9 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
 #endif
 
       NAMELIST /DIC_FORCING/
-     &          DIC_windFile, DIC_atmospFile, DIC_iceFile,
-     &          DIC_ironFile, DIC_silicaFile, DIC_parFile,
-     &          DIC_chlaFile,
+     &          DIC_windFile, DIC_atmospFile, DIC_silicaFile,
+     &          DIC_deepSilicaFile, DIC_iceFile, DIC_parFile,
+     &          DIC_chlaFile, DIC_ironFile,
      &          DIC_forcingPeriod, DIC_forcingCycle,
      &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
 
@@ -169,13 +169,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        alphaUniform     = 2. _d -3/(360. _d 0 * 86400. _d 0)
        rainRatioUniform = 7. _d -2
 #endif
-       DIC_windFile  = ' '
-       DIC_atmospFile= ' '
-       DIC_iceFile   = ' '
-       DIC_ironFile  = ' '
-       DIC_silicaFile= ' '
-       DIC_parFile   = ' '
-       DIC_chlaFile  = ' '
+       DIC_windFile   = ' '
+       DIC_atmospFile = ' '
+       DIC_silicaFile = ' '
+       DIC_deepSilicaFile = ' '
+       DIC_iceFile    = ' '
+       DIC_parFile    = ' '
+       DIC_chlaFile   = ' '
+       DIC_ironFile   = ' '
        dic_int1    = 0
        dic_int2    = 0
        dic_int3    = 0
@@ -408,16 +409,18 @@ C- namelist DIC_FORCING
      & '  /* File name of wind speeds */')
        CALL WRITE_0D_C( DIC_atmospFile, -1,INDEX_NONE,'DIC_atmospFile=',
      & '  /* File name of atmospheric pressure*/')
+       CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,
+     & 'DIC_silicaFile=','  /* File name of surface silica */')
+       CALL WRITE_0D_C( DIC_deepSilicaFile, -1,INDEX_NONE,
+     & 'DIC_deepSilicaFile=','  /* File name of 3d silica field */')
        CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
-       CALL WRITE_0D_C( DIC_ironFile, -1, INDEX_NONE, 'DIC_ironFile =',
-     & '  /* File name of aeolian iron flux */')
-       CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,'DIC_silicaFile=',
-     & '  /* File name of surface silica */')
        CALL WRITE_0D_C( DIC_parFile, -1,INDEX_NONE,'DIC_parFile=',
      & '  /* File name of photosynthetically available radiation */')
        CALL WRITE_0D_C( DIC_chlaFile, -1,INDEX_NONE,'DIC_chlaFile=',
      & '  /* File name of chlorophyll climatology */')
+       CALL WRITE_0D_C( DIC_ironFile, -1, INDEX_NONE, 'DIC_ironFile =',
+     & '  /* File name of aeolian iron flux */')
        CALL WRITE_0D_RL( DIC_forcingPeriod,
      &   INDEX_NONE,'DIC_forcingPeriod =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')

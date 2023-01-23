@@ -303,11 +303,7 @@ CADJ STORE hFacC       = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_SHELFICE
-CADJ STORE shelficeLoadAnomaly    = tapelev_init, key=1, kind=isbyte
-CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1, kind=isbyte
-CADJ STORE shelficeHeatFlux       = tapelev_init, key=1, kind=isbyte
-CADJ STORE shiTransCoeffT         = tapelev_init, key=1, kind=isbyte
-CADJ STORE shiTransCoeffS         = tapelev_init, key=1, kind=isbyte
+CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE
 CADJ STORE H_streamice = tapelev_init, key=1
@@ -485,6 +481,7 @@ CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nSx*nSy*Nr
 c--
 #   ifdef ALLOW_GMREDI
 CADJ INIT comlev1_gmredi_k_gad = COMMON,nchklev_1*nSx*nSy*Nr*maxpass
+cCADJ INIT comlev1_gmredi_slope = COMMON,nchklev_1*nSx*nSy*Nr*3
 #   endif /* ALLOW_GMREDI */
 c--
 #   ifdef ALLOW_PTRACERS
