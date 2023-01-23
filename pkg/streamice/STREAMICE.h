@@ -78,7 +78,11 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_kx_b_init, streamice_ky_b_init,
      & streamice_wgt_drift, streamice_wgt_surf,
      & streamice_wgt_avthick, streamice_wgt_vel,
-     & streamice_wgt_tikh,
+     & streamice_wgt_tikh_beta,
+     & streamice_wgt_tikh_bglen,
+     & streamice_wgt_tikh_gen,
+     & streamice_wgt_prior_bglen,
+     & streamice_wgt_prior_gen,
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform,
@@ -86,7 +90,8 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_buttr_width,
 #endif
      & streamice_firn_correction, streamice_density_firn,
-     & streamice_forcing_period
+     & streamice_forcing_period,
+     & 
 
       _RL streamice_density, streamice_density_ocean_avg
       _RL B_glen_isothermal, n_glen, eps_glen_min, eps_u_min
@@ -108,7 +113,9 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_kx_b_init, streamice_ky_b_init
       _RL streamice_wgt_drift, streamice_wgt_surf
       _RL streamice_wgt_avthick, streamice_wgt_vel
-      _RL streamice_wgt_tikh
+      _RL streamice_wgt_tikh_beta, streamice_wgt_tikh_bglen,
+     &    streamice_wgt_tikh_gen
+      _RL streamice_wgt_prior_bglen, streamice_wgt_prior_gen
       _RL streamice_addl_backstress
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
@@ -194,6 +201,15 @@ c      INTEGER streamice_n_sub_regularize
 
       INTEGER isinloop0, isinloop1, isinloop2
 
+#endif
+
+#ifdef ALLOW_STREAMICE_TC_COST
+      COMMON /STREAMICE_PARMS_TC_CTRL/
+     &     streamice_vel_cost_timesteps,
+     &     streamice_surf_cost_timesteps
+
+      INTEGER streamice_vel_cost_timesteps(streamiceMaxCostLevel)
+      INTEGER streamice_surf_cost_timesteps(streamiceMaxCostLevel)
 #endif
 
 C     -------------------------- CHAR PARAMS ---------------------------------------------------
@@ -489,6 +505,8 @@ C                                 ::  (over-rides STREAMICE_vel_ext)
       LOGICAL STREAMICE_use_log_ctrl
       LOGICAL STREAMICE_vel_ext
       LOGICAL STREAMICE_vel_ext_cgrid
+      LOGICAL STREAMICE_do_snapshot_cost
+      LOGICAL STREAMICE_do_timedep_cost
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -529,6 +547,8 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_vel_ext,
      & STREAMICE_vel_ext_cgrid,
      & STREAMICE_use_log_ctrl,
+     & STREAMICE_do_snapshot_cost,
+     & STREAMICE_do_timedep_cost,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
 #endif
