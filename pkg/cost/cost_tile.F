@@ -129,6 +129,10 @@ CADJ &     kind = isbyte
          CALL SHELFICE_COST_ACCUMULATE (myThid)
 #endif
 
+#ifdef ALLOW_COST_STREAMICE
+         CALL STRAMICE_COST_SURFACE_ACCUM (myThid)
+#endif
+
 #if (defined ALLOW_THSICE && defined ALLOW_THSICE_COST_TEST)
          IF (useThSIce)
      &    CALL THSICE_COST_DRIVER (myTime, myIter, myThid)
