@@ -90,8 +90,7 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_buttr_width,
 #endif
      & streamice_firn_correction, streamice_density_firn,
-     & streamice_forcing_period,
-     & 
+     & streamice_forcing_period
 
       _RL streamice_density, streamice_density_ocean_avg
       _RL B_glen_isothermal, n_glen, eps_glen_min, eps_u_min
@@ -325,10 +324,13 @@ C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEAdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotTimeDepFile
-      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEtopogFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEcostMaskFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBglenCostMaskFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_ADV_SCHEME
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimSnapBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimTCBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimTCBasename
 
 C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
 C     (i.e. boundaries that do not conform with rectangular walls)
@@ -386,7 +388,9 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEBdotConfig,
      &     STREAMICEAdotConfig,
      &     STREAMICEbasalTracFile,
-     &     STREAMICEvelOptimFile,
+     &     STREAMICEvelOptimSnapBasename,
+     &     STREAMICEvelOptimTCBasename,
+     &     STREAMICEsurfOptimTCBasename,
      &     STREAMICEtopogFile,
      &     STREAMICEhmaskFile,
      &     STREAMICEHBCxFile,
