@@ -247,16 +247,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef NONLIN_FRSURF
 #  if (defined ALLOW_AUTODIFF_TAMC) && \
       (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      idynkey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      idynkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 CADJ STORE dEtaHdt(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key = idynkey, kind = isbyte
 #  endif

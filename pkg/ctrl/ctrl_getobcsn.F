@@ -72,6 +72,7 @@ cgg      _RL maskxz   (1-OLx:sNx+OLx,Nr,nSx,nSy)
       _RL     tmpz (Nr,nSx,nSy)
       _RL     stmp
 #endif
+      integer ilDir
 
 c     == end of interface ==
 
@@ -89,10 +90,13 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+
       if (optimcycle .ge. 0) then
         ilobcsn=ilnblnk( xx_obcsn_file )
         write(fnameobcsn(1:80),'(2a,i10.10)')
-     &       xx_obcsn_file(1:ilobcsn), '.', optimcycle
+     &       ctrlDir(1:ilDir)//xx_obcsn_file(1:ilobcsn), '.', optimcycle
       endif
 
 c--   Get the counters, flags, and the interpolation factor.

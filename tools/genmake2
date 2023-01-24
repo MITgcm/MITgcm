@@ -3049,7 +3049,7 @@ else
 fi
 
 # extract default cpp search path so we can pass it to makedepend
-CPPINCLUDES=`cat /dev/null | $CPP -v 2>&1 | awk '/^End of search/{f=0}!/^\#/{if(f){printf " -I%s", $1;}}/^\#include "..." search start/{f=1}'`
+CPPINCLUDES=`cat /dev/null | $CPP -v 2>&1 | $AWK '/^End of search/{f=0}!/^#/{if(f){printf " -I%s", $1;}}/^#include "..." search start/{f=1}'`
 
 cat >>$MAKEFILE <<EOF
 # Unix ln (link)
@@ -3393,13 +3393,12 @@ adobj: ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o
 EOF
 fi
 
+#adonlyfwd:
+#	patch < \$(TOOLSDIR)/ad_taf_output.f.onlyfwd.diff
+#adtrick:
+#	patch < \$(TOOLSDIR)/ad_taf_output.f.adtrick.diff
+
 cat >>$MAKEFILE <<EOF
-adonlyfwd:
-	patch < \$(TOOLSDIR)/ad_taf_output.f.onlyfwd.diff
-
-adtrick:
-	patch < \$(TOOLSDIR)/ad_taf_output.f.adtrick.diff
-
 ad_tamc_output.$FS: ad_input_code.$FS
 	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_tamc_output.$FS

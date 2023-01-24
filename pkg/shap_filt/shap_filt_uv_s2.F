@@ -70,7 +70,7 @@ C     == Local variables ==
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER kkey, act1, max1, act2, max2, act3, max3
+      INTEGER kkey
 #endif
 CEOP
 
@@ -121,13 +121,7 @@ C--   [d_xx+d_yy]^n tmpFld
 C     This store uses a wrongly-sized tape and stores the same field
 C     nShapUV times, but since this field does not change here, we
 C     can do it like this and suppress the recomputation warning
-           act1 = bi - myBxLo(myThid)
-           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-           act2 = bj - myByLo(myThid)
-           max2 = myByHi(myThid) - myByLo(myThid) + 1
-           act3 = myThid - 1
-           max3 = nTx*nTy
-           kkey= k + (act1 + act2*max1 + act3*max1*max2 -1 ) * Nr
+           kkey = k + (bi-1 + (bj-1)*nSx) * Nr
 CADJ STORE hFacZ = loctape_shapfilt_bibj_k, key = kkey
 #endif
            IF ( n.LE.nShapUVPhys .OR.
