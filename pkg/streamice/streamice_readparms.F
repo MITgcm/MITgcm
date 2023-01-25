@@ -1,6 +1,12 @@
 C this needs changes
 
 #include "STREAMICE_OPTIONS.h"
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_STREAMICE_TC_COST
+# include "STREAMICE_COST_SIZE.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -30,7 +36,7 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-c     INTEGER iarr, tarr
+      INTEGER iarr
 
       NAMELIST /STREAMICE_PARM01/
      &     streamice_density, streamice_density_ocean_avg,
@@ -64,7 +70,6 @@ c     INTEGER iarr, tarr
      &     STREAMICEBdotFile,
      &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
-     &     STREAMICEvelOptimFile,
      &     STREAMICEtopogFile,
      &     STREAMICEhmaskFile,
      &     STREAMICEHBCyFile,
@@ -136,6 +141,25 @@ c     INTEGER iarr, tarr
      &     PETSC_PRECOND_OAD
 #endif
 #endif
+
+#ifdef ALLOW_COST_STREAMICE
+      NAMELIST /STREAMICE_COST/
+     &     STREAMICEvelOptimSnapBasename,
+     &     STREAMICEvelOptimTCBasename,
+     &     STREAMICEsurfOptimTCBasename,
+     &     STREAMICEBglenCostMaskFile,
+     &     streamice_wgt_tikh_beta,
+     &     streamice_wgt_tikh_bglen,
+     &     streamice_wgt_tikh_gen,
+     &     streamice_wgt_prior_bglen,
+     &     streamice_wgt_prior_gen,
+     &     STREAMICE_do_snapshot_cost,
+     &     STREAMICE_do_timedep_cost
+#ifdef ALLOW_STREAMICE_TC_COST
+     &     ,streamice_vel_cost_timesteps,
+     &     streamice_surf_cost_timesteps
+#endif
+#endif      
 
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c      NAMELIST /STREAMICE_PARMFLUXCTRL/
@@ -236,11 +260,6 @@ c      streamice_n_sub_regularize = 4
       streamice_bg_surf_slope_y = 0.
       streamice_kx_b_init = 1.
       streamice_ky_b_init = 1.
-      streamice_wgt_drift = 0.
-      streamice_wgt_tikh = 0.
-      streamice_wgt_surf = 0.
-      streamice_wgt_vel = 0.
-      streamice_wgt_avthick = 0.
       streamice_addl_backstress = 0.0
       streamice_smooth_gl_width = 0.0
       streamice_adot_uniform = 0.0
@@ -263,7 +282,6 @@ c      streamice_n_sub_regularize = 4
       STREAMICEAdotFile = ''
       STREAMICEBdotTimeDepFile = ' '
       STREAMICEbasalTracFile = ' '
-      STREAMICEvelOptimFile = ''
       STREAMICEtopogFile = ''
       STREAMICEhmaskFile = ''
       STREAMICEHBCyFile = ''
@@ -338,6 +356,25 @@ c      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_vel_ext = .FALSE.
       STREAMICE_vel_ext_cgrid = .FALSE.
 c       STREAMICE_hybrid_stress= .FALSE.
+
+
+      STREAMICEvelOptimSnapBasename = ''
+      STREAMICEvelOptimTCBasename = ''
+      STREAMICEsurfOptimTCBasename = ''
+      STREAMICEBglenCostMaskFile = ''
+      streamice_wgt_tikh_beta = 0.
+      streamice_wgt_tikh_bglen = 0.
+      streamice_wgt_tikh_gen = 0.
+      streamice_wgt_prior_bglen = 0.
+      streamice_wgt_prior_gen = 0.
+      STREAMICE_do_snapshot_cost = 0.
+      STREAMICE_do_timedep_cost = 0.
+#ifdef ALLOW_STREAMICE_TC_COST
+      do iarr = 1, streamiceMaxCostLevel
+       streamice_vel_cost_timesteps(iarr) = 0
+       streamice_surf_cost_timesteps(iarr) = 0
+      enddo
+#endif
 
       min_x_noflow_NORTH = 0.
       max_x_noflow_NORTH = 0.

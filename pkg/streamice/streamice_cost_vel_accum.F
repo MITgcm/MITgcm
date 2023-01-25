@@ -6,7 +6,7 @@
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_surf_accum ( myThid, myIter )
+      subroutine streamice_cost_vel_accum ( myThid, myIter )
 C     *==========================================================*
 C     | subroutine cost_test                                     |
 C     | o this routine computes the cost function for the tiles  |
@@ -49,14 +49,24 @@ C     == Local variables
       integer il
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) surffilename
-      _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      WRITE(surffilename,'(a,I10.10,a)') STREAMICEsurfOptimTCBasename,
-     &  myIter,'.bin'
-      CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
+      CHARACTER*(MAX_LEN_FNAM) uvelfilename
+      CHARACTER*(MAX_LEN_FNAM) vvelfilename
+      CHARACTER*(MAX_LEN_FNAM) errvelfilename
+      _RL uvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL errvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      WRITE(uvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
+     &  myIter,'u.bin'
+      WRITE(vvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
+     &  myIter,'v.bin'
+      WRITE(errvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
+     &  myIter,'err.bin'
+      CALL READ_FLD_XY_RL( uvelfilename, ' ', uvelobs,
      &      0, myThid )
-
-
+      CALL READ_FLD_XY_RL( vvelfilename, ' ', vvelobs,
+     &      0, myThid )
+      CALL READ_FLD_XY_RL( errvelfilename, ' ', errvelobs,
+     &      0, myThid )
 
 
 
@@ -76,24 +86,6 @@ C--   Calculate cost function on tile of this instance
         do bi = itlo,ithi
           do j=1,sNy
             do i=1,sNx
-             if (SURFOBS(i,j,bi,bj).ge.-999990. .and.
-     &           streamice_hmask(i,j,bi,bj).eq.1.0) THEN
-
-             h = H_streamice(i,j,bi,bj)
-             hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
-!
-             if ((h-hf) .gt. 5.) then
-
-
-              cost_func1_streamice (bi,bj) =
-     &        cost_func1_streamice (bi,bj) +
-     &              surf_err
-              cost_surf_streamice (bi,bj) =
-     &        cost_surf_streamice (bi,bj) +
-     &              surf_err
-             endif
-
-            endif
 
 
             end do

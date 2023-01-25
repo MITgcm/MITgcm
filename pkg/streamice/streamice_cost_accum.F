@@ -6,7 +6,7 @@
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_surf_accum ( myThid, myIter )
+      subroutine streamice_cost_accum ( myThid, myIter )
 C     *==========================================================*
 C     | subroutine cost_test                                     |
 C     | o this routine computes the cost function for the tiles  |
@@ -39,9 +39,10 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       integer myThid, myIter
 
-#ifdef ALLOW_STREAMICE_TC_COST
+#ifdef ALLOW_COST_TEST
 C     == Local variables
-      _RL HAF
+      _RL thetaRef, HAF
+
       integer i, j, k, bi, bj
       integer ig, jg
       integer itlo,ithi
@@ -49,16 +50,18 @@ C     == Local variables
       integer il
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) surffilename
-      _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      WRITE(surffilename,'(a,I10.10,a)') STREAMICEsurfOptimTCBasename,
-     &  myIter,'.bin'
-      CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
-     &      0, myThid )
+      CHARACTER*(MAX_LEN_FNAM) suff
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimFile
+      _RL S_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      jtlo = mybylo(myThid)
+      jthi = mybyhi(myThid)
+      itlo = mybxlo(myThid)
+      ithi = mybxhi(myThid)
 
 
-
-
+C--   Calculate mask for tracer cells  (0 => land, 1 => water)
+!       k=1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
@@ -69,37 +72,26 @@ CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
 
-      
-
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j=1,sNy
             do i=1,sNx
-             if (SURFOBS(i,j,bi,bj).ge.-999990. .and.
-     &           streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
-             h = H_streamice(i,j,bi,bj)
-             hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
-!
-             if ((h-hf) .gt. 5.) then
-
-
+!             S_obs(i,j,bi,bj) = 0.0
+             if (streamice_cost_mask(i,j,bi,bj).eq.1.0) THEN
               cost_func1_streamice (bi,bj) =
-     &        cost_func1_streamice (bi,bj) +
-     &              surf_err
-              cost_surf_streamice (bi,bj) =
-     &        cost_surf_streamice (bi,bj) +
-     &              surf_err
+     &        cost_func1_streamice (bi,bj) + 0.0
              endif
-
-            endif
-
 
             end do
           end do
         end do
       end do
+
+#ifdef ALLOW_STREAMICE_TC_COST
+      CALL STREAMICE_COST_SURFACE_ACCUM (myThid, myIter)
+#endif
 
 #endif
 
