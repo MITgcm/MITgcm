@@ -34,6 +34,9 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+#ifdef ALLOW_STREAMICE_TC_COST
+# include "STREAMICE_COST_SIZE.h"
+#endif      
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -48,11 +51,9 @@ C     == Local variables
       integer itlo,ithi
       integer jtlo,jthi
       integer il
+      integer itime
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) suff
-      CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimFile
-      _RL S_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
@@ -90,7 +91,16 @@ C--   Calculate cost function on tile of this instance
       end do
 
 #ifdef ALLOW_STREAMICE_TC_COST
-      CALL STREAMICE_COST_SURFACE_ACCUM (myThid, myIter)
+      IF ( STREAMICE_do_timedep_cost ) THEN
+       DO itime = 1,streamiceMaxCostLevel
+        IF (myIter==streamice_surf_cost_timesteps(itime)) THEN
+         CALL STREAMICE_COST_SURF_ACCUM (myThid, myIter)
+        ENDIF
+        IF (myIter==streamice_vel_cost_timesteps(itime)) THEN
+         CALL STREAMICE_COST_VEL_ACCUM (myThid, myIter)
+        ENDIF
+       ENDDO
+      ENDIF
 #endif
 
 #endif

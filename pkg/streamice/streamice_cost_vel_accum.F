@@ -55,20 +55,22 @@ C     == Local variables
       _RL uvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL errvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      WRITE(uvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
-     &  myIter,'u.bin'
-      WRITE(vvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
-     &  myIter,'v.bin'
-      WRITE(errvelfilename,'(a,I10.10,a)') STREAMICEvelOptimTCBasename,
-     &  myIter,'err.bin'
+      _RL i_numcells, vel_err
+
+      WRITE(myIterStr,'(I10.10)') myIter
+      
+      uvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"u.bin"
+      vvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"v.bin"
+      errvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"err.bin"
       CALL READ_FLD_XY_RL( uvelfilename, ' ', uvelobs,
      &      0, myThid )
       CALL READ_FLD_XY_RL( vvelfilename, ' ', vvelobs,
      &      0, myThid )
       CALL READ_FLD_XY_RL( errvelfilename, ' ', errvelobs,
      &      0, myThid )
-
-
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
@@ -80,12 +82,25 @@ CADJ &     kind = isbyte
 #endif
 
       
+      i_numcells = 1.0/(Nx*Ny) 
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j=1,sNy
             do i=1,sNx
+
+              vel_err = streamice_wgt_vel * i_numcells * (
+     &         (streamice_u_surf(i,j,bi,bj)-uvelobs(i,j,bi,bj))**2
+     &        +(streamice_v_surf(i,j,bi,bj)-vvelobs(i,j,bi,bj))**2)
+     &        /(1. + errvelobs(i,j,bi,bj)**2)
+
+              cost_func1_streamice (bi,bj) =
+     &        cost_func1_streamice (bi,bj) +
+     &              vel_err
+              cost_vel_streamice (bi,bj) =
+     &        cost_vel_streamice (bi,bj) +
+     &              vel_err
 
 
             end do

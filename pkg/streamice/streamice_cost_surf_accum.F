@@ -47,29 +47,33 @@ C     == Local variables
       integer itlo,ithi
       integer jtlo,jthi
       integer il
+      CHARACTER*(10) myIterStr
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
       CHARACTER*(MAX_LEN_FNAM) surffilename
       _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      WRITE(surffilename,'(a,I10.10,a)') STREAMICEsurfOptimTCBasename,
-     &  myIter,'.bin'
+      _RL rhoi, rhow, r, i_r, i_numcells, surf_err, h, hf
+      WRITE(myIterStr,'(I10.10)') myIter
+      surffilename=STREAMICEsurfOptimTCBasename(1:
+     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//".bin"
       CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
-     &      0, myThid )
-
-
-
+     &  0, myThid )
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+eADJ &     kind = isbyte
 CADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
 
-      
+      rhoi = streamice_density
+      rhow = streamice_density_ocean_avg
+      r=rhoi/rhow
+      i_r = 1./r
+      i_numcells = 1.0/(Nx*Ny) 
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
@@ -84,6 +88,9 @@ C--   Calculate cost function on tile of this instance
 !
              if ((h-hf) .gt. 5.) then
 
+              surf_err = streamice_wgt_surf * i_numcells *
+     &         (surf_el_streamice(i,j,bi,bj) - 
+     &          surfobs(i,j,bi,bj))**2
 
               cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) +

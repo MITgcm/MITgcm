@@ -371,8 +371,8 @@ c       STREAMICE_hybrid_stress= .FALSE.
       STREAMICE_do_timedep_cost = 0.
 #ifdef ALLOW_STREAMICE_TC_COST
       do iarr = 1, streamiceMaxCostLevel
-       streamice_vel_cost_timesteps(iarr) = 0
-       streamice_surf_cost_timesteps(iarr) = 0
+       streamice_vel_cost_timesteps(iarr) = -1
+       streamice_surf_cost_timesteps(iarr) = -1
       enddo
 #endif
 
