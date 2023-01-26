@@ -34,15 +34,12 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
-#ifdef ALLOW_STREAMICE_TC_COST
-# include "STREAMICE_COST_SIZE.h"
-#endif      
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       integer myThid, myIter
 
-#ifdef ALLOW_COST_TEST
+#ifdef ALLOW_COST
 C     == Local variables
       _RL thetaRef, HAF
 

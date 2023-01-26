@@ -10,7 +10,7 @@ C
 C     streamiceMaxCostLevel :: max list of timestep levels where cost is applied
 
       integer     streamiceMaxCostLevel
-      parameter ( streamiceMaxCostLevel = 1 )
+      parameter ( streamiceMaxCostLevel = 10 )
 
 #endif
 

@@ -347,6 +347,7 @@ c initialize glen constant
 
 #else
 
+        print *, "got here", STREAMICEGlenConstFile
         CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ',
      &      B_glen, 0, myThid )
 

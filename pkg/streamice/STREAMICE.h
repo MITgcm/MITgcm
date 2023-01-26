@@ -1,6 +1,9 @@
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
+#ifdef ALLOW_STREAMICE_TC_COST
+#include "STREAMICE_COST_SIZE.h"
+#endif
 
 C     -------------------------- REAL PARAMS ---------------------------------------------------
 
@@ -416,6 +419,7 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
+     &     STREAMICEBglenCostMaskFile,
      &     STREAMICEcostMaskFile,
      &     STREAMICE_ADV_SCHEME,
      &     STREAMICE_uvel_ext_file,

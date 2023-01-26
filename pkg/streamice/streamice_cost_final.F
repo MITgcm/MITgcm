@@ -1,10 +1,10 @@
 C $Header: /u/gcmpack/MITgcm_contrib/dgoldberg/code_ad_flowline/cost_test.F,v 1.1 2012/07/20 13:42:08 heimbach Exp $
 C $Name:  $
 
+#include "STREAMICE_OPTIONS.h"
 #ifdef ALLOW_COST
 #include "COST_OPTIONS.h"
 #endif
-#include "STREAMICE_OPTIONS.h"
 
       subroutine streamice_cost_final( myThid )
 C     /==========================================================\
@@ -58,6 +58,7 @@ C     == Local variables
       _RL V_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_err (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Bglen0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BglenMask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL R0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL smooth_cost_fric  (nSx,nSy)
@@ -68,7 +69,7 @@ C     == Local variables
 
       _RL smooth_cost_fric_gl, smooth_cost_prior_gl,
      &    smooth_cost_bglen_gl, cost_misfit_gl,
-     &    smooth_cost_bed_gl, cost_thin_gl,
+     &    cost_thin_gl,
      &    cost_vel_td_gl
       _RL rhoi, rhow, r, i_r, h, hf
 
@@ -96,7 +97,7 @@ C     == Local variables
      &  STREAMICEvelOptimSnapBasename(1:
      &  ILNBLNK(STREAMICEvelOptimSnapBasename))//"err.bin"
 
-      if (streamice_do_snapshot_cost)
+      if (streamice_do_snapshot_cost) then
        CALL READ_FLD_XY_RL( STREAMICExvelOptimFile, ' ', 
      &      U_obs, 0, myThid )
        print *, 'GOT HERE read velobsu'
@@ -107,9 +108,11 @@ C     == Local variables
      &      U_err, 0, myThid )
        print *, 'GOT HERE read uerr'
       endif
-      if (STREAMICEGlenConstFile .ne. ' ')
-       CALL READ_FLD_XY_RL(, ' ',
+      if (STREAMICEGlenConstFile .ne. ' ') then
+       CALL READ_FLD_XY_RL(STREAMICEGlenConstFile, ' ',
      &      Bglen0, 0, myThid )
+       CALL READ_FLD_XY_RL(STREAMICEBglenCostMaskFile, ' ',
+     &      BglenMask, 0, myThid )
        print *, 'GOT HERE read Bglen file'
        calc_prior_cost_bglen = .true.
       else
@@ -212,10 +215,12 @@ C--   Calculate cost function on tile of this instance
 
               objf_test (bi,bj) = objf_test (bi,bj) +
      &        0.e5 * (dRdx**2+dRdy**2) * I_numcells
-              smooth_cost_bed (bi,bj) = smooth_cost_bed (bi,bj) +
-     &        0.e5 * (dRdx**2+dRdy**2) * I_numcells
 
-              IF (float_frac_streamice(i,j,bi,bj).eq.1.0 .and. ) THEN
+              h = H_streamice(i,j,bi,bj)
+              hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
+
+              IF ((h-hf) .gt. 5. .AND. BglenMask(i,j,bi,bj).gt.0.0 .and.
+     &            calc_prior_cost_bglen) then
 
                 objf_test (bi,bj) = objf_test (bi,bj) + 
      &           streamice_wgt_prior_bglen * I_numcells *  
