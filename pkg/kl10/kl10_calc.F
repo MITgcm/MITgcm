@@ -90,9 +90,12 @@ c           eps(k-1) = (dz(k-1)*eps0(k-1) +dz(k)*eps0(k))/(dz(k-1)+dz(k))
 C get sorted densities rhoS, and the array with the depths from which
 C the density came from, RS.
             DO K=2,Nr
-               CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi
-     &              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
-               rhoS(K)=rhot
+C               CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi
+C     &              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
+C               rhoS(K)=rhot
+C Use vertical gradient of iso-neutral density (SigmaR) to find density 
+C profile (valid for nonlinear EOS)
+                rhoS(K)= rhoS(K-1) + rkSign*drC(K)*SigmaR(I,J,K)
                RS(K)=rC(K)
 c$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
 c$$$     &              -1,' ',theta(I,J,K,bi,bj),' ',rhot
