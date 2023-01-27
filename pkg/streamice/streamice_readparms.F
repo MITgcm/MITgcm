@@ -478,6 +478,7 @@ C     Read parameters from open data file
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+#endif      
 
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c

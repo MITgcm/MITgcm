@@ -56,7 +56,7 @@ C     == Local variables
       _RL uvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL errvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL i_numcells, vel_err
+      _RL i_numcells, vel_err, uobs, vobs, verr
 
       WRITE(myIterStr,'(I10.10)') myIter
       
@@ -86,15 +86,23 @@ CADJ &     kind = isbyte
       i_numcells = 1.0/(Nx*Ny) 
 
 C--   Calculate cost function on tile of this instance
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           do j=1,sNy
             do i=1,sNx
 
+             uobs = uvelobs(i,j,bi,bj)
+             vobs = vvelobs(i,j,bi,bj)
+             verr = errvelobs(i,j,bi,bj)
+
+             if (uobs.gt.-999990. .and. vobs.gt.-999990. .and.
+     &           verr.gt.-999990.) then
+
+
               vel_err = streamice_wgt_vel * i_numcells * (
-     &         (streamice_u_surf(i,j,bi,bj)-uvelobs(i,j,bi,bj))**2
-     &        +(streamice_v_surf(i,j,bi,bj)-vvelobs(i,j,bi,bj))**2)
-     &        /(1. + errvelobs(i,j,bi,bj)**2)
+     &         (streamice_u_surf(i,j,bi,bj)-uobs)**2
+     &        +(streamice_v_surf(i,j,bi,bj)-vobs)**2)
+     &        /(1. + verr**2)
 
               cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) +
@@ -103,6 +111,7 @@ C--   Calculate cost function on tile of this instance
      &        cost_vel_streamice (bi,bj) +
      &              vel_err
 
+             end if
 
             end do
           end do

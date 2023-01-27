@@ -20,10 +20,10 @@ C     *==========================================================*
 
 C     == Global variables ===
 #include "SIZE.h"
+#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "GRID.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
 #endif
@@ -76,8 +76,8 @@ CADJ &     kind = isbyte
       i_numcells = 1.0/(Nx*Ny) 
 
 C--   Calculate cost function on tile of this instance
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           do j=1,sNy
             do i=1,sNx
              if (SURFOBS(i,j,bi,bj).ge.-999990. .and.
@@ -85,8 +85,9 @@ C--   Calculate cost function on tile of this instance
 
              h = H_streamice(i,j,bi,bj)
              hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
-!
+
              if ((h-hf) .gt. 5.) then
+
 
               surf_err = streamice_wgt_surf * i_numcells *
      &         (surf_el_streamice(i,j,bi,bj) - 
