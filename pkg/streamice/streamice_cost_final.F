@@ -179,7 +179,7 @@ C--   Calculate cost function on tile of this instance
      &         streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
 
-               objf_test (bi,bj) = objf_test (bi,bj) + 
+               tile_fc (bi,bj) = tile_fc (bi,bj) + 
      &         ( 
      &         streamice_wgt_vel *
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
@@ -203,17 +203,17 @@ C--   Calculate cost function on tile of this instance
 
 
              if(streamice_hmask(i,j,bi,bj).eq.1.0) then
-              objf_test (bi,bj) = objf_test (bi,bj) +
+              tile_fc (bi,bj) = tile_fc (bi,bj) +
      &        streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
               smooth_cost_fric (bi,bj) = smooth_cost_fric (bi,bj) +
      &        streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
 
-              objf_test (bi,bj) = objf_test (bi,bj) +
+              tile_fc (bi,bj) = tile_fc (bi,bj) +
      &        streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
               smooth_cost_bglen (bi,bj) = smooth_cost_bglen (bi,bj) +
      &        streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
 
-              objf_test (bi,bj) = objf_test (bi,bj) +
+              tile_fc (bi,bj) = tile_fc (bi,bj) +
      &        0.e5 * (dRdx**2+dRdy**2) * I_numcells
 
               h = H_streamice(i,j,bi,bj)
@@ -222,7 +222,7 @@ C--   Calculate cost function on tile of this instance
               IF ((h-hf) .gt. 5. .AND. BglenMask(i,j,bi,bj).gt.0.0 .and.
      &            calc_prior_cost_bglen) then
 
-                objf_test (bi,bj) = objf_test (bi,bj) + 
+                tile_fc (bi,bj) = tile_fc (bi,bj) + 
      &           streamice_wgt_prior_bglen * I_numcells *  
      &           (B_glen(i,j,bi,bj)-Bglen0(i,j,bi,bj))**2
 
@@ -236,8 +236,8 @@ C--   Calculate cost function on tile of this instance
             end do
           end do
 
-          objf_test (bi,bj) =
-     &       objf_test (bi,bj) + cost_func1_streamice(bi,bj)
+          tile_fc (bi,bj) =
+     &       tile_fc (bi,bj) + cost_func1_streamice(bi,bj)
 
         end do
       end do
