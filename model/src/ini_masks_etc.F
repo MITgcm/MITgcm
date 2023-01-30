@@ -448,9 +448,8 @@ C     and roughness length, assuming von Karman constant = 0.4
            DO k=1,Nr
             IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) kLow = k
            ENDDO
-           k = MAX(kLow,1)
-           IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) THEN
-            hLoc = ( 0.5*drF(k) * hFacW(i,j,k,bi,bj) + zRoughBot )
+           IF ( kLow .GT. 0 ) THEN
+            hLoc = ( 0.5*drF(kLow) * hFacW(i,j,kLow,bi,bj) + zRoughBot )
      &           / zRoughBot
             bottomDragCoeffW(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
            ELSE
@@ -464,9 +463,8 @@ C     and roughness length, assuming von Karman constant = 0.4
            DO k=1,Nr
             IF ( hFacS(i,j,k,bi,bj).NE.zeroRS ) kLow = k
            ENDDO
-           k = MAX(kLow,1)
-           IF ( hFacS(i,j,k,bi,bj).NE.zeroRS ) THEN
-            hLoc = ( 0.5*drF(k) * hFacS(i,j,k,bi,bj) + zRoughBot )
+           IF ( kLow .GT. 0 ) THEN
+            hLoc = ( 0.5*drF(kLow) * hFacS(i,j,kLow,bi,bj) + zRoughBot )
      &           / zRoughBot
             bottomDragCoeffS(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
            ELSE
