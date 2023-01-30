@@ -28,6 +28,9 @@ C     useCalciteSaturation :: Dissolve calcium carbonate only below saturation
 C                             horizon (needs DIC_CALCITE_SAT to be defined)
 C     calcOmegaCalciteFreq :: Frequency at which 3D calcite saturation state,
 C                             omegaC, is updated (s).
+C     nIterCO3           :: Number of iterations of the Follows 3D pH solver to 
+C                       calculate deep carbonate ion concenetration (no
+C                       effect when using the Munhoven/SolveSapHe solvers).
 C     KierRateK   :: Rate constant (%) for calcite dissolution from
 C                       Kier (1980) Geochem. Cosmochem. Acta.
 C     KierRateExp :: Rate exponent for calcite dissolution from
@@ -41,7 +44,7 @@ C     omegaC      :: Local saturation state with respect to calcite
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
-     &              zca, calcOmegaCalciteFreq,
+     &              zca, calcOmegaCalciteFreq, nIterCO3,
      &              KierRateK, KierRateExp, WsinkPIC,
      &              selectCalciteBottomRemin,
      &              useCalciteSaturation
@@ -61,6 +64,7 @@ C     omegaC      :: Local saturation state with respect to calcite
       _RL  KierRateExp
       _RL  WsinkPIC
       INTEGER selectCalciteBottomRemin
+      INTEGER nIterCO3
       LOGICAL useCalciteSaturation
 
 #ifdef DIC_CALCITE_SAT

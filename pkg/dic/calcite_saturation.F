@@ -52,7 +52,7 @@ C  i,j,k                  :: loop indices
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        INTEGER CO3ITER
-       INTEGER CO3ITERmax
+C       INTEGER CO3ITERmax
 CEOP
 
 Cmick...................................................
@@ -152,12 +152,12 @@ Cmick -DEC 04
 Cmick- NOW ITERATE pH SOLVER AT DEPTH ONLY
 Cmick  TO ENSURE ACCURATE ESTIMATE OF CO3 AT DEPTH
 Cmick - NOTE Si STILL USING A UNIFORM DUMMY VALUE
-            CO3itermax = 10
+C            nIterCO3 = 10
 Cmick - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
 Cmick - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
 CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
 
-            DO CO3iter = 1, CO3itermax
+            DO CO3iter = 1, nIterCO3
               CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
