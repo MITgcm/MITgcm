@@ -9,7 +9,9 @@ C !INTERFACE: ==========================================================
      I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C  Calculate carbonate fluxes
+C  Calculate carbonate fluxes:
+C   - determine carbonate ion concentration through full domain
+C   - calculate calcite saturation state
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -52,18 +54,9 @@ C  i,j,k                  :: loop indices
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        INTEGER CO3ITER
-C       INTEGER CO3ITERmax
 CEOP
 
-Cmick...................................................
-c       write(6,*)'myIter ',myIter,'  CALLED CALCITE_SATURATION'
-c      write(6,*)'WARNING calcite_sat needs 3d silica & H0 set=7.9'
-c       write(6,*)'        - & Fixed first guess of deep pH to 7.9'
-Cmick....................................................
-
        DO k=1,Nr
-c determine carbonate ion concentration through full domain
-c determine calcite saturation state
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
             locTemp(i,j) = theta(i,j,k,bi,bj)
@@ -104,12 +97,14 @@ C Now correct the coefficients for pressure dependence
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
+C calcium concentration already calculated in S/R DIC_COEFFS_SURF
            calcium = cat(i,j,bi,bj)
 #else
            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
 #endif
 
-c 30 micromol = 0.03 mol m-3
+C SilicaDeep filled with constant value of 0.03 mol/m3 unless 
+C     DIC_deepSilicaFile provided.
            sitlocal = silicaDeep(i,j,k,bi,bj)
            po4local = PTR_PO4(i,j,k)
            diclocal = PTR_DIC(i,j,k)
@@ -148,14 +143,10 @@ C Use the original Follows et al. (2006) solver
 #endif
             pHlocal(i,j) = 7.9 _d 0
 
-Cmick -DEC 04
-Cmick- NOW ITERATE pH SOLVER AT DEPTH ONLY
-Cmick  TO ENSURE ACCURATE ESTIMATE OF CO3 AT DEPTH
-Cmick - NOTE Si STILL USING A UNIFORM DUMMY VALUE
-C            nIterCO3 = 10
-Cmick - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
-Cmick - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
-CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
+C Since we start cold with an arbitrary pH, we must iterate pH solver 
+C    to ensure accurate estimate of co3 at depth
+C    Because we may call this for deep ocean infrequently can afford to make
+C    several iterations
 
             DO CO3iter = 1, nIterCO3
               CALL CALC_PCO2_APPROX(
@@ -170,12 +161,6 @@ CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
-
-c........................................................
-c               if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
-c                 write(6,*)'Iteration, pH = ',CO3iter,pHlocal
-c               endif
-c........................................................
             ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
