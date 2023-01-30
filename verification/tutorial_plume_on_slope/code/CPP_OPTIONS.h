@@ -33,6 +33,11 @@ C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
 #undef NONLIN_FRSURF
 
+C o Compute bottom drag coefficents, following the logarithmic law of the wall,
+C   as a function of grid cell thickness and roughness length
+C   zRoughBot (order 0.01m), assuming a von Karman constant = 0.4.
+#define ALLOW_BOTTOMDRAG_ROUGHNESS
+
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
 C          because the old code did not have no-slip BCs
@@ -52,4 +57,3 @@ cph# include "ECCO_CPPOPTIONS.h"
 cph#endif
 
 #endif /* CPP_OPTIONS_H */
-
