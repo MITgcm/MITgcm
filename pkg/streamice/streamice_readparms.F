@@ -145,6 +145,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEBglenCostMaskFile,
      &     streamice_wgt_drift,
      &     streamice_wgt_vel,
+     &     streamice_wgt_vel_norm,
      &     streamice_wgt_surf,
      &     streamice_wgt_tikh_beta,
      &     streamice_wgt_tikh_bglen,
@@ -362,6 +363,7 @@ c       STREAMICE_hybrid_stress= .FALSE.
       STREAMICEBglenCostMaskFile = ''
       streamice_wgt_drift = 0.
       streamice_wgt_tikh_beta = 0.
+      streamice_wgt_vel_norm = 0.
       streamice_wgt_tikh_bglen = 0.
       streamice_wgt_tikh_gen = 0.
       streamice_wgt_prior_bglen = 0.

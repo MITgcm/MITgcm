@@ -81,6 +81,7 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_kx_b_init, streamice_ky_b_init,
      & streamice_wgt_drift, streamice_wgt_surf,
      & streamice_wgt_avthick, streamice_wgt_vel,
+     & streamice_wgt_vel_norm,
      & streamice_wgt_tikh_beta,
      & streamice_wgt_tikh_bglen,
      & streamice_wgt_tikh_gen,
@@ -115,6 +116,7 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_kx_b_init, streamice_ky_b_init
       _RL streamice_wgt_drift, streamice_wgt_surf
       _RL streamice_wgt_avthick, streamice_wgt_vel
+      _RL streamice_wgt_vel_norm
       _RL streamice_wgt_tikh_beta, streamice_wgt_tikh_bglen,
      &    streamice_wgt_tikh_gen
       _RL streamice_wgt_prior_bglen, streamice_wgt_prior_gen

@@ -65,11 +65,12 @@ C     == Local variables
       _RL smooth_cost_prior (nSx,nSy)
       _RL smooth_cost_bglen (nSx,nSy)
       _RL cost_misfit (nSx,nSy)
+      _RL cost_misfit_norm (nSx,nSy)
 
 
       _RL smooth_cost_fric_gl, smooth_cost_prior_gl,
      &    smooth_cost_bglen_gl, cost_misfit_gl,
-     &    cost_thin_gl,
+     &    cost_thin_gl, cost_misfit_norm_gl,
      &    cost_vel_td_gl
       _RL rhoi, rhow, r, i_r, h, hf
 
@@ -197,6 +198,23 @@ C--   Calculate cost function on tile of this instance
      &                V_obs(i,j,bi,bj))**2) * I_numcells
      &         / (1.0+U_err(i,j,bi,bj))**2
 
+               tile_fc (bi,bj) = tile_fc (bi,bj) + 
+     &         ( 
+     &         streamice_wgt_vel_norm *
+     &         0.5 * (streamice_u_surf(i,j,bi,bj)-
+     &                U_obs(i,j,bi,bj))**2 +
+     &         0.5 * (streamice_v_surf(i,j,bi,bj)-
+     &                V_obs(i,j,bi,bj))**2) * I_numcells
+     &         / (1.0+U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
+
+               cost_misfit_norm (bi,bj) = cost_misfit_norm (bi,bj) + 
+     &         (
+     &         streamice_wgt_vel_norm *
+     &         0.5 * (streamice_u_surf(i,j,bi,bj)-
+     &                U_obs(i,j,bi,bj))**2 +
+     &         0.5 * (streamice_v_surf(i,j,bi,bj)-
+     &                V_obs(i,j,bi,bj))**2) * I_numcells
+     &         / (1.0+U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
 
               ENDIF
              endif
@@ -251,6 +269,8 @@ C--   Calculate cost function on tile of this instance
       CALL GLOBAL_SUM_TILE_RL
      &   ( cost_misfit, cost_misfit_gl, myThid )
       CALL GLOBAL_SUM_TILE_RL
+     &   ( cost_misfit_norm, cost_misfit_norm_gl, myThid )
+      CALL GLOBAL_SUM_TILE_RL
      &   ( cost_surf_streamice, cost_thin_gl, myThid )
       CALL GLOBAL_SUM_TILE_RL
      &   ( cost_vel_streamice, cost_vel_td_gl, myThid )
@@ -263,6 +283,8 @@ C--   Calculate cost function on tile of this instance
      &   smooth_cost_prior_gl
       write(standardmessageunit,'(A,D22.15)') 'vel misfit = ', 
      &   cost_misfit_gl
+      write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ', 
+     &   cost_misfit_norm_gl
       write(standardmessageunit,'(A,D22.15)') 'thinning contr = ', 
      &   cost_thin_gl
       write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ', 
