@@ -24,7 +24,7 @@ jobs:
         - exp: "global_ocean.90x40x15"
           precs: "16 16 16"
         - exp: "tutorial_plume_on_slope"
-          precs: "16"
+          precs: "16 16"
         - exp: "tutorial_advection_in_gyre"
           precs: "16"
         - exp: "hs94.cs-32x32x5"
