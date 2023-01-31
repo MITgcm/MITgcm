@@ -46,6 +46,9 @@ C Include self-shading effect by phytoplankton
 C Include iron sediment source using DOP flux
 #undef SEDFE
 
+C For Adjoint built
+#undef DIC_AD_SAFE
+
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */
 

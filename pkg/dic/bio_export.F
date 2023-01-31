@@ -60,7 +60,7 @@ C  i,j,k                  :: loop indices
 #ifdef ALLOW_FE
       _RL tmpfe
 #endif
-#ifdef AD_SAFE
+#ifdef DIC_AD_SAFE
       _RL thx, thy, thaux
 #endif
 CEOP
@@ -125,7 +125,7 @@ C     performance drop on vector computers
 #else
          tmpfe=PTR_FE(i,j,k)
 #endif
-#ifdef AD_SAFE
+#ifdef DIC_AD_SAFE
          thx = tmppo4/(tmppo4+KPO4)
          thy = tmpfe/(tmpfe+KFE)
 c        thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
