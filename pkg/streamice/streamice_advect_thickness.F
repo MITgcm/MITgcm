@@ -375,9 +375,32 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
             STOP 'SHELFICE IS NOT ENABLED'
 #endif
            ELSE
-              MR = (1.-float_frac_streamice(i,j,bi,bj)) *
+
+              IF (STREAMICEBdotConfig.EQ.'FILE' ) THEN
+
+               MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             (BDOT_STREAMICE(i,j,bi,bj) +
      &              BDOT_pert(i,j,bi,bj))
+              ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
+               IF (base_el_streamice(i,j,bi,bj) .lt. 
+     &             streamice_bdot_depth_nomelt) THEN
+                IF (base_el_streamice(i,j,bi,bj) .lt. 
+     &             streamice_bdot_depth_maxmelt) THEN
+                 MR = streamice_bdot_maxmelt
+                ELSE
+                 MR = (streamice_bdot_depth_nomelt-
+     &                 base_el_streamice(i,j,bi,bj)) /
+     &                (streamice_bdot_depth_nomelt-
+     &                 streamice_bdot_depth_maxmelt) *
+     &                 streamice_bdot_maxmelt
+                ENDIF
+               ELSE
+                 MR = 0.0
+               ENDIF 
+               MR = (1.-float_frac_streamice(i,j,bi,bj)) *
+     &             (MR + BDOT_pert(i,j,bi,bj))
+               BDOT_STREAMICE(i,j,bi,bj) = MR
+              ENDIF
            ENDIF
 
            SMB = ADOT_STREAMICE(i,j,bi,bj)

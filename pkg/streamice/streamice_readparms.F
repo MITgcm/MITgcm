@@ -35,6 +35,12 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iUnit
       INTEGER iarr
 
+
+!      _RL streamice_bdot_depth_nomelt
+!      _RL streamice_bdot_depth_maxmelt
+!      _RL streamice_bdot_maxmelt
+
+
       NAMELIST /STREAMICE_PARM01/
      &     streamice_density, streamice_density_ocean_avg,
      &     streamice_density_firn,
@@ -67,6 +73,9 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEBdotFile,
      &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
+     &     streamice_bdot_depth_nomelt,
+     &     streamice_bdot_depth_maxmelt,
+     &     streamice_bdot_maxmelt,
      &     STREAMICEtopogFile,
      &     STREAMICEhmaskFile,
      &     STREAMICEHBCyFile,
@@ -264,6 +273,10 @@ c      streamice_n_sub_regularize = 4
       streamice_adot_uniform = 0.0
       streamice_forcing_period = 0
       streamice_firn_correction = 0.
+      streamice_bdot_depth_nomelt = 0.
+      streamice_bdot_depth_maxmelt = 0.
+      streamice_bdot_maxmelt = 0.
+
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       streamice_buttr_width = 1000000000.
 #endif

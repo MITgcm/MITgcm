@@ -90,6 +90,9 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform,
+     & streamice_bdot_depth_nomelt,
+     & streamice_bdot_depth_maxmelt,
+     & streamice_bdot_maxmelt,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & streamice_buttr_width,
 #endif
@@ -123,6 +126,9 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_addl_backstress
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
+      _RL streamice_bdot_depth_nomelt
+      _RL streamice_bdot_depth_maxmelt
+      _RL streamice_bdot_maxmelt
       _RL streamice_forcing_period
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL streamice_buttr_width
@@ -733,6 +739,8 @@ C    REAL ARRAYS
      &     GAD_trac_2d
 #endif
 #endif
+
+
 
 #ifdef USE_ALT_RLOW
       COMMON /STREAMICE_RLOW/
