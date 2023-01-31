@@ -103,7 +103,7 @@ C calcium concentration already calculated in S/R DIC_COEFFS_SURF
            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
 #endif
 
-C SilicaDeep filled with constant value of 0.03 mol/m3 unless 
+C SilicaDeep filled with constant value of 0.03 mol/m3 unless
 C     DIC_deepSilicaFile provided.
            sitlocal = silicaDeep(i,j,k,bi,bj)
            po4local = PTR_PO4(i,j,k)
@@ -143,7 +143,7 @@ C Use the original Follows et al. (2006) solver
 #endif
             pHlocal(i,j) = 7.9 _d 0
 
-C Since we start cold with an arbitrary pH, we must iterate pH solver 
+C Since we start cold with an arbitrary pH, we must iterate pH solver
 C    to ensure accurate estimate of co3 at depth
 C    Because we may call this for deep ocean infrequently can afford to make
 C    several iterations

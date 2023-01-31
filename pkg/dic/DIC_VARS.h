@@ -8,8 +8,7 @@ C     *==========================================================*
 
 C     AtmospCO2   :: Atmospheric pCO2 (atm).
 C     AtmosP      :: Atmospheric Pressure loaded from file (atm).
-C     pH          :: surface ocean pH (acidity) for pCO2
-C                       calculations.
+C     pH          :: surface ocean pH (acidity) for pCO2 calculations.
 C     pCO2        :: surface ocean partial pressure of CO2 (atm).
 C     FluxCO2     :: Air-sea flux of CO2 (mol/m2/s).
 C     wind        :: Wind speed loaded from file for air-sea
@@ -21,14 +20,12 @@ C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
 C     silicaSurf  :: Surface ocean concentration of silicate for
 C                       pCO2 calculations. Read in from file (mol/m3).
-C     silicaDeep  :: 3D-field of silicate concentration for pH and
-C                       carbonate calculations. Read in from file (mol/m3).
 C     zca         :: Scale depth for CaCO3 remineralization [m]
 C     useCalciteSaturation :: Dissolve calcium carbonate only below saturation
 C                             horizon (needs DIC_CALCITE_SAT to be defined)
 C     calcOmegaCalciteFreq :: Frequency at which 3D calcite saturation state,
 C                             omegaC, is updated (s).
-C     nIterCO3           :: Number of iterations of the Follows 3D pH solver to 
+C     nIterCO3    :: Number of iterations of the Follows 3D pH solver to
 C                       calculate deep carbonate ion concenetration (no
 C                       effect when using the Munhoven/SolveSapHe solvers).
 C     KierRateK   :: Rate constant (%) for calcite dissolution from
@@ -39,14 +36,13 @@ C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
 C     selectCalciteBottomRemin :: to either remineralize in bottom or top layer
 C                       if flux reaches bottom layer; =0 : bottom, =1 : top
-C     omegaC      :: Local saturation state with respect to calcite
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
-     &              zca, calcOmegaCalciteFreq, nIterCO3,
+     &              zca, calcOmegaCalciteFreq,
      &              KierRateK, KierRateExp, WsinkPIC,
-     &              selectCalciteBottomRemin,
+     &              selectCalciteBottomRemin, nIterCO3,
      &              useCalciteSaturation
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -68,6 +64,9 @@ C     omegaC      :: Local saturation state with respect to calcite
       LOGICAL useCalciteSaturation
 
 #ifdef DIC_CALCITE_SAT
+C     silicaDeep  :: 3D-field of silicate concentration for pH and
+C                    carbonate calculations. Read in from file (mol/m3).
+C     omegaC      :: Local saturation state with respect to calcite
        COMMON /DIC_CALCITE_SAT_FIELDS/
      &              silicaDeep, omegaC
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

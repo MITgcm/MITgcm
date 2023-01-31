@@ -77,7 +77,7 @@ C  useCalciteSaturation :: dissolve calcium carbonate below the calcite
 C                          saturation horizon following method by Karsten Friis
 C  calcOmegaCalciteFreq :: Frequency that 3d calcite saturation state, omegaC,
 C                          is calculated.
-C  nIterCO3           :: Number of iterations of the Follows 3D pH solver to 
+C  nIterCO3             :: Number of iterations of the Follows 3D pH solver to
 C                          calculate deep carbonate ion concenetration (no
 C                          effect when using the Munhoven/SolveSapHe solvers).
 C  KierRateK            :: Rate constant (%) for calcite dissolution from
@@ -96,9 +96,9 @@ C----
      &  selectBTconst, selectFTconst,
      &  selectHFconst, selectK1K2const,
      &  selectPHsolver,
-     &  useCalciteSaturation,
-     &  calcOmegaCalciteFreq, KierRateK, KierRateExp,
-     &  WsinkPIC, selectCalciteBottomRemin, nIterCO3,
+     &  useCalciteSaturation, calcOmegaCalciteFreq,
+     &  nIterCO3, KierRateK, KierRateExp,
+     &  WsinkPIC, selectCalciteBottomRemin,
      &  zca
 
 #ifdef DIC_BIOTIC
@@ -163,13 +163,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        useCalciteSaturation = .FALSE.
 C-- Parameters used in Calcite Saturation calculation (useCalciteSaturation=T):
 C set calcite saturation calculation to every timestep - could be expensive
-       calcOmegaCalciteFreq     = deltaTClock
+       calcOmegaCalciteFreq = deltaTClock
+C number of iterations for the Follows 3d pH solver
+       nIterCO3             = 10
+C set some nominal particulate sinking rate (m/s); try 100m/day:
 C flag to either remineralize in bottom or top layer if flux
 C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
-C number of iterations for the Follows 3d pH solver
-       nIterCO3               = 10
-C set some nominal particulate sinking rate (m/s); try 100m/day:
        WsinkPIC                 = 100. _d 0/86400. _d 0
 C Kier rate exponent for calcite (4.2 for aragonite)
        KierRateExp              = 4.54 _d 0
