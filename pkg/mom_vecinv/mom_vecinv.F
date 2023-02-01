@@ -5,6 +5,9 @@
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
 
       SUBROUTINE MOM_VECINV(
      I        bi,bj,k,iMin,iMax,jMin,jMax,
@@ -40,6 +43,9 @@ C     == Global variables ==
 #include "FFIELDS.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
+#endif
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+# include "GGL90.h"
 #endif
 #ifdef ALLOW_TIMEAVE
 # include "TIMEAVE_STATV.h"
@@ -99,6 +105,10 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+      _RL uRes    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vRes    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL del2u   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -187,6 +197,10 @@ C--   Initialise intermediate terms
         zStar(i,j) = 0.
         guDiss(i,j)= 0.
         gvDiss(i,j)= 0.
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+c       uRes(i,j)  = 0.
+c       vRes(i,j)  = 0.
+#endif
         vort3(i,j) = 0.
         omega3(i,j)= 0.
         KE(i,j)    = 0.
@@ -659,6 +673,14 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
         CALL MOM_VI_V_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
      &                         uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
+#if ( defined ALLOW_GGL90 && defined ALLOW_GGL90_LANGMUIR )
+       ELSEIF ( useLANGMUIR ) THEN
+        CALL GGL90_ADD_STOKESDRIFT(
+     O                 uRes, vRes,
+     I                 uFld, vFld, k, bi, bj, myThid )
+        CALL MOM_VI_CORIOLIS(bi,bj,k,uRes,vRes,hFacZ,r_hFacZ,
+     &                       uCf,vCf,myThid)
+#endif
        ELSE
         CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,hFacZ,r_hFacZ,
      &                       uCf,vCf,myThid)

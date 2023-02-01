@@ -326,11 +326,12 @@ the separate output files. A sample ``data.diagnostics`` namelist file:
      &DIAGNOSTICS_LIST
       fields(1:2,1) = 'UVEL    ','VVEL    ',
        levels(1:5,1) = 1.,2.,3.,4.,5.,
-       filename(1) = 'diagout1',
+       fileName(1) = 'diagout1',
       frequency(1) = 86400.,
       fields(1:2,2) = 'THETA   ','SALT    ',
-       filename(2) = 'diagout2',
-      fileflags(2) = ' P1     ',
+       fileName(2) = 'diagout2',
+      fileFlags(2) = ' P      ',
+      levels(1:5,2) = 100000.0, 70000.0, 50000.0, 30000.0, 20000.0,
       frequency(2) = 3600.,
      &
 
@@ -343,8 +344,50 @@ the prefix ``diagout1``, does time averaging every 86400. seconds,
 (frequency is 86400.), and will write fields which are multiple-level
 fields at output levels 1-5. The names of diagnostics quantities are
 ``UVEL`` and ``VVEL``. The second set of output files has the prefix diagout2,
-does time averaging every 3600. seconds, includes fields with all
-levels, and the names of diagnostics quantities are ``THETA`` and ``SALT``.
+does time averaging every 3600. seconds and the names of diagnostics quantities
+are ``THETA`` and ``SALT``.  It interpolates vertically to the pressure levels
+100000 Pa, ..., 20000 Pa.
+
+The :varlink:`fileFlags` parameter is explained in
+:numref:`diagnostic_fileFlags`.  Only the first three characters matter.  The
+first character determines the precision of the output files.  The default is
+to use :varlink:`writeBinaryPrec`.  The second character determines whether the
+fields are to be integrated or interpolated vertically or written as is (the
+default).  Interpolation is only available in the atmosphere.  The desired
+pressure levels need to be specified in ``levels``.  The third character is
+used to time average the product of a diagnostic with the appropriate
+thickness factor, hFacC, hFacW or hFacS.  This is mostly useful with a
+non-linear free surface where the thickness factors vary in time.  This will
+have an effect only for certain diagnostics, as determined by the parsing code
+(see :numref:`diagnostic_parsing_array` and the file available_diagnostics.log
+for a given setup):  parse(3) has to be ``'R'``, parse(5) blank and parse(9:10)
+``'MR'``.  Vorticity-point diagnostics cannot be hFac weighted.  Note that the
+appropriate hFac factors are automatically included when integrating vertically
+(second character ``'I'``), so the 'h' is not needed in this case
+but could still improve accuracy of a time-averaged vertical integral when using
+non-linear free surface.
+
+.. table:: Diagnostic fileFlags
+   :name: diagnostic_fileflags
+
+   +---------------+-------+----------------------------------------------+
+   | Character pos | Value | Description                                  |
+   +===============+=======+==============================================+
+   | 1             | R     | precision: 32 bits                           |
+   +---------------+-------+----------------------------------------------+
+   |               | D     | precision: 64 bits                           |
+   +---------------+-------+----------------------------------------------+
+   |               |       | precision: writeBinaryPrec                   |
+   +---------------+-------+----------------------------------------------+
+   | 2             | I     | integrate vertically                         |
+   +---------------+-------+----------------------------------------------+
+   |               | P     | interpolate vertically                       |
+   +---------------+-------+----------------------------------------------+
+   |               |       | do not integrate or interpolate              |
+   +---------------+-------+----------------------------------------------+
+   | 3             | h     | multiply by hFac (if permitted) when filled  |
+   +---------------+-------+----------------------------------------------+
+
 
 The user must assure that enough computer memory is allocated for the
 diagnostics and the output streams selected for a particular experiment.
@@ -427,7 +470,7 @@ Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
    225 |ADJkapgm| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKgm: Sensitivity to GM Intensity
    226 |ADJkapre| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKredi: Sensitivity to Redi Coefficient
 
-:: 
+::
 
    227 |TRAC01  | 15 |       |SMR     MR|mol C/m         |Dissolved Inorganic Carbon concentration
    241 |ADJptr01| 15 |       |SMRA    MR|dJ/mol C/m      |sensitivity to Dissolved Inorganic Carbon concentration
@@ -1987,6 +2030,12 @@ potential and planetary) and its related components. This is an offline
 computation. It was developed to be used in mode water studies, so that
 it comes with other related routines, in particular ones computing
 surface vertical potential vorticity fluxes.
+
+.. note::
+
+    This toolbox was developed in 2006 for the `CLIMODE project <https://www.nsf.gov/awardsearch/showAward?AWD_ID=0425150>`_.
+    The toolbox routines are available on this
+    `archived repository <https://github.com/gmaze/gmaze_legacy/tree/master/matlab/MIT>`_.
 
 Equations
 ---------
