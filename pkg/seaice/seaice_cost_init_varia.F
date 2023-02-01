@@ -28,48 +28,37 @@ c     == global variables ==
 c     == routine arguments ==
       integer myThid
 
-#ifdef ALLOW_COST
-#if (defined ALLOW_SEAICE_COST_SMR_AREA || defined ALLOW_COST_ICE)
+#if (defined ALLOW_COST && defined ALLOW_COST_ICE)
 
 c     == local variables ==
       integer bi,bj
+#ifdef ALLOW_SEAICE_COST_EXPORT
       integer i,j
+#endif
 
 c     == end of interface ==
 
 c--   Initialize the tiled cost function contributions.
       do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
-          objf_ice(bi,bj)     = 0. _d 0
-          objf_smrarea(bi,bj) = 0. _d 0
-          objf_smrsst(bi,bj)  = 0. _d 0
-          objf_smrsss(bi,bj)  = 0. _d 0
+          objf_ice(bi,bj)        = 0. _d 0
           objf_ice_export(bi,bj) = 0. _d 0
 c
-          num_ice(bi,bj)      = 0. _d 0
-          num_smrarea(bi,bj)  = 0. _d 0
-          num_smrsst(bi,bj)   = 0. _d 0
-          num_smrsss(bi,bj)   = 0. _d 0
-        enddo
-      enddo
+          num_ice(bi,bj)         = 0. _d 0
 
-      do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_SEAICE_COST_EXPORT
           do j=1-OLy,sNy+OLy
             do i=1-OLx,sNx+OLx
-#ifdef ALLOW_SEAICE_COST_EXPORT
                uHeffExportCell(i,j,bi,bj) = 0. _d 0
                vHeffExportCell(i,j,bi,bj) = 0. _d 0
-#endif
-               cosphi         (i,j,bi,bj) = 1. _d 0
             enddo
           enddo
+#endif
         enddo
       enddo
 
       _BARRIER
 
-#endif
 #endif /* ALLOW_COST */
 
       return

@@ -53,11 +53,7 @@ c     == local variables ==
 c     == end of interface ==
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) THEN
-       IF (.NOT.useECCO)
-     &   CALL SEAICE_COST_DRIVER( endTime, nEndIter, myThid )
-       CALL SEAICE_COST_FINAL( myThid )
-      ENDIF
+      IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE

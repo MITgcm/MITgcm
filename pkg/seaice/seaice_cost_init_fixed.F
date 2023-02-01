@@ -40,12 +40,6 @@ C     == local variables ==
       logical exst
 
 C     == external functions ==
-c#ifdef ALLOW_CAL
-c     integer  cal_IntMonths
-c     external cal_IntMonths
-c     integer  cal_IntDays
-c     external cal_IntDays
-c#endif
 
 C     == end of interface ==
 
@@ -74,34 +68,10 @@ C-      use "modelEndDate" as default value for costIceEnd
         call cal_ToSeconds ( tempDate2 , costIceEnd , mythid )
         costIceEnd = costIceEnd + startTime
 C--
-        if ( smrareadatfile .ne. ' ' )
-     &   call cal_FullDate( smrareastartdate1, smrareastartdate2,
-     &                      smrareastartdate,  mythid )
-
       ENDIF
       _END_MASTER( mythid )
 
 #endif /* ALLOW_CAL */
-
-C--   Get the weights that are to be used for the individual cost
-C--   function contributions.
-      call seaice_cost_weights( mythid )
-
-C--   Initialise adjoint of monthly mean files calculated
-C--   in cost_averagesfields (and their ad...).
-cph(
-cph   The following init. shoud not be applied if in the middle
-cph   of a divided adjoint run
-cph)
-#ifndef ALLOW_TANGENTLINEAR_RUN
-cph!!! and I think it needs to be seen by TAF
-cph!!! for repeated TLM runs
-cph!!!
-      inquire( file='costfinal', exist=exst )
-      if ( .NOT. exst) then
-cph         call seaice_cost_init_barfiles( mythid )
-      endif
-#endif
 
       _BARRIER
 

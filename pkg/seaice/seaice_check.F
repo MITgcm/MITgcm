@@ -1268,25 +1268,14 @@ C
 #endif
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
-# ifndef ALLOW_CAL
       WRITE(msgBuf,'(A)')
-     &     'SEAICE_CHECK: cpp-flag ALLOW_SEAICE_COST_SMR_AREA requires'
+     & 'SEAICE_CHECK: cpp-flag ALLOW_SEAICE_COST_SMR_AREA '//
+     & 'is not allowed anymore.'
       CALL PRINT_ERROR( msgBuf, myThid )
       WRITE(msgBuf,'(A)')
-     &     'SEAICE_CHECK: that pkg/cal is compiled and turned on.'
+     & 'SEAICE_CHECK: Use pkg/ecco''s generic cost function instead.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-# else
-      IF ( .NOT. useCAL ) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: cpp-flag ALLOW_SEAICE_COST_SMR_AREA defined,'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &       'SEAICE_CHECK: but useCAL=F; this does not work.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-# endif
 #endif
 
       IF ( errCount .GE. 1 ) THEN
