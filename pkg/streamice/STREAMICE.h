@@ -55,8 +55,18 @@ C     streamice_wgt_avthick       :: cost function coefficient
 C                                    of thickness misfit term
 C     streamice_wgt_vel           :: cost function coefficient
 C                                    of vel misfit term
-C     streamice_wgt_tikh          :: cost function coefficient
-C                                    of sq gradient penalty
+C     streamice_wgt_vel_norm      :: cost function coefficient
+C                                    of vel misfit normalised by obs. vel
+C     streamice_wgt_tikh_beta     :: cost function coefficient
+C                                    of sq gradient penalty for sliding param
+C     streamice_wgt_tikh_bglen    :: cost function coefficient
+C                                    of sq gradient penalty for stiffness
+C     streamice_wgt_tikh_gen      :: cost function coefficient
+C                                    of sq gradient penalty for generic ctrl
+C     streamice_wgt_prior_bglen   :: cost function coefficient
+C                                    of sq deviation from prior stiffness
+C     streamice_wgt_prior_gen     :: cost function coefficient
+C                                    of sq deviation from prior, generic ctrl
 C     streamice_addl_backstress   -- to remove
 C     streamice_smooth_gl_width   :: grounding line regularisation
 C                                    width (m)
@@ -66,6 +76,13 @@ C                                    of buttressing -- flowline mode only
 C     streamice_firn_correction   :: air thickness in column (m)
 C     streamice_density_firn      :: firn density in column
 C     streamice_forcing_period    :: forcing freq (s)
+C      FOLLOWING FOR STREAMICEBdotConfig='PARAM'
+C     streamice_bdot_depth_nomelt :: pw linear depth-dependent melt param:
+C                                    depth above which no melt
+C     streamice_bdot_depth_maxmelt:: pw linear depth-dependent melt param:
+C                                    depth below which const melt
+C     streamice_bdot_maxmelt      :: pw linear depth-dependent melt param:
+C                                    maximum melt rate
 
       COMMON /STREAMICE_PARMS_R/
      & streamice_density, streamice_density_ocean_avg,
@@ -178,6 +195,12 @@ C     streamice_petsc_pcfactorlevels    :: fill level of incomplete
 C                                          cholesky preconditioner
 C                                          for use with PETSC and
 C                                          BLOCKJACOBI precond ONLY
+C     streamice_vel_cost_timesteps      :: array of time steps where velocity misfit
+C                                          is accumulated, expects files
+C       [STREAMICEvelOptimTCBasename][timestep in 10 digit format][u/v/err].bin
+C     streamice_surf_cost_timesteps      :: array of time steps where surface misfit
+C                                          is accumulated, expects files
+C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER streamice_max_nl
@@ -252,10 +275,16 @@ C                                    overridden in coupled mode
 C     STREAMICEAdotConfig         :: mode of SMB init
 C                                    FILE - via STREAMICEAdotFile
 C                                    o/w streamice_adot_uniform
+C     STREAMICEBglenCostMaskFile  :: prior values for Bglen in 
+C                                    transient or snapshot inversion
 C     STREAMICEvelOptimFile       :: file prefix for obs velocities
 C                                    in inversion e.g. 'velobs'
 C                                    indicates 'velobsu.bin'
 C                                    and       'velobsv.bin'
+C     STREAMICEvelOptimSnapBasename
+C                                 :: file prefix for obs velocities
+C                                    in snapshot inversion, expects files
+C        [STREAMICEvelOptimSnapBasename][u/v/err].bin
 C     STREAMICEtopogFile          :: bed topography (separate from
 C                                    ocean bathy)
 C     STREAMICEhmaskFile          :: ice mask file
@@ -498,6 +527,9 @@ C                                        (if false, sqrt is used)
 C     STREAMICE_vel_ext           :: impose velocity with external files
 C     STREAMICE_vel_ext_cgrid     :: impose velocity with external files on C grid
 C                                 ::  (over-rides STREAMICE_vel_ext)
+C     STREAMICE_do_snapshot_cost  :: accumulate snapshot cost function at 
+C                                    final time step
+C     STREAMICE_do_timedep_cost   :: accumulate cost at specified time steps
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
