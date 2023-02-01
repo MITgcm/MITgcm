@@ -611,11 +611,11 @@ C-    end retired parameters
       costIceEnd1       =  0
       costIceEnd2       =  0
       cost_ice_flag     =  1
-      SEAICE_clamp_salt  = UNSET_RL
-      SEAICE_clamp_theta = UNSET_RL
       SEAICE_cutoff_area = 0.0001 _d 0
       SEAICE_cutoff_heff = 0. _d 0
-c
+C     retired cost related parameters
+      SEAICE_clamp_salt  = UNSET_RL
+      SEAICE_clamp_theta = UNSET_RL
       mult_smrsst       =  UNSET_RL
       mult_smrsss       =  UNSET_RL
       mult_smrarea      =  UNSET_RL
