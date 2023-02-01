@@ -1302,6 +1302,7 @@ C-    Retired parameters
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
+#ifdef ALLOW_COST
       IF ( smrsstbarfile .NE.  ' ' .OR. smrsssbarfile .NE. ' '
      &     .OR. smrareabarfile .NE. ' ' .OR. smrareadatfile .NE. ' '
      &     .OR. smrarea_errfile .NE. ' '
@@ -1331,6 +1332,7 @@ C-    Retired parameters
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
+#endif
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'
