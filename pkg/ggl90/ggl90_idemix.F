@@ -79,6 +79,8 @@ C     === Local variables ===
       INTEGER i, j, k, kl, kp1, km1
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
+      INTEGER nIter, iIter
+      _RL  recip_nIter
       _RL  deltaTloc
 C     cstar :: vertical integral over N, eq (13) in Olbers+Eden (2013)
       _RL  fxa,fxb,fxc,cstar,twoOverPi
@@ -125,6 +127,9 @@ CEOP
 
       twoOverPi = 2. _d 0/PI
 
+      nIter = 1
+      recip_nIter = 1./float(nIter)
+
 C     Initialize local fields
       DO k = 1, Nr
        DO j=1-OLy,sNy+OLy
@@ -161,9 +166,10 @@ c-----------------------------------------------------------------------
         DO i=1-OLx,sNx+OLx
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaR(i,j,k) * coordFac
-         fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
-         Nsquare(i,j,k)= MAX( 100.*fxb*fxb, Nsquare(i,j,k) )
-     &                 *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+         Nsquare(i,j,k)= MAX( 0. _d 0, Nsquare(i,j,k) )
+CML         fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
+CML         Nsquare(i,j,k)= MAX( 100.*fxb*fxb, Nsquare(i,j,k) )
+CML     &                 *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -185,21 +191,28 @@ c-----------------------------------------------------------------------
       DO k=2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
-          fxa = SQRT(Nsquare(i,j,k))/fxb
-          cstar = bN0(i,j)/(PI*IDEMIX_jstar)
+CML          fxb = MAX( 1. _d -6, ABS( fCori(i,j,bi,bj) ))
+CML          fxa = SQRT(Nsquare(i,j,k))/fxb
+          fxb = ABS( fCori(i,j,bi,bj) )
+          fxa = SQRT(Nsquare(i,j,k))/(1. _d -22 + fxb)
+CMLC     cstar is not limited from below (to say 1e-2), instead Nsquare is
+CMLC     limited from below to (10 * max(1e-6, fCori))**2
+CML          cstar = bN0(i,j)/(PI*IDEMIX_jstar)
+          cstar = MAX(1. _d -2, bN0(i,j)/(PI*IDEMIX_jstar) )
           c0(i,j,k)=MAX(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa,twoOverPI))
           v0(i,j,k)=MAX(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa,twoOverPI))
+C     next two lines: fxc = ACOSH( MAX(1,fxa) )
           fxc = MAX( 1. _d 0 , fxa )
           fxc = LOG( fxc + SQRT( fxc*fxc -1.))
-          tau_d(i,j,k) = IDEMIX_mu0*fxb*fxc*
-     &         (IDEMIX_jstar*PI/(GGL90eps+bN0(i,j)) )**2
+CML          tau_d(i,j,k) = IDEMIX_mu0*fxb*fxc*
+CML     &         (IDEMIX_jstar*PI/(GGL90eps+bN0(i,j)) )**2
+          tau_d(i,j,k) = MAX( 1. _d -4, IDEMIX_mu0*fxb*fxc/cstar**2 )
         ENDDO
        ENDDO
       ENDDO
-      IF ( IDEMIX_tau_h .GT. 0. _d 0 ) THEN
+      IF ( IDEMIX_tau_h .GT. 0. _d 0 .AND. nIter .EQ. 1 ) THEN
 C     horizontal diffusion of IW energy can become unstable for long
 C     time steps, so limit horizontal group velocity to satisfy simple
 C     CFL-like criterion:
@@ -288,6 +301,7 @@ c      inject at bottom box only
 c-----------------------------------------------------------------------
 c     horizontal diffusion of IW energy
 c-----------------------------------------------------------------------
+       DO iIter = 1,nIter
        DO k=2,Nr
         kl = k
         IF ( usingPCoords ) kl = k - 1
@@ -333,9 +347,11 @@ c-----------------------------------------------------------------------
      &                   *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))+(dfy(i,j+1)-dfy(i,j)) )  )
      &         *maskC(i,j,kl,bi,bj) ! paranoia setting
+     &         * recip_nIter
          ENDDO
         ENDDO
        ENDDO ! k loop
+       ENDDO ! iIter loop
 c-----------------------------------------------------------------------
 c      add interior forcing e.g. by mesoscale GM
 c-----------------------------------------------------------------------
