@@ -431,7 +431,7 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE totPhiHyd (:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE phiHydLow (:,:,bi,bj)

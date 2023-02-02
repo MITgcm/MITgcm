@@ -739,7 +739,7 @@ C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
 cph kkey formula corrected.
 cph Needed for rhoK, rhoKm1, in the case useGMREDI.
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c#ifdef ALLOW_AUTODIFF_TAMC

@@ -246,7 +246,7 @@ CML      it2d = it2d+1
 #endif /* ALLOW_LOOP_DIRECTIVE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       ikey = (ikey_dynamics-1)*numItersMax + it2d
+       ikey = it2d + (ikey_dynamics-1)*numItersMax
 CADJ STORE err_sq = comlev1_cg2d_iter, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        IF ( it2d .LE. cg2dMinItersNSA .OR.

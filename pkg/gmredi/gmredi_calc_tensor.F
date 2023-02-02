@@ -423,7 +423,7 @@ C     to match stratification sign (i.e., positive if stratified)
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (tkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -543,7 +543,7 @@ C     Update components of Redi/GM tensor, second step: multiply by Diffusivity
       DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
 C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
-       kkey = (tkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -692,7 +692,7 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (tkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 #endif
 
 C     Gradient of Sigma at U points
@@ -920,7 +920,7 @@ C     Gradient of Sigma at V points
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (tkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 #endif
 
        DO j=1-OLy+1,sNy+OLy-1

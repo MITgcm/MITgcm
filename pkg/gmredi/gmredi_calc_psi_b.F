@@ -131,7 +131,7 @@ C      Calculate slopes , taper and/or clip
      I              bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (tkey-1)*Nr + k
+        kkey = k + (tkey-1)*Nr
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

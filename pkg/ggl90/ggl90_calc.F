@@ -400,7 +400,7 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -414,7 +414,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -433,7 +433,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -454,7 +454,7 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -484,7 +484,7 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -498,7 +498,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -517,7 +517,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -538,7 +538,7 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (tkey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -632,7 +632,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -656,7 +656,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -674,7 +674,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
          ENDDO
          DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -698,7 +698,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -722,7 +722,7 @@ CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k-1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */

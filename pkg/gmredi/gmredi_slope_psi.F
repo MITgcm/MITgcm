@@ -89,7 +89,7 @@ C     |sigmaX/Y| > 1.e+4
 
 #ifdef ALLOW_AUTODIFF_TAMC
       kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      kkey   = (kkey-1)*Nr + k
+      kkey = k + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
