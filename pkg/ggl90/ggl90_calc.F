@@ -121,7 +121,7 @@ c     _RL SQRTTKE
       _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_IDEMIX
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     IDEMIX_gTKE :: TKE tendency due to internal waves
+C     IDEMIX_gTKE :: dissipation of internal wave energy
 C                    (output of S/R GGL90_IDEMIX)
       _RL IDEMIX_gTKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
@@ -149,6 +149,7 @@ C     gTKE     :: right hand side of diffusion equation
       _RL p4, p8, p16
 #endif
 #ifdef ALLOW_DIAGNOSTICS
+      _RL recip_deltaT
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -197,6 +198,21 @@ CEOP
 C     explicit/implicit timestepping weights for dissipation
       explDissFac = 0. _d 0
       implDissFac = 1. _d 0 - explDissFac
+
+#ifdef ALLOW_DIAGNOSTICS
+C     this is a dirty hack, because the diagnostics needs to fill the
+C     level k=1 to work, but later we loop only over k=2,Nr
+      IF ( useDiagnostics ) THEN
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         surf_flx_tke(i,j) = 0.
+        ENDDO
+       ENDDO
+       IF ( DIAGNOSTICS_IS_ON('GGL90Emn',myThid) )
+     &      CALL DIAGNOSTICS_FILL( surf_flx_tke ,'GGL90Emn',
+     &                             1, 1, 2, bi, bj, myThid )
+      ENDIF
+#endif
 
 C     For nonlinear free surface and especially with r*-coordinates, the
 C     hFacs change every timestep, so we need to update them here in the
@@ -960,6 +976,17 @@ C     solve tri-diagonal system
 CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
 #endif
       DO k=2,Nr
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics .AND. DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
+     &     ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          surf_flx_tke(i,j) = GGL90TKE(i,j,k,bi,bj)
+     &         * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
        DO j=jMin,jMax
         DO i=iMin,iMax
 C     impose minimum TKE to avoid numerical undershoots below zero;
@@ -969,6 +996,20 @@ C     bottom boundary conditions, which by definition is zero
      &                  *MAX( GGL90TKE(i,j,k,bi,bj), GGL90TKEmin )
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics .AND. DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
+     &      ) THEN
+        recip_deltaT = 1. _d 0 / deltaTloc
+        DO j=1,sNy
+         DO i=1,sNx
+          surf_flx_tke(i,j) = (GGL90TKE(i,j,k,bi,bj)-surf_flx_tke(i,j))
+     &         *recip_deltaT
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL( surf_flx_tke ,'GGL90Emn',
+     &                         k, 1, 2, bi, bj, myThid )
+       ENDIF
+#endif
       ENDDO
 
 C     end of time step

@@ -51,6 +51,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        diagName  = 'GGL90Emn'
+        diagTitle = 'rate of TKE energy added by applying GGL90TKEmin'
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
         diagName  = 'GGL90Lmx'
         diagTitle = 'Mixing length scale              '
         diagUnits = 'm               '
@@ -111,6 +118,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'IDEMIX_E'
         diagTitle = 'IDEMIX internal wave energy            '
         diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMgTKE'
+        diagTitle = 'IDEMIX tendency: tau_d*IDEMIX_E**2     '
+        diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

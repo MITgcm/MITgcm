@@ -52,7 +52,7 @@ C     bi, bj :: Current tile indices
 C     hFacI  :: thickness factors for w-cells (interface)
 C               with reciprocal of hFacI = recip_hFacI
 C     sigmaR :: Vertical gradient of iso-neutral density
-C     gTKE   :: TKE tendency due to internal waves (output of S/R GGL90_IDEMIX)
+C     gTKE   :: dissipation of IW energy (output of S/R GGL90_IDEMIX)
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
@@ -504,7 +504,7 @@ C     solve tri-diagonal system
      O                        errCode,
      I                        bi, bj, myThid )
 
-C     generate TKE tendency due to internal waves (output)
+C     generate TKE tendency due to dissipation of IW energy (output)
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -537,6 +537,7 @@ c-----------------------------------------------------------------------
      &                          0, Nr, 2, bi, bj, myThid )
        ENDIF
        CALL DIAGNOSTICS_FILL( IDEMIX_E ,'IDEMIX_E',0,Nr,1,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL( gTKE ,    'IDEMgTKE',0,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL( tau_d,    'IDEMIX_t',0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL( v0,       'IDEMIX_v',0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL( c0 ,      'IDEMIX_c',0,Nr,2,bi,bj,myThid)
