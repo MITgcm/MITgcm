@@ -152,7 +152,8 @@ C     ijkkey :: tape key (depends on i,j-indices, levels, and tiles)
       LOGICAL calcLeith, calcSmag, calcLeithQG
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      kkey = (bi-1 + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy)*Nr + k
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k  + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :
@@ -373,8 +374,8 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
-           ijkkey = i+OLx + (sNx+2*OLx)*(j+OLy-1)
-     &                    + (sNx+2*OLx)*(sNy+2*OLy)*(kkey-1)
+         ijkkey = i+OLx + (j+OLy-1)*(sNx+2*OLx)
+     &                   + (kkey-1)*(sNx+2*OLx)*(sNy+2*OLy)
 CADJ STORE viscA4_ZSmg(i,j)=comlev1_mom_ijk_loop,key=ijkkey,byte=isbyte
 CADJ STORE viscAh_ZSmg(i,j)=comlev1_mom_ijk_loop,key=ijkkey,byte=isbyte
 # endif
