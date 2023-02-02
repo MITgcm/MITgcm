@@ -111,7 +111,9 @@ C  gTr_trp          :: passive tracer total transport tendency before gchem
       INTEGER iterNb
       _RL dummy(Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER  iptrkey, kkey
+C     tkey :: tape key (depends on tracer and tiles)
+C     kkey :: tape key (depends on levels, tracer, and tiles)
+      INTEGER  tkey, kkey
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -178,8 +180,8 @@ C-    Initialise tracer tendency to zero
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        iptrkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-        iptrkey = iTracer + (iptrkey-1)*PTRACERS_num
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        tkey = iTracer + (tkey-1)*PTRACERS_num
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Apply AB on Tracer :
@@ -219,7 +221,7 @@ C     compute pTr^n+1/2 (stored in gpTrNm1) extrapolating pTr forward in time
 #ifndef DISABLE_MULTIDIM_ADVECTION
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
-CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
+CADJ &      = comlev1_bibj_ptracers, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
@@ -261,7 +263,7 @@ C-    Start vertical index (k) loop (Nr:1)
      &                  .AND. (PTRACERS_advScheme(iTracer).NE.0)
         DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (iptrkey-1)*Nr + k
+          kkey = (tkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
           kM1  = MAX(1,k-1)
@@ -425,8 +427,7 @@ C       tracer field for implicit matrix calculation
 C--   Vertical advection & diffusion (implicit) for passive tracers
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers,
-CADJ &     key=iptrkey, byte=isbyte
+CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_IMPLVERTADV_CODE

@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o TAF tape keys:
+  - rename many local taf keys to use shorter and more consistent names ;
+  - pkg/thsice: fix bug in key computations.
 o pkg/diagnostics (+doc):
   - fix index-loop range in diagnostics_sum_levels.F and document "fileFlags"
     and associated features (vertical interpolation & integral & hFac scaling).

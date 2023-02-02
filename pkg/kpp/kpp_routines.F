@@ -26,21 +26,21 @@ C--  o KPP_DOUBLEDIFF - Compute double diffusive contribution to diffusivities
 c***********************************************************************
 
       SUBROUTINE KPPMIX (
-     I       kmtj, shsq, dvsq, ustar, msk
-     I     , bo, bosol
+     I       kmtj, shsq, dvsq, ustar, msk,
+     I       bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , dbloc, Ritop, coriol
-     I     , diffusKzS, diffusKzT
-     I     , ikppkey
-     O     , diffus
-     U     , ghat
-     O     , hbl
-     I     , bi, bj, myTime, myIter, myThid )
+     I       dbloc, Ritop, coriol,
+     I       diffusKzS, diffusKzT,
+     I       ikey,
+     O       diffus,
+     U       ghat,
+     O       hbl,
+     I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c
@@ -71,6 +71,7 @@ c   bi, bj :: Array indices on which to apply calculations
 c   myTime :: Current time in simulation
 c   myIter :: Current iteration number in simulation
 c   myThid :: My Thread Id. number
+C     ikey :: tape key TAF-AD simulations (depends on tiles)
 c     kmtj   (imt)     - number of vertical layers on this row
 c     msk    (imt)     - surface mask (=1 if water, =0 otherwise)
 c     shsq   (imt,Nr)  - (local velocity shear)^2                     ((m/s)^2)
@@ -115,7 +116,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
 
-      INTEGER ikppkey
+      INTEGER ikey
 
 c output
 c     diffus (imt,1)  - vertical viscosity coefficient                  (m^2/s)
@@ -161,24 +162,24 @@ c-----------------------------------------------------------------------
 cph(
 cph these storings avoid recomp. of Ri_iwmix
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ghat  = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dbloc = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ghat  = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dbloc = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
       CALL Ri_iwmix (
-     I       kmtj, shsq, dbloc, ghat
-     I     , diffusKzS, diffusKzT
-     I     , ikppkey
-     O     , diffus, myThid )
+     I       kmtj, shsq, dbloc, ghat,
+     I       diffusKzS, diffusKzT,
+     I       ikey,
+     O       diffus, myThid )
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix
 cph DESPITE TAFs 'not necessary' warning!
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dbloc  = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE shsq   = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE ghat   = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE diffus = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dbloc  = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE shsq   = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE ghat   = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE diffus = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -202,22 +203,22 @@ c diagnose the new boundary layer depth
 c-----------------------------------------------------------------------
 
       CALL bldepth (
-     I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+     I       kmtj,
+     I       dvsq, dbloc, Ritop, ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , coriol
-     I     , ikppkey
-     O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , bi, bj, myTime, myIter, myThid )
+     I       coriol,
+     I       ikey,
+     O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
+     I       bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp,
-CADJ &     key=ikppkey, kind=isbyte
+CADJ &     key=ikey, kind=isbyte
 #endif
 
 c-----------------------------------------------------------------------
@@ -225,15 +226,15 @@ c compute boundary layer diffusivities
 c-----------------------------------------------------------------------
 
       CALL blmix (
-     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikppkey
-     I     , myThid )
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
+     O       dkm1, blmc, ghat, sigma, ikey,
+     I       myThid )
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dkm1,blmc,ghat = comlev1_kpp,
-CADJ &     key=ikppkey, kind=isbyte
+CADJ &     key=ikey, kind=isbyte
 CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp,
-CADJ &     key=ikppkey, kind=isbyte
+CADJ &     key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -242,15 +243,15 @@ c enhance diffusivity at interface kbl - 1
 c-----------------------------------------------------------------------
 
       CALL enhance (
-     I       dkm1, hbl, kbl, diffus, casea
-     U     , ghat
-     O     , blmc
-     I     , myThid )
+     I       dkm1, hbl, kbl, diffus, casea,
+     U       ghat,
+     O       blmc,
+     I       myThid )
 
 cph(
 cph avoids recomp. of enhance
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE blmc = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE blmc = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 cph)
 
@@ -290,18 +291,18 @@ C     mixing coefficients blmc to pure Ri-number based mixing
 c*************************************************************************
 
       subroutine bldepth (
-     I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+     I       kmtj,
+     I       dvsq, dbloc, Ritop, ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SPDepth
+     I       boplume, SPDepth,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , lon,lat
+     I       lon, lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , coriol
-     I     , ikppkey
-     O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , bi, bj, myTime, myIter, myThid )
+     I       coriol,
+     I       ikey,
+     O       hbl, bfsfc, stable, casea, kbl, Rib, sigma,
+     I       bi, bj, myTime, myIter, myThid )
 
 c     the oceanic planetary boundary layer depth, hbl, is determined as
 c     the shallowest depth where the bulk Richardson number is
@@ -363,7 +364,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bo      (imt)
       _RL bosol   (imt)
       _RL coriol  (imt)
-      INTEGER ikppkey
+      INTEGER ikey
 #ifdef ALLOW_SALT_PLUME
       _RL boplume (imt,Nrp1)
       _RL SPDepth (imt)
@@ -409,7 +410,7 @@ c wm, ws    : turbulent velocity scales         (m/s)
       _RL temp
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER kkppkey
+      INTEGER kkey
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -447,7 +448,7 @@ c     initialize hbl and kbl to bottomed out values
       DO kl = 2, Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkppkey = (ikppkey-1)*Nr + kl
+         kkey = (ikey-1)*Nr + kl
 #endif
 
 c     compute bfsfc = sw fraction at hbf * zgrid
@@ -456,14 +457,14 @@ c     compute bfsfc = sw fraction at hbf * zgrid
             worka(i) = zgrid(kl)
          ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
+CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
          CALL SWFRAC(
      I       imt, hbf,
      U       worka,
      I       myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
+CADJ store worka = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
 
          DO i = 1, imt
@@ -530,7 +531,7 @@ c-----------------------------------------------------------------------
      I        sigma, casea, ustar, bfsfc,
      O        wm, ws, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ws = comlev1_kpp_k, key = kkppkey, kind=isbyte
+CADJ store ws = comlev1_kpp_k, key = kkey, kind=isbyte
 #endif
 
          DO i = 1, imt
@@ -588,8 +589,7 @@ cph(
 cph  without this store, there is a recomputation error for
 cph  rib in adbldepth (probably partial recomputation problem)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store Rib = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store Rib = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
 #endif
 cph)
@@ -601,8 +601,7 @@ cph)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store kbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store kbl = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -620,8 +619,7 @@ CML     1           (Rib(i,kl)-Ricr)*zgrid(kl-1))/tempVar1
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -633,8 +631,7 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
       CALL SWFRAC(
@@ -642,8 +639,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
      U       worka,
      I       myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -681,8 +677,7 @@ C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -695,8 +690,7 @@ c--   ensure bfsfc is never 0
 cph(
 cph  added stable to store list to avoid extensive recomp.
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc, stable = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store bfsfc, stable = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 cph)
@@ -720,8 +714,7 @@ c-----------------------------------------------------------------------
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -731,8 +724,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store hbl = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -756,8 +748,7 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
       CALL SWFRAC(
@@ -765,8 +756,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
      U     worka,
      I     myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store worka = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -804,8 +794,7 @@ C            bfsfc(i) = bfsfc(i) + boplume(i,1)*temp
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bfsfc = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte,
+CADJ store bfsfc = comlev1_kpp, key=ikey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 #endif
 
@@ -944,7 +933,7 @@ c*************************************************************************
       subroutine Ri_iwmix (
      I       kmtj, shsq, dbloc, dblocSm,
      I       diffusKzS, diffusKzT,
-     I       ikppkey,
+     I       ikey,
      O       diffus,
      I       myThid )
 
@@ -980,7 +969,7 @@ c     myThid :: My Thread Id. number
       _RL dblocSm  (imt,Nr)
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
-      INTEGER ikppkey
+      INTEGER ikey
       INTEGER myThid
 
 c output
@@ -1046,7 +1035,7 @@ C     break data flow dependence on diffus
          ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store diffus = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ store diffus = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
 c-----------------------------------------------------------------------
@@ -1055,10 +1044,10 @@ c     vertically smooth Ri
       DO mr = 1, num_v_smooth_Ri
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store diffus(:,:,1) = kpp_ri_tape_mr
-CADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
-CMLCADJ store diffus(:,:,2) = kpp_ri_tape_mr
-CMLCADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
+CADJ store diffus(:,:,1) = kpp_ri_tape_mr, key=mr
+CADJ &  , shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
+CMLCADJ store diffus(:,:,2) = kpp_ri_tape_mr, key=mr
+CMLCADJ &  , shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
 #endif
 
          CALL z121 (
@@ -1312,9 +1301,9 @@ c     transfer smoothed field to output array
 c*************************************************************************
 
       subroutine blmix (
-     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikppkey
-     I     , myThid )
+     I       ustar, bfsfc, hbl, stable, casea, diffus, kbl,
+     O       dkm1, blmc, ghat, sigma, ikey,
+     I       myThid )
 
 c     mixing coefficients within boundary layer depend on surface
 c     forcing and the magnitude and gradient of interior mixing below
@@ -1359,7 +1348,7 @@ c     sigma(imt)                  normalized depth (d / hbl)
       _RL blmc (imt,Nr,mdiff)
       _RL ghat (imt,Nr)
       _RL sigma(imt)
-      INTEGER ikppkey
+      INTEGER ikey
 
 #ifdef ALLOW_KPP
 
@@ -1385,7 +1374,7 @@ c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
       _RL    p0    , eins
       PARAMETER (p0=0.0, eins=1.0)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER kkppkey
+      INTEGER kkey
 #endif
 
 c-----------------------------------------------------------------------
@@ -1397,14 +1386,14 @@ c-----------------------------------------------------------------------
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sigma = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE sigma = comlev1_kpp, key=ikey, kind=isbyte
 #endif
       CALL wscale (
      I        sigma, hbl, ustar, bfsfc,
      O        wm, ws, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE wm = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO i = 1, imt
@@ -1412,8 +1401,8 @@ CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
          ws(i) = sign(eins,ws(i))*MAX(phepsi,ABS(ws(i)))
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE wm = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO i = 1, imt
@@ -1482,12 +1471,12 @@ CML   why do we need that here?
 
       ENDDO
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE gat1m = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE gat1s = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE gat1t = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dat1m = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dat1s = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE gat1m = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE gat1s = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE gat1t = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dat1m = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dat1s = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dat1t = comlev1_kpp, key=ikey, kind=isbyte
 #endif
       DO i = 1, imt
          dat1m(i) = MIN(dat1m(i),p0)
@@ -1495,15 +1484,15 @@ CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
          dat1t(i) = MIN(dat1t(i),p0)
       ENDDO
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE dat1m = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dat1s = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1m = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dat1s = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE dat1t = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO ki = 1, Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkppkey = (ikppkey-1)*Nr + ki
+         kkey = (ikey-1)*Nr + ki
 #endif
 
 c-----------------------------------------------------------------------
@@ -1515,18 +1504,18 @@ c-----------------------------------------------------------------------
             sigma(i) = stable(i)*sig + (1.-stable(i))*MIN(sig,epsilon)
          ENDDO
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE wm = comlev1_kpp_k, key = kkppkey
-CADJ STORE ws = comlev1_kpp_k, key = kkppkey
+CADJ STORE wm = comlev1_kpp_k, key = kkey
+CADJ STORE ws = comlev1_kpp_k, key = kkey
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sigma = comlev1_kpp_k, key = kkppkey
+CADJ STORE sigma = comlev1_kpp_k, key = kkey
 #endif
          CALL wscale (
      I        sigma, hbl, ustar, bfsfc,
      O        wm, ws, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wm = comlev1_kpp_k, key = kkppkey
-CADJ STORE ws = comlev1_kpp_k, key = kkppkey
+CADJ STORE wm = comlev1_kpp_k, key = kkey
+CADJ STORE ws = comlev1_kpp_k, key = kkey
 #endif
 
 c-----------------------------------------------------------------------
@@ -1576,18 +1565,18 @@ c-----------------------------------------------------------------------
       ENDDO
 
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE wm = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sigma = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE sigma = comlev1_kpp, key=ikey, kind=isbyte
 #endif
       CALL wscale (
      I        sigma, hbl, ustar, bfsfc,
      O        wm, ws, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
-CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE wm = comlev1_kpp, key=ikey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikey, kind=isbyte
 #endif
 
       DO i = 1, imt
@@ -1612,10 +1601,10 @@ CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 c*************************************************************************
 
       subroutine enhance (
-     I       dkm1, hbl, kbl, diffus, casea
-     U     , ghat
-     O     , blmc
-     &     , myThid )
+     I       dkm1, hbl, kbl, diffus, casea,
+     U       ghat,
+     O       blmc,
+     &       myThid )
 
 c enhance the diffusivity at the kbl-.5 interface
 
@@ -1683,7 +1672,7 @@ c*************************************************************************
 
       SUBROUTINE STATEKPP (
      O     RHO1, DBLOC, DBSFC, TTALPHA, SSBETA,
-     I     ikppkey, bi, bj, myThid )
+     I     ikey, bi, bj, myThid )
 c
 c-----------------------------------------------------------------------
 c     "statekpp" computes all necessary input arrays
@@ -1750,18 +1739,18 @@ c     work1,2,3    - work arrays for holding horizontal slabs
       _RL WORK3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       INTEGER i, j, k
-      INTEGER ikppkey, kkppkey
+      INTEGER ikey, kkey
 
 c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
-      kkppkey = (ikppkey-1)*Nr + 1
+      kkey = (ikey-1)*Nr + 1
 
       k = 1
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
       CALL FIND_RHO_2D(
      I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
@@ -1770,9 +1759,9 @@ CADJ &     key=kkppkey, kind=isbyte
      I     k, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
 
       CALL FIND_ALPHA(
@@ -1797,13 +1786,13 @@ c calculate alpha, beta, and gradients in interior layers
 CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
       DO k = 2, Nr
 
-         kkppkey = (ikppkey-1)*Nr + k
+         kkey = (ikey-1)*Nr + k
 
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1813,9 +1802,9 @@ CADJ &     key=kkppkey, kind=isbyte
 
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1825,9 +1814,9 @@ CADJ &     key=kkppkey, kind=isbyte
 
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ &     key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1836,12 +1825,9 @@ CADJ &     key=kkppkey, kind=isbyte
      I        1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE rhok  (:,:)          = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
-CADJ STORE rhokm1(:,:)          = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
-CADJ STORE rho1k (:,:)          = comlev1_kpp_k,
-CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE rhok  (:,:) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE rhokm1(:,:) = comlev1_kpp_k, key=kkey, kind=isbyte
+CADJ STORE rho1k (:,:) = comlev1_kpp_k, key=kkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
 
          CALL FIND_ALPHA(
@@ -1892,7 +1878,7 @@ c*************************************************************************
      I     TTALPHA, SSBETA,
      U     kappaRT,
      U     kappaRS,
-     I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myThid )
+     I     ikey, iMin, iMax, jMin, jMax, bi, bj, myThid )
 c
 c-----------------------------------------------------------------------
 c     "KPP_DOUBLEDIFF" adds the double diffusive contributions
@@ -1901,7 +1887,7 @@ c
 c     input:
 c     bi, bj  = array indices on which to apply calculations
 c     iMin, iMax, jMin, jMax = array boundaries
-c     ikppkey = key for TAMC/TAF automatic differentiation
+c     ikey = key for TAMC/TAF automatic differentiation
 c     myThid  = thread id
 c
 c      ttalpha= thermal expansion coefficient without 1/rho factor
@@ -1929,7 +1915,7 @@ c-----------------------------------------------------------------------
 #endif
 
 c-------------- Routine arguments -----------------------------------------
-      INTEGER ikppkey, iMin, iMax, jMin, jMax, bi, bj, myThid
+      INTEGER ikey, iMin, iMax, jMin, jMax, bi, bj, myThid
 
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
@@ -1942,10 +1928,10 @@ C--------------------------------------------------------------------------
 C
 C     local variables
 C     i,j,k :: loop indices
-C     kkppkey :: key for TAMC/TAF automatic differentiation
+C     kkey  :: key for TAMC/TAF automatic differentiation
 C
       INTEGER i, j, k
-      INTEGER kkppkey
+      INTEGER kkey
 C     alphaDT   :: d\rho/d\theta * d\theta
 C     betaDS    :: d\rho/dsalt * dsalt
 C     Rrho      :: "density ratio" R_{\rho} = \alpha dT/dz / \beta dS/dz
@@ -1965,13 +1951,13 @@ C     set some constants here
       numol = 1.5 _d -06
       rFac  = 1. _d 0 / (Rrho0 - 1. _d 0 )
 C
-      kkppkey = (ikppkey-1)*Nr + 1
+      kkey = (ikey-1)*Nr + 1
 
 CML#ifdef KPP_AUTODIFF_MORE_STORE
 CMLCADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
-CMLCADJ &     key=kkppkey, kind=isbyte
+CMLCADJ &     key=kkey, kind=isbyte
 CMLCADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
-CMLCADJ &     key=kkppkey, kind=isbyte
+CMLCADJ &     key=kkey, kind=isbyte
 CML#endif /* KPP_AUTODIFF_MORE_STORE */
 
       DO k = 1, Nr

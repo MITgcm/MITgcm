@@ -51,7 +51,8 @@ C     uIce/vIce :: ice velocity on C-grid [m/s]
       INTEGER i, j
       INTEGER iMin, iMax, jMin, jMax
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ticekey
+C     tkey :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
       _RL  uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -68,32 +69,25 @@ c      jMax = sNy
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-         ticekey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+         tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
          CALL THSICE_GET_VELOCITY(
      O                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icemask(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qice1(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE hOceMxL(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE icemask(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE qice1(:,:,bi,bj)   = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE hOceMxL(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 #endif
          CALL THSICE_ADVDIFF(
      U                        uIce, vIce,
      I                        bi,bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hOceMxL(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceHeight(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE iceMask(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=ticekey, byte=isbyte
+CADJ STORE hOceMxL(:,:,bi,bj)    = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE iceMask(:,:,bi,bj)    = comlev1_bibj, key=tkey, byte=isbyte
 #endif
          DO j = jMin, jMax
           DO i = iMin, iMax
