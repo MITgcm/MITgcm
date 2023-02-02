@@ -248,6 +248,7 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
+C- Note: inefficient storage, storing nSx*nSy times the full som_S array
 CADJ STORE som_S = comlev1_bibj, key=tkey, byte=isbyte
 # endif
       IF ( saltSOM_Advection ) THEN
@@ -283,7 +284,7 @@ C-    Start vertical index (k) loop (Nr:1)
       calcAdvection = saltAdvection .AND. .NOT.saltMultiDimAdvec
       DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (tkey-1)*Nr + k
+        kkey = k + (tkey-1)*Nr
 #endif
         kM1  = MAX(1,k-1)
         kUp  = 1+MOD(k+1,2)
