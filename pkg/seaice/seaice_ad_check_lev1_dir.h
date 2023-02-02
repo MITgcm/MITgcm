@@ -57,7 +57,6 @@ CADJ STORE objf_ice    = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vHeffExportCell = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE icevolMeanCell  = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 
 #ifdef ALLOW_OBCS

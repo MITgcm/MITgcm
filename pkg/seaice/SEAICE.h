@@ -106,7 +106,7 @@ C
       _RL uIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
 C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_COST/ AREAforAtmFW, frWtrAtm
       _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

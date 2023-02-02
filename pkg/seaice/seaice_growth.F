@@ -486,7 +486,7 @@ C for lateral melt parameterization:
           ENDDO
          ENDDO
         ENDDO
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
           frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
@@ -604,7 +604,7 @@ Cgf no additional dependency of air-sea fluxes to ice
         ENDIF
 #endif
 
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
         DO J=1,sNy
          DO I=1,sNx
           AREAforAtmFW(I,J,bi,bj) = AREApreTH(I,J)
@@ -2416,24 +2416,6 @@ C--
 # endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
          ENDDO
         ENDDO
-C--
-#else  /* ndef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
-C--
-# ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-        DO J=1,sNy
-         DO I=1,sNx
-          frWtrAtm(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
-     &         PRECIP(I,J,bi,bj)
-     &         - EVAP(I,J,bi,bj)
-     &         *( ONE - AREApreTH(I,J) )
-#  ifdef ALLOW_RUNOFF
-     &         + RUNOFF(I,J,bi,bj)
-#  endif /* ALLOW_RUNOFF */
-     &         )*rhoConstFresh
-     &     - a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
-         ENDDO
-        ENDDO
-# endif
 C--
 #endif /* ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
 

@@ -37,8 +37,7 @@ C     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
-#ifdef ALLOW_COST
-#if (defined ALLOW_COST_ICE || defined ALLOW_SEAICE_COST_EXPORT)
+#if (defined ALLOW_COST && defined ALLOW_COST_ICE)
 C     ! FUNCTIONS:
       LOGICAL  MASTER_CPU_THREAD
       EXTERNAL MASTER_CPU_THREAD
@@ -95,8 +94,7 @@ C--   Each process has calculated the global part for itself.
 
       ENDIF
 
-#endif /* ALLOW_COST_ICE or ALLOW_SEAICE_COST_EXPORT */
-#endif /* ALLOW_COST */
+#endif /* ALLOW_COST and ALLOW_COST_ICE */
 
       RETURN
       END

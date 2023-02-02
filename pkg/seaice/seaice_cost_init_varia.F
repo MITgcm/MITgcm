@@ -59,7 +59,7 @@ c
 
       _BARRIER
 
-#endif /* ALLOW_COST */
+#endif /* ALLOW_COST and ALLOW_COST_ICE */
 
       return
       end
