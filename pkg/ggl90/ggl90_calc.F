@@ -687,20 +687,16 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
         ENDDO
        ENDIF
 
-C     compute Prandtl number (always greater than 0)
+C     compute Prandtl number (always greater than 1)
 #ifdef ALLOW_GGL90_IDEMIX
        IF ( useIDEMIX ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-C     account for partical cell factor in vertical shear:
-          verticalShear(i,j) = verticalShear(i,j)
-     &                       * recip_hFacI(i,j,k)*recip_hFacI(i,j,k)
           RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
      &         /(verticalShear(i,j)+GGL90eps)
-CML         IDEMIX_RiNumber = 1./GGL90eps
           IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
      &         ( GGL90eps + IDEMIX_gTKE(i,j,k) )
-          prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
+          prTemp          = 6.6 _d 0 * MIN( RiNumber, IDEMIX_RiNumber )
           TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
           TKEPrandtlNumber(i,j,k) = MAX( oneRL,TKEPrandtlNumber(i,j,k) )
          ENDDO
@@ -828,18 +824,14 @@ C-    No need for maskC(k) with recip_hFacC(k)
        ENDDO
       ENDDO
 
-#ifdef ALLOW_GGL90_IDEMIX
-      IF ( useIDEMIX ) THEN
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          a3d(i,j,k) = a3d(i,j,k)*recip_hFacI(i,j,k)
-          c3d(i,j,k) = c3d(i,j,k)*recip_hFacI(i,j,k)
-         ENDDO
+      DO k=2,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         a3d(i,j,k) = a3d(i,j,k)*recip_hFacI(i,j,k)
+         c3d(i,j,k) = c3d(i,j,k)*recip_hFacI(i,j,k)
         ENDDO
        ENDDO
-      ENDIF
-#endif /* ALLOW_GGL90_IDEMIX */
+      ENDDO
 
       IF (.NOT.GGL90_dirichlet) THEN
 C      Neumann bottom boundary condition for TKE: no flux from bottom
