@@ -67,7 +67,7 @@ C local variables for carbon chem
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey_dic
+      INTEGER tkey
 #endif
 CEOP
 
@@ -162,8 +162,8 @@ C Schmidt number is accounted for later
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       ikey_dic = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = ikey_dic, kind = isbyte
+       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #endif
        debugPrt = debugMode
 C pCO2 solver...

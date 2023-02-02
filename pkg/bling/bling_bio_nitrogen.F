@@ -333,14 +333,14 @@ C
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-C     ikey   :: tape key (tile dependent)
+C     tkey   :: tape key (tile dependent)
 C     ijkkey :: tape key (depends on i,j,k indices and tiles)
-      INTEGER ikey, ijkkey
+      INTEGER tkey, ijkkey
 #endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 #endif
 
 C  Initialize output and diagnostics
@@ -490,7 +490,7 @@ C  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
      I                         myTime, myIter, myThid)
 # ifdef ALLOW_AUTODIFF_TAMC
 C     save result of s/r bling_mixedlayer to avoid calling it in AD-code
-CADJ STORE mld = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE mld = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif
 
@@ -502,9 +502,9 @@ C  taken with its interpretation.
 
 #ifdef ML_MEAN_PHYTO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Phy_sm_local   = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE Phy_lg_local   = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE Phy_diaz_local = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO j=jmin,jmax
        DO i=imin,imax
@@ -570,8 +570,8 @@ C  light availability for biological production
      I                    myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 C     save results of s/r bling_light to avoid calling it in AD-code
-CADJ STORE irr_inst = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE irr_eff  = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE irr_inst = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE irr_eff  = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
 C  phytoplankton photoadaptation to local light level
@@ -928,8 +928,8 @@ C  biomass, which is required to calculate the uptake fluxes.
 
 #if ( ( defined SIZE_DEP_LIM ) || ( defined USE_SIBLING ) )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Phy_sm_local   = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE Phy_lg_local   = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO k=1,Nr
        DO j=jmin,jmax
@@ -973,9 +973,9 @@ c     &                * PTRACERS_dTLev(k)
 
 C  Separate loop for adjoint stores
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Phy_sm_local   = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE Phy_lg_local   = comlev1_bibj, key=ikey, kind=isbyte
-CADJ STORE Phy_diaz_local = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
       DO k=1,Nr
@@ -1133,11 +1133,11 @@ C  long-lived dissolved organic matter.
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing the previous loop, but avoiding
 C     that may not be necessary
-CADJ STORE N_spm     = comlev1_bibj, key = ikey, kind = isbyte
-CADJ STORE P_spm     = comlev1_bibj, key = ikey, kind = isbyte
-CADJ STORE Fe_spm    = comlev1_bibj, key = ikey, kind = isbyte
-CADJ STORE don_prod  = comlev1_bibj, key = ikey, kind = isbyte
-CADJ STORE n_recycle = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE N_spm     = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE P_spm     = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE Fe_spm    = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE don_prod  = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE n_recycle = comlev1_bibj, key = tkey, kind = isbyte
 #endif
 
 C ---------------------------------------------------------------------
@@ -1168,8 +1168,8 @@ C  Initialize upper flux
 
         DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         ijkkey = (ikey - 1) * (2*OLx+sNx) * (2*OLy+sNy) * Nr
-     &        +   ( (j-1) * (2*OLx+sNx) + (i-1) ) * Nr + k
+         ijkkey = k + ( (i-1) + (j-1) * (2*OLx+sNx) ) * Nr
+     &          + (tkey - 1) * (2*OLx+sNx) * (2*OLy+sNy) * Nr
 CADJ STORE PONflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 CADJ STORE POPflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
 CADJ STORE PFEflux_u   = comlev1_bibj_ijk, key = ijkkey, kind = isbyte
@@ -1433,7 +1433,7 @@ C  Prepare the tracers for the next layer down
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE N_reminp = comlev1_bibj, key=ikey, kind=isbyte
+CADJ STORE N_reminp = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 C-----------------------------------------------------------
 C  remineralization from diel vertical migration
