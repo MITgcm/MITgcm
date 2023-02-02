@@ -40,13 +40,18 @@ c     objf_ice    - sea-ice volume
       _RL costIceStart
       _RL costIceEnd
 
-c     cost_ice_flag  - cost_ice flag (see cost_ice.F)
+c     cost_ice_flag  - cost_ice flag (see seaice_cost_test.F)
 
       common /seaice_cost_i/
-     &                           cost_ice_flag,
-     &                           cost_ice_iprec
+     &                           cost_ice_flag
       integer cost_ice_flag
-      integer cost_ice_iprec
+
+#ifdef ALLOW_SEAICE_COST_EXPORT
+      _RL uHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /SEAICE_COST_EXPORT_R/
+     &       uHeffExportCell, vHeffExportCell
+#endif
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
