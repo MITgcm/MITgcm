@@ -64,7 +64,8 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER it
 #endif /* SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itmpkey
+C     tkey :: tape key (depends on tiles)
+      INTEGER tkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SITRACER
       _RL hEffNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -143,12 +144,12 @@ C     Initialise for TAF
          ENDDO
         ENDDO
 C
-        itmpkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key=itmpkey, kind=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key=itmpkey, kind=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key=itmpkey, kind=isbyte
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 # ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, key=itmpkey, kind=isbyte
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
