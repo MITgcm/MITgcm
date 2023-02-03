@@ -52,8 +52,8 @@ C     !INPUT/OUTPUT ARGUMENTS
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=1-oly,sNy+oly
+           DO i=1-olx,sNx+olx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
             ubd_SI (i,j,bi,bj) = 0. _d 0
@@ -87,12 +87,12 @@ C     !INPUT/OUTPUT ARGUMENTS
             err_tempv = 0. _d 0
             IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
              err_tempu =
-     &        ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
+     &        ABS (Au_SI(i,j,bi,bj)+ubd_SI(i,j,bi,bj) -
      &            taudx_SI(i,j,bi,bj))
             ENDIF
             IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
              err_tempv = MAX( err_tempu,
-     &        ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
+     &        ABS (Av_SI(i,j,bi,bj)+vbd_SI(i,j,bi,bj) -
      &            taudy_SI(i,j,bi,bj)))
             ENDIF
             IF (err_tempv .ge. err_max) THEN
@@ -114,12 +114,12 @@ C     !INPUT/OUTPUT ARGUMENTS
 
             IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
              err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
-     &        (ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
+     &        (ABS (Au_SI(i,j,bi,bj)+ubd_SI(i,j,bi,bj) -
      &            taudx_SI(i,j,bi,bj))) ** streamice_err_norm
             ENDIF
             IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
              err_sum_tile(bi,bj) = err_sum_tile(bi,bj) +
-     &        (ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
+     &        (ABS (Av_SI(i,j,bi,bj)+vbd_SI(i,j,bi,bj) -
      &            taudy_SI(i,j,bi,bj))) ** streamice_err_norm
             ENDIF
 

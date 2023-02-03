@@ -214,6 +214,29 @@ C     === Global variables ===
       _EXCH_XY_RS( STREAMICE_umask, myThid )
       _EXCH_XY_RS( STREAMICE_vmask, myThid )
 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          if (streamice_umask(i,j,bi,bj).ne.3.0) THEN
+            u_bdry_values_SI_mask(i,j,bi,bj) = 1.0
+          else
+            u_bdry_values_SI_mask(i,j,bi,bj) = 0.0
+          endif
+          if (streamice_vmask(i,j,bi,bj).ne.3.0) THEN
+            v_bdry_values_SI_mask(i,j,bi,bj) = 1.0
+          else
+            v_bdry_values_SI_mask(i,j,bi,bj) = 0.0
+          endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      _EXCH_XY_RS( u_bdry_values_SI_mask, mythid )
+      _EXCH_XY_RS( v_bdry_values_SI_mask, mythid )
+
+
 !       CALL WRITE_FULLARRAY_RL ("umask",STREAMICE_umask,
 !      c   1,0,0,1,0,myThid)
 !      CALL WRITE_FLD_XY_RL ("umask","",STREAMICE_umask,0,myThid)

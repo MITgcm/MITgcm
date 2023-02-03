@@ -911,30 +911,60 @@ C     == Local variables ==
 
             n = 2*(jq-1)+iq
 
-            uq = u_bdry_values_SI(i,j,bi,bj)*Xquad(3-iq)*Xquad(3-jq)+ 
-     &       u_bdry_values_SI(i+1,j,bi,bj)*Xquad(iq)*Xquad(3-jq)+ 
-     &       u_bdry_values_SI(i,j+1,bi,bj)*Xquad(3-iq)*Xquad(jq)+ 
-     &       u_bdry_values_SI(i+1,j+1,bi,bj)*Xquad(iq)*Xquad(jq)
-            vq = v_bdry_values_SI(i,j,bi,bj)*Xquad(3-iq)*Xquad(3-jq)+ 
-     &       v_bdry_values_SI(i+1,j,bi,bj)*Xquad(iq)*Xquad(3-jq)+ 
-     &       v_bdry_values_SI(i,j+1,bi,bj)*Xquad(3-iq)*Xquad(jq)+ 
-     &       v_bdry_values_SI(i+1,j+1,bi,bj)*Xquad(iq)*Xquad(jq)
-            ux = u_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,1) + 
-     &       u_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,1) + 
-     &       u_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,1) + 
-     &       u_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,1)
-            uy = u_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,2) +
-     &       u_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) + 
-     &       u_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) + 
-     &       u_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
-            vx = v_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,1) + 
-     &       v_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,1) + 
-     &       v_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,1) + 
-     &       v_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,1)
-            vy = v_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,2) + 
-     &       v_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) + 
-     &       v_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) + 
-     &       v_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
+            uq = u_bdry_values_SI_mask(i,j,bi,bj)*
+     &        u_bdry_values_SI(i,j,bi,bj)*Xquad(3-iq)*Xquad(3-jq)+ 
+     &       u_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        u_bdry_values_SI(i+1,j,bi,bj)*Xquad(iq)*Xquad(3-jq)+ 
+     &       u_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        u_bdry_values_SI(i,j+1,bi,bj)*Xquad(3-iq)*Xquad(jq)+ 
+     &       u_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        u_bdry_values_SI(i+1,j+1,bi,bj)*Xquad(iq)*Xquad(jq)
+             
+            vq = v_bdry_values_SI_mask(i,j,bi,bj)*
+     &        v_bdry_values_SI(i,j,bi,bj)*Xquad(3-iq)*Xquad(3-jq)+ 
+     &       v_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        v_bdry_values_SI(i+1,j,bi,bj)*Xquad(iq)*Xquad(3-jq)+ 
+     &       v_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        v_bdry_values_SI(i,j+1,bi,bj)*Xquad(3-iq)*Xquad(jq)+ 
+     &       v_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        v_bdry_values_SI(i+1,j+1,bi,bj)*Xquad(iq)*Xquad(jq)
+
+            ux = u_bdry_values_SI_mask(i,j,bi,bj)*
+     &        u_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,1) + 
+     &       u_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        u_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,1) + 
+     &       u_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        u_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,1) + 
+     &       u_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        u_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,1)
+
+            uy = u_bdry_values_SI_mask(i,j,bi,bj)*
+     &        u_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,2) +
+     &       u_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        u_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) + 
+     &       u_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        u_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) + 
+     &       u_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        u_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
+
+            vx = v_bdry_values_SI_mask(i,j,bi,bj)*
+     &        v_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,1) + 
+     &       v_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        v_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,1) + 
+     &       v_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        v_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,1) + 
+     &       v_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        v_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,1)
+
+            vy = v_bdry_values_SI_mask(i,j,bi,bj)*
+     &        v_bdry_values_SI(i,j,bi,bj) * DPhi(i,j,bi,bj,1,n,2) + 
+     &       v_bdry_values_SI_mask(i+1,j,bi,bj)*
+     &        v_bdry_values_SI(i+1,j,bi,bj) * DPhi(i,j,bi,bj,2,n,2) + 
+     &       v_bdry_values_SI_mask(i,j+1,bi,bj)*
+     &        v_bdry_values_SI(i,j+1,bi,bj) * DPhi(i,j,bi,bj,3,n,2) + 
+     &       v_bdry_values_SI_mask(i+1,j+1,bi,bj)*
+     &        v_bdry_values_SI(i+1,j+1,bi,bj) * DPhi(i,j,bi,bj,4,n,2)
+
             exx = ux + k1AtC_str(i,j,bi,bj)*vq
             eyy = vy + k2AtC_str(i,j,bi,bj)*uq
             exy = .5*(uy+vx) + 
