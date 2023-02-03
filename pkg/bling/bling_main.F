@@ -117,7 +117,7 @@ C     runoff_PO4           :: tendency due to river runoff
 #endif
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itdkey
+      INTEGER tkey
 #endif
 CEOP
 
@@ -125,7 +125,7 @@ c-----------------------------------------------------------
 c  Initialize local variables
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 #endif
       DO j=jmin,jmax
        DO i=imin,imax
@@ -168,7 +168,7 @@ c  carbon and oxygen air-sea interaction
      I                       myTime, myIter, myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
 c-----------------------------------------------------------
