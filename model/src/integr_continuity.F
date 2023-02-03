@@ -79,9 +79,8 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
 #if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 # if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_DEPTH_CONTROL)
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER idynkey
+C     tkey :: tape key (tile dependent)
+      INTEGER tkey
 # endif
 #else
       _RL rStarDhDt(1)
@@ -155,7 +154,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
           DO j=1,sNy
            DO i=1,sNx
             dEtaHdt(i,j,bi,bj) = (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &                         / (implicDiv2Dflow*deltaTfreesurf)
+     &                         / (implicDiv2Dflow*deltaTFreeSurf)
            ENDDO
           ENDDO
          ENDIF
@@ -171,7 +170,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
        ELSEIF ( myIter.EQ.nIter0 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-            ks = kSurfC(I,J,bi,bj)
+            ks = kSurfC(i,j,bi,bj)
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                         *recip_deepFac2F(ks)
@@ -226,7 +225,7 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
         DO j=1,sNy
          DO i=1,sNx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTfreesurf
+     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTFreeSurf
          ENDDO
         ENDDO
        ENDIF
@@ -247,9 +246,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef NONLIN_FRSURF
 #  if (defined ALLOW_AUTODIFF_TAMC) && \
       (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-      idynkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE dEtaHdt(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key = idynkey, kind = isbyte
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE dEtaHdt(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
       IF (select_rStar .NE. 0) THEN
 #  ifndef DISABLE_RSTAR_CODE
@@ -267,7 +265,7 @@ C         except for deep-factor and rho factor.
       ENDIF
 #  if (defined ALLOW_AUTODIFF_TAMC) && \
       (defined ALLOW_DEPTH_CONTROL) && (!defined DISABLE_RSTAR_CODE)
-CADJ STORE rStarDhDt = comlev1_bibj, key = idynkey, kind = isbyte
+CADJ STORE rStarDhDt = comlev1_bibj, key = tkey, kind = isbyte
 #  endif
 # endif /* NONLIN_FRSURF */
 

@@ -152,15 +152,17 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER ioUnit
       _RL tmpFac
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER passkey, igadkey
+C     tkey :: tape key (depends on tracer and tile indices)
+C     dkey :: tape key (depends on direction and tkey)
+      INTEGER tkey, dkey
 #endif
 CEOP
 
 C     make local copy to be tampered with if necessary
       advectionScheme = advectionSchArg
 #ifdef ALLOW_AUTODIFF_TAMC
-      igadkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      igadkey = tracerIdentity + (igadkey-1)*maxpass
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = tracerIdentity + (tkey-1)*maxpass
       IF (tracerIdentity.GT.maxpass) THEN
        WRITE(msgBuf,'(A,2I5)')
      &      'SEAICE_ADVECTION: tracerIdentity > maxpass ',
@@ -250,7 +252,7 @@ C--   Set tile-specific parameters for horizontal fluxes
 C--   Start of k loop for horizontal fluxes
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceFld =
-CADJ &     comlev1_bibj_k_gadice, key=igadkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Content of CALC_COMMON_FACTORS, adapted for 2D fields
@@ -292,7 +294,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-       passkey = ipass + (igadkey-1)*maxcube
+       dkey = ipass + (tkey-1)*maxcube
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        interiorOnly = .FALSE.
@@ -324,11 +326,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ STORE localTij(:,:) =
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ STORE af(:,:) =
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
@@ -358,7 +360,7 @@ cph-exch2#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -540,9 +542,9 @@ C--   Y direction
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -572,7 +574,7 @@ cph-exch2#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

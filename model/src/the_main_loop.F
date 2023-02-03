@@ -533,17 +533,19 @@ c--
 #   ifdef ALLOW_THSICE
 C     Tape for thsice_advection, which is called for thSIce_nAdv (=5)
 C     different variables (thSIce_nAdv is set in THSICE_SIZE.h)
-CADJ INIT comlev1_thsice_adv = COMMON,
+CADJ INIT comlev1_thsice_adv  = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxcube*thSIce_nAdv
 CADJ INIT comlev1_thsice_nlyr = COMMON,nchklev_1*nSx*nSy*nlyr
+CADJ INIT comlev1_thsice_s4t  = COMMON,nchklev_1*nSx*nSy*MaxTsf
 #   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
-CADJ INIT comlev1_thsice_5 = COMMON,
-CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)
-CADJ INIT comlev1_thsice_exf = COMMON,nchklev_1*nSx*nSy*MaxTsf
+C     These tapes are only used within thsice_get_exf.F
+CADJ INIT comlev1_thsice_exf       = COMMON,
+CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)
 CADJ INIT comlev1_thsice_exf_niter = COMMON,
-CADJ &    nchklev_1*nSx*nSy*MaxTsf*(niter_bulk+1)
+CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk
+CADJ INIT comlev1_thsice_exf_ij    = COMMON,
+CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk*sNx*sNy
 #   endif
-CADJ INIT comlev1_thsice_s4t = COMMON,nchklev_1*nSx*nSy*MaxTsf
 #   endif /* ALLOW_THSICE */
 c--
 #   ifdef ALLOW_STREAMICE
