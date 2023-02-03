@@ -1,6 +1,17 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - rename CPP: CAR_DISS -> DIC_CALCITE_SAT and AD_SAFE -> DIC_AD_SAFE and put
+    all carbonate-saturation code and 3D arrays inside #ifdef DIC_CALCITE_SAT
+    block and time-ave arrays within #ifdef ALLOW_TIMEAVE ;
+  - add run-time params: useCalciteSaturation, calcOmegaCalciteFreq, nIterCO3,
+    selectCalciteBottomRemin, KierRateK, KierRateExp and WsinkPIC ;
+  - switch order of arguments to "myTime, myIter, myThid" in few remaining
+    pkg/dic S/R + S/R calls in pkg/gchem ;
+  - update exp. so_box_biogeo (define CARBONCHEM_TOTALPHSCALE & DIC_CALCITE_SAT)
+    + add 2 new secondary tests (caSat0 & caSat3) with useCalciteSaturation=T
+    and using 3-D silicate input file.
 o TAF tape keys:
   - rename many local taf keys to use shorter and more consistent names ;
   - pkg/thsice: fix bug in key computations.
