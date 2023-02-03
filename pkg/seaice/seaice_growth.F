@@ -487,13 +487,6 @@ C for lateral melt parameterization:
           ENDDO
          ENDDO
         ENDDO
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
-         ENDDO
-        ENDDO
-#endif
 
 C =====================================================================
 C ===========PART 1: treat pathological cases (post advdiff)===========
@@ -603,14 +596,6 @@ Cgf no additional dependency of air-sea fluxes to ice
          ENDDO
 #endif
         ENDIF
-#endif
-
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-        DO J=1,sNy
-         DO I=1,sNx
-          AREAforAtmFW(I,J,bi,bj) = AREApreTH(I,J)
-         ENDDO
-        ENDDO
 #endif
 
 C     COMPUTE ACTUAL ICE/SNOW THICKNESS; USE MIN/MAX VALUES
@@ -2400,25 +2385,6 @@ C and the flux leaving/entering the ocean+ice
 
          ENDDO
         ENDDO
-
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-C--
-        DO J=1,sNy
-         DO I=1,sNx
-            frWtrAtm(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
-     &           PRECIP(I,J,bi,bj)
-     &           - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
-# ifdef ALLOW_RUNOFF
-     &           + RUNOFF(I,J,bi,bj)
-# endif /* ALLOW_RUNOFF */
-     &           )*rhoConstFresh
-# ifdef SEAICE_ADD_SUBLIMATION_TO_FWBUDGET
-     &           - a_FWbySublim(I,J)*AREApreTH(I,J)
-# endif /* SEAICE_ADD_SUBLIMATION_TO_FWBUDGET */
-         ENDDO
-        ENDDO
-C--
-#endif /* ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
 
 #ifdef SEAICE_DEBUG
        IF ( plotLevel.GE.debLevC ) THEN

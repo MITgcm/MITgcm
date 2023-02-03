@@ -106,13 +106,6 @@ C
       _RL uIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-C--   Dynamical variables
-      COMMON/SEAICE_DYNVARS_COST/ AREAforAtmFW, frWtrAtm
-      _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL frWtrAtm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
 #ifndef SEAICE_CGRID
       COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN, uIceC, vIceC
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -16,13 +16,7 @@ CADJ STORE salt    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE totphihyd  = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE runoff     = comlev1, key=ikey_dynamics, kind=isbyte
 
-CADJ STORE area    = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE heff    = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE heffm   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE hsnow   = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_DYNAMICS
-CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE zeta    = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE eta     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif

@@ -151,10 +151,6 @@ c "ice concentration" tracer that should remain .EQ.1.
           ENDDO
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-          frWtrAtm(i,j,bi,bj)   = 0. _d 0
-          AREAforAtmFW(i,j,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
@@ -431,18 +427,6 @@ C--   Read initial sea ice age from file if available.
 #endif /* ALLOW_SITRACER */
 
       ENDIF
-
-#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          AREAforAtmFW(i,j,bi,bj) = AREA(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
 
 #ifdef ALLOW_OBCS
 C--   In case we use scheme with a large stencil that extends into overlap:
