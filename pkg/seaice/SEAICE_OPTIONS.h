@@ -176,11 +176,11 @@ C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
 
 C--   pkg/seaice cost functions compile flags
-C--   Sea-ice volume (requires pkg/cost)
+C-    Sea-ice volume (requires pkg/cost)
 #undef ALLOW_COST_ICE
 #ifdef ALLOW_COST_ICE
-C--   Enable template for sea-ice volume export in seaice_cost_export.F
-C     (requires pkg/cost)
+C-    Enable template for sea-ice volume export in seaice_cost_export.F
+C     (requires pkg/cost & ALLOW_COST_ICE defined)
 # undef ALLOW_SEAICE_COST_EXPORT
 #endif /* ALLOW_COST_ICE */
 

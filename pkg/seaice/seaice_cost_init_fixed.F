@@ -1,5 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#include "AD_CONFIG.h"
 
       subroutine seaice_cost_init_fixed( mythid )
 
@@ -20,7 +19,6 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
 #ifdef ALLOW_COST
 # include "SEAICE_COST.h"
@@ -33,14 +31,9 @@ C     == routine arguments ==
       integer mythid
 
 #if (defined ALLOW_COST && defined ALLOW_COST_ICE)
-
 C     == local variables ==
       integer tempDate1(4)
       integer tempDate2(4)
-      logical exst
-
-C     == external functions ==
-
 C     == end of interface ==
 
 #ifdef ALLOW_CAL
@@ -71,10 +64,9 @@ C--
       ENDIF
       _END_MASTER( mythid )
 
-#endif /* ALLOW_CAL */
-
       _BARRIER
 
+#endif /* ALLOW_CAL */
 #endif /* ALLOW_COST and ALLOW_COST_ICE */
 
       RETURN
