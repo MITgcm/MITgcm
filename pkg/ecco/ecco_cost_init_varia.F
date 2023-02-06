@@ -78,12 +78,6 @@ C--   Initialize the tiled cost function contributions.
           num_ageos(bi,bj)  = 0. _d 0
 #endif
 
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              cosphi(i,j,bi,bj) = 1. _d 0
-            ENDDO
-          ENDDO
-
         ENDDO
       ENDDO
 
