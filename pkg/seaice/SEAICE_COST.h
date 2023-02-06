@@ -3,7 +3,6 @@ C     | SEAICE_COST.h                                            |
 C     | o Sea ice cost terms.                                    |
 C     *==========================================================*
 
-c#ifdef ALLOW_COST_ICE
 C     objf_ice   :: sea-ice volume
       COMMON /seaice_cost_objf/
      &                objf_ice,
@@ -48,4 +47,3 @@ C     cost_ice_flag  :: cost_ice flag (see seaice_cost_test.F)
       COMMON /SEAICE_COST_EXPORT_R/
      &       uHeffExportCell, vHeffExportCell
 #endif
-c#endif /* ALLOW_COST_ICE */
