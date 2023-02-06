@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - make all seaice-cost code independent of pkg/ecco and remove few
+    SEAICE_COST.h from pkg/ecco ;
+  - remove unused code related to ALLOW_SEAICE_COST_SMR_AREA (formerly used
+    with ECCO_CTRL_DEPRECATED, seaice_cost_driver.F and S/R called from there),
+    ALLOW_MEAN_SFLUX_COST_CONTRIBUTION + ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION,
+    and retire associated parameters.
 o pkg/dic:
   - rename CPP: CAR_DISS -> DIC_CALCITE_SAT and AD_SAFE -> DIC_AD_SAFE and put
     all carbonate-saturation code and 3D arrays inside #ifdef DIC_CALCITE_SAT
