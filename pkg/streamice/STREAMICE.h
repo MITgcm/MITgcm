@@ -110,6 +110,8 @@ C                                    maximum melt rate
      & streamice_bdot_depth_nomelt,
      & streamice_bdot_depth_maxmelt,
      & streamice_bdot_maxmelt,
+     & streamice_bdot_depth_maxmelt_p,
+     & streamice_bdot_maxmelt_p,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & streamice_buttr_width,
 #endif
@@ -146,6 +148,8 @@ C                                    maximum melt rate
       _RL streamice_bdot_depth_nomelt
       _RL streamice_bdot_depth_maxmelt
       _RL streamice_bdot_maxmelt
+      _RL streamice_bdot_depth_maxmelt_p
+      _RL streamice_bdot_maxmelt_p
       _RL streamice_forcing_period
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL streamice_buttr_width

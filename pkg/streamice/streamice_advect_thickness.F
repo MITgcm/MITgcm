@@ -39,6 +39,7 @@ C     === Global variables ===
       _RL thick_bd, uflux, vflux, max_icfl, loc_icfl
       _RL time_step_full, time_step_rem
       _RL sec_per_year, time_step_loc, MR, SMB, TMB, irho
+      _RL bdot_depth, bdot_max
       _RL BCVALX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BCVALY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS BCMASKX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -355,7 +356,10 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 ! NOW WE APPLY MELT RATES !!
 ! THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
       irho = 1./streamice_density
-
+      bdot_depth = streamice_bdot_depth_maxmelt + 
+     &             streamice_bdot_depth_maxmelt_p 
+      bdot_max   = streamice_bdot_maxmelt + 
+     &             streamice_bdot_maxmelt_p 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
@@ -382,17 +386,18 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
      &             (BDOT_STREAMICE(i,j,bi,bj) +
      &              BDOT_pert(i,j,bi,bj))
               ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
+
                IF (base_el_streamice(i,j,bi,bj) .lt. 
      &             streamice_bdot_depth_nomelt) THEN
                 IF (base_el_streamice(i,j,bi,bj) .lt. 
-     &             streamice_bdot_depth_maxmelt) THEN
-                 MR = streamice_bdot_maxmelt
+     &             bdot_depth) THEN
+                 MR = bdot_max
                 ELSE
                  MR = (streamice_bdot_depth_nomelt-
      &                 base_el_streamice(i,j,bi,bj)) /
      &                (streamice_bdot_depth_nomelt-
-     &                 streamice_bdot_depth_maxmelt) *
-     &                 streamice_bdot_maxmelt
+     &                 bdot_depth) *
+     &                 bdot_max
                 ENDIF
                ELSE
                  MR = 0.0

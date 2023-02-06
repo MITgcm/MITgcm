@@ -124,6 +124,8 @@ c          h_after_uflux_SI(i,j,bi,bj) = 0. _d 0
         cost_vel_streamice (bi,bj) = 0.0
         cost_surf_streamice (bi,bj) = 0.0
 #endif
+        streamice_bdot_depth_maxmelt_p = 0.0
+        streamice_bdot_maxmelt_p = 0.0
 
        ENDDO
       ENDDO
