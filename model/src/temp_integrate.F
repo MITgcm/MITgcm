@@ -144,7 +144,9 @@ C   useVariableK :: T when vertical diffusion is not constant
       LOGICAL useVariableK
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itdkey, kkey
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+      INTEGER tkey, kkey
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -176,7 +178,7 @@ C     extended over 1 point in tile halo region (0:sNx+1,0:sNy=1).
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Apply AB on T :
@@ -223,13 +225,13 @@ C-    Tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
       ENDDO
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wFld(:,:,:)         = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE wFld(:,:,:)         = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,1) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gtNm(:,:,:,bi,bj,2) = comlev1_bibj, key=tkey, byte=isbyte
 # else
-CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE gtNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -254,7 +256,8 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE som_T = comlev1_bibj, key=itdkey, byte=isbyte
+C- Note: inefficient storage, storing nSx*nSy times the full som_T array
+CADJ STORE som_T = comlev1_bibj, key=tkey, byte=isbyte
 # endif
       IF ( tempSOM_Advection ) THEN
 # ifdef ALLOW_DEBUG
@@ -289,7 +292,7 @@ C-    Start vertical index (k) loop (Nr:1)
       calcAdvection = tempAdvection .AND. .NOT.tempMultiDimAdvec
       DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (itdkey-1)*Nr + k
+        kkey = k + (tkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
         kM1  = MAX(1,k-1)
         kUp  = 1+MOD(k+1,2)
@@ -477,11 +480,11 @@ C--   Implicit vertical advection & diffusion
 C     to recover older (prior to 2016-10-05) results:
 c     IF ( tempImplVertAdv ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gT_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE wFld(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE recip_hFac(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE kappaRk(:,:,:)     = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gT_loc(:,:,:)      = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE wFld(:,:,:)        = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE recip_hFac(:,:,:)  = comlev1_bibj, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempVertAdvScheme, GAD_TEMPERATURE,
@@ -494,8 +497,8 @@ CADJ STORE recip_hFac(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
       IF     ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
-CADJ STORE gT_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj, key=tkey, byte=isbyte
+CADJ STORE gT_loc (:,:,:) = comlev1_bibj, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,

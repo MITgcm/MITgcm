@@ -139,7 +139,8 @@ C     xxxFac :: On-off tracer parameters used for switching terms off.
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER imomkey
+C     kkey :: tape key (depends on level and tile indices)
+      INTEGER kkey
 #endif
 
 #ifdef ALLOW_MNC
@@ -157,8 +158,8 @@ C--   (at least in part)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      imomkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      imomkey = k  + (imomkey-1)*Nr
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k  + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock)
@@ -258,18 +259,12 @@ C     Make local copies of horizontal flow field
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ufld(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vfld(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE hFacZ(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE r_hFacZ(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE fverukm(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE fvervkm(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE ufld(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vfld(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE hFacZ(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE r_hFacZ(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE fverukm(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE fvervkm(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C note (jmc) : Dissipation and Vort3 advection do not necesary
@@ -281,12 +276,9 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vort3bc(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:)      = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vort3bc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
@@ -301,10 +293,8 @@ C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vort3bc(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vort3bc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
       IF (momViscosity) THEN
@@ -329,10 +319,8 @@ C      and mask relative vorticity (free-slip case):
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE h0FacZ(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE hFacZ(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE h0FacZ(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE hFacZ(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
@@ -364,14 +352,10 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hdiv(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE tension(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE strain(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE strainbc(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE hdiv(:,:)     = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE tension(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE strain(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE strainbc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C--    Calculate Lateral Viscosities
@@ -386,8 +370,7 @@ C--    Calculate Lateral Viscosities
        IF ( useVariableVisc ) THEN
 C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
          CALL MOM_CALC_VISC( bi, bj, k,
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
@@ -398,21 +381,16 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 C     These store directive must not be here, if you want to recompute
 C     these viscosity coefficients with a modified viscFacAdj = viscFacInAd
 C     because the store directives intentionally prevent the recomputation.
-CADJ STORE viscAh_Z(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscAh_D(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscA4_Z(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscA4_D(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscAh_Z(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscAh_D(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscA4_Z(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE viscA4_D(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 # endif /* AUTODIFF_ALLOW_VISCFACADJ */
 #endif /* ALLOW_AUTODIFF_TAMC */
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hDiv(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE hDiv(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C      Calculate del^2 u and del^2 v for bi-harmonic term
@@ -426,14 +404,10 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE del2u(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE del2v(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE dStar(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE zStar(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE del2u(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE del2v(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE dStar(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE zStar(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C---   Calculate dissipation terms for U and V equations
@@ -471,8 +445,7 @@ C     Combine fluxes
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVerUkp(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE fVerUkp(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C--   Tendency is minus divergence of the fluxes
@@ -507,8 +480,7 @@ C-     No-slip BCs impose a drag at walls...
 C-    No-slip BCs impose a drag at bottom
        IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRU, KE,
@@ -533,8 +505,7 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #ifdef ALLOW_SHELFICE
        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRU, KE,
@@ -563,8 +534,7 @@ C     Combine fluxes -> fVerV
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVerVkp(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE fVerVkp(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 C--   Tendency is minus divergence of the fluxes
 C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
@@ -598,8 +568,7 @@ C-     No-slip BCs impose a drag at walls...
 C-    No-slip BCs impose a drag at bottom
        IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRV, KE,
@@ -624,8 +593,7 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #ifdef ALLOW_SHELFICE
        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
         CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRV, KE,
@@ -655,8 +623,7 @@ C-    calculate absolute vorticity
      &  CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE omega3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE omega3(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C--   Horizontal Coriolis terms
@@ -721,10 +688,8 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ucf(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vcf(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE ucf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vcf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
       IF (momAdvection) THEN
@@ -781,10 +746,8 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ucf(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vcf(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE ucf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE vcf(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
        IF ( writeDiag ) THEN

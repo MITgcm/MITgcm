@@ -1,50 +1,48 @@
 #include "SEAICE_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: SEAICE_COST_ACCUMULATE_MEAN
+
+C     !INTERFACE:
       SUBROUTINE SEAICE_COST_ACCUMULATE_MEAN(
      &           myTime, myIter, myThid )
-C     *==========================================================*
-C     | subroutine seaice_cost_accumulate_mean                   |
-C     | o accumulate time-mean state for cost evalualtion        |
-C     *==========================================================*
-      IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     Accumulate time-mean state for cost evalualtion
+
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE.h"
 #ifdef ALLOW_COST
+# include "SEAICE_COST.h"
 # include "cost.h"
 #endif
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid ::  my Thread Id number
       _RL myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_COST
 #ifdef ALLOW_SEAICE_COST_EXPORT
 
-C     == Local variables
-      INTEGER bi, bj
-      INTEGER i, j
-      INTEGER itlo,ithi
-      INTEGER jtlo,jthi
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
+C     !LOCAL VARIABLES:
+      INTEGER i, j, bi, bj
 
       IF ( myTime .GT. (EndTime - lastinterval) ) THEN
 
 C--   Calculate cost function on tile of this instance
-       DO bj = jtlo,jthi
-        DO bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
             uHeffExportCell(i,j,bi,bj) = uHeffExportCell(i,j,bi,bj)
@@ -65,7 +63,6 @@ C--   Calculate cost function on tile of this instance
       ENDIF
 
 #endif /* ALLOW_SEAICE_COST_EXPORT */
-
 #endif /* ALLOW_COST */
 
       RETURN

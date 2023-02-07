@@ -1,5 +1,11 @@
 #ifdef AUTODIFF_USE_STORE_RESTORE
 CADJ STORE StoreSEAICE       = tapelev4, key = ilev_4
+# ifdef AUTODIFF_SOMETIMES_NEEDED
+CADJ STORE area  = tapelev4, key = ilev_4
+CADJ STORE heff  = tapelev4, key = ilev_4
+CADJ STORE uice  = tapelev4, key = ilev_4
+CADJ STORE vice  = tapelev4, key = ilev_4
+# endif
 #else
 CADJ STORE AREA              = tapelev4, key = ilev_4
 CADJ STORE HEFF              = tapelev4, key = ilev_4
@@ -28,23 +34,12 @@ CADJ STORE HSALT             = tapelev4, key = ilev_4
 # endif
 #endif /* AUTODIFF_USE_STORE_RESTORE */
 
-#ifdef AUTODIFF_SOMETIMES_NEEDED
-CADJ STORE area  = tapelev4, key = ilev_4
-CADJ STORE heff  = tapelev4, key = ilev_4
-CADJ STORE uice  = tapelev4, key = ilev_4
-CADJ STORE vice  = tapelev4, key = ilev_4
-#endif
-
 #ifdef ALLOW_COST_ICE
 CADJ STORE objf_ice = tapelev4, key = ilev_4
-#endif
-#ifdef ALLOW_SEAICE_COST_EXPORT
+# ifdef ALLOW_SEAICE_COST_EXPORT
 CADJ STORE uHeffExportCell = tapelev4, key = ilev_4
 CADJ STORE vHeffExportCell = tapelev4, key = ilev_4
-CADJ STORE icevolMeanCell = tapelev4, key = ilev_4
-#endif
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-CADJ STORE AREAforAtmFW = tapelev4, key = ilev_4
+# endif
 #endif
 
 #ifdef ALLOW_OBCS

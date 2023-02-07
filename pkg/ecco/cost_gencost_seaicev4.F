@@ -1,4 +1,14 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
+
+C--  File cost_gencost_seaicev4.F:
+C--   Contents
+C--   o COST_GENCOST_SEAICEV4
+C--   o GET_EXCONC_DECONC
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine cost_gencost_seaicev4(myThid)
 
@@ -27,11 +37,11 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE_COST.h"
-# include "SEAICE_PARAMS.h"
-#endif
+c#ifdef ALLOW_SEAICE
+c# include "SEAICE_SIZE.h"
+c# include "SEAICE_COST.h"
+c# include "SEAICE_PARAMS.h"
+c#endif
 
 c     == routine arguments ==
       integer myThid
@@ -338,7 +348,7 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
 #endif /* ALLOW_SEAICE */
 
       RETURN
-      end
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -386,8 +396,8 @@ c     == routine arguments ==
 
       character*2 flag_exconc_deconc
 
-#ifdef ALLOW_GENCOST_CONTRIBUTION
 #ifdef ALLOW_SEAICE
+#ifdef ALLOW_GENCOST_CONTRIBUTION
 
 c    == local variables ==
       integer bi,bj
@@ -506,5 +516,3 @@ c cost(Model-data)^2
 #endif /* ALLOW_SEAICE */
       RETURN
       END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
