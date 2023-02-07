@@ -27,7 +27,6 @@ fi
 #LINK="$F90C -ipo"
 
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
