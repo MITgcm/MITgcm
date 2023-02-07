@@ -127,7 +127,7 @@ C     This modification improves the convergence of the vector code
 C     dramatically, so that is may actually be useful in general, but
 C     that needs to be tested. Can be used without vectorization options.
 # define SEAICE_LSR_ZEBRA
-C     This flag is also required for an actual adjoint of seaice_lsr; 
+C     This flag is also required for an actual adjoint of seaice_lsr;
 C     increases memory requirements a lot.
 # define SEAICE_LSR_ADJOINT_ITER
 C     Use parameterisation of grounding ice for a better representation
@@ -167,8 +167,6 @@ C--   Enable free drift code
 C--   pkg/seaice cost functions compile flags
 c       >>> Sea-ice volume (requires pkg/cost)
 #undef ALLOW_COST_ICE
-c       >>> Sea-ice misfit to obs (requires pkg/cost and ecco)
-#define ALLOW_SEAICE_COST_SMR_AREA
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */

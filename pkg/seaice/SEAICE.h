@@ -106,13 +106,6 @@ C
       _RL uIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-C--   Dynamical variables
-      COMMON/SEAICE_DYNVARS_COST/ AREAforAtmFW, frWtrAtm
-      _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL frWtrAtm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
 #ifndef SEAICE_CGRID
       COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN, uIceC, vIceC
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -217,15 +210,6 @@ C     WINDY  - meridional wind stress over water at C points
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       INTEGER KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-#ifdef ALLOW_SEAICE_COST_EXPORT
-      _RL uHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL icevolMeanCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /SEAICE_COST_EXPORT_R/
-     &       uHeffExportCell, vHeffExportCell,
-     &       icevolMeanCell
 #endif
 
 C     SWFracB :: fraction of surface Short-Wave radiation reaching
