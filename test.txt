@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 test pushing modified low-level 'JCam98_main_sverdrup' branch with
 committed changes onto origin remote copy of upstream master branch
 
+=======
+test pushing modified low-level 'JCam98_main_sverdrup' branch with 
+committed changes onto origin remote copy of upstream master branch
+>>>>>>> master
