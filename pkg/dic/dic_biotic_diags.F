@@ -58,8 +58,6 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZE(fluxCO2ave,DIC_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZE(OmegaCave, DIC_timeAve, Nr ,
-     &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZE(pfluxave,DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZE(epfluxave,DIC_timeAve, Nr ,
@@ -88,8 +86,6 @@ C      Normalize by integrated time
          CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
      &        myIter,myThid)
          CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
-     &        myIter,myThid)
-         CALL WRITE_FLD_XYZ_RL('DIC_OmegaCtave.',suff,OmegaCave,
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DIC_pfluxtave.',suff,pfluxave,
      &        myIter,myThid)
@@ -125,8 +121,6 @@ C      Normalize by integrated time
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_fluxCO2_ave',fluxCO2ave,myThid)
          CALL MNC_CW_RL_W(
-     &        pf,'dic_tave',0,0,'dic_OmegaC_ave',OmegaCave,myThid)
-         CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_pflux_ave',pfluxave,myThid)
          CALL MNC_CW_RL_W(
      &        pf,'dic_tave',0,0,'dic_epflux_ave',epfluxave,myThid)
@@ -145,7 +139,6 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
-         CALL TIMEAVE_RESET(OmegaCave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(epfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(cfluxave,Nr,bi,bj,myThid)

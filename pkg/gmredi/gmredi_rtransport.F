@@ -64,7 +64,9 @@ C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igadkey, kkey
+C     kkey :: tape key (depends on levels, tiles, and tracers)
+      INTEGER kkey
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -73,12 +75,15 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igadkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      igadkey = trIdentity + (igadkey-1)*maxpass
-      kkey    = k + (igadkey-1)*Nr
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = trIdentity + (kkey-1)*maxpass
+      kkey = k + (kkey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
-       PRINT *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
-       STOP 'maxpass seems smaller than trIdentity'
+       WRITE(msgBuf,'(A,2I5)')
+     &      'GMREDI_RTRANSPORT: trIdentity > maxpass ',
+     &      trIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_RTRANSPORT'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 

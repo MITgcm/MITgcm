@@ -6,7 +6,7 @@ C !ROUTINE: O2_SURFFORCING
 C !INTERFACE: ==========================================================
       SUBROUTINE O2_SURFFORCING( PTR_O2, SGO2,
      I           bi,bj,iMin,iMax,jMin,jMax,
-     I           myIter, myTime, myThid )
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C Calculate the oxygen air-sea flux terms
@@ -22,13 +22,13 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 c  !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  PTR_O2               :: oxygen tracer field
-      _RL myTime
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+      _RL myTime
       INTEGER myIter, myThid
 
 c  !OUTPUT PARAMETERS: ===================================================
@@ -41,7 +41,7 @@ C  SGO2                  :: air-sea exchange of oxygen
 
 C !LOCAL VARIABLES: ===================================================
 C I, J, K - Loop counters
-      INTEGER I,J,K
+      INTEGER i,j,k
 C Solubility relation coefficients
       _RL SchmidtNoO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -60,8 +60,7 @@ C Solubility relation coefficients
       _RL  oCnew
 CEOP
 
-
-      K=1
+      k=1
 
 C calculate SCHMIDT NO. for O2
         DO j=jmin,jmax
@@ -106,11 +105,10 @@ c Convert from ml/l to mol/m^3
 C Determine flux, inc. correction for local atmos surface pressure
               FluxO2(i,j) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j)
-     &                      - PTR_O2(i,j,K))
+     &                      - PTR_O2(i,j,k))
             ELSE
               FluxO2(i,j) = 0. _d 0
             ENDIF
-
 
           END DO
         END DO
@@ -119,12 +117,11 @@ C update surface tendencies
         DO j=jmin,jmax
           DO i=imin,imax
            SGO2(i,j)= FluxO2(i,j)
-     &         *recip_drF(K) * recip_hFacC(i,j,K,bi,bj)
+     &         *recip_drF(k) * recip_hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
 #endif
 #endif
-
 
         RETURN
         END

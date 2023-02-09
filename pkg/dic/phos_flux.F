@@ -6,7 +6,7 @@ C !ROUTINE: PHOS_FLUX
 C !INTERFACE: ==========================================================
       SUBROUTINE PHOS_FLUX( BIOac, pflux, exportflux,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C Calculate the PO4 flux to depth from bio activity
@@ -21,15 +21,15 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  BIOac                :: biological productivity
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ===================================================
 C  pflux                :: changes to PO4 due to flux and reminerlization
@@ -47,7 +47,7 @@ c  depth_l                :: depth and lower interface
 c  flux_u, flux_l         :: flux through upper and lower interfaces
 c  reminFac               :: abbreviation
 c  zbase                  :: depth of bottom of current productive layer
-      INTEGER I,J,k, ko, kop1
+      INTEGER i,j,k, ko, kop1
       _RL zbase
       _RL bexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL reminFac
@@ -65,7 +65,7 @@ C- Calculate PO4 flux from base of each layer
 C--   If no layer below initial layer (because of bottom or
 C--   topography), then remineralize in here
           IF (k.EQ.Nr) THEN
-           pflux(i,j,k)=pflux(i,j,k)+BIOac(i,j,k)*(1. _d 0-DOPfraction) 
+           pflux(i,j,k)=pflux(i,j,k)+BIOac(i,j,k)*(1. _d 0-DOPfraction)
           ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
            pflux(i,j,k)=pflux(i,j,k)+BIOac(i,j,k)*(1. _d 0-DOPfraction)
           ELSE
@@ -93,11 +93,11 @@ C     in order to save a few expensive exp-function calls
 #ifndef NONLIN_FRSURF
 C     For the linear free surface, hFacC can be omitted, buying another
 C     performance increase of a factor of six on a vector computer.
-C     For now this is not implemented via run time flags, in order to 
+C     For now this is not implemented via run time flags, in order to
 C     avoid making this code too complicated.
         depth_l  = -rF(ko) + drF(ko)
 C       reminFac = (depth_l/zbase)**(-Kremin)
-C     The following form does the same, but is faster 
+C     The following form does the same, but is faster
         reminFac = exp(-Kremin*log(depth_l/zbase))
 #endif
         DO j=jmin,jmax
@@ -107,12 +107,12 @@ C--   Lower flux (no flux to ocean bottom)
 #ifdef NONLIN_FRSURF
            depth_l  = -rF(ko) + drF(ko) * _hFacC(i,j,ko,bi,bj)
 C          reminFac = (depth_l/zbase)**(-Kremin)
-C     The following form does the same, but is faster 
+C     The following form does the same, but is faster
            reminFac = exp(-Kremin*log(depth_l/zbase))
 #endif
            flux_l   = bexport(i,j)*reminFac
      &          *maskC(i,j,kop1,bi,bj)
-C     
+C
            pflux(i,j,ko)=pflux(i,j,ko) + (flux_u(i,j)-flux_l)
      &          *recip_drF(ko) * _recip_hFacC(i,j,ko,bi,bj)
            exportflux(i,j,ko)=exportflux(i,j,ko)+flux_u(i,j)
