@@ -387,17 +387,22 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
      &              BDOT_pert(i,j,bi,bj))
               ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
 
+               bdot_depth = bdot_depth + 
+     &          streamice_bdot_depth_maxmelt_pv(i,j,bi,bj)
+               bdot_max = bdot_max + 
+     &          streamice_bdot_maxmelt_pv(i,j,bi,bj)
+
                IF (base_el_streamice(i,j,bi,bj) .lt. 
      &             streamice_bdot_depth_nomelt) THEN
                 IF (base_el_streamice(i,j,bi,bj) .lt. 
      &             bdot_depth) THEN
-                 MR = bdot_max
+                 MR = bdot_max**streamice_bdot_exp
                 ELSE
-                 MR = (streamice_bdot_depth_nomelt-
+                 MR = ((streamice_bdot_depth_nomelt-
      &                 base_el_streamice(i,j,bi,bj)) /
      &                (streamice_bdot_depth_nomelt-
      &                 bdot_depth) *
-     &                 bdot_max
+     &                 bdot_max)**streamice_bdot_exp 
                 ENDIF
                ELSE
                  MR = 0.0

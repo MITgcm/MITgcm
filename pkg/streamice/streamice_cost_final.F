@@ -143,6 +143,7 @@ C--   Calculate cost function on tile of this instance
           smooth_cost_bglen (bi,bj) = 0.0
           smooth_cost_prior (bi,bj) = 0.0
           cost_misfit (bi,bj) = 0.0
+          cost_misfit_norm (bi,bj) = 0.0
 
           do j=1,sNy
             do i=1,sNx

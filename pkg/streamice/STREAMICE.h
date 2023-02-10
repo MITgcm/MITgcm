@@ -83,6 +83,8 @@ C     streamice_bdot_depth_maxmelt:: pw linear depth-dependent melt param:
 C                                    depth below which const melt
 C     streamice_bdot_maxmelt      :: pw linear depth-dependent melt param:
 C                                    maximum melt rate
+C     streamice_bdot_exp          :: pw linear depth-dependent melt param:
+C                                    melt exponent
 
       COMMON /STREAMICE_PARMS_R/
      & streamice_density, streamice_density_ocean_avg,
@@ -110,6 +112,7 @@ C                                    maximum melt rate
      & streamice_bdot_depth_nomelt,
      & streamice_bdot_depth_maxmelt,
      & streamice_bdot_maxmelt,
+     & streamice_bdot_exp,
      & streamice_bdot_depth_maxmelt_p,
      & streamice_bdot_maxmelt_p,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
@@ -148,6 +151,7 @@ C                                    maximum melt rate
       _RL streamice_bdot_depth_nomelt
       _RL streamice_bdot_depth_maxmelt
       _RL streamice_bdot_maxmelt
+      _RL streamice_bdot_exp
       _RL streamice_bdot_depth_maxmelt_p
       _RL streamice_bdot_maxmelt_p
       _RL streamice_forcing_period
@@ -715,6 +719,7 @@ C    REAL ARRAYS
      &     C_basal_friction,
      &     B_glen,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
+     &     streamice_bdot_depth_maxmelt_pv, streamice_bdot_maxmelt_pv,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
      &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg,
@@ -877,6 +882,8 @@ C     The following arrays are used for the hybrid stress balance
 C  IMPORTANT: MELT RATE IN METERS PER YEAR
 C  POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_depth_maxmelt_pv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt_pv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ADOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

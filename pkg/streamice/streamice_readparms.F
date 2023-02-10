@@ -76,6 +76,7 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_bdot_depth_nomelt,
      &     streamice_bdot_depth_maxmelt,
      &     streamice_bdot_maxmelt,
+     &     streamice_bdot_exp,
      &     STREAMICEtopogFile,
      &     STREAMICEhmaskFile,
      &     STREAMICEHBCyFile,
@@ -276,6 +277,7 @@ c      streamice_n_sub_regularize = 4
       streamice_bdot_depth_nomelt = 0.
       streamice_bdot_depth_maxmelt = 0.
       streamice_bdot_maxmelt = 0.
+      streamice_bdot_exp = 1.
 
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       streamice_buttr_width = 1000000000.
