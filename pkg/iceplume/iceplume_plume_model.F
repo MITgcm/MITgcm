@@ -145,7 +145,11 @@ C Next point at which to retrieve values
        TOUT = zProf(iceDepthK-1)
 
 C Clear cells below depth of ice face
-      DO k = Nr+1,iceDepthK+1
+catn The loop below needs to loop ONLY to Nr+1 and not
+catn iceDepthK+1 in the case iceDepthK = Nr+1. Else we
+catn encounter out of bound error
+catn      DO k = Nr+1,iceDepthK+1
+      DO k = Nr+1,iceDepthK
        rProfPlume(k) = 0.D0
        wProfPlume(k) = 0.D0
        tProfPlume(k) = 0.D0

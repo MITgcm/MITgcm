@@ -101,22 +101,23 @@ catn      PARAMETER(rho_0=1027.0D0)
 catn      PARAMETER(rho_shelfice=917.0D0)
 catn      PARAMETER(lhfusion=333.55E+3)
 catn: be careful about overlap, i think these will all need them.
-      _RL gT_iceplumeBG       (1:sNx,1:sNy,Nr)
-      _RL gS_iceplumeBG       (1:sNx,1:sNy,Nr)
-      _RL AddMass3Dbg         (1:sNx,1:sNy,Nr)
-      _RL Fwflux3D            (1:sNx,1:sNy,Nr)
-      _RL HeatFlux3D          (1:sNx,1:sNy,Nr)
-      _RL rProfPlume3D        (1:sNx,1:sNy,Nr)
-      _RL wProfPlume3D        (1:sNx,1:sNy,Nr)
-      _RL tProfPlume3D        (1:sNx,1:sNy,Nr)
-      _RL sProfPlume3D        (1:sNx,1:sNy,Nr)
-      _RL mProfPlume3D        (1:sNx,1:sNy,Nr)
-      _RL mProfAv3D           (1:sNx,1:sNy,Nr)
-      _RL runoffVel           (1:sNx,1:sNy)
-      _RL runoffRad           (1:sNx,1:sNy)
+      _RL gT_iceplumeBG   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL gS_iceplumeBG   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL AddMass3Dbg     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Fwflux3D        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL HeatFlux3D      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL wProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL mProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL mProfAv3D       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+catn no longer need runoff[Vel,Rad] if we read in Qsg, see below
+c      _RL runoffVel       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c      _RL runoffRad       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME 
-      _RL thetaProfPlume3D    (1:sNx,1:sNy,Nr)
-      _RL distanceProfPlume3D (1:sNx,1:sNy,Nr)
+      _RL thetaProfPlume3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL distanceProfPlume3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
 #ifdef ALLOW_PTRACERS
@@ -132,6 +133,9 @@ catn: HeatCapacity_Cp = 3994. [J/kg/degC]
 cat:  so eps5 = 1/1029./3994. = 2.433193035422911e-07 [degC m3 / J]
       eps5 = mass2rUnit/HeatCapacity_Cp
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('ICEPLUME_CALC',myThid)
+#endif
 C -----------------------------------------
 C Enter into loops
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -139,8 +143,8 @@ C Enter into loops
 
 catn: Initialize tendencies for plume
         DO k=1,Nr
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            gT_iceplumeBG(i,j,k)=0. _d 0
            gS_iceplumeBG(i,j,k)=0. _d 0
            AddMass3Dbg(i,j,k)=0. _d 0
@@ -161,37 +165,40 @@ catn: Initialize tendencies for plume
         ENDDO
 
 c when read in Qsg, initialize LOCAL runoff[Vel,Rad] array, no bibj
-        DO j=1,sNy
-         DO i=1,sNx
-          runoffVel(i,j)=0. _d 0
-          runoffRad(i,j)=0. _d 0
-         ENDDO
-        ENDDO
+catn now removing runoff[Vel,Rad] local arrays if read Qsg
+c        DO j=1-OLy,sNy+OLy
+c         DO i=1-OLx,sNx+OLx
+c          runoffVel(i,j)=0. _d 0
+c          runoffRad(i,j)=0. _d 0
+c         ENDDO
+c        ENDDO
 
 catn: When read in Qsg, add a loop outside to calculate the 2d fields
 catn: runoff(Vel,Rad), which depends on geometry dLtangential
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
-            dLtangential = dyG(I,J,bi,bj)
-          ELSEIF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
-            dLtangential = dxG(I,J,bi,bj)
-          ENDIF
-          IF(runoffQsg(I,J,bi,bj) .GT. 0. _d 0) THEN
-           runoffVel(i,j) = wVel_sg_0
-           IF ( useSheetPlume ) THEN
-            runoffRad(i,j)=runoffQsg(I,J,bi,bj)/
-     &                     (dLtangential*runoffVel(i,j))
-           ELSEIF (useConePlume .OR. useDetachPlume) THEN
-            runoffRad(i,j)=(twoRL*runoffQsg(I,J,bi,bj)/
-     &                     (runoffVel(i,j)*pi))**halfRL
-           ENDIF
-          ELSE
-           runoffVel(i,j) = 0. _d 0
-           runoffRad(i,j) = 0. _d 0
-          ENDIF
-         ENDDO
-        ENDDO
+ckiki: use[sheet,cone,detatch,etc]plume not set here yet.
+ckiki: moved loop to later
+c        DO j=1-OLy,sNy+OLy
+c         DO i=1-OLx,sNx+OLx
+c          IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+c            dLtangential = dyG(I,J,bi,bj)
+c          ELSEIF ( plumeMask(I,J,bi,bj) .LT. 0 ) THEN
+c            dLtangential = dxG(I,J,bi,bj)
+c          ENDIF
+c          IF(runoffQsg(I,J,bi,bj) .GT. 0. _d 0) THEN
+c           runoffVel(i,j) = wVel_sg_0
+c           IF ( useSheetPlume ) THEN
+c            runoffRad(i,j)=runoffQsg(I,J,bi,bj)/
+c     &                     (dLtangential*runoffVel(i,j))
+c           ELSEIF (useConePlume .OR. useDetachPlume) THEN
+c            runoffRad(i,j)=(twoRL*runoffQsg(I,J,bi,bj)/
+c     &                     (runoffVel(i,j)*pi))**halfRL
+c           ENDIF
+c          ELSE
+c           runoffVel(i,j) = 0. _d 0
+c           runoffRad(i,j) = 0. _d 0
+c          ENDIF
+c         ENDDO
+c        ENDDO
 
 catn: need to be careful here: the I,J are with overlaps
         DO J = 1-OLy,sNy+OLy
@@ -238,7 +245,7 @@ catn: Also, we must avoid hardcoding delta_x and dLtangential to [x,y] of
 catn: model grid because it depends on the geometry of the plume, which
 catn: is including in the sign of the plumeMask.  So, since we are
 catn: looping through I,J starting at the entry of this call, best to
-catn: move defn of delta_[x,y] to above when we're checking plumeMask.
+catn: move defn of delta_[x,y] to above when we are checking plumeMask.
 
 catn: In original code, it has been assummed that dyG is across the
 catn: glacier and dxG is down the fjord toward open ocean. So
@@ -282,7 +289,7 @@ catn: the glacier and dyG along the fjord toward open ocean:
             useSheetPlume = .FALSE.
             useConePlume = .FALSE.
             useDetachPlume = .TRUE.
-#else
+#else /* ICEPLUME_ALLOW_DETACHED_PLUME */
             WRITE(msgBuf,'(2A)')
      &      'cannot use detaching plume without ',
      &      '#define ICEPLUME_ALLOW_DETACHED_PLUME'
@@ -298,14 +305,31 @@ catn: the glacier and dyG along the fjord toward open ocean:
             STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
 
           ENDIF
-
+ckiki: inserted loop from above here
+catn: In addition, since [w,r]_sg are assigned to runoff[Vel,Rad]
+catn  immediately here, we remove these two local arrays altogether
+          IF(runoffQsg(I,J,bi,bj) .GT. 0. _d 0) THEN
+           Q_sg=runoffQsg(I,J,bi,bj)
+           w_sg = wVel_sg_0
+           IF ( useSheetPlume ) THEN
+            r_sg=runoffQsg(I,J,bi,bj)/
+     &                     (dLtangential*w_sg)
+           ELSEIF (useConePlume .OR. useDetachPlume) THEN
+            r_sg=(twoRL*runoffQsg(I,J,bi,bj)/
+     &                     (w_sg*pi))**halfRL
+           ENDIF
+          ELSE
+           Q_sg = 0. _d 0
+           w_sg = 0. _d 0
+           r_sg = 0. _d 0
+          ENDIF
 C Read in the subglacial discharge for this place and time
 C (only the lowermost cell in column is read)
 catn: when read in Qsg, runoff[Vel,Rad] are local, no bibj
-catn           w_sg = runoffVel(I,J,bi,bj)
-catn           r_sg = runoffRad(I,J,bi,bj)
-           w_sg = runoffVel(I,J)
-           r_sg = runoffRad(I,J)
+ccatn           w_sg = runoffVel(I,J,bi,bj)
+ccatn           r_sg = runoffRad(I,J,bi,bj)
+c           w_sg = runoffVel(I,J)
+c           r_sg = runoffRad(I,J)
 catn: changed 2 files into 1 since the only thing we need is Qsg
 
 catn: There is a potential error for delta_y here because it is yet
@@ -322,17 +346,17 @@ catn           Q_sg = w_sg*((pi*r_sg**2.)/2.)
 catn           ELSE
 catn           Q_sg = 0. _d 0
 catn           ENDIF
-          IF (runoffQsg(I,J,bi,bj) .GT. 0. _d 0 .AND. 
-     &               w_sg .GT. 0. _d 0) THEN
-            Q_sg=runoffQsg(I,J,bi,bj)
-            IF ( useSheetPlume ) THEN
-             r_sg=Q_sg/(dLtangential*w_sg)
-            ELSEIF (useConePlume .OR. useDetachPlume) THEN
-             r_sg=(twoRL*Q_sg/(w_sg*pi))**halfRL
-            ENDIF
-          ELSE
-            Q_sg = 0. _d 0
-          ENDIF
+c          IF (runoffQsg(I,J,bi,bj) .GT. 0. _d 0 .AND.
+c     &               w_sg .GT. 0. _d 0) THEN
+c            Q_sg=runoffQsg(I,J,bi,bj)
+c            IF ( useSheetPlume ) THEN
+c             r_sg=Q_sg/(dLtangential*w_sg)
+c            ELSEIF (useConePlume .OR. useDetachPlume) THEN
+c             r_sg=(twoRL*Q_sg/(w_sg*pi))**halfRL
+c            ENDIF
+c          ELSE
+c            Q_sg = 0. _d 0
+c          ENDIF
 
 
 C Create variables with temperature, salinity
@@ -383,7 +407,10 @@ C Find grid layer at depth of ice face (move this to initialisation)
 C If a matching grid layer is not found, this may be because the bottom layer is a partial cell
 C In this case, start in cell above partial cell
           IF ( iceDepthK .EQ. 0 ) THEN
-           DO K=1,Nr+1
+catn The loop below needs to only loop until Nr in order to access
+catn rF(K+1) and not encountering out of bound error
+catn           DO K=1,Nr+1
+           DO K=1,Nr
             IF ( rF(K) .GT. iceDepth ) THEN
               IF ( rF(K+1) .LT. iceDepth ) THEN
                iceDepthK = K
@@ -429,7 +456,7 @@ C ... assuming detached-conical form
               volFlux(k) = 0. _d 0
              ENDIF
             ENDDO
-                                
+
 C A couple of corrections:
 C - even if plume is still buoyant, it cannot flow through the fjord surface
             volFlux(1) = 0. _d 0
@@ -675,7 +702,7 @@ catn: We now change delta_y to dLtangential
      &              +mProf(k)*(dLtangential*delta_z(k)-plumeAreaInCell))
      &              / (dLtangential * delta_z(k))
 C Scale down background melt rate to account for area occupied by plume
-C (necessary so that tendency terms aren't over estimated)
+C (necessary so that tendency terms are not over estimated)
                 mProf(k) = mProf(k)*(1-plumeAreaInCell/
      &                  (dLtangential*delta_z(k)))
                ENDIF
@@ -695,7 +722,7 @@ C If it is not a plume cell, then no plume melting.
             ENDIF ! are we above sea bed?
 
 C Send outputs to 3D grid for diagnostics
-catn: Since we're saving these 3D diags, should know how to calc offline
+catn: Since we are saving these 3D diags, should know how to calc offline
 catn: their contributions to addMass3D(plume,bg)
             IF ( usePlumeDiagnostics ) THEN
              mProfPlume3D(I,J,K) = mProfPlume(k)
@@ -729,7 +756,7 @@ catn: this is using mProf, so it is background melt only
 catn  Now: m/day*day/sec*kg/m3=kg/m2/s
 catn: Lastly, to convert this FwFlux (kg/m2/s) to addMass3Dbg [kg/s], mult by the vertical
 catn: area (dLtangential*dz).  Note we have already taken care at this point to ensure 
-catn: dLtangential is along the glacier front.  In addition, we've already taken care to
+catn: dLtangential is along the glacier front.  In addition, we have already taken care to
 catn: reduce this addmass3dbg to zero if the whole cell is plume.
 catn      addMass3Dbg(I,j,k,bi,bj)=Fwflux3D(I,J,k,bi,bj)*dLtangential*delta_z(k)*rUnit2mass 
 catn: pay attention to sign! addMass is minus FwFlux!! (following pkg/shelfice of eccov4r5)
@@ -792,10 +819,10 @@ catn degC/s.m/m = degC/s; g/kg/s.m/m=g/kg/s
      &            * 1./dLnormal
            ENDDO !the big k-loop
 
-catn: Note: currently we're not taking care of the mass added from FwFlux (background melt).
+catn: Note: currently we are not taking care of the mass added from FwFlux (background melt).
 catn: To fully take into account all fw added to the ocean, we will need to either add it
 catn: to addMass array, or create yet another 3D field specific to iceplume where we store
-catn: it there.  The latter, though not desirable as we're carrying more 3d fields around,
+catn: it there.  The latter, though not desirable as we are carrying more 3d fields around,
 catn: is very good for diagnostic purpose, as we can for sure compute the ratio of 
 catn: background melt vs plume-induced entrainment vs Qsg
 
@@ -807,7 +834,7 @@ catn: want to use separate processes to treat Tendencies at different places in 
            IF ( Q_sg.NE.0. _d 0 ) THEN
 C Find temperature and salinity of plume outflow
              DO k = 1,Nr        !second kloop
-catn: volFluxDiff entering here: when there's net convergence at this k
+catn: volFluxDiff entering here: when there is net convergence at this k
                IF ( volFluxDiff(k) .GT. 0. _d 0 ) THEN
                 temp_AddMass3Dplume(I,J,K,bi,bj) = ! convert to potential temp
      &           SW_PTMP(sProfPlume(k),tProfPlume(k),prProf(k),0. _d 0)
@@ -835,8 +862,8 @@ catn: tendency because we already take care of it in here with tend[T,S]
 C Convert m3/s into kg/s
 catn: volFluxDiff is now converted to addMass, so already taken care of massflux into ocean at depth
 catn: Need to avoid hardcoded 1000 (missing decimal), will use rhoConstFresh
-catn: Note: in integr_continuity, we convert addMass to volume using rhoConst=1029, so we'll need to 
-catn: use that here to avoid a difference in "mass" effect between what's computed in here and outside
+catn: Note: in integr_continuity, we convert addMass to volume using rhoConst=1029, so we will need to
+catn: use that here to avoid a difference in "mass" effect between what is computed in here and outside
 catn             addMass(I,j,k,bi,bj) = volFLuxDiff(k)*1000 
 catn              addMass(I,j,k,bi,bj) = volFLuxDiff(k)*rhoConstFresh 
 catn: rUnit2mass = rhoConst, this is how mitgcm converts between volume and mass
