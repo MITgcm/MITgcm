@@ -247,15 +247,30 @@ CEOP
 
 C--   Forcing term
       ka = 1. _d 0/(40. _d 0*86400. _d 0)
+#ifdef TOP_HEAVY_HEATING
+      ks = 1. _d 0/(20. _d 0 *86400. _d 0)
+#else
       ks = 1. _d 0/(4. _d 0 *86400. _d 0)
+#endif
+C--   Hing Ong, 23 Aug 2020
+#ifdef TOP_HEAVY_HEATING
+C--   Tropopause
+      sigma_b = 0.1 _d 0
+#else
+C--   Top of planetary boundary layer
       sigma_b = 0.7 _d 0
+#endif
+C--   Hing Ong, 23 Aug 2020
       rFullDepth = rF(1)-rF(Nr+1)
       DO j=0,sNy+1
        DO i=0,sNx+1
          term1 = 60. _d 0*(SIN(yC(i,j,bi,bj)*deg2rad)**2)
          termP = 0.5 _d 0*( rF(k) + rF(k+1) )
-         term2 = 10. _d 0*LOG(termP/atm_po)
+C--   Bug fix
+c         term2 = 10. _d 0*LOG(termP/atm_po)
+         term2 = 10. _d 0*LOG10(termP/atm_po)
      &            *(COS(yC(i,j,bi,bj)*deg2rad)**2)
+C--   Hing Ong, 23 Aug 2020
          thetaLim = 200. _d 0/ ((termP/atm_po)**atm_kappa)
          thetaEq = 315. _d 0 - term1 - term2
          thetaEq = MAX(thetaLim,thetaEq)
@@ -281,8 +296,13 @@ C-  which simplifies to:
      &          + bHybSigmC(k)
          ENDIF
          kT = ka+(ks-ka)
+#ifdef TOP_HEAVY_HEATING
+     &      *MAX(zeroRL,SIN(PI*(termP-sigma_b)/(1. _d 0-sigma_b))/termP)
+#else
      &      *MAX( zeroRL, (termP-sigma_b)/(1. _d 0-sigma_b) )
+#endif
      &      *COS((yC(i,j,bi,bj)*deg2rad))**4
+C--   Hing Ong, 23 Aug 2020
          gT_arr(i,j) = gT_arr(i,j)
      &               - kT*( theta(i,j,k,bi,bj)-thetaEq )
      &                *maskC(i,j,k,bi,bj)
