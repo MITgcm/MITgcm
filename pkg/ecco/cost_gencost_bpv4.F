@@ -72,6 +72,7 @@ c     == local variables ==
 
       integer k, kgen, k2, k2_bp
       logical dosumsq
+      logical exst
 
 c     == external functions ==
 
@@ -317,18 +318,38 @@ catn and can cause NaN for other grid horizontal resolution.  In addition, all
 catn other ecco costs that uses smooth, e.g., sshv4, sstv4, generic, calls
 catn smooth_hetero2d instead of smooth_basic2D. So here we try to use the
 catn same syntax as well as make the call more general using runtime params.
-        if ( useSMOOTH )
-     &   call smooth_hetero2d(bpdifanom,maskc,
-     &     gencost_posproc_c(k2_bp,kgen),
-     &     gencost_posproc_i(k2_bp,kgen),mythid)
+catn If the runtime scaling file gencost_posproc_c is missing, we revert
+catn to default call smooth_basic2D used in eccov4.
+        IF ( useSMOOTH ) THEN
+         il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
+         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
+         IF ( il .gt. 1 .and. exst ) THEN
+           call smooth_hetero2d(bpdifanom,maskc,
+     &      gencost_posproc_c(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+         ELSE
+          call smooth_basic2D(bpdifanom,maskInC,
+     &      gencost_posproc_r(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+         ENDIF
+        ENDIF
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
-         if ( useSMOOTH )
-     &   call smooth_hetero2d(bpdatanom,maskc,
-     &     gencost_posproc_c(k2_bp,kgen),
-     &     gencost_posproc_i(k2_bp,kgen),mythid)
+         IF ( useSMOOTH ) THEN
+          il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
+          inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
+          IF ( il .gt. 1 .and. exst ) THEN
+           call smooth_hetero2d(bpdatanom,maskc,
+     &      gencost_posproc_c(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+          ELSE
+           call smooth_basic2D(bpdatanom,maskInC,
+     &      gencost_posproc_r(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+          ENDIF
+         ENDIF
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
