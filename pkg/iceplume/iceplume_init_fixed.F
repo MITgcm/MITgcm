@@ -46,6 +46,7 @@ C     I,J,K,bi,bj - Loop counters
         DO I = 1-Olx,sNx+Olx
          DO J = 1-Oly,sNy+Oly
           plumeMask  (I,J,bi,bj)  = 0. _d 0
+          plumeLength  (I,J,bi,bj)  = 0. _d 0
 
 #ifdef ALLOW_PTRACERS
 
@@ -64,6 +65,11 @@ C      Read plume mask data
        IF ( plumeMaskFile .NE. ' ' ) THEN
         CALL READ_REC_XY_RS
      &     (plumeMaskFile,plumeMask,iRec0,myIter,myThid)
+       ENDIF
+ckiki read in plume length(s)
+       IF ( plumeLengthFile .NE. ' ' ) THEN
+        CALL READ_REC_XY_RS
+     &     (plumeLengthFile,plumeLength,iRec0,myIter,myThid)
        ENDIF
 
 C Load runoff

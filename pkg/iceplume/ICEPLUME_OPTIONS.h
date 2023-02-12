@@ -18,5 +18,8 @@ C     Package-specific Options & Macros go here
 C     ALLOW FOR DETACHED PLUME - requires different array sizes
 #undef ICEPLUME_ALLOW_DETACHED_PLUME
 
+C     ALLOW for Schulz GRL 2022 parameterization
+#undef ICEPLUME_ALLOW_SCHULZ22
+
 #endif /* ALLOW_ICEPLUME */
 #endif /* ICEPLUME_OPTIONS_H */

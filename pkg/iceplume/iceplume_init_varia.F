@@ -52,6 +52,7 @@ catn namelists or initialized in iceplume_readparms.F
       dLnormal     = 0. _d 0
       Q_sg = 0. _d 0
       r_sg = 0. _d 0
+      L_sg = 0. _d 0
       w_sg = 0. _d 0
 
       DO bj = myByLo(myThid), myByHi(myThid)

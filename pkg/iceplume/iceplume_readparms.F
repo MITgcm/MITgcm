@@ -49,7 +49,7 @@ CEOP
 
 C    PARMO1 - ICEPLUME inputs
       NAMELIST /ICEPLUME_PARM01/
-     &     runoffQsgfile, plumeMaskFile,
+     &     runoffQsgfile, plumeMaskFile, plumeLengthFile,
      &     T_sg_0, S_sg_0, E_0, Angle_sg_0, wVel_sg_0,
      &     RTOL, ATOL,
      &     IceTemp,
@@ -64,6 +64,16 @@ C    PARMO1 - ICEPLUME inputs
      &     Cd,
      &     useSheetPlume,
      &     useConePlume,
+     &     useTruncPlume,
+     &     useBuoyPlume,
+     &     slopeTmod,
+     &     interceptTmod,
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+     &     facGamSGamT,
+     &     GamTconst,
+     &     GamSconst,
+     &     Lp,
+#endif
      &     maxDepth,
      &     backgroundVelThresh
 catn runoffVelfile, runoffRadfile, 
@@ -183,10 +193,12 @@ C-    internal parameters (not in namelist):
 #endif /* ALLOW_EXF */
 c-
       plumeMaskFile = ' '
+      plumeLengthFile = ' '
       usePlumeDiagnostics = .FALSE.
       conserveMass    = .FALSE.
       useSheetPlume   = .FALSE.
       useConePlume    = .FALSE.
+      useTruncPlume   = .FALSE.
 catn  Will use rhoConst instead of setting yet another rho_ref
 catn  In addition, inside iceplume_calc.F there is another rho_0=1027.
 catn  which will also now be set to rhoConst.
@@ -206,6 +218,17 @@ catn      L      = 334000D0
       backgroundVelThresh = 0.001
       maxDepth = UNSET_RL
       Cd     = 0.0025
+      slopeTmod = 1.0
+      interceptTmod = 0.0 
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+catn set some values if using Schulz et al. GRL 2022:
+c      useBuoyPlume    = .FALSE.
+      facGamSGamT = 0.07
+      GamTconst = 0.001
+      GamSconst = facGamSGamT*GamTconst
+      backgroundVelThresh = 0.05
+      Lp = 220. _d 0
+#endif
 
 C Default values for PARMO2
        ICEPLUMElatentHeat       =  334.0 _d 3

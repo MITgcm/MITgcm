@@ -27,6 +27,8 @@ C Header file pkg/ICEPLUME
      &      useSheetPlume,
      &      useConePlume,
      &      useDetachPlume,
+     &      useTruncPlume,
+     &      useBuoyPlume,
      &      conserveMass,
      &      useInputPtracers
       LOGICAL usePlumeDiagnostics
@@ -34,12 +36,14 @@ C Header file pkg/ICEPLUME
       LOGICAL useSheetPlume
       LOGICAL useConePlume
       LOGICAL useDetachPlume
+      LOGICAL useTruncPlume
+      LOGICAL useBuoyPlume
       LOGICAL conserveMass
       LOGICAL useInputPtracers
 
       COMMON /ICEPLUME_FIELDS/
      &     runoffQsg,runoffQsg0,runoffQsg1,
-     &     plumeMask,
+     &     plumeMask, plumeLength,
      &     temp_addMass3Dplume, salt_addMass3Dplume,
      &     addMass3Dplume,
      &     Qin
@@ -55,6 +59,7 @@ catn      _RL runoffRad  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 catn      _RL runoffRad0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL plumeMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL plumeLength(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL temp_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL salt_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -62,13 +67,15 @@ catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       COMMON /ICEPLUME_FILES/
      &      runoffQsgfile,
-     &      plumeMaskFile
+     &      plumeMaskFile,
+     &      plumeLengthFile
 #ifdef ALLOW_EXF
      &     ,runoffQsgmask
 #endif /* ALLOW_EXF */
       CHARACTER*(MAX_LEN_FNAM)
      &      runoffQsgfile,
-     &      plumeMaskFile
+     &      plumeMaskFile,
+     &      plumeLengthFile
 #ifdef ALLOW_EXF
       CHARACTER*1 runoffQsgmask
 c runoffQsgmask will be 'c'
@@ -164,7 +171,7 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
 
       COMMON /ICEPLUME_PARM_R/
      &     E_0,
-     &     Q_sg, T_sg_0, S_sg_0, r_sg, w_sg,
+     &     Q_sg, T_sg_0, S_sg_0, r_sg, w_sg, L_sg,
      &     Angle_sg_0, wVel_sg_0,
      &     dLnormal, dLtangential,
      &     RTOL, ATOL,
@@ -177,7 +184,11 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
      &     iceDepth,
      &     backgroundVelThresh,
      &     ptracerfluxSum,
-     &     maxDepth
+     &     maxDepth,
+     &     slopeTmod, interceptTmod
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+     &    , GamTconst, GamSconst, facGamSGamT, Lp
+#endif
       _RS E_0
       _RL Angle_sg_0
       _RL wVel_sg_0
@@ -186,6 +197,7 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
       _RL Q_sg
       _RL w_sg
       _RL r_sg
+      _RL L_sg
       _RL dLnormal
       _RL dLtangential
       _RL RTOL
@@ -205,6 +217,14 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
       _RL cd
       _RL iceDepth
       _RL backgroundVelThresh
+      _RL slopeTmod
+      _RL interceptTmod
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+      _RL facGamSGamT
+      _RL GamTconst
+      _RL GamSconst
+      _RL Lp
+#endif
       _RL ptracerFluxSum
       _RL maxDepth
 

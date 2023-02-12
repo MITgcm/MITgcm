@@ -25,6 +25,11 @@ C     | Outward (pos) = leaving the ocean, inward (neg) = entering ocean.
 C     | Freshwater (kg/m2/s): inward (negative) freshwater flux implies 
 C     | glacier melting due to outward (positive) heat flux (W/m^2)
 
+C     | kiki 27. October 2021: started to implement new plume option 6&7
+C     | frictionless plume following Wells and Worster, 2008 to simulate
+C     | purely melt water driven plumes (see Jackson et al., 2020, GRL)
+C     | and truncated line plume by Jackson et al., 2017
+
 C     \ev
 C     !USES:
       IMPLICIT NONE
@@ -41,6 +46,11 @@ C     === Global variables ===
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_START.h"
 #include "PTRACERS_FIELDS.h"
+#endif
+
+cMW diagnostic package:
+#ifdef ALLOW_DIAGNOSTICS_VEC
+include "ICEPLUME_DV_FIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -81,6 +91,10 @@ C                                :: 0 for EastWest, default is -9999
 
       INTEGER bi, bj
       INTEGER J, K, I
+#ifdef ALLOW_DIAGNOSTICS_VEC
+      INTEGER i_dv, j_dv, bi_dv, bj_dv
+      INTEGER fld3D, loc_count, nFlds3D, numvalid, vec_id, vec_tag
+#endif
       INTEGER GlacierFront_is_NorthSouth
 
       _RL eps5
@@ -94,6 +108,7 @@ catn      _RL rho_0
 catn      _RL rho_shelfice
       _RL secInday
       _RL tmpT, tmpS
+      _RL tModMWplume
       external SW_TEMP
       external SW_PTMP
 
@@ -233,6 +248,8 @@ C 2 = sheet plume (Jenkins)
 C 3 = half-conical plume (Morton/Slater)
 C 4 = both sheet plume and half-conical plume (NOT YET IMPLEMENTED)
 C 5 = detaching conical plume (Goldberg)
+C 6 = truncated line plume (Jacksom et al., 2017, GRL) (Kiki)
+C 7 = buoyancy driven sublayer, Wells and Worster 2008 (Kiki)
 
 C POSITIVE values indicate ice front is orientated north-south
 C NEGATIVE values indicate ice front is orientated east-west
@@ -269,27 +286,37 @@ catn: the glacier and dyG along the fjord toward open ocean:
             useSheetPlume = .FALSE.
             useConePlume = .FALSE.
             useDetachPlume = .FALSE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .FALSE.
           ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -2
      &         .OR. plumeMask(I,J,bi,bj) .EQ. 2) THEN
             useSheetPlume = .TRUE.
             useConePlume = .FALSE.
             useDetachPlume = .FALSE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .FALSE.
           ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -3
      &         .OR. plumeMask(I,J,bi,bj) .EQ. 3) THEN
             useSheetPlume = .FALSE.
             useConePlume = .TRUE.
             useDetachPlume = .FALSE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .FALSE.
           ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -4
      &         .OR. plumeMask(I,J,bi,bj) .EQ. 4) THEN
             useSheetPlume = .TRUE.
             useConePlume = .TRUE.
             useDetachPlume = .FALSE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .FALSE.
           ELSEIF ( plumeMask(I,J,bi,bj) .EQ. -5
      &         .OR. plumeMask(I,J,bi,bj) .EQ. 5) THEN
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME          
             useSheetPlume = .FALSE.
             useConePlume = .FALSE.
             useDetachPlume = .TRUE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .FALSE.
 #else /* ICEPLUME_ALLOW_DETACHED_PLUME */
             WRITE(msgBuf,'(2A)')
      &      'cannot use detaching plume without ',
@@ -297,11 +324,24 @@ catn: the glacier and dyG along the fjord toward open ocean:
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
 #endif
-
+          ELSEIF ( plumemask(I,J,bi,bj) .EQ. -6
+     &         .OR. plumemask(I,J,bi,bj) .EQ. 6) THEN
+            useSheetPlume = .FALSE.
+            useConePlume = .FALSE.
+            useDetachPlume = .FALSE.
+            useTruncPlume = .TRUE.
+            useBuoyPlume = .FALSE.
+          ELSEIF ( plumemask(I,J,bi,bj) .EQ. -7
+     &         .OR. plumemask(I,J,bi,bj) .EQ. 7) THEN
+            useSheetPlume = .FALSE.
+            useConePlume = .FALSE.
+            useDetachPlume = .FALSE.
+            useTruncPlume = .FALSE.
+            useBuoyPlume = .TRUE.
           ELSE
 
             WRITE(msgBuf,'(2A)')
-     &      'Plume mask value must be between -5 and 5'
+     &      'Plume mask value must be between -7 and 7'
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R ICEPLUME_CALC'
 
@@ -315,6 +355,10 @@ catn  immediately here, we remove these two local arrays altogether
            IF ( useSheetPlume ) THEN
             r_sg=runoffQsg(I,J,bi,bj)/
      &                     (dLtangential*w_sg)
+           ELSEIF ( useTruncPlume ) THEN
+            r_sg=runoffQsg(I,J,bi,bj)/
+     &                     (plumeLength(I,J,bi,bj)*w_sg)
+            L_sg=plumeLength(i,j,bi,bj)   
            ELSEIF (useConePlume .OR. useDetachPlume) THEN
             r_sg=(twoRL*runoffQsg(I,J,bi,bj)/
      &                     (w_sg*pi))**halfRL
@@ -344,6 +388,13 @@ catn           ELSEIF ( useConePlume ) THEN
 catn           Q_sg = w_sg*((pi*r_sg**2.)/2.)
 catn           ELSEIF ( useDetachPlume ) THEN
 catn           Q_sg = w_sg*((pi*r_sg**2.)/2.)
+catn           ELSEIF ( useTruncPlume ) THEN
+catnckiki: needs to be implemented using Lp, for now only placeholder
+catn           Q_sg = w_sg*r_sg
+catn#ifdef ICEPLUME_ALLOW_SCHULZ22
+catn           ELSEIF ( useBuoyPlume ) THEN
+catn           Q_sg = 1.0 _d -10
+catn#endif /* ICEPLUME_ALLOW_SCHULZ22 */
 catn           ELSE
 catn           Q_sg = 0. _d 0
 catn           ENDIF
@@ -352,8 +403,13 @@ c     &               w_sg .GT. 0. _d 0) THEN
 c            Q_sg=runoffQsg(I,J,bi,bj)
 c            IF ( useSheetPlume ) THEN
 c             r_sg=Q_sg/(dLtangential*w_sg)
+c            ELSEIF ( useTruncPlume ) THEN
+c             r_sg=Q_sg/(plumeLength(I,J,bi,bj)*w_sg)
+c            L_sg=plumeLength(i,j,bi,bj)   
 c            ELSEIF (useConePlume .OR. useDetachPlume) THEN
 c             r_sg=(twoRL*Q_sg/(w_sg*pi))**halfRL
+c            ELSEIF ( useBuoyPlume ) THEN
+c             r_sg = Q_sg/(dLtangential*w_sg)
 c            ENDIF
 c          ELSE
 c            Q_sg = 0. _d 0
@@ -452,6 +508,13 @@ C ... or assuming half-conical form
 C ... assuming detached-conical form
               ELSEIF ( useDetachPlume ) THEN
                volFlux(k)=rProfPlume(k)*wProfPlume(k)
+C ... assuming truncated line plume 
+              ELSEIF ( useTruncPlume ) THEN
+               volFlux(k) =wProfPlume(k)*rProfPlume(k)
+     &                         *plumeLength(I,J,bi,bj)
+C ... assuming buoyancy driven sublayer plume (as sheet plume)                                
+              ELSEIF ( useBuoyPlume ) THEN
+               volFlux(k) = wProfPlume(k)*rProfPlume(k)*dLtangential
               ENDIF
              ELSE
               volFlux(k) = 0. _d 0
@@ -612,8 +675,9 @@ C plume outflow. It is useful though to have it available as a diagnostic.
 
 catn: note that mProfPlume below is not impacted by scaling of volFluxDiff
              IF ( ( Q_sg .NE. 0 ) .AND. 
-     &        (useConePlume .OR. useSheetPlume.OR.useDetachPlume) )
-     &                                                             THEN
+     &        (useConePlume .OR. useSheetPlume.OR.useDetachPlume
+     &         .OR. useBuoyPlume
+     &        .OR. useTruncPlume) ) THEN
 catn: aProfPlume(k): integrated contact area, calc in iceplume_plume_model [m2]
               plumeAreaInCell = aProfPlume(k) - aProfPlume(k+1)
 catn: if the area above is bigger than below, implying plume area expands
@@ -681,8 +745,16 @@ catn 30.Nov.2022: to make this function more general, let us compute
 catn meltrate output in m/s , and convert to m/day outside as needed
              tmpT = 0. _d 0
              tmpS = 0. _d 0
+ckiki: Assuming that submarine melting forms little meltwater
+ckiki: plumes that we do not resolve for computational reasons
+ckiki: we can mimic the water mass transformation within these
+ckiki: plumes and not give the ambient fjord temperature to the
+ckiki: ice front ie the 3 equation model, but a reduced temperature 
+ckiki: of Tprime =0.9Tfjord -0.2, could do same for salinity but
+ckiki: that is not sensitive
+             tModMWplume = slopeTmod*tProf(k)+interceptTmod
              CALL ICEPLUME_MELTRATE(
-     I            tProf(k),sProf(k),meanVel,rC(k),
+     I            tModMWplume,sProf(k),meanVel,rC(k),
      O            mProf(k), tmpT, tmpS )
              mProf(k)=mProf(k)*secInday
 
@@ -692,6 +764,7 @@ C assessing overall melt rate of glacier. Unit: [m/time]
 C the following should apply to both conical and sheet plume models
              IF ( ( Q_sg .NE. 0 ) ) THEN
               plumeAreaInCell = aProfPlume(k) - aProfPlume(k+1)
+C              write(*,*) 'plumeAreaInCell',plumeAreaInCell,'k=',k
 catn: This is problematic here that delta_y is entering as if
 catn: this geometry is strictly applied for only ice front aligning
 catn: along u-direction such that the cross-sectional dlength is delta_y
@@ -910,6 +983,24 @@ c          DO I = 1,sNx
         ENDDO
 #endif
 C-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+cMW special diagnostics pkg
+#ifdef ALLOW_DIAGNOSTICS_VEC
+
+      DO k=1,Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          icefrntA_dv(i,j,k,bi,bj)= mProfAv3D(i,j,k)
+          icefrntM_dv(i,j,k,bi,bj)= mProfPlume3D(i,j,k)
+          icefrntR_dv(i,j,k,bi,bj)= rProfPlume3D(i,j,k)
+          icefrntS_dv(i,j,k,bi,bj)= sProfPlume3D(i,j,k)
+          icefrntT_dv(i,j,k,bi,bj)= tProfPlume3D(i,j,k)
+          icefrntW_dv(i,j,k,bi,bj)= wProfPlume3D(i,j,k)
+        ENDDO
+       ENDDO
+      ENDDO
+
+#endif /* DIAGNOSTICS_VEC */
 
 C Save plume values
 #ifdef ALLOW_DIAGNOSTICS

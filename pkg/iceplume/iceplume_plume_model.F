@@ -31,7 +31,7 @@ C     ==Local variables==
 C     Plume models
 catn: change the name JENKINS to SHEETPLUME
       EXTERNAL SHEETPLUME, HALFCONE, DETACHED_CONE, JEX !JENKINS
-
+     & , WANDW 
 C     For ODEPACK
       INTEGER  IOPT, IOUT, ISTATE, ITASK, ITOL, IWORK(20), LIW, LRW,
      &         MF, NEQ
@@ -123,6 +123,9 @@ catn ============
 #else
       Y(1) = r_sg          ! intial plume thickness
       Y(7) = dLtangential
+      IF (useTruncPlume) THEN
+       Y(7) = L_sg
+      ENDIF
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
 
@@ -192,9 +195,12 @@ C Decide which plume model to use
         Y(9) = dLtangential
 #else
         Y(7) = dLtangential
+        IF (useTruncPlume) THEN
+         Y(7) = L_sg 
+        ENDIF
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
-        IF ( useSheetPlume ) THEN
+        IF ( useSheetPlume .OR. useTruncPlume ) THEN
 
 c         CALL DLSODE (JENKINS,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
          CALL DLSODE (SHEETPLUME,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
@@ -204,7 +210,10 @@ c         CALL DLSODE (JENKINS,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
 
          CALL DLSODE (HALFCONE,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
      &               ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
+        ELSEIF ( useBuoyPlume ) THEN
 
+         CALL DLSODE (WANDW,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
+     &               ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
 
         ELSEIF ( useDetachPlume ) THEN
@@ -333,6 +342,7 @@ c    Y(T,S,vertical vel, radii) as a function of depth. Y will be
 c    resaved in iceplume_plume_model into vertical profile properties
 c    [t,s,w,r,a,mInt]ProfPlume.
 
+ckiki here I added my meltrate parameterization
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -386,8 +396,11 @@ catn minimum background velocity if we use default Jenkin et al:
       ELSE
        absVelocity = ABS(Y(2))
       ENDIF
-
+#ifndef ICEPLUME_ALLOW_SCHULZ22
       factor_Cd = (Cd**HalfRL)*absVelocity
+#else
+      factor_Cd = (Cd**HalfRL)*(absVelocity-backgroundVelThresh)
+#endif
 
       call iceplume_meltrate(
      I        Y(3),Y(4),Y(2),DD,
@@ -411,12 +424,22 @@ cc as well as the common factor (Tb-Y(3))/Y(1).  Also, note I flipped
 cc the original -(Y(3)-Tb) to +(Tb-Y(3)) prior to pulling out
       YDOT(3)=E_0*(Tambient-Y(3))/Y(1)
      &  +mdot*(Tb-Y(3))/(Y(1)*absVelocity)
+#ifndef ICEPLUME_ALLOW_SCHULZ22
      &  -GamT*(Cd**HalfRL)*(Y(3)-Tb)/Y(1)
+#else
+     & -(GamT*(Cd**HalfRL)*(absVelocity-backgroundVelThresh)+GamTconst)
+     & *(Y(3)-Tb)/(Y(1)*absVelocity)
+#endif
 
 C Plume salinity
       YDOT(4)=E_0*(Sambient-Y(4))/Y(1)
      &  +mdot*(Sb-Y(4))/(Y(1)*absVelocity)
+#ifndef ICEPLUME_ALLOW_SCHULZ22
      &  -GamS*(Cd**HalfRL)*(Y(4)-Sb)/Y(1)
+#else
+     & -(GamS*(Cd**HalfRL)*(absVelocity-backgroundVelThresh)+GamSconst)
+     &  *(Y(4)-Sb)/(Y(1)*absVelocity)
+#endif
 
 C along-plume integrated melt rate and contact area  - 
       YDOT(5) = Y(7)
@@ -437,7 +460,7 @@ C - ------------------------------------------------------------------
      I                 NEQ,
      U                 DD, Y,
      O                 YDOT)
-
+ckiki: here I added my new melt rate paramterization
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -447,7 +470,7 @@ C - ------------------------------------------------------------------
 
       INTEGER  NEQ
       DOUBLE PRECISION DD, Y(7), YDOT(6)
-      _RL Tambient, Sambient, rho_ambient, rho_plume, DDin
+      _RL Tambient, Sambient, rho_ambient, rho_plume, DDin !, ut
       DOUBLE PRECISION mdot, Sb, Tb
       DOUBLE PRECISION a,b,c
       DOUBLE PRECISION RHO
@@ -491,8 +514,11 @@ catn minimum background velocity if we use default Jenkin et al:
       ELSE
        absVelocity = ABS(Y(2))
       ENDIF
-
+#ifndef ICEPLUME_ALLOW_SCHULZ22
       factor_Cd = (Cd**HalfRL)*absVelocity
+#else
+      factor_Cd = (Cd**HalfRL)*(absVelocity-backgroundVelThresh)
+#endif
 
 C     Equations for Sb, Tb and mdot
 
@@ -522,14 +548,24 @@ cc flipped the original -4.*(Y(3)-Tb) to +4.*(Tb-Y(3)) prior to pulling
       YDOT(3) = twoRL*E_0*(Tambient-Y(3))/Y(1)
      &         +4.*mdot*
      &           (Tb-Y(3))/(pi*Y(1)*absVelocity)-4.*
+#ifndef ICEPLUME_ALLOW_SCHULZ22
      &           GamT*(Cd**HalfRL)*(Y(3)-Tb)/(pi*Y(1))
+#else
+     &          +GamTconst
+     &      *(Y(3)-Tb)/(pi*Y(1)*absVelocity)
+#endif
 
 cc same as above, factor_Cd/absVelocity = (Cd**HalfRL)
 cc same flipping of sign and pulling common factors to the end
       YDOT(4) = twoRL*E_0*(Sambient-Y(4))/Y(1)
      &         +4.*mdot*(Sb-Y(4))/
      &          (pi*Y(1)*absVelocity)-4.*
+#ifndef ICEPLUME_ALLOW_SCHULZ22
      &           GamS*(Cd**HalfRL)*(Y(4)-Sb)/(pi*Y(1))
+#else
+     &              + GamSconst
+     &      *(Y(4)-Sb)/(pi*Y(1)*absVelocity)
+#endif
 
 C along-plume integrated melt rate and contact area
       YDOT(5) = twoRL*Y(1)
@@ -602,7 +638,11 @@ catn minimum background velocity if we use default Jenkin et al:
       ELSE
        absVelocity = ABS(Y(2))
       ENDIF
+#ifndef ICEPLUME_ALLOW_SCHULZ22
       factor_Cd = (Cd**HalfRL)*absVelocity
+#else
+      factor_Cd = (Cd**HalfRL)*(absVelocity-backgroundVelThresh)
+#endif
 
 C     Equations for Sb, Tb and mdot
 
@@ -660,6 +700,110 @@ catn: rewriting to avoid mult only to div by same number
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
 
 C----------------------------------------------------------------------
+
+      SUBROUTINE  WANDW (
+     I                 NEQ, 
+     U                 DD, Y,
+     O                 YDOT)
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "ICEPLUME.h"
+
+      INTEGER  NEQ
+      DOUBLE PRECISION DD, Y(7), YDOT(6)
+      _RL Tambient, Sambient, rho_ambient, rho_plume, DDin
+      DOUBLE PRECISION mdot, Sb, Tb
+      DOUBLE PRECISION a,b,c
+      DOUBLE PRECISION RHO
+      DOUBLE PRECISION absVelocity, factor_Cd
+
+#ifdef ALLOW_ICEPLUME
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+
+C     Y(1) = r
+C     Y(2) = w
+C     Y(3) = T
+C     Y(4) = S
+
+      
+C Interpolate from imposed ambient profiles
+
+      IF ( abs(DD) .LE. zProfAbs(1) ) THEN
+       Tambient = tProf(1)
+       Sambient = sProf(1)
+      ELSEIF ( abs(DD) .GE. zProfAbs(Nr) ) THEN
+       Tambient = tProf(Nr)
+       Sambient = sProf(Nr)
+      ELSE
+       CALL linint(Nr,zProfAbs,tProf,abs(DD),Tambient)
+       CALL linint(Nr,zProfAbs,sProf,abs(DD),Sambient)
+      ENDIF
+
+      DDin = DD
+c      write(*, * ) 'uses WandW equations'
+C Plume density
+      rho_plume   = RHO(Y(3),Y(4),DDin)         !formerly rho_1
+C Ambient density
+      rho_ambient = RHO(Tambient,Sambient,DDin) !formerly rho_0
+
+C Equations for Sb, Tb and mdot
+C
+cckiki: checked (note: cd term in Sb vanishes in SHEETPLUME (JENKINS)!)
+c      a = lambda1*(GamTconst*HeatCapacity_Cp-GamSconst*c_i)
+c
+c      b = GamSconst*c_i*(lambda1*Y(4)-lambda2-lambda3*DDin+
+c     &         iceTemp-(ICEPLUMElatentHeat/c_i))
+c     &        -GamTconst*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*DDin)
+c
+c      c = GamSconst*Y(4)*(c_i*(lambda2+lambda3*DDin-iceTemp)
+c     &        +ICEPLUMElatentHeat)
+c
+c      Sb   = (OneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL))
+c      Tb   = lambda1*Sb+lambda2+lambda3*DDin
+c      mdot = GamSconst*(Y(4)-Sb)/Sb
+
+catn replace chunk above with functional call, assuming same set as
+catn in sheetplume and halfcone
+      call iceplume_meltrate(
+     I        Y(3),Y(4),Y(2),DD,
+     O        mdot, Tb, Sb)
+
+C Differential equations
+C Plume thickness
+      YDOT(1)=twoRL*E_0-(g*Y(1)/(absVelocity**twoRL))
+     &  *(rho_ambient-rho_plume)
+     &  /rhoConst+twoRL*mdot/absVelocity
+
+C Plume vertical velocity
+      YDOT(2)=-(absVelocity/Y(1))*(E_0+mdot/absVelocity)
+     &  +(g/absVelocity)*(rho_ambient-rho_plume)/rhoConst
+
+C Plume temperature
+      YDOT(3)=E_0*(Tambient-Y(3))/Y(1)
+     &  +mdot*(Tb-Y(3))/(Y(1)*absVelocity)
+     &  -GamTconst*(Y(3)-Tb)/(Y(1)*absVelocity)
+C Plume salinity
+      YDOT(4)=E_0*(Sambient-Y(4))/Y(1)
+     &  +mdot*(Sb-Y(4))/(Y(1)*absVelocity)
+     &  -GamSconst*(Y(4)-Sb)/(Y(1)*absVelocity)
+
+C along-plume integrated melt rate and contact area  - 
+      YDOT(5) = Y(7)
+      YDOT(6) = Y(7) * mdot
+
+      DD = DDin
+
+#endif /* ICEPLUME_ALLOW_SCHULZ22 */
+#endif /* ALLOW_ICEPLUME */
+
+      RETURN
+      END
+
+C - ------------------------------------------------------------------
 C Dummy routine for ODEPACK. Necessary for Jacobian matrix if stiff ODEs.
 
       SUBROUTINE jex()

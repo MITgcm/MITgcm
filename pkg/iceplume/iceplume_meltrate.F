@@ -46,20 +46,46 @@ C Calculate melt rate from 3 equation formualtion (as for plume models)
 
 C     Equations for Sb, Tb and mdot
 
+catn: this setting of Gam[T,S]const were moved to iceplume_readparm.F
+cc        GamSconst = 0.07*GamTconst
+
+#ifndef ICEPLUME_ALLOW_SCHULZ22
       factor_Cd = (Cd**HalfRL)*absVelocity
+#else
+      factor_Cd = (Cd**HalfRL)*(absVelocity-backgroundVelThresh)
+#endif
 
-      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
+      a = lambda1*(GamT     *HeatCapacity_Cp-GamS     *c_i)
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+      a = a*factor_Cd
+     &  + lambda1*(GamTconst*HeatCapacity_Cp-GamSconst*c_i)
+#endif
 
-      b = GamS*c_i*(lambda1*salinity-lambda2-lambda3*depth+
-     &         iceTemp-(ICEPLUMElatentHeat/c_i))
-     &        -GamT*HeatCapacity_Cp*(temperature-lambda2-lambda3*depth)
+      b = GamS     *c_i*(lambda1*salinity-lambda2-lambda3*depth+
+     &                   iceTemp-(ICEPLUMElatentHeat/c_i))
+     &   -GamT     *HeatCapacity_Cp*(temperature-lambda2-lambda3*depth)
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+      b = b*factor_Cd
+     &   +GamSconst*c_i*(lambda1*salinity-lambda2-lambda3*depth+
+     &                   iceTemp-(ICEPLUMElatentHeat/c_i))
+     &   -GamTconst*HeatCapacity_Cp*(temperature-lambda2-lambda3*depth)
+#endif
 
-      c = GamS*salinity*(c_i*(lambda2+lambda3*depth-iceTemp)
+      c = GamS     *salinity*(c_i*(lambda2+lambda3*depth-iceTemp)
      &       +ICEPLUMElatentHeat)
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+      c = c*factor_Cd
+     &   +GamSconst*salinity*(c_i*(lambda2+lambda3*depth-iceTemp)
+     &       +ICEPLUMElatentHeat)
+#endif
 
-      Sb   = (oneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL)) !Sb
-      Tb   = lambda1*Sb+lambda2+lambda3*depth !Tb
-      mdot = GamS*(Cd**HalfRL)*absVelocity*(salinity-Sb)/Sb ! mdot
+      Sb   = (oneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL))
+      Tb   = lambda1*Sb+lambda2+lambda3*depth
+      mdot = GamS*(Cd**HalfRL)*absVelocity*(salinity-Sb)/Sb
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+      mdot = mdot 
+     &                 + GamSconst*(salinity-Sb)/Sb
+#endif
 
 catn: to make this function more general, we remove conversion to m/d
 cC Meltrate is in m d^-1
