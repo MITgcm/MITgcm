@@ -4,7 +4,7 @@
   selectFTconst=1,
   selectHFconst=1,
   selectK1K2const=6,
-# Munhoven "GENERAL" solver:
+# Munhoven "GENERAL" solver: =1 ; Munhoven "SEC" solver: =2 ; Munhoven "FAST" solver: =3
   selectPHsolver=1,
  &
 

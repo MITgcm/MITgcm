@@ -1267,6 +1267,17 @@ C
       ENDIF
 #endif
 
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
+      WRITE(msgBuf,'(A)')
+     & 'SEAICE_CHECK: cpp-flag ALLOW_SEAICE_COST_SMR_AREA '//
+     & 'is not allowed anymore.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     & 'SEAICE_CHECK: Use pkg/ecco''s generic cost function instead.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
+
       IF ( errCount .GE. 1 ) THEN
        WRITE(msgBuf,'(A,I3,A)') 'SEAICE_CHECK: ', errCount,
      &      ' parameter/CPP-flag combinations are '//

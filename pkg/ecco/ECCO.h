@@ -140,10 +140,9 @@ C                 the current model integration.
      &                    trVol, trHeat, trSalt,
      &                    VOLsumGlob_0, VOLsumGlob,
      &                    RHOsumGlob_0, RHOsumGlob,
-     &                    frame, cosphi, eccoVol_0
+     &                    frame, eccoVol_0
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
       _RL frame   (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
-      _RL cosphi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_bp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #ifdef ALLOW_PSBAR_STERIC

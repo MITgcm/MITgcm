@@ -1,11 +1,36 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68n (2023/02/08)
+o pkg/seaice:
+  - make all seaice-cost code independent of pkg/ecco and remove few
+    SEAICE_COST.h from pkg/ecco ;
+  - remove unused code related to ALLOW_SEAICE_COST_SMR_AREA (formerly used
+    with ECCO_CTRL_DEPRECATED, seaice_cost_driver.F and S/R called from there),
+    ALLOW_MEAN_SFLUX_COST_CONTRIBUTION + ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION,
+    and retire associated parameters.
+o pkg/dic:
+  - rename CPP: CAR_DISS -> DIC_CALCITE_SAT and AD_SAFE -> DIC_AD_SAFE and put
+    all carbonate-saturation code and 3D arrays inside #ifdef DIC_CALCITE_SAT
+    block and time-ave arrays within #ifdef ALLOW_TIMEAVE ;
+  - add run-time params: useCalciteSaturation, calcOmegaCalciteFreq, nIterCO3,
+    selectCalciteBottomRemin, KierRateK, KierRateExp and WsinkPIC ;
+  - switch order of arguments to "myTime, myIter, myThid" in few remaining
+    pkg/dic S/R + S/R calls in pkg/gchem ;
+  - update exp. so_box_biogeo (define CARBONCHEM_TOTALPHSCALE & DIC_CALCITE_SAT)
+    + add 2 new secondary tests (caSat0 & caSat3) with useCalciteSaturation=T
+    and using 3-D silicate input file.
+o TAF tape keys:
+  - rename many local taf keys to use shorter and more consistent names ;
+  - pkg/thsice: fix bug in key computations.
+o pkg/diagnostics (+doc):
+  - fix index-loop range in diagnostics_sum_levels.F and document "fileFlags"
+    and associated features (vertical interpolation & integral & hFac scaling).
 o pkg/gmredi:
-   - in gmredi_slope_limit.F, fix tape keys by using local tapes.
+  - in gmredi_slope_limit.F, fix tape keys by using local tapes.
 o pkg/ggl90:
-   - cleaning: remove maskS multiplication in ggl90_calc_visc.F (no equivalent
-     for KappaRU) and update "output_oadm.ggl90.txt" in OpenAD exp.
+  - cleaning: remove maskS multiplication in ggl90_calc_visc.F (no equivalent
+    for KappaRU) and update "output_oadm.ggl90.txt" in OpenAD exp.
 o pkg/ggl90:
   - Add code in pkg/ggl90 to parameterize Langmuir Circulation (LC) effects on
     vertical mixing (useLANGMUIR=T); follows: Tak et al, Ocean Modelling, 2023;

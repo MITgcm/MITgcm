@@ -43,7 +43,7 @@ C     !LOCAL VARIABLES:
       INTEGER i,j,k
       _RL  lig, FeL
       _RL  tmpfe
-#if ( defined MINFE && defined AD_SAFE )
+#if ( defined MINFE && defined DIC_AD_SAFE )
       _RL thx, thy, theps
 #endif
 
@@ -90,7 +90,7 @@ C   Ligand,FeL,Fe calculation
                 freefe(i,j,k) = 0. _d 0
               ENDIF
 #ifdef MINFE
-#ifdef AD_SAFE
+#ifdef DIC_AD_SAFE
               thx=freefe(i,j,k)
               thy=freefemax
               theps=1. _d -8

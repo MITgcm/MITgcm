@@ -6,7 +6,7 @@ C !ROUTINE: CAR_FLUX
 C !INTERFACE: ==========================================================
       SUBROUTINE CAR_FLUX( CAR_S, cflux,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C Calculate carbonate fluxes
@@ -21,15 +21,15 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  CAR_S                :: carbonate source
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  CAR_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ===================================================
 C  cflux                :: carbonate flux
@@ -46,7 +46,7 @@ c  depth_l                :: depth and lower interface
 c  flux_u, flux_l         :: flux through upper and lower interfaces
 c  reminFac               :: abbreviation
 c  zbase                  :: depth of bottom of current productive layer
-      INTEGER I,J,k, ko, kop1
+      INTEGER i,j,k, ko, kop1
       _RL zbase
       _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL reminFac
@@ -64,12 +64,12 @@ C- Calculate carbonate flux from base of each layer
 C--   If no layer below initial layer (because of bottom or
 C--   topography), then remineralize in here
           IF (k.EQ.Nr) THEN
-           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
+           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k)
           ELSEIF ( _hFacC(i,j,k+1,bi,bj).EQ.0. _d 0 ) THEN
-           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
+           cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k)
           ELSE
 C- flux out of layer k
-           caexport(i,j) = CAR_S(i,j,k)*drF(k) * _hFacC(i,j,k,bi,bj) 
+           caexport(i,j) = CAR_S(i,j,k)*drF(k) * _hFacC(i,j,k,bi,bj)
           ENDIF
          ENDIF
         ENDDO
@@ -91,7 +91,7 @@ C     in order to save a few expensive exp-function calls
 #ifndef NONLIN_FRSURF
 C     For the linear free surface, hFacC can be omitted, buying another
 C     performance increase of a factor of six on a vector computer.
-C     For now this is not implemented via run time flags, in order to 
+C     For now this is not implemented via run time flags, in order to
 C     avoid making this code too complicated.
         depth_l  = -rF(ko) + drF(ko)
         reminFac = exp(-(depth_l-zbase)/zca)
@@ -106,7 +106,7 @@ C--   Lower flux (no flux to ocean bottom)
 #endif /* NONLIN_FRSURF */
            flux_l   = caexport(i,j)*reminFac
      &          *maskC(i,j,kop1,bi,bj)
-C           
+C
            cflux(i,j,ko)=cflux(i,j,ko) + (flux_u(i,j)-flux_l)
      &          *recip_drF(ko) * _recip_hFacC(i,j,ko,bi,bj)
 C--   Store flux through upper layer for the next k-level
