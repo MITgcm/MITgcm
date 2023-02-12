@@ -61,13 +61,13 @@ catn      _RL runoffRad1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS Qin (100)
 
       COMMON /ICEPLUME_FILES/
-     &	    runoffQsgfile,
+     &      runoffQsgfile,
      &      plumeMaskFile
 #ifdef ALLOW_EXF
      &     ,runoffQsgmask
 #endif /* ALLOW_EXF */
       CHARACTER*(MAX_LEN_FNAM)
-     &	    runoffQsgfile,
+     &      runoffQsgfile,
      &      plumeMaskFile
 #ifdef ALLOW_EXF
       CHARACTER*1 runoffQsgmask
@@ -175,7 +175,7 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
      &     GamT, GamS, Cd,
      &     sOutPlume, tOutPlume,
      &     iceDepth,
-     &     backgroundVel,
+     &     backgroundVelThresh,
      &     ptracerfluxSum,
      &     maxDepth
       _RS E_0
@@ -204,7 +204,7 @@ C     wVel_sg_0    :: initial vertical vel at point source, default to 1. m/s, u
       _RL gamT
       _RL cd
       _RL iceDepth
-      _RL backgroundVel
+      _RL backgroundVelThresh
       _RL ptracerFluxSum
       _RL maxDepth
 

@@ -65,7 +65,7 @@ C    PARMO1 - ICEPLUME inputs
      &     useSheetPlume,
      &     useConePlume,
      &     maxDepth,
-     &     backgroundVel
+     &     backgroundVelThresh
 catn runoffVelfile, runoffRadfile, 
 
 C    PARMO2 - iceplume inputs required for thermodynamics
@@ -203,8 +203,9 @@ catn      L      = 334000D0
       lambda3= 0.000761D0
       GamT   = 0.022
       GamS   = 0.00062
+      backgroundVelThresh = 0.001
+      maxDepth = UNSET_RL
       Cd     = 0.0025
-      backgroundVel = 0.001
 
 C Default values for PARMO2
        ICEPLUMElatentHeat       =  334.0 _d 3

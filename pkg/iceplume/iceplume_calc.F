@@ -93,6 +93,7 @@ catn: Second, make rho_shelfice a readable param to avoid hardcoding.
 catn      _RL rho_0
 catn      _RL rho_shelfice
       _RL secInday
+      _RL tmpT, tmpS
       external SW_TEMP
       external SW_PTMP
 
@@ -676,9 +677,14 @@ catn: From Tom: what we want here is meanVel tangential to the ice front.
               meanVel = ((wVelCell**twoRL)
      &                  +(hVelCell_tangential**twoRL))**HalfRL
 
+catn 30.Nov.2022: to make this function more general, let us compute
+catn meltrate output in m/s , and convert to m/day outside as needed
+             tmpT = 0. _d 0
+             tmpS = 0. _d 0
              CALL ICEPLUME_MELTRATE(
      I            tProf(k),sProf(k),meanVel,rC(k),
-     O            mProf(k) )
+     O            mProf(k), tmpT, tmpS )
+             mProf(k)=mProf(k)*secInday
 
 C Get average melt rate. This is useful for visualling melt patterns and 
 C assessing overall melt rate of glacier. Unit: [m/time]

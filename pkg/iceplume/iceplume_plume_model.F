@@ -22,7 +22,6 @@ C     == Global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "ICEPLUME.h"
-#include "ICEPLUME_OPTIONS.h"
 
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -30,12 +29,15 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     ==Local variables==
 
 C     Plume models
-      EXTERNAL JENKINS, HALFCONE, DETACHED_CONE, JEX
+catn: change the name JENKINS to SHEETPLUME
+      EXTERNAL SHEETPLUME, HALFCONE, DETACHED_CONE, JEX !JENKINS
 
 C     For ODEPACK
       INTEGER  IOPT, IOUT, ISTATE, ITASK, ITOL, IWORK(20), LIW, LRW,
      &         MF, NEQ
-      _RL T, TOUT
+catn In original code Depth takes variable T, which is very confusing
+catn since we also have T as temperature sometimes. Now change to DD.
+      _RL DD, DDOUT
 
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
       _RL  RWORK(148), Y(9)
@@ -62,6 +64,9 @@ C     Other local variables
       DOUBLE PRECISION rho_plume, rho_ambient
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('ICEPLUME_PLUME_MODEL',myThid)
+#endif
 #ifdef ALLOW_ICEPLUME
 
 C For ODEPACK solver. See ODEPACK documentation for definitions.
@@ -139,10 +144,10 @@ C Prepare profiles
       ENDDO
 
 C Start at bottom of ice face
-       T = iceDepth
+       DD = iceDepth
 
 C Next point at which to retrieve values
-       TOUT = zProf(iceDepthK-1)
+       DDOUT = zProf(iceDepthK-1)
 
 C Clear cells below depth of ice face
 catn The loop below needs to loop ONLY to Nr+1 and not
@@ -191,19 +196,20 @@ C Decide which plume model to use
 
         IF ( useSheetPlume ) THEN
 
-         CALL DLSODE (JENKINS,NEQ,Y,T,TOUT,ITOL,RTOL,ATOL,ITASK,
+c         CALL DLSODE (JENKINS,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
+         CALL DLSODE (SHEETPLUME,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
      &               ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
 
         ELSEIF ( useConePlume ) THEN
 
-         CALL DLSODE (HALFCONE,NEQ,Y,T,TOUT,ITOL,RTOL,ATOL,ITASK,
+         CALL DLSODE (HALFCONE,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
      &               ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
 
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
 
         ELSEIF ( useDetachPlume ) THEN
 
-         CALL DLSODE (DETACHED_CONE,NEQ,Y,T,TOUT,ITOL,RTOL,ATOL,
+         CALL DLSODE (DETACHED_CONE,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,
      &        ITASK, ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
 
 #endif /* ICEPLUME_ALLOW_DETACHED_PLUME */
@@ -211,17 +217,19 @@ C Decide which plume model to use
         ENDIF
 
 C Test to see if neutral buoyancy has now been reached.
-C If solver returns ISTATE = -1, then it has been unable to meet required tolerances
-C at this level. This generally occurs because plume has reached neutral buoyancy and
-C run out of momentum, and so is no longer rising. At this point, we therefore end
-C the call to the plume model.
-C Our aim is to catch the plume at the point of neutral buoyancy. We therefore perform
-C a manual comparrison of ambient and plume density. If plume density >= ambient density
-C we assign ISTATE = -1, again ending the call to the plume model.
+C If solver returns ISTATE = -1, then it has been unable to meet required
+C tolerances at this level. This generally occurs because plume has reached
+C neutral buoyancy and run out of momentum, and so is no longer rising. At
+C this point, we therefore end the call to the plume model.
+
+C Our aim is to catch the plume at the point of neutral buoyancy. We
+C therefore perform a manual comparison of ambient and plume density.
+C If plume density >= ambient density we assign ISTATE = -1, again
+C ending the call to the plume model.
 
         temperature = Y(3)
         salinity = Y(4)
-        depth = T
+        depth = DD
 
 C Calculate plume density
         rho_plume = RHO(temperature,salinity,depth)
@@ -258,11 +266,11 @@ C Make sure we're not at the surface
 
 C Define present depth
 
-          T=TOUT
+          DD=DDOUT
 
 C Define next depth
 
-          TOUT = zProf(IOUT-1)
+          DDOUT = zProf(IOUT-1)
 
          ENDIF
         ENDIF
@@ -308,9 +316,23 @@ C Save results
 
 C---------------------------------------------------
 
-      SUBROUTINE  JENKINS (NEQ, T, Y, YDOT)
+c      SUBROUTINE  JENKINS (
+      SUBROUTINE  SHEETPLUME (
+     I                 NEQ,
+     U                 DD, Y,
+     O                 YDOT  )
+catn Note: in functions such as this one,
+c    we solve at depth DD two sets of equations simutaneously for the
+c    glacial front mass balance (3eq, iceplume_meltrate.F) and plume
+c    properties (4eq).  The order is that we take in the subglacial
+c    DISCHARGE properties [w,r]sg at depth  DD (the bottom of the
+c    vertical front), and first call iceplume_meltrate to calculate
+c    the total melt and T,S stored in [mdot,tb,sb].
+c    Then, we solve the four equations for plume tendencies YDOT,
+c    Y(T,S,vertical vel, radii) as a function of depth. Y will be
+c    resaved in iceplume_plume_model into vertical profile properties
+c    [t,s,w,r,a,mInt]ProfPlume.
 
-#include "ICEPLUME_OPTIONS.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -319,11 +341,12 @@ C---------------------------------------------------
 #include "ICEPLUME.h"
 
       INTEGER  NEQ
-      DOUBLE PRECISION T, Y(7), YDOT(6)
-      _RL Tambient, Sambient, rho_0, rho_1, Tin
+      DOUBLE PRECISION DD, Y(7), YDOT(6)
+      _RL Tambient, Sambient, rho_ambient, rho_plume, DDin
       DOUBLE PRECISION mdot, Sb, Tb
       DOUBLE PRECISION a,b,c
       DOUBLE PRECISION RHO
+      DOUBLE PRECISION absVelocity, factor_cd
 
 #ifdef ALLOW_ICEPLUME
 
@@ -335,65 +358,73 @@ C     Y(4) = S
       
 C Interpolate from imposed ambient profiles
 
-      IF ( abs(T) .LE. zProfAbs(1) ) THEN
+      IF ( abs(DD) .LE. zProfAbs(1) ) THEN
        Tambient = tProf(1)
        Sambient = sProf(1)
-      ELSEIF ( abs(T) .GE. zProfAbs(Nr) ) THEN
+      ELSEIF ( abs(DD) .GE. zProfAbs(Nr) ) THEN
        Tambient = tProf(Nr)
        Sambient = sProf(Nr)
       ELSE
-       CALL linint(Nr,zProfAbs,tProf,abs(T),Tambient)
-       CALL linint(Nr,zProfAbs,sProf,abs(T),Sambient)
+       CALL linint(Nr,zProfAbs,tProf,abs(DD),Tambient)
+       CALL linint(Nr,zProfAbs,sProf,abs(DD),Sambient)
       ENDIF
 
-      Tin = T
+      DDin = DD
 
 C Plume density
-      rho_1   = RHO(Y(3),Y(4),Tin)
+      rho_plume   = RHO(Y(3),Y(4),DDin)
 C Ambient density
-      rho_0 = RHO(Tambient,Sambient,Tin)
+      rho_ambient = RHO(Tambient,Sambient,DDin)
 
 C Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
+c================
+catn set some constant that we use all the time, as well as
+catn minimum background velocity if we use default Jenkin et al:
+      IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
+       absVelocity = backgroundVelThresh
+      ELSE
+       absVelocity = ABS(Y(2))
+      ENDIF
 
-      b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEPLUMElatentHeat/c_i))
-     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
+      factor_Cd = (Cd**HalfRL)*absVelocity
 
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &        +ICEPLUMElatentHeat)
-
-      Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
-      Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
-      mdot = GamS*(Cd**0.5)*Y(2)*(Y(4)-Sb)/Sb ! mdot
+      call iceplume_meltrate(
+     I        Y(3),Y(4),Y(2),DD,
+     O        mdot, Tb, Sb)
 
 C Differential equations
 C Plume thickness
-      YDOT(1)=2*E_0+Cd-(gravity*Y(1)/(Y(2)**2))*(rho_0-rho_1)
-     &  /rhoConst+2*mdot/Y(2)
-catn     &  /rho_ref+2*mdot/Y(2)
+      YDOT(1)=twoRL*E_0+Cd-(gravity*Y(1)/(absVelocity**twoRL))
+     &  *(rho_ambient-rho_plume)/rhoConst+twoRL*mdot/absVelocity
 
 C Plume vertical velocity
-      YDOT(2)=-(Y(2)/Y(1))*(E_0+Cd+mdot/Y(2))
-     &  +(gravity/Y(2))*(rho_0-rho_1)/rhoConst
-catn     &  +(gravity/Y(2))*(rho_0-rho_1)/rho_ref
+      YDOT(2)=-(absVelocity/Y(1))*(E_0+Cd+mdot/absVelocity)
+     &  +(gravity/absVelocity)*(rho_ambient-rho_plume)/rhoConst
 
 C Plume temperature
+catn in default code, factor_Cd = (Cd**HalfRL)*absVelocity
+cc Need to check whether all Y(2) should be replaced with absVelocity.
+cc I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
+cc pull absVelocity out all the way to the end outside of ifdef block,
+cc as well as the common factor (Tb-Y(3))/Y(1).  Also, note I flipped
+cc the original -(Y(3)-Tb) to +(Tb-Y(3)) prior to pulling out
       YDOT(3)=E_0*(Tambient-Y(3))/Y(1)
-     &  +mdot*(Tb-Y(3))/(Y(1)*Y(2))
-     &  -GamT*(Cd**0.5)*(Y(3)-Tb)/Y(1)
+     &  +mdot*(Tb-Y(3))/(Y(1)*absVelocity)
+     &  -GamT*(Cd**HalfRL)*(Y(3)-Tb)/Y(1)
 
 C Plume salinity
       YDOT(4)=E_0*(Sambient-Y(4))/Y(1)
-     &  +mdot*(Sb-Y(4))/(Y(1)*Y(2))
-     &  -GamS*(Cd**0.5)*(Y(4)-Sb)/Y(1)
+     &  +mdot*(Sb-Y(4))/(Y(1)*absVelocity)
+     &  -GamS*(Cd**HalfRL)*(Y(4)-Sb)/Y(1)
 
 C along-plume integrated melt rate and contact area  - 
       YDOT(5) = Y(7)
       YDOT(6) = Y(7) * mdot
 
-      T = Tin
+catn As i suspected, the calculations of YDOT are different depending
+catn on the geometry, so we cannot generalize it with a subroutine
+      DD = DDin
 
 #endif /* ALLOW_ICEPLUME */
 
@@ -402,9 +433,11 @@ C along-plume integrated melt rate and contact area  -
 
 C - ------------------------------------------------------------------
 
-      SUBROUTINE  HALFCONE (NEQ, T, Y, YDOT)
+      SUBROUTINE  HALFCONE (
+     I                 NEQ,
+     U                 DD, Y,
+     O                 YDOT)
 
-#include "ICEPLUME_OPTIONS.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -413,11 +446,12 @@ C - ------------------------------------------------------------------
 #include "ICEPLUME.h"
 
       INTEGER  NEQ
-      DOUBLE PRECISION T, Y(7), YDOT(6), Tin
-      _RL Tambient, Sambient, rho_0, rho_1
+      DOUBLE PRECISION DD, Y(7), YDOT(6)
+      _RL Tambient, Sambient, rho_ambient, rho_plume, DDin
       DOUBLE PRECISION mdot, Sb, Tb
       DOUBLE PRECISION a,b,c
       DOUBLE PRECISION RHO
+      DOUBLE PRECISION absVelocity, factor_cd
 
 #ifdef ALLOW_ICEPLUME
 
@@ -429,55 +463,79 @@ C     Y(4) = S
      
 C     Interpolate from imposed ambient profiles
 
-      IF ( abs(T) .LE. zProfAbs(1) ) THEN
+      IF ( abs(DD) .LE. zProfAbs(1) ) THEN
        Tambient = tProf(1)
        Sambient = sProf(1)
-      ELSEIF ( abs(T) .GE. zProfAbs(Nr) ) THEN
+      ELSEIF ( abs(DD) .GE. zProfAbs(Nr) ) THEN
        Tambient = tProf(Nr)
        Sambient = sProf(Nr)
       ELSE
-       CALL linint(Nr,zProfAbs,tProf,abs(T),Tambient)
-       CALL linint(Nr,zProfAbs,sProf,abs(T),Sambient)
+       CALL linint(Nr,zProfAbs,tProf,abs(DD),Tambient)
+       CALL linint(Nr,zProfAbs,sProf,abs(DD),Sambient)
       ENDIF
 
-      Tin = T
-      rho_1   = RHO(Y(3),Y(4),Tin)
-      rho_0 = RHO(Tambient,Sambient,Tin)
+      DDin = DD
+
+C Plume density
+      rho_plume   = RHO(Y(3),Y(4),DDin)
+C Ambient density
+      rho_ambient = RHO(Tambient,Sambient,DDin)
 
 C     Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
+c================
+catn set some constant that we use all the time, as well as
+catn minimum background velocity if we use default Jenkin et al:
+      IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
+       absVelocity = backgroundVelThresh
+      ELSE
+       absVelocity = ABS(Y(2))
+      ENDIF
 
-      b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEPLUMElatentHeat/c_i))
-     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
+      factor_Cd = (Cd**HalfRL)*absVelocity
 
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &       +ICEPLUMElatentHeat)
+C     Equations for Sb, Tb and mdot
 
-      Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
-      Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
-      mdot = GamS*(Cd**0.5)*Y(2)*(Y(4)-Sb)/Sb ! mdot
+      call iceplume_meltrate(
+     I        Y(3),Y(4),Y(2),DD,
+     O        mdot, Tb, Sb)
 
-      YDOT(1) = 2.*E_0+4.*mdot/(pi*Y(2))-Y(1)*gravity*
-     &          (rho_0-rho_1)/(2.*Y(2)*Y(2)*rhoConst)+2.*Cd/pi
-catn     &          (rho_0-rho_1)/(2.*Y(2)*Y(2)*rho_ref)+2.*Cd/pi
+C Differential equations
+C Plume thickness
+      YDOT(1) = twoRL*E_0+4.*mdot/(pi*absVelocity)
+     &         -Y(1)*gravity*(rho_ambient-rho_plume)
+     &            /(twoRL*absVelocity*absVelocity*rhoConst)
+     &         +twoRL*Cd/pi
 
-      YDOT(2) = -2.*E_0*Y(2)/Y(1)-4.*mdot/(pi*Y(1))+gravity*
-     &          (rho_0-rho_1)/(Y(2)*rhoConst)-4.*Cd*Y(2)/(pi*Y(1))
-catn     &          (rho_0-rho_1)/(Y(2)*rho_ref)-4.*Cd*Y(2)/(pi*Y(1))
+C Plume vertical velocity
+      YDOT(2) = -twoRL*E_0*absVelocity/Y(1)-4.*mdot/(pi*Y(1))
+     &          +gravity*(rho_ambient-rho_plume)/(absVelocity*rhoConst)
+     &          -4.*Cd*absVelocity/(pi*Y(1))
 
-      YDOT(3) = 2.*E_0*(TAMBIENT-Y(3))/Y(1)+4.*mdot*
-     &           (Tb-Y(3))/(pi*Y(1)*Y(2))-4.*
-     &           GamT*(Cd**0.5)*(Y(3)-Tb)/(pi*Y(1))
+C Plume temperature
+catn in default code, factor_Cd = (Cd**HalfRL)*absVelocity
+cc Need to check whether all Y(2) should be replaced with absVelocity.
+cc I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
+cc pull absVelocity out all the way to the end outside of ifdef block,
+cc as well as the common factor (Tb-Y(3))/(pi*Y(1)).  Also, note I
+cc flipped the original -4.*(Y(3)-Tb) to +4.*(Tb-Y(3)) prior to pulling
+      YDOT(3) = twoRL*E_0*(Tambient-Y(3))/Y(1)
+     &         +4.*mdot*
+     &           (Tb-Y(3))/(pi*Y(1)*absVelocity)-4.*
+     &           GamT*(Cd**HalfRL)*(Y(3)-Tb)/(pi*Y(1))
 
-      YDOT(4) = 2.*E_0*(Sambient-Y(4))/Y(1)+4.*mdot*(Sb-Y(4))/
-     &          (pi*Y(1)*Y(2))-4.*GamS*(Cd**0.5)*(Y(4)-Sb)/(pi*Y(1))
+cc same as above, factor_Cd/absVelocity = (Cd**HalfRL)
+cc same flipping of sign and pulling common factors to the end
+      YDOT(4) = twoRL*E_0*(Sambient-Y(4))/Y(1)
+     &         +4.*mdot*(Sb-Y(4))/
+     &          (pi*Y(1)*absVelocity)-4.*
+     &           GamS*(Cd**HalfRL)*(Y(4)-Sb)/(pi*Y(1))
 
-      YDOT(5) = 2.*Y(1)
-      YDOT(6) = 2.*Y(1)*mdot
+C along-plume integrated melt rate and contact area
+      YDOT(5) = twoRL*Y(1)
+      YDOT(6) = twoRL*Y(1)*mdot
 
-      T = Tin
+      DD = DDin
 #endif /* ALLOW_ICEPLUME */
 
       RETURN
@@ -487,9 +545,11 @@ C - ------------------------------------------------------------------
 
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
 
-      SUBROUTINE  DETACHED_CONE (NEQ, T, Y, YDOT)
+      SUBROUTINE  DETACHED_CONE (
+     I                 NEQ,
+     U                 DD, Y,
+     O                 YDOT)
 
-#include "ICEPLUME_OPTIONS.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -498,12 +558,13 @@ C - ------------------------------------------------------------------
 #include "ICEPLUME.h"
 
       INTEGER  NEQ
-      DOUBLE PRECISION T, Y(9), YDOT(8), Tin
-      _RL Tambient, Sambient, rho_0, rho_1
+      DOUBLE PRECISION DD, Y(9), YDOT(8), DDin
+      _RL Tambient, Sambient, rho_ambient, rho_plume
       _RL Wplume, Cplume
       DOUBLE PRECISION mdot, Sb, Tb
       DOUBLE PRECISION a,b,c
       DOUBLE PRECISION RHO
+      DOUBLE PRECISION absVelocity, factor_Cd
 
       EXTERNAL PLUME_GEOMETRY
 
@@ -517,71 +578,78 @@ C     Y(4) = S
      
 C     Interpolate from imposed ambient profiles
 
-      IF ( abs(T) .LE. zProfAbs(1) ) THEN
+      IF ( abs(DD) .LE. zProfAbs(1) ) THEN
        Tambient = tProf(1)
        Sambient = sProf(1)
-      ELSEIF ( abs(T) .GE. zProfAbs(Nr) ) THEN
+      ELSEIF ( abs(DD) .GE. zProfAbs(Nr) ) THEN
        Tambient = tProf(Nr)
        Sambient = sProf(Nr)
       ELSE
-       CALL linint(Nr,zProfAbs,tProf,abs(T),Tambient)
-       CALL linint(Nr,zProfAbs,sProf,abs(T),Sambient)
+       CALL linint(Nr,zProfAbs,tProf,abs(DD),Tambient)
+       CALL linint(Nr,zProfAbs,sProf,abs(DD),Sambient)
       ENDIF
 
-      Tin = T
-      rho_1   = RHO(Y(3),Y(4),Tin)
-      rho_0 = RHO(Tambient,Sambient,Tin)
+      DDin = DD
+C plume density
+      rho_plume   = RHO(Y(3),Y(4),DDin)         !formerly rho_1
+C ambient density
+      rho_ambient = RHO(Tambient,Sambient,DDin) !formerly rho_0
+c================
+catn set some constant that we use all the time, as well as
+catn minimum background velocity if we use default Jenkin et al:
+      IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
+       absVelocity = backgroundVelThresh
+      ELSE
+       absVelocity = ABS(Y(2))
+      ENDIF
+      factor_Cd = (Cd**HalfRL)*absVelocity
 
 C     Equations for Sb, Tb and mdot
 
-      a = lambda1*(GamT*HeatCapacity_Cp-GamS*c_i)
-
-      b = GamS*c_i*(lambda1*Y(4)-lambda2-lambda3*Tin+
-     &         iceTemp-(ICEPLUMElatentHeat/c_i))
-     &        -GamT*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*Tin)
-
-      c = GamS*Y(4)*(c_i*(lambda2+lambda3*Tin-iceTemp)
-     &         +ICEPLUMElatentHeat)
-
-      Sb   = (1./(2.*a))*(-b-((b**2.-4.*a*c)**0.5)) !Sb
-      Tb   = lambda1*Sb+lambda2+lambda3*Tin !Tb
-      mdot = GamS*(Cd**0.5)*Y(2)*(Y(4)-Sb)/Sb ! mdot
+      call iceplume_meltrate(
+     I        Y(3),Y(4),Y(2),DD,
+     O        mdot, Tb, Sb)
 
 
       CALL PLUME_GEOMETRY(Y(1),Y(8),Cplume,Wplume)
 
 
-      YDOT(1) = 2*E_0*Cplume/sin(Y(7))+
-     &          2*Wplume*mdot/(sin(Y(7))*Y(2))-
-     &          Y(1)*gravity*(rho_0-rho_1)/(Y(2)*Y(2)*rhoConst)+
-     &          Cd*Wplume
-catn     &          Y(1)*gravity*(rho_0-rho_1)/(Y(2)*Y(2)*rho_ref)+
+C Differential equations
+C Plume thickness
+      YDOT(1) = twoRL*E_0*Cplume/sin(Y(7))+
+     &          twoRL*Wplume*mdot/(sin(Y(7))*absVelocity)-
+     &          Y(1)*gravity*(rho_ambient-rho_plume)
+     &                       /(absVelocity*absVelocity*rhoConst)
+     &          +Cd*Wplume
 
-      YDOT(2) = -E_0*Cplume*Y(2)/Y(1)/sin(Y(7))-
+C Plume vertical velocity
+      YDOT(2) = -E_0*Cplume*absVelocity/Y(1)/sin(Y(7))-
      &          Wplume*mdot/(Y(1)*sin(Y(7)))+
-     &          gravity*(rho_0-rho_1)/(Y(2)*rhoConst)-
-     &          Cd*Wplume*Y(2)/Y(1)
-catn     &          gravity*(rho_0-rho_1)/(Y(2)*rho_ref)-
+     &          gravity*(rho_ambient-rho_plume)/(absVelocity*rhoConst)-
+     &          Cd*Wplume*absVelocity/Y(1)
 
+C Plume temperature
       YDOT(3) = (E_0*Cplume*(Tambient-Y(3))/Y(1)+
-     &           Wplume*mdot*(Tb-Y(3))/(Y(1)*Y(2))-
+     &           Wplume*mdot*(Tb-Y(3))/(Y(1)*absVelocity)-
      &           GamT*sqrt(Cd)*Wplume*(Y(3)-Tb)/(Y(1)))
      &          /sin(Y(7))
 
-
+C Plume salinity
       YDOT(4) = (E_0*Cplume*(Sambient-Y(4))/Y(1)+
-     &           Wplume*mdot*(Sb-Y(4))/(Y(1)*Y(2))-
+     &           Wplume*mdot*(Sb-Y(4))/(Y(1)*absVelocity)-
      &           GamS*sqrt(Cd)*Wplume*(Y(4)-Sb)/(Y(1)))
      &          /sin(Y(7))
 
       YDOT(5) = Wplume
       YDOT(6) = Wplume*mdot
 
-      YDOT(7) = (Y(2)*Y(2)*YDOT(1)+2*Y(2)*Y(1)*YDOT(2)) /
-     &          (Y(2)*Y(2)*Y(1))/TAN(Y(7))
-      YDOT(8) = 1.0/(TAN(Y(7)))
+catn: rewriting to avoid mult only to div by same number
+      YDOT(7) = (absVelocity*absVelocity*YDOT(1)
+     &          + twoRL*absVelocity*Y(1)*YDOT(2)) /
+     &          (absVelocity*absVelocity*Y(1))/TAN(Y(7))
+      YDOT(8) = OneRL/(TAN(Y(7)))
 
-      T = Tin
+      DD = DDin
 
 
 #endif /* ALLOW_ICEPLUME */
@@ -613,7 +681,7 @@ C     z = depth (m)
       DOUBLE PRECISION bulk_modulus
       DOUBLE PRECISION A, B, C, rho_w,rho_zero
 
-      PARAMETER(rho_0=1027)
+      PARAMETER(rho_0=1027. _d 0)
       PARAMETER(g=9.81)
 
       P= rho_0*g*abs(z)*1.0E-5
@@ -705,8 +773,8 @@ C ---------------------------------------------------
 
 !      PLUME IS FULLY DETACHED    
 
-       C = 2*PI*B
-       W = 0
+       C = twoRL*PI*B
+       W = zeroRL
 
       ELSE
      
@@ -717,9 +785,9 @@ C ---------------------------------------------------
        ITERMAX = 300
 
        DO I=1,ITERMAX
-        F = B*B * (PI-acos(X/B)) + X*(B*B-X*X)**0.5 - A
-        FP = 2*B*(PI - acos(X/B)) - X/(1 - X*X/(B*B))**0.5 + 
-     &   (X*B)/(B*B - X*X)**0.5
+        F = B*B * (PI-acos(X/B)) + X*(B*B-X*X)**HalfRL - A
+        FP = twoRL*B*(PI - acos(X/B)) - X/(OneRL - X*X/(B*B))**HalfRL +
+     &   (X*B)/(B*B - X*X)**HalfRL
         ADJ = f/fp
         B = B - ADJ
         if (B .LT. X) then
@@ -738,8 +806,8 @@ C ---------------------------------------------------
                 STOP 'ABNORMAL END: S/R ICEPLUME_PLUME_MODEL'
        endif
     
-       W = 2 * sqrt(B*B-X*X)
-       C = 2 * (pi-acos(X/b)) * B
+       W = twoRL * sqrt(B*B-X*X)
+       C = twoRL * (pi-acos(X/b)) * B
      
       ENDIF
 
