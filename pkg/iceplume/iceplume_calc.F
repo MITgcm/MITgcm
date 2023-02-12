@@ -202,7 +202,7 @@ c        ENDDO
 
 catn: need to be careful here: the I,J are with overlaps
         DO J = 1-OLy,sNy+OLy
-         DO I = 1-OLx,sNx+Olx
+         DO I = 1-OLx,sNx+OLx
 catn: check if we need overlap at all? if not we do without
 catn        DO J = 1,sNy
 catn         DO I = 1,sNx
@@ -893,8 +893,10 @@ C DO I loop
 catn: here we calc fields that live outside this routine
 #ifdef ALLOW_ADDFLUID
         DO K = 1,Nr
-         DO J = 1,sNy
-          DO I = 1,sNx
+c         DO J = 1,sNy
+c          DO I = 1,sNx
+         DO J = 1-OLy,sNy+OLy
+          DO I = 1-OLx,sNx+OLx
              addMass(I,J,K,bi,bj) = addMass(I,J,K,bi,bj) +
      &         addMass3Dplume(i,j,k,bi,bj)+addMass3Dbg(i,j,k)
           ENDDO
@@ -909,11 +911,11 @@ C Save plume values
          IF ( useDiagnostics .AND. usePlumeDiagnostics ) THEN
 
 C Transfer to local (no bi,bj indices) and interior only arrays
-C (can't seem to get the diagnostics to output properly with the
+C (cannot seem to get the diagnostics to output properly with the
 C other options!)
         DO K = 1,Nr
-         DO J = 1,sNy
-          DO I = 1,sNx
+         DO J = 1-OLy,sNy+OLy
+          DO I = 1-OLx,sNx+OLx
             gT_iceplumeBG(i,j,k)=iceplumeBG_tendT(i,j,k,bi,bj)
             gS_iceplumeBG(i,j,k)=iceplumeBG_tendS(i,j,k,bi,bj)
            ENDDO !I
@@ -922,40 +924,44 @@ C other options!)
 
 C Output diagnostics
           DO K=1,Nr
-C Here, the first 'k' is the layer in the output field in which to save the data
+C Here, the first k is the layer in the output field in which to save the data
 C and the second k is layer from which this data is taken in the original field
+c flag 2 for with overlap, 3 for without overlap; 1--3: bi,bj done outside
           CALL DIAGNOSTICS_FILL_RS(wProfPlume3D,'icefrntW',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(tProfPlume3D,'icefrntT',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(sProfPlume3D,'icefrntS',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(rProfPlume3D,'icefrntR',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(mProfPlume3D,'icefrntM',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(mProfAv3D,'icefrntA',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
           CALL DIAGNOSTICS_FILL_RS(thetaProfPlume3D,'PlumAngl',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(distanceProfPlume3D,'PlumDist',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
 #endif
           CALL DIAGNOSTICS_FILL_RS(gT_iceplumeBG,'IP_gTbg ',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(gS_iceplumeBG,'IP_gSbg ',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(addMass3Dplume,'IPmasspl',
      &         k,k,1,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(addMass3Dbg,'IPmassbg',
-     &         k,k,3,bi,bj,myThid)
+     &         k,k,2,bi,bj,myThid)
           ENDDO
 
+catn since none of below needs bi,bj, they need reset here.
 C Clear local arrays otherwise results replicate on other tiles
         DO K = 1,Nr
-         DO J = 1,sNy
-          DO I = 1,sNx
+         DO J = 1-OLy,sNy+OLy
+          DO I = 1-OLx,sNx+OLx
+C         DO J = 1,sNy
+C          DO I = 1,sNx
            wProfPlume3d(I,J,K) = 0.d0
            tProfPlume3d(I,J,K) = 0.d0
            sProfPlume3d(I,J,K) = 0.d0

@@ -1,3 +1,4 @@
+#include "ICEPLUME_OPTIONS.h"
 
       SUBROUTINE ICEPLUME_MELTRATE(
      I           temperature, salinity, velocity, depth,
@@ -6,7 +7,6 @@
       IMPLICIT NONE
 
 C Global variables
-#include "ICEPLUME_OPTIONS.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
