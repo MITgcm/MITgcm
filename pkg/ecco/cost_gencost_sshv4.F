@@ -214,18 +214,16 @@ c-- detect the relevant gencost indices
        do k2 = 1, NGENPPROC
         if (gencost_posproc(k2,igen_mdt).EQ.'smooth') k2_mdt=k2
        enddo
-       write(msgbuf,'(a,i5)') ' sshv4: k2_mdt: ',k2_mdt
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , myThid)
       endif
       if (igen_lsc.GT.0) then
        do k2 = 1, NGENPPROC
         if (gencost_posproc(k2,igen_lsc).EQ.'smooth') k2_lsc=k2
        enddo
-       write(msgbuf,'(a,i5)') ' sshv4: k2_lsc: ',k2_mdt
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , myThid)
       endif
+      write(msgbuf,'(a,2(1x,i5))')
+     &  'sshv4: k2_[mdt,lsc]: ', k2_mdt, k2_lsc
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , myThid)
 
       dosumsq = .TRUE.
       if (igen_mdt.GT.0) then
@@ -278,7 +276,7 @@ c switch for excluding global mean
      &                    SQUEEZE_RIGHT , myThid)
 
 catn: loop once to determine use_mon and nrec_year
-c: note loop through all indices in case some of the
+c note loop through all indices in case some of the
 c data files are not defined.
       use_mon=.FALSE.
       nrec_year=366
@@ -301,7 +299,8 @@ catn: should set to 3 and 12
         num0=100
         nrec_mdt_ref=365
       endif
-      write(msgbuf,'(a,L5,2(1x,i10),2(1x,i5))') 
+
+      write(msgbuf,'(a,L5,2(1x,i10),2(1x,i5))')
      & ' sshv4: use_mon, nrec_year, nrec_total, num0, nrec_mdt_ref: ',
      &          use_mon, nrec_year, nrec_total, num0, nrec_mdt_ref
       call print_message( msgbuf, standardmessageunit,
@@ -460,7 +459,6 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
        enddo
 
       do year=mdt_y0,mdt_y1
-c       do day=1,366
        do irec=1,nrec_year
 
        do bj = jtlo,jthi
@@ -478,9 +476,12 @@ c       do day=1,366
         enddo
        enddo
 
-c      write(msgbuf,'(a,l)') ' sshv4:using_tpj=',using_tpj
-c      call print_message( msgbuf, standardmessageunit,
-c     &                    SQUEEZE_RIGHT , myThid)
+#ifdef ECCO_VERBOSE
+       write(msgbuf,'(a,3(1x,l))') ' sshv4:using_[tpj,ers,gfo]: ',
+     &   using_tpj, using_ers, using_gfo
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , myThid)
+#endif
        if (using_tpj)
      & call cost_sla_read_yd( tpfi, tpsta,use_mon,
      &                tpob, tpma,
@@ -640,20 +641,14 @@ cgf =======================================================
       offset     = 0. _d 0
       offset_sum = 0. _d 0
 
-c      write(msgbuf,'(a,i)')
-c     & 'sshv4: before entering irec loop, nmonsrec:',nmonsrec
-c      call print_message( msgbuf, standardmessageunit,
-c     &                    SQUEEZE_RIGHT , myThid)
-c      write(msgbuf,'(a,i)')
-c     & 'sshv4: before entering irec loop, ndaysrec:',ndaysrec
-c      call print_message( msgbuf, standardmessageunit,
-c     &                    SQUEEZE_RIGHT , myThid)
-c      write(msgbuf,'(a,i)')
-c     & 'sshv4: before entering irec loop, nrec_total:',
-c     &    nrec_total
-c      call print_message( msgbuf, standardmessageunit,
-c     &                    SQUEEZE_RIGHT , myThid)
-catn      do irec = 1, ndaysrec
+#ifdef ECCO_VERBOSE
+      write(msgbuf,'(a,3(1x,i6))')
+     & 'sshv4: before entering irec loop, n[mon,day]srec,nrec_total: ',
+     & nmonsrec,ndaysrec,nrec_total
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , myThid)
+#endif
+
       do irec = 1, nrec_total
 
 #ifdef ALLOW_AUTODIFF
@@ -1025,9 +1020,11 @@ catn: so it MUST BE AT LEAST 2 or else large-scale cost WILL BE SKIPPED!!
 
 catn add a warning if have less nrecday than the hardcoded 35days
       tempinteger=nrec_total-nrecsave+1
-c      write(msgbuf,'(A,i5,1x,i5,1x,i5)') 
-c     & 'sshv4: nrec[save,_total],tempint',
-c     &     nrecsave,nrec_total,tempinteger
+#ifdef ECCO_VERBOSE
+      write(msgbuf,'(A,i5,1x,i5,1x,i5)')
+     & 'sshv4: nrec[save,_total],tempinteger',
+     &     nrecsave,nrec_total,tempinteger
+#endif
       if(tempinteger.LT.1) then
         write(msgbuf,'(A,i5)')
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are < ',nrecsave
@@ -1055,7 +1052,6 @@ c     &     nrecsave,nrec_total,tempinteger
       endif
 catn -----------
 
-catn      do irec = 1, ndaysrec-ndaysave+1
       do irec = 1, nrec_total-nrecsave+1
 
        do bj = jtlo,jthi
@@ -1076,7 +1072,6 @@ catn      do irec = 1, ndaysrec-ndaysave+1
 c PART 4.1: compute running sample average over ndaysave
 c ------------------------------------------------------
 
-catn      do jrec=1,ndaysave
       do jrec=1,nrecsave
 
         krec=irec+jrec-1
@@ -1215,8 +1210,10 @@ c ----------------------------------------
                   slaoffset=slaoffset+RA(i,j,bi,bj)*
      &                      anom_psMslaobs(i,j,bi,bj)
                   slaoffset_sum=slaoffset_sum+RA(i,j,bi,bj)
-c Of interest is the total weight for an average of N indep sample (not the area weighted average of weight)
-c Since slaoffset is itself area weighted, however, the total weight is only approx the simple weight sum :
+C Of interest is the total weight for an average of N
+C indep sample (not the area weighted average of weight)
+C Since slaoffset is itself area weighted, however, the
+C total weight is only approx the simple weight sum:
                   slaoffset_weight=slaoffset_weight+
      &                      gencost_weight(i,j,bi,bj,igen_lsc)
                endif

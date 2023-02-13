@@ -4,8 +4,6 @@
      I                sla_file, sla_startdate, use_mon,
      O                sla_obs, sla_mask,
      I                year, irec, myThid )
-c     I                sla_startdate, sla_period,
-c     I                sla_intercept, sla_slope,
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
