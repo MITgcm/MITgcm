@@ -57,7 +57,7 @@ C     ConvectCount :: Convection mixing freq. counter.
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k, kTop, kBottom, kDir, deltaK
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, kkey
+      INTEGER tkey, kkey
 #endif
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -92,7 +92,7 @@ C-      Initialisation of Convection Counter
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         IF ( rkSign*gravitySign .GT. 0. ) THEN
@@ -113,7 +113,7 @@ C--       Loop over all *interior* layers
         DO k=kTop,kBottom,kDir
 
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = (ikey-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 C     It is important that the two k-levels of these fields are stored
 C     in one statement because otherwise taf will only store one, which
 C     is wrong (i.e. was wrong in previous versions).
