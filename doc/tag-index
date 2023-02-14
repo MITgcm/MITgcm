@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - fix OpenMP option in ifort optfiles for modern intel compiler.
+
+checkpoint68n (2023/02/08)
 o pkg/seaice:
   - make all seaice-cost code independent of pkg/ecco and remove few
     SEAICE_COST.h from pkg/ecco ;
