@@ -1,0 +1,114 @@
+#!/bin/bash
+#
+# Build options for intel compiler on Linux amd64 platform albedo (@AWI)
+# derived from linux_amd64_ifort
+#
+#  Tested with intel-oneapi-compilers/2022.1.0 loading the following modules
+#
+# module purge (to remove you have anything that may conflict with ifort)
+# module load intel-oneapi-compilers
+# # module load intel-oneapi-mkl
+# module load intel-oneapi-mpi
+# module load netcdf-fortran/4.5.4-oneapi2022.1.0
+# albedo0::> module list
+# Currently Loaded Modulefiles:
+#  1) intel-oneapi-compilers/2022.1.0   2) intel-oneapi-mpi/2021.6.0
+#  3) netcdf-fortran/4.5.4-oneapi2022.1.0
+
+if test "x$MPI" = xtrue ; then
+  CC=mpiicc
+  FC=mpiifort
+  F90C=mpiifort
+else
+  CC=icc
+  FC=ifort
+  F90C=ifort
+fi
+#LINK="$F90C -ipo"
+
+DEFINES='-DWORDLENGTH=4'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-qopenmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl"
+FFLAGS="$FFLAGS -fPIC"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+    # FOPTIM='-fast' does not work because there are no static netcdf
+    # libaries, also the implied '-xHost' is not recognized so we use
+    # -xcore-avx2 instead and spell out the options explicitly.
+    # '-ipo' makes linking very slow with no effect, so we will skip that, too.
+    #FOPTIM='-ipo -align -O3 -static -no-prec-div -fp-model fast=2 -xHost'
+    FOPTIM='-ip -align -O3 -no-prec-div -fp-model fast=2 -march=core-avx2'
+    # probably not necessary
+    FOPTIM="$FOPTIM -mtune=core-avx2"
+    # additional options from benchmarkers
+    FOPTIM="$FOPTIM -qopt-prefetch=5 -unroll-aggressive"
+    # report optimization (very cryptic)
+    #FOPTIM="$FOPTIM -qopt-report5"
+    # reduce optimization level a little for some files
+    NOOPTFLAGS='-ip -align -O1 -no-prec-div -fp-model fast=2 -march=core-avx2'
+    #NOOPTFLAGS="$NOOPTFLAGS -mtune=core-avx2"
+    NOOPTFILES='obcs_init_fixed.F obcs_set_connect.F'
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    # "-fp-model [keyword]" is the recommended method of controlling precision
+    FOPTIM='-O0 -noalign -march=core-avx2 -ip -fp-model consistent'
+# alternatives, see man pages for details
+#   FOPTIM='-O0 -noalign -march=core-avx2 -ip -mp1'
+#   FOPTIM='-O0 -noalign -march=core-avx2 -ip -fp-model precise'
+#   FOPTIM='-O0 -noalign -march=core-avx2 -ip -mieee-fp'
+  else                          #- development/check options:
+#    FFLAGS="$FFLAGS -warn all -warn nounused"
+    FFLAGS="$FFLAGS -warn unused"
+    FOPTIM="-fpe0 -check all -ftrapuv -fp-model precise"
+    FOPTIM="$FOPTIM -O0 -noalign -g -traceback"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0 -fPIC -ip'
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if [[ -n $( nf-config --fflags )  && ($? == 0) ]]; then
+    INCLUDES=$(nf-config --fflags)
+#    LIBS=$(nf-config --flibs)
+    LIBS="-L$(nf-config --prefix)/lib -lnetcdff"
+fi
+
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config insteal
+      if [[ -n $( pkg-config --cflags-only-I impi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I impi | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      # only fill this if we can find MPI, otherwise triggers netcdf error
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      #- used for parallel (MPI) DIVA
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
+fi

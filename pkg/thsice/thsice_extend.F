@@ -112,7 +112,8 @@ C     qicAv     :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
       INTEGER  i,j     ! loop indices
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ticekey
+C     tkey :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -136,12 +137,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ticekey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE hIce   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE hSnow  = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE icFrac = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE qIc1   = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE qIc2   = comlev1_bibj, key = ticekey, kind = isbyte
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE hIce   = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE hSnow  = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE icFrac = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE qIc1   = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE qIc2   = comlev1_bibj, key = tkey, kind = isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax

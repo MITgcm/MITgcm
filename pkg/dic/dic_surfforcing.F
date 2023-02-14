@@ -9,7 +9,7 @@ C !ROUTINE: DIC_SURFFORCING
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_SURFFORCING( PTR_CO2 , PTR_ALK, PTR_PO4, GDC,
      I           bi, bj, iMin, iMax, jMin, jMax,
-     I           myIter, myTime, myThid )
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Calculate the carbon air-sea flux terms
@@ -29,16 +29,16 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  PTR_CO2              :: DIC tracer field
-      INTEGER myIter, myThid
-      _RL myTime
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_CO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+      _RL myTime
+      INTEGER myIter, myThid
 
 C !OUTPUT PARAMETERS: ===================================================
 C GDC                   :: tendency due to air-sea exchange
@@ -67,7 +67,7 @@ C local variables for carbon chem
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey_dic
+      INTEGER tkey
 #endif
 CEOP
 
@@ -162,8 +162,8 @@ C Schmidt number is accounted for later
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       ikey_dic = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = ikey_dic, kind = isbyte
+       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #endif
        debugPrt = debugMode
 C pCO2 solver...

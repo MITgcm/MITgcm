@@ -57,7 +57,7 @@ C     ks     :: index of surface interface layer
       INTEGER i,j
       INTEGER ks
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey
+      INTEGER tkey
 #endif
       _RL recip_Cp
 #ifdef ALLOW_BALANCE_FLUXES
@@ -193,13 +193,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE EmPmR(:,:,bi,bj) = comlev1_bibj, key=ikey,  kind = isbyte
+CADJ STORE EmPmR(:,:,bi,bj) = comlev1_bibj, key=tkey,  kind = isbyte
 #ifdef EXACT_CONSERV
-CADJ STORE PmEpR(:,:,bi,bj) = comlev1_bibj, key=ikey,  kind = isbyte
+CADJ STORE PmEpR(:,:,bi,bj) = comlev1_bibj, key=tkey,  kind = isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

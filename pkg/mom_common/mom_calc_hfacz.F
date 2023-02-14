@@ -66,7 +66,7 @@ C                    without topography)
       EXTERNAL SMOOTHMIN_RS
 # endif /* USE_SMOOTH_MIN */
 # ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey, kkey
+      INTEGER kkey
 # endif
 #else /* ALLOW_DEPTH_CONTROL */
       _RS     hFacZOpen
@@ -86,8 +86,8 @@ C--   Calculate open water fraction at vorticity points
 #ifdef ALLOW_DEPTH_CONTROL
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      kkey = (ikey-1)*Nr + k
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-OLy,sNy+OLy
@@ -359,7 +359,7 @@ C-    to get the same truncation, independent from the face Nb:
 C     Special Cubed Sphere block ends here
 C-----------------------------------------
 
-C--   Calculate reciprol:
+C--   Calculate reciprocal:
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         IF (hFacZ(i,j).EQ.0.) THEN
