@@ -136,6 +136,9 @@ C   The following has low memory footprint, but not suitable for AD
 C   The following one suitable for AD but does not vectorize
 #undef SOLVE_DIAGONAL_KINNER
 
+C   Implementation alternative (might be faster on some platforms ?)
+#undef USE_MASK_AND_NO_IF
+
 C-- Retired code options:
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when

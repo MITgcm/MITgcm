@@ -26,23 +26,13 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C       >>> Use the EGM-96 geoid error covariance.
-#undef  ALLOW_EGM96_ERROR_COV
-#undef  ALLOW_READ_EGM_DATA
+#undef ALLOW_COST_STATE_FINAL
+#undef ALLOW_COST_VECTOR
+
 C       >>> Cost function contributions
-#undef ALLOW_HFLUX_COST_CONTRIBUTION
-#undef ALLOW_SFLUX_COST_CONTRIBUTION
-#undef ALLOW_USTRESS_COST_CONTRIBUTION
-#undef ALLOW_VSTRESS_COST_CONTRIBUTION
-#undef ALLOW_THETA_COST_CONTRIBUTION
-#undef ALLOW_SALT_COST_CONTRIBUTION
-#undef ALLOW_SST_COST_CONTRIBUTION
-#undef ALLOW_SSS_COST_CONTRIBUTION
-#undef ALLOW_SSH_COST_CONTRIBUTION
-#undef ALLOW_CTDT_COST_CONTRIBUTION
-#undef ALLOW_CTDS_COST_CONTRIBUTION
 #undef ALLOW_COST_ATLANTIC
 #undef ALLOW_COST_ATLANTIC_HEAT
+#undef ALLOW_COST_ATLANTIC_HEAT_DOMASS
 
 #undef ALLOW_COST_TEST
 #undef ALLOW_COST_DEPTH
@@ -54,6 +44,7 @@ C   List these options here:
 #undef ALLOW_COST_HFLUXM
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
+#undef ALLOW_COST_SHELFICE
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

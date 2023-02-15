@@ -37,6 +37,7 @@ C-- options set in Makefile by genmake2:
 #undef HAVE_FLUSH
 
 C-- options that can be set in Makefile by the OPTFILE
+#undef HAVE_PTHREADS
 C-  platform specific options:
 #undef TARGET_AIX
 #undef TARGET_BGL
