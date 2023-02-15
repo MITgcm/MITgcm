@@ -15,6 +15,11 @@ C Note: comment out the #define below (instead of having an #undef) to
 C       enable to set this Option in CPP command line (from the optfile)
 c#define PROFILES_USE_MDSFINDUNITS
 
+C-- Undocumented Options:
+#undef ALLOW_PROFILES_CLIMMASK
+#undef ALLOW_PROFILES_EXCLUDE_CORNERS
+#undef ALLOW_PROFILES_SAMPLESPLIT_COST
+
 #endif /* ALLOW_PROFILES */
 #endif /* PROFILES_OPTIONS_H */
 
