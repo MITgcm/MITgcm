@@ -348,6 +348,48 @@ C     Make sure we are not trying to use some arrays that are unavailable
        errCount = errCount + 1
       ENDIF
 
+      IF ( usingPcoords ) THEN
+C-    Some GM pieces of code have not been fixed to work in Pressure-coordinates
+       IF ( GM_taper_scheme.EQ.'fm07' .OR.
+     &      GM_taper_scheme.EQ.'stableGmAdjTap' ) THEN
+        iL = ILNBLNK(GM_taper_scheme)
+        WRITE(msgBuf,'(3A)') 'GMREDI_CHECK: GM_taper_scheme "',
+     &   GM_taper_scheme(1:iL), '" not yet fixed for P-Coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_useBVP ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: GM_useBVP',
+     &    ' code not yet fixed for P-Coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_Visbeck_alpha.NE.zeroRL ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: Visbeck',
+     &    'scheme not yet fixed for P-Coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_useBatesK3d ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_CHECK: ',
+     &    'GM_useBatesK3d potentially unsafe with P-Coordinate'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+       IF ( GM_useLeithQG ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: GM_useLeithQG',
+     &    ' code not yet fixed for P-Coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( GM_useSubMeso ) THEN
+        WRITE(msgBuf,'(2A)') 'GMREDI_CHECK: GM_useSubMeso',
+     &   ' not yet fixed for P-Coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+
       IF ( useShelfIce .OR. topoFile.NE.' ' ) THEN
 C-    Some GM options are likely to not work when some dry grid cells are found
 C     near the top (e.g., under ice-shelf). This might change as more pieces of

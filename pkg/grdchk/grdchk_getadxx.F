@@ -58,20 +58,20 @@ c--   == external ==
 
 c     == local variables ==
       integer iarr
-      integer il
+      integer il, ilDir
       integer dumiter
       _RL     dumtime
       _RL     dummy
       logical doglobalread
       logical ladinit
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       character*(80) fname
 
 c--   == end of interface ==
@@ -80,6 +80,8 @@ c--   == end of interface ==
       ladinit      = .false.
       dumiter      = 0
       dumtime      = 0. _d 0
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       if ( grdchkvarindex .eq. 0 ) then
          STOP 'GRDCHK INDEX 0 NOT ALLOWED'
@@ -87,32 +89,32 @@ c--   == end of interface ==
 #ifdef ALLOW_OBCSN_CONTROL
       else if ( grdchkvarindex .eq. 11 ) then
          il=ilnblnk( xx_obcsn_file )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcsn_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSN_CONTROL */
 
 #ifdef ALLOW_OBCSS_CONTROL
       else if ( grdchkvarindex .eq. 12 ) then
          il=ilnblnk( xx_obcss_file )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcss_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSS_CONTROL */
 
 #ifdef ALLOW_OBCSW_CONTROL
       else if ( grdchkvarindex .eq. 13 ) then
          il=ilnblnk( xx_obcsw_file )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcsw_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSW_CONTROL */
 
 #ifdef ALLOW_OBCSE_CONTROL
       else if ( grdchkvarindex .eq. 14 ) then
          il=ilnblnk( xx_obcse_file )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcse_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSE_CONTROL */
 
@@ -122,8 +124,8 @@ c--   == end of interface ==
        do iarr = 1, maxCtrlArr2D
         if ( grdchkvarindex .eq. 100+iarr ) then
          il=ilnblnk( xx_genarr2d_file(iarr) )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
         endif
        enddo
@@ -135,8 +137,8 @@ c--   == end of interface ==
        do iarr = 1, maxCtrlArr3D
         if ( grdchkvarindex .eq. 200+iarr ) then
          il=ilnblnk( xx_genarr3d_file(iarr) )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
         endif
        enddo
@@ -148,8 +150,8 @@ c--   == end of interface ==
        do iarr = 1, maxCtrlTim2D
         if ( grdchkvarindex .eq. 300+iarr ) then
          il=ilnblnk( xx_gentim2d_file(iarr) )
-         write(fname(1:80),'(80a)') ' '
-         write(fname(1:80),'(3a,i10.10)')
+         write(fname,'(80a)') ' '
+         write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
         endif
        enddo

@@ -87,8 +87,16 @@ c ============ retired compile option checks
 #endif
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
            WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
-     &      'ALLOW_MEAN_HFLUX_COST_CONTRIBUTION has no',
+     &      'ALLOW_MEAN_SFLUX_COST_CONTRIBUTION has no',
      &      'effect since cost_mean_saltflux has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION has no',
+     &      'effect since cost_ssh_globmean has been retired'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        nRetired = nRetired + 1

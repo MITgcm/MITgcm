@@ -54,9 +54,8 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, bi, bj
       INTEGER no_so
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iebmkey
+C     ikey :: tape key (tile dependent)
+      INTEGER ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
       _RL ReCountX(1-OLy:sNy+OLy,nSy)
 
@@ -87,16 +86,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = ikey_dynamics - 1
-        iebmkey = (act1 + 1) + act2*max1
-     &                       + act3*max1*max2
-     &                       + act4*max1*max2*max3
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO j=1-OLy,sNy+OLy
@@ -133,7 +123,7 @@ C--   Greenland in Northern Hemisphere, Antarctica in Southern
          ENDIF
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ReCountX(:,bj) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE ReCountX(:,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
 c=====================================================
@@ -145,7 +135,7 @@ c=======================================================
         T_var(3) = SIN(latBnd(2)*deg2rad)**3 - SIN(latBnd(1)*deg2rad)**3
         T_var(4) = SIN(latBnd(3)*deg2rad)**3 - SIN(latBnd(2)*deg2rad)**3
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE T_var(:) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE T_var(:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
 c----------------------------------------
@@ -180,8 +170,8 @@ c     Magnitude of the heat and moisture transport at 35 N/S
 c-----------------------------------------------------------
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE T35(:)    = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE DTDy35(:) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE T35(:)    = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE DTDy35(:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
         DO no_so = 1, 2
          IF ( DTDy35(no_so).NE.0. .AND. T35(no_so).NE.0. ) THEN
@@ -234,9 +224,9 @@ C     setup Legendre polynomials and  derivatives
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE S(:,:,bj)    = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE P2(:,:,bj)   = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE P4(:,:,bj)   = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE S(:,:,bj)    = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE P2(:,:,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE P4(:,:,bj)   = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 c
         DO j=1,sNy

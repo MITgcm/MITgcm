@@ -76,7 +76,7 @@ C     pKappaC    :: (p/Po)^kappa at cell center k
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER ikey, kkey
+      INTEGER tkey, kkey
 #endif
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef DISABLE_SIGMA_CODE
@@ -111,20 +111,7 @@ C                          and InterFace_W at the middle of Tracer lev;
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-
-      act3 = myThid - 1
-      max3 = nTx*nTy
-
-      act4 = ikey_dynamics - 1
-
-      ikey = (act1 + 1) + act2*max1
-     &                  + act3*max1*max2
-     &                  + act4*max1*max2*max3
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialize phiHydF to zero :
@@ -150,7 +137,7 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (ikey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
@@ -314,7 +301,7 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (ikey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,

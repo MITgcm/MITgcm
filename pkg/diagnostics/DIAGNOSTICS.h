@@ -100,7 +100,7 @@ C     fnames(n)   :: output file name for output stream # n
 C     fflags(n)   :: character string with per-file flags
 C                 :: 1rst: file precision ('R','D' or ' ' to use default outp prec)
 C                 :: 2nd: 'I'; integrate vertically ; 'P': interpolate vertically
-C                 :: 3rd: 'h'; cumulate thickness weighted field (if permitted)
+C                 :: 3rd: 'h'; multiply by hFac (if permitted) when filled
 C useMissingValue :: put MissingValue where mask = 0 (NetCDF output only)
 
       _RL freq(numLists), phase(numLists)

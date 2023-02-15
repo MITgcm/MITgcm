@@ -24,5 +24,8 @@ C     originally implemented in OPA.
 C     allow IDEMIX model
 #undef ALLOW_GGL90_IDEMIX
 
+C     include Langmuir circulation parameterization
+#undef ALLOW_GGL90_LANGMUIR
+
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */

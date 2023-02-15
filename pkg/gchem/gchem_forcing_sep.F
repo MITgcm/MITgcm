@@ -154,7 +154,7 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,6),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #else
 #ifdef ALLOW_O2
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
@@ -163,14 +163,14 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #else
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #endif
 #endif
 # ifndef ALLOW_AUTODIFF

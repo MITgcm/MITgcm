@@ -200,26 +200,14 @@ cph(
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
       integer i, j, kSurf, k, kp1, km1, im1, ip1, jm1, jp1
-      integer ikppkey
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-#endif
+C     ikey :: tape key (depends on tiles)
+      integer ikey
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ikppkey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #else /* ALLOW_AUTODIFF_TAMC */
-      ikppkey = 0
+      ikey = 0
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c     Check to see if new vertical mixing coefficient should be computed now?
@@ -263,7 +251,7 @@ c------------------------------------------------------------------------
       CALL STATEKPP(
      O     work2, dbloc, Ritop,
      O     TTALPHA, SSBETA,
-     I     ikppkey, bi, bj, myThid )
+     I     ikey, bi, bj, myThid )
 
       DO k = 1, Nr
        DO j = 1-OLy, sNy+OLy
@@ -354,11 +342,11 @@ c     so that the subroutine "bldepth" works correctly
 cph(
 cph  this avoids a single or double recomp./call of statekpp
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE work2              = comlev1_kpp, key = ikppkey
+CADJ STORE work2              = comlev1_kpp, key = ikey
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dbloc, Ritop, ghat = comlev1_kpp, key = ikppkey
-CADJ STORE vddiff             = comlev1_kpp, key = ikppkey
-CADJ STORE TTALPHA, SSBETA    = comlev1_kpp, key = ikppkey
+CADJ STORE dbloc, Ritop, ghat = comlev1_kpp, key = ikey
+CADJ STORE vddiff             = comlev1_kpp, key = ikey
+CADJ STORE TTALPHA, SSBETA    = comlev1_kpp, key = ikey
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -442,11 +430,11 @@ c------------------------------------------------------------------------
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
-     I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
+     I     ikey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 CMLcph(
 CML#ifdef ALLOW_AUTODIFF_TAMC
-CMLCADJ STORE ustar = comlev1_kpp, key = ikppkey
+CMLCADJ STORE ustar = comlev1_kpp, key = ikey
 CML#endif
 CMLcph)
 
@@ -508,7 +496,7 @@ c     shsq computation
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dvsq, shsq = comlev1_kpp, key = ikppkey
+CADJ STORE dvsq, shsq = comlev1_kpp, key = ikey
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
@@ -539,7 +527,7 @@ C     and salt are not passed to kppmix and are thus not available there.
      I      TTALPHA, SSBETA,
      U      KPPdiffKzT(1-OLx,1-OLy,1,bi,bj),
      U      KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
-     I      ikppkey,1-OLx,sNx+OLx,1-OLy,sNy+OLy,bi,bj,myThid)
+     I      ikey,1-OLx,sNx+OLx,1-OLy,sNy+OLy,bi,bj,myThid)
       ENDIF
 #endif /* ndef EXCLUDE_KPP_DOUBLEDIFF */
 
@@ -550,23 +538,23 @@ C     and salt are not passed to kppmix and are thus not available there.
          ENDDO
       ENDDO
       CALL KPPMIX (
-     I       work1, shsq, dVsq, ustar
-     I     , maskC(1-OLx,1-OLy,1,bi,bj)
-     I     , bo, bosol
+     I       work1, shsq, dVsq, ustar,
+     I       maskC(1-OLx,1-OLy,1,bi,bj),
+     I       bo, bosol,
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume, SaltPlumeDepth(1-OLx,1-OLy,bi,bj)
+     I       boplume, SaltPlumeDepth(1-OLx,1-OLy,bi,bj),
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I     , XC(1-OLx,1-OLy,bi,bj), YC(1-OLx,1-OLy,bi,bj)
+     I       XC(1-OLx,1-OLy,bi,bj), YC(1-OLx,1-OLy,bi,bj),
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #endif /* ALLOW_SALT_PLUME */
-     I     , dbloc, Ritop, work2
-     I     , KPPdiffKzS(1-OLx,1-OLy,1,bi,bj)
-     I     , KPPdiffKzT(1-OLx,1-OLy,1,bi,bj)
-     I     , ikppkey
-     O     , vddiff
-     U     , ghat
-     O     , hbl
-     I     , bi, bj, myTime, myIter, myThid )
+     I       dbloc, Ritop, work2,
+     I       KPPdiffKzS(1-OLx,1-OLy,1,bi,bj),
+     I       KPPdiffKzT(1-OLx,1-OLy,1,bi,bj),
+     I       ikey,
+     O       vddiff,
+     U       ghat,
+     O       hbl,
+     I       bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
@@ -626,7 +614,7 @@ c     horizontal smoothing of vertical diffusivity
 cph(
 cph  crucial: this avoids full recomp./call of kppmix
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KPPhbl = comlev1_kpp, key = ikppkey
+CADJ STORE KPPhbl = comlev1_kpp, key = ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 
