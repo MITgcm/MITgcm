@@ -182,9 +182,18 @@ C     Sea ice growth rates (m/s)
       _RL EnergyInNewTotalIceVolume     (1:sNx,1:sNy)
       _RL NetEnergyFluxOutOfOcean       (1:sNx,1:sNy)
 
+catn: these are defined locally here, not global
+catn  In seaice_diagnostics_init.F, SIaaflux is defined only
+catn  if ndef SEAICE_DISABLE_HEATCONSFIX
+catn  Now we define our own SIacflux to avoid confusion with
+catn  mainbranch meaning of SIaaflux.
 CAB   Terms for closing the budget
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+catn Comment out the local definition of SIaaflux as its meaning
+catn does not exist within the adx context, and introduce a new
+catn local array SIacflux to keep clear the different physics.
+catn  _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIacflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
@@ -422,6 +431,7 @@ C NEW VARIABLE NAMES
           leadPlumeFraction               (I,J) = 0. _d 0
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
+          SIacflux(I,J,bi,bj) = 0. _d 0
 
          ENDDO
         ENDDO
@@ -695,6 +705,12 @@ c =======================================================================
      I        bi, bj, myTime, myIter, myThid )
         ENDDO
 
+catn:note that in the main branch, to replicate old code, we reset
+catn FWSublim to zero if defined SEAICE_DISABLE_SUBLIM. Otherwise, we
+catn need to make sure FWsublim is being accounted for in all changes
+catn of hsnow and heff and energy loss in ocean etc. Otherwise, if we
+catn simply carry on with this FWsublim in EMPMR term below, mass
+catn budget will not close, and likely FW budget as well.
 c =======================================================================
 c  record the ice surface temperature in each category
 c  and find the average of fluxes across each category
@@ -776,7 +792,6 @@ CCHECK: HSNOW ACTUAL SHOULD NOT BE REGULARIZED FOR THIS
 c           Snow melt and melt rate [m] (actual snow thickness)
               SnowMeltFromSurface(I,J)     = hsnowActual(I,J)
 
-c             SnowMeltRateFromSurface(I,J) =
               SnowMeltRateFromSurface(I,J) =
      &           SnowMeltFromSurface(I,J) * recip_deltaTtherm
 
@@ -1240,18 +1255,32 @@ c    weighted
 CAB   Budget test , adding the energy stored in snow melt to qnet
 C     Moved bunch of these to line 780
 
+catn Everything down here is diagnostic, and should reflect what we
+catn calculated above and passed out to the ocean instead of computed
+catn again.  Otherwise we can end up with mismatch when we modify above
+catn and not replicate down here.
           SItflux(I,J,bi,bj) = 0.0 +
-     &         (AREApreTH(I,J)
-     &         *(F_ia_net(I,J)
-     &         + F_io_net(I,J) + QSWI(I,J))
-     &         +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
+c     &        (AREApreTH(I,J)
+c     &        *(F_ia_net(I,J)
+c     &        + F_io_net(I,J) + QSWI(I,J))
+c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
+     &     NetEnergyFluxOutOfOcean(I,J)*recip_deltaTtherm
      &         *HEFFM(I,J,bi,bj)
      &         +(SIheffNeg(I,J,bi,bj)*recip_QI
      &         +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
      &          + SnowAccOverIce(I,J) )*recip_QS)
      &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-          SIaaflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+catn In the main branch, SIaaflux is perserved for ifdef block
+catn SEAICE_DISABLE_HEATCONSFIX, such that when NOT defined (ifndef), a
+catn missing heat term associated with "treatment of advective heat flux
+catn by ocean to ice water exchange (at 0decC)" is accounted for.
+catn SIaaflux is only valid for ifndef SEAICE_DISABLE_HEATCONSFIX and
+catn filled when SEAICEheatConsFix=.true. at runtime. This set of flags
+catn (compiled and runtime) do not exist in adx code.  So, for diag
+catn the treatment of SIatmFW (EmPmR) on QNET, we use a new array
+catn SIacflux here instead of changing the meaning of SIaaflux.
+          SIacflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
      &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
 
           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
@@ -1261,7 +1290,16 @@ C     Moved bunch of these to line 780
      &          - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
      &           )*rhoConstFresh
-     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
+catn The line below is only valid if we account for sublimation in hsnow
+c and heff tendency correctly (e.g. how it is done in seaice_growth.F).
+c Specifically, in seaice_growth.F, sublimation is taken into account
+c through all calculations for updating mass tendency for hsnow, heff,
+c and mass coming off the ocean, then updated to EmPmR, before being
+c updated into the diagnostic SIatmFW.  In adx code, we do NOT use this
+c FWsublim term to update any mass tendency terms.  Therefore, we canNOT
+c add it to SIatmFW here, otherwise the ice mass budget will NOT closed.
+c But we can actually still diagnose it to SIfwSubl.
+cccc     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
 CAB
 
          ENDDO
@@ -1449,7 +1487,8 @@ C     &        'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
 
-       CALL DIAGNOSTICS_FILL(SIaaflux,'SIaaflux',0,1,0,1,1,myThid)
+c       CALL DIAGNOSTICS_FILL(SIaaflux,'SIaaflux',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(SIacflux,'SIacflux',0,1,0,1,1,myThid)
 
        tmpscal1= - 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,

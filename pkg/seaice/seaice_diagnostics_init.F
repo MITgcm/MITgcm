@@ -377,6 +377,13 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'SIacflux'
+      diagTitle = 'heat flux adjustment for freshwater empmr'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifndef SEAICE_DISABLE_HEATCONSFIX
       diagName  = 'SIaaflux'
       diagTitle = 'conservative ocn<->seaice adv. heat flux adjust.'

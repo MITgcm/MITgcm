@@ -42,10 +42,16 @@ C--   run with sea Ice Thickness Distribution (ITD);
 C     set number of categories (nITD) in SEAICE_SIZE.h
 #undef SEAICE_ITD
 
+catn this disable_sublim flag does NOTHING (i.e. it is
+catn meaningless) in adx code.  It also means that right
+catn now we DO NOT take sublimation into account in adx code.
 C--   Since the missing sublimation term is now included
 C     this flag is needed for backward compatibility
 #undef SEAICE_DISABLE_SUBLIM
 
+catn this ifdef block and its runtime param seaiceheatfixcons have
+catn no meaning in seaice_growth adx code.  So make sure these are
+catn undef to ensure SIaaflux is not defined, so as to avoid confusion
 C--   Suspected missing term in coupled ocn-ice heat budget (to be confirmed)
 #undef SEAICE_DISABLE_HEATCONSFIX
 
@@ -167,6 +173,8 @@ C     like all of the others -- residuals heat and fw stocks are passed to
 C     the ocean at the end of seaice_growth in a conservative manner.
 C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
+catn In adx code, the flag seaice_cap_sublim above DOES NOT work,
+catn so it is MEANINGLESS
 
 C--   Use the adjointable sea-ice thermodynamic model
 C     in seaice_growth_adx.F instead of seaice_growth.F
