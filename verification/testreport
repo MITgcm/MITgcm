@@ -1746,7 +1746,7 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-        if [[ "$fres" != *" pass "* ]]; then
+        if [[ ! "$fres" =~ " pass " ]]; then
             allpass=f
         fi
 
@@ -1773,7 +1773,7 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
-            if [[ "$fres" != *" pass "* ]]; then
+            if [[ ! "$fres" =~ " pass " ]]; then
                 allpass=f
             fi
 	    if test "x$POSTCLEAN" = x2 ; then
