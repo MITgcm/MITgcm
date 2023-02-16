@@ -76,8 +76,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#include "STREAMICE.h"      
-
 c**************************************
 #ifdef ALLOW_AUTODIFF
 # ifndef ALLOW_OPENAD
