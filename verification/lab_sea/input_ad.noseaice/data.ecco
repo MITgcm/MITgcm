@@ -59,7 +59,7 @@
  mult_gencost(4) = 1.,
 #
  gencost_avgperiod(5)  = 'month',
- gencost_barfile(5) = 'm_boxmean_vol',
+ gencost_barfile(5) = 'm_boxmean_theta',
  gencost_mask(5) = 'labsea_densityfollowing_mask',
  gencost_name(5) = 'labsea_densityfollowing_theta',
  gencost_useDensityMask(5) = .TRUE.,
@@ -68,4 +68,15 @@
  gencost_sigmaHigh(5) = 27.8,
  gencost_outputlevel(5)=1,
  mult_gencost(5) = 1.D+02,
+#
+ gencost_avgperiod(6)  = 'month',
+ gencost_barfile(6) = 'm_boxmean_vol',
+ gencost_mask(6) = 'labsea_densityfollowing_mask',
+ gencost_name(6) = 'labsea_densityfollowing_vol',
+ gencost_useDensityMask(6) = .TRUE.,
+ gencost_refPressure(6) = 0.0,
+ gencost_sigmaLow(6) = 27.0,
+ gencost_sigmaHigh(6) = 27.01,
+ gencost_outputlevel(6)=1,
+ mult_gencost(6) = 1.D-12,
  &
