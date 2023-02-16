@@ -541,9 +541,9 @@ c
 c Note: for shelfice, do not take this final average to make
 c       comparable to shelfice_cost_final.
 cts ---
-       IF (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .AND.
-     &    (gencost_barfile(kgen)(11:13).NE.'shi' .OR. 
-     &     gencost_barfile(kgen)(11:13).NE.'vol')) THEN
+       IF ( gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .AND.
+     &      gencost_barfile(kgen)(11:13).NE.'shi' .AND.
+     &      gencost_barfile(kgen)(11:13).NE.'vol' ) THEN
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ECCO_DIV( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 areavolGlob, 1, 1, myThid )
