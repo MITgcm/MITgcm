@@ -109,11 +109,9 @@ C     == Local variables
      &      U_err, 0, myThid )
        print *, 'GOT HERE read uerr'
       endif
-      if (STREAMICEGlenConstFile .ne. ' ') then
-       CALL READ_FLD_XY_RL(STREAMICEGlenConstFile, ' ',
+      if (STREAMICEBglenCostMaskFile .ne. ' ') then
+       CALL READ_FLD_XY_RL(STREAMICEBGlenCostMaskFile, ' ',
      &      Bglen0, 0, myThid )
-       CALL READ_FLD_XY_RL(STREAMICEBglenCostMaskFile, ' ',
-     &      BglenMask, 0, myThid )
        print *, 'GOT HERE read Bglen file'
        calc_prior_cost_bglen = .true.
       else
@@ -238,7 +236,7 @@ C--   Calculate cost function on tile of this instance
               h = H_streamice(i,j,bi,bj)
               hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
 
-              IF ((h-hf) .gt. 5. .AND. BglenMask(i,j,bi,bj).gt.0.0 .and.
+              IF ((h-hf) .gt. 5. .AND. Bglen0(i,j,bi,bj).gt.0.0 .and.
      &            calc_prior_cost_bglen) then
 
                 tile_fc (bi,bj) = tile_fc (bi,bj) + 
