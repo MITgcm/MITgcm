@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - add new generic integral cost function "m_boxmean_vol" (e.g. to track
+    volume of isoycnal layer); add it to lab_sea secondary AD test "noseaice"
+    and update ref. AD output file.
 o tools/build_options:
   - fix OpenMP option in ifort optfiles for modern intel compiler.
 
