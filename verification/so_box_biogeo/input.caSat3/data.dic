@@ -1,0 +1,24 @@
+# DIC parameters
+ &ABIOTIC_PARMS
+  useCalciteSaturation= .TRUE.,
+# calcOmegaCalciteFreq= 86400.,
+  selectBTconst=1,
+  selectFTconst=1,
+  selectHFconst=1,
+  selectK1K2const=6,
+# Munhoven "GENERAL" solver: =1 ; Munhoven "SEC" solver: =2 ; Munhoven "FAST" solver: =3
+  selectPHsolver=3,
+ &
+
+ &BIOTIC_PARMS
+  alphaUniform = 0.97e-10,
+  rainRatioUniform = 5.e-2,
+  KRemin = 0.95,
+ &
+
+ &DIC_FORCING
+  DIC_iceFile='fice_box.bin',
+  DIC_windFile='tren_speed_box.bin',
+  DIC_silicaFile='sillev1_box.bin',
+  DIC_deepSilicaFile='silicate_3D_12m_box.bin',
+ &

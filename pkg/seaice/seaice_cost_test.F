@@ -1,9 +1,9 @@
 #include "SEAICE_OPTIONS.h"
 
-      subroutine cost_ice_test( mytime, myiter, mythid )
+      subroutine seaice_cost_test( mytime, myiter, mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_ice_test
+c     SUBROUTINE seaice_cost_test
 c     ==================================================================
 c
 c     o Compute sea-ice cost function.  The following options can be
@@ -39,7 +39,7 @@ c
 c     started: menemenlis@jpl.nasa.gov 26-Feb-2003
 c
 c     ==================================================================
-c     SUBROUTINE cost_ice_test
+c     SUBROUTINE seaice_cost_test
 c     ==================================================================
 
       implicit none

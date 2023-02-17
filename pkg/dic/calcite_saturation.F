@@ -6,10 +6,12 @@ C !ROUTINE: CALCITE_SATURATION
 C !INTERFACE: ==========================================================
       SUBROUTINE CALCITE_SATURATION( PTR_DIC, PTR_ALK, PTR_PO4,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid )
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C  Calculate carbonate fluxes
+C  Calculate carbonate fluxes:
+C   - determine carbonate ion concentration through full domain
+C   - calculate calcite saturation state
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -21,20 +23,20 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myIter               :: current timestep
 C  myTime               :: current time
+C  myIter               :: current timestep
 C  myThid               :: thread number
        _RL  PTR_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ===================================================
 
-#ifdef DIC_BIOTIC
+#if ( defined DIC_BIOTIC && defined DIC_CALCITE_SAT )
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
@@ -52,18 +54,9 @@ C  i,j,k                  :: loop indices
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        INTEGER CO3ITER
-       INTEGER CO3ITERmax
 CEOP
 
-Cmick...................................................
-c       write(6,*)'myIter ',myIter,'  CALLED CALCITE_SATURATION'
-c      write(6,*)'WARNING calcite_sat needs 3d silica & H0 set=7.9'
-c       write(6,*)'        - & Fixed first guess of deep pH to 7.9'
-Cmick....................................................
-
        DO k=1,Nr
-c determine carbonate ion concentration through full domain
-c determine calcite saturation state
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
             locTemp(i,j) = theta(i,j,k,bi,bj)
@@ -104,12 +97,14 @@ C Now correct the coefficients for pressure dependence
 
           IF ( maskC(i,j,k,bi,bj).EQ.oneRS ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
+C calcium concentration already calculated in S/R DIC_COEFFS_SURF
            calcium = cat(i,j,bi,bj)
 #else
            calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
 #endif
 
-c 30 micromol = 0.03 mol m-3
+C SilicaDeep filled with constant value of 0.03 mol/m3 unless
+C     DIC_deepSilicaFile provided.
            sitlocal = silicaDeep(i,j,k,bi,bj)
            po4local = PTR_PO4(i,j,k)
            diclocal = PTR_DIC(i,j,k)
@@ -137,7 +132,6 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I          sitlocal, alklocal,
      U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
-            debugPrt = .FALSE.
 
 C- convert carbonate to mol kg^-1-SW for calculation of saturation state
             carbonate(i,j) = carbonate(i,j)*permil
@@ -149,16 +143,12 @@ C Use the original Follows et al. (2006) solver
 #endif
             pHlocal(i,j) = 7.9 _d 0
 
-Cmick -DEC 04
-Cmick- NOW ITERATE pH SOLVER AT DEPTH ONLY
-Cmick  TO ENSURE ACCURATE ESTIMATE OF CO3 AT DEPTH
-Cmick - NOTE Si STILL USING A UNIFORM DUMMY VALUE
-            CO3itermax = 10
-Cmick - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
-Cmick - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
-CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
+C Since we start cold with an arbitrary pH, we must iterate pH solver
+C    to ensure accurate estimate of co3 at depth
+C    Because we may call this for deep ocean infrequently can afford to make
+C    several iterations
 
-            DO CO3iter = 1, CO3itermax
+            DO CO3iter = 1, nIterCO3
               CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
@@ -171,12 +161,6 @@ CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
      I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal(i,j), pCO2local(i,j), carbonate(i,j),
      I          i,j,k,bi,bj,myIter,myThid )
-
-c........................................................
-c               if(i .eq. 76 .and. j .eq. 36  .and. k .eq. 15) then
-c                 write(6,*)'Iteration, pH = ',CO3iter,pHlocal
-c               endif
-c........................................................
             ENDDO
 #ifdef CARBONCHEM_SOLVESAPHE
            ENDIF
@@ -184,6 +168,7 @@ c........................................................
 
            omegaC(i,j,k,bi,bj) = calcium * carbonate(i,j)
      &                         / Ksp_TP_Calc(i,j,bi,bj)
+           debugPrt = .FALSE.
 
 Cmick...................................................
 c            if(omegaC(i,j,k,bi,bj) .eq. 0.) then
@@ -236,6 +221,6 @@ C-     end k loop
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#endif /* DIC_BIOTIC */
+#endif /* DIC_BIOTIC and DIC_CALCITE_SAT */
        RETURN
        END

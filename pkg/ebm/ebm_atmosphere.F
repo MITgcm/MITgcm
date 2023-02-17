@@ -54,7 +54,8 @@ C     !LOCAL VARIABLES:
       INTEGER i, j, bi, bj
       INTEGER no_so
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER iebmkey
+C     ikey :: tape key (tile dependent)
+      INTEGER ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
       _RL ReCountX(1-OLy:sNy+OLy,nSy)
 
@@ -85,7 +86,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        iebmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO j=1-OLy,sNy+OLy
@@ -122,7 +123,7 @@ C--   Greenland in Northern Hemisphere, Antarctica in Southern
          ENDIF
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ReCountX(:,bj) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE ReCountX(:,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
 c=====================================================
@@ -134,7 +135,7 @@ c=======================================================
         T_var(3) = SIN(latBnd(2)*deg2rad)**3 - SIN(latBnd(1)*deg2rad)**3
         T_var(4) = SIN(latBnd(3)*deg2rad)**3 - SIN(latBnd(2)*deg2rad)**3
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE T_var(:) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE T_var(:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
 c----------------------------------------
@@ -169,8 +170,8 @@ c     Magnitude of the heat and moisture transport at 35 N/S
 c-----------------------------------------------------------
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE T35(:)    = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE DTDy35(:) = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE T35(:)    = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE DTDy35(:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
         DO no_so = 1, 2
          IF ( DTDy35(no_so).NE.0. .AND. T35(no_so).NE.0. ) THEN
@@ -223,9 +224,9 @@ C     setup Legendre polynomials and  derivatives
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE S(:,:,bj)    = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE P2(:,:,bj)   = comlev1_bibj, key=iebmkey, byte=isbyte
-CADJ STORE P4(:,:,bj)   = comlev1_bibj, key=iebmkey, byte=isbyte
+CADJ STORE S(:,:,bj)    = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE P2(:,:,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE P4(:,:,bj)   = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 c
         DO j=1,sNy
