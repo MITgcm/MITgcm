@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kl10:
+  - get stratification from variable "SigmaR" (passed as argument) instead of
+    recomputing locally in-situ density (less efficient and inaccurate when
+    using Non-Linear EOS); update (kl10) ref output for internal_wave exp.
 o pkg/ecco:
   - add new generic integral cost function "m_boxmean_vol" (e.g. to track
     volume of isoycnal layer); add it to lab_sea secondary AD test "noseaice"
