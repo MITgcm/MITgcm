@@ -491,6 +491,8 @@ be used (e.g. 1000 dbar, 2000 dbar).
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
   +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_vol``   | total volume over box            | specify box      |
+  +---------------------+----------------------------------+------------------+  
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
 
