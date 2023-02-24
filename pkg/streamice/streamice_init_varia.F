@@ -65,8 +65,8 @@ C     ZERO OUT FLOATING POINT ARRAYS
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
           BDOT_streamice1(i,j,bi,bj) = 0. _d 0
 #endif
-          streamice_bdot_depth_maxmelt_pv(i,j,bi,bj) = 0. _d 0
-          streamice_bdot_maxmelt_pv(i,j,bi,bj) = 0. _d 0
+          streamice_bdot_depth_maxmelt_v(i,j,bi,bj) = 0. _d 0
+          streamice_bdot_maxmelt_v(i,j,bi,bj) = 0. _d 0
           ADOT_streamice(i,j,bi,bj) = streamice_adot_uniform
           C_basal_friction(i,j,bi,bj) = C_basal_fric_const
 #ifndef STREAMICE_3D_GLEN_CONST
@@ -126,11 +126,11 @@ c          h_after_uflux_SI(i,j,bi,bj) = 0. _d 0
         cost_vel_streamice (bi,bj) = 0.0
         cost_surf_streamice (bi,bj) = 0.0
 #endif
-        streamice_bdot_depth_maxmelt_p = 0.0
-        streamice_bdot_maxmelt_p = 0.0
 
        ENDDO
       ENDDO
+      streamice_bdot_depth_maxmelt_p = 0.0
+      streamice_bdot_maxmelt_p = 0.0
 
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
@@ -402,6 +402,24 @@ c initialize melt rates
         WRITE(msgBuf,'(A)') 'INIT BDOT - FILENAME MISSING'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+       ENDIF
+
+      ELSEIF ( STREAMICEBdotConfig.EQ.'PARAM' ) THEN
+
+       IF ( STREAMICEBdotDepthFile .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICEBdotDepthFile, ' ',
+     &      streamice_bdot_depth_maxmelt_v, 0, myThid )
+
+       ENDIF
+
+       IF ( STREAMICEBdotMaxMeltFile .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICEBdotMaxMeltFile, ' ',
+     &     streamice_bdot_maxmelt_v , 0, myThid )
+
        ENDIF
 
       ENDIF

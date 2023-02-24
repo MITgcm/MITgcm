@@ -315,6 +315,14 @@ C     STREAMICEuMassFluxFile      :: file to set u_flux_bdry_SI
 C                                    see EXPLANATION OF MASKS below
 C     STREAMICEvMassFluxFile      :: file to set v_flux_bdry_SI
 C                                    see EXPLANATION OF MASKS below
+C     STREAMICEBdotDepthFile      :: file giving a spatially dependent
+C                                    depth below which const melt
+C                                    when Bdot_config='PARAM'. 
+C                                    overrides streamice_bdot_depth_maxmelt
+C     STREAMICEBdotMaxMeltFile    :: file giving a spatially dependent
+C                                    max melt at depth
+C                                    when Bdot_config='PARAM'
+C                                    overrides streamice_bdot_maxmelt
 C
 C     following give \gamma_sig and \gamma_tau factors as described
 C     in appendix of
@@ -379,6 +387,8 @@ C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimSnapBasename
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimTCBasename
       CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimTCBasename
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotDepthFile 
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotMaxMeltFile
 
 C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
 C     (i.e. boundaries that do not conform with rectangular walls)
@@ -468,7 +478,9 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEcostMaskFile,
      &     STREAMICE_ADV_SCHEME,
      &     STREAMICE_uvel_ext_file,
-     &     STREAMICE_vvel_ext_file
+     &     STREAMICE_vvel_ext_file,
+     &     STREAMICEBdotDepthFile,
+     &     STREAMICEBdotMaxMeltFile
 
 #ifdef ALLOW_PETSC
       COMMON /PETSC_PARM_C/
@@ -719,7 +731,7 @@ C    REAL ARRAYS
      &     C_basal_friction,
      &     B_glen,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
-     &     streamice_bdot_depth_maxmelt_pv, streamice_bdot_maxmelt_pv,
+     &     streamice_bdot_depth_maxmelt_v, streamice_bdot_maxmelt_v,
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
      &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg,

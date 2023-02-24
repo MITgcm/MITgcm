@@ -114,6 +114,8 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_vel_ext_cgrid,
      &     STREAMICE_uvel_ext_file,
      &     STREAMICE_vvel_ext_file,
+     &     STREAMICEBdotDepthFile,
+     &     STREAMICEBdotMaxMeltFile,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -333,6 +335,8 @@ c      streamice_n_sub_regularize = 4
       streamice_use_petsc = .false.
 #endif
       STREAMICE_ADV_SCHEME = ''
+      STREAMICEBdotDepthFile = ''
+      STREAMICEBdotMaxMeltFile = ''
 
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c      n_fluxes = 0

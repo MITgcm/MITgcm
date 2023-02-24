@@ -381,15 +381,42 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
                MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             (BDOT_STREAMICE(i,j,bi,bj) +
      &              BDOT_pert(i,j,bi,bj))
+
               ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
 
-               bdot_depth = 
-     &          streamice_bdot_depth_maxmelt_pv(i,j,bi,bj) +
-     &          streamice_bdot_depth_maxmelt_p + 
-     &          streamice_bdot_depth_maxmelt
+     
+               IF ( STREAMICEBdotDepthFile .EQ. '' ) THEN          
+                       
+                 bdot_depth = 
+     &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
+     &            streamice_bdot_depth_maxmelt_p + 
+     &            streamice_bdot_depth_maxmelt
+
+               ELSE
+                       
+                 bdot_depth = 
+     &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
+     &            streamice_bdot_depth_maxmelt_p 
+
+               ENDIF
+
+               IF ( STREAMICEBdotMeltMaxFile .EQ. '' ) THEN          
+                       
+                bdot_max = 
+     &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
+     &           streamice_bdot_maxmelt_p +
+     &           streamice_bdot_maxmelt
+
+               ELSE
+                       
+                bdot_max = 
+     &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
+     &           streamice_bdot_maxmelt_p 
+
+               ENDIF
 
                bdot_max = 
-     &          streamice_bdot_maxmelt_pv(i,j,bi,bj) +
+     &          streamice_bdot_maxmelt_v(i,j,bi,bj) +
      &          streamice_bdot_maxmelt_p +
      &          streamice_bdot_maxmelt
 
