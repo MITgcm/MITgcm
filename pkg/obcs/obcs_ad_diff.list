@@ -21,6 +21,7 @@ obcs_init_variables.f
 obcs_prescribe_read.f
 obcs_read_pickup.f
 obcs_sponge.f
+obcs_seaice_sponge.f
 obcs_balance_flow.f
 obcs_adjust.f
 orlanski_east.f
