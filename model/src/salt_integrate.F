@@ -403,7 +403,7 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
 
 #ifdef NONLIN_FRSURF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gs_loc(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE gS_loc(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
 # endif
         IF (nonlinFreeSurf.GT.0) THEN
           CALL FREESURF_RESCALE_G(
@@ -425,6 +425,9 @@ CADJ STORE gsNm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey, kind=isbyte
      U                            gsNm(1-OLx,1-OLy,1,bi,bj,2),
      I                            myThid )
 #else
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gsNm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
+# endif
           CALL FREESURF_RESCALE_G(
      I                            bi, bj, k,
      U                            gsNm1(1-OLx,1-OLy,1,bi,bj),
@@ -440,7 +443,7 @@ C-    end of vertical index (k) loop (Nr:1)
 #ifdef ALLOW_DOWN_SLOPE
       IF ( useDOWN_SLOPE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE recip_hfac = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE recip_hFac = comlev1_bibj, key = tkey, kind = isbyte
 # endif
         IF ( usingPCoords ) THEN
           CALL DWNSLP_APPLY(
