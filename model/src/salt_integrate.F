@@ -233,6 +233,9 @@ CADJ STORE gsNm1(:,:,:,bi,bj)  = comlev1_bibj, key=tkey, byte=isbyte
      I         GAD_SALINITY, useGMredi, useKPP,
      O         kappaRk,
      I         myThid )
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kappaRk = comlev1_bibj, key = tkey, byte = isbyte
+# endif
 #endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -291,18 +294,13 @@ C-    Start vertical index (k) loop (Nr:1)
         kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVer(:,:,:) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
-CADJ STORE gS_loc(:,:,k) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
+CADJ STORE fVer(:,:,:)         = comlev1_bibj_k, key=kkey, kind = isbyte
+CADJ STORE gS_loc(:,:,k)       = comlev1_bibj_k, key=kkey, kind = isbyte
 # ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gsNm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
-CADJ STORE gsNm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey,
-CADJ &     kind = isbyte
+CADJ STORE gsNm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey, kind = isbyte
+CADJ STORE gsNm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey, kind = isbyte
 # else
-CADJ STORE gsNm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
+CADJ STORE gsNm1(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL CALC_ADV_FLOW(
@@ -404,6 +402,9 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
         ENDIF
 
 #ifdef NONLIN_FRSURF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gs_loc(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+# endif
         IF (nonlinFreeSurf.GT.0) THEN
           CALL FREESURF_RESCALE_G(
      I                            bi, bj, k,
@@ -412,10 +413,8 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
          IF ( AdamsBashforthGs ) THEN
 #ifdef ALLOW_ADAMSBASHFORTH_3
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gsNm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey,
-CADJ &     byte=isbyte,  kind = isbyte
-CADJ STORE gsNm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey,
-CADJ &     kind = isbyte
+CADJ STORE gsNm(:,:,k,bi,bj,1) = comlev1_bibj_k, key=kkey, kind=isbyte
+CADJ STORE gsNm(:,:,k,bi,bj,2) = comlev1_bibj_k, key=kkey, kind=isbyte
 # endif
           CALL FREESURF_RESCALE_G(
      I                            bi, bj, k,
@@ -440,6 +439,9 @@ C-    end of vertical index (k) loop (Nr:1)
 
 #ifdef ALLOW_DOWN_SLOPE
       IF ( useDOWN_SLOPE ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE recip_hfac = comlev1_bibj, key = tkey, kind = isbyte
+# endif
         IF ( usingPCoords ) THEN
           CALL DWNSLP_APPLY(
      I                  GAD_SALINITY, bi, bj, kSurfC,
@@ -467,17 +469,18 @@ C-    Integrate forward in time, storing in gS_loc:  gS <= S + dt*gS
 
 C--   Implicit vertical advection & diffusion
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gS_loc(:,:,:)     = comlev1_bibj, key = tkey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef INCLUDE_IMPLVERTADV_CODE
       IF ( saltImplVertAdv .OR. implicitDiffusion ) THEN
 C     to recover older (prior to 2016-10-05) results:
 c     IF ( saltImplVertAdv ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:)    = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE gS_loc(:,:,:)     = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE wFld(:,:,:)       = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key=tkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE wFld(:,:,:)       = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE salt(:,:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key = tkey, byte = isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
         CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltVertAdvScheme, GAD_SALINITY,
      I         dTtracerLev, kappaRk, recip_hFac, wFld,
@@ -488,10 +491,6 @@ CADJ STORE recip_hFac(:,:,:) = comlev1_bibj, key=tkey, byte=isbyte
 #else /* INCLUDE_IMPLVERTADV_CODE */
       IF     ( implicitDiffusion ) THEN
 #endif /* INCLUDE_IMPLVERTADV_CODE */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj, key=tkey, byte=isbyte
-CADJ STORE gS_loc(:,:,:)  = comlev1_bibj, key=tkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
         CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         GAD_SALINITY, kappaRk, recip_hFac,
