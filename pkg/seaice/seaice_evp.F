@@ -99,7 +99,9 @@ C     betaFacU/V     :: analog betaFacP1U/V
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikeyloc, iicekey
+C     evpkey :: tape key (depends on evp iteration)
+C     tkey   :: tape key (depends on tile indices and evpkey)
+      INTEGER evpkey, tkey
 #else
       INTEGER nEVPstepMax
 #endif
@@ -306,16 +308,15 @@ C     start of the main time loop
        IF (iEVPstep.LE.nEVPstep) THEN
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikeyloc = iEVPstep +
-     &      (ikey_dynamics-1)*nEVPstepMax
-CADJ STORE uice           = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE vice           = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma1  = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma2  = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE seaice_sigma12 = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE evpAlphaC      = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE evpBetaU       = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE evpBetaV       = comlev1_evp, key = ikeyloc, byte = isbyte
+        evpkey = iEVPstep + (ikey_dynamics-1)*nEVPstepMax
+CADJ STORE uice           = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE vice           = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE seaice_sigma1  = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE seaice_sigma2  = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE seaice_sigma12 = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE evpAlphaC      = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE evpBetaU       = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE evpBetaV       = comlev1_evp, key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first calculate strain rates and bulk moduli/viscosities
@@ -326,15 +327,15 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE e11 = comlev1_evp,key = ikeyloc, byte = isbyte
-CADJ STORE e12 = comlev1_evp,key = ikeyloc, byte = isbyte
-CADJ STORE e22 = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE e11 = comlev1_evp,key = evpkey, byte = isbyte
+CADJ STORE e12 = comlev1_evp,key = evpkey, byte = isbyte
+CADJ STORE e22 = comlev1_evp,key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-          iicekey = bi + (bj-1)*nSx + (ikeyloc-1)*nSx*nSy
+          tkey = bi + (bj-1)*nSx + (evpkey-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL
 C     save previous (p-1) iteration
@@ -449,10 +450,8 @@ C     Bouillon et al., 2013)
           ENDDO
 #ifdef SEAICE_ALLOW_CLIPZETA
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE zetac            = comlev1_bibj_evp,
-CADJ &     key = iiceloc, byte = isbyte
-CADJ STORE zetaz(:,:,bi,bj) = comlev1_bibj_evp,
-CADJ &     key = iicekey, byte = isbyte
+CADJ STORE zetac            = comlev1_bibj_evp, key = tkey, byte=isbyte
+CADJ STORE zetaz(:,:,bi,bj) = comlev1_bibj_evp, key = tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     regularize zeta if necessary
           DO j=0,sNy+1
@@ -570,10 +569,8 @@ C
 C     first step stress equations
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE denom1(:,:,bi,bj) = comlev1_bibj_evp,
-CADJ &     key=iicekey, byte=isbyte
-CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp,
-CADJ &     key=iicekey, byte=isbyte
+CADJ STORE denom1(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
+CADJ STORE denom2(:,:,bi,bj) = comlev1_bibj_evp, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           IF ( useAdaptiveEVP ) THEN
            DO j=0,sNy
@@ -616,10 +613,8 @@ C     recover sigma11 and sigma22
           ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE denom2   (:,:,bi,bj) = comlev1_bibj_evp,
-CADJ &     key=iicekey, byte=isbyte
-CADJ STORE evpAlphaZ(:,:,bi,bj) = comlev1_bibj_evp,
-CADJ &     key=iicekey, byte=isbyte
+CADJ STORE denom2   (:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
+CADJ STORE evpAlphaZ(:,:,bi,bj) = comlev1_bibj_evp,key=tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     sigma12 is computed on Z points
           IF ( useAdaptiveEVP ) THEN
@@ -719,10 +714,8 @@ C     in this case the scaling with AREA is already done
         ENDIF
 #endif /* ALLOW_SEAICE_EVP_RESIDUAL */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE stressDivergenceX = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
-CADJ STORE stressDivergenceY = comlev1_evp,
-CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE stressDivergenceX = comlev1_evp, key = evpkey, byte=isbyte
+CADJ STORE stressDivergenceY = comlev1_evp, key = evpkey, byte=isbyte
 # ifdef SEAICE_DYN_STABLE_ADJOINT
 Cgf zero out adjoint fields to stabilize pkg/seaice dyna. adjoint
       CALL ZERO_ADJ( 1, stressDivergenceX, myThid)
@@ -901,8 +894,8 @@ c    &                       +( vIce(i,j,bi,bj) - vIceNm1(i,j,bi,bj) )
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uIce = comlev1_evp, key = ikeyloc, byte = isbyte
-CADJ STORE vIce = comlev1_evp, key = ikeyloc, byte = isbyte
+CADJ STORE uIce = comlev1_evp, key = evpkey, byte = isbyte
+CADJ STORE vIce = comlev1_evp, key = evpkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         CALL EXCH_UV_XY_RL(uIce,vIce,.TRUE.,myThid)

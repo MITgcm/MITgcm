@@ -87,8 +87,16 @@ c ============ retired compile option checks
 #endif
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
            WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
-     &      'ALLOW_MEAN_HFLUX_COST_CONTRIBUTION has no',
+     &      'ALLOW_MEAN_SFLUX_COST_CONTRIBUTION has no',
      &      'effect since cost_mean_saltflux has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION has no',
+     &      'effect since cost_ssh_globmean has been retired'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        nRetired = nRetired + 1
@@ -470,6 +478,7 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
      &          (gencost_barfile(k)(1:17).EQ.'m_boxmean_ptracer').OR.
+     &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_vol').OR.
      &          (gencost_barfile(k)(1:16).EQ.'m_boxmean_shifwf').OR.
      &          (gencost_barfile(k)(1:16).EQ.'m_boxmean_shihtf').OR.
      &          (gencost_barfile(k)(1:13).EQ.'m_horflux_vol')

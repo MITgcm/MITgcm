@@ -27,8 +27,12 @@ C     myThid               :: thread number
 CEOP
 
 #ifdef ALLOW_DIC
+#ifdef DIC_BIOTIC
       INTEGER i,j, bi,bj
+# ifdef DIC_CALCITE_SAT
       INTEGER k
+# endif
+#endif
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -58,6 +62,7 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
             rain_ratio(i,j,bi,bj) = rainRatioUniform
           ENDDO
         ENDDO
+#ifdef DIC_CALCITE_SAT
         DO k = 1, Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -65,6 +70,7 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
           ENDDO
          ENDDO
         ENDDO
+#endif /* DIC_CALCITE_SAT */
        ENDDO
       ENDDO
 #endif /* DIC_BIOTIC */

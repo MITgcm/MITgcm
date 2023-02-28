@@ -117,13 +117,15 @@ c     _RL M2loc
 #endif
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+C     tkey :: tape key (depends on tiles)
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER tkey, kkey
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -421,7 +423,7 @@ C     to match stratification sign (i.e., positive if stratified)
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -520,7 +522,7 @@ C-- end 1rst loop on vertical level index k
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 #endif
       IF ( GM_Visbeck_alpha.GT.zeroRL ) THEN
 C-     Limit range that Kappa-GM can take
@@ -533,7 +535,7 @@ C-     Limit range that Kappa-GM can take
        ENDDO
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 #endif
 #endif /* GM_VISBECK_VARIABLE_K */
 
@@ -541,7 +543,7 @@ C     Update components of Redi/GM tensor, second step: multiply by Diffusivity
       DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
 C to avoid few minor recomputations (with KAPREDI_CONTROL, KAPGM_CONTROL ?)
-       kkey = (igmkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -690,7 +692,7 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 #endif
 
 C     Gradient of Sigma at U points
@@ -918,7 +920,7 @@ C     Gradient of Sigma at V points
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (igmkey-1)*Nr + k
+       kkey = k + (tkey-1)*Nr
 #endif
 
        DO j=1-OLy+1,sNy+OLy-1

@@ -78,42 +78,42 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef CAR_DISS
-      diagName  = 'DIC3DSIT'
-      diagTitle = 'Three dimensional silicate concentration (mol/m3)'
-      diagUnits = 'mol/m3          '
-      diagCode  = 'SMRP    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+#ifdef DIC_CALCITE_SAT
+       diagName  = 'DIC3DSIT'
+       diagTitle = 'Three dimensional silicate concentration (mol/m3)'
+       diagUnits = 'mol/m3          '
+       diagCode  = 'SMRP    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'OMEGAC  '
-      diagTitle = 'Carbonate saturation'
-      diagUnits = 'mol eq/m3/s     '
-      diagCode  = 'SMRP    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+       diagName  = 'OMEGAC  '
+       diagTitle = 'Carbonate saturation'
+       diagUnits = 'mol eq/m3/s     '
+       diagCode  = 'SMRP    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'DIC3DPH '
-      diagTitle = 'Three dimensional pH (dimensionless)'
-      diagUnits = 'dimensionless   '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+       diagName  = 'DIC3DPH '
+       diagTitle = 'Three dimensional pH (dimensionless)'
+       diagUnits = 'dimensionless   '
+       diagCode  = 'SM P    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'DIC3DPCO'
-      diagTitle = 'Three dimensional CO2 partial pressure (atm)'
-      diagUnits = 'atm             '
-      diagCode  = 'SMRP    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+       diagName  = 'DIC3DPCO'
+       diagTitle = 'Three dimensional CO2 partial pressure (atm)'
+       diagUnits = 'atm             '
+       diagCode  = 'SMRP    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'DIC3DCO3'
-      diagTitle = 'Three dimensional carbonate concentration (mol/m3)'
-      diagUnits = 'mol/m3          '
-      diagCode  = 'SMRP    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+       diagName  = 'DIC3DCO3'
+       diagTitle = 'Three dimensional carbonate concentration (mol/m3)'
+       diagUnits = 'mol/m3          '
+       diagCode  = 'SMRP    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif
+#endif /* DIC_CALCITE_SAT */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
