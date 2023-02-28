@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#
 #  Build options for ifort with impi on Linux AMD64 platform
 #
-#  Tested on engaging1 (Centos 6) with ifort 14.0.2 (20140120) and impi 4.1.3.048
+#  Tested on engaging (Centos 6, Centos 7), with or without OpenMP,
+#                     with ifort 14.0.2 (20140120) and impi 4.1.3.048
 #
 #-------
 
@@ -27,6 +27,15 @@ OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
+
+#- for setting specific options, check compiler version:
+fcVers=`$FC $GET_FC_VERSION | head -n 1 | awk '{print $NF}'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-release '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-release: '$fcVers'" ; fi
+if [ $fcVers -ge 20160301 ] ; then
+    OMPFLAG='-qopenmp'
+fi
 
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2
