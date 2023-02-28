@@ -1031,12 +1031,16 @@ Generic Control Record Access
 For each control variable ``$ctrlvar``, three pairs of .data files (and their
 corresponding .meta) are required or produced per adjoint run:
 
-#. (a) ``$ctrlvar.$iternumber.data/meta``
-   (b) ``ad$ctrlvar.$iternumber.data/meta``
-#. (a) ``$ctrlvar.tmp.$iternumber.data/meta``
-   (b) ``ad$ctrlvar.tmp.$iternumber.data/meta``
-#. (a) ``$ctrlvar.effective.$iternumber.data/meta``
-   (b) ``ad$ctrlvar.effective.$iternumber.data/meta``
+::
+
+   1a   $ctrlvar.$iternumber.data/meta
+   1b ad$ctrlvar.$iternumber.data/meta
+
+   2a   $ctrlvar.tmp.$iternumber.data/meta
+   2b ad$ctrlvar.tmp.$iternumber.data/meta
+
+   3a   $ctrlvar.effective.$iternumber.data/meta
+   3b ad$ctrlvar.effective.$iternumber.data/meta
 
 In an adjoint run with the 2D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
