@@ -150,7 +150,7 @@ C     allow to import and export from/to Coupler interface.
 C--   Activate some pieces of code for coupling to GEOS AGCM
 #undef HACK_FOR_GMAO_CPL
 
-#endif /* _CPP_EEOPTIONS_H_ */
-
+C=== And define Macros ===
 #include "CPP_EEMACROS.h"
 
+#endif /* _CPP_EEOPTIONS_H_ */

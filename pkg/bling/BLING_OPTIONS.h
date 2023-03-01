@@ -97,7 +97,3 @@ C-- Undocumented Options:
 
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

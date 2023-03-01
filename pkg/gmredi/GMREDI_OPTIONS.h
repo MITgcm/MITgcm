@@ -1,10 +1,19 @@
-C CPP options file for GM/Redi package
-C Use this file for selecting options within the GM/Redi package
-
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+CBOP
+C !ROUTINE: GMREDI_OPTIONS.h
+C !INTERFACE:
+C #include "GMREDI_OPTIONS.h"
+
+C !DESCRIPTION:
+C *==================================================================*
+C | CPP options file for GM/Redi package:
+C | Control which optional features to compile in this package code.
+C *==================================================================*
+CEOP
 
 #ifdef ALLOW_GMREDI
 C     Package-specific Options & Macros go here
@@ -58,7 +67,3 @@ C Related to Adjoint-code:
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
