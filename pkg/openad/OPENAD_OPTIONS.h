@@ -1,3 +1,8 @@
+#ifndef OPENAD_OPTIONS_H
+#define OPENAD_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: OPENAD_OPTIONS.h
 C !INTERFACE:
@@ -9,11 +14,6 @@ C | CPP options file for OpenAD (openad) package:
 C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
-
-#ifndef OPENAD_OPTIONS_H
-#define OPENAD_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_OPENAD
 
