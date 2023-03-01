@@ -82,11 +82,6 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #undef EXCLUDE_PCELL_MIX_CODE
 
-C o Compute bottom drag coefficents, following the logarithmic law of the wall,
-C   as a function of grid cell thickness and roughness length
-C   zRoughBot (order 0.01m), assuming a von Karman constant = 0.4.
-#undef ALLOW_BOTTOMDRAG_ROUGHNESS
-
 C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
 C   for tracers (after scaling by constant Prandtl number)
 #undef ALLOW_SMAG_3D_DIFFUSIVITY

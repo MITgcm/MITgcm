@@ -25,6 +25,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif

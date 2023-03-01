@@ -46,10 +46,6 @@ c     _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL hFacMnSz, hFac_loc
       _RL hFac1tmp, hFac2tmp
       _RS rEmpty
-#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
-      INTEGER kLow
-      _RL hLoc
-#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -429,53 +425,6 @@ C     a) might add some "thin walls" in specific location
 C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
 C     new: location now reccorded as kSurfW/S = Nr+2
       CALL ADD_WALLS2MASKS( rEmpty, myThid )
-
-#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
-C--   Compute bottom drag coefficents as a function of grid cell thickness
-C     and roughness length, assuming von Karman constant = 0.4
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          bottomDragCoeffW(i,j,bi,bj) = bottomDragQuadratic
-          bottomDragCoeffS(i,j,bi,bj) = bottomDragQuadratic
-         ENDDO
-        ENDDO
-        IF ( zRoughBot .GT. 0. _d 0 ) THEN
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           kLow = 0
-           DO k=1,Nr
-            IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) kLow = k
-           ENDDO
-           IF ( kLow .GT. 0 ) THEN
-            hLoc = ( 0.5*drF(kLow) * hFacW(i,j,kLow,bi,bj) + zRoughBot )
-     &           / zRoughBot
-            bottomDragCoeffW(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
-           ELSE
-            bottomDragCoeffW(i,j,bi,bj) =  0. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           kLow = 0
-           DO k=1,Nr
-            IF ( hFacS(i,j,k,bi,bj).NE.zeroRS ) kLow = k
-           ENDDO
-           IF ( kLow .GT. 0 ) THEN
-            hLoc = ( 0.5*drF(kLow) * hFacS(i,j,kLow,bi,bj) + zRoughBot )
-     &           / zRoughBot
-            bottomDragCoeffS(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
-           ELSE
-            bottomDragCoeffS(i,j,bi,bj) = 0. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDDO
-      ENDDO
-#endif /* ALLOW_BOTTOMDRAG_ROUGHNESS */
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
