@@ -533,10 +533,8 @@ C--   z,p,r coord input switching.
 C-    set default scheme for quadratic bottom-drag
       IF ( selectBotDragQuadr.EQ.-1 .AND. bottomDragQuadratic.NE.0. )
      &  selectBotDragQuadr = 0
-#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
       IF ( selectBotDragQuadr.EQ.-1 .AND. zRoughBot.NE.0. )
      &  selectBotDragQuadr = 0
-#endif
 #endif /* ALLOW_MOM_COMMON */
 
       IF ( smag3D_diffCoeff.NE.zeroRL .AND. .NOT.useSmag3D ) THEN
