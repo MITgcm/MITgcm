@@ -12,7 +12,9 @@
  bottomDragLinear=0.E-4,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.FALSE.,
- zRoughBot = 0.01
+# Instead of a constant bottom drag coefficient, compute coefficient
+# from logarithmic law of the wall and bottom roughness length.
+ zRoughBot = 0.01,
 # For this configuration (vertical grid spacing)
 # this value of zRoughBot corresponds to approximately
 # bottomDragQuadratic=5.E-2,
