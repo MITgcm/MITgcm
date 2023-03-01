@@ -400,7 +400,7 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
                ENDIF
 
-               IF ( STREAMICEBdotMeltMaxFile .EQ. '' ) THEN          
+               IF ( STREAMICEBdotMaxMeltFile .EQ. '' ) THEN          
                        
                 bdot_max = 
      &           streamice_bdot_maxmelt_v(i,j,bi,bj) +

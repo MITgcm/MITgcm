@@ -894,8 +894,10 @@ C     The following arrays are used for the hybrid stress balance
 C  IMPORTANT: MELT RATE IN METERS PER YEAR
 C  POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bdot_depth_maxmelt_v(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bdot_maxmelt_v(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_depth_maxmelt_v
+     &                   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt_v
+     &                   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ADOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
