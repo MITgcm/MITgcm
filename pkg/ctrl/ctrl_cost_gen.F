@@ -132,9 +132,7 @@ c--   >>> Loop 1 to compute mean forcing:
       enddo
 
 c--   >>> Loop over records.
-catn: this is the cost of xx_*.00 , so it needs to loop
-catn over the same records startrec:endrec and not 1:Nrec
-      do irec = startrec+irec-1,endrec
+      do irec = startrec,endrec
 
 #ifdef ALLOW_AUTODIFF
         call active_read_xy(
