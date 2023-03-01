@@ -438,7 +438,11 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
                MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             (MR + BDOT_pert(i,j,bi,bj))
                BDOT_STREAMICE(i,j,bi,bj) = MR
+              ELSE
+               MR = 0.
+               BDOT_STREAMICE(i,j,bi,bj) = MR
               ENDIF
+
            ENDIF
 
            SMB = ADOT_STREAMICE(i,j,bi,bj)

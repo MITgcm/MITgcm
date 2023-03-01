@@ -676,9 +676,7 @@ C     Short arrays (e.g. masks)
      &     STREAMICE_float_cond,
      &     STREAMICE_calve_mask,
      &     STREAMICE_ctrl_mask,
-     &     STREAMICE_cost_mask,
-     &     v_bdry_values_SI_mask,
-     &     u_bdry_values_SI_mask
+     &     STREAMICE_cost_mask
       _RS STREAMICE_hmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS STREAMICE_umask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS STREAMICE_vmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -698,8 +696,6 @@ C     Short arrays (e.g. masks)
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS STREAMICE_cost_mask
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS v_bdry_values_SI_mask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS u_bdry_values_SI_mask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C    NOTES :
 C     STREAMICE_ufacemask_bdry, STREAMICE_vfacemask_bdry ARE CONSTANT (FIXED)
