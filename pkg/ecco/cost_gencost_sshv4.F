@@ -78,7 +78,7 @@ catn
 c mapping to gencost
       integer igen_mdt, igen_lsc, igen_gmsl
       integer igen_tp, igen_ers, igen_gfo
-      integer igen_etaobs
+      integer igen_etagcm
 
       _RL spval, factor
       _RL offset
@@ -102,7 +102,7 @@ c local arrays
       _RL tpma(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ersma(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gfoma(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL etaobs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL etagcm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       character*(MAX_LEN_FNAM) mdtfi, tpfi, ersfi, gfofi
       integer tpsta(4), erssta(4), gfosta(4)
@@ -155,7 +155,6 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL junk,junkweight
 
       integer nrecsave
-      _RL nrecsaveRL
 
       integer k2, k2_mdt, k2_lsc
       logical dosumsq
@@ -198,7 +197,7 @@ c-- detect the relevant gencost indices
       igen_gfo=0
       igen_lsc=0
       igen_gmsl=0
-      igen_etaobs=0
+      igen_etagcm=0
       do k=1,NGENCOST
         if (gencost_name(k).EQ.'sshv4-mdt') igen_mdt=k
         if (gencost_name(k).EQ.'sshv4-tp') igen_tp=k
@@ -309,7 +308,9 @@ c determine whether or not to re-reference
 c-- not only model period has to fall within the mdt period
 c-- but that there has to be at least 365 days (or 12 months) of model
 c-- run so for short model run, this will always get set to FALSE
-catn: note also the hard-coded years 1992,2011 here that SHOULD BE REMOVED
+catn Note also the hard-coded years 1992,2011 here that should be
+c removed at some point in the future if the reference MDT start
+c date no longer falls between 1992 and 2011
       doReference=.FALSE.
       IF ((modelstartdate(1).GT.1992*10000).AND.
      &    (modelstartdate(1).LT.2011*10000).AND.
@@ -344,7 +345,7 @@ c mdtfi, mdtsta, mdtend
        call cal_CopyDate(gencost_startdate(1,igen_mdt),mdtsta,myThid)
        call cal_CopyDate(gencost_enddate(1,igen_mdt), mdtend, myThid)
        if (gencost_barfile(igen_mdt)(1:5).EQ.'m_eta')
-     &    igen_etaobs=igen_mdt
+     &    igen_etagcm=igen_mdt
       endif
 c tpfi, tpsta, tpper
       if (igen_tp.GT.0) then
@@ -353,7 +354,7 @@ c tpfi, tpsta, tpper
        call cal_CopyDate(gencost_startdate(1,igen_tp),tpsta,myThid)
        tpper=gencost_period(igen_tp)
        if (gencost_barfile(igen_tp)(1:5).EQ.'m_eta')
-     &    igen_etaobs=igen_tp
+     &    igen_etagcm=igen_tp
       endif
 c ersfi, erssta, ersper
       if (igen_ers.GT.0) then
@@ -362,7 +363,7 @@ c ersfi, erssta, ersper
        call cal_CopyDate(gencost_startdate(1,igen_ers),erssta,myThid)
        ersper=gencost_period(igen_ers)
        if (gencost_barfile(igen_ers)(1:5).EQ.'m_eta')
-     &    igen_etaobs=igen_ers
+     &    igen_etagcm=igen_ers
       endif
 c gfofi, gfosta, gfoper
       if (igen_gfo.GT.0) then
@@ -371,7 +372,7 @@ c gfofi, gfosta, gfoper
        call cal_CopyDate(gencost_startdate(1,igen_gfo),gfosta,myThid)
        gfoper=gencost_period(igen_gfo)
        if (gencost_barfile(igen_gfo)(1:5).EQ.'m_eta')
-     &    igen_etaobs=igen_gfo
+     &    igen_etagcm=igen_gfo
       endif
 
 c mdt_y0, mdt_y1
@@ -397,9 +398,9 @@ c--   First, read tiled data.
       ladinit      = .false.
 
       write(fname(1:80),'(80a)') ' '
-      ilps=ilnblnk( gencost_barfile(igen_etaobs) )
+      ilps=ilnblnk( gencost_barfile(igen_etagcm) )
       write(fname(1:80),'(2a,i10.10)')
-     &     gencost_barfile(igen_etaobs)(1:ilps),'.',eccoiter
+     &     gencost_barfile(igen_etagcm)(1:ilps),'.',eccoiter
 
 cgf =======================================================
 cgf PART 1:
@@ -409,7 +410,7 @@ cgf        together) over the time interval of the MDT ... subtract
 cgf        mean_slaobs_mdt from mdt.
 cgf        x At this point, mdt is the inferred SLA reference field.
 cgf        x From there on, mdt+sla will be directly comparable to
-cgf        the model SSH (etaobs).
+cgf        the model SSH (etagcm).
 cgf =======================================================
 
 c--   Read mean field and mask
@@ -607,8 +608,8 @@ c--   re-reference mdt:
       enddo
 
 cgf =======================================================
-cgf PART 2: compute sample means of etaobs-slaobs over the
-cgf         period that is covered by the model (i.e. etaobs).
+cgf PART 2: compute sample means of etagcm-slaobs over the
+cgf         period that is covered by the model (i.e. etagcm).
 cgf       x for all SLA data sets together: mean_psMssh_all, mean_psMssh_all_MSK,
 cgf         and offset will be used in PART 3 (MDT cost term).
 cgf       x for each SLA data individually. mean_psMtpobs, mean_psMtpobs_MS, etc.
@@ -652,16 +653,16 @@ cgf =======================================================
       do irec = 1, nrec_total
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( fname, etaobs, irec, doglobalread,
+        call active_read_xy( fname, etagcm, irec, doglobalread,
      &                       ladinit, eccoiter, myThid,
-     &                       gencost_dummy(igen_etaobs) )
+     &                       gencost_dummy(igen_etagcm) )
 #else
-        CALL READ_REC_XY_RL( fname, etaobs, iRec, 1, myThid )
+        CALL READ_REC_XY_RL( fname, etagcm, iRec, 1, myThid )
 #endif
 
         if (.NOT.useEtaMean)
-     &  CALL REMOVE_MEAN_RL( 1, etaobs, maskInC, maskInC, rA, drF,
-     &                       'etaobs', zeroRL, 1, myThid )
+     &  CALL REMOVE_MEAN_RL( 1, etagcm, maskInC, maskInC, rA, drF,
+     &                       'etagcm', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -699,7 +700,7 @@ cgf =======================================================
             do j = jmin,jmax
               do i = imin,imax
                 psmean(i,j,bi,bj) = psmean(i,j,bi,bj) +
-     &                etaobs(i,j,bi,bj) / float(nrec_total)
+     &                etagcm(i,j,bi,bj) / float(nrec_total)
                 if ( igen_tp .GT. 0 ) then
                   if ( tpma(i,j,bi,bj)*
      &             gencost_weight(i,j,bi,bj,igen_tp) .NE. 0. ) then
@@ -707,7 +708,7 @@ cgf =======================================================
      &              mean_slaobs_model(i,j,bi,bj)+tpob(i,j,bi,bj)
                    mean_psMtpobs(i,j,bi,bj) =
      &                 mean_psMtpobs(i,j,bi,bj) +
-     &                 etaobs(i,j,bi,bj)-tpob(i,j,bi,bj)
+     &                 etagcm(i,j,bi,bj)-tpob(i,j,bi,bj)
                    mean_psMtpobs_NUM(i,j,bi,bj) =
      &                 mean_psMtpobs_NUM(i,j,bi,bj) + 1. _d 0
                   endif
@@ -719,7 +720,7 @@ cgf =======================================================
      &              mean_slaobs_model(i,j,bi,bj)+ersob(i,j,bi,bj)
                    mean_psMersobs(i,j,bi,bj) =
      &                 mean_psMersobs(i,j,bi,bj) +
-     &                 etaobs(i,j,bi,bj)-ersob(i,j,bi,bj)
+     &                 etagcm(i,j,bi,bj)-ersob(i,j,bi,bj)
                    mean_psMersobs_NUM(i,j,bi,bj) =
      &                 mean_psMersobs_NUM(i,j,bi,bj) + 1. _d 0
                   endif
@@ -731,7 +732,7 @@ cgf =======================================================
      &              mean_slaobs_model(i,j,bi,bj)+gfoob(i,j,bi,bj)
                    mean_psMgfoobs(i,j,bi,bj) =
      &                 mean_psMgfoobs(i,j,bi,bj) +
-     &                 etaobs(i,j,bi,bj)-gfoob(i,j,bi,bj)
+     &                 etagcm(i,j,bi,bj)-gfoob(i,j,bi,bj)
                    mean_psMgfoobs_NUM(i,j,bi,bj) =
      &                 mean_psMgfoobs_NUM(i,j,bi,bj) + 1. _d 0
                   endif
@@ -963,9 +964,9 @@ c--    smooth mean_psMssh_all
 #endif
 
 cgf at this point:
-cgf     1) mean_psMssh_all is the sample mean <etaobs-slaobs-mdt-offset>,
+cgf     1) mean_psMssh_all is the sample mean <etagcm-slaobs-mdt-offset>,
 cgf             to which a smoothing filter has been applied.
-cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <etaobs-tpobs>.
+cgf     2) mean_psMtpobs is the (unsmoothed) sample mean <etagcm-tpobs>.
 cgf             And similarly for ers and gfo, each treated separately.
 
 cgf =======================================================
@@ -1006,19 +1007,13 @@ cgf =======================================================
 cgf PART 4: compute smooth SLA cost term
 cgf =======================================================
 
-catn
       if (use_mon) then
-catn: NOTE!!! can not have nrecsave=0 here
-catn: nrecsave is used for running mean, so should be > 1
-catn: also, nrecsave/2 is used as time of middle running-mean period
-catn: so it MUST BE AT LEAST 2 or else large-scale cost WILL BE SKIPPED!!
-        nrecsave=2
+        nrecsave=1
       else
         nrecsave=35
       endif
-      nrecsaveRL=nrecsave
 
-catn add a warning if have less nrecday than the hardcoded 35days
+catn add a warning if nrec_total is less than the hardcoded nrecsave
       tempinteger=nrec_total-nrecsave+1
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(A,i5,1x,i5,1x,i5)')
@@ -1030,7 +1025,7 @@ catn add a warning if have less nrecday than the hardcoded 35days
      &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are < ',nrecsave
         call print_message( msgbuf, errormessageunit,
      &                      SQUEEZE_RIGHT , myThid)
-        if( use_mon) then
+        if (use_mon) then
          write(msgbuf,'(A)')
      &   '        months required to calculate running mean tp+ers+gfo.'
          call print_message( msgbuf, errormessageunit,
@@ -1069,7 +1064,7 @@ catn -----------
         enddo
        enddo
 
-c PART 4.1: compute running sample average over ndaysave
+c PART 4.1: compute running sample average over nrecsave
 c ------------------------------------------------------
 
       do jrec=1,nrecsave
@@ -1077,16 +1072,16 @@ c ------------------------------------------------------
         krec=irec+jrec-1
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( fname, etaobs, krec, doglobalread,
+        call active_read_xy( fname, etagcm, krec, doglobalread,
      &                       ladinit, eccoiter, myThid,
-     &                       gencost_dummy(igen_etaobs) )
+     &                       gencost_dummy(igen_etagcm) )
 #else
-        CALL READ_REC_XY_RL( fname, etaobs, kRec, 1, myThid )
+        CALL READ_REC_XY_RL( fname, etagcm, kRec, 1, myThid )
 #endif
 
         if (.NOT.useEtaMean)
-     &  CALL REMOVE_MEAN_RL( 1, etaobs, maskInC, maskInC, rA, drF,
-     &                       'etaobs', zeroRL, 1, myThid )
+     &  CALL REMOVE_MEAN_RL( 1, etagcm, maskInC, maskInC, rA, drF,
+     &                       'etagcm', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1126,23 +1121,19 @@ c ------------------------------------------------------
       if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etaobs(i,j,bi,bj)-tpob(i,j,bi,bj)
+     &        etagcm(i,j,bi,bj)-tpob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        tpob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
-catn: note the hardcoded 2*jrec or 2*jrec-1 below:
-catn  in old code it used to be 2*jrec or 2*jrec+1, which means
-catn: if want lsc cost, need nrecsave > 1 and be at least 2.
-catn  Now, we can have nrecsave > or = 1 and still get lsc
            if ( (2*jrec.EQ.nrecsave).OR.(2*jrec-1.EQ.nrecsave) )
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
       if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etaobs(i,j,bi,bj)-ersob(i,j,bi,bj)
+     &        etagcm(i,j,bi,bj)-ersob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        ersob(i,j,bi,bj)
@@ -1154,7 +1145,7 @@ catn  Now, we can have nrecsave > or = 1 and still get lsc
       if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
      &  .NE.0. ) then
            anom_psMslaobs(i,j,bi,bj)= anom_psMslaobs(i,j,bi,bj)+
-     &        etaobs(i,j,bi,bj)-gfoob(i,j,bi,bj)
+     &        etagcm(i,j,bi,bj)-gfoob(i,j,bi,bj)
      &        -mean_psMslaobs(i,j,bi,bj)
            anom_slaobs(i,j,bi,bj)= anom_slaobs(i,j,bi,bj)+
      &        gfoob(i,j,bi,bj)
@@ -1168,7 +1159,7 @@ catn  Now, we can have nrecsave > or = 1 and still get lsc
         enddo
        enddo
 
-      enddo !do jrec=1,ndaysave
+      enddo !do jrec=1,nrecsave
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1371,16 +1362,16 @@ c time associated with this ndaysrec mean
         krec = irec + (nrecsave/2)
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_xy( fname, etaobs, krec, doglobalread,
+        call active_read_xy( fname, etagcm, krec, doglobalread,
      &                       ladinit, eccoiter, myThid,
-     &                       gencost_dummy(igen_etaobs) )
+     &                       gencost_dummy(igen_etagcm) )
 #else
-        CALL READ_REC_XY_RL( fname, etaobs, kRec, 1, myThid )
+        CALL READ_REC_XY_RL( fname, etagcm, kRec, 1, myThid )
 #endif
 
         if (.NOT.useEtaMean)
-     &  CALL REMOVE_MEAN_RL( 1, etaobs, maskInC, maskInC, rA, drF,
-     &                       'etaobs', zeroRL, 1, myThid )
+     &  CALL REMOVE_MEAN_RL( 1, etagcm, maskInC, maskInC, rA, drF,
+     &                       'etagcm', zeroRL, 1, myThid )
 
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1435,7 +1426,7 @@ c time associated with this ndaysrec mean
       if ( tpma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMtpobs(i,j,bi,bj)=
-     &       etaobs(i,j,bi,bj) - tpob(i,j,bi,bj)
+     &       etagcm(i,j,bi,bj) - tpob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_tpobs(i,j,bi,bj)=tpob(i,j,bi,bj) - slaoffset
@@ -1444,7 +1435,7 @@ c time associated with this ndaysrec mean
       if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMersobs(i,j,bi,bj)=
-     &       etaobs(i,j,bi,bj) - ersob(i,j,bi,bj)
+     &       etagcm(i,j,bi,bj) - ersob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_ersobs(i,j,bi,bj)=ersob(i,j,bi,bj) - slaoffset
@@ -1453,7 +1444,7 @@ c time associated with this ndaysrec mean
       if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj).NE.0. )
      & then
          anom_psMgfoobs(i,j,bi,bj)=
-     &       etaobs(i,j,bi,bj) - gfoob(i,j,bi,bj)
+     &       etagcm(i,j,bi,bj) - gfoob(i,j,bi,bj)
      &       - mean_psMslaobs(i,j,bi,bj) - slaoffset
      &       - anom_psMslaobs(i,j,bi,bj)
          anom_gfoobs(i,j,bi,bj)=gfoob(i,j,bi,bj) - slaoffset
@@ -1557,8 +1548,7 @@ c--             The array gfoobs contains SSH anomalies.
        enddo
       endif
 
-catn: closing irec loop below
-      enddo
+      enddo !do irec = 1, nrec_total-nrecsave+1
 
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 

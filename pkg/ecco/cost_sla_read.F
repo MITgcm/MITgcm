@@ -62,10 +62,10 @@ c     == local variables ==
       _RL factor
 cnew(
       integer  il
-      _RL daytime
-      integer dayiter
-      integer daydate(4)
-      integer yday, ymod
+      _RL obstime
+      integer obsiter
+      integer obsdate(4)
+      integer yobs, ymod
       integer md, dd, sd, ld, wd
       character*(80) fnametmp
       logical exst
@@ -79,7 +79,7 @@ catn: copy from cost_bp_read
       integer beginlocal, beginmodel, obsrec
       integer mody, modm
 
-      _RL dayspermon
+      _RL daysperavgperiod
 catn
 c     == end of interface ==
 
@@ -97,7 +97,7 @@ c     == end of interface ==
 
 catn
 
-      if (use_mon) then
+      IF (use_mon) THEN
         beginlocal = sla_startdate(1)/10000
         beginmodel = modelstartdate(1)/10000
         obsrec =  ( beginmodel - beginlocal )*nmonthyear
@@ -107,92 +107,92 @@ catn
 
         mody = modelstartdate(1)/10000
         modm = modelstartdate(1)/100 - mody*100
-        yday = mody + INT((modm-1+irec-1)/12)
+        yobs = mody + INT((modm-1+irec-1)/12)
         sshrec = 1 + MOD(modm-1+irec-1,12)
-        dayspermon = 30.5
+        daysperavgperiod = 30.5
 
-      else
+      ELSE
 
-        dayspermon = 1.0
+        daysperavgperiod = 1.0
 c select data record to read
-      daytime = FLOAT(secondsperday*(irec-1)) + modelstart
-      dayiter = hoursperday*(irec-1)+modeliter0
-      call cal_getdate( dayiter, daytime, daydate, myThid )
-      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,myThid )
-      ymod = sla_startdate(1)/10000
+        obstime = FLOAT(secondsperday*(irec-1)) + modelstart
+        obsiter = hoursperday*(irec-1)+modeliter0
+        call cal_getdate( obsiter, obstime, obsdate, myThid )
+        call cal_convdate( obsdate,yobs,md,dd,sd,ld,wd,myThid )
+        ymod = sla_startdate(1)/10000
 
-      if ( ymod .GE. yday ) then
-         call cal_FullDate( sla_startdate(1), 0, middate, myThid)
-      else
-         tempDate_1 = yday*10000+100+1
-         call cal_FullDate( tempDate_1, 0, middate, myThid)
-      endif
+        IF ( ymod .GE. yobs ) THEN
+           call cal_FullDate( sla_startdate(1), 0, middate, myThid)
+        ELSE
+           tempDate_1 = yobs*10000+100+1
+           call cal_FullDate( tempDate_1, 0, middate, myThid)
+        ENDIF
 
-      call cal_TimePassed( middate, daydate, difftime, myThid )
-      call cal_ToSeconds( difftime, diffsecs, myThid )
-c      sshrec = floor(diffsecs/sla_period) + 1
-      sshrec = int(diffsecs/sla_period) + 1
-      endif !use_mon
+        call cal_TimePassed( middate, obsdate, difftime, myThid )
+        call cal_ToSeconds( difftime, diffsecs, myThid )
+c        sshrec = floor(diffsecs/sla_period) + 1
+        sshrec = int(diffsecs/sla_period) + 1
+      ENDIF !use_mon
 
       il=ilnblnk(sla_file)
-      write(fnametmp(1:80),'(2a,i4)')
-     &     sla_file(1:il), '_', yday
+      WRITE(fnametmp(1:80),'(2a,i4)')
+     &     sla_file(1:il), '_', yobs
       inquire( file=fnametmp, exist=exst )
 
 c read data:
-      if ( (sshrec .GT. 0).AND.(exst) ) then
+      IF ( (sshrec .GT. 0).AND.(exst) ) THEN
        CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
      &                      sla_obs, sshrec, 1, myThid )
-      else
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
-         do j = jmin,jmax
-          do i = imin,imax
+      ELSE
+       DO bj = jtlo,jthi
+        DO bi = itlo,ithi
+         DO j = jmin,jmax
+          DO i = imin,imax
             sla_obs(i,j,bi,bj) = spval
-          enddo
-         enddo
-        enddo
-       enddo
-      endif
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 c mask data:
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj = jtlo,jthi
+        DO bi = itlo,ithi
           k = 1
-          do j = jmin,jmax
-            do i = imin,imax
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+          DO j = jmin,jmax
+            DO i = imin,imax
+              IF (_hFacC(i,j,k,bi,bj) .EQ. 0.) THEN
                  sla_mask(i,j,bi,bj) = 0. _d 0
-              else
+              ELSE
                  sla_mask(i,j,bi,bj) = 1. _d 0
-              endif
-              if (sla_obs(i,j,bi,bj) .le. spval) then
+              ENDIF
+              IF (sla_obs(i,j,bi,bj) .LE. spval) THEN
                 sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
-              if (abs(sla_obs(i,j,bi,bj)) .lt. 1.d-8 ) then
+              ENDIF
+              IF (abs(sla_obs(i,j,bi,bj)) .LT. 1.d-8 ) THEN
                  sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+              ENDIF
 
 #ifndef ALLOW_SHALLOW_ALTIMETRY
-              if ( R_low(i,j,bi,bj) .GT. -200. ) then
+              IF ( R_low(i,j,bi,bj) .GT. -200. ) THEN
                 sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+              ENDIF
 #endif
 #ifndef ALLOW_HIGHLAT_ALTIMETRY
-              if ( abs(YC(i,j,bi,bj)) .GT. 66. ) then
+              IF ( abs(YC(i,j,bi,bj)) .GT. 66. ) THEN
                 sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+              ENDIF
 #endif
 
               sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
               sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
      &             ( sla_obs(i,j,bi,bj) -
      &               ( sla_intercept + sla_slope*irec*hoursperday
-     &                *dayspermon  ) )
-            enddo
-          enddo
-        enddo
-      enddo
+     &                *daysperavgperiod  ) )
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
       RETURN
       END

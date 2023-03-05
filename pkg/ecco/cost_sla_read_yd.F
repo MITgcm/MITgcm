@@ -82,84 +82,84 @@ c     == end of interface ==
 
 catn
       read_rec=.FALSE.
-      if (use_mon) then
-        if ( (irec.GE.1).AND.(irec.LE.12 ) ) then
+      IF (use_mon) THEN
+        IF ( (irec.GE.1).AND.(irec.LE.12 ) ) THEN
           read_rec = .TRUE.
-        endif
-      else
+        ENDIF
+      ELSE
 
-        if ( (irec.GE.1).AND.( (
-     &   (cal_IsLeap(year,myThid).eq.2).AND.(irec.LE.366)
-     &   ).OR.(irec.LE.365) ) ) then
+        IF ( (irec.GE.1).AND.( (
+     &   (cal_IsLeap(year,myThid).EQ.2).AND.(irec.LE.366)
+     &   ).OR.(irec.LE.365) ) ) THEN
           read_rec = .TRUE.
-        endif
-      endif
+        ENDIF
+      ENDIF
 
-      if (read_rec) then
+      IF (read_rec) THEN
         il=ilnblnk(sla_file)
 
-        write(fnametmp(1:80),'(2a,i4)')
+        WRITE(fnametmp(1:80),'(2a,i4)')
      &     sla_file(1:il), '_', year
         inquire( file=fnametmp, exist=exst )
-        if (.NOT. exst) then
-           stop
-        endif
+        IF (.NOT. exst) THEN
+           STOP
+        ENDIF
 
-      CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
-     &                   sla_obs, irec, 1, myThid )
+        CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
+     &                     sla_obs, irec, 1, myThid )
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          k = 1
-          do j = jmin,jmax
-            do i = imin,imax
+        DO bj = jtlo,jthi
+          DO bi = itlo,ithi
+            k = 1
+            DO j = jmin,jmax
+              DO i = imin,imax
 
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-              else
-                 sla_mask(i,j,bi,bj) = 1. _d 0
-              endif
-              if (sla_obs(i,j,bi,bj) .le. spval) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
-              if (abs(sla_obs(i,j,bi,bj)) .lt. 1.d-8 ) then
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF (_hFacC(i,j,k,bi,bj) .EQ. 0.) THEN
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+                ELSE
+                   sla_mask(i,j,bi,bj) = 1. _d 0
+                ENDIF
+                IF (sla_obs(i,j,bi,bj) .LE. spval) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
+                IF (abs(sla_obs(i,j,bi,bj)) .LT. 1.d-8 ) THEN
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 
 #ifndef ALLOW_SHALLOW_ALTIMETRY
-              if ( R_low(i,j,bi,bj) .GT. -200. ) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF ( R_low(i,j,bi,bj) .GT. -200. ) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 #endif
 #ifndef ALLOW_HIGHLAT_ALTIMETRY
-              if ( abs(YC(i,j,bi,bj)) .GT. 66. ) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF ( abs(YC(i,j,bi,bj)) .GT. 66. ) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 #endif
 
-              sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
-              sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
-     &             sla_obs(i,j,bi,bj)
+                sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
+                sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
+     &               sla_obs(i,j,bi,bj)
 
-            enddo
-          enddo
-        enddo
-      enddo
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
 
-      else !if ( (irec.GE.1).AND...
+      ELSE !IF ( (irec.GE.1).AND...
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-                 sla_obs(i,j,bi,bj) = 0. _d 0
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
+        DO bj = jtlo,jthi
+          DO bi = itlo,ithi
+            DO j = jmin,jmax
+              DO i = imin,imax
+                   sla_obs(i,j,bi,bj) = 0. _d 0
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
 
-      endif !if ( (irec.GE.1).AND...
+      ENDIF !IF ( (irec.GE.1).AND...
 
       RETURN
       END
