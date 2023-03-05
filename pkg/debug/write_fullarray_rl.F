@@ -63,11 +63,11 @@ C--   to Build file name
       CALL MDSFINDUNIT( dUnit, myThid )
 
 C--   file precision has to match array type (no copy to buffer)
-#ifdef RL_IS_REAL4
-      filePrec = precFloat32
-#else
+c#ifdef RL_IS_REAL4
+c     filePrec = precFloat32
+c#else
       filePrec = precFloat64
-#endif
+c#endif
 
       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
 C--   Write full global array:

@@ -1,3 +1,8 @@
+#ifndef CTRL_OPTIONS_H
+#define CTRL_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:
@@ -10,11 +15,6 @@ C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
 
-#ifndef CTRL_OPTIONS_H
-#define CTRL_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
 #ifdef ALLOW_CTRL
 #ifdef ECCO_CPPOPTIONS_H
 
@@ -26,19 +26,67 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-#undef EXCLUDE_CTRL_PACK
+C o I/O and pack settings
+#undef CTRL_SET_PREC_32
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
+#undef EXCLUDE_CTRL_PACK
+#undef ALLOW_PACKUNPACK_METHOD2
+#undef CTRL_DO_PACK_UNPACK_ONLY
+#undef CTRL_PACK_PRECISE
+#undef CTRL_UNPACK_PRECISE
+#undef CTRL_DELZNORM
+#undef ALLOW_CTRL_WETV
 
 C       >>> Other Control.
-#undef ALLOW_DIFFKR_CONTROL
+C   Allows for GMREDI controls
 #undef ALLOW_KAPGM_CONTROL
 #undef ALLOW_KAPREDI_CONTROL
+C   Allows for Vertical Diffusivity controls
+#undef ALLOW_DIFFKR_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
+#undef ALLOW_DIC_CONTROL
+
+C   Allows bathymetry as a control vector
+C   Note: keep this Option separated from generic control since this control
+C     involves many new dependencies that we would like to avoid in general.
+#define ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
+C   Only relevant within DEPTH_CONTROL code:
+# define USE_SMOOTH_MIN
+# undef ALLOW_HFACC_CONTROL
+# undef ALLOW_HFACC3D_CONTROL
+#endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #undef ALLOW_GENTIM2D_CONTROL
+# undef ALLOW_UVEL0_CONTROL
+# undef ALLOW_VVEL0_CONTROL
+# undef CTRL_SET_OLD_MAXCVARS_30
+# undef CTRL_SET_OLD_MAXCVARS_40
+
+C       >>> Open boundaries
+#ifdef ALLOW_OBCS
+C    Control of Open-Boundaries is meaningless without compiling pkg/obcs
+C    Note: Make sure that corresponding OBCS N/S/W/E Option is defined
+# define ALLOW_OBCSN_CONTROL
+# define ALLOW_OBCSS_CONTROL
+# define ALLOW_OBCSW_CONTROL
+# define ALLOW_OBCSE_CONTROL
+# undef ALLOW_OBCS_CONTROL_MODES
+#endif /* ALLOW_OBCS */
+
+C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
+#if (defined (ALLOW_OBCSN_CONTROL) || \
+     defined (ALLOW_OBCSS_CONTROL) || \
+     defined (ALLOW_OBCSW_CONTROL) || \
+     defined (ALLOW_OBCSE_CONTROL))
+# define ALLOW_OBCS_CONTROL
+#endif
+
+C  o Impose bounds on controls
+#undef ALLOW_ADCTRLBOUND
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
