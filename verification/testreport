@@ -49,6 +49,7 @@ usage()
     echo " ---- output options : ----"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
+    echo "  (-pass)                  return non-zero exit code if any exp do not pass"
     echo "  (-odir) STRING           used to build output directory name"
     echo "                             (DEF=\"hostname\")"
     echo "  (-addr|-a) STRING        list of email recipients"
@@ -1135,6 +1136,7 @@ EXTRFLG=
 NOCATAD=
 MKSMALLF=
 OADSINGULARITY=
+CHECK_PASS=f
 
 #- type of testing (KIND):
 #   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
@@ -1225,6 +1227,8 @@ for ac_option ; do
 
 	-postclean | --postclean | -pc | --pc) POSTCLEAN=2 ;;
 	-deloutp | --deloutp | -do | --do) POSTCLEAN=1 ;;
+
+	-pass) CHECK_PASS=t ;;
 
 	-mpi | --mpi) MPI=2 ;;
 	-MPI | --MPI) ac_prev=MPI ;;
@@ -1561,6 +1565,8 @@ if test "x$CLEANUP" != xt ; then
 fi
 echo "-------------------------------------------------------------------------------"
 
+allpass=t
+
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
 
@@ -1740,6 +1746,9 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+        if [[ ! "$fres" =~ " pass " ]]; then
+            allpass=f
+        fi
 
 	for ex in $extra_runs ; do
 	    unset run
@@ -1764,6 +1773,9 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+            if [[ ! "$fres" =~ " pass " ]]; then
+                allpass=f
+            fi
 	    if test "x$POSTCLEAN" = x2 ; then
 		run_clean $dir/$pfxdir.$ex
 	    fi
@@ -1884,4 +1896,9 @@ fi
 if test "x$DELDIR" = xt ; then
     rm -rf $DRESULTS
 fi
+
+if test "$CHECK_PASS" = t && test "$allpass" = f; then
+    exit 1
+fi
+
 echo "======== End of testreport execution ========"

@@ -1,6 +1,6 @@
-c     ==================================================================
-c     HEADER ECCO_legacy
-c     ==================================================================
+C     ==================================================================
+C     HEADER ECCO_legacy
+C     ==================================================================
 
       INTEGER NSSHV4COST
       PARAMETER ( NSSHV4COST=5 )
@@ -24,7 +24,7 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) costTranspDataFile
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      _RL transpbar(maxNumDays,nsx,nsy)
+      _RL transpbar(maxNumDays,nSx,nSy)
       _RL transpobs(maxNumDays)
       _RL wtransp(maxNumDays)
 #endif
@@ -80,14 +80,14 @@ c     ==================================================================
       _RL  mult_lwdown
       _RL  mult_evap
       _RL  mult_apressure
-      _RL  mult_runoff
+c     _RL  mult_runoff
       _RL  mult_uwind
       _RL  mult_vwind
       _RL  mult_curmtr
       _RL  mult_kapgm
       _RL  mult_kapredi
       _RL  mult_diffkr
-      _RL  mult_ini_fin
+c     _RL  mult_ini_fin
       _RL  mult_edtau
       _RL  mult_bottomdrag
       _RL  mult_smooth_ic
@@ -98,15 +98,14 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) sflux_errfile
       character*(MAX_LEN_FNAM) tauu_errfile
       character*(MAX_LEN_FNAM) tauv_errfile
-      character*(MAX_LEN_FNAM) hfluxm_errfile
-      character*(MAX_LEN_FNAM) sfluxm_errfile
-      character*(MAX_LEN_FNAM) tauum_errfile
-      character*(MAX_LEN_FNAM) tauvm_errfile
+c     character*(MAX_LEN_FNAM) hfluxm_errfile
+c     character*(MAX_LEN_FNAM) sfluxm_errfile
+c     character*(MAX_LEN_FNAM) tauum_errfile
+c     character*(MAX_LEN_FNAM) tauvm_errfile
       character*(MAX_LEN_FNAM) scatx_errfile
       character*(MAX_LEN_FNAM) scaty_errfile
-C     moved to OBCS_CTRL.h because this file is used for obcs-ctrl
-C     parameters
-C     character*(MAX_LEN_FNAM) data_errfile
+C     moved to OBCS_CTRL.h because this file is used for obcs-ctrl parameters
+c     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) geoid_errfile
       character*(MAX_LEN_FNAM) geoid_covariancefile
       character*(MAX_LEN_FNAM) ssh_errfile
@@ -115,9 +114,9 @@ C     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) gfo_errfile
       character*(MAX_LEN_FNAM) sshv4cost_scalefile(NSSHV4COST)
       character*(MAX_LEN_FNAM) sshv4cost_errfile(NSSHV4COST)
-      character*(MAX_LEN_FNAM) ctdt_errfile
-      character*(MAX_LEN_FNAM) ctds_errfile
-      character*(MAX_LEN_FNAM) drift_errfile
+c     character*(MAX_LEN_FNAM) ctdt_errfile
+c     character*(MAX_LEN_FNAM) ctds_errfile
+c     character*(MAX_LEN_FNAM) drift_errfile
       character*(MAX_LEN_FNAM) udrifterrfile
       character*(MAX_LEN_FNAM) vdrifterrfile
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
@@ -146,7 +145,7 @@ C     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) lwdown_errfile
       character*(MAX_LEN_FNAM) evap_errfile
       character*(MAX_LEN_FNAM) apressure_errfile
-      character*(MAX_LEN_FNAM) runoff_errfile
+c     character*(MAX_LEN_FNAM) runoff_errfile
       character*(MAX_LEN_FNAM) edtau_errfile
       character*(MAX_LEN_FNAM) kapgm_errfile
       character*(MAX_LEN_FNAM) kapredi_errfile
@@ -169,7 +168,7 @@ C     character*(MAX_LEN_FNAM) data_errfile
       _RL wlwdown0
       _RL wevap0
       _RL wapressure0
-      _RL wrunoff0
+c     _RL wrunoff0
       _RL wbottomdrag0
       _RL wwind0
       _RL wdiffkr0
@@ -190,7 +189,7 @@ C     character*(MAX_LEN_FNAM) data_errfile
       _RL wmean_lwdown
       _RL wmean_evap
       _RL wmean_apressure
-      _RL wmean_runoff
+c     _RL wmean_runoff
       _RL wmean_wind
 
 #ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
@@ -222,20 +221,20 @@ C     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) curmtrufile
       character*(MAX_LEN_FNAM) curmtrvfile
 
-      integer scatxstartdate(4)
-      integer scatystartdate(4)
-      integer sststartdate(4)
-      integer argotstartdate(4)
-      integer argosstartdate(4)
-      integer tmistartdate(4)
-      integer sssstartdate(4)
-      integer bpstartdate(4)
-      integer iesstartdate(4)
-      integer topexstartdate(4)
-      integer ersstartdate(4)
-      integer gfostartdate(4)
-      integer mdtstartdate(4)
-      integer mdtenddate(4)
+c     integer scatxstartdate(4)
+c     integer scatystartdate(4)
+c     integer sststartdate(4)
+c     integer argotstartdate(4)
+c     integer argosstartdate(4)
+c     integer tmistartdate(4)
+c     integer sssstartdate(4)
+c     integer bpstartdate(4)
+c     integer iesstartdate(4)
+c     integer topexstartdate(4)
+c     integer ersstartdate(4)
+c     integer gfostartdate(4)
+c     integer mdtstartdate(4)
+c     integer mdtenddate(4)
 
       integer tmistartdate1
       integer tmistartdate2
@@ -282,6 +281,6 @@ C     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) ersTimeMaskFile
       character*(MAX_LEN_FNAM) gfoTimeMaskFile
 
-c     ==================================================================
-c     END OF HEADER ECCO_legacy
-c     ==================================================================
+C     ==================================================================
+C     END OF HEADER ECCO_legacy
+C     ==================================================================

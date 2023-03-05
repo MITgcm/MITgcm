@@ -21,14 +21,19 @@ C     === Global variables ===
 #include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid ::  Number of this instance
+C     myThid :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+#if (defined ALLOW_3D_DIFFKR) || (defined ALLOW_BL79_LAT_VARY)
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
       INTEGER bi, bj
-      INTEGER i, j, k
+      INTEGER i, j
+#endif
+#ifdef ALLOW_3D_DIFFKR
+      INTEGER k
+#endif
 CEOP
 
 #ifdef ALLOW_3D_DIFFKR
@@ -56,8 +61,8 @@ CEOP
           DO i = 1-OLx, sNx+OLx
            BL79LatArray(i,j,bi,bj) = 0.0 _d 0
            IF ( ABS(YC(i,j,bi,bj)) .LT. BL79LatVary )
-     &          BL79LatArray(i,j,bi,bj) =
-     &          ( 1 + COS(YC(i,j,bi,bj)*pi/BL79LatVary) ) / 2
+     &       BL79LatArray(i,j,bi,bj) = halfRL
+     &         *( 1. _d 0 + COS(YC(i,j,bi,bj)*PI/BL79LatVary) )
           ENDDO
          ENDDO
         ENDDO
