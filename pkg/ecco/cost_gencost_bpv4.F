@@ -78,6 +78,9 @@ c     == local variables ==
       integer k2_bp
       logical exst
 #endif
+#ifdef ECCO_VERBOSE
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
 c     == end of interface ==
 
@@ -327,7 +330,7 @@ catn to default call smooth_basic2D used in eccov4.
      &      gencost_posproc_c(k2_bp,kgen),
      &      gencost_posproc_i(k2_bp,kgen),myThid)
          ELSE
-          call smooth_basic2D(bpdifanom,maskInC,
+           call smooth_basic2D(bpdifanom,maskInC,
      &      gencost_posproc_r(k2_bp,kgen),
      &      gencost_posproc_i(k2_bp,kgen),myThid)
          ENDIF
