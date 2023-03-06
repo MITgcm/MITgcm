@@ -1056,14 +1056,16 @@ used to determine the length of the three pairs (1--3) of files above in the
 order as follows:
 
 - First the ``ad$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b above
-  are produced in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
-  (with yadprefix="ad") and of sizes 1:endrec for 1b, 1:diffrec for 2b and 3b --
+  are initialised with zeros in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
+  (with yadprefix="ad"); 1b has the size 1:endrec and 2b and 3b have the size 1:diffrec --
   see :numref:`adxx_creation`;
 
 - Second, records startrec:endrec of (1a) ``$ctrvar.$iternumber.data`` are
-  accessed in ctrl_get_gen_rec.F
-  and (2a,3a) ``$ctrlvar.{tmp,effective}.data`` of size 1:diffrec are produced in
-  initialize_variamd (inside call adthe_main_loop in taf_ad_output.F) --
+  read in filelink:`ctrl_map_ini_gentim2d.F`, processed if scaling or
+  smoothing, etc,  need to be applied, and then written to (2a,3a)
+  ``$ctrlvar.{tmp,effective}.data`` of size 1:diffrec; note that the actual routines
+  are often the "md" versions produced by taf, e.g., `s/r ctrl_map_ini_gentim2dmd` called from
+  `s/r initialize_variamd` (called from adthe_main_loop in taf_ad_output.f) --
   see :numref:`xx_creation`.
 
   .. figure:: figs/adxx_creation.*
