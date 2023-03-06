@@ -1046,7 +1046,7 @@ corresponding .meta) are required or produced per adjoint run:
 
 In an adjoint run with the 2D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
-:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` will be
+:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` = :varlink:`endrec` - :varlink:`startrec` will be
 initialized as a function of the startdate (:varlink:`startdate_1`,
 :varlink:`startdate_2`) in data.cal, the control variables startdates
 (:varlink:`xx_gentim2d_startdate1`, :varlink:`xx_gentim2d_startdate2`) in
