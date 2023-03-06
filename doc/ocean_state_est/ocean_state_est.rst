@@ -492,7 +492,7 @@ be used (e.g. 1000 dbar, 2000 dbar).
   | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_vol``   | total volume over box            | specify box      |
-  +---------------------+----------------------------------+------------------+  
+  +---------------------+----------------------------------+------------------+
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
 
@@ -1046,7 +1046,7 @@ corresponding .meta) are required or produced per adjoint run:
 
 In an adjoint run with the 2D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
-:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` = :varlink:`endrec` - :varlink:`startrec` will be
+:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` = :varlink:`endrec` - :varlink:`startrec` + 1 will be
 initialized as a function of the startdate (:varlink:`startdate_1`,
 :varlink:`startdate_2`) in data.cal, the control variables startdates
 (:varlink:`xx_gentim2d_startdate1`, :varlink:`xx_gentim2d_startdate2`) in
@@ -1055,18 +1055,20 @@ calls ctrl_init, ctrl_init_rec).  These three variables are subsequently
 used to determine the length of the three pairs (1--3) of files above in the
 order as follows:
 
-- First the ``ad$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b above
-  are initialised with zeros in packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar
-  (with yadprefix="ad"); 1b has the size 1:endrec and 2b and 3b have the size 1:diffrec --
-  see :numref:`adxx_creation`;
+- First the ``ad$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b) above
+  are initialised with zeros in
+  packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar (with yadprefix =
+  ``ad``); 1b has the size 1::varlink:`endrec` and 2b and 3b have the size
+  1::varlink:`diffrec` -- see :numref:`adxx_creation`;
 
-- Second, records startrec:endrec of (1a) ``$ctrvar.$iternumber.data`` are
-  read in filelink:`ctrl_map_ini_gentim2d.F`, processed if scaling or
-  smoothing, etc,  need to be applied, and then written to (2a,3a)
-  ``$ctrlvar.{tmp,effective}.data`` of size 1:diffrec; note that the actual routines
-  are often the "md" versions produced by taf, e.g., `s/r ctrl_map_ini_gentim2dmd` called from
-  `s/r initialize_variamd` (called from adthe_main_loop in taf_ad_output.f) --
-  see :numref:`xx_creation`.
+- Second, records startrec:endrec of (1a) ``$ctrvar.$iternumber.data`` are read
+  in :filelink:`ctrl_map_ini_gentim2d.F`, processed if scaling or smoothing,
+  etc, need to be applied, and then written to (2a,3a)
+  ``$ctrlvar.{tmp,effective}.data`` of size 1::varlink:`diffrec`; note that the
+  actual routines are often the ``md`` versions produced by taf, e.g., ``s/r
+  ctrl_map_ini_gentim2dmd`` called from ``s/r initialize_variamd`` (called from
+  ``s/r adthe_main_loop`` in taf-generated file ``taf_ad_output.f``) -- see
+  :numref:`xx_creation`.
 
   .. figure:: figs/adxx_creation.*
     :width: 95%
@@ -1077,17 +1079,18 @@ order as follows:
     adxx* are created first inside packages_init_fixed / ctrl_init.F.
 
 The difference in length of records for 1[a,b] compared to 2[a,b] and 3[a,b] is
-due to the fact that we need to access records startrec:endrec in 1a, i.e.,
-file 1a needs a total of at least :varlink:`endrec` records, and the file 1b is
-automatically generated to require access to endrec:-1:startrec.  File 1b, in
+due to the fact that we need to access records
+:varlink:`startrec`::varlink:`endrec` in 1a, i.e., file 1a needs a total of at
+least :varlink:`endrec` records, and the file 1b is automatically generated to
+require access to :varlink:`endrec`:-1::varlink:`startrec`. File 1b, in
 particular, is where adjoint sensitivity will be accumulated backward and
 written to.  For pairs 2[a,b] and 3[a,b], because they are generated *after* we
 have already accessed the correct records startrec:endrec in 1a, we simply
-create / write out these records in a shorter file of size 1:diffrec =
-1:endrec-startrec+1.
+create / write out these records in a shorter file of size 1::varlink:`diffrec`
+= 1::varlink:`endrec`-:varlink:`startrec` + 1.
 
-After their file size initializations, 3a which has physical unit is passed on to
-pkg/exf for surface forcing application.
+After their file size initializations, 3a which has physical unit is passed on
+to pkg/exf for surface forcing application.
 
   .. figure:: figs/xx_creation.*
     :width: 95%
