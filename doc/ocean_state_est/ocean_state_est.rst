@@ -738,7 +738,7 @@ grid files. *This operation could eventually be inlined.*
 CTRL: Model Parameter Adjustment Capability
 -------------------------------------------
 
-Author: Gael Forget, An T. Nguyen
+Author: Gael Forget, An T. Nguyen, Martin Losch
 
 .. _gen_ctrl:
 

@@ -312,7 +312,7 @@ C
      &       diffrecFull, startrec, endrecFull,
      &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 C
-catn: make length of adxx_.00 to be of length endrec
+C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,

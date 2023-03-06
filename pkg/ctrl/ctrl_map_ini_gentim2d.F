@@ -134,7 +134,7 @@ catn: write out to xx_atemp.effective.0000000001.data as as
 catn: 1:diffrec. Note that the version of this in ad_taf_output.f
 catn: strips all the misc write statements so it appears as if
 catn: we did not go past here, but we did.
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
         write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
      &              iarr,xx_gentim2d_startdate(1,iarr)
 #endif
@@ -187,7 +187,7 @@ c--   docycle
          endif
         enddo
 
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
         write(*,'(A,1x,5I6)')
      &   'AD:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
      &              startrec, endrec, diffrec,
@@ -201,7 +201,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           krec=replicated_nrec*(jrec-1)+irec
           lrec=startrec+irec-1
           IF (krec.LE.endrec) THEN
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
          ilgen=ilnblnk( fnamegenIn )
          write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
          write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
@@ -227,7 +227,7 @@ catn  the records startec-1:-1:1 should be all zeros.
 catn: now here, we write xx_atemp.effective.0000000001, so 
 catn: the krec is the correct record, no mod here
 #ifdef ALLOW_AUTODIFF
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenOut )
            write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
            write(*,*) 'AH: fnamegenOut: ', fnamegenOut(1:ilgen)
@@ -259,7 +259,7 @@ c--   rmcycle
          endif
         enddo
 
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
         write(*,'(A,1x,5I6)'),
      &  'AI:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
      &      startrec,endrec,diffrec,replicated_nrec,replicated_ntimes
@@ -272,7 +272,7 @@ c     create cyclic average
          nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
          recip_nyearsRL=1. _d 0/float(nyearsINT)
 
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
          write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
 #endif
 
@@ -293,7 +293,7 @@ c     create cyclic average
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=irec+(jrec-1)*replicated_nrec
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
            write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
            ilgen=ilnblnk( fnamegenOut )
            write(*,*) 'AL: fnamegenOut: ',fnamegenOut(1:ilgen)
@@ -349,7 +349,7 @@ c     subtract cyclic average
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
            krec=replicated_nrec*(jrec-1)+irec
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
            write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
            ilgen=ilnblnk( fnamegenOut )
            write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
@@ -404,7 +404,7 @@ catn: so we no longer need to fix any record from here on out
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
          ilgen=ilnblnk( fnamegenOut )
          lrec=startrec+irec-1
          write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, irec,lrec ',
@@ -425,7 +425,6 @@ catn: have this situation?  not sure how to fix this.  The fix
 catn: needs to be inside the do k2 loop
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') then
-catn            jrec=irec
             jrec=startrec+irec-1
           endif
          enddo
@@ -466,7 +465,7 @@ C--   Get appropriate mask
 
          CALL EXCH_XY_RL ( xx_gen , myThid )
 
-#ifdef ALLOW_CTRL_ATN_DEBUG
+#ifdef ALLOW_CTRL_DEBUG
          ilgen=ilnblnk( fnamegenOut )
          write(*,'(A,1x,I6,1x,A)')
      &      'AQ: irec,fnamegenOut: ',irec,fnamegenOut(1:ilgen)

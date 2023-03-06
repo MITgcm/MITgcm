@@ -106,8 +106,8 @@ C  this flag and associated code as well.
 C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
 #undef ALLOW_SMOOTH_CTRL2D
 
-C add debug ATN
-#undef ALLOW_CTRL_ATN_DEBUG
+C add debug
+#undef ALLOW_CTRL_DEBUG
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
