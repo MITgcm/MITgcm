@@ -1,8 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_bpv4(
-     I                     myThid
-     &                   )
+     I                     myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_bpv4
@@ -33,11 +32,14 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
+
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
 
@@ -70,14 +72,12 @@ c     == local variables ==
       _RL offset
       _RL offset_sum
 
-      integer k, kgen, k2, k2_bp
+      integer k, kgen
       logical dosumsq
+#ifdef ALLOW_SMOOTH
+      integer k2_bp
       logical exst
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
+#endif
 
 c     == end of interface ==
 
@@ -96,10 +96,10 @@ c     == end of interface ==
       if (kgen.GT.0) then
 
 #ifdef ALLOW_SMOOTH
+        k2_bp=0
         if ( useSMOOTH) then
-          k2_bp=0
-          do k2 = 1,ngenpproc
-            if (gencost_posproc(k2,kgen).eq.'smooth') k2_bp=k2
+          do k = 1,ngenpproc
+            if (gencost_posproc(k,kgen).eq.'smooth') k2_bp=k
           enddo
         endif
 #endif
@@ -149,7 +149,6 @@ c-- map global variable to local variables
        enddo
 
 #ifdef ALLOW_CTRL
-       write(fname(1:80),'(80a)') ' '
        il=ilnblnk( gencost_barfile(kgen) )
        write(fname(1:80),'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
@@ -163,7 +162,7 @@ c--   ============
       WRITE(msgBuf,'(A,1x,i5,1x,i10)')
      & ' bpv4, kgen, nmonsrec: ',kgen, nmonsrec
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 #endif
        do irec = 1, nmonsrec
 
@@ -181,15 +180,15 @@ c--     Compute the mean over all bpdat records.
      &       gencost_startdate(1,kgen),
      &       locbpdat, locbpmask, irec, myThid )
 
-#ifdef ECCO_VERBOS
+#ifdef ECCO_VERBOSE
         il=ilnblnk( gencost_datafile(kgen) )
         WRITE(msgBuf,'(A,1x,A,1x,i10)') ' bpv4, datafile, irec: ',
      &        gencost_datafile(kgen)(1:il), irec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , 1)
+     &                      SQUEEZE_RIGHT, myThid )
         write(fname4test(1:80),'(2a,i4.4)')
      &       gencost_datafile(kgen)(1:il),'.',irec
-        call write_rec_xy_rl( fname4test, locbpdat, 1, 1, mythid)
+        call write_rec_xy_rl( fname4test, locbpdat, 1, 1, myThid)
 #endif
 
         do bj = jtlo,jthi
@@ -320,7 +319,7 @@ catn smooth_hetero2d instead of smooth_basic2D. So here we try to use the
 catn same syntax as well as make the call more general using runtime params.
 catn If the runtime scaling file gencost_posproc_c is missing, we revert
 catn to default call smooth_basic2D used in eccov4.
-        IF ( useSMOOTH ) THEN
+        IF ( k2_bp.GE.1 ) THEN
          il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
          inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
          IF ( il .gt. 1 .and. exst ) THEN
@@ -337,9 +336,10 @@ catn to default call smooth_basic2D used in eccov4.
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
-         IF ( useSMOOTH ) THEN
-          il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
-          inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
+         IF ( k2_bp.GE.1 ) THEN
+C--   Skip second evaluation of "il" & "exst" (unchanged since first one above)
+c         il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
+c         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
           IF ( il .gt. 1 .and. exst ) THEN
            call smooth_hetero2d(bpdatanom,maskc,
      &      gencost_posproc_c(k2_bp,kgen),
