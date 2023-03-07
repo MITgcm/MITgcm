@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  -  update OBCS configuration summary.
 o eesupp/inc, model/inc & pkgs:
   Clean CPP header files:
   - remove ALLOW_GENCOST_CONTRIBUTION from COST_OPTIONS.h (is already set in
