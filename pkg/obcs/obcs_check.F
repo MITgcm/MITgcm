@@ -246,7 +246,7 @@ C
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// end of OBCS config. summary'
+      WRITE(msgBuf,'(A)') '// End of OBCS config. summary'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
