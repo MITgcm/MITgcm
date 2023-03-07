@@ -430,15 +430,17 @@ free-drift implementation can be selected with run-time flags.
 
 The :filelink:`pkg/seaice` includes the original so-called zero-layer
 thermodynamics with a snow cover as in the appendix of Semtner (1976)
-:cite:`semtner:76`.  Two versions of this zero-layer thermodynamic code
-exist, with a more developed version :filelink:`seaice_growth.F` and a simplified
-version :filelink:`seaice_growth_adx.F` based on Fenty (2013) :cite:`fenty:13`
-that excludes physics such as ITD, treatment for sublimation, and frazil
-ice but provides a stable sea ice adjointable with physical sensitivity.
-When the seaice_growth_adx code is enabled (by defining :varlink:`SEAICE_USE_GROWTH_ADX`
-in :filelink:`SEAICE_OPTIONS.h`), the regularization parameter
-:varlink:`SINegFac` is set to zero in adjoint mode to disable the
-potential propagation of unphysical terms associated with sea ice dynamics.
+:cite:`semtner:76`.  Two versions of this zero-layer thermodynamic code exist,
+with a more developed version :filelink:`seaice_growth.F
+<pkg/seaice/seaice_growth.F>` and a simplified version
+:filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` based on
+Fenty (2013) :cite:`fenty:13` that excludes physics such as ITD, treatment for
+sublimation, and frazil ice but provides a stable sea ice adjointable with
+physical sensitivity.  When the seaice_growth_adx code is enabled (by defining
+:varlink:`SEAICE_USE_GROWTH_ADX` in :filelink:`SEAICE_OPTIONS.h
+<pkg/seaice/SEAICE_OPTIONS.h>`), the regularization parameter
+:varlink:`SINegFac` is set to zero in adjoint mode to disable the potential
+propagation of unphysical terms associated with sea ice dynamics.
 
 
 .. _para_phys_pkg_seaice_thsice:
