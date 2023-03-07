@@ -46,6 +46,9 @@ c#endif
 # ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME_OPTIONS.h"
 # endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 c# ifdef ALLOW_THSICE
 c# include "THSICE_OPTIONS.h"
 c# endif
@@ -172,6 +175,10 @@ c**************************************
       COMMON/WIND_STRESS_ICE/TAUX,TAUY
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+# endif
 #endif /* ALLOW_TAPENADE */
 
 c**************************************

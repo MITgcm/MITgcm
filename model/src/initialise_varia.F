@@ -19,6 +19,9 @@
 # ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 # endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 c# ifdef ALLOW_THSICE
 c# include "THSICE_OPTIONS.h"
 c# endif
@@ -148,6 +151,10 @@ C     == Global variables ==
 # ifdef ALLOW_SEAICE
 # include "SEAICE_SIZE.h"
 # include "SEAICE.h"
+# endif
+# ifdef ALLOW_ECCO
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
