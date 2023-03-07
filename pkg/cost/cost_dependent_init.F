@@ -23,7 +23,9 @@ c     == global variables ==
 
 #include "cost.h"
 #include "adcost.h"
-#include "tap_adj_cost.h"
+#ifdef ALLOW_TAPENADE
+# include "tap_adj_cost.h"
+#endif
 c     == routine arguments ==
 
       integer mythid
