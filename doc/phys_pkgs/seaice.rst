@@ -129,7 +129,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseEVPpickup`      |     TRUE                     | use EVP pickups                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseDYNAMICS`       |     FALSE                    | solve approximate momentum equation, bypassing rheology                 |
+  | :varlink:`SEAICEuseFREEDRIFT`      |     FALSE                    | solve approximate momentum equation, bypassing rheology                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseFluxForm`       |     TRUE                     | use flux form for 2nd central difference advection scheme               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -414,18 +414,6 @@ MITgcm. Heat, fresh water fluxes and surface stresses are computed from the
 atmospheric state and, by default, modified by the ice model at every time
 step.
 
-Within :filelink:`pkg/seaice`, two ice thermodynamic code exists,
-The :filelink:`pkg/seaice` includes the original so-called zero-layer
-thermodynamics with a snow cover as in the appendix of Semtner (1976)
-:cite:`semtner:76`.  Two versions of this zero-layer thermodynamic code
-exist, with a more developed version seaice_growth.F and a simplified
-version seaice_growth_adx.F based on Fenty (2013) :cite:`fenty:13`
-that excludes physics such as ITD, treatment for sublimation, and frazil
-ice but provides a stable sea ice adjointable with physical sensitivity.
-When seaice_growth_adx code is enabled, the regularization parameter
-:varlink:`SINegFac` is set to zero in adjoint mode to disable the
-potential propagation of unphysical terms associated with sea ice dynamics.
-
 The ice dynamics models that are most widely used for large-scale climate
 studies are the viscous-plastic (VP) model (Hilber 1979 :cite:`hibler:79`), the
 cavitating fluid (CF) model (Flato and Hibler 1992 :cite:`flato:92`), and the
@@ -439,6 +427,18 @@ as the default dynamic component of our ice model. To do this we extended the
 line successive over relaxation (LSOR) method of Zhang and Hibler (1997)
 :cite:`zhang:97` for use in a parallel configuration. An EVP model and a
 free-drift implementation can be selected with run-time flags.
+
+The :filelink:`pkg/seaice` includes the original so-called zero-layer
+thermodynamics with a snow cover as in the appendix of Semtner (1976)
+:cite:`semtner:76`.  Two versions of this zero-layer thermodynamic code
+exist, with a more developed version :filelink:`seaice_growth.F` and a simplified
+version :filelink:`seaice_growth_adx.F` based on Fenty (2013) :cite:`fenty:13`
+that excludes physics such as ITD, treatment for sublimation, and frazil
+ice but provides a stable sea ice adjointable with physical sensitivity.
+When the seaice_growth_adx code is enabled (by defining :varlink:`SEAICE_USE_GROWTH_ADX`
+in :filelink:`SEAICE_OPTIONS.h`), the regularization parameter
+:varlink:`SINegFac` is set to zero in adjoint mode to disable the
+potential propagation of unphysical terms associated with sea ice dynamics.
 
 
 .. _para_phys_pkg_seaice_thsice:
