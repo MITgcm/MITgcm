@@ -146,7 +146,12 @@ C     temporary variables available for the various computations
       _RL F_ia_net_mult     (1:sNx,1:sNy,nITD)
       _RL F_ia_mult     (1:sNx,1:sNy,nITD)
       _RL QSWI_mult     (1:sNx,1:sNy,nITD)
+
+C Variables related to FWsublim are dummies required for call
+C to seaice_solve4temp subroutine and are not used afterwards
+C in this routine (by choice).
       _RL FWsublim_mult     (1:sNx,1:sNy,nITD)
+      _RL FWsublim          (1:sNx,1:sNy)
 
 #ifdef ALLOW_DIAGNOSTICS
 C     Helper variables for diagnostics
@@ -182,18 +187,9 @@ C     Sea ice growth rates (m/s)
       _RL EnergyInNewTotalIceVolume     (1:sNx,1:sNy)
       _RL NetEnergyFluxOutOfOcean       (1:sNx,1:sNy)
 
-catn: these are defined locally here, not global
-catn  In seaice_diagnostics_init.F, SIaaflux is defined only
-catn  if ndef SEAICE_DISABLE_HEATCONSFIX
-catn  Now we define our own SIacflux to avoid confusion with
-catn  mainbranch meaning of SIaaflux.
-CAB   Terms for closing the budget
+C Local arrays for diagnostics
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-catn Comment out the local definition of SIaaflux as its meaning
-catn does not exist within the adx context, and introduce a new
-catn local array SIacflux to keep clear the different physics.
-catn  _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIacflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIeprflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
@@ -280,8 +276,6 @@ C        F_ao > 0
 
 C     F_mi - heat flux from ocean to the ice (W/m^2)
       _RL F_mi                          (1:sNx,1:sNy)
-
-      _RL FWsublim                      (1:sNx,1:sNy)
 
 C     S_a_from_IGROW : d(AREA)/dt [from ice growth rate from open water fluxes]
       _RL S_a_IGROW                     (1:sNx,1:sNy)
@@ -431,7 +425,7 @@ C NEW VARIABLE NAMES
           leadPlumeFraction               (I,J) = 0. _d 0
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
-          SIacflux(I,J,bi,bj) = 0. _d 0
+          SIeprflx(I,J,bi,bj) = 0. _d 0
 
          ENDDO
         ENDDO
@@ -1271,16 +1265,8 @@ c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
      &          + SnowAccOverIce(I,J) )*recip_QS)
      &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-catn In the main branch, SIaaflux is perserved for ifdef block
-catn SEAICE_DISABLE_HEATCONSFIX, such that when NOT defined (ifndef), a
-catn missing heat term associated with "treatment of advective heat flux
-catn by ocean to ice water exchange (at 0decC)" is accounted for.
-catn SIaaflux is only valid for ifndef SEAICE_DISABLE_HEATCONSFIX and
-catn filled when SEAICEheatConsFix=.true. at runtime. This set of flags
-catn (compiled and runtime) do not exist in adx code.  So, for diag
-catn the treatment of SIatmFW (EmPmR) on QNET, we use a new array
-catn SIacflux here instead of changing the meaning of SIaaflux.
-          SIacflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+C Heat flux term associated with EmPmR:
+          SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
      &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
 
           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
@@ -1487,8 +1473,7 @@ C     &        'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
 
-c       CALL DIAGNOSTICS_FILL(SIaaflux,'SIaaflux',0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(SIacflux,'SIacflux',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(SIeprflx,'SIeprflx',0,1,0,1,1,myThid)
 
        tmpscal1= - 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
