@@ -81,12 +81,12 @@ C--   Print OBCS set-up summary:
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '// OBCS_CHECK.h: OBCS configuration summary'
+      WRITE(msgBuf,'(A)') '// OBCS_CHECK: OBCS configuration summary'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '//  '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 C
       CALL WRITE_0D_L( useOBCSprescribe, INDEX_NONE,
@@ -251,7 +251,7 @@ C
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A)') '//  '
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
