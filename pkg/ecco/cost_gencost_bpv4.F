@@ -42,36 +42,27 @@ c     == external functions ==
       external ilnblnk
 
 c     == local variables ==
-
       integer bi,bj
       integer i,j
-      integer itlo,ithi
-      integer jtlo,jthi
       integer irec
       integer il
-
       logical doglobalread
       logical ladinit
-
       _RL locbpbar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpdat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locwbp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
       _RL bpdifmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdifanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdatmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdatanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpcount ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL junk
-
       character*(80) fname
       character*(80) fname4test
-
       _RL fac
       _RL offset
       _RL offset_sum
-
       integer k, kgen
       logical dosumsq
 #ifdef ALLOW_SMOOTH
@@ -81,13 +72,7 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-
 c     == end of interface ==
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
 
       kgen=0
       do k=1,NGENCOST
@@ -99,12 +84,12 @@ c     == end of interface ==
       if (kgen.GT.0) then
 
 #ifdef ALLOW_SMOOTH
-        k2_bp=0
-        if ( useSMOOTH) then
+       k2_bp=0
+       if ( useSMOOTH) then
           do k = 1,ngenpproc
             if (gencost_posproc(k,kgen).eq.'smooth') k2_bp=k
           enddo
-        endif
+       endif
 #endif
 
        dosumsq=.TRUE.
@@ -118,8 +103,8 @@ c     == end of interface ==
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
        fac = 1. _d 2 / 9.81 _d 0
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              bpdifmean(i,j,bi,bj) = 0. _d 0
@@ -133,23 +118,23 @@ cgf convert phibot from m2/s2 to cm
              locbpmask(i,j,bi,bj) = 0. _d 0
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
        doglobalread = .false.
        ladinit      = .false.
 
 c-- map global variable to local variables
 
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              locwbp(i,j,bi,bj) = gencost_weight(i,j,bi,bj,kgen)
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
 #ifdef ALLOW_CTRL
        il=ilnblnk( gencost_barfile(kgen) )
@@ -162,10 +147,10 @@ c--   Mean values.
 c--   ============
 
 #ifdef ECCO_VERBOSE
-      WRITE(msgBuf,'(A,1x,i5,1x,i10)')
-     & ' bpv4, kgen, nmonsrec: ',kgen, nmonsrec
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,1x,i5,1x,i10)')
+     &      ' bpv4, kgen, nmonsrec: ',kgen, nmonsrec
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
 #endif
        do irec = 1, nmonsrec
 
@@ -194,8 +179,8 @@ c--     Compute the mean over all bpdat records.
         call write_rec_xy_rl( fname4test, locbpdat, 1, 1, myThid)
 #endif
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -208,13 +193,13 @@ c--     Compute the mean over all bpdat records.
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
        enddo
 
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
@@ -225,8 +210,8 @@ c--     Compute the mean over all bpdat records.
              endif
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
 c--   ==========
 c--   Anomalies.
@@ -248,8 +233,8 @@ c--   Loop over records for the second time.
      &       locbpdat, locbpmask, irec, myThid )
 
 c--    Compute field of anomalies
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -265,15 +250,15 @@ c--    Compute field of anomalies
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
 c--    Remove global mean value
         offset     = 0. _d 0
         offset_sum = 0. _d 0
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -283,14 +268,14 @@ c--    Remove global mean value
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
         _GLOBAL_SUM_RL( offset     , myThid )
         _GLOBAL_SUM_RL( offset_sum , myThid )
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (offset_sum.GT. 0. _d 0).AND.
@@ -301,8 +286,8 @@ c--    Remove global mean value
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
 c--    Smooth field of anomalies
         if (gencost_outputlevel(kgen).GT.0) then
@@ -315,14 +300,11 @@ c--    Smooth field of anomalies
         endif
 
 #ifdef ALLOW_SMOOTH
-catn The hardcoding numbers 300000. and 3000 are specific only to llc90/eccov4
-catn and can cause NaN for other grid horizontal resolution.  In addition, all
-catn other ecco costs that uses smooth, e.g., sshv4, sstv4, generic, calls
-catn smooth_hetero2d instead of smooth_basic2D. So here we try to use the
-catn same syntax as well as make the call more general using runtime params.
-catn If the runtime scaling file gencost_posproc_c is missing, we revert
-catn to default call smooth_basic2D used in eccov4.
         IF ( k2_bp.GE.1 ) THEN
+C- Note: Unlike all other generic-cost smoothing, original code was using
+C  "smooth_basic2D" with hard-coded smoothing length (3.e+5) and time
+C  multiplicator (3000). Keep original call (now using run-time params setting)
+C  when the scaling file gencost_posproc_c is missing:
          il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
          inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
          IF ( il .gt. 1 .and. exst ) THEN
@@ -364,8 +346,8 @@ c         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
         endif
 
 c--    Compute cost function
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
 c-- map to global cost variables
@@ -380,8 +362,8 @@ c-- map to global cost variables
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
        enddo
 
