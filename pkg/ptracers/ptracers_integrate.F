@@ -111,10 +111,10 @@ C  gTr_trp          :: passive tracer total transport tendency before gchem
       INTEGER iterNb
       _RL dummy(Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
-C     ikey :: tape key (depends on tiles)
-C     tkey :: tape key (depends on tracer and tiles)
+C     tkey :: tape key (depends on tiles)
+C     ikey :: tape key (depends on tracer and tiles)
 C     kkey :: tape key (depends on levels, tracer, and tiles)
-      INTEGER  ikey, tkey, kkey
+      INTEGER  tkey, ikey, kkey
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -181,8 +181,8 @@ C-    Initialise tracer tendency to zero
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-        tkey = iTracer + (ikey-1)*PTRACERS_num
+        tkey = bi + (bj-1)*nSx + (tkey_dynamics-1)*nSx*nSy
+        ikey = iTracer + (tkey-1)*PTRACERS_num
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Apply AB on Tracer :
@@ -221,14 +221,14 @@ c#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
      O         kappaRk,
      I         myThid)
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk = comlev1_bibj_ptracers, key = tkey, byte = isbyte
+CADJ STORE kappaRk = comlev1_bibj_ptracers, key = ikey, byte = isbyte
 # endif
 c#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
-CADJ &      = comlev1_bibj_ptracers, key=tkey, byte=isbyte
+CADJ &      = comlev1_bibj_ptracers, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
@@ -270,7 +270,7 @@ C-    Start vertical index (k) loop (Nr:1)
      &                  .AND. (PTRACERS_advScheme(iTracer).NE.0)
         DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (tkey-1)*Nr + k
+          kkey = k + (ikey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
           kM1  = MAX(1,k-1)
@@ -404,7 +404,7 @@ C-    end of vertical index (k) loop (Nr:1)
 # ifdef ALLOW_AUTODIFF_TAMC
 C     Here we can store on comlev1_bibj to save memory, because
 C     recip_hfac is the same for all tracers
-CADJ STORE recip_hfac = comlev1_bibj, key = ikey, kind = isbyte
+CADJ STORE recip_hfac = comlev1_bibj, key = tkey, kind = isbyte
 # endif
           IF ( usingPCoords ) THEN
             CALL DWNSLP_APPLY(
@@ -447,7 +447,7 @@ C       tracer field for implicit matrix calculation
 C--   Vertical advection & diffusion (implicit) for passive tracers
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers, key=tkey, byte=isbyte
+CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_IMPLVERTADV_CODE
