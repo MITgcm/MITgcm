@@ -2973,14 +2973,6 @@ for d in $alldirs ; do
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
 
-			#if test "x$TAPENADE" = x ; then
-			#    basename=${sf%%.F}
-			#    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
-			#    if test -z "$isAD" ; then
-			#	echo    " \\"  >> $TMP.nonADF77srclist
-			#	printf " $sf" >> $TMP.nonADF77srclist
-			#    fi
-			#else #- TAPENADE case:
 			if test "x$TAPENADE" != x ; then
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
@@ -3640,8 +3632,7 @@ EXECUTABLE_AD=$EXECUTABLE"_tap_adj"
 EXECUTABLE_TLM=$EXECUTABLE"_tap_tlm"
 
 cat >>$MAKEFILE <<EOF
-# ... TAPENADE ...
-
+# ========== begin TAPENADE specific section ==============
 EOF
 
 echo "  Add the source list for AD code generation"
@@ -3663,6 +3654,7 @@ cat >>$MAKEFILE <<EOF
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
+AD_CLEAN = *.f~ autodiff_init_varia_b.msg
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
@@ -3704,10 +3696,10 @@ tlm_exe_target:
 
 \$(EXECUTABLE_AD): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS) 
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS)
 \$(EXECUTABLE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS) 
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS)
 
 # ============ end TAPENADE specific section ==============
 
@@ -4001,10 +3993,13 @@ if test $FC_CHECK = 5 ; then
 	echo "  > make adAll    (<-- adjoint executable)"
     elif test $ad != 0 ; then
 	echo "  > make depend"
-	echo "    > make adall  (<-- adjoint executable with TAF)"
+      if test "x$TAPENADE" = x ; then
+	echo "    > make adall  (<-- adjoint  executable with TAF)"
 	echo " or > make ftlall (<-- tang-lin executable with TAF)"
+      else
 	echo "    > make tap_adj  (<-- adjoint executable with Tapenade)"
 	echo " or > make tap_tlm (<-- tang-lin executable with Tapenade)"
+      fi
 	echo " or > make        (<-- forward executable)"
     else
 #	echo "  > make depend   (add dependencies to Makefile)"
