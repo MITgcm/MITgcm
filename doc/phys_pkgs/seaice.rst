@@ -483,11 +483,10 @@ sea-ice model is global: in ice-free regions bulk formulae (by default computed
 in package :filelink:`exf <pkg/exf>`) are used to estimate oceanic forcing from
 the atmospheric fields.
 
-.. _para_phys_pkg_seaice_dynamics:
+.. _ssub_phys_pkg_seaice_dynamics:
 
 Dynamics
 ========
-
 
 The momentum equation of the sea-ice model is
 
@@ -1398,7 +1397,7 @@ zeros. In analogy to :math:`(\epsilon_{12})^Z=0` on boundaries, we set
 :math:`\sigma_{21}^{Z}=0`, or equivalently :math:`\eta_{i,j}^{Z}=0`, on
 boundaries.
 
-.. _para_phys_pkg_seaice_thermodynamics:
+.. _ssub_phys_pkg_seaice_thermodynamics:
 
 Thermodynamics
 ==============
