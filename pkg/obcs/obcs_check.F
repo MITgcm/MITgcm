@@ -159,10 +159,10 @@ C
      & 'useStevensPhaseVel  =', '  /* include phase vel. term. */')
       CALL WRITE_0D_L( useStevensAdvection,    INDEX_NONE,
      & 'useStevensAdvection  =', '  /* include advection term. */')
-      CALL WRITE_0D_RL( TrelaxStevens, INDEX_NONE,
+      CALL WRITE_0D_RS( TrelaxStevens, INDEX_NONE,
      & 'TrelaxStevens =',
      & ' /* relaxation time scale for theta ( s ). */')
-      CALL WRITE_0D_RL( SrelaxStevens, INDEX_NONE,
+      CALL WRITE_0D_RS( SrelaxStevens, INDEX_NONE,
      & 'SrelaxStevens =',
      & ' /* relaxation time scale for salinity ( s ). */')
 C
@@ -194,16 +194,16 @@ C
        CALL WRITE_0D_I( spongeThickness, INDEX_NONE,
      & 'spongeThickness =',
      & ' /* number grid points in sponge */')
-       CALL WRITE_0D_RL( Urelaxobcsinner, INDEX_NONE,
+       CALL WRITE_0D_RS( Urelaxobcsinner, INDEX_NONE,
      &  'Urelaxobcsinner =',
      & ' /* innermost relaxation time scale, u-velocity ( s ). */')
-       CALL WRITE_0D_RL( Urelaxobcsbound, INDEX_NONE,
+       CALL WRITE_0D_RS( Urelaxobcsbound, INDEX_NONE,
      &  'Urelaxobcsbound =',
      & ' /* boudnary relaxation time scale, u-velocity ( s ). */')
-       CALL WRITE_0D_RL( Vrelaxobcsinner, INDEX_NONE,
+       CALL WRITE_0D_RS( Vrelaxobcsinner, INDEX_NONE,
      &  'Vrelaxobcsinner =',
      & ' /* innermost relaxation time scale, v-velocity ( s ). */')
-       CALL WRITE_0D_RL( Vrelaxobcsbound, INDEX_NONE,
+       CALL WRITE_0D_RS( Vrelaxobcsbound, INDEX_NONE,
      &  'Vrelaxobcsbound =',
      & ' /* boundary relaxation time scale, v-velocity ( s ). */')
       ENDIF
