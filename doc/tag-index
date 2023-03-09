@@ -1,6 +1,23 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - smoothing in gencost_bpv4: allow to choose between a) call to smooth_basic2D
+    (using a constant length, with run-time params replacing hard-coded values)
+    or b) call to smooth_hetero2D (using a 2D field to be read in).
+o pkg/obcs:
+  -  update OBCS configuration summary.
+o eesupp/inc, model/inc & pkgs:
+  Clean CPP header files:
+  - remove ALLOW_GENCOST_CONTRIBUTION from COST_OPTIONS.h (is already set in
+    ECCO_OPTIONS.h);
+  - move ALLOW_PACKUNPACK_METHOD2 from AUTODIFF_OPTIONS.h to CTRL_OPTIONS.h;
+  - set EXCLUDE_WHIO_GLOBUFF_2D in MDSIO_OPTIONS.h (found in some customized
+    AUTODIFF_OPTIONS.h);
+  - list CPP options in pkg CPP header file (as undef) when used in any
+    experiment local set-up;
+  - fix typo in 2 CPP option names ; rename few (unused) pkg/fizhi CPP options;
+  - update pkg dependence rule for pkg/bling ; avoid few unused variables.
 o pkg/kl10:
   - get stratification from variable "SigmaR" (passed as argument) instead of
     recomputing locally in-situ density (less efficient and inaccurate when
