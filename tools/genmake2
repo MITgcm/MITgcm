@@ -1817,7 +1817,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 	exit 1
     fi
 fi
-if test $CAT_SRC_FOR_TAF = 0 ; then TAF_EXTRA="${TAF_EXTRA} -fixed" ; fi
+### if test $CAT_SRC_FOR_TAF = 0 ; then TAF_EXTRA="${TAF_EXTRA} -fixed" ; fi
 
 #====================================================================
 # Initialize INCLUDEDIRSMK from and optfile INCLUDEDIRS
@@ -2749,7 +2749,11 @@ fi
 if test -f $TMP.adSrcFiles ; then
     rm -f $TMP.adSrcFiles
 fi
+if test -f $TMP.adF90Files ; then
+    rm -f $TMP.adF90Files
+fi
 echo "  Creating the list of files for the adjoint compiler."
+# first F77
 touch $TMP.adSrcFiles
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
@@ -2761,6 +2765,19 @@ if test ! "x"$FS = "x.f" ; then
     cat $TMP.adSrcFiles | sed -e "s/\.f/.$FS/g" > $TMP.adSrcFiles_f
     mv -f $TMP.adSrcFiles_f $TMP.adSrcFiles
 fi
+# now F90
+touch $TMP.adF90Files
+for i in $SOURCEDIRS ; do
+    list_files=`( cd $i && ls -1 *.F90list 2>/dev/null )`
+    for j in $list_files ; do
+        cat $i/$j >> $TMP.adF90Files
+    done
+done
+if test ! "x"$FS90 = "x.f90" ; then
+    cat $TMP.adF90Files | sed -e "s/\.f90/.$FS90/g" > $TMP.adF90Files_f
+    mv -f $TMP.adF90Files_f $TMP.adF90Files
+fi
+
 
 echo
 echo "===  Creating the Makefile  ==="
@@ -3138,7 +3155,7 @@ fwd_exe_target:
 
 depend:
 	@\$(MAKE) -f \$(MAKEFILE) links
-	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F77_SRC_FILES)
+	\$(MAKEDEPEND) -f \$(MAKEFILE) -o .$FS \$(DEFINES) \$(INCLUDES) \$(CPPINCLUDES) \$(F77_SRC_FILES) \$(F90_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
@@ -3304,6 +3321,15 @@ for i in $AD_FILES ; do
 done
 echo >> $MAKEFILE
 rm -f $TMP.adSrcFiles
+printf "AD_F90FILES = " >> $MAKEFILE
+AD_F90FILES=`cat $TMP.adF90Files`
+for i in $AD_F90FILES ; do
+    echo    " \\" >> $MAKEFILE
+    printf " $i" >> $MAKEFILE
+done
+echo >> $MAKEFILE
+rm -f $TMP.adF90Files
+
 
 if test $CAT_SRC_FOR_TAF = 0 ; then
 cat >>$MAKEFILE <<EOF
@@ -3315,11 +3341,13 @@ remove_comments:
 adj_sed:
 	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_ad.$FS)
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS.bak)
+	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_F90FILES:.$FS90=_ad.$FS90)
+	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90.bak)
 ftl_sed:
 	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_tl.$FS)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS.bak)
-adobjfiles: \$(AD_FILES:.$FS=_ad.o)
-ftlobjfiles: \$(AD_FILES:.$FS=_tl.o)
+adobjfiles: \$(AD_FILES:.$FS=_ad.o) \$(AD_F90FILES:.$FS90=_ad.o)
+ftlobjfiles: \$(AD_FILES:.$FS=_tl.o) \$(AD_F90FILES:.$FS90=_tl.o)
 EOF
 fi
 
@@ -3345,10 +3373,20 @@ ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
 	cat \$(FLOWFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
+ad_input_code.$FS90: \$(AD_F90FILES) \$(AD_FLOW_FILES)
+	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
+	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
+	@-rm -f ad_config.template
+	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
+	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
+	cat \$(FLOWFILES) \$(AD_F90FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS90
+
 adtafonly:
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS ad_input_code.$FS90
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
+	ls -l ad_input_code_ad.$FS90
+	cat ad_input_code_ad.$FS90 | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS90
 
 EOF
 
@@ -3371,21 +3409,24 @@ EOF
 else
 cat >>$MAKEFILE <<EOF
 # ... send multiple files to TAF ...
-ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
+ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES) \$(AD_F90FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
 	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
+	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
+	cat \$(FLOWFILES) > all_flowfiles.$FS
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
+	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) \$(FLOWFILES) \$(AD_FILES)
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) all_flowfiles.$FS \$(AD_FILES) \$(AD_F90FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
 \$(EXE_AD): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
-	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_ad.o) \$(AD_F90FILES:.$FS90=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
