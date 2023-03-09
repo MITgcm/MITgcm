@@ -73,11 +73,6 @@ C     pKappaF    :: (p/Po)^kappa at interface k
 C     pKappaU    :: (p/Po)^kappa at interface k+1 (Upper k)
 C     pKappaC    :: (p/Po)^kappa at cell center k
       INTEGER i,j
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER tkey, kkey
-#endif
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef DISABLE_SIGMA_CODE
       _RL phiHydU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -91,6 +86,11 @@ C     pKappaC    :: (p/Po)^kappa at cell center k
       _RL surfPhiFac
       LOGICAL useDiagPhiRlow, addSurfPhiAnom
       LOGICAL useFVgradPhi
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+      INTEGER tkey, kkey
+#endif
 CEOP
       useDiagPhiRlow = .TRUE.
       addSurfPhiAnom = select_rStar.EQ.0 .AND. nonlinFreeSurf.GE.4
