@@ -181,7 +181,7 @@ C-    Initialise tracer tendency to zero
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        tkey = bi + (bj-1)*nSx + (tkey_dynamics-1)*nSx*nSy
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
         ikey = iTracer + (tkey-1)*PTRACERS_num
 #endif /* ALLOW_AUTODIFF_TAMC */
 
