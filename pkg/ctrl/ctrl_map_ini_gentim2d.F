@@ -79,8 +79,10 @@ C     == local variables ==
       integer ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
       IF (debugMode)
-     &   CALL DEBUG_CALL('CTRL_MAP_INI_GENTIM2D',myThid)
+     &   CALL DEBUG_ENTER('CTRL_MAP_INI_GENTIM2D',myThid)
+#endif /* ALLOW_DEBUG */
 
 c--   Now, read the control vector.
       doglobalread = .false.
@@ -211,8 +213,8 @@ catn: from startrec+irec-1 instead of irec in the call below
 catn: HOWEVER, the problem is that in the adjoint mode, the function
 catn  adactive_read_xy is called to read in adxx_atemp.0000000001
 catn  instead xx_atemp.0000000001, in which case the records need to
-catn  be diffrec:-1:1 instead of of endrec:-1:startrec.  The question 
-catn  is how can we separate that out? Can we make use of the flag 
+catn  be diffrec:-1:1 instead of of endrec:-1:startrec.  The question
+catn  is how can we separate that out? Can we make use of the flag
 catn  FORWARD_SIMULATION and REVERSE_SIMULATION?
 catn  The solution now is that we make adxx file of length 1:endrec,
 catn  so that we can access record endrec:-1:startrec. The rest of
@@ -224,7 +226,7 @@ catn  the records startec-1:-1:1 should be all zeros.
 #else
            CALL READ_REC_XY_RL( fnamegenIn, xx_gen, lRec, 1, myThid )
 #endif
-catn: now here, we write xx_atemp.effective.0000000001, so 
+catn: now here, we write xx_atemp.effective.0000000001, so
 catn: the krec is the correct record, no mod here
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_CTRL_DEBUG
@@ -487,9 +489,11 @@ c--   end irec loop
 c--   end iarr loop
       ENDDO
 
-#endif /* ALLOW_GENTIM2D_CONTROL */
+#ifdef ALLOW_DEBUG
       IF (debugMode)
      &   CALL DEBUG_LEAVE('CTRL_MAP_INI_GENTIM2D',myThid)
+#endif /* ALLOW_DEBUG */
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
       RETURN
       END
