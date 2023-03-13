@@ -190,6 +190,8 @@ C     Sea ice growth rates (m/s)
 C Local arrays for diagnostics
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIeprflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C term for flooding
+      _RL SIfldflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
@@ -198,6 +200,8 @@ C   used in budget
 
 CAB
       _RL d_HEFFbyFlood                (1:sNx,1:sNy)
+C
+      _RL d_EnergybyFlood              (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
 C     to sea ice (Joules)
@@ -419,14 +423,14 @@ C NEW VARIABLE NAMES
           S_hsnow(I,J)   = 0.0 _d 0
 
           d_HEFFbyFlood(I,J) = 0.0 _d 0
-
+          d_EnergybyFlood(I,J) = 0.0 _d 0
 #ifdef ALLOW_SALT_PLUME
           IceGrowthRateInLeads            (I,J) = 0. _d 0
           leadPlumeFraction               (I,J) = 0. _d 0
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
           SIeprflx(I,J,bi,bj) = 0. _d 0
-
+          SIfldflx(I,J,bi,bj) = 0.0 _d 0
          ENDDO
         ENDDO
 
@@ -1148,6 +1152,9 @@ c     The energy required to melt or form the new ice volume
           EnergyInNewTotalIceVolume(I,J) =
      &         ActualNewTotalVolumeChange(I,J)*recip_QI
 c
+        IF(SEAICEuseFlooding) THEN
+          d_EnergybyFlood(I,J)=d_HEFFbyFlood(I,J)*recip_QI
+        ENDIF
 
 c     This is the net energy flux out of the ice+ocean system
 c     Remember -----
@@ -1176,6 +1183,17 @@ c     change the ML temperature at all.
           ResidualEnergyOutOfOcean(I,J) =
      &             NetEnergyFluxOutOfOcean(I,J) -
      &             EnergyInNewTotalIceVolume(I,J)
+
+C Here we add d_EnergybyFlood directly into term for QNET
+C that goes to the ocean.  So, for diagnosing the portion
+C that is taken from ice, we need to make sure this heat is added
+C to SItflux, the term that is taken out of the ice+snow into QNET.
+C We also will diagnose the energy associated with d_EnergybyFlood
+C into SIfldflx
+        IF(SEAICEuseFlooding) THEN
+            ResidualEnergyOutOfOcean(I,J)=ResidualEnergyOutOfOcean(I,J)
+     &            +d_EnergybyFlood(I,J)
+        ENDIF
 
 C     NOW FORMULATE QNET
 C     THIS QNET DETERMINES THE TEMPERATURE CHANGE
@@ -1266,8 +1284,18 @@ c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
      &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
 C Heat flux term associated with EmPmR:
+        IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
           SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
      &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
+        ELSE
+         SIeprflx(I,J,bi,bj) = 0.0
+CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L2275
+        ENDIF
+
+        IF(SEAICEuseFlooding) THEN
+            SIfldflx(I,J,bi,bj) =
+     &            d_EnergybyFlood(I,J)*recip_deltaTtherm
+        ENDIF
 
           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
@@ -1473,6 +1501,7 @@ C     &        'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
 
+       CALL DIAGNOSTICS_FILL(SIfldflx,'SIfldflx',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(SIeprflx,'SIeprflx',0,1,0,1,1,myThid)
 
        tmpscal1= - 1. _d 0

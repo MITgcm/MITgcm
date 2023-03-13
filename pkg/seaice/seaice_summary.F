@@ -102,6 +102,8 @@ C--  Time-stepping related param.
      &                    SQUEEZE_RIGHT, myThid )
 
 C--  Seaice-Dynamics parameters
+      CALL WRITE_0D_L ( SEAICEmultiDimAdvection, INDEX_NONE,
+     & 'SEAICEmultiDimAdvection =', ' /* multidimadvec */')
       CALL WRITE_0D_L ( SEAICEuseDYNAMICS, INDEX_NONE,
      & 'SEAICEuseDYNAMICS =', ' /* use dynamics */')
 
