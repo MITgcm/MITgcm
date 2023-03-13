@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68o (2023/03/13)
 o model/src:
   - salt/temp/ptracer_integrate.F: optimise store directives
   - add mising "obcs_seaice_sponge.f" to obcs_ad_diff.list
