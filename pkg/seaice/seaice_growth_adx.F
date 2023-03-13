@@ -200,7 +200,6 @@ C   used in budget
 
 CAB
       _RL d_HEFFbyFlood                (1:sNx,1:sNy)
-C
       _RL d_EnergybyFlood              (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
@@ -703,12 +702,6 @@ c =======================================================================
      I        bi, bj, myTime, myIter, myThid )
         ENDDO
 
-catn:note that in the main branch, to replicate old code, we reset
-catn FWSublim to zero if defined SEAICE_DISABLE_SUBLIM. Otherwise, we
-catn need to make sure FWsublim is being accounted for in all changes
-catn of hsnow and heff and energy loss in ocean etc. Otherwise, if we
-catn simply carry on with this FWsublim in EMPMR term below, mass
-catn budget will not close, and likely FW budget as well.
 c =======================================================================
 c  record the ice surface temperature in each category
 c  and find the average of fluxes across each category
@@ -1304,17 +1297,6 @@ CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L22
      &          - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
      &           )*rhoConstFresh
-catn The line below is only valid if we account for sublimation in hsnow
-c and heff tendency correctly (e.g. how it is done in seaice_growth.F).
-c Specifically, in seaice_growth.F, sublimation is taken into account
-c through all calculations for updating mass tendency for hsnow, heff,
-c and mass coming off the ocean, then updated to EmPmR, before being
-c updated into the diagnostic SIatmFW.  In adx code, we do NOT use this
-c FWsublim term to update any mass tendency terms.  Therefore, we canNOT
-c add it to SIatmFW here, otherwise the ice mass budget will NOT closed.
-c But we can actually still diagnose it to SIfwSubl.
-cccc     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
-CAB
 
          ENDDO
         ENDDO
