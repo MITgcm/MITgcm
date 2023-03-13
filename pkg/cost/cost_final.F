@@ -53,7 +53,7 @@ c     == local variables ==
 c     == end of interface ==
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
+      IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE

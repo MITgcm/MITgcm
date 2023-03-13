@@ -4,13 +4,13 @@ CBOP
 C !ROUTINE: GGL90.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | GGL90.h                                                  |
 C     | o Basic header for Garpar et al. (1990)                  |
 C     |   vertical mixing parameterization. Implementation       |
 C     |   follows OPA implementation of Blanke+Delecuse (1993)   |
 C     |   Contains all GGL90 field declarations.                 |
-C     \==========================================================/
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C
@@ -41,6 +41,9 @@ C     useIDEMIX       - turn on internal wave mixing contribution modeled by
 C                       IDEMIX version 1:
 C                     - Olbers, D. and Eden, C. (2013), J. Phys. Oceano.
 C                       doi:10.1175/JPO-D-12-0207.1
+C
+C     useLANGMUIR     - turn on the parameterization of Langmuir circulation
+C                       by Tak, Song et al. (2022), Ocean Modelling
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
@@ -91,10 +94,11 @@ CEOP
       LOGICAL GGL90isOn, GGL90mixingMaps, GGL90writeState
       LOGICAL GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear
       LOGICAL useIDEMIX
+      LOGICAL useLANGMUIR
       COMMON /GGL90_PARMS_L/
      &     GGL90isOn, GGL90mixingMaps, GGL90writeState,
      &     GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear,
-     &     useIDEMIX
+     &     useIDEMIX, useLANGMUIR
 
 #ifdef ALLOW_GGL90_SMOOTH
       COMMON /GGL90_CORNER/ mskCor
@@ -157,5 +161,13 @@ C-----------------------------------------------------------------------
       COMMON /GLL90_IDEMIX_L/
      &            IDEMIX_include_GM, IDEMIX_include_GM_bottom
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+C     LC_Gamma  :: mixing-length Amplification factor from Langmuir Circ.
+C     LC_num    :: Value for the Langmuir number (no unit)
+C     LC_lambda :: vertical scale for Stokes velocity profile ( m )
+      _RL LC_Gamma, LC_num, LC_lambda
+      COMMON /GGL90_LCPARA/ LC_Gamma, LC_num, LC_lambda
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 #endif /* ALLOW_GGL90 */
