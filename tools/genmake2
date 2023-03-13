@@ -2973,14 +2973,6 @@ for d in $alldirs ; do
 			echo    " \\"  >> $TMP.F77srclist
 			printf " $sf" >> $TMP.F77srclist
 
-			#if test "x$TAPENADE" = x ; then
-			#    basename=${sf%%.F}
-			#    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
-			#    if test -z "$isAD" ; then
-			#	echo    " \\"  >> $TMP.nonADF77srclist
-			#	printf " $sf" >> $TMP.nonADF77srclist
-			#    fi
-			#else #- TAPENADE case:
 			if test "x$TAPENADE" != x ; then
 			    basename=${sf%%.F}
 			    isAD=`egrep ^$basename.f'[ 	]*' $TMP.adSrcFiles`
@@ -3104,8 +3096,13 @@ echo "#    $CMDLINE"  >> $MAKEFILE
 echo "# executed by:" >> $MAKEFILE
 echo "#    ${THISUSER}@${THISHOST}:${THISCWD}" >> $MAKEFILE
 
-EXE_AD=$EXECUTABLE"_ad"
-EXE_FTL=$EXECUTABLE"_ftl"
+if test "x$TAPENADE" = x ; then
+    EXE_ADJ=$EXECUTABLE"_ad"
+    EXE_TLM=$EXECUTABLE"_ftl"
+else
+    EXE_ADJ=$EXECUTABLE"_tap_adj"
+    EXE_TLM=$EXECUTABLE"_tap_tlm"
+fi
 EXE_SVD=$EXECUTABLE"_svd"
 
 cat >>$MAKEFILE <<EOF
@@ -3139,8 +3136,8 @@ OADTOOLS    = ${OADTOOLSMK}
 
 #eh3  new defines for the adjoint work
 AUTODIFF    = \$(ROOTDIR)/pkg/autodiff
-EXE_AD      = ${EXE_AD}
-EXE_FTL     = ${EXE_FTL}
+EXE_ADJ     = ${EXE_ADJ}
+EXE_TLM     = ${EXE_TLM}
 EXE_SVD     = ${EXE_SVD}
 
 ENABLED_PACKAGES = ${ENABLED_PACKAGES}
@@ -3290,7 +3287,7 @@ Clean:
 #         and output from a run (plus log files from testreport)
 CLEAN:
 	@\$(MAKE) -f \$(MAKEFILE) Clean
-	-rm -f \$(EXECUTABLE) \$(EXE_AD) \$(EXE_FTL) *.bak
+	-rm -f \$(EXECUTABLE) \$(EXE_ADJ) \$(EXE_TLM) *.bak
 	-rm -f $LOGFILE genmake_state genmake_*optfile
 	-rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	-rm -rf mpi_headers mnc_test_*
@@ -3450,11 +3447,11 @@ adtaf: ad_taf_output.$FS
 adtamc: ad_tamc_output.$FS
 
 ad_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXE_AD)
+	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXE_AD)
+	\$(MAKE) -f \$(MAKEFILE) \$(EXE_ADJ)
 
 ad_input_code.$FS: \$(AD_FILES) \$(AD_FLOW_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3480,8 +3477,8 @@ ad_taf_output.$FS: ad_input_code.$FS
 	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
-\$(EXE_AD): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 
@@ -3502,9 +3499,9 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
-\$(EXE_AD): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(H_SRC_FILES) ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
-	\$(LINK) -o \${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_ad.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 adobj: ad_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 	\$(MAKE) -f \$(MAKEFILE) adobjfiles
@@ -3523,7 +3520,7 @@ ad_tamc_output.$FS: ad_input_code.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_tamc_output.$FS
 
 ad_tamc: ad_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS)
+	\$(LINK) -o ${EXE_ADJ} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS)
 
 # ... FTL ...
 ftlall: ftl_exe_target
@@ -3531,11 +3528,11 @@ ftltaf: ftl_taf_output.$FS
 ftltamc: ftl_tamc_output.$FS
 
 ftl_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXE_FTL)
+	@echo Update AD_CONFIG.h and make \$(EXE_TLM)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXE_FTL)
+	\$(MAKE) -f \$(MAKEFILE) \$(EXE_TLM)
 
 ftl_input_code.$FS: \$(AD_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "TangLin version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
@@ -3561,8 +3558,8 @@ ftl_taf_output.$FS: ftl_input_code.$FS
 	ls -l ftl_input_code_tl.$FS
 	cat ftl_input_code_tl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
-\$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
-	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ftlobj: ftl_taf_output.o \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 
@@ -3583,9 +3580,9 @@ ftl_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftl_sed
 	cat \$(AD_FILES:.$FS=_tl.$FS) > ftl_taf_output.$FS
 
-\$(EXE_FTL): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(H_SRC_FILES) ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(EMBEDDED_FILES)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
-	\$(LINK) -o \${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
+	\$(LINK) -o \${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(AD_FILES:.$FS=_tl.o) \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o) \$(LIBS)
 
 ftlobj: ftl_taf_output.$FS \$(NON_AD_F77_SRC_FILES:.F=.o) \$(F90_SRC_FILES:.F90=.o) \$(C_SRC_FILES:.c=.o)
 	\$(MAKE) -f \$(MAKEFILE) ftlobjfiles
@@ -3599,7 +3596,7 @@ ftl_tamc_output.$FS: ftl_input_code.$FS
 	cat ftl_input_code_ftl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_tamc_output.$FS
 
 ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS)
+	\$(LINK) -o ${EXE_TLM} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS)
 
 # ... SVD ...
 svdtaf: ad_taf_output.$FS ftl_taf_output.$FS
@@ -3636,12 +3633,8 @@ if test "x$TAPENADE" != x ; then
 
 # ============ begin TAPENADE specific section ==============
 
-EXECUTABLE_AD=$EXECUTABLE"_tap_adj"
-EXECUTABLE_TLM=$EXECUTABLE"_tap_tlm"
-
 cat >>$MAKEFILE <<EOF
-# ... TAPENADE ...
-
+# ========== begin TAPENADE specific section ==============
 EOF
 
 echo "  Add the source list for AD code generation"
@@ -3663,6 +3656,7 @@ cat >>$MAKEFILE <<EOF
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
+AD_CLEAN = *.f~ autodiff_init_varia_?.msg autodiff_init_varia_?.msg~
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
@@ -3680,34 +3674,31 @@ TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_ADJ)
 	tapenade -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 
-EXECUTABLE_AD=${EXECUTABLE_AD}
-EXECUTABLE_TLM=${EXECUTABLE_TLM}
-
 adAll: ad_exe_target
 .PHONY: adAll
 
 tap_adj: ad_exe_target
 ad_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
+	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_AD)
+	\$(MAKE) -f \$(MAKEFILE) \$(EXE_ADJ)
 
 tap_tlm: tlm_exe_target
 tlm_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXECUTABLE)
+	@echo Update AD_CONFIG.h and make \$(EXE_TLM)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Tangent linear version" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN > ad_config.template
 	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXECUTABLE_TLM)
+	\$(MAKE) -f \$(MAKEFILE) \$(EXE_TLM)
 
-\$(EXECUTABLE_AD): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
+\$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS) 
-\$(EXECUTABLE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS)
+\$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS) 
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/pop_push/%=%) \$(LIBS)
 
 # ============ end TAPENADE specific section ==============
 
@@ -3804,11 +3795,11 @@ adAll: ad_exe_target
 .PHONY: adAll
 
 ad_exe_target:
-	@echo Update AD_CONFIG.h and make \$(EXE_AD)
+	@echo Update AD_CONFIG.h and make \$(EXE_ADJ)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	@cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	\$(MAKE) -f \$(MAKEFILE) \$(EXE_AD)
+	\$(MAKE) -f \$(MAKEFILE) \$(EXE_ADJ)
 
 CB2M_F90_PP_SRC_FILES=\$(addsuffix _mod.f$FS90, \$(CB2M_F90_SRC_NAMES))
 
@@ -3849,7 +3840,7 @@ AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC
 
 AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
 
-\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S2)
+\$(EXE_ADJ): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S2)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
 
 # create sources files modules from header files containing common blocks
@@ -4001,10 +3992,13 @@ if test $FC_CHECK = 5 ; then
 	echo "  > make adAll    (<-- adjoint executable)"
     elif test $ad != 0 ; then
 	echo "  > make depend"
-	echo "    > make adall  (<-- adjoint executable with TAF)"
+      if test "x$TAPENADE" = x ; then
+	echo "    > make adall  (<-- adjoint  executable with TAF)"
 	echo " or > make ftlall (<-- tang-lin executable with TAF)"
+      else
 	echo "    > make tap_adj  (<-- adjoint executable with Tapenade)"
 	echo " or > make tap_tlm (<-- tang-lin executable with Tapenade)"
+      fi
 	echo " or > make        (<-- forward executable)"
     else
 #	echo "  > make depend   (add dependencies to Makefile)"

@@ -52,10 +52,6 @@ c     == end of interface ==
 
 #ifdef ALLOW_TAPENADE
       fcb = 1.0
-#else
-      if ( myProcId .EQ. 0 ) then
-       fcb = 1. _d 0
-      endif
 #endif
 
 #ifdef ALLOW_OPENAD
@@ -69,24 +65,23 @@ c     == end of interface ==
       do bj = myByLo(mythid), myByHi(mythid)
        do bi = myBxLo(mythid), myBxHi(mythid)
 #ifdef ALLOW_COST_VECTOR
-        do i=1,sNx
-         objf_vector(i,bi,bj) = 0. _d 0
-         adobjf_vector(i,bi,bj) = 1. _d 0
-        end do
+         do i=1,sNx
+          objf_vector(i,bi,bj) = 0. _d 0
+          adobjf_vector(i,bi,bj) = 1. _d 0
+         enddo
 #endif
 #ifdef ALLOW_COST_STATE_FINAL
-         do j=1,sNy
-          do i=1,sNx
-           do k=1,4*Nr
+         do k=1,4*Nr+1
+          do j=1,sNy
+           do i=1,sNx
             objf_state_final(i,j,bi,bj,k) = 0. _d 0
            enddo
-           objf_state_final(i,j,bi,bj,4*Nr+1) = 0. _d 0
+          enddo
+         enddo
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
-          end do
-         end do
 #endif
-        enddo
+       enddo
       enddo
 
 #endif /* ALLOW_AUTODIFF */
