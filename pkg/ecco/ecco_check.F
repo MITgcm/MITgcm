@@ -41,14 +41,14 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 c     == external functions ==
-      INTEGER  ILNBLNk
+      INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     === Local variables ===
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il
+      INTEGER igen_etagcm, il
       LOGICAL exst
       CHARACTER*(128) tempfile
       INTEGER icount_transp
@@ -650,13 +650,13 @@ c check that one of the used gencost term defines etaday (needed in sshv4)
       IF ( (using_tpj ).OR.(using_ers).OR.(using_gfo)
      &     .OR.(using_mdt) ) using_cost_altim = .TRUE.
 
-      igen_etaday=0
+      igen_etagcm=0
       DO k=1,NGENCOST
         IF ( (gencost_barfile(k)(1:5).EQ.'m_eta').AND.
-     &       (using_gencost(k)) )  igen_etaday=k
+     &       (using_gencost(k)) )  igen_etagcm=k
       ENDDO
 
-      IF ((igen_etaday.EQ.0).AND.(using_cost_altim)) THEN
+      IF ((igen_etagcm.EQ.0).AND.(using_cost_altim)) THEN
 c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
@@ -667,7 +667,7 @@ c warn user as we override using_cost_altim
       ELSE
 c print result to screen
         WRITE(msgbuf,'(a,i3)')
-     &  'etaday defined by gencost ',igen_etaday
+     &  'etaday defined by gencost ',igen_etagcm
         CALL print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , myThid)
       ENDIF
