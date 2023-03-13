@@ -839,24 +839,34 @@ Generic Control Fields
   +--------------------+-----------------------+--------------------------------+
   |                    | ``xx_geothermal``     | geothermal heat flux           |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_shicoefft``      | shelfice thermal transfer      |
+  |                    | ``xx_shicoefft``      | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | thermal transfer coefficient   |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicoeffs``      | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | salinity transfer              |
   |                    |                       | coefficient                    |
   |                    |                       | (see :numref:`shi_ctrl`)       |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_shicoeffs``      | shelfice salinity transfer     |
-  |                    |                       | coefficient                    |
+  |                    | ``xx_shicdrag``       | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | drag coefficient               |
   |                    |                       | (see :numref:`shi_ctrl`)       |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_shicdrag``       | shelfice drag coefficient      |
-  |                    |                       | (see :numref:`shi_ctrl`)       |
-  +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_depth``          | bottom topography              |
-  |                    |                       | requires to define             |
+  |                    | ``xx_depth``          | bottom topography;             |
+  |                    |                       | requires #define               |
   |                    |                       | :varlink:`ALLOW_DEPTH_CONTROL` |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_siheff``         | initial sea ice thickness      |
+  |                    | ``xx_siheff``         | package :ref:`seaice           |
+  |                    |                       | <sub_phys_pkg_seaice>`         |
+  |                    |                       | initial sea ice thickness      |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_siarea``         | initial sea ice area           |
+  |                    | ``xx_siarea``         | package :ref:`seaice           |
+  |                    |                       | <sub_phys_pkg_seaice>`         |
+  |                    |                       | initial sea ice area           |
+  +--------------------+-----------------------+--------------------------------+
   +--------------------+-----------------------+--------------------------------+
   | 3D, time-invariant | ``genarr3d``          |                                |
   | controls           |                       |                                |
@@ -869,11 +879,18 @@ Generic Control Fields
   +--------------------+-----------------------+--------------------------------+
   |                    | ``xx_vvel``           | initial meridional velocity    |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_kapgm``          | GM coefficient                 |
+  |                    | ``xx_kapgm``          | package :ref:`gmredi           |
+  |                    |                       | <sub_phys_pkg_gmredi>`         |
+  |                    |                       | GM thickness diffusivity       |
+  |                    |                       | (see :numref:`GM_bolus_desc`)  |
   +--------------------+-----------------------+--------------------------------+
-  |                    | ``xx_kapredi``        | isopycnal diffusivity          |
+  |                    | ``xx_kapredi``        | package :ref:`gmredi           |
+  |                    |                       | <sub_phys_pkg_gmredi>`         |
+  |                    |                       | isopycnal ("Redi") diffusivity |
+  |                    |                       | (see :numref:`GM_redi_desc`)   |
   +--------------------+-----------------------+--------------------------------+
   |                    | ``xx_diffkr``         | diapycnal diffusivity          |
+  +--------------------+-----------------------+--------------------------------+
   +--------------------+-----------------------+--------------------------------+
   | 2D, time-varying   | ``gentim2D``          |                                |
   | controls           |                       |                                |
@@ -899,7 +916,7 @@ Generic Control Fields
   |                    | ``xx_tauv``           | meridional wind stres          |
   +--------------------+-----------------------+--------------------------------+
   |                    | ``xx_gen_precip``     | globally averaged              |
-  |                    |                       | precipitation?                 |
+  |                    |                       | precipitation                  |
   +--------------------+-----------------------+--------------------------------+
   |                    | ``xx_hflux``          | net heat flux                  |
   +--------------------+-----------------------+--------------------------------+
@@ -923,32 +940,32 @@ Generic Control Processing Options
   +-----------------------+-----------------------+-----------------------+
   | name                  | description           | arguments             |
   +=======================+=======================+=======================+
-  | ``WC01``              | Correlation modeling  | integer: operator     |
+  | ``WC01``              | correlation modeling  | integer: operator     |
   |                       |                       | type (default: 1)     |
   +-----------------------+-----------------------+-----------------------+
-  | ``smooth``            | Smoothing without     | integer: operator     |
+  | ``smooth``            | smoothing without     | integer: operator     |
   |                       | normalization         | type (default: 1)     |
   +-----------------------+-----------------------+-----------------------+
-  | ``docycle``           | Average period        | integer: cycle length |
+  | ``docycle``           | average period        | integer: cycle length |
   |                       | replication           |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``replicate``         | Alias for ``docycle`` |(units of              |
+  | ``replicate``         | alias for ``docycle`` |(units of              |
   |                       |                       |``xx_gentim2d_period``)|
   +-----------------------+-----------------------+-----------------------+
-  | ``rmcycle``           | Periodic average      | integer: cycle length |
+  | ``rmcycle``           | periodic average      | integer: cycle length |
   |                       | subtraction           |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``variaweight``       | Use time-varying      | —                     |
+  | ``variaweight``       | use time-varying      | —                     |
   |                       | weight                |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``noscaling``         | Do not scale with     | —                     |
+  | ``noscaling``         | do not scale with     | —                     |
   | :math:`^{a}`          | ``xx_gen*_weight``    |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``documul``           | Sets                  | —                     |
+  | ``documul``           | sets                  | —                     |
   |                       | ``xx_gentim2d_cumsum``|                       |
   |                       |                       |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``doglomean``         | Sets                  | —                     |
+  | ``doglomean``         | sets                  | —                     |
   |                       | ``xx_gentim2d_glosum``|                       |
   |                       |                       |                       |
   +-----------------------+-----------------------+-----------------------+
@@ -962,7 +979,7 @@ Generic Control Processing Options
   | name                  | description           | arguments             |
   +=======================+=======================+=======================+
   |``log10ctrl``          | Control adjustments to| See                   |
-  |                       | base 10 logarithm of  | :numref:`log_ctrl`    |
+  |                       | log10 of              | :numref:`log_ctrl`    |
   |                       | 2D or 3D array        |                       |
   |                       | (not available for    |                       |
   |                       | ``xx_gentim2d``).     |                       |
@@ -977,7 +994,8 @@ through multiplication by the respective uncertainty fields
 :math:`\mathcal{Q}` in :eq:`Upreproc`. Besides the
 scaling of :math:`\vec{u}_j` to physical units, the preprocessor
 :math:`\mathcal{Q}` can include, for example, spatial correlation
-modeling (using an implementation of Weaver and Coutier, 2001) by
+modeling (using an implementation of Weaver and Coutier, 2001
+:cite:`weaver:01`) by
 setting ``xx_gen*_preproc = ’WC01’``. Alternatively, setting
 ``xx_gen*_preproc = ’smooth’`` activates the smoothing part of ``WC01``,
 but omits the normalization. Additionally, bounds for the controls can
@@ -1014,8 +1032,8 @@ specific setup, e.g., with the :ref:`EXF package <ssub_phys_pkg_exf_config>`.
 
 Generic Control Record Access
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-For each control variable ``$ctrlvar``, three pairs of .data files (and their
-corresponding .meta) are required or produced per adjoint run:
+For each control variable ``$ctrlvar``, three pairs of ``.data`` files (and their
+corresponding ``.meta``) are required or produced per adjoint run:
 
 ::
 
