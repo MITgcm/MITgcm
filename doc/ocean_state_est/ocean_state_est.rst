@@ -397,7 +397,7 @@ index for that cost function term.
   +=======================+=======================+=======================+
   | ``gencost_preproc``   |                       |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``clim``              | Use climatological    | integer: no. of       |
+  | ``clim``              | Use climatological    | integer: no. of       |
   |                       | misfits               | records per           |
   |                       |                       | climatological cycle  |
   +-----------------------+-----------------------+-----------------------+
@@ -518,10 +518,10 @@ This section (very much a work in progress...) pertains to the special cases of
 :filelink:`cost_gencost_moc.F <pkg/ecco/cost_gencost_moc.>`.  The
 :filelink:`cost_gencost_transp.F <pkg/ecco/cost_gencost_transp.F>` function can
 be used to compute a transport of volume, heat, or salt through a specified
-section (non quadratic cost function). To this end one sets ``gencost_name =
-‘transp*’``, where ``*`` is an optional suffix starting with ``‘_’``, and set
-:varlink:`gencost_barfile` to one of ``m_trVol``, ``m_trHeat``, and
-``m_trSalt``.
+section (non quadratic cost function). To this end one sets
+``gencost_name = ‘transp*’``, where ``*`` is an optional suffix starting
+with ``‘_’``, and set :varlink:`gencost_barfile` to one of ``m_trVol``,
+``m_trHeat``, and ``m_trSalt``.
 
 The :filelink:`cost_gencost_moc.F <pkg/ecco/cost_gencost_moc.F>` function is
 similar to transport function, but is intended to compute the meridional
@@ -757,7 +757,7 @@ Package :filelink:`ctrl <pkg/ctrl>` provides an interface to defining the
 control variables for an optimization. After defining CPP-flags
 :varlink:`ALLOW_GENTIM2D_CONTROL`, :varlink:`ALLOW_GENARR2D_CONTROL`,
 :varlink:`ALLOW_GENARR3D_CONTROL` in :filelink:`CTRL_OPTIONS.h
-<pkg/ctrl/CTRL_OPTIONS.h`, the parameters available for configuring generic
+<pkg/ctrl/CTRL_OPTIONS.h>`, the parameters available for configuring generic
 cost terms in ``data.ctrl`` are given in :numref:`gencost_ctrl_params`.  The
 control variables are stored as fields on the model grid in files
 ``$ctrlvar.$iternumber.data/meta``, and corresponding gradients in
@@ -776,7 +776,7 @@ Namelists
 ^^^^^^^^^
 
 
-.. table:: Parameters in ``ctrl_nml_genarr`` namelist in ``data.ctrl``.  The
+.. table:: Parameters in namelist group :varlink:`ctrl_nml_genarr` in ``data.ctrl``.  The
            ``*`` can be replaced by ``arr2d``, ``arr3d``, or ``tim2d`` for
            time-invariant two and three dimensional controls and time-varying
            2D controls, respectively. Parameters for ``genarr2d``,
