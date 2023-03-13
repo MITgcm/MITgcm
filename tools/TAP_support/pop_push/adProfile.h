@@ -1,5 +1,0 @@
-#ifndef ADPROFILE_LOADED
-#define ADPROFILE_LOADED 1
-
-
-#endif

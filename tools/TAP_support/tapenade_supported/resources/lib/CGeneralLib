@@ -97,13 +97,26 @@ function sign:
                           call(none(), ident sign, expressions(realCst 1.0,
                                mul(metavar X, metavar Y))))))
 
+function copysign:
+  intrinsic:
+  shape: (param 1, param 2, result)
+  deps : (id,
+          id,
+          1,0,0)
+  type: (metavar float, metavar float, metavar float)
+  derivative : binary(call(none(), ident sign, expressions(metavar X, metavar Y)),
+       none(),
+       expressions(binary(metavar X, none(),
+                          call(none(), ident copysign, expressions(realCst 1.0,
+                               metavar Y)))))
+
 function sngl:
   intrinsic:
   shape: (param 1, result)
   type: (metavar float, metavar float)
   derivative : binary(call(none(), ident sngl, expressions(metavar X)),
        none(),
-       expressions())
+       expressions(binary(metavar X, none(), realCst 1.0)))
 
 function sqrt:
   intrinsic:
@@ -421,6 +434,168 @@ fabs
 minus
 metavar
 x
+endOfList
+endOfList
+
+function creal:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, float())
+  derivative : binary(call(none(), ident creal, expressions(metavar X)),
+       none(),
+       expressions())
+
+function cimag:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, float())
+  derivative : binary(call(none(), ident cimag, expressions(metavar X)),
+       none(),
+       expressions())
+
+function conj:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident conj, expressions(metavar X)),
+       none(),
+       expressions())
+
+function cpow:
+  intrinsic:
+  shape: (param 1, (param 2, result)
+  type: (metavar complex, metavar complex, metavar complex)
+  derivative : binary(call(none(), ident cpow, expressions(metavar X, metavar Y)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+                                         mul(metavar Y, call(none(), ident cpow, expressions(metavar X, sub(metavar Y, intCst 1))))),
+                                  binary(metavar Y, none(),
+                                         mul(call(none(), ident clog, expressions(metavar X)), metavar TOP_EXPRESSION))))
+
+function cexp:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident cexp, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+                          metavar TOP_EXPRESSION)))
+
+function csqrt:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident csqrt, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+                          div(realCst 1.0, mul(realCst 2.0, metavar TOP_EXPRESSION)))))
+
+function csin:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident csin, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(), call(none(), ident ccos, expressions(metavar X)))))
+
+function ccos:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident ccos, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(), minus(call(none(), ident csin, expressions(metavar X))))))
+
+function ctan:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative :  binary(call(none(), ident ctan, expressions(metavar X)),
+                       none(),
+                       expressions(binary(metavar X, none(), add(realCst 1.0, power(metavar TOP_EXPRESSION, intCst 2)))))
+
+function casin:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident casin, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+		          div(realCst 1.0, call(none(), ident csqrt, expressions(sub(realCst 1.0, power(metavar X, intCst 2))))))))
+
+function cacos:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident cacos, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+		          div(realCst -1.0, call(none(), ident csqrt, expressions(sub(realCst 1.0, power(metavar X, intCst 2))))))))
+
+function catan:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar complex)
+  derivative : binary(call(none(), ident catan, expressions(metavar X)),
+                      none(),
+                      expressions(binary(metavar X, none(),
+		          div(realCst 1.0, add(realCst 1.0, power(metavar X, intCst 2))))))
+
+function cabs:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar complex, metavar float)
+  inline :
+function
+modifiers
+endOfList
+float
+none
+metavar
+cabs
+varDeclarations
+varDeclaration
+none
+complex
+declarators
+metavar
+z
+endOfList
+endOfList
+blockStatement
+implicit
+endOfList
+assign
+metavar
+cabs
+call
+none
+ident
+sqrt
+expressions
+add
+power
+call
+none
+ident
+creal
+expressions
+metavar
+z
+endOfList
+intCst
+2
+power
+call
+none
+ident
+cimag
+expressions
+metavar
+z
+endOfList
+intCst
+2
 endOfList
 endOfList
 

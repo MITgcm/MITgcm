@@ -1359,7 +1359,7 @@ function dcmplx:
 function conjg:
   intrinsic:
   shape: (param 1, result)
-  type: (complex(), complex())
+  type: (metavar complex, metavar complex)
   derivative : binary(call(none(), ident conjg, expressions(metavar X)),
        none(),
        expressions())
@@ -1367,7 +1367,7 @@ function conjg:
 function dconjg:
   intrinsic:
   shape: (param 1, result)
-  type: (complex(), complex())
+  type: (modifiedType(modifiers(ident double), complex()), modifiedType(modifiers(ident double), complex()))
   derivative : binary(call(none(), ident dconjg, expressions(metavar X)),
        none(),
        expressions())
@@ -1388,11 +1388,27 @@ function real:
        none(),
        expressions(binary(metavar X, none(), realCst 1.D0)))
 
+function dreal:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar type, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident dreal, expressions(metavar X)),
+       none(),
+       expressions(binary(metavar X, none(), realCst 1.D0)))
+
 function aimag:
   intrinsic:
   shape: (param 1, result)
   type: (metavar type, float())
   derivative : binary(call(none(), ident aimag, expressions(metavar X)),
+       none(),
+       expressions())
+
+function dimag:
+  intrinsic:
+  shape: (param 1, result)
+  type: (metavar type, modifiedType(modifiers(ident double), float()))
+  derivative : binary(call(none(), ident dimag, expressions(metavar X)),
        none(),
        expressions())
 
@@ -1733,6 +1749,128 @@ function %val:
   shape:(param 1, result)
   type : (integer(), integer())
 
+function abs:
+  intrinsic:
+  shape: (param 1, result)
+  type: (complex(), float())
+  inline :
+function
+modifiers
+endOfList
+float
+none
+metavar
+abs
+varDeclarations
+varDeclaration
+none
+complex
+declarators
+metavar
+z
+endOfList
+endOfList
+blockStatement
+implicit
+endOfList
+assign
+metavar
+abs
+call
+none
+ident
+sqrt
+expressions
+add
+power
+call
+none
+ident
+real
+expressions
+metavar
+z
+endOfList
+intCst
+2
+power
+call
+none
+ident
+aimag
+expressions
+metavar
+z
+endOfList
+intCst
+2
+endOfList
+endOfList
+
+function abs:
+  intrinsic:
+  shape: (param 1, result)
+  type: (arrayType(complex(), dimColons()),
+         arrayType(float(), dimColons()))
+  inline :
+function
+modifiers
+endOfList
+arrayType
+float
+dimColons
+endOfList
+none
+metavar
+abs
+varDeclarations
+varDeclaration
+none
+arrayType
+complex
+dimColons
+endOfList
+declarators
+metavar
+z
+endOfList
+endOfList
+blockStatement
+implicit
+endOfList
+assign
+metavar
+abs
+call
+none
+ident
+sqrt
+expressions
+add
+power
+call
+none
+ident
+real
+expressions
+metavar
+z
+endOfList
+intCst
+2
+power
+call
+none
+ident
+aimag
+expressions
+metavar
+z
+endOfList
+intCst
+2
+endOfList
+endOfList
 
 subroutine mpi_send:
   external:

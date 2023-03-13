@@ -36,4 +36,4 @@ TJARPATH=$TAPENADE_HOME/build/libs/tapenade-3.16.jar
 
 # echo $0 $*
 
-"$JAVA_BIN" $JAVA_OPTION -Dfile.encoding=ISO-8859-15 -Djava_home="$JAVA_HOME" -Dtapenade_home="$TAPENADE_HOME" -Dbrowser="$BROWSER" -jar "$TJARPATH" -association byaddress -assocbyaddresssuffix "" "$@"
+"$JAVA_BIN" $JAVA_OPTION -Dfile.encoding=ISO-8859-15 -Djava_home="$JAVA_HOME" -Dtapenade_home="$TAPENADE_HOME" -Dbrowser="$BROWSER" -jar "$TJARPATH" -aa -assocbyaddresssuffix "" "$@"

@@ -32,8 +32,14 @@ else
   BROWSER=
 fi
 
+LD_LIBRARY_PATH=$TAPENADE_HOME/jars:$LD_LIBRARY_PATH
+DYLD_LIBRARY_PATH=$TAPENADE_HOME/jars:$DYLD_LIBRARY_PATH
+
+ZTHREEPATH=$TAPENADE_HOME/jars
+ZTHREEJAR=$ZTHREEPATH/com.microsoft.z3.jar:$ZTHREEPATH
 TJARPATH=$TAPENADE_HOME/build/libs/tapenade-3.16.jar
+TCLASSPATH=$ZTHREEJAR:$TJARPATH
 
 # echo $0 $*
 
-"$JAVA_BIN" $JAVA_OPTION -Dfile.encoding=ISO-8859-15 -Djava_home="$JAVA_HOME" -Dtapenade_home="$TAPENADE_HOME" -Dbrowser="$BROWSER" -jar "$TJARPATH" "$@"
+"$JAVA_BIN" $JAVA_OPTION -classpath "$TCLASSPATH" -Dfile.encoding=ISO-8859-15 -Djava_home="$JAVA_HOME" -Djava.library.path="$ZTHREEPATH" -Dtapenade_home="$TAPENADE_HOME" -Dbrowser="$BROWSER" fr.inria.tapenade.toplevel.Tapenade "$@"

@@ -3,6 +3,8 @@
 #include <string.h>
 #include "adStack.h"
 
+#include "adComplex.h"
+
 // Set to 0 to hide trace.
 static int traceOn = 0 ;
 static int freeemptyblocks = 1 ;
@@ -480,7 +482,7 @@ void popComplex8Array(ccmplx *x, int n) {
 #endif
 }
 
-void pushComplex16Array(cdcmplx *x, int n) {
+void pushComplex16Array(double complex *x, int n) {
   if (topRepetitionPoint) checkPushInReadOnly() ;
   pushNArray((char *)x,(int)(n*16)) ;
 #ifdef _ADSTACKPROFILE
@@ -488,7 +490,7 @@ void pushComplex16Array(cdcmplx *x, int n) {
 #endif
 }
 
-void popComplex16Array(cdcmplx *x, int n) {
+void popComplex16Array(double complex *x, int n) {
   popNArray((char *)x,(int)(n*16)) ;
   if (topRepetitionPoint) checkPopToReadOnly() ;
 #ifdef _ADSTACKPROFILE
@@ -682,13 +684,13 @@ void popComplex8(ccmplx * val) {
 #endif
 }
 
-void pushComplex16(cdcmplx val) {
+void pushComplex16(double complex val) {
   if (topRepetitionPoint) checkPushInReadOnly() ;
   if(tappos + 16 > BLOCK_SIZE) {
     pushNArray((char*)&val, 16) ;
   }
   else {
-    *(cdcmplx*)(tapblock+tappos) = val;
+    *(double complex *)(tapblock+tappos) = val;
     tappos = tappos + 16 ;
   }
 #ifdef _ADSTACKPROFILE
@@ -696,13 +698,13 @@ void pushComplex16(cdcmplx val) {
 #endif
 }
 
-void popComplex16(cdcmplx * val) {
+void popComplex16(double complex *val) {
   if(tappos - 16 < 0) {
     popNArray((char*)val, 16) ;
   }
   else {
     tappos = tappos - 16 ;
-    *val = *(cdcmplx*)(tapblock+tappos);
+    *val = *(double complex *)(tapblock+tappos);
   }
   if (topRepetitionPoint) checkPopToReadOnly() ;
 #ifdef _ADSTACKPROFILE
@@ -999,7 +1001,7 @@ void popControl8b(int *cc) {
 /****************** Profiling and debugging *******************/
 
 void adStack_showPeakSize() {
-  printf("Peak stack size (%1i blocks): %1llu bytes\n",
+  printf("Peak stack size (%1li blocks): %1llu bytes\n",
          maxBlocks, maxBlocks*((long long int)BLOCK_SIZE)) ;
 }
 
@@ -1114,11 +1116,11 @@ void popcomplex8array_(ccmplx *ii, int *ll) {
 }
 
 void pushcomplex16array_(cdcmplx *ii, int *ll) {
-  pushComplex16Array(ii, *ll) ;
+  pushComplex16Array((double complex *)ii, *ll) ;
 }
 
 void popcomplex16array_(cdcmplx *ii, int *ll) {
-  popComplex16Array(ii, *ll) ;
+  popComplex16Array((double complex *)ii, *ll) ;
 }
 
 void pushcharacterarray_(char *ii, int *ll) {
@@ -1193,12 +1195,12 @@ void popcomplex8_(ccmplx* val) {
   popComplex8(val) ;
 }
 
-void pushcomplex16_(cdcmplx* val) {
-  pushComplex16(*val) ;
+void pushcomplex16_(cdcmplx *val) {
+  pushComplex16(*((double complex *)val)) ;
 }
 
 void popcomplex16_(cdcmplx* val) {
-  popComplex16(val) ;
+  popComplex16((double complex *)val) ;
 }
 
 void pushpointer4_(void** val) {

@@ -1,7 +1,7 @@
-#ifndef ADSTACK_H
-#define ADSTACK_H
-typedef struct {float r,i;} ccmplx ;
-typedef struct {double dr, di;} cdcmplx ;
+#ifndef ADSTACK_INCLUDED
+#define ADSTACK_INCLUDED
+
+#include "complex.h"
 
 void adStack_startRepeat() ;
 void adStack_resetRepeat() ;
@@ -20,10 +20,11 @@ void pushReal4Array(float *x, int n) ;
 void popReal4Array(float *x, int n) ;
 void pushReal8Array(double *x, int n) ;
 void popReal8Array(double *x, int n) ;
-void pushComplex8Array(ccmplx *x, int n) ;
-void popComplex8Array(ccmplx *x, int n) ;
-void pushComplex16Array(cdcmplx *x, int n) ;
-void popComplex16Array(cdcmplx *x, int n) ;
+/* Commented out because sizeof(complex) == sizeof(double complex) == 16 */
+/* void pushComplex8Array(complex *x, int n) ; */
+/* void popComplex8Array(complex *x, int n) ; */
+void pushComplex16Array(double complex *x, int n) ;
+void popComplex16Array(double complex *x, int n) ;
 void pushCharacterArray(char *x, int n) ;
 void popCharacterArray(char *x, int n) ;
 
@@ -37,10 +38,11 @@ void pushInteger4(int val) ;
 void popInteger4(int* val) ;
 void pushInteger8(long val) ;
 void popInteger8(long* val) ;
-void pushComplex8(ccmplx val) ;
-void popComplex8(ccmplx* val) ;
-void pushComplex16(cdcmplx val) ;
-void popComplex16(cdcmplx* val) ;
+/* Commented out because sizeof(complex) == sizeof(double complex) == 16 */
+/* void pushComplex8(complex val) ; */
+/* void popComplex8(complex *val) ; */
+void pushComplex16(double complex val) ;
+void popComplex16(double complex *val) ;
 void pushPointer4(void* val) ;
 void popPointer4(void** val) ;
 void pushPointer8(void* val) ;

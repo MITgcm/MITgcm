@@ -149,7 +149,7 @@ void dbad_resetCondensors() {
 
 double dbad_nextRandom() {
   dbad_currentSeed += dbad_seed ;
-  if (dbad_currentSeed>1.0) dbad_currentSeed-=1.0 ;
+  if (dbad_currentSeed>=1.0) dbad_currentSeed-=1.0 ;
   /* Return a value in range [1.0 2.0[ */
   return dbad_currentSeed+1.0 ;
 }

@@ -1,7 +1,7 @@
 #ifndef ADDEBUG_INCLUDED
 #define ADDEBUG_INCLUDED
-typedef struct {float r,i;} ccmplx ;
-typedef struct {double dr, di;} cdcmplx ;
+
+#include "adComplex.h"
 
 void adDebugTgt_init(double epsilon, double seed, int tested_process) ;
 void adDebugTgt_call(char *unitname, int traced, int forcetraced) ;
