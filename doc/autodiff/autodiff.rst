@@ -1824,7 +1824,7 @@ Steps for Linux
 
 1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
 
-2. Download `tapenade_3.16.tar <http://www-sop.inria.fr/ecuador/tapenade/distrib/tapenade_3.16.tar>`__ into your chosen installation directory *install_dir*.
+2. Download `tapenade_3.16.tar <https://tapenade.gitlabpages.inria.fr/tapenade/distrib/tapenade_3.16.tar>`__ into your chosen installation directory *install_dir*.
 
 3. Go to your chosen installation directory *install_dir*, and extract Tapenade from the tar file :
 
@@ -1846,7 +1846,7 @@ Steps for Windows
 
 1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
 
-2. Download `tapenade_3.16.zip <http://www-sop.inria.fr/ecuador/tapenade/distrib/tapenade_3.16.zip>`__ into your chosen installation directory *install_dir*.
+2. Download `tapenade_3.16.zip <https://tapenade.gitlabpages.inria.fr/tapenade/distrib/tapenade_3.16.zip>`__ into your chosen installation directory *install_dir*.
 
 3. Go to your chosen installation directory *install_dir*, and extract Tapenade from the zip file.
 
