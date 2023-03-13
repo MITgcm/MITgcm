@@ -115,6 +115,9 @@ C     == local variables ==
 #endif /* ALLOW_GENARR3D_CONTROL */
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_INI_GENARR', myThid )
+#endif
 #ifdef ALLOW_GENARR2D_CONTROL
 C--   generic 2D control variables
 
@@ -345,6 +348,10 @@ CADJ loop = parallel
 # endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_INI_GENARR', myThid )
+#endif
 
       RETURN
       END

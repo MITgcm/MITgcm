@@ -132,7 +132,7 @@ catn: it is found in ad_taf_output.  At the end of the above
 catn: ctrl_init_rec call, we get [start,end,diff]rec. So what
 catn: we need to make sure next is that when we read from
 catn: xx_atemp.0000000001.data, read from startrec:endrec, then
-catn: write out to xx_atemp.effective.0000000001.data as as
+catn: write out to xx_atemp.effective.0000000001.data as
 catn: 1:diffrec. Note that the version of this in ad_taf_output.f
 catn: strips all the misc write statements so it appears as if
 catn: we did not go past here, but we did.
@@ -275,7 +275,7 @@ c     create cyclic average
          recip_nyearsRL=1. _d 0/float(nyearsINT)
 
 #ifdef ALLOW_CTRL_DEBUG
-         write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,nyearsRL
+         write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,recip_nyearsRL
 #endif
 
          DO irec = 1, replicated_nrec
