@@ -1005,7 +1005,7 @@ between ``xx_gen*_bounds(i,1)`` and ``xx_gen*_bounds(i,4)``. The bounds
 have no effect in adjoint mode unless ``xx_gen*_bounds(i,j)`` :math:`<`
 ``xx_gen*_bounds(i,j+1)`` for :math:`j = 1, 3`. When this is the case,
 the bounds will “emulate a local minimum” as follows in
- :filelink:`pkg/ctrl/adctrl_bound.F`: On the minimum end,
+:filelink:`pkg/ctrl/adctrl_bound.F`: On the minimum end,
 when ``xx_gen*(i)`` :math:`<` ``xx_gen*_bounds(i,2)`` and the gradient
 ``adxx_gen*(i)`` :math:`>` 0.0, i.e. the derivative suggests that a
 further decrease of ``xx_gen*(i)`` will decrease the cost, an adjustment
