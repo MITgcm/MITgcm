@@ -1002,18 +1002,18 @@ but omits the normalization. Additionally, bounds for the controls can
 be specified by setting ``xx_gen*_bounds``. In forward mode, adjustments
 to the :math:`i^\text{th}` control are clipped so that they remain
 between ``xx_gen*_bounds(i,1)`` and ``xx_gen*_bounds(i,4)``. The bounds
-have no effect in adjoint mode unless ``xx_gen*_bounds(i,j)`` :math:`<`
+have no effect in adjoint mode unless ``xx_gen*_bounds(i,j)`` <
 ``xx_gen*_bounds(i,j+1)`` for :math:`j = 1, 3`. When this is the case,
 the bounds will “emulate a local minimum” as follows in
-:filelink:`pkg/ctrl/adctrl_bound.F`: On the minimum end,
-when ``xx_gen*(i)`` :math:`<` ``xx_gen*_bounds(i,2)`` and the gradient
-``adxx_gen*(i)`` :math:`>` 0.0, i.e. the derivative suggests that a
+:filelink:`pkg/ctrl/adctrl_bound.F`. On the minimum end,
+when ``xx_gen*(i)`` < ``xx_gen*_bounds(i,2)`` and the gradient
+``adxx_gen*(i)`` > 0.0, i.e., the derivative suggests that a
 further decrease of ``xx_gen*(i)`` will decrease the cost, an adjustment
 is enforced to reverse the sign of the gradient ``adxx_gen*(i)`` to be
 negative such that any further decrease in ``xx_gen*(i)`` toward its minimum
 bound ``xx_gen*_bounds(i,1)`` will be penalized.  The opposite is enforced
-at the maximum end when ``xx_gen*(i)`` :math:`>` ``xx_gen*_bounds(i,3)``
-and ``adxx_gen*(i)`` :math:`<` 0.0 such that the sign of the gradient 
+at the maximum end when ``xx_gen*(i)`` > ``xx_gen*_bounds(i,3)``
+and ``adxx_gen*(i)`` < 0.0 such that the sign of the gradient 
 ``adxx_gen*(i)`` will be reversed to positive to penalize any further
 increase in ``xx_gen*(i)`` toward its maximum bound ``xx_gen*_bounds(i,4)``.
 
