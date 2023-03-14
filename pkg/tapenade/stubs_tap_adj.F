@@ -10,7 +10,7 @@
       _RL     rhsmaxb
       INTEGER myThid
       
-      CALL GLOBAL_ADMAX_R8(rhsmax, rhsmaxb, mythid)
+      CALL GLOBAL_ADMAX_R8(rhsmaxb, mythid)
       RETURN
       END
 

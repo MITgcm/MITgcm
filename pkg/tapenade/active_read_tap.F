@@ -50,7 +50,7 @@ C     myThid     :: my Thread Id. number
       LOGICAL lAdInit
       INTEGER myOptimIter 
       INTEGER myThid
-      _RL  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dummy
       _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     !LOCAL VARIABLES:
@@ -117,7 +117,7 @@ C     myThid     :: my Thread Id. number
       LOGICAL lAdInit
       INTEGER myOptimIter
       INTEGER myThid
-      _RL  dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dummy
       _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     !LOCAL VARIABLES:
@@ -184,7 +184,8 @@ C     myThid     :: my Thread Id. number
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter
-      _RL  dummy, dummyb ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, dummyb
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
@@ -251,7 +252,8 @@ C     myThid     :: my Thread Id. number
       LOGICAL doglobalread
       LOGICAL lAdInit
       INTEGER myOptimIter
-      _RL  dummy, dummyb ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, dummyb
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
