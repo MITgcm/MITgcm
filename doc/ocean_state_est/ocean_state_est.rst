@@ -1057,20 +1057,24 @@ corresponding ``.meta``) are required or produced per adjoint run:
    3a   $ctrlvar.effective.$iternumber.data/meta
    3b ad$ctrlvar.effective.$iternumber.data/meta
 
-In an adjoint run with the 2D time-dependent controls (CPP-flag
+In an adjoint run with the 2-D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
-:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` = :varlink:`endrec` - :varlink:`startrec` + 1 will be
+:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` =
+:varlink:`endrec` - :varlink:`startrec` + 1 will be
 initialized as a function of the startdate (:varlink:`startdate_1`,
-:varlink:`startdate_2`) in data.cal, the control variables startdates
+:varlink:`startdate_2`) in ```data.cal``, the control variables startdates
 (:varlink:`xx_gentim2d_startdate1`, :varlink:`xx_gentim2d_startdate2`) in
-data.ctrl, and the pickup time ``niter0`` in packages_init_fixed.F (which
-calls ctrl_init, ctrl_init_rec).  These three variables are subsequently
-used to determine the length of the three pairs (1--3) of files above in the
-order as follows:
+``data.ctrl``, and the pickup time :varlink:`niter0` in
+:filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>` (which
+calls :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`,
+:filelink:`ctrl_init_rec.F <pkg/ctrl/ctrl_init_rec.F>`). These three variables
+are subsequently used to determine the length of the three pairs (1--3)
+of files above in the order as follows:
 
 - First the ``ad$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b) above
-  are initialised with zeros in
-  packages_init_fixed.F-->ctrl_init.F-->ctrl_init_ctrlvar (with yadprefix =
+  are initialized with zeros in
+  :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`-->
+  :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->ctrl_init_ctrlvar (with yadprefix =
   ``ad``); 1b has the size 1::varlink:`endrec` and 2b and 3b have the size
   1::varlink:`diffrec` -- see :numref:`adxx_creation`;
 
