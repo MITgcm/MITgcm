@@ -1048,44 +1048,117 @@ corresponding ``.meta``) are required or produced per adjoint run:
 
 ::
 
-   1a   $ctrlvar.$iternumber.data/meta
-   1b ad$ctrlvar.$iternumber.data/meta
+   1a   $ctrlvar.$iternumber.data
+   1b ad$ctrlvar.$iternumber.data
 
-   2a   $ctrlvar.tmp.$iternumber.data/meta
-   2b ad$ctrlvar.tmp.$iternumber.data/meta
+   2a   $ctrlvar.tmp.$iternumber.data
+   2b ad$ctrlvar.tmp.$iternumber.data
 
-   3a   $ctrlvar.effective.$iternumber.data/meta
-   3b ad$ctrlvar.effective.$iternumber.data/meta
+   3a   $ctrlvar.effective.$iternumber.data
+   3b ad$ctrlvar.effective.$iternumber.data
 
 In an adjoint run with the 2-D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
 :varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` =
 :varlink:`endrec` - :varlink:`startrec` + 1 will be
 initialized as a function of the startdate (:varlink:`startdate_1`,
-:varlink:`startdate_2`) in ```data.cal``, the control variables startdates
+:varlink:`startdate_2`) in ``data.cal``, the control variables startdates
 (:varlink:`xx_gentim2d_startdate1`, :varlink:`xx_gentim2d_startdate2`) in
 ``data.ctrl``, and the pickup time :varlink:`niter0` in
 :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>` (which
 calls :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`,
 :filelink:`ctrl_init_rec.F <pkg/ctrl/ctrl_init_rec.F>`). These three variables
-are subsequently used to determine the length of the three pairs (1--3)
-of files above in the order as follows:
+are subsequently used to determine the record length of the three pairs (1--3)
+of the above files, in the order as follows:
 
 - First the ``ad$ctrlvar.[,tmp,effective].$iternumber.`` files (1b,2b,3b) above
   are initialized with zeros in
   :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`-->
-  :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->ctrl_init_ctrlvar (with yadprefix =
-  ``ad``); 1b has the size 1::varlink:`endrec` and 2b and 3b have the size
-  1::varlink:`diffrec` -- see :numref:`adxx_creation`;
+  :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->
+  :filelink:`ctrl_init_ctrlvar.F <pkg/ctrl/ctrl_init_ctrlvar.F>`
+  (with :varlink:`yadprefix` = ``'ad'``); 1b has size :varlink:`endrec`
+  and 2b and 3b have size :varlink:`diffrec` -- see :numref:`adxx_creation`;
 
-- Second, records startrec:endrec of (1a) ``$ctrvar.$iternumber.data`` are read
-  in :filelink:`ctrl_map_ini_gentim2d.F`, processed if scaling or smoothing,
-  etc, need to be applied, and then written to (2a,3a)
-  ``$ctrlvar.{tmp,effective}.data`` of size 1::varlink:`diffrec`; note that the
-  actual routines are often the ``md`` versions produced by taf, e.g., ``s/r
-  ctrl_map_ini_gentim2dmd`` called from ``s/r initialize_variamd`` (called from
-  ``s/r adthe_main_loop`` in taf-generated file ``taf_ad_output.f``) -- see
-  :numref:`xx_creation`.
+::
+
+  Flow of pkg/ctrl when the adjoint is running:
+  
+  Note: the_model_main.F calls the_main_loop, but once the code is generated from TAF,
+  the preprocessed form the_model_main.f calls either mdthe_main_loop or adthe_main_loop
+       
+  the_model_main.f
+  |-initialize_fixed
+    |-ini_parms
+    |-packages_boot, packages_readparms
+    |-set_parms, ini_model_io, ini_grid, load_ref_files, ini_eos, set_ref_state,
+      set_grid_factors, ini_depths, ini_masks, etc.
+  
+    |-packages_init_fixed
+      |-cal_init_fixed, diagnostics_init_early, diagnostics_main_init, gad_init_fixed,
+        mom_init_fixed, obcs_init_fixed, exf_init_fixed, kpp_init_fixed, gmredi_init_fixed,
+        seaice_cost_init_fixed, smooth_init_fixed, ecco_cost_init_fixed, 
+        profiles_init_fixed, seaice_init_fixed, salt_plume_init_fixed
+  
+      |-ctrl_init
+       |-active_write_xyz('wunit')
+       |-ctrl_init_ctrlvar (genarr2d, genarr3d)
+
+       |-ctrl_init_rec(gentim2d_startdate, diffrec, startrec, endrec)
+       |-ctrl_init_ctrlvar('xx_atemp.effective.0000000001, 'c','xy')
+           |-ctrl_set_fname(xx_fname,fname)           --> fname(1:3)=[,ad,hn]xx_atemp.effective.0000000001
+           |-ctrl_set_globfld_xy(fname(2)) (with yadprefix='ad') 
+              |-MDSWRITEFIELD(adxx_atemp.effective.0000000001)
+       |-ctrl_init_ctrlvar('xx_atemp.tmp.0000000001)
+           |-ctrl_set_fname(xx_fname,fname)           --> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001
+           |-ctrl_set_globfld_xy(fname(2)) (with yadprefix='ad') 
+              |-MDSWRITEFIELD(adxx_atemp.tmp.0000000001)
+       |-ctrl_init_ctrlvar('xx_atemp.0000000001)
+           |-ctrl_set_fname(xx_fname,fname)           --> fname(1:3)=[,ad,hn]xx_atemp.0000000001
+           |-ctrl_set_globfld_xy(fname(2)) (with yadprefix='ad') 
+              |-MDSWRITEFIELD(adxx_atemp.0000000001)
+
+.. admonition:: Flow of pkg/ctrl when the adjoint is running
+  :class: note
+
+    | the_model_main.f
+    |   Note: the_model_main.F calls the_main_loop, but once we produce the code from TAF,
+    |   we get the preprocessed form the_model_main.f which calls either mdthe_main_loop or
+    |   adthe_main_loop
+
+    | the_model_main.f
+    | `|`-initialize_fixed
+    | :math:`\phantom{x}` `|`-ini_parms
+    | :math:`\phantom{x}` `|`-packages_boot, packages_readparms
+    | :math:`\phantom{x}` `|`-set_parms, ini_model_io, ini_grid, load_ref_files, ini_eos, set_ref_state,
+    | :math:`\phantom{xx}` set_grid_factors, ini_depths, ini_masks, etc.
+
+    | :math:`\phantom{x}` `|`-packages_init_fixed
+    | :math:`\phantom{xx}` `|`-cal_init_fixed, diagnostics_init_early, diagnostics_main_init, gad_init_fixed,
+    | :math:`\phantom{xxx}` mom_init_fixed, obcs_init_fixed, exf_init_fixed, kpp_init_fixed, gmredi_init_fixed,
+    | :math:`\phantom{xxx}` seaice_cost_init_fixed, smooth_init_fixed, ecco_cost_init_fixed, profiles_init_fixed,
+    | :math:`\phantom{xxx}` seaice_init_fixed, salt_plume_init_fixed
+
+    | :math:`\phantom{xx}` `|`-ctrl_init
+    | :math:`\phantom{xxx}` `|`-active_write_xyz('wunit')
+    | :math:`\phantom{xxx}` `|`-ctrl_init_ctrlvar (genarr2d, genarr3d)
+
+    | :math:`\phantom{xxx}` `|`-ctrl_init_rec(gentim2d_startdate, diffrec, startrec, endrec)
+    | :math:`\phantom{xxx}` `|`-ctrl_init_ctrlvar('xx_atemp.effective.0000000001, 'c','xy')
+    | :math:`\phantom{xxxx}` `|`-ctrl_set_fname(xx_fname,fname)
+    | :math:`\phantom{xxxxxxxxxx}`    --> fname(1:3)=[,ad,hn]xx_atemp.effective.0000000001
+    | :math:`\phantom{xxxx}` `|`-ctrl_set_globfld_xy(fname(2)) (with yadprefix="ad")
+    | :math:`\phantom{xxxxx}` `|` - MDSWRITEFIELD(adxx_atemp.effective.0000000001) (14 rec)
+    | :math:`\phantom{xxxxxxxxxx}`    -->  WRITE adxx_atemp.effective.00*
+       
+
+- Second, records :varlink:`startrec` to :varlink:`endrec` of (1a) ``$ctrvar.$iternumber.data`` are read
+  in :filelink:`ctrl_map_ini_gentim2d.F <pkg/ctrl/ctrl_map_ini_gentim2d.F>`,
+  processed if scaling or smoothing, etc., need to be applied, and then written
+  to (2a,3a) ``$ctrlvar.{tmp,effective}.data`` of size :varlink:`diffrec`;
+  note that the actual routines are often the ``md`` versions produced by TAF,
+  e.g., ``s/r ctrl_map_ini_gentim2dmd`` called from ``s/r initialize_variamd``
+  (called from ``s/r adthe_main_loop`` in TAF-generated file ``taf_ad_output.f``)
+  -- see :numref:`xx_creation`.
 
   .. figure:: figs/adxx_creation.*
     :width: 95%
