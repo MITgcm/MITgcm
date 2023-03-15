@@ -548,9 +548,6 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
-#ifdef ALLOW_LEITH_QG
-           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
-#endif
           ENDDO
          ENDDO
         ENDDO

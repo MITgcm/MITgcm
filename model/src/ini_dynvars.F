@@ -88,6 +88,9 @@ C-      3D arrays
            totPhiHyd(i,j,k,bi,bj)    = 0. _d 0
            rhoInSitu(i,j,k,bi,bj)    = 0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
+           sigmaRfield(i,j,k,bi,bj)  = 0. _d 0
+#endif
 #ifdef ALLOW_SOLVE4_PS_AND_DRAG
            dU_psFacX(i,j,k,bi,bj)    = 0. _d 0
            dV_psFacY(i,j,k,bi,bj)    = 0. _d 0
