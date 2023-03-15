@@ -178,7 +178,7 @@ CADJ STORE cMeanThetaUVel = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE cMeanThetaVVel = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
-#if (defined (ALLOW_COST_ATLANTIC) || defined (ALLOW_COST_ATLANTIC_HEAT))
+#ifdef ALLOW_COST_ATLANTIC_HEAT
 CADJ STORE theta = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE uVel  = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE vVel  = comlev1, key = ikey_dynamics, kind = isbyte
@@ -188,12 +188,8 @@ CADJ STORE vVel  = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_DOWN_SLOPE
 CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
-C Note: code under option ALLOW_HFLUXM_CONTROL or ANNUAL_BALANCE is not
+C Note: code under option ANNUAL_BALANCE is not
 C       standard MITgcm code (-> untested and not maintained).
-# ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE Qnetm     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
 # ifdef ANNUAL_BALANCE
 CADJ STORE balance_itcount = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE atmfw_tilesum   = comlev1, key = ikey_dynamics, kind = isbyte

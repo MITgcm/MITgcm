@@ -194,14 +194,6 @@ CADJ STORE cMeanThetaVVel = tapelev3, key = ilev_3
 CADJ STORE objf_tracer = tapelev3, key = ilev_3
 #endif
 
-#ifdef ALLOW_COST_TRANSPORT
-CADJ STORE objf_transport = tapelev3, key = ilev_3
-#endif
-
-#ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE qnetm          = tapelev3, key = ilev_3
-#endif
-
 #ifdef ALLOW_SEAICE
 cph temporary for HD
 # ifdef ANNUAL_BALANCE

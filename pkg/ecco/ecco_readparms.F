@@ -248,12 +248,7 @@ c- set default to false
 #else
       using_cost_sst=.FALSE.
 #endif
-#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
-     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
-      using_cost_scat=.TRUE.
-#else
       using_cost_scat=.FALSE.
-#endif
 
 c other run time parameters
         data_errfile          =    ' '

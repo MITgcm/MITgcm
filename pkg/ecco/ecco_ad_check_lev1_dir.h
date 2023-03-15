@@ -19,9 +19,6 @@ CADJ STORE sstbar  = comlev1, key=ikey_dynamics, kind=isbyte
 
 CADJ STORE xx_tbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_sbar_mean_dummy  = dummytape, key=1, kind=isbyte
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-CADJ STORE xx_sigmaRbar_mean_dummy  = dummytape, key=1, kind=isbyte
-#endif
 CADJ STORE xx_ubar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_vbar_mean_dummy  = dummytape, key=1, kind=isbyte
 CADJ STORE xx_wbar_mean_dummy  = dummytape, key=1, kind=isbyte

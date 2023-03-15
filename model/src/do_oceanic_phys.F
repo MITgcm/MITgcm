@@ -185,11 +185,6 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-#   include "ecco_cost.h"
-#  endif
-# endif
 #endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -553,7 +548,7 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#ifdef ALLOW_LEITH_QG
            sigmaRfield(i,j,k,bi,bj) = 0. _d 0
 #endif
           ENDDO
@@ -796,13 +791,13 @@ CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#ifdef ALLOW_LEITH_QG
             DO j=jMin,jMax
              DO i=iMin,iMax
               sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
              ENDDO
             ENDDO
-#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
+#endif /* ALLOW_LEITH_QG */
 
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
