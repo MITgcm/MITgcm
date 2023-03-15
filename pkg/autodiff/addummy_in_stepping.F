@@ -148,12 +148,6 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_KAPREDI_CONTROL
         call adexch_xyz_rl( myThid, adKapRedi )
 # endif
-# ifdef ALLOW_SST0_CONTROL
-        call adexch_xy_rl( myThid,adsst )
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-        call adexch_xy_rl( myThid,adsss )
-# endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
@@ -188,12 +182,6 @@ C     problem occurs
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
         CALL ADEXCH_3D_RL( adKapRedi, Nr, myThid )
-# endif
-# ifdef ALLOW_SST0_CONTROL
-        CALL ADEXCH_XY_RS( adSST, myThid )
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-        CALL ADEXCH_XY_RS( adSSS, myThid )
 # endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )

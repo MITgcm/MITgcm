@@ -316,35 +316,11 @@ CADJ STORE alpha    = tapelev_init, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
-# ifdef ALLOW_THETA0_CONTROL
-c$openad INDEPENDENT(xx_theta_dummy)
-# endif
-# ifdef ALLOW_SALT0_CONTROL
-c$openad INDEPENDENT(xx_salt_dummy)
-# endif
-# ifdef ALLOW_HFLUX0_CONTROL
-c$openad INDEPENDENT(xx_hflux0)
-# endif
-# ifdef ALLOW_SFLUX0_CONTROL
-c$openad INDEPENDENT(xx_sflux0)
-# endif
-# ifdef ALLOW_TAUU0_CONTROL
-c$openad INDEPENDENT(xx_tauu0)
-# endif
-# ifdef ALLOW_TAUV0_CONTROL
-c$openad INDEPENDENT(xx_tauv0)
-# endif
 # ifdef ALLOW_DIFFKR_CONTROL
 c$openad INDEPENDENT(xx_diffkr_dummy)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
 c$openad INDEPENDENT(xx_kapgm)
-# endif
-# ifdef ALLOW_TR10_CONTROL
-c$openad INDEPENDENT(xx_tr1)
-# endif
-# ifdef ALLOW_HFLUXM_CONTROL
-c$openad INDEPENDENT(xx_hfluxm)
 # endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
