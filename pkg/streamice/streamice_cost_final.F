@@ -47,7 +47,7 @@ C     == Local variables
       integer jtlo,jthi
       _RL i_numcells, dCdx, dCdy, dBdx, dBdy, dmdx, dmdy, idt
       _RL utmp, vtmp, uotmp, votmp, cotmp, dhdt, dhdt_fac
-      _RL dRdx, dRdy
+      _RL dRdx, dRdy, cfricval, bglenval, cfricvalp1, bglenvalp1
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
       CHARACTER*(MAX_LEN_FNAM) STREAMICExvelOptimFile
@@ -57,8 +57,6 @@ C     == Local variables
       _RL U_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL V_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL U_err (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL Bglen0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL BglenMask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL R0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL smooth_cost_fric  (nSx,nSy)
@@ -110,9 +108,6 @@ C     == Local variables
        print *, 'GOT HERE read uerr'
       endif
       if (STREAMICEBglenCostMaskFile .ne. ' ') then
-       CALL READ_FLD_XY_RL(STREAMICEBGlenCostMaskFile, ' ',
-     &      Bglen0, 0, myThid )
-       print *, 'GOT HERE read Bglen file'
        calc_prior_cost_bglen = .true.
       else
        calc_prior_cost_bglen = .false.
@@ -146,26 +141,52 @@ C--   Calculate cost function on tile of this instance
           do j=1,sNy
             do i=1,sNx
 
-             dCdx = (C_basal_friction(i+1,j,bi,bj)-
-     &               C_basal_friction(i,j,bi,bj)) /
+#ifdef ALLOW_STREAMICE_TC_COST
+             IF ( .not. STREAMICE_do_timedep_cost ) THEN
+#endif
+              cfricval = C_basal_friction(i,j,bi,bj)
+              bglenval = B_glen(i,j,bi,bj)
+ 
+              cfricvalp1 = C_basal_friction(i+1,j,bi,bj) 
+              dCdx = (Cfricvalp1-cfricval)/
      &              (dxC(i+1,j,bi,bj))
-             dCdy = (C_basal_friction(i,j+1,bi,bj)-
-     &               C_basal_friction(i,j,bi,bj)) /
+              cfricvalp1 = C_basal_friction(i,j+1,bi,bj) 
+              dCdy = (Cfricvalp1-cfricval)/
+     &              (dxC(i,j+1,bi,bj))
+
+              bglenvalp1 = B_glen(i+1,j,bi,bj)
+              dBdx = (bglenvalp1-
+     &               bglenval) /
+     &              (dxC(i+1,j,bi,bj))
+              bglenvalp1 = B_glen(i,j+1,bi,bj)
+              dBdy = (bglenvalp1-
+     &               bglenval) /
      &               (dyC(i,j+1,bi,bj))
 
-             dBdx = (B_glen(i+1,j,bi,bj)-
-     &               B_glen(i,j,bi,bj)) /
+!             dCdx = (C_basal_friction(i+1,j,bi,bj)-
+!     &               C_basal_friction(i,j,bi,bj)) /
+!     &              (dxC(i+1,j,bi,bj))
+!             dCdy = (C_basal_friction(i,j+1,bi,bj)-
+!     &               C_basal_friction(i,j,bi,bj)) /
+!     &               (dyC(i,j+1,bi,bj))
+
+!             dBdx = (B_glen(i+1,j,bi,bj)-
+!     &               B_glen(i,j,bi,bj)) /
+!     &              (dxC(i+1,j,bi,bj))
+!             dBdy = (B_glen(i,j+1,bi,bj)-
+!     &               B_glen(i,j,bi,bj)) /
+!     &               (dyC(i,j+1,bi,bj))
+
+              dRdx = (R_low_si(i+1,j,bi,bj)-
+     &               R_low_si(i,j,bi,bj)) /
      &              (dxC(i+1,j,bi,bj))
-             dBdy = (B_glen(i,j+1,bi,bj)-
-     &               B_glen(i,j,bi,bj)) /
+              dRdy = (R_low_si(i,j+1,bi,bj)-
+     &               R_low_si(i,j,bi,bj)) /
      &               (dyC(i,j+1,bi,bj))
 
-             dRdx = (R_low_si(i+1,j,bi,bj)-
-     &               R_low_si(i,j,bi,bj)) /
-     &              (dxC(i+1,j,bi,bj))
-             dRdy = (R_low_si(i,j+1,bi,bj)-
-     &               R_low_si(i,j,bi,bj)) /
-     &               (dyC(i,j+1,bi,bj))
+#ifdef ALLOW_STREAMICE_TC_COST
+             endif
+#endif
 
              if (STREAMICE_do_snapshot_cost) then
    
@@ -219,42 +240,57 @@ C--   Calculate cost function on tile of this instance
              endif
 
 
-             if(streamice_hmask(i,j,bi,bj).eq.1.0) then
-              tile_fc (bi,bj) = tile_fc (bi,bj) +
-     &        streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
-              smooth_cost_fric (bi,bj) = smooth_cost_fric (bi,bj) +
-     &        streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
+#ifdef ALLOW_STREAMICE_TC_COST
+             IF ( .not. STREAMICE_do_timedep_cost ) THEN
+#endif
 
-              tile_fc (bi,bj) = tile_fc (bi,bj) +
-     &        streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
-              smooth_cost_bglen (bi,bj) = smooth_cost_bglen (bi,bj) +
-     &        streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
+              if(streamice_hmask(i,j,bi,bj).eq.1.0) then
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
+               smooth_cost_fric (bi,bj) = smooth_cost_fric (bi,bj) +
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
 
-              tile_fc (bi,bj) = tile_fc (bi,bj) +
-     &        0.e5 * (dRdx**2+dRdy**2) * I_numcells
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
+     &         streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
+               smooth_cost_bglen (bi,bj) = smooth_cost_bglen (bi,bj) +
+     &         streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
 
-              h = H_streamice(i,j,bi,bj)
-              hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
+     &         0.e5 * (dRdx**2+dRdy**2) * I_numcells
 
-              IF ((h-hf) .gt. 5. .AND. Bglen0(i,j,bi,bj).gt.0.0 .and.
-     &            calc_prior_cost_bglen) then
+               h = H_streamice(i,j,bi,bj)
+               hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
 
-                tile_fc (bi,bj) = tile_fc (bi,bj) + 
-     &           streamice_wgt_prior_bglen * I_numcells *  
-     &           (B_glen(i,j,bi,bj)-Bglen0(i,j,bi,bj))**2
+               IF ((h-hf) .gt. 5. .AND. B_glen0(i,j,bi,bj).gt.0.0 .and.
+     &             calc_prior_cost_bglen) then
 
-                smooth_cost_prior (bi,bj) = smooth_cost_prior (bi,bj) + 
-     &           streamice_wgt_prior_bglen * I_numcells *  
-     &           (B_glen(i,j,bi,bj)-Bglen0(i,j,bi,bj))**2
+                 tile_fc (bi,bj) = tile_fc (bi,bj) + 
+     &            streamice_wgt_prior_bglen * I_numcells *  
+     &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
 
-              ENDIF
-             endif
+                 smooth_cost_prior (bi,bj) = smooth_cost_prior (bi,bj) +
+     &            streamice_wgt_prior_bglen * I_numcells *  
+     &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
 
+               ENDIF
+              endif
+
+#ifdef ALLOW_STREAMICE_TC_COST
+             ENDIF
+#endif
             end do
           end do
 
           tile_fc (bi,bj) =
      &       tile_fc (bi,bj) + cost_func1_streamice(bi,bj)
+
+#ifdef ALLOW_STREAMICE_TC_COST
+          if ( STREAMICE_do_timedep_cost ) then
+           smooth_cost_prior(bi,bj) = cost_prior_streamice(bi,bj)
+           smooth_cost_fric(bi,bj) = cost_smooth_fric_streamice(bi,bj)
+           smooth_cost_bglen(bi,bj) = cost_smooth_glen_streamice(bi,bj)
+          endif
+#endif
 
         end do
       end do

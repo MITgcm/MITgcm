@@ -18,6 +18,7 @@ streamice_cg_solve.f
 streamice_cg_solve_matfree.f
 streamice_taub.f
 streamice_cost_accum.f
+streamice_cost_reg_accum.f
 streamice_cost_surf_accum.f
 streamice_cost_vel_accum.f
 streamice_cost_final.f

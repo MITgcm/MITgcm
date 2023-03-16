@@ -127,7 +127,28 @@ C       The 0 is the "iteration" argument. The ' ' is an empty suffix
           ENDDO
          ENDDO
         ENDDO
+       ENDIF
+#endif
+#ifdef ALLOW_STREAMICE_TC_COST
+       IF ( STREAMICEBglenCostMaskFile .NE. ' ') THEN
+        _BARRIER
+C       The 0 is the "iteration" argument. The ' ' is an empty suffix
+        CALL READ_FLD_XY_RS( STREAMICEBglenCostMaskFile, ' ',
+     &   B_glen0, 0, myThid )
+       ELSE
+        WRITE(msgBuf,'(A)') 'BGLEN COST MASK - NOT IMPLENTED'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            b_glen0 (i,j,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
        ENDIF
 #endif
 

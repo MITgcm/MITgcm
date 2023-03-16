@@ -125,6 +125,9 @@ c          h_after_uflux_SI(i,j,bi,bj) = 0. _d 0
         cost_func1_streamice (bi,bj) = 0.0
         cost_vel_streamice (bi,bj) = 0.0
         cost_surf_streamice (bi,bj) = 0.0
+        cost_smooth_fric_streamice (bi,bj) = 0.0
+        cost_smooth_glen_streamice (bi,bj) = 0.0
+        cost_prior_streamice (bi,bj) = 0.0
 #endif
 
        ENDDO
@@ -353,6 +356,8 @@ c initialize glen constant
 
         CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ',
      &      B_glen, 0, myThid )
+        CALL READ_FLD_XY_RL( STREAMICEGlenConstFile, ' ',
+     &      B_glen_init, 0, myThid )
 
 #endif
        ELSE
@@ -503,6 +508,8 @@ c initialize basal traction
 
         CALL READ_FLD_XY_RL( STREAMICEbasalTracFile, ' ',
      &      C_basal_friction, 0, myThid )
+        CALL READ_FLD_XY_RL( STREAMICEbasalTracFile, ' ',
+     &      C_basal_fric_init, 0, myThid )
 
        ELSE
         WRITE(msgBuf,'(A)') 'INIT C_BASAL - FILENAME MISSING'

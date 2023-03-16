@@ -724,8 +724,8 @@ C    REAL ARRAYS
      &     u_bdry_values_SI,
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
-     &     C_basal_friction,
-     &     B_glen,
+     &     C_basal_friction, C_basal_fric_init,
+     &     B_glen, B_glen_init, B_glen0,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_bdot_depth_maxmelt_v, streamice_bdot_maxmelt_v,
      &     streamice_sigma_coord, streamice_delsigma,
@@ -817,6 +817,7 @@ C    REAL ARRAYS
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL c_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL c_basal_fric_init   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -825,6 +826,9 @@ C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+      _RL B_glen_init    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL B_glen_pert    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL B_glen0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_sigma_coord (Nr)
       _RL streamice_delsigma (Nr)
 
@@ -941,10 +945,16 @@ C  POSITIVE WHERE MELTING
       COMMON /STREAMICE_COST_RL/
      &       cost_func1_streamice,
      &       cost_vel_streamice,
-     &       cost_surf_streamice
+     &       cost_surf_streamice,
+     &       cost_smooth_fric_streamice,
+     &       cost_smooth_glen_streamice,
+     &       cost_prior_streamice
       _RL cost_func1_streamice(nSx,nSy)
       _RL cost_vel_streamice(nSx,nSy)
       _RL cost_surf_streamice(nSx,nSy)
+      _RL cost_smooth_fric_streamice(nSx,nSy)
+      _RL cost_smooth_glen_streamice(nSx,nSy)
+      _RL cost_prior_streamice(nSx,nSy)
 
 C    NOTES :
 C      REAL ARRAYS THAT COMPRISE "STATE":

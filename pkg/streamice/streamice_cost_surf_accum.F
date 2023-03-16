@@ -50,13 +50,18 @@ C     == Local variables
       CHARACTER*(10) myIterStr
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) surffilename
+      CHARACTER*(MAX_LEN_FNAM) surffilename, errsurffilename
       _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL errsurfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rhoi, rhow, r, i_r, i_numcells, surf_err, h, hf
       WRITE(myIterStr,'(I10.10)') myIter
       surffilename=STREAMICEsurfOptimTCBasename(1:
      & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//".bin"
+      errsurffilename=STREAMICEsurfOptimTCBasename(1:
+     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//"err.bin"
       CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
+     &  0, myThid )
+      CALL READ_FLD_XY_RL( errsurffilename, ' ', errsurfobs,
      &  0, myThid )
 
 
@@ -91,7 +96,8 @@ C--   Calculate cost function on tile of this instance
 
               surf_err = streamice_wgt_surf * i_numcells *
      &         (surf_el_streamice(i,j,bi,bj) - 
-     &          surfobs(i,j,bi,bj))**2
+     &          surfobs(i,j,bi,bj))**2 / 
+     &          (.01 + errSurfObs(i,j,bi,bj)**2) 
 
               cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) +
