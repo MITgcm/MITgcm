@@ -1,6 +1,19 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - remove TAF storage dir for variable "OmegaC" (within wrong CPP option).
+
+checkpoint68o (2023/03/13)
+o model/src:
+  - salt/temp/ptracer_integrate.F: optimise store directives
+  - add mising "obcs_seaice_sponge.f" to obcs_ad_diff.list
+o pkg/ecco:
+  - smoothing in gencost_bpv4: allow to choose between a) call to smooth_basic2D
+    (using a constant length, with run-time params replacing hard-coded values)
+    or b) call to smooth_hetero2D (using a 2D field to be read in).
+o pkg/obcs:
+  -  update OBCS configuration summary.
 o eesupp/inc, model/inc & pkgs:
   Clean CPP header files:
   - remove ALLOW_GENCOST_CONTRIBUTION from COST_OPTIONS.h (is already set in
