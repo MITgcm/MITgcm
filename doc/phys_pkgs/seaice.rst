@@ -157,7 +157,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseFlooding`       | TRUE                         | use flood-freeze algorithm                                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SINegFac`                | 1.0                          | over/undershoot factor for sea ice advective term in forward/adjoint    |
+  | :varlink:`SINegFac`                | 1.0                          | over/undershoot factor for seaice advective term in forward/adjoint     |
+  |                                    |                              | (SEAICE_USE_GROWTH_ADX only)                                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_no_slip`          | FALSE                        | use no-slip boundary conditions instead of free-slip                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
