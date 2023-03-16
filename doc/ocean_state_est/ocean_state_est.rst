@@ -1071,7 +1071,7 @@ calls :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`,
 are subsequently used to determine the record length of the three pairs (1--3)
 of the above files, in the order as follows:
 
-- First the ``ad$ctrlvar.[tmp,effective,].$iternumber`` files (1b,2b,3b) above
+- First the ``ad$ctrlvar.[effective,tmp,].$iternumber`` files (1b,2b,3b) above
   are initialized with zeros in
   :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`-->
   :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->
@@ -1134,17 +1134,17 @@ of the above files, in the order as follows:
     \|-initialise_variamd
       \|-packages_init_variablesmd
         \|-:filelink:`diagnostics_init_varia <pkg/diagnostics/diagnostics_init_varia.F>`, :filelink:`kpp_init_varia <pkg/kpp/kpp_init_varia.F>`, :filelink:`exf_init_varia <pkg/exf/exf_init_varia.F>`  **store salt,theta**
-        \|-:filelink:`profiles_init_varia <pkg/profiles/profiles_init_varia.F>`, :filelink:`ecco_init_varia <pkg/ecco/ecco_init_varia.F>`, :filelink:`obcs_init_variables <pkg/obcs/obcs_init_variables.F>`  **done after ctrl**
+        \|-:filelink:`profiles_init_varia <pkg/profiles/profiles_init_varia.F>`, :filelink:`ecco_init_varia <pkg/ecco/ecco_init_varia.F>`, :filelink:`obcs_init_variables <pkg/obcs/obcs_init_variables.F>`  **some done after ctrl**
         \|-ctrl_init_variablesmd
           \|-:filelink:`ctrl_map_ini_genarr <pkg/ctrl/ctrl_map_ini_genarr.F>`
             \|-:filelink:`ctrl_map_genarr2d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set etan,siheff ctrl**
             \|-:filelink:`ctrl_map_genarr3d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set logdiffkr ctrl**
           \|-ctrl_map_ini_gentim2dmd
-            \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (xx_atemp) **example here: [startrec,endrec,diffrec]=[24,37,14]**
-            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenIn,lrec) **read in xx_atemp.0000000001.data from 24:37**
-            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec) **write out to xx_atemp.effective.0000000001.data from 1:14**
-            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)  **read in xx_atemp.effective.0000000001.data 1:14, do some math**
-            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenTmp,irec)  **write out to xx_atemp.tmp.0000000001.data 1:14**
+            \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (xx_atemp) **example here for atemp: [startrec,endrec,diffrec]=[24,37,14]**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenIn,lrec) **read in xx_atemp.0000000001.data from 24->37**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec) **write out to xx_atemp.effective.0000000001.data from 1->14**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)  **read in xx_atemp.effective.0000000001.data 1->14, do some math**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenTmp,irec)  **write out to xx_atemp.tmp.0000000001.data 1->14**
             do irec=1,diffrec
             \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
             \|-:filelink:`mds_read_field <pkg/mdsio/mdsio_read_field.F>`\ (xx_gentim2d_weight,jrec) **if variaweight, jrec=lrec, else jrec=1**
@@ -1164,7 +1164,7 @@ written; note the model would thus crash if its last record were :varlink:`diffr
 For pairs 1[a,b] and 2[a,b], because they are generated *after* we
 have already accessed the correct records :varlink:`startrec` to :varlink:`endrec` in 3a, we simply
 create and write out these records in the shorter file size :varlink:`diffrec`.
-After their file size initializations, the physical unit for file 1a is passed on
+After their file size initializations, the control adjustment field with physical unit from file 1a is passed on
 to :filelink:`pkg/exf` for surface forcing application.
 
 Note, that :varlink:`xx_gentim2d_startdate` can be used to control how many
