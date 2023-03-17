@@ -126,16 +126,17 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
-catn: there is a copy of this code as ctrl_map_ini_gentim2dmd
-catn: so that this code is actually not called but a version of
-catn: it is found in ad_taf_output.  At the end of the above
-catn: ctrl_init_rec call, we get [start,end,diff]rec. So what
-catn: we need to make sure next is that when we read from
-catn: xx_atemp.0000000001.data, read from startrec:endrec, then
-catn: write out to xx_atemp.effective.0000000001.data as
-catn: 1:diffrec. Note that the version of this in ad_taf_output.f
-catn: strips all the misc write statements so it appears as if
-catn: we did not go past here, but we did.
+C From ctrl_init_rec one gets [start,end,diff]rec. Below, the
+C file xx_*.$iter.data is read in from records startrec to endrec,
+C followed by a write to file xx_*.effective.$iter.data of record
+C 1 to diffrec. The flow of this read/write can be followed inside
+C the TAF-produced version of S/R ctrl_map_ini_gentim2dmd inside either
+C ctrl_map_ini_gentim2d_ad.f or the concatenated file ad_taf_output.f
+C 
+C Note that the .f version of this S/R by TAF strips all misc
+C write(*,FORMAT) statments so it appears as if we donot go past here,
+C but we did.  See Documentation for further details on record access.
+
 #ifdef ALLOW_CTRL_DEBUG
         write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
      &              iarr,xx_gentim2d_startdate(1,iarr)
@@ -208,17 +209,14 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
          write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
          write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
 #endif
-catn: fnamegenIn is xx_atemp.0000000001, so we need to read
-catn: from startrec+irec-1 instead of irec in the call below
-catn: HOWEVER, the problem is that in the adjoint mode, the function
-catn  adactive_read_xy is called to read in adxx_atemp.0000000001
-catn  instead xx_atemp.0000000001, in which case the records need to
-catn  be diffrec:-1:1 instead of of endrec:-1:startrec.  The question
-catn  is how can we separate that out? Can we make use of the flag
-catn  FORWARD_SIMULATION and REVERSE_SIMULATION?
-catn  The solution now is that we make adxx file of length 1:endrec,
-catn  so that we can access record endrec:-1:startrec. The rest of
-catn  the records startec-1:-1:1 should be all zeros.
+C fnamegenIn is xx_*.$iter.data, so the required access records starts
+C at startrec+irec-1 instead of irec in the read call below. In adjoint
+C mode, the S/R adactive_read_xy produced by TAF reads adxx_*.$iter.data
+C in reverse, with required access of endrec back to startrec.  This 
+C necessitates creating the adxx_*.$iter.data of size endrec, and that
+C records endrec to startrec will have valid gradients while the rest
+C from startrec-1 to 1 will be all zeros.  See Documentation for more
+C info in record access.
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, lrec,
      &          doglobalread, ladinit, optimcycle,
@@ -226,8 +224,8 @@ catn  the records startec-1:-1:1 should be all zeros.
 #else
            CALL READ_REC_XY_RL( fnamegenIn, xx_gen, lRec, 1, myThid )
 #endif
-catn: now here, we write xx_atemp.effective.0000000001, so
-catn: the krec is the correct record, no mod here
+C Here, we write out to file xx_*.effective.$iter of size diffrec,
+C so the record krec looping from 1 to diffrec is used.
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenOut )
@@ -398,9 +396,9 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 c--   scaling and smoothing
 
-catn: so, the fix for xx_atemp.0000000001 was already above
-catn: From now on, we read in from xx_atemp.effective.0000000001
-catn: so we no longer need to fix any record from here on out
+C The access of records startrec to endrec in  xx_*.*iter was already
+C done correctly above. From here, we read in xx_*.effective.$iter.data
+C of size diffrec, so no more fix of record is needed from here on out.
         DO irec = 1, diffrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
@@ -422,9 +420,9 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 #ifndef ALLOW_OPENAD
          jrec=1
-catn: what should we do with the timevariable weights? do we ever
-catn: have this situation?  not sure how to fix this.  The fix
-catn: needs to be inside the do k2 loop
+Catn What should we do with the timevariable weights? Do we ever
+C have this situation?  Not sure how to fix this.  The fix will
+C need to be inside the do k2 loop
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') then
             jrec=startrec+irec-1
