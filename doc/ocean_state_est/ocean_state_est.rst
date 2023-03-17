@@ -1110,11 +1110,13 @@ of the above files, in the order as follows:
            `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.effective.0000000001)  **<- size diffrec**
        `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.tmp.0000000001)
-           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)         **--> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001**
+           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+                            **--> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001**
            `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.tmp.0000000001)        **<- size diffrec**
        `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.0000000001)
-           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)         **--> fname(1:3)=[,ad,hn]xx_atemp.0000000001**
+           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+                            **--> fname(1:3)=[,ad,hn]xx_atemp.0000000001**
            `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.0000000001)            **<- size endrec**
 
@@ -1124,8 +1126,10 @@ of the above files, in the order as follows:
   processed if scaling or smoothing, etc., need to be applied, and then written
   to (1a,2a) ``$ctrlvar.{effective,tmp}.data`` of size :varlink:`diffrec`.
   Note these routines contain a ``md`` or ``ad`` suffix and are produced by TAF,
-  e.g., ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file ``ctrl_map_ini_gentim2d_ad.f``) called from ``s/r initialize_variamd`` (found in TAF-generated file ``initialize_varia_ad.f``)
-  (in turn called from ``s/r adthe_main_loop`` in TAF-generated file ``the_main_loop_ad.f``, alternatively all of these routine are found the concatenated file ``ad_taf_output.f``). 
+  e.g., ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file ``ctrl_map_ini_gentim2d_ad.f``)
+  called from ``s/r initialize_variamd`` (found in TAF-generated file ``initialize_varia_ad.f``),
+  which in turn is called from ``s/r adthe_main_loop`` (found in TAF-generated file ``the_main_loop_ad.f``);
+  alternatively, all of these routines are found the concatenated file ``ad_taf_output.f``. 
 
 .. parsed-literal ::
 
@@ -1155,7 +1159,7 @@ of the above files, in the order as follows:
             \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
             \|-:filelink:`mds_read_field <pkg/mdsio/mdsio_read_field.F>`\ (xx_gentim2d_weight,jrec)
 	             **if variaweight, jrec=lrec, else jrec=1**
-            \|-smooth_correl2d  **or smooth2d**
+            \|-:filelink:`smooth_correl2d <pkg/smooth/smooth_correl2d.F>`  **or smooth2d**
             \|-xx_gen/sqrt(wgentim2d)  **if doscaling**
             \|-exch_xy_rl
             \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
