@@ -163,9 +163,9 @@ via :varlink:`gencost_posproc_c` (name of a smoothing scale file) and
 :varlink:`gencost_posproc_i` (an integer specifying the smoother number of time
 steps, see :numref:`gencost_ecco_preproc`).  The smoothing scale file can be
 be based on the large-scale parameter specified in data.smooth or prepared as
-a factor of the model resolution DXG and DYG.  As an example, one can read in
-offline the model DXG and DYG and create a characteristic length-scale as
-sqrt(DXG^2 + DYG^2), then multiply by a factor of 3 if one wants the smoothed
+a factor of the model resolution dxC and dyC.  As an example, one can read in
+offline the model dxC and dyC and create a characteristic length-scale as
+sqrt(dxC^2 + dyC^2), then multiply by a factor of 3 if one wants the smoothed
 (large scale) field to be of length-scale 3x that of the model grid spacing.
 The smoother number of time steps `gencost_posproc_i` can be the same as that
 used in data.smooth.  Other options associated with the computation
