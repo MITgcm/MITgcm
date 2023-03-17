@@ -1141,18 +1141,25 @@ of the above files, in the order as follows:
             \|-:filelink:`ctrl_map_genarr2d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set etan,siheff ctrl**
             \|-:filelink:`ctrl_map_genarr3d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set logdiffkr ctrl**
           \|-ctrl_map_ini_gentim2dmd
-            \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (xx_atemp) **example here for atemp: [startrec,endrec,diffrec]=[24,37,14]**
-            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenIn,lrec) **read in xx_atemp.0000000001.data from 24->37**
-            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec) **write out to xx_atemp.effective.0000000001.data from 1->14**
-            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)  **read in xx_atemp.effective.0000000001.data 1->14, do some math**
-            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenTmp,irec)  **write out to xx_atemp.tmp.0000000001.data 1->14**
+            \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (xx_atemp)
+	             **example here for atemp: [startrec,endrec,diffrec]=[24,37,14]**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenIn,lrec)
+	             **read in xx_atemp.0000000001.data from 24->37**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **write out to xx_atemp.effective.0000000001.data from 1->14**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **read in xx_atemp.effective.0000000001.data 1->14, do some math**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenTmp,irec)
+	             **write out to xx_atemp.tmp.0000000001.data 1->14**
             do irec=1,diffrec
             \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
-            \|-:filelink:`mds_read_field <pkg/mdsio/mdsio_read_field.F>`\ (xx_gentim2d_weight,jrec) **if variaweight, jrec=lrec, else jrec=1**
+            \|-:filelink:`mds_read_field <pkg/mdsio/mdsio_read_field.F>`\ (xx_gentim2d_weight,jrec)
+	             **if variaweight, jrec=lrec, else jrec=1**
             \|-smooth_correl2d  **or smooth2d**
             \|-xx_gen/sqrt(wgentim2d)  **if doscaling**
             \|-exch_xy_rl
-            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec) **write out to xx_atemp.effective.0000000001.data (smooth/scaled)**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **write out to xx_atemp.effective.0000000001.data (smooth/scaled)**
             enddo
 
 The difference in length of records for 3[a,b] compared to 1[a,b] and 2[a,b] is
