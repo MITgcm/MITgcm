@@ -262,7 +262,7 @@ c--   rmcycle
         enddo
 
 #ifdef ALLOW_CTRL_DEBUG
-        write(*,'(A,1x,5I6)'),
+        write(*,'(A,1x,5I6)')
      &  'AI:[start,end,diff]rec, replicated_[nrec,ntimes]: ',
      &      startrec,endrec,diffrec,replicated_nrec,replicated_ntimes
 #endif
