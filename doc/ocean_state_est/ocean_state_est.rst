@@ -1124,12 +1124,12 @@ of the above files, in the order as follows:
   processed if scaling or smoothing, etc., need to be applied, and then written
   to (1a,2a) ``$ctrlvar.{effective,tmp}.data`` of size :varlink:`diffrec`.
   Note these routines contain a ``md`` or ``ad`` suffix and are produced by TAF,
-  e.g., ``s/r ctrl_map_ini_gentim2dmd`` called from ``s/r initialize_variamd``
-  (in turn called from ``s/r adthe_main_loop`` in TAF-generated file ``taf_ad_output.f``). 
+  e.g., ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file ``ctrl_map_ini_gentim2d_ad.f``) called from ``s/r initialize_variamd`` (found in TAF-generated file ``initialize_varia_ad.f``)
+  (in turn called from ``s/r adthe_main_loop`` in TAF-generated file ``the_main_loop_ad.f``, alternatively all of these routine are found the concatenated file ``ad_taf_output.f``). 
 
 .. parsed-literal ::
 
-  \|-adthe_main_loop  **only available in ad_taf_output.f, called from the_model_main.f**
+  \|-adthe_main_loop  **only available in the_main_loop_ad.f, called from the_model_main.f**
     \|-adopen (many tapes, ocean variables, atmos, obcs, etc)  **initialize tapelev grid, etc.**
 
     \|-initialise_variamd
