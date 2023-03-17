@@ -87,6 +87,7 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
       _RL SEAICE_abEps
       LOGICAL SEAICEuseAB2
+#ifdef ALLOW_COST
 C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL  mult_smrarea
       _RL  mult_smrsst
@@ -103,6 +104,7 @@ C     former ALLOW_SEAICE_COST_SMR_AREA related flags
       _RL smrareaperiod
       _RL SEAICE_clamp_salt
       _RL SEAICE_clamp_theta
+#endif /* ALLOW_COST */
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -1332,7 +1334,7 @@ C-    Retired parameters
      &  'is no longer allowed in file "data.seaice"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_COST */
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R SEAICE_READPARMS: ',
      &  'Error reading parameter file "data.seaice"'

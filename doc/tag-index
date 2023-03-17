@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - SEAICE_USE_GROWTH_ADX: fix diagnostic SIatmFW and add diagnostic SIeprflx
+    to close seaice mass and heat budgets.
 o pkg/dic:
   - remove TAF storage dir for variable "OmegaC" (within wrong CPP option).
 
