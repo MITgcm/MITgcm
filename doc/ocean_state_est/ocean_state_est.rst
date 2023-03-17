@@ -1179,7 +1179,7 @@ Note, that :varlink:`xx_gentim2d_startdate` can be used to control how many
 records the different :varlink:`xx_gentim2d` files
 contain. :numref:`xx_var_sketch` illustrates a few examples.
 
-  .. figure:: figs/ctrl_var_sketch.*
+  .. figure:: figs/ctrl_var_sketch.pdf
     :width: 100%
     :align: center
     :alt: xx_var_sketch
@@ -1187,30 +1187,6 @@ contain. :numref:`xx_var_sketch` illustrates a few examples.
 
     Sketch illustrating which parts of the timeline are covered by which
     :varlink:`xx_gentim2d` files.
-
-Old figures/captions to delete:
-
-  .. figure:: figs/adxx_creation.*
-    :width: 95%
-    :align: center
-    :alt: adxx_creation
-    :name: adxx_creation
-
-    adxx* are created first inside packages_init_fixed / ctrl_init.F.
-
-  .. figure:: figs/xx_creation.*
-    :width: 95%
-    :align: center
-    :alt: xx_creation
-    :name: xx_creation
-
-    ``$ctrlvar`` are read in/created afterward inside
-    packages_init_variables[md] / ctrl_map_ini_gentim2d[md]. During the adjoint
-    run, ``ad$ctrlvar`` are read from ctrl_map_ini_gentim2d_ad, requesting
-    records in reverse, and can cause crashing if that last record is
-    :varlink:`diffrec` instead of :varlink:`endrec`.  As a result, file 1b
-    needs accessible records :varlink:`endrec`:-1::varlink:`startrec` and the
-    length of the file is endrec.
 
 .. _shi_ctrl:
 
