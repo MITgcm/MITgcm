@@ -95,7 +95,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         diagName  = 'GGL90KN2'
         diagTitle = 'GGL90 diffusivity times buoyancy frequency'
-        diagUnits = 'm^2/s^2         '
+        diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
