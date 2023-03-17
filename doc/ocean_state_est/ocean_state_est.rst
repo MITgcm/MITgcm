@@ -1183,7 +1183,7 @@ Note, that :varlink:`xx_gentim2d_startdate` can be used to control how many
 records the different :varlink:`xx_gentim2d` files
 contain. :numref:`xx_var_sketch` illustrates a few examples.
 
-  .. figure:: figs/ctrl_var_sketch.pdf
+  .. figure:: figs/ctrl_var_sketch.*
     :width: 100%
     :align: center
     :alt: xx_var_sketch
