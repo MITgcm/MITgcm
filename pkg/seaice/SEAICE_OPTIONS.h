@@ -227,6 +227,8 @@ C-    Special seaice flag for AD testing
 
 C--   Use the adjointable sea-ice thermodynamic model
 C     in seaice_growth_adx.F instead of seaice_growth.F
+C     This options excludes more complex physics such
+C     as sublimation, ITD, and frazil.
 #undef SEAICE_USE_GROWTH_ADX
 
 C--   These flags are not strictly AD-related but may help obtaining
