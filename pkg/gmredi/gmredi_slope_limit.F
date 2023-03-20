@@ -422,7 +422,7 @@ C         but still neglect Kxy & Kyx (assumed to be zero)
              SlopeX(i,j) = 0. _d 0
              SlopeY(i,j) = 0. _d 0
           ENDIF
-#ifndef ALLOWW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF_TAMC
 cph-- this part does not adjoint well
           IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN

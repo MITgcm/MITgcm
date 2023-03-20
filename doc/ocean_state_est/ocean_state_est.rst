@@ -159,8 +159,16 @@ records (i.e., a # of months, days, or time steps) per climatological
 cycle. The generic post-processor (:math:`\mathcal{P}` in Eq. :eq:`Jposproc`)
 also allows model-data misfits to be, for example, smoothed in space by setting
 :varlink:`gencost_posproc` to ‘smooth’ and specifying the smoother parameters
-via :varlink:`gencost_posproc_c` and :varlink:`gencost_posproc_i` (see
-:numref:`gencost_ecco_preproc`).  Other options associated with the computation
+via :varlink:`gencost_posproc_c` (name of a smoothing scale file) and
+:varlink:`gencost_posproc_i` (an integer specifying the smoother number of time
+steps, see :numref:`gencost_ecco_preproc`).  The smoothing scale file can be
+be based on the large-scale parameter specified in data.smooth or prepared as
+a factor of the model resolution DXG and DYG.  As an example, one can read in
+offline the model DXG and DYG and create a characteristic length-scale as
+sqrt(DXG^2 + DYG^2), then multiply by a factor of 3 if one wants the smoothed
+(large scale) field to be of length-scale 3x that of the model grid spacing.
+The smoother number of time steps `gencost_posproc_i` can be the same as that
+used in data.smooth.  Other options associated with the computation
 of Eq. :eq:`Jtotal` are summarized in :numref:`gencost_ecco_preproc` and
 further discussed below. Multiple :varlink:`gencost_preproc` /
 :varlink:`gencost_posproc` options may be specified per cost term.
@@ -491,6 +499,8 @@ be used (e.g. 1000 dbar, 2000 dbar).
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
   +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_vol``   | total volume over box            | specify box      |
+  +---------------------+----------------------------------+------------------+  
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
 

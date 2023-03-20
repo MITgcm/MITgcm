@@ -8,10 +8,12 @@
 # OpenMP : tested on danton (FC 14) using intel compiler v.11.1.046 (20090630)
 #                                    and (FC 14,17 & 19) v.12.0.4   (20110427)
 #                                    and also (FC 19)    v.14.0.0   (20130728)
+#              on jaures (FC21, FC23) using intel compiler v.15.0.3 (20150407)
 #
-# MPI : Tested  on danton, with and without OpenMP,
-#        using intel compiler v.11.1.046 and v.12.0.4 and also v.14.0.0
+# MPI : Tested  on danton/jaures, with and without OpenMP,
+#        using version v.11.1.046, v.12.0.4, v.14.0.0 and v.15.0.3
 #       and  on acesgrid  (FC 15)  with intel compiler v.13.0.0.079 (20120731)
+#       and  on svante (FC24) with: 17.0.3 (20170404) and 2021.4.0 (20210910)
 # ==> DON'T FORGET to set environment variable MPI_INC_DIR to the include
 #     directory of your MPI implementation
 
@@ -48,6 +50,15 @@ OMPFLAG='-openmp'
 
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
+
+#- for setting specific options, check compiler version:
+fcVers=`$FC $GET_FC_VERSION | head -n 1 | awk '{print $NF}'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-release '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-release: '$fcVers'" ; fi
+if [ $fcVers -ge 20160301 ] ; then
+    OMPFLAG='-qopenmp'
+fi
 
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2

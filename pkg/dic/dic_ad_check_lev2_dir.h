@@ -7,10 +7,6 @@ CADJ STORE fIce               = tapelev2, key = ilev_2
 CADJ STORE silicaSurf         = tapelev2, key = ilev_2
 CADJ STORE atmosPCO2          = tapelev2, key = ilev_2
 
-#ifdef DIC_BIOTIC
-CADJ STORE omegaC             = tapelev2, key = ilev_2
-#endif
-
 CADJ STORE gsm_s              = tapelev2, key = ilev_2
 CADJ STORE co2atmos           = tapelev2, key = ilev_2
 CADJ STORE total_atmos_carbon = tapelev2, key = ilev_2

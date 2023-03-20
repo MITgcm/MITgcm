@@ -56,9 +56,11 @@ c Local constants
 C     iMin, iMax, jMin, jMax :: array computation indices
       INTEGER I, J, K, Km1, JJ
       INTEGER   iMin ,iMax ,jMin ,jMax,di
-      _RL     KLviscTmp, rhot, tempu
+      _RL     KLviscTmp, tempu
       _RL     b0, buoyFreqf, buoyFreqc, KLviscold,zsum,zsums
-      _RL     rhoS(1:Nr),RS(1:Nr)
+C note: rhoS(0) is never used but could be reached when evaluating
+C       the "DO WHILE" expression around line 106
+      _RL     rhoS(0:Nr), RS(1:Nr)
       _RL     dzp,ec,ep,es,epss(-1:0),epsw(-1:0),dz,KTemp
 c     _RL     bF(1:Nr)
 c     _RL     theta_mcb(1:Nr),theta_mcb3(1:Nr)
@@ -75,9 +77,7 @@ CEOP
       DO J=jMin,jMax
          DO I=iMin,iMax
             K=1
-            CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi,bj),
-     &           totPhiHyd(I,J,K,bi,bj),rhot,myThid )
-            rhoS(1)=rhot
+            rhoS(1)=rhoInSitu(I,J,K,bi,bj)
             RS(1)=rC(1)
 
             KLeps(I-1,J-1,1,bi,bj)=0.0
@@ -87,13 +87,15 @@ c           eps(k-1) = (dz(k-1)*eps0(k-1) +dz(k)*eps0(k))/(dz(k-1)+dz(k))
 
             KLviscAr(I,J,1,bi,bj) = viscArNr(1)
             KLviscold = KLviscAr(I,J,1,bi,bj) ! at previous cell center
+C Fill in density profile using vertical gradient of iso-neutral density (SigmaR)
+C      (valid also for nonlinear EOS + remove pressure effect)
+            DO K=2,Nr
+               rhoS(K)= rhoS(K-1) + rkSign*drC(K)*SigmaR(I,J,K)
+               RS(K)=rC(K)
+            ENDDO
 C get sorted densities rhoS, and the array with the depths from which
 C the density came from, RS.
             DO K=2,Nr
-               CALL FIND_RHO_SCALAR(theta(I,J,K,bi,bj), salt(I,J,K,bi
-     &              ,bj),totPhiHyd(I,J,K,bi,bj),rhot,myThid )
-               rhoS(K)=rhot
-               RS(K)=rC(K)
 c$$$               WRITE(msgBuf, '(A,I10.10,A,E10.4,A,E10.4)') 'Hellok ', K
 c$$$     &              -1,' ',theta(I,J,K,bi,bj),' ',rhot
 c$$$               CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
