@@ -85,8 +85,6 @@ C-- partially retired options (i.e., only used to set default switch):
 # undef ALLOW_SSH_COST_CONTRIBUTION
 # undef ALLOW_SST_COST_CONTRIBUTION
 # undef ALLOW_SEAICE_COST_CONTRIBUTION
-C-  same except the corresponding run-time switch is never used:
-# undef ALLOW_BP_COST_CONTRIBUTION
 
 C-- Retired ? options (but still with bits of code left)
 # undef ALLOW_ECCO_BARSTORES
