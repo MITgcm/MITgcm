@@ -123,8 +123,8 @@ c     _RL SQRTTKE
       _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_IDEMIX
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     IDEMIX_gTKE :: dissipation of internal wave energy
-C                    (output of S/R GGL90_IDEMIX)
+C     IDEMIX_gTKE :: dissipation of internal wave energy is a source
+C                    of TKE and mixing (output of S/R GGL90_IDEMIX)
       _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
@@ -1073,7 +1073,7 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
          a3d(i,j,k) = -deltaTloc
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*recip_hFacI(i,j,k)
      &        *coordFac*coordFac
         ENDDO
        ENDDO
@@ -1095,17 +1095,8 @@ C-    No need for maskC(k) with recip_hFacC(k)
          c3d(i,j,k) = -deltaTloc
      &         *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &         *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &         *recip_drC(k)*maskC(i,j,k-1,bi,bj)
+     &         *recip_drC(k)*maskC(i,j,k-1,bi,bj)*recip_hFacI(i,j,k)
      &         *coordFac*coordFac
-        ENDDO
-       ENDDO
-      ENDDO
-
-      DO k=2,Nr
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         a3d(i,j,k) = a3d(i,j,k)*recip_hFacI(i,j,k)
-         c3d(i,j,k) = c3d(i,j,k)*recip_hFacI(i,j,k)
         ENDDO
        ENDDO
       ENDDO

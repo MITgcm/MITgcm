@@ -79,8 +79,6 @@ C     === Local variables ===
       INTEGER i, j, k, kl, kp1, km1
       INTEGER kSrf, kTop, kBot
       INTEGER errCode
-      INTEGER nIter, iIter
-      _RL  recip_nIter
       _RL  deltaTloc
 C     cstar :: vertical integral over N, eq (13) in Olbers+Eden (2013)
       _RL  fxa,fxb,fxc,cstar,twoOverPi
@@ -126,9 +124,6 @@ CEOP
       recip_coordFac = 1./coordFac
 
       twoOverPi = 2. _d 0/PI
-
-      nIter = 1
-      recip_nIter = 1./float(nIter)
 
 C     Initialize local fields
       DO k = 1, Nr
@@ -212,7 +207,7 @@ CML     &         (IDEMIX_jstar*PI/(GGL90eps+bN0(i,j)) )**2
         ENDDO
        ENDDO
       ENDDO
-      IF ( IDEMIX_tau_h .GT. 0. _d 0 .AND. nIter .EQ. 1 ) THEN
+      IF ( IDEMIX_tau_h .GT. 0. _d 0 ) THEN
 C     horizontal diffusion of IW energy can become unstable for long
 C     time steps, so limit horizontal group velocity to satisfy simple
 C     CFL-like criterion:
@@ -301,7 +296,6 @@ c      inject at bottom box only
 c-----------------------------------------------------------------------
 c     horizontal diffusion of IW energy
 c-----------------------------------------------------------------------
-       DO iIter = 1,nIter
        DO k=2,Nr
         kl = k
         IF ( usingPCoords ) kl = k - 1
@@ -347,11 +341,9 @@ c-----------------------------------------------------------------------
      &                   *recip_hFacI(i,j,k)
      &         *((dfx(i+1,j)-dfx(i,j))+(dfy(i,j+1)-dfy(i,j)) )  )
      &         *maskC(i,j,kl,bi,bj) ! paranoia setting
-     &         * recip_nIter
          ENDDO
         ENDDO
        ENDDO ! k loop
-       ENDDO ! iIter loop
 c-----------------------------------------------------------------------
 c      add interior forcing e.g. by mesoscale GM
 c-----------------------------------------------------------------------
