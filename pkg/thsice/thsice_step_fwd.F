@@ -105,9 +105,8 @@ C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
       LOGICAL dBugFlag
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ticekey
+C     tkey  :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -117,16 +116,7 @@ C-    define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ticekey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Initialise
@@ -159,7 +149,7 @@ c         frzmltMxL(i,j) = 0. _d 0
       snowFac = thSIce_deltaT/(rhos*hNewSnowAge)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -232,13 +222,13 @@ C-------
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE icFrwAtm  (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE tFrzOce               = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE frzMltMxl             = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE icFrwAtm  (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE tFrzOce               = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE frzMltMxl             = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=tkey,kind=isbyte
 #endif
       CALL THSICE_CALC_THICKN(
      I          bi, bj,
@@ -256,12 +246,12 @@ CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing s/r thsice_calc_thickn
 CADJ STORE icFrwAtm(:,:,bi,bj)
-CADJ &               = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE frzSeaWat = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE fsalt     = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE flx2oc    = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE frw2oc    = comlev1_bibj, key = ticekey, kind = isbyte
-CADJ STORE frzmltMxL = comlev1_bibj, key = ticekey, kind = isbyte
+CADJ &               = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE frzSeaWat = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE fsalt     = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE flx2oc    = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE frw2oc    = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE frzmltMxL = comlev1_bibj, key = tkey, kind = isbyte
 #endif
 
 C--   Net fluxes :
@@ -334,10 +324,10 @@ C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     these stores avoid recomputing s/r thsice_extend
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=ticekey,kind=isbyte
-CADJ STORE iceFrac               = comlev1_bibj,key=ticekey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceFrac               = comlev1_bibj,key=tkey,kind=isbyte
 #endif
       DO j = jMin, jMax
        DO i = iMin, iMax

@@ -1,3 +1,8 @@
+#ifndef MYPACKAGE_OPTIONS_H
+#define MYPACKAGE_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: MYPACKAGE_OPTIONS.h
 C !INTERFACE:
@@ -9,11 +14,6 @@ C | CPP options file for pkg "mypackage":
 C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
-
-#ifndef MYPACKAGE_OPTIONS_H
-#define MYPACKAGE_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_MYPACKAGE
 C Place CPP define/undef flag here

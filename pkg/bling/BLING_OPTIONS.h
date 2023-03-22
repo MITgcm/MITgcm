@@ -69,7 +69,7 @@ C Simplify some parts of the code that are problematic when using the adjoint
 
 C For adjoint safe, do not call bling_dvm
 #ifdef BLING_ADJOINT_SAFE
-#undef USE_BLING_DVM
+# undef USE_BLING_DVM
 #endif
 
 C ABIOTIC OPTIONS
@@ -90,9 +90,10 @@ C When calculating the fraction of sinking organic matter, use model biomass dia
 C Assume different nutrient limitations for small and large phytoplankton.
 #define SIZE_DEP_LIM
 
+C-- Undocumented Options:
+#undef MULT_NUT_LIM
+#undef USE_ATMOSCO2
+#undef USE_EXFCO2
+
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

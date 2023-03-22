@@ -96,11 +96,11 @@ c$taf COMMON shelfice_fields_rl FTLNAME = g_shelfice_fields_rl
 c$taf COMMON ggl90_fields  ADNAME = adggl90_fields
 c$taf COMMON ggl90_fields FTLNAME = g_ggl90_fields
 
-c$taf COMMON ctrl_fields_kapgm  ADNAME = adctrl_fields_kapgm
-c$taf COMMON ctrl_fields_kapgm FTLNAME = g_ctrl_fields_kapgm
+c$taf COMMON GM_INP_K3D_GM  ADNAME = adGM_INP_K3D_GM
+c$taf COMMON GM_INP_K3D_GM FTLNAME = g_GM_INP_K3D_GM
 
-c$taf COMMON ctrl_fields_kapredi  ADNAME = adctrl_fields_kapredi
-c$taf COMMON ctrl_fields_kapredi FTLNAME = g_ctrl_fields_kapredi
+c$taf COMMON GM_INP_K3D_REDI  ADNAME = adGM_INP_K3D_REDI
+c$taf COMMON GM_INP_K3D_REDI FTLNAME = g_GM_INP_K3D_REDI
 
 c$taf COMMON ctrl_fields_bottomdrag  ADNAME = adctrl_fields_bottomdrag
 c$taf COMMON ctrl_fields_bottomdrag FTLNAME = g_ctrl_fields_bottomdrag

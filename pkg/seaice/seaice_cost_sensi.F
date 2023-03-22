@@ -1,8 +1,8 @@
 #include "SEAICE_OPTIONS.h"
 
-      subroutine seaice_cost_sensi( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_COST_SENSI( myTime, myIter, myThid )
 C     *==========================================================*
-C     | subroutine seaice_cost_sensi
+C     | SUBROUTINE SEAICE_COST_SENSI
 C     | o driver for seaice sensitivity cost functions
 C     *==========================================================*
 
@@ -16,17 +16,18 @@ C     == Global variables ===
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       _RL myTime
-      integer myIter
-      integer myThid
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_COST
 C     == Local variables
 
-      CALL COST_ICE_TEST ( myTime, myIter, myThid )
+      CALL SEAICE_COST_TEST ( myTime, myIter, myThid )
 
       CALL SEAICE_COST_ACCUMULATE_MEAN (
      &    myTime, myIter, myThid)
 
 #endif
 
+      RETURN
       END

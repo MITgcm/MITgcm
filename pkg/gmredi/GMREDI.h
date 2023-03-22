@@ -68,21 +68,21 @@ C     GM_iso2dFile :: input file for 2.D horiz scaling of Isopycnal diffusivity
 C     GM_iso1dFile :: input file for 1.D vert. scaling of Isopycnal diffusivity
 C     GM_bol2dFile :: input file for 2.D horiz scaling of Thickness diffusivity
 C     GM_bol1dFile :: input file for 1.D vert. scaling of Thickness diffusivity
-C     GM_isopycK3dFile :: input file for 3.D GM_isopycK
-C     GM_background_K3dFile :: input file for 3.D GM_background_K
+C     GM_K3dRediFile :: input file for background 3.D Isopycal(Redi) diffusivity
+C     GM_K3dGMFile   :: input file for background 3.D Thickness (GM) diffusivity
 
       CHARACTER*(40) GM_taper_scheme
       CHARACTER*(MAX_LEN_FNAM) GM_iso2dFile
       CHARACTER*(MAX_LEN_FNAM) GM_iso1dFile
       CHARACTER*(MAX_LEN_FNAM) GM_bol2dFile
       CHARACTER*(MAX_LEN_FNAM) GM_bol1dFile
-      CHARACTER*(MAX_LEN_FNAM) GM_isopycK3dFile
-      CHARACTER*(MAX_LEN_FNAM) GM_background_K3dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_K3dRediFile
+      CHARACTER*(MAX_LEN_FNAM) GM_K3dGMFile
       COMMON /GM_PARAMS_C/
      &                   GM_taper_scheme,
      &                   GM_iso2dFile, GM_iso1dFile,
      &                   GM_bol2dFile, GM_bol1dFile,
-     &                   GM_isopycK3dFile, GM_background_K3dFile
+     &                   GM_K3dRediFile, GM_K3dGMFile
 
 C--   COMMON /GM_PARAMS_R/ GM/Redi real-type parameters
 C     GM_isopycK       :: Isopycnal diffusivity [m^2/s] (Redi-tensor)
@@ -212,6 +212,17 @@ C     GM_bolFac1d  :: 1.D vert. scaling factor [-] of Thickness diffusivity
       COMMON /GM_COEFFICIENTS/
      &  GM_isoFac2d, GM_bolFac2d, GM_isoFac1d, GM_bolFac1d
 
+#ifdef GM_READ_K3D_REDI
+C--   COMMON /GM_INP_K3D_REDI/ 3.D background isopycnal (Redi) diffusiv. [m^2/s]
+      COMMON /GM_INP_K3D_REDI/ GM_inpK3dRedi
+      _RL GM_inpK3dRedi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#ifdef GM_READ_K3D_GM
+C--   COMMON /GM_INP_K3D_GM/   3.D background thickness (GM) diffusivity [m^2/s]
+      COMMON /GM_INP_K3D_GM/   GM_inpK3dGM
+      _RL GM_inpK3dGM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  GM/Redi tensor elements
 
@@ -252,14 +263,14 @@ C        streamfunctions PsiX and PsiY :
 #endif
 
 #ifdef GM_VISBECK_VARIABLE_K
-C     GM mixing/stirring coefficient (spatially variable in horizontal
-C     for Visbeck et al. parameterization)
+C     GM mixing/stirring coefficient (spatially variable in horizontal)
+C     for Visbeck et al. parameterization
       _RL VisbeckK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /GM_Visbeck/ VisbeckK
 #endif
 
 #ifdef GM_BATES_K3D
-C     GM_BatesK3d :: The 3-d eddy mixing coeffixint from Bates etal [m**2/s]
+C     GM_BatesK3d :: The 3-d eddy mixing coefficient from Bates etal [m**2/s]
 C     modesC      :: First baroclinic mode at the centre of a tracer cell [-]
 C     modesW      :: First N baroclinic mode at the western face of a cell [-]
 C     modesS      :: First N baroclinic mode at the southern face of a cell [-]

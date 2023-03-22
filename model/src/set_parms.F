@@ -159,6 +159,7 @@ C--   Set default Vorticity-Term Scheme:
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
+      useAbsVorticity = vectorInvariantMomentum .AND. useAbsVorticity
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
        vfFacMom = 1. _d 0

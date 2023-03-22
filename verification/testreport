@@ -49,6 +49,7 @@ usage()
     echo " ---- output options : ----"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
+    echo "  (-pass)                  return non-zero exit code if any exp do not pass"
     echo "  (-odir) STRING           used to build output directory name"
     echo "                             (DEF=\"hostname\")"
     echo "  (-addr|-a) STRING        list of email recipients"
@@ -585,9 +586,11 @@ makemodel()
 	fi
     fi
     if test $KIND = 1 -a -f taf_ftl.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ftl.log >> $CDIR"/summary.txt"
     fi
     if test $KIND = 2 -a -f taf_ad.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ad.log >> $CDIR"/summary.txt"
 	nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
 	nwar=`grep -c '^TAF *.* RECOMPUTATION *.* WARNING ' taf_ad.log`
@@ -1133,6 +1136,7 @@ EXTRFLG=
 NOCATAD=
 MKSMALLF=
 OADSINGULARITY=
+CHECK_PASS=f
 
 #- type of testing (KIND):
 #   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
@@ -1223,6 +1227,8 @@ for ac_option ; do
 
 	-postclean | --postclean | -pc | --pc) POSTCLEAN=2 ;;
 	-deloutp | --deloutp | -do | --do) POSTCLEAN=1 ;;
+
+	-pass) CHECK_PASS=t ;;
 
 	-mpi | --mpi) MPI=2 ;;
 	-MPI | --MPI) ac_prev=MPI ;;
@@ -1559,6 +1565,8 @@ if test "x$CLEANUP" != xt ; then
 fi
 echo "-------------------------------------------------------------------------------"
 
+allpass=t
+
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
 
@@ -1738,6 +1746,9 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+        if [[ ! "$fres" =~ " pass " ]]; then
+            allpass=f
+        fi
 
 	for ex in $extra_runs ; do
 	    unset run
@@ -1762,6 +1773,9 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+            if [[ ! "$fres" =~ " pass " ]]; then
+                allpass=f
+            fi
 	    if test "x$POSTCLEAN" = x2 ; then
 		run_clean $dir/$pfxdir.$ex
 	    fi
@@ -1882,4 +1896,9 @@ fi
 if test "x$DELDIR" = xt ; then
     rm -rf $DRESULTS
 fi
+
+if test "$CHECK_PASS" = t && test "$allpass" = f; then
+    exit 1
+fi
+
 echo "======== End of testreport execution ========"
