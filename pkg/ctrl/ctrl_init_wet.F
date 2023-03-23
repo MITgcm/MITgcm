@@ -45,7 +45,7 @@ c     == local variables ==
 #ifdef ALLOW_OBCS_CONTROL
       integer iobcs
       integer ntmpob(nobcs)
-      character*(80) ymaskobcs
+      character*(MAX_LEN_FNAM) ymaskobcs
 #endif
 #ifdef ALLOW_EFLUXP0_CONTROL
       _RL dummy

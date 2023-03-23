@@ -47,7 +47,7 @@ c     == local variables ==
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
 #endif
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
 
 c     == end of interface ==
 
@@ -64,8 +64,8 @@ c     == end of interface ==
 
       if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') 'maskobcsn'
+      write(fname,'(a)') ' '
+      write(fname,'(a)') 'maskobcsn'
 c
       do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
@@ -87,8 +87,8 @@ c
 
       else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') 'maskobcss'
+      write(fname,'(a)') ' '
+      write(fname,'(a)') 'maskobcss'
 c
       do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
@@ -110,8 +110,8 @@ c
 
       else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') 'maskobcsw'
+      write(fname,'(a)') ' '
+      write(fname,'(a)') 'maskobcsw'
 c
       do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
@@ -133,8 +133,8 @@ c
 
       else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') 'maskobcse'
+      write(fname,'(a)') ' '
+      write(fname,'(a)') 'maskobcse'
 c
       do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,

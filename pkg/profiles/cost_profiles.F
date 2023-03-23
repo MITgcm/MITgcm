@@ -47,7 +47,7 @@ C     ========= Local variables =======================
       integer optimcycle
 #endif
       character*(max_len_mbuf) msgbuf
-      character*(80) profilesfile, fnameequinc
+      character*(MAX_LEN_FNAM) profilesfile, fnameequinc
       integer IL, JL, err
 
       _RL  objf_prof_tile (nSx,nSy)
@@ -137,11 +137,11 @@ c then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile(1:80),'(1a)')
+           write(profilesfile,'(1a)')
      &     profilesfiles(num_file)(1:IL)
            IL  = ILNBLNK( profilesfile )
            JL  = ILNBLNK( profilesDir )
-           write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+           write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
            err = NF_OPEN(fnameequinc,NF_NOWRITE,
@@ -416,11 +416,11 @@ c then re-open it to compute cost function
            iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
            jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
            IL  = ILNBLNK( profilesfiles(num_file) )
-           write(profilesfile(1:80),'(1a)')
+           write(profilesfile,'(1a)')
      &     profilesfiles(num_file)(1:IL)
            IL  = ILNBLNK( profilesfile )
            JL  = ILNBLNK( profilesDir )
-           write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+           write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      &     profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 c
            err = NF_OPEN(fnameequinc,NF_NOWRITE,

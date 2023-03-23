@@ -60,7 +60,7 @@ c     == local variables ==
       _RL loccount ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL junk, junkweight
 
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
 
       _RL fac
       _RL locbarglbmean
@@ -157,9 +157,9 @@ C now remove the time-mean from the data
 c--
 
 #ifdef ALLOW_CTRL
-      write(fname(1:80),'(80a)') ' '
+      write(fname,'(a)') ' '
       il=ilnblnk( gencost_barfile(kgen) )
-      write(fname(1:80),'(2a,i10.10)')
+      write(fname,'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
 #endif
 

@@ -46,7 +46,7 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*( 80)   fnamehfacc
+      character*(MAX_LEN_FNAM)   fnamehfacc
       character*(max_len_mbuf) msgbuf
 
       _RL     fac
@@ -130,7 +130,7 @@ C     this will be no longer necessary
 
 C--
       il=ilnblnk( xx_hfacc_file )
-      write(fnamehfacc(1:80),'(2a,i10.10)')
+      write(fnamehfacc,'(2a,i10.10)')
      &     ctrlDir(1:ilDir)//xx_hfacc_file(1:il),'.',optimcycle
 #ifdef ALLOW_HFACC3D_CONTROL
       call active_read_xyz( fnamehfacc, tmpfld3d, 1,

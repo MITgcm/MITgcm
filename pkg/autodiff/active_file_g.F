@@ -84,7 +84,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -165,7 +165,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -246,7 +246,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -327,7 +327,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -412,7 +412,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 
@@ -485,7 +485,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -561,7 +561,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -637,7 +637,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -713,7 +713,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -796,7 +796,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 

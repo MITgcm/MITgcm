@@ -89,7 +89,7 @@ C                      variable and write to active file
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -171,7 +171,7 @@ C                      variable and write to active file
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -253,7 +253,7 @@ C                      variable and write to active file
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -335,7 +335,7 @@ C                      variable and write to active file
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
@@ -407,7 +407,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -481,7 +481,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -555,7 +555,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
@@ -629,7 +629,7 @@ C     myThid:          thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir

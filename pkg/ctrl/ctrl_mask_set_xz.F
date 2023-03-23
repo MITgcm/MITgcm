@@ -30,7 +30,7 @@ c     == routine arguments ==
       integer jp1, jNone
       integer OB_J     (1-olx:snx+olx,nsx,nsy)
       integer nwetobcs (nsx,nsy,nr,nobcs)
-      character*(80)   ymaskobcs
+      character*(MAX_LEN_FNAM)   ymaskobcs
       integer mythid
 
 c     == local variables ==
@@ -46,7 +46,7 @@ c     == local variables ==
       _RL     maskxz   (1-olx:snx+olx,nr,nsx,nsy,nobcs)
       _RL     gg       (1-olx:snx+olx,nr,nsx,nsy)
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
 
 c     == external ==
 
@@ -106,8 +106,8 @@ c--               West mask for U
 
 #ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') ymaskobcs
+      write(fname,'(a)') ' '
+      write(fname,'(a)') ymaskobcs
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi

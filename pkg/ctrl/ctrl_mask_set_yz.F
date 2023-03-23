@@ -30,7 +30,7 @@ c     == routine arguments ==
       integer ip1, iNone
       integer OB_I     (1-oly:sny+oly,nsx,nsy)
       integer nwetobcs (nsx,nsy,nr,nobcs)
-      character*(80)   ymaskobcs
+      character*(MAX_LEN_FNAM)   ymaskobcs
       integer mythid
 
 c     == local variables ==
@@ -46,7 +46,7 @@ c     == local variables ==
       _RL     maskyz   (1-oly:sny+oly,nr,nsx,nsy,nobcs)
       _RL     gg       (1-oly:sny+oly,nr,nsx,nsy)
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
 
 c     == external ==
 
@@ -107,8 +107,8 @@ c--               South mask for V
 
 #ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') ymaskobcs
+      write(fname,'(a)') ' '
+      write(fname,'(a)') ymaskobcs
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi

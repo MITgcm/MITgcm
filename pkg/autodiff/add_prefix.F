@@ -35,15 +35,15 @@ CEOP
 
       il = ILNBLNK( actvarf )
       ll = 0
-      IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
+c     IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
         l = il
         DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )
           IF ( actvarf(l:l) .EQ. '/' ) ll = l
           l = l -1
         ENDDO
-      ELSE
-        STOP 'ABNORMAL END: S/R ADD_PREFIX'
-      ENDIF
+c     ELSE
+c       STOP 'ABNORMAL END: S/R ADD_PREFIX'
+c     ENDIF
       WRITE(fname,'(3A)') actvarf(1:ll), prefix, actvarf(ll+1:il)
 
       RETURN

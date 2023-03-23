@@ -54,7 +54,7 @@ c     == local variables ==
       integer il
       logical doglobalread
       logical ladinit
-      character*(80) fnamegeneric
+      character*(MAX_LEN_FNAM) fnamegeneric
       _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 c     == end of interface ==
@@ -81,7 +81,7 @@ CEOP
 #ifdef ALLOW_SIAREA_CONTROL
 c--   siarea.
       il=ilnblnk( xx_siarea_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
+      write(fnamegeneric,'(2a,i10.10)')
      &     xx_siarea_file(1:il),'.',optimcycle
       call active_read_xy( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
@@ -101,7 +101,7 @@ c--   siarea.
 #ifdef ALLOW_SIHEFF_CONTROL
 c--   siheff.
       il=ilnblnk( xx_siheff_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
+      write(fnamegeneric,'(2a,i10.10)')
      &     xx_siheff_file(1:il),'.',optimcycle
       call active_read_xy( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
@@ -121,7 +121,7 @@ c--   siheff.
 #ifdef ALLOW_SIHSNOW_CONTROL
 c--   sihsnow.
       il=ilnblnk( xx_sihsnow_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
+      write(fnamegeneric,'(2a,i10.10)')
      &     xx_sihsnow_file(1:il),'.',optimcycle
       call active_read_xy( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,

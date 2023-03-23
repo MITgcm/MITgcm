@@ -67,7 +67,7 @@ c      CHARACTER*(MAX_LEN_MBUF) msgBuf
 c     == end of interface ==
 CEOP
 
-      write(fname1(1:128),'(80a)') ' '
+      write(fname1(1:128),'(a)') ' '
       il=ilnblnk( localbarfile )
       write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',eccoiter

@@ -51,10 +51,10 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
       integer numsmo
-      character*(80) fnamegenIn
-      character*(80) fnamegenOut
-      character*(80) fnamegenTmp
-      character*(80) fnamebase
+      character*(MAX_LEN_FNAM) fnamegenIn
+      character*(MAX_LEN_FNAM) fnamegenOut
+      character*(MAX_LEN_FNAM) fnamegenTmp
+      character*(MAX_LEN_FNAM) fnamebase
       integer startrec
       integer endrec
       integer diffrec
@@ -145,11 +145,11 @@ C--   generic 2D control variables
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
-        write(fnamegenIn(1:80),'(2a,i10.10)')
+        write(fnamegenIn,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-        write(fnamegenOut(1:80),'(2a,i10.10)')
+        write(fnamegenOut,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
-        write(fnamegenTmp(1:80),'(2a,i10.10)')
+        write(fnamegenTmp,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.tmp.',optimcycle
 
 c--   docycle

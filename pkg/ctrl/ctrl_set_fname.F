@@ -25,7 +25,7 @@ C     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS
       CHARACTER*(*) xx_fname
-      CHARACTER*( 80) fname(3)
+      CHARACTER*(MAX_LEN_FNAM) fname(3)
       INTEGER myThid
 
 C     !FUNCTIONS:
@@ -42,7 +42,7 @@ C--   Only the master thread will do I/O.
 
       il = ILNBLNK( xx_fname )
 
-      IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
+      IF ( il .GT. 0 .AND. il .LE. MAX_LEN_FNAM ) THEN
         ll = 0
         l = il
         DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )

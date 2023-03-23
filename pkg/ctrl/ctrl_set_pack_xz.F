@@ -38,9 +38,9 @@ c     == routine arguments ==
 
       integer cunit
       integer ivartype
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*( 80) weighttype
+      character*(MAX_LEN_FNAM) weighttype
       _RL     weightfld( nr,nobcs )
       logical lxxadxx
       integer mythid
@@ -61,7 +61,7 @@ c     == local variables ==
       integer cbuffindex
       integer reclen, irectrue
       integer cunit2, cunit3
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 
       real*4  cbuff      ( snx*nsx*npx*nsy*npy )
       real*4  globfldtmp2( snx,nsx,npx,nsy,npy )
@@ -71,7 +71,7 @@ c     == local variables ==
       _RL     globmskxz  ( snx,nsx,npx,nsy,npy,nr,nobcs )
 #ifdef CTRL_PACK_PRECISE
       integer il
-      character*(80) weightname
+      character*(MAX_LEN_FNAM) weightname
       _RL     weightfldxz( snx,nsx,npx,nsy,npy,nr,nobcs )
 
 c     == external ==
@@ -131,20 +131,20 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
+         write(cfile2,'(a)') ' '
+         write(cfile3,'(a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
@@ -164,8 +164,8 @@ c--   Only the master thread will do I/O.
      &        Nr, globmskxz(1,1,1,1,1,1,iobcs), iobcs, mythid)
 #ifdef CTRL_PACK_PRECISE
          il=ilnblnk( weighttype)
-         write(weightname(1:80),'(80a)') ' '
-         write(weightname(1:80),'(a)') weighttype(1:il)
+         write(weightname,'(a)') ' '
+         write(weightname,'(a)') weighttype(1:il)
          call MDSREADFIELD_XZ_GL(
      &        weightname, ctrlprec, 'RL',
      &        Nr, weightfldxz(1,1,1,1,1,1,iobcs), iobcs, mythid)

@@ -27,7 +27,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
       integer ivartype
       integer myThid
 
