@@ -383,9 +383,6 @@ CADJ STORE pload, siceload   = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef NONLIN_FRSURF
 CADJ STORE recip_hfacc       = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
-#  ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount   = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif /* ANNUAL_BALANCE */
 #  ifdef ALLOW_THSICE
 C-- store thSIce vars before advection (called from SEAICE_MODEL) updates them:
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte

@@ -86,9 +86,6 @@ C-- partially retired options (i.e., only used to set default switch):
 # undef ALLOW_SST_COST_CONTRIBUTION
 # undef ALLOW_SEAICE_COST_CONTRIBUTION
 
-C-- Retired ? options (but still with bits of code left)
-# undef ALLOW_ECCO_BARSTORES
-
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_ECCO */
