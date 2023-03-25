@@ -80,8 +80,7 @@ C     == local variables ==
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode)
-     &   CALL DEBUG_ENTER('CTRL_MAP_INI_GENTIM2D',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_INI_GENTIM2D',myThid)
 #endif /* ALLOW_DEBUG */
 
 c--   Now, read the control vector.
@@ -126,18 +125,14 @@ C--   generic 2D control variables
      O       diffrec, startrec, endrec,
      I       myThid )
 
-C From ctrl_init_rec one gets [start,end,diff]rec. Below, the
-C file xx_*.$iter.data is read in from records startrec to endrec,
-C followed by a write to file xx_*.effective.$iter.data of record
-C 1 to diffrec. The flow of this read/write can be followed inside
-C the TAF-produced version of S/R ctrl_map_ini_gentim2dmd inside either
-C ctrl_map_ini_gentim2d_ad.f or the concatenated file ad_taf_output.f
-C 
-C Note that the .f version of this S/R by TAF strips all misc
-C write(*,FORMAT) statments so it appears as if we donot go past here,
-C but we did.  See Documentation for further details on record access.
+C From CTRL_INIT_REC one gets [start,end,diff]rec.
+C Below, file xx_*.$iter.data is read in from records startrec to endrec,
+C followed by a write to file xx_*.effective.$iter.data of record 1 to diffrec
+C (see TAF-generated S/R ctrl_map_ini_gentim2dmd).
 
 #ifdef ALLOW_CTRL_DEBUG
+C Note: In the "md" (i.e. TAF modified) version of this fwd S/R, DEBUG calls and
+C print statements are removed. See "Automatic Differentiation" chap. in the doc
         write(*,*) 'AA: iarr,xx_gentim2d_startdate(1,iarr): ',
      &              iarr,xx_gentim2d_startdate(1,iarr)
 #endif
@@ -205,18 +200,17 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           lrec=startrec+irec-1
           IF (krec.LE.endrec) THEN
 #ifdef ALLOW_CTRL_DEBUG
-         ilgen=ilnblnk( fnamegenIn )
-         write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
-         write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
+           ilgen=ilnblnk( fnamegenIn )
+           write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
+           write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
 #endif
-C fnamegenIn is xx_*.$iter.data, so the required access records starts
-C at startrec+irec-1 instead of irec in the read call below. In adjoint
-C mode, the S/R adactive_read_xy produced by TAF reads adxx_*.$iter.data
-C in reverse, with required access of endrec back to startrec.  This 
-C necessitates creating the adxx_*.$iter.data of size endrec, and that
-C records endrec to startrec will have valid gradients while the rest
-C from startrec-1 to 1 will be all zeros.  See Documentation for more
-C info in record access.
+C fnamegenIn is xx_*.$iter.data, so the required access records starts at
+C startrec+irec-1 instead of irec in the read call below. In adjoint mode, S/R
+C ADACTIVE_READ_XY reads adxx_*.$iter.data in reverse order, with required
+C access from endrec back to startrec. This requires creating adxx_*.$iter.data
+C file of size endrec, with valid gradients from records startrec to endrec
+C but all zeros from 1 to startrec-1. See documentation:
+C https://mitgcm.readthedocs.io/en/latest/ocean_state_est/ocean_state_est.html#ctrl-model-parameter-adjustment-capability
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, lrec,
      &          doglobalread, ladinit, optimcycle,
@@ -224,8 +218,7 @@ C info in record access.
 #else
            CALL READ_REC_XY_RL( fnamegenIn, xx_gen, lRec, 1, myThid )
 #endif
-C Here, we write out to file xx_*.effective.$iter of size diffrec,
-C so the record krec looping from 1 to diffrec is used.
+C Here, we write record krec (from 1 to diffrec) to file xx_*.effective.$iter
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenOut )
@@ -420,9 +413,8 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 #ifndef ALLOW_OPENAD
          jrec=1
-Catn What should we do with the timevariable weights? Do we ever
-C have this situation?  Not sure how to fix this.  The fix will
-C need to be inside the do k2 loop
+C Not clear which record to use for timevariable weights ;
+C For now, just assumes records from startrec to endrec are available in file
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') then
             jrec=startrec+irec-1
@@ -488,8 +480,7 @@ c--   end iarr loop
       ENDDO
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode)
-     &   CALL DEBUG_LEAVE('CTRL_MAP_INI_GENTIM2D',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_INI_GENTIM2D',myThid)
 #endif /* ALLOW_DEBUG */
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
