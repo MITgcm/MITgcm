@@ -7,7 +7,7 @@
   useDOWN_SLOPE=.TRUE.,
   useDiagnostics = .FALSE.,
   useCAL    = .TRUE.,
-# useMNC    = .TRUE.,
+  useMNC    = .TRUE.,
   useECCO   = .TRUE.,
   useGrdchk = .TRUE.,
  &

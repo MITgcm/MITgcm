@@ -25,6 +25,9 @@
 c# ifdef ALLOW_THSICE
 c# include "THSICE_OPTIONS.h"
 c# endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 #endif /* ALLOW_TAPENADE */
 
 CBOP
@@ -131,6 +134,7 @@ C     == Global variables ==
 # ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
+# include "PTRACERS_PARAMS.h"
 # endif
 # ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_SOM_VARS.h"
@@ -155,6 +159,10 @@ C     == Global variables ==
 # ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
+# endif
+# ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+# include "BLING_LOAD.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

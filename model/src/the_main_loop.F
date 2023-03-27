@@ -239,6 +239,9 @@ C     it is important that this file is included after SEAICE_SIZE.h
 # include "DWNSLP_SIZE.h"
 # include "DWNSLP_VARS.h"
 # endif
+# ifdef ALLOW_PTRACERS
+# include "PTRACERS_PARAMS.h"
+# endif
       COMMON/WIND_STRESS_ICE/TAUX,TAUY
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

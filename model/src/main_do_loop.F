@@ -53,6 +53,9 @@ c# ifdef ALLOW_THSICE
 c# include "THSICE_OPTIONS.h"
 c# endif
 #endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 CBOP
 C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
@@ -178,6 +181,10 @@ c**************************************
 # ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
+# endif
+# ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+# include "BLING_LOAD.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

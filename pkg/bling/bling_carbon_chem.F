@@ -637,11 +637,19 @@ C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
 C Both on seawater pH scale
+#ifndef ALLOW_TAPENADE
            ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
      &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
      &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
            ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0-
      &          0.0184 _d 0*s + 0.000118 _d 0*s2))
+#else
+           ak1(i,j,bi,bj)=10.0**(-1. _d 0*(3670.7 _d 0*invtk -
+     &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
+     &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
+           ak2(i,j,bi,bj)=10.0**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0
+     &          -0.0184 _d 0*s + 0.000118 _d 0*s2))
+#endif
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
 C Millero p.669 (1995) using data from dickson (1990)
@@ -966,11 +974,21 @@ C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
 C Both on seawater pH scale
+
+#ifndef ALLOW_TAPENADE
            ak1(i,j,bi,bj)=10**(-1*(3670.7*invtk -
      &          62.008 + 9.7944*dlogtk -
      &          0.0118 * s + 0.000116*s2))
            ak2(i,j,bi,bj)=10**(-1*(1394.7*invtk + 4.777 -
      &          0.0184*s + 0.000118*s2))
+#else
+           ak1(i,j,bi,bj)=10.0**(-1*(3670.7*invtk -
+     &          62.008 + 9.7944*dlogtk -
+     &          0.0118 * s + 0.000116*s2))
+           ak2(i,j,bi,bj)=10.0**(-1*(1394.7*invtk + 4.777 -
+     &          0.0184*s + 0.000118*s2))
+#endif
+
 C NOW PRESSURE DEPENDENCE:
 c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
@@ -1258,8 +1276,13 @@ c alternative pressure dependence from Ingle (1975)
      &                 + (-0.00588d0 + 0.0001845d0*t)*zdum*zdum)
      &            / (188.93d0*(t + 273.15d0))
 
+#ifndef ALLOW_TAPENADE
            Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10**(xvalue)
            Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10**(xvalue)
+#else
+           Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10.0**(xvalue)
+           Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10.0**(xvalue)
+#endif
 
 C------------------------------------------------------------------------
          else

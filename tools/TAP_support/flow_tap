@@ -912,3 +912,192 @@ subroutine write_rec_xy_rl:
   ReadNotWritten:     (1,1,1,1,1)
   NotReadThenWritten: (0,0,0,0,0)
   ReadThenWritten:    (0,0,0,0,0)
+
+subroutine bling_read_pickup:
+  external:
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (0,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (1,0,0)
+
+subroutine bling_min_val:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5)
+  type: (none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0)
+
+subroutine mnc_update_time:
+  external:
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (1,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (0,0,0)
+
+subroutine mnc_cw_set_udim:
+  external:
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (1,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (0,0,0)
+
+subroutine mnc_update_time:
+  external:
+  shape: (param 1, param 2, param 3)
+  type: (none(),none(),none())
+  NotReadNotWritten:  (0,0,0)
+  ReadNotWritten:     (1,1,1)
+  NotReadThenWritten: (0,0,0)
+  ReadThenWritten:    (0,0,0)
+
+subroutine mnc_cw_i_w_s:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rl_w_s:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rs_w_s:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rl_w:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rs_w:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rl_r:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rs_r:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7)
+  type: (none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rl_w_offset:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8)
+  type: (none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0,0)
+
+subroutine mnc_cw_rs_w_offset:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6, param 7, param 8)
+  type: (none(),none(),none(),none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0,0,0)
+
+subroutine mnc_cw_add_vattr_text:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5)
+  type: (none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0)
+
+subroutine mnc_cw_add_vname:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5)
+  type: (none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0)
+
+subroutine mnc_cw_citer_setg:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5)
+  type: (none(),none(),none(),none(),none())
+  NotReadNotWritten:  (0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0)
+
+subroutine mnc_cw_set_citer:
+  external:
+  shape: (param 1, param 2, param 3, param 4, param 5, param 6)
+  type: (none(),none(),none(),none(),none(), none())
+  NotReadNotWritten:  (0,0,0,0,0,0)
+  ReadNotWritten:     (1,1,1,1,1,1)
+  NotReadThenWritten: (0,0,0,0,0,0)
+  ReadThenWritten:    (0,0,0,0,0,0)
+
+subroutine mnc_cw_del_gname:
+  external:
+  shape: (param 1, param 2)
+  type: (none(),none())
+  NotReadNotWritten:  (0,0)
+  ReadNotWritten:     (1,1)
+  NotReadThenWritten: (0,0)
+  ReadThenWritten:    (0,0)
+
+subroutine mnc_cw_del_vname:
+  external:
+  shape: (param 1, param 2)
+  type: (none(),none())
+  NotReadNotWritten:  (0,0)
+  ReadNotWritten:     (1,1)
+  NotReadThenWritten: (0,0)
+  ReadThenWritten:    (0,0)
+
+subroutine mnc_file_close_all_matching:
+  external:
+  shape: (param 1, param 2)
+  type: (none(),none())
+  NotReadNotWritten:  (0,0)
+  ReadNotWritten:     (1,1)
+  NotReadThenWritten: (0,0)
+  ReadThenWritten:    (0,0)
