@@ -228,7 +228,7 @@ c ============ retired compile option checks
 
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
-     &  '  retired compile-time options need to be remove'
+     &  '  retired compile-time options need to be removed'
        CALL PRINT_ERROR( msgBuf, myThid )
        CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
