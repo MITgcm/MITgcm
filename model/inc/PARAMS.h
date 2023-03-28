@@ -799,7 +799,7 @@ C                b) use model surface (local) value if set to UNSET_RL)
 C     hMixCriteria:: criteria for mixed-layer diagnostic
 C     dRhoSmall   :: parameter for mixed-layer diagnostic
 C     hMixSmooth  :: Smoothing parameter for mixed-layer diag
-C                    (default=0=no smoothing)
+C                    (default=0: no smoothing)
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides)
 C                           (default=2: full drag ; =1: gives half-slip BC)
@@ -811,8 +811,7 @@ C                  (in m, typical values are order 0.01 m)
 C     smoothAbsFuncRange :: 1/2 of interval around zero, for which FORTRAN ABS
 C                           is to be replace by a smoother function
 C                           (affects myabs, mymin, mymax)
-C     nh_Am2        :: scales the non-hydrostatic terms and changes internal
-C                      scales
+C     nh_Am2        :: scales non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
 C     tCylIn        :: Temperature of the cylinder inner boundary
 C     tCylOut       :: Temperature of the cylinder outer boundary
@@ -861,8 +860,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
-     & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
-     & smoothAbsFuncRange, sIceLoadFac, zRoughBot,
+     & sideDragFactor, bottomDragLinear, bottomDragQuadratic,
+     & zRoughBot, nh_Am2, smoothAbsFuncRange, sIceLoadFac,
      & tCylIn, tCylOut,
      & phiEuler, thetaEuler, psiEuler
 
