@@ -376,7 +376,14 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
+#ifdef SEAICE_USE_GROWTH_ADX
+      diagName  = 'SIeprflx'
+      diagTitle = 'heat flux adjustment associated with EmPmR'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#else
 #ifndef SEAICE_DISABLE_HEATCONSFIX
       diagName  = 'SIaaflux'
       diagTitle = 'conservative ocn<->seaice adv. heat flux adjust.'
@@ -384,6 +391,7 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 #endif
 
       diagName  = 'SIhl    '
