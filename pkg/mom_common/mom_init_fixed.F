@@ -33,6 +33,7 @@ C     i,j,k,bi,bj  :: loop counter
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
       INTEGER kLow
       _RL hLoc
+      _RL recip_zRoughBot
 #endif
 
       k = 1
@@ -172,31 +173,28 @@ C     and roughness length, assuming von Karman constant = 0.4
          ENDDO
         ENDDO
         IF ( zRoughBot .GT. 0. _d 0 ) THEN
+         recip_zRoughBot = 1. _d 0 / zRoughBot
          DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           kLow = 0
-           DO k=1,Nr
-            IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) kLow = k
-           ENDDO
+          DO i=1-OLx+1,sNx+OLx
+           kLow = MIN( kLowC(i-1,j,bi,bj), kLowC(i,j,bi,bj)  )
            IF ( kLow .GT. 0 ) THEN
-            hLoc = ( 0.5*drF(kLow) * hFacW(i,j,kLow,bi,bj) + zRoughBot )
-     &           / zRoughBot
-            bottomDragCoeffW(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
+            hLoc = ( oneRL +
+     &           0.5*drF(kLow)*hFacW(i,j,kLow,bi,bj)*recip_zRoughBot )
+            bottomDragCoeffW(i,j,bi,bj) =
+     &           ( 0.4 _d 0/LOG(hLoc) )*( 0.4 _d 0/LOG(hLoc) )
            ELSE
             bottomDragCoeffW(i,j,bi,bj) =  0. _d 0
            ENDIF
           ENDDO
          ENDDO
-         DO j=1-OLy,sNy+OLy
+         DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           kLow = 0
-           DO k=1,Nr
-            IF ( hFacS(i,j,k,bi,bj).NE.zeroRS ) kLow = k
-           ENDDO
+           kLow = MIN( kLowC(i,j-1,bi,bj), kLowC(i,j,bi,bj)  )
            IF ( kLow .GT. 0 ) THEN
-            hLoc = ( 0.5*drF(kLow) * hFacS(i,j,kLow,bi,bj) + zRoughBot )
-     &           / zRoughBot
-            bottomDragCoeffS(i,j,bi,bj) = ( 0.4 _d 0/LOG(hLoc) )**2
+            hLoc = ( oneRL +
+     &           0.5*drF(kLow)*hFacS(i,j,kLow,bi,bj)*recip_zRoughBot )
+            bottomDragCoeffS(i,j,bi,bj) =
+     &           ( 0.4 _d 0/LOG(hLoc) )*( 0.4 _d 0/LOG(hLoc) )
            ELSE
             bottomDragCoeffS(i,j,bi,bj) = 0. _d 0
            ENDIF
