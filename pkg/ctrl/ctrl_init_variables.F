@@ -104,10 +104,6 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       ENDDO
 #endif
 
-#ifdef ALLOW_SEAICE
-      CALL SEAICE_CTRL_MAP_INI( myThid )
-#endif
-
 #endif /* ALLOW_CTRL */
 
       RETURN
