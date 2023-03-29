@@ -575,6 +575,7 @@ C     STREAMICE_do_timedep_cost   :: accumulate cost at specified time steps
       LOGICAL STREAMICE_vel_ext_cgrid
       LOGICAL STREAMICE_do_snapshot_cost
       LOGICAL STREAMICE_do_timedep_cost
+      LOGICAL STREAMICE_use_global_ctrl
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -617,6 +618,7 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_use_log_ctrl,
      & STREAMICE_do_snapshot_cost,
      & STREAMICE_do_timedep_cost,
+     & STREAMICE_use_global_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
 #endif

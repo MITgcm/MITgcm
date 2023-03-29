@@ -91,13 +91,12 @@ C--   Calculate cost function on tile of this instance
              h = H_streamice(i,j,bi,bj)
              hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
 
-             if ((h-hf) .gt. 5.) then
-
+!             if ((h-hf) .gt. 5.) then
 
               surf_err = streamice_wgt_surf * i_numcells *
      &         (surf_el_streamice(i,j,bi,bj) - 
      &          surfobs(i,j,bi,bj))**2 / 
-     &          (.01 + errSurfObs(i,j,bi,bj)**2) 
+     &          (.001 + errSurfObs(i,j,bi,bj)**2) 
 
               cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) +
@@ -105,10 +104,10 @@ C--   Calculate cost function on tile of this instance
               cost_surf_streamice (bi,bj) =
      &        cost_surf_streamice (bi,bj) +
      &              surf_err
+
+!             endif
+
              endif
-
-            endif
-
 
             end do
           end do
