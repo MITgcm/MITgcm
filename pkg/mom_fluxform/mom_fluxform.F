@@ -32,6 +32,8 @@ CEOI
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+C- to switch back to (very) old accounting of geometry/Area factor
+#undef OLD_UV_GEOM
 
 CBOP
 C !ROUTINE: MOM_FLUXFORM

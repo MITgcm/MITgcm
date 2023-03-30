@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkgs:
+  Finish to remove code within retired CPP options:
+  - remove orphan code within (many) removed ALLOW_()_CONTROL (as listed in
+    PR #689 comments); remove seaice_ctrl_map_ini.F;
+  - remove code within retired CPP options, remove call to COST_TRANSPORT,
+    remove ALLOW_ECCO_BARSTORES and the 4 "ecco_ad_check_lev?_dir.h" files;
+  - remove (check & stop) "using_cost_bp" & "using_cost_scat" from "data.ecco";
+  - avoid few unused variables; use default CTRL_OPTIONS.h in exp. hs94.1x64x5.
 o pkg/seaice:
   - SEAICE_USE_GROWTH_ADX: fix diagnostic SIatmFW and add diagnostic SIeprflx
     to close seaice mass and heat budgets.
