@@ -114,10 +114,6 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       ENDDO
 #endif
 
-#ifdef ALLOW_SEAICE
-      CALL SEAICE_CTRL_MAP_INI( myThid )
-#endif
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('CTRL_INIT_VARIABLES',myThid)
 #endif

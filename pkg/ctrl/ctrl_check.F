@@ -54,10 +54,6 @@ C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER errCount
-#if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
-      LOGICAL solve4Stress
-#endif
-
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       INTEGER iarr
 #endif
@@ -215,39 +211,6 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
 # endif
 #endif /* ALLOW_KAPREDI_CONTROL */
 
-#ifdef ALLOW_SEAICE
-C     pkg/seaice requires a particular set of control parameters
-C     which in turn require a particular set of input fields
-# if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
-C     needs to replaced by appropriate runtime options
-      IF ( useAtmWind ) THEN
-        solve4Stress = .TRUE.
-      ELSE
-#  ifdef ALLOW_BULK_LARGEYEAGER04
-        solve4Stress = wspeedfile .NE. ' '
-#  else
-        solve4Stress = .FALSE.
-#  endif
-      ENDIF
-      IF (.NOT.solve4Stress) THEN
-        WRITE(msgBuf,'(A)')
-     &     'The SEAICE adjoint does not allow the surface fluxes'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') '  ALLOW_USTRESS_CONTROL'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') '  ALLOW_VSTRESS_CONTROL'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') 'to be control variables'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') 'except if wspeedfile is specified'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)') 'and ifdef ALLOW_BULK_LARGEYEAGER04'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-# endif /* ALLOW_USTRESS_CONTROL or ALLOW_VSTRESS_CONTROL */
-#endif /* ALLOW_SEAICE */
-
 #ifndef ALLOW_PACKUNPACK_METHOD2
 # ifndef EXCLUDE_CTRL_PACK
       IF ( useSingleCpuIO ) THEN
@@ -262,10 +225,7 @@ C     needs to replaced by appropriate runtime options
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
 # ifndef EXCLUDE_CTRL_PACK
-#  if ( defined ALLOW_OBCSN_CONTROL || \
-        defined ALLOW_OBCSS_CONTROL || \
-        defined ALLOW_OBCSW_CONTROL || \
-        defined ALLOW_OBCSE_CONTROL )
+#  ifdef ALLOW_OBCS_CONTROL
       WRITE(msgBuf,'(2A)')
      &        'ALLOW_PACKUNPACK_METHOD2 does not work with',
      &        'open boundary controls (see verif/obcs_ctrl).'
