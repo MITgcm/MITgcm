@@ -25,40 +25,23 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-
 #include "cost.h"
 
 c     == routine arguments ==
-
       integer mythid
 
 c     == local variables ==
-
       integer i,j,k
       integer bi,bj
-      integer itlo,ithi
-      integer jtlo,jthi
-
-c     == external functions ==
-
 c     == end of interface ==
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
 
 c--   Initialize the tiled cost function contributions.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           tile_fc(bi,bj)   = 0. _d 0
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
           objf_atl(bi,bj)  = 0. _d 0
-#endif
           objf_test(bi,bj) = 0. _d 0
           objf_tracer(bi,bj) = 0. _d 0
-#ifdef ALLOW_COST_TRANSPORT
-          objf_transport(bi,bj) = 0. _d 0
-#endif
 #ifdef ALLOW_COST_DEPTH
           objf_depth(bi,bj) = 0. _d 0
 #endif
@@ -94,8 +77,8 @@ cph because we need it in ADM*TLM
               end do
             end do
 #endif
-       enddo
-      enddo
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_SEAICE
       call seaice_cost_init_varia( mythid )

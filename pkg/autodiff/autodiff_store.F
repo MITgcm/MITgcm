@@ -14,29 +14,29 @@
 
       SUBROUTINE AUTODIFF_STORE( myThid )
 
-c     ==================================================================
-c     SUBROUTINE autodiff_store
-c     ==================================================================
-c
-c     packing for checkpoint storage
-c
-c     started: Matt Mazloff mmazloff@mit.edu 03-May-2007
-c
-c     ==================================================================
-c     SUBROUTINE autodiff_store
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE autodiff_store
+C     ==================================================================
+C
+C     packing for checkpoint storage
+C
+C     started: Matt Mazloff mmazloff@mit.edu 03-May-2007
+C
+C     ==================================================================
+C     SUBROUTINE autodiff_store
+C     ==================================================================
 
       IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c**************************************
-c These includes are needed for
-c AD-checkpointing.
-c They provide the fields to be stored.
+C**************************************
+C These includes are needed for
+C AD-checkpointing.
+C They provide the fields to be stored.
 
 #include "GRID.h"
 #include "DYNVARS.h"
@@ -61,25 +61,22 @@ c They provide the fields to be stored.
 # include "ctrl.h"
 # include "CTRL_OBCS.h"
 #endif
-c     it is important that this file is included after SEAICE_SIZE.h
+C     it is important that this file is included after SEAICE_SIZE.h
 #include "AUTODIFF_STORE.h"
 
-c     == routine arguments ==
-c     note: under the multi-threaded model myIter and
-c           myTime are local variables passed around as routine
-c           arguments. Although this is fiddly it saves the need to
-c           impose additional synchronisation points when they are
-c           updated.
-c     myThid - thread number for this instance of the routine.
+C     == routine arguments ==
+C     myThid   :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c     == local variables ==
+C     == local variables ==
+#if ( defined AUTODIFF_USE_STORE_RESTORE || \
+     ( defined ALLOW_OBCS && defined AUTODIFF_USE_STORE_RESTORE_OBCS ))
+      INTEGER bi, bj
+      INTEGER I, J, K
+#endif
 
-      INTEGER bi,bj
-      INTEGER I,J,K
-
-c--   == end of interface ==
+C--   == end of interface ==
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_ENTER('AUTODIFF_STORE',myThid)
@@ -341,10 +338,10 @@ C-      2D arrays
          ENDDO
         ENDDO
 C--   this 3D array comes last because it has a variable size nITD
-        DO k=1,nITD
+        DO K=1,nITD
          DO J=1-OLy,sNy+OLy
           DO I=1-OLx,sNx+OLx
-           StoreSEAICE(I,J,bi,bj,16+k) = TICES(I,J,k,bi,bj)
+           StoreSEAICE(I,J,bi,bj,16+K) = TICES(I,J,K,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -539,14 +536,14 @@ C-      2D arrays
        ENDDO
       ENDDO
 # endif /* ALLOW_OBCS_WEST */
-#endif /* ALLOW_OBCS */
+#endif /* ALLOW_OBCS & AUTODIFF_USE_STORE_RESTORE_OBCS */
 
 #ifdef ALLOW_DEBUG
       IF ( debugMode ) CALL DEBUG_LEAVE('AUTODIFF_STORE',myThid)
 #endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */
-c**************************************
+C**************************************
 
       RETURN
       END

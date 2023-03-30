@@ -116,26 +116,6 @@ c They provide the fields to be stored.
          foo5=diffkr%d
          call write_fld_xy_rl('adjdiffkr.',suff,foo5,myIter,1)
 # endif
-# ifdef ALLOW_HFLUX0_CONTROL
-         foo4=qnet%d
-         call write_fld_xy_rl('adjqnet.',suff,foo4,myIter,1)
-# endif
-# ifdef ALLOW_SFLUX0_CONTROL
-         foo4=empmr%d
-         call write_fld_xy_rl('adjempmr.',suff,foo4,myIter,1)
-# endif
-# ifdef ALLOW_TAUU0_CONTROL
-         foo4=fu%d
-         call write_fld_xy_rl('adjfu.',suff,foo4,myIter,1)
-# endif
-# ifdef ALLOW_TAUV0_CONTROL
-         foo4=fv%d
-         call write_fld_xy_rl('adjfv.',suff,foo4,myIter,1)
-# endif
-# ifdef ALLOW_HFLUXM_CONTROL
-         foo4=qnetm%d
-         call write_fld_xy_rl('adjhfluxm.',suff,foo4,myIter,1)
-#endif
       ENDIF
 
       RETURN
