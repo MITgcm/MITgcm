@@ -1639,19 +1639,36 @@ range 0.001–0.003.
 
 After defining :varlink:`ALLOW_BOTTOMDRAG_ROUGHNESS` in
 :filelink:`MOM_COMMON_OPTIONS.h`, the quadratic drag coefficient can be
-computed by the logarithmic law of the wall as a function of distance from the
-bottom (i.e. half of the cell thickness :math:`\frac{1}{2} \Delta r_f h_w`) and
-a prescribed roughness length :math:`z_r` (runtime parameter
-:varlink:`zRoughBot` in meters, a typical value is 0.01) as:
+computed by the logarithmic law of the wall with a roughness length of
+:math:`z_r` (runtime parameter :varlink:`zRoughBot` in meters):
+
+ .. math::
+   u(z) = \left(\frac{\tau}{\rho}\right)^{\frac{1}{2}}\frac{1}{0.4}
+   \ln{\frac{z+z_r}{z_r}}
+
+where :math:`z` is the height from the seafloor, and :math:`\tau` is the bottom
+stress (and stress in the log-layer).  The velocity comes from the center of
+the bottom cell :math:`z=\frac{1}{2}\Delta r_f h_w`, so stress on the bottom
+cell is therefore :math:`\tau / \rho = C_d u(\frac{1}{2}\Delta r_f h_w)^2`
+where:
 
 .. math::
    C_d = \left(\frac{0.4}{
    \ln{\frac{\frac{1}{2} \Delta r_f h_w + z_{r} }{z_{r}}}}\right)^2.
    :label: logLawWall
 
-For :math:`z_r = 0`, :math:`C_d` defaults to the value of :varlink:`bottomDragQuadratic`.
+This formulation assumes that the bottom-most cell is thin enough that it is in
+a constant-stress log layer.  A value of :varlink:`zRoughBot` of 0.01 m yields
+a quadratic drag co-efficient for :math:`\Delta r_f` of 100 m of 0.0022, and
+for :math:`\Delta r_f` of 10 m of 0.0041.
 
-.. admonition:: S/R  :filelink:`MOM_U_BOTTOMDRAG <pkg/mom_common/mom_u_bottomdrag.F>`, :filelink:`MOM_V_BOTTOMDRAG <pkg/mom_common/mom_v_bottomdrag.F>`
+For :math:`z_r = 0`, :math:`C_d` defaults to the value of
+:varlink:`bottomDragQuadratic`.
+
+.. admonition:: S/R :filelink:`MOM_U_BOTTOMDRAG
+                <pkg/mom_common/mom_u_bottomdrag.F>`,
+                :filelink:`MOM_V_BOTTOMDRAG
+                <pkg/mom_common/mom_v_bottomdrag.F>`
   :class: note
 
     | :math:`\tau_{13}^{\rm bottom-drag} / \Delta r_f , \tau_{23}^{\rm bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
