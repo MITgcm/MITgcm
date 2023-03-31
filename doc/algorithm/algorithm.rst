@@ -1607,7 +1607,7 @@ to-do’s.
 
 As for the lateral viscous terms, the free-slip condition is equivalent
 to simply setting the stress to zero on boundaries. The no-slip
-condition is implemented as an additional term acting on top of the
+condition is implemented as an additional term acting in conjunction with the
 interior and free-slip stresses. Bottom drag represents additional
 friction, in addition to that imposed by the no-slip condition at the
 bottom. The drag is cast as a stress expressed as a linear or quadratic
@@ -1632,34 +1632,36 @@ function of the mean flow in the layer above the topography:
    :label: tau23
 
 where these terms are only evaluated immediately above topography.
-:math:`r_b` (:varlink:`bottomDragLinear`) has units of :math:`m s^{-1}` and a
-typical value of the order 0.0002 :math:`m s^{-1}`. :math:`C_d`
+:math:`r_b` (:varlink:`bottomDragLinear`) has units of m s\ :sup:`-1` and a
+typical value of the order 0.0002 m s\ :sup:`-1`. :math:`C_d`
 (:varlink:`bottomDragQuadratic`) is dimensionless with typical values in the
 range 0.001–0.003.
 
 After defining :varlink:`ALLOW_BOTTOMDRAG_ROUGHNESS` in
-:filelink:`MOM_COMMON_OPTIONS.h`, the quadratic drag coefficient can be
-computed by the logarithmic law of the wall with a roughness length of
-:math:`z_r` (runtime parameter :varlink:`zRoughBot` in meters):
+:filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`,
+the quadratic drag coefficient can be
+computed by the logarithmic law of the wall: 
 
  .. math::
    u(z) = \left(\frac{\tau}{\rho}\right)^{\frac{1}{2}}\frac{1}{0.4}
    \ln{\frac{z+z_r}{z_r}}
 
-where :math:`z` is the height from the seafloor, and :math:`\tau` is the bottom
-stress (and stress in the log-layer).  The velocity comes from the center of
+where :math:`z_r` is the roughness length (runtime parameter :varlink:`zRoughBot`).
+Here, :math:`z` is the height from the seafloor and :math:`\tau` is the bottom
+stress (and stress in the log-layer).  The velocity is computed at the center of
 the bottom cell :math:`z_b=\frac{1}{2}\Delta r_f h_w`, so stress on the bottom
-cell is :math:`\tau / \rho = C_d u_b^2`, where :math:`u_b = u(z_b)` is the bottom cell velocity and:
+cell is :math:`\tau / \rho = C_d u_b^2`, where :math:`u_b = u(z_b)`
+is the bottom cell velocity and:
 
 .. math::
    C_d = \left(\frac{0.4}{
-   \ln{\frac{\frac{1}{2} \Delta r_f h_w + z_{r} }{z_{r}}}}\right)^2.
+   \ln{\frac{\frac{1}{2} \Delta r_f h_w + z_{r} }{z_{r}}}}\right)^2
    :label: logLawWall
 
-This formulation assumes that the bottom-most cell is thin enough that it is in
+This formulation assumes that the bottommost cell is sufficiently thin that it is in
 a constant-stress log layer.  A value of :varlink:`zRoughBot` of 0.01 m yields
-a quadratic drag co-efficient for :math:`\Delta r_f` of 100 m of 0.0022, and
-for :math:`\Delta r_f` of 10 m of 0.0041.
+a quadratic drag coefficient of 0.0022 for :math:`\Delta r_f =` 100 m, or
+a quadratic drag coefficient of 0.0041 for :math:`\Delta r_f =` 10 m.
 
 For :math:`z_r = 0`, :math:`C_d` defaults to the value of
 :varlink:`bottomDragQuadratic`.
