@@ -1648,9 +1648,8 @@ computed by the logarithmic law of the wall with a roughness length of
 
 where :math:`z` is the height from the seafloor, and :math:`\tau` is the bottom
 stress (and stress in the log-layer).  The velocity comes from the center of
-the bottom cell :math:`z=\frac{1}{2}\Delta r_f h_w`, so stress on the bottom
-cell is therefore :math:`\tau / \rho = C_d u(\frac{1}{2}\Delta r_f h_w)^2`
-where:
+the bottom cell :math:`z_b=\frac{1}{2}\Delta r_f h_w`, so stress on the bottom
+cell is :math:`\tau / \rho = C_d u_b^2`, where :math:`u_b = u(z_b)` is the bottom cell velocity and:
 
 .. math::
    C_d = \left(\frac{0.4}{
