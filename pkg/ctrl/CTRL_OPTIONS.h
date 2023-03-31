@@ -106,7 +106,7 @@ C  this flag and associated code as well.
 C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of Smooth_Correl2D)
 #undef ALLOW_SMOOTH_CTRL2D
 
-C add debug
+C  o Print more debug info to STDOUT
 #undef ALLOW_CTRL_DEBUG
 
 C   ==================================================================
