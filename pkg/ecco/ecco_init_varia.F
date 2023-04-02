@@ -47,8 +47,11 @@ c     == end of interface ==
       CALL ECCO_PHYS( startTime, -1, myThid )
 
 #ifdef ALLOW_PSBAR_STERIC
-      RHOsumGlob_0=RHOsumGlob
-      VOLsumGlob_0=VOLsumGlob
+      IF ( RHOsumGlob_0 .EQ. 0. _d 0 .AND.
+     &     VOLsumGlob_0 .EQ. 0. _d 0 ) THEN
+        RHOsumGlob_0=RHOsumGlob
+        VOLsumGlob_0=VOLsumGlob
+      ENDIF
 #endif
 
       CALL ECCO_COST_INIT_VARIA( myThid )
