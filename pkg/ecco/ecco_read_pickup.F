@@ -37,9 +37,10 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn, fntmp
       CHARACTER*(10) suff
-      INTEGER prec
-      INTEGER IL
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER prec, IL, ioUnit
       LOGICAL exst
+      _RL tmparr(2), dummyRS(1)
 CEOP
 
 C--   Suffix for pickup files
@@ -60,16 +61,32 @@ C-    Check first for global file with simple name (ie. fn)
       INQUIRE( file=fn, exist=exst )
       IF ( .NOT.exst ) THEN
 C-    Check for global file with ".data" suffix
-       IL  = ILNBLNK( fn )
-       WRITE(fntmp,'(2A)') fn(1:IL),'.data'
-       INQUIRE( file=fntmp, exist=exst )
+        IL  = ILNBLNK( fn )
+        WRITE(fntmp,'(2A)') fn(1:IL),'.data'
+        INQUIRE( file=fntmp, exist=exst )
       ENDIF
 
       IF (exst) THEN
-        CALL READ_GLVEC_RL( fn, ' ',
-     &                      VOLsumGlob_0, 1, 1, myThid )
-        CALL READ_GLVEC_RL( fn, ' ',
-     &                      RHOsumGlob_0, 1, 2, myThid )
+        ioUnit = 0
+        prec = precFloat64
+        CALL MDS_READVEC_LOC( fn, prec, ioUnit, 'RL',
+     &    2, tmparr, dummyRS, 0, 0, 1, myThid )
+        VOLsumGlob_0 = tmparr(1)
+        RHOsumGlob_0 = tmparr(2)
+      ELSE
+        WRITE(msgBuf,'(2A)') 'ECCO_READ_PICKUP: ',
+     &        fn(1:IL)//' and '//fntmp(1:iL+5)//' not provided.'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,I)') 'ECCO_READ_PICKUP: ',
+     &        'sterGloH is referenced to its value at time step ', 
+     &        nIter0 
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &    SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
       ENDIF
 
 #endif /*  ALLOW_PSBAR_STERIC  */

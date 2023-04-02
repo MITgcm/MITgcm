@@ -40,16 +40,22 @@ C     myThid  :: My Thread Id number
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
-      _RL tmparr(2)
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER prec, ioUnit
+      _RL tmparr(2), dummyRS(1)
 CEOP
 
       WRITE(fn,'(A,A10)') 'pickup_ecco.',suff
       IF (fn .NE. ' ') THEN
+        ioUnit = 0
+        prec = precFloat64
+
         tmparr(1) = VOLsumGlob_0
         tmparr(2) = RHOsumGlob_0
-        CALL WRITE_GLVEC_RL( fn, ' ',
-     &                      tmparr, 2, myIter, myThid )
+        CALL MDS_WRITEVEC_LOC(
+     I             fn, prec, ioUnit,
+     I             'RL', 2, tmparr, dummyRS,
+     I             0, 0, 1, myIter, myThid )
       ENDIF
 
 #endif /*  ALLOW_PSBAR_STERIC  */
