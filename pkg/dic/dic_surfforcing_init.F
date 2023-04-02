@@ -79,6 +79,15 @@ C--   Get reccord number and weight for time interpolation:
      &        nIter0,myThid )
          CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
      &        nIter0,myThid )
+#ifndef ALLOW_AUTODIFF
+#ifdef DIC_CALCITE_SAT
+       ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep0,
+     &                         intime0, nIter0, myThid )
+         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep1,
+     &                         intime1, nIter0, myThid )
+#endif /* DIC_CALCITE_SAT */
+#endif /* ndef ALLOW_AUTODIFF */
        ENDIF
 
 c#ifdef ALLOW_OFFLINE
@@ -104,18 +113,21 @@ C If file provided for surface silicate, read it in
          ENDDO
         ENDDO
 #ifndef ALLOW_AUTODIFF
+#ifdef DIC_CALCITE_SAT
        ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 C If no surface silicate file but deep (3d) silicate provided, use top level
-             silicaSurf(i,j,bi,bj) = silicaDeep(i,j,kLev,bi,bj)
+             silicaSurf(i,j,bi,bj) = bWght*silicaDeep0(i,j,kLev,bi,bj)
+     &                             + aWght*silicaDeep1(i,j,kLev,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-#endif
+#endif /* DIC_CALCITE_SAT */
+#endif /* ndef ALLOW_AUTODIFF */
        ENDIF
 
 C end periodicExternalForcing

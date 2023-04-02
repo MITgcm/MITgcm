@@ -90,20 +90,16 @@ C     using_ers :: flag that indicates the use of ERS data
      &                         using_ers,
      &                         using_gfo,
      &                         using_cost_altim,
-     &                         using_cost_bp,
      &                         using_cost_sst,
-     &                         using_cost_scat,
-     &                         using_cost_seaice
-     &                        ,using_cost_transp
+     &                         using_cost_seaice,
+     &                         using_cost_transp
       LOGICAL using_mdt
       LOGICAL using_tpj
       LOGICAL using_topex
       LOGICAL using_ers
       LOGICAL using_gfo
       LOGICAL using_cost_altim
-      LOGICAL using_cost_bp
       LOGICAL using_cost_sst
-      LOGICAL using_cost_scat
       LOGICAL using_cost_seaice
       LOGICAL using_cost_transp
 
@@ -140,10 +136,9 @@ C                 the current model integration.
      &                    trVol, trHeat, trSalt,
      &                    VOLsumGlob_0, VOLsumGlob,
      &                    RHOsumGlob_0, RHOsumGlob,
-     &                    frame, cosphi, eccoVol_0
+     &                    frame, eccoVol_0
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
       _RL frame   (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
-      _RL cosphi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_bp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #ifdef ALLOW_PSBAR_STERIC

@@ -16,7 +16,7 @@ C In S/R CARBON_CHEM convert ak1 and ak2 to the total pH scale
 C  consistent with other coefficients (currently on the seawater scale).
 C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different
 C  coeffs are used).
-#undef CARBONCHEM_TOTALPHSCALE
+#define CARBONCHEM_TOTALPHSCALE
 
 C BIOTIC OPTIONS
 #define DIC_BIOTIC
@@ -38,13 +38,16 @@ C put back bugs related to Water-Vapour in carbonate chemistry & air-sea fluxes
 #undef WATERVAP_BUG
 
 C dissolution only below saturation horizon following method by Karsten Friis
-#undef CAR_DISS
+#define DIC_CALCITE_SAT
 
 C Include self-shading effect by phytoplankton
 #undef LIGHT_CHL
 
 C Include iron sediment source using DOP flux
 #undef SEDFE
+
+C For Adjoint built
+#undef DIC_AD_SAFE
 
 #endif /* ALLOW_DIC */
 #endif /* DIC_OPTIONS_H */

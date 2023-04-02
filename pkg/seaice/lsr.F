@@ -1,12 +1,11 @@
-#ifndef SEAICE_LSRBNEW
-C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
-C     and d/dy[ (zeta-eta) dU/dx] uncomment this option
-C#define SEAICE_TEST
-#endif
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+#endif
+#ifndef SEAICE_LSRBNEW
+C     Define this option below for an alternative discretization of
+C     d/dx[ (zeta-eta) dV/dy] and d/dy[ (zeta-eta) dU/dx]
+# undef SEAICE_TEST
 #endif
 
 CStartOfInterface

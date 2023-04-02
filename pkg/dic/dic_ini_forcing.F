@@ -27,7 +27,10 @@ CEOP
 #ifdef ALLOW_DIC
 
 c !LOCAL VARIABLES: ===================================================
-       INTEGER bi,bj,i,j,k
+       INTEGER bi,bj,i,j
+#ifdef DIC_CALCITE_SAT
+      INTEGER k
+#endif
 #if (defined (READ_PAR) && defined (USE_QSW))
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
@@ -57,6 +60,7 @@ C First call requires that we initialize everything to zero for safety
 #ifdef LIGHT_CHL
       CALL LEF_ZERO( chlinput,myThid )
 #endif
+#ifdef DIC_CALCITE_SAT
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
@@ -69,6 +73,7 @@ C First call requires that we initialize everything to zero for safety
         ENDDO
        ENDDO
       ENDDO
+#endif
 
 #ifdef READ_PAR
 #ifdef USE_QSW
@@ -85,31 +90,34 @@ C set reasonable values to those that need at least something
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            WIND(i,j,bi,bj)    = 5. _d 0*maskC(i,j,1,bi,bj)
-            AtmosP(i,j,bi,bj)  = 1. _d 0*maskC(i,j,1,bi,bj)
-C If neither surface nor deep silicate is provided, set to constant value
+            WIND(i,j,bi,bj)       = 5. _d 0*maskC(i,j,1,bi,bj)
+            AtmosP(i,j,bi,bj)     = 1. _d 0*maskC(i,j,1,bi,bj)
             silicaSurf(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
-            fIce(i,j,bi,bj)    = 0. _d 0
-            FluxCO2(i,j,bi,bj) = 0. _d 0
+            fIce(i,j,bi,bj)       = 0. _d 0
+            FluxCO2(i,j,bi,bj)    = 0. _d 0
 #ifdef READ_PAR
-            PAR(i,j,bi,bj)     = 100. _d 0*maskC(i,j,1,bi,bj)
+            PAR(i,j,bi,bj)        = 100. _d 0*maskC(i,j,1,bi,bj)
 #endif
 #ifdef LIGHT_CHL
 C If the chlorophyll climatology is not provided, use this default value.
-            CHL(i,j,bi,bj)     = 1. _d -2*maskC(i,j,1,bi,bj)
+            CHL(i,j,bi,bj)        = 1. _d -2*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-            InputFe(i,j,bi,bj) = 1. _d -11*maskC(i,j,1,bi,bj)
+            InputFe(i,j,bi,bj)    = 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
           ENDDO
          ENDDO
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             silicaDeep(i,j,k,bi,bj) = 3 _d -2*maskC(i,j,k,bi,bj)
+#ifdef DIC_CALCITE_SAT
+         IF ( useCalciteSaturation ) THEN
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              silicaDeep(i,j,k,bi,bj) = 3. _d -2*maskC(i,j,k,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
-         ENDDO
+         ENDIF
+#endif
 C-    end bi,bj loops
         ENDDO
        ENDDO

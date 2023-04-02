@@ -6,7 +6,7 @@ C !ROUTINE: ALK_SURFFORCING
 C !INTERFACE: ==========================================================
       SUBROUTINE ALK_SURFFORCING( PTR_ALK , GALK,
      I           bi,bj,imin,imax,jmin,jmax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C Calculate the alkalinity change due to freshwater flux
@@ -23,15 +23,15 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
-C  bi,bj                :: tile indices
 C  PTR_ALK              :: alkalinity field
-      INTEGER myIter, myThid
-      _RL myTime
+C  bi,bj                :: tile indices
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+      _RL myTime
+      INTEGER myIter, myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  GALK                 :: tendency term of alkalinity

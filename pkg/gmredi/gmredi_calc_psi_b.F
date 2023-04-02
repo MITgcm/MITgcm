@@ -56,7 +56,9 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER i,j,k, km1
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+C     tkey :: tape key (depends on tiles)
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER tkey, kkey
 #endif
       _RL halfSign
       _RL rDepth, half_K
@@ -70,12 +72,12 @@ C     !LOCAL VARIABLES:
 C-    Initialization : <= done in S/R gmredi_init
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 # endif
 #endif
       IF (GM_AdvForm) THEN
@@ -129,7 +131,7 @@ C      Calculate slopes , taper and/or clip
      I              bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (igmkey-1)*Nr + k
+        kkey = k + (tkey-1)*Nr
 CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte

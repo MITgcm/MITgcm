@@ -185,11 +185,6 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-#   include "ecco_cost.h"
-#  endif
-# endif
 #endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -230,13 +225,15 @@ C     kSrf          :: surface index
       _RL thetaRef
 #endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER kkey, itdkey
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+      INTEGER kkey, tkey
 #endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
-      itdkey = 1
+      tkey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       kSrf = 1
@@ -386,9 +383,6 @@ CADJ STORE pload, siceload   = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef NONLIN_FRSURF
 CADJ STORE recip_hfacc       = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
-#  ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount   = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif /* ANNUAL_BALANCE */
 #  ifdef ALLOW_THSICE
 C-- store thSIce vars before advection (called from SEAICE_MODEL) updates them:
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte
@@ -536,7 +530,7 @@ CHPF$ INDEPENDENT
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        itdkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -551,9 +545,6 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
-           sigmaRfield(i,j,k,bi,bj) = 0. _d 0
-#endif
           ENDDO
          ENDDO
         ENDDO
@@ -643,19 +634,16 @@ cph although some of these are re-initialised later.
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE salt (:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE totphihyd(:,:,:,bi,bj)
-CADJ &                         = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE theta(:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE salt (:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE totphihyd(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 # ifdef ALLOW_KPP
-CADJ STORE uvel (:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE vvel (:,:,:,bi,bj)  = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE uvel (:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE vvel (:,:,:,bi,bj)     = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 # ifdef ALLOW_SALT_PLUME
-CADJ STORE saltplumedepth(:,:,bi,bj)
-CADJ &                         = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE saltplumeflux(:,:,bi,bj)
-CADJ &                         = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE saltplumedepth(:,:,bi,bj)= comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE saltplumeflux(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -740,7 +728,7 @@ C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
 cph kkey formula corrected.
 cph Needed for rhoK, rhoKm1, in the case useGMREDI.
-          kkey = (itdkey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c#ifdef ALLOW_AUTODIFF_TAMC
@@ -797,13 +785,13 @@ CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 
-#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#ifdef ALLOW_LEITH_QG
             DO j=jMin,jMax
              DO i=iMin,iMax
               sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
              ENDDO
             ENDDO
-#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
+#endif /* ALLOW_LEITH_QG */
 
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
@@ -840,8 +828,7 @@ C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE IVDConvCount(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE IVDConvCount(:,:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
 #endif
 
 C--     Diagnose Mixed Layer Depth:
@@ -888,14 +875,10 @@ C      now called earlier, before bi,bj loop.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
-CADJ STORE surfaceForcingU(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE surfaceForcingV(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE surfaceForcingS(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE surfaceForcingT(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE surfaceForcingU(:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE surfaceForcingV(:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE surfaceForcingS(:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE surfaceForcingT(:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_KPP
@@ -951,8 +934,7 @@ C--     Compute MY82 mixing coefficients
 
 #ifdef  ALLOW_GGL90
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--     Compute GGL90 mixing coefficients
         IF ( useGGL90 .AND. Nr.GT.1 ) THEN
@@ -983,9 +965,9 @@ cph storing here is needed only for one GMREDI_OPTIONS:
 cph define GM_BOLUS_ADVEC
 cph keep it although TAF says you dont need to.
 cph but I have avoided the #ifdef for now, in case more things change
-CADJ STORE sigmaX(:,:,:)       = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE sigmaY(:,:,:)       = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE sigmaR(:,:,:)       = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE sigmaX(:,:,:) = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE sigmaY(:,:,:) = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE sigmaR(:,:,:) = comlev1_bibj, key = tkey, kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

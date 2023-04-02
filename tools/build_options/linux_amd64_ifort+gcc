@@ -29,6 +29,15 @@ OMPFLAG='-openmp'
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
+#- for setting specific options, check compiler version:
+fcVers=`$FC $GET_FC_VERSION | head -n 1 | awk '{print $NF}'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-release '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-release: '$fcVers'" ; fi
+if [ $fcVers -ge 20160301 ] ; then
+    OMPFLAG='-qopenmp'
+fi
+
 if test "x$GENERIC" != x ; then
     PROCF=-axSSE4.2,SSE4.1,SSSE3,SSE3,SSE2
 else
