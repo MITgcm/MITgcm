@@ -31,9 +31,11 @@ C     i,j,k,bi,bj  :: loop counter
       _RL recip_dt
       _RL twoThird
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+C     msgBuf :: Informational/error message buffer
       INTEGER kLow
       _RL hLoc
       _RL recip_zRoughBot
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 
       k = 1
@@ -172,7 +174,7 @@ C     and roughness length, assuming von Karman constant = 0.4
           bottomDragCoeffS(i,j,bi,bj) = bottomDragQuadratic
          ENDDO
         ENDDO
-        IF ( zRoughBot .GT. 0. _d 0 ) THEN
+        IF ( zRoughBot .GT. 0. _d 0 .AND. usingZCoords ) THEN
          recip_zRoughBot = 1. _d 0 / zRoughBot
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
@@ -200,6 +202,12 @@ C     and roughness length, assuming von Karman constant = 0.4
            ENDIF
           ENDDO
          ENDDO
+        ELSEIF ( zRoughBot .GT. 0. _d 0 ) THEN
+C-    Roughness dependent drag not yet coded for P-Coordinates
+         WRITE(msgBuf,'(2A)') 'MOM_INIT_FIXED: zRoughBot > 0.',
+     &                ' not yet implemented for P-Coordinate'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R MOM_INIT_FIXED'
         ENDIF
        ENDDO
       ENDDO
