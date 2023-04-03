@@ -1640,28 +1640,29 @@ range 0.001–0.003.
 After defining :varlink:`ALLOW_BOTTOMDRAG_ROUGHNESS` in
 :filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`,
 the quadratic drag coefficient can be
-computed by the logarithmic law of the wall: 
+computed by the logarithmic law of the wall:
 
- .. math::
+.. math::
    u(z) = \left(\frac{\tau}{\rho}\right)^{\frac{1}{2}}\frac{1}{0.4}
    \ln{\frac{z+z_r}{z_r}}
+   :label: logLawWallu
 
-where :math:`z_r` is the roughness length (runtime parameter :varlink:`zRoughBot`).
-Here, :math:`z` is the height from the seafloor and :math:`\tau` is the bottom
-stress (and stress in the log-layer).  The velocity is computed at the center of
-the bottom cell :math:`z_b=\frac{1}{2}\Delta r_f h_w`, so stress on the bottom
-cell is :math:`\tau / \rho = C_d u_b^2`, where :math:`u_b = u(z_b)`
-is the bottom cell velocity and:
+where :math:`z_r` is the roughness length (runtime parameter
+:varlink:`zRoughBot`).  Here, :math:`z` is the height from the seafloor and
+:math:`\tau` is the bottom stress (and stress in the log-layer).  The velocity
+is computed at the center of the bottom cell :math:`z_b=\frac{1}{2}\Delta r_f
+h_w`, so stress on the bottom cell is :math:`\tau / \rho = C_d u_b^2`, where
+:math:`u_b = u(z_b)` is the bottom cell velocity and:
 
 .. math::
    C_d = \left(\frac{0.4}{
    \ln{\frac{\frac{1}{2} \Delta r_f h_w + z_{r} }{z_{r}}}}\right)^2
-   :label: logLawWall
+   :label: logLawWallcd
 
-This formulation assumes that the bottommost cell is sufficiently thin that it is in
-a constant-stress log layer.  A value of :varlink:`zRoughBot` of 0.01 m yields
-a quadratic drag coefficient of 0.0022 for :math:`\Delta r_f =` 100 m, or
-a quadratic drag coefficient of 0.0041 for :math:`\Delta r_f =` 10 m.
+This formulation assumes that the bottommost cell is sufficiently thin that it
+is in a constant-stress log layer. A value of :varlink:`zRoughBot` of 0.01 m
+yields a quadratic drag coefficient of 0.0022 for :math:`\Delta r_f =` 100 m,
+or a quadratic drag coefficient of 0.0041 for :math:`\Delta r_f =` 10 m.
 
 For :math:`z_r = 0`, :math:`C_d` defaults to the value of
 :varlink:`bottomDragQuadratic`.
