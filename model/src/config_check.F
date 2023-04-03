@@ -518,6 +518,14 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+#else
+      IF (usingPCoords .AND. zRoughBot .GT. 0.) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: zRoughBot > 0., and usingPCoords = .TRUE.,'//
+     &  ' is not allowed (not implemented).'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 #endif /* ALLOW_BOTTOMDRAG_ROUGHNESS */
 
       IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
