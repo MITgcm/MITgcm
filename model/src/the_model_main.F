@@ -483,8 +483,8 @@ C/\  | | | | |-FIZHI_WRITE_PICKUP     :: Write Fizhi pickups   (see pkg/fizhi)
 C/\  | | | | |-FIZHI_WRITE_VEGTILES   :: Write Fizhi VegTiles  (see pkg/fizhi)
 C/\  | | | | |-FIZHI_WRITE_DATETIME   :: Write Fizhi DateTime  (see pkg/fizhi)
 C/\  | | | | |-CPL_WRITE_PICKUP       :: Write Coupling-Interface pickups
-C/\  | | | | |-MYPACKAGE_WRITE_PICKUP :: Write pkg/mypackage pickups
 C/\  | | | | |-ECCO_WRITE_PICKUP      :: Write ECCO pickups    (see pkg/ecco)
+C/\  | | | | |-MYPACKAGE_WRITE_PICKUP :: Write pkg/mypackage pickups
 C/\  | | | |
 C/\  | | | |-WRITE_PICKUP          :: Write main model pickup files.
 C/\  | | |
