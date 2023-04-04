@@ -47,6 +47,9 @@ c     == end of interface ==
       CALL ECCO_PHYS( startTime, -1, myThid )
 
 #ifdef ALLOW_PSBAR_STERIC
+C RHO/VOLsumGlob_0 are zeros if S/R ECCO_READ_PICKUP is not called 
+C or pickup files (pickup_ecco.*.data/meta) do not exist. Assign 
+C RHO/VOLsumGlob calculated in S/R ECCO_PHYS to RHO/VOLsumGlob_0.
       IF ( RHOsumGlob_0 .EQ. 0. _d 0 .AND.
      &     VOLsumGlob_0 .EQ. 0. _d 0 ) THEN
         RHOsumGlob_0=RHOsumGlob
