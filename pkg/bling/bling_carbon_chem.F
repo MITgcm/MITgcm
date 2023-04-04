@@ -637,19 +637,11 @@ C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
 C Both on seawater pH scale
-#ifndef ALLOW_TAPENADE
-           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
-     &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
-     &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
-           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0-
-     &          0.0184 _d 0*s + 0.000118 _d 0*s2))
-#else
-           ak1(i,j,bi,bj)=10.0**(-1. _d 0*(3670.7 _d 0*invtk -
+          ak1(i,j,bi,bj)=10.0**(-1. _d 0*(3670.7 _d 0*invtk -
      &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
      &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
            ak2(i,j,bi,bj)=10.0**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0
      &          -0.0184 _d 0*s + 0.000118 _d 0*s2))
-#endif
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
 C Millero p.669 (1995) using data from dickson (1990)
