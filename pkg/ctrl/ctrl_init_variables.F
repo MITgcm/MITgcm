@@ -56,13 +56,8 @@ C     == Global variables ===
 # include "STREAMICE.h"
 # endif
 # ifdef ALLOW_SEAICE
-C# include "SIZE.h"
-      COMMON /seaice_dynvars_1/ area, heff, hsnow, uice, vice
-      _RL area(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL heff(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL hsnow(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL uice(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL vice(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+# include "SEAICE_SIZE.h"
+# include "SEAICE.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
