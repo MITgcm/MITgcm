@@ -660,7 +660,7 @@ C--   Set model configuration (fixed arrays)
 
 # if defined( ALLOW_TANGENTLINEAR_RUN )
 
-# if !defined( ALLOW_TAPENADE)
+# ifndef ALLOW_TAPENADE
 
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
