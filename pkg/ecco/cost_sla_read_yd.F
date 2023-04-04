@@ -13,6 +13,8 @@ c     o Read a given record of the SLA data.
 c
 c     started: Gael Forget 20-Oct-2009
 c
+c     Apr-2023: argument use_mon, switches read daily to monthly if true
+c
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
 c     ==================================================================
@@ -40,6 +42,7 @@ c     _RL sla_slope
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer year, irec
       integer myThid
+      logical use_mon
 
 c     == external functions ==
       integer  ilnblnk
@@ -61,10 +64,7 @@ cnew(
       character*(80) fnametmp
       logical exst
 cnew)
-catn
-      logical use_mon
       logical read_rec
-catn
 
 c     == end of interface ==
 
@@ -80,7 +80,6 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-catn
       read_rec=.FALSE.
       IF (use_mon) THEN
         IF ( (irec.GE.1).AND.(irec.LE.12 ) ) THEN

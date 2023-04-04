@@ -68,8 +68,8 @@ c     == local variables ==
       integer imin,imax
       integer irec,jrec,krec
       integer ilps
-catn
       integer nrec_year, nrec_total, nrec_mdt_ref
+c introduce use_mon to switch from using daily to monthly data if true
       logical use_mon
 
       logical doglobalread
@@ -149,7 +149,7 @@ c for PART 4/5: compute smooth/raw anomalies
       _RL anom_psMgfoobs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL anom_gfoobs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      integer mdt_y0,mdt_y1,year,day
+      integer mdt_y0,mdt_y1,year
       integer num0
 
       _RL junk,junkweight
@@ -274,16 +274,18 @@ c switch for excluding global mean
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , myThid)
 
-catn: loop once to determine use_mon and nrec_year
-c note loop through all indices in case some of the
-c data files are not defined.
+C Check to determine use_mon and nrec_year. Check all igen_[tp,ers,gfo]
+C in case some of the data files are not defined.
       use_mon=.FALSE.
       nrec_year=366
       nrec_total=ndaysrec
       IF (igen_tp.GT.0 .or. igen_ers.GT.0 .or. igen_gfo.GT.0) THEN
         IF( gencost_avgperiod(igen_tp)(1:3) .EQ.'mon' .OR.
+            gencost_avgperiod(igen_tp)(1:3) .EQ.'MON' .OR.
      &      gencost_avgperiod(igen_ers)(1:3).EQ.'mon' .OR.
-     &      gencost_avgperiod(igen_gfo)(1:3).EQ.'mon' ) THEN
+     &      gencost_avgperiod(igen_ers)(1:3).EQ.'MON' .OR.
+     &      gencost_avgperiod(igen_gfo)(1:3).EQ.'mon' .OR.
+     &      gencost_avgperiod(igen_gfo)(1:3).EQ.'MON' ) THEN
           use_mon=.TRUE.
           nrec_year=12
           nrec_total=nmonsrec
@@ -291,7 +293,6 @@ c data files are not defined.
       ENDIF
 c minimum number of observations to consider re-referenced MDT
       IF (use_mon) THEN
-catn: should set to 3 and 12
         num0=3
         nrec_mdt_ref=12
       else
@@ -308,7 +309,7 @@ c determine whether or not to re-reference
 c-- not only model period has to fall within the mdt period
 c-- but that there has to be at least 365 days (or 12 months) of model
 c-- run so for short model run, this will always get set to FALSE
-catn Note also the hard-coded years 1992,2011 here that should be
+C Note also the hard-coded years 1992,2011 here that should be
 c removed at some point in the future if the reference MDT start
 c date no longer falls between 1992 and 2011
       doReference=.FALSE.
@@ -376,9 +377,9 @@ c gfofi, gfosta, gfoper
       endif
 
 c mdt_y0, mdt_y1
-catn: in the case the model run is within the valid mdt years,
-catn  we use the max/min check below to get the bound instead of
-catn  basing on mdt years alone.
+C in the case the model run is within the valid mdt years,
+C we use the max/min check below to get the bound instead of
+C basing on mdt years alone.
 c       mdt_y0=mdtsta(1)/10000
 c       mdt_y1=mdtend(1)/10000
        mdt_y0=max(mdtsta(1)/10000,modelstartdate(1)/10000)
@@ -545,7 +546,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
         enddo
        endif
 
-       enddo !do day=1,366 or irec=1,12
+       enddo !do irec=1,nrec_year
       enddo !do year=mdt_y0,mdt_y1
 
       do bj = jtlo,jthi
@@ -838,8 +839,8 @@ c--   Do a global summation.
       _GLOBAL_SUM_RL( offset     , myThid )
       _GLOBAL_SUM_RL( offset_sum , myThid )
 
-catn--- add warning that written mean_slaobs_model is all zero
-c       due to having less data points that hardcoded num0
+C --  add warning that written mean_slaobs_model is all zero
+c     due to having less data points that hardcoded num0
         num0total=0. _d 0
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -864,7 +865,6 @@ c       due to having less data points that hardcoded num0
       call print_message( msgbuf, errormessageunit,
      &                    SQUEEZE_RIGHT , myThid)
       endif
-catn-------
 
       if (igen_gmsl.GT.0) then
        if (offset_sum .EQ. 0.0) then
@@ -1013,7 +1013,7 @@ cgf =======================================================
         nrecsave=35
       endif
 
-catn add a warning if nrec_total is less than the hardcoded nrecsave
+C add a warning if nrec_total is less than the hardcoded nrecsave
       tempinteger=nrec_total-nrecsave+1
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(A,i5,1x,i5,1x,i5)')
@@ -1045,7 +1045,6 @@ catn add a warning if nrec_total is less than the hardcoded nrecsave
       call print_message( msgbuf, errormessageunit,
      &                    SQUEEZE_RIGHT , myThid)
       endif
-catn -----------
 
       do irec = 1, nrec_total-nrecsave+1
 

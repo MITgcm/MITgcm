@@ -14,6 +14,8 @@ c     o Read a given record of the SLA data.
 c
 c     started: Gael Forget 20-Oct-2009
 c
+c     Apr-2023: argument use_mon, switches read daily to monthly if true
+c
 c     ==================================================================
 c     SUBROUTINE cost_sla_read
 c     ==================================================================
@@ -41,6 +43,7 @@ c     == routine arguments ==
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer irec
       integer myThid
+      logical use_mon
 
 c     == external functions ==
       integer  ilnblnk
@@ -71,16 +74,10 @@ cnew(
       logical exst
 cnew)
 
-catn: copy from cost_bp_read
-      logical use_mon
-      integer nobs
-      integer beginssh
-      integer beginrun
       integer beginlocal, beginmodel, obsrec
       integer mody, modm
-
       _RL daysperavgperiod
-catn
+
 c     == end of interface ==
 
       jtlo = myByLo(myThid)
@@ -95,7 +92,6 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-catn
 
       IF (use_mon) THEN
         beginlocal = sla_startdate(1)/10000
