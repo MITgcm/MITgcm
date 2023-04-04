@@ -228,7 +228,7 @@ C Here, we write record krec (from 1 to diffrec) to file xx_*.effective.$iter
            CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+           CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
 #endif
           ENDIF
          ENDDO
@@ -236,17 +236,17 @@ C Here, we write record krec (from 1 to diffrec) to file xx_*.effective.$iter
 
 c--   rmcycle
 #ifdef ALLOW_ECCO
-        replicated_nrec=endrec
+        replicated_nrec=diffrec
         replicated_ntimes=0
         do k2 = 1, maxCtrlProc
          if (xx_gentim2d_preproc(k2,iarr).EQ.'rmcycle') then
           if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
-           replicated_nrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+           replicated_nrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
            replicated_ntimes=
-     &          int(float(endrec)/float(replicated_nrec))
-           if (replicated_ntimes*replicated_nrec.LT.endrec)
+     &          int(float(diffrec)/float(replicated_nrec))
+           if (replicated_ntimes*replicated_nrec.LT.diffrec)
      &          replicated_ntimes=replicated_ntimes+1
-           if (replicated_ntimes*replicated_nrec.GT.endrec)
+           if (replicated_ntimes*replicated_nrec.GT.diffrec)
      &          replicated_ntimes=replicated_ntimes-1
           endif
          endif
@@ -262,7 +262,7 @@ c--   rmcycle
 
 c     create cyclic average
 
-         nyearsINT=1+int((endrec-replicated_nrec)/replicated_nrec)
+         nyearsINT=1+int((diffrec-replicated_nrec)/replicated_nrec)
          recip_nyearsRL=1. _d 0/float(nyearsINT)
 
 #ifdef ALLOW_CTRL_DEBUG
@@ -347,7 +347,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
            ilgen=ilnblnk( fnamegenOut )
            write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
 #endif
-           IF (krec.LE.endrec) THEN
+           IF (krec.LE.diffrec) THEN
 #ifdef ALLOW_AUTODIFF
             CALL active_read_xy( fnamegenOut, xx_gen, kRec,
      &           doglobalread, ladinit, optimcycle,

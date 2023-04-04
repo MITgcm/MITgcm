@@ -1057,6 +1057,11 @@ corresponding ``.meta``) are required or produced per adjoint run:
    3a   $ctrlvar.$iternumber.data
    3b ad$ctrlvar.$iternumber.data
 
+Pair 3a,b can be scaled/unscaled by the correspondent ``xx_gen*_weight`` depending
+on the setting of :varlink:`noscaling` (see :numref:`gencost_ctrl_preproc`) and
+thus can have unit or are unitless.  Pair 1a,b are the physical fields and have
+physical units, and pair 2a,b are temporary files storing a repeat cycle for use
+during calculations when :varlink:`docycle` and :varlink:`rmcycle` are active.
 In an adjoint run with the 2-D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
 :varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` =
