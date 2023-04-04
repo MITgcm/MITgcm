@@ -244,8 +244,7 @@ C
       betaFacP1  = betaFac + evpStarFac*recip_deltaT
       betaFacP1U = betaFacP1
       betaFacP1V = betaFacP1
-#ifndef ALLOW_AUTODIFF_TAMC
-# ifndef ALLOW_TAPENADE
+#if !defined ALLOW_AUTODIFF_TAMC && !defined ALLOW_TAPENADE
       nEVPstepMax = nEVPstep
 # endif
 #endif
