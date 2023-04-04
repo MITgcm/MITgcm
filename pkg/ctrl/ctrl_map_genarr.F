@@ -389,12 +389,14 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, myThid )
 
-Cssg For TAPENADE
-C$AD DO-NOT-DIFF 
+#ifdef ALLOW_TAPENADE
+C$AD DO-NOT-DIFF
+#endif
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
      &                      fld, 1, optimcycle, myThid )
-Cssg For TAPENADE
+#ifdef ALLOW_TAPENADE
 C$AD END-DO-NOT-DIFF
+#endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
