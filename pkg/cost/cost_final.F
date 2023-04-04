@@ -120,11 +120,9 @@ c--   Sum up all contributions.
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
 #endif
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
-# ifdef ALLOW_COST_ATLANTIC_HEAT
+#ifdef ALLOW_COST_ATLANTIC_HEAT
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
-# endif
 #endif
 #ifdef ALLOW_COST_TEMP
          WRITE(standardMessageUnit,'(A,D22.15)')
@@ -133,10 +131,6 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_HFLUXM
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_TRANSPORT
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
 #ifdef ALLOW_COST_DEPTH
          WRITE(standardMessageUnit,'(A,D22.15)')
@@ -150,13 +144,8 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_TRACER
      &            + mult_tracer * objf_tracer(bi,bj)
 #endif
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
-# ifdef ALLOW_COST_ATLANTIC_HEAT
+#ifdef ALLOW_COST_ATLANTIC_HEAT
      &            + mult_atl    * objf_atl(bi,bj)
-# endif
-#endif
-#ifdef ALLOW_COST_TRANSPORT
-     &            + mult_transport * objf_transport(bi,bj)
 #endif
 #ifdef ALLOW_COST_TEMP
      &            + mult_temp_tut  * objf_temp_tut(bi,bj)

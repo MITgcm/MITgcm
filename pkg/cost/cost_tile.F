@@ -143,10 +143,6 @@ CADJ &     kind = isbyte
            CALL COST_TRACER( bi, bj, myThid )
 #endif
 
-#ifdef ALLOW_COST_TRANSPORT
-           CALL COST_TRANSPORT( bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_COST_TRANSPORT */
-
         ENDDO
       ENDDO
 
