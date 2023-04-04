@@ -685,7 +685,7 @@ C===========================================================
       else
         err = NF_OPEN(fnameequinc,NF_WRITE,fidforward(num_file,bi,bj))
       endif
-#ifdef ALLOW_ADJOINT_RUN
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TAPENADE))
       inquire( file=adfnameequinc, exist=exst )
       if (.NOT.exst) then
         call profiles_init_ncfile(num_file,fiddata(num_file,bi,bj),
@@ -720,7 +720,7 @@ C===========================================================
      &   form ='unformatted',status='unknown', access='direct',
      &   recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
       endif
-#ifdef ALLOW_ADJOINT_RUN
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TAPENADE))
       inquire( file=adfnameequinc, exist=exst )
 #ifdef PROFILES_USE_MDSFINDUNITS
       call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
