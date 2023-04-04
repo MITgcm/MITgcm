@@ -136,6 +136,7 @@ C-    viscosity and diffusivity default value:
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
+      zRoughBot           = 0. _d 0
       selectBotDragQuadr  = -1
       viscA4              = 0. _d 11
       viscA4Grid          = 0. _d 0
