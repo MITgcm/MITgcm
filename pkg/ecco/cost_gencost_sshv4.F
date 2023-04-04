@@ -281,7 +281,7 @@ C in case some of the data files are not defined.
       nrec_total=ndaysrec
       IF (igen_tp.GT.0 .or. igen_ers.GT.0 .or. igen_gfo.GT.0) THEN
         IF( gencost_avgperiod(igen_tp)(1:3) .EQ.'mon' .OR.
-            gencost_avgperiod(igen_tp)(1:3) .EQ.'MON' .OR.
+     &      gencost_avgperiod(igen_tp)(1:3) .EQ.'MON' .OR.
      &      gencost_avgperiod(igen_ers)(1:3).EQ.'mon' .OR.
      &      gencost_avgperiod(igen_ers)(1:3).EQ.'MON' .OR.
      &      gencost_avgperiod(igen_gfo)(1:3).EQ.'mon' .OR.
