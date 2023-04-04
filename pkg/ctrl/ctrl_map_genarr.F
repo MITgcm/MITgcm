@@ -183,12 +183,14 @@ C avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, myThid )
 
-Cssg For TAPENADE
+#ifdef ALLOW_TAPENADE
 C$AD DO-NOT-DIFF
+#endif
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
      &                      fld, 1, optimcycle, myThid )
-Cssg For TAPENADE
+#ifdef ALLOW_TAPENADE
 C$AD END-DO-NOT-DIFF
+#endif
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
