@@ -246,7 +246,6 @@ C
       betaFacP1V = betaFacP1
 #if !defined ALLOW_AUTODIFF_TAMC && !defined ALLOW_TAPENADE
       nEVPstepMax = nEVPstep
-# endif
 #endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
