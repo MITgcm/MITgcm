@@ -395,9 +395,6 @@ C     == Global variables ==
 # include "EXF_PARAM.h"
 # include "EXF_INTERP_PARAM.h"
 # endif
-      COMMON/WIND_STRESS_ICE/TAUX,TAUY
-      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:

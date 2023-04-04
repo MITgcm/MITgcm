@@ -57,6 +57,7 @@ C     !FUNCTIONS:
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
 
+#ifndef ALLOW_TAPENADE
 C     !LOCAL VARIABLES:
 C     === In Local common block ===
 C     TAUX   :: zonal      wind stress over seaice at U point
@@ -64,6 +65,7 @@ C     TAUY   :: meridional wind stress over seaice at V point
       COMMON/WIND_STRESS_ICE/TAUX,TAUY
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 C     === Local variables ===
 C     i,j    :: Loop counters
 C     bi,bj  :: tile counters

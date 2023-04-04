@@ -175,9 +175,6 @@ c**************************************
 # ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME.h"
 # endif
-      COMMON/WIND_STRESS_ICE/TAUX,TAUY
-      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # ifdef ALLOW_ECCO
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
