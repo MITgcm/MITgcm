@@ -179,12 +179,8 @@ C        MP limiter
          B = 4. _d 0*d2 - d2m1
          C = d2m1
          D = d2
-#ifndef ALLOW_TAPENADE
-         dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
-#else
          dm1h = max(min(min(A,B),min(C,D)),0. _d 0)
      &        + min(max(max(A,B),max(C,D)),0. _d 0)
-#endif
 c        qMD = 0.5*( ( Qi + Qip ) - dp1h )
 c        qMD = 0.5 _d 0*( ( 2. _d 0*Qi + DelIp ) - dp1h )
 c        qUL = Qi + (1. _d 0-cfl)/(cfl+Eps)*DelI
@@ -196,17 +192,9 @@ C--   simplify and avoid division by zero
          PhiLC = rp1h_cfl*( 1. _d 0+dm1h*recip_DelI )
 C--
          PhiMin = max(min(0. _d 0,PhiMD),
-#ifndef ALLOW_TAPENADE
-     &        min(0. _d 0,2. _d 0*rp1h_cfl,PhiLC))
-#else
      &        min(min(0. _d 0,2. _d 0*rp1h_cfl),PhiLC))
-#endif
          PhiMax = min(max(2. _d 0/(1. _d 0-cfl),PhiMD),
-#ifndef ALLOW_TAPENADE
-     &        max(0. _d 0,2. _d 0*rp1h_cfl,PhiLC))
-#else
      &        max(max(0. _d 0,2. _d 0*rp1h_cfl),PhiLC))
-#endif
          Phi = max(PhiMin,min(Phi,PhiMax))
 
          Psi = Phi * 0.5 _d 0 * (1. _d 0 - cfl)
