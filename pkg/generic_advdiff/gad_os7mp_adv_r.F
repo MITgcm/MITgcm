@@ -173,12 +173,8 @@ C        MP limiter
          B = 4. _d 0*d2p1 - d2
          C = d2
          D = d2p1
-#ifndef ALLOW_TAPENADE
-         dp1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
-#else
          dp1h = max(min(min(A,B),min(C,D)),0. _d 0)
      &        + min(max(max(A,B),max(C,D)),0. _d 0)
-#endif
          A = 4. _d 0*d2m1 - d2
          B = 4. _d 0*d2 - d2m1
          C = d2m1
