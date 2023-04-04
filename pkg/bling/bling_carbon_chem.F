@@ -966,21 +966,11 @@ C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale
 C Both on seawater pH scale
-
-#ifndef ALLOW_TAPENADE
-           ak1(i,j,bi,bj)=10**(-1*(3670.7*invtk -
-     &          62.008 + 9.7944*dlogtk -
-     &          0.0118 * s + 0.000116*s2))
-           ak2(i,j,bi,bj)=10**(-1*(1394.7*invtk + 4.777 -
-     &          0.0184*s + 0.000118*s2))
-#else
            ak1(i,j,bi,bj)=10.0**(-1*(3670.7*invtk -
      &          62.008 + 9.7944*dlogtk -
      &          0.0118 * s + 0.000116*s2))
            ak2(i,j,bi,bj)=10.0**(-1*(1394.7*invtk + 4.777 -
      &          0.0184*s + 0.000118*s2))
-#endif
-
 C NOW PRESSURE DEPENDENCE:
 c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
