@@ -57,8 +57,8 @@ C     !FUNCTIONS:
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
 
-#ifndef ALLOW_TAPENADE
 C     !LOCAL VARIABLES:
+#ifndef ALLOW_TAPENADE
 C     === In Local common block ===
 C     TAUX   :: zonal      wind stress over seaice at U point
 C     TAUY   :: meridional wind stress over seaice at V point
