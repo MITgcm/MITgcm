@@ -1013,7 +1013,7 @@ is enforced to reverse the sign of the gradient ``adxx_gen*(i)`` to be
 negative such that any further decrease in ``xx_gen*(i)`` toward its minimum
 bound ``xx_gen*_bounds(i,1)`` will be penalized.  The opposite is enforced
 at the maximum end when ``xx_gen*(i)`` > ``xx_gen*_bounds(i,3)``
-and ``adxx_gen*(i)`` < 0.0 such that the sign of the gradient 
+and ``adxx_gen*(i)`` < 0.0 such that the sign of the gradient
 ``adxx_gen*(i)`` will be reversed to positive to penalize any further
 increase in ``xx_gen*(i)`` toward its maximum bound ``xx_gen*_bounds(i,4)``.
 
@@ -1057,11 +1057,13 @@ corresponding ``.meta``) are required or produced per adjoint run:
    3a   $ctrlvar.$iternumber.data
    3b ad$ctrlvar.$iternumber.data
 
-Pair 3a,b can be scaled/unscaled by the correspondent ``xx_gen*_weight`` depending
-on the setting of :varlink:`noscaling` (see :numref:`gencost_ctrl_preproc`) and
-thus can have unit or are unitless.  Pair 1a,b are the physical fields and have
-physical units, and pair 2a,b are temporary files storing a repeat cycle for use
-during calculations when :varlink:`docycle` and :varlink:`rmcycle` are active.
+Pair 1a,b are the physical fields with physical units. Pair 2a,b are temporary
+files storing a repeat cycle for use during calculations when
+:varlink:`docycle` and :varlink:`rmcycle` are active. Pair 3a,b have units or
+no units depending on the setting of :varlink:`noscaling`, which controls
+scaling/unscaling by the corresponding ``xx_gen*_weight`` (see
+:numref:`gencost_ctrl_preproc`).
+
 In an adjoint run with the 2-D time-dependent controls (CPP-flag
 :varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
 :varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` =
@@ -1082,28 +1084,28 @@ of the above files, in the order as follows:
   :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->
   :filelink:`ctrl_init_ctrlvar.F <pkg/ctrl/ctrl_init_ctrlvar.F>`
   (with :varlink:`yadprefix` = ``'ad'``); 1b and 2b have size :varlink:`diffrec`
-  and 3b has size :varlink:`endrec`. 
+  and 3b has size :varlink:`endrec`.
 
 .. parsed-literal ::
 
   Flow of :filelink:`pkg/ctrl` when the adjoint is running (below, for $iternumber=0000000001):
-  
+
   Note: :filelink:`the_model_main.F <model/src/the_model_main.F>` calls :filelink:`the_main_loop.F <model/src/the_main_loop.F>`, but once the code is generated from TAF,
   the preprocessed form the_model_main.f calls either mdthe_main_loop or adthe_main_loop
-       
+
   :filelink:`the_model_main <model/src/the_model_main.F>`
   \|-:filelink:`initialise_fixed <model/src/initialise_fixed.F>`
     \|-:filelink:`ini_parms <model/src/ini_parms.F>`
     \|-:filelink:`packages_boot <model/src/packages_boot.F>`, :filelink:`packages_readparms <model/src/packages_readparms.F>`
     \|-:filelink:`set_parms <model/src/set_parms.F>`, :filelink:`ini_model_io <model/src/ini_model_io.F>`, :filelink:`ini_grid <model/src/ini_grid.F>`, :filelink:`load_ref_files <model/src/load_ref_files.F>`, :filelink:`ini_eos <model/src/ini_eos.F>`, :filelink:`set_ref_state <model/src/set_ref_state.F>`,
       :filelink:`set_grid_factors <model/src/set_grid_factors.F>`, :filelink:`ini_depths <model/src/ini_depths.F>`, :filelink:`ini_masks_etc <model/src/ini_masks_etc.F>`
-  
+
     \|-:filelink:`packages_init_fixed <model/src/packages_init_fixed.F>`
       \|-:filelink:`cal_init_fixed <pkg/cal/cal_init_fixed.F>`, :filelink:`diagnostics_init_early <pkg/diagnostics/diagnostics_init_early.F>`, :filelink:`diagnostics_main_init <pkg/diagnostics/diagnostics_main_init.F>`, :filelink:`gad_init_fixed <pkg/generic_advdiff/gad_init_fixed.F>`,
         :filelink:`mom_init_fixed <pkg/mom_common/mom_init_fixed.F>`, :filelink:`obcs_init_fixed <pkg/obcs/obcs_init_fixed.F>`, :filelink:`exf_init_fixed <pkg/exf/exf_init_fixed.F>`, :filelink:`kpp_init_fixed <pkg/kpp/kpp_init_fixed.F>`, :filelink:`gmredi_init_fixed <pkg/gmredi/gmredi_init_fixed.F>`,
-        :filelink:`seaice_cost_init_fixed <pkg/seaice/seaice_cost_init_fixed.F>`, :filelink:`smooth_init_fixed <pkg/smooth/smooth_init_fixed.F>`, :filelink:`ecco_cost_init_fixed <pkg/ecco/ecco_cost_init_fixed.F>`, 
+        :filelink:`seaice_cost_init_fixed <pkg/seaice/seaice_cost_init_fixed.F>`, :filelink:`smooth_init_fixed <pkg/smooth/smooth_init_fixed.F>`, :filelink:`ecco_cost_init_fixed <pkg/ecco/ecco_cost_init_fixed.F>`,
         :filelink:`profiles_init_fixed <pkg/profiles/profiles_init_fixed.F>`, :filelink:`seaice_init_fixed <pkg/seaice/seaice_init_fixed.F>`, :filelink:`salt_plume_init_fixed <pkg/salt_plume/salt_plume_init_fixed.F>`
-  
+
       \|-:filelink:`ctrl_init <pkg/ctrl/ctrl_init.F>`
        \|-:filelink:`active_write_xyz <pkg/autodiff/active_file.F>`\ ('wunit')
        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (genarr2d, genarr3d)
@@ -1112,29 +1114,32 @@ of the above files, in the order as follows:
        `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.effective.0000000001, 'c','xy')
            `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\ (xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.effective.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
+           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.effective.0000000001)  **<- size diffrec**
        `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.tmp.0000000001)
            `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
+           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.tmp.0000000001)        **<- size diffrec**
        `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.0000000001)
            `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad') 
+           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
               `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.0000000001)            **<- size endrec**
 
-- Second, within ``initiase_variamd.f`` (see below), records :varlink:`startrec`
-  to :varlink:`endrec` of file 3a ``$ctrvar.$iternumber.data`` are read
-  in :filelink:`ctrl_map_ini_gentim2d.F <pkg/ctrl/ctrl_map_ini_gentim2d.F>`,
-  processed if scaling or smoothing, etc., need to be applied, and then written
-  to (1a,2a) ``$ctrlvar.{effective,tmp}.data`` of size :varlink:`diffrec`.
-  Note these routines contain a ``md`` or ``ad`` suffix and are produced by TAF,
-  e.g., ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file ``ctrl_map_ini_gentim2d_ad.f``)
-  called from ``s/r initialize_variamd`` (found in TAF-generated file ``initialize_varia_ad.f``),
-  which in turn is called from ``s/r adthe_main_loop`` (found in TAF-generated file ``the_main_loop_ad.f``);
-  alternatively, all of these routines are found the concatenated file ``ad_taf_output.f``. 
+- Second, within ``initiase_variamd.f`` (see below), records
+  :varlink:`startrec` to :varlink:`endrec` of file 3a
+  ``$ctrvar.$iternumber.data`` are read in :filelink:`ctrl_map_ini_gentim2d.F
+  <pkg/ctrl/ctrl_map_ini_gentim2d.F>`, processed if scaling or smoothing, etc.,
+  need to be applied, and then written to (1a,2a)
+  ``$ctrlvar.{effective,tmp}.data`` of size :varlink:`diffrec`.  Note these
+  routines contain a ``md`` or ``ad`` suffix and are produced by TAF, e.g.,
+  ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file
+  ``ctrl_map_ini_gentim2d_ad.f``) called from ``s/r initialize_variamd`` (found
+  in TAF-generated file ``initialize_varia_ad.f``), which in turn is called
+  from ``s/r adthe_main_loop`` (found in TAF-generated file
+  ``the_main_loop_ad.f``); alternatively, all of these routines are found the
+  concatenated file ``ad_taf_output.f``.
 
 .. parsed-literal ::
 
@@ -1172,17 +1177,18 @@ of the above files, in the order as follows:
             enddo
 
 The difference in length of records for 3[a,b] compared to 1[a,b] and 2[a,b] is
-due to the fact that we need to access records
-:varlink:`startrec` thru :varlink:`endrec` in 3a, i.e., file 3a needs a total of at
-least :varlink:`endrec` records; file 3b is automatically generated to
-provide access to :varlink:`endrec` thru :varlink:`startrec` (i.e., in reverse order). File 3b, in
-particular, is where adjoint sensitivity will be accumulated backward and
-written; note the model would thus crash if its last record were :varlink:`diffrec` rather than :varlink:`endrec`.
-For pairs 1[a,b] and 2[a,b], because they are generated *after* we
-have already accessed the correct records :varlink:`startrec` to :varlink:`endrec` in 3a, we simply
-create and write out these records in the shorter file size :varlink:`diffrec`.
-After their file size initializations, the control adjustment field with physical unit from file 1a is passed on
-to :filelink:`pkg/exf` for surface forcing application.
+due to the fact that we need to access records :varlink:`startrec` thru
+:varlink:`endrec` in 3a, i.e., file 3a needs a total of at least
+:varlink:`endrec` records; file 3b is automatically generated to provide access
+to :varlink:`endrec` thru :varlink:`startrec` (i.e., in reverse order). File
+3b, in particular, is where adjoint sensitivity will be accumulated backward
+and written; note the model would thus crash if its last record were
+:varlink:`diffrec` rather than :varlink:`endrec`.  For pairs 1[a,b] and 2[a,b],
+because they are generated *after* we have already accessed the correct records
+:varlink:`startrec` to :varlink:`endrec` in 3a, we simply create and write out
+these records in the shorter file size :varlink:`diffrec`.  After their file
+size initializations, the control adjustment field with physical unit from file
+1a is passed on to :filelink:`pkg/exf` for surface forcing application.
 
 Note, that :varlink:`xx_gentim2d_startdate` can be used to control how many
 records the different :varlink:`xx_gentim2d` files
