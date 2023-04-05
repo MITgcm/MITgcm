@@ -3659,13 +3659,13 @@ TAPENADECMD = ${TAPENADECMD}
 
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
-AD_CLEAN = *.${FS}~ autodiff_init_varia_?.msg autodiff_init_varia_?.msg~
+AD_CLEAN = *.f~ autodiff_init_varia_?.msg autodiff_init_varia_?.msg~
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
 #
-AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.$FS)
-AD_FILES_TLM=\$(AD_FILES:.$FS=_d.$FS)
+AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.f)
+AD_FILES_TLM=\$(AD_FILES:.$FS=_d.f)
 #
 .PHONY: TAP_TLM_FILES
 TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
