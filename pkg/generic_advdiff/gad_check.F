@@ -131,11 +131,27 @@ C     for mom limitations, done in CONFIG_CHECK, but can move to MOM_INIT_FIXED
 
 C Check compatibility with adjoint
 #ifdef ALLOW_AUTODIFF
-      IF ( tempAdvScheme.EQ.ENUM_OS7MP .OR.
-     &     saltAdvScheme.EQ.ENUM_OS7MP ) THEN
-        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection scheme OS7MP ',
-     &     ENUM_OS7MP,
-     &     ' not yet implemented for adjoint'
+      IF ( tempAdvScheme.EQ.ENUM_PPM_NULL_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PPM_NULL_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_PPM_MONO_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PPM_MONO_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_PPM_WENO_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PPM_WENO_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_PQM_NULL_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PQM_NULL_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_PQM_WENO_LIMIT .OR.
+     &     saltAdvScheme.EQ.ENUM_PQM_WENO_LIMIT .OR.
+     &     tempAdvScheme.EQ.ENUM_SOM_PRATHER    .OR.
+     &     saltAdvScheme.EQ.ENUM_SOM_PRATHER    .OR.
+     &     tempAdvScheme.EQ.ENUM_SOM_LIMITER    .OR.
+     &     saltAdvScheme.EQ.ENUM_SOM_LIMITER ) THEN
+        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
+     &   ENUM_PPM_NULL_LIMIT, ENUM_PPM_MONO_LIMIT, ENUM_PPM_WENO_LIMIT,
+     &   ENUM_PQM_NULL_LIMIT, ENUM_PQM_MONO_LIMIT, ENUM_PQM_WENO_LIMIT,
+     &   ENUM_SOM_PRATHER, ENUM_SOM_LIMITER,
+     &   ' not yet implemented for adjoint'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
