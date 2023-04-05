@@ -1421,6 +1421,7 @@ FS90=
 
 AUTODIFF_PKG_USED=f
 TAPENADE=
+TAPENADECMD=tapenade
 OPENAD=
 AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
@@ -1453,7 +1454,7 @@ gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAPENADE TAPENADECMD OPENAD TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
 gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
 gm_s12="TAF_EXTRA TAMC_EXTRA DIVA MPIINCLUDEDIR MPI_HEADER_FILES"
 
@@ -3654,25 +3655,27 @@ rm -f $TMP.adSrcFiles
 
 cat >>$MAKEFILE <<EOF
 
+TAPENADECMD = ${TAPENADECMD}
+
 TAPENADE_SUPPORT_F90_SRC_FILES = \
 ${TAPTOOLS}/diffsizes.F90
-AD_CLEAN = *.f~ autodiff_init_varia_?.msg autodiff_init_varia_?.msg~
+AD_CLEAN = *.${FS}~ autodiff_init_varia_?.msg autodiff_init_varia_?.msg~
 
 f95_test_mods.f90: \$(TAPENADE_SUPPORT_F90_SRC_FILES)
 	cat \$^ > \$@
 #
-AD_FILES_ADJ=\$(AD_FILES:.f=_b.f)
-AD_FILES_TLM=\$(AD_FILES:.f=_d.f)
+AD_FILES_ADJ=\$(AD_FILES:.$FS=_b.$FS)
+AD_FILES_TLM=\$(AD_FILES:.$FS=_d.$FS)
 #
 .PHONY: TAP_TLM_FILES
 TAP_TLM_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_TLM)
-	tapenade -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -d -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 #
 .PHONY: TAP_ADJ_FILES
 TAP_ADJ_FILES: \$(AD_FILES) f95_test_mods.f90
 	touch \$(AD_FILES_ADJ)
-	tapenade -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
+	\$(TAPENADECMD) -b -ext "${TAPTOOLS}/flow_tap" -head "the_main_loop(fc)/(xx_genarr3d_dummy, xx_genarr2d_dummy, xx_gentim2d_dummy)" \$(AD_FILES) f95_test_mods.f90
 
 adAll: ad_exe_target
 .PHONY: adAll
