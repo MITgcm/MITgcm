@@ -12,11 +12,6 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
-#ifdef ALLOW_TAPENADE
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
-#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
