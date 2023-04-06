@@ -415,6 +415,10 @@ C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving front
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuFluxTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvFluxTimeDepFile
 
+      CHARACTER*(MAX_LEN_FNAM) bdotMaxmeltTimeDepFile
+      CHARACTER*(MAX_LEN_FNAM) bglenTimeDepFile
+      CHARACTER*(MAX_LEN_FNAM) cfricTimeDepFile
+
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_uvel_ext_file
       CHARACTER*(MAX_LEN_FNAM) STREAMICE_vvel_ext_file
 
@@ -480,7 +484,10 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICE_uvel_ext_file,
      &     STREAMICE_vvel_ext_file,
      &     STREAMICEBdotDepthFile,
-     &     STREAMICEBdotMaxMeltFile
+     &     STREAMICEBdotMaxMeltFile,
+     &     bdotMaxmeltTimeDepFile,
+     &     bglenTimeDepFile,
+     &     cfricTimeDepFile
 
 #ifdef ALLOW_PETSC
       COMMON /PETSC_PARM_C/
@@ -765,7 +772,10 @@ C    REAL ARRAYS
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
       COMMON /STREAMICE_TIMEDEP_FORCE/
      &      bdot_streamice0,
-     &      bdot_streamice1
+     &      bdot_streamice1,
+     &      streamice_bdot_maxmelt0, streamice_bdot_maxmelt1,
+     &      streamice_bglen0, streamice_bglen1,
+     &      streamice_beta0, streamice_beta1
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
      &      ,streamice_u_normal_stress0,
      &      streamice_u_normal_stress1,
@@ -822,6 +832,14 @@ C    REAL ARRAYS
       _RL c_basal_fric_init   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt0
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt1
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef STREAMICE_3D_GLEN_CONST
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

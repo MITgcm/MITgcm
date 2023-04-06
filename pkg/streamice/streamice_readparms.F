@@ -96,6 +96,9 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEuShearTimeDepFile,
      &     STREAMICEvShearTimeDepFile,
      &     STREAMICEuFluxTimeDepFile, STREAMICEvFluxTimeDepFile,
+     &     bdotMaxmeltTimeDepFile,
+     &     bglenTimeDepFile,
+     &     cfricTimeDepFile,
      &     STREAMICEGlenConstFile, STREAMICEGlenConstConfig,
      &     STREAMICE_ppm_driving_stress,
      &     STREAMICE_h_ctrl_const_surf,
@@ -315,6 +318,9 @@ c      streamice_n_sub_regularize = 4
       STREAMICEvFluxTimeDepFile = ' '
       STREAMICE_vvel_ext_file = ' '
       STREAMICE_uvel_ext_file = ' '
+      bdotMaxmeltTimeDepFile = ' ' 
+      bglenTimeDepFile = ' '
+      cfricTimeDepFile = ' ' 
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       STREAMICETrac2DBCxFile = ''

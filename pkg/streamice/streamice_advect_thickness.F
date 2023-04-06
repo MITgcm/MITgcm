@@ -385,40 +385,41 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
               ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
 
      
-               IF ( STREAMICEBdotDepthFile .EQ. '' ) THEN          
+!               IF ( STREAMICEBdotDepthFile .EQ. '' ) THEN          
                        
-                 bdot_depth = 
+               bdot_depth = 
      &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
      &            streamice_bdot_depth_maxmelt_p + 
      &            streamice_bdot_depth_maxmelt
 
-               ELSE
+!               ELSE
                        
-                 bdot_depth = 
-     &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
-     &            streamice_bdot_depth_maxmelt_p 
+!                 bdot_depth = 
+!     &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
+!     &            streamice_bdot_depth_maxmelt_p 
 
-               ENDIF
+!               ENDIF
 
-               IF ( STREAMICEBdotMaxMeltFile .EQ. '' ) THEN          
+!               IF ( STREAMICEBdotMaxMeltFile .EQ. '' .or.
+!     &              bdotMaxmeltTimeDepFile .EQ. '') THEN          
                        
-                bdot_max = 
+               bdot_max = 
      &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
      &           streamice_bdot_maxmelt_p +
      &           streamice_bdot_maxmelt
 
-               ELSE
-                       
-                bdot_max = 
-     &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
-     &           streamice_bdot_maxmelt_p 
+!               ELSE
+!                       
+!                bdot_max = 
+!     &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
+!     &           streamice_bdot_maxmelt_p 
 
-               ENDIF
+!               ENDIF
 
-               bdot_max = 
-     &          streamice_bdot_maxmelt_v(i,j,bi,bj) +
-     &          streamice_bdot_maxmelt_p +
-     &          streamice_bdot_maxmelt
+!               bdot_max = 
+!     &          streamice_bdot_maxmelt_v(i,j,bi,bj) +
+!     &          streamice_bdot_maxmelt_p +
+!     &          streamice_bdot_maxmelt
 
                IF (base_el_streamice(i,j,bi,bj) .lt. 
      &             streamice_bdot_depth_nomelt) THEN

@@ -64,6 +64,9 @@ C     ZERO OUT FLOATING POINT ARRAYS
           v_streamice_ext(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
           BDOT_streamice1(i,j,bi,bj) = 0. _d 0
+          streamice_bdot_maxmelt1(i,j,bi,bj) = 0. _d 0
+          streamice_bglen1(i,j,bi,bj) = 0. _d 0
+          streamice_beta1(i,j,bi,bj) = 0. _d 0
 #endif
           streamice_bdot_depth_maxmelt_v(i,j,bi,bj) = 0. _d 0
           streamice_bdot_maxmelt_v(i,j,bi,bj) = 0. _d 0

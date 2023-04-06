@@ -113,7 +113,7 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(float_frac_streamice,'SI_float',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',
+       CALL DIAGNOSTICS_FILL(C_basal_friction,'SI_selev',
      &      0,1,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(bdot_streamice,'BDOT_SI ',
      &      0,1,0,1,1,myThid)
