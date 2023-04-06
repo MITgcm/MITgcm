@@ -1107,25 +1107,25 @@ of the above files, in the order as follows:
         :filelink:`profiles_init_fixed <pkg/profiles/profiles_init_fixed.F>`, :filelink:`seaice_init_fixed <pkg/seaice/seaice_init_fixed.F>`, :filelink:`salt_plume_init_fixed <pkg/salt_plume/salt_plume_init_fixed.F>`
 
       \|-:filelink:`ctrl_init <pkg/ctrl/ctrl_init.F>`
-       \|-:filelink:`active_write_xyz <pkg/autodiff/active_file.F>`\ ('wunit')
-       \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (genarr2d, genarr3d)
+        \|-:filelink:`active_write_xyz <pkg/autodiff/active_file.F>`\ ('wunit')
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (genarr2d, genarr3d)
 
-       `|`-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (gentim2d_startdate, diffrec, startrec, endrec)
-       `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.effective.0000000001, 'c','xy')
-           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\ (xx_fname,fname)
+        \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (gentim2d_startdate, diffrec, startrec, endrec)
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.effective.0000000001, 'c','xy')
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\ (xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.effective.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
-              `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.effective.0000000001)  **<- size diffrec**
-       `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.tmp.0000000001)
-           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.effective.0000000001)  **<- size diffrec**
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.tmp.0000000001)
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
-              `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.tmp.0000000001)        **<- size diffrec**
-       `|`-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ ('xx_atemp.0000000001)
-           `|`-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.tmp.0000000001)        **<- size diffrec**
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.0000000001)
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
                             **--> fname(1:3)=[,ad,hn]xx_atemp.0000000001**
-           `|`-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
-              `|`-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.0000000001)            **<- size endrec**
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.0000000001)            **<- size endrec**
 
 - Second, within ``initiase_variamd.f`` (see below), records
   :varlink:`startrec` to :varlink:`endrec` of file 3a
