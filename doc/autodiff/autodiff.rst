@@ -1865,8 +1865,7 @@ Steps for Linux
 
     % tar xvfz tapenade_3.16.tar
 
-**NOTE**: Alternatively, a Tapenade version that works correctly with MITgcm is
- always available in the ``tools/TAP_support/tapenade_supported`` directory.
+**NOTE**: Alternatively, a Tapenade version that works correctly with MITgcm is always available in the ``tools/TAP_support/tapenade_supported`` directory.
 
 4. On Linux, depending on your distribution, Tapenade may require you to set
    the shell variable ``JAVA_HOME`` to your java installation directory. It is
@@ -1905,12 +1904,7 @@ current browser.
 
 .. _tapenade_bashrc_snippet:
 
-**NOTE**: Every time you wish to use the AD capability with Tapenade, you must
- re-source the environment. We recommend that this be done automatically in
- your bash or c-shell profile upon login. An example of an addition to a
- ``.bashrc`` file from a Linux server is given below. Luckily, shell variable
- ``JAVA_HOME`` was not required to be explicitly set for this particular Linux
- distribution, but might be necessary for some other distributions.
+**NOTE**: Every time you wish to use the AD capability with Tapenade, you must re-source the environment. We recommend that this be done automatically in your bash or c-shell profile upon login. An example of an addition to a ``.bashrc`` file from a Linux server is given below. Luckily, shell variable ``JAVA_HOME`` was not required to be explicitly set for this particular Linux distribution, but might be necessary for some other distributions.
 
 ::
 
@@ -1941,8 +1935,7 @@ packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with
 Tapenade. The users are referred to the ``code_tap`` directories in the various
 verification experiments for reference.
 
-**Pro tip**: ``diff -qr dir1 dir2`` can help you see all the differences in the
- files of two directories.
+**Pro tip**: ``diff -qr dir1 dir2`` can help you see all the differences in the files of two directories.
 
 ``autodiff`` is not completely untangled from the Tapenade setup yet. In
 ``code_tap/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is
