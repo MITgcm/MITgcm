@@ -107,10 +107,6 @@ CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 # include "ggl90_ad_check_lev4_dir.h"
 #endif
 
-#ifdef ALLOW_ECCO
-# include "ecco_ad_check_lev4_dir.h"
-#endif
-
 #ifdef ALLOW_EXF
 # include "exf_ad_check_lev4_dir.h"
 #endif /* ALLOW_EXF */
@@ -192,23 +188,4 @@ CADJ STORE cMeanThetaVVel = tapelev4, key = ilev_4
 
 #ifdef ALLOW_COST_TRACER
 CADJ STORE objf_tracer = tapelev4, key = ilev_4
-#endif
-
-#ifdef ALLOW_COST_TRANSPORT
-CADJ STORE objf_transport = tapelev4, key = ilev_4
-#endif
-
-#ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE qnetm          = tapelev4, key = ilev_4
-#endif
-
-#ifdef ALLOW_SEAICE
-cph temporary for HD
-# ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount = tapelev4, key = ilev_4
-CADJ STORE atmfw_tilesum   = tapelev4, key = ilev_4
-CADJ STORE qnet_tilesum    = tapelev4, key = ilev_4
-CADJ STORE empmr_corr      = tapelev4, key = ilev_4
-CADJ STORE qnet_corr       = tapelev4, key = ilev_4
-# endif /* ANNUAL_BALANCE */
 #endif

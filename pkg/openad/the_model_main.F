@@ -622,7 +622,7 @@ C     myIter :: Iteration counter for this thread
       LOGICAL exst
       LOGICAL lastdiva
 C -->> OpenAD
-      _RL foo(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL foo(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL foo2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fname
@@ -776,44 +776,11 @@ C -->> OpenAD
       our_rev_mode%plain=.TRUE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.FALSE.
-#   ifdef OAD_DEBUG
-#    if (defined (ALLOW_THETA0_CONTROL) && defined (ALLOW_SALT0_CONTROL))
-      DO i1=1-OLx,sNx+OLx
-        DO i2=1-OLy,sNy+OLy
-          DO i3=1,nr
-            DO i4=1,nSx
-              DO i5=1,nSy
-                 write (standardmessageunit,
-     +'(A,5(I3,A),E25.17E3,A,E25.17E3)')
-     +'OAD: (',
-     +i1,',',i2,',',i3,',',i4,',',i5,') salt/theta ',
-     +xx_salt(i1,i2,i3,i4,i5)%d,'/',xx_theta(i1,i2,i3,i4,i5)%d
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-#    endif
-#   endif /* OAD_DEBUG */
 C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
       WRITE(suff,'(I10.10)') optimcycle
 #   ifndef ALLOW_OPENAD_ACTIVE_READ_XYZ
-#   ifdef ALLOW_THETA0_CONTROL
-      foo=xx_theta%d
-      il=ILNBLNK( xx_theta_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_theta_file(1:il),'.'
-      CALL WRITE_FLD_XYZ_RL(fname,suff,foo,myIter,1)
-#   endif
-#   ifdef ALLOW_SALT0_CONTROL
-      foo=xx_salt%d
-      il=ILNBLNK( xx_salt_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_salt_file(1:il),'.'
-      CALL WRITE_FLD_XYZ_RL(fname,suff,foo,myIter,1)
-#   endif
 #   ifdef ALLOW_DIFFKR_CONTROL
       foo=diffkr%d
       il=ILNBLNK( xx_diffkr_file )
@@ -823,48 +790,6 @@ C     Temporarily change setting of writeBinaryPrec
 #   endif
 #   endif /* ALLOW_OPENAD_ACTIVE_READ_XYZ */
 
-#   ifdef ALLOW_TAUU0_CONTROL
-      foo2D=fu%d
-      il=ILNBLNK( xx_tauu_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_tauu_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
-#   ifdef ALLOW_TAUV0_CONTROL
-      foo2D=fv%d
-      il=ILNBLNK( xx_tauv_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_tauv_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
-#   ifdef ALLOW_HFLUX0_CONTROL
-      foo2D=qnet%d
-      il=ILNBLNK( xx_hflux_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_hflux_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
-#   ifdef ALLOW_SFLUX0_CONTROL
-      foo2D=empmr%d
-      il=ILNBLNK( xx_sflux_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_sflux_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
-#   ifdef ALLOW_HFLUXM_CONTROL
-      foo2D=xx_hfluxm%d
-      il=ILNBLNK( xx_hfluxm_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_hfluxm_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
-#   ifdef ALLOW_ETAN0_CONTROL
-      foo2D=etan%d
-      il=ILNBLNK( xx_etan_file )
-      write(fname(1:MAX_LEN_FNAM),'(3a)')
-     &     'ad',xx_etan_file(1:il),'.'
-      CALL WRITE_FLD_XY_RL(fname,suff,foo2D,myIter,1)
-#   endif
 cc#   ifdef ALLOW_GENARR2D_CONTROL
 cc      do ik = 1, maxCtrlArr2D
 cc        foo2d=xx_genarr2d(:,:,:,:,ik)%d

@@ -77,16 +77,6 @@ CADJ STORE climsss1   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE climsst0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE climsst1   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-# ifdef ALLOW_CLIMSALT_RELAXATION
-cph not used so far
-cphCADJ STORE climsalt0  = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE climsalt1  = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-# ifdef ALLOW_CLIMTEMP_RELAXATION
-cph not used so far
-cphCADJ STORE climtemp0  = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE climtemp1  = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE apressure0    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE apressure1    = comlev1, key=ikey_dynamics, kind=isbyte

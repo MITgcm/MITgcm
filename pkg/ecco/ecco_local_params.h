@@ -7,9 +7,6 @@ C     ==================================================================
 
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRbarfile
-#endif
       character*(MAX_LEN_FNAM) sstbarfile
       character*(MAX_LEN_FNAM) psbarfile
       character*(MAX_LEN_FNAM) bpbarfile
@@ -23,12 +20,6 @@ C     ==================================================================
       character*(MAX_LEN_FNAM) sfluxmeanbarfile
       character*(MAX_LEN_FNAM) costTranspDataFile
 
-#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      _RL transpbar(maxNumDays,nSx,nSy)
-      _RL transpobs(maxNumDays)
-      _RL wtransp(maxNumDays)
-#endif
-
       _RL  mult_hflux
       _RL  mult_sflux
       _RL  mult_hfluxmm
@@ -41,9 +32,6 @@ C     ==================================================================
       _RL  mult_ers
       _RL  mult_gfo
       _RL  mult_sshv4cost(NSSHV4COST)
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      _RL  mult_sigmaR
-#endif
       _RL  mult_temp
       _RL  mult_salt
       _RL  mult_temp0
@@ -119,9 +107,6 @@ c     character*(MAX_LEN_FNAM) ctds_errfile
 c     character*(MAX_LEN_FNAM) drift_errfile
       character*(MAX_LEN_FNAM) udrifterrfile
       character*(MAX_LEN_FNAM) vdrifterrfile
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRerrfile
-#endif
       character*(MAX_LEN_FNAM) salterrfile
       character*(MAX_LEN_FNAM) temperrfile
       character*(MAX_LEN_FNAM) velerrfile
@@ -192,9 +177,6 @@ c     _RL wrunoff0
 c     _RL wmean_runoff
       _RL wmean_wind
 
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRdatfile
-#endif
       character*(MAX_LEN_FNAM) tdatfile
       character*(MAX_LEN_FNAM) sdatfile
       character*(MAX_LEN_FNAM) scatxdatfile

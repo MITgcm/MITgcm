@@ -25,6 +25,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+# include "MOM_VISC.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
@@ -136,7 +139,13 @@ C-    average grid-cell-center KE to get velocity norm @ U.pt
          DO i=1-OLx+1,sNx+OLx-1
           IF ( (KE(i,j)+KE(i-1,j)).GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))*dragFac
+     &      + (
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+     &          bottomDragCoeffW(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
+#endif
+     &          )*SQRT(KE(i,j)+KE(i-1,j))*dragFac
           ENDIF
          ENDDO
         ENDDO
@@ -152,7 +161,13 @@ C-    calculate locally velocity norm @ U.pt (local U & 4 V averaged)
      &       )*recip_hFacW(i,j,k,bi,bj)*0.25 _d 0
           IF ( uSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(uSq)*dragFac
+     &      + (
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+     &          bottomDragCoeffW(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
+#endif
+     &          )*SQRT(uSq)*dragFac
           ENDIF
          ENDDO
         ENDDO
@@ -174,7 +189,13 @@ C-    same as above but using wet-point method to average 4 V
           ENDIF
           IF ( uSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(uSq)*dragFac
+     &      + (
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+     &          bottomDragCoeffW(i,j,bi,bj)
+#else
+     &          bottomDragQuadratic
+#endif
+     &          )*SQRT(uSq)*dragFac
           ENDIF
          ENDDO
         ENDDO
