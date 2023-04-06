@@ -1258,13 +1258,8 @@ c alternative pressure dependence from Ingle (1975)
      &                 + (-0.00588d0 + 0.0001845d0*t)*zdum*zdum)
      &            / (188.93d0*(t + 273.15d0))
 
-#ifndef ALLOW_TAPENADE
-           Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10**(xvalue)
-           Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10**(xvalue)
-#else
            Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10.0**(xvalue)
            Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10.0**(xvalue)
-#endif
 
 C------------------------------------------------------------------------
          else
