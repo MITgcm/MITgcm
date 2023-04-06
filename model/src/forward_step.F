@@ -255,7 +255,7 @@ C     == Global variables ==
 # include "LONGSTEP.h"
 #endif
 
-#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
+#ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
 # include "FFIELDS.h"
 # include "SURFACE.h"

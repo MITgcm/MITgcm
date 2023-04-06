@@ -107,7 +107,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
-#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
+#ifdef ALLOW_AUTODIFF
 # include "GRID.h"
 # include "FFIELDS.h"
 #endif

@@ -68,16 +68,13 @@ C     == Global variables ==
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
 #  include "EXF_CONSTANTS.h"
+#  ifdef ALLOW_TAPENADE
+#   include "EXF_PARAM.h"
+#   include "EXF_INTERP_SIZE.h"
+#   include "EXF_INTERP_PARAM.h"
+#  endif
 # endif
 #endif /* ALLOW_AUTODIFF */
-
-#ifdef ALLOW_TAPENADE
-# ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-# include "EXF_INTERP_SIZE.h"
-# include "EXF_INTERP_PARAM.h"
-# endif
-#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread

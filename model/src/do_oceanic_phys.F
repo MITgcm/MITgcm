@@ -147,7 +147,7 @@ C     == Global variables ===
 # include "OFFLINE_SWITCH.h"
 #endif
 
-#if (defined ALLOW_AUTODIFF || defined ALLOW_TAPENADE)
+#ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
@@ -185,7 +185,7 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
-#endif /* ALLOW_AUTODIFF or ALLOW_TAPENADE */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_KPP
