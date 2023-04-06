@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - fix record number (mostly in ctrl_map_ini_gentim2d.F) in case of restart,
+    using corresponding xx_gentim2d_startdate1/2 as specified from data.ctrl;
+    this finalizes (+ fix) changes made in PR #260 and #380;
+  - also add more debug print (+new CPP option ALLOW_CTRL_DEBUG);
+  - improve generic-control documentation in Chap.10 (State Estimation).
 o pkg/mom_common:
   - new expression for quadratic drag coefficient, function of cell thickness &
     roughness length (logarithmic law of the wall); for now, only for z-Coords.
