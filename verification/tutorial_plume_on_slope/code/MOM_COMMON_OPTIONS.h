@@ -24,7 +24,7 @@ C allow full 3D specification of horizontal Biharmonic Viscosity
 C Compute bottom drag coefficents, following the logarithmic law of the wall,
 C as a function of grid cell thickness and roughness length
 C zRoughBot (order 0.01m), assuming a von Karman constant = 0.4.
-#undef ALLOW_BOTTOMDRAG_ROUGHNESS
+#define ALLOW_BOTTOMDRAG_ROUGHNESS
 
 #endif /* ALLOW_MOM_COMMON */
 #endif /* MOM_COMMON_OPTIONS_H */

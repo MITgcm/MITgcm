@@ -30,11 +30,18 @@ C     i,j,k,bi,bj  :: loop counter
       INTEGER i,j,k,bi,bj
       _RL recip_dt
       _RL twoThird
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+C     msgBuf :: Informational/error message buffer
+      INTEGER kLow
+      _RL hLoc
+      _RL recip_zRoughBot
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
       k = 1
       twoThird = 2. _d 0 / 3. _d 0
       recip_dt = 1. _d 0
-      IF ( deltaTmom.NE.0. ) recip_dt = 1. _d 0/deltaTmom
+      IF ( deltaTMom.NE.0. ) recip_dt = 1. _d 0/deltaTMom
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -155,6 +162,56 @@ C-     end bi,bj loops
          CALL EXCH_Z_3D_RL( viscA4Zfld, Nr, myThid )
       ENDIF
 #endif /* ALLOW_3D_VISCA4 */
+
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+C--   Compute bottom drag coefficents as a function of grid cell thickness
+C     and roughness length, assuming von Karman constant = 0.4
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          bottomDragCoeffW(i,j,bi,bj) = bottomDragQuadratic
+          bottomDragCoeffS(i,j,bi,bj) = bottomDragQuadratic
+         ENDDO
+        ENDDO
+        IF ( zRoughBot .GT. 0. _d 0 .AND. usingZCoords ) THEN
+         recip_zRoughBot = 1. _d 0 / zRoughBot
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
+           kLow = MIN( kLowC(i-1,j,bi,bj), kLowC(i,j,bi,bj)  )
+           IF ( kLow .GE. 1 ) THEN
+            hLoc = ( oneRL +
+     &           0.5*drF(kLow)*hFacW(i,j,kLow,bi,bj)*recip_zRoughBot )
+            hLoc = 0.4 _d 0/LOG(hLoc)
+            bottomDragCoeffW(i,j,bi,bj) = hLoc*hLoc
+           ELSE
+            bottomDragCoeffW(i,j,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           kLow = MIN( kLowC(i,j-1,bi,bj), kLowC(i,j,bi,bj)  )
+           IF ( kLow .GE. 1 ) THEN
+            hLoc = ( oneRL +
+     &           0.5*drF(kLow)*hFacS(i,j,kLow,bi,bj)*recip_zRoughBot )
+            hLoc = 0.4 _d 0/LOG(hLoc)
+            bottomDragCoeffS(i,j,bi,bj) = hLoc*hLoc
+           ELSE
+            bottomDragCoeffS(i,j,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ELSEIF ( zRoughBot .GT. 0. _d 0 ) THEN
+C-    Roughness dependent drag not yet coded for P-Coordinates
+         WRITE(msgBuf,'(2A)') 'MOM_INIT_FIXED: zRoughBot > 0.',
+     &                ' not yet implemented for P-Coordinate'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R MOM_INIT_FIXED'
+        ENDIF
+       ENDDO
+      ENDDO
+#endif /* ALLOW_BOTTOMDRAG_ROUGHNESS */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

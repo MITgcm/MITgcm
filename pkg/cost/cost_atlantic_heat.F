@@ -179,15 +179,12 @@ c
          end if
         end do
 
-
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
 #ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
         objf_atl(bi,bj) =
      &     sum*1.E-6
 #else
         objf_atl(bi,bj) =
      &     sum*HeatCapacity_Cp*rhoConst/petawatt
-#endif
 #endif
 
 c--   end of bi,bj loop

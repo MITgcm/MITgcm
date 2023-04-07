@@ -72,8 +72,7 @@ C     msgBuf      - Informational/error message buffer
       _BEGIN_MASTER(myThid)
 
 c ============ retired compile option checks
-
-        nRetired              =      0
+      nRetired = 0
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
            WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
@@ -122,6 +121,13 @@ c ============ retired compile option checks
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
        nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+        WRITE(msgBuf,'(3A)') 'ECCO_CHECK:',
+     &      ' "ALLOW_BP_COST_CONTRIBUTION" has been removed',
+     &      ' since cost_bp has been retired'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
 #endif
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
            WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
@@ -222,14 +228,14 @@ c ============ retired compile option checks
 
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
-     &  '  retired compile-time options need to be undefined'
+     &  '  retired compile-time options need to be removed'
        CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 
 c ============ retired run-time parameter checks
-
-        nRetired              =      0
+      nRetired = 0
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       DO k=1,NGENCOST
@@ -273,6 +279,7 @@ c ============ retired run-time parameter checks
        WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
      &  '  retired run-time options were found in data.ecco'
        CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 

@@ -52,12 +52,12 @@ Basic operators:
   :math:`\overline{ \nabla } \Phi = \{ \delta_x \Phi , \delta_y \Phi \}`
 |
 | :math:`\overline{ \nabla } \cdot` = horizontal divergence operator :
-  :math:`\overline{ \nabla }\cdot \vec{\mathrm{{\bf f}}}  = 
-  \dfrac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x 
+  :math:`\overline{ \nabla }\cdot \vec{\mathrm{{\bf f}}}  =
+  \dfrac{1}{\cal A} \{ \delta_i \Delta y \, \mathrm{f}_x
                     + \delta_j \Delta x \, \mathrm{f}_y \}`
 |
 | :math:`\overline{\nabla}^2` = horizontal Laplacian operator :
-  :math:`\overline{\nabla}^2 \Phi = 
+  :math:`\overline{\nabla}^2 \Phi =
      \overline{ \nabla } \cdot \overline{ \nabla } \Phi`
 |
 
@@ -85,7 +85,7 @@ algorithm for each of the basic formulations which are:
 
 #. the semi-implicit pressure method for hydrostatic equations with a
    rigid-lid, variables co-located in time and with Adams-Bashforth
-   time-stepping; 
+   time-stepping;
 
 #. as 1 but with an implicit linear free-surface;
 
@@ -116,7 +116,7 @@ more exactly, including non-linear terms, and this is described in
 :numref:`nonlinear-freesurface`.
 
 .. _press_meth_rigid:
- 
+
 Pressure method with rigid-lid
 ==============================
 
@@ -187,7 +187,7 @@ yielding an elliptic equation for :math:`\eta^{n+1}`. Equations
 .. math:: \partial_x \Delta t g H \partial_x \eta^{n+1}
    + \partial_y \Delta t g H \partial_y \eta^{n+1}
    = \partial_x H \widehat{u^{*}}
-   + \partial_y H \widehat{v^{*}} 
+   + \partial_y H \widehat{v^{*}}
    :label: elliptic
 
 .. math:: u^{n+1} = u^{*} - \Delta t g \partial_x \eta^{n+1}
@@ -362,7 +362,7 @@ time discretization of the explicit terms. We have historically used the
 quasi-second order Adams-Bashforth method (AB-II) for all explicit terms in both
 the momentum and tracer equations. This is still the default mode of
 operation but it is now possible to use alternate schemes for tracers
-(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III). 
+(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III).
 In the previous sections, we summarized an explicit scheme as:
 
 .. math::
@@ -582,7 +582,7 @@ into the pressure method algorithm when all state variables are
 co-located in time. The algorithm can be represented by the sequential solution of the
 follow equations:
 
-.. math::   
+.. math::
    G_{\theta,S}^{n} = G_{\theta,S} ( u^n, \theta^n, S^n )
    :label: Gt-n-sync
 
@@ -911,10 +911,10 @@ following equations:
    u^{*} = u^{n} + \Delta t G_u^{(n+1/2)}
    :label: ustar-nh
 
-.. math::   
+.. math::
    v^{*} = v^{n} + \Delta t G_v^{(n+1/2)}
    :label: vstar-nh
- 
+
 .. math::
    w^{*} = w^{n} + \Delta t G_w^{(n+1/2)}
    :label: wstar-nh
@@ -1013,9 +1013,9 @@ substituting :eq:`discrete-time-u-nh`, :eq:`discrete-time-v-nh` and
 
 .. math::
    [  \nabla _h^2 + \partial_{rr} ] {\phi'_{\rm nh}}^{n+1}
-   = \frac{1}{\Delta t} 
+   = \frac{1}{\Delta t}
     \nabla _h \cdot \vec{\bf v}^{**} + \partial_r \dot{r}^*
-   :label: sub-u-v-w-in-cont 
+   :label: sub-u-v-w-in-cont
 
 where
 
@@ -1031,7 +1031,7 @@ Finally, the horizontal velocities at the new time level are found by:
 .. math::
    \vec{\bf v}^{n+1} = \vec{\bf v}^{**}
    - \epsilon_{\rm nh} \Delta t  \nabla _h {\phi'_{\rm nh}}^{n+1}
-   :label: v-new-time-lev 
+   :label: v-new-time-lev
 
 and the vertical velocity is found by integrating the continuity
 equation vertically. Note that, for the convenience of the restart
@@ -1090,7 +1090,7 @@ separable and differently.
    c-grid.rst
    horiz-grid.rst
    vert-grid.rst
-   
+
 Continuity and horizontal pressure gradient term
 =================================================
 
@@ -1227,7 +1227,7 @@ These terms are calculated in routines called from subroutine
     | :math:`G_u` : :varlink:`gU` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`G_v` : :varlink:`gV` ( :filelink:`DYNVARS.h <model/inc/DYNVARS.h>` )
     | :math:`G_w` : :varlink:`gW` ( :filelink:`NH_VARS.h <model/inc/NH_VARS.h>` )
- 
+
 
 Advection of momentum
 ---------------------
@@ -1245,7 +1245,7 @@ The advective operator is second order accurate in space:
    {\cal A}_s \Delta r_f h_s G_v^{\rm adv} =
      \delta_i \overline{ U }^j \overline{ v }^i
    + \delta_j \overline{ V }^j \overline{ v }^j
-   + \delta_k \overline{ W }^j \overline{ v }^k 
+   + \delta_k \overline{ W }^j \overline{ v }^k
    :label: discrete-momadvv
 
 .. math::
@@ -1373,16 +1373,16 @@ approximations these terms are discretized:
    {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ v }^j }^i
    :label: gu_metric
-  
+
 .. math::
    {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i }{a} \tan{\varphi} {\cal A}_c \Delta r_f h_c \overline{ u }^i }^j \\
    :label: gv_metric
-  
+
 .. math::
    G_w^{\rm metric} = 0
    :label: gw_metric
-  
+
 where :math:`a` is the radius of the planet (sphericity is assumed) or
 the radial distance of the particle (i.e. a function of height). It is
 easy to see that this discretization satisfies all the properties of the
@@ -1420,12 +1420,12 @@ required to conserve angular momentum:
    {\cal A}_w \Delta r_f h_w G_u^{\rm metric} =
    - \overline{ \frac{ \overline{u}^i \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c }^i
    :label: gu_metricnh
-  
+
 .. math::
    {\cal A}_s \Delta r_f h_s G_v^{\rm metric} =
    - \overline{ \frac{ \overline{v}^j \overline{w}^k }{a} {\cal A}_c \Delta r_f h_c}^j
    :label: gv_metricnh
-  
+
 .. math::
    {\cal A}_c \Delta r_c G_w^{\rm metric} =
      \overline{ \frac{ {\overline{u}^i}^2 + {\overline{v}^j}^2}{a} {\cal A}_c \Delta r_f h_c }^k
@@ -1437,11 +1437,11 @@ in the past, used a different discretization in the model which is:
 .. math::
 
    \begin{aligned}
-   G_u^{\rm metric} & = 
+   G_u^{\rm metric} & =
    - \frac{u}{a} \overline{w}^{ik} \\
-   G_v^{\rm metric} & = 
+   G_v^{\rm metric} & =
    - \frac{v}{a} \overline{w}^{jk} \\
-   G_w^{\rm metric} & = 
+   G_w^{\rm metric} & =
      \frac{1}{a} ( {\overline{u}^{ik}}^2 + {\overline{v}^{jk}}^2 )\end{aligned}
 
 .. admonition:: S/R  :filelink:`MOM_U_METRIC_NH <pkg/mom_common/mom_u_metric_nh.F>`, :filelink:`MOM_V_METRIC_NH <pkg/mom_common/mom_v_metric_nh.F>`
@@ -1607,7 +1607,7 @@ to-do’s.
 
 As for the lateral viscous terms, the free-slip condition is equivalent
 to simply setting the stress to zero on boundaries. The no-slip
-condition is implemented as an additional term acting on top of the
+condition is implemented as an additional term acting in conjunction with the
 interior and free-slip stresses. Bottom drag represents additional
 friction, in addition to that imposed by the no-slip condition at the
 bottom. The drag is cast as a stress expressed as a linear or quadratic
@@ -1632,12 +1632,45 @@ function of the mean flow in the layer above the topography:
    :label: tau23
 
 where these terms are only evaluated immediately above topography.
-:math:`r_b` (:varlink:`bottomDragLinear`) has units of :math:`m s^{-1}` and a
-typical value of the order 0.0002 :math:`m s^{-1}`. :math:`C_d`
+:math:`r_b` (:varlink:`bottomDragLinear`) has units of m s\ :sup:`-1` and a
+typical value of the order 0.0002 m s\ :sup:`-1`. :math:`C_d`
 (:varlink:`bottomDragQuadratic`) is dimensionless with typical values in the
 range 0.001–0.003.
 
-.. admonition:: S/R  :filelink:`MOM_U_BOTTOMDRAG <pkg/mom_common/mom_u_bottomdrag.F>`, :filelink:`MOM_V_BOTTOMDRAG <pkg/mom_common/mom_v_bottomdrag.F>`
+After defining :varlink:`ALLOW_BOTTOMDRAG_ROUGHNESS` in
+:filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`,
+the quadratic drag coefficient can be
+computed by the logarithmic law of the wall:
+
+.. math::
+   u(z) = \left(\frac{\tau}{\rho}\right)^{\frac{1}{2}}\frac{1}{0.4}
+   \ln{\frac{z+z_r}{z_r}}
+   :label: logLawWallu
+
+where :math:`z_r` is the roughness length (runtime parameter
+:varlink:`zRoughBot`).  Here, :math:`z` is the height from the seafloor and
+:math:`\tau` is the bottom stress (and stress in the log-layer).  The velocity
+is computed at the center of the bottom cell :math:`z_b=\frac{1}{2}\Delta r_f
+h_w`, so stress on the bottom cell is :math:`\tau / \rho = C_d u_b^2`, where
+:math:`u_b = u(z_b)` is the bottom cell velocity and:
+
+.. math::
+   C_d = \left(\frac{0.4}{
+   \ln{\frac{\frac{1}{2} \Delta r_f h_w + z_{r} }{z_{r}}}}\right)^2
+   :label: logLawWallcd
+
+This formulation assumes that the bottommost cell is sufficiently thin that it
+is in a constant-stress log layer. A value of :varlink:`zRoughBot` of 0.01 m
+yields a quadratic drag coefficient of 0.0022 for :math:`\Delta r_f =` 100 m,
+or a quadratic drag coefficient of 0.0041 for :math:`\Delta r_f =` 10 m.
+
+For :math:`z_r = 0`, :math:`C_d` defaults to the value of
+:varlink:`bottomDragQuadratic`.
+
+.. admonition:: S/R :filelink:`MOM_U_BOTTOMDRAG
+                <pkg/mom_common/mom_u_bottomdrag.F>`,
+                :filelink:`MOM_V_BOTTOMDRAG
+                <pkg/mom_common/mom_v_bottomdrag.F>`
   :class: note
 
     | :math:`\tau_{13}^{\rm bottom-drag} / \Delta r_f , \tau_{23}^{\rm bottom-drag} / \Delta r_f` : :varlink:`vF` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
@@ -1662,7 +1695,7 @@ Mom Diagnostics
 
 
     ------------------------------------------------------------------------
-    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c) 
+    <-Name->|Levs|<-parsing code->|<--  Units   -->|<- Tile (max=80c)
     ------------------------------------------------------------------------
     VISCAHZ | 15 |SZ      MR      |m^2/s           |Harmonic Visc Coefficient (m2/s) (Zeta Pt)
     VISCA4Z | 15 |SZ      MR      |m^4/s           |Biharmonic Visc Coefficient (m4/s) (Zeta Pt)
@@ -1748,7 +1781,7 @@ The non-hydrostatic vector invariant equations read:
    :label: vect_invar_nh
 
 which describe motions in any orthogonal curvilinear coordinate system.
-Here, :math:`B` is the Bernoulli function and :math:`\vec{\boldsymbol{\zeta}}= \nabla 
+Here, :math:`B` is the Bernoulli function and :math:`\vec{\boldsymbol{\zeta}}= \nabla
 \times \vec{\bf v}` is the vorticity vector. We can take advantage of the
 elegance of these equations when discretizing them and use the discrete
 definitions of the grad, curl and divergence operators to satisfy
@@ -1814,7 +1847,7 @@ Kinetic energy
 The kinetic energy, denoted :math:`\mathrm{KE}`, is defined:
 
 .. math::
-   \mathrm{KE} = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j 
+   \mathrm{KE} = \frac{1}{2} ( \overline{ u^2 }^i + \overline{ v^2 }^j
    + \epsilon_{\rm nh} \overline{ w^2 }^k )
    :label: KE_vecinv
 
@@ -2091,7 +2124,7 @@ lines). Tendencies are calculated at time levels :math:`n` and
 method:
 
 .. math::
-   G^{(n+1/2)} = 
+   G^{(n+1/2)} =
    (\tfrac{3}{2} + \epsilon) G^{(n)} - (\tfrac{1}{2} + \epsilon) G^{(n-1)}
    :label: g_nponehalf
 
@@ -2132,7 +2165,7 @@ that explicit diffusion and forcing use the forward method.
 Advection schemes
 =================
 
-.. toctree:: 
+.. toctree::
     adv-schemes.rst
 
 .. _shapiro_filter:
@@ -2164,14 +2197,14 @@ The three computational filter operators are :
    \begin{aligned}
    & \mathrm{S1c:}\hspace{2cm}
    [1 - 1/2 \frac{\Delta t}{\tau_{\rm Shap}}
-      \{ (\frac{1}{4}\delta_{ii})^n 
+      \{ (\frac{1}{4}\delta_{ii})^n
        + (\frac{1}{4}\delta_{jj})^n \} ]\\
    & \mathrm{S2c:}\hspace{2cm}
-   [1 - \frac{\Delta t}{\tau_{\rm Shap}} 
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}}
    \{ \frac{1}{8} (\delta_{ii} + \delta_{jj}) \}^n]\\
    & \mathrm{S4c:}\hspace{2cm}
    [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{ii})^n]
-   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{jj})^n]\end{aligned} 
+   [1 - \frac{\Delta t}{\tau_{\rm Shap}} (\frac{1}{4}\delta_{jj})^n]\end{aligned}
 
 In addition, the S2 operator can easily be extended to a physical space
 filter:
@@ -2194,7 +2227,7 @@ SHAP Diagnostics
 ::
 
     --------------------------------------------------------------
-    <-Name->|Levs|parsing code|<-Units->|<- Tile (max=80c) 
+    <-Name->|Levs|parsing code|<-Units->|<- Tile (max=80c)
     --------------------------------------------------------------
     SHAP_dT |  5 |SM      MR  |K/s      |Temperature Tendency due to Shapiro Filter
     SHAP_dS |  5 |SM      MR  |g/kg/s   |Specific Humidity Tendency due to Shapiro Filter
@@ -2528,7 +2561,7 @@ a contribution from quasigeostrophic vortex stretching (Bachman et al. 2017 :cit
 The viscosity is given by
 
 .. math::
-    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \left|  \nabla _{h}(f\mathbf{\hat{z}}) + 
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \left|  \nabla _{h}(f\mathbf{\hat{z}}) +
      \nabla _{h}( \nabla  \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}}  \nabla _{h} b \right|
     :label: bachman2017_eq39
 
@@ -2541,8 +2574,8 @@ However, the viscosity given by :eq:`bachman2017_eq39` does not constrain purely
 divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is added
 
 .. math::
-    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
-    \sqrt{\left| \nabla _{h}(f\mathbf{\hat{z}}) +  \nabla _{h}( \nabla  \times \mathbf{v}_{h*}) + 
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3}
+    \sqrt{\left| \nabla _{h}(f\mathbf{\hat{z}}) +  \nabla _{h}( \nabla  \times \mathbf{v}_{h*}) +
     \partial_{z} \frac{f}{N^{2}}  \nabla _{h} b\right|^{2} + |  \nabla  ( \nabla  \cdot \mathbf{v}_{h})|^{2}}
     :label: bachman2017_eq40
 
@@ -2748,7 +2781,7 @@ projection about a latitude :math:`\theta_0` and geopotential height
 .. math::
    {\rm Ro} \frac{D{\tilde v}}{Dt} +
    \frac{{\tilde u}\sin\theta}{\sin\theta_0} + M_{Ro}{\frac{\partial{\pi}}{\partial{y}}}
-   = -\frac{\mu{\rm Ro} \tan\theta({\tilde u}^2 + {\tilde v}^2)}{r/L} 
+   = -\frac{\mu{\rm Ro} \tan\theta({\tilde u}^2 + {\tilde v}^2)}{r/L}
    - \frac{{\rm Fr}^2M_{Ro} {\tilde v} w}{r/H}
    + \frac{{\rm Ro} {\bf \hat y}\cdot\nabla^2{\bf u}}{{\rm Re}}
    :label: gill_v
@@ -2775,30 +2808,30 @@ Where
    {\tilde u}=\frac{u^*}{V\mu},\ \ \  {\tilde v}=\frac{v^*}{V\mu}
 
 .. math::
-   f_0\equiv2\Omega\sin\theta_0,\ \ \  
-   %,\ \ \  \BFKDt\  \equiv \mu^2\left({\tilde u}\BFKpd x\  
-   %+{\tilde v} \BFKpd y\  \right)+\frac{\rm Fr^2M_{Ro}}{\rm Ro} w\BFKpd z\  
-   \frac{D}{Dt}  \equiv \mu^2\left({\tilde u}\frac{\partial}{\partial x}  
+   f_0\equiv2\Omega\sin\theta_0,\ \ \
+   %,\ \ \  \BFKDt\  \equiv \mu^2\left({\tilde u}\BFKpd x\
+   %+{\tilde v} \BFKpd y\  \right)+\frac{\rm Fr^2M_{Ro}}{\rm Ro} w\BFKpd z\
+   \frac{D}{Dt}  \equiv \mu^2\left({\tilde u}\frac{\partial}{\partial x}
    +{\tilde v} \frac{\partial}{\partial y}  \right)
    +\frac{\rm Fr^2M_{Ro}}{\rm Ro} w\frac{\partial}{\partial z}
 
 .. math::
-   x\equiv \frac{r}{L} \phi \cos \theta_0, \ \ \   
+   x\equiv \frac{r}{L} \phi \cos \theta_0, \ \ \
    y\equiv \frac{r}{L} \int_{\theta_0}^\theta
-   \frac{\cos \theta_0 {\,\rm d\theta}'}{\cos\theta'}, \ \ \   
+   \frac{\cos \theta_0 {\,\rm d\theta}'}{\cos\theta'}, \ \ \
    z\equiv \lambda\frac{r-r_0}{L}
 
 .. math:: t^*=t \frac{L}{V},\ \ \  b^*= b\frac{V f_0M_{Ro}}{\lambda}
 
 .. math::
-  \pi^* = \pi V f_0 LM_{Ro},\ \ \  
+  \pi^* = \pi V f_0 LM_{Ro},\ \ \
    w^* = w V \frac{{\rm Fr}^2 \lambda M_{Ro}}{\rm Ro}
 
 .. math:: {\rm Ro} \equiv \frac{V}{f_0 L},\ \ \  M_{Ro}\equiv \max[1,\rm Ro]
 
 .. math::
-   {\rm Fr} \equiv \frac{V}{N \lambda L}, \ \ \   
-   {\rm Re} \equiv \frac{VL}{\nu}, \ \ \   
+   {\rm Fr} \equiv \frac{V}{N \lambda L}, \ \ \
+   {\rm Re} \equiv \frac{VL}{\nu}, \ \ \
    {\rm Pr} \equiv \frac{\nu}{\kappa}
 
 Dimensional variables are denoted by an asterisk where necessary. If we
@@ -2809,7 +2842,7 @@ filter over a grid scale typical for ocean models:
 | 0.001m/s :math:`< V <` 1 m/s
 | :math:`f_0 <` 0.0001 s :sup:`-1`
 | 0.01 s :sup:`-1` :math:`< N <` 0.0001 s :sup:`-1`
-| 
+|
 
 these equations are very well approximated by
 
@@ -2829,11 +2862,11 @@ these equations are very well approximated by
 .. math::
    {\rm Fr}^2\lambda^2\frac{D{w}}{Dt} - b + {\frac{\partial{\pi}}{\partial{z}}}
    = \frac{\lambda\cot \theta_0 {\tilde u}}{M_{Ro}}
-   +\frac{{\rm Fr}^2\lambda^2\nabla^2w}{{\rm Re}} 
+   +\frac{{\rm Fr}^2\lambda^2\nabla^2w}{{\rm Re}}
    :label: gill_w_filt
 
 .. math::
-   \frac{D{b}}{Dt} + w = \frac{\nabla^2 b}{\Pr{\rm Re}} 
+   \frac{D{b}}{Dt} + w = \frac{\nabla^2 b}{\Pr{\rm Re}}
    :label: gill_b_filt
 
 
