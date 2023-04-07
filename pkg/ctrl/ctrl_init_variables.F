@@ -78,6 +78,10 @@ C     == Local variables
 c     == end of interface ==
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_INIT_VARIABLES',myThid)
+#endif
+
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -97,9 +101,15 @@ CEOP
 C--   Map the control variables onto the model state.
 C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL))
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_GENARR',myThid)
+# endif
       CALL CTRL_MAP_INI_GENARR( myThid )
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
+# ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CTRL_MAP_INI_GENTIM2D',myThid)
+# endif
       CALL CTRL_MAP_INI_GENTIM2D( myThid )
 #endif
 
@@ -134,6 +144,9 @@ C-    Needs to be called after few {PKG}_init_varia (e.g., PTRACERS_INIT_VARIA)
       ENDDO
 #endif
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_INIT_VARIABLES',myThid)
+#endif
 #endif /* ALLOW_CTRL */
 
       RETURN

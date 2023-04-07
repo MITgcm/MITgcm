@@ -67,6 +67,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
@@ -192,6 +195,9 @@ C$AD DO-NOT-DIFF
 C$AD END-DO-NOT-DIFF
 #endif
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR2D', myThid )
+#endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
@@ -262,6 +268,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
@@ -398,6 +407,9 @@ C$AD DO-NOT-DIFF
 C$AD END-DO-NOT-DIFF
 #endif
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR3D', myThid )
+#endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
 
