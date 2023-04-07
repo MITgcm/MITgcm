@@ -1,8 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_bpv4(
-     I                     myThid
-     &                   )
+     I                     myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_gencost_bpv4
@@ -33,57 +32,47 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myThid
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
-c     == local variables ==
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
       integer i,j
-      integer itlo,ithi
-      integer jtlo,jthi
       integer irec
       integer il
-
       logical doglobalread
       logical ladinit
-
       _RL locbpbar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpdat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locwbp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
       _RL bpdifmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdifanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdatmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdatanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpcount ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL junk
-
       character*(80) fname
       character*(80) fname4test
-
       _RL fac
       _RL offset
       _RL offset_sum
-
       integer k, kgen
       logical dosumsq
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
+#ifdef ALLOW_SMOOTH
+      integer k2_bp
+      logical exst
+#endif
+#ifdef ECCO_VERBOSE
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 c     == end of interface ==
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
 
       kgen=0
       do k=1,NGENCOST
@@ -93,6 +82,15 @@ c     == end of interface ==
       enddo
 
       if (kgen.GT.0) then
+
+#ifdef ALLOW_SMOOTH
+       k2_bp=0
+       if ( useSMOOTH) then
+          do k = 1,ngenpproc
+            if (gencost_posproc(k,kgen).eq.'smooth') k2_bp=k
+          enddo
+       endif
+#endif
 
        dosumsq=.TRUE.
        call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen),
@@ -105,8 +103,8 @@ c     == end of interface ==
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
        fac = 1. _d 2 / 9.81 _d 0
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              bpdifmean(i,j,bi,bj) = 0. _d 0
@@ -120,26 +118,25 @@ cgf convert phibot from m2/s2 to cm
              locbpmask(i,j,bi,bj) = 0. _d 0
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
        doglobalread = .false.
        ladinit      = .false.
 
 c-- map global variable to local variables
 
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              locwbp(i,j,bi,bj) = gencost_weight(i,j,bi,bj,kgen)
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
 #ifdef ALLOW_CTRL
-       write(fname(1:80),'(80a)') ' '
        il=ilnblnk( gencost_barfile(kgen) )
        write(fname(1:80),'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
@@ -149,6 +146,12 @@ c--   ============
 c--   Mean values.
 c--   ============
 
+#ifdef ECCO_VERBOSE
+       WRITE(msgBuf,'(A,1x,i5,1x,i10)')
+     &      ' bpv4, kgen, nmonsrec: ',kgen, nmonsrec
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
        do irec = 1, nmonsrec
 
 c--     Compute the mean over all bpdat records.
@@ -165,8 +168,19 @@ c--     Compute the mean over all bpdat records.
      &       gencost_startdate(1,kgen),
      &       locbpdat, locbpmask, irec, myThid )
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+#ifdef ECCO_VERBOSE
+        il=ilnblnk( gencost_datafile(kgen) )
+        WRITE(msgBuf,'(A,1x,A,1x,i10)') ' bpv4, datafile, irec: ',
+     &        gencost_datafile(kgen)(1:il), irec
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        write(fname4test(1:80),'(2a,i4.4)')
+     &       gencost_datafile(kgen)(1:il),'.',irec
+        call write_rec_xy_rl( fname4test, locbpdat, 1, 1, myThid)
+#endif
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -179,13 +193,13 @@ c--     Compute the mean over all bpdat records.
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
        enddo
 
-       do bj = jtlo,jthi
-        do bi = itlo,ithi
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           do j = 1,sNy
            do i = 1,sNx
              if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
@@ -196,8 +210,8 @@ c--     Compute the mean over all bpdat records.
              endif
            enddo
           enddo
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
 c--   ==========
 c--   Anomalies.
@@ -219,8 +233,8 @@ c--   Loop over records for the second time.
      &       locbpdat, locbpmask, irec, myThid )
 
 c--    Compute field of anomalies
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -236,15 +250,15 @@ c--    Compute field of anomalies
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
 c--    Remove global mean value
         offset     = 0. _d 0
         offset_sum = 0. _d 0
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
@@ -254,14 +268,14 @@ c--    Remove global mean value
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
         _GLOBAL_SUM_RL( offset     , myThid )
         _GLOBAL_SUM_RL( offset_sum , myThid )
 
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
               if ( (offset_sum.GT. 0. _d 0).AND.
@@ -272,8 +286,8 @@ c--    Remove global mean value
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
 c--    Smooth field of anomalies
         if (gencost_outputlevel(kgen).GT.0) then
@@ -286,14 +300,41 @@ c--    Smooth field of anomalies
         endif
 
 #ifdef ALLOW_SMOOTH
-        if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,3000,myThid)
+        IF ( k2_bp.GE.1 ) THEN
+C- Note: Unlike all other generic-cost smoothing, original code was using
+C  "smooth_basic2D" with hard-coded smoothing length (3.e+5) and time
+C  multiplicator (3000). Keep original call (now using run-time params setting)
+C  when the scaling file gencost_posproc_c is missing:
+         il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
+         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
+         IF ( il .gt. 1 .and. exst ) THEN
+           call smooth_hetero2d(bpdifanom,maskc,
+     &      gencost_posproc_c(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+         ELSE
+           call smooth_basic2D(bpdifanom,maskInC,
+     &      gencost_posproc_r(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+         ENDIF
+        ENDIF
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
-         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,3000,myThid)
+         IF ( k2_bp.GE.1 ) THEN
+C--   Skip second evaluation of "il" & "exst" (unchanged since first one above)
+c         il=ilnblnk( gencost_posproc_c(k2_bp,kgen) )
+c         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
+          IF ( il .gt. 1 .and. exst ) THEN
+           call smooth_hetero2d(bpdatanom,maskc,
+     &      gencost_posproc_c(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+          ELSE
+           call smooth_basic2D(bpdatanom,maskInC,
+     &      gencost_posproc_r(k2_bp,kgen),
+     &      gencost_posproc_i(k2_bp,kgen),myThid)
+          ENDIF
+         ENDIF
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
@@ -305,8 +346,8 @@ c--    Smooth field of anomalies
         endif
 
 c--    Compute cost function
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1,sNy
             do i = 1,sNx
 c-- map to global cost variables
@@ -321,8 +362,8 @@ c-- map to global cost variables
               endif
             enddo
            enddo
-         enddo
-        enddo
+         ENDDO
+        ENDDO
 
        enddo
 

@@ -66,7 +66,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_MCE`, #undef, enable use of Mohr-Coulomb yield curve with elliptical plastic potential
    :varlink:`SEAICE_ALLOW_TD`, #undef, enable use of teardrop and parabolic Lens yield curves with normal flow rules
    :varlink:`SEAICE_LSR_ZEBRA`, #undef, use a coloring method for LSR solver
-   :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
+   :varlink:`SEAICE_ALLOW_FREEDRIFT`, #undef, enable solve approximate sea ice momentum equation and bypass solving for sea ice internal stress
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
    :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
@@ -77,7 +77,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`ALLOW_SITRACER`, #undef, enable sea ice tracer package
    :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean
    :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities
-   :varlink:`SEAICE_USE_GROWTH_ADX`, #undef, enable use of adjointable but more simplified sea ice thermodynamics model in :filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` instead of :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
+   :varlink:`SEAICE_USE_GROWTH_ADX`, #undef, use of adjointable but more simplified sea ice thermodynamics model in :filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` instead of :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
 
 .. _ssub_phys_pkg_seaice_runtime:
 
@@ -157,7 +157,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseFlooding`       | TRUE                         | use flood-freeze algorithm                                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SINegFac`                | 1.0                          | over/undershoot factor for sea ice advective term in forward/adjoint    |
+  | :varlink:`SINegFac`                | 1.0                          | over/undershoot factor for seaice advective term in forward/adjoint     |
+  |                                    |                              | (SEAICE_USE_GROWTH_ADX only)                                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_no_slip`          | FALSE                        | use no-slip boundary conditions instead of free-slip                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+

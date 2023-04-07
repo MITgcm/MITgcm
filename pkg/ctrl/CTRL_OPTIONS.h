@@ -49,7 +49,7 @@ C   Allows for Vertical Diffusivity controls
 C   Allows bathymetry as a control vector
 C   Note: keep this Option separated from generic control since this control
 C     involves many new dependencies that we would like to avoid in general.
-#define ALLOW_DEPTH_CONTROL
+#undef ALLOW_DEPTH_CONTROL
 #ifdef ALLOW_DEPTH_CONTROL
 C   Only relevant within DEPTH_CONTROL code:
 # define USE_SMOOTH_MIN
@@ -58,9 +58,9 @@ C   Only relevant within DEPTH_CONTROL code:
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
 # undef ALLOW_UVEL0_CONTROL
 # undef ALLOW_VVEL0_CONTROL
 # undef CTRL_SET_OLD_MAXCVARS_30
@@ -103,8 +103,11 @@ C  is inconsistent with the Weaver and Courtier, 2001 algorithm, and
 C  should probably not be used. The corresponding 3D flag applied only
 C  to deprecated code that is now removed. At some point we will remove
 C  this flag and associated code as well.
-C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
+C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of Smooth_Correl2D)
 #undef ALLOW_SMOOTH_CTRL2D
+
+C  o Print more debug info to STDOUT
+#undef ALLOW_CTRL_DEBUG
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

@@ -67,6 +67,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
@@ -184,6 +187,9 @@ C avoid param out of [boundsVec(1) boundsVec(4)]
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
      &                      fld, 1, optimcycle, myThid )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR2D', myThid )
+#endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
@@ -254,6 +260,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
@@ -384,6 +393,9 @@ C  xx_uvel and xx_vvel are read in.
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
      &                      fld, 1, optimcycle, myThid )
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR3D', myThid )
+#endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
 

@@ -506,6 +506,18 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
       ENDIF
 #endif /* ALLOW_SRCG */
 
+#ifndef ALLOW_BOTTOMDRAG_ROUGHNESS
+      IF (zRoughBot .GT. 0.) THEN
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: zRoughBot > 0.',
+     &  ' but bottom drag code for roughness length is not compiled'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Re-compile with',
+     &  ' #define ALLOW_BOTTOMDRAG_ROUGHNESS (MOM_COMMON_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_BOTTOMDRAG_ROUGHNESS */
+
       IF ( useNSACGSolver .AND. useSRCGSolver ) THEN
         WRITE(msgBuf,'(A,A)')
      &      'CONFIG_CHECK: both useNSACGSolver and ',

@@ -429,7 +429,7 @@ C NEW VARIABLE NAMES
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
           SIeprflx(I,J,bi,bj) = 0. _d 0
-          SIfldflx(I,J,bi,bj) = 0.0 _d 0
+          SIfldflx(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -1278,7 +1278,7 @@ c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
 
 C Heat flux term associated with EmPmR:
         IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
-          SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+         SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
      &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
         ELSE
          SIeprflx(I,J,bi,bj) = 0.0
