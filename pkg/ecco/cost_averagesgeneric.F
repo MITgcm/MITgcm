@@ -122,7 +122,6 @@ c--     Save snapshot at every time step
           enddo
         enddo
 c--     Save ...bar on file.
-        write(fname(1:128),'(a)') ' '
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
@@ -172,7 +171,6 @@ c--     Add the last value and devide by the number of accumulated records.
           enddo
         enddo
 c--     Save ...bar on file.
-        write(fname(1:128),'(a)') ' '
         il=ilnblnk( localbarfile )
         write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', eccoiter
@@ -213,4 +211,3 @@ c--     Accumulate the array holding the average.
 
       return
       end
-

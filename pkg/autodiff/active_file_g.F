@@ -418,7 +418,6 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_READ_1D_RL(
@@ -802,7 +801,6 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_WRITE_1D_RL(

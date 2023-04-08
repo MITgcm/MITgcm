@@ -106,7 +106,6 @@ c--               West mask for U
 
 #ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
-      write(fname,'(a)') ' '
       write(fname,'(a)') ymaskobcs
 
       do iobcs = 1,nobcs

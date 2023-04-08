@@ -355,7 +355,6 @@ c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-      write(fname,'(a)') ' '
       ilps=ilnblnk( gencost_barfile(igen_etaday) )
       write(fname,'(2a,i10.10)')
      &     gencost_barfile(igen_etaday)(1:ilps),'.',eccoiter

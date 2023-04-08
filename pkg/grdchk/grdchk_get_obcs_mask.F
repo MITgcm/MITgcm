@@ -64,7 +64,6 @@ c     == end of interface ==
 
       if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-      write(fname,'(a)') ' '
       write(fname,'(a)') 'maskobcsn'
 c
       do iobcs = 1,nobcs
@@ -87,7 +86,6 @@ c
 
       else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-      write(fname,'(a)') ' '
       write(fname,'(a)') 'maskobcss'
 c
       do iobcs = 1,nobcs
@@ -110,7 +108,6 @@ c
 
       else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-      write(fname,'(a)') ' '
       write(fname,'(a)') 'maskobcsw'
 c
       do iobcs = 1,nobcs
@@ -133,7 +130,6 @@ c
 
       else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-      write(fname,'(a)') ' '
       write(fname,'(a)') 'maskobcse'
 c
       do iobcs = 1,nobcs

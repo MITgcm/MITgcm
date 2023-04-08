@@ -157,7 +157,6 @@ C now remove the time-mean from the data
 c--
 
 #ifdef ALLOW_CTRL
-      write(fname,'(a)') ' '
       il=ilnblnk( gencost_barfile(kgen) )
       write(fname,'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
