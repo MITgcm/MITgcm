@@ -1,0 +1,84 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=60*1.,
+ sRef=60*35.,
+ viscA4=0.0E4,
+ viscAh=1.E-2,
+ viscAz=1.E-3,
+ bottomDragLinear=0.E-4,
+ no_slip_sides=.TRUE.,
+ no_slip_bottom=.FALSE.,
+# Instead of a constant bottom drag coefficient, compute coefficient
+# from logarithmic law of the wall and bottom roughness length.
+ zRoughBot = 0.01,
+# For this configuration (vertical grid spacing)
+# this value of zRoughBot corresponds to approximately
+# bottomDragQuadratic=5.E-2,
+ diffK4T=0.E4,
+ diffKhT=0.E-2,
+ diffKzT=0.E-3,
+ diffK4S=0.E4,
+ diffKhS=1.E-2,
+ diffKzS=1.E-5,
+ tempAdvScheme=33,
+ staggerTimeStep=.TRUE.,
+ f0=0.e-4,
+ beta=0.E-11,
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ hFacMin=0.05,
+ nonHydrostatic=.TRUE.,
+ readBinaryPrec=64,
+#- not safe to use globalFiles in multi-processors runs
+#globalFiles=.TRUE.,
+ useSingleCpuIO = .TRUE.,
+ plotLevel=0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=300,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=20,
+ cg3dTargetResidual=1.E-8,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=20,
+#nTimeSteps=8640,
+ deltaT=20.0,
+ abEps=0.01,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=6000.0,
+#taveFreq=864000.0,
+ monitorSelect=2,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delXfile='dx.bin',
+ dYspacing=200.,
+ delZ=60*3.33333333333333333333333,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='topog.slope',
+ hydrogThetaFile='T.init',
+ surfQnetFile   ='Qnet.forcing',
+#hydrogThetaFile='T.pickup',
+#uVelInitFile   ='U.pickup',
+#pSurfInitFile  ='Eta.pickup',
+ &
