@@ -77,6 +77,10 @@ C     == Local variables ==
       _RL e5d_prime(Nr)
       _RL y5d_prime(Nr)
       _RL y5d_update(Nr)
+#  ifdef ALLOW_AUTODIFF_TAMC
+C     kkey :: tape key, depends on i,j,k
+      INTEGER kkey
+#  endif
 # else
       _RL c5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL d5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -201,6 +205,10 @@ C-      end if k= .. ; end of k loop
       errCode = 0
 
 #ifdef SOLVE_DIAGONAL_KINNER
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ INIT loctape_solvepenta = COMMON, Nr*(sNy+2*OLy)*(sNx+2*OLx)
+#endif
 C--   Temporary array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
@@ -225,6 +233,12 @@ C--   Main loop
         DO k=1,Nr
 C--   forward sweep (starting from top)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          kkey = k + Nr*(i-1+OLx) + Nr*(sNx+2*OLx)*(j-1+OLy)
+CADJ STORE d5d_prime(k) = loctape_solvepenta, key = kkey
+CADJ STORE e5d_prime(k) = loctape_solvepenta, key = kkey
+CADJ STORE y5d_prime(k) = loctape_solvepenta, key = kkey
+#endif
           IF (k.EQ.1) THEN
 c just copy terms
            c5d_prime(k) = c5d(i,j,k)
@@ -242,6 +256,9 @@ c subtract one term
      &      -b5d(i,j,k)*y5d_prime(k-1)
           ELSE
 c subtract two terms
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE d5d_prime(k) = loctape_solvepenta, key = kkey
+#endif
            c5d_prime(k) = c5d(i,j,k)
      &      -a5d(i,j,k)*e5d_prime(k-2)
      &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*d5d_prime(k-1)
@@ -252,7 +269,7 @@ c subtract two terms
      &      -a5d(i,j,k)*y5d_prime(k-2)
      &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*y5d_prime(k-1)
           ENDIF
-
+x
 c normalization
           tmpVar = c5d_prime(k)
           IF ( tmpVar.NE.0. _d 0 ) THEN
