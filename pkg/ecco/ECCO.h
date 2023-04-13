@@ -122,11 +122,9 @@ C                 the current model integration.
       INTEGER ndaysrec
 
       COMMON /ECCO_R/
-     &                    m_eta, m_UE, m_VN,
-     &                    m_bp,
+     &                    m_eta, m_UE, m_VN, m_bp,
      &                    trVol, trHeat, trSalt,
-     &                    frame, eccoVol_0
-      _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
+     &                    eccoVol_0, frame
       _RL m_eta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_UE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL m_VN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -135,12 +133,13 @@ C                 the current model integration.
       _RL trHeat   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trSalt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
 
 #ifdef ALLOW_PSBAR_STERIC
       COMMON /ECCO_R2/
      &                    sterGloH,
      &                    VOLsumGlob_0, VOLsumGlob,
-     &                    RHOsumGlob_0, RHOsumGlob 
+     &                    RHOsumGlob_0, RHOsumGlob
       _RL sterGloH
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
 #endif
@@ -149,7 +148,7 @@ C                 the current model integration.
 #ifdef ALLOW_IB_CORR
       COMMON /ECCO_R3/
      &                    m_bp_nopabar,
-     &                    m_eta_dyn 
+     &                    m_eta_dyn
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_dyn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
