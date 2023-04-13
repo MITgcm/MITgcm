@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: ECCO_WRITE_PICKUP
 C     !INTERFACE:
       SUBROUTINE ECCO_WRITE_PICKUP( permPickup, suff,
-     I                               myTime, myIter, myThid )
+     I                              myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "ECCO.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     permPickup :: write a permanent pickup
 C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
 C     myTime  :: Current time in simulation
@@ -36,9 +35,7 @@ C     myThid  :: My Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_PSBAR_STERIC
-
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, ioUnit
@@ -46,16 +43,20 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       WRITE(fn,'(A,A10)') 'pickup_ecco.',suff
-      IF (fn .NE. ' ') THEN
+      IF ( fn .NE. ' ' ) THEN
         ioUnit = 0
         prec = precFloat64
 
         tmparr(1) = VOLsumGlob_0
         tmparr(2) = RHOsumGlob_0
+#ifdef ALLOW_MDSIO
         CALL MDS_WRITEVEC_LOC(
      I             fn, prec, ioUnit,
      I             'RL', 2, tmparr, dummyRS,
      I             0, 0, 1, myIter, myThid )
+#else
+        STOP 'ABNORMAL END: S/R ECCO_WRITE_PICKUP: Needs MDSIO pkg'
+#endif
       ENDIF
 
 #endif /*  ALLOW_PSBAR_STERIC  */
