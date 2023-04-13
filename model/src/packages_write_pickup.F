@@ -29,6 +29,8 @@ C       |-- OBCS_WRITE_PICKUP
 C       |
 C       |-- GGL90_WRITE_PICKUP
 C       |
+C       |-- GMREDI_WRITE_PICKUP
+C       |
 C       |-- BBL_WRITE_PICKUP
 C       |
 C       |-- CHEAPAML_WRITE_PICKUP
@@ -56,8 +58,6 @@ C       |-- FIZHI_WRITE_VEGTILES
 C       |-- FIZHI_WRITE_DATETIME
 C       |
 C       |-- DIAGNOSTICS_WRITE_PICKUP
-C       |
-C       |-- GMREDI_WRITE_PICKUP
 C       |
 C       |-- CPL_WRITE_PICKUP
 C       |
@@ -119,6 +119,13 @@ C     Write restart file for 2nd-Order moment (active) Tracers
      I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_GGL90 */
+
+#ifdef ALLOW_GMREDI
+      IF ( useGMRedi ) THEN
+        CALL GMREDI_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_BBL
       IF (useBBL) THEN
@@ -216,13 +223,6 @@ C     Write pickup file for diagnostics package
       IF (useDiagnostics) THEN
         CALL DIAGNOSTICS_WRITE_PICKUP( permPickup,
      I                         suffix, myTime, myIter, myThid )
-      ENDIF
-#endif
-
-#ifdef ALLOW_GMREDI
-      IF ( useGMRedi ) THEN
-        CALL GMREDI_WRITE_PICKUP( permPickup,
-     I                            suffix, myTime, myIter, myThid )
       ENDIF
 #endif
 
