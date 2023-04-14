@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix "sterGloH" output after a restart (issue related to Greatbatch
+    correction) by writing & reading (small) new "pickup_ecco" files.
 o pkg/ctrl:
   - fix record number (mostly in ctrl_map_ini_gentim2d.F) in case of restart,
     using corresponding xx_gentim2d_startdate1/2 as specified from data.ctrl;
