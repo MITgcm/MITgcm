@@ -33,16 +33,19 @@ C     == local variables ==
 C     == end of interface ==
 
 #ifdef ALLOW_PSBAR_STERIC
+# ifndef ALLOW_AUTODIFF
       _BEGIN_MASTER(myThid)
+# endif
       RHOsumGlob_0 = 0. _d 0
       VOLsumGlob_0 = 0. _d 0
+# ifndef ALLOW_AUTODIFF
       _END_MASTER(myThid)
-
+# endif
       IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
      &     .AND. pickupSuff .EQ. ' ') ) THEN
         CALL ECCO_READ_PICKUP ( nIter0, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_PSBAR_STERIC */
 
       CALL ECCO_PHYS( startTime, -1, myThid )
 
