@@ -73,6 +73,7 @@ C  gTracer           :: tendency array
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
+#ifdef GAD_ALLOW_TS_SOM_ADV
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
 C  i,j,k         :: loop indices
@@ -666,6 +667,7 @@ C--   End of k loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block
       ENDIF
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

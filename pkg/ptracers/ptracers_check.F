@@ -235,6 +235,33 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
        ENDIF
 #endif /* ndef GAD_SMOLARKIEWICZ_HACK */
+       IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+#ifdef  PTRACERS_ALLOW_DYN_STATE
+# ifndef GAD_ALLOW_TS_SOM_ADV
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
+     &    ' GAD_ALLOW_TS_SOM_ADV is not defined in GAD_OPTIONS.h.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+# endif
+#else
+        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
+     &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(3A)') 'PTRACERS_CHECK:',
+     &    ' PTRACERS_ALLOW_DYN_STATE is not defined',
+     &    ' in PTRACERS_OPTIONS.h.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+# ifndef GAD_ALLOW_TS_SOM_ADV
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
+     &    ' and GAD_ALLOW_TS_SOM_ADV is not defined in GAD_OPTIONS.h.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+# endif
+        errCount = errCount + 1
+#endif
+       ENDIF
       ENDDO
 
       IF ( errCount.GE.1 ) THEN
