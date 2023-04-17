@@ -383,8 +383,6 @@ C--   Reset control vector.
           IF ( useCentralDiff ) THEN
 C--   (C-2) repeat the proceedure for a negative perturbation:
             localEps = - ABS(grdchk_eps)
-          ELSE
-            localEps = 0.0
 
 C-- end of if useCentralDiff ...
           END IF
