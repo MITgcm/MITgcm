@@ -492,10 +492,10 @@ CADJ &  nchklev_1*nSx*nSy*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 CADJ INIT comlev1_lsr      = COMMON,        nchklev_1*MPSEUDOTIMESTEPS
 CADJ INIT comlev1_bibj_lsr = COMMON,nSx*nSy*nchklev_1*MPSEUDOTIMESTEPS
 #     endif
-#    endif
-#    ifdef SEAICE_ALLOW_EVP
+#     ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp      = COMMON,        nEVPstepMax*nchklev_1
 CADJ INIT comlev1_bibj_evp = COMMON,nSx*nSy*nEVPstepMax*nchklev_1
+#     endif
 #    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim = COMMON,nchklev_1*nSx*nSy*nitd
