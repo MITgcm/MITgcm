@@ -516,15 +516,22 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`so_box_biogeo <verification/so_box_biogeo>` - Open boundary Southern Ocean box around Drake
    Passage, using same model parameters and forcing as experiment
    :ref:`tutorial_global_oce_biogeo <sub_global_oce_biogeo>` from which initial conditions and open boundary
-   conditions have been extracted. Also contains additional setup using the SolveSAPHE algorithm
-   (Munhoven 2013 :cite:`munhoven:13`) to determine oceanic pH
-   (:filelink:`input.saphe <verification/so_box_biogeo/input.saphe>`).
+   conditions have been extracted. Also contains additional setups:
+
+   - using the SolveSAPHE algorithm (Munhoven 2013 :cite:`munhoven:13`) to determine oceanic pH (:filelink:`input.saphe <verification/so_box_biogeo/input.saphe>`)
+
+   - using the calcite-saturation code (with 3-D pH and silica input file) with the original pH solver (:filelink:`input.caSat0 <verification/so_box_biogeo/input.caSat0>`)
+
+   - using the calcite-saturation code with the Munhoven "FAST" solver (:filelink:`input.caSat3 <verification/so_box_biogeo/input.caSat3>`)
 
 #. :filelink:`solid-body.cs-32x32x1 <verification/solid-body.cs-32x32x1>` - Solid body rotation test for cube sphere
    grid.
 
 #. :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>` - Experiment as described in :numref:`sec_deep_convection`, also contains an additional setup
    using the Smagorinisky (1963) :cite:`smag:63` viscosity scheme (:filelink:`input.smag3d <verification/tutorial_deep_convection/input.smag3d>`).
+
+#. :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>` - Experiment as described in :numref:`tutorial_plume_on_slope`, also contains an additional setup
+   usng the logarithmic law of the wall to compute the bottom drag coefficient (:filelink:`input.roughBot <verification/tutorial_plume_on_slope/input.roughBot>`).
 
 #. :filelink:`vermix <verification/vermix>` - Simple test in a small domain (3 columns) for ocean
    vertical mixing schemes. The standard setup (:filelink:`input <verification/vermix/input>`) uses the :ref:`KPP scheme <sub_phys_pkg_kpp>`
