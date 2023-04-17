@@ -1,3 +1,33 @@
+Version 0.5, 2023-04-17
+- Add folder tests
+  o test_utils.py
+    > test_blanklist
+    > test_tilemap
+- Add module utils.py
+  o gen_blanklist computes blanklist
+  o hfac computes hfacc,W,S masks
+  o readbin reads bin files
+  o tilecmap plots tile distribution
+  o writebin writes bin files
+- Add module conversion.py
+  o pfromz converts metres to dbar
+- Add module density.py
+  o linear computes rho from linear
+  o poly3 computes rho from knusen formula
+  o ini_poly3 loads the coefficients for poly3
+  o jmd95 computes bulk from jmd95 polynomia
+  o bulkmodjmd95 computes bulk for  jmd95
+  o unesco computes rho from unesco polynomia
+  o bulkmodunesco computes bulk for unesco
+  o mdjwf computes rho from mdjwf polynomia
+  o teos10 computes rho from teos 48 polynomia
+- Edit modules:
+  o llc.py moved to the llc folder
+  o __init__.py llc is load as cs
+- Delete modules:
+  o mdjwf.py moved to density
+  o jmd95.py moved to density
+
 Version 0.1.2, 2021-01-11
 - Fix readstats for multiple fields in one file
 - Fix more deprecation and syntax warnings
