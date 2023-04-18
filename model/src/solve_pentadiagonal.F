@@ -65,6 +65,9 @@ C                            of A*Xp=Yp with subsequent call to this routine
       INTEGER errCode
       INTEGER bi, bj, myThid
 
+C/*   This flag combination is only false if INCLUDE_IMPLVERTADV_CODE is
+C     not defined while ALLOW_AUTODIFF is. */
+#if !(!defined INCLUDE_IMPLVERTADV_CODE && (defined ALLOW_AUTODIFF))
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
@@ -422,6 +425,8 @@ C-    k-loop
 #endif /* SOLVE_DIAGONAL_KINNER */
 
 #endif /* SOLVE_DIAGONAL_LOWMEMORY */
+
+#endif /* INCLUDE_IMPLVERTADV_CODE */
 
       RETURN
       END
