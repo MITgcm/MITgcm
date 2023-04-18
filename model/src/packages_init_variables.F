@@ -6,6 +6,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -522,6 +525,12 @@ C--   Initialise pkg/ecco (and related pkgs components)
 #  if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
 CADJ STORE uvel = tapelev_init, key = 1
 CADJ STORE vvel = tapelev_init, key = 1
+#  endif
+#  ifdef ALLOW_PSBAR_STERIC
+C     In some set-ups (e.g. lab_sea), this is necessary
+CADJ STORE etaN  = tapelev_init, key = 1
+CADJ STORE theta = tapelev_init, key = 1
+CADJ STORE salt  = tapelev_init, key = 1
 #  endif
 # endif
       IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )
