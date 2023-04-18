@@ -160,7 +160,7 @@ C--   start 1rst loop on strip number "ns"
 
       IF ( limiter.EQ.1 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sm_o,sm_v,sm_x,sm_xx,sm_xy,sm_xz,sm_y,sm_yy,sm_yz,sm_z,sm_zz
+CADJ STORE sm_o,sm_y,sm_yy,sm_xy,sm_yz
 CADJ &     = somtape_y, key = ns, kind = isbyte
 #endif
        DO j=jMinUpd(1)-1,jMaxUpd(1)+1
@@ -238,7 +238,7 @@ C--   end 1rst loop on strip number "ns"
 c     ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sm_o,sm_v,sm_x,sm_xx,sm_xy,sm_xz,sm_y,sm_yy,sm_yz,sm_z,sm_zz
+CADJ STORE sm_o,sm_v,sm_x,sm_y,sm_z,sm_xy,sm_yy,sm_yz
 CADJ &     = somtape_y, key = ns, kind = isbyte
 #endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
