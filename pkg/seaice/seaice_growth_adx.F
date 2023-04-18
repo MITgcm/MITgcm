@@ -200,7 +200,6 @@ C   used in budget
 
 CAB
       _RL d_HEFFbyFlood                (1:sNx,1:sNy)
-      _RL d_EnergybyFlood              (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
 C     to sea ice (Joules)
@@ -422,7 +421,6 @@ C NEW VARIABLE NAMES
           S_hsnow(I,J)   = 0.0 _d 0
 
           d_HEFFbyFlood(I,J) = 0.0 _d 0
-          d_EnergybyFlood(I,J) = 0.0 _d 0
 #ifdef ALLOW_SALT_PLUME
           IceGrowthRateInLeads            (I,J) = 0. _d 0
           leadPlumeFraction               (I,J) = 0. _d 0
@@ -1100,27 +1098,6 @@ c         THE EFFECTIVE SHORTWAVE HEATING RATE
          ENDDO
         ENDDO
 
-        IF(SEAICEuseFlooding) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* ALLOW_AUTODIFF_TAMC */
-C     convert snow to ice if submerged.
-         DO J=1,sNy
-          DO I=1,sNx
-           tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
-           d_HEFFbyFlood(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
-           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFlood(I,J)
-           HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
-     &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
-          ENDDO
-         ENDDO
-c     SEAICEuseFlooding
-        ENDIF
-
         DO J=1,sNy
          DO I=1,sNx
 
@@ -1145,10 +1122,6 @@ c     The energy required to melt or form the new ice volume
           EnergyInNewTotalIceVolume(I,J) =
      &         ActualNewTotalVolumeChange(I,J)*recip_QI
 c
-        IF(SEAICEuseFlooding) THEN
-          d_EnergybyFlood(I,J)=d_HEFFbyFlood(I,J)*recip_QI
-        ENDIF
-
 c     This is the net energy flux out of the ice+ocean system
 c     Remember -----
 c     F_ia_net : Under ice/snow surface freezing conditions,
@@ -1176,17 +1149,6 @@ c     change the ML temperature at all.
           ResidualEnergyOutOfOcean(I,J) =
      &             NetEnergyFluxOutOfOcean(I,J) -
      &             EnergyInNewTotalIceVolume(I,J)
-
-C Here we add d_EnergybyFlood directly into term for QNET
-C that goes to the ocean.  So, for diagnosing the portion
-C that is taken from ice, we need to make sure this heat is added
-C to SItflux, the term that is taken out of the ice+snow into QNET.
-C We also will diagnose the energy associated with d_EnergybyFlood
-C into SIfldflx
-        IF(SEAICEuseFlooding) THEN
-            ResidualEnergyOutOfOcean(I,J)=ResidualEnergyOutOfOcean(I,J)
-     &            +d_EnergybyFlood(I,J)
-        ENDIF
 
 C     NOW FORMULATE QNET
 C     THIS QNET DETERMINES THE TEMPERATURE CHANGE
@@ -1285,11 +1247,6 @@ C Heat flux term associated with EmPmR:
 CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L2275
         ENDIF
 
-        IF(SEAICEuseFlooding) THEN
-            SIfldflx(I,J,bi,bj) =
-     &            d_EnergybyFlood(I,J)*recip_deltaTtherm
-        ENDIF
-
           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &         - PRECIP(I,J,bi,bj)
@@ -1302,6 +1259,36 @@ CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L22
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C Treat flooding after calculations of QNET and before Sea Ice loading
+        IF(SEAICEuseFlooding) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     convert snow to ice if submerged.
+         DO J=1,sNy
+          DO I=1,sNx
+           tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
+           d_HEFFbyFlood(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
+           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFlood(I,J)
+           HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
+     &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
+
+C Calculate latent heat associated with ice growth from flooding.
+C Note this is purely for diagnostic purpose and is not required
+C for closing sea ice heat budget offline.
+           SIfldflx(I,J,bi,bj) = d_HEFFbyFlood(I,J)*recip_QI
+     &                                             *recip_deltaTtherm
+
+          ENDDO
+         ENDDO
+c     SEAICEuseFlooding
+        ENDIF
+
 
 C     Sea Ice Load on the sea surface.
 C     =================================
