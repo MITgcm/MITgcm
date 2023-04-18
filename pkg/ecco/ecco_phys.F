@@ -130,7 +130,9 @@ CEOP
       CALL GLOBAL_SUM_TILE_RL( VOLsumTile, VOLsumGlob_1, myThid )
       CALL GLOBAL_SUM_TILE_RL( RHOsumTile, RHOsumGlob_1, myThid )
 
+# ifndef ALLOW_AUTODIFF
       _BEGIN_MASTER(myThid)
+# endif
       VOLsumGlob = VOLsumGlob_1
       RHOsumGlob = RHOsumGlob_1/VOLsumGlob
 
@@ -144,8 +146,10 @@ CEOP
 c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
 c     CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 c    &                       SQUEEZE_RIGHT, myThid )
+# ifndef ALLOW_AUTODIFF
       _END_MASTER(myThid)
       _BARRIER
+# endif
 
 #endif /* ALLOW_PSBAR_STERIC */
 

@@ -876,9 +876,10 @@ runmodel()
 	      echo " Divided Adjoint Run: $adm_diva_nb" >> $RUNLOG
 	      eval "let $adm_diva_nb"
 	      if [ $add_DIVA_runs -ge 1 ] ; then
+		extraRuns=`expr $add_DIVA_runs - 1`
 		rm -f costf* divided.ctrl snapshot*
 		echo -n "(add_DIVA_runs=$add_DIVA_runs) ... "
-		for ii in `seq 1 $add_DIVA_runs` ; do
+		for ii in `seq 0 $extraRuns` ; do
 		  ( eval $COMMAND ) >> $RUNLOG 2>&1
 		  echo " additional DIVA run # $ii : done" >> $RUNLOG
 		  mv -f $OUTPUTFILE ${OUTPUTFILE}.diva_${ii}
