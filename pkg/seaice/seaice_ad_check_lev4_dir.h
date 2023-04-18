@@ -17,17 +17,19 @@ CADJ STORE ZETA              = tapelev4, key = ilev_4
 CADJ STORE ETA               = tapelev4, key = ilev_4
 CADJ STORE TICES             = tapelev4, key = ilev_4
 # ifdef SEAICE_CGRID
-CADJ STORE dwatn             = tapelev4, key = ilev_4
-#  ifdef SEAICE_ALLOW_BOTTOMDRAG
-CADJ STORE cbotc             = tapelev4, key = ilev_4
-#  endif /* SEAICE_ALLOW_BOTTOMDRAG */
 CADJ STORE stressDivergenceX = tapelev4, key = ilev_4
 CADJ STORE stressDivergenceY = tapelev4, key = ilev_4
-# ifdef SEAICE_ALLOW_EVP
+#  ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE dwatn             = tapelev4, key = ilev_4
+#   ifdef SEAICE_ALLOW_BOTTOMDRAG
+CADJ STORE cbotc             = tapelev4, key = ilev_4
+#   endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1     = tapelev4, key = ilev_4
 CADJ STORE seaice_sigma2     = tapelev4, key = ilev_4
 CADJ STORE seaice_sigma12    = tapelev4, key = ilev_4
-# endif /* SEAICE_ALLOW_EVP */
+#   endif /* SEAICE_ALLOW_EVP */
+#  endif /* SEAICE_ALLOW_DYNAMICS */
 # endif /* SEAICE_CGRID */
 # ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE HSALT             = tapelev4, key = ilev_4
