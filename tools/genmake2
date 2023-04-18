@@ -3339,10 +3339,8 @@ remove_comments:
 	sed -i.bak -f \$(TOOLSDIR)/remove_comments_sed \$(AD_FILES)
 	@-rm -f \$(AD_FILES:.$FS=.$FS.bak)
 adj_sed:
-	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_ad.$FS)
-	@-rm -f \$(AD_FILES:.$FS=_ad.$FS.bak)
-	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_F90FILES:.$FS90=_ad.$FS90)
-	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90.bak)
+	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_ad.$FS) \$(AD_F90FILES:.$FS90=_ad.$FS90)
+	@-rm -f \$(AD_FILES:.$FS=_ad.$FS.bak) \$(AD_F90FILES:.$FS90=_ad.$FS90.bak)
 ftl_sed:
 	sed -i.bak -f \$(TOOLSDIR)/adjoint_sed \$(AD_FILES:.$FS=_tl.$FS)
 	@-rm -f \$(AD_FILES:.$FS=_tl.$FS.bak)
@@ -3413,14 +3411,12 @@ ad_taf_output.$FS: \$(AD_FLOW_FILES) \$(AD_FILES) \$(AD_F90FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Adjoint version" -bAD_CONFIG_H -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@-rm -f ad_config.template
-	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES)
-	@\$(MAKE) -f \$(MAKEFILE) \$(F90_PP_SRC_FILES)
+	@\$(MAKE) -f \$(MAKEFILE) \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
 	@\$(MAKE) -f \$(MAKEFILE) \$(FLOWFILES)
-	cat \$(FLOWFILES) > all_flowfiles.$FS
 	@-rm -f \$(AD_FILES:.$FS=_ad.$FS) \$(AD_FILES:.$FS=_ad.o); echo ''
 	@-rm -f \$(AD_F90FILES:.$FS90=_ad.$FS90) \$(AD_F90FILES:.$FS90=_ad.o); echo ''
 	\$(MAKE) -f \$(MAKEFILE) remove_comments
-	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) all_flowfiles.$FS \$(AD_FILES) \$(AD_F90FILES)
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) -fixed \$(FLOWFILES) \$(AD_FILES) -free \$(AD_F90FILES)
 	\$(MAKE) -f \$(MAKEFILE) adj_sed
 	cat \$(AD_FILES:.$FS=_ad.$FS) > ad_taf_output.$FS
 
