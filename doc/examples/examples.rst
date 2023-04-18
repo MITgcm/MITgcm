@@ -335,11 +335,14 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`front_relax <verification/front_relax>` - Relaxation of an 2-D (:math:`y-z`) ocean thermal front (test of
    Gent and McWilliams scheme). Also contains additional setups:
 
+   - using the identical setup except with pressure as the vertical coordinate instead of height
+     (:filelink:`input.bvp <verification/front_relax/input.in_p>`)
+
    - using the boundary-value problem method (Ferrari et al. 2010 :cite:`ferrari:10`)
-     (:filelink:`input.bvp <verification/front_relax/input.bvp>`).
+     (:filelink:`input.bvp <verification/front_relax/input.bvp>`)
 
    - with mixed-layer eddy parameterization (Ferrari and McWilliams
-     2008 :cite:`ferrari:08`) (:filelink:`input.mxl <verification/front_relax/input.mxl>`).
+     2008 :cite:`ferrari:08`) (:filelink:`input.mxl <verification/front_relax/input.mxl>`)
 
    - with dry-cell at the top and a sloping bottom
      (:filelink:`input.top <verification/front_relax/input.top>`).
@@ -370,7 +373,9 @@ For many experiments, additional information is provided in a ``README`` file lo
    - using thermodynamic and dynamic (:filelink:`pkg/seaice`) sea ice with :filelink:`exf <pkg/exf>` package
      package (:filelink:`input.seaice <verification/global_ocean.cs32x15/input.seaice>`).
 
-   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>` package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
+   - using pressure as vertical coordinate, with :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`)
+     and dynamic and thermodynamic seaice (:filelink:`pkg/seaice`) package and :filelink:`exf <pkg/exf>`
+     package (:filelink:`input.in_p <verification/global_ocean.cs32x15/input.in_p>`)
 
 #. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Global ocean experiment on a lat-lon grid
    coupled to a zonally averaged atmospheric energy balance model. Similar to
