@@ -10,20 +10,14 @@ CADJ STORE vice  = tapelev4, key = ilev_4
 CADJ STORE AREA              = tapelev4, key = ilev_4
 CADJ STORE HEFF              = tapelev4, key = ilev_4
 CADJ STORE HSNOW             = tapelev4, key = ilev_4
-CADJ STORE RUNOFF            = tapelev4, key = ilev_4
 CADJ STORE UICE              = tapelev4, key = ilev_4
 CADJ STORE VICE              = tapelev4, key = ilev_4
-CADJ STORE ZETA              = tapelev4, key = ilev_4
-CADJ STORE ETA               = tapelev4, key = ilev_4
 CADJ STORE TICES             = tapelev4, key = ilev_4
 # ifdef SEAICE_CGRID
 CADJ STORE stressDivergenceX = tapelev4, key = ilev_4
 CADJ STORE stressDivergenceY = tapelev4, key = ilev_4
 #  ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE dwatn             = tapelev4, key = ilev_4
-#   ifdef SEAICE_ALLOW_BOTTOMDRAG
-CADJ STORE cbotc             = tapelev4, key = ilev_4
-#   endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1     = tapelev4, key = ilev_4
 CADJ STORE seaice_sigma2     = tapelev4, key = ilev_4
