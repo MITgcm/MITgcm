@@ -84,8 +84,10 @@ CADJ STORE rstarfacc,rstarfacs,rstarfacw
 CADJ &     = tapelev4, key = ilev_4
 CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = tapelev4, key = ilev_4
+#  if (defined ALLOW_CG2D_NSA || defined ALLOW_DEPTH_CONTROL)
 CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev4, key = ilev_4
+#  endif
 # endif
 
 #endif /* NONLIN_FRSURF */
@@ -176,6 +178,10 @@ CADJ STORE empmr = tapelev4, key = ilev_4
 #endif /* ALLOW_EBM */
 
 #ifdef ALLOW_COST
+C     Whether or not the following store directives are necessary
+C     depends heavily on the details of the cost function, so we stick
+C     to the strategy of inserting these store directives regardless of
+C     the "not necessary" warnings they produce.
 CADJ STORE cMeanTheta = tapelev4, key = ilev_4
 CADJ STORE cMeanUVel  = tapelev4, key = ilev_4
 CADJ STORE cMeanVVel  = tapelev4, key = ilev_4
