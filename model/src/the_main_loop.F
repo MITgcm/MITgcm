@@ -300,10 +300,6 @@ CADJ  INIT tapelvi3 = USER,'adi'
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
-# ifdef NONLIN_FRSURF
-CADJ STORE hFacC       = tapelev_init, key = 1
-CADJ STORE recip_hFacC = tapelev_init, key = 1
-# endif
 # ifdef ALLOW_SHELFICE
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
