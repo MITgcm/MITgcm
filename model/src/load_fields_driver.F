@@ -1,17 +1,5 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
-#ifdef ALLOW_COST
-# include "COST_OPTIONS.h"
-#endif
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
-#ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
@@ -50,26 +38,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-
-#ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_AUTODIFF_TAMC
-#  include "tamc.h"
-# endif
-# ifdef ALLOW_CTRL
-#  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "CTRL_GENARR.h"
-#  include "ctrl_dummy.h"
-# endif
-# ifdef ALLOW_COST
-#  include "cost.h"
-# endif
-# include "EOS.h"
-# ifdef ALLOW_EXF
-#  include "EXF_FIELDS.h"
-#  include "EXF_CONSTANTS.h"
-# endif
-#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread
@@ -125,11 +93,6 @@ C--   Initialise forcing arrays that may receive multiple contributions
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
       if (useCTRL) CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
-# if (defined ALLOW_AUTODIFF_TAMC && defined ALLOW_GENTIM2D_CONTROL)
-C     This store-directive avoids storing xx_gentim2d0/1 and subsequently
-C     calling this routine in the AD-sweep.
-CADJ STORE xx_gentim2d = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
 #endif
 
 #ifdef ALLOW_BULK_FORCE
@@ -173,13 +136,6 @@ C--   Call external CheapAML forcing package
         CALL TIMER_START('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
         CALL EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
         CALL TIMER_STOP ('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
-#ifdef NONLIN_FRSURF
-CADJ STORE SST    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE SSS    = comlev1, key = ikey_dynamics, kind = isbyte
-# ifdef SHORTWAVE_HEATING
-CADJ STORE Qsw    = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
-#endif
       ENDIF
 
 #ifdef ALLOW_GCHEM
