@@ -21,7 +21,7 @@ _typesuffixes = {'float32': 'f4',
                  }
 
 cmap_lm =  ListedColormap(["lightsteelblue"])
-                     
+
 def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
     """
     Computes blanklist for data.exch2
@@ -30,7 +30,7 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
     Parameters
     ----------
     depth      : 2D array_like
-                 depth [m] 
+                 depth [m]
     sNx        : x point in each tile
     sNy        : y point in each tile
     tilemap=True : output tile contourplot
@@ -40,25 +40,22 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
     -------
     blank         :empty tiles numbers
     fig(optional) :tile colormap
-    
-    Example
-    -------
+
+    Examples
+    --------
     >>> blank=gen_blanklist(bathy, 51, 51, tilemap=False)
     1,2,4..97
     >>> [blank,fig]=gen_blanklist(bathy, 51, 51, tilemap=True)
     1,2,4..97
-    
-    Test
-    ----
-    >>> test_blanklist(bathy, 51, 51, tilemap=False)
+    >>> test_blanklist()
     1,2,4..97
-    >>> test_blanklist(bathy, 51, 51, tilemap=True)
+    >>> test_blanklist()
     1,2,4..97
 
     """
-    
+
     assert depth.ndim==2,'check_stp: depth must be 2D'
-    
+
     [Ny,Nx]=depth.shape
     nPx = Nx//sNx
     nPy = Ny//sNy
@@ -72,13 +69,13 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
           blank.append(tile_order[n, m])
 
     if tilemap:
-      
+
       # plot ocean and blank tiles
       mland = np.copy(depth)
       mland[mland!=fill_value] = 1
-      mland[mland==fill_value] = np.nan 
-      
-      [cn_x, cn_y] = np.meshgrid(np.arange(sNx//2, Nx, sNx),                                 
+      mland[mland==fill_value] = np.nan
+
+      [cn_x, cn_y] = np.meshgrid(np.arange(sNx//2, Nx, sNx),
                                 np.arange(sNy//2, Ny, sNy))
       p0 = 0
       fig = plt.figure(1, figsize=(12, 12))
@@ -88,12 +85,12 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
       major_yticks = np.arange(0, Ny+sNy, sNy)
       for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
         if c==blank[p0]:
-         rect = patches.Rectangle((a-sNx//2, b-sNy//2), 
-                 sNx, sNy, linewidth=10,edgecolor='r', facecolor='none')    
+         rect = patches.Rectangle((a-sNx//2, b-sNy//2),
+                 sNx, sNy, linewidth=10,edgecolor='r', facecolor='none')
          ax.add_patch(rect)
          rect.set_clip_path(rect)
          p0+=1
-        ax.annotate(str(c), (a, b), color='black', 
+        ax.annotate(str(c), (a, b), color='black',
                    fontsize=12, ha='center', va='center')
         if p0==len(blank):p0=0
       ax.set_xticks(major_xticks)
@@ -102,18 +99,18 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
       ax.set_xlim([0,Nx])
       ax.set_ylim([0,Ny])
       ax.set_xlabel('x')
-      ax.set_ylabel('y')   
+      ax.set_ylabel('y')
 
       ax.grid()
-      
+
       return blank,fig
-      
+
     else:
-      
+
       return blank
-    
-    
-def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):    
+
+
+def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     """
     Computes hFacC,W,S
 
@@ -121,7 +118,7 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
     Parameters
     ----------
     depth      : 2D array_like
-                 depth [m]  
+                 depth [m]
     rF         : 1D array_like
                  depth at the f point
     hFacMin    : min fraction for
@@ -134,57 +131,57 @@ def hfac(depth,rF,hFacMin=0.3,hFacMinDr=50,htype='C'):
 
     Returns
     -------
-    hFacC,W,S     
-    
+    hFacC,W,S
+
     Example
     -------
-    >>>[hFacC]=hfac(depth,rF,0.3,50,'C')
-    >>>[hFacC,hFacS]=hfac(depth,rF,0.3,50,['C','S'])
-    
+    >>> [hFacC]=hfac(depth,rF,0.3,50,'C')
+    >>> [hFacC,hFacS]=hfac(depth,rF,0.3,50,['C','S'])
+
     Notes
     -----
-    
+
     The first row and column are filled with zeros
-    for the hFacS and hFacW, respectively. 
-    """  
+    for the hFacS and hFacW, respectively.
+    """
 
     assert depth.ndim==2,'check_stp: depth must be 2D'
     assert rF.ndim==1,'check_stp: rF must be 1D'
- 
+
     assert np.any(depth<0),'check_stp: depth does not have no negative values'
     assert np.all(rF<=0),'check_stp: rF must be negative'
-   
-    [Ny,Nx] = depth.shape    
+
+    [Ny,Nx] = depth.shape
     dRF = abs(np.diff(rF))
     Nr = dRF.size
-    
+
     recip_drF = 1/dRF
-    
+
     hFacC = np.zeros([Nr,Ny,Nx])
     hFacW = np.zeros([Nr,Ny,Nx])
     hFacS = np.zeros([Nr,Ny,Nx])
     for k in range(0,Nr):
       hFacMnSz = np.max([hFacMin, np.min([hFacMinDr*recip_drF[k],1])])
-      
-#     Calculate lopping factor hFacC : 
+
+#     Calculate lopping factor hFacC :
       hFac_loc = (rF[k]-depth)*recip_drF[k]
       hFac_loc = np.minimum(np.maximum(hFac_loc, 0 ) , 1)
-#     o Impose minimum fraction and/or size (dimensional)      
-      hFac_loc[hFac_loc < hFacMnSz/2]=np.nan 
+#     o Impose minimum fraction and/or size (dimensional)
+      hFac_loc[hFac_loc < hFacMnSz/2]=np.nan
       hFac_loc[depth >= 0]=np.nan
       hFac_loc = np.maximum(hFac_loc, hFacMnSz)
       hFac_loc[np.isnan(hFac_loc)]=0
       hFacC[k,:,:] = hFac_loc
       hFacW[k,:,1:Nx] = np.minimum(hFacC[k,:,1:Nx],hFacC[k,:,0:Nx-1])
       hFacS[k,1:Ny,:] = np.minimum(hFacC[k,1:Ny,:],hFacC[k,0:Ny-1,:])
-      
-    hfac_dic = {}  
-    hfac_dic['C'] = hFacC 
-    hfac_dic['S'] = hFacS 
-    hfac_dic['W'] = hFacW 
-     
-    return tuple(hfac_dic[i] for i in htype)  
-    
+
+    hfac_dic = {}
+    hfac_dic['C'] = hFacC
+    hfac_dic['S'] = hFacS
+    hfac_dic['W'] = hFacW
+
+    return tuple(hfac_dic[i] for i in htype)
+
 def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     """
     Read meta-data files as written by MITgcm.
@@ -193,8 +190,8 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     ----------
     fname : string
             name of file to read
-    dims  : dimension of the file 
-    machineformat : int endianness 
+    dims  : dimension of the file
+    machineformat : int endianness
                     ('b' or 'l', default 'b')
     astype :    dataprec : string
     precision of resulting file ('float32' or 'float64')
@@ -204,9 +201,9 @@ def readbin(fname, ndims, dataprec='float32', machineformat='b'):
     arr : array_like
           numpy array of the data read
 
-    Examples
-    --------
-    >>> arr=readbin('bathy.bin',[Y,X]) 
+    Example
+    -------
+    >>> arr=readbin('bathy.bin',[Y,X])
     """
     tp = _typeprefixes[machineformat]
     try:
@@ -227,102 +224,98 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
 
     Parameters
     ----------
-    arr        : 2D array_like                 
+    arr        : 2D array_like
     sNx        : x point in each tile
-    sNy        : y point in each tile             
+    sNy        : y point in each tile
     nPx        : Total Tiles in x dir
-    nPy        : Total Tiles in y dir 
+    nPy        : Total Tiles in y dir
     tilen      : plot a specific tile
                : default None
     sel_zoom   : zooming range
                : default 5
-    fill_value : default 0          
- 
-   
+    fill_value : default 0
+
+
     Returns
     -------
     figure     : colormap of tiles
                : distribution
 
-    
-    Example
-    -------
+    Examples
+    --------
     >>> [fig]=tilemap(bathy, 51, 51,)
     >>> [fig]=tilemap(bathy, 51, 51,58,5)
-    
-    Test
-    ----  
-    >>> test_tilemap(bathy, 51, 51,)
-    >>> test_tilemap(bathy, 51, 51,58,5)
+    >>> test_tilemap()
+    >>> test_tilemap()
 
     """
     #Check dimensions of arr
-    
+
     assert arr.ndim==2,'check_stp: array must be 2D'
-    
+
     [Ny,Nx]=arr.shape
-    
+
     nTx = Nx//sNx
     nTy = Ny//sNy
-    
+
     mland = np.copy(arr)
     mland[mland!=fill_value] = 1
     mland[mland==fill_value] = np.nan
     arr = arr*mland
-    
+
     tile_order = np.zeros([nTy, nTx], dtype=int)
-    
+
     for n in range(0, nTy):
       for m in range(0, nTx):
         tile_order[n, m] = int(n*nTx+m+1)
-          
-    [cn_x, cn_y] = np.meshgrid(np.arange(sNx//2, Nx, sNx),                                 
+
+    [cn_x, cn_y] = np.meshgrid(np.arange(sNx//2, Nx, sNx),
                                 np.arange(sNy//2, Ny, sNy))
-    
+
     major_xticks = np.arange(0, Nx+sNx, sNx)
     major_yticks = np.arange(0, Ny+sNy, sNy)
-    
-    
-    fig = plt.figure(1, figsize=(16, 16))  
+
+
+    fig = plt.figure(1, figsize=(16, 16))
     ax = fig.add_subplot(111)
     ax.pcolor(mland,cmap=cmap_lm)
 
     for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
-        ax.annotate(str(c), (a, b), color='black', 
+        ax.annotate(str(c), (a, b), color='black',
                    fontsize=16, ha='center', va='center')
-    
+
     if tilen!=None:
-      
-     [Tind]=np.argwhere(tile_order==tilen) 
-     
+
+     [Tind]=np.argwhere(tile_order==tilen)
+
      #Select position for the zoom inseting
-     if (Tind[0]>nTy/2): 
-       if(Tind[1]>nTx//2):locz=2; locm1=1; locm2=4; cbar_pos=-0.1  
-       else:locz=1; locm1=2; locm2=3; cbar_pos=1.05 
-     else: 
-       if(Tind[1]>nTx//2):locz=1; locm1=3; locm2=4; cbar_pos=1.05 
-       else:locz=2; locm1=3; locm2=4; cbar_pos=-0.1 
-       
+     if (Tind[0]>nTy/2):
+       if(Tind[1]>nTx//2):locz=2; locm1=1; locm2=4; cbar_pos=-0.1
+       else:locz=1; locm1=2; locm2=3; cbar_pos=1.05
+     else:
+       if(Tind[1]>nTx//2):locz=1; locm1=3; locm2=4; cbar_pos=1.05
+       else:locz=2; locm1=3; locm2=4; cbar_pos=-0.1
+
      #Select colorbar range for zoom
      Tix = Tind[1]*sNx;  Tiy = Tind[0]*sNy
      arrmin = np.nanmin(arr[Tiy:Tiy+sNy,Tix:Tix+sNx])
      arrmax = np.nanmax(arr[Tiy:Tiy+sNy,Tix:Tix+sNx])
-     
+
      ax2 = zoomed_inset_axes(ax, zoom=sel_zoom, loc=locz, borderpad=-11)
-     pc=ax2.pcolor(arr,vmin=arrmin,vmax=arrmax,cmap=plt.cm.jet) 
-     
+     pc=ax2.pcolor(arr,vmin=arrmin,vmax=arrmax,cmap=plt.cm.jet)
+
      ax2.set_xlim([major_xticks[Tind[1]],major_xticks[Tind[1]]+sNx])
      ax2.set_ylim([major_yticks[Tind[0]],major_xticks[Tind[0]]+sNy])
-     mark_inset(ax, ax2, loc1=locm1, loc2=locm2, fc="none", lw=3, ec='0')    
+     mark_inset(ax, ax2, loc1=locm1, loc2=locm2, fc="none", lw=3, ec='0')
      plt.xticks(visible=False)
      plt.yticks(visible=False)
      cax = inset_axes(ax2,
                       width="5%",
                       height="100%",
                       loc="lower left",
-                      bbox_to_anchor=(cbar_pos,0,1,1), 
+                      bbox_to_anchor=(cbar_pos,0,1,1),
                       bbox_transform=ax2.transAxes,
-                      borderpad=0,                  
+                      borderpad=0,
                       )
      cbar=plt.colorbar(pc,cax=cax, orientation='vertical')
      cbar.ax.tick_params(labelsize=18)
@@ -334,13 +327,13 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
     ax.set_xlim([0,Nx])
     ax.set_ylim([0,Ny])
     ax.set_xlabel('x')
-    ax.set_ylabel('y')   
+    ax.set_ylabel('y')
     ax.grid()
-                
-    return fig 
+
+    return fig
 
 
-  
+
 def writebin(fname, arr, dataprec='float32', machineformat='b'):
     '''Write an array to a bin format for MITgcm
 
@@ -353,11 +346,11 @@ def writebin(fname, arr, dataprec='float32', machineformat='b'):
     dataprec : string
                precision of resulting file ('float32' or 'float64')
     machineformat : string
-                   'b' or 'l' for big or little endian         
+                   'b' or 'l' for big or little endian
 
-    Examples
-    --------
-    >>> writebin('bathy.bin',bathy)      
+    Example
+    -------
+    >>> writebin('bathy.bin',bathy)
     '''
 
     tp = _typeprefixes[machineformat]
@@ -367,4 +360,3 @@ def writebin(fname, arr, dataprec='float32', machineformat='b'):
         raise ValueError("dataprec must be 'float32' or 'float64'.")
 
     arr.astype(tp).tofile(fname)
-
