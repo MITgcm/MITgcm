@@ -59,7 +59,13 @@ density
 
 .. automodule:: MITgcmutils.density
     :members:
+    
+miscellaneous utilities
+-----------------------
 
+.. automodule:: MITgcmutils.utils
+    :members:
+    
 cs
 --
 
@@ -71,7 +77,13 @@ llc
 
 .. automodule:: MITgcmutils.llc
     :members:
+    
+tests
+-----
 
+.. automodule:: MITgcmutils.tests
+    :members:
+    
 .. _gluemncbig:
 
 gluemncbig

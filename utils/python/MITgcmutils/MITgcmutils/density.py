@@ -91,7 +91,7 @@ def linear(salt,theta,sref=30,tref=20,sbeta=7.4e-04,talpha=2.0e-04,rhonil=9.998e
       assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
         
         
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       sneg = np.where(s < 0 ); s[sneg] = np.nan    
 
@@ -155,7 +155,7 @@ def poly3(poly3,salt,theta):
       assert s.shape==t.shape,'check_stp: S & T must have same dimensions'
         
         
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       sneg = np.where(s < 0 ); s[sneg] = np.nan
 
@@ -301,7 +301,7 @@ def jmd95(salt,theta,p):
          assert xp==xs,'check_stp: p has wrong row dimensions'
          assert yp==ys,'check_stp: p has wrong column dimensions'
        
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       if s.size==1: s[s<0]=np.nan
       else: sneg = np.where(s < 0 ); s[sneg] = np.nan
@@ -427,7 +427,7 @@ def bulkmodjmd95(salt,theta,p):
          assert xp==xs,'check_stp: p has wrong row dimensions'
          assert yp==ys,'check_stp: p has wrong column dimensions'
        
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       if s.size==1: s[s<0]=np.nan
       else: sneg = np.where(s < 0 ); s[sneg] = np.nan     
@@ -562,7 +562,7 @@ def unesco(salt,theta,p):
          assert xp==xs,'check_stp: p has wrong row dimensions'
          assert yp==ys,'check_stp: p has wrong column dimensions'
        
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       if s.size==1: s[s<0]=np.nan
       else: sneg = np.where(s < 0 ); s[sneg] = np.nan     
@@ -686,7 +686,7 @@ def bulkmodunesco(salt,theta,p):
          assert xp==xs,'check_stp: p has wrong row dimensions'
          assert yp==ys,'check_stp: p has wrong column dimensions'
        
-    if not np.all(s>0):         
+    if not np.all(s>=0):         
       warnings.warn('found negative salinity values, reset them to NaN')
       if s.size==1: s[s<0]=np.nan
       else: sneg = np.where(s < 0 ); s[sneg] = np.nan    
