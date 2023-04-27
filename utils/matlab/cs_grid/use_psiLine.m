@@ -26,7 +26,7 @@ if krd > 0,
   eval(M);
   tmp=strcmp(fldList,'UVELMASS'); ju=find(tmp==1);
   tmp=strcmp(fldList,'VVELMASS'); jv=find(tmp==1);
-  if isempty(ju) || isempty(jv),
+  if isempty(ju) | isempty(jv),
     error(['At least 1 velocity Comp. missing from file: ',namFil]);
   end
   uu=squeeze(v4d(:,:,:,ju));

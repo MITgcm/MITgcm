@@ -21,7 +21,7 @@ if dims(1) == nc*nc*6+2,
  z3d=reshape(z3d,[nPts nr]);
  zzC=z3d(nPg+1:nPg+2,:);
  z3d=reshape(z3d(1:nPg,:),[nc nc 6 nr]);
-elseif dims(1) == 6*dims(2) || dims(1)*6 == dims(2),
+elseif dims(1) == 6*dims(2) | dims(1)*6 == dims(2),
  nc=min(dims(1),dims(2));
  if nDim == 2, nr=1; else nr=prod(dims(3:end)); end
  nPg=nc*nc*6; nPts=nPg+2;
