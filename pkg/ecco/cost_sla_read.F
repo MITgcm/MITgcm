@@ -37,13 +37,13 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) sla_file
       integer sla_startdate(4)
       _RL sla_period
+      logical use_mon
       _RL sla_intercept
       _RL sla_slope
       _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer irec
       integer myThid
-      logical use_mon
 
 c     == external functions ==
       integer  ilnblnk

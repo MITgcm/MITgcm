@@ -35,6 +35,7 @@ c     == global variables ==
 c     == routine arguments ==
       character*(MAX_LEN_FNAM) sla_file
       integer sla_startdate(4)
+      logical use_mon
 c     _RL sla_period
 c     _RL sla_intercept
 c     _RL sla_slope
@@ -42,7 +43,6 @@ c     _RL sla_slope
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer year, irec
       integer myThid
-      logical use_mon
 
 c     == external functions ==
       integer  ilnblnk

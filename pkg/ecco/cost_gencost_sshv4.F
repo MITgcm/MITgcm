@@ -277,24 +277,27 @@ c switch for excluding global mean
 C Check to determine use_mon and nrec_year. Check all igen_[tp,ers,gfo]
 C in case some of the data files are not defined.
       use_mon=.FALSE.
+      IF ( igen_tp.GT.0 .AND.
+     &    (gencost_avgperiod(igen_tp)(1:5) .EQ.'month' .OR.
+     &     gencost_avgperiod(igen_tp)(1:5) .EQ.'MONTH') )
+     &    use_mon = .TRUE.
+      IF ( igen_ers.GT.0 .AND.
+     &    (gencost_avgperiod(igen_ers)(1:5) .EQ.'month' .OR.
+     &     gencost_avgperiod(igen_ers)(1:5) .EQ.'MONTH') )
+     &    use_mon = .TRUE.
+      IF ( igen_gfo.GT.0 .AND.
+     &     (gencost_avgperiod(igen_gfo)(1:5).EQ.'month' .OR.
+     &      gencost_avgperiod(igen_gfo)(1:5).EQ.'MONTH' ) )
+     &    use_mon = .TRUE.
+
+c minimum number of observations to consider re-referenced MDT
       nrec_year=366
       nrec_total=ndaysrec
-      IF (igen_tp.GT.0 .or. igen_ers.GT.0 .or. igen_gfo.GT.0) THEN
-        IF( gencost_avgperiod(igen_tp)(1:5) .EQ.'month' .OR.
-     &      gencost_avgperiod(igen_tp)(1:5) .EQ.'MONTH' .OR.
-     &      gencost_avgperiod(igen_ers)(1:5).EQ.'month' .OR.
-     &      gencost_avgperiod(igen_ers)(1:5).EQ.'MONTH' .OR.
-     &      gencost_avgperiod(igen_gfo)(1:5).EQ.'month' .OR.
-     &      gencost_avgperiod(igen_gfo)(1:5).EQ.'MONTH' ) THEN
-          use_mon=.TRUE.
-          nrec_year=12
-          nrec_total=nmonsrec
-        ENDIF
-      ENDIF
-c minimum number of observations to consider re-referenced MDT
       IF (use_mon) THEN
         num0=3
         nrec_mdt_ref=12
+        nrec_year=12
+        nrec_total=nmonsrec
       else
         num0=100
         nrec_mdt_ref=365
