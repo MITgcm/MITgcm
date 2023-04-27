@@ -39,7 +39,7 @@ def readstats(fname):
             if m:
                 var,val = m.groups()
                 if var.startswith('Fields'):
-                    flds = val.split()
+                    for fld in val.split(): flds.append(fld)
 
         res = dict((fld,[]) for fld in flds)
         itrs = dict((fld,[]) for fld in flds)
@@ -79,4 +79,3 @@ def readstats(fname):
         totals = dict((fld,np.array(res[fld])[:,0]) for fld in flds)
         locals = dict((fld,np.array(res[fld])[:,1:]) for fld in flds)
         return locals,totals,itrs
-
