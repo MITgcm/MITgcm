@@ -1237,15 +1237,6 @@ c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
      &          + SnowAccOverIce(I,J) )*recip_QS)
      &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-C Heat flux term associated with EmPmR:
-        IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
-         SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
-     &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
-        ELSE
-         SIeprflx(I,J,bi,bj) = 0.0
-CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L2275
-        ENDIF
-
           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &         - PRECIP(I,J,bi,bj)
@@ -1256,6 +1247,19 @@ CAB I  HAVE NOT FIGURED  OUT the QNET for this, should not matter 01/14/2021 L22
 
          ENDDO
         ENDDO
+
+        IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+C Heat flux term associated with EmPmR:
+           SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+     &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
+
+          ENDDO
+         ENDDO
+c       ELSE
+CAB I  HAVE NOT FIGURED  OUT the QNET for the ELSE case, should not matter 01/14/2021 L2275
+        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
