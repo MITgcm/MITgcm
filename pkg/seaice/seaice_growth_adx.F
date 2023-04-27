@@ -197,7 +197,6 @@ CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
       _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIhsnwNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 CAB
       _RL d_HEFFbyFlood                (1:sNx,1:sNy)
 
@@ -1222,10 +1221,10 @@ c    weighted
 CAB   Budget test , adding the energy stored in snow melt to qnet
 C     Moved bunch of these to line 780
 
-catn Everything down here is diagnostic, and should reflect what we
-catn calculated above and passed out to the ocean instead of computed
-catn again.  Otherwise we can end up with mismatch when we modify above
-catn and not replicate down here.
+C Everything down here is diagnostic, and should reflect what we
+C calculated above and passed out to the ocean instead of computed
+C again.  Otherwise we can end up with mismatch when we modify above
+C and not replicate down here.
           SItflux(I,J,bi,bj) = 0.0 +
 c     &        (AREApreTH(I,J)
 c     &        *(F_ia_net(I,J)
@@ -1288,7 +1287,6 @@ C for closing sea ice heat budget offline.
          ENDDO
 c     SEAICEuseFlooding
         ENDIF
-
 
 C     Sea Ice Load on the sea surface.
 C     =================================
@@ -1459,31 +1457,21 @@ C close bi,bj loops
 C these diags need to be done outside of the bi,bj loop so that
 C we may do potential global mean adjustement to them consistently.
 CAB
-CAB        CALL DIAGNOSTICS_FILL(SItflux,
-
-C        CALL DIAGNOSTICS_FILL(SIatmQnt,
-C     &        'SIatmQnt',0,1,0,1,1,myThid)
-C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
+C        CALL DIAGNOSTICS_FILL(SIatmQnt,'SIatmQnt',0,1,0,1,1,myThid)
 CAB
-C       CALL DIAGNOSTICS_FILL(SIacSubl,
-C     &        'SIacSubl',0,1,3,bi,bj,myThid)
+C       CALL DIAGNOSTICS_FILL(SIacSubl,'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
-
        CALL DIAGNOSTICS_FILL(SIfldflx,'SIfldflx',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(SIeprflx,'SIeprflx',0,1,0,1,1,myThid)
 
+C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
        tmpscal1= - 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
      &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-C      WRITE(msgBuf,'(a,a,e24.17)') 'SINegFac ',
-C     &       ' = ', SINegFac
-C      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-C     &                      SQUEEZE_RIGHT, myThid )
-C
       _END_MASTER( myThid )
 
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */

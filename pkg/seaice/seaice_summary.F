@@ -477,6 +477,9 @@ C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,A,E24.17)') 'SINegFac ',' = ', SINegFac
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_USE_GROWTH_ADX */
 
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
