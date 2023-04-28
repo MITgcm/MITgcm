@@ -289,6 +289,7 @@ def jmd95(salt,theta,p):
        elif p.size>1 and s.ndim==1:
          assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
        else:
+        p=np.atleast_2d(p)    
         [ys,xs] = np.shape(s)  
         [yp,xp] = np.shape(p) 
         if yp==ys and xp==1:                    # P is row vector 
@@ -415,6 +416,7 @@ def bulkmodjmd95(salt,theta,p):
        elif p.size>1 and s.ndim==1:
          assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
        else:
+        p=np.atleast_2d(p)   
         [ys,xs] = np.shape(s)  
         [yp,xp] = np.shape(p) 
         if yp==ys and xp==1:                    # P is row vector 
@@ -550,6 +552,7 @@ def unesco(salt,theta,p):
        elif p.size>1 and s.ndim==1:
          assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
        else:
+        p=np.atleast_2d(p)    
         [ys,xs] = np.shape(s)  
         [yp,xp] = np.shape(p) 
         if yp==ys and xp==1:                    # P is row vector 
@@ -674,6 +677,7 @@ def bulkmodunesco(salt,theta,p):
        elif p.size>1 and s.ndim==1:
          assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
        else:
+        p=np.atleast_2d(p)    
         [ys,xs] = np.shape(s)  
         [yp,xp] = np.shape(p) 
         if yp==ys and xp==1:                    # P is row vector 
@@ -813,6 +817,7 @@ def mdjwf(salt,theta,p,epsln=0):
        elif p.size>1 and s.ndim==1:
          assert s.shape==p.shape,'check_stp: p has wrong row dimensions' 
        else:
+        p=np.atleast_2d(p)    
         [ys,xs] = np.shape(s)  
         [yp,xp] = np.shape(p) 
         if yp==ys and xp==1:                    # P is row vector 

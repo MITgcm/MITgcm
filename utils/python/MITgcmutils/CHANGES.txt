@@ -1,4 +1,4 @@
-Version 0.5, 2023-04-17
+Version 0.2, 2023-04-17
 - Add folder tests
   o test_utils.py
     > test_blanklist
