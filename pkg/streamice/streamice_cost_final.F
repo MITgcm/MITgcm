@@ -201,40 +201,46 @@ C--   Calculate cost function on tile of this instance
 
 
                tile_fc (bi,bj) = tile_fc (bi,bj) + 
-     &         ( 
      &         streamice_wgt_vel *
+     &         ( 
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
      &                U_obs(i,j,bi,bj))**2 +
      &         0.5 * (streamice_v_surf(i,j,bi,bj)-
-     &                V_obs(i,j,bi,bj))**2) * I_numcells
-     &         / (1.0+U_err(i,j,bi,bj))**2
+     &                V_obs(i,j,bi,bj))**2
+     &         ) * I_numcells
+     &         / (1.0+U_err(i,j,bi,bj)**2)
 
                cost_misfit (bi,bj) = cost_misfit (bi,bj) + 
-     &         (
      &         streamice_wgt_vel *
+     &         (
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
      &                U_obs(i,j,bi,bj))**2 +
      &         0.5 * (streamice_v_surf(i,j,bi,bj)-
-     &                V_obs(i,j,bi,bj))**2) * I_numcells
-     &         / (1.0+U_err(i,j,bi,bj))**2
+     &                V_obs(i,j,bi,bj))**2
+     &         ) * I_numcells
+     &         / (1.0+U_err(i,j,bi,bj)**2)
 
                tile_fc (bi,bj) = tile_fc (bi,bj) + 
-     &         ( 
      &         streamice_wgt_vel_norm *
+     &         ( 
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
      &                U_obs(i,j,bi,bj))**2 +
      &         0.5 * (streamice_v_surf(i,j,bi,bj)-
-     &                V_obs(i,j,bi,bj))**2) * I_numcells
-     &         / (1.0+U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
+     &                V_obs(i,j,bi,bj))**2
+     &         ) * I_numcells
+     &         / (U_err(i,j,bi,bj)**2+
+     &            U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
 
                cost_misfit_norm (bi,bj) = cost_misfit_norm (bi,bj) + 
-     &         (
      &         streamice_wgt_vel_norm *
+     &         (
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
      &                U_obs(i,j,bi,bj))**2 +
      &         0.5 * (streamice_v_surf(i,j,bi,bj)-
-     &                V_obs(i,j,bi,bj))**2) * I_numcells
-     &         / (1.0+U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
+     &                V_obs(i,j,bi,bj))**2
+     &         ) * I_numcells
+     &         / (U_err(i,j,bi,bj)**2+
+     &            U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
 
               ENDIF
              endif
