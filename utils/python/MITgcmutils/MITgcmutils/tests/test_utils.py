@@ -7,12 +7,12 @@ Created on Thu Apr 13 08:34:30 2023
 import MITgcmutils as mit
 import os
 
-files_path=os.path.dirname(mit.tests.__file__)
+files_path=os.path.dirname(mit.__file__)
 
 def test_blanklist():
     """Test blanklist generator
     """
-    bathy=mit.readbin(files_path+'/bathy_test.bin', [510,510])
+    bathy=mit.readbin(files_path+'/tests/bathy_test.bin', [510,510])
 
     # Test
 
@@ -31,7 +31,7 @@ def test_blanklist():
 def test_tilemap():
     """Test tilemap plot distribution
     """
-    bathy=mit.readbin(files_path+'/bathy_test.bin', [510,510])
+    bathy=mit.readbin(files_path+'/tests/bathy_test.bin', [510,510])
 
     # Test
 
