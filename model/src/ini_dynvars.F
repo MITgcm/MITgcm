@@ -1,5 +1,8 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -88,6 +91,9 @@ C-      3D arrays
            totPhiHyd(i,j,k,bi,bj)    = 0. _d 0
            rhoInSitu(i,j,k,bi,bj)    = 0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
+           sigmaRfield(i,j,k,bi,bj)  = 0. _d 0
+#endif
 #ifdef ALLOW_SOLVE4_PS_AND_DRAG
            dU_psFacX(i,j,k,bi,bj)    = 0. _d 0
            dV_psFacY(i,j,k,bi,bj)    = 0. _d 0

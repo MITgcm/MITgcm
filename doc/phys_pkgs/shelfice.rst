@@ -1,3 +1,5 @@
+.. _sub_phys_pkg_shelfice:
+
 SHELFICE Package
 ----------------
 
