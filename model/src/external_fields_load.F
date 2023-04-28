@@ -40,9 +40,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_ICEPLUME
-#include "ICEPLUME.h"
-#endif /* ALLOW_ICEPLUME */
+c#ifdef ALLOW_ICEPLUME
+c#include "ICEPLUME.h"
+c#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -214,28 +214,28 @@ C-    Qnet is now (after c54) the net Heat Flux (including SW)
         ENDIF
 #endif
 
-# ifdef ALLOW_ICEPLUME
-      IF ( useICEPLUME ) THEN
-      IF ( runoffQsgfile .NE. ' ') THEN
-      CALL READ_REC_XY_RL(
-     &     runoffQsgFile,runoffQsg0,inTime0,myIter,myThid)
-      CALL READ_REC_XY_RL(
-     &     runoffQsgFile,runoffQsg1,inTime1,myIter,myThid)
-      ENDIF
-catn      IF ( runoffVelfile .NE. ' ') THEN
-catn      CALL READ_REC_XY_RL(
-catn     &     runoffVelFile,runoffVel0,inTime0,myIter,myThid)
-catn      CALL READ_REC_XY_RL(
-catn     &     runoffVelFile,runoffVel1,inTime1,myIter,myThid)
-catn      ENDIF
-catn      IF ( runoffRadFile .NE. ' ') THEN
-catn      CALL READ_REC_XY_RL(
-catn     &     runoffRadFile,runoffRad0,inTime0,myIter,myThid)
-catn      CALL READ_REC_XY_RL(
-catn     &     runoffRadFile,runoffRad1,inTime1,myIter,myThid)
-catn      ENDIF
-      ENDIF
-# endif /* ALLOW_ICEPLUME */
+c# ifdef ALLOW_ICEPLUME
+c      IF ( useICEPLUME ) THEN
+c      IF ( runoffQsgfile .NE. ' ') THEN
+c      CALL READ_REC_XY_RL(
+c     &     runoffQsgFile,runoffQsg0,inTime0,myIter,myThid)
+c      CALL READ_REC_XY_RL(
+c     &     runoffQsgFile,runoffQsg1,inTime1,myIter,myThid)
+c      ENDIF
+ccatn      IF ( runoffVelfile .NE. ' ') THEN
+ccatn      CALL READ_REC_XY_RL(
+ccatn     &     runoffVelFile,runoffVel0,inTime0,myIter,myThid)
+ccatn      CALL READ_REC_XY_RL(
+ccatn     &     runoffVelFile,runoffVel1,inTime1,myIter,myThid)
+ccatn      ENDIF
+ccatn      IF ( runoffRadFile .NE. ' ') THEN
+ccatn      CALL READ_REC_XY_RL(
+ccatn     &     runoffRadFile,runoffRad0,inTime0,myIter,myThid)
+ccatn      CALL READ_REC_XY_RL(
+ccatn     &     runoffRadFile,runoffRad1,inTime1,myIter,myThid)
+ccatn      ENDIF
+c      ENDIF
+c# endif /* ALLOW_ICEPLUME */
 
 C-    thread synchronisation (barrier) is part of the EXCH S/R calls
         _EXCH_XY_RS(SST0  , myThid )
@@ -359,32 +359,32 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
           ENDDO
         ENDIF
 #endif
-#ifdef ALLOW_ICEPLUME
-        IF ( runoffQsgFile .NE. ' '  ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            runoffQsg(i,j,bi,bj) = bWght*runoffQsg0(i,j,bi,bj)
-     &                        + aWght*runoffQsg1(i,j,bi,bj)
-           ENDDO
-          ENDDO
-        ENDIF
-catn        IF ( runoffVelFile .NE. ' '  ) THEN
-catn          DO j=1-Oly,sNy+Oly
-catn           DO i=1-Olx,sNx+Olx
-catn            runoffVel(i,j,bi,bj) = bWght*runoffVel0(i,j,bi,bj)
-catn     &                        + aWght*runoffVel1(i,j,bi,bj)
-catn           ENDDO
-catn          ENDDO
-catn        ENDIF
-catn        IF ( runoffRadFile .NE. ' '  ) THEN
-catn          DO j=1-Oly,sNy+Oly
-catn           DO i=1-Olx,sNx+Olx
-catn            runoffRad(i,j,bi,bj) = bWght*runoffRad0(i,j,bi,bj)
-catn     &                        + aWght*runoffRad1(i,j,bi,bj)
-catn           ENDDO
-catn          ENDDO
-catn        ENDIF
-#endif
+c#ifdef ALLOW_ICEPLUME
+c        IF ( runoffQsgFile .NE. ' '  ) THEN
+c          DO j=1-Oly,sNy+Oly
+c           DO i=1-Olx,sNx+Olx
+c            runoffQsg(i,j,bi,bj) = bWght*runoffQsg0(i,j,bi,bj)
+c     &                        + aWght*runoffQsg1(i,j,bi,bj)
+c           ENDDO
+c          ENDDO
+c        ENDIF
+ccatn        IF ( runoffVelFile .NE. ' '  ) THEN
+ccatn          DO j=1-Oly,sNy+Oly
+ccatn           DO i=1-Olx,sNx+Olx
+ccatn            runoffVel(i,j,bi,bj) = bWght*runoffVel0(i,j,bi,bj)
+ccatn     &                        + aWght*runoffVel1(i,j,bi,bj)
+ccatn           ENDDO
+ccatn          ENDDO
+ccatn        ENDIF
+ccatn        IF ( runoffRadFile .NE. ' '  ) THEN
+ccatn          DO j=1-Oly,sNy+Oly
+ccatn           DO i=1-Olx,sNx+Olx
+ccatn            runoffRad(i,j,bi,bj) = bWght*runoffRad0(i,j,bi,bj)
+ccatn     &                        + aWght*runoffRad1(i,j,bi,bj)
+ccatn           ENDDO
+ccatn          ENDDO
+ccatn        ENDIF
+c#endif
        ENDDO
       ENDDO
 

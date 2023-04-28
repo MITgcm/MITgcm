@@ -40,9 +40,9 @@ C     == global variables ==
 #include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
 
-#ifdef ALLOW_ICEPLUME
-#include "ICEPLUME.h"
-#endif /* ALLOW_ICEPLUME */
+c#ifdef ALLOW_ICEPLUME
+c#include "ICEPLUME.h"
+c#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
@@ -453,27 +453,27 @@ C-    Runoff temperature
      I     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
 
-#ifdef ALLOW_ICEPLUME
-      IF (useICEPLUME) THEN
-C-    RunoffQsg subglacial discharge 
-catn the field in the file is provided in unit m3/s
-catn and the scaling factor will be 1. , then scaled later
-catn inside iceplume by rhoconst to convert to unit kg/s
-      CALL EXF_SET_FLD(
-     I     'runoffQsg', runoffQsgfile, runoffQsgmask,
-     I     runoffQsgStartTime, runoffQsgperiod, runoffQsgRepCycle,
-     I     runoffQsg_inscal,
-     I     runoffQsg_remov_intercept, runoffQsg_remov_slope,
-     U     runoffQsg, runoffQsg0, runoffQsg1,
-#ifdef USE_EXF_INTERPOLATION
-     I     runoffQsg_lon0, runoffQsg_lon_inc, 
-     I     runoffQsg_lat0, runoffQsg_lat_inc,
-     I     runoffQsg_nlon, runoffQsg_nlat, xC, yC, 
-     I     runoffQsg_interpMethod,
-#endif
-     I     myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_ICEPLUME */
+c#ifdef ALLOW_ICEPLUME
+c      IF (useICEPLUME) THEN
+cC-    RunoffQsg subglacial discharge 
+ccatn the field in the file is provided in unit m3/s
+ccatn and the scaling factor will be 1. , then scaled later
+ccatn inside iceplume by rhoconst to convert to unit kg/s
+c      CALL EXF_SET_FLD(
+c     I     'runoffQsg', runoffQsgfile, runoffQsgmask,
+c     I     runoffQsgStartTime, runoffQsgperiod, runoffQsgRepCycle,
+c     I     runoffQsg_inscal,
+c     I     runoffQsg_remov_intercept, runoffQsg_remov_slope,
+c     U     runoffQsg, runoffQsg0, runoffQsg1,
+c#ifdef USE_EXF_INTERPOLATION
+c     I     runoffQsg_lon0, runoffQsg_lon_inc, 
+c     I     runoffQsg_lat0, runoffQsg_lat_inc,
+c     I     runoffQsg_nlon, runoffQsg_nlat, xC, yC, 
+c     I     runoffQsg_interpMethod,
+c#endif
+c     I     myTime, myIter, myThid )
+c      ENDIF
+c#endif /* ALLOW_ICEPLUME */
 
 
 #ifdef ALLOW_SALTFLX

@@ -12,6 +12,9 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_ICEPLUME
+# include "ICEPLUME_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
@@ -30,6 +33,8 @@ C     !CALLING SEQUENCE:
 C     LOAD_FIELDS_DRIVER
 C       |
 C       |-- BULKF_FIELDS_LOAD
+C       |
+C       |-- ICEPLUME_FIELDS_LOAD
 C       |
 C       |-- EXF_GETFORCING
 C       |
@@ -70,6 +75,9 @@ C     == Global variables ==
 #  include "EXF_CONSTANTS.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_ICEPLUME
+# include "ICEPLUME.h"
+#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread
@@ -143,6 +151,16 @@ C--   Bulk-Formulae pkg: load all forcing fields at current time
         CALL TIMER_STOP ('BULKF_FIELDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
       ENDIF
 #endif /* ALLOW_BULK_FORCE */
+
+C--   Call external iceplume forcing package
+#ifdef ALLOW_ICEPLUME
+      IF (useICEPLUME) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ICEPLUME_FIELDS_LOAD',myThid)
+# endif
+        CALL ICEPLUME_FIELDS_LOAD( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_ICEPLUME */
 
 C--   Call external forcing package
 #ifdef ALLOW_EXF
