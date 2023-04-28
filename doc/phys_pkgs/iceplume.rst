@@ -47,9 +47,9 @@ CPP flags. These options are set in :filelink:`ICEPLUME_OPTIONS.h <pkg/iceplume/
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | CPP Flag Name                                 | Default | Description                                                                                                          |
    +===============================================+=========+======================================================================================================================+
-   | :varlink:`ICEPLUME_ALLOW_DETACHED_PLUME`      | #define | allow for detached plume                                                    |
+   | :varlink:`ICEPLUME_ALLOW_DETACHED_PLUME`      | #define | allow for detached plume                                                                                             |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ICEPLUME_ALLOW_SCHULZ22`            | #undef  | allow for Schulz et al. (2022) :cite:`schulz:22` melt parameterization      |
+   | :varlink:`ICEPLUME_ALLOW_SCHULZ22`            | #undef  | allow for Schulz et al. (2022) :cite:`schulz:22` melt parameterization                                               |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 .. _ssub_phys_pkg_iceplume_runtime:
@@ -59,8 +59,8 @@ Enabling the package
 
 Once it has been compiled, :filelink:`pkg/iceplume` is switched on/off at run-time by setting :varlink:`useICEPLUME` to ``.TRUE.`` in file ``data.pkg``.
 
-Runtime parmeters: general flags and parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Runtime parameters: general flags and parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Run-time parameters are set in file ``data.iceplume`` (read in :filelink:`iceplume_readparms.F <pkg/iceplume/iceplume_readparms.F>`).
 General :filelink:`pkg/iceplume` parameters are set under :varlink:`ICEPLUME_PARM01`, :varlink:`ICEPLUME_PARM02` and :varlink:`ICEPLUME_PARM03` as described in :numref:`tab_phys_pkg_iceplume_runtimeparms`.
@@ -73,111 +73,111 @@ General :filelink:`pkg/iceplume` parameters are set under :varlink:`ICEPLUME_PAR
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | Parameter                                 | Default                      | Description                                                                                                        |
    +===========================================+==============================+====================================================================================================================+
-   | :varlink:`runoffQsgfile`              |     :kbd:`' '`                    | Subglacial Runoff file  (unit kg/s )                                                                 |
+   | :varlink:`runoffQsgfile`                  |     :kbd:`' '`               | Subglacial Runoff file  (unit kg/s )                                                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`plumeMaskFile`    |     :kbd:`' '`                     | xy mask of iceplume types, containing integer values within range -6 to +6                                                            |
+   | :varlink:`plumeMaskFile`                  |     :kbd:`' '`               | xy mask of iceplume types, containing integer values within range -6 to +6                                         |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`plumeLengthFile`                         |     :kbd:`' '`                        | file of length of plume, unit meter                                                                                |
+   | :varlink:`plumeLengthFile`                |     :kbd:`' '`               | file of length of plume, unit meter                                                                                |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`T_sg_0`                   |     1.0e-3                    | subglacial runoff potential temperature, deg C
+   | :varlink:`T_sg_0`                         |     1.0e-3                   | subglacial runoff potential temperature, deg C                                                                     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`S_sg_0`                   |     1.0e-3                     | subglacial runoff salinity, g/kg                                                          |
+   | :varlink:`S_sg_0`                         |     1.0e-3                   | subglacial runoff salinity, g/kg                                                                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`E_0`               |     0.1                        | Entrainment parameter in plume model (unitless)                                                                        |
+   | :varlink:`E_0`                            |     0.1                      | Entrainment parameter in plume model (unitless)                                                                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`Angle_sg_0`               |     pi/2                     | radians                                   |
+   | :varlink:`Angle_sg_0`                     |     pi/2                     | radians                                                                                                            |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`wVel_sg_0`         |     1.0                     | Initial vertical velocity of subglacial discharge at point source, m/s                                               |
+   | :varlink:`wVel_sg_0`                      |     1.0                      | Initial vertical velocity of subglacial discharge at point source, m/s                                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`RTOL`          |     1.0e-5                     | Relative tolerance parameter for ODE solver                         |
+   | :varlink:`RTOL`                           |     1.0e-5                   | Relative tolerance parameter for ODE solver                                                                        |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ATOL`        |     1.0e-5                        | Absolute tolerance parameter for ODE solver                          |
+   | :varlink:`ATOL`                           |     1.0e-5                   | Absolute tolerance parameter for ODE solver                                                                        |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`iceTemp`           |     0.                     | Temperature of ice in contact with ocean (deg C)                                                 |
+   | :varlink:`iceTemp`                        |     0.                       | Temperature of ice in contact with ocean (deg C)                                                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`usePlumeDiagnostics`          |     .FALSE.                      | Option to write out iceplume properties through required pkg/diagnostics                                                                    |
+   | :varlink:`usePlumeDiagnostics`            |     .FALSE.                  | Option to write out iceplume properties through required pkg/diagnostics                                           |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`conserveMass`        |     .FALSE.                        | Adjust plume outflow to prevent net addition of mass due to runoff and melt; conserve mass in plume entrainment such that net vertical sum of entrained mass is zero if true.                                                                |
+   | :varlink:`conserveMass`                   |     .FALSE.                  | Adjust plume outflow to prevent net addition of mass due to runoff and melt if true.                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`c_i`        |     2009.e0                     | Heat capacity of ice (J kg-1 degC-1)                                        |
+   | :varlink:`c_i`                            |     2009.e0                  | Heat capacity of ice (J kg-1 degC-1)                                                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`lambda1`             |    -5.73e-2                         | freezing point slope (degC (g/kg)-1)                                |
+   | :varlink:`lambda1`                        |    -5.73e-2                  | freezing point slope (degC (g/kg)-1)                                                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`lambda2`|    8.32e-2                     | freezing point offset (degC)                                                |
+   | :varlink:`lambda2`                        |    8.32e-2                   | freezing point offset (degC)                                                                                       |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`lambda3`  |    7.61e-4                      | freezing point depth (degC, m-1)                                                                     |
+   | :varlink:`lambda3`                        |    7.61e-4                   | freezing point depth (degC, m-1)                                                                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`GamT`             |    2.2e-2                     | Thermal turbulent transfer coefficient (unitless)                                                    |
+   | :varlink:`GamT`                           |    2.2e-2                    | Thermal turbulent transfer coefficient (unitless)                                                                  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`GamS`             |    :kbd:`' '`                | thickness initialization file, in meters (rather than parameters in :varlink:`ICEPLUME_PARM03`)                   |
+   | :varlink:`GamS`                           |    :kbd:`' '`                | thickness initialization file, in meters (rather than parameters in :varlink:`ICEPLUME_PARM03`)                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`Cd`           |    2.5e-3                     | Ice plume drag coefficient (unitless)                                                                                   |
+   | :varlink:`Cd`                             |    2.5e-3                    | Ice plume drag coefficient (unitless)                                                                              |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useSheetPlume`        |    FALSE                     | use 2d sheet plume at ice/ocean interface if true             |
+   | :varlink:`useSheetPlume`                  |    FALSE                     | use 2d sheet plume at ice/ocean interface if true                                                                  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useConePlume`         |    FALSE                     | use 2d cone-shaped steady-state plume at ice/ocean interface if true               | 
+   | :varlink:`useConePlume`                   |    FALSE                     | use 2d cone-shaped steady-state plume at ice/ocean interface if true                                               | 
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useTruncPlume`         |    FALSE                | use 2d sheet plume but truncated in the along-ice dimension                                                                 |
+   | :varlink:`useTruncPlume`                  |    FALSE                     | use 2d sheet plume but truncated in the along-ice dimension                                                        |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useBuoyPlume`      |    FALSE                     | do not update ice thickness (velocity solve only)                                                                  |
+   | :varlink:`useBuoyPlume`                   |    FALSE                     | do not update ice thickness (velocity solve only)                                                                  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`slopeTmod`           |    0.5                       | CFL factor which determine maximum time step for thickness sub-cycling                                             |
+   | :varlink:`slopeTmod`                      |    0.5                       | CFL factor which determine maximum time step for thickness sub-cycling                                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`interceptTmod`              |    0.0                       |                                                       |
+   | :varlink:`interceptTmod`                  |    0.0                       |                                                                                                                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`facGamSGamT`       |    0.07                   | factor relating GamS and GamT, use when defined ICEPLUME_ALLOW_SCHULZ22                                             |
+   | :varlink:`facGamSGamT`                    |    0.07                      | factor relating GamS and GamT, use when defined ICEPLUME_ALLOW_SCHULZ22                                            |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`GamTconst`         |    0.001                | constant GamT, use when defined ICEPLUME_ALLOW_SCHULZ22                                |
+   | :varlink:`GamTconst`                      |    0.001                     | constant GamT, use when defined ICEPLUME_ALLOW_SCHULZ22                                                            |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`Lp`       |    220.                   | length of truncated plume (m), use when defined ICEPLUME_ALLOW_SCHULZ22                                            |
+   | :varlink:`Lp`                             |    220.                      | length of truncated plume (m), use when defined ICEPLUME_ALLOW_SCHULZ22                                            |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`maxDepth`         |    :kbd:`' '`                | Glen's constant initialization file (see :ref:`ssub_phys_pkg_iceplume_units` for units)                           |
+   | :varlink:`maxDepth`                       |    :kbd:`' '`                | Glen's constant initialization file (see :ref:`ssub_phys_pkg_iceplume_units` for units)                            |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`backgroundVelThresh`              |    0.05                 | Unresolved velocity at ice-ocean interface (m/s)                                 |
+   | :varlink:`backgroundVelThresh`            |    0.05                      | Unresolved velocity at ice-ocean interface (m/s)                                                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ICEPLUMElatentHeat`              |    334.e3                | Latent heat of melting (J/kg)                                                                     |
+   | :varlink:`ICEPLUMElatentHeat`             |    334.e3                    | Latent heat of melting (J/kg)                                                                                      |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ICEPLUMEHeatCapacity_Cp`       |   2000.                 | Heat capacity of ice (J/kg/degC)                 |
+   | :varlink:`ICEPLUMEHeatCapacity_Cp`        |   2000.                      | Heat capacity of ice (J/kg/degC)                                                                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`applyIcePlumeBGTendT`             |    .TRUE.                | apply iceplume temperature tendency gT to ocean temperature if true                                       |
+   | :varlink:`applyIcePlumeBGTendT`           |    .TRUE.                    | apply iceplume temperature tendency gT to ocean temperature if true                                                |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`applyIcePlumeBGTendS`             |   .TRUE.                 | apply iceplume salt tendency gS to ocean salinity if true              |
+   | :varlink:`applyIcePlumeBGTendS`           |   .TRUE.                     | apply iceplume salt tendency gS to ocean salinity if true                                                          |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ptracerMaskFile`         |     :kbd:`' '`               | Nx by Ny by n_ptracers mask giving the concentration of ptracer in subglacial runoff in that location, requires pkg/ptracers     |
+   | :varlink:`ptracerMaskFile`                |     :kbd:`' '`               | Nx x Ny x n_ptracers mask, concentration of ptracer in subglacial runoff in the location, requires pkg/ptracers    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`useInputPtracers`         |     .FALSE.               | Option to add a quantity of ptracer to the plume output, corresponding to the volume of subglacial runoff, requires pkg/ptracers     |
+   | :varlink:`useInputPtracers`               |     .FALSE.                  | Add a quantity of ptracer to the plume volume of subglacial runoff, requires pkg/ptracers                          |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgperiod`         |     0.0               | repeat cycle, 0=one-time constant, -12=monthly climatology  |
+   | :varlink:`runoffQsgperiod`                |     0.0                      | repeat cycle, 0=one-time constant, -12=monthly climatology                                                         |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgStartTime`         |     UNSET_RL               |   |
+   | :varlink:`runoffQsgStartTime`             |     UNSET_RL                 |                                                                                                                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgstartdate1`      |     0               | format yyyymmdd                                                 |
+   | :varlink:`runoffQsgstartdate1`            |     0                        | format yyyymmdd                                                                                                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgstartdate2`      |     0               | format hhmmss                                                 |
+   | :varlink:`runoffQsgstartdate2`            |     0                        | format hhmmss                                                                                                      |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgconst`     |     0.0               | additive constant, unit kg       |
+   | :varlink:`runoffQsgconst`                 |     0.0                      | additive constant, unit kg                                                                                         |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_inscal`     |     1.0               | scaling factor, unitless       |
+   | :varlink:`runoffQsg_inscal`               |     1.0                      | scaling factor, unitless                                                                                           |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_remov_intercept`      |     0.0              | zero-crossing intercept to be removed, unit kg       |
+   | :varlink:`runoffQsg_remov_intercept`      |     0.0                      | zero-crossing intercept to be removed, unit kg                                                                     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_remov_slope`      |     0.0               | slope to be removed, unit kg/s       |
+   | :varlink:`runoffQsg_remov_slope`          |     0.0                      | slope to be removed, unit kg/s                                                                                     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsgRepCycle`    |     0.0               |                                                     |
+   | :varlink:`runoffQsgRepCycle`              |     0.0                      |                                                                                                                    |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_interpMethod`    |     0               | 0=no interpolation, 1=do interpolation from Qsg grid to model grid                                                    |
+   | :varlink:`runoffQsg_interpMethod`         |     0                        | 0=no interpolation, 1=do interpolation from Qsg grid to model grid                                                 |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_lon0`     |       0.            | subglacial runoff discharge first point longitude                                                      |
+   | :varlink:`runoffQsg_lon0`                 |       0.                     | subglacial runoff discharge first point longitude                                                                  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_lon_inc`     |     0.               | longitude increment                                                     |
+   | :varlink:`runoffQsg_lon_inc`              |     0.                       | longitude increment                                                                                                |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_nlon`         |   0                          | number of longitudes                                                                |
+   | :varlink:`runoffQsg_nlon`                 |   0                          | number of longitudes                                                                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_lat0`       |   0.                          | first point latitude in the Qsg grid                                               |
+   | :varlink:`runoffQsg_lat0`                 |   0.                         | first point latitude in the Qsg grid                                                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_lat_inc`      |   0.                          | increment                                   |
+   | :varlink:`runoffQsg_lat_inc`              |   0.                         | increment                                                                                                          |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`runoffQsg_nlat`    |   0                      | number          |
+   | :varlink:`runoffQsg_nlat`                 |   0                          | number                                                                                                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
  
 .. _ssub_phys_pkg_iceplume_domain_setup:
@@ -247,8 +247,9 @@ The parameter E_0 is the entrainment coefficient in the plume model. A value of 
 vary between 0.07-0.16 along a continuum from forced jets to buoyant plumes (Kaminski et al. 2005). Proglacial
 plumes are buoyancy dominated, and so values in the upper half of this range may be appropriate.
 
-The logical parameter useInputPtracers, in conjunction with pkg/ptracers, marks the subglacial runoff with a
-passive tracer. The concentration of this tracer represents the proportion of water in a cell that was originally
+The logical parameter useInputPtracers, in conjunction with pkg/ptracers, add a quantity of ptracer to the
+plume output, corresponding to the volume of subglacial runoff, requires pkg/ptracers.
+The concentration of this tracer represents the proportion of water in a cell that was originally
 glacial runoff (e.g. 1 means the cell is filled entirely with subglacial runoff). This enables the flow of these
 waters to be tracked. This volume represents only the subglacial discharge, not the total volume of the plume
 (which is mainly entrained fjord water). Whether or not this option is selected, the plume model will transport
@@ -279,7 +280,7 @@ Units of input files
 Numerical Details
 ~~~~~~~~~~~~~~~~~
 
-.. figure:: figs/iceplume_mask.*
+.. figure:: figs/iceplume_mask.png
    :width: 80%
    :align: center
    :alt: ICEPLUME example
