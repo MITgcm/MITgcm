@@ -140,6 +140,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'tAddMass'
+      diagTitle = 'Temperature times plume AddMass in apply_forcing'
+      diagUnits = 'C.kg/s.m3/kg/m3 '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'sAddMass'
+      diagTitle = 'Salinity times plume AddMass in apply_forcing   '
+      diagUnits = 'g/kg.kg/s.m3/kg/m3'
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_ICEPLUME */
 
