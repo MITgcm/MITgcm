@@ -13,7 +13,7 @@ Introduction
 
 The purpose of package :filelink:`ICEPLUME <pkg/iceplume>` is to permit the efficient incorporation of glaciers,
 and specifically glacial runoff, in simulations of fjord systems. The package, written by Tom Cowton and used in
-Cowton et al. (2015) :cite:`cowton:89`, provides a subgrid-scale parameterization for subglacial and submarine melt
+Cowton et al. (2015) :cite:`cowton:15`, provides a subgrid-scale parameterization for subglacial and submarine melt
 plumes at a vertical glacial front.  This is done through usage of a theoretical plume model to parameterise vertical
 transport in the plume adjacent to the glacier front.  The parameterization represents steady-state entrainment of
 volume, mass, temperature and salt tendencies at the vertical glacial ice/ocean interface as melt plumes rise from
