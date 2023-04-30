@@ -9,6 +9,7 @@ from . import cs
 from . import llc
 from . import tests
 from . import density as dens
+from . import mds
 
 __all__ = ['NaN', 'Inf', 'rdmds', 'wrmds', 'iolabel', 'iolabel2num',
            'readstats', 'rdmnc', 'mnc_files','gen_blanklist', 'hfac',
