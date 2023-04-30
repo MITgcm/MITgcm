@@ -27,35 +27,12 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     === in common block ===
-C     runoffQsgfile ::
-C     runoffVelfile ::
-C     runoffRadfile ::
-C     runoffQsg[01] :: subglacial discharge mass flux, kg/s
-C     runoffVel[01] :: subglacial discharge vertical vel, m/s
-C     runoffRad[01] :: subglacial discharge radius, m
-
-      COMMON /ICEPLUMEFFIELDS/
-     &         runoffQsg0,   runoffQsg1
-c     &         runoffVel0,   runoffVel1,
-c     &         runoffRad0,   runoffRad1,
-
-      _RL  runoffQsg0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  runoffQsg1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c      _RL  runoffVelsg0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c      _RL  runoffVelsg1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c      _RL  runoffRadsg0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c      _RL  runoffRadsg1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-C     === Local arrays ===
 C     aWght,bWght :: Interpolation weights
-
       _RL aWght, bWght
 
       INTEGER bi, bj
       INTEGER i, j, iG, jG
       INTEGER intimeP, intime0, intime1
-c      _RL local, u, ssqa
 
 #ifdef ALLOW_ICEPLUME
 
@@ -69,10 +46,10 @@ C First call requires that we initialize everything to zero for safety
            DO i=1-OLx,sNx+OLx
             runoffQsg0  (i,j,bi,bj) = 0.
             runoffQsg1  (i,j,bi,bj) = 0.
-            runoffVelsg0  (i,j,bi,bj) = 0.
-            runoffVelsg1  (i,j,bi,bj) = 0.
-            runoffRadsg0  (i,j,bi,bj) = 0.
-            runoffRadsg1  (i,j,bi,bj) = 0.
+c            runoffVel0  (i,j,bi,bj) = 0.
+c            runoffVel1  (i,j,bi,bj) = 0.
+c            runoffRad0  (i,j,bi,bj) = 0.
+c            runoffRad1  (i,j,bi,bj) = 0.
            ENDDO
           ENDDO
          ENDDO
@@ -122,8 +99,8 @@ c          CALL READ_REC_XY_RL(
 c     &         runoffVelFile,runoffVel0,inTime0,myIter,myThid)
 c          CALL READ_REC_XY_RL(
 c     &         runoffVelFile,runoffVel1,inTime1,myIter,myThid)
-c          _EXCH_XY_RL( runoffVelsg0 , myThid )
-c          _EXCH_XY_RL( runoffVelsg1 , myThid )
+c          _EXCH_XY_RL( runoffVel0 , myThid )
+c          _EXCH_XY_RL( runoffVel1 , myThid )
 c        ENDIF
 c
 c        IF ( runoffRadFile .NE. ' ') THEN
@@ -131,8 +108,8 @@ c          CALL READ_REC_XY_RL(
 c     &         runoffRadFile,runoffRad0,inTime0,myIter,myThid)
 c          CALL READ_REC_XY_RL(
 c     &         runoffRadFile,runoffRad1,inTime1,myIter,myThid)
-c          _EXCH_XY_RL( runoffRadsg0 , myThid )
-c          _EXCH_XY_RL( runoffRadsg1 , myThid )
+c          _EXCH_XY_RL( runoffRad0 , myThid )
+c          _EXCH_XY_RL( runoffRad1 , myThid )
 c        ENDIF
 
 C--   Interpolate
