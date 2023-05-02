@@ -98,6 +98,9 @@ C     betaFacU/V     :: analog betaFacP1U/V
       INTEGER i, j, bi, bj
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
+#ifndef ALLOW_AUTODIFF
+      INTEGER nEVPstepMax
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 C     evpkey :: tape key (depends on evp iteration)
 C     tkey   :: tape key (depends on tile indices and evpkey)
