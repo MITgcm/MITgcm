@@ -28,8 +28,10 @@ C-    Maximum Number of tracers
       INTEGER SItrMaxNum
       PARAMETER(SItrMaxNum = 3 )
 
-#ifdef ALLOW_AUTODIFF
+C-    Define this here, even if it not a parameters to avoid double
+C     declarations
       INTEGER nEVPstepMax
+#ifdef ALLOW_AUTODIFF
       PARAMETER ( nEVPstepMax=180 )
       INTEGER NMAX_TICE
       PARAMETER ( NMAX_TICE=10 )
