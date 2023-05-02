@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -24,7 +27,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC

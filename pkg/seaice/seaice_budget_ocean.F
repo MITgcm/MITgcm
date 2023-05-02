@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE SEAICE_BUDGET_OCEAN(
@@ -25,7 +28,6 @@ C     === Global variables ===
 # include "SEAICE_SIZE.h"
 # include "SEAICE_PARAMS.h"
 # ifdef ALLOW_EXF
-#  include "EXF_OPTIONS.h"
 #  include "EXF_FIELDS.h"
 # endif
 #endif
