@@ -8,11 +8,12 @@ import MITgcmutils as mit
 import os
 
 files_path=os.path.dirname(mit.__file__)
+bathy_file=os.path.join(files_path,'tests','bathy_test.bin')
 
 def test_blanklist():
     """Test blanklist generator
     """
-    bathy=mit.readbin(files_path+'/tests/bathy_test.bin', [510,510])
+    bathy=mit.readbin(bathy_file, [510,510])
 
     # Test
 
@@ -27,11 +28,11 @@ def test_blanklist():
 
     [blank,fig1]=mit.gen_blanklist(bathy, 51,51, tilemap=True)
     print(blank[0:3],'..',blank[-1])
-    
+
 def test_tilemap():
     """Test tilemap plot distribution
     """
-    bathy=mit.readbin(files_path+'/tests/bathy_test.bin', [510,510])
+    bathy=mit.readbin(bathy_file, [510,510])
 
     # Test
 
@@ -41,7 +42,6 @@ def test_tilemap():
     mit.tilecmap(bathy, 51, 51)
 
     print('Test 2: Output tilemap without specific tile')
-    print('mit.tilecmap(bathy, 51, 51)')
+    print('mit.tilecmap(bathy, 51, 51, 80, sel_zoom=5)')
 
-    mit.tilecmap(bathy, 51, 51,80,sel_zoom=5)
-   
+    mit.tilecmap(bathy, 51, 51, 80, sel_zoom=5)
