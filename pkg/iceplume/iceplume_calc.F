@@ -40,12 +40,15 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_PARAMS.h"
-#include "PTRACERS_START.h"
-#include "PTRACERS_FIELDS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+# include "PTRACERS_START.h"
+# include "PTRACERS_FIELDS.h"
+# include "ICEPLUME_PTRACERS_FIELDS.h"
 #endif
 
 cMW diagnostic package:

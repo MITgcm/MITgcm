@@ -17,10 +17,17 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 #ifdef ALLOW_EXF
-#include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
+# include "EXF_PARAM.h"
+# include "ICEPLUME_EXF_INTERP.h"
 #endif /* ALLOW_EXF */
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "ICEPLUME_PTRACERS_FIELDS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
@@ -37,7 +44,10 @@ C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
 #ifdef ALLOW_ICEPLUME
 C     === Local variables ===
 C     I,J,K,bi,bj - Loop counters
-      INTEGER I, J, K, bi, bj, iTracer
+      INTEGER I, J, K, bi, bj
+#ifdef ALLOW_PTRACERS
+      integer iTracer
+#endif /* ALLOW_PTRACERS */
 
       iRec0 = 1.
 
@@ -79,7 +89,8 @@ C Load runoff
        _BEGIN_MASTER( myThid )
        errCount = 0
 # ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START runoffQsg',myThid)
+      IF (debugMode) 
+     & CALL DEBUG_CALL('EXF_GETFFIELD_START runoffQsg',myThid)
 # endif
 catn useExfYearlyFields is a twoDigitYear to identify year or undef if have
 catn cycle. Note the double "FF" in getffield, which is the newer version

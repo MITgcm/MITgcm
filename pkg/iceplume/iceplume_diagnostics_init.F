@@ -14,7 +14,8 @@ C     !USES:
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
 
 

@@ -1,4 +1,7 @@
 #include "ICEPLUME_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif /* ALLOW_EXF */
 
 C     !ROUTINE: ICEPLUME_FIELDS_LOAD
 C     !INTERFACE:
@@ -15,7 +18,12 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_INTERP_SIZE.h"
+# include "ICEPLUME_EXF_INTERP.h"
+#endif /* ALLOW_EXF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

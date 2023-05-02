@@ -13,7 +13,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 #include "GRID.h"
 
 C     === Routine arguments ===

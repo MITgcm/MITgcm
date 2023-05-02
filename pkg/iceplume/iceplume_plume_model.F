@@ -21,7 +21,8 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -348,7 +349,8 @@ ckiki here I added my meltrate parameterization
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
       INTEGER  NEQ
       DOUBLE PRECISION DD, Y(7), YDOT(6)
@@ -466,7 +468,8 @@ ckiki: here I added my new melt rate paramterization
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
       INTEGER  NEQ
       DOUBLE PRECISION DD, Y(7), YDOT(6)
@@ -591,7 +594,8 @@ C - ------------------------------------------------------------------
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
       INTEGER  NEQ
       DOUBLE PRECISION DD, Y(9), YDOT(8), DDin
@@ -711,7 +715,8 @@ C----------------------------------------------------------------------
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
       INTEGER  NEQ
       DOUBLE PRECISION DD, Y(7), YDOT(6)

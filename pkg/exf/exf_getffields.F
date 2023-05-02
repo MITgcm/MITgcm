@@ -41,7 +41,7 @@ C     == global variables ==
 #include "EXF_FIELDS.h"
 
 c#ifdef ALLOW_ICEPLUME
-c#include "ICEPLUME.h"
+c#include "ICEPLUME_EXF_INTERP.h"
 c#endif /* ALLOW_ICEPLUME */
 
 #ifdef ALLOW_CTRL

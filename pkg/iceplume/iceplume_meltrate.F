@@ -11,7 +11,7 @@ C Global variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
 
 c Input: properties in the boundary layer, either from
 c subglacial plume or submarine background smaller plumes:

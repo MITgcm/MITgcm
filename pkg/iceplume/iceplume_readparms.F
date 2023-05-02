@@ -1,5 +1,7 @@
-
 #include "ICEPLUME_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif /* ALLOW_EXF */
 
 CBOP
 C !ROUTINE: ICEPLUME_READPARMS
@@ -12,17 +14,23 @@ C     Initialize ICEPLUME parameters, read in data.iceplume
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXF
+# include "EXF_INTERP_SIZE.h"
+# include "ICEPLUME_EXF_INTERP.h"
 # ifdef USE_EXF_INTERPOLATION
-#  include "EXF_INTERP_SIZE.h"
 #  include "SET_GRID.h"
 # endif
 #endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "ICEPLUME_PTRACERS_FIELDS.h"
+#endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
+#  include "W2_EXCH2_SIZE.h"
 c# include "W2_EXCH2_TOPOLOGY.h"
 # endif /* ALLOW_EXCH2 */
 
@@ -50,11 +58,9 @@ CEOP
 C    PARMO1 - ICEPLUME inputs
       NAMELIST /ICEPLUME_PARM01/
      &     runoffQsgfile, plumeMaskFile, plumeLengthFile,
-     &     T_sg_0, S_sg_0, E_0, Angle_sg_0, wVel_sg_0,
-     &     RTOL, ATOL,
-     &     IceTemp,
-     &     usePlumeDiagnostics,
-     &     conserveMass,
+     &     T_sg_0, S_sg_0, Angle_sg_0, wVel_sg_0,
+     &     RTOL, ATOL, E_0,
+     &     iceTemp,
      &     c_i,
      &     lambda1,
      &     lambda2,
@@ -62,39 +68,42 @@ C    PARMO1 - ICEPLUME inputs
      &     GamT,
      &     GamS,
      &     Cd,
+     &     slopeTmod,
+     &     interceptTmod,
+     &     maxDepth,
+     &     backgroundVelThresh,
+     &     ICEPLUMElatentHeat, ICEPLUMEHeatCapacity_Cp,
+#ifdef ICEPLUME_ALLOW_SCHULZ22
+     &     GamTconst,
+     &     GamSconst,
+     &     facGamSGamT,
+     &     Lp,
+#endif
+     &     usePlumeDiagnostics,
+     &     conserveMass,
      &     useSheetPlume,
      &     useConePlume,
      &     useTruncPlume,
      &     useBuoyPlume,
-     &     slopeTmod,
-     &     interceptTmod,
-#ifdef ICEPLUME_ALLOW_SCHULZ22
-     &     facGamSGamT,
-     &     GamTconst,
-     &     GamSconst,
-     &     Lp,
-#endif
-     &     maxDepth,
-     &     backgroundVelThresh
+     &     applyIcePlumeBGTendT,applyIcePlumeBGTendS
 catn runoffVelfile, runoffRadfile, 
 
 C    PARMO2 - iceplume inputs required for thermodynamics
 catn change icefront to iceplume in case we ever run with icefront and
 catn have duplicate definitions of variables. change tend to tendBG to
 catn indicate these flags or fields are relevant for the background melt
-      NAMELIST /ICEPLUME_PARM02/
-     &     ICEPLUMElatentHeat, ICEPLUMEHeatCapacity_Cp,
-     &     applyIcePlumeBGTendT,applyIcePlumeBGTendS
+catn 01/May/2023: now merged into PARM01
+C      NAMELIST /ICEPLUME_PARM02/
 
 #ifdef ALLOW_PTRACERS
-C    PARM03 - inputs relating to passive tracers
-      NAMELIST /ICEPLUME_PARM03/
+C    PARM02 - inputs relating to passive tracers
+      NAMELIST /ICEPLUME_PARM02/
      &     ptracerMaskFile,
      &     useInputPtracers
 #endif /* ALLOW_PTRACERS */ 
 
 #ifdef ALLOW_EXF
-      NAMELIST /ICEPLUME_EXF_PARM04/
+      NAMELIST /ICEPLUME_EXF_PARM03/
      &     runoffQsgperiod,   runoffQsgStartTime,
      &     runoffQsgstartdate1, runoffQsgstartdate2,
      &     runoffQsgconst,      runoffQsg_inscal,
@@ -199,6 +208,7 @@ c-
       useSheetPlume   = .FALSE.
       useConePlume    = .FALSE.
       useTruncPlume   = .FALSE.
+      useDetachPlume  = .FALSE.
 catn  Will use rhoConst instead of setting yet another rho_ref
 catn  In addition, inside iceplume_calc.F there is another rho_0=1027.
 catn  which will also now be set to rhoConst.
@@ -230,14 +240,14 @@ c      useBuoyPlume    = .FALSE.
       Lp = 220. _d 0
 #endif
 
-C Default values for PARMO2
+C Default values for PARMO2, now merged into PARM01
        ICEPLUMElatentHeat       =  334.0 _d 3
        ICEPLUMEHeatCapacity_Cp  = 2000.0 _d 0
        applyIcePlumeBGTendT     = .TRUE.
        applyIcePlumeBGTendS     = .TRUE.
 
 #ifdef ALLOW_PTRACERS
-C Default values for PARM03
+C Default values for PARM03, now PARM02
        ptracerMaskFile= ' '
        useInputPtracers = .FALSE.
 #endif /* ALLOW_PTRACERS */
@@ -251,17 +261,17 @@ C Open and read the data.icefront file
      O                   iUnit,
      I                   myThid )
       READ(UNIT=iUnit,NML=ICEPLUME_PARM01)
-      READ(UNIT=iUnit,NML=ICEPLUME_PARM02)
+C      READ(UNIT=iUnit,NML=ICEPLUME_PARM02)
 #ifdef ALLOW_PTRACERS
-      READ(UNIT=iUnit,NML=ICEPLUME_PARM03)
+      READ(UNIT=iUnit,NML=ICEPLUME_PARM02)
 #endif /* ALLOW_PTRACERS */
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
        WRITE(msgBuf,'(A)')
-     &     ' ICEPLUME_READPARMS: reading ICEPLUME_EXF_PARM04'
+     &     ' ICEPLUME_READPARMS: reading ICEPLUME_EXF_PARM03'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       READ(UNIT=iUnit,NML=ICEPLUME_EXF_PARM04)
+       READ(UNIT=iUnit,NML=ICEPLUME_EXF_PARM03)
       ENDIF
 #endif /* ALLOW_EXF */
       WRITE(msgBuf,'(A)')

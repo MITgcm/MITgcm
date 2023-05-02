@@ -18,10 +18,13 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 #ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
+#include "ICEPLUME_PTRACERS_FIELDS.h"
 #endif /* ALLOW_PTRACERS */
 
 C     === Routine arguments ===
@@ -29,7 +32,9 @@ C     myThid -  Number of this instance of ICEFRONT_INIT_VARIA
       INTEGER myThid
       INTEGER myIter
       INTEGER fp, iRec0
+#ifdef ALLOW_PTRACERS
       INTEGER iTracer
+#endif /* ALLOW_PTRACERS */
       _RL aWght, bWght
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     myTime
@@ -112,12 +117,13 @@ catn: some variables are defined down to Nr+1
        volFlux     (K) = 0. _d 0
       ENDDO
 
-       DO I = 1,100
-        runoffLocation(I,1) = 0. _d 0
-        runoffLocation(I,2) = 0. _d 0
-        plumeInputLayer(I)  = 0. _d 0
-        Qin(I)              = 0. _d 0
-       ENDDO
+Catn: obsolete, these are not used anywhere
+C       DO I = 1,100
+C        runoffLocation(I,1) = 0. _d 0
+C        runoffLocation(I,2) = 0. _d 0
+C        plumeInputLayer(I)  = 0. _d 0
+C        Qin(I)              = 0. _d 0
+C       ENDDO
 
 C Clear addMass from previous timestep
 catn: Cannot reset the global field addMass inside a pkg

@@ -22,7 +22,8 @@ C     !USES:
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -80,7 +81,8 @@ C     !INPUT PARAMETERS:
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
-#include "ICEPLUME.h"
+#include "ICEPLUME_PARAMS.h"
+#include "ICEPLUME_FIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gS_arr    :: the tendency array

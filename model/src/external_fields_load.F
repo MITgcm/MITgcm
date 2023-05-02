@@ -41,7 +41,8 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 c#ifdef ALLOW_ICEPLUME
-c#include "ICEPLUME.h"
+c#include "ICEPLUME_PARAMS.h"
+c#include "ICEPLUME_FIELDS.h"
 c#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:

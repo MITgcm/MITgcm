@@ -75,9 +75,6 @@ C     == Global variables ==
 #  include "EXF_CONSTANTS.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
-#ifdef ALLOW_ICEPLUME
-# include "ICEPLUME.h"
-#endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread

@@ -416,7 +416,7 @@ C     == Global data ==
 #include "FFIELDS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_ICEPLUME
-#include "ICEPLUME.h"
+#include "ICEPLUME_FIELDS.h"
 #endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -917,7 +917,7 @@ C     == Global data ==
 #include "FFIELDS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_ICEPLUME
-#include "ICEPLUME.h"
+#include "ICEPLUME_FIELDS.h"
 #endif /* ALLOW_ICEPLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
