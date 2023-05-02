@@ -136,14 +136,16 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C---   loops on tile indices bi,bj
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C     Initialise for TAF
+#ifdef ALLOW_AUTODIFF
+C     Initialise to help AD-tools
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gFld(i,j)       = 0. _d 0
+          gFld(i,j) = 0. _d 0
          ENDDO
         ENDDO
+#endif
 C
+#ifdef ALLOW_AUTODIFF_TAMC
         tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte

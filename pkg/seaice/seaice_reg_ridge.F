@@ -109,7 +109,7 @@ C =====================================================================
 C ========== PART 1: treat pathological cases (post advdiff) ==========
 C =====================================================================
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no dependency through pathological cases treatment
         IF ( SEAICEadjMODE.EQ.0 ) THEN
 #endif
@@ -381,7 +381,7 @@ C     concentrations > 1) for the non-ITD sea ice model
 
 #endif /* SEAICE_ITD */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 C        end SEAICEadjMODE.EQ.0 statement:
         ENDIF
 #endif

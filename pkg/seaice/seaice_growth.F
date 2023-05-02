@@ -574,7 +574,7 @@ C     prepare SItrAREA to be computed as cumulative sum
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no additional dependency of air-sea fluxes to ice
         IF ( SEAICEadjMODE.GE.1 ) THEN
          DO J=1,sNy
@@ -659,7 +659,7 @@ Cif       Do not regularize when HEFFpreTH = 0
         ENDDO
 #endif /* SEAICE_ITD */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
         CALL ZERO_ADJ_1D( sNx*sNy, heffActual, myThid)
         CALL ZERO_ADJ_1D( sNx*sNy, hsnowActual, myThid)
         CALL ZERO_ADJ_1D( sNx*sNy, recip_heffActual, myThid)
@@ -974,7 +974,7 @@ CADJ STORE r_QbyATM_open   = comlev1_bibj, key = tkey, byte = isbyte
 CADJ STORE r_FWbySublim    = comlev1_bibj, key = tkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no additional dependency through ice cover
         IF ( SEAICEadjMODE.GE.3 ) THEN
 #ifdef SEAICE_ITD
@@ -1097,7 +1097,7 @@ C     due to lateral melt
         ENDDO
 #endif /* SEAICE_ITD */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
         CALL ZERO_ADJ_1D( sNx*sNy, r_QbyOCN, myThid)
 #endif
 
@@ -1905,7 +1905,7 @@ C       limit area reduction so that actual ice thickness does not increase
         ENDIF
 #endif /* SEAICE_ITD */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf 'bulk' linearization of area=f(HEFF)
         IF ( SEAICEadjMODE.GE.1 ) THEN
 #ifdef SEAICE_ITD

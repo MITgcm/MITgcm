@@ -175,7 +175,7 @@ C
 C
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 cph break artificial dependencies
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

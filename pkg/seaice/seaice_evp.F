@@ -397,14 +397,14 @@ C     (and energy conserving) according to Bouillon et al. 2013, eq (11)
            DO i=0,sNx+1
             deltaSq = ep(I,J)**2 + recip_ecc2 * em(I,J)**2
      &           + recip_ecc2 * 4. _d 0 * e12Csq(I,J)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C     avoid sqrt of 0
             deltaC(I,J,bi,bj) = 0. _d 0
             IF ( deltaSq .GT. 0. _d 0 )
      &           deltaC(I,J,bi,bj) = SQRT(deltaSq)
 #else
             deltaC(I,J,bi,bj) = SQRT(deltaSq)
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 #ifdef SEAICE_DELTA_SMOOTHREG
 C     smooth regularization (without max-function) of delta for
 C     better differentiability
