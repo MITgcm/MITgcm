@@ -153,13 +153,6 @@ C in this routine (by choice).
       _RL FWsublim_mult     (1:sNx,1:sNy,nITD)
       _RL FWsublim          (1:sNx,1:sNy)
 
-#ifdef ALLOW_DIAGNOSTICS
-C     Helper variables for diagnostics
-c     _RL DIAGarrayA    (1:sNx,1:sNy)
-      _RL DIAGarrayB    (1:sNx,1:sNy)
-      _RL DIAGarrayC    (1:sNx,1:sNy)
-      _RL DIAGarrayD    (1:sNx,1:sNy)
-#endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_SALT_PLUME
 c     d(HEFF)/dt from heat fluxes in the open water fraction of the grid cell
       _RL IceGrowthRateInLeads          (1:sNx,1:sNy)
@@ -187,12 +180,14 @@ C     Sea ice growth rates (m/s)
       _RL EnergyInNewTotalIceVolume     (1:sNx,1:sNy)
       _RL NetEnergyFluxOutOfOcean       (1:sNx,1:sNy)
 
+#ifdef ALLOW_DIAGNOSTICS
 C Local arrays for diagnostics
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIeprflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C term for flooding
       _RL SIfldflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
       _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -462,19 +457,14 @@ CAB
           HSNWpreTH(I,J) = HSNOW(I,J,bi,bj)
           AREApreTH(I,J) = AREA(I,J,bi,bj)
 
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayB(I,J) = AREA(I,J,bi,bj)
-          DIAGarrayC(I,J) = HEFF(I,J,bi,bj)
-          DIAGarrayD(I,J) = HSNOW(I,J,bi,bj)
-#endif
          ENDDO
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIareaPT',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIheffPT',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsnoPT',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(AREA, 'SIareaPT',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HEFF, 'SIheffPT',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HSNOW,'SIhsnoPT',0,1,1,bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -1218,48 +1208,8 @@ c    weighted
      &          + SIhsnwNeg(I,J,bi,bj)*SEAICE_rhoSnow)
      &          *recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-CAB   Budget test , adding the energy stored in snow melt to qnet
-C     Moved bunch of these to line 780
-
-C Everything down here is diagnostic, and should reflect what we
-C calculated above and passed out to the ocean instead of computed
-C again.  Otherwise we can end up with mismatch when we modify above
-C and not replicate down here.
-          SItflux(I,J,bi,bj) = 0.0 +
-c     &        (AREApreTH(I,J)
-c     &        *(F_ia_net(I,J)
-c     &        + F_io_net(I,J) + QSWI(I,J))
-c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
-     &     NetEnergyFluxOutOfOcean(I,J)*recip_deltaTtherm
-     &         *HEFFM(I,J,bi,bj)
-     &         +(SIheffNeg(I,J,bi,bj)*recip_QI
-     &         +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
-     &          + SnowAccOverIce(I,J) )*recip_QS)
-     &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
-
-          SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
-     &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
-     &         - PRECIP(I,J,bi,bj)
-#ifdef ALLOW_RUNOFF
-     &          - RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
-     &           )*rhoConstFresh
-
          ENDDO
         ENDDO
-
-        IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
-         DO J=1,sNy
-          DO I=1,sNx
-C Heat flux term associated with EmPmR:
-           SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
-     &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
-
-          ENDDO
-         ENDDO
-c       ELSE
-CAB I  HAVE NOT FIGURED  OUT the QNET for the ELSE case, should not matter 01/14/2021 L2275
-        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -1309,6 +1259,50 @@ C     =================================
           ENDDO
          ENDDO
         ENDIF
+
+C Everything down here is diagnostic, and should reflect what we
+C calculated above and passed out to the ocean instead of computed
+C again.  Otherwise we can end up with mismatch when we modify above
+C and not replicate down here.
+#ifdef ALLOW_DIAGNOSTICS
+        IF (useDiagnostics) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           SItflux(I,J,bi,bj) = 0.0 +
+c     &        (AREApreTH(I,J)
+c     &        *(F_ia_net(I,J)
+c     &        + F_io_net(I,J) + QSWI(I,J))
+c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
+     &          NetEnergyFluxOutOfOcean(I,J)*recip_deltaTtherm
+     &          *HEFFM(I,J,bi,bj)
+     &          +(SIheffNeg(I,J,bi,bj)*recip_QI
+     &          +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
+     &           + SnowAccOverIce(I,J) )*recip_QS)
+     &          * recip_deltaTtherm * HEFFM(I,J,bi,bj)
+
+           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
+     &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+     &          - PRECIP(I,J,bi,bj)
+#ifdef ALLOW_RUNOFF
+     &          - RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
+     &          )*rhoConstFresh
+          ENDDO
+         ENDDO
+
+         IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+C Heat flux term associated with EmPmR:
+            SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+     &           * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
+           ENDDO
+          ENDDO
+c        ELSE
+CAB I  HAVE NOT FIGURED  OUT the QNET for the ELSE case, should not matter 01/14/2021 L2275
+         ENDIF
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
         DO j=1,sNy
@@ -1455,15 +1449,10 @@ C close bi,bj loops
        ENDDO
       ENDDO
 
-      _BEGIN_MASTER( myThid )
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 C these diags need to be done outside of the bi,bj loop so that
 C we may do potential global mean adjustement to them consistently.
-CAB
-C        CALL DIAGNOSTICS_FILL(SIatmQnt,'SIatmQnt',0,1,0,1,1,myThid)
-CAB
-C       CALL DIAGNOSTICS_FILL(SIacSubl,'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(SIfldflx,'SIfldflx',0,1,0,1,1,myThid)
@@ -1475,8 +1464,6 @@ C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
      &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
-      _END_MASTER( myThid )
 
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
       STOP 'SEAICE_GROWTH_ADX not compiled with EXF and ALLOW_ATM_TEMP'
