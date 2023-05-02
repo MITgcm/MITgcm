@@ -131,6 +131,7 @@ catn: be careful about overlap, i think these will all need them.
       _RL sProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mProfPlume3D    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mProfAv3D       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tmpvar          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 catn no longer need runoff[Vel,Rad] if we read in Qsg, see below
 c      _RL runoffVel       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c      _RL runoffRad       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1018,6 +1019,7 @@ C other options!)
           DO I = 1-OLx,sNx+OLx
             gT_iceplumeBG(i,j,k)=iceplumeBG_tendT(i,j,k,bi,bj)
             gS_iceplumeBG(i,j,k)=iceplumeBG_tendS(i,j,k,bi,bj)
+            tmpvar(i,j,k) = addMass3Dplume(i,j,k,bi,bj)
            ENDDO !I
           ENDDO  !J
          ENDDO   !K
@@ -1049,8 +1051,8 @@ c flag 2 for with overlap, 3 for without overlap; 1--3: bi,bj done outside
      &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(gS_iceplumeBG,'IP_gSbg ',
      &         k,k,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL_RS(addMass3Dplume,'IPmasspl',
-     &         k,k,1,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tmpvar,'IPmasspl',
+     &         k,k,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL_RS(addMass3Dbg,'IPmassbg',
      &         k,k,2,bi,bj,myThid)
           ENDDO
