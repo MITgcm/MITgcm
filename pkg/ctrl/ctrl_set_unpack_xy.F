@@ -60,11 +60,6 @@ C========================================================================
       integer imin,imax
       _RL     globmsk  ( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
       _RL     globfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      integer il
-      _RL     weightfld2d( sNx,nSx,nPx,sNy,nSy,nPy )
-      character*( 80) weightname
-#endif
       integer reclen, irectrue
       integer cunit2, cunit3
       real*4 globfldtmp2( sNx,nSx,nPx,sNy,nSy,nPy )
@@ -78,7 +73,6 @@ C========================================================================
       real*8 fld2d_buf_glo(Nx,Ny)
       _RL fld2dDim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld2dNodim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL wei2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dummy
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
 c     == end of interface ==
@@ -146,31 +140,6 @@ c--   Only the master thread will do I/O.
          open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
-
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      if (weighttype.NE.' ') then
-       il=ilnblnk( weighttype)
-       write(weightname(1:80),'(80a)') ' '
-       write(weightname(1:80),'(a)') weighttype(1:il)
-       call MDSREADFIELD_2D_GL(
-     &     weightname, ctrlprec, 'RL',
-     &     1, weightfld2d, 1, mythid)
-      else
-        do jp = 1,nPy
-         do bj = jtlo,jthi
-          do j = jmin,jmax
-           do ip = 1,nPx
-            do bi = itlo,ithi
-             do i = imin,imax
-              weightfld2d(i,bi,ip,j,bj,jp) = 1. _d 0
-             enddo
-            enddo
-           enddo
-          enddo
-         enddo
-        enddo
-      endif
-#endif
 
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
@@ -371,15 +340,6 @@ cph)
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
 c-- part 1: preliminary reads and definitions
-
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-#ifdef ALLOW_AUTODIFF
-      call active_read_xy(weighttype, wei2d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
-#else
-      CALL READ_REC_XY_RL( weighttype, wei2d, 1, 1, myThid )
-#endif
-#endif
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
