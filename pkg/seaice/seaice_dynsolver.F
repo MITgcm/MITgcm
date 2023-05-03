@@ -61,7 +61,9 @@ C     !LOCAL VARIABLES:
 C     === In Local common block ===
 C     TAUX   :: zonal      wind stress over seaice at U point
 C     TAUY   :: meridional wind stress over seaice at V point
-      COMMON/WIND_STRESS_ICE/TAUX,TAUY
+#ifndef ALLOW_AUTODIFF
+      COMMON /WIND_STRESS_ICE/ TAUX, TAUY
+#endif
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     === Local variables ===
@@ -87,25 +89,11 @@ C     bi,bj  :: tile counters
       LOGICAL diag_SIpRfric_isOn, diag_SIpSfric_isOn
 #endif /* ALLOW_DIAGNOSTICS */
 
-C Initialise local variables in common block
-      IF ( myIter.EQ.nIter0 ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           TAUX(i,j,bi,bj) = 0. _d 0
-           TAUY(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-
-# ifdef ALLOW_AUTODIFF
-C Following re-initialisation breaks some "artificial" AD dependencies
-C incured by IF (DIFFERENT_MULTIPLE ... statement
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef ALLOW_AUTODIFF
+C Following re-initialisation breaks some "artificial" AD dependencies
+C incured by IF (DIFFERENT_MULTIPLE ... statement
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
@@ -125,9 +113,19 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
 # endif
          ENDDO
         ENDDO
+#else /* ALLOW_AUTODIFF */
+C Initialise local variables in common block
+        IF ( myIter.EQ.nIter0 ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           TAUX(i,j,bi,bj) = 0. _d 0
+           TAUY(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_AUTODIFF */
        ENDDO
       ENDDO
-# endif /* ALLOW_AUTODIFF */
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
