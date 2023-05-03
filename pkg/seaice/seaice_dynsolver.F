@@ -58,20 +58,21 @@ C     !FUNCTIONS:
 #endif /* ALLOW_DIAGNOSTICS */
 
 C     !LOCAL VARIABLES:
-C     === In Local common block ===
-C     TAUX   :: zonal      wind stress over seaice at U point
-C     TAUY   :: meridional wind stress over seaice at V point
-#ifndef ALLOW_AUTODIFF
-      COMMON /WIND_STRESS_ICE/ TAUX, TAUY
-#endif
-      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     === Local variables ===
 C     i,j    :: Loop counters
 C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
-      _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef SEAICE_ALLOW_DYNAMICS
+# ifndef ALLOW_AUTODIFF
       _RL mask_uice, mask_vice
+# endif
+C     phiSurf :: geopotential height at sea surface (including pressure load)
+      _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+C     TAUX    :: zonal      wind stress over seaice at U point
+C     TAUY    :: meridional wind stress over seaice at V point
+      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_DIAGNOSTICS
 # ifdef ALLOW_AUTODIFF
       _RL strDivX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,18 +92,16 @@ C     bi,bj  :: tile counters
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_AUTODIFF
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
-          TAUX(i,j,bi,bj)   = 0. _d 0
-          TAUY(i,j,bi,bj)   = 0. _d 0
 # ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
@@ -111,19 +110,13 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           strDivX(i,j,bi,bj)= 0. _d 0
           strDivY(i,j,bi,bj)= 0. _d 0
 # endif
+#endif /* ALLOW_AUTODIFF */
+C     Always initialise these local variables, needed for TAF, but also
+C     because they are not completely filled in S/R seaice_get_dynforcing
+          TAUX(i,j,bi,bj) = 0. _d 0
+          TAUY(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-#else /* ALLOW_AUTODIFF */
-C Initialise local variables in common block
-        IF ( myIter.EQ.nIter0 ) THEN
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           TAUX(i,j,bi,bj) = 0. _d 0
-           TAUY(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDIF
-#endif /* ALLOW_AUTODIFF */
        ENDDO
       ENDDO
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -132,17 +125,22 @@ CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
+C--   interface of dynamics with atmopheric forcing fields (wind/stress)
+C     Call this in each time step so that we can use the surface stress
+C     in S/R seaice_ocean_stress
+      CALL SEAICE_GET_DYNFORCING (
+     I     uIce, vIce, AREA, SIMaskU, SIMaskV,
+     O     TAUX, TAUY,
+     I     myTime, myIter, myThid )
 
       IF (
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
 
-# ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SEAICE_ALLOW_EVP
+#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_EVP)
 CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC and SEAICE_ALLOW_EVP */
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -209,32 +207,18 @@ C     and only kept for testing purposes
 C--   NOW SET UP FORCING FIELDS
 
 C     initialise fields
+#if (defined ALLOW_AUTODIFF && defined SEAICE_ALLOW_EVP)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          TAUX (i,j,bi,bj)= 0. _d 0
-          TAUY (i,j,bi,bj)= 0. _d 0
-#ifdef ALLOW_AUTODIFF
-# ifdef SEAICE_ALLOW_EVP
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
-# endif
-#endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
-C--   interface of dynamics with atmopheric forcing fields (wind/stress)
-      CALL SEAICE_GET_DYNFORCING (
-     I     uIce, vIce, AREA, SIMaskU, SIMaskV,
-     O     TAUX, TAUY,
-     I     myTime, myIter, myThid )
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -393,29 +377,23 @@ C End of IF (SEAICEuseDYNAMICS ...
 C End of IF (DIFFERENT_MULTIPLE ...
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE stressDivergenceX  = comlev1,
-CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE stressDivergenceY  = comlev1,
-CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE DWATN = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C Update ocean surface stress
       IF ( SEAICEupdateOceanStress ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice, vice, DWATN = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE stressDivergenceX = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE stressDivergenceY = comlev1, key=ikey_dynamics, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL SEAICE_OCEAN_STRESS (
      I              TAUX, TAUY, myTime, myIter, myThid )
       ENDIF
 
-#ifdef SEAICE_ALLOW_DYNAMICS
-#ifdef SEAICE_ALLOW_CLIPVELS
+#if (defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_ALLOW_CLIPVELS)
       IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+# endif /* ALLOW_AUTODIFF_TAMC */
 c Put a cap on ice velocity
 c limit velocity to 0.40 m s-1 to avoid potential CFL violations
 c in open water areas (drift of zero thickness ice)
@@ -432,8 +410,7 @@ c in open water areas (drift of zero thickness ice)
         ENDDO
        ENDDO
       ENDIF
-#endif /* SEAICE_ALLOW_CLIPVELS */
-#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_ALLOW_CLIPVELS */
 
 #ifdef ALLOW_DIAGNOSTICS
 C     diagnostics related to mechanics/dynamics/momentum equations
@@ -496,7 +473,7 @@ C
 C     stress diagnostics
 C
          IF ( diag_SIsigma_isOn ) THEN
-#ifdef SEAICE_ALLOW_EVP
+# ifdef SEAICE_ALLOW_EVP
 C     This could go directly into EVP, but to keep a better eye on it,
 C     I would like to keep it here.
           IF ( SEAICEuseEVP ) THEN
@@ -521,9 +498,9 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
             ENDDO
            ENDDO
           ELSE
-#else
+# else
           IF ( .TRUE. ) THEN
-#endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_EVP */
            CALL SEAICE_CALC_STRESS(
      I          e11, e22, e12, press, zeta, eta, etaZ,
      O          sig1, sig2, sig12,
@@ -732,7 +709,6 @@ C     bi/bj-loop
        ENDDO
 C     useDiagnostics
       ENDIF
-
 #endif   /* ALLOW_DIAGNOSTICS */
 #endif  /* SEAICE_CGRID */
 
