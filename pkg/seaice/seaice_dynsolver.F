@@ -133,7 +133,8 @@ C     in S/R seaice_ocean_stress
      O     TAUX, TAUY,
      I     myTime, myIter, myThid )
 
-      IF (
+#ifdef SEAICE_ALLOW_DYNAMICS
+      IF ( SEAICEuseDYNAMICS .AND.
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
 
@@ -143,166 +144,164 @@ CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC and SEAICE_ALLOW_EVP */
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy+1,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-          seaiceMassC(i,j,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
-          seaiceMassU(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
-     &          HEFF(i,j,bi,bj) + HEFF(i-1,j  ,bi,bj) )
-          seaiceMassV(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
-     &          HEFF(i,j,bi,bj) + HEFF(i  ,j-1,bi,bj) )
-         ENDDO
-        ENDDO
-        IF ( SEAICEaddSnowMass ) THEN
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           seaiceMassC(i,j,bi,bj)=seaiceMassC(i,j,bi,bj)
-     &          +                 SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
-           seaiceMassU(i,j,bi,bj)=seaiceMassU(i,j,bi,bj)
-     &         +                  SEAICE_rhoSnow*HALF*(
-     &          HSNOW(i,j,bi,bj) + HSNOW(i-1,j  ,bi,bj) )
-
-           seaiceMassV(i,j,bi,bj)=seaiceMassV(i,j,bi,bj)
-     &         +                  SEAICE_rhoSnow*HALF*(
-     &          HSNOW(i,j,bi,bj) + HSNOW(i  ,j-1,bi,bj) )
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDDO
-      ENDDO
-
-#ifndef ALLOW_AUTODIFF
-      IF ( SEAICE_maskRHS ) THEN
-C     dynamic masking of areas with no ice, not recommended
-C     and only kept for testing purposes
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           seaiceMaskU(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj)
-           mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
-           IF ( (seaiceMaskU(i,j,bi,bj) .GT. 0. _d 0) .AND.
-     &         (mask_uice .GT. 1.5 _d 0) ) THEN
-            seaiceMaskU(i,j,bi,bj) = 1. _d 0
-           ELSE
-            seaiceMaskU(i,j,bi,bj) = 0. _d 0
-           ENDIF
-           seaiceMaskV(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj)
-           mask_vice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
-           IF ( (seaiceMaskV(i,j,bi,bj) .GT. 0. _d 0) .AND.
-     &         (mask_vice .GT. 1.5 _d 0) ) THEN
-            seaiceMaskV(i,j,bi,bj) = 1. _d 0
-           ELSE
-            seaiceMaskV(i,j,bi,bj) = 0. _d 0
-           ENDIF
+           seaiceMassC(i,j,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
+           seaiceMassU(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
+     &          HEFF(i,j,bi,bj) + HEFF(i-1,j  ,bi,bj) )
+           seaiceMassV(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
+     &          HEFF(i,j,bi,bj) + HEFF(i  ,j-1,bi,bj) )
+          ENDDO
+         ENDDO
+         IF ( SEAICEaddSnowMass ) THEN
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            seaiceMassC(i,j,bi,bj)=seaiceMassC(i,j,bi,bj)
+     &           +                 SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
+            seaiceMassU(i,j,bi,bj)=seaiceMassU(i,j,bi,bj)
+     &           +                  SEAICE_rhoSnow*HALF*(
+     &           HSNOW(i,j,bi,bj) + HSNOW(i-1,j  ,bi,bj) )
+
+            seaiceMassV(i,j,bi,bj)=seaiceMassV(i,j,bi,bj)
+     &           +                  SEAICE_rhoSnow*HALF*(
+     &           HSNOW(i,j,bi,bj) + HSNOW(i  ,j-1,bi,bj) )
+           ENDDO
+          ENDDO
+         ENDIF
+        ENDDO
+       ENDDO
+
+#ifndef ALLOW_AUTODIFF
+       IF ( SEAICE_maskRHS ) THEN
+C     dynamic masking of areas with no ice, not recommended
+C     and only kept for testing purposes
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            seaiceMaskU(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj)
+            mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
+            IF ( (seaiceMaskU(i,j,bi,bj) .GT. 0. _d 0) .AND.
+     &           (mask_uice .GT. 1.5 _d 0) ) THEN
+             seaiceMaskU(i,j,bi,bj) = 1. _d 0
+            ELSE
+             seaiceMaskU(i,j,bi,bj) = 0. _d 0
+            ENDIF
+            seaiceMaskV(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj)
+            mask_vice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
+            IF ( (seaiceMaskV(i,j,bi,bj) .GT. 0. _d 0) .AND.
+     &           (mask_vice .GT. 1.5 _d 0) ) THEN
+             seaiceMaskV(i,j,bi,bj) = 1. _d 0
+            ELSE
+             seaiceMaskV(i,j,bi,bj) = 0. _d 0
+            ENDIF
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
-      ENDIF
+        CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
+       ENDIF
 #endif /* ndef ALLOW_AUTODIFF */
 
 C--   NOW SET UP FORCING FIELDS
 
 C     initialise fields
 #if (defined ALLOW_AUTODIFF && defined SEAICE_ALLOW_EVP)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          stressDivergenceX(i,j,bi,bj) = 0. _d 0
-          stressDivergenceY(i,j,bi,bj) = 0. _d 0
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           stressDivergenceX(i,j,bi,bj) = 0. _d 0
+           stressDivergenceY(i,j,bi,bj) = 0. _d 0
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
 #endif
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        IF ( usingPCoords ) THEN
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           phiSurf(i,j) = phiHydLow(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ELSE
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
-#ifdef ATMOSPHERIC_LOADING
-C--   add atmospheric loading and Sea-Ice loading as it is done for phi0surf
-C--   in S/R external_forcing_surf
-        IF ( usingZCoords ) THEN
-         IF ( useRealFreshWaterFlux ) THEN
+         IF ( usingPCoords ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            phiSurf(i,j) = phiSurf(i,j)
-     &                   + ( pload(i,j,bi,bj)
-     &                      +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
-     &                     )*recip_rhoConst
+            phiSurf(i,j) = phiHydLow(i,j,bi,bj)
            ENDDO
           ENDDO
          ELSE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            phiSurf(i,j) = phiSurf(i,j)
-     &                   + pload(i,j,bi,bj)*recip_rhoConst
+            phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDIF
-C       ELSEIF ( usingPCoords ) THEN
+#ifdef ATMOSPHERIC_LOADING
+C--   add atmospheric loading and Sea-Ice loading as it is done for phi0surf
+C--   in S/R external_forcing_surf
+         IF ( usingZCoords ) THEN
+          IF ( useRealFreshWaterFlux ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             phiSurf(i,j) = phiSurf(i,j)
+     &                    + ( pload(i,j,bi,bj)
+     &                       +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
+     &                      )*recip_rhoConst
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             phiSurf(i,j) = phiSurf(i,j)
+     &                    + pload(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+          ENDIF
+C        ELSEIF ( usingPCoords ) THEN
 C     The true atmospheric P-loading is not yet implemented for P-coord
 C     (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
-        ENDIF
+         ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 C--   basic forcing by wind stress
-        IF ( SEAICEscaleSurfStress ) THEN
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
-     &          * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj))
-           FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
-     &          * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj))
+         IF ( SEAICEscaleSurfStress ) THEN
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
+     &           * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj))
+            FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
+     &           * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj))
+           ENDDO
           ENDDO
-         ENDDO
-        ELSE
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
-           FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
+         ELSE
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
+            FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
+           ENDDO
           ENDDO
-         ENDDO
-        ENDIF
+         ENDIF
 
-        IF ( SEAICEuseTILT ) then
-        DO j=1-OLy+1,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
+         IF ( SEAICEuseTILT ) then
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
 C--   now add in tilt
-          FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
-     &         -seaiceMassU(i,j,bi,bj)*_recip_dxC(i,j,bi,bj)
-     &         *( phiSurf(i,j)-phiSurf(i-1,j) )
-          FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
-     &         -seaiceMassV(i,j,bi,bj)* _recip_dyC(i,j,bi,bj)
-     &         *( phiSurf(i,j)-phiSurf(i,j-1) )
-         ENDDO
+            FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
+     &           -seaiceMassU(i,j,bi,bj)*_recip_dxC(i,j,bi,bj)
+     &           *( phiSurf(i,j)-phiSurf(i-1,j) )
+            FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
+     &           -seaiceMassV(i,j,bi,bj)* _recip_dyC(i,j,bi,bj)
+     &           *( phiSurf(i,j)-phiSurf(i,j-1) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+         CALL SEAICE_CALC_ICE_STRENGTH( bi, bj, myTime, myIter, myThid )
+
         ENDDO
-        ENDIF
-
-        CALL SEAICE_CALC_ICE_STRENGTH( bi, bj, myTime, myIter, myThid )
-
        ENDDO
-      ENDDO
 
-#ifdef SEAICE_ALLOW_DYNAMICS
-      IF ( SEAICEuseDYNAMICS ) THEN
 #ifdef SEAICE_ALLOW_FREEDRIFT
        IF ( SEAICEuseFREEDRIFT .OR. SEAICEuseEVP
      &                         .OR. LSR_mixIniGuess.EQ.0 ) THEN
@@ -370,12 +369,9 @@ C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
 # endif /*  ALLOW_AUTODIFF */
 #endif /* SEAICE_ALLOW_JFNK */
 
-C End of IF (SEAICEuseDYNAMICS ...
+C End of IF (SEAICEuseDYNAMICS and DIFFERENT_MULTIPLE ...
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
-
-C End of IF (DIFFERENT_MULTIPLE ...
-      ENDIF
 
 C Update ocean surface stress
       IF ( SEAICEupdateOceanStress ) THEN
