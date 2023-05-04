@@ -155,10 +155,9 @@ C     u/vice_fd :: free drift velocities (m/s)
       _RL uice_fd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vice_fd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif
+
 # ifdef SEAICE_ALLOW_EVP
-C
-C     additional fields needed by the EVP solver
-C
+C--   Additional fields needed by the EVP solver:
 C     (vertically integrated) stress tensor, with diagonal terms sigma11/22
 C     seaice_sigma1  :: sigma11+sigma22, defined at C-points   (N/m)
 C     seaice_sigma2  :: sigma11-sigma22, defined at C-points   (N/m)
