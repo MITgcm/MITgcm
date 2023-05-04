@@ -283,7 +283,7 @@ C--   basic forcing by wind stress
           ENDDO
          ENDIF
 
-         IF ( SEAICEuseTILT ) then
+         IF ( SEAICEuseTILT ) THEN
           DO j=1-OLy+1,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
 C--   now add in tilt
@@ -538,7 +538,7 @@ C
      &           + e12(i+1,j+1,bi,bj)**2 + e12(i  ,j+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
 C     the average
-            sig1(i,j) = sqrt(sigm*sigm + sigTmp)
+            sig1(i,j) = SQRT(sigm*sigm + sigTmp)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,2,bi,bj,myThid)
