@@ -834,16 +834,6 @@ C--   Check Overlap size:
          errCount = errCount + 1
         ENDIF
        ENDIF
-C--   Check time-steps:
-# ifdef ALLOW_AUTODIFF
-       IF ( useHB87stressCoupling .AND.
-     &      ( SEAICE_deltaTdyn .GT. SEAICE_deltaTtherm ) )  THEN
-         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: useHB87stressCoupling',
-     &        ' not working with deltaTdyn > deltaTtherm'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         errCount = errCount + 1
-       ENDIF
-# endif
 
 # ifdef SEAICE_ALLOW_EVP
        IF ( SEAICEuseEVP ) THEN
@@ -900,17 +890,9 @@ C--   Check time-steps:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( SEAICEuseEVP .AND. (
-# ifdef SEAICE_ALLOW_TEARDROP
-     &      SEAICEuseTD .OR. SEAICEusePL .OR.
-# endif
-# ifdef SEAICE_ALLOW_MCE
-     &      SEAICEuseMCE .OR.
-# endif
-# ifdef SEAICE_ALLOW_MCS
-     &      SEAICEuseMCS .OR.
-# endif
-     &      .FALSE. ) ) THEN
+       IF ( SEAICEuseEVP .AND.
+     &      ( SEAICEuseTD .OR. SEAICEusePL .OR.
+     &        SEAICEuseMCE .OR.  SEAICEuseMCS ) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: SEAICEuseMCS, ',
      &      'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -1005,19 +987,25 @@ C     SEAICEuseDynamics
       ENDIF
 #endif
 
+      i = 0
+      IF ( SEAICEuseTEM ) i = i + 1
+      IF ( SEAICEuseMCS ) i = i + 1
+      IF ( SEAICEuseMCE ) i = i + 1
+      IF ( SEAICEuseTD  ) i = i + 1
+      IF ( SEAICEusePL  ) i = i + 1
+      IF ( i .GT. 1 ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: More than one rheology ',
+     &      'flag = .TRUE.,'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: but only one can be .TRUE. at a time.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+
 #ifndef SEAICE_CGRID
 
-      IF ( SEAICEuseTEM
-# ifdef SEAICE_ALLOW_TEARDROP
-     &     .OR. SEAICEuseTD .OR. SEAICEusePL
-# endif
-# ifdef SEAICE_ALLOW_MCE
-     &     .OR. SEAICEuseMCE
-# endif
-# ifdef SEAICE_ALLOW_MCS
-     &     .OR. SEAICEuseMCS
-# endif
-     &     .OR. FALSE ) THEN
+      IF ( i .GE. 1 ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: non-default rheologies ',
      &      'require that SEAICE_CGRID is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -1049,29 +1037,6 @@ C     SEAICEuseDynamics
 C      errCount = errCount + 1
       ENDIF
 #endif /* ndef SEAICE_CGRID */
-
-#if ( defined SEAICE_ALLOW_TEARDROP || defined SEAICE_ALLOW_MCS || \
-      defined SEAICE_ALLOW_MCE || defined SEAICE_ALLOW_TEM )
-      IF ( (SEAICEuseMCE    .AND. SEAICEuseMCS) .OR.
-     &     (SEAICEuseMCE    .AND. SEAICEuseTD) .OR.
-     &     (SEAICEuseMCE    .AND. SEAICEusePL) .OR.
-     &     (SEAICEuseMCE    .AND. SEAICEuseTEM) .OR.
-     &     (SEAICEuseMCS    .AND. SEAICEuseTD) .OR.
-     &     (SEAICEuseMCS    .AND. SEAICEusePL) .OR.
-     &     (SEAICEuseMCS    .AND. SEAICEuseTEM) .OR.
-     &     (SEAICEuseTD     .AND. SEAICEusePL) .OR.
-     &     (SEAICEuseTD     .AND. SEAICEuseTEM) .OR.
-     &     (SEAICEusePL     .AND. SEAICEuseTEM)
-     &     ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: More than one rheology ',
-     &      'flag = .TRUE.,'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: but only one can be .TRUE. at a time.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ENDIF
-#endif
 
 C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 #ifndef SEAICE_ALLOW_FREEDRIFT
