@@ -235,12 +235,6 @@ C     diagnostics for the JFNK and Krylov solver
       COMMON /SEAICE_KRYLOV_RL/ scalarProductMetric
 #endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
 
-#ifdef ALLOW_TAPENADE
-      COMMON/WIND_STRESS_ICE/TAUX,TAUY
-      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***

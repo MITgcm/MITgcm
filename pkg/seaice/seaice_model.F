@@ -2,11 +2,7 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
-#ifdef ALLOW_TAPENADE
-# ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-# endif
-#endif
+
 CBOP
 C !ROUTINE: SEAICE_MODEL
 

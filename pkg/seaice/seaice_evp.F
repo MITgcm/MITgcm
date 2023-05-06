@@ -103,9 +103,7 @@ C     evpkey :: tape key (depends on evp iteration)
 C     tkey   :: tape key (depends on tile indices and evpkey)
       INTEGER evpkey, tkey
 #else
-# ifndef ALLOW_TAPENADE
       INTEGER nEVPstepMax
-# endif
 #endif
 
       _RL COSWAT
@@ -244,7 +242,7 @@ C
       betaFacP1  = betaFac + evpStarFac*recip_deltaT
       betaFacP1U = betaFacP1
       betaFacP1V = betaFacP1
-#if !defined ALLOW_AUTODIFF_TAMC && !defined ALLOW_TAPENADE
+#ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
 
