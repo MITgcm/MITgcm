@@ -103,7 +103,7 @@ C--   basic constants
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           deltaCreg  (i,j) = SEAICE_deltaMin
@@ -111,7 +111,7 @@ C
           recip_shear(i,j) = 0. _d 0
          ENDDO
         ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 C     need to do this beforehand for easier vectorization after
 C     TAFization
         IF ( SEAICEetaZmethod .EQ. 0 ) THEN
@@ -145,13 +145,13 @@ C     (and energy conserving)
      &                / SQRT( shearDefSq + smallNbrSq )
 C         recip_shear(i,j) = 1. _d 0 / ( shearDef + smallNbr )
 #else
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
 C     avoid sqrt of 0
           shearDef = 0. _d 0
           IF ( shearDefSq .GT. 0. _d 0 ) shearDef = SQRT(shearDefSq)
 # else
           shearDef = SQRT(shearDefSq)
-# endif /* ALLOW_AUTODIFF_TAMC */
+# endif /* ALLOW_AUTODIFF */
           recip_shear(i,j) = 1. _d 0 / MAX( ShearDef, smallNbr )
 #endif /* SEAICE_DELTA_SMOOTHREG */
          ENDDO
@@ -346,14 +346,14 @@ CML          deltaCsq =
 CML     &         (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+recip_e2)
 CML     &         + 4. _d 0*recip_e2*e12Csq(i,j)
 CML     &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-recip_e2)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C     avoid sqrt of 0
            deltaC(i,j,bi,bj) = 0. _d 0
            IF ( deltaCsq .GT. 0. _d 0 )
      &          deltaC(i,j,bi,bj) = SQRT(deltaCsq)
 #else
            deltaC(i,j,bi,bj) = SQRT(deltaCsq)
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 #ifdef SEAICE_DELTA_SMOOTHREG
 C     smooth regularization (without max-function) of delta for
 C     better differentiability
