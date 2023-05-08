@@ -90,7 +90,9 @@ C     tkey :: tape key (depends on tiles)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#if ( defined SEAICE_ITD || !defined ALLOW_GENERIC_ADVDIFF )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
