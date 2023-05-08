@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68p (2023/05/07)
 o pkg/seaice:
   - fix compile error related to ALLOW_AUTODIFF_TAMC/ALLOW_AUTODIFF mix-up
     in seaice_evp.F; also replace many ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF
