@@ -46,7 +46,8 @@ C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef SEAICE_ALLOW_JFNK
+#if ( defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_CGRID \
+      && defined SEAICE_ALLOW_JFNK )
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -595,7 +596,7 @@ C     Increment counter
 C     This is the new residual
       JFNKresidual = resLoc
 
-#endif /* SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_DYNAMCS and SEAICE_CGRID and SEAICE_ALLOW_JFNK */
 
       RETURN
       END

@@ -45,6 +45,7 @@ C     myThid    :: Thread no. that called this routine.
       INTEGER myThid
 CEOP
 
+#ifdef SEAICE_ALLOW_DYNAMICS
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,k       :: inner loop counters
@@ -192,6 +193,7 @@ CML        ENDDO
 CML       ENDDO
 CML      ENDIF
 CML#endif /* SEAICE_CGRID */
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
       RETURN
       END

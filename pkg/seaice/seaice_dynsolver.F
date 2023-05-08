@@ -95,6 +95,7 @@ C     TAUY    :: meridional wind stress over seaice at V point
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_AUTODIFF
+# ifdef SEAICE_ALLOW_DYNAMICS
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
@@ -102,9 +103,10 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
-# ifdef SEAICE_ALLOW_FREEDRIFT
+#  ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
+#  endif
 # endif
 # ifdef ALLOW_DIAGNOSTICS
           strDivX(i,j,bi,bj)= 0. _d 0
