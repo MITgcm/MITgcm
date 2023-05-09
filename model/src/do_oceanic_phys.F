@@ -168,7 +168,9 @@ C     == Global variables ===
 #  include "EBM.h"
 # endif
 # ifdef ALLOW_EXF
-#  include "ctrl.h"
+#  ifdef ALLOW_CTRL
+#   include "ctrl.h"
+#  endif
 #  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
@@ -189,12 +191,10 @@ C     == Global variables ===
 
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_KPP
-#  ifndef ALLOW_SEAICE
 #  include "KPP_PARAMS.h"
-#  endif
 # endif
 # ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
+#  include "SHELFICE.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

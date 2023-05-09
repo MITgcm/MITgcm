@@ -1,6 +1,6 @@
 #include "CPP_EEOPTIONS.h"
 
-      SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, mythid)
+      SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -9,8 +9,8 @@
       _RL     rhsmax
       _RL     rhsmaxb
       INTEGER myThid
-      
-      CALL GLOBAL_ADMAX_R8(rhsmaxb, mythid)
+
+      CALL GLOBAL_ADMAX_R8(rhsmaxb, myThid)
       RETURN
       END
 
@@ -30,7 +30,6 @@
       CALL GLOBAL_ADSUM_TILE_RL(phiTileb, sumPhib, myThid)
       END
 
-
 !     Adjoint of global_sum_r8 for arguments Arg1=(in;out)
       SUBROUTINE GLOBAL_SUM_R8_B(sumPhi, sumPhib, myThid)
       IMPLICIT NONE
@@ -45,7 +44,7 @@
       CALL GLOBAL_ADSUM_R8(sumPhib, myThid)
       END
 
-      SUBROUTINE CG2D_B0(cg2d_b, cg2d_bb, cg2d_x, 
+      SUBROUTINE CG2D_B0(cg2d_b, cg2d_bb, cg2d_x,
      &                cg2d_xb, firstResidual, minResidualSq,
      &                lastResidual,numIters, nIterMin,myThid)
       IMPLICIT NONE
@@ -53,10 +52,10 @@
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-      _RL  cg2d_b(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_bb(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_x(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_xb(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  cg2d_b(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_bb(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_xb(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
       _RL  firstResidual
       _RL  minResidualSq
       _RL  lastResidual
@@ -100,7 +99,7 @@
       INTEGER myThid
       WRITE(*,*) "Called not yet defined"
       END
- 
+
       SUBROUTINE ADEXCH_XY_RS( adVar, myThid )
       IMPLICIT NONE
       Real*8 adVar

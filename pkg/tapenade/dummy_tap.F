@@ -18,7 +18,7 @@
       RETURN
       END
 
-      SUBROUTINE DUMMY_FOR_ETAN_D(mytime, mytimed, myiter, mythid)
+      SUBROUTINE DUMMY_FOR_ETAN_D(myTime, myTimed, myIter, myThid)
 
       IMPLICIT NONE
       _RL     myTime
@@ -27,12 +27,11 @@
       INTEGER myThid
       END
 
-      SUBROUTINE DUMMY_FOR_ETAN_B(mytime, mytimeb, myiter, mythid)
+      SUBROUTINE DUMMY_FOR_ETAN_B(myTime, myTimeb, myIter, myThid)
       IMPLICIT NONE
       _RL     myTime
       _RL     myTimeb
       INTEGER myIter
       INTEGER myThid
       END
-
 

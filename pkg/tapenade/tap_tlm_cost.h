@@ -9,13 +9,13 @@ c     ==================================================================
 #ifdef ALLOW_COST_STATE_FINAL
       common /cost_state_final_r_d/
      &               objf_state_finald
-      _RL  objf_state_finald (snx,sny,nsx,nsy,4*Nr+1)
+      _RL  objf_state_finald (sNx,sNy,nSx,nSy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
       common /cost_vector_r_d/
      &                  objf_vectord
-      _RL  objf_vectord(snx,nsx,nsy)
+      _RL  objf_vectord(sNx,nSx,nSy)
 #endif
 
 c     ==================================================================

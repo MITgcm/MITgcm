@@ -29,7 +29,7 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "GRID.h"
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
+# include "tamc.h"
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE

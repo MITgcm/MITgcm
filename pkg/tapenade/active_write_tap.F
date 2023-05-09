@@ -1,3 +1,4 @@
+#include "CPP_EEOPTIONS.h"
 C--   File active_write_tap.F: Active write with Tapenade.
 C--    Contents:
 C--    o ACTIVE_WRITE_XY_D

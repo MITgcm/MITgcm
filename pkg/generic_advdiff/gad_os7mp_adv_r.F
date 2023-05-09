@@ -53,8 +53,8 @@ C     == Local variables ==
       kp2=MIN(Nr,k+2)
       kp3=MIN(Nr,k+3)
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 
         wLoc = wFld(i,j)
         cfl = abs(wLoc*deltaTloc*recip_drC(k))

@@ -47,17 +47,17 @@ C     == Local variables ==
 
       Eps = 1. _d -20
 
-      DO j=1-Oly,sNy+Oly
-       uT(1-Olx,j)=0. _d 0
-       uT(2-Olx,j)=0. _d 0
-       uT(3-Olx,j)=0. _d 0
-       uT(4-Olx,j)=0. _d 0
-       uT(sNx+Olx-2,j)=0. _d 0
-       uT(sNx+Olx-1,j)=0. _d 0
-       uT(sNx+Olx,j)=0. _d 0
+      DO j=1-OLy,sNy+OLy
+       uT(1-OLx,j)=0. _d 0
+       uT(2-OLx,j)=0. _d 0
+       uT(3-OLx,j)=0. _d 0
+       uT(4-OLx,j)=0. _d 0
+       uT(sNx+OLx-2,j)=0. _d 0
+       uT(sNx+OLx-1,j)=0. _d 0
+       uT(sNx+OLx,j)=0. _d 0
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+4,sNx+Olx-3
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+4,sNx+OLx-3
 
         uLoc = uFld(i,j)
         cfl = uLoc

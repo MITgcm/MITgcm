@@ -48,7 +48,7 @@ C     myThid     :: my Thread Id. number
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
-      INTEGER myOptimIter 
+      INTEGER myOptimIter
       INTEGER myThid
       _RL  dummy
       _RL dummyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -145,9 +145,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_READ_XY_B
 C     !INTERFACE:
-      SUBROUTINE ACTIVE_READ_XY_B(active_var_file, 
+      SUBROUTINE ACTIVE_READ_XY_B(active_var_file,
      &                 active_var, active_varb,
-     &                 iRec, doglobalread, lAdInit, 
+     &                 iRec, doglobalread, lAdInit,
      &                 myOptimIter, myThid, dummy, dummyb)
 
 C     *==========================================================*
@@ -213,9 +213,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: ACTIVE_READ_XYZ_B
 C     !INTERFACE:
-      SUBROUTINE ACTIVE_READ_XYZ_B(active_var_file, 
+      SUBROUTINE ACTIVE_READ_XYZ_B(active_var_file,
      &                 active_var, active_varb,
-     &                 iRec, doglobalread, lAdInit, 
+     &                 iRec, doglobalread, lAdInit,
      &                 myOptimIter, myThid, dummy, dummyb)
 
 C     *==========================================================*

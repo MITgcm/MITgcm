@@ -312,7 +312,7 @@ C--   Call the default CG solver
 #ifndef ALLOW_TAPENADE
       IF (  .NOT. useNSACGSolver .AND. cg2dFullAdjoint )
      &     CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
-#endif /* ALLOW_TAPENADE */ 
+#endif /* ALLOW_TAPENADE */
 #endif
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 

@@ -374,26 +374,24 @@ C     == Global variables ==
       defined ALLOW_DEPTH_CONTROL)
 #  include "CG2D.h"
 # endif
-#endif /* ALLOW_AUTODIFF or ALLOW_TAPENADE */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_KPP
-#  ifndef ALLOW_SEAICE
 #  include "KPP_PARAMS.h"
-#  endif
 # endif
 # ifdef ALLOW_GMREDI
-# include "GMREDI_TAVE.h"
+#  include "GMREDI_TAVE.h"
 # endif
 # ifdef ALLOW_TIMEAVE
-# include "TIMEAVE_STATV.h"
+#  include "TIMEAVE_STATV.h"
 # endif
 # ifdef ALLOW_MOM_FLUXFORM
-# include "MOM_FLUXFORM.h"
+#  include "MOM_FLUXFORM.h"
 # endif
 # ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
-# include "EXF_INTERP_PARAM.h"
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_PARAM.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

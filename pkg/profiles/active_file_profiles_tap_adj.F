@@ -3,13 +3,12 @@
 c     ==================================================================
 c
 c     active_files_tap_adj.F: Routines to handle the I/O of the active file
-c                        for the adjoint calculations with Tapenade. 
+c                        for the adjoint calculations with Tapenade.
 c                        All files are direct access files.
 c
 c     Routines
-c
 c     o  active_read_profile_b      - Adjoint of active_read_profile
-c     o  adactive_write_profile_b     - Adjoint of active_write_profile
+c     o  active_write_profile_b     - Adjoint of active_write_profile
 c
 c        changed: shreyasg911@gmail.com 26-Mar-2023
 c
@@ -52,20 +51,20 @@ c     active_var_file: filename
 c     nadactive_var:   integer size of adactive_var
 c     adactive_var:    array
 c     irec:            record number
-c     myIter:          number of optimization iteration (default: 0)
-c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
 c     lAdInit:         initialisation of corresponding adjoint
 c                      variable and write to active file
-      integer nadactive_var,active_num_file
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+      integer active_num_file, nadactive_var
       _RL    active_var(nadactive_var), adactive_var(nadactive_var)
-      integer irec,active_varnum
-      integer myiter
-      integer  bi,bj,mythid
+      integer active_varnum
+      integer irec
       logical lAdInit
+      integer myiter
+      integer  bi, bj, mythid
       _RL      dummy
       _RL      dummyb
+c     == end of interface ==
 
 #ifdef ALLOW_PROFILES
 
@@ -79,10 +78,7 @@ c                      variable and write to active file
 
       end
 
-c     ==================================================================
-c     ==================================================================
-c     ==================================================================
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine active_write_profile_b(
      I                              active_num_file,
@@ -123,19 +119,14 @@ c     adactive_var:    array
 c     irec:            record number
 c     myIter:          number of optimization iteration (default: 0)
 c     mythid:          thread number for this instance
-c     doglobalread:    flag for global or local read/write
-c                      (default: .false.)
-c     lAdInit:         initialisation of corresponding adjoint
-c                      variable and write to active file
-      integer nadactive_var,active_num_file
+      integer active_num_file, nadactive_var
       _RL    active_var(nadactive_var), adactive_var(nadactive_var)
-      integer irec,active_varnum
+      integer active_varnum
+      integer irec
       integer myiter
-      integer  bi,bj,mythid
+      integer  bi, bj, mythid
       _RL     dummy
       _RL     dummyb
-
-
 c     == end of interface ==
 
 #ifdef ALLOW_PROFILES
@@ -149,7 +140,3 @@ c     == end of interface ==
 #endif
 
       end
-
-c     ==================================================================
-
-

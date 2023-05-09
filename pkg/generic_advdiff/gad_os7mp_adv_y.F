@@ -47,17 +47,17 @@ C     == Local variables ==
 
       Eps = 1. _d -20
 
-      DO i=1-Olx,sNx+Olx
-       vT(i,1-Oly)=0. _d 0
-       vT(i,2-Oly)=0. _d 0
-       vT(i,3-Oly)=0. _d 0
-       vT(i,4-Oly)=0. _d 0
-       vT(i,sNy+Oly-2)=0. _d 0
-       vT(i,sNy+Oly-1)=0. _d 0
-       vT(i,sNy+Oly)=0. _d 0
+      DO i=1-OLx,sNx+OLx
+       vT(i,1-OLy)=0. _d 0
+       vT(i,2-OLy)=0. _d 0
+       vT(i,3-OLy)=0. _d 0
+       vT(i,4-OLy)=0. _d 0
+       vT(i,sNy+OLy-2)=0. _d 0
+       vT(i,sNy+OLy-1)=0. _d 0
+       vT(i,sNy+OLy)=0. _d 0
       ENDDO
-      DO j=1-Oly+4,sNy+Oly-3
-       DO i=1-Olx,sNx+Olx
+      DO j=1-OLy+4,sNy+OLy-3
+       DO i=1-OLx,sNx+OLx
 
         vLoc = vFld(i,j)
         cfl = vLoc

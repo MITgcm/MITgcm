@@ -72,7 +72,7 @@ C     == Global variables ===
 
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GENERIC_ADVDIFF
-# include "GAD_SOM_VARS.h"
+#  include "GAD_SOM_VARS.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 

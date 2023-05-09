@@ -29,15 +29,15 @@
       CALL GLOBAL_SUM_R8(sumPhi, myThid)
       END
 
-      SUBROUTINE CG2D_D(cg2d_b, cg2d_bd, cg2d_x, 
+      SUBROUTINE CG2D_D(cg2d_b, cg2d_bd, cg2d_x,
      &                cg2d_xd, firstResidual, minResidualSq,
      &                lastResidual,numIters, nIterMin,myThid )
       IMPLICIT NONE
 #include "SIZE.h"
-      _RL  cg2d_b(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_bd(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_x(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
-      _RL  cg2d_xd(1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy)
+      _RL  cg2d_b(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_bd(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
+      _RL  cg2d_xd(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy)
       _RL  firstResidual
       _RL  minResidualSq
       _RL  lastResidual
@@ -60,7 +60,7 @@
      &        copyIt2, myThid)
       END
 
-      SUBROUTINE GLOBAL_MAX_R8_D(rhsmax, rhsmaxd, mythid)
+      SUBROUTINE GLOBAL_MAX_R8_D(rhsmax, rhsmaxd, myThid)
       IMPLICIT NONE
       _RL     rhsmax
       _RL     rhsmaxd
