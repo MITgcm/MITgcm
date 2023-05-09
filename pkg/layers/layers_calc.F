@@ -301,7 +301,6 @@ C--   Direct Snap-shot output
           CALL WRITE_FLD_3D_RL( 'layers_Ttottend.', suff, 2*Nr,
      &       layers_tottend, myIter, myThid )
 # endif /* LAYERS_DIAG_TOTTEND */
-#endif
 #ifdef SHORTWAVE_HEATING
           CALL WRITE_FLD_3D_RL( 'layers_sw.', suff, Nr,
      &       layers_sw, myIter, myThid )
@@ -408,8 +407,7 @@ C--   Fill-in diagnostics
          CALL DIAGNOSTICS_FILL( layers_TtendAdvr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 #ifdef LAYERS_DIAG_TOTTEND
-         IF( layers_diag_tottendTS)
-     &   WRITE(diagName,'(A4,I1,A3)') 'LTto',iLa,layers_name(iLa)
+         WRITE(diagName,'(A4,I1,A3)') 'LTto',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Ttendtot,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 #endif /* LAYERS_DIAG_TOTTEND */
@@ -429,8 +427,7 @@ C--   Fill-in diagnostics
          CALL DIAGNOSTICS_FILL( layers_StendAdvr,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 #ifdef LAYERS_DIAG_TOTTEND
-         IF( layers_diag_tottendTS)
-     &   WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)
+         WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)
          CALL DIAGNOSTICS_FILL( layers_Stendtot,
      &                          diagName,0,Nlayers-1, 0, 1, 1, myThid )
 #endif /* LAYERS_DIAG_TOTTEND */
@@ -501,9 +498,9 @@ C--   Reset temporary flux arrays to zero
             layers_afx     (i,j,k,iTracer,bi,bj) = 0. _d 0
             layers_afy     (i,j,k,iTracer,bi,bj) = 0. _d 0
             layers_afr     (i,j,k,iTracer,bi,bj) = 0. _d 0
-# ifdef LAYERS_DIAG_TOTTEND
+#ifdef LAYERS_DIAG_TOTTEND
             layers_tottend (i,j,k,iTracer,bi,bj) = 0. _d 0
-# endif /* LAYERS_DIAG_TOTTEND */
+#endif
 #ifdef SHORTWAVE_HEATING
             layers_sw       (i,j,k,1      ,bi,bj) = 0. _d 0
 #endif /* SHORTWAVE_HEATING */

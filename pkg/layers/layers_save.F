@@ -84,9 +84,11 @@ C msgBuf           :: error message buffer
        ELSE IF (fluxid.EQ.'AFR') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_afr,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+#ifdef LAYERS_DIAG_TOTTEND
        ELSE IF (fluxid.EQ.'TOT') THEN
          CALL LAYERS_FILL_FIELD(df, trIdentity, Nr, layers_tottend,'M',
      &           kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+#endif
        ELSE
          WRITE(msgBuf,'(2A)')
      &          'S/R LAYERS_FILL: ',

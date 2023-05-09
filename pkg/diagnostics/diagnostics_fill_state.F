@@ -359,7 +359,9 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
      &                              'TOTVTEND',0,Nr,0,1,1,myThid )
 
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
-     &     .OR. ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+     &     .OR.  useLayers
+#endif
      &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -375,12 +377,16 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) )
      &    CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,0,1,1,myThid)
-         IF ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+         IF ( useLayers )
      &    CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,0,1,1,myThid)
+#endif
         ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
-     &     .OR. ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+     &     .OR. useLayers
+#endif
      &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -396,8 +402,10 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          ENDDO
          IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) )
      &    CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,0,1,1,myThid)
-         IF ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+         IF ( useLayers )
      &    CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,0,1,1,myThid)
+#endif
         ENDIF
 
 C--   fill momentum state-var diagnostics: end
@@ -667,7 +675,9 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
         ENDDO
 
         IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid)
-     &     .OR. ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+     &     .OR. useLayers
+#endif
      &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -681,14 +691,18 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            IF ( DIAGNOSTICS_IS_ON('TOTTTEND',myThid) )
      &      CALL DIAGNOSTICS_FILL(tmpMk,'TOTTTEND',0,Nr,-1,bi,bj,myThid)
-           IF ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+           IF ( useLayers )
      &      CALL LAYERS_FILL(tmpMk,1,'TOT',0,Nr,-1,bi,bj,myThid)
+#endif
           ENDDO
          ENDDO
         ENDIF
 
         IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid)
-     &     .OR. ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+     &     .OR. useLayers
+#endif
      &     ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -702,8 +716,10 @@ C     (previous fill for these diagnostics DID allow counter to be incremented)
            ENDDO
            IF ( DIAGNOSTICS_IS_ON('TOTSTEND',myThid) )
      &      CALL DIAGNOSTICS_FILL(tmpMk,'TOTSTEND',0,Nr,-1,bi,bj,myThid)
-           IF ( useLayers .AND. layers_diag_tottendTS )
+#ifdef ALLOW_LAYERS
+           IF ( useLayers )
      &      CALL LAYERS_FILL(tmpMk,2,'TOT',0,Nr,-1,bi,bj,myThid)
+#endif
           ENDDO
          ENDDO
         ENDIF

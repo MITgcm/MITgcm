@@ -21,10 +21,8 @@ C     layers_diagFreq ::
 
       LOGICAL layers_MNC, layers_MDSIO
       LOGICAL layers_bolus(layers_maxNum)
-      LOGICAL layers_diag_tottendTS
       COMMON /LAYERS_PARM_L/ layers_MNC, layers_MDSIO,
      &                       layers_bolus
-     &                      ,layers_diag_tottendTS
 
       _RL layers_taveFreq, layers_diagFreq
       COMMON /LAYERS_PARM_RL/ layers_taveFreq, layers_diagFreq
@@ -93,7 +91,7 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
      &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr,
      &    layers_afx, layers_afy, layers_afr
 #ifdef LAYERS_DIAG_TOTTEND
-     &   ,layers_tottend
+     &  , layers_tottend
 #endif /* LAYERS_DIAG_TOTTEND */
       _RL layers_bounds_w(Nlayers, layers_maxNum)
       _RL layers_recip_delta(Nlayers-1, layers_maxNum)
@@ -140,7 +138,7 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
       _RL layers_afr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
 #ifdef LAYERS_DIAG_TOTTEND
       _RL layers_tottend(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-#endif /* LAYERS_DIAG_TOTTEND */
+#endif
 
 #ifdef SHORTWAVE_HEATING
       COMMON /LAYERS_SW/ layers_sw
