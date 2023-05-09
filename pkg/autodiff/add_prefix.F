@@ -16,6 +16,7 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
+#include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     prefix  :: (input)  2 character prefix to add
@@ -35,15 +36,15 @@ CEOP
 
       il = ILNBLNK( actvarf )
       ll = 0
-c     IF ( il .GT. 0 .AND. il .LE. 80 ) THEN
+      IF ( il .GT. 0 .AND. il .LE. MAX_LEN_FNAM ) THEN
         l = il
         DO WHILE ( ll .EQ. 0 .AND. l .GE. 1 )
           IF ( actvarf(l:l) .EQ. '/' ) ll = l
           l = l -1
         ENDDO
-c     ELSE
-c       STOP 'ABNORMAL END: S/R ADD_PREFIX'
-c     ENDIF
+      ELSE
+        STOP 'ABNORMAL END: S/R ADD_PREFIX'
+      ENDIF
       WRITE(fname,'(3A)') actvarf(1:ll), prefix, actvarf(ll+1:il)
 
       RETURN
