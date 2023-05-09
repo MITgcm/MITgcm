@@ -22,7 +22,7 @@ c     == global variables ==
 #include "cost.h"
 #include "adcost.h"
 #ifdef ALLOW_TAPENADE
-# include "tap_adj_cost.h"
+# include "COST_TAP_ADJ.h"
 #endif
 
 c     == routine arguments ==

@@ -86,7 +86,7 @@ C     == global variables ==
 #include "g_cost.h"
 
 #ifdef ALLOW_TAPENADE
-# include "tap_tlm_cost.h"
+# include "COST_TAP_TLM.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
