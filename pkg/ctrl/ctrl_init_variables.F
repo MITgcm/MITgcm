@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_TAPENADE
 # ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
+#  include "GMREDI_OPTIONS.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
@@ -39,25 +39,25 @@ C     == Global variables ===
 #ifdef ALLOW_TAPENADE
 # include "DYNVARS.h"
 # ifdef ALLOW_GMREDI
-# include "GMREDI.h"
+#  include "GMREDI.h"
 # endif
 # ifdef ALLOW_CTRL
-# include "optim.h"
-# include "ctrl_dummy.h"
+#  include "optim.h"
+#  include "ctrl_dummy.h"
 # endif
 # ifdef ALLOW_PTRACERS
-# include "PTRACERS_SIZE.h"
-# include "PTRACERS_FIELDS.h"
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
+#  include "SHELFICE.h"
 # endif
 # ifdef ALLOW_STREAMICE
-# include "STREAMICE.h"
+#  include "STREAMICE.h"
 # endif
 # ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE.h"
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
 # endif
 #endif /* ALLOW_TAPENADE */
 
