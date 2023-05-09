@@ -1,5 +1,14 @@
 #include "CPP_EEOPTIONS.h"
 
+C--  File exch2_rs_rl_12_d.F: Tapenade Tangent Linear EXCH2 routines
+C--   Contents
+C--   o  EXCH2_RS1_CUBE_D(
+C--   o  EXCH2_RL1_CUBE_D(
+C--   o  EXCH2_RS2_CUBE_D(
+C--   o  EXCH2_RL2_CUBE_D(
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE EXCH2_RS1_CUBE_D(
      U            array, arrayd,
      I            signOption, fieldCode,
@@ -13,7 +22,6 @@
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_BUFFER.h"
-
 
       INTEGER myOLw, myOLe, myOLs, myOLn, myNz
       _RS array(1-myOLw:sNx+myOLe,
@@ -40,8 +48,10 @@
      I            signOption, fieldCode,
      I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            cornerMode, myThid )      
+     I            cornerMode, myThid )
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXCH2_RL1_CUBE_D(
      U            array, arrayd,
@@ -56,7 +66,6 @@
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_BUFFER.h"
-
 
       INTEGER myOLw, myOLe, myOLs, myOLn, myNz
       _RL array(1-myOLw:sNx+myOLe,
@@ -83,9 +92,11 @@
      I            signOption, fieldCode,
      I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            cornerMode, myThid )      
+     I            cornerMode, myThid )
 
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXCH2_RS2_CUBE_D(
      U            array1, array1d,
@@ -107,7 +118,7 @@
      &           myNz, nSx, nSy)
       _RS array1d(1-myOLw:sNx+myOLe,
      &           1-myOLs:sNy+myOLn,
-     &           myNz, nSx, nSy) 
+     &           myNz, nSx, nSy)
       _RS array2(1-myOLw:sNx+myOLe,
      &           1-myOLs:sNy+myOLn,
      &           myNz, nSx, nSy)
@@ -136,8 +147,9 @@
      I            exchWidthX, exchWidthY,
      I            cornerMode, myThid )
 
-
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXCH2_RL2_CUBE_D(
      U            array1, array1d,
@@ -154,14 +166,13 @@
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_BUFFER.h"
 
-
       INTEGER myOLw, myOLe, myOLs, myOLn, myNz
       _RL array1(1-myOLw:sNx+myOLe,
      &           1-myOLs:sNy+myOLn,
      &           myNz, nSx, nSy)
       _RL array1d(1-myOLw:sNx+myOLe,
      &           1-myOLs:sNy+myOLn,
-     &           myNz, nSx, nSy) 
+     &           myNz, nSx, nSy)
       _RL array2(1-myOLw:sNx+myOLe,
      &           1-myOLs:sNy+myOLn,
      &           myNz, nSx, nSy)
@@ -190,8 +201,4 @@
      I            exchWidthX, exchWidthY,
      I            cornerMode, myThid )
 
-
       END
-
-
-
