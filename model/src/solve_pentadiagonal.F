@@ -272,7 +272,7 @@ CADJ STORE d5d_prime(k) = loctape_solvepenta, key = kkey
      &      -a5d(i,j,k)*y5d_prime(k-2)
      &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(k-2))*y5d_prime(k-1)
           ENDIF
-x
+
 c normalization
           tmpVar = c5d_prime(k)
           IF ( tmpVar.NE.0. _d 0 ) THEN
