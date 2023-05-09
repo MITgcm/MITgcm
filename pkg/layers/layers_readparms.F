@@ -37,6 +37,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &       layers_G, layers_taveFreq, layers_diagFreq,
      &       LAYER_nb, layers_kref, useBOLUS, layers_bolus,
      &       layers_name, layers_bounds, layers_krho
+     &      ,layers_diag_tottendTS
 
       IF ( .NOT.useLayers ) THEN
 C-    pkg LAYERS is not used
@@ -58,6 +59,13 @@ C--   Default values for LAYERS
 C     The MNC stuff is not working yet
       layers_MNC = .FALSE.
       layers_MDSIO = .TRUE.
+
+C--   filling of layers tottend variables and tottend diagnostics
+#ifdef LAYERS_DIAG_TOTTEND
+      layers_diag_tottendTS = .TRUE.
+#else
+      layers_diag_tottendTS = .FALSE.
+#endif /* LAYERS_DIAG_TOTTEND */
 
       DO iLa=1,layers_maxNum
         layers_name(iLa) = ' '
@@ -200,6 +208,18 @@ C- Check MSE is not used with grey atmosphere nor with fizhi
         ENDIF
        ENDIF
       ENDDO
+
+C- Check filling of layers tottend variables and diagnostics 
+#ifndef LAYERS_DIAG_TOTTEND
+      IF ( layers_diag_tottendTS ) THEN
+        WRITE(msgBuf,'(3A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'layers_diag_tottendTS=.TRUE. requires to '
+     &      'define LAYERS_DIAG_TOTTEND'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+      ENDIF
+#endif
 
 C--   Make sure that we locally honor the global MNC on/off flag
       layers_MNC = layers_MNC .AND. useMNC
