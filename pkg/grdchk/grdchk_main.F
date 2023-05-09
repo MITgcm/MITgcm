@@ -86,18 +86,14 @@ C     == global variables ==
 #include "g_cost.h"
 
 #ifdef ALLOW_TAPENADE
-#include "tap_tlm_cost.h"
-C#include "CTRL_SIZE.h"
-C#include "ctrl_dummy.h"
+# include "tap_tlm_cost.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
 C     !LOCAL VARIABLES:
-C     == local variables ==
       INTEGER myIter
       _RL     myTime
       INTEGER bi, bj
@@ -134,7 +130,6 @@ C     == local variables ==
       _RL tmpplot1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpplot2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpplot3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C     == end of interface ==
 CEOP
 
       ioUnit = standardMessageUnit
@@ -169,13 +164,9 @@ Cph   assuming all xx_ fields are initialised to zero.
 
 #ifdef ALLOW_TAPENADE
 C--   forward run with unperturbed control vector
-            myTime = startTime
-            myIter = nIter0
-#ifdef ALLOW_OPENAD
-            CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
-#else
-            CALL THE_MAIN_LOOP( myTime, myIter, myThid )
-#endif
+      myTime = startTime
+      myIter = nIter0
+      CALL THE_MAIN_LOOP( myTime, myIter, myThid )
 #endif
 
 #if (defined  (ALLOW_ADMTLM))
@@ -299,7 +290,7 @@ C--   1. perturb control vector component: xx(i)=1.
 C--   2. perform tangent linear run
           myTime = startTime
           myIter = nIter0
-#ifdef ALLOW_ADMTLM
+# ifdef ALLOW_ADMTLM
           DO k=1,4*Nr+1
             DO j=1,sNy
               DO i=1,sNx
@@ -307,28 +298,25 @@ C--   2. perform tangent linear run
               ENDDO
             ENDDO
           ENDDO
-#else
+# else
           g_fc = 0.
-#endif
+# endif
 
-#ifndef ALLOW_TAPENADE
-
-          CALL G_THE_MAIN_LOOP( myTime, myIter, myThid )
-#ifdef ALLOW_ADMTLM
-          ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
-#else
-          ftlxxmemo = g_fc
-#endif
-
-#else /* ALLOW_TAPENADE */
+# ifdef ALLOW_TAPENADE
           CALL THE_MAIN_LOOP_D( myTime, myIter, myThid )
-#ifdef ALLOW_ADMTLM
+#  ifdef ALLOW_ADMTLM
           ftlxxmemo = objf_state_finald(idep,jdep,1,1,1)
-#else
+#  else
           ftlxxmemo = fcd
-#endif
-
-#endif /* ALLOW_TAPENADE */
+#  endif
+# else /* ALLOW_TAPENADE */
+          CALL G_THE_MAIN_LOOP( myTime, myIter, myThid )
+#  ifdef ALLOW_ADMTLM
+          ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
+#  else
+          ftlxxmemo = g_fc
+#  endif
+# endif /* ALLOW_TAPENADE */
 
 C--   3. reset control vector
           CALL GRDCHK_SETXX( icvrec, TANGENT_SIMULATION,
@@ -362,7 +350,7 @@ C--   forward run with perturbed control vector
           CALL THE_MAIN_LOOP( myTime, myIter, myThid )
 #endif
 
-#if (defined (ALLOW_ADMTLM))
+#ifdef ALLOW_ADMTLM
           fcpertplus = objf_state_final(idep,jdep,1,1,1)
 #elif (defined (ALLOW_OPENAD))
           fcpertplus = fc%v
@@ -383,9 +371,6 @@ C--   Reset control vector.
           IF ( useCentralDiff ) THEN
 C--   (C-2) repeat the proceedure for a negative perturbation:
             localEps = - ABS(grdchk_eps)
-
-C-- end of if useCentralDiff ...
-          END IF
 
 C--   get control vector component from file
 C--   perturb it and write back to file
@@ -420,6 +405,9 @@ C--   Reset control vector.
      &                 itile, jtile, layer,
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, ierr, myThid )
+
+C-- end of if useCentralDiff ...
+          ENDIF
 
 C******************************************************
 C--   (D): calculate relative differences between gradients
