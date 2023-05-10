@@ -1,29 +1,28 @@
-c     ==================================================================
-c     HEADER TAP_ADJ_COST
-c     ==================================================================
+C     ==================================================================
+C     HEADER COST_TAP_ADJ
+C     ==================================================================
 
-      common /cost_r_b/
-     &                  fcb
+      COMMON /COST_R_B/
+     &        fcb
       _RL  fcb
 
 #ifdef ALLOW_COST_STATE_FINAL
-      common /cost_state_final_r_b/
-     &                objf_state_finalb
+      COMMON /COST_STATE_FINAL_R_B/
+     &        objf_state_finalb
       _RL  objf_state_finalb (sNx,sNy,nSx,nSy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
-      common /cost_vector_r_b/
-     &                  objf_vectorb
+      COMMON /COST_VECTOR_R_B/
+     &        objf_vectorb
       _RL  objf_vectorb(sNx,nSx,nSy)
 #endif
 
 #ifdef ALLOW_DIC
-         COMMON /dic_cost_ctrl_b/
-     &    totcostb
+      COMMON /DIC_COST_CTRL_B/
+     &        totcostb
       _RL  totcostb
 #endif
-c     ==================================================================
-c     END OF HEADER TAP_ADJ_COST
-c     ==================================================================
-
+C     ==================================================================
+C     END OF HEADER COST_TAP_ADJ
+C     ==================================================================

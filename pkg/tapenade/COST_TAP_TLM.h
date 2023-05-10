@@ -1,24 +1,23 @@
-c     ==================================================================
-c     HEADER TAP_TLM_COST
-c     ==================================================================
+C     ==================================================================
+C     HEADER COST_TAP_TLM
+C     ==================================================================
 
-      common /cost_r_d/
-     &                  fcd
+      COMMON /COST_R_D/
+     &        fcd
       _RL  fcd
 
 #ifdef ALLOW_COST_STATE_FINAL
-      common /cost_state_final_r_d/
-     &               objf_state_finald
+      COMMON /COST_STATE_FINAL_R_D/
+     &        objf_state_finald
       _RL  objf_state_finald (sNx,sNy,nSx,nSy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
-      common /cost_vector_r_d/
-     &                  objf_vectord
+      COMMON /COST_VECTOR_R_D/
+     &        objf_vectord
       _RL  objf_vectord(sNx,nSx,nSy)
 #endif
 
-c     ==================================================================
-c     END OF HEADER TAP_TLM_COST
-c     ==================================================================
-
+C     ==================================================================
+C     END OF HEADER COST_TAP_TLM
+C     ==================================================================
