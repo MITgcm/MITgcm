@@ -261,6 +261,7 @@ C--   Set vertical diffusivity contribution from KPP
 #ifndef EXCLUDE_PCELL_MIX_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ INIT loctape_3d_diff = COMMON, Nr
+CADJ STORE kappartr = loctape_3d_diff
 # endif
       IF ( interDiffKr_pCell ) THEN
 C--   This is a hack: alter vertical diffusivity (instead of changing many S/R)
@@ -364,6 +365,9 @@ C-    Increase KappaRTr below surface level:
            ENDDO
           ENDDO
           IF ( mixSurf.EQ.2 ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tmpFac          = loctape_3d_diff, key = k
+# endif
            DO j = 2-OLy, sNy+OLy
             DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
