@@ -628,6 +628,9 @@ makemodel()
 	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
 	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
     fi
+    if test -f make.tr_log && test $KIND = 4 -o $KIND = 5 ; then
+	grep '^Tapenade ' make.tr_log | tail -n 1 >> $CDIR"/summary.txt"
+    fi
     if test $mk_fail != 0 ; then return $mk_fail ; fi
     )
 }
