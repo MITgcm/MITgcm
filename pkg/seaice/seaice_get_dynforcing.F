@@ -156,7 +156,7 @@ C     make local copies of wind field
           ENDDO
          ENDDO
          IF ( useRelativeWind ) THEN
-C     undo subtraction of ocean velocities and subtract ice velocities
+C     subtract ice velocities from each component wind-speed
           DO j=1-OLy,sNy+OLy-1
            DO i=1-OLx,sNx+OLx-1
             uTmp(i,j)=uwind(i,j,bi,bj)
