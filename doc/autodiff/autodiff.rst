@@ -1865,8 +1865,6 @@ Steps for Linux
 
     % tar xvfz tapenade_3.16.tar
 
-**NOTE**: Alternatively, a Tapenade version that works correctly with MITgcm is always available in the ``tools/TAP_support/tapenade_supported`` directory.
-
 4. On Linux, depending on your distribution, Tapenade may require you to set
    the shell variable ``JAVA_HOME`` to your java installation directory. It is
    often ``JAVA_HOME=/usr/java/default``. You might also need to modify the

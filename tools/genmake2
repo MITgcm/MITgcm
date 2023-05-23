@@ -3227,8 +3227,8 @@ echo 'OBJFILES= $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o) $(F90_SRC_FILES:.F90
 if test "x$TAPENADE" != x ; then
 cat >>$MAKEFILE <<EOF
 TAPENADE_SUPPORT_C_SRC_FILES = \
-${TAPTOOLS}/tapenade_supported/ADFirstAidKit/adStack.c \
-${TAPTOOLS}/tapenade_supported/ADFirstAidKit/adBinomial.c
+${TAPTOOLS}/ADFirstAidKit/adStack.c \
+${TAPTOOLS}/ADFirstAidKit/adBinomial.c
 EOF
 echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
 fi
@@ -3698,10 +3698,10 @@ tlm_exe_target:
 
 \$(EXE_ADJ): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_ADJ_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/tapenade_supported/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_ADJ) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
 \$(EXE_TLM): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(TAP_SUPPORT_OBJFILES) \$(EMBEDDED_FILES) TAP_TLM_FILES
 	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/tapenade_supported/ADFirstAidKit/%=%) \$(LIBS)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(AD_FILES_TLM) \$(TAP_SUPPORT_OBJFILES:${TAPTOOLS}/ADFirstAidKit/%=%) \$(LIBS)
 
 # ============ end TAPENADE specific section ==============
 
