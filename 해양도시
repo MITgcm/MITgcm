@@ -1,0 +1,40 @@
+program mitgcm_demo
+
+implicit none
+integer :: i, iter, iters_max, j, jj
+real*8 :: dt, dx, dy, dz, time_step, model_time, temp_out(50,50)
+
+iters_max = 50   
+dx = 1000.0      
+dy = 1000.0       
+dz = 10.0         
+time_step = 300.0
+
+do iter = 1, iters_max
+  model_time = time_step * iter
+
+  call calculate_surface_temp(temp_out, dx, dy, dz, model_time)
+
+  do j = 1, 50
+    do jj = 1, 50
+      write(*,*) j*dx, jj*dy, temp_out(j,jj)
+    end do
+  end do
+end do
+
+end program mitgcm_demo
+
+subroutine calculate_surface_temp(temp_out, dx, dy, dz, model_time)
+  implicit none
+  real*8, intent(out) :: temp_out(:,:)
+  real*8, intent(in) :: dx, dy, dz, model_time
+  integer :: i, j
+
+  do i = 1, 50
+    do j = 1, 50
+      temp_out(i,j) = sin(i*dx * j*dy / dz + model_time) !
+    end do
+  end do
+
+  return
+end subroutine calculate_surface_temp
