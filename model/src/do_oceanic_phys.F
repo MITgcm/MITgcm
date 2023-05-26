@@ -190,9 +190,9 @@ C     == Global variables ===
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
-# ifdef ALLOW_KPP
-#  include "KPP_PARAMS.h"
-# endif
+c# ifdef ALLOW_KPP
+c#  include "KPP_PARAMS.h"
+c# endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 # endif

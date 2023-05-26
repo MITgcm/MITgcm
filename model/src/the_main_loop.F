@@ -222,7 +222,7 @@ C     it is important that this file is included after SEAICE_SIZE.h
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-#  include "KPP_PARAMS.h"
+c#  include "KPP_PARAMS.h"
 # endif
 # ifdef ALLOW_CTRL
 #  include "optim.h"

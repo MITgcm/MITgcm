@@ -161,7 +161,7 @@ c**************************************
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-#  include "KPP_PARAMS.h"
+c#  include "KPP_PARAMS.h"
 # endif
 # ifdef ALLOW_DOWN_SLOPE
 #  include "DWNSLP_SIZE.h"
