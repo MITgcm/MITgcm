@@ -1,7 +1,5 @@
-#
-#
 # ******************
-# ECCO cost function
+# Cost function
 # ******************
  &COST_NML
 #

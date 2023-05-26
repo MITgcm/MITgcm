@@ -13,6 +13,3 @@
  pickup_write_mnc=.FALSE.,
  pickup_read_mnc=.FALSE.,
  &
-# Note: Some systems use & as the
-# namelist terminator. Other systems
-# use a / character (as shown here).
