@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/tapenade + other Tapenade addition:
+  - add new capability to use Tapenade to generate Adjoint & Tang-Linear model:
+    new package (pkg/tapenade), new tools (tools/TAP_support), update genmake2
+    and testreport ; add some docs (in progress);
+  - modify src code & packages to work with tapenade ; add new code_tap/ &
+    input_tap/ dirs (+ ref output) in 9 verification experiments to get
+    tested with tapenade.
+
 checkpoint68p (2023/05/07)
 o pkg/seaice:
   - fix compile error related to ALLOW_AUTODIFF_TAMC/ALLOW_AUTODIFF mix-up

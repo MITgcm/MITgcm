@@ -51,14 +51,17 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       integer iarr
       integer numsmo
-      character*(80) fnamegenIn
-      character*(80) fnamegenOut
-      character*(80) fnamegenTmp
-      character*(80) fnamebase
+C     Tapenade requires these 4 variables to be declared as arrays of
+C     size maxCtrlTim2D. If declared as scalars, it does not store their
+C     temporary values in the do loop during reverse pass.
+      CHARACTER*(80) fnamegenIn(1:maxCtrlTim2D)
+      CHARACTER*(80) fnamegenOut(1:maxCtrlTim2D)
+      CHARACTER*(80) fnamegenTmp(1:maxCtrlTim2D)
+      CHARACTER*(80) fnamebase(1:maxCtrlTim2D)
       integer startrec
       integer endrec
       integer diffrec
-      integer irec, jrec, krec, lrec
+      integer iRec, jrec, kRec, lRec
       integer replicated_nrec
       integer replicated_ntimes
       logical doglobalread
@@ -83,11 +86,11 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_INI_GENTIM2D',myThid)
 #endif /* ALLOW_DEBUG */
 
-c--   Now, read the control vector.
+C--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-c     Find ctrlDir (w/o trailing blanks) length
+C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
 
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -115,8 +118,9 @@ C--   generic 2D control variables
 #endif
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
-        call ctrl_init_rec ( fnamebase,
+        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
+
+        call ctrl_init_rec ( fnamebase(iarr),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -159,15 +163,16 @@ C print statements are removed. See "Automatic Differentiation" chap. in the doc
         enddo
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        fnamebase = xx_gentim2d_file(iarr)(1:ilgen)
-        write(fnamegenIn(1:80),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-        write(fnamegenOut(1:80),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
-        write(fnamegenTmp(1:80),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.tmp.',optimcycle
+        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
+        write(fnamegenIn(iarr)(1:80),'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.',optimcycle
+        write(fnamegenOut(iarr)(1:80),'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen)
+     &   ,'.effective.',optimcycle
+        write(fnamegenTmp(iarr)(1:80),'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
 
-c--   docycle
+C--   docycle
 
         replicated_nrec=diffrec
         replicated_ntimes=0
@@ -192,49 +197,51 @@ c--   docycle
      &              replicated_nrec,replicated_ntimes
 #endif
         DO jrec = 1, replicated_ntimes+1
-         DO irec = 1, replicated_nrec
+         DO iRec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
-          krec=replicated_nrec*(jrec-1)+irec
-          lrec=startrec+irec-1
-          IF (krec.LE.endrec) THEN
+          kRec=replicated_nrec*(jrec-1)+iRec
+          lRec=startrec+iRec-1
+          IF (kRec.LE.endrec) THEN
 #ifdef ALLOW_CTRL_DEBUG
-           ilgen=ilnblnk( fnamegenIn )
-           write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,irec,jrec,lrec
-           write(*,*) 'AF: fnamegenIn: ', fnamegenIn(1:ilgen)
+           ilgen=ilnblnk( fnamegenIn(iarr) )
+           write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,iRec,jrec,lRec
+           write(*,*) 'AF: fnamegenIn: ', fnamegenIn(iarr)(1:ilgen)
 #endif
 C fnamegenIn is xx_*.$iter.data, so the required access records starts at
-C startrec+irec-1 instead of irec in the read call below. In adjoint mode, S/R
+C startrec+iRec-1 instead of iRec in the read call below. In adjoint mode, S/R
 C ADACTIVE_READ_XY reads adxx_*.$iter.data in reverse order, with required
 C access from endrec back to startrec. This requires creating adxx_*.$iter.data
 C file of size endrec, with valid gradients from records startrec to endrec
 C but all zeros from 1 to startrec-1. See documentation:
 C https://mitgcm.readthedocs.io/en/latest/ocean_state_est/ocean_state_est.html#ctrl-model-parameter-adjustment-capability
 #ifdef ALLOW_AUTODIFF
-           CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, lrec,
+           CALL ACTIVE_READ_XY( fnamegenIn(iarr), xx_gen, lRec,
      &          doglobalread, ladinit, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenIn, xx_gen, lRec, 1, myThid )
+           CALL READ_REC_XY_RL( fnamegenIn(iarr), xx_gen, lRec,
+     &                          1, myThid )
 #endif
-C Here, we write record krec (from 1 to diffrec) to file xx_*.effective.$iter
+C Here, we write record kRec (from 1 to diffrec) to file xx_*.effective.$iter
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_CTRL_DEBUG
-           ilgen=ilnblnk( fnamegenOut )
-           write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-           write(*,*) 'AH: fnamegenOut: ', fnamegenOut(1:ilgen)
+           ilgen=ilnblnk( fnamegenOut(iarr) )
+           write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
+           write(*,*) 'AH: fnamegenOut: ', fnamegenOut(iarr)(1:ilgen)
 #endif
-           CALL ACTIVE_WRITE_XY( fnamegenOut, xx_gen, krec, optimcycle,
-     &          myThid, xx_gentim2d_dummy(iarr) )
+           CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, kRec,
+     &          optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
+           CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, kRec,
+     &          1 , myThid )
 #endif
           ENDIF
          ENDDO
         ENDDO
 
-c--   rmcycle
+C--   rmcycle
 #ifdef ALLOW_ECCO
         replicated_nrec=diffrec
         replicated_ntimes=0
@@ -260,7 +267,7 @@ c--   rmcycle
 
         IF (replicated_ntimes.GT.0) THEN
 
-c     create cyclic average
+C     create cyclic average
 
          nyearsINT=1+int((diffrec-replicated_nrec)/replicated_nrec)
          recip_nyearsRL=1. _d 0/float(nyearsINT)
@@ -269,7 +276,7 @@ c     create cyclic average
          write(*,*) 'AJ: nyears[INT,RL]: ',nyearsINT,recip_nyearsRL
 #endif
 
-         DO irec = 1, replicated_nrec
+         DO iRec = 1, replicated_nrec
 
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -285,18 +292,18 @@ c     create cyclic average
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
-           krec=irec+(jrec-1)*replicated_nrec
+           kRec=iRec+(jrec-1)*replicated_nrec
 #ifdef ALLOW_CTRL_DEBUG
-           write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-           ilgen=ilnblnk( fnamegenOut )
-           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(1:ilgen)
+           write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
+           ilgen=ilnblnk( fnamegenOut(iarr) )
+           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(iarr)(1:ilgen)
 #endif
 #ifdef ALLOW_AUTODIFF
-           call active_read_xy( fnamegenOut, xx_gen_tmp, krec,
+           CALL ACTIVE_READ_XY( fnamegenOut(iarr), xx_gen_tmp, kRec,
      &          doglobalread, ladinit, optimcycle,
      &          myThid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
+           CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen_tmp, kRec,
      &          1, myThid )
 #endif
            DO bj=myByLo(myThid),myByHi(myThid)
@@ -327,41 +334,43 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
 #ifdef ALLOW_AUTODIFF
-          call active_write_xy( fnamegenTmp, xx_gen, iRec, optimcycle,
-     &         myThid, xx_gentim2d_dummy(iarr) )
+          CALL ACTIVE_WRITE_XY( fnamegenTmp(iarr), xx_gen, iRec,
+     &         optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
-          CALL WRITE_REC_XY_RL( fnamegenTmp, xx_gen, iRec, 1, myThid )
+          CALL WRITE_REC_XY_RL( fnamegenTmp(iarr), xx_gen, iRec,
+     &         1, myThid )
 #endif
 
          ENDDO
 
-c     subtract cyclic average
+C     subtract cyclic average
          DO jrec = 1, replicated_ntimes+1
-          DO irec = 1, replicated_nrec
+          DO iRec = 1, replicated_nrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
-           krec=replicated_nrec*(jrec-1)+irec
+           kRec=replicated_nrec*(jrec-1)+iRec
 #ifdef ALLOW_CTRL_DEBUG
-           write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,irec,jrec,krec
-           ilgen=ilnblnk( fnamegenOut )
-           write(*,*) 'AN: fnamegenOut: ',fnamegenOut(1:ilgen)
+           write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
+           ilgen=ilnblnk( fnamegenOut(iarr) )
+           write(*,*) 'AN: fnamegenOut: ',fnamegenOut(iarr)(1:ilgen)
 #endif
-           IF (krec.LE.diffrec) THEN
+           IF (kRec.LE.diffrec) THEN
 #ifdef ALLOW_AUTODIFF
-            CALL active_read_xy( fnamegenOut, xx_gen, kRec,
+            CALL ACTIVE_READ_XY( fnamegenOut(iarr), xx_gen, kRec,
      &           doglobalread, ladinit, optimcycle,
      &           myThid, xx_gentim2d_dummy(iarr) )
 #else
-            CALL READ_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1, myThid )
+            CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen, kRec,
+     &           1, myThid )
 #endif
 #ifdef ALLOW_AUTODIFF
-            CALL active_read_xy( fnamegenTmp, xx_gen_tmp, iRec,
+            CALL ACTIVE_READ_XY( fnamegenTmp(iarr), xx_gen_tmp, iRec,
      &           doglobalread, ladinit, optimcycle,
      &           myThid, xx_gentim2d_dummy(iarr) )
 #else
-            CALL READ_REC_XY_RL( fnamegenTmp, xx_gen_tmp, iRec, 1,
-     &           myThid )
+            CALL READ_REC_XY_RL( fnamegenTmp(iarr), xx_gen_tmp, iRec,
+     &           1, myThid )
 #endif
             DO bj=myByLo(myThid),myByHi(myThid)
              DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -374,11 +383,11 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
              ENDDO
             ENDDO
 #ifdef ALLOW_AUTODIFF
-            CALL active_write_xy( fnamegenOut, xx_gen, kRec,
+            CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, kRec,
      &           optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
-            CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, kRec, 1,
-     &           myThid )
+            CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, kRec,
+     &           1, myThid )
 #endif
            ENDIF
           ENDDO
@@ -387,28 +396,29 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
         ENDIF
 #endif /* ifdef ALLOW_ECCO */
 
-c--   scaling and smoothing
+C--   scaling and smoothing
 
 C The access of records startrec to endrec in  xx_*.*iter was already
 C done correctly above. From here, we read in xx_*.effective.$iter.data
 C of size diffrec, so no more fix of record is needed from here on out.
-        DO irec = 1, diffrec
+        DO iRec = 1, diffrec
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #endif
 
 #ifdef ALLOW_CTRL_DEBUG
-         ilgen=ilnblnk( fnamegenOut )
-         lrec=startrec+irec-1
-         write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, irec,lrec ',
-     &       fnamegenOut(1:ilgen),irec,lrec
+         ilgen=ilnblnk( fnamegenOut(iarr) )
+         lRec=startrec+iRec-1
+         write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, iRec,lRec ',
+     &       fnamegenOut(iarr)(1:ilgen),iRec,lRec
 #endif
 #ifdef ALLOW_AUTODIFF
-         call active_read_xy( fnamegenOut, xx_gen, irec,
+         CALL ACTIVE_READ_XY( fnamegenOut(iarr), xx_gen, iRec,
      &        doglobalread, ladinit, optimcycle,
      &        myThid, xx_gentim2d_dummy(iarr) )
 #else
-         CALL READ_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+         CALL READ_REC_XY_RL( fnamegenOut(iarr), xx_gen, iRec,
+     &        1, myThid )
 #endif
 
 #ifndef ALLOW_OPENAD
@@ -417,7 +427,7 @@ C Not clear which record to use for timevariable weights ;
 C For now, just assumes records from startrec to endrec are available in file
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') then
-            jrec=startrec+irec-1
+            jrec=startrec+iRec-1
           endif
          enddo
          CALL READ_REC_3D_RL( xx_gentim2d_weight(iarr), ctrlprec, 1,
@@ -458,25 +468,25 @@ C--   Get appropriate mask
          CALL EXCH_XY_RL ( xx_gen , myThid )
 
 #ifdef ALLOW_CTRL_DEBUG
-         ilgen=ilnblnk( fnamegenOut )
+         ilgen=ilnblnk( fnamegenOut(iarr) )
          write(*,'(A,1x,I6,1x,A)')
-     &      'AQ: irec,fnamegenOut: ',irec,fnamegenOut(1:ilgen)
+     &      'AQ: iRec,fnamegenOut: ',iRec,fnamegenOut(iarr)(1:ilgen)
 #endif
 #ifdef ALLOW_AUTODIFF
-         call active_write_xy( fnamegenOut, xx_gen, irec, optimcycle,
-     &        myThid, xx_gentim2d_dummy(iarr) )
+         CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, iRec,
+     &        optimcycle, myThid, xx_gentim2d_dummy(iarr) )
 #else
-         CALL WRITE_REC_XY_RL( fnamegenOut, xx_gen, iRec, 1, myThid )
+         CALL WRITE_REC_XY_RL( fnamegenOut(iarr), xx_gen, iRec,
+     &        1, myThid )
 #endif
-
-c--   end irec loop
+C--   end iRec loop
         ENDDO
 
 #ifndef ALLOW_OPENAD
        endif
 #endif
 
-c--   end iarr loop
+C--   end iarr loop
       ENDDO
 
 #ifdef ALLOW_DEBUG
