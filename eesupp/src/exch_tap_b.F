@@ -190,10 +190,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 #include "EXCH.h"
       INTEGER myOLw, myOLe, myOLs, myOLn, myNz
-      _RL     array( 1-myOLw:sNx+myOLe,
+      _RS     array( 1-myOLw:sNx+myOLe,
      &               1-myOLs:sNy+myOLn,
      &               myNz, nSx, nSy )
-      _RL     arrayb( 1-myOLw:sNx+myOLe,
+      _RS     arrayb( 1-myOLw:sNx+myOLe,
      &               1-myOLs:sNy+myOLn,
      &               myNz, nSx, nSy )
       INTEGER exchWidthX
