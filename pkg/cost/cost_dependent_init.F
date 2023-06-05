@@ -1,6 +1,6 @@
 #include "COST_OPTIONS.h"
 
-      subroutine cost_dependent_init( mythid )
+      subroutine cost_dependent_init( myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_dependent_init
@@ -14,22 +14,21 @@ c     ==================================================================
 c     SUBROUTINE cost_dependent_init
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
-
 #include "cost.h"
 #include "adcost.h"
+#ifdef ALLOW_TAPENADE
+# include "COST_TAP_ADJ.h"
+#endif
 
 c     == routine arguments ==
-
-      integer mythid
+      integer myThid
 
 c     == local variables ==
-
 #if ( defined ALLOW_COST_VECTOR || defined  ALLOW_COST_STATE_FINAL )
       integer i
 #endif
@@ -37,7 +36,6 @@ c     == local variables ==
       integer j, k
 #endif
       integer bi,bj
-
 c     == end of interface ==
 
 #ifdef ALLOW_OPENAD
@@ -48,6 +46,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_AUTODIFF
 
+#ifdef ALLOW_TAPENADE
+      fcb = 1.0
+#endif
+
 #ifdef ALLOW_OPENAD
       adfc = 1.0
 #else
@@ -56,27 +58,26 @@ c     == end of interface ==
       endif
 #endif
 
-      do bj = myByLo(mythid), myByHi(mythid)
-       do bi = myBxLo(mythid), myBxHi(mythid)
+      do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
 #ifdef ALLOW_COST_VECTOR
-        do i=1,sNx
-         objf_vector(i,bi,bj) = 0. _d 0
-         adobjf_vector(i,bi,bj) = 1. _d 0
-        end do
+         do i=1,sNx
+          objf_vector(i,bi,bj) = 0. _d 0
+          adobjf_vector(i,bi,bj) = 1. _d 0
+         enddo
 #endif
 #ifdef ALLOW_COST_STATE_FINAL
-         do j=1,sNy
-          do i=1,sNx
-           do k=1,4*Nr
+         do k=1,4*Nr+1
+          do j=1,sNy
+           do i=1,sNx
             objf_state_final(i,j,bi,bj,k) = 0. _d 0
            enddo
-           objf_state_final(i,j,bi,bj,4*Nr+1) = 0. _d 0
+          enddo
+         enddo
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
-          end do
-         end do
 #endif
-        enddo
+       enddo
       enddo
 
 #endif /* ALLOW_AUTODIFF */

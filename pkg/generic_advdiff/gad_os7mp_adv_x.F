@@ -47,17 +47,17 @@ C     == Local variables ==
 
       Eps = 1. _d -20
 
-      DO j=1-Oly,sNy+Oly
-       uT(1-Olx,j)=0. _d 0
-       uT(2-Olx,j)=0. _d 0
-       uT(3-Olx,j)=0. _d 0
-       uT(4-Olx,j)=0. _d 0
-       uT(sNx+Olx-2,j)=0. _d 0
-       uT(sNx+Olx-1,j)=0. _d 0
-       uT(sNx+Olx,j)=0. _d 0
+      DO j=1-OLy,sNy+OLy
+       uT(1-OLx,j)=0. _d 0
+       uT(2-OLx,j)=0. _d 0
+       uT(3-OLx,j)=0. _d 0
+       uT(4-OLx,j)=0. _d 0
+       uT(sNx+OLx-2,j)=0. _d 0
+       uT(sNx+OLx-1,j)=0. _d 0
+       uT(sNx+OLx,j)=0. _d 0
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+4,sNx+Olx-3
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+4,sNx+OLx-3
 
         uLoc = uFld(i,j)
         cfl = uLoc
@@ -177,12 +177,14 @@ C        MP limiter
          B = 4. _d 0*d2p1 - d2
          C = d2
          D = d2p1
-         dp1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
+         dp1h = max(min(min(A,B),min(C,D)),0. _d 0)
+     &        + min(max(max(A,B),max(C,D)),0. _d 0)
          A = 4. _d 0*d2m1 - d2
          B = 4. _d 0*d2 - d2m1
          C = d2m1
          D = d2
-         dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
+         dm1h = max(min(min(A,B),min(C,D)),0. _d 0)
+     &        + min(max(max(A,B),max(C,D)),0. _d 0)
 c        qMD = 0.5*( ( Qi + Qip ) - dp1h )
 c        qMD = 0.5 _d 0*( ( 2. _d 0*Qi + DelIp ) - dp1h )
 c        qUL = Qi + (1. _d 0-cfl)/(cfl+Eps)*DelI
@@ -194,9 +196,9 @@ C--   simplify and avoid division by zero
          PhiLC = rp1h_cfl*( 1. _d 0+dm1h*recip_DelI )
 C--
          PhiMin = max( min(0. _d 0,PhiMD),
-     &                 min(0. _d 0,2. _d 0*rp1h_cfl,PhiLC) )
+     &                 min(min(0. _d 0,2. _d 0*rp1h_cfl),PhiLC) )
          PhiMax = min( max(2. _d 0/(1. _d 0-cfl),PhiMD),
-     &                 max(0. _d 0,2. _d 0*rp1h_cfl,PhiLC) )
+     &                 max(max(0. _d 0,2. _d 0*rp1h_cfl),PhiLC) )
          Phi = max(PhiMin,min(Phi,PhiMax))
 
          Psi = Phi * 0.5 _d 0 * (1. _d 0 - cfl)

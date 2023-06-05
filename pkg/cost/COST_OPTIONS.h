@@ -30,7 +30,6 @@ C-- Package-specific Options & Macros go here
 #undef ALLOW_COST_VECTOR
 
 C       >>> Cost function contributions
-#undef ALLOW_COST_ATLANTIC
 #undef ALLOW_COST_ATLANTIC_HEAT
 #undef ALLOW_COST_ATLANTIC_HEAT_DOMASS
 

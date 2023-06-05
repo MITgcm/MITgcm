@@ -115,3 +115,4 @@ core
 
 /verification/*/tr_run.*
 
+/tools/TAP_support/ADFirstAidKit/*.gch
