@@ -176,8 +176,10 @@ C     gTKE     :: right hand side of diffusion equation
       _RL kappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #endif
 #ifdef ALLOW_DIAGNOSTICS
+# ifndef ALLOW_AUTODIFF
       LOGICAL doDiagTKEmin
       _RL recip_deltaT
+# endif
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -217,13 +219,17 @@ C     explicit/implicit timestepping weights for dissipation
       implDissFac = 1. _d 0 - explDissFac
 
 #ifdef ALLOW_DIAGNOSTICS
+# ifndef ALLOW_AUTODIFF
       doDiagTKEmin = .FALSE.
+# endif
       IF ( useDiagnostics ) THEN
+# ifndef ALLOW_AUTODIFF
        doDiagTKEmin = DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
 C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
 C        does it only if k=1 (never the case here)
        IF ( doDiagTKEmin )
      &      CALL DIAGNOSTICS_COUNT('GGL90Emn',bi,bj,myThid)
+# endif
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          surf_flx_tke(i,j) = 0.
@@ -1075,7 +1081,10 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
          a3d(i,j,k) = -deltaTloc
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*recip_hFacI(i,j,k)
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)
+#ifndef GGL90_MISSING_HFAC_BUG
+     &        *recip_hFacI(i,j,k)
+#endif
      &        *coordFac*coordFac
         ENDDO
        ENDDO
@@ -1095,10 +1104,13 @@ C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
          c3d(i,j,k) = -deltaTloc
-     &         *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
-     &         *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &         *recip_drC(k)*maskC(i,j,k-1,bi,bj)*recip_hFacI(i,j,k)
-     &         *coordFac*coordFac
+     &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
+     &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
+     &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
+#ifndef GGL90_MISSING_HFAC_BUG
+     &        *recip_hFacI(i,j,k)
+#endif
+     &        *coordFac*coordFac
         ENDDO
        ENDDO
       ENDDO
@@ -1316,7 +1328,8 @@ C     solve tri-diagonal system
 CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO k=2,Nr
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && !defined ALLOW_AUTODIFF )
+C     This diagnostics code causes extra recomputations so we skip it.
        IF ( doDiagTKEmin ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -1335,7 +1348,7 @@ C     bottom boundary conditions, which by definition is zero
      &                  *MAX( GGL90TKE(i,j,k,bi,bj), GGL90TKEmin )
         ENDDO
        ENDDO
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && !defined ALLOW_AUTODIFF )
        IF ( doDiagTKEmin ) THEN
         recip_deltaT = 1. _d 0 / deltaTloc
         DO j=1,sNy

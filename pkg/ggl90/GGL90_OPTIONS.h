@@ -27,5 +27,8 @@ C     allow IDEMIX model
 C     include Langmuir circulation parameterization
 #undef ALLOW_GGL90_LANGMUIR
 
+C     recover old bug prior to Jun 2023
+#undef GGL90_MISSING_HFAC_BUG
+
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */
