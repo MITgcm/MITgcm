@@ -123,7 +123,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'IDEMgTKE'
-        diagTitle = 'IDEMIX tendency: tau_d*IDEMIX_E**2     '
+        diagTitle = 'IDEMIX tendency: tau_d times IDEMIX_E^2'
         diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
