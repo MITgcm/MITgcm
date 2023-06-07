@@ -1,4 +1,9 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_CTRL
+#  include "CTRL_OPTIONS.h"
+# endif
+#endif
 
       subroutine ecco_cost_driver(  myTime, myIter, myThid  )
 
@@ -19,6 +24,13 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#ifdef ALLOW_TAPENADE
+# include "CTRL_SIZE.h"
+# include "ctrl.h"
+# include "CTRL_GENARR.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
+#endif
 
 c     == routine arguments ==
       integer myThid

@@ -85,13 +85,15 @@ C     == global variables ==
 #include "ctrl.h"
 #include "g_cost.h"
 
+#ifdef ALLOW_TAPENADE
+# include "COST_TAP_TLM.h"
+#endif
+
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
 C     !LOCAL VARIABLES:
-C     == local variables ==
       INTEGER myIter
       _RL     myTime
       INTEGER bi, bj
@@ -128,7 +130,6 @@ C     == local variables ==
       _RL tmpplot1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpplot2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpplot3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C     == end of interface ==
 CEOP
 
       ioUnit = standardMessageUnit
@@ -160,6 +161,14 @@ Cph   assuming all xx_ fields are initialised to zero.
       ierr_grdchk = 0
       adxxmemo  = 0.
       ftlxxmemo = 0.
+
+#ifdef ALLOW_TAPENADE
+C--   forward run with unperturbed control vector
+      myTime = startTime
+      myIter = nIter0
+      CALL THE_MAIN_LOOP( myTime, myIter, myThid )
+#endif
+
 #if (defined  (ALLOW_ADMTLM))
       fcref = objf_state_final(idep,jdep,1,1,1)
 #elif (defined (ALLOW_OPENAD))
@@ -281,7 +290,7 @@ C--   1. perturb control vector component: xx(i)=1.
 C--   2. perform tangent linear run
           myTime = startTime
           myIter = nIter0
-#ifdef ALLOW_ADMTLM
+# ifdef ALLOW_ADMTLM
           DO k=1,4*Nr+1
             DO j=1,sNy
               DO i=1,sNx
@@ -289,16 +298,25 @@ C--   2. perform tangent linear run
               ENDDO
             ENDDO
           ENDDO
-#else
+# else
           g_fc = 0.
-#endif
+# endif
 
+# ifdef ALLOW_TAPENADE
+          CALL THE_MAIN_LOOP_D( myTime, myIter, myThid )
+#  ifdef ALLOW_ADMTLM
+          ftlxxmemo = objf_state_finald(idep,jdep,1,1,1)
+#  else
+          ftlxxmemo = fcd
+#  endif
+# else /* ALLOW_TAPENADE */
           CALL G_THE_MAIN_LOOP( myTime, myIter, myThid )
-#ifdef ALLOW_ADMTLM
+#  ifdef ALLOW_ADMTLM
           ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
-#else
+#  else
           ftlxxmemo = g_fc
-#endif
+#  endif
+# endif /* ALLOW_TAPENADE */
 
 C--   3. reset control vector
           CALL GRDCHK_SETXX( icvrec, TANGENT_SIMULATION,
@@ -332,7 +350,7 @@ C--   forward run with perturbed control vector
           CALL THE_MAIN_LOOP( myTime, myIter, myThid )
 #endif
 
-#if (defined (ALLOW_ADMTLM))
+#ifdef ALLOW_ADMTLM
           fcpertplus = objf_state_final(idep,jdep,1,1,1)
 #elif (defined (ALLOW_OPENAD))
           fcpertplus = fc%v

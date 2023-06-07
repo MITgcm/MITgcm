@@ -1,0 +1,37 @@
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRL_NML
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &CTRL_PACKNAMES
+ &
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr3d_file(1)       = 'xx_theta',
+ xx_genarr3d_weight(1)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,1) = -2.,-1.9,39.,40.,5.,
+#
+ xx_genarr3d_file(2)       = 'xx_salt',
+ xx_genarr3d_weight(2)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
+#
+ xx_genarr3d_file(3)       = 'xx_diffkr',
+ xx_genarr3d_weight(3)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,3) = 1.E-6,2.E-6,4.E-4,5.E-4,0.,
+#
+ xx_gentim2d_file(1)       = 'xx_shifwflx',
+ xx_gentim2d_weight(1)     = 'ones_64b.bin',
+#
+ xx_genarr2d_file(1)       = 'xx_shicoefft',
+ xx_genarr2d_weight(1)     = 'ones_64b.bin',
+ xx_genarr2d_preproc_c(1,1)= 'log10ctrl',
+ xx_genarr2d_preproc_r(1,1)= -4.,
+#
+ &

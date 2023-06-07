@@ -136,14 +136,16 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C---   loops on tile indices bi,bj
 
-#ifdef ALLOW_AUTODIFF_TAMC
-C     Initialise for TAF
+#ifdef ALLOW_AUTODIFF
+C     Initialise to help AD-tools
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          gFld(i,j)       = 0. _d 0
+          gFld(i,j) = 0. _d 0
          ENDDO
         ENDDO
+#endif
 C
+#ifdef ALLOW_AUTODIFF_TAMC
         tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
 CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key=tkey, kind=isbyte
@@ -433,7 +435,7 @@ C--   store previous value for spurious maxima treament
             SItrPrev(i,j,bi,bj)=SItracer(i,j,bi,bj,iTr)
 #endif
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-            diagArray(I,J,2+(iTr-1)*5) = SItrExt(i,j,bi,bj)
+            diagArray(i,j,2+(iTr-1)*5) = SItrExt(i,j,bi,bj)
 #endif
            ENDDO
           ENDDO
@@ -465,39 +467,40 @@ C--   scale back to actual value, or move effective value to ocean bucket
          IF (SItrMate(iTr).EQ.'HEFF') THEN
           DO j=1,sNy
            DO i=1,sNx
-            if (HEFF(I,J,bi,bj).GE.siEps) then
-            SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/HEFF(I,J,bi,bj)
-            SItrBucket(i,j,bi,bj,iTr)=0. _d 0
-            else
-            SItracer(i,j,bi,bj,iTr)=0. _d 0
-            SItrBucket(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)
-            endif
+            IF (HEFF(i,j,bi,bj).GE.siEps) THEN
+             SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/HEFF(i,j,bi,bj)
+             SItrBucket(i,j,bi,bj,iTr)=0. _d 0
+            ELSE
+             SItracer(i,j,bi,bj,iTr)=0. _d 0
+             SItrBucket(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)
+            ENDIF
 #ifdef ALLOW_SITRACER_ADVCAP
 C hack to try avoid 'spontaneous generation' of maxima, which supposedly would
 C occur less frequently if we advected SItr with uXheff instead SItrXheff with u
-             tmpscal1=max(SItrPrev(i,j,bi,bj),
+            tmpscal1=max(SItrPrev(i,j,bi,bj),
      &       SItrPrev(i+1,j,bi,bj),SItrPrev(i-1,j,bi,bj),
      &       SItrPrev(i,j+1,bi,bj),SItrPrev(i,j-1,bi,bj))
-             tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
-             SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
-             SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
-     &           +tmpscal2*HEFF(I,J,bi,bj)
+            tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
+            SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
+            SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
+     &           +tmpscal2*HEFF(i,j,bi,bj)
 #endif
 C           treat case of potential negative value
-            if (HEFF(I,J,bi,bj).GE.siEps) then
-              tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
-              SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
-              SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
-     &                                 +HEFF(I,J,bi,bj)*tmpscal1
-            endif
+            IF (HEFF(i,j,bi,bj).GE.siEps) THEN
+             tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
+             SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
+             SItrBucket(i,j,bi,bj,iTr)=SItrBucket(i,j,bi,bj,iTr)
+     &                                 +HEFF(i,j,bi,bj)*tmpscal1
+            ENDIF
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-      diagArray(I,J,1+(iTr-1)*5)= - SItrBucket(i,j,bi,bj,iTr)
-     &  *HEFFM(I,J,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
-      tmpscal1= ( HEFF(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)
-     &  + SItrBucket(i,j,bi,bj,iTr) )*HEFFM(I,J,bi,bj)
-      diagArray(I,J,2+(iTr-1)*5)= tmpscal1-diagArray(I,J,2+(iTr-1)*5)
-      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) *
-     &  SEAICE_deltaTtherm * gFld(i,j)
+            diagArray(i,j,1+(iTr-1)*5)= -SItrBucket(i,j,bi,bj,iTr)
+     &      * HEFFM(i,j,bi,bj)/SEAICE_deltaTtherm*SEAICE_rhoIce
+            tmpscal1= ( HEFF(i,j,bi,bj)*SItracer(i,j,bi,bj,iTr)
+     &      + SItrBucket(i,j,bi,bj,iTr) )*HEFFM(i,j,bi,bj)
+            diagArray(i,j,2+(iTr-1)*5)= tmpscal1
+     &                                - diagArray(i,j,2+(iTr-1)*5)
+            diagArray(i,j,3+(iTr-1)*5)= HEFFM(i,j,bi,bj)
+     &      * SEAICE_deltaTtherm * gFld(i,j)
 #endif
            ENDDO
           ENDDO
@@ -505,30 +508,30 @@ c TAF?   ELSEIF (SItrMate(iTr).EQ.'AREA') THEN
          ELSE
           DO j=1,sNy
            DO i=1,sNx
-            if (AREA(I,J,bi,bj).GE.SEAICE_area_floor) then
-            SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/AREA(I,J,bi,bj)
-            else
-            SItracer(i,j,bi,bj,iTr)=0. _d 0
-            endif
+            IF (AREA(i,j,bi,bj).GE.SEAICE_area_floor) THEN
+             SItracer(i,j,bi,bj,iTr)=SItrExt(i,j,bi,bj)/AREA(i,j,bi,bj)
+            ELSE
+             SItracer(i,j,bi,bj,iTr)=0. _d 0
+            ENDIF
             SItrBucket(i,j,bi,bj,iTr)=0. _d 0
 #ifdef ALLOW_SITRACER_ADVCAP
-             tmpscal1=max(SItrPrev(i,j,bi,bj),
+            tmpscal1=max(SItrPrev(i,j,bi,bj),
      &       SItrPrev(i+1,j,bi,bj),SItrPrev(i-1,j,bi,bj),
      &       SItrPrev(i,j+1,bi,bj),SItrPrev(i,j-1,bi,bj))
-             tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
-             SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
+            tmpscal2=MAX(ZERO,SItracer(i,j,bi,bj,iTr)-tmpscal1)
+            SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal2
 #endif
 C           treat case of potential negative value
-            if (AREA(I,J,bi,bj).GE.SEAICE_area_floor) then
+            IF (AREA(i,j,bi,bj).GE.SEAICE_area_floor) THEN
               tmpscal1=MIN(0. _d 0,SItracer(i,j,bi,bj,iTr))
               SItracer(i,j,bi,bj,iTr)=SItracer(i,j,bi,bj,iTr)-tmpscal1
-            endif
+            ENDIF
 #ifdef ALLOW_SITRACER_DEBUG_DIAG
-      diagArray(I,J,1+(iTr-1)*5)= 0. _d 0
-      diagArray(I,J,2+(iTr-1)*5)= - diagArray(I,J,2+(iTr-1)*5)
-     & + AREA(I,J,bi,bj)*SItracer(i,j,bi,bj,iTr)*HEFFM(I,J,bi,bj)
-      diagArray(I,J,3+(iTr-1)*5)=HEFFM(i,j,bi,bj) *
-     &  SEAICE_deltaTtherm * gFld(i,j)
+            diagArray(i,j,1+(iTr-1)*5)= 0. _d 0
+            diagArray(i,j,2+(iTr-1)*5)= - diagArray(i,j,2+(iTr-1)*5)
+     &      + AREA(i,j,bi,bj)*SItracer(i,j,bi,bj,iTr)*HEFFM(i,j,bi,bj)
+            diagArray(i,j,3+(iTr-1)*5)=HEFFM(i,j,bi,bj)
+     &      * SEAICE_deltaTtherm * gFld(i,j)
 #endif
            ENDDO
           ENDDO
@@ -546,28 +549,28 @@ C---   end bi,bj loops
       ENDDO
 
 #else /* not ALLOW_GENERIC_ADVDIFF */
-      WRITE(msgBuf,'(2A)')
+       WRITE(msgBuf,'(2A)')
      &  'SEAICE_ADVDIFF: cannot use SEAICEmultiDimAdvection',
      &  ' without pkg/generic_advdiff'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+       CALL PRINT_ERROR( msgBuf , myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
      &  'Re-compile with pkg "generic_advdiff" in packages.conf'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      CALL ALL_PROC_DIE( myThid )
-      STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
+       CALL PRINT_ERROR( msgBuf , myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
 #endif /* ALLOW_GENERIC_ADVDIFF */
       ELSE
 C--   if not multiDimAdvection
 #ifdef SEAICE_ITD
 C     just for safety
-      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+       WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
      &  'ITD with SEAICEmultiDimAdvection=.False. is not allowed,'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+       CALL PRINT_ERROR( msgBuf , myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
      &  'use a multidimensional advection scheme (in data.seaice)'
-      CALL PRINT_ERROR( msgBuf , myThid )
-      CALL ALL_PROC_DIE( myThid )
-      STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
+       CALL PRINT_ERROR( msgBuf , myThid )
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
 #endif /* SEAICE_ITD */
 
        IF ( SEAICEadvHEff ) THEN

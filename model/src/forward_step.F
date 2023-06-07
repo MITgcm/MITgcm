@@ -376,6 +376,25 @@ C     == Global variables ==
 # endif
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_TAPENADE
+c# ifdef ALLOW_KPP
+c#  include "KPP_PARAMS.h"
+c# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_TAVE.h"
+# endif
+# ifdef ALLOW_TIMEAVE
+#  include "TIMEAVE_STATV.h"
+# endif
+# ifdef ALLOW_MOM_FLUXFORM
+#  include "MOM_FLUXFORM.h"
+# endif
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_PARAM.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     note: under the multi-threaded model myIter and

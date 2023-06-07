@@ -1,5 +1,17 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: LOAD_FIELDS_DRIVER
@@ -38,6 +50,31 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+
+#ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "CTRL_GENARR.h"
+#  include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_COST
+#  include "cost.h"
+# endif
+# include "EOS.h"
+# ifdef ALLOW_EXF
+#  include "EXF_FIELDS.h"
+#  include "EXF_CONSTANTS.h"
+#  ifdef ALLOW_TAPENADE
+#   include "EXF_PARAM.h"
+#   include "EXF_INTERP_SIZE.h"
+#   include "EXF_INTERP_PARAM.h"
+#  endif
+# endif
+#endif /* ALLOW_AUTODIFF */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: time counter for this thread
