@@ -176,6 +176,7 @@ C     gTKE     :: right hand side of diffusion equation
       _RL kappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #endif
 #ifdef ALLOW_DIAGNOSTICS
+      LOGICAL doDiagTKEmin
       _RL recip_deltaT
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
@@ -216,17 +217,18 @@ C     explicit/implicit timestepping weights for dissipation
       implDissFac = 1. _d 0 - explDissFac
 
 #ifdef ALLOW_DIAGNOSTICS
-C     this is a dirty hack, because the diagnostics needs to fill the
-C     level k=1 to work, but later we loop only over k=2,Nr
+      doDiagTKEmin = .FALSE.
       IF ( useDiagnostics ) THEN
+       doDiagTKEmin = DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
+C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+       IF ( doDiagTKEmin )
+     &      CALL DIAGNOSTICS_COUNT('GGL90Emn',bi,bj,myThid)
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          surf_flx_tke(i,j) = 0.
         ENDDO
        ENDDO
-       IF ( DIAGNOSTICS_IS_ON('GGL90Emn',myThid) )
-     &      CALL DIAGNOSTICS_FILL( surf_flx_tke ,'GGL90Emn',
-     &                             1, 1, 2, bi, bj, myThid )
       ENDIF
 #endif
 
@@ -1315,8 +1317,7 @@ CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO k=2,Nr
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics .AND. DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
-     &     ) THEN
+       IF ( doDiagTKEmin ) THEN
         DO j=1,sNy
          DO i=1,sNx
           surf_flx_tke(i,j) = GGL90TKE(i,j,k,bi,bj)
@@ -1335,8 +1336,7 @@ C     bottom boundary conditions, which by definition is zero
         ENDDO
        ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics .AND. DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
-     &      ) THEN
+       IF ( doDiagTKEmin ) THEN
         recip_deltaT = 1. _d 0 / deltaTloc
         DO j=1,sNy
          DO i=1,sNx
