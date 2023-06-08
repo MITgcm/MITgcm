@@ -246,8 +246,8 @@ C     case of using IDEMIX.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           hFac =
-     &         MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
-     &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
+     &         MIN( halfRS, _hFacC(i,j,km1,bi,bj) )
+     &       + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           recip_hFacI(i,j,k)=0. _d 0
           IF ( hFac .NE. 0. _d 0 )
      &         recip_hFacI(i,j,k)=1. _d 0/hFac
@@ -1071,6 +1071,15 @@ C--   Lower diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
+#ifdef GGL90_MISSING_HFAC_BUG
+       IF ( .NOT.useIDEMIX ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          recip_hFacI(i,j,k) = oneRS
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
        km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -1081,10 +1090,7 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
          a3d(i,j,k) = -deltaTloc
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)
-#ifndef GGL90_MISSING_HFAC_BUG
-     &        *recip_hFacI(i,j,k)
-#endif
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*recip_hFacI(i,j,k)
      &        *coordFac*coordFac
         ENDDO
        ENDDO
@@ -1106,10 +1112,7 @@ C-    No need for maskC(k) with recip_hFacC(k)
          c3d(i,j,k) = -deltaTloc
      &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
-#ifndef GGL90_MISSING_HFAC_BUG
-     &        *recip_hFacI(i,j,k)
-#endif
+     &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)*recip_hFacI(i,j,k)
      &        *coordFac*coordFac
         ENDDO
        ENDDO
