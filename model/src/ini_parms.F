@@ -209,7 +209,8 @@ C--   Continuous equation parameters
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor, no_slip_bottom, bottomVisc_pCell,
-     & bottomDragLinear, bottomDragQuadratic, selectBotDragQuadr,
+     & bottomDragLinear, bottomDragQuadratic,  zRoughBot,
+     & selectBotDragQuadr,
      & momViscosity,  momAdvection, momForcing, momTidalForcing,
      & useCoriolis, useConstantF, useBetaPlaneF, useSphereF,
      & use3dCoriolis, momPressureForcing,
@@ -532,6 +533,8 @@ C--   z,p,r coord input switching.
 #ifdef ALLOW_MOM_COMMON
 C-    set default scheme for quadratic bottom-drag
       IF ( selectBotDragQuadr.EQ.-1 .AND. bottomDragQuadratic.NE.0. )
+     &  selectBotDragQuadr = 0
+      IF ( selectBotDragQuadr.EQ.-1 .AND. zRoughBot.NE.0. )
      &  selectBotDragQuadr = 0
 #endif /* ALLOW_MOM_COMMON */
 

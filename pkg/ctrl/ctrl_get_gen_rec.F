@@ -133,8 +133,7 @@ C     Determine first record:
 c      call cal_TimePassed( fldstartdate, modelstartdate,
 c    &                      difftime, mythid )
 c      call cal_ToSeconds ( difftime, fldsecs, mythid )
-c      startrec = int((modelstart + startTime - fldsecs)/
-c    &                fldperiod) + 1
+c      startrec = int((modelstart - fldsecs)/fldperiod) + 1
 
 C     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,

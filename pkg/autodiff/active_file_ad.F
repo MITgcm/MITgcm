@@ -92,7 +92,8 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
@@ -174,7 +175,8 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
@@ -256,7 +258,8 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
@@ -338,7 +341,8 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) adpref
@@ -419,7 +423,8 @@ C                       variable and write to active file
       INTEGER iRec
       INTEGER myIter, myThid
       LOGICAL lAdInit
-      _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
+C Tags for IO: ctrl input and adjoint (gradient) output
+      _RL  dummy, addummy
 
 C     !FUNCTIONS:
       INTEGER  ILNBLNK

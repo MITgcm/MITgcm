@@ -61,4 +61,13 @@ C     viscA4_W  :: Horizontal biharmonic viscosity for vertical momentum
       _RL  viscA4_W(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
 
+#ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
+C--   bottom drag coefficents as a function of grid cell thickness
+C     and roughness length
+      COMMON /GRID_DRAGCOEFFS_RS/
+     &     bottomDragCoeffW, bottomDragCoeffS
+      _RS bottomDragCoeffW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS bottomDragCoeffS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
 #endif /* ALLOW_MOM_COMMON */

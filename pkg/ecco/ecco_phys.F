@@ -75,6 +75,7 @@ C- note: defined with overlap here, not needed, but more efficient
       _RL rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_PSBAR_STERIC
       _RL VOLsumTile(nSx,nSy), RHOsumTile(nSx,nSy)
+      _RL VOLsumGlob_1, RHOsumGlob_1
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 C     Mload     :: total mass load (kg/m**2)
@@ -126,9 +127,14 @@ CEOP
         ENDDO
        ENDDO
       ENDDO
-      CALL GLOBAL_SUM_TILE_RL( VOLsumTile, VOLsumGlob, myThid )
-      CALL GLOBAL_SUM_TILE_RL( RHOsumTile, RHOsumGlob, myThid )
-      RHOsumGlob = RHOsumGlob/VOLsumGlob
+      CALL GLOBAL_SUM_TILE_RL( VOLsumTile, VOLsumGlob_1, myThid )
+      CALL GLOBAL_SUM_TILE_RL( RHOsumTile, RHOsumGlob_1, myThid )
+
+# ifndef ALLOW_AUTODIFF
+      _BEGIN_MASTER(myThid)
+# endif
+      VOLsumGlob = VOLsumGlob_1
+      RHOsumGlob = RHOsumGlob_1/VOLsumGlob
 
       IF (RHOsumGlob_0.GT.0. _d 0) THEN
         sterGloH = VOLsumGlob_0/globalArea
@@ -140,6 +146,10 @@ CEOP
 c     WRITE(msgBuf,'(A,1PE21.14)') ' sterGloH= ', sterGloH
 c     CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 c    &                       SQUEEZE_RIGHT, myThid )
+# ifndef ALLOW_AUTODIFF
+      _END_MASTER(myThid)
+      _BARRIER
+# endif
 
 #endif /* ALLOW_PSBAR_STERIC */
 

@@ -58,6 +58,7 @@ c     == local variables ==
       integer i
 #ifdef ALLOW_CAL
       integer difftime(4)
+      INTEGER modelBaseDate(4)
       _RL     diffsecs
 #endif /* ALLOW_CAL */
       character*(max_len_mbuf) msgbuf
@@ -90,15 +91,16 @@ c     initialise some output
        endrec   = 1*nfac
       else
 # ifdef ALLOW_CAL
+       call cal_FullDate( startdate_1, startdate_2,
+     &                        modelBaseDate , mythid )
        call cal_FullDate( fldstartdate1, fldstartdate2,
      &                        fldstartdate , mythid )
-       call cal_TimePassed( fldstartdate, modelstartdate,
+       call cal_TimePassed( modelBaseDate, fldstartdate,
      &                           difftime, mythid )
        call cal_ToSeconds ( difftime, diffsecs, mythid )
-       startrec = int((modelstart + startTime - diffsecs)/
-     &                fldperiod) + 1
-       endrec   = int((modelend + startTime - diffsecs + modelstep/2)/
-     &                fldperiod) + 2
+       startrec = int((modelstart - diffsecs)/fldperiod) + 1
+       endrec   = int((modelend   - diffsecs + modelstep/2)
+     &                                       /fldperiod) + 2
        if ( nfac .ne. 1 ) then
 c     This is the case of obcs.
         startrec = (startrec - 1)*nfac + 1
@@ -124,4 +126,3 @@ c     This is the case of obcs.
 
       return
       end
-

@@ -132,7 +132,7 @@ c--   >>> Loop 1 to compute mean forcing:
       enddo
 
 c--   >>> Loop over records.
-      do irec = 1,nrec
+      do irec = startrec,endrec
 
 #ifdef ALLOW_AUTODIFF
         call active_read_xy(
