@@ -50,7 +50,7 @@ C     !LOCAL VARIABLES:
       INTEGER im, ix, iv, ist
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
       INTEGER i, j, k
-      CHARACTER*(MAX_LEN_MBUF) tnam
+      CHARACTER*(MAX_LEN_FNAM) tnam
       CHARACTER*(3) stat_typ(5)
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
