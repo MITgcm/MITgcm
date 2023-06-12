@@ -22,11 +22,11 @@ C     originally implemented in OPA.
 #undef ALLOW_GGL90_SMOOTH
 
 C     allow IDEMIX model
-#undef ALLOW_GGL90_IDEMIX
+#define ALLOW_GGL90_IDEMIX
 #ifdef ALLOW_GGL90_IDEMIX
 C     The cvmix version of idemix uses different regularisations for the
 C     Coriolis parameter, buoyancy frequency etc, when used in the denominator
-# define GGL90_IDEMIX_CVMIX_VERSION
+# undef GGL90_IDEMIX_CVMIX_VERSION
 #endif
 
 C     include Langmuir circulation parameterization
