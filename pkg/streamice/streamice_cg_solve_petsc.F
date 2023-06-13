@@ -396,12 +396,16 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
 
        CASE ('MUMPS')
        PRINT *, "PETSC PRECOND: SELECTED MUMPS"
+#ifdef STREAMICE_ALLOW_PETSC_MUMPS       
        call PCSetType(pc,PCLU,ierr)
        call PCFactorSetMatSolverType(pc,MATSOLVERMUMPS,ierr)
        call PCFactorSetUpMatSolverType(pc,ierr)
        call PCFactorGetMatrix(pc,mumpsFac,ierr)
        call MatMumpsSetIcntl(mumpsfac,24,1,ierr)
        call kspsetup (ksp, ierr)
+#else
+       STOP 'ERROR STREAMICE: MUMPS NOT AVAILABLE'
+#endif
 
        CASE DEFAULT
        PRINT *, "PETSC PRECOND: SELECTED DEFAULT"
