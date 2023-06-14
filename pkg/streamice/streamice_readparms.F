@@ -120,6 +120,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICEBdotDepthFile,
      &     STREAMICEBdotMaxMeltFile,
      &     STREAMICE_use_global_ctrl,
+     &      STREAMICE_shelf_dhdt_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -377,6 +378,7 @@ c      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_allow_reg_coulomb = .FALSE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_use_global_ctrl = .FALSE.
+      STREAMICE_shelf_dhdt_ctrl = .FALSE.
       STREAMICE_allow_cpl = .false.
       STREAMICE_use_log_ctrl = .false.
       STREAMICE_vel_ext = .FALSE.
