@@ -184,8 +184,6 @@ C     Sea ice growth rates (m/s)
 C Local arrays for diagnostics
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIeprflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C term for flooding
-      _RL SIfldflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CAB these two terms are placeholders for extra bits from advection,
@@ -421,7 +419,6 @@ C NEW VARIABLE NAMES
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
           SIeprflx(I,J,bi,bj) = 0. _d 0
-          SIfldflx(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -1231,16 +1228,14 @@ C     convert snow to ice if submerged.
            HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
      &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
 
-C Calculate latent heat associated with ice growth from flooding.
-C Note this is purely for diagnostic purpose and is not required
-C for closing sea ice heat budget offline.
-           SIfldflx(I,J,bi,bj) = d_HEFFbyFlood(I,J)*recip_QI
-     &                                             *recip_deltaTtherm
-
           ENDDO
          ENDDO
 c     SEAICEuseFlooding
         ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+        IF (useDiagnostics) CALL DIAGNOSTICS_FILL(
+     &    d_HEFFbyFLood,'SIdhefld',0,1,3,bi,bj,myThid)
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     Sea Ice Load on the sea surface.
 C     =================================
@@ -1455,7 +1450,6 @@ C these diags need to be done outside of the bi,bj loop so that
 C we may do potential global mean adjustement to them consistently.
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(SIfldflx,'SIfldflx',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(SIeprflx,'SIeprflx',0,1,0,1,1,myThid)
 
 C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
