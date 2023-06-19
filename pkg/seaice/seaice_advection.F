@@ -170,7 +170,9 @@ C     make local copy to be tampered with if necessary
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
       ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 C
+#ifdef ALLOW_AUTODIFF
       IF ( inAdMode .AND. useApproxAdvectionInAdMode ) THEN
 C     In AD-mode, we change non-linear, potentially unstable AD advection
 C     schemes to linear schemes with more stability. So far only DST3 with
@@ -180,7 +182,7 @@ C     combination is possible.
      &      advectionScheme = ENUM_DST3
 C     here is room for more advection schemes as this becomes necessary
       ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
@@ -201,7 +203,7 @@ C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         localTij(i,j) = 0. _d 0
@@ -272,7 +274,7 @@ C--   Make local copy of sea-ice field and mask West & South
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-     Initialise Advective flux in X & Y
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -387,7 +389,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
@@ -601,7 +603,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,

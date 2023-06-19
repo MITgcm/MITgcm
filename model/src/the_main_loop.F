@@ -185,6 +185,7 @@ c They provide the fields to be stored.
 #   endif
 #  endif
 
+C-- keep tamc.h here without ALLOW_AUTODIFF_TAMC for ALLOW_TAMC_CHECKPOINTING
 #  include "tamc.h"
 
 #  ifdef ALLOW_GGL90
@@ -213,6 +214,35 @@ C     it is important that this file is included after SEAICE_SIZE.h
 # endif
 
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+#  include "GMREDI_TAVE.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+c#  include "KPP_PARAMS.h"
+# endif
+# ifdef ALLOW_CTRL
+#  include "optim.h"
+# endif
+# ifdef ALLOW_TIMEAVE
+#  include "TIMEAVE_STATV.h"
+# endif
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_PARAM.h"
+# endif
+# ifdef ALLOW_DOWN_SLOPE
+#  include "DWNSLP_SIZE.h"
+#  include "DWNSLP_VARS.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_PARAMS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:

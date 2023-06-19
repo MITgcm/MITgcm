@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -24,7 +27,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -75,10 +77,10 @@ C--   Compute proxy for geostrophic velocity,
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-     &                         +uVel(i,j-1,KGEO(I,J,bi,bj),bi,bj))
-          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-     &                         +vVel(i-1,j,KGEO(I,J,bi,bj),bi,bj))
+          GWATX(i,j,bi,bj)=HALF*(uVel(i,j,KGEO(i,j,bi,bj),bi,bj)
+     &                         +uVel(i,j-1,KGEO(i,j,bi,bj),bi,bj))
+          GWATY(i,j,bi,bj)=HALF*(vVel(i,j,KGEO(i,j,bi,bj),bi,bj)
+     &                         +vVel(i-1,j,KGEO(i,j,bi,bj),bi,bj))
 #ifdef SEAICE_DEBUG
 c          write(*,'(2i4,2i2,f7.1,7f12.3)')
 c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)
@@ -101,10 +103,10 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
         ENDDO
         DO j=1,sNy
          DO i=1,sNx
-          AMASS(I,J,bi,bj)=RHOICE*QUART*(
+          AMASS(i,j,bi,bj)=RHOICE*QUART*(
      &          HEFF(i,j  ,bi,bj) + HEFF(i-1,j  ,bi,bj)
      &         +HEFF(i,j-1,bi,bj) + HEFF(i-1,j-1,bi,bj) )
-          COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj) * _fCoriG(I,J,bi,bj)
+          COR_ICE(i,j,bi,bj)=AMASS(i,j,bi,bj) * _fCoriG(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -118,10 +120,10 @@ C     locations from wind on tracer locations
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          U1=QUART*(UWIND(I-1,J-1,bi,bj)+UWIND(I-1,J,bi,bj)
-     &             +UWIND(I  ,J-1,bi,bj)+UWIND(I  ,J,bi,bj))
-          V1=QUART*(VWIND(I-1,J-1,bi,bj)+VWIND(I-1,J,bi,bj)
-     &             +VWIND(I  ,J-1,bi,bj)+VWIND(I  ,J,bi,bj))
+          U1=QUART*(UWIND(i-1,j-1,bi,bj)+UWIND(i-1,j,bi,bj)
+     &             +UWIND(i  ,j-1,bi,bj)+UWIND(i  ,j,bi,bj))
+          V1=QUART*(VWIND(i-1,j-1,bi,bj)+VWIND(i-1,j,bi,bj)
+     &             +VWIND(i  ,j-1,bi,bj)+VWIND(i  ,j,bi,bj))
           AAA=U1**2+V1**2
           IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
              AAA=SEAICE_EPS
@@ -129,29 +131,29 @@ C     locations from wind on tracer locations
              AAA=SQRT(AAA)
           ENDIF
 C first ocean surface stress
-          DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
+          DAIRN(i,j,bi,bj)=RHOAIR*OCEAN_drag
      &         *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-          WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
-          WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
+          WINDX(i,j,bi,bj)=DAIRN(i,j,bi,bj)*
+     &         (COSWIN*U1-SIGN(SINWIN, _fCori(i,j,bi,bj))*V1)
+          WINDY(i,j,bi,bj)=DAIRN(i,j,bi,bj)*
+     &         (SIGN(SINWIN, _fCori(i,j,bi,bj))*U1+COSWIN*V1)
 
 C now ice surface stress
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           DAIRN(I,J,bi,bj) =
-     &          RHOAIR*(SEAICE_drag_south*AAA*AREA(I,J,bi,bj)
+          IF ( YC(i,j,bi,bj) .LT. ZERO ) THEN
+           DAIRN(i,j,bi,bj) =
+     &          RHOAIR*(SEAICE_drag_south*AAA*AREA(i,j,bi,bj)
      &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,bi,bj)))
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(i,j,bi,bj)))
           ELSE
-           DAIRN(I,J,bi,bj) =
-     &          RHOAIR*(SEAICE_drag*AAA*AREA(I,J,bi,bj)
+           DAIRN(i,j,bi,bj) =
+     &          RHOAIR*(SEAICE_drag*AAA*AREA(i,j,bi,bj)
      &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,bi,bj)))
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(i,j,bi,bj)))
           ENDIF
-          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
-          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
+          FORCEX(i,j,bi,bj)=DAIRN(i,j,bi,bj)*
+     &         (COSWIN*U1-SIGN(SINWIN, _fCori(i,j,bi,bj))*V1)
+          FORCEY(i,j,bi,bj)=DAIRN(i,j,bi,bj)*
+     &         (SIGN(SINWIN, _fCori(i,j,bi,bj))*U1+COSWIN*V1)
          ENDDO
         ENDDO
        ENDDO
@@ -190,19 +192,19 @@ C-    add atmospheric loading and Sea-Ice loading
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
 C--   NOW ADD IN TILT
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &      -AMASS(I,J,bi,bj)
+          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj)
+     &      -AMASS(i,j,bi,bj)
      &         *( (phiSurf(i, j )-phiSurf(i-1, j ))*SIMaskU(i, j ,bi,bj)
      &           +(phiSurf(i,j-1)-phiSurf(i-1,j-1))*SIMaskV(i,j-1,bi,bj)
-     &          )*HALF*_recip_dxV(I,J,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &      -AMASS(I,J,bi,bj)
+     &          )*HALF*_recip_dxV(i,j,bi,bj)
+          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj)
+     &      -AMASS(i,j,bi,bj)
      &         *( (phiSurf( i ,j)-phiSurf( i ,j-1))*SIMaskV( i ,j,bi,bj)
      &           +(phiSurf(i-1,j)-phiSurf(i-1,j-1))*SIMaskV(i-1,j,bi,bj)
-     &          )*HALF*_recip_dyU(I,J,bi,bj)
+     &          )*HALF*_recip_dyU(i,j,bi,bj)
 C NOW KEEP FORCEX0
-          FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-          FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+          FORCEX0(i,j,bi,bj)=FORCEX(i,j,bi,bj)
+          FORCEY0(i,j,bi,bj)=FORCEY(i,j,bi,bj)
          ENDDO
         ENDDO
 #endif /* EXPLICIT_SSH_SLOPE */
@@ -210,22 +212,22 @@ C NOW KEEP FORCEX0
          DO i=1-OLx,sNx+OLx
 #ifndef EXPLICIT_SSH_SLOPE
 C--   NOW ADD IN TILT
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &         -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &         +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
+          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj)
+     &         -COR_ICE(i,j,bi,bj)*GWATY(i,j,bi,bj)
+          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj)
+     &         +COR_ICE(i,j,bi,bj)*GWATX(i,j,bi,bj)
 C NOW KEEP FORCEX0
-          FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-          FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+          FORCEX0(i,j,bi,bj)=FORCEX(i,j,bi,bj)
+          FORCEY0(i,j,bi,bj)=FORCEY(i,j,bi,bj)
 #endif /* EXPLICIT_SSH_SLOPE */
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
-          PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,bi,bj)
+          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
 CML          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
-          ZMAX(I,J,bi,bj)=SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMAX(i,j,bi,bj)=SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
 CML          ZMIN(I,J,bi,bj)=4.0 _d +08
-          ZMIN(I,J,bi,bj)=SEAICE_zetaMin
-          PRESS0(I,J,bi,bj)=PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
+          ZMIN(i,j,bi,bj)=SEAICE_zetaMin
+          PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -251,10 +253,10 @@ C NOW DO PREDICTOR TIME STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICENM1(I,J,bi,bj)=UICE(I,J,bi,bj)
-          VICENM1(I,J,bi,bj)=VICE(I,J,bi,bj)
-          UICEC(I,J,bi,bj)=UICE(I,J,bi,bj)
-          VICEC(I,J,bi,bj)=VICE(I,J,bi,bj)
+          UICENM1(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICENM1(i,j,bi,bj)=VICE(i,j,bi,bj)
+          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -272,10 +274,10 @@ C NOW DO MODIFIED EULER STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICE(I,J,bi,bj)=HALF*(UICE(I,J,bi,bj)+UICENM1(I,J,bi,bj))
-          VICE(I,J,bi,bj)=HALF*(VICE(I,J,bi,bj)+VICENM1(I,J,bi,bj))
-          UICEC(I,J,bi,bj)=UICE(I,J,bi,bj)
-          VICEC(I,J,bi,bj)=VICE(I,J,bi,bj)
+          UICE(i,j,bi,bj)=HALF*(UICE(i,j,bi,bj)+UICENM1(i,j,bi,bj))
+          VICE(i,j,bi,bj)=HALF*(VICE(i,j,bi,bj)+VICENM1(i,j,bi,bj))
+          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO

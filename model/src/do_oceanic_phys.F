@@ -168,7 +168,9 @@ C     == Global variables ===
 #  include "EBM.h"
 # endif
 # ifdef ALLOW_EXF
-#  include "ctrl.h"
+#  ifdef ALLOW_CTRL
+#   include "ctrl.h"
+#  endif
 #  include "EXF_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
@@ -186,6 +188,15 @@ C     == Global variables ===
 #  include "SALT_PLUME.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+c# ifdef ALLOW_KPP
+c#  include "KPP_PARAMS.h"
+c# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

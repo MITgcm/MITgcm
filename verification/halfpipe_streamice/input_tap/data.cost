@@ -1,0 +1,8 @@
+# ******************
+# cost function
+# ******************
+ &COST_NML
+#revert to default 1 month
+ lastinterval=320000000.,
+ mult_test=1.,
+ &
