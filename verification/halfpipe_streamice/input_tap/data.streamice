@@ -1,0 +1,92 @@
+# ===================================
+# | Parameters for STREAMICE package |
+# ===================================
+ &STREAMICE_PARM01
+ streamice_density = 917.,
+ streamice_density_ocean_avg = 1028.,
+ B_glen_isothermal = 700.,
+ C_basal_fric_const = 5.,
+ n_glen = 3.0,
+ n_basal_friction = 1.,
+ eps_glen_min = 1.0e-12,
+ eps_u_min = 1.0e-12,
+ streamice_cg_tol = 1.0e-6,
+ STREAMICE_lower_cg_tol = .false.,
+ streamice_nonlin_tol = 1.0e-20,
+ streamice_nonlin_tol_fp = 1.e-7,
+ streamice_max_cg_iter = 500,
+ streamice_max_nl_iter = 100,
+ STREAMICE_move_front = .false.,
+ STREAMICE_calve_to_mask = .false.,
+ streamice_CFL_factor = 0.5,
+ STREAMICE_dump_mdsio = .true.,
+ streamice_bg_surf_slope_x = 0.,
+ STREAMICEthickInit='PARAM',
+ STREAMICEthickFile='h_init.box',
+ STREAMICEtopogFile='topog.box',
+ STREAMICEbasalTracConfig='UNIFORM',
+ STREAMICEGlenConstConfig='UNIFORM',
+ &
+
+#PETSC_SOLVER_TYPE = 'BICG',
+#PETSC_PRECOND_TYPE = 'BLOCKJACOBI',
+#&
+ 
+
+ &STREAMICE_PARM02
+ shelf_max_draft = 1300.0,
+ shelf_min_draft = 300.0,
+ shelf_edge_pos = 70.0e3,
+ shelf_slope_scale = 62.0e3,
+ shelf_flat_width = 20.0e3,
+ &
+
+ &STREAMICE_PARMOAD
+ streamice_nonlin_tol_adjoint = 1.e-8,
+ &
+
+ &STREAMICE_PARM03
+ min_x_noflow_north = 0.0,
+ max_x_noflow_north = 120.0e3,
+ min_x_noflow_south = 0.0,
+ max_x_noflow_south = 120.0e3,
+ min_y_noflow_WEST = -1.0,
+ max_y_noflow_WEST = -1.0,
+ min_y_noflow_EAST = -1.0,
+ max_y_noflow_EAST = -1.0,
+ min_x_noStress_NORTH = 0.0e3,
+ max_x_noStress_NORTH = 0.0e3,
+ min_x_noStress_SOUTH = 0.0e3,
+ max_x_noStress_SOUTH = 0.0e3,
+ min_y_noStress_WEST = -1.0,
+ max_y_noStress_WEST = -1.0,
+ min_y_noStress_EAST = -1.0,
+ max_y_noStress_EAST = -1.0,
+ min_x_FluxBdry_NORTH = -1.0,
+ max_x_FluxBdry_NORTH = -1.0,
+ min_x_FluxBdry_SOUTH = -1.0,
+ max_x_FluxBdry_SOUTH = -1.0,
+ min_y_FluxBdry_WEST = 0.0,
+ max_y_FluxBdry_WEST = 40.0e3,
+ min_y_FluxBdry_EAST = -1.0,
+ max_y_FluxBdry_EAST = -1.0,
+ min_x_Dirich_NORTH = -1.0,
+ max_x_Dirich_NORTH = -1.0,
+ min_x_Dirich_SOUTH = -1.0,
+ max_x_Dirich_SOUTH = -1.0,
+ min_y_Dirich_WEST = -1.0,
+ max_y_Dirich_WEST = -1.0,
+ min_y_Dirich_EAST = -1.0,
+ max_y_Dirich_EAST = -1.0,
+ min_x_CFBC_NORTH = -1.0,
+ max_x_CFBC_NORTH = -1.0,
+ min_x_CFBC_SOUTH = -1.0,
+ max_x_CFBC_SOUTH = -1.0,
+ min_y_CFBC_WEST = -1.0,
+ max_y_CFBC_WEST = -1.0,
+ min_y_CFBC_EAST = 0.0,
+ max_y_CFBC_EAST = 40.0e3,
+ flux_bdry_val_WEST =1.5e6,
+ STREAMICE_NS_periodic = .false.,
+ STREAMICE_EW_periodic = .false.,
+ &

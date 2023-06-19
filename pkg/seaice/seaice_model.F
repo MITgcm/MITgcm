@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -37,7 +40,6 @@ C !USES: ===============================================================
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -124,7 +126,7 @@ C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
       ENDIF
 #endif /* ALLOW_EXF */
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -140,6 +142,8 @@ C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
         ENDDO
        ENDDO
       ENDDO
+#endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte

@@ -70,6 +70,12 @@ C     == Global variables ===
 # endif
 #endif /* ALLOW_AUTODIFF */
 
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GENERIC_ADVDIFF
+#  include "GAD_SOM_VARS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime :: Current time in simulation

@@ -1,6 +1,29 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;
+  - fix RI-Number calculation for IDEMIX ; new flag GGL90_IDEMIX_CVMIX_VERSION
+    (defined by default) to update IDEMIX to CVMix version ;
+  - add new diagnostics ;
+  - update Fwd ref. output of exp. isomip.obcs, global_ocean.90x40x15.idemix
+    and global_ocean.cs32x15.in_p.
+o pkg/tapenade + other Tapenade addition:
+  - add new capability to use Tapenade to generate Adjoint & Tang-Linear model:
+    new package (pkg/tapenade), new tools (tools/TAP_support), update genmake2
+    and testreport ; add some docs (in progress);
+  - modify src code & packages to work with tapenade ; add new code_tap/ &
+    input_tap/ dirs (+ ref output) in 9 verification experiments to get
+    tested with tapenade.
+
+checkpoint68p (2023/05/07)
+o pkg/seaice:
+  - fix compile error related to ALLOW_AUTODIFF_TAMC/ALLOW_AUTODIFF mix-up
+    in seaice_evp.F; also replace many ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF
+    where code is not specific to TAF/TAMC;
+  - call S/R seaice_get_dynforcing every timestep to always have valid TAUX/Y;
+  - move most of routine body of seaice_dynsolver.F inside the
+    SEAICE_ALLOW_DYNAMICS block.
 o pkg/ecco:
   - fix "sterGloH" output after a restart (issue related to Greatbatch
     correction) by writing & reading (small) new "pickup_ecco" files.
