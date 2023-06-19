@@ -737,10 +737,6 @@ C Here we check for inconsistency:
        ENDIF
       ENDIF
 
-
-      ENDIF
-
-
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
 C ============ other pkg/ecco related checks
