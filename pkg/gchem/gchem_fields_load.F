@@ -5,7 +5,7 @@ C !ROUTINE: GCHEM_FIELDS_LOAD
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_FIELDS_LOAD (
-     I           myTime, myIter, myThid)
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  calls routines which read in fields needed for any tracer experiment
@@ -32,7 +32,7 @@ c load external data     c
 cccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
-       CALL DIC_FIELDS_LOAD (myIter,myTime,myThid)
+       CALL DIC_FIELDS_LOAD( myTime, myIter, myThid )
       ENDIF
 #endif
 

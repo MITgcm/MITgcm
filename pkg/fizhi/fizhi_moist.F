@@ -238,7 +238,6 @@ C --------------------------------------------------------------------
       enddo
       enddo
 
-
 C Set up the array of indeces of subcloud levels for the gathering
 C ----------------------------------------------------------------
       indx = 0
@@ -604,7 +603,6 @@ C ----------------------------------------------------
        endif
        enddo
 
-
 C End of subcloud layer depth loop (iloop)
 
        num = num+nindeces(nsubcl)
@@ -830,7 +828,6 @@ C Remove pi-weighting for u and v tendencies
       enddo
       enddo
       enddo
-
 
       endif
 
@@ -1064,7 +1061,6 @@ C --------------------------------------------------------------------
        cldlsp_lw(i,j,L) = (nlwcld*cldlsp_lw(i,j,L) + cldlsp)/(nlwcld+1)
        cldras_lw(i,j,L) = (nlwcld*cldras_lw(i,j,L) + cldras)/(nlwcld+1)
 
-
 C Compute Time-averaged Cloud and Water Amounts for Shortwave Radiation
 C ---------------------------------------------------------------------
        watnow = cldwater(i,j,L)
@@ -1086,7 +1082,6 @@ C ---------------------------------------------------------------------
        cldtot_sw(i,j,L) = (nswcld*cldtot_sw(i,j,L) + cldnow)/(nswcld+1)
        cldlsp_sw(i,j,L) = (nswcld*cldlsp_sw(i,j,L) + cldlsp)/(nswcld+1)
        cldras_sw(i,j,L) = (nswcld*cldras_sw(i,j,L) + cldras)/(nswcld+1)
-
 
 C Compute Instantaneous Low-Mid-High Maximum Overlap Cloud Fractions
 C ----------------------------------------------------------------------
@@ -1116,7 +1111,6 @@ C ----------------------------------------------
      .                  * (1.-cldlow(i,j))
       enddo
       enddo
-
 
 C **********************************************************************
 C ***       Fill Cloud Top Pressure and Temperature Diagnostic       ***
@@ -1459,11 +1453,11 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
       integer iseed
       real *8 seed,port_rand
       _RL random_numbx
-#ifdef CRAY
+#ifdef FIZHI_CRAY
       _RL ranf
       random_numbx = ranf()
 #else
-#ifdef SGI
+#ifdef FIZHI_SGI
       _RL rand
       random_numbx = rand()
 #else
@@ -1477,10 +1471,10 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
       implicit none
       integer  iseed
       real *8 port_rand
-#ifdef CRAY
+#ifdef FIZHI_CRAY
       call ranset (iseed)
 #else
-#ifdef SGI
+#ifdef FIZHI_SGI
       integer*4   seed
                   seed = iseed
       call srand (seed)
@@ -1541,7 +1535,7 @@ C     LENC    : The run: the number of soundings processes in a single call.
 C               RAS works on the first LENC of the lng soundings
 C               passed. This allows working on pieces of the world
 C               say for multitasking, without declaring temporary arrays
-C               and copying the data to and from them.  This is an f77
+C               and copying the data to and from them. This is a F77
 C               version. An F90 version would have to allow more
 C               flexibility in the argument declarations.  Obviously
 C               (LENC<=lng).
@@ -1661,8 +1655,8 @@ C
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
 #endif
@@ -1748,7 +1742,6 @@ C
 C
  3703    CONTINUE
       ENDIF
-
 
       DO 70 I=1,LENC
       HOL(I,IC) = TX2(I)
@@ -2337,7 +2330,6 @@ C Local variables
      .           .25574,  .20347,  .17254,  .15260,  .16756,
      .           .09916,  .10360,  .05880/
 
-
       do L=1,lma-1
       do i=1,lng
          if( pl(i).ge.p(L)   .and.
@@ -2405,8 +2397,8 @@ C
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
 #endif
@@ -2628,8 +2620,8 @@ C***********************************************************************
 
 C Explicit Inline Directives
 C --------------------------
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
 #endif

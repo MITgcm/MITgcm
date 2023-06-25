@@ -252,6 +252,10 @@ C--  Seaice-Dynamics parameters
        IF ( SEAICEuseJFNK ) THEN
         CALL WRITE_0D_I ( SEAICE_JFNK_lsIter,  INDEX_NONE,
      & 'SEAICE_JFNK_lsIter =', ' /* start of line search */')
+        CALL WRITE_0D_I ( SEAICE_JFNK_lsLmax,  INDEX_NONE,
+     & 'SEAICE_JFNK_lsLmax =', ' /* max. number line search iters */')
+        CALL WRITE_0D_RL( SEAICE_JFNK_lsGamma,  INDEX_NONE,
+     & 'SEAICE_JFNK_lsGamma =', ' /* line search step size param */')
         CALL WRITE_0D_I ( SEAICE_JFNK_tolIter,  INDEX_NONE,
      & 'SEAICE_JFNK_tolIter =', ' /* tol. is relaxed after this */')
         CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
@@ -462,6 +466,16 @@ C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       ELSE
+#ifdef SEAICE_USE_GROWTH_ADX
+      WRITE(msgBuf,'(A)')
+     &      'SEAICE_USE_GROWTH_ADX defined, '//
+     &      'using seaice_growth_adx code'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+#endif /* SEAICE_USE_GROWTH_ADX */
 
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')

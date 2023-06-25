@@ -24,6 +24,12 @@ CADJ STORE gtNm1, gsNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE guNm1, gvNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
+#if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
+CADJ STORE aW2d,aS2d,aC2d= comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pW, pS, pC    = comlev1, key = ikey_dynamics, kind = isbyte
+#endif
+
 #ifdef NONLIN_FRSURF
 
 CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics, kind = isbyte
@@ -61,10 +67,6 @@ CADJ STORE theta, salt = comlev1, key = ikey_dynamics,kind = isbyte
 
 #ifdef ALLOW_GGL90
 # include "ggl90_ad_check_lev1_dir.h"
-#endif
-
-#ifdef ALLOW_ECCO
-# include "ecco_ad_check_lev1_dir.h"
 #endif
 
 #ifdef ALLOW_EXF
@@ -116,6 +118,7 @@ CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow = comlev1, key = ikey_dynamics, kind = isbyte
 # include "seaice_ad_check_lev1_dir.h"
 #endif
 
@@ -134,10 +137,6 @@ CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_OFFLINE
 # include "offline_ad_check_lev1_dir.h"
 #endif /* ALLOW_OFFLINE */
-
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev1_dir.h"
-#endif
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev1_dir.h"
@@ -175,7 +174,7 @@ CADJ STORE cMeanThetaUVel = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE cMeanThetaVVel = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
-#if (defined (ALLOW_COST_ATLANTIC) || defined (ALLOW_COST_ATLANTIC_HEAT))
+#ifdef ALLOW_COST_ATLANTIC_HEAT
 CADJ STORE theta = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE uVel  = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE vVel  = comlev1, key = ikey_dynamics, kind = isbyte
@@ -185,17 +184,4 @@ CADJ STORE vVel  = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_DOWN_SLOPE
 CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
-C Note: code under option ALLOW_HFLUXM_CONTROL or ANNUAL_BALANCE is not
-C       standard MITgcm code (-> untested and not maintained).
-# ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE Qnetm     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
-# ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE atmfw_tilesum   = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE qnet_tilesum    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE qnet_corr       = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE empmr_corr      = comlev1, key = ikey_dynamics, kind = isbyte
-# endif /* ANNUAL_BALANCE */
 #endif

@@ -100,7 +100,6 @@ c find global surface averages
        CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,1), gsm_dic, myThid )
-       print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,2), gsm_alk, myThid )
 # ifndef ALLOW_AUTODIFF
@@ -116,7 +115,6 @@ c find global surface averages
        CALL GCHEM_SURFMEAN(salt,gsm_s,myThid)
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iDIC), gsm_dic, myThid )
-       print*,'mean surface dic', gsm_dic,gsm_s
        CALL GCHEM_SURFMEAN(
      &             pTracer(1-OLx,1-OLy,1,1,1,iALK), gsm_alk, myThid )
 c     ENDIF
@@ -156,7 +154,7 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,6),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #else
 #ifdef ALLOW_O2
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
@@ -165,14 +163,14 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #else
           CALL DIC_BIOTIC_FORCING( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
      &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myIter, myTime, myThid )
+     &                          myTime, myIter, myThid )
 #endif
 #endif
 # ifndef ALLOW_AUTODIFF

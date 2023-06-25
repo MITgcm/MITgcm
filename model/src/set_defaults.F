@@ -118,6 +118,7 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
 C-    viscosity and diffusivity default value:
       viscAh              = 0. _d 3
       smag3D_coeff        = 1. _d -2
+      smag3D_diffCoeff    = 0. _d 0
       viscAhGrid          = 0. _d 0
       viscAhGridMin       = 0. _d 0
       viscAhGridMax       = 1. _d 21
@@ -135,6 +136,7 @@ C-    viscosity and diffusivity default value:
       sideDragFactor      = 2. _d 0
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
+      zRoughBot           = 0. _d 0
       selectBotDragQuadr  = -1
       viscA4              = 0. _d 11
       viscA4Grid          = 0. _d 0
@@ -175,6 +177,7 @@ C-    viscosity and diffusivity default value:
       buoyancyRelation    = 'OCEANIC'
       selectP_inEOS_Zc    = UNSET_I
       smoothAbsFuncRange  = 0. _d 0
+      sIceLoadFac         = 1. _d 0
       hFacMin             = 1. _d 0
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
@@ -262,7 +265,7 @@ C--   Set (free)surface-related parameters
       salt_EvPrRn = 0.
       temp_addMass = UNSET_RL
       salt_addMass = UNSET_RL
-      balanceEmPmR        = .FALSE.
+      selectBalanceEmPmR  = UNSET_I
       balanceQnet         = .FALSE.
       balancePrintMean    = .FALSE.
       balanceThetaClimRelax = .FALSE.
@@ -280,15 +283,15 @@ C--   Atmospheric physical parameters (e.g.: EOS)
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
+      cg2dMinItersNSA    = 0
       cg2dTargetResidual = 1. _d -7
       cg2dTargetResWunit = -1.
-      cg2dChkResFreq     = 1
       cg2dUseMinResSol   = UNSET_I
       cg2dpcOffDFac      = 0.51 _d 0
       cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
-      cg3dChkResFreq     = 1
+      useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
 
 C--   Time stepping parameters
@@ -384,12 +387,14 @@ C--   Input files
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
       pLoadFile       = ' '
+      geoPotAnomFile  = ' '
       addMassFile     = ' '
       eddyPsiXFile    = ' '
       eddyPsiYFile    = ' '
       geothermalFile  = ' '
       lambdaThetaFile = ' '
       lambdaSaltFile  = ' '
+      wghtBalanceFile = ' '
       mdsioLocalDir   = ' '
       adTapeDir       = ' '
       the_run_name    = ' '

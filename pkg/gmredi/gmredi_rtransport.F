@@ -35,7 +35,6 @@ C     == GLobal variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
@@ -64,6 +63,11 @@ CEOP
 C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
+#ifdef ALLOW_AUTODIFF_TAMC
+C     kkey :: tape key (depends on levels, tiles, and tracers)
+      INTEGER kkey
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef GM_BOLUS_ADVEC
@@ -71,25 +75,16 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = trIdentity - 1
-          max0 = maxpass
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          kkey = (igadkey-1)*Nr + k
-          if (trIdentity.GT.maxpass) then
-             print *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
-             STOP 'maxpass seems smaller than trIdentity'
-          endif
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = trIdentity + (kkey-1)*maxpass
+      kkey = k + (kkey-1)*Nr
+      IF (trIdentity.GT.maxpass) THEN
+       WRITE(msgBuf,'(A,2I5)')
+     &      'GMREDI_RTRANSPORT: trIdentity > maxpass ',
+     &      trIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_RTRANSPORT'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Surface flux is zero
@@ -99,34 +94,32 @@ C-    Horizontal gradients interpolated to W points
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = op5*(
-     &   +op5*(_maskW(i+1,j,k,bi,bj)
-     &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (Tracer(i+1,j,k)-Tracer(i,j,k))
-     &        +_maskW(i,j,k,bi,bj)
-     &         *_recip_dxC(i,j,bi,bj)*
-     &           (Tracer(i,j,k)-Tracer(i-1,j,k)) )
-     &   +op5*(_maskW(i+1,j,k-1,bi,bj)
-     &         *_recip_dxC(i+1,j,bi,bj)*
-     &           (Tracer(i+1,j,k-1)-Tracer(i,j,k-1))
-     &        +_maskW(i,j,k-1,bi,bj)
-     &         *_recip_dxC(i,j,bi,bj)*
-     &           (Tracer(i,j,k-1)-Tracer(i-1,j,k-1)) )
-     &       )
+     &    op5*recip_deepFacC(k)
+     &       *( _maskW(i+1,j,k,bi,bj)*_recip_dxC(i+1,j,bi,bj)
+     &             *( Tracer(i+1,j,k) - Tracer( i ,j,k) )
+     &        + _maskW( i ,j,k,bi,bj) *_recip_dxC(i,j,bi,bj)
+     &             *( Tracer( i ,j,k) - Tracer(i-1,j,k) )
+     &        )
+     &   +op5*recip_deepFacC(k-1)
+     &       *( _maskW(i+1,j,k-1,bi,bj)*_recip_dxC(i+1,j,bi,bj)
+     &             *( Tracer(i+1,j,k-1) - Tracer( i ,j,k-1) )
+     &         +_maskW( i ,j,k-1,bi,bj)*_recip_dxC( i ,j,bi,bj)
+     &             *( Tracer( i ,j,k-1) - Tracer(i-1,j,k-1) )
+     &        )          )
 
         dTdy(i,j) = op5*(
-     &   +op5*(_maskS(i,j,k,bi,bj)
-     &         *_recip_dyC(i,j,bi,bj)*
-     &           (Tracer(i,j,k)-Tracer(i,j-1,k))
-     &        +_maskS(i,j+1,k,bi,bj)
-     &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (Tracer(i,j+1,k)-Tracer(i,j,k)) )
-     &   +op5*(_maskS(i,j,k-1,bi,bj)
-     &         *_recip_dyC(i,j,bi,bj)*
-     &           (Tracer(i,j,k-1)-Tracer(i,j-1,k-1))
-     &        +_maskS(i,j+1,k-1,bi,bj)
-     &         *_recip_dyC(i,j+1,bi,bj)*
-     &           (Tracer(i,j+1,k-1)-Tracer(i,j,k-1)) )
-     &       )
+     &    op5*recip_deepFacC(k)
+     &       *( _maskS(i,j+1,k,bi,bj)*_recip_dyC(i,j+1,bi,bj)
+     &             *( Tracer(i,j+1,k) - Tracer(i,j,k) )
+     &        + _maskS(i, j ,k,bi,bj)*_recip_dyC(i, j ,bi,bj)
+     &             *( Tracer(i,j,k) - Tracer(i,j-1,k) )
+     &        )
+     &   +op5*recip_deepFacC(k-1)
+     &       *( _maskS(i,j+1,k-1,bi,bj)*_recip_dyC(i,j+1,bi,bj)
+     &             *( Tracer(i,j+1,k-1) - Tracer(i,j,k-1) )
+     &        + _maskS(i, j ,k-1,bi,bj)*_recip_dyC(i, j ,bi,bj)
+     &             *( Tracer(i,j,k-1) - Tracer(i,j-1,k-1) )
+     &        )          )
        ENDDO
       ENDDO
 
@@ -143,7 +136,7 @@ C-    Off-diagonal components of vertical flux
         DO j=jMin,jMax
          DO i=iMin,iMax
           df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &      - _rA(i,j,bi,bj)*deepFac2F(k)*maskInC(i,j,bi,bj)
      &       *( LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)
      &        + LS_Kwy(i,j,k,bi,bj)*dTdy(i,j) )*maskUp(i,j)
          ENDDO
@@ -153,7 +146,7 @@ C-    Off-diagonal components of vertical flux
         DO j=jMin,jMax
          DO i=iMin,iMax
           df(i,j) = df(i,j)
-     &      - _rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+     &      - _rA(i,j,bi,bj)*deepFac2F(k)*maskInC(i,j,bi,bj)
      &       *( Kwx(i,j,k,bi,bj)*dTdx(i,j)
      &        + Kwy(i,j,k,bi,bj)*dTdy(i,j) )*maskUp(i,j)
          ENDDO
@@ -165,13 +158,17 @@ C-    Off-diagonal components of vertical flux
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm .AND. GM_AdvSeparate
      & .AND. .NOT.GM_InMomAsStress) THEN
+C      Since bolus transport is computed as curl of stream-function, needs to
+C      flip sign when using Left-Handed Coordinate system such as P-coordinate
+c      flipSign4LHCoord = -gravitySign
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rTrans(i,j) =
+         rTrans(i,j) = -gravitySign*(
      &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
+     &                              )*deepFacF(k)
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE
@@ -181,9 +178,9 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
        DO j=jMin,jMax
         DO i=iMin,iMax
          df(i,j) = df(i,j)
-     &    +rTrans(i,j)*op5
-     &                *(Tracer(i,j,k)+Tracer(i,j,k-1))
-     &        *maskInC(i,j,bi,bj)*maskUp(i,j)
+     &    + rTrans(i,j)*op5
+     &                 *( Tracer(i,j,k) + Tracer(i,j,k-1) )
+     &                 *maskInC(i,j,bi,bj)*maskUp(i,j)
         ENDDO
        ENDDO
       ENDIF
@@ -191,17 +188,8 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 
 c     IF (.NOT.implicitDiffusion) THEN
 C This vertical diffusion term is currently implemented
-C by adding the VisbeckK*Kwz diffusivity to KappaRT/S
+C by adding the Kwz diffusivity to KappaRT/S
 C See calc_diffusivity.F and calc_gt.F (calc_gs.F)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-c        df(i,j) = df(i,j) - _rA(i,j,bi,bj)
-c    &    *maskUp(i,j)*VisbeckK(i,j,bi,bj)*Kwz(i,j,k,bi,bj)
-c    &    *recip_drC(k)*rkfac
-c    &    *(Tracer(i,j,k-1)-Tracer(i,j,k))
-c    &    *maskInC(i,j,bi,bj)
-c       ENDDO
-c      ENDDO
 c     ENDIF
 
       ENDIF

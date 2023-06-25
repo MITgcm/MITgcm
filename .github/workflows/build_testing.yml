@@ -1,0 +1,157 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+ forward:
+   runs-on: ubuntu-latest
+
+   strategy:
+     matrix:
+      include:
+        - exp: "offline_exf_seaice"
+        - exp: "global_ocean.cs32x15"
+        - exp: "tutorial_deep_convection"
+        - exp: "aim.5l_cs"
+        - exp: "isomip"
+        - exp: "global_ocean.90x40x15"
+        - exp: "tutorial_plume_on_slope"
+        - exp: "tutorial_advection_in_gyre"
+        - exp: "hs94.cs-32x32x5"
+        - exp: "tutorial_global_oce_biogeo"
+        - exp: "tutorial_global_oce_in_p"
+        - exp: "tutorial_cfc_offline"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
+
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/testreport-images:ubuntu_18_04_villon
+         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
+
+     - name: Run a test
+       env:
+        MITGCM_EXP: ${{ matrix.exp }}
+       run: |
+         . tools/ci/runtr.sh
+
+ openad:
+   runs-on: ubuntu-latest
+
+   strategy:
+     matrix:
+      include:
+        - exp: "global_ocean.90x40x15"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+
+     - name: Run testreport
+       env:
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
+        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
+       run: |
+         . tools/ci/runtr.sh
+
+ openad-other:
+   runs-on: ubuntu-latest
+   if: ${{ contains(github.event.pull_request.labels.*.name, 'adjoint') }}
+
+   strategy:
+     matrix:
+      include:
+        - exp: "halfpipe_streamice"
+        - exp: "hs94.1x64x5"
+        - exp: "isomip"
+        - exp: "OpenAD"
+        - exp: "tutorial_global_oce_biogeo"
+        - exp: "tutorial_global_oce_optim"
+        - exp: "tutorial_tracer_adjsens"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+
+     - name: Run testreport
+       env:
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
+        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
+       run: |
+         . tools/ci/runtr.sh
+
+ doc_html:
+   runs-on: ubuntu-latest
+
+   continue-on-error: true
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: 3.11
+
+     - name: install dependencies
+       run: tools/ci/install_doc_dependencies.sh
+
+     - name: build docs
+       run: |
+         cd doc
+         sphinx-build -Wa -b html -d _build_doctrees . _build/html
+
+ doc_latex:
+   runs-on: ubuntu-latest
+
+   continue-on-error: true
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: 3.11
+
+     - name: install dependencies
+       run: tools/ci/install_doc_dependencies.sh
+
+     - name: build docs
+       run: |
+         cd doc
+         make clean latexpdf LATEXOPTS="-interaction=nonstopmode -halt-on-error"

@@ -1,11 +1,11 @@
 #include "COST_OPTIONS.h"
 
       SUBROUTINE COST_CHECK( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE CTRK_CHECK                                    |
 C     | o Validate basic package setup and inter-package         |
 C     | dependencies.                                            |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -14,99 +14,44 @@ C     === Global variables ===
 #include "PARAMS.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance
+C     myThid  :: my Thread Id number
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     nRetired :: Counter used to trap gracefully "retired" option & parameters
+C     msgBuf   :: Informational/error message buffer
+      INTEGER nRetired
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _BEGIN_MASTER(myThid)
+      nRetired = 0
 
       WRITE(msgBuf,'(A)') 'COST_CHECK: #define ALLOW_COST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-#ifdef ALLOW_ECCO
+     &                    SQUEEZE_RIGHT, myThid )
 
-#if ((defined (ALLOW_HFLUX_CONTROL) && \
-      !defined (ALLOW_HFLUX_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_HFLUX_CONTROL) && \
-      defined (ALLOW_HFLUX_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_HFLUX_CONTROL & ALLOW_HFLUX_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#elif ((defined (ALLOW_ATEMP_CONTROL) && \
-      !defined (ALLOW_ATEMP_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_ATEMP_CONTROL) && \
-      defined (ALLOW_ATEMP_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_ATEMP_CONTROL & ALLOW_ATEMP_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
+#ifdef ALLOW_COST_TRANSPORT
+        WRITE(msgBuf,'(2A)') 'COST_CHECK: ',
+     &    'ALLOW_COST_TRANSPORT not allowed anymore in COST_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_COST_ATLANTIC
+        WRITE(msgBuf,'(2A)') 'COST_CHECK: ',
+     &    'ALLOW_COST_ATLANTIC not allowed anymore in COST_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        nRetired = nRetired + 1
 #endif
 
-#if ((defined (ALLOW_SFLUX_CONTROL) && \
-      !defined (ALLOW_SFLUX_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_SFLUX_CONTROL) && \
-      defined (ALLOW_SFLUX_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_SFLUX_CONTROL & ALLOW_SFLUX_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#elif ((defined (ALLOW_AQH_CONTROL) && \
-      !defined (ALLOW_AQH_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_AQH_CONTROL) && \
-      defined (ALLOW_AQH_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_AQH_CONTROL & ALLOW_AQH_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#endif
+      IF ( nRetired .GT. 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R COST_CHECK: ',
+     &   'retired compile-time options need to be undefined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R COST_CHECK'
+      ENDIF
 
-#if ((defined (ALLOW_USTRESS_CONTROL) && \
-      !defined (ALLOW_USTRESS_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_USTRESS_CONTROL) && \
-      defined (ALLOW_USTRESS_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_USTRESS_CONTROL & ALLOW_USTRESS_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#elif ((defined (ALLOW_UWIND_CONTROL) && \
-      !defined (ALLOW_UWIND_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_UWIND_CONTROL) && \
-      defined (ALLOW_UWIND_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_UWIND_CONTROL & ALLOW_UWIND_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#endif
+      _END_MASTER(myThid)
 
-#if ((defined (ALLOW_VSTRESS_CONTROL) && \
-      !defined (ALLOW_VSTRESS_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_VSTRESS_CONTROL) && \
-      defined (ALLOW_VSTRESS_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_VSTRESS_CONTROL & ALLOW_VSTRESS_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#elif ((defined (ALLOW_VWIND_CONTROL) && \
-      !defined (ALLOW_VWIND_COST_CONTRIBUTION)) || \
-     (!defined (ALLOW_VWIND_CONTROL) && \
-      defined (ALLOW_VWIND_COST_CONTRIBUTION)))
-c      WRITE(msgBuf,'(A,A)')
-c     &     'Must have both ',
-c     &     'ALLOW_VWIND_CONTROL & ALLOW_VWIND_COST_CONTRIBUTION'
-c      CALL PRINT_ERROR( msgBuf , 1)
-cph      STOP 'ABNORMAL END: S/R COST_CHECK'
-#endif
-
-#endif /* ALLOW_ECCO */
-
-      return
-      end
+      RETURN
+      END

@@ -1,7 +1,7 @@
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MYPACKAGE_INIT_VARIA
 
 C !INTERFACE:
@@ -12,6 +12,7 @@ C     Initialize MYPACKAGE variables
 
 C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -23,10 +24,7 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_MYPACKAGE
-
 C     !LOCAL VARIABLES:
-C     === Local variables ===
       INTEGER i,j,k,bi,bj
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -35,8 +33,8 @@ C     === Local variables ===
 C     Initialize arrays in common blocks :
 C     3-dim.
         DO k=1,Nr
-         DO j=1-Oly,sNy+OLy
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 #ifdef MYPACKAGE_3D_STATE
            myPa_StatScal1(i,j,k,bi,bj) = 0. _d 0
            myPa_StatScal2(i,j,k,bi,bj) = 0. _d 0
@@ -55,8 +53,8 @@ C     3-dim.
 
 C     2-dim.
 #ifdef MYPACKAGE_2D_STATE
-        DO j=1-Oly,sNy+OLy
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           myPa_Surf1(i,j,bi,bj) = 0. _d 0
           myPa_Surf2(i,j,bi,bj) = 0. _d 0
          ENDDO
@@ -126,8 +124,6 @@ C--   restart from a pickup:
 
 C--   end start-from-iter-zero if/else block
       ENDIF
-
-#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END

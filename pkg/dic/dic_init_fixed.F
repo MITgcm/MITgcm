@@ -26,8 +26,10 @@ CEOP
 
 #ifdef ALLOW_DIC
       INTEGER k
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+#ifdef DIC_BIOTIC
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -62,7 +64,7 @@ C coefficients for determining saturation O2
 C     Set other constant/flag
 
       IF ( dic_int1.EQ.2 ) THEN
-        CALL MDSFINDUNIT( iUnit, mythid )
+        CALL MDSFINDUNIT( iUnit, myThid )
         OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
         DO k=1,dic_int2
           READ(iUnit,*) co2atmos(k)

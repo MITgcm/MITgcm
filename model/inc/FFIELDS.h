@@ -35,11 +35,9 @@ C           NOTE: for backward compatibility EmPmRfile is specified in
 C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C
-C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
+C  saltFlux :: Net upward salt flux in g/kg.kg/m^2/s = g/m^2/s
 C              flux of Salt taken out of the ocean per time unit (second).
-C              Note: a) only used when salty sea-ice forms or melts.
-C                    b) units: when salinity (unit= psu) is expressed
-C                       in g/kg, saltFlux unit becomes g/m^2/s.
+C              Note: only used when salty sea-ice forms or melts.
 C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C
@@ -58,12 +56,12 @@ C
 C     SST   :: Sea surface temperature in degrees C for relaxation
 C              Southwest C-grid tracer point
 C
-C     SSS   :: Sea surface salinity in psu for relaxation
+C     SSS   :: Sea surface salinity in g/kg for relaxation
 C              Southwest C-grid tracer point
 C
-C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C     lambdaThetaClimRelax :: Inverse time scale for SST relaxation ( 1/s ).
 C
-C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C     lambdaSaltClimRelax  :: Inverse time scale for SSS relaxation ( 1/s ).
 
 C     phiTide2d :: vertically uniform (2d-map), time-dependent geopotential
 C                  anomaly (e.g., tidal forcing); Units are m^2/s^2
@@ -128,6 +126,12 @@ C                    Typical range: 0 < geothermalFlux < 1.5 W/m^2
 C                    (global mean on the order 0.09 - 0.1 W/m^2)
       COMMON /FFIELDS_geothermal/ geothermalFlux
       _RS geothermalFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_BALANCE_FLUXES
+C  weight2BalanceFlx :: weight used for applying weighted correction
+C                       to global-mean surf. flux imbalance ; no-units
+      COMMON /FFIELDS_W2BALANCE/ weight2BalanceFlx
+      _RS weight2BalanceFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 C- jmc: commented out until corresponding (ghost-like) code apparition
@@ -222,9 +226,9 @@ C                -> usage in gU:     gU = gU + surfaceForcingU/drF [m/s^2]
 C     surfaceForcingV     units are  r_unit.m/s^2 (=m^2/s^-2 if r=z)
 C                -> usage in gU:     gV = gV + surfaceForcingV/drF [m/s^2]
 C
-C     surfaceForcingS     units are  r_unit.psu/s (=psu.m/s if r=z)
+C     surfaceForcingS     units are  r_unit.g/kg/s (=g/kg.m/s if r=z)
 C            - EmPmR * S_surf plus salinity relaxation*drF(1)
-C                -> usage in gS:     gS = gS + surfaceForcingS/drF [psu/s]
+C                -> usage in gS:     gS = gS + surfaceForcingS/drF [g/kg/s]
 C
 C     surfaceForcingT     units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C            - Qnet (+Qsw) plus temp. relaxation*drF(1)

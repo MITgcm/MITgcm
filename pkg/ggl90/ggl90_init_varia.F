@@ -29,10 +29,9 @@ C     myThid -  Number of this instance of GGL90_INIT
 #ifdef ALLOW_GGL90
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj,I,J,K,Km1 - Loop counters
+C     bi,bj,I,J,K - Loop counters
       INTEGER bi, bj
-      INTEGER I, J, K
-      INTEGER Km1
+      INTEGER i, j, k
 CEOP
 
 C--   Over all tiles
@@ -40,18 +39,17 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C-      3D arrays
-        DO K=1,Nr
-         Km1 = MAX(K-1,1)
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
-           GGL90viscArU(I,J,K,bi,bj) = 0. _d 0
-           GGL90viscArV(I,J,K,bi,bj) = 0. _d 0
-           GGL90diffKr(I,J,K,bi,bj)  = 0. _d 0
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           GGL90viscArU(i,j,k,bi,bj) = 0. _d 0
+           GGL90viscArV(i,j,k,bi,bj) = 0. _d 0
+           GGL90diffKr(i,j,k,bi,bj)  = 0. _d 0
            IF ( useIDEMIX) THEN
-            GGL90TKE(I,J,K,bi,bj)=GGL90eps*maskC(I,J,K,bi,bj)
+            GGL90TKE(i,j,k,bi,bj)=GGL90eps*maskC(i,j,k,bi,bj)
            ELSE
 CML           GGL90TKE(I,J,K,bi,bj)=0. _d 0
-            GGL90TKE(I,J,K,bi,bj)=GGL90TKEmin*maskC(I,J,K,bi,bj)
+            GGL90TKE(i,j,k,bi,bj)=GGL90TKEmin*maskC(i,j,k,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -70,20 +68,18 @@ C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-        DO K=1,Nr
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
-           IDEMIX_E(I,J,K,bi,bj)     = 0. _d 0
-           IDEMIX_V0(I,J,K,bi,bj)    = 0. _d 0
-           IDEMIX_tau_d(I,J,K,bi,bj) = 0. _d 0
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IDEMIX_E(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
 
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          IDEMIX_F_B(I,J,bi,bj) = 0. _d 0
-          IDEMIX_F_S(I,J,bi,bj) = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IDEMIX_F_B(i,j,bi,bj) = 0. _d 0
+          IDEMIX_F_S(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -98,8 +94,8 @@ c-----------------------------------------------------------------------
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IDEMIX_F_b(i,j,bi,bj) = -MAX(0. _d 0,
      &          MIN(1. _d 0,IDEMIX_F_b(i,j,bi,bj)))
 C     fraction that enters IW field
@@ -117,8 +113,8 @@ CML     &          IDEMIX_F_b(i,j,bi,bj)*recip_rhoConst
        _EXCH_XY_RL(IDEMIX_F_s,myThid)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J=1-OLy,sNy+OLy
-          DO I=1-OLx,sNx+OLx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IDEMIX_F_s(i,j,bi,bj) = MAX(0. _d 0,
      &          MIN(1. _d 0,IDEMIX_F_s(i,j,bi,bj)))
 C     fraction that leaves mixed layer
@@ -141,11 +137,11 @@ C--   Read initial turbulent kinetic energy thickness from file if available.
         _EXCH_XYZ_RL(GGL90TKE,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
-           DO J=1-OLy,sNy+OLy
-            DO I=1-OLx,sNx+OLx
-             GGL90TKE(I,J,K,bi,bj) = MAX(GGL90TKE(I,J,K,bi,bj),
-     &            GGL90TKEmin)*maskC(I,J,K,bi,bj)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             GGL90TKE(i,j,k,bi,bj) = MAX(GGL90TKE(i,j,k,bi,bj),
+     &            GGL90TKEmin)*maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO

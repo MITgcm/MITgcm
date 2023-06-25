@@ -1,15 +1,22 @@
 #include "GMREDI_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: GMREDI_DIAGNOSTICS_FILL
+C     !INTERFACE:
       SUBROUTINE GMREDI_DIAGNOSTICS_FILL(
-     I             bi, bj, myThid )
+     I                  bi, bj, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE GMREDI_DIAGNOSTICS_FILL
 C     | o fill GM-Redi diagnostics
 C     *==========================================================*
-C     | note: formerly was part of S/R GMREDI_CALC_TENSOR
+C     | Note: formerly was part of S/R GMREDI_CALC_TENSOR
 C     |       and was isolated in this S/R for TAF reasons
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -19,26 +26,27 @@ C     == Global variables ==
 #include "GRID.h"
 #include "GMREDI.h"
 
-C     == Routine arguments ==
-C
+C     !INPUT/OUTPUT PARAMETERS:
+C     bi, bj :: tile indices
+C     myThid :: my Thread Id number
       INTEGER bi,bj
       INTEGER myThid
+
+#ifdef ALLOW_GMREDI
 #ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
-CEndOfInterface
+CEOP
 
-#ifdef ALLOW_GMREDI
-
-C     == Local variables ==
+C     !LOCAL VARIABLES:
 #ifdef ALLOW_EDDYPSI
       INTEGER i,j,k
       _RL tmpfld3dloc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -48,10 +56,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL DIAGNOSTICS_FILL(VisbeckK,'GM_VisbK',0,1,1,bi,bj,myThid)
        ENDIF
 #endif
-#ifdef GM_NON_UNITY_DIAGONAL
          CALL DIAGNOSTICS_FILL(Kux,'GM_Kux  ',0,Nr,1,bi,bj,myThid)
          CALL DIAGNOSTICS_FILL(Kvy,'GM_Kvy  ',0,Nr,1,bi,bj,myThid)
-#endif
 #ifdef GM_EXTRA_DIAGONAL
        IF ( GM_ExtraDiag ) THEN
          CALL DIAGNOSTICS_FILL(Kuz,'GM_Kuz  ',0,Nr,1,bi,bj,myThid)
@@ -71,8 +77,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_EDDYPSI
        IF ( DIAGNOSTICS_IS_ON('GMEdTauX',myThid) ) THEN
         DO k = 1, Nr
-         DO j = 1, sny
-          DO i = 1, snx
+         DO j = 1, sNy
+          DO i = 1, sNx
            tmpfld3dloc(i,j,k,bi,bj) =
      &      0.5*rhoConst*fCori(i,j,bi,bj)*
      &      Kwy(i,j,k,bi,bj)
@@ -85,8 +91,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c
        IF ( DIAGNOSTICS_IS_ON('GMEdTauY',myThid) ) THEN
         DO k = 1, Nr
-         DO j = 1, sny
-          DO i = 1, snx
+         DO j = 1, sNy
+          DO i = 1, sNx
            tmpfld3dloc(i,j,k,bi,bj) =
      &      -0.5*rhoConst*fCori(i,j,bi,bj)*
      &      Kwx(i,j,k,bi,bj)
@@ -97,9 +103,9 @@ c
      &   0,Nr,1,bi,bj,myThid)
        ENDIF
 #endif /* ALLOW_EDDYPSI */
-#ifdef GM_K3D
-       IF (GM_useK3D) THEN
-         CALL DIAGNOSTICS_FILL(K3D, 'GM_K3D  ',0,Nr,0,1,1,myThid)
+#ifdef GM_BATES_K3D
+       IF (GM_useBatesK3d) THEN
+         CALL DIAGNOSTICS_FILL(GM_BatesK3d,'GM_BaK  ',0,Nr,0,1,1,myThid)
        ENDIF
 #endif
 

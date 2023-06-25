@@ -30,7 +30,9 @@ CEOP
 
 #ifdef ALLOW_PTRACERS
 C     !LOCAL VARIABLES:
+#ifndef ALLOW_AUTODIFF
       INTEGER iTracer
+#endif
 
       IF ( .NOT.PTRACERS_startAllTrc ) THEN
 

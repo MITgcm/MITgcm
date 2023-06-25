@@ -3,7 +3,12 @@ c     store directives for checkpoint level 2
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-#ifdef AUTODIFF_USE_OLDSTORE_2D
+#ifdef AUTODIFF_USE_STORE_RESTORE
+c
+CADJ STORE StoreDynVars2D = tapelev2, key = ilev_2
+CADJ STORE StoreDynVars3D = tapelev2, key = ilev_2
+c
+#else
 c
 CADJ STORE etan  = tapelev2, key = ilev_2
 #ifndef EXCLUDE_FFIELDS_LOAD
@@ -40,14 +45,6 @@ CADJ STORE dEtaHdt = tapelev2, key = ilev_2
 CADJ STORE PmEpR = tapelev2, key = ilev_2
 #endif
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_2D */
-c
-CADJ STORE StoreDynVars2D     = tapelev2, key = ilev_2
-c
-#endif /* AUTODIFF_USE_OLDSTORE_2D */
-c
-#ifdef AUTODIFF_USE_OLDSTORE_3D
-c
 #ifdef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gtnm = tapelev2, key = ilev_2
 CADJ STORE gsnm = tapelev2, key = ilev_2
@@ -66,11 +63,7 @@ CADJ STORE vvel  = tapelev2, key = ilev_2
 CADJ STORE wvel  = tapelev2, key = ilev_2
 CADJ STORE totphihyd  = tapelev2, key = ilev_2
 c
-#else /* ndef AUTODIFF_USE_OLDSTORE_3D */
-c
-CADJ STORE StoreDynVars3D     = tapelev2, key = ilev_2
-c
-#endif /* AUTODIFF_USE_OLDSTORE_3D */
+#endif /* AUTODIFF_USE_STORE_RESTORE */
 
 CADJ STORE phi0surf     = tapelev2, key = ilev_2
 CADJ STORE saltflux     = tapelev2, key = ilev_2
@@ -98,14 +91,13 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev2, key = ilev_2
 # endif
 
-# ifdef ALLOW_CG2D_NSA
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     tapelev2, key = ilev_2
-CADJ STORE pc, ps, pw =
-CADJ &     tapelev2, key = ilev_2
-# endif
-
 #endif /* NONLIN_FRSURF */
+
+#if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
+CADJ STORE aW2d, aS2d, aC2d = tapelev2, key = ilev_2
+CADJ STORE pc, ps, pw       = tapelev2, key = ilev_2
+#endif
 
 #ifdef ALLOW_CD_CODE
 # include "cd_code_ad_check_lev2_dir.h"
@@ -113,10 +105,6 @@ CADJ &     tapelev2, key = ilev_2
 
 #ifdef ALLOW_GGL90
 # include "ggl90_ad_check_lev2_dir.h"
-#endif
-
-#ifdef ALLOW_ECCO
-# include "ecco_ad_check_lev2_dir.h"
 #endif
 
 #ifdef ALLOW_EXF
@@ -140,6 +128,7 @@ CADJ &     tapelev2, key = ilev_2
 #endif
 
 #ifdef ALLOW_SEAICE
+CADJ STORE phiHydLow  = tapelev2, key = ilev_2
 # include "seaice_ad_check_lev2_dir.h"
 #endif /* ALLOW_SEAICE */
 
@@ -162,10 +151,6 @@ CADJ &     tapelev2, key = ilev_2
 #ifdef ALLOW_OFFLINE
 # include "offline_ad_check_lev2_dir.h"
 #endif /* ALLOW_OFFLINE */
-
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev2_dir.h"
-#endif
 
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev2_dir.h"
@@ -203,23 +188,4 @@ CADJ STORE cMeanThetaVVel = tapelev2, key = ilev_2
 
 #ifdef ALLOW_COST_TRACER
 CADJ STORE objf_tracer = tapelev2, key = ilev_2
-#endif
-
-#ifdef ALLOW_COST_TRANSPORT
-CADJ STORE objf_transport = tapelev2, key = ilev_2
-#endif
-
-#ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE qnetm          = tapelev2, key = ilev_2
-#endif
-
-#ifdef ALLOW_SEAICE
-cph temporary for HD
-# ifdef ANNUAL_BALANCE
-CADJ STORE balance_itcount = tapelev2, key = ilev_2
-CADJ STORE atmfw_tilesum   = tapelev2, key = ilev_2
-CADJ STORE qnet_tilesum    = tapelev2, key = ilev_2
-CADJ STORE empmr_corr      = tapelev2, key = ilev_2
-CADJ STORE qnet_corr       = tapelev2, key = ilev_2
-# endif /* ANNUAL_BALANCE */
 #endif

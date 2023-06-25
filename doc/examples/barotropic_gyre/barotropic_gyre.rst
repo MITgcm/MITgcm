@@ -26,7 +26,7 @@ set to :math:`10^{-4}\text{s}^{-1}` and :math:`\beta = 10^{-11}\text{s}^{-1}\tex
 The sinusoidal wind-stress variations are defined according to
 
 .. math::
-   \tau_x(y) = -\tau_{0}\cos(\pi \frac{y}{L_y})
+   \tau_x(y) = -\tau_{0} \cos\left(\pi \frac{y}{L_y}\right)
 
 where :math:`L_{y}` is the lateral domain extent and
 :math:`\tau_0` is set to :math:`0.1 \text{N m}^{-2}`.
@@ -62,12 +62,12 @@ equations for this configuration as follows:
    :label: baro_model_eq_v
 
 .. math::
-    \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot H \vec{u}
+    \frac{\partial \eta}{\partial t} +  \nabla _{h}\cdot (H \vec{\bf u})
     = 0
     :label: baro_model_eq_eta
 
 where :math:`u` and :math:`v` are the :math:`x` and :math:`y` components of the
-flow vector :math:`\vec{u}`, :math:`\eta` is the free surface height,
+flow vector :math:`\vec{\bf u}`, :math:`\eta` is the free surface height,
 :math:`A_{h}` the horizontal Laplacian viscosity, :math:`\rho_{c}` is the fluid density,
 and :math:`g` the acceleration due to gravity.
 
@@ -97,7 +97,7 @@ maximum horizontal flow speed is:
 .. math::
     :label: eq_baro_cfl_stability
 
-    S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+    S_{\rm adv} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
 
 The 2 factor on the left is because we have a 2-D problem
 (in contrast with the more familiar 1-D canonical stability analysis); the right hand side is 0.5
@@ -106,14 +106,14 @@ value of 1 that one would obtain using a forward Euler scheme.
 In our configuration, let’s assume our solution will achieve a maximum :math:`| u | = 1` ms\ :sup:`--1`
 (in reality, current speeds in our solution will be much smaller). To keep :math:`\Delta t` safely
 below the stability threshold, let’s choose :math:`\Delta t` = 1200 s (= 20 minutes), which
-results in :math:`S_{a}` = 0.12.
+results in :math:`S_{\rm adv}` = 0.12.
 
 The numerical stability for inertial oscillations using Adams-Bashforth II (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
     :label: eq_baro_inertial_stability
 
-    S_{i} = f {\Delta t} < 0.5 \text{ for stability}
+    S_{\rm inert} = f {\Delta t} < 0.5 \text{ for stability}
 
 evaluates to 0.12 for our choice of :math:`\Delta t`, which is below the stability threshold.
 
@@ -129,11 +129,11 @@ zero-crossing, see Pedlosky 1987 :cite:`pedlosky:87`) is given by:
 .. math::
     :label: baro_munk_layer
 
-    M_{w} = \frac{2\pi}{\sqrt{3}} \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
+    M = \frac{2\pi}{\sqrt{3}} \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
 
 For our configuration we will choose to resolve a boundary layer of :math:`\approx` 100 km,
 or roughly across five grid cells, so we set :math:`A_{h} = 400` m\ :sup:`2` s\ :sup:`--1`
-(more precisely, this sets the full width at :math:`M_{w}` = 124 km). This choice ensures
+(more precisely, this sets the full width at :math:`M` = 124 km). This choice ensures
 that the frictional boundary layer is well resolved.
 
 Given our choice of :math:`\Delta t`, the stability
@@ -142,7 +142,7 @@ parameter for the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`
 .. math::
     :label: baro_laplacian_stability
 
-    S_{l} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
+    S_{\rm Lh} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
 
 evaluates to 0.0096, which is well below the stability threshold. As in :eq:`eq_baro_cfl_stability` the above criteria
 is for a 2D problem using Adams-Bashforth2 time stepping, with the 0.6 value on the right replacing the more familiar 1
@@ -517,7 +517,8 @@ value is set to 0 (i.e., “land”).   As discussed in :numref:`sec_baro_num_co
 (i.e., periodic in both :math:`x`- and :math:`y`-directions), so boundary walls
 are necessary to set up our enclosed box domain.
 The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this bathymetry file. By default, this file is assumed to
+was used to generate this bathymetry file (alternatively, see python equivalent
+:filelink:`gendata.py <verification/tutorial_barotropic_gyre/input/gendata.py>`). By default, this file is assumed to
 contain 32-bit (single precision) binary numbers.
 See :numref:`sec_mitgcm_inp_file_format` for additional information on MITgcm input data file format specifications.
 
@@ -532,9 +533,11 @@ The units are Nm\ :sup:`--2`. Although :math:`\tau_{x}` is only a function of :m
 this file must still define a complete 2-D map in order
 to be compatible with the standard code for loading forcing fields
 in MITgcm. The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this wind stress file. To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
-you will in fact need to run this
-matlab program to generate the file ``input/windx_siny.bin``.
+was used to generate this wind stress file (alternatively, see python equivalent
+:filelink:`gendata.py <verification/tutorial_barotropic_gyre/input/gendata.py>`). 
+To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
+you will in fact need to run one of these
+programs to generate the file ``input/windx_siny.bin``.
 
 .. _baro_gyre_build_run:
 
@@ -703,21 +706,31 @@ binary data in ``Eta.0000077760.001.001.data`` is as simple as:
 ::
 
    addpath ../../../utils/matlab/
-   XC=rdmds('XC'); YC=rdmds('YC');
-   Eta=rdmds('Eta',77760);
-   contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar;
-   colormap((flipud(hot))); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
+   XC=rdmds('XC');
+   YC=rdmds('YC');
+   Eta=rdmds('Eta', 77760);
+   contourf(XC/1000, YC/1000, Eta, [-.04:.01:.04])
+   colorbar
+   colormap((flipud(hot)))
+   set(gca, 'XLim', [0 1200])
+   set(gca, 'YLim', [0 1200])
 
-or using python (you will need to install the MITgcmutils package, see :numref:`sec_python`):
+or using python (you will need to install the MITgcmutils package, see :numref:`MITgcmutils`):
 
 ::
 
    from MITgcmutils import mds
+   import numpy as np
    import matplotlib.pyplot as plt
-   XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
+   XC = mds.rdmds('XC')
+   YC = mds.rdmds('YC')
    Eta = mds.rdmds('Eta', 77760)
-   plt.contourf(XC, YC, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
-   plt.colorbar(); plt.show()
+   plt.contourf(XC/1000, YC/1000, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
+   plt.colorbar()
+   plt.show()
+
+(for a more involved example with detailed explanations how to read in model output, 
+perform calculations using these data, and make plots, see tutorial :ref:`Baroclinic Ocean Gyre <baroclinic_gyre_solution>`)
 
 Let’s simplify the example by considering the linear problem where we neglect the advection of momentum terms.
 In other words, replace :math:`\frac{Du}{Dt}` and :math:`\frac{Dv}{Dt}` with
@@ -729,10 +742,10 @@ line  ``# momAdvection=.FALSE.,`` in file ``data`` and re-run the model. Any exi
 For the linearized equations, the Munk layer (equilibrium) analytical solution is given by:
 
 .. math::
-   \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin(\pi \frac{y}{L_y})
-   \left[1 - \exp({\frac{-x}{2\delta_m}}) \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
+   \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin\left(\pi \frac{y}{L_y}\right)
+   \left[1 - e^{-x/(2\delta_m)} \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
 
-where :math:`\delta_m= ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}`. :numref:`lin_anal_soln`
+where :math:`\delta_m = (A_{h} / \beta)^{\frac{1}{3}}`. :numref:`lin_anal_soln`
 displays the MITgcm output after switching off momentum advection vs.
 the analytical solution to the linearized equations. Success!
 

@@ -46,7 +46,6 @@ C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_PREC) record
 #if !defined(USE_FORTRAN_SCRATCH_FILES) || defined(SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
-      CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
       INTEGER  errIO,IL
       LOGICAL  exst
@@ -54,11 +53,14 @@ C     msgBuf    :: Informational/error message buffer
 C     mpiRC  :: Error code reporting variable used with MPI.
       INTEGER mpiRC
 #endif
+#ifdef USE_PDAF
+      INTEGER mpi_task_id
+#endif
 CEOP
 
       _BEGIN_MASTER(myThid)
 
-C--   Open the parameter file
+C--   Check for parameter file
       INQUIRE( FILE=data_file, EXIST=exst )
       IF (exst) THEN
        WRITE(msgBuf,'(A,A)')
@@ -74,26 +76,27 @@ C--   Open the parameter file
        STOP 'ABNORMAL END: S/R OPEN_COPY_DATA_FILE'
       ENDIF
 
-C     Make scratch copies of eedata with and without comments
+C     Make a scratch copy of parameter file without comments
 #ifdef SINGLE_DISK_IO
       WRITE(scratchFile1,'(A,A)') 'scratch1_', data_file
-      WRITE(scratchFile2,'(A,A)') 'scratch2_', data_file
       IF ( myProcId .EQ. 0 ) THEN
-       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+       OPEN( UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN' )
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 #ifdef USE_FORTRAN_SCRATCH_FILES
 C     this is the old default, which can cause filename conflicts on some
 C     multi-node/multi-processor systems
-      OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
-      OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+      OPEN( UNIT=scrUnit1, STATUS='SCRATCH' )
 #else
 C     After opening regular files here, they are closed with STATUS='DELETE'
+#ifdef USE_PDAF
+      CALL GET_TASKID_PDAF(mpi_task_id)
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//',A,'//FMT_TSK_ID//')')
+     &     'scratch1.', myProcId, '.', mpi_task_id
+#else
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', myProcId
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+#endif
+      OPEN( UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN' )
 #endif /* USE_FORTRAN_SCRATCH_FILES */
 #endif /* SINGLE_DISK_IO */
 
@@ -101,8 +104,9 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
       IF ( myProcId .EQ. 0 ) THEN
 #endif
 
-      OPEN(UNIT=modelDataUnit,FILE=data_file,STATUS='OLD',
-     &     IOSTAT=errIO)
+C--   Open the parameter file
+      OPEN( UNIT=modelDataUnit, FILE=data_file,
+     &      _READONLY_ACTION STATUS='OLD', IOSTAT=errIO )
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'Unable to open parameter file: ',data_file
@@ -112,20 +116,8 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
        STOP 'ABNORMAL END: S/R OPEN_COPY_DATA_FILE'
       ENDIF
 
-      DO WHILE ( .TRUE. )
-       READ(modelDataUnit,FMT='(A)',END=1001) RECORD
-       IL = MAX(ILNBLNK(RECORD),1)
-       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
-c        CALL NML_SET_TERMINATOR( RECORD )
-         CALL NML_CHANGE_SYNTAX( RECORD, data_file, myThid )
-         WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
-       ENDIF
-       WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
-      ENDDO
- 1001 CONTINUE
-      CLOSE(modelDataUnit)
-
-C--   Report contents of model parameter file
+C--   Read parameter file, make a scratch copy without comments
+C     and report contents of parameter file to STDOUT
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -137,17 +129,22 @@ C--   Report contents of model parameter file
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      iUnit = scrUnit2
-      REWIND(iUnit)
+
+C     Read file, remove comments and apply specific syntax changes:
       DO WHILE ( .TRUE. )
-       READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
+       READ(modelDataUnit,FMT='(A)',END=1001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
+       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+c        CALL NML_SET_TERMINATOR( RECORD )
+         CALL NML_CHANGE_SYNTAX( RECORD, data_file, myThid )
+         WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
+       ENDIF
        WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDDO
- 2001 CONTINUE
-      CLOSE(iUnit,STATUS='DELETE')
+ 1001 CONTINUE
+      CLOSE(modelDataUnit)
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -166,7 +163,8 @@ C     writing scratchFile1 before opening it
 #ifdef HAVE_SYSTEM
       CALL SYSTEM('sleep 1')
 #endif
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
+      OPEN( UNIT=scrUnit1, FILE=scratchFile1,
+     &      _READONLY_ACTION STATUS='OLD' )
 #endif /* SINGLE_DISK_IO */
 
 C--   Return open unit to caller

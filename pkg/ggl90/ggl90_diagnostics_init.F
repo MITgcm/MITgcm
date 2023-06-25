@@ -1,7 +1,7 @@
 #include "GGL90_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 
+CBOP
 C !ROUTINE: GGL90_DIAGNOSTICS_INIT
 C !INTERFACE:
       SUBROUTINE GGL90_DIAGNOSTICS_INIT( myThid )
@@ -51,6 +51,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        diagName  = 'GGL90Emn'
+        diagTitle = 'rate of TKE energy added by applying GGL90TKEmin'
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
         diagName  = 'GGL90Lmx'
         diagTitle = 'Mixing length scale              '
         diagUnits = 'm               '
@@ -79,9 +86,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'GGL90Kr'
+        diagName  = 'GGL90Kr '
         diagTitle = 'GGL90 diffusion coefficient for temperature'
         diagUnits = 'm^2/s           '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'GGL90KN2'
+        diagTitle = 'GGL90 diffusivity times buoyancy frequency'
+        diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -92,7 +106,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 
         diagName  = 'GGL90tau'
         diagTitle = 'Work done by the wind                     '
@@ -105,6 +118,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'IDEMIX_E'
         diagTitle = 'IDEMIX internal wave energy            '
         diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMgTKE'
+        diagTitle = 'IDEMIX tendency: tau_d times IDEMIX_E^2'
+        diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -165,6 +185,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#endif
+
+#ifdef ALLOW_AUTODIFF
+      diagName  = 'ADJtke90'
+      diagTitle = 'dJ/dTKE: Sensitivity to GGL90 TKE'
+      diagUnits = 'dJ/(m^2/s^2)   '
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
 #endif /* ALLOW_DIAGNOSTICS */

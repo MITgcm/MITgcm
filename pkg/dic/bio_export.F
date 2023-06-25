@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
 #endif
      O           bioac,
      I           bi,bj,iMin,iMax,jMin,jMax,
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid )
 
 c !DESCRIPTION:
 C  Calculate biological activity and export
@@ -28,24 +28,24 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
-C  myTime               :: current time
 C  PTR_PO4              :: phosphate tracer field
 C  PTR_FE               :: iron tracer field
-      INTEGER myIter
-      _RL myTime
-      INTEGER myThid
+C  myTime               :: current time
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER iMin, iMax, jMin, jMax, bi, bj
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  bioac               :: biological productivity (will be split
 C                         between export and dissolved pool)
-      _RL bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR)
+      _RL bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #if (defined ALLOW_PTRACERS && defined DIC_BIOTIC)
 
@@ -60,8 +60,8 @@ C  i,j,k                  :: loop indices
 #ifdef ALLOW_FE
       _RL tmpfe
 #endif
-#ifdef AD_SAFE
-      _RL thx, thy, theps, thaux
+#ifdef DIC_AD_SAFE
+      _RL thx, thy, thaux
 #endif
 CEOP
 
@@ -125,13 +125,11 @@ C     performance drop on vector computers
 #else
          tmpfe=PTR_FE(i,j,k)
 #endif
-#ifdef AD_SAFE
+#ifdef DIC_AD_SAFE
          thx = tmppo4/(tmppo4+KPO4)
          thy = tmpfe/(tmpfe+KFE)
 c        thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
 c        thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
-c        theps = 1. _d -6
-c        thaux = tanh( (thx-thy)/theps )
          thaux = tanh( (thx-thy)*1. _d 6 )
          nutlimit= ( 1. _d 0 - thaux ) * thx * 0.5 _d 0
      &        +    ( 1. _d 0 + thaux ) * thy * 0.5 _d 0

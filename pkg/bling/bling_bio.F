@@ -200,10 +200,14 @@ C
       _RL tmp_p_diaz_ML
       _RL tmp_ML
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+      INTEGER tkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 #endif
 
 c ---------------------------------------------------------------------
@@ -539,8 +543,8 @@ c  limitation, with a maximum Fe:P uptake ratio of Fe2p_max
 
 c  Separate loop for adjoint stores
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
       DO k=1,Nr
@@ -944,5 +948,4 @@ c 2d local variables
 #endif /* ALLOW_BLING */
 
       RETURN
-
       END

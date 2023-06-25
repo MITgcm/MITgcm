@@ -39,10 +39,9 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF_TAMC */
 #include "SURFACE.h"
 #include "DYNVARS.h"
 
@@ -87,6 +86,11 @@ C     pKappaC    :: (p/Po)^kappa at cell center k
       _RL surfPhiFac
       LOGICAL useDiagPhiRlow, addSurfPhiAnom
       LOGICAL useFVgradPhi
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+C     kkey :: tape key (level and tile dependent)
+      INTEGER tkey, kkey
+#endif
 CEOP
       useDiagPhiRlow = .TRUE.
       addSurfPhiAnom = select_rStar.EQ.0 .AND. nonlinFreeSurf.GE.4
@@ -107,20 +111,7 @@ C                          and InterFace_W at the middle of Tracer lev;
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-
-          act3 = myThid - 1
-          max3 = nTx*nTy
-
-          act4 = ikey_dynamics - 1
-
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialize phiHydF to zero :
@@ -146,7 +137,7 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (ikey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
@@ -189,8 +180,10 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -308,7 +301,7 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (ikey-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
@@ -343,8 +336,10 @@ C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added as if they modify the specific-volume
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -449,8 +444,10 @@ C-      horizontally uniform (tRef) reference state
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 

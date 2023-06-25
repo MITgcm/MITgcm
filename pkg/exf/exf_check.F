@@ -90,7 +90,9 @@ C- Note: should check all obcs{N,S,E,W}repCycle (not just default repeatPeriod)
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
-       IF ( repeatPeriod.NE.0. ) THEN
+       IF ( repeatPeriod.NE.0. .AND. (OBCSNperiod.GE.0 .OR.
+     &      OBCSSperiod.GE.0 .OR. OBCSWperiod.GE.0 .OR.
+     &      OBCSEperiod.GE.0)) THEN
 C- Note: should check all siob{N,S,E,W}repCycle (not just default repeatPeriod)
         WRITE(msgBuf,'(2A)') 'EXF_CHECK: ',
      &       'useOBCSYearlyFields not implemented for repeatPeriod <> 0'
@@ -109,14 +111,6 @@ C-    Check wind parameters:
        IF ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
         WRITE(msgBuf,'(A)')
      &   'EXF_CHECK: use u,v_wind components but not wind-stress'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-       IF ( useRelativeWind .AND.
-     &      ( uwindfile .EQ. ' ' .OR. uwindperiod.EQ.0. .OR.
-     &        vwindfile .EQ. ' ' .OR. vwindperiod.EQ.0. ) ) THEN
-        WRITE(msgBuf,'(2A)') 'EXF_CHECK: useRelativeWind ',
-     &       'requires to update u/vwind'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF

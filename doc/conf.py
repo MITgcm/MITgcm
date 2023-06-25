@@ -41,6 +41,8 @@ extensions = ['sphinx.ext.autodoc',
 
 autodoc_mock_imports = ['matplotlib', 'mpl_toolkits']
 
+bibtex_bibfiles = ['manual_references.bib']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -97,7 +99,7 @@ release = version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -153,6 +155,11 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_css_files = [
+    'css/custom.css',
+    'css/wrap_tables.css',
+]
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -218,7 +225,3 @@ texinfo_documents = [
      author, 'MITgcm', 'A highly configurable general circulation model.',
      'Miscellaneous'),
 ]
-
-def setup(app):
-    app.add_stylesheet('css/custom.css')
-    app.add_stylesheet('css/wrap_tables.css')

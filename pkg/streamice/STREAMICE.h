@@ -10,7 +10,7 @@ C     streamice_density_ocean_avg :: average ocean density
 C                                    determining ice floatation
 C     B_glen_isothermal           :: (sqrt of) uniform ice stiffness
 C                                    coefficient (Pa 1/2 yr 1/6)
-C     n_glen                      :: Glen's law exponent
+C     n_glen                      :: Glen s law exponent
 C     eps_glen_min                :: min strain rate in ice viscosity
 C     eps_u_min                   :: min velocity in nonlinear sliding
 C                                    law
@@ -27,6 +27,9 @@ C                                    (relative residual, unitless)
 C     streamice_nonlin_tol_fp     :: fixed point nonlinear solver
 C                                    tolerance(absolute change, m/a)
 C     streamice_nonlin_tol_adjoint:: fixed-point error of adjoint
+C                                    iterative solve (absolute)
+C     streamice_nonlin_tol_adjoint_rl
+C                                 :: fixed-point error of adjoint
 C                                    iterative solver (relative
 C                                    reduction)
 C  |  streamice_err_norm: the p-norm to find the error of the residual
@@ -68,7 +71,7 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
      & streamice_nonlin_tol_fp, streamice_err_norm,
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-     & streamice_nonlin_tol_adjoint,
+     & streamice_nonlin_tol_adjoint, streamice_nonlin_tol_adjoint_rl,
 #endif
      & streamice_CFL_factor, streamice_adjDump,
      & streamice_bg_surf_slope_x, streamice_bg_surf_slope_y,
@@ -97,6 +100,7 @@ C     streamice_forcing_period    :: forcing freq (s)
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       _RL streamice_nonlin_tol_adjoint
+      _RL streamice_nonlin_tol_adjoint_rl
 #endif
       _RL streamice_CFL_factor
       _RL streamice_adjDump
@@ -158,8 +162,10 @@ C                                          cholesky preconditioner
 C                                          for use with PETSC and
 C                                          BLOCKJACOBI precond ONLY
 
-       INTEGER streamice_max_nl
-       PARAMETER ( streamice_max_nl = 100 )
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER streamice_max_nl
+      PARAMETER ( streamice_max_nl = 100 )
+#endif
 
       COMMON /STREAMICE_PARMS_I/
      &     streamice_max_cg_iter, streamice_max_nl_iter,
@@ -211,7 +217,7 @@ C                                     C_basal_fric_const
 C                                    2DPERIODIC - varies in x- and
 C                                     y-dirs via streamice_kx_b_init
 C                                     and streamice_ky_b_init
-C     STREAMICEGlenConstConfig    :: mode of Glen's const init
+C     STREAMICEGlenConstConfig    :: mode of Glen s const init
 C                                    FILE - via STREAMICEGlenConstFile
 C                                    UNIFORM - B_glen_isothermal
 C     STREAMICEBdotConfig         :: mode of ice-shelf melt rate init
@@ -249,9 +255,9 @@ C                                    see EXPLANATION OF MASKS below
 C
 C     following give \gamma_sig and \gamma_tau factors as described
 C     in appendix of
-C     Goldberg et al, 2015 -- "Committed retreat of Smith, Pope, and
-C                              Kohler Glaciers over the next 30 years
-C                              inferred by transient model calibration"
+C     Goldberg et al, 2015 -- Committed retreat of Smith, Pope, and
+C                             Kohler Glaciers over the next 30 years
+C                             inferred by transient model calibration
 C     applied only where stress boundary condition applies
 C
 C     STREAMICEuNormalStressFile
@@ -285,6 +291,8 @@ C                                    MUMPS -- Direct
 C                                    ILU -- incomplete ILU
 C                                     (will not work in parallel)
 C       see https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/PC/
+C     STREAMICE_uvel_ext_file     :: x-velocity file to replace velocity calc
+C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEthickInit
@@ -330,6 +338,9 @@ C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING buttressing along calving front
 
       CHARACTER*(MAX_LEN_FNAM) STREAMICEuFluxTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvFluxTimeDepFile
+
+      CHARACTER*(MAX_LEN_FNAM) STREAMICE_uvel_ext_file
+      CHARACTER*(MAX_LEN_FNAM) STREAMICE_vvel_ext_file
 
 #ifdef ALLOW_PETSC
 c     CHARACTER PARAMS FOR PETSC
@@ -386,7 +397,9 @@ c     CHARACTER PARAMS FOR TRACER
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
      &     STREAMICEcostMaskFile,
-     &     STREAMICE_ADV_SCHEME
+     &     STREAMICE_ADV_SCHEME,
+     &     STREAMICE_uvel_ext_file,
+     &     STREAMICE_vvel_ext_file
 
 #ifdef ALLOW_PETSC
       COMMON /PETSC_PARM_C/
@@ -443,8 +456,16 @@ C                                        sliding, implements
 C                                        "regularised coulomb"
 C                                        sliding law
 C        Asay-Davis et al (2016), Geosci. Model Dev.,
-C        "Experimental design for three interrelated marine ice
-C        sheet..." (eqn 11)
+C     "Experimental design for three interrelated marine ice sheet..."
+C     (eqn 11)
+C     STREAMICE_use_log_ctrl          :: fields C_basal_friction
+C                                        and Bglen (and initialisation
+C                                        values) given as the
+C                                        *logarithm* of physical values
+C                                        (if false, sqrt is used)
+C     STREAMICE_vel_ext           :: impose velocity with external files
+C     STREAMICE_vel_ext_cgrid     :: impose velocity with external files on C grid
+C                                 ::  (over-rides STREAMICE_vel_ext)
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -465,6 +486,9 @@ C        sheet..." (eqn 11)
       LOGICAL STREAMICE_apply_firn_correction
       LOGICAL STREAMICE_alt_driving_stress
       LOGICAL STREAMICE_allow_reg_coulomb
+      LOGICAL STREAMICE_use_log_ctrl
+      LOGICAL STREAMICE_vel_ext
+      LOGICAL STREAMICE_vel_ext_cgrid
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
@@ -502,6 +526,9 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_allow_cpl, streamice_use_petsc,
      & STREAMICE_alt_driving_stress,
      & STREAMICE_allow_reg_coulomb,
+     & STREAMICE_vel_ext,
+     & STREAMICE_vel_ext_cgrid,
+     & STREAMICE_use_log_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
 #endif
@@ -610,12 +637,12 @@ C    REAL ARRAYS
      &     v_bdry_values_SI,
      &     STREAMICE_dummy_array,
      &     C_basal_friction,
-c     &     A_glen,
      &     B_glen,
-     &     BDOT_streamice, ADOT_streamice,  BDOT_pert,! mass balances in meters per year
+     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
-     &     u_new_si, v_new_si
+     &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg,
+     &     u_streamice_ext, v_streamice_ext
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       COMMON /STREAMICE_FLUX_CONTROL/
@@ -698,7 +725,9 @@ c     &     A_glen,
       _RL h_vbdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_bdry_values_SI    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL C_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL c_basal_friction    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef STREAMICE_3D_GLEN_CONST
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -771,10 +800,13 @@ C  IMPORTANT: MELT RATE IN METERS PER YEAR
 C  POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ADOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_tavg (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_tavg (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL

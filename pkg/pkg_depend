@@ -28,6 +28,7 @@ ptracers	+generic_advdiff
 matrix		+ptracers	-gchem
 gchem		+ptracers
 dic		+gchem
+bling		+gchem		-dic
 cfc		+gchem
 fizhi		+gridalt	+diagnostics	-aim
 fizhi		+atm_common
@@ -39,6 +40,7 @@ flt		+mdsio
 autodiff	+mdsio
 ctrl		+mdsio
 ecco		+mdsio		+cal
+tapenade	+autodiff
 grdchk		+autodiff	+cost		+ctrl
 showflops	+runclock
 

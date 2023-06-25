@@ -15,7 +15,7 @@ model to allow continuous updating of the ice shelf draft in a mass-, salt- and 
 Note 'Shelfice Remeshing' is not a separate physical package as such, but works in conjunction
 with :filelink:`pkg/shelfice`, and all code is contained within :filelink:`pkg/shelfice`.
 However, as a separate line of development its application and use warrants
-its own entry in the documentation. 
+its own entry in the documentation.
 By using :filelink:`pkg/streamice` at the same time, remeshing can allow synchronous coupling between ocean and ice shelf.
 
 .. _ssub_phys_remeshing_config:
@@ -38,9 +38,9 @@ to :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. Additionally,
 
 .. _ssub_phys_remeshing_runtime:
 
-Run-time parameters 
+Run-time parameters
 ===================
-   
+
 :numref:`tab_phys_remeshing_runtimeparms` lists run-time parameters in ``data.shelfice`` relevant
 to shelfice remeshing. In addition, :varlink:`nonlinFreeSurf`\ ``=4`` should be set, and :varlink:`select_rstar` should be zero (the model default) in file ``data``.
 
@@ -76,7 +76,8 @@ Description
 ===========
 
 When :filelink:`pkg/shelfice` is enabled, the elevation of the free surface in a grid cell is
-determined by the mass of the ice shelf in that cell. In general use of :filelink:`shelfice <pkg/shelfice>`
+determined by the mass of the ice shelf in that cell, see Jordan et al. (2018)
+:cite:`jordan:18`.  In general use of :filelink:`shelfice <pkg/shelfice>`
 this mass is held constant, but if it is allowed to change the free surface adjusts if :varlink:`implicitFreeSurface` ``= .true.``
 through adjustment of the thickness of the top-level cell (:numref:`figremesh1`). If :varlink:`nonlinFreeSurf`\ ``=4``
 these changes are fully accounted for in the ocean dynamics and tracer transport. However:
@@ -109,8 +110,7 @@ can be set in ``data.shelfice`` to allow volume conservation.
    and the distance between the two, :math:`\eta`, and (b) the extent of the ice-shelf boundary layer used to calculate velocities,
    Bv (red), and tracers, B :math:`_\chi` (blue), used in the melt rate calculation.
    The model grid is represented by dashed lines with the actual sizeof the cells represented by the solid lines.
-   From Jordan et al. (2018) :cite:`jordan:18`.
-   
+
 .. figure:: figs/remesh2.*
    :width: 80%
    :align: center
@@ -119,7 +119,7 @@ can be set in ``data.shelfice`` to allow volume conservation.
 
    Schematic representation of dimensionless vertical grid size, :math:`h_c`, and reference ice-shelf depth, `d`,
    at i=2 in (a) a "normal" case, (b) a cell with :math:`h_c` > :math:`h_{max}` at i=2, k=2 just before a model
-   remesh check, and (c) the same cell just after a model remesh has occurred. From Jordan et al. (2018) :cite:`jordan:18`.
+   remesh check, and (c) the same cell just after a model remesh has occurred.
 
 .. _ssub_phys_remesh_topdr:
 
@@ -154,7 +154,7 @@ To allow this, :varlink:`pkg/streamice` must be enabled. Please see the :filelin
 .. and the runtime parameter ``useOBCSbalance`` must be set to .TRUE. This remeshing feature calculates at each time step
 .. the average sea level :math:`z_{sl}` of non-ice shelf covered ocean, and the OBCS balance flow then acts as if there is an
 .. additional flux of :math:`\frac{z_{sl}}{\Delta t}` into the domain which must be balanced.
-   
+
 Diagnostics
 ===========
 
@@ -165,4 +165,4 @@ Experiments that use Remeshing
 ==============================
 
 -  :filelink:`verification/shelfice_2d_remesh`
- 
+

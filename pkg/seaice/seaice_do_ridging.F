@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: SEAICE_DO_RIDGING
@@ -31,10 +28,6 @@ C !USES: ===============================================================
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
@@ -108,7 +101,7 @@ C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Hiblers "ridging function" for single category ice
       DO j=jMin,jMax
        DO i=iMin,iMax
-        AREA(I,J,bi,bj) = MIN(AREA(I,J,bi,bj),SEAICE_area_max)
+        AREA(i,j,bi,bj) = MIN(AREA(i,j,bi,bj),SEAICE_area_max)
        ENDDO
       ENDDO
 #else

@@ -23,7 +23,7 @@ C     myThid            :: thread number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef GM_K3D
+#ifdef GM_BATES_K3D
 
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
@@ -150,7 +150,7 @@ C       Centre mode
         ENDDO
 
 C      Western Mode
-        DO n=1,GM_K3D_NModes
+        DO n=1,GM_Bates_NModes
          WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'W'
          CALL READ_MFLDS_3D_RL( fieldname, vec,
      &        nm, fp, Nr, myIter, myThid )
@@ -169,7 +169,7 @@ C      Western Mode
         ENDDO
 
 C      Southern Mode
-        DO n=1,GM_K3D_NModes
+        DO n=1,GM_Bates_NModes
          WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'S'
          CALL READ_MFLDS_3D_RL( fieldname, vec,
      &        nm, fp, Nr, myIter, myThid )
@@ -225,7 +225,7 @@ C--    Check for missing fields:
 
 C--    Update overlap regions:
 C        CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
-#endif /* GM_K3D */
+#endif /* GM_BATES_K3D */
 
       RETURN
       END

@@ -29,7 +29,8 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_SMOOTH
 # include "SMOOTH.h"
@@ -133,14 +134,18 @@ c-- detect the relevant gencost indices
 c ------
 
       dosumsq=.TRUE.
-      call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
-      call ecco_zero(gencost_weight(:,:,1,1,kgen_lsc),1,zeroRL,myThid)
+      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &                1, zeroRL, myThid )
+      call ecco_zero( gencost_weight(1-OLx,1-OLy,1,1,kgen_lsc),
+     &                1, zeroRL, myThid )
       if ( gencost_errfile(kgen) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,dosumsq,myThid)
+     &   call ecco_readwei( gencost_errfile(kgen),
+     &     gencost_weight(1-OLx,1-OLy,1,1,kgen),
+     &     1, 1, 1, dosumsq, myThid )
       if ( gencost_errfile(kgen_lsc) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen_lsc),
-     &     gencost_weight(:,:,1,1,kgen_lsc),1,1,dosumsq,myThid)
+     &   call ecco_readwei( gencost_errfile(kgen_lsc),
+     &     gencost_weight(1-OLx,1-OLy,1,1,kgen_lsc),
+     &     1, 1, 1, dosumsq, myThid )
 
       call cal_FullDate(19920101,0,locstartdate,myThid)
 
@@ -293,13 +298,13 @@ c ----------------------------------------
 #endif
 
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(anom_sst,maskc,
+     &     call smooth_hetero2d(anom_sst,maskInC,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(obs_sst,maskc,
+     &     call smooth_hetero2d(obs_sst,maskInC,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
@@ -321,12 +326,12 @@ c ------------------------------------
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen_lsc)*
      &          maskc(i,j,1,bi,bj)
-             objf_gencost(kgen_lsc,bi,bj) =
-     &          objf_gencost(kgen_lsc,bi,bj)
+             objf_gencost(bi,bj,kgen_lsc) =
+     &          objf_gencost(bi,bj,kgen_lsc)
      &            +junk*junk*junkweight/ndaysaveRL
              if ( (junkweight.GT.0.).AND.(nb_sst(i,j,bi,bj).GT.0.) )
-     &          num_gencost(kgen_lsc,bi,bj) =
-     &          num_gencost(kgen_lsc,bi,bj) + 1. _d 0 /ndaysaveRL
+     &          num_gencost(bi,bj,kgen_lsc) =
+     &          num_gencost(bi,bj,kgen_lsc) + 1. _d 0 /ndaysaveRL
             enddo
            enddo
           enddo
@@ -432,11 +437,11 @@ c compute cost:
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen)*
      &          maskc(i,j,1,bi,bj)*msk_sst(i,j,bi,bj)
-             objf_gencost(kgen,bi,bj) =
-     &          objf_gencost(kgen,bi,bj)+junk*junk*junkweight
+             objf_gencost(bi,bj,kgen) =
+     &          objf_gencost(bi,bj,kgen)+junk*junk*junkweight
              if (junkweight.GT.0.)
-     &          num_gencost(kgen,bi,bj) =
-     &          num_gencost(kgen,bi,bj) + 1. _d 0
+     &          num_gencost(bi,bj,kgen) =
+     &          num_gencost(bi,bj,kgen) + 1. _d 0
             enddo
            enddo
           enddo

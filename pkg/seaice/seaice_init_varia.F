@@ -37,7 +37,7 @@ C     === Local variables ===
 C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
-      INTEGER kSurface
+      INTEGER kSrf
       _RS  mask_uice
       INTEGER k
 #ifdef ALLOW_SITRACER
@@ -50,10 +50,10 @@ C     i,j,k,bi,bj :: Loop counters
       _RL recip_tensilDepth
 #endif
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface = Nr
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
       ELSE
-       kSurface = 1
+       kSrf = 1
       ENDIF
 
 C--   Initialise all variables in common blocks:
@@ -149,21 +149,20 @@ c "ice concentration" tracer that should remain .EQ.1.
           DO k=1,nITD
             TICES(i,j,k,bi,bj)=0. _d 0
           ENDDO
-#ifdef ALLOW_SEAICE_COST_EXPORT
-          uHeffExportCell(i,j,bi,bj) = 0. _d 0
-          vHeffExportCell(i,j,bi,bj) = 0. _d 0
-          icevolMeanCell(i,j,bi,bj) = 0. _d 0
-#endif
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-          frWtrAtm(i,j,bi,bj)   = 0. _d 0
-          AREAforAtmFW(i,j,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call SEAICE_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useSEAICE.
+C        Therefore, in this case, the "If useSEAICE" is added back here:
+      IF ( useSEAICE ) THEN
+#endif
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
@@ -400,7 +399,7 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)*
+           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSrf,bi,bj)*
      &            SEAICE_rhoIce*SEAICE_saltFrac
 cif     &            ICE2WATR*rhoConstFresh*SEAICE_saltFrac
 
@@ -428,18 +427,6 @@ C--   Read initial sea ice age from file if available.
 #endif /* ALLOW_SITRACER */
 
       ENDIF
-
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          AREAforAtmFW(i,j,bi,bj) = AREA(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
 
 #ifdef ALLOW_OBCS
 C--   In case we use scheme with a large stencil that extends into overlap:
@@ -523,6 +510,11 @@ C     on depth
        ENDDO
       ENDIF
 #endif /* SEAICE_CGRID */
+
+#ifdef ALLOW_AUTODIFF
+C-    end if useSEAICE block
+      ENDIF
+#endif
 
       RETURN
       END

@@ -3,11 +3,12 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      SUBROUTINE ADAUTODIFF_INADMODE_UNSET( myThid )
+      SUBROUTINE ADAUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE ADAUTODIFF_INADMODE_UNSET
 C     *==========================================================*
 
+C     !USES:
       IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
@@ -21,22 +22,45 @@ C     == Global variables ===
 #ifdef ALLOW_CTRL
 #include "ctrl.h"
 #endif
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
-C     == Routine arguments ==
-C     myThid :: my Thread Id number
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
+
+C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      inAdMode  = inAdFalse
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+      LOGICAL modelEnd
+C --- Write the fields out here
+      IF ( useDiag4AdjOutp ) THEN
+C --- Grab modelEnd, necessary input for diagnostics routines
+       modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
+       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+       CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
+       CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
+      inAdMode  = .FALSE.
 
       useKPP    = useKPPinFwdMode
       useGMRedi = useGMRediInFwdMode
       useSEAICE = useSEAICEinFwdMode
       useGGL90    = useGGL90inFwdMode
       useSALT_PLUME    = useSALT_PLUMEinFwdMode
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-      ctrlSmoothCorrel2D    = useSmoothCorrel2DinFwdMode
-#endif
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
         SEAICEuseFREEDRIFT = SEAICEuseFREEDRIFTinFwdMode
@@ -46,9 +70,10 @@ C     myThid :: my Thread Id number
         SEAICEuseDYNAMICS  = SEAICEuseDYNAMICSinFwdMode
       ENDIF
       SEAICEadjMODE=0
-      SINegFac      = SIregFacInFw
+C     SIregFacInFw = UNSET_RL by default, so we need to check this here
+      IF ( SIregFacInFw .NE. UNSET_RL ) SINegFac = SIregFacInFw
 #endif /* ALLOW_SEAICE */
-      viscFacAdj=1. _d 0
+      viscFacAdj=viscFacInFw
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
@@ -77,14 +102,6 @@ C     myThid :: my Thread Id number
      &      'S/R ADAUTODIFF_INADMODE_UNSET: viscFacAdj =',viscFacAdj
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-
-#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
-       WRITE(msgBuf,'(A,L5)')
-     &      'S/R ADAUTODIFF_INADMODE_UNSET: ctrlSmoothCorrel2D    =',
-     &       ctrlSmoothCorrel2D
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-#endif
 
 #ifdef ALLOW_SEAICE
        IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN

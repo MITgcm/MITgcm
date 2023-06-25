@@ -79,10 +79,6 @@ c     ==================================================================
       integer xx_obcssstartdate(4)
       integer xx_obcswstartdate(4)
       integer xx_obcsestartdate(4)
-      character*( 80)   fname_obcsn(3)
-      character*( 80)   fname_obcss(3)
-      character*( 80)   fname_obcsw(3)
-      character*( 80)   fname_obcse(3)
       common /controlvars_i_obcsn/
      &                       nwetobcsn,
      &                       nwetobcsnglo
@@ -104,6 +100,11 @@ c     ==================================================================
       integer nwetobcse     ( nsx,nsy,nr,nobcs )
       integer nwetobcseglo  ( nr,nobcs )
 
+C     This is moved from ecco_local_params.h, because it is the only
+C     parameter used (by obcs ctrl parameters)
+      common /ecco_data_errfile/
+     &     data_errfile
+      character*(max_len_fnam) data_errfile
 #if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || defined (ALLOW_OBCSN_CONTROL))
       common /ecco_cost_weights_obcsn/
      &                      wobcsn, wobcsnLev
@@ -151,4 +152,3 @@ c     ==================================================================
       _RL xx_obcse0 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
       _RL xx_obcse1 (1-Oly:sNy+Oly,Nr,nSx,nSy,nobcs)
 #endif
-

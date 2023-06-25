@@ -74,9 +74,15 @@ C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
+C     geoPotAnomFile  :: File containing constant geopotential anomaly due to
+C                        density structure
 C     addMassFile     :: File containing source/sink of fluid in the interior
 C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data
 C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
+C     geothermalFile  :: File containing geothermal heat flux
+C     lambdaThetaFile :: File containing SST relaxation coefficient
+C     lambdaSaltFile  :: File containing SSS relaxation coefficient
+C     wghtBalanceFile :: File containing weight used in balancing net EmPmR
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/
      &                buoyancyRelation, eosType,
@@ -92,10 +98,10 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                saltClimFile,
      &                EmPmRfile, saltFluxFile,
      &                surfQfile, surfQnetFile, surfQswFile,
-     &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                pLoadFile, addMassFile,
+     &                pLoadFile, geoPotAnomFile, addMassFile,
      &                eddyPsiXFile, eddyPsiYFile, geothermalFile,
+     &                lambdaThetaFile, lambdaSaltFile, wghtBalanceFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(6)  eosType
@@ -133,27 +139,28 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) pLoadFile
+      CHARACTER*(MAX_LEN_FNAM) geoPotAnomFile
       CHARACTER*(MAX_LEN_FNAM) addMassFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile
       CHARACTER*(MAX_LEN_FNAM) eddyPsiYFile
       CHARACTER*(MAX_LEN_FNAM) geothermalFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
+      CHARACTER*(MAX_LEN_FNAM) wghtBalanceFile
       CHARACTER*(MAX_LEN_PREC/2) the_run_name
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
 C                            two-dimensional con. grad solver.
-C     cg2dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
+C     cg2dMinItersNSA     :: Minimum number of iterations in the
+C                            not-self-adjoint version (cg2d_nsa.F) of the
+C                            two-dimensional con. grad solver (default = 0).
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
 C                            (non-linear free-surf.)
 C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
 C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
-C     cg3dChkResFreq      :: Frequency with which to check residual
-C                            in con. grad solver.
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -178,6 +185,8 @@ C                           =3: use full (Hyd+NH) dynamical pressure
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
+C     selectBalanceEmPmR  :: option to balance net surface fresh-water flux:
+C                           =0 off ; =1 uniform correction ; = 2 weighted correction
 C     selectImplicitDrag  :: select Implicit treatment of bottom/top drag
 C                           = 0: fully explicit
 C                           = 1: implicit on provisional velocity
@@ -217,16 +226,15 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
-     &        cg2dMaxIters, cg2dChkResFreq,
+     &        cg2dMaxIters, cg2dMinItersNSA,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
-     &        cg3dMaxIters, cg3dChkResFreq,
-     &        printResidualFreq,
+     &        cg3dMaxIters, printResidualFreq,
      &        nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
      &        selectCoriMap,
      &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
      &        selectNHfreeSurf, selectP_inEOS_Zc,
-     &        selectAddFluid, selectImplicitDrag,
+     &        selectAddFluid, selectBalanceEmPmR, selectImplicitDrag,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
@@ -235,11 +243,10 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
-      INTEGER cg2dChkResFreq
+      INTEGER cg2dMinItersNSA
       INTEGER cg2dPreCondFreq
       INTEGER cg2dUseMinResSol
       INTEGER cg3dMaxIters
-      INTEGER cg3dChkResFreq
       INTEGER printResidualFreq
       INTEGER nIter0
       INTEGER nTimeSteps
@@ -252,6 +259,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER selectNHfreeSurf
       INTEGER selectP_inEOS_Zc
       INTEGER selectAddFluid
+      INTEGER selectBalanceEmPmR
       INTEGER selectImplicitDrag
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
@@ -343,6 +351,9 @@ C     maskIniSalt    :: apply mask to initial salinity
 C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
 C     checkIniSalt   :: check for points with identically zero initial salinity
 C- Pressure solver related parameters (PARM02)
+C     useNSACGSolver :: Set to true to use "not self-adjoint" conjugate
+C                       gradient solver that stores the iteration history
+C                       for an iterative adjoint as accuate as possible
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
@@ -379,7 +390,6 @@ C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
 C                          apply AB on tracer tendencies (rather than on Tracer)
 C- Other forcing params -
-C     balanceEmPmR    :: substract global mean of EmPmR at every time step
 C     balanceQnet     :: substract global mean of Qnet at every time step
 C     balancePrintMean:: print substracted global means to STDOUT
 C     doThetaClimRelax :: Set true if relaxation to temperature
@@ -429,7 +439,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useSRCGSolver,
+     & useNSACGSolver, useSRCGSolver,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -440,7 +450,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
-     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax,
      & doThetaClimRelax, doSaltClimRelax,
      & allowFreezing,
@@ -510,6 +520,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL maskIniSalt
       LOGICAL checkIniTemp
       LOGICAL checkIniSalt
+      LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
@@ -535,7 +546,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useMultiDimAdvec
       LOGICAL momDissip_In_AB
       LOGICAL doAB_onGtGs
-      LOGICAL balanceEmPmR
       LOGICAL balanceQnet
       LOGICAL balancePrintMean
       LOGICAL doThetaClimRelax
@@ -604,18 +614,25 @@ C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     thetaConst :: Constant reference for potential temperature
 C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
-C     surf_pRef  :: surface reference pressure ( Pa )
-C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
-C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
+C     rhoRef     :: density vertical profile from (tRef,sRef) [kg/m^3]
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
 C                :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C                :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
+C     surf_pRef  :: surface reference pressure ( Pa )
+C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
+C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
 C     rVel2wUnit :: units conversion factor (Non-Hydrostatic code),
 C                :: from r-coordinate vertical velocity to vertical velocity [m/s].
 C                :: z-coord: = 1 ; p-coord: wSpeed [m/s] = rVel [Pa/s] * rVel2wUnit
 C     wUnit2rVel :: units conversion factor (Non-Hydrostatic code),
 C                :: from vertical velocity [m/s] to r-coordinate vertical velocity.
 C                :: z-coord: = 1 ; p-coord: rVel [Pa/s] = wSpeed [m/s] * wUnit2rVel
+C     rUnit2z    :: units conversion factor (for ocean in P-coord, only fct of k),
+C                :: from r-coordinate to z [m] (at level center):
+C                :: z-coord: = 1 ; p-coord: dz [m] = dr [Pa] * rUnit2z
+C     z2rUnit    :: units conversion factor (for ocean in P-coord, only fct of k),
+C                :: from z [m] to r-coordinate (at level center):
+C                :: z-coord: = 1 ; p-coord: dr [Pa] = dz [m] * z2rUnit
 C     mass2rUnit :: units conversion factor (surface forcing),
 C                :: from mass per unit area [kg/m2] to vertical r-coordinate unit.
 C                :: z-coord: = 1/rhoConst ( [kg/m2] / rho = [m] ) ;
@@ -624,6 +641,8 @@ C     rUnit2mass :: units conversion factor (surface forcing),
 C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
+C     sIceLoadFac:: factor to scale (and turn off) sIceLoad (sea-ice loading)
+C                   default = 1
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
@@ -653,7 +672,8 @@ C     viscA4D    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Divergence part) ( m^4/s )
 C     viscA4Z    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Vorticity  part) ( m^4/s )
-C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
+C     smag3D_coeff     :: Isotropic 3-D Smagorinsky viscosity coefficient (-)
+C     smag3D_diffCoeff :: Isotropic 3-D Smagorinsky diffusivity coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
 C     viscC2LeithQG:: QG Leith non-dimensional viscosity factor
@@ -778,17 +798,20 @@ C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
 C     hMixCriteria:: criteria for mixed-layer diagnostic
 C     dRhoSmall   :: parameter for mixed-layer diagnostic
-C     hMixSmooth  :: Smoothing parameter for mixed-layer diag (default=0=no smoothing)
+C     hMixSmooth  :: Smoothing parameter for mixed-layer diag
+C                    (default=0: no smoothing)
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides)
 C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
 C     bottomDragQuadratic :: Quadratic bottom-drag coefficient (units of [r]/m)
 C               (if using zcoordinate, units becomes linear: m/s, quadratic: [-])
+C     zRoughBot :: roughness length for quadratic bottom friction coefficient
+C                  (in m, typical values are order 0.01 m)
 C     smoothAbsFuncRange :: 1/2 of interval around zero, for which FORTRAN ABS
 C                           is to be replace by a smoother function
 C                           (affects myabs, mymin, mymax)
-C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
+C     nh_Am2        :: scales non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
 C     tCylIn        :: Temperature of the cylinder inner boundary
 C     tCylOut       :: Temperature of the cylinder outer boundary
@@ -802,7 +825,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & f0, beta, fPrime, omega, rotationPeriod,
-     & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
+     & viscFacAdj, viscAh, viscAhW, smag3D_coeff, smag3D_diffCoeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD, viscC2LeithQG,
      & viscC2smag, viscC4smag,
@@ -824,8 +847,9 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
      & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
-     & thetaConst, tRef, sRef, surf_pRef, pRef4EOS, phiRef, dBdrRef,
-     & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
+     & thetaConst, tRef, sRef, rhoRef, dBdrRef,
+     & surf_pRef, pRef4EOS, phiRef,
+     & rVel2wUnit, wUnit2rVel, rUnit2z, z2rUnit, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -836,8 +860,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
-     & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
-     & smoothAbsFuncRange,
+     & sideDragFactor, bottomDragLinear, bottomDragQuadratic,
+     & zRoughBot, nh_Am2, smoothAbsFuncRange, sIceLoadFac,
      & tCylIn, tCylOut,
      & phiEuler, thetaEuler, psiEuler
 
@@ -882,7 +906,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhW
       _RL viscAhD
       _RL viscAhZ
-      _RL smag3D_coeff
+      _RL smag3D_coeff, smag3D_diffCoeff
       _RL viscAhMax
       _RL viscAhReMax
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin
@@ -935,10 +959,12 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL thetaConst
       _RL tRef(Nr)
       _RL sRef(Nr)
+      _RL rhoRef(Nr)
+      _RL dBdrRef(Nr)
       _RL surf_pRef, pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
-      _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
+      _RL rUnit2z(Nr), z2rUnit(Nr)
       _RL mass2rUnit, rUnit2mass
       _RL baseTime
       _RL startTime
@@ -977,7 +1003,9 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic
+      _RL zRoughBot
       _RL smoothAbsFuncRange
+      _RL sIceLoadFac
       _RL nh_Am2
       _RL tCylIn, tCylOut
       _RL phiEuler, thetaEuler, psiEuler

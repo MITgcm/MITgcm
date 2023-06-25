@@ -5,7 +5,7 @@ Ocean State Estimation Packages
 
 This chapter describes packages that have been introduced for ocean
 state estimation purposes and in relation with automatic differentiation
-(see :ref:`chap_autodiff`). Various examples in this chapter rely on two 
+(see :ref:`chap_autodiff`). Various examples in this chapter rely on two
 model configurations that can be setup as explained in :ref:`sec:exp:llc`
 
 .. _sec:pkg:ecco:
@@ -15,7 +15,7 @@ ECCO: model-data comparisons using gridded data sets
 
 Author: Gael Forget
 
-The functionalities implemented in ``pkg/ecco`` are: (1) output
+The functionalities implemented in :varlink:`pkg/ecco` are: (1) output
 time-averaged model fields to compare with gridded data sets; (2)
 compute normalized model-data distances (i.e., cost functions); (3)
 compute averages and transports (i.e., integrals). The former is
@@ -24,8 +24,8 @@ after time-integration has completed. Following
 :cite:`for-eta:15` the total cost function is formulated
 generically as
 
-.. math::
-   \mathcal{J}(\vec{u}) = \sum_i \alpha_i \left(\vec{d}_i^T R_i^{-1} \vec{d}_i\right) + \sum_j \beta_j \vec{u}^T\vec{u}
+.. math:: \mathcal{J}(\vec{u}) = \sum_i \alpha_i \left(\vec{d}_i^T R_i^{-1}
+   \vec{d}_i\right) + \sum_j \beta_j \vec{u}^T\vec{u}
    :label: Jtotal
 
 .. math::
@@ -51,7 +51,7 @@ from adjustable model parameters (:math:`\vec{v}`) through model
 dynamics integration (:math:`\mathcal{M}`), diagnostic calculations
 (:math:`\mathcal{D}`), and averaging in space and time
 (:math:`\mathcal{S}`). Alternatively :math:`\mathcal{S}` stands for
-subsampling in space and time in the context of 
+subsampling in space and time in the context of
 :numref:`sec:pkg:profiles` (:ref:`sec:pkg:profiles`). Plain
 model-data misfits (:math:`\vec{m}_i-\vec{o}_i`) can be penalized
 directly in Eq. :eq:`Jtotal` but penalized misfits
@@ -115,24 +115,24 @@ examples of possible specifications are available in:
 
 -  MITgcm_contrib/gael/verification/global_oce_llc90/input.ecco_v4/data.ecco
 
-The gridded observation file name is specified by ``gencost_datafile``.
-Observational time series may be provided as on big file or split into
-yearly files finishing in ‘\_1992’, ‘\_1993’, etc. The corresponding
-:math:`\vec{m}_i` physical variable is specified via the
-``gencost_barfile`` root (see :numref:`gencost_ecco_barfile`).
-A file named as specified by ``gencost_barfile`` gets created where
-averaged fields are written progressively as the model steps forward in
-time. After the final time step this file is re-read by
-``cost_generic.F`` to compute the corresponding cost function term. If
-``gencost_outputlevel`` = 1 and ``gencost_name``\ =‘foo’ then
-``cost_generic.F`` outputs model-data misfit fields (i.e.,
-:math:`\vec{d}_i`) to a file named ‘misfit_foo.data’ for offline
-analysis and visualization.
+The gridded observation file name is specified by :varlink:`gencost_datafile`.
+Observational time series may be provided as on big file or split into yearly
+files finishing in ‘\_1992’, ‘\_1993’, etc. The corresponding :math:`\vec{m}_i`
+physical variable is specified via the :varlink:`gencost_barfile` root (see
+:numref:`gencost_ecco_barfile`).  A file named as specified by
+:varlink:`gencost_barfile` gets created where averaged fields are written
+progressively as the model steps forward in time. After the final time step
+this file is re-read by :filelink:`cost_generic.F <pkg/ecco/cost_generic.F>` to
+compute the corresponding cost function term. If :varlink:`gencost_outputlevel`
+= 1 and :varlink:`gencost_name`\ =‘foo’ then :filelink:`cost_generic.F
+<pkg/ecco/cost_generic.F>` outputs model-data misfit fields (i.e.,
+:math:`\vec{d}_i`) to a file named ‘misfit_foo.data’ for offline analysis and
+visualization.
 
 In the current implementation, model-data error covariance matrices
 :math:`R_i` omit non-diagonal terms. Specifying :math:`R_i` thus boils
 down to providing uncertainty fields (:math:`\sigma_i` such that
-:math:`R_i=\sigma_i^2`) in a file specified via ``gencost_errfile``. By
+:math:`R_i=\sigma_i^2`) in a file specified via :varlink:`gencost_errfile`. By
 default :math:`\sigma_i` is assumed to be time-invariant but a
 :math:`\sigma_i` time series of the same length as the :math:`\vec{o}_i`
 time series can be provided using the ``variaweight`` option
@@ -144,146 +144,178 @@ default cost functions are quadratic but
 
 In principle, any averaging frequency should be possible, but only
 ‘day’, ‘month’, ‘step’, and ‘const’ are implemented for
-``gencost_avgperiod``. If two different averaging frequencies are needed
+:varlink:`gencost_avgperiod`. If two different averaging frequencies are needed
 for a variable used in multiple cost function terms (e.g., daily and
 monthly) then an extension starting with ‘\_’ should be added to
-``gencost_barfile`` (such as ‘\_day’ and ‘\_mon’).  [1]_ If two cost
+:varlink:`gencost_barfile` (such as ‘\_day’ and ‘\_mon’).  [1]_ If two cost
 function terms use the same variable and frequency, however, then using
-a common ``gencost_barfile`` saves disk space.
+a common :varlink:`gencost_barfile` saves disk space.
 
-Climatologies of :math:`\vec{m}_i` can be formed from the time series of
-model averages in order to compare with climatologies of
-:math:`\vec{o}_i` by activating the ‘clim’ option via
-``gencost_preproc`` and setting the corresponding ``gencost_preproc_i``
-integer parameter to the number of records (i.e., a # of months, days,
-or time steps) per climatological cycle. The generic post-processor
-(:math:`\mathcal{P}` in Eq. :eq:`Jposproc`) also
-allows model-data misfits to be, for example, smoothed in space by
-setting ``gencost_posproc`` to ‘smooth’ and specifying the smoother
-parameters via ``gencost_posproc_c`` and ``gencost_posproc_i`` (see
-:numref:`gencost_ecco_preproc`).
-Other options associated with the computation of
-Eq. :eq:`Jtotal` are summarized in
-:numref:`gencost_ecco_preproc` and
-further discussed below. Multiple ``gencost_preproc`` /
-``gencost_posproc`` options may be specified per cost term.
+Climatologies of :math:`\vec{m}_i` can be formed from the time series of model
+averages in order to compare with climatologies of :math:`\vec{o}_i` by
+activating the ‘clim’ option via :varlink:`gencost_preproc` and setting the
+corresponding :varlink:`gencost_preproc_i` integer parameter to the number of
+records (i.e., a # of months, days, or time steps) per climatological
+cycle. The generic post-processor (:math:`\mathcal{P}` in Eq. :eq:`Jposproc`)
+also allows model-data misfits to be, for example, smoothed in space by setting
+:varlink:`gencost_posproc` to ‘smooth’ and specifying the smoother parameters
+via :varlink:`gencost_posproc_c` (name of a smoothing scale file) and
+:varlink:`gencost_posproc_i` (an integer specifying the smoother number of time
+steps, see :numref:`gencost_ecco_preproc`).  The smoothing scale file can be
+be based on the large-scale parameter specified in data.smooth or prepared as
+a factor of the model resolution dxC and dyC.  As an example, one can read in
+offline the model dxC and dyC and create a characteristic length-scale as
+sqrt(dxC^2 + dyC^2), then multiply by a factor of 3 if one wants the smoothed
+(large scale) field to be of length-scale 3x that of the model grid spacing.
+The smoother number of time steps `gencost_posproc_i` can be the same as that
+used in data.smooth.  Other options associated with the computation
+of Eq. :eq:`Jtotal` are summarized in :numref:`gencost_ecco_preproc` and
+further discussed below. Multiple :varlink:`gencost_preproc` /
+:varlink:`gencost_posproc` options may be specified per cost term.
 
-In general the specification of ``gencost_name`` is optional, has no
-impact on the end-result, and only serves to distinguish between cost
-function terms amongst the model output (STDOUT.0000, STDERR.0000,
-costfunction000, misfit*.data). Exceptions listed in
-:numref:`gencost_ecco_name` however
-activate alternative cost function codes (in place of
-``cost_generic.F``) described in :numref:`v4custom`. In this
-section and in :numref:`gencost_ecco_barfile`
-(unlike in other parts of the manual) ‘zonal’ / ‘meridional’ are to be
-taken literally and these components are centered (i.e., not at the
-staggered model velocity points). Preparing gridded velocity data sets
-for use in cost functions thus boils down to interpolating them to XC /
-YC.
+In general the specification of :varlink:`gencost_name` is optional, has no
+impact on the end-result, and only serves to distinguish between cost function
+terms amongst the model output (STDOUT.0000, STDERR.0000, costfunction000,
+misfit*.data). Exceptions listed in :numref:`gencost_ecco_name` however
+activate alternative cost function codes (in place of :filelink:`cost_generic.F
+<pkg/ecco/cost_generic.F>`) described in :numref:`v4custom`. In this section
+and in :numref:`gencost_ecco_barfile` (unlike in other parts of the manual)
+‘zonal’ / ‘meridional’ are to be taken literally and these components are
+centered (i.e., not at the staggered model velocity points). Preparing gridded
+velocity data sets for use in cost functions thus boils down to interpolating
+them to XC / YC.
 
-.. table:: Run-time parameters used in formulating generic cost functions
-           and defined via `ecco_gencost_nml`` namelist in ``data.ecco``.
-           All parameters are vectors of length ``NGENCOST`` (the # of 
-           available cost terms) except for ``gencost_proc*`` are arrays
-           of size ``NGENPPROC``\ :math:`\times`\ ``NGENCOST`` (10 :math:`\times`\
-           20 by default; can be changed in ``ecco.h`` at compile time). In addition,
-           the ``gencost_is3d`` internal parameter is reset to true on the 
-           fly in all 3D cases in :numref:`gencost_ecco_barfile`.
+The :varlink:`gencost_kLev_select` option allows the user to select the
+vertical level of a 3D model field, thereby creating a 2D field out of that
+slice which is used for the cost computation. For example, drifter velocities
+correspond to the second depth level of the grid used in ECCOv4, so model
+velocities are selected from this depth level to compare to the drifter
+observations. The user can specify this in ``data.ecco`` with:
+:varlink:`gencost_kLev_select` ``( i ) = 2``, where i is replaced with the
+index for that cost function term.
+
+.. table:: Run-time parameters used in formulating generic cost functions and
+           defined via `ecco_gencost_nml`` namelist in ``data.ecco``.  All
+           parameters are vectors of length ``NGENCOST`` (the # of available
+           cost terms) except for ``gencost_proc*`` are arrays of size
+           ``NGENPPROC``\ :math:`\times`\ ``NGENCOST`` (10 :math:`\times`\ 20
+           by default; can be changed in ``ECCO_SIZE.h`` at compile time). In
+           addition, the ``gencost_is3d`` internal parameter is reset to true
+           on the fly in all 3D cases in :numref:`gencost_ecco_barfile`.
   :name: gencost_ecco_params
 
-  +-----------------------+-----------------------+-----------------------------------+
-  | parameter             | type                  | function                          |
-  +=======================+=======================+===================================+
-  | ``gencost_name``      | character(*)          | Name of cost term                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_barfile``   | character(*)          | File to receive model counterpart |
-  |                       |                       | :math:`\vec{m}_i` (See            |
-  |                       |                       | :numref:`gencost_ecco_barfile`)   |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_datafile``  | character(*)          | File containing                   |
-  |                       |                       | observational data                |
-  |                       |                       | :math:`\vec{o}_i`                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_avgperiod`` | character(5)          | Averaging period for              |
-  |                       |                       | :math:`\vec{o}_i` and             |
-  |                       |                       | :math:`\vec{m}_i`                 |
-  |                       |                       | (see text)                        |
-  +-----------------------+-----------------------+-----------------------------------+
-  |``gencost_outputlevel``| integer               | Greater than 0 will               |
-  |                       |                       | output misfit fields              |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_errfile``   | character(*)          | Uncertainty field                 |
-  |                       |                       | name (not used in                 |
-  |                       |                       | :numref:`intgen`)                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_mask``      | character(*)          | Mask file name root               |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`intgen`)                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``mult_gencost``      | real                  | Multiplier                        |
-  |                       |                       | :math:`\alpha_i`                  |
-  |                       |                       | (default: 1)                      |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc``   | character(*)          | Preprocessor names                |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_c`` | character(*)          | Preprocessor                      |
-  |                       |                       | character arguments               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_i`` | integer(*)            | Preprocessor integer              |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_preproc_r`` | real(*)               | Preprocessor real                 |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc``   | character(*)          | Post-processor names              |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_c`` | character(*)          | Post-processor                    |
-  |                       |                       | character arguments               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_i`` | integer(*)            | Post-processor                    |
-  |                       |                       | integer arguments                 |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_posproc_r`` | real(*)               | Post-processor real               |
-  |                       |                       | arguments                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spmin``     | real                  | Data less than this               |
-  |                       |                       | value will be omitted             |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spmax``     | real                  | Data greater than                 |
-  |                       |                       | this value will be                |
-  |                       |                       | omitted                           |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_spzero``    | real                  | Data points equal to              |
-  |                       |                       | this value will be                |
-  |                       |                       | omitted                           |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_startdate1``| integer               | Start date of                     |
-  |                       |                       | observations                      |
-  |                       |                       | (YYYMMDD)                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_startdate2``| integer               | Start date of                     |
-  |                       |                       | observations (HHMMSS)             |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_is3d``      | logical               | Needs to be true for              |
-  |                       |                       | 3D fields                         |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_enddate1``  | integer               | Not fully implemented             |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`v4custom`)               |
-  +-----------------------+-----------------------+-----------------------------------+
-  | ``gencost_enddate2``  | integer               | Not fully implemented             |
-  |                       |                       | (used only in                     |
-  |                       |                       | :numref:`v4custom`)               |
-  +-----------------------+-----------------------+-----------------------------------+
+  +---------------------------+-------------------+-----------------------------------+
+  | parameter                 | type              | function                          |
+  +===========================+===================+===================================+
+  | ``gencost_name``          | character(\*)     | Name of cost term                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_barfile``       | character(\*)     | File to receive model counterpart |
+  |                           |                   | :math:`\vec{m}_i` (See            |
+  |                           |                   | :numref:`gencost_ecco_barfile`)   |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_datafile``      | character(\*)     | File containing                   |
+  |                           |                   | observational data                |
+  |                           |                   | :math:`\vec{o}_i`                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_avgperiod``     | character(5)      | Averaging period for              |
+  |                           |                   | :math:`\vec{o}_i` and             |
+  |                           |                   | :math:`\vec{m}_i`                 |
+  |                           |                   | (see text)                        |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_outputlevel``   | integer           | Greater than 0 will               |
+  |                           |                   | output misfit fields              |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_errfile``       | character(\*)     | Uncertainty field                 |
+  |                           |                   | name (not used in                 |
+  |                           |                   | :numref:`intgen`)                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_mask``          | character(\*)     | Mask file name root               |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`intgen`)                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``mult_gencost``          | real              | Multiplier                        |
+  |                           |                   | :math:`\alpha_i`                  |
+  |                           |                   | (default: 1)                      |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc``       | character(\*)     | Preprocessor names                |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_c``     | character(\*)     | Preprocessor                      |
+  |                           |                   | character arguments               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_i``     | integer(\*)       | Preprocessor integer              |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_preproc_r``     | real(\*)          | Preprocessor real                 |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc``       | character(\*)     | Post-processor names              |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_c``     | character(\*)     | Post-processor                    |
+  |                           |                   | character arguments               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_i``     | integer(\*)       | Post-processor                    |
+  |                           |                   | integer arguments                 |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_posproc_r``     | real(\*)          | Post-processor real               |
+  |                           |                   | arguments                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spmin``         | real              | Data less than this               |
+  |                           |                   | value will be omitted             |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spmax``         | real              | Data greater than                 |
+  |                           |                   | this value will be                |
+  |                           |                   | omitted                           |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_spzero``        | real              | Data points equal to              |
+  |                           |                   | this value will be                |
+  |                           |                   | omitted                           |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_startdate1``    | integer           | Start date of                     |
+  |                           |                   | observations                      |
+  |                           |                   | (YYYMMDD)                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_startdate2``    | integer           | Start date of                     |
+  |                           |                   | observations (HHMMSS)             |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_is3d``          | logical           | Needs to be true for              |
+  |                           |                   | 3D fields                         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_enddate1``      | integer           | Not fully implemented             |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`v4custom`)               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_enddate2``      | integer           | Not fully implemented             |
+  |                           |                   | (used only in                     |
+  |                           |                   | :numref:`v4custom`)               |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_kLev_select``   | integer           | Vertical level of a 3D field to   |
+  |                           |                   | create a 2D field for cost        |
+  |                           |                   | computation                       |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_useDensityMask``| logical           | Needs to be true if density       |
+  |                           |                   | following feature is used         |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_sigmaLow``      | real              | Use to define minimum density     |
+  |                           |                   | surface chosen                    |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_sigmaHigh``     | real              | Used to define maximum density    |
+  |                           |                   | surface chosen                    |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_refPressure``   | real              | Defines reference pressure used   |
+  |                           |                   | in density following feature      |
+  +---------------------------+-------------------+-----------------------------------+
+  | ``gencost_tanhScale``     | real              | Used in defining density levels   |
+  |                           |                   | in density following feature      |
+  +---------------------------+-------------------+-----------------------------------+
 
-.. table:: Implemented ``gencost_barfile`` options (as of checkpoint
-           65z) that can be used via ``cost_generic.F``
-           (:numref:`costgen`). An extension starting with ‘\_’ can be
-           appended at the end of the variable name to distinguish between separate
-           cost function terms. Note: the ‘m_eta’ formula depends on the
-           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile time options
-           and ‘useRealFreshWaterFlux’ run time parameter.
+.. table:: Implemented ``gencost_barfile`` options (as of checkpoint 65z) that
+           can be used via :filelink:`cost_generic.F
+           <pkg/ecco/cost_generic.F>` (:numref:`costgen`). An extension
+           starting with ‘\_’ can be appended at the end of the variable name
+           to distinguish between separate cost function terms. Note: the
+           ‘m_eta’ formula depends on the ``ATMOSPHERIC_LOADING`` and
+           ``ALLOW_PSBAR_STERIC`` compile-time options and
+           ‘useRealFreshWaterFlux’ run-time parameter.
   :name: gencost_ecco_barfile
 
   +-----------------------+-----------------------+-----------------------+
@@ -365,7 +397,7 @@ YC.
   +=======================+=======================+=======================+
   | ``gencost_preproc``   |                       |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``clim``              | Use climatological    | integer: no. of       |
+  | ``clim``              | Use climatological    | integer: no. of       |
   |                       | misfits               | records per           |
   |                       |                       | climatological cycle  |
   +-----------------------+-----------------------+-----------------------+
@@ -384,6 +416,11 @@ YC.
   |                       | :math:`\vec{m}_i` by  | factor                |
   |                       | a scaling factor      |                       |
   +-----------------------+-----------------------+-----------------------+
+  | ``offset``            | subtract mean misfit  | —                     |
+  +-----------------------+-----------------------+-----------------------+
+  | ``mindepth``          | mask (ignore) misfit  | real: minimum water   |
+  |                       | above minimum depth   | depth (:math:`< 0`)   |
+  +-----------------------+-----------------------+-----------------------+
   | ``gencost_posproc``   |                       |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``smooth``            | Smooth misfits        | character: smoothing  |
@@ -399,26 +436,25 @@ Generic Integral Function
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The functionality described in this section is operated by
-``cost_gencost_boxmean.F``. It is primarily aimed at obtaining a
-mechanistic understanding of a chosen physical variable via adjoint
-sensitivity computations (see :ref:`chap_autodiff`) as done for example in
-:cite:`maro-eta:99,heim-eta:11,fuku-etal:14`. Thus the
-quadratic term in Eq. :eq:`Jtotal`
-(:math:`\vec{d}_i^T R_i^{-1} \vec{d}_i`) is by default replaced with a
-:math:`d_i` scalar [2]_ that derives from model fields through a generic
-integral formula (Eq. :eq:`Jpreproc`). The
-specification of ``gencost_barfile`` again selects the physical variable
-type. Current valid options to use ``cost_gencost_boxmean.F`` are
-reported in :numref:`genint_ecco_barfile`. A
-suffix starting with ``‘_’`` can again be appended to
-``gencost_barfile``.
+:filelink:`cost_gencost_boxmean.F <pkg/ecco/cost_gencost_boxmean.F>`. It is
+primarily aimed at obtaining a mechanistic understanding of a chosen physical
+variable via adjoint sensitivity computations (see :ref:`chap_autodiff`) as
+done for example in :cite:`maro-eta:99,heim-eta:11,fuku-etal:14`. Thus the
+quadratic term in Eq. :eq:`Jtotal` (:math:`\vec{d}_i^T R_i^{-1} \vec{d}_i`) is
+by default replaced with a :math:`d_i` scalar [2]_ that derives from model
+fields through a generic integral formula (Eq. :eq:`Jpreproc`). The
+specification of :varlink:`gencost_barfile` again selects the physical variable
+type. Current valid options to use :filelink:`cost_gencost_boxmean.F
+<pkg/ecco/cost_gencost_boxmean.F>` are reported in
+:numref:`genint_ecco_barfile`. A suffix starting with ``‘_’`` can again be
+appended to :varlink:`gencost_barfile`.
 
 The integral formula is defined by masks provided via binary files which
-names are specified via ``gencost_mask``. There are two cases: (1) if
-``gencost_mask = ‘foo_mask’`` and ``gencost_barfile`` is of the
+names are specified via :varlink:`gencost_mask`. There are two cases: (1) if
+``gencost_mask = ‘foo_mask’`` and :varlink:`gencost_barfile` is of the
 ‘m_boxmean\*’ type then the model will search for horizontal, vertical,
 and temporal mask files named ``foo_maskC``, ``foo_maskK``, and
-``foo_maskT``; (2) if instead ``gencost_barfile`` is of the
+``foo_maskT``; (2) if instead :varlink:`gencost_barfile` is of the
 ‘m_horflux\_’ type then the model will search for ``foo_maskW``,
 ``foo_maskS``, ``foo_maskK``, and ``foo_maskT``.
 
@@ -426,16 +462,27 @@ The ‘C’ mask or the ‘W’ / ‘S’ masks are expected to be two-dimension
 fields. The ‘K’ and ‘T’ masks (both optional; all 1 by default) are
 expected to be one-dimensional vectors. The ‘K’ vector length should
 match Nr. The ‘T’ vector length should match the # of records that the
-specification of ``gencost_avgperiod`` implies but there is no
+specification of :varlink:`gencost_avgperiod` implies but there is no
 restriction on its values. In case #1 (‘m_boxmean\*’) the ‘C’ and ‘K’
 masks should consists of +1 and 0 values and a volume average will be
 computed accordingly. In case #2 (‘m_horflux\*’) the ‘W’, ‘S’, and ‘K’
 masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
-.. table:: Implemented ``gencost_barfile`` options (as of checkpoint
-           65z) that can be used via ``cost_gencost_boxmean.F``
-           (:numref:`intgen`).
+In order to define a control volume using both a depth range and a
+density range, use a ‘K’ mask and also set
+:varlink:`gencost_useDensityMask` ``=.TRUE.``. When the density range
+feature is active, the control volume is defined at each timestep by
+the bounds set in the ‘K’ mask and also by the density range specified
+by the parameters :varlink:`gencost_sigmaLow` (the minimum density to
+be included in the control volume) and :varlink:`gencost_sigmaHigh`
+(the maximum density to be included in the control volume). As a default
+:varlink:`gencost_refPressure` should be set to 0, but other values can
+be used (e.g. 1000 dbar, 2000 dbar).
+
+.. table:: Implemented :varlink:`gencost_barfile` options (as of checkpoint
+           67x) that can be used via :filelink:`cost_gencost_boxmean.F
+           <pkg/ecco/cost_gencost_boxmean.F>` (:numref:`intgen`).
   :name: genint_ecco_barfile
 
   +---------------------+----------------------------------+------------------+
@@ -447,6 +494,13 @@ horizontal transport (or overturn) will be computed accordingly.
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_eta``   | mean of SSH over box             | specify box      |
   +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shifwf``| total shelfice freshwater flux   | specify box      |
+  |                     | over box                         |                  |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_vol``   | total volume over box            | specify box      |
+  +---------------------+----------------------------------+------------------+
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
 
@@ -455,29 +509,47 @@ horizontal transport (or overturn) will be computed accordingly.
 Custom Cost Functions
 ~~~~~~~~~~~~~~~~~~~~~
 
-This section (very much a work in progress...) pertains to the special
-cases of ``cost_gencost_bpv4.F``, ``cost_gencost_seaicev4.F``,
-``cost_gencost_sshv4.F``, ``cost_gencost_sstv4.F``, and
-``cost_gencost_transp.F``. The cost_gencost_transp.F function can be
-used to compute a transport of volume, heat, or salt through a specified
+This section (very much a work in progress...) pertains to the special cases of
+:filelink:`cost_gencost_bpv4.F <pkg/ecco/cost_gencost_bpv4.F>`,
+:filelink:`cost_gencost_seaicev4.F <pkg/ecco/cost_gencost_seaicev4.F>`,
+:filelink:`cost_gencost_sshv4.F <pkg/ecco/cost_gencost_sshv4.F>`,
+:filelink:`cost_gencost_sstv4.F <pkg/ecco/cost_gencost_sstv4.F>`,
+:filelink:`cost_gencost_transp.F <pkg/ecco/>`, and
+:filelink:`cost_gencost_moc.F <pkg/ecco/cost_gencost_moc.>`.  The
+:filelink:`cost_gencost_transp.F <pkg/ecco/cost_gencost_transp.F>` function can
+be used to compute a transport of volume, heat, or salt through a specified
 section (non quadratic cost function). To this end one sets
 ``gencost_name = ‘transp*’``, where ``*`` is an optional suffix starting
-with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
+with ``‘_’``, and set :varlink:`gencost_barfile` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
 
-Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
-Users interested in computing volumetric transports through a section
-are recommended to use the ``m_horflux_vol`` capabilities described above as 
-it is regularly tested. Users interested in computing heat and salt transport 
-should note the following about ``m_trHeat`` and ``m_trSalt``:
+The :filelink:`cost_gencost_moc.F <pkg/ecco/cost_gencost_moc.F>` function is
+similar to transport function, but is intended to compute the meridional
+overturning streamfunction maximum based on the volumetric transport integrated
+from the floor to surface, as in Smith and Heimbach (2019) :cite:`smith:19`.
+Therefore, this function is intended to work with :varlink:`gencost_barfile`
+``= m_trVol``, and note that the first 3 characters of :varlink:`gencost_name`
+must be ``moc``, as depicted in :numref:`gencost_ecco_name`.  Users can specify
+a latitude band to compute the MOC with appropriately defined West ('W') and
+South ('S') masks as described in :numref:`intgen`.  As an example see
+parameter group (3) in `this data.ecco file
+<https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/input_ad.sens/data.ecco>`_
+.
+
+Note: the functionality in :filelink:`cost_gencost_transp.F
+<pkg/ecco/cost_gencost_transp.F>` is not regularly tested.  Users interested in
+computing volumetric transports through a section are recommended to use the
+``m_horflux_vol`` capabilities described above as it is regularly tested. Users
+interested in computing heat and salt transport should note the following about
+``m_trHeat`` and ``m_trSalt``:
 
     1. The associated advection scheme with transports may be inconsistent with
-       the model unless ``ENUM_CENTERED_2ND`` is implemented 
+       the model unless ``ENUM_CENTERED_2ND`` is implemented
     2. Bolus velocities are not included
     3. Diffusion components are not included
 
 
-.. table:: Pre-defined ``gencost_name`` special cases (as of checkpoint
+.. table:: Pre-defined :varlink:`gencost_name` special cases (as of checkpoint
            65z; :numref:`v4custom`).
   :name: gencost_ecco_name
 
@@ -531,23 +603,41 @@ should note the following about ``m_trHeat`` and ``m_trSalt``:
   | ``transp_trSalt``     | salt transport        | specify masks         |
   |                       |                       | (:numref:`intgen`)    |
   +-----------------------+-----------------------+-----------------------+
+  | ``moc_trVol``         | meridional ovt.       | specify masks         |
+  |                       | streamfn. maximum     | (:numref:`intgen`)    |
+  +-----------------------+-----------------------+-----------------------+
 
 Key Routines
 ~~~~~~~~~~~~
 
-TBA... ``ecco_readparms.F``, ``ecco_check.F``, ``ecco_summary.F``, ...
-``cost_generic.F``, ``cost_gencost_boxmean.F``, ``ecco_toolbox.F``, ...
-``ecco_phys.F``, ``cost_gencost_customize.F``,
-``cost_averagesfields.F``, ...
+TBA ...
+:filelink:`ecco_readparms.F <pkg/ecco/ecco_readparms.F>`,
+:filelink:`ecco_check.F <pkg/ecco/ecco_check.F>`,
+:filelink:`ecco_summary.F <pkg/ecco/ecco_summary.F>`,
+:filelink:`cost_generic.F <pkg/ecco/cost_generic.F>`,
+:filelink:`cost_gencost_boxmean.F <pkg/ecco/cost_gencost_boxmean.F>`,
+:filelink:`ecco_toolbox.F <pkg/ecco/ecco_toolbox.F>`,
+:filelink:`ecco_phys.F <pkg/ecco/ecco_phys.F>`,
+:filelink:`cost_gencost_customize.F <pkg/ecco/cost_gencost_customize.F>`,
+:filelink:`cost_averagesfields.F <pkg/ecco/cost_averagesfields.F>`, ...
 
 Compile Options
 ~~~~~~~~~~~~~~~
 
-TBA... ALLOW_GENCOST_CONTRIBUTION, ALLOW_GENCOST3D, ...
-ALLOW_PSBAR_STERIC, ALLOW_SHALLOW_ALTIMETRY, ALLOW_HIGHLAT_ALTIMETRY,
-... ALLOW_PROFILES_CONTRIBUTION, ... ALLOW_ECCO_OLD_FC_PRINT, ...
-ECCO_CTRL_DEPRECATED, ... packages required for some functionalities:
-smooth, profiles, ctrl
+TBA ...
+:varlink:`ALLOW_GENCOST_CONTRIBUTION`,
+:varlink:`ALLOW_GENCOST3D`,
+:varlink:`ALLOW_PSBAR_STERIC`,
+:varlink:`ALLOW_SHALLOW_ALTIMETRY`,
+:varlink:`ALLOW_HIGHLAT_ALTIMETRY`,
+:varlink:`ALLOW_PROFILES_CONTRIBUTION`,
+:varlink:`ALLOW_ECCO_OLD_FC_PRINT`,
+...
+
+packages required for some functionalities:
+:filelink:`smooth <pkg/smooth>`,
+:filelink:`profiles <pkg/profiles>`,
+:filelink:`ctrl <pkg/ctrl>`
 
 .. _sec:pkg:profiles:
 
@@ -566,7 +656,7 @@ comparison online and formulate a least-squares problem (ECCO
 application).
 
 The pkg/profiles namelist is called data.profiles. In the example below,
-it includes two input netcdf file names (ARGOifremer_r8.nc 
+it includes two input netcdf file names (ARGOifremer_r8.nc
 and XBT_v5.nc) that should be linked to the run directory
 and *cost function* multipliers that only matter in the
 context of automatic differentiation (see :ref:`chap_autodiff`). The
@@ -578,7 +668,7 @@ velocity, sea surface height anomaly, and passive tracer.
 .. more updates are needed below
 
 The netcdf input file structure is illustrated in the case of XBT_v5.nc
-To create such files, one can use the MITprof matlab toolbox obtained 
+To create such files, one can use the MITprof matlab toolbox obtained
 from https://github.com/gaelforget/MITprof .
 At run time, each file is scanned to determine which
 variables are included; these will be interpolated. The (final) output
@@ -656,178 +746,243 @@ grid files. *This operation could eventually be inlined.*
 CTRL: Model Parameter Adjustment Capability
 -------------------------------------------
 
-Author: Gael Forget
+Author: Gael Forget, An T. Nguyen, Martin Losch
 
-The parameters available for configuring generic cost terms in
-``data.ctrl`` are given in :numref:`gencost_ctrl_params`.
+.. _gen_ctrl:
 
-.. table:: Parameters in ``ctrl_nml_genarr`` namelist in ``data.ctrl``.
-           The ``*`` can be replaced by ``arr2d``, ``arr3d``, or ``tim2d`` for
-           time-invariant two and three dimensional controls and time-varying 2D
-           controls, respectively. Parameters for ``genarr2d``, ``genarr3d``, and
-           ``gentime2d`` are arrays of length ``maxCtrlArr2D``, ``maxCtrlArr3D``,
-           and ``maxCtrlTim2D``, respectively, with one entry per term in the cost
-           function.
+Generic Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Package :filelink:`ctrl <pkg/ctrl>` provides an interface to defining the
+control variables for an optimization. After defining CPP-flags
+:varlink:`ALLOW_GENTIM2D_CONTROL`, :varlink:`ALLOW_GENARR2D_CONTROL`,
+:varlink:`ALLOW_GENARR3D_CONTROL` in :filelink:`CTRL_OPTIONS.h
+<pkg/ctrl/CTRL_OPTIONS.h>`, the parameters available for configuring generic
+cost terms in ``data.ctrl`` are given in :numref:`gencost_ctrl_params`.  The
+control variables are stored as fields on the model grid in files
+``$ctrlvar.$iternumber.data/meta``, and corresponding gradients in
+``ad$ctrlvar.$iternumber.data/meta``, where ``$ctrl`` is defined in
+``data.ctrl`` (see :numref:`gencost_ctrl_files` for possible options) and
+``$iternumber`` is the 10-digit iteration number of the optimization. Further,
+:filelink:`ctrl <pkg/ctrl>` maps the gradient fields to a vector that can be
+handed over to an optimization routine (see :numref:`sectionoptim`) and maps
+the resulting new control vector to the model grid unless CPP-flag
+:varlink:`EXCLUDE_CTRL_PACK` is defined in :filelink:`CTRL_OPTIONS.h
+<pkg/ctrl/CTRL_OPTIONS.h>`.
+
+.. _gen_ctrl_param:
+
+Run-time Parameters
+^^^^^^^^^^^^^^^^^^^
+
+.. table:: Parameters in namelist group :varlink:`ctrl_nml_genarr` in ``data.ctrl``.  The
+           ``*`` can be replaced by ``arr2d``, ``arr3d``, or ``tim2d`` for
+           time-invariant two and three dimensional controls and time-varying
+           2D controls, respectively. Parameters for ``genarr2d``,
+           ``genarr3d``, and ``gentime2d`` are arrays of length
+           :varlink:`maxCtrlArr2D`, :varlink:`maxCtrlArr3D`, and
+           :varlink:`maxCtrlTim2D`, respectively, with one entry per term in
+           the cost function.
   :name: gencost_ctrl_params
 
-  +-----------------------+-----------------------+--------------------------------+
-  | parameter             | type                  | function                       |
-  +=======================+=======================+================================+
-  | ``xx_gen*_file``      | character(*)          | Control Name: prefix from      |
-  |                       |                       | :numref:`gencost_ctrl_files`   |
-  |                       |                       | + suffix.                      |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_weight``    | character(*)          | Weights in the form            |
-  |                       |                       | of                             |
-  |                       |                       | :math:`\sigma_{\vec{u          |
-  |                       |                       | }_j}^{-2}`                     |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_bounds``    | real(5)               | Apply bounds                   |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc``   | character(*)          | Control                        |
-  |                       |                       | preprocessor(s) (see           |
-  |                       |                       | :numref:`gencost_ctrl_preproc` |
-  |                       |                       | )                              |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_c`` | character(*)          | Preprocessor                   |
-  |                       |                       | character arguments            |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_i`` | integer(*)            | Preprocessor integer           |
-  |                       |                       | arguments                      |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gen*_preproc_r`` | real(*)               | Preprocessor real              |
-  |                       |                       | arguments                      |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``gen*Precond``       | real                  | Preconditioning                |
-  |                       |                       | factor (:math:`=1` by          |
-  |                       |                       | default)                       |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``mult_gen*``         | real                  | Cost function                  |
-  |                       |                       | multiplier                     |
-  |                       |                       | :math:`\beta_j`                |
-  |                       |                       | (:math:`= 1` by                |
-  |                       |                       | default)                       |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gentim2d_period``| real                  | Frequency of                   |
-  |                       |                       | adjustments (in                |
-  |                       |                       | seconds)                       |
-  +-----------------------+-----------------------+--------------------------------+
-  |``xx_gentim2d_startda``| integer               | Adjustment start date          |
-  |``te1``                |                       |                                |
-  +-----------------------+-----------------------+--------------------------------+
-  |``xx_gentim2d_startda``| integer               | Default: model start           |
-  |``te2``                |                       | date                           |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gentim2d_cumsum``| logical               | Accumulate control             |
-  |                       |                       | adjustments                    |
-  +-----------------------+-----------------------+--------------------------------+
-  | ``xx_gentim2d_glosum``| logical               | Global sum of                  |
-  |                       |                       | adjustment (output is          |
-  |                       |                       | still 2D)                      |
-  +-----------------------+-----------------------+--------------------------------+
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  |   Name                             |      Default value           |   Description                                                           |
+  +====================================+==============================+=========================================================================+
+  | ``xx_gen*_file``                   |    :kbd:`' '`                | control fllename: prefix from :numref:`gencost_ctrl_files` + suffix     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_weight``                 |    :kbd:`' '`                | filename for weights in the form of :math:`\sigma_{\vec{u}_j}^{-2}`     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_bounds``                 |    0.0, 0.0, 0.0, 0.0, 0.0   | apply bounds                                                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_preproc``                |    :kbd:`' '`                | control preprocessor (see :numref:`gencost_ctrl_preproc`)               |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_preproc_c``              |    :kbd:`' '`                | preprocessor character arguments (see :numref:`genarr_preproc_c`)       |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_preproc_i``              |    0                         | preprocessor integer arguments                                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``xx_gen*_preproc_r``              |    0.0                       | preprocessor real arguments                                             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``gen*Precond``                    |    1.0                       | preconditioning factor                                                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | ``mult_gen*``                      |    1.0                       | cost function multiplier :math:`\beta_j`                                |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`xx_gentim2d_period`      |    0.0                       | frequency of adjustments (s)                                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`xx_gentim2d_startdate1`  |  :varlink:`startdate_1`      | adjustment start date 1 yyyymmdd (default from :filelink:`pkg/cal`;     |
+  |                                    |                              | see :numref:`sub_phys_pkg_cal`)                                         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`xx_gentim2d_startdate2`  |  :varlink:`startdate_2`      | adjustment start date 2 hhmmss (default from :filelink:`pkg/cal`;       |
+  |                                    |                              | see :numref:`sub_phys_pkg_cal`)                                         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`xx_gentim2d_cumsum`      |   FALSE                      | accumulate control adjustments                                          |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`xx_gentim2d_glosum`      |   FALSE                      | global sum of adjustment (note: output is still 2D)                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
-.. table:: Generic control prefixes implemented as of checkpoint 65z.
+.. _gen_ctrl_fields:
+
+Generic Control Fields
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. table:: Generic control prefixes implemented as of checkpoint 67x.
   :name: gencost_ctrl_files
 
-  +-----------------------+-----------------------+-----------------------+
-  |                       | name                  | description           |
-  +=======================+=======================+=======================+
-  | 2D, time-invariant    | ``genarr2d``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_etan``           | initial sea surface   |
-  |                       |                       | height                |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_bottomdrag``     | bottom drag           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_geothermal``     | geothermal heat flux  |
-  +-----------------------+-----------------------+-----------------------+
-  | 3D, time-invariant    | ``genarr3d``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_theta``          | initial potential     |
-  |                       |                       | temperature           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_salt``           | initial salinity      |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_uvel``           | initial zonal         |
-  |                       |                       | velocity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_vvel``           | initial meridional    |
-  |                       |                       | velocity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_kapgm``          | GM coefficient        |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_kapredi``        | isopycnal diffusivity |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_diffkr``         | diapycnal diffusivity |
-  +-----------------------+-----------------------+-----------------------+
-  | 2D, time-varying      | ``gentim2D``          |                       |
-  | controls              |                       |                       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_atemp``          | atmospheric           |
-  |                       |                       | temperature           |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_aqh``            | atmospheric specific  |
-  |                       |                       | humidity              |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_swdown``         | downward shortwave    |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_lwdown``         | downward longwave     |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_precip``         | precipitation         |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_uwind``          | zonal wind            |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_vwind``          | meridional wind       |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_tauu``           | zonal wind stress     |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_tauv``           | meridional wind       |
-  |                       |                       | stress                |
-  +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_gen_precip``     | globally averaged     |
-  |                       |                       | precipitation?        |
-  +-----------------------+-----------------------+-----------------------+
+  +--------------------+-----------------------+--------------------------------+
+  |                    | name                  | description                    |
+  +====================+=======================+================================+
+  | 2D, time-invariant | ``genarr2d``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_etan``           | initial sea surface height     |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_bottomdrag``     | bottom drag                    |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_geothermal``     | geothermal heat flux           |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicoefft``      | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | thermal transfer coefficient   |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicoeffs``      | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | salinity transfer              |
+  |                    |                       | coefficient                    |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shicdrag``       | package :ref:`shelfice         |
+  |                    |                       | <sub_phys_pkg_shelfice>`       |
+  |                    |                       | drag coefficient               |
+  |                    |                       | (see :numref:`shi_ctrl`)       |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_depth``          | bottom topography;             |
+  |                    |                       | requires #define               |
+  |                    |                       | :varlink:`ALLOW_DEPTH_CONTROL` |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_siheff``         | package :ref:`seaice           |
+  |                    |                       | <sub_phys_pkg_seaice>`         |
+  |                    |                       | initial sea ice thickness      |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_siarea``         | package :ref:`seaice           |
+  |                    |                       | <sub_phys_pkg_seaice>`         |
+  |                    |                       | initial sea ice area           |
+  +--------------------+-----------------------+--------------------------------+
+  +--------------------+-----------------------+--------------------------------+
+  | 3D, time-invariant | ``genarr3d``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_theta``          | initial potential temperature  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_salt``           | initial salinity               |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_uvel``           | initial zonal velocity         |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_vvel``           | initial meridional velocity    |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_kapgm``          | package :ref:`gmredi           |
+  |                    |                       | <sub_phys_pkg_gmredi>`         |
+  |                    |                       | GM thickness diffusivity       |
+  |                    |                       | (see :numref:`GM_bolus_desc`)  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_kapredi``        | package :ref:`gmredi           |
+  |                    |                       | <sub_phys_pkg_gmredi>`         |
+  |                    |                       | isopycnal ("Redi") diffusivity |
+  |                    |                       | (see :numref:`GM_redi_desc`)   |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_diffkr``         | diapycnal diffusivity          |
+  +--------------------+-----------------------+--------------------------------+
+  +--------------------+-----------------------+--------------------------------+
+  | 2D, time-varying   | ``gentim2D``          |                                |
+  | controls           |                       |                                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_atemp``          | atmospheric temperature        |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_aqh``            | atmospheric specific humidity  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_swdown``         | downward shortwave             |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_lwdown``         | downward longwave              |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_precip``         | precipitation                  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_runoff``         | river runoff                   |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_uwind``          | zonal wind                     |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_vwind``          | meridional wind                |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_tauu``           | zonal wind stress              |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_tauv``           | meridional wind stres          |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_gen_precip``     | globally averaged              |
+  |                    |                       | precipitation                  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_hflux``          | net heat flux                  |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_sflux``          | net salt (EmPmR) flux          |
+  +--------------------+-----------------------+--------------------------------+
+  |                    | ``xx_shifwflx``       | shelfice melt rate             |
+  +--------------------+-----------------------+--------------------------------+
+
+.. _gen_ctrl_proc:
+
+Generic Control Processing Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
-           65z. Notes: :math:`^a`: If ``noscaling`` is false, the control
+           67x. Notes: :math:`^a`: If ``noscaling`` is false, the control
            adjustment is scaled by one on the square root of the weight before
-           being added to the base control variable; if ``noscaling`` is true, the
-           control is multiplied by the weight in the cost function itself.
+           being added to the base control variable; if ``noscaling`` is true,
+           the control is multiplied by the weight in the cost function itself.
   :name: gencost_ctrl_preproc
 
   +-----------------------+-----------------------+-----------------------+
   | name                  | description           | arguments             |
   +=======================+=======================+=======================+
-  | ``WC01``              | Correlation modeling  | integer: operator     |
+  | ``WC01``              | correlation modeling  | integer: operator     |
   |                       |                       | type (default: 1)     |
   +-----------------------+-----------------------+-----------------------+
-  | ``smooth``            | Smoothing without     | integer: operator     |
+  | ``smooth``            | smoothing without     | integer: operator     |
   |                       | normalization         | type (default: 1)     |
   +-----------------------+-----------------------+-----------------------+
-  | ``docycle``           | Average period        | integer: cycle length |
+  | ``docycle``           | average period        | integer: cycle length |
   |                       | replication           |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``replicate``         | Alias for ``docycle`` |(units of              |
+  | ``replicate``         | alias for ``docycle`` |(units of              |
   |                       |                       |``xx_gentim2d_period``)|
   +-----------------------+-----------------------+-----------------------+
-  | ``rmcycle``           | Periodic average      | integer: cycle length |
+  | ``rmcycle``           | periodic average      | integer: cycle length |
   |                       | subtraction           |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``variaweight``       | Use time-varying      | —                     |
+  | ``variaweight``       | use time-varying      | —                     |
   |                       | weight                |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``noscaling``\ :math: | Do not scale with     | —                     |
-  | `^{a}`                | ``xx_gen*_weight``    |                       |
+  | ``noscaling``         | do not scale with     | —                     |
+  | :math:`^{a}`          | ``xx_gen*_weight``    |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``documul``           | Sets                  | —                     |
+  | ``documul``           | sets                  | —                     |
   |                       | ``xx_gentim2d_cumsum``|                       |
   |                       |                       |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``doglomean``         | Sets                  | —                     |
+  | ``doglomean``         | sets                  | —                     |
   |                       | ``xx_gentim2d_glosum``|                       |
   |                       |                       |                       |
+  +-----------------------+-----------------------+-----------------------+
+
+
+.. table:: ``xx_gen????d_preproc_c`` options implemented as of checkpoint
+           67x.
+  :name: genarr_preproc_c
+
+  +-----------------------+-----------------------+-----------------------+
+  | name                  | description           | arguments             |
+  +=======================+=======================+=======================+
+  |``log10ctrl``          | Control adjustments to| See                   |
+  |                       | log10 of              | :numref:`log_ctrl`    |
+  |                       | 2D or 3D array        |                       |
+  |                       | (not available for    |                       |
+  |                       | ``xx_gentim2d``).     |                       |
   +-----------------------+-----------------------+-----------------------+
 
 The control problem is non-dimensional by default, as reflected in the
@@ -839,26 +994,38 @@ through multiplication by the respective uncertainty fields
 :math:`\mathcal{Q}` in :eq:`Upreproc`. Besides the
 scaling of :math:`\vec{u}_j` to physical units, the preprocessor
 :math:`\mathcal{Q}` can include, for example, spatial correlation
-modeling (using an implementation of Weaver and Coutier, 2001) by
+modeling (using an implementation of Weaver and Coutier, 2001
+:cite:`weaver:01`) by
 setting ``xx_gen*_preproc = ’WC01’``. Alternatively, setting
 ``xx_gen*_preproc = ’smooth’`` activates the smoothing part of ``WC01``,
 but omits the normalization. Additionally, bounds for the controls can
 be specified by setting ``xx_gen*_bounds``. In forward mode, adjustments
 to the :math:`i^\text{th}` control are clipped so that they remain
-between ``xx_gen*_bounds(i,1)`` and ``xx_gen*_bounds(i,4)``. If
-``xx_gen*_bounds(i,1)`` :math:`<` ``xx_gen*_bounds(i+1,1)`` for
-:math:`i = 1, 2, 3`, then the bounds will “emulate a local
-minimum;” otherwise, the bounds have no effect in adjoint mode.
+between ``xx_gen*_bounds(i,1)`` and ``xx_gen*_bounds(i,4)``. The bounds
+have no effect in adjoint mode unless ``xx_gen*_bounds(i,j)`` <
+``xx_gen*_bounds(i,j+1)`` for :math:`j = 1, 3`. When this is the case,
+the bounds will “emulate a local minimum” as follows in
+:filelink:`pkg/ctrl/adctrl_bound.F`. On the minimum end,
+when ``xx_gen*(i)`` < ``xx_gen*_bounds(i,2)`` and the gradient
+``adxx_gen*(i)`` > 0.0, i.e., the derivative suggests that a
+further decrease of ``xx_gen*(i)`` will decrease the cost, an adjustment
+is enforced to reverse the sign of the gradient ``adxx_gen*(i)`` to be
+negative such that any further decrease in ``xx_gen*(i)`` toward its minimum
+bound ``xx_gen*_bounds(i,1)`` will be penalized.  The opposite is enforced
+at the maximum end when ``xx_gen*(i)`` > ``xx_gen*_bounds(i,3)``
+and ``adxx_gen*(i)`` < 0.0 such that the sign of the gradient
+``adxx_gen*(i)`` will be reversed to positive to penalize any further
+increase in ``xx_gen*(i)`` toward its maximum bound ``xx_gen*_bounds(i,4)``.
 
 For the case of time-varying controls, the frequency is specified by
-``xx_gentim2d_period``. The generic control package interprets special
-values of ``xx_gentim2d_period`` in the same way as the ``exf`` package:
+:varlink:`xx_gentim2d_period`. The generic control package interprets special
+values of :varlink:`xx_gentim2d_period` in the same way as the ``exf`` package:
 a value of :math:`-12` implies cycling monthly fields while a value of
 :math:`0` means that the field is steady. Time varying weights can be
 provided by specifying the preprocessor ``variaweight``, in which case
-the ``xx_gentim2d_weight`` file must contain as many records as the
+the :varlink:`xx_gentim2d_weight` file must contain as many records as the
 control parameter time series itself (approximately the run length
-divided by ``xx_gentim2d_period``).
+divided by :varlink:`xx_gentim2d_period`).
 
 The parameter ``mult_gen*`` sets the multiplier for the corresponding
 cost function penalty [:math:`\beta_j` in :eq:`Jtotal`;
@@ -866,6 +1033,240 @@ cost function penalty [:math:`\beta_j` in :eq:`Jtotal`;
 does not directly appear in the estimation problem, but only serves to
 push the optimization process in a certain direction in control space;
 this operator is specified by ``gen*Precond`` (:math:`=1` by default).
+
+Note that control parameters exist for each individual near surface atmospheric
+state variable, as well as the net heat and salt (EmPmR) fluxes.  The user must
+be mindful of control parameter combinations that make sense according to their
+specific setup, e.g., with the :ref:`EXF package <ssub_phys_pkg_exf_config>`.
+
+.. _gen_ctrl_rec:
+
+Generic Control Record Access
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+For each control variable ``$ctrlvar``, three pairs of ``.data`` files (and their
+corresponding ``.meta``) are required or produced per adjoint run:
+
+::
+
+   1a   $ctrlvar.effective.$iternumber.data
+   1b ad$ctrlvar.effective.$iternumber.data
+
+   2a   $ctrlvar.tmp.$iternumber.data
+   2b ad$ctrlvar.tmp.$iternumber.data
+
+   3a   $ctrlvar.$iternumber.data
+   3b ad$ctrlvar.$iternumber.data
+
+Pair 1a,b are the physical fields with physical units. Pair 2a,b are temporary
+files storing a repeat cycle for use during calculations when
+:varlink:`docycle` and :varlink:`rmcycle` are active. Pair 3a,b have units or
+no units depending on the setting of :varlink:`noscaling`, which controls
+scaling/unscaling by the corresponding ``xx_gen*_weight`` (see
+:numref:`gencost_ctrl_preproc`).
+
+In an adjoint run with the 2-D time-dependent controls (CPP-flag
+:varlink:`ALLOW_GENTIM2D_CONTROL` defined), three variables
+:varlink:`startrec`, :varlink:`endrec`, and :varlink:`diffrec` =
+:varlink:`endrec` - :varlink:`startrec` + 1 will be
+initialized as a function of the startdate (:varlink:`startdate_1`,
+:varlink:`startdate_2`) in ``data.cal``, the control variables startdates
+(:varlink:`xx_gentim2d_startdate1`, :varlink:`xx_gentim2d_startdate2`) in
+``data.ctrl``, and the pickup time :varlink:`nIter0` in
+:filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>` (which
+calls :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`,
+:filelink:`ctrl_init_rec.F <pkg/ctrl/ctrl_init_rec.F>`). These three variables
+are subsequently used to determine the record length of the three pairs (1--3)
+of the above files, in the order as follows:
+
+- First the ``ad$ctrlvar.[effective,tmp,].$iternumber`` files (1b,2b,3b) above
+  are initialized with zeros in
+  :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`-->
+  :filelink:`ctrl_init.F <pkg/ctrl/ctrl_init.F>`-->
+  :filelink:`ctrl_init_ctrlvar.F <pkg/ctrl/ctrl_init_ctrlvar.F>`
+  (with :varlink:`yadprefix` = ``'ad'``); 1b and 2b have size :varlink:`diffrec`
+  and 3b has size :varlink:`endrec`.
+
+.. parsed-literal ::
+
+  Flow of :filelink:`pkg/ctrl` when the adjoint is running (below, for $iternumber=0000000001):
+
+  Note: :filelink:`the_model_main.F <model/src/the_model_main.F>` calls :filelink:`the_main_loop.F <model/src/the_main_loop.F>`, but once the code is generated from TAF,
+  the preprocessed form the_model_main.f calls either mdthe_main_loop or adthe_main_loop
+
+  :filelink:`the_model_main <model/src/the_model_main.F>`
+  \|-:filelink:`initialise_fixed <model/src/initialise_fixed.F>`
+    \|-:filelink:`ini_parms <model/src/ini_parms.F>`
+    \|-:filelink:`packages_boot <model/src/packages_boot.F>`, :filelink:`packages_readparms <model/src/packages_readparms.F>`
+    \|-:filelink:`set_parms <model/src/set_parms.F>`, :filelink:`ini_model_io <model/src/ini_model_io.F>`, :filelink:`ini_grid <model/src/ini_grid.F>`, :filelink:`load_ref_files <model/src/load_ref_files.F>`, :filelink:`ini_eos <model/src/ini_eos.F>`, :filelink:`set_ref_state <model/src/set_ref_state.F>`,
+      :filelink:`set_grid_factors <model/src/set_grid_factors.F>`, :filelink:`ini_depths <model/src/ini_depths.F>`, :filelink:`ini_masks_etc <model/src/ini_masks_etc.F>`
+
+    \|-:filelink:`packages_init_fixed <model/src/packages_init_fixed.F>`
+      \|-:filelink:`cal_init_fixed <pkg/cal/cal_init_fixed.F>`, :filelink:`diagnostics_init_early <pkg/diagnostics/diagnostics_init_early.F>`, :filelink:`diagnostics_main_init <pkg/diagnostics/diagnostics_main_init.F>`, :filelink:`gad_init_fixed <pkg/generic_advdiff/gad_init_fixed.F>`,
+        :filelink:`mom_init_fixed <pkg/mom_common/mom_init_fixed.F>`, :filelink:`obcs_init_fixed <pkg/obcs/obcs_init_fixed.F>`, :filelink:`exf_init_fixed <pkg/exf/exf_init_fixed.F>`, :filelink:`kpp_init_fixed <pkg/kpp/kpp_init_fixed.F>`, :filelink:`gmredi_init_fixed <pkg/gmredi/gmredi_init_fixed.F>`,
+        :filelink:`seaice_cost_init_fixed <pkg/seaice/seaice_cost_init_fixed.F>`, :filelink:`smooth_init_fixed <pkg/smooth/smooth_init_fixed.F>`, :filelink:`ecco_cost_init_fixed <pkg/ecco/ecco_cost_init_fixed.F>`,
+        :filelink:`profiles_init_fixed <pkg/profiles/profiles_init_fixed.F>`, :filelink:`seaice_init_fixed <pkg/seaice/seaice_init_fixed.F>`, :filelink:`salt_plume_init_fixed <pkg/salt_plume/salt_plume_init_fixed.F>`
+
+      \|-:filelink:`ctrl_init <pkg/ctrl/ctrl_init.F>`
+        \|-:filelink:`active_write_xyz <pkg/autodiff/active_file.F>`\ ('wunit')
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (genarr2d, genarr3d)
+
+        \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (gentim2d_startdate, diffrec, startrec, endrec)
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.effective.0000000001, 'c','xy')
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\ (xx_fname,fname)
+                            **--> fname(1:3)=[,ad,hn]xx_atemp.effective.0000000001**
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.effective.0000000001)  **<- size diffrec**
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.tmp.0000000001)
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+                            **--> fname(1:3)=[,ad,hn]xx_atemp.tmp.0000000001**
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.tmp.0000000001)        **<- size diffrec**
+        \|-:filelink:`ctrl_init_ctrlvar <pkg/ctrl/ctrl_init_ctrlvar.F>`\ (xx_atemp.0000000001)
+          \|-:filelink:`ctrl_set_fname <pkg/ctrl/ctrl_set_fname.F>`\(xx_fname,fname)
+                            **--> fname(1:3)=[,ad,hn]xx_atemp.0000000001**
+          \|-:filelink:`ctrl_set_globfld_xy <pkg/ctrl/ctrl_set_globfld_xy.F>`\ (fname(2)) (with yadprefix='ad')
+            \|-:filelink:`mds_write_field <pkg/mdsio/mdsio_write_field.F>`\ (adxx_atemp.0000000001)            **<- size endrec**
+
+- Second, within ``initiase_variamd.f`` (see below), records
+  :varlink:`startrec` to :varlink:`endrec` of file 3a
+  ``$ctrvar.$iternumber.data`` are read in :filelink:`ctrl_map_ini_gentim2d.F
+  <pkg/ctrl/ctrl_map_ini_gentim2d.F>`, processed if scaling or smoothing, etc.,
+  need to be applied, and then written to (1a,2a)
+  ``$ctrlvar.{effective,tmp}.data`` of size :varlink:`diffrec`.  Note these
+  routines contain a ``md`` or ``ad`` suffix and are produced by TAF, e.g.,
+  ``s/r ctrl_map_ini_gentim2dmd`` (found in TAF-generated file
+  ``ctrl_map_ini_gentim2d_ad.f``) called from ``s/r initialize_variamd`` (found
+  in TAF-generated file ``initialize_varia_ad.f``), which in turn is called
+  from ``s/r adthe_main_loop`` (found in TAF-generated file
+  ``the_main_loop_ad.f``); alternatively, all of these routines are found the
+  concatenated file ``ad_taf_output.f``.
+
+.. parsed-literal ::
+
+  \|-adthe_main_loop  **only available in the_main_loop_ad.f, called from the_model_main.f**
+    \|-adopen (many tapes, ocean variables, atmos, obcs, etc)  **initialize tapelev grid, etc.**
+
+    \|-initialise_variamd
+      \|-packages_init_variablesmd
+        \|-:filelink:`diagnostics_init_varia <pkg/diagnostics/diagnostics_init_varia.F>`, :filelink:`kpp_init_varia <pkg/kpp/kpp_init_varia.F>`, :filelink:`exf_init_varia <pkg/exf/exf_init_varia.F>`  **store salt,theta**
+        \|-:filelink:`profiles_init_varia <pkg/profiles/profiles_init_varia.F>`, :filelink:`ecco_init_varia <pkg/ecco/ecco_init_varia.F>`, :filelink:`obcs_init_variables <pkg/obcs/obcs_init_variables.F>`  **some done after ctrl**
+        \|-ctrl_init_variablesmd
+          \|-:filelink:`ctrl_map_ini_genarr <pkg/ctrl/ctrl_map_ini_genarr.F>`
+            \|-:filelink:`ctrl_map_genarr2d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set etan,siheff ctrl**
+            \|-:filelink:`ctrl_map_genarr3d <pkg/ctrl/ctrl_map_genarr.F>`  **e.g., set logdiffkr ctrl**
+          \|-ctrl_map_ini_gentim2dmd
+            \|-:filelink:`ctrl_init_rec <pkg/ctrl/ctrl_init_rec.F>`\ (xx_atemp)
+	             **example here for atemp: [startrec,endrec,diffrec]=[24,37,14]**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenIn,lrec)
+	             **read in xx_atemp.0000000001.data from 24->37**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **write out to xx_atemp.effective.0000000001.data from 1->14**
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **read in xx_atemp.effective.0000000001.data 1->14, do some math**
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenTmp,irec)
+	             **write out to xx_atemp.tmp.0000000001.data 1->14**
+            do irec=1,diffrec
+            \|-:filelink:`active_read_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+            \|-:filelink:`mds_read_field <pkg/mdsio/mdsio_read_field.F>`\ (xx_gentim2d_weight,jrec)
+	             **if variaweight, jrec=lrec, else jrec=1**
+            \|-:filelink:`smooth_correl2d <pkg/smooth/smooth_correl2d.F>`  **or smooth2d**
+            \|-xx_gen/sqrt(wgentim2d)  **if doscaling**
+            \|-exch_xy_rl
+            \|-:filelink:`active_write_xy <pkg/autodiff/active_file.F>`\ (fnamegenOut,irec)
+	             **write out to xx_atemp.effective.0000000001.data (smooth/scaled)**
+            enddo
+
+The difference in length of records for 3[a,b] compared to 1[a,b] and 2[a,b] is
+due to the fact that we need to access records :varlink:`startrec` thru
+:varlink:`endrec` in 3a, i.e., file 3a needs a total of at least
+:varlink:`endrec` records; file 3b is automatically generated to provide access
+to :varlink:`endrec` thru :varlink:`startrec` (i.e., in reverse order). File
+3b, in particular, is where adjoint sensitivity will be accumulated backward
+and written; note the model would thus crash if its last record were
+:varlink:`diffrec` rather than :varlink:`endrec`.  For pairs 1[a,b] and 2[a,b],
+because they are generated *after* we have already accessed the correct records
+:varlink:`startrec` to :varlink:`endrec` in 3a, we simply create and write out
+these records in the shorter file size :varlink:`diffrec`.  After their file
+size initializations, the control adjustment field with physical unit from file
+1a is passed on to :filelink:`pkg/exf` for surface forcing application.
+
+Note, that :varlink:`xx_gentim2d_startdate` can be used to control how many
+records the different :varlink:`xx_gentim2d` files
+contain. :numref:`xx_var_sketch` illustrates a few examples.
+
+  .. figure:: figs/ctrl_var_sketch.*
+    :width: 100%
+    :align: center
+    :alt: xx_var_sketch
+    :name: xx_var_sketch
+
+    Sketch illustrating which parts of the timeline are covered by which
+    :varlink:`xx_gentim2d` files.
+
+.. _shi_ctrl:
+
+Shelfice Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The available iceshelf control parameters depend on the form of transfer
+coefficient used in the simulation.
+
+The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available when the
+velocity **independent** form of transfer coefficients is used, by setting
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT`
+in :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>` at
+compile time (see :numref:`tab_phys_pkg_shelfice_compileparms`) and
+:varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`).  These parameters provide
+adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.  If only one
+of either is used, the value of the other is set based on the control
+adjustments used together with :varlink:`SHELFICEsaltToHeatRatio`, which can be
+set in ``data.shelfice``.  See :ref:`tab_phys_pkg_shelfice_runtimeparms` for
+the default.
+
+The adjustment ``xx_shicdrag`` is available in the velocity **dependent** form
+of the ice-ocean transfer coefficients, which is specified by ``#define``
+:varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict`
+``=.TRUE.`` at compile time and run time respectively.  This parameter provides
+adjustments to the drag coefficient at the ice ocean boundary, but by default
+only adjusts the drag coefficient used to compute the thermal and freshwater
+fluxes, neglecting the momentum contributions.  To allow the contribution
+directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
+in ``data.ctrl``.
+
+.. _log_ctrl:
+
+Logarithmic Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As indicated in :numref:`genarr_preproc_c`, the base-10 logarithm of a
+control field can be adjusted by specifying the character option
+``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2`` and ``iarr``
+as appropriate, and ``*d`` denoting that ``2d`` or ``3d`` are available.
+As a concrete example, if the control parameter is updating ``fld2d``,
+then the field will be set as follows:
+
+.. code-block:: fortran
+
+	fld2d(i,j,bi,bj) = 10**( log10InitVal + xx_genarr2d(i,j,bi,bj,iarr) )
+
+where ``log10InitVal`` is a scalar with a default value of 0, but can be changed
+by setting ``gencost_preproc_r(k2,iarr)``. This is useful in the case where
+``doInitXX=.TRUE.``.
+Concretely, if we had an initial guess for ``fld2d = 10^-4`` then one could set
+the following in ``data.ctrl``:
+
+::
+
+	xx_genarr2d_file(1) = 'xx_fld2d'
+	xx_genarr2d_weight(1) = 'nonzero_weights.data'
+	xx_genarr2d_preproc_c(1,1) = 'log10ctrl'
+	xx_genarr2d_preproc_r(1,1) = -4. ,
+
+Note that the ``log10ctrl`` option can only be used when a weight file
+is provided, and finally that this log-option cannot be used with
+``xx_gen*_preproc(k2,iarr) = 'noscaling',``.
+
 
 .. _sec:pkg:smooth:
 
@@ -1071,7 +1472,7 @@ iteration to update Hessian:
 
     Example 2: jmin = 3, jmax = 7, mupd = 5   ---> jmax = 2
 
-      1   2   3   |  
+      1   2   3   |
     |___|___|___| | |___|___| |___|___| |___|___| |___|___| |___|___|
                   |     6         7         3         4         5
 
@@ -1091,7 +1492,7 @@ Error handling
           |             create or open OPWARMD
           |
           |---- check consistency between OPWARMI and model parameters
-          | 
+          |
           |---- >>> if COLD start: <<<
           |      |  first simulation with f.g. xx_0; output: first ff_0, gg_0
           |      |  set first preconditioner value xdiff_0 to 1
@@ -1112,7 +1513,7 @@ Error handling
           |      )       |      |  first optimization after cold start:
           |      (       |      |  preconditioner estimated via ff_0 - ff_(first guess)
           |      )       |      |  dd(i-1) = -gg(i-1)*preco
-          |      (       |      |  
+          |      (       |      |
           |      )       |     >>> if jmax > 0 <<<
           |      (       |         dd(i-1) = -gg(i-1)
           |      )       |         CALL HESSUPD
@@ -1139,7 +1540,7 @@ Error handling
           |      (---- CALL OPTLINE / LSLINE
           |      )       |
           |      (       |---- /// loop over simulations
-          |      )              (  
+          |      )              (
           |      (              )---- CALL SIMUL
           |      )              (       |
           |      (              )       |----  input: xdiff(i)
@@ -1181,7 +1582,7 @@ Error handling
           |      (                               for new simulation
           |      )                               N.B.: new xx is thus not based on new gg, but
           |      (                                     rather on new step size tact
-          |      )        
+          |      )
           |      (---- store new values xx(i), gg(i) to OPWARMD (first 2 entries)
           |      )---- >>> if ifail = 7,8,9 <<<
           |      (         goto 1000
@@ -1191,7 +1592,7 @@ Error handling
 ::
 
          ...    ...
-          |      )        
+          |      )
           |      (---- store new values xx(i), gg(i) to OPWARMD (first 2 entries)
           |      )---- >>> if ifail = 7,8,9 <<<
           |      (         goto 1000
@@ -1300,14 +1701,14 @@ does the following: ::
   call m1qn3 (simul_rc,...,xx,objf,adxx,...,reverse,indic,...)
   call optim_store_m1qn3( ..., .true. )          ! write state of m1qn3
   call optim_writedata( nn, ctrlname, ..., xx )  ! write control vector
-  
+
 The optimization loop is executed outside of this program within a script.
 
-The code can be obtained at https://github.com/mjlosch/optim_m1qn3
-. The ``README`` contains short instructions how to build and use the
-code in combination with the ``tutorial_global_oce_optim``
-experiment. The usage is very similar to the :filelink:`optim`
-package.
+The code can be obtained at https://github.com/mjlosch/optim_m1qn3. The `README
+<https://github.com/mjlosch/optim_m1qn3/blob/master/README.md>`__ contains
+short instructions how to build and use the code in combination with the
+:filelink:`verification/tutorial_global_oce_optim` experiment. The usage is
+very similar to the :filelink:`optim` package.
 
 .. _sec:exp:llc:
 
@@ -1315,28 +1716,42 @@ package.
 Test Cases For Estimation Package Capabilities
 ----------------------------------------------
 
-First, download the model as explained in :ref:`chap_getting_started` via the MITgcm git server
-::
+First, if you have not done so already, download the model as explained
+in :ref:`chap_getting_started` via the `MITgcm git repository <https://github.com/MITgcm/MITgcm>`_: ::
 
-    % git clone https://github.com/user_name/MITgcm.git
+    % git clone https://github.com/MITgcm/MITgcm.git
 
-Then, download the setup from the `MITgcm_contrib/` area by logging into the cvs server
-::
+Then, download the setup from the `MITgcm
+verification_other git repository <https://github.com/MITgcm/verification_other>`_: ::
 
-    % setenv CVSROOT ':pserver:cvsanon@mitgcm.org:/u/gcmpack'
-    % cvs login
-    %     ( enter the CVS password: "cvsanon" )
+    % cd MITgcm
+    % git clone https://github.com/MITgcm/verification_other
 
-and following the directions provided `here for global_oce_cs32 <https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`__
-or `here for global_oce_llc90 <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`__. These model configurations
-are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
-Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
-To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 
-The various commands can also be used to run these examples outside of crontab, directly at the command line via the `testreport capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/>`__.
+and follow the additional directions provided for `global_oce_cs32
+<https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`_
+or for `global_oce_llc90
+<https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_.
+These model configurations are used for daily regression tests to ensure
+continued availability of the tested estimation package features discussed in
+:ref:`chap_state_estimation`.  Daily results of these tests, which currently
+run on the `glacier` cluster, are reported on https://mitgcm.org/testing-summary.
+To this end, one sets a `crontab
+job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes
+the script reported below.  The various commands can also be used to run these
+examples outside of crontab, directly at the command line via the :ref:`testreport
+capability <testreport_utility>`.
 
 .. note::
 
-   Users are advised against running `global_oce_llc90/` tests with fewer than 12 cores (96 for adjoint tests) to avoid potential memory overloads. `global_oce_llc90/ <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/>`__ (595M) uses the same LLC90 grid as the production `ECCO version 4` setup does :cite:`for-eta:15`. The much coarser resolution `global_oce_cs32/ <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/>`__ (614M) uses the CS32 grid and can run on any modern laptop.
+   Users are advised against running `global_oce_llc90
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_
+   tests with fewer than 12 cores (96 for adjoint tests) to avoid potential memory
+   overloads. `global_oce_llc90
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`_
+   (595M) uses the same LLC90 grid as the production `ECCO version 4` setup
+   :cite:`for-eta:15`. The much coarser resolution `global_oce_cs32
+   <https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`_
+   (614M) uses the CS32 grid and can run on any modern laptop.
 
 ::
 
@@ -1347,7 +1762,7 @@ The various commands can also be used to run these examples outside of crontab, 
     % module use /usr/share/Modules
     % module load openmpi-x86_64
     % setenv MPI_INC_DIR $MPI_INCLUDE
-    % 
+    %
     % cd ~/MITgcm
     % #mkdir gitpull.log
     % set D=`date +%Y-%m-%d`
@@ -1373,5 +1788,3 @@ The various commands can also be used to run these examples outside of crontab, 
     % #adjoint case:
     % ./testreport -clean -t 'global_oce_*'
     % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -ad -t 'global_oce_*' -addr username@something.whatever
-
-

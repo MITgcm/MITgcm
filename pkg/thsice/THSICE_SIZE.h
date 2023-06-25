@@ -23,10 +23,12 @@ C--   identifiers for advected properties
      &            GAD_SI_QICE2 = -9 )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ticekey
-      INTEGER ikey_1, ikey_2, ikey_3, ikey_4
       INTEGER MaxTsf
       PARAMETER ( MaxTsf = 20 )
+C     The number of properties to be advected is needed to define static tapes.
+      INTEGER thSIce_nAdv
+c     PARAMETER ( thSIce_nAdv = 1 + GAD_SI_FRAC - GAD_SI_QICE2 )
+      PARAMETER ( thSIce_nAdv = 5 )
 #endif
 
 #endif /* ALLOW_THSICE */

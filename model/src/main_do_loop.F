@@ -42,29 +42,36 @@ c#endif
 c#ifdef ALLOW_ECCO
 c# include "ECCO_OPTIONS.h"
 c#endif
-
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+# endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
+c# ifdef ALLOW_THSICE
+c# include "THSICE_OPTIONS.h"
+c# endif
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 CBOP
 C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
       SUBROUTINE MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
 
-C     !DESCRIPTION: \bv
+C     !DESCRIPTION:
 C     *================================================================*
-C     | SUBROUTINE the_loop_body
-C     | o Run the ocean model and evaluate the specified cost function.
+C     | SUBROUTINE MAIN_DO_LOOP
+C     | o Interface S/R that calls FORWARD_STEP
 C     *================================================================*
-C     |
-C     | MAIN_DO_LOOP is the toplevel routine for the Tangent Linear and
-C     | Adjoint Model Compiler (TAMC).
-C     | For this purpose the initialization
-C     | of the model was split into two parts. Those parameters that do
-C     | not depend on a specific model run are set in INITIALISE_FIXED,
-C     | whereas those that do depend on the specific realization are
-C     | initialized in INITIALISE_VARIA.
-C     | This routine is to be used in conjuction with the MITgcmuv
-C     | checkpoint 37.
+C     | This S/R contains the model main "do-loop" for OpenAD built
+C     | (i.e., ALLOW_OPENAD defined), with a call to FORWARD_STEP
+C     | inside the loop.
+C     | But without OpenAD, this S/R just calls directly FORWARD_STEP
+C     | (in this case the main do-loop is done in S/R THE_MAIN_LOOP).
 C     *================================================================*
-C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -74,7 +81,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#ifdef ALLOW_OPENAD
+#if (defined ALLOW_OPENAD || defined ALLOW_TAPENADE)
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
@@ -125,29 +132,69 @@ c**************************************
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_OPENAD */
+#endif /* ALLOW_OPENAD or ALLOW_TAPENADE */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_SIZE.h"
+#  include "EXF_INTERP_PARAM.h"
+#  include "EXF_FIELDS.h"
+# endif
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+#  include "GMREDI_TAVE.h"
+# endif
+# ifdef ALLOW_TIMEAVE
+#  include "TIMEAVE_STATV.h"
+# endif
+# include "FFIELDS.h"
+# include "DYNVARS.h"
+# include "SURFACE.h"
+# include "GRID.h"
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+c#  include "KPP_PARAMS.h"
+# endif
+# ifdef ALLOW_DOWN_SLOPE
+#  include "DWNSLP_SIZE.h"
+#  include "DWNSLP_VARS.h"
+# endif
+# ifdef ALLOW_THSICE
+#  include "THSICE_VARS.h"
+# endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME.h"
+# endif
+# ifdef ALLOW_ECCO
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
+# endif
+# ifdef ALLOW_BLING
+#  include "BLING_VARS.h"
+#  include "BLING_LOAD.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     note: under the multi-threaded model myIter and
-C           myTime are local variables passed around as routine
-C           arguments. Although this is fiddly it saves the need to
-C           impose additional synchronisation points when they are
-C           updated.
 C     myTime :: time counter for this thread
 C     myIter :: iteration counter for this thread
 C     myThid :: thread number for this instance of the routine.
+      INTEGER iloop
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
-C     !FUNCTIONS:
-C     == Functions ==
-
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER iloop
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -162,11 +209,10 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # else
       DO iloop = 1, nTimeSteps
 # endif
-
 #endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
+        IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
 #ifndef ALLOW_OPENAD
@@ -179,19 +225,19 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
         CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 # endif
-#else
+#else /* ALLOW_OPENAD */
 # ifdef ALLOW_OPENAD_DIVA
-       CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
+        nTimeSteps_l2 = 2
+        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
 # else
-       CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
-       CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
-       CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
+        nTimeSteps_l2 = 2
+        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
+        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 # endif
-#endif /* ndef ALLOW_OPENAD */
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_OPENAD
       ENDDO
