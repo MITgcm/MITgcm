@@ -28,7 +28,7 @@ fi
 #- an take pickup files from this dir:
 fromDir="../input_ad"
 
-fileList=`( cd $fromDir ; echo pickup* )`
+fileList=`( cd $fromDir ; ls pickup* ones_64b.bin )`
 
 #echo 'fileList=' $fileList
 

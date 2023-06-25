@@ -1,6 +1,0 @@
-# Packages
- &PACKAGES
- useMNC=.FALSE.,
- useShelfIce=.TRUE.,
- useGrdchk=.TRUE.,
- &

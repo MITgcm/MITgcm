@@ -35,6 +35,10 @@
    fileName(2) = 'dynDiag',
   frequency(2) =  5184000.,
 
+  fields(1:4,3)  = 'GGL90TKE','GGL90Lmx','GGL90Prl','GGL90Kr ',
+#  fileName(3) = 'ggl90Diag',
+  frequency(3) = 1728000.,
+
   fields(1:7,4) =  'ADVx_TH ','ADVy_TH ','ADVr_TH ',
                    'DFxE_TH ','DFyE_TH ','DFrE_TH ',
                    'DFrI_TH ',

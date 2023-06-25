@@ -21,7 +21,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_SHELFICE
-#include "GRID.h"
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
 
@@ -40,7 +39,7 @@ C     == Local variables ==
 C     bi, bj    :: tile indices
 C     i, j      :: Loop counters
       INTEGER bi, bj
-      INTEGER i, j, k
+      INTEGER i, j
 CEOP
 
 C--   Initialize R_shelfIce
@@ -94,34 +93,7 @@ C--   Modify ocean upper boundary position according to ice-shelf topography
         STOP 'SHELFICE_INIT_DEPTHS: Missing code for P-coords'
       ENDIF
 
-C---- ICEFRONT BEGIN
-      IF ( ICEFRONTlengthFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( ICEFRONTlengthFile, ' ',
-     &      icefrontlength, 0, myThid )
-       _EXCH_XY_RS( icefrontlength, myThid )
-      ENDIF
-
-      IF ( ICEFRONTdepthFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RS( ICEFRONTdepthFile, ' ',
-     &      R_icefront, 0, myThid )
-       _EXCH_XY_RS( R_icefront, myThid )
-      ENDIF
-
-C     Make sure that R_icefront is positive
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
-          R_icefront(I,J,bi,bj) = ABS(R_icefront(I,J,bi,bj))
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-C---- ICEFRONT END
-
 #endif /* ALLOW_SHELFICE */
-
 
       RETURN
       END

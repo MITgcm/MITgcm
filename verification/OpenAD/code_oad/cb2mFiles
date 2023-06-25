@@ -13,7 +13,6 @@ CTRL_OBCS
 ctrl_dummy
 ctrl
 ctrl_local_params
-ctrl_weights
 DYNVARS
 EESUPPORT
 EOS
@@ -25,7 +24,6 @@ g_cost
 GLOBAL_MAX
 GLOBAL_SUM
 GGL90
-GGL90_TAVE
 GMREDI
 GMREDI_TAVE
 grdchk
@@ -42,5 +40,3 @@ SOLVE_FOR_PRESSURE3D
 SOLVE_FOR_PRESSURE
 SURFACE
 AUTODIFF_PARAMS
-tamc_keys
-tamc

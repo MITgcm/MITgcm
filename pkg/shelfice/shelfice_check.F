@@ -268,6 +268,28 @@ CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         errCount = errCount + 1
 CML      ENDIF
 
+      IF ( SHELFICEMassStepping .AND. useSEAICE ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+     &   'pkg/seaice IGNORES Ice-Shelf retreat/advance'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+     &   ' that might occur with SHELFICEMassStepping'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+C     Currently cannot use SHELFICEMassStepping with OpenAD
+C     See shelfice_mass_stepping.F and github.com/MITgcm/MITgcm/pull/495
+#ifdef ALLOW_OPENAD
+      IF (SHELFICEMassStepping) THEN
+       WRITE(msgBuf,'(2A)')
+     &    'SHELFICEMassStepping does not currently work',
+     &    ' with #define ALLOW_OPENAD'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &       'SHELFICE_CHECK: detected', errCount,' fatal error(s)'

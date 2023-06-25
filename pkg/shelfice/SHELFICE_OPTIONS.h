@@ -14,9 +14,6 @@ C     *==========================================================*
 #ifdef ALLOW_SHELFICE
 C     Package-specific Options & Macros go here
 
-C     allow shelfice/icefront merged code
-#define shelfice_new_thermo
-
 C     allow code for simple ISOMIP thermodynamics
 #define ALLOW_ISOMIP_TD
 
@@ -29,9 +26,6 @@ C     exceeds thresholds
 #undef ALLOW_SHELFICE_REMESHING
 C     and allow to print message to STDOUT when this happens
 #define SHELFICE_REMESH_PRINT
-
-CC use 3d shiTransCoeffT and shiTransCoeffS
-C#define ALLOW_shiTransCoeff_3d
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */

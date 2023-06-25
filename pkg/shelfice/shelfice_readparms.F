@@ -39,6 +39,7 @@ C  msgBuf               :: message buffer
 CEOP
 
       NAMELIST /SHELFICE_PARM01/
+     &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff,
      &     SHELFICEsaltTransCoeff,
      &     SHELFICEMassStepping,
@@ -48,8 +49,6 @@ CEOP
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface,
      &     useISOMIPTD,
-     &     SHELFICEsalinity,
-     &     useISOMIPTD, no_slip_shelfice,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
      &     SHELFICEwriteState,
@@ -60,7 +59,6 @@ CEOP
      &     SHELFICEtopoFile,
      &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
      &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
-     &     ICEFRONTlengthFile, ICEFRONTdepthFile,
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
@@ -105,17 +103,14 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEloadAnomalyFile  = ' '
       SHELFICEMassDynTendFile  = ' '
       SHELFICETransCoeffTFile  = ' '
-      ICEFRONTlengthFile       = ' '
-      ICEFRONTdepthFile        = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0
+      SHELFICEsaltToHeatRatio  =   5.05 _d -03
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL
-C--   Molecular thermal conductivity ice shelf (m^2/s)
       SHELFICEkappa            =   1.54 _d -06
       SHELFICEthetaSurface     = - 20.0 _d 0
-      SHELFICEsalinity         = 0.0 _d 0
       no_slip_shelfice         = no_slip_bottom
       SHELFICEDragLinear       = bottomDragLinear
       SHELFICEDragQuadratic    = UNSET_RL
@@ -174,7 +169,7 @@ C Close the open data file
 C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
-     &     5.05 _d -3 *SHELFICEheatTransCoeff
+     &     SHELFICEsaltToHeatRatio * SHELFICEheatTransCoeff
 
 C New calcUstar expression not available with SHELFICEboundaryLayer:
       IF ( SHELFICEboundaryLayer ) SHELFICE_oldCalcUStar = .TRUE.

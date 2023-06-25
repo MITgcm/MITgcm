@@ -1,8 +1,15 @@
 # =========================
 # pkg AUTODIFF parameters :
 # =========================
-#  inAdExact :: get an exact adjoint (no approximation) (def=.True.)
+#  inAdExact   :: get an exact adjoint (no approximation) (def=.True.)
+#  viscFacInAd :: parameter to increase part of the viscosity in backward sweep;
+#                 multplies 3D viscosity fields (read from files viscAhDfile and
+#                 viscAhZfile) before they are added to the final viscosity to
+#                 improve stability of backwards sweep. It is commented out,
+#                 because in this experiment the 3D viscosity fields are zero
+#                 (not read) and this parameter has no effect.
 #
  &AUTODIFF_PARM01
 # inAdExact = .FALSE.,
+# viscFacInAd = 2.,
  &

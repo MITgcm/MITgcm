@@ -13,7 +13,6 @@ CTRL_OBCS
 ctrl_dummy
 ctrl
 ctrl_local_params
-ctrl_weights
 DYNVARS
 EESUPPORT
 EOS
@@ -40,5 +39,3 @@ SOLVE_FOR_PRESSURE3D
 SOLVE_FOR_PRESSURE
 SURFACE
 AUTODIFF_PARAMS
-tamc_keys
-tamc

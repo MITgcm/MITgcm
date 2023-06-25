@@ -29,7 +29,7 @@ C o Allow to account for heating due to friction (and momentum dissipation)
 
 C o Allow mass source or sink of Fluid in the interior
 C   (3-D generalisation of oceanic real-fresh water flux)
-#define ALLOW_ADDFLUID
+#undef ALLOW_ADDFLUID
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
