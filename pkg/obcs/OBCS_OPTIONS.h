@@ -63,6 +63,9 @@ C     Compute rather than specify seaice velocities at the edges.
 #undef OBCS_SEAICE_COMPUTE_UVICE
 #endif /* OBCS_UVICE_OLD */
 
+C     use Neuman boundary conditions for all sea ice variables
+#undef OBCS_SEAICE_NEUMANN
+
 C     Smooth the tracer sea-ice variables near the edges.
 #undef OBCS_SEAICE_SMOOTH_EDGE
 
