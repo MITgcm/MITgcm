@@ -32,6 +32,9 @@
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 #endif /* ALLOW_AUTODIFF */
 
 CBOP
@@ -187,6 +190,10 @@ C     == Global variables ===
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
+# ifdef ALLOW_OBCS
+#  include "OBCS_PARAMS.h"
+#  include "OBCS_FIELDS.h"
+# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_TAPENADE
@@ -286,6 +293,27 @@ C--   moved before SEAICE_MODEL call since SEAICE_MODEL needs seaice-obcs fields
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE etaN  = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef ALLOW_OBCS_STEVENS
+CADJ STORE uVel  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vVel  = comlev1, key=ikey_dynamics, kind=isbyte
+#   ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEtStevens = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE OBEsStevens = comlev1, key=ikey_dynamics, kind=isbyte
+#   endif
+#   ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWtStevens = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE OBWsStevens = comlev1, key=ikey_dynamics, kind=isbyte
+#   endif
+#   ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNtStevens = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE OBNsStevens = comlev1, key=ikey_dynamics, kind=isbyte
+#   endif
+#   ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBStStevens = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE OBSsStevens = comlev1, key=ikey_dynamics, kind=isbyte
+#   endif
+#  endif /* ALLOW_OBCS_STEVENS */
 # endif
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
@@ -293,6 +321,22 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
        CALL OBCS_CALC( myTime+deltaTClock, myIter+1,
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
+# if ( defined ALLOW_AUTODIFF_TAMC && defined ALLOW_OBCS_BALANCE )
+C     This needs to be done ***after*** the if-block to avoid calling
+C     S/R OBCS_CALC in the AD code.
+#  ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNv        = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+#  ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSv        = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+#  ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEu        = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+#  ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWu        = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+# endif /* ALLOW_AUTODIFF_TAMC and ALLOW_OBCS_BALANCE */
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_OCN_COMPON_INTERF
@@ -363,16 +407,16 @@ C       and modify forcing terms including effects from ice
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE qnet  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE qsw   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fu,fv = comlev1, key=ikey_dynamics, kind=isbyte
-#if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
+#  if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 CADJ STORE evap  = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
-# endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE phiHydLow= comlev1, key=ikey_dynamics, byte=isbyte
-#endif
+#  endif
+CADJ STORE etan      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uvel,vvel = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE phiHydLow = comlev1, key=ikey_dynamics, byte=isbyte
+# endif
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
@@ -504,7 +548,9 @@ CADJ STORE theta             = comlev1, key=ikey_dynamics, kind=isbyte
 C---  Determines forcing terms based on external fields
 C     relaxation terms, etc.
 #ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE salt, theta       = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 #else  /* ALLOW_AUTODIFF */
 C--   if fluid is not water, by-pass surfaceForcing, find_rho, gmredi
 C     and all vertical mixing schemes, but keep OBCS_CALC
@@ -516,6 +562,11 @@ C     and all vertical mixing schemes, but keep OBCS_CALC
         CALL EXTERNAL_FORCING_SURF(
      I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid calling S/R EXTERNAL_FORCING_SURF in AD routine.
+CADJ STORE EmPmR             = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uvel, vvel        = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
@@ -721,6 +772,10 @@ C-    horizontally uniform (tRef) reference state
            ENDDO
           ENDDO
         ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid recomputing rhoInSitu in AD routine.
+CADJ STORE rhoInSitu(:,:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEBUG
@@ -839,6 +894,8 @@ C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid recomputing sigmaR and IVDConvCount in AD routine.
+CADJ STORE sigmaR                   =comlev1_bibj,key=tkey,kind=isbyte
 CADJ STORE IVDConvCount(:,:,:,bi,bj)=comlev1_bibj,key=tkey,kind=isbyte
 #endif
 
