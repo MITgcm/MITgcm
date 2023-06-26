@@ -72,7 +72,8 @@ C     myThid :: my Thread Id. number
 
 C     if external forcing (exf) package is enabled (useEXF=T), all loading of
 C     external fields is done by exf
-#if (defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE )
+#if ( defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE && \
+      !defined EXCLUDE_FFIELDS_LOAD )
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -751,7 +752,7 @@ CEOP
         ENDDO
        ENDDO
 
-#endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE */
+#endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE and not EXCLUDE_FFIELDS_LOAD */
 
        RETURN
        END
