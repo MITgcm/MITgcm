@@ -44,7 +44,7 @@ c--   Read the namelist input.
 #ifdef ALLOW_COST_HFLUXM
      &         mult_temp_tut, mult_hflux_tut,
 #endif
-     &         lastinterval
+     &         lastinterval, cost_mask_file
 
       _BEGIN_MASTER( myThid )
 
@@ -64,6 +64,7 @@ c--     Set default values.
         mult_temp_tut         =      0. _d 0
         mult_hflux_tut        =      0. _d 0
 #endif
+        cost_mask_file        =      ' '
 
 c--     30*24*3600 = 2592000 = 1 model month
         lastinterval = 2592000.
@@ -99,6 +100,41 @@ c-- get the weights for the cost functions
       CALL COST_WEIGHTS( myThid )
 cgf : to compile previous line user is expected to provide cost_weights.F
 #endif
+
+C--   print cost parameters to stdout for better debugging
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// cost configuration'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
+      CALL WRITE_0D_RL( lastinterval, INDEX_NONE,'lastinterval =',
+     &'   /* cost interval over which to average ( s ). */')
+C
+       CALL WRITE_0D_C( cost_mask_file, -1, INDEX_NONE,
+     &  'cost_mask_file =', ' /* file name of cost mask file */')
+
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of cost config. summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
       _END_MASTER( mythid )
 
       _BARRIER
