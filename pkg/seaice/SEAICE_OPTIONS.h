@@ -174,6 +174,10 @@ C     Use parameterisation of grounding ice for a better representation
 C     of fastice in shallow seas
 # undef SEAICE_ALLOW_BOTTOMDRAG
 
+C     Use parameterisation of explicit lateral drag for a better
+C     representation of fastice along coast lines and islands
+# undef SEAICE_ALLOW_SIDEDRAG
+
 #else /* not SEAICE_CGRID, but old B-grid */
 C--   Options for the B-grid version only:
 

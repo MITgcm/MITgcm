@@ -52,6 +52,11 @@ C     local copy of surface layer thickness in meters
 #ifndef SEAICE_CGRID
       _RL mask_uice
 #endif
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      LOGICAL readCoastLineFields
+      _RL LcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL LcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
       IF ( usingPCoords ) THEN
        kSrf        = Nr
@@ -407,6 +412,76 @@ C     approximation
 C-    end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          NcoastX(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskU(i,j-1,bi,bj)
+     &         - SIMaskU(i,j,bi,bj)
+     &         - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
+          NcoastY(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskV(i-1,j,bi,bj)
+     &         - SIMaskV(i,j,bi,bj)
+     &         - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      readCoastLineFields =
+     &     uCoastLineFile .NE. ' ' .OR. vCoastLineFile .NE. ' '
+      IF ( readCoastLineFields ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           LcoastX(i,j,bi,bj) = 0. _d 0
+           LcoastY(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       IF ( uCoastLineFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( uCoastLineFile, ' ', LcoastX, 0, myThid )
+       ENDIF
+       IF ( vCoastLineFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( vCoastLineFile, ' ', LcoastY, 0, myThid )
+       ENDIF
+
+       CALL EXCH_UV_BGRID_3D_RL( LcoastX, LcoastY, .FALSE., 1, myThid )
+       IF ( uCoastLineFile .NE. ' ' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy-1
+           DO i=1-OLx,sNx+OLx
+            NcoastX(i,j,bi,bj)=(LcoastX(i,j,bi,bj)+LcoastX(i,j+1,bi,bj))
+     &           * 0.5 * SIMaskU(i,j,bi,bj) * recip_dxC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( vCoastLineFile .NE. ' ' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx-1
+            NcoastY(i,j,bi,bj)=(LcoastY(i,j,bi,bj)+LcoastY(i+1,j,bi,bj))
+     &           * 0.5 * SIMaskV(i,j,bi,bj) * recip_dyC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+
+      CALL EXCH_UV_XY_RL( NcoastX, NcoastY, .FALSE., myThid )
+      CALL WRITE_FLD_XY_RL( 'Nlized_coastX', ' ', NcoastX,-1, myThid )
+      CALL WRITE_FLD_XY_RL( 'Nlized_coastY', ' ', NcoastY,-1, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce ) THEN

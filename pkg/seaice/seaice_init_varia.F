@@ -114,6 +114,10 @@ C
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
           CbotC(i,j,bi,bj)   = 0. _d 0
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#ifdef SEAICE_ALLOW_SIDEDRAG
+          SideDragx(i,j,bi,bj) = 0. _d 0
+          SideDragy(i,j,bi,bj) = 0. _d 0
+#endif /* SEAICE_ALLOW_SIDEDRAG */
           PRESS0(i,j,bi,bj)  = 0. _d 0
           PRESS (i,j,bi,bj)  = 0. _d 0
           FORCEX0(i,j,bi,bj) = 0. _d 0

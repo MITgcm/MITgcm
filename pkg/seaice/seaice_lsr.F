@@ -362,6 +362,13 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICESideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I     uIceC, vIceC, NcoastX, NcoastY, AREA,
+     O     SideDragX, SideDragY,
+     I     ipass, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 C
 C     some abbreviations
 C
@@ -502,6 +509,23 @@ C
      I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( SEAICESideDrag .NE. 0. _d 0 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           BU(I,J,bi,bj) = BU(I,J,bi,bj)
+     &          + seaiceMaskU(I,J,bi,bj) * SideDragX(I,J,bi,bj)
+           BV(I,J,bi,bj) = BV(I,J,bi,bj)
+     &          + seaiceMaskV(I,J,bi,bj) * SideDragY(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver from modifying OB values:

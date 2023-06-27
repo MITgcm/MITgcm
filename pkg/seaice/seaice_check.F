@@ -1204,6 +1204,29 @@ C--   Some sanity checks for SEAICEdWatMin
       ENDIF
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      IF ( ( SEAICEuseEVP .OR. SEAICEuseKrylov .OR. SEAICEuseJFNK )
+     &     .AND. SEAICEsideDrag .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,E12.5)')
+     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: cannot be used with ',
+     &      'SEAICEuseEVP, SEAICEuseKrylov, or SEAICEuseJFNK = T'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#else
+      IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,E12.5)')
+     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: is set, ',
+     &      'but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifdef SEAICE_ITD
 C     The ice thickness distribution (ITD) module can only be used with
 C     the zero-layer thermodynamics of S/R SEAICE_GROWTH and the
