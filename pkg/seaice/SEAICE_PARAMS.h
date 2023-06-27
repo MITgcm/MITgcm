@@ -416,7 +416,7 @@ C     SEAICEbasalDragK2  :: if > 0, turns on basal drag
 C                           (default = 0, Lemieux suggests 15)
 C     SEAICESideDrag     :: if > 0, turns on lateral static drag
 C                           if < 0, turns on lateral quadratic drag
-C                           (default = 0, Liu et al 2021 use 2e-4)
+C                           (default = 0, Liu et al 2022 use 2e-4)
 C
 C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
 C     SEAICE_waterAlbedo :: water albedo
