@@ -71,6 +71,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
    :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
+   :varlink:`SEAICE_ALLOW_SIDEDRAG`, #undef, enable lateral drag parameterization for improved fastice along coastlines and islands
    :varlink:`SEAICE_ITD`, #undef, run with dynamical sea Ice Thickness Distribution (ITD)
    :varlink:`SEAICE_VARIABLE_SALINITY`, #undef, enable sea ice with variable salinity
    :varlink:`SEAICE_CAP_ICELOAD`, #undef, enable to limit seaice load (:varlink:`siceLoad`) on the sea surface
@@ -324,6 +325,20 @@ General flags and parameters
   | :varlink:`SEAICE_multDim`          | 1                            | number of ice categories for thermodynamics                             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_useMultDimSnow`   | TRUE                         | use same fixed pdf for snow as for multi-thickness-category ice         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEbasalDragK1`       | 8.0                          | basal drag parameter K\ :sub:`1` :cite:`lemieux:15`                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEbasalDragK2`       | 0.0                          | basal drag parameter K\ :sub:`2`                                        |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_cBasalStar`       | :varlink:`SEAICE_cStar` value| basal drag parameter (no units)                                         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEbasalDragU0`       | 5.E-5                        | basal drag parameter (m/s)                                              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICESideDrag`          | 0.0                          | lateral drag coefficient :cite:`liu:22`                                 |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`uCoastLineFile`          | unset                        | filename for coastline length for u-equation                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`vCoastLineFile`          | unset                        | filename for coastline length for v-equation                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
