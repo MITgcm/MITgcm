@@ -743,6 +743,13 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
+#ifdef SEAICE_ALLOW_SIDEDRAG
+        IF ( SEAICESideDrag .NE. 0. _d 0 ) CALL SEAICE_SIDEDRAG_STRESS(
+     I       uIce, vIce, NcoastX, NcoastY, AREA,
+     O       SideDragX, SideDragY,
+     I       iEVPstep, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
+
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
@@ -856,6 +863,10 @@ C     compute and adjust parameters that are constant otherwise
             denomV = denomV + areaS(i,j,bi,bj)
      &           * 0.5 _d 0*( CbotC(i,j,bi,bj) + CbotC(i,j-1,bi,bj) )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#ifdef SEAICE_ALLOW_SIDEDRAG
+            denomU = denomU + SideDragX(i,j,bi,bj)
+            denomV = denomV + SideDragY(i,j,bi,bj)
+#endif
             IF ( denomU .EQ. 0. _d 0 ) denomU = 1. _d 0
             IF ( denomV .EQ. 0. _d 0 ) denomV = 1. _d 0
             uIce(i,j,bi,bj) = seaiceMaskU(i,j,bi,bj) *

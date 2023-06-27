@@ -1151,7 +1151,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
 
       IF ( SEAICEpressReplFac .LT. 0. _d 0 .OR.
      &     SEAICEpressReplFac .GT. 1. _d 0 ) THEN
-       WRITE(msgBuf,'(A,I2)')
+       WRITE(msgBuf,'(A,F5.2)')
      &      'SEAICE_CHECK: SEAICEpressReplFac = ', SEAICEpressReplFac
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: cannot be < 0 or > 1'
@@ -1194,7 +1194,7 @@ C--   Some sanity checks for SEAICEdWatMin
 
 #ifndef SEAICE_ALLOW_BOTTOMDRAG
       IF ( SEAICEbasalDragK2 .GT. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,I2)')
+       WRITE(msgBuf,'(A,E12.5)')
      &      'SEAICE_CHECK: SEAICEbasalDragK2 = ', SEAICEbasalDragK2
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: is greater than 0, ',
@@ -1204,18 +1204,7 @@ C--   Some sanity checks for SEAICEdWatMin
       ENDIF
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
-#ifdef SEAICE_ALLOW_SIDEDRAG
-      IF ( ( SEAICEuseEVP .OR. SEAICEuseKrylov .OR. SEAICEuseJFNK )
-     &     .AND. SEAICEsideDrag .NE. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,E12.5)')
-     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: cannot be used with ',
-     &      'SEAICEuseEVP, SEAICEuseKrylov, or SEAICEuseJFNK = T'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       errCount = errCount + 1
-      ENDIF
-#else
+#ifndef SEAICE_ALLOW_SIDEDRAG
       IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
        WRITE(msgBuf,'(A,E12.5)')
      &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag
