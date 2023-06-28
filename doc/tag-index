@@ -1,6 +1,112 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;
+  - fix RI-Number calculation for IDEMIX ; new flag GGL90_IDEMIX_CVMIX_VERSION
+    (defined by default) to update IDEMIX to CVMix version ;
+  - add new diagnostics ;
+  - update Fwd ref. output of exp. isomip.obcs, global_ocean.90x40x15.idemix
+    and global_ocean.cs32x15.in_p.
+o pkg/tapenade + other Tapenade addition:
+  - add new capability to use Tapenade to generate Adjoint & Tang-Linear model:
+    new package (pkg/tapenade), new tools (tools/TAP_support), update genmake2
+    and testreport ; add some docs (in progress);
+  - modify src code & packages to work with tapenade ; add new code_tap/ &
+    input_tap/ dirs (+ ref output) in 9 verification experiments to get
+    tested with tapenade.
+
+checkpoint68p (2023/05/07)
+o pkg/seaice:
+  - fix compile error related to ALLOW_AUTODIFF_TAMC/ALLOW_AUTODIFF mix-up
+    in seaice_evp.F; also replace many ALLOW_AUTODIFF_TAMC by ALLOW_AUTODIFF
+    where code is not specific to TAF/TAMC;
+  - call S/R seaice_get_dynforcing every timestep to always have valid TAUX/Y;
+  - move most of routine body of seaice_dynsolver.F inside the
+    SEAICE_ALLOW_DYNAMICS block.
+o pkg/ecco:
+  - fix "sterGloH" output after a restart (issue related to Greatbatch
+    correction) by writing & reading (small) new "pickup_ecco" files.
+o pkg/ctrl:
+  - fix record number (mostly in ctrl_map_ini_gentim2d.F) in case of restart,
+    using corresponding xx_gentim2d_startdate1/2 as specified from data.ctrl;
+    this finalizes (+ fix) changes made in PR #260 and #380;
+  - also add more debug print (+new CPP option ALLOW_CTRL_DEBUG);
+  - improve generic-control documentation in Chap.10 (State Estimation).
+o pkg/mom_common:
+  - new expression for quadratic drag coefficient, function of cell thickness &
+    roughness length (logarithmic law of the wall); for now, only for z-Coords.
+    Turned on with CPP option ALLOW_BOTTOMDRAG_ROUGHNESS (MOM_COMMON_OPTIONS.h)
+    and run-time setting zRoughBot > 0 in data, PARMS01 namelist.
+    Tested in exp. tutorial_plume_on_slope, new secondary test "roughBot".
+o model/src & pkgs:
+  Finish to remove code within retired CPP options:
+  - remove orphan code within (many) removed ALLOW_()_CONTROL (as listed in
+    PR #689 comments); remove seaice_ctrl_map_ini.F;
+  - remove code within retired CPP options, remove call to COST_TRANSPORT,
+    remove ALLOW_ECCO_BARSTORES and the 4 "ecco_ad_check_lev?_dir.h" files;
+  - remove (check & stop) "using_cost_bp" & "using_cost_scat" from "data.ecco";
+  - avoid few unused variables; use default CTRL_OPTIONS.h in exp. hs94.1x64x5.
+o pkg/seaice:
+  - SEAICE_USE_GROWTH_ADX: fix diagnostic SIatmFW and add diagnostic SIeprflx
+    to close seaice mass and heat budgets.
+o pkg/dic:
+  - remove TAF storage dir for variable "OmegaC" (within wrong CPP option).
+
+checkpoint68o (2023/03/13)
+o model/src:
+  - salt/temp/ptracer_integrate.F: optimise store directives
+  - add mising "obcs_seaice_sponge.f" to obcs_ad_diff.list
+o pkg/ecco:
+  - smoothing in gencost_bpv4: allow to choose between a) call to smooth_basic2D
+    (using a constant length, with run-time params replacing hard-coded values)
+    or b) call to smooth_hetero2D (using a 2D field to be read in).
+o pkg/obcs:
+  -  update OBCS configuration summary.
+o eesupp/inc, model/inc & pkgs:
+  Clean CPP header files:
+  - remove ALLOW_GENCOST_CONTRIBUTION from COST_OPTIONS.h (is already set in
+    ECCO_OPTIONS.h);
+  - move ALLOW_PACKUNPACK_METHOD2 from AUTODIFF_OPTIONS.h to CTRL_OPTIONS.h;
+  - set EXCLUDE_WHIO_GLOBUFF_2D in MDSIO_OPTIONS.h (found in some customized
+    AUTODIFF_OPTIONS.h);
+  - list CPP options in pkg CPP header file (as undef) when used in any
+    experiment local set-up;
+  - fix typo in 2 CPP option names ; rename few (unused) pkg/fizhi CPP options;
+  - update pkg dependence rule for pkg/bling ; avoid few unused variables.
+o pkg/kl10:
+  - get stratification from variable "SigmaR" (passed as argument) instead of
+    recomputing locally in-situ density (less efficient and inaccurate when
+    using Non-Linear EOS); update (kl10) ref output for internal_wave exp.
+o pkg/ecco:
+  - add new generic integral cost function "m_boxmean_vol" (e.g. to track
+    volume of isoycnal layer); add it to lab_sea secondary AD test "noseaice"
+    and update ref. AD output file.
+o tools/build_options:
+  - fix OpenMP option in ifort optfiles for modern intel compiler.
+
+checkpoint68n (2023/02/08)
+o pkg/seaice:
+  - make all seaice-cost code independent of pkg/ecco and remove few
+    SEAICE_COST.h from pkg/ecco ;
+  - remove unused code related to ALLOW_SEAICE_COST_SMR_AREA (formerly used
+    with ECCO_CTRL_DEPRECATED, seaice_cost_driver.F and S/R called from there),
+    ALLOW_MEAN_SFLUX_COST_CONTRIBUTION + ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION,
+    and retire associated parameters.
+o pkg/dic:
+  - rename CPP: CAR_DISS -> DIC_CALCITE_SAT and AD_SAFE -> DIC_AD_SAFE and put
+    all carbonate-saturation code and 3D arrays inside #ifdef DIC_CALCITE_SAT
+    block and time-ave arrays within #ifdef ALLOW_TIMEAVE ;
+  - add run-time params: useCalciteSaturation, calcOmegaCalciteFreq, nIterCO3,
+    selectCalciteBottomRemin, KierRateK, KierRateExp and WsinkPIC ;
+  - switch order of arguments to "myTime, myIter, myThid" in few remaining
+    pkg/dic S/R + S/R calls in pkg/gchem ;
+  - update exp. so_box_biogeo (define CARBONCHEM_TOTALPHSCALE & DIC_CALCITE_SAT)
+    + add 2 new secondary tests (caSat0 & caSat3) with useCalciteSaturation=T
+    and using 3-D silicate input file.
+o TAF tape keys:
+  - rename many local taf keys to use shorter and more consistent names ;
+  - pkg/thsice: fix bug in key computations.
 o pkg/diagnostics (+doc):
   - fix index-loop range in diagnostics_sum_levels.F and document "fileFlags"
     and associated features (vertical interpolation & integral & hFac scaling).

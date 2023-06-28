@@ -2031,6 +2031,12 @@ computation. It was developed to be used in mode water studies, so that
 it comes with other related routines, in particular ones computing
 surface vertical potential vorticity fluxes.
 
+.. note::
+
+    This toolbox was developed in 2006 for the `CLIMODE project <https://www.nsf.gov/awardsearch/showAward?AWD_ID=0425150>`_.
+    The toolbox routines are available on this
+    `archived repository <https://github.com/gmaze/gmaze_legacy/tree/master/matlab/MIT>`_.
+
 Equations
 ---------
 

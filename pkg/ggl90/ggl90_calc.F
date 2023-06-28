@@ -61,6 +61,11 @@ C     myThid :: My Thread Id number
 
 #ifdef ALLOW_GGL90
 
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
 C !LOCAL VARIABLES: ====================================================
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k          :: array computation indices
@@ -118,8 +123,8 @@ c     _RL SQRTTKE
       _RL GGL90visctmp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_IDEMIX
       _RL hFacI            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     IDEMIX_gTKE :: TKE tendency due to internal waves
-C                    (output of S/R GGL90_IDEMIX)
+C     IDEMIX_gTKE :: dissipation of internal wave energy is a source
+C                    of TKE and mixing (output of S/R GGL90_IDEMIX)
       _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
@@ -171,10 +176,16 @@ C     gTKE     :: right hand side of diffusion equation
       _RL kappaRX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
 #endif
 #ifdef ALLOW_DIAGNOSTICS
+# ifndef ALLOW_AUTODIFF
+      LOGICAL doDiagTKEmin
+      _RL recip_deltaT
+# endif
       _RL surf_flx_tke(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikeyLoc, kkeyLoc
+C     tkey :: tape key (depends on tiles)
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER tkey, kkey
 #endif
 CEOP
 
@@ -200,12 +211,32 @@ CEOP
       recip_coordFac = 1./coordFac
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      ikeyLoc = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     explicit/implicit timestepping weights for dissipation
       explDissFac = 0. _d 0
       implDissFac = 1. _d 0 - explDissFac
+
+#ifdef ALLOW_DIAGNOSTICS
+# ifndef ALLOW_AUTODIFF
+      doDiagTKEmin = .FALSE.
+# endif
+      IF ( useDiagnostics ) THEN
+# ifndef ALLOW_AUTODIFF
+       doDiagTKEmin = DIAGNOSTICS_IS_ON('GGL90Emn',myThid)
+C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+       IF ( doDiagTKEmin )
+     &      CALL DIAGNOSTICS_COUNT('GGL90Emn',bi,bj,myThid)
+# endif
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         surf_flx_tke(i,j) = 0.
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
 C     For nonlinear free surface and especially with r*-coordinates, the
 C     hFacs change every timestep, so we need to update them here in the
@@ -215,8 +246,8 @@ C     case of using IDEMIX.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           hFac =
-     &         MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
-     &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
+     &         MIN( halfRS, _hFacC(i,j,km1,bi,bj) )
+     &       + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           recip_hFacI(i,j,k)=0. _d 0
           IF ( hFac .NE. 0. _d 0 )
      &         recip_hFacI(i,j,k)=1. _d 0/hFac
@@ -258,7 +289,7 @@ C     Initialize local fields
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -386,7 +417,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep, extra treatment of k=Nr for p-coordinates
 C     because level Nr+1 is not available
@@ -398,9 +429,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -412,9 +443,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -426,14 +457,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -452,9 +483,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -470,7 +501,7 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep, extra treatment of k=Nr for p-coordinates
 C     because level Nr+1 is not available
@@ -482,9 +513,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -496,9 +527,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
 C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -510,14 +541,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -536,9 +567,9 @@ C     because level Nr+1 is not available
         ENDDO
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkeyLoc = (ikeyLoc-1)*Nr + k
+         kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -556,7 +587,7 @@ C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
       IF ( mxlMaxFlag.EQ.3 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
        DO k=2,Nr
         DO j=jMin,jMax
@@ -579,7 +610,7 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = ikeyLoc, kind=isbyte
        ENDDO
       ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
 #endif
        DO k=2,Nr
         DO j=jMin,jMax
@@ -625,14 +656,14 @@ C      The calculation closely follows that for GGL90mixingLength.
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -649,14 +680,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -672,9 +703,9 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
          ENDDO
          DO k=Nr-1, 2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -691,14 +722,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Upward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -715,14 +746,14 @@ CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
         ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = ikeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
          DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkeyLoc = (ikeyLoc-1)*Nr + k
+          kkey = k + (tkey-1)*Nr
 CADJ STORE mxLength_Dn(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkeyLoc, kind=isbyte
+CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -925,24 +956,20 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
         ENDIF
        ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE stokesterm = comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE stokesterm = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif /* ALLOW_GGL90_LANGMUIR */
 
-C     compute Prandtl number (always greater than 0)
+C     compute Prandtl number (always greater than 1)
 #ifdef ALLOW_GGL90_IDEMIX
        IF ( useIDEMIX ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-C     account for partical cell factor in vertical shear:
-          verticalShear(i,j) = verticalShear(i,j)
-     &                       * recip_hFacI(i,j,k)*recip_hFacI(i,j,k)
           RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
      &         /(verticalShear(i,j)+GGL90eps)
-CML         IDEMIX_RiNumber = 1./GGL90eps
           IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
      &         ( GGL90eps + IDEMIX_gTKE(i,j,k) )
-          prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
+          prTemp          = 6.6 _d 0 * MIN( RiNumber, IDEMIX_RiNumber )
           TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
           TKEPrandtlNumber(i,j,k) = MAX( oneRL,TKEPrandtlNumber(i,j,k) )
          ENDDO
@@ -1044,6 +1071,15 @@ C--   Lower diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
+#ifdef GGL90_MISSING_HFAC_BUG
+       IF ( .NOT.useIDEMIX ) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          recip_hFacI(i,j,k) = oneRS
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
        km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -1054,7 +1090,7 @@ C-    No need for maskC(k-1) with recip_hFacC(k-1)
          a3d(i,j,k) = -deltaTloc
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*recip_hFacI(i,j,k)
      &        *coordFac*coordFac
         ENDDO
        ENDDO
@@ -1074,26 +1110,13 @@ C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
          c3d(i,j,k) = -deltaTloc
-     &         *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
-     &         *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &         *recip_drC(k)*maskC(i,j,k-1,bi,bj)
-     &         *coordFac*coordFac
+     &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
+     &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
+     &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)*recip_hFacI(i,j,k)
+     &        *coordFac*coordFac
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ALLOW_GGL90_IDEMIX
-      IF ( useIDEMIX ) THEN
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          a3d(i,j,k) = a3d(i,j,k)*recip_hFacI(i,j,k)
-          c3d(i,j,k) = c3d(i,j,k)*recip_hFacI(i,j,k)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* ALLOW_GGL90_IDEMIX */
 
       IF (.NOT.GGL90_dirichlet) THEN
 C      Neumann bottom boundary condition for TKE: no flux from bottom
@@ -1294,7 +1317,7 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
 #endif
 C     solve tri-diagonal system
       errCode = -1
@@ -1305,9 +1328,20 @@ C     solve tri-diagonal system
      I                        bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=ikeyLoc, kind=isbyte
+CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
 #endif
       DO k=2,Nr
+#if ( defined ALLOW_DIAGNOSTICS && !defined ALLOW_AUTODIFF )
+C     This diagnostics code causes extra recomputations so we skip it.
+       IF ( doDiagTKEmin ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          surf_flx_tke(i,j) = GGL90TKE(i,j,k,bi,bj)
+     &         * maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
        DO j=jMin,jMax
         DO i=iMin,iMax
 C     impose minimum TKE to avoid numerical undershoots below zero;
@@ -1317,6 +1351,19 @@ C     bottom boundary conditions, which by definition is zero
      &                  *MAX( GGL90TKE(i,j,k,bi,bj), GGL90TKEmin )
         ENDDO
        ENDDO
+#if ( defined ALLOW_DIAGNOSTICS && !defined ALLOW_AUTODIFF )
+       IF ( doDiagTKEmin ) THEN
+        recip_deltaT = 1. _d 0 / deltaTloc
+        DO j=1,sNy
+         DO i=1,sNx
+          surf_flx_tke(i,j) = (GGL90TKE(i,j,k,bi,bj)-surf_flx_tke(i,j))
+     &         *recip_deltaT
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL( surf_flx_tke ,'GGL90Emn',
+     &                         k, 1, 2, bi, bj, myThid )
+       ENDIF
+#endif
       ENDDO
 
 C     end of time step
@@ -1428,62 +1475,79 @@ C     ===============================
      &                          0,Nr, 2, bi, bj, myThid )
         ENDIF
 
+C     avoid extra 3D diagnostics field and abuse unused field
+        IF ( DIAGNOSTICS_IS_ON('GGL90KN2',myThid) ) THEN
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            TKEPrandtlNumber(i,j,k) =
+     &           GGL90diffKr(i,j,k,bi,bj) * Nsquare(i,j,k)
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90KN2',
+     &                          0, Nr, 2, bi, bj, myThid )
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('GGL90flx',myThid) ) THEN
 C     diagnose surface flux of TKE
-        IF ( usingPCoords ) THEN
-C     diagnose surface flux of TKE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
+         IF ( usingPCoords ) THEN
+          DO j=jMin,jMax
+           DO i=iMin,iMax
 CML#ifdef ALLOW_SHELFICE
 CML           IF ( useShelfIce ) THEN
 CML            kSrf = MAX(kTopC(i,j,bi,bj),1)
 CML            kTop = kSrf
 CML           ENDIF
 CML#endif
-           surf_flx_tke(i,j) =
-     &          (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
-     &          - GGL90TKE(i,j,kSrf,bi,bj) )
-     &          *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
-     &          *KappaE(i,j,kSrf)
-     &          *coordFac
+            surf_flx_tke(i,j) =
+     &           (MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
+     &           - GGL90TKE(i,j,kSrf,bi,bj) )
+     &           *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
+     &           *KappaE(i,j,kSrf)
+     &           *coordFac
+           ENDDO
           ENDDO
-         ENDDO
-        ELSE
+         ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+            IF ( useShelfIce ) THEN
+             kSrf = MAX(1,kTopC(i,j,bi,bj))
+             kTop = MIN(kSrf+1,Nr)
+            ENDIF
+#endif
+            surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
+     &                          GGL90TKE(i,j,kTop,bi,bj))
+     &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
+     &         *KappaE(i,j,kTop)
+           ENDDO
+          ENDDO
+         ENDIF
+         CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90flx',
+     &                          0, 1, 2, bi, bj, myThid )
+        ENDIF
+
+        IF ( DIAGNOSTICS_IS_ON('GGL90tau',myThid) ) THEN
+         k=kSrf
          DO j=jMin,jMax
           DO i=iMin,iMax
 #ifdef ALLOW_SHELFICE
-           IF ( useShelfIce ) THEN
-            kSrf = MAX(1,kTopC(i,j,bi,bj))
-            kTop = MIN(kSrf+1,Nr)
-           ENDIF
-#endif
-           surf_flx_tke(i,j) =(GGL90TKE(i,j,kSrf,bi,bj)-
-     &                         GGL90TKE(i,j,kTop,bi,bj))
-     &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
-     &         *KappaE(i,j,kTop)
-          ENDDO
-         ENDDO
-        ENDIF
-        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90flx',
-     &                         0, 1, 2, bi, bj, myThid )
-
-        k=kSrf
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-          IF ( useShelfIce ) k = MAX(1,kTopC(i,j,bi,bj))
+           IF ( useShelfIce ) k = MAX(1,kTopC(i,j,bi,bj))
 #endif
 C     diagnose work done by the wind
-          surf_flx_tke(i,j) =
+           surf_flx_tke(i,j) =
      &      halfRL*( surfaceForcingU(i,  j,bi,bj)*uVel(i  ,j,k,bi,bj)
      &              +surfaceForcingU(i+1,j,bi,bj)*uVel(i+1,j,k,bi,bj))
      &    + halfRL*( surfaceForcingV(i,j,  bi,bj)*vVel(i,j  ,k,bi,bj)
      &              +surfaceForcingV(i,j+1,bi,bj)*vVel(i,j+1,k,bi,bj))
-          surf_flx_tke(i,j) = surf_flx_tke(i,j) *recip_coordFac
+           surf_flx_tke(i,j) = surf_flx_tke(i,j) *recip_coordFac
+          ENDDO
          ENDDO
-        ENDDO
-        CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
-     &                         0, 1, 2, bi, bj, myThid )
-
+         CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
+     &                          0, 1, 2, bi, bj, myThid )
+        ENDIF
+C     endif useDiagnostics
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

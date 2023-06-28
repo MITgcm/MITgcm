@@ -171,8 +171,6 @@ C--   Enable free drift code
 C--   pkg/seaice cost functions compile flags
 c       >>> Sea-ice volume (requires pkg/cost)
 #define ALLOW_COST_ICE
-c       >>> Sea-ice misfit to obs (requires pkg/cost and ecco)
-#define ALLOW_SEAICE_COST_SMR_AREA
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */

@@ -32,6 +32,8 @@ CEOI
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+C- to switch back to (very) old accounting of geometry/Area factor
+#undef OLD_UV_GEOM
 
 CBOP
 C !ROUTINE: MOM_FLUXFORM
@@ -115,7 +117,8 @@ C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
       INTEGER i,j
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER imomkey
+C     kkey :: tape key (depends on level and tile indices)
+      INTEGER kkey
 #endif
       _RL  vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -192,8 +195,8 @@ CEOP
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          imomkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-          imomkey = k  + (imomkey-1)*Nr
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k  + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Initialise intermediate terms
@@ -372,12 +375,9 @@ C-    Calculate vertical transports above U & V points (West & South face):
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE dwtransc(:,:,bi,bj) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE dwtransu(:,:,bi,bj) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE dwtransv(:,:,bi,bj) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE dwtransc(:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransu(:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dwtransv(:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -603,7 +603,7 @@ C-     No-slip BCs impose a drag at walls...
 C-    No-slip BCs impose a drag at bottom
         IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
          CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRU, KE,
@@ -629,7 +629,7 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
 #ifdef ALLOW_SHELFICE
         IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
          CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRU, KE,
@@ -853,7 +853,7 @@ C-     No-slip BCs impose a drag at walls...
 C-    No-slip BCs impose a drag at bottom
         IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
          CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRV, KE,
@@ -879,7 +879,7 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
 #ifdef ALLOW_SHELFICE
         IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
          CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRV, KE,

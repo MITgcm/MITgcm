@@ -46,9 +46,6 @@ C     tile_fc   :: Final cost function contribution from this tile
      &                objf_tracer,
      &                objf_entropy,
      &                objf_t_misfit,
-#ifdef ALLOW_COST_TRANSPORT
-     &                objf_transport,
-#endif
 #ifdef ALLOW_COST_DEPTH
      &                objf_depth,
 #endif
@@ -58,21 +55,18 @@ C     tile_fc   :: Final cost function contribution from this tile
      &               ,objf_temp_tut
 #endif
 
-      _RL  objf_atl  (nsx,nsy)
-      _RL  objf_test (nsx,nsy)
-      _RL  objf_tracer (nsx,nsy)
-      _RL  objf_entropy (nsx,nsy)
-      _RL  objf_t_misfit (nsx,nsy)
-      _RL  objf_eflux (nsx,nsy)
-#ifdef ALLOW_COST_TRANSPORT
-      _RL  objf_transport (nsx,nsy)
-#endif
+      _RL  objf_atl  (nSx,nSy)
+      _RL  objf_test (nSx,nSy)
+      _RL  objf_tracer (nSx,nSy)
+      _RL  objf_entropy (nSx,nSy)
+      _RL  objf_t_misfit (nSx,nSy)
+      _RL  objf_eflux (nSx,nSy)
 #ifdef ALLOW_COST_DEPTH
-      _RL  objf_depth (nsx,nsy)
+      _RL  objf_depth (nSx,nSy)
 #endif
 #ifdef ALLOW_COST_HFLUXM
-      _RL  objf_hflux_tut (nsx,nsy)
-      _RL  objf_temp_tut (nsx,nsy)
+      _RL  objf_hflux_tut (nSx,nSy)
+      _RL  objf_temp_tut (nSx,nSy)
 #endif
 
       common /cost_param_r/
@@ -83,13 +77,13 @@ C     tile_fc   :: Final cost function contribution from this tile
       common /cost_state_final_r/
      &                objf_state_final
 cph      _RL  objf_state_final (snx,sny,nsx,nsy)
-      _RL  objf_state_final (snx,sny,nsx,nsy,4*Nr+1)
+      _RL  objf_state_final (sNx,sNy,nSx,nSy,4*Nr+1)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
       common /cost_vector_r/
      &                objf_vector
-      _RL  objf_vector (snx,nsx,nsy)
+      _RL  objf_vector (sNx,nSx,nSy)
 #endif
 
       common /cost_aux_r/
@@ -103,9 +97,6 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &                    multSalt,
      &                    multUvel,
      &                    multVvel,
-#ifdef ALLOW_COST_TRANSPORT
-     &           mult_transport,
-#endif
 #ifdef ALLOW_COST_DEPTH
      &           mult_depth,
 #endif
@@ -126,9 +117,6 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
       _RL  multUvel
       _RL  multVvel
       _RL  multEtan
-#ifdef ALLOW_COST_TRANSPORT
-      _RL  mult_transport
-#endif
 #ifdef ALLOW_COST_DEPTH
       _RL  mult_depth
 #endif
