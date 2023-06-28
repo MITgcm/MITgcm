@@ -112,7 +112,7 @@ C                                    melt exponent
      & streamice_bdot_depth_nomelt,
      & streamice_bdot_depth_maxmelt,
      & streamice_bdot_maxmelt,
-     & streamice_bdot_exp
+     & streamice_bdot_exp,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & streamice_buttr_width,
 #endif
