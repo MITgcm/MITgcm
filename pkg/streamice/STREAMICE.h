@@ -112,9 +112,7 @@ C                                    melt exponent
      & streamice_bdot_depth_nomelt,
      & streamice_bdot_depth_maxmelt,
      & streamice_bdot_maxmelt,
-     & streamice_bdot_exp,
-     & streamice_bdot_depth_maxmelt_p,
-     & streamice_bdot_maxmelt_p,
+     & streamice_bdot_exp
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & streamice_buttr_width,
 #endif
@@ -152,8 +150,6 @@ C                                    melt exponent
       _RL streamice_bdot_depth_maxmelt
       _RL streamice_bdot_maxmelt
       _RL streamice_bdot_exp
-      _RL streamice_bdot_depth_maxmelt_p
-      _RL streamice_bdot_maxmelt_p
       _RL streamice_forcing_period
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL streamice_buttr_width
@@ -206,7 +202,7 @@ C                                          BLOCKJACOBI precond ONLY
 C     streamice_vel_cost_timesteps      :: array of time steps where velocity misfit
 C                                          is accumulated, expects files
 C       [STREAMICEvelOptimTCBasename][timestep in 10 digit format][u/v/err].bin
-C     streamice_surf_cost_timesteps      :: array of time steps where surface misfit
+C     streamice_surf_cost_timesteps     :: array of time steps where surface misfit
 C                                          is accumulated, expects files
 C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
 
@@ -285,14 +281,16 @@ C                                    FILE - via STREAMICEAdotFile
 C                                    o/w streamice_adot_uniform
 C     STREAMICEBglenCostMaskFile  :: prior values for Bglen in 
 C                                    transient or snapshot inversion
-C     STREAMICEvelOptimFile       :: file prefix for obs velocities
-C                                    in inversion e.g. 'velobs'
-C                                    indicates 'velobsu.bin'
-C                                    and       'velobsv.bin'
 C     STREAMICEvelOptimSnapBasename
 C                                 :: file prefix for obs velocities
 C                                    in snapshot inversion, expects files
 C        [STREAMICEvelOptimSnapBasename][u/v/err].bin
+C     STREAMICEvelOptimTCBasename :: file prefix for obs velocities
+C                                    in transient inversion, expects files
+C       [STREAMICEvelOptimTCBasename][timestep in 10 digit format][u/v/err].bin
+C     STREAMICEsurfOptimTCBasename :: file prefix for obs surf elev
+C                                    in transient inversion, expects files
+C       [STREAMICEsurfOptimTCBasename][timestep in 10 digit format][u/v/err].bin
 C     STREAMICEtopogFile          :: bed topography (separate from
 C                                    ocean bathy)
 C     STREAMICEhmaskFile          :: ice mask file
@@ -323,6 +321,19 @@ C     STREAMICEBdotMaxMeltFile    :: file giving a spatially dependent
 C                                    max melt at depth
 C                                    when Bdot_config='PARAM'
 C                                    overrides streamice_bdot_maxmelt
+C     BdotMaxMeltTimeDepFile      :: file giving a time and spatially dependent
+C                                    max melt at depth
+C                                    when Bdot_config='PARAM'
+C                                    overrides streamice_bdot_maxmelt and
+C                                    STREAMICEBdotMaxMeltFile 
+C     cfricTimeDepFile            :: file giving a time and spatially dependent
+C                                    sliding param
+C                                    when STREAMICEbasalTracConfig is 'FILE'
+C                                    overrides STREAMICEbasaltracFile
+C     bglenTimeDepFile            :: file giving a time and spatially dependent
+C                                    rheology param (Bbar)
+C                                    when STREAMICEGlenconstConfig='FILE'
+C                                    overrides STREAMICEGlenConstFile
 C
 C     following give \gamma_sig and \gamma_tau factors as described
 C     in appendix of
@@ -557,6 +568,11 @@ C                                 ::  (over-rides STREAMICE_vel_ext)
 C     STREAMICE_do_snapshot_cost  :: accumulate snapshot cost function at 
 C                                    final time step
 C     STREAMICE_do_timedep_cost   :: accumulate cost at specified time steps
+C     STREAMICE_shelf_dhdt_ctrl   :: option to apply surface elevation constraint to 
+C                                    floating ice in cost function
+C     STREAMICE_use_global_ctrl   :: placeholder parameter to allow aggregation of 
+C                                 :: controls into spatially constant fields, to be
+C                                 :: used in conjunction with control package
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio

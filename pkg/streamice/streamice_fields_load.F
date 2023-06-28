@@ -69,10 +69,12 @@ C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
       upd_cfric = .FALSE. 
       upd_bdot_maxmelt = .FALSE. 
       upd_bglen = .FALSE.
-      IF ( bdotMaxmeltTimeDepFile .NE. ' '  ) THEN
+      IF ( bdotMaxmeltTimeDepFile .NE. ' ' .and. 
+     &  STREAMICEbasalTracConfig.eq.'FILE' ) THEN
         upd_bdot_maxmelt = .TRUE.
       ENDIF
-      IF ( bglenTimeDepFile .NE. ' '  ) THEN
+      IF ( bglenTimeDepFile .NE. ' ' .and. 
+     &  STREAMICEGlenConstConfig.eq.'FILE' ) THEN
         upd_bglen = .TRUE.
       ENDIF
       IF ( cfricTimeDepFile .NE. ' '  ) THEN
