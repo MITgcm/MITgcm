@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68q (2023/06/29)
 o pkg/ggl90:
   - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;
   - fix RI-Number calculation for IDEMIX ; new flag GGL90_IDEMIX_CVMIX_VERSION
