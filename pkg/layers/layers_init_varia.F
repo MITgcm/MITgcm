@@ -78,9 +78,7 @@ C     Loop through 3D layers variables:
          DO kg=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-#ifdef LAYERS_DIAG_TOTTEND
             layers_tottend (i,j,kg,iTracer,bi,bj) = 0. _d 0
-#endif
             layers_dfx     (i,j,kg,iTracer,bi,bj) = 0. _d 0
             layers_dfy     (i,j,kg,iTracer,bi,bj) = 0. _d 0
             layers_dfr     (i,j,kg,iTracer,bi,bj) = 0. _d 0

@@ -77,30 +77,19 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
       COMMON /LAYERS_VAR_THERMODYNAMICS/
      &    layers_bounds_w, layers_recip_delta,
      &    layers_TtendSurf, layers_TtendDiffh, layers_TtendDiffr,
-     &    layers_TtendAdvh, layers_TtendAdvr,
-#ifdef LAYERS_DIAG_TOTTEND
-     &    layers_Ttendtot,
-#endif /* LAYERS_DIAG_TOTTEND */
+     &    layers_TtendAdvh, layers_TtendAdvr, layers_Ttendtot,
      &    layers_StendSurf, layers_StendDiffh, layers_StendDiffr,
-     &    layers_StendAdvh, layers_StendAdvr,
-#ifdef LAYERS_DIAG_TOTTEND
-     &    layers_Stendtot,
-#endif /* LAYERS_DIAG_TOTTEND */
+     &    layers_StendAdvh, layers_StendAdvr, layers_Stendtot,
      &    layers_Hc, layers_PIc,
      &    layers_Hcw,
      &    layers_surfflux, layers_dfx, layers_dfy, layers_dfr,
-     &    layers_afx, layers_afy, layers_afr
-#ifdef LAYERS_DIAG_TOTTEND
-     &  , layers_tottend
-#endif /* LAYERS_DIAG_TOTTEND */
+     &    layers_afx, layers_afy, layers_afr, layers_tottend
       _RL layers_bounds_w(Nlayers, layers_maxNum)
       _RL layers_recip_delta(Nlayers-1, layers_maxNum)
       _RL layers_TtendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
-#ifdef LAYERS_DIAG_TOTTEND
       _RL layers_Ttendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
-#endif /* LAYERS_DIAG_TOTTEND */
       _RL layers_TtendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
@@ -111,10 +100,8 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
-#ifdef LAYERS_DIAG_TOTTEND
       _RL layers_Stendtot(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
-#endif /* LAYERS_DIAG_TOTTEND */
       _RL layers_StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
      &                                         Nlayers-1,nSx,nSy)
       _RL layers_StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,
@@ -136,9 +123,7 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
       _RL layers_afx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
       _RL layers_afy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
       _RL layers_afr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-#ifdef LAYERS_DIAG_TOTTEND
       _RL layers_tottend(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,2,nSx,nSy)
-#endif
 
 #ifdef SHORTWAVE_HEATING
       COMMON /LAYERS_SW/ layers_sw
