@@ -37,22 +37,35 @@ C      plumeMask       :: mask specifying type of plume at glacier/ocean interfa
 C      plumeLength     :: length of plume along glacier/ocean interface [m]
 C      addMass3Dplume  :: src+entrained mass in SG plume to be added to ocean [kg/s]
 C      [temp,salt]_addMass3Dplume :: [ptemp,salinity] of addMass3Dplume [degC,g/kg]
+C      HeatFlux3Dpl    :: Heat flux associated with addMass3Dplume [J/s]
+C      SaltFlux3Dpl    :: Salt flux associated with addMass3Dplume [g/s]
+C      addMass3Dbg     :: src+entrained mass in submarine melt to be added to ocean [kg/s]
+C      HeatFlux3Dbg    :: Heat flux associated with background submarine melt [J/s]
+C      SaltFlux3Dbg    :: Salt flux associated with background submarine melt [g/s]
 C      iceplumeBG_Tend[T,S]:: contrib of tend g[T,S] of BG melt
 
       COMMON /ICEPLUME_FIELDS_RL/
      &     runoffQsg,runoffQsg0,runoffQsg1,
      &     plumeMask, plumeLength,
-     &     addMass3Dplume,temp_addMass3Dplume, salt_addMass3Dplume,
-     &     iceplumeBG_TendT,iceplumeBG_TendS
+     &     addMass3Dplume,
+     &     iceplumeBG_TendT,iceplumeBG_TendS,
+     &     HeatFlux3Dpl, SaltFlux3Dpl,
+     &     addMass3Dbg, HeatFlux3Dbg, SaltFlux3Dbg
+c    &     temp_addMass3Dplume, salt_addMass3Dplume,
 
       _RL runoffQsg  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL runoffQsg0 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL runoffQsg1 (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL plumeMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL plumeLength(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL temp_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL salt_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+c      _RL temp_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+c      _RL salt_addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL addMass3Dplume(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL HeatFlux3Dpl(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL SaltFlux3Dpl(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL addMass3Dbg(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL HeatFlux3Dbg(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL SaltFlux3Dbg(1-OLx:sNx+OLx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL iceplumeBG_TendT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL iceplumeBG_TendS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
@@ -80,20 +93,21 @@ C [s,t,pt]Prof  :: [salt,temp,ptemp] vert prof of BG melt
 C [u,v]Prof     :: absolute value of fjord [uVel,vVel] vert prof at BG melt contact
 C VolFlux       :: Vert. vol flux of SG melt from below into cell [m3/s]
 C VolFluxDiff   :: Net vertical convergence of SG melt (bot minus top) [m3/s] 
-C FwFlux        :: net BG freshwater flux, positive = into ocean, [kg/m2/s]
-C HeatFlux      :: net BG heatflux flux, negative = into ocean [W/m2]
+cC FwFlux1dbg    :: net BG mass flux, positive = into ocean, [kg/m2/s]
+cC HeatFlux1dbg  :: net BG heatflux flux, negative = into ocean [W/m2]
 C [z,pr]Prof    :: model [depth, pressure] vert prof [m,dbar]
 C zProfAbs      :: absolute values of zProf [m]
-C delta_z       :: model drF
+cC delta_z       :: model drF
 
       COMMON /ICEPLUME_FIELDS_PROFILES/
      &     sProf, tProf, ptProf, prProf, uProf, vProf,
      &     rProfPlume, wProfPlume, tProfPlume, sProfPlume,
      &     uProfPlume, aProfPlume, mProfPlume, mIntProfPlume,
      &     mProfAv, mProf, zProf, zProfAbs,
-     &     volFLux, volFluxDiff,
-     &     FwFlux, HeatFlux,
-     &     delta_z
+     &     volFLux, volFluxDiff
+catn the three fields below are only local to iceplume_calc
+c     &     FwFlux1dbg, HeatFlux1dbg
+c     &     delta_z
       _RL sProf  (Nr)
       _RL tProf  (Nr)
       _RL ptProf (Nr)
@@ -114,9 +128,9 @@ C delta_z       :: model drF
       _RL zProfAbs   (Nr+1)
       _RL volFlux     (Nr+1)
       _RL volFluxDiff (Nr)
-      _RL HeatFlux(Nr)
-      _RL FwFlux(Nr)
-      _RL delta_z(Nr)
+c      _RL HeatFlux1dbg(Nr)
+c      _RL FwFlux1dbg(Nr)
+c      _RL delta_z(Nr)
 
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
 C thetaProfPlume    ::

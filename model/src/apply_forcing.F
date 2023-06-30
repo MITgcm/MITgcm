@@ -524,23 +524,33 @@ catn point we apply whatever is the current theta/salt at this time?
 catn The way pkg/iceplume was coded, we do only iceplume from
 catn subglacial discharge here.  But what about other processes
 catn such as iceshelf or icefront that also contribe to addMass?
+catn 26Jun2023:
+c Do we also need to add an additional contrib due to
+c diff in reference T, similar to how empmr is treated?
+c My understanding is that when heatflux is added WITHOUT mass, we
+c only add the contrib of HeatFlux3Dpl to the tendency, similar
+c to how geothermal heatflux is treated. However, when there is also
+c a massflux, e.g. addMass3Dplume, we need an extra contrib related
+c to the cell theta or T_ref similar to how EmPmR contributes to
+c surfaceForcingT in external_forcing_surf.F.
 #ifdef ALLOW_ICEPLUME
-catn initialize
-
       IF ( useICEPLUME ) THEN
        IF ( selectAddFluid.NE.0) THEN
         IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
-
+c J/s degC.kg/J m3/kg 1/m3 = degC/s
 catn 1Feb2022: from JMC we should save also addMass3Dplume*salt as it 
 catn is the quantity to convert between gT and diag fluxes similar to
 catn how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
 catn JMC is not sure if treatment for heat will work and will check
            tmpVar(i,j)=
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *(temp_addMass3Dplume(I,J,k,bi,bj)-theta(i,j,k,bi,bj))
+c     &          (addMass3Dplume(i,j,k,bi,bj)
+c     &          *temp_addMass3Dplume(I,J,k,bi,bj)
+     &         (HeatFlux3Dpl(i,j,k,bi,bj)*recip_Cp
+     &        - addMass3Dplume(i,j,k,bi,bj)*theta(i,j,k,bi,bj))
+     &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -548,12 +558,15 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
            gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
-       ELSE
+        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
            tmpVar(i,j)=
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( temp_addMass3Dplume(I,J,k,bi,bj) - tRef(k) )
+c     &          (addMass3Dplume(i,j,k,bi,bj)
+c     &          *temp_addMass3Dplume(I,J,k,bi,bj)
+     &         (HeatFlux3Dpl(i,j,k,bi,bj)*recip_Cp
+     &         - addMass3Dplume(i,j,k,bi,bj)*tRef(k) )
+     &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -1012,18 +1025,27 @@ C--   Forcing term
 catn: Note tendency included in addMass3Dplume here is from the plume.
 catn: The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
-catn initialize
 
+catn 26Jun2023
+c Similarly for saltflux, when there is NO massflux, we only add contrib
+c of saltflux to S tendency via saltflux/rho/vol [g/s.m3/kg.1/m3=g/kg/s]
+c same way saltflux is a applied in external_forcing_surf.F.
+c However, when there is also a mass flux, e.g. addMass3Dplume, we also
+c need a term associated with this mass and the cell salinity or Sref,
+c similar to how PmEpR contributes to surfaceForcingS.
       IF ( useICEPLUME ) THEN
        IF ( selectAddFluid.NE.0) THEN
         IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
-
+c g/s m3/kg 1/m3 = g/kg/s
            tmpVar(i,j) =
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( salt_addMass3Dplume(I,J,k,bi,bj)-salt(i,j,k,bi,bj) )
+c     &          (addMass3Dplume(i,j,k,bi,bj)
+c     &          *salt_addMass3Dplume(I,J,k,bi,bj)
+     &         (SaltFlux3Dpl(i,j,k,bi,bj)
+     &         - addMass3Dplume(i,j,k,bi,bj)*salt(i,j,k,bi,bj) )
+     &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -1031,13 +1053,16 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
            gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
           ENDDO
          ENDDO
-       ELSE
+        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
 
            tmpVar(i,j) =
-     &          addMass3Dplume(i,j,k,bi,bj)*mass2rUnit
-     &          *( salt_addMass3Dplume(I,J,k,bi,bj) - sRef(k) )
+c     &          (addMass3Dplume(i,j,k,bi,bj)
+c     &          *salt_addMass3Dplume(I,J,k,bi,bj)
+     &         (SaltFlux3Dpl(i,j,k,bi,bj)
+     &        -  addMass3Dplume(i,j,k,bi,bj)*sRef(k) )
+     &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
 C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)

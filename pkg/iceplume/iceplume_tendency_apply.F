@@ -21,6 +21,7 @@ C     !USES:
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DYNVARS.h"
 #include "ICEPLUME_PARAMS.h"
 #include "ICEPLUME_FIELDS.h"
@@ -42,18 +43,51 @@ C     myThid    :: my Thread Id number
 
 C     !LOCAL VARIABLES:
       INTEGER i, j
+      _RL tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_ICEPLUME
 
 catn: this is the background melt tendency
+catn 26Jun2026
+c Because the bg submarine melt is also contributing massflux to the
+c grid cell, should we treat it the same way as the plume? i.e. need
+c to account for the massflux*theta or massflux*Tref
       IF ( applyIcePlumeBGTendT ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-          gT_arr(i,j) = gT_arr(i,j)
-     &         + iceplumeBG_TendT(i,j,k,bi,bj)
+c          gT_arr(i,j) = gT_arr(i,j)
+c     &         + iceplumeBG_TendT(i,j,k,bi,bj)
+          tmpVar(i,j) =
+     &         (HeatFlux3Dbg(i,j,k,bi,bj)/HeatCapacity_Cp
+     &         )*mass2rUnit
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)
+c the orig calc of tendency inside iceplume_calc did not account for hfac
+c     &          *_recip_hFacC(i,j,k,bi,bj)
+          gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
+c now mult recip_hFacC before output, for comparison with IP_gTbg
+          tmpVar(i,j) = tmpVar(i,j)
+     &          *_recip_hFacC(i,j,k,bi,bj)
+c the orig calc also did not account for the correction to tendency due
+c to addmass, which we applied for subglacial plume in apply_forcing.F
+          tmpVar1(i,j)= -addMass3Dbg(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
+     &          *mass2rUnit
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(k)
+c     &          *_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL (
+     &      tmpVar,'IP_gTbga',k,1,2,bi,bj,myThid )
+       CALL DIAGNOSTICS_FILL (
+     &      tmpVar1,'IP_gTbgb',k,1,2,bi,bj,myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_ICEPLUME */
 
@@ -80,6 +114,7 @@ C     !INPUT PARAMETERS:
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DYNVARS.h"
 #include "ICEPLUME_PARAMS.h"
 #include "ICEPLUME_FIELDS.h"
@@ -101,6 +136,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i, j
+      _RL tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_ICEPLUME
 
@@ -108,11 +145,36 @@ catn: this is the background melt tendency
       IF ( applyIcePlumeBGTendS ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-          gS_arr(i,j) = gS_arr(i,j)
-     &         + iceplumeBG_TendS(i,j,k,bi,bj)
+c          gS_arr(i,j) = gS_arr(i,j)
+c     &         + iceplumeBG_TendS(i,j,k,bi,bj)
+         tmpVar(i,j) =
+     &         (SaltFlux3Dbg(i,j,k,bi,bj)
+     &         )*mass2rUnit
+     &         *recip_rA(i,j,bi,bj)
+     &         *recip_drF(k)
+c the orig calc of tendency inside iceplume_calc did not account for hfac
+c     &         *_recip_hFacC(i,j,k,bi,bj)
+          gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
+          tmpVar(i,j) = tmpVar(i,j)
+     &         *_recip_hFacC(i,j,k,bi,bj)
+c now mult recip_hFacC before output, for comparison with IP_gSbg
+         tmpVar1(i,j) = -addMass3Dbg(i,j,k,bi,bj)*salt(i,j,k,bi,bj)
+     &         *mass2rUnit
+     &         *recip_rA(i,j,bi,bj)
+     &         *recip_drF(k)
+     &         *_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL (
+     &      tmpVar,'IP_gSbga',k,1,2,bi,bj,myThid )
+       CALL DIAGNOSTICS_FILL (
+     &      tmpVar1,'IP_gSbgb',k,1,2,bi,bj,myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_ICEPLUME */
 

@@ -50,7 +50,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'icefrntT'
       diagTitle = 'plume temperature'
-      diagUnits = 'Deg. C           '
+      diagUnits = 'Deg.C           '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -99,6 +99,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
+      diagName  = 'IP_gTbga'
+      diagTitle = 'Temperature tenda from iceplumeBG, >0 incr ocn T'
+      diagUnits = 'degC/s        '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IP_gSbga'
+      diagTitle = 'Salinity tenda from iceplumeBG, >0 incr ocn S'
+      diagUnits = 'g/kg/s       '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IP_gTbgb'
+      diagTitle = 'Temperature tendb from iceplumeBG, >0 incr ocn T'
+      diagUnits = 'degC/s        '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IP_gSbgb'
+      diagTitle = 'Salinity tendb from iceplumeBG, >0 incr ocn S'
+      diagUnits = 'g/kg/s       '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'IP_gTbg '
       diagTitle = 'Temperature tend from iceplumeBG, >0 incr ocn T'
       diagUnits = 'degC/s        '
@@ -141,6 +169,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'IPhflxbg'
+      diagTitle = 'Heat flux from iceplumeBG, >0 incr ocn T'
+      diagUnits = 'J/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IPsflxbg'
+      diagTitle = 'Salt flux from iceplumeBG, >0 incr ocn S'
+      diagUnits = 'g/s          '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IPhflxpl'
+      diagTitle = 'Heat flux from plume, >0 incr ocn T'
+      diagUnits = 'J/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'IPsflxpl'
+      diagTitle = 'Salt flux from plume, >0 incr ocn S'
+      diagUnits = 'g/s          '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'tAddMass'
       diagTitle = 'Temperature times plume AddMass in apply_forcing'
       diagUnits = 'C.kg/s.m3/kg/m3 '
@@ -150,7 +206,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'sAddMass'
       diagTitle = 'Salinity times plume AddMass in apply_forcing   '
-      diagUnits = 'g/kg.kg/s.m3/kg/m3'
+      diagUnits = 'g/kg/s          '
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )

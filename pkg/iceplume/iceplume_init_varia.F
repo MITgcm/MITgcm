@@ -30,14 +30,10 @@ C     === Global variables ===
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEFRONT_INIT_VARIA
       INTEGER myThid
-      INTEGER myIter
       INTEGER fp, iRec0
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
 #endif /* ALLOW_PTRACERS */
-      _RL aWght, bWght
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     myTime
 CEndOfInterface
 
 #ifdef ALLOW_ICEPLUME
@@ -67,11 +63,15 @@ catn namelists or initialized in iceplume_readparms.F
           DO I = 1-OLx,sNx+OLx
            iceplumeBG_TendT (i,j,k,bi,bj) = 0. _d 0
            iceplumeBG_TendS (i,j,k,bi,bj) = 0. _d 0
-           temp_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
-           salt_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
+c           temp_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
+c           salt_addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
 catn: move below now to local inside iceplume_calc
-c          addMass3Dbg    (I,J,K,bi,bj) = 0. _d 0
+           addMass3Dbg    (I,J,K,bi,bj) = 0. _d 0
            addMass3Dplume (I,J,K,bi,bj) = 0. _d 0
+           HeatFlux3Dbg (i,j,k,bi,bj) = 0. _d 0
+           SaltFlux3Dbg (i,j,k,bi,bj) = 0. _d 0
+           HeatFlux3Dpl (I,J,K,bi,bj) = 0. _d 0
+           SaltFlux3Dpl (I,J,K,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -102,9 +102,9 @@ catn  for adjoint if implemented later.
        mIntProfPlume (K) = 0. _d 0
        volFlux     (K) = 0. _d 0
        volFluxDiff (K) = 0. _d 0
-       HeatFlux(K) = 0. _d 0
-       FwFlux  (K) = 0. _d 0
-       delta_z     (K) = 0. _d 0
+c       HeatFlux1dbg(K) = 0. _d 0
+c       FwFlux1dbg  (K) = 0. _d 0
+c       delta_z     (K) = 0. _d 0
       ENDDO
 catn: some variables are defined down to Nr+1
       DO k = Nr+1,Nr+1
