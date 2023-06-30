@@ -181,7 +181,8 @@ C     gTKE     :: right hand side of diffusion equation
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (depends on tiles)
-      INTEGER tkey
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER tkey, kkey
 #endif
 CEOP
 
@@ -505,6 +506,11 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
          ENDDO
         ENDDO
        ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = k + (tkey-1)*Nr
+CADJ STORE kappaM        = comlev1_bibj_k, key = kkey, kind=isbyte
+CADJ STORE verticalShear = comlev1_bibj_k, key = kkey, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_GGL90_LANGMUIR
        IF (useLANGMUIR) THEN
@@ -860,6 +866,14 @@ C
         ENDDO
        ENDDO
       ENDIF
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid recomputing the above multiple times in AD routine
+CADJ STORE TKEPrandtlNumber = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE GGL90visctmp     = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE uStarSquare      = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE kappaE           = comlev1_bibj, key = tkey, kind = isbyte
+CADJ STORE a3d, b3d, c3d    = comlev1_bibj, key = tkey, kind = isbyte
 #endif
 
 C     Dirichlet surface boundary condition for TKE
