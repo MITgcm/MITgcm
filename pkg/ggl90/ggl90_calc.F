@@ -293,7 +293,8 @@ CADJ STORE GGL90TKE(:,:,:,bi,bj)=comlev1_bibj, key=tkey, kind=isbyte
         verticalShear(i,j) = 0. _d 0
 c       rMixingLength(i,j,1)  = 0. _d 0
 #ifdef ALLOW_AUTODIFF
-        IF ( usingZCoords .AND. maskC(i,j,1,bi,bj).EQ.oneRS ) THEN
+        IF ( usingZCoords .AND. maskC(i,j,1,bi,bj).EQ.oneRS
+     &       .AND. GGL90TKE(i,j,1,bi,bj) .GT. zeroRL ) THEN
 #endif
          SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
 #ifdef ALLOW_AUTODIFF
@@ -331,7 +332,8 @@ c       rMixingLength(i,j,1)  = 0. _d 0
         DO i=iMin,iMax
          mskLoc = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
 #ifdef ALLOW_AUTODIFF
-         IF ( mskLoc.EQ.oneRS ) THEN
+         IF ( mskLoc.EQ.oneRS
+     &        .AND. GGL90TKE(i,j,k,bi,bj) .GT. zeroRL ) THEN
 #endif
           SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
 #ifdef ALLOW_AUTODIFF
@@ -777,15 +779,15 @@ C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
          tempUp = surfaceForcingU(i+1,j,bi,bj)
          tempV  = surfaceForcingV(i, j ,bi,bj)
          tempVp = surfaceForcingV(i,j+1,bi,bj)
-         uStarSquare(i,j) = SQRT(
+         uStarSquare(i,j) =
      &        ( tempU*tempU + tempUp*tempUp
      &        + tempV*tempV + tempVp*tempVp
-     &        )*halfRL          )*recip_coordFac
+     &        )*halfRL
 C Note: adding parenthesis in 4 terms sum (-> 2 group of 2) as below:
-c        uStarSquare(i,j) = SQRT(
+c        uStarSquare(i,j) =
 c    &        ( ( tempU*tempU + tempUp*tempUp )
 c    &        + ( tempV*tempV + tempVp*tempVp )
-c    &        )*halfRL          )*recip_coordFac
+c    &        )*halfRL
 C       seems to break restart !
         ENDDO
        ENDDO
@@ -793,12 +795,11 @@ C       seems to break restart !
        DO j=jMin,jMax
         DO i=iMin,iMax
 C     estimate friction velocity uStar from surface forcing
-         uStarSquare(i,j) = SQRT(
+         uStarSquare(i,j) =
      &     ( .5 _d 0*( surfaceForcingU(i,  j,  bi,bj)
      &               + surfaceForcingU(i+1,j,  bi,bj) ) )**2
      &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
      &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-     &                          )*recip_coordFac
         ENDDO
        ENDDO
       ENDIF
@@ -858,20 +859,32 @@ C
        DO j=jMin,jMax
         DO i=jMin,jMax
          IF ( kTopC(i,j,bi,bj) .GT. 0 ) THEN
-          uStarSquare(i,j) = SQRT(
+          uStarSquare(i,j) =
      &         ( stressU(i,j)*stressU(i,j)+stressU(i+1,j)*stressU(i+1,j)
      &         + stressV(i,j)*stressV(i,j)+stressV(i,j+1)*stressV(i,j+1)
-     &         )*halfRL          )*recip_coordFac
+     &         )*halfRL
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uStarSquare      = comlev1_bibj, key = tkey, kind = isbyte
+#endif
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+#ifdef ALLOW_AUTODIFF
+         IF ( uStarSquare(i,j) .GT. zeroRL )
+     &        uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
+#else
+         uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
+#endif
+       ENDDO
+      ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
 C     avoid recomputing the above multiple times in AD routine
 CADJ STORE TKEPrandtlNumber = comlev1_bibj, key = tkey, kind = isbyte
 CADJ STORE GGL90visctmp     = comlev1_bibj, key = tkey, kind = isbyte
-CADJ STORE uStarSquare      = comlev1_bibj, key = tkey, kind = isbyte
 CADJ STORE kappaE           = comlev1_bibj, key = tkey, kind = isbyte
 CADJ STORE a3d, b3d, c3d    = comlev1_bibj, key = tkey, kind = isbyte
 #endif
