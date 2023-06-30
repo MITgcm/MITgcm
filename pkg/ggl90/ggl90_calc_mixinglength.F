@@ -13,6 +13,7 @@ C !INTERFACE: ======================================================
      O     LCmixingLength,
 #endif
      O     rMixingLength,
+     I     iMin ,iMax ,jMin ,jMax,
      I     bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
@@ -44,11 +45,13 @@ C !USES: ============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
+C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     bi, bj :: Current tile indices
 C     GGL90mixingLength :: mixing length (m)
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
+      INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER bi, bj
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_LANGMUIR
@@ -61,7 +64,6 @@ C     myThid :: My Thread Id number
 
 #ifdef ALLOW_GGL90
 C !LOCAL VARIABLES: ====================================================
-C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     i, j, k          :: array computation indices
 C     kSrf             :: vertical index of surface level
 C     kTop             :: index of top interface (just below surf. level)
@@ -74,10 +76,7 @@ C
 C     totalDepth       :: thickness of water column (inverse of recip_Rcol)
 C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
-      INTEGER iMin ,iMax ,jMin ,jMax
       INTEGER i, j, k
-      INTEGER kp1, km1
-      INTEGER kSrf, kTop, kBot
       _RL totalDepth (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL MaxLength
       _RL mxLength_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -93,9 +92,6 @@ C     kkey :: tape key (depends on levels and tiles)
       INTEGER tkey, kkey
 #endif
 CEOP
-
-      PARAMETER( iMin = 2-OLx, iMax = sNx+OLx-1 )
-      PARAMETER( jMin = 2-OLy, jMax = sNy+OLy-1 )
 
       coordFac = 1. _d 0
       IF ( usingPCoords) coordFac = gravity * rhoConst

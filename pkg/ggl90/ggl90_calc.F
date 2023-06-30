@@ -111,8 +111,7 @@ c     _RL SQRTTKE
       _RL IDEMIX_RiNumber
 #endif
       _RL TKEdissipation
-      _RL tempU, tempUp, tempV, tempVp, prTemp
-      _RL MaxLength, tmpmlx, tmpVisc
+      _RL tempU, tempUp, tempV, tempVp, prTemp, tmpVisc
       _RL TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -125,10 +124,9 @@ C                    of TKE and mixing (output of S/R GGL90_IDEMIX)
       _RL IDEMIX_gTKE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif /* ALLOW_GGL90_IDEMIX */
 #ifdef ALLOW_GGL90_LANGMUIR
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 C   uStar, vStar :: frictional velocity component
       _RL uStar, vStar, depthFac
-      _RL MLtmp, recip_Lasq, recip_LD
+      _RL recip_Lasq, recip_LD
       _RL LCmixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL stokesterm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dstokesUdR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -376,6 +374,7 @@ C- ensure mixing between first and second level
      O     LCmixingLength,
 #endif
      O     rMixingLength,
+     I     iMin ,iMax ,jMin ,jMax,
      I     bi, bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
@@ -385,11 +384,12 @@ CADJ STORE LCmixingLength    = comlev1_bibj, key=tkey, kind=isbyte
 # endif
 #endif
 
-C     start "proper" k-loop (the code above was moved out and up to
-C     implemement various mixing parameters efficiently)
+C     start "proper" k-loop
       DO k=2,Nr
        km1 = k-1
-
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = k + (tkey-1)*Nr
+#endif
 #ifdef ALLOW_GGL90_HORIZDIFF
        IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
 C     horizontal diffusion of TKE (requires an exchange in
@@ -509,7 +509,6 @@ C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
         ENDDO
        ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = k + (tkey-1)*Nr
 CADJ STORE kappaM        = comlev1_bibj_k, key = kkey, kind=isbyte
 CADJ STORE verticalShear = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -599,6 +598,9 @@ C     compute Prandtl number (always greater than 1)
 #ifdef ALLOW_GGL90_IDEMIX
        ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE TKEPrandtlNumber(:,:,k)=comlev1_bibj_k,key=kkey,kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
        DO j=jMin,jMax
         DO i=iMin,iMax
