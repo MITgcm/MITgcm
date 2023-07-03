@@ -111,7 +111,8 @@ C     Initialize local fields
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         mxLength_Dn(i,j,k)       = 0. _d 0
+         rMixingLength(i,j,k) = 0. _d 0
+         mxLength_Dn  (i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
