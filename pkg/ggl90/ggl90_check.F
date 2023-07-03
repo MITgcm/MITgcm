@@ -1,4 +1,7 @@
 #include "GGL90_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       SUBROUTINE GGL90_CHECK( myThid )
 C     *==========================================================*
@@ -13,6 +16,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GGL90.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid   :: Number of this instance of GGL90_CHECK
@@ -125,6 +131,20 @@ C     Compatibility with the use of other pkgs:
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Not everything works stably with AD code
+      IF ( useGGL90inAdMode .AND. mxlMaxFlag .GT. 1 ) THEN
+       WRITE(msgBuf,'(2A,L,A,I2,A)') 'GGL90_CHECK: ',
+     &      'useGGL90inAdMode = ', useGGL90inAdMode,
+     &      ' with mxlMaxFlag =', mxlMaxFlag, ' (> 1)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
+     &      'tends to be unstable, use mxlMaxFag = 0 or 1'
+       CALL PRINT_ERROR( msgBuf, myThid )
+c      errCount = errCount + 1
+      ENDIF
+#endif
 
 C-    Stop cleanly when error was detected
       IF ( errCount.GE.1 ) THEN
