@@ -67,7 +67,6 @@ C !LOCAL VARIABLES: ====================================================
 C     i, j, k          :: array computation indices
 C     kSrf             :: vertical index of surface level
 C     kTop             :: index of top interface (just below surf. level)
-C     kBot             :: index of bottom interface (just above bottom lev.)
 C
 C     In general, all 3D variables are defined at W-points (i.e.,
 C     between k and k-1), all 2D variables are also defined at W-points
@@ -76,6 +75,7 @@ C
 C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
       INTEGER i, j, k
+      INTEGER kSrf, kTop
       _RL MaxLength
       _RL mxLength_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -90,6 +90,14 @@ C     kkey :: tape key (depends on levels and tiles)
       INTEGER tkey, kkey
 #endif
 CEOP
+
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+       kTop = Nr
+      ELSE
+       kSrf =  1
+       kTop =  2
+      ENDIF
 
       coordFac = 1. _d 0
       IF ( usingPCoords) coordFac = gravity * rhoConst
@@ -125,6 +133,21 @@ c       rMixingLength(i,j,1)  = 0. _d 0
        ENDDO
       ENDIF
 #endif
+
+C- ensure mixing between first and second level
+      IF (mxlSurfFlag) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+#ifdef ALLOW_SHELFICE
+         IF ( useShelfIce ) THEN
+          kSrf = MAX(1,kTopC(i,j,bi,bj))
+          kTop = MIN(kSrf+1,Nr)
+         ENDIF
+#endif
+         GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Impose upper and lower bound for mixing length
 #ifdef ALLOW_AUTODIFF
@@ -354,9 +377,12 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-#endif
+          MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k)
+     &         + GGL90mixingLengthMin**2 )
+#else
           MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k) )
-          MLtmp = MAX( MLtmp, GGL90mixingLengthMin)
+          MLtmp = MAX( MLtmp, GGL90mixingLengthMin )
+#endif
           rMixingLength(i,j,k) = 1. _d 0 / MLtmp
          ENDDO
         ENDDO
@@ -368,15 +394,18 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
 #ifdef ALLOW_AUTODIFF
+          GGL90mixingLength(i,j,k) = SQRT( GGL90mixingLength(i,j,k)**2
+     &         + GGL90mixingLengthMin**2 )
          ENDDO
         ENDDO
        ENDDO
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
+#else
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
 #endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO

@@ -345,28 +345,13 @@ C     buoyancy frequency
      &                  * sigmaR(i,j,k) * coordFac
 C     vertical shear term (dU/dz)^2+(dV/dz)^2 is computed later
 C     to save some memory
-C     mixing length
+C     Initialise mixing length (eq. 2.35)
          GGL90mixingLength(i,j,k) = SQRTTWO *
      &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
      &        * mskLoc
         ENDDO
        ENDDO
       ENDDO
-
-C- ensure mixing between first and second level
-      IF (mxlSurfFlag) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-         IF ( useShelfIce ) THEN
-          kSrf = MAX(1,kTopC(i,j,bi,bj))
-          kTop = MIN(kSrf+1,Nr)
-         ENDIF
-#endif
-         GGL90mixingLength(i,j,kTop)=drF(kSrf)*recip_coordFac
-        ENDDO
-       ENDDO
-      ENDIF
 
       CALL GGL90_CALC_MIXINGLENGTH(
      U     GGL90mixingLength,
