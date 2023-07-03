@@ -73,11 +73,9 @@ C     In general, all 3D variables are defined at W-points (i.e.,
 C     between k and k-1), all 2D variables are also defined at W-points
 C     or at the very surface level (like uStarSquare)
 C
-C     totalDepth       :: thickness of water column (inverse of recip_Rcol)
 C     GGL90mixingLength:: mixing length of scheme following Banke+Delecuse
 C         rMixingLength:: inverse of mixing length
       INTEGER i, j, k
-      _RL totalDepth (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL MaxLength
       _RL mxLength_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -134,15 +132,13 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
 #endif
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-        ENDDO
-       ENDDO
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          MaxLength=totalDepth(i,j)*recip_coordFac
+C     Use thickness of water column (inverse of recip_Rcol) as the
+C     maximum length.
+          MaxLength =
+     &         ( Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj) )*recip_coordFac
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
          ENDDO
