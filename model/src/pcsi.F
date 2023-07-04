@@ -153,10 +153,7 @@ C-    Initialise saved solution
           ENDDO
          ENDDO
         ENDIF
-C--    in this is wrong, so errTile 
-#ifdef yhchen  
-        errTile(bi,bj) = 0. _d 0
-#endif
+
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
@@ -169,16 +166,11 @@ C--    in this is wrong, so errTile
      &    +aS2d(i  ,j+1,bi,bj)*pcsi_x(i  ,j+1,bi,bj)
      &    +aC2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j  ,bi,bj)
      &    )
-#ifdef yhchen
-          errTile(bi,bj) = errTile(bi,bj)
-     &                 + pcsi_r(i,j,bi,bj)*pcsi_r(i,j,bi,bj)
-#endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-C#ifdef yhchen
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         errTile(bi,bj) = 0. _d 0
@@ -190,7 +182,6 @@ C#ifdef yhchen
         ENDDO
        ENDDO
       ENDDO
-C#endif
 
       CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
