@@ -161,6 +161,11 @@ C     cg2dUseMinResSol    :: =0 : use last-iteration/converged solution
 C                            =1 : use solver minimum-residual solution
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                            three-dimensional con. grad solver.
+C     PcsiMaxIters        :: Maximum number of iterations in the PCSI solver
+C     PcsiConvergenceCheckFreq
+C                         :: check convergence every so many iters
+C     PcsiConvergenceCheckStart
+C                         :: start checking convergennce at this iter
 C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
@@ -362,6 +367,8 @@ C                       for an iterative adjoint as accuate as possible
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
+C     usePcsiSolver  :: Set to true to use Preconditioned Classical Stiefel
+C                       Iteration (PCSI) solver
 C- Time-stepping & free-surface params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
@@ -578,6 +585,8 @@ C          :: Target residual for cg2d solver; W unit (No RHS normalisation)
 C     cg3dTargetResidual
 C               :: Target residual for cg3d solver.
 C     cg2dpcOffDFac :: Averaging weight for preconditioner off-diagonal.
+C     PcsiTargetResidual
+C          :: Target residual for PCSI solver; no unit (RHS normalisation)
 C     Note. 20th May 1998
 C           I made a weird discovery! In the model paper we argue
 C           for the form of the preconditioner used here ( see
