@@ -226,6 +226,8 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
+     &        PcsiConvergenceCheckFreq,
+     &        PcsiConvergenceCheckStart, PcsiMaxIters,
      &        cg2dMaxIters, cg2dMinItersNSA,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
      &        cg3dMaxIters, printResidualFreq,
@@ -242,6 +244,9 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        selectBotDragQuadr, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
+      INTEGER PcsiConvergenceCheckFreq
+      INTEGER PcsiConvergenceCheckStart
+      INTEGER PcsiMaxIters
       INTEGER cg2dMaxIters
       INTEGER cg2dMinItersNSA
       INTEGER cg2dPreCondFreq
@@ -439,7 +444,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useNSACGSolver, useSRCGSolver,
+     & useNSACGSolver, useSRCGSolver, usePcsiSolver,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -522,6 +527,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL checkIniSalt
       LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
+      LOGICAL usePcsiSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL uniformLin_PhiSurf
@@ -819,6 +825,7 @@ C     phiEuler      :: Euler angle, rotation about original z-axis
 C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
+     & PcsiTargetResidual,
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, xgOrigin, ygOrigin, rSphere, recip_rSphere,
      & radius_fromHorizGrid, seaLev_Z, top_Pres, rSigmaBnd,
@@ -869,6 +876,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL cg2dTargetResWunit
       _RL cg3dTargetResidual
       _RL cg2dpcOffDFac
+      _RL PcsiTargetResidual
       _RL delR(Nr)
       _RL delRc(Nr+1)
       _RL xgOrigin

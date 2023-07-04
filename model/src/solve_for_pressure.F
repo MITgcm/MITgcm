@@ -58,6 +58,7 @@ C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
       INTEGER numIters, nIterMin
+      INTEGER PcsinumIters, PcsinIterMin
       _RL firstResidual, minResidualSq, lastResidual
       _RL tmpFac
       _RL sumEmP, tileEmP(nSx,nSy)
@@ -271,6 +272,8 @@ C     solver minimum-residual solution (instead of the last-iter solution)
 C     by setting cg2dUseMinResSol=1 (<-> nIterMin=0 in input)
       numIters      = cg2dMaxIters
       nIterMin      = cg2dUseMinResSol - 1
+      PcsinumIters  = PcsiMaxIters
+      PcsinIterMin  = cg2dUseMinResSol - 1
 c     CALL TIMER_START('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef DISCONNECTED_TILES
 C--   Call the disconnected-tile (no EXCH) version of cg2d
@@ -289,6 +292,15 @@ C--   Call the single reduce CG solver
      U           numIters, nIterMin,
      I           myThid )
 #endif /* ALLOW_SRCG */
+#ifdef ALLOW_PCSI
+      ELSEIF ( usePcsiSolver ) THEN
+C--   Call the pcsi solver
+       CALL PCSI(
+     U           cg2d_b, cg2d_x,
+     O           firstResidual, minResidualSq, lastResidual,
+     U           PcsinumIters, PcsinIterMin,
+     I           myThid )
+#endif
 #ifdef ALLOW_CG2D_NSA
       ELSEIF ( useNSACGSolver ) THEN
 C--   Call the not-self-adjoint version of cg2d
@@ -325,9 +337,22 @@ c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-     &   ) THEN
-       IF ( debugLevel .GE. debLevA ) THEN
-        _BEGIN_MASTER( myThid )
+     &    .AND. debugLevel .GE. debLevA ) THEN
+       _BEGIN_MASTER( myThid )
+       IF ( usePcsiSolver ) THEN
+        WRITE(msgBuf,'(A20,1PE23.14)') 'pcsi_init_res =',firstResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        WRITE(msgBuf,'(A27,2I8)')
+     &        'pcsi_iters(min,last) =', pcsinIterMin, pcsinumIters
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        IF ( minResidualSq.GE.0. ) THEN
+         minResidualSq = SQRT(minResidualSq)
+         WRITE(msgBuf,'(A20,1PE23.14)') 'pcsi_min_res  =',minResidualSq
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        ENDIF
+        WRITE(msgBuf,'(A20,1PE23.14)') 'pcsi_last_res =',lastResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       ELSE
         WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_init_res =',firstResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         WRITE(msgBuf,'(A27,2I8)')
@@ -340,8 +365,8 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
         ENDIF
         WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_last_res =',lastResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( myThid )
        ENDIF
+       _END_MASTER( myThid )
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS

@@ -25,6 +25,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #include "CG2D.h"
+#include "PCSI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -66,6 +67,7 @@ C--   Init. scalars
       cg2dNorm = 0. _d 0
       cg2dNormaliseRHS = .FALSE.
       cg2dtolerance = 0. _d 0
+      Pcsitolerance = 0. _d 0
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
@@ -151,6 +153,24 @@ C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
         cg2dTolerance = cg2dNorm * cg2dTargetResWunit
      &                           * globalArea / deltaTMom
       ENDIF
+
+#ifdef ALLOW_PCSI
+C--   set pcsi parameter begin
+
+C-- set global parameter in common block:
+      PcsiNorm = myNorm
+C-- Define the solver tolerance in the appropriate Unit :
+      PcsiNormaliseRHS = cg2dTargetResWunit.LE.0.
+      IF (PcsiNormaliseRHS) THEN
+C-  when using a normalisation of RHS, tolerance has no unit => no conversion
+        PcsiTolerance = PcsiTargetResidual
+      ELSE
+C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
+        PcsiTolerance = PcsiNorm * cg2dTargetResWunit
+     &                           * globalArea / deltaTMom
+      ENDIF
+C-- set pcsi parameter end
+#endif
       _END_MASTER(myThid)
 
 CcnhDebugStarts
@@ -228,6 +248,13 @@ C          pS(i,j,bi,bj) = 0.
 C--   Update overlap regions
       CALL EXCH_XY_RS( pC, myThid )
       CALL EXCH_UV_XY_RS( pW, pS, .FALSE., myThid )
+
+#ifdef ALLOW_PCSI
+      IF ( usePcsiSolver ) THEN
+        CALL EIGEN_LANCZOS(PcsiMaxEigs, PcsiMinEigs, myThid )
+      ENDIF
+#endif
+
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
