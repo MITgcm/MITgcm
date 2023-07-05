@@ -1,16 +1,21 @@
 #include "CPP_OPTIONS.h"
 
+C--  File eigen_lanczos.F: lanczos method  S/R:
+C--   Contents
+C--   o EIGEN_LANCZOS
+C--   o RATQR
+
 CBOP
 C     !ROUTINE: EIGEN_LANCZOS
 C     !INTERFACE:
       SUBROUTINE EIGEN_LANCZOS(
      U                u, v,
      I                myThid )
-C     !DESCRIPTION: \bv
+C     !DESCRIPTION:
 C     *================================================================*
 C     | SUBROUTINE EIGEN_LANCZOS
 C     | o This routine implements the Lanczos based method to solve the
-C     | o maximum and minimum eigenvalues of the coefficient matrix $A$.
+C     |   maximum and minimum eigenvalues of the coefficient matrix $A$.
 C     | o Or $AM$ if a preconditioner $M^{-1}$ is provided.
 C     *================================================================*
 C     | References:
@@ -22,7 +27,6 @@ C     | o Paige, C. C. (1980). Accuracy and effectiveness of the
 C     |   Lanczos algorithm for the symmetric eigenproblem.
 C     |   Linear algebra and its applications, 34, 235-258.
 C     *================================================================*
-C     \ev
 
 C     !USES:
       IMPLICIT NONE
@@ -36,18 +40,19 @@ C     === Global data ===
 # include "EESUPPORT.h"
 #endif /* ALLOW_USE_MPI */
 
-      _RL LanczosconvergenceCriterion
-      PARAMETER ( LanczosconvergenceCriterion  = 0.15 )
-      INTEGER maxlanczosstep
-      PARAMETER ( maxlanczosstep = 100 )
-
-C     INPUT/OUTPUT PARAMETERS:
+C     !INPUT/OUTPUT PARAMETERS:
 C     u, v      :: max and min eigenvalues
 C     myThid    :: Thread on which I am working.
       _RL  u, v
       INTEGER myThid
 
 #ifdef ALLOW_PCSI
+C     !LOCAL VARIABLES:
+      _RL LanczosconvergenceCriterion
+      PARAMETER ( LanczosconvergenceCriterion  = 0.001 )
+      INTEGER maxlanczosstep
+      PARAMETER ( maxlanczosstep = 1000 )
+
       _RL valpha(maxlanczosstep), vbeta(maxlanczosstep)
       _RL malpha(maxlanczosstep), mbeta(maxlanczosstep)
       _RL eigen_q0(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
@@ -63,6 +68,7 @@ C     myThid    :: Thread on which I am working.
       INTEGER mpiierr
 #endif /* ALLOW_USE_MPI */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
 C     set random vector R, intialize vectors
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -286,18 +292,20 @@ C         compute smallest eigenvalue
       END DO lanczos_iter
 
 #endif /* ALLOW_PCSI */
-C-----------------------------------------------------------------------
       RETURN
       END SUBROUTINE EIGEN_LANCZOS
 
+C-----------------------------------------------------------------------
       SUBROUTINE  RATQR(n, eps1, d, e, mineig,ierr )
+CBOP
 C     !DESCRIPTION:
 C      This subroutine finds the algebraically smallest
 C      eigenvalue of a positive definite symmetric tridiagonal matrix by the
 C      rational QR method with Newton corrections.
 C      Follow EISPACK lib subroutine RATQR
 C
-C     ! INPUT VARIABLES
+      IMPLICIT NONE
+C     !INPUT/OUTPUT PARAMETERS:
 C     n       :: matrix order
 C     d       :: diagonal elements
 C     e       :: off-diagonal elements, e(1) is arbitrary
@@ -305,7 +313,7 @@ C     eps1    :: convergence tolerance
 C     mineig  :: smallest eigevalue
 C     ierr    :: status flag
       INTEGER maxlanczosstep
-      PARAMETER ( maxlanczosstep = 100 )
+      PARAMETER ( maxlanczosstep = 1000 )
 
       INTEGER  n
       _RL      d(maxlanczosstep), e(maxlanczosstep)
@@ -313,13 +321,13 @@ C     ierr    :: status flag
       INTEGER  ierr
 
 #ifdef ALLOW_PCSI
-C     ! LOCAL  VARIABLES
+C     !LOCAL VARIABLES:
       _RL     bd(maxlanczosstep), w(maxlanczosstep)
       _RL     f, ep, delta, err
 C     local counters
       INTEGER i, ii
       _RL     p, q, qp,r,s,tot
-
+CEOP
       ierr = 0
       w(1:n) = d(1:n)
       err = 0. _d 0
