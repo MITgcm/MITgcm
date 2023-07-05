@@ -252,7 +252,7 @@ C-    Initialise saved solution
       ENDIF
 
 C     iterate
-      iterationLoop: do it2d = 1, numIters
+      iterationLoop: DO it2d = 1, numIters
 C--     step 3 : update iteration parameter
         csomga = 1. _d 0/(csy-csomga/(4. _d 0*csalpha*csalpha))
 
@@ -308,8 +308,9 @@ C--     step 5 : compute X increment and update X and R
         CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
         actualIts = it2d
-        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and.
-     &          (it2d .ge. PcsiconvergenceCheckStart)) then
+C     test for convergence
+        IF ((MOD(it2d, PcsiconvergenceCheckFreq) .EQ. 0) .AND.
+     &          (it2d .GE. PcsiconvergenceCheckStart)) THEN
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            errTile(bi,bj) = 0. _d 0
@@ -321,12 +322,8 @@ C--     step 5 : compute X increment and update X and R
            ENDDO
           ENDDO
          ENDDO
-        endif
 
-C       test for convergence
-        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and.
-     &          (it2d .ge. PcsiconvergenceCheckStart)) then
-          CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
+         CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
 
          IF ( err_sq .LT. minResidualSq ) THEN
 C-       Store lowest residual solution
@@ -351,12 +348,12 @@ C-       Store lowest residual solution
      &          SQUEEZE_RIGHT, myThid )
           ENDIF
          ENDIF
-         if (err_sq < pcsiTolerance_sq) then
+         IF (err_sq .LT. pcsiTolerance_sq) THEN
            actualIts = it2d
-           exit iterationLoop
-         endif
-        endif
-      enddo iterationLoop
+           EXIT iterationLoop
+         ENDIF
+        ENDIF
+      ENDDO iterationLoop
 
       IF ( nIterMin.GE.0 .AND. err_sq .GT. minResidualSq ) THEN
 C-    use the lowest residual solution (instead of current one = last residual)
