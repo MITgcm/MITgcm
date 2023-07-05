@@ -339,9 +339,9 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
      &    .AND. debugLevel .GE. debLevA ) THEN
        _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_init_res =',firstResidual
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        IF ( usePcsiSolver ) THEN
-        WRITE(msgBuf,'(A20,1PE23.14)') 'pcsi_init_res =',firstResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         WRITE(msgBuf,'(A27,2I8)')
      &        'pcsi_iters(min,last) =', pcsinIterMin, pcsinumIters
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -353,8 +353,6 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
         WRITE(msgBuf,'(A20,1PE23.14)') 'pcsi_last_res =',lastResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        ELSE
-        WRITE(msgBuf,'(A20,1PE23.14)') 'cg2d_init_res =',firstResidual
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         WRITE(msgBuf,'(A27,2I8)')
      &       'cg2d_iters(min,last) =', nIterMin, numIters
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)

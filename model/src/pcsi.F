@@ -17,20 +17,20 @@ C     !INTERFACE:
      U                numIters, nIterMin,
      I                myThid )
 C     !DESCRIPTION: \bv
-C     *=========================================================================*
+C     *========================================================================*
 C     | SUBROUTINE PCSI
-C     | o Preconditioned Classical Stiefel Iteration(PCSi) solver for solving 
+C     | o Preconditioned Classical Stiefel Iteration (PCSi) solver for solving
 C     | o the linear system $Ax=b$ (with preconditioner).
-C     *=========================================================================*
+C     *========================================================================*
 C     | It uses the two extreme eigenvalues of $A$ instead of the norm of
 C     | residual. Thus, PCSI eliminates global reductions in each iteration.
 C     | The eigenvalues are estimated by routine eigen_lanczos.
-C     | PCSI supports all kinds of preconditioners supported by PCG/ChronGear, 
-C     | including diagonal and EVP preconditioning. It requires the A be 
-C     | symmetric and positive-definite. This implementation assumes A is a 
+C     | PCSI supports all kinds of preconditioners supported by PCG/ChronGear,
+C     | including diagonal and EVP preconditioning. It requires the A be
+C     | symmetric and positive-definite. This implementation assumes A is a
 C     | five-diagonal matrix of the form that arises in the discrete
 C     | representation of the del^2 operator in a two-dimensional space.
-C     *=========================================================================*
+C     *========================================================================*
 C     \ev
 
 C     !USES:
@@ -77,16 +77,16 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER i, j, it2d
       INTEGER actualIts
       _RL    pcsiTolerance_sq
-      _RL    err_sq,  errTile(nSx,nSy)
+      _RL    err_sq, errTile(nSx,nSy)
       _RL    rhsMax
       _RL    rhsNorm
       _RL    pcsi_min(1:sNx,1:sNy,nSx,nSy)
       _RL    pcsi_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    pcsi_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    pcsi_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    csalpha,csbeta,csy,csomga,rr
+      _RL    csalpha,csbeta,csy,csomga
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-C      LOGICAL printResidual
+      LOGICAL printResidual
 CEOP
 
 C--   Compute iteration parameters by eigenvalues
@@ -153,10 +153,7 @@ C-    Initialise saved solution
           ENDDO
          ENDDO
         ENDIF
-C--    in this is wrong, so errTile 
-#ifdef yhchen  
         errTile(bi,bj) = 0. _d 0
-#endif
 #ifdef TARGET_NEC_SX
 !CDIR OUTERUNROLL=CG2D_OUTERLOOPITERS
 #endif /* TARGET_NEC_SX */
@@ -169,28 +166,12 @@ C--    in this is wrong, so errTile
      &    +aS2d(i  ,j+1,bi,bj)*pcsi_x(i  ,j+1,bi,bj)
      &    +aC2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j  ,bi,bj)
      &    )
-#ifdef yhchen
-          errTile(bi,bj) = errTile(bi,bj)
-     &                 + pcsi_r(i,j,bi,bj)*pcsi_r(i,j,bi,bj)
-#endif
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-C#ifdef yhchen
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        errTile(bi,bj) = 0. _d 0
-        DO j=1,sNy
-         DO i=1,sNx
           errTile(bi,bj) = errTile(bi,bj)
      &                 + pcsi_r(i,j,bi,bj)*pcsi_r(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C#endif
 
       CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
@@ -261,12 +242,21 @@ C#endif
       ENDDO
       CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
+      printResidual = .FALSE.
+      IF ( debugLevel .GE. debLevZero ) THEN
+        _BEGIN_MASTER( myThid )
+        printResidual = printResidualFreq.GE.1
+        WRITE(standardmessageunit,'(A,1P2E22.14)')
+     &  ' pcsi: Sum(rhs),rhsMax = ', 0.,rhsMax
+        _END_MASTER( myThid )
+      ENDIF
+
 C     iterate
       iterationLoop: do it2d = 1, numIters
-C--     step 3 : update iteration parameter 
+C--     step 3 : update iteration parameter
         csomga = 1. _d 0/(csy-csomga/(4. _d 0*csalpha*csalpha))
 
-C--     step 4 : preconditioning 
+C--     step 4 : preconditioning
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
@@ -287,7 +277,7 @@ C--     step 5 : compute X increment and update X and R
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
-            pcsi_q(i,j,bi,bj) = csomga*pcsi_s(i,j,bi,bj)+ 
+            pcsi_q(i,j,bi,bj) = csomga*pcsi_s(i,j,bi,bj)+
      &                        (csy*csomga-1. _d 0)*pcsi_q(i,j,bi,bj)
             pcsi_x(i,j,bi,bj) = pcsi_x(i,j,bi,bj) + pcsi_q(i,j,bi,bj)
            ENDDO
@@ -318,7 +308,7 @@ C--     step 5 : compute X increment and update X and R
         CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
         actualIts = it2d
-        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and. 
+        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and.
      &          (it2d .ge. PcsiconvergenceCheckStart)) then
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -334,7 +324,7 @@ C--     step 5 : compute X increment and update X and R
         endif
 
 C       test for convergence
-        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and. 
+        if ((mod(it2d, PcsiconvergenceCheckFreq) == 0) .and.
      &          (it2d .ge. PcsiconvergenceCheckStart)) then
           CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
 
@@ -353,6 +343,14 @@ C-       Store lowest residual solution
            ENDDO
          ENDIF
 
+         IF ( printResidual ) THEN
+          IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
+           WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+     &          ' pcsi: iter=', it2d, ' ; resid.= ', SQRT(err_sq)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT, myThid )
+          ENDIF
+         ENDIF
          if (err_sq < pcsiTolerance_sq) then
            actualIts = it2d
            exit iterationLoop
@@ -390,15 +388,14 @@ C--   Return parameters to caller
       lastResidual = SQRT(err_sq)
       numIters = actualIts
 
-      _BEGIN_MASTER( myThid )
-      WRITE(standardmessageunit,'(A,I6,1PE22.14)')
-     &' pcsi: iter, resid. = ', numIters,SQRT(err_sq)
-      _END_MASTER( myThid )
-
-C      WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-C     &  ' pcsi: iter=', numIters, ' ; resid.= ', SQRT(err_sq)
-C      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-C     &                    SQUEEZE_RIGHT, myThid )
+      IF ( printResidual ) THEN
+       IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
+        WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+     &   ' pcsi: iter=', numIters, ' ; resid.= ', lastResidual
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
 
       RETURN
       END

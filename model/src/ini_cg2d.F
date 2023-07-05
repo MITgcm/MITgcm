@@ -218,14 +218,15 @@ C-    calculate and store solver main diagonal :
         ENDDO
         DO j=1,sNy
          DO i=1,sNx
-           aC  = aC2d( i, j, bi,bj)
+          aC  = aC2d( i, j, bi,bj)
+          IF ( aC .EQ. 0. ) THEN
+           pC(i,j,bi,bj) = 1. _d 0
+          ELSE
+           pC(i,j,bi,bj) =  1. _d 0 / aC
+          ENDIF
+          IF ( useCG2DPrecond ) THEN
            aCs = aC2d( i,j-1,bi,bj)
            aCw = aC2d(i-1,j, bi,bj)
-           IF ( aC .EQ. 0. ) THEN
-            pC(i,j,bi,bj) = 1. _d 0
-           ELSE
-            pC(i,j,bi,bj) =  1. _d 0 / aC
-           ENDIF
            IF ( aC + aCw .EQ. 0. ) THEN
             pW(i,j,bi,bj) = 0.
            ELSE
@@ -238,9 +239,10 @@ C-    calculate and store solver main diagonal :
             pS(i,j,bi,bj) =
      &         -aS2d(i,j,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
            ENDIF
-C          pC(i,j,bi,bj) = 1.
-C          pW(i,j,bi,bj) = 0.
-C          pS(i,j,bi,bj) = 0.
+          ENDIF
+C         pC(i,j,bi,bj) = 1.
+C         pW(i,j,bi,bj) = 0.
+C         pS(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO

@@ -369,6 +369,7 @@ C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
 C     usePcsiSolver  :: Set to true to use Preconditioned Classical Stiefel
 C                       Iteration (PCSI) solver
+C     useCG2DPrecond :: use the full preconditions of CG2D (default = .TRUE.)
 C- Time-stepping & free-surface params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
@@ -451,7 +452,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useNSACGSolver, useSRCGSolver, usePcsiSolver,
+     & useNSACGSolver, useSRCGSolver, usePcsiSolver, useCG2DPrecond,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -535,6 +536,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
       LOGICAL usePcsiSolver
+      LOGICAL useCG2DPrecond
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL uniformLin_PhiSurf

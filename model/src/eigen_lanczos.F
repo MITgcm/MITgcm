@@ -1,25 +1,26 @@
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: eigen_LANCZOS
+C     !ROUTINE: EIGEN_LANCZOS
 C     !INTERFACE:
-      SUBROUTINE eigen_LANCZOS(
+      SUBROUTINE EIGEN_LANCZOS(
      U                u, v,
      I                myThid )
 C     !DESCRIPTION: \bv
 C     *================================================================*
-C     | SUBROUTINE eigen_LANCZOS
-C     | o This routine implements the Lanczos based method to solve the  
+C     | SUBROUTINE EIGEN_LANCZOS
+C     | o This routine implements the Lanczos based method to solve the
 C     | o maximum and minimum eigenvalues of the coefficient matrix $A$.
 C     | o Or $AM$ if a preconditioner $M^{-1}$ is provided.
 C     *================================================================*
 C     | References:
-C     | o Hu, Y., Huang, X., Wang, X., Fu, H., Xu, S., Ruan, H., ... 
-C     | o & Yang, G. (2013). A scalable barotropic mode solver for the 
-C     | o parallel ocean program. In Euro-Par 2013 Parallel Processing (pp. 739-750). 
-C     | o Springer Berlin Heidelberg.Paige, C. C. (1980). Accuracy and 
-C     | o effectiveness of the Lanczos algorithm for the symmetric eigenproblem. 
-C     | o Linear algebra and its applications, 34, 235-258.
+C     | o Hu, Y., Huang, X., Wang, X., Fu, H., Xu, S., Ruan, H., ...
+C     |   & Yang, G. (2013). A scalable barotropic mode solver for the
+C     |   parallel ocean program. In Euro-Par 2013 Parallel Processing
+C     |   (pp. 739-750). Springer Berlin Heidelberg.
+C     | o Paige, C. C. (1980). Accuracy and effectiveness of the
+C     |   Lanczos algorithm for the symmetric eigenproblem.
+C     |   Linear algebra and its applications, 34, 235-258.
 C     *================================================================*
 C     \ev
 
@@ -43,18 +44,19 @@ C     === Global data ===
 C     INPUT/OUTPUT PARAMETERS:
 C     u, v      :: max and min eigenvalues
 C     myThid    :: Thread on which I am working.
-      _RL  u, v 
+      _RL  u, v
       INTEGER myThid
 
+#ifdef ALLOW_PCSI
       _RL valpha(maxlanczosstep), vbeta(maxlanczosstep)
       _RL malpha(maxlanczosstep), mbeta(maxlanczosstep)
-      _RL    eigen_q0(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    eigen_r (1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    eigen_q1(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    eigen_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    eigen_p(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    sumtile(nSx,nSy)
-      _RL   eigen_alpha, eigen_beta, eigen_csc, mineig
+      _RL eigen_q0(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL eigen_r (1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL eigen_q1(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL eigen_s (1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL eigen_p (1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL sumtile(nSx,nSy)
+      _RL eigen_alpha, eigen_beta, eigen_csc, mineig
       INTEGER  i, j, bi, bj
       INTEGER  m, info
 #ifdef ALLOW_USE_MPI
@@ -98,7 +100,7 @@ C     proconditioning s = M*r
         sumtile(bi,bj) = 0. _d 0
         DO j=1,sNy
          DO i=1,sNx
-          sumtile(bi,bj) = sumtile(bi,bj) + 
+          sumtile(bi,bj) = sumtile(bi,bj) +
      &                   eigen_r(i,j,bi,bj)*eigen_s(i,j,bi,bj)
          ENDDO
         ENDDO
@@ -106,7 +108,7 @@ C     proconditioning s = M*r
       ENDDO
 
       CALL GLOBAL_SUM_TILE_RL( sumtile, eigen_csc, myThid )
-      eigen_csc = sqrt(-eigen_csc)
+      eigen_csc = SQRT(-eigen_csc)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -124,8 +126,7 @@ C     proconditioning s = M*r
       v       = 0. _d 0
       mineig  = 1. _d 0
 
-C     lanczos iterations
-      lanczos_iter: do m = 1, maxlanczosstep
+      lanczos_iter: DO m = 1, maxlanczosstep
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -164,7 +165,7 @@ C     lanczos iterations
           sumtile(bi,bj) = 0. _d 0
           DO j=1,sNy
            DO i=1,sNx
-            sumtile(bi,bj) = sumtile(bi,bj) + 
+            sumtile(bi,bj) = sumtile(bi,bj) +
      &                   eigen_p(i,j,bi,bj)*eigen_r(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -205,24 +206,24 @@ C     lanczos iterations
           sumtile(bi,bj) = 0. _d 0
           DO j=1,sNy
            DO i=1,sNx
-            sumtile(bi,bj) = sumtile(bi,bj) + 
+            sumtile(bi,bj) = sumtile(bi,bj) +
      &                     eigen_r(i,j,bi,bj)*eigen_s(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
         CALL GLOBAL_SUM_TILE_RL( sumtile, eigen_csc, myThid )
-        eigen_beta = sqrt(-eigen_csc)
+        eigen_beta = SQRT(-eigen_csc)
 
         valpha(m) = eigen_alpha
         vbeta(m)  = eigen_beta
 
-C       Gershgorin circle theorem to estimate the largest eigenvaule 
-        if (m ==1 ) then
+C       Gershgorin circle theorem to estimate the largest eigenvaule
+        IF ( m .EQ. 1 ) THEN
           u = valpha(1) + vbeta(1)
-        else 
-          u = max(u, valpha(m) + vbeta(m) + vbeta(m-1))
-        endif
+        ELSE
+          u = MAX(u, valpha(m) + vbeta(m) + vbeta(m-1))
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -251,18 +252,18 @@ C       compute eigenvalues of the tridiagonal matrix T every 10 steps
         IF ((mod(m,10) == 0) .or. (m ==maxlanczosstep)) then
          IF ( myProcId == 0 ) THEN
           DO i = 1, m-1
-           malpha(i)  = valpha(i) 
+           malpha(i)  = valpha(i)
            mbeta(i+1) = vbeta(i)
           END DO
           malpha(m) = valpha(m)
           mbeta(1) = 0.0
           info = 0
 C         compute smallest eigenvalue
-          call ratqr(m, 1.D-08, malpha,mbeta,v,info)
-          IF (info /= 0) THEN 
-           write(*,*)
+          CALL RATQR(m, 1.D-08, malpha, mbeta, v, info)
+          IF (info .NE. 0) THEN
+           WRITE(*,*)
      &     'eigen_Lanczos: error estimating smallest eigenvalue !!!'
-           exit
+           EXIT
           END IF
          END IF
 
@@ -275,25 +276,26 @@ C         compute smallest eigenvalue
      &    ' Lanczos: steps =', m , ' ; eigs:= ', u, v
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-      
+
          ! check convergence of the smallest eigenvalue
-         IF (abs(1-v/mineig ) <  LanczosconvergenceCriterion) THEN
-          exit lanczos_iter
+         IF (abs(1-v/mineig ) .LT.  LanczosconvergenceCriterion) THEN
+          EXIT lanczos_iter
          END IF
-         mineig = v  ! save previous value 
-        END IF 
+         mineig = v  ! save previous value
+        END IF
       END DO lanczos_iter
 
+#endif /* ALLOW_PCSI */
 C-----------------------------------------------------------------------
+      RETURN
+      END SUBROUTINE EIGEN_LANCZOS
 
-      END SUBROUTINE eigen_LANCZOS
-
-      SUBROUTINE  ratqr(n, eps1, d, e, mineig,ierr )
+      SUBROUTINE  RATQR(n, eps1, d, e, mineig,ierr )
 C     !DESCRIPTION:
-C      This subroutine finds the algebraically smallest 
+C      This subroutine finds the algebraically smallest
 C      eigenvalue of a positive definite symmetric tridiagonal matrix by the
 C      rational QR method with Newton corrections.
-C      Follow EISPACK lib subroutine RATQR 
+C      Follow EISPACK lib subroutine RATQR
 C
 C     ! INPUT VARIABLES
 C     n       :: matrix order
@@ -306,40 +308,41 @@ C     ierr    :: status flag
       PARAMETER ( maxlanczosstep = 100 )
 
       INTEGER  n
-      Real*8   d(maxlanczosstep), e(maxlanczosstep)
-      Real*8   eps1, mineig
+      _RL      d(maxlanczosstep), e(maxlanczosstep)
+      _RL      eps1, mineig
       INTEGER  ierr
-      
-C      !  ! LOCAL  VARIABLES
-      Real*8 e2(maxlanczosstep), bd(maxlanczosstep), w(maxlanczosstep)
-      Real*8 f, ep, delta, err
+
+#ifdef ALLOW_PCSI
+C     ! LOCAL  VARIABLES
+      _RL     bd(maxlanczosstep), w(maxlanczosstep)
+      _RL     f, ep, delta, err
 C     local counters
       INTEGER i, ii
-      Real*8 p, q, qp,r,s,tot
-      
+      _RL     p, q, qp,r,s,tot
+
       ierr = 0
       w(1:n) = d(1:n)
-      err = 0. _d 0 
+      err = 0. _d 0
       s = 0. _d 0
       tot = w(1)
       q = 0. _d 0
-      
+
       DO i = 1, n
        p = q
        bd(i) = e(i)*e(i)
-       q = 0. _d 0 
+       q = 0. _d 0
        IF ( i /= n ) THEN
          q = abs ( e(i+1) )
        END IF
-       tot = min ( w(i) - p - q, tot )
+       Tot = min ( w(i) - p - q, tot )
       END DO
-      bd(1) = 0. _d 0 
+      bd(1) = 0. _d 0
       IF ( tot < 0. _d 0  ) THEN
         tot = 0. _d 0
-      ELSE 
+      ELSE
         w(1:n) = w(1:n) - tot
       ENDIF
-      
+
 C     QR transformation.
       DO while (.true.)
         tot = tot + s
@@ -347,7 +350,7 @@ C     QR transformation.
         i = n
         IF ( delta <= eps1 ) THEN
           exit
-        END IF 
+        END IF
         f = bd(n) / delta
         qp = delta + f
         p = 1. _d 0
@@ -359,13 +362,13 @@ C     QR transformation.
           ep = f * r
           w(i+1) = qp + ep
           delta = q - ep
-C         check convergence 
+C         check convergence
           IF ( delta <= eps1 ) EXIT
           f = bd(i) / q
           qp = delta + f
           bd(i+1) = qp * ep
         END DO
-C       check convergence 
+C       check convergence
         if ( delta <= eps1 ) exit
         w(1) = qp
         s = qp / p
@@ -374,11 +377,12 @@ C       Set error: irregular end of iteration.
           ierr = 1
           RETURN
         ENDIF
-      ENDDO 
+      ENDDO
       w(1) = tot
       err = err + abs ( delta)
       bd(1) = err
       mineig = w(1)
-      RETURN
 
-      END SUBROUTINE ratqr
+#endif /* ALLOW_PCSI */
+      RETURN
+      END SUBROUTINE RATQR
