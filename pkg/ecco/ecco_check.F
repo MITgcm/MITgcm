@@ -716,7 +716,7 @@ C Here we check for inconsistency:
           use_day_int = use_day_int + 1
         ENDIF
        ENDIF
-       IF ( using_tpo ) THEN
+       IF ( using_gfo ) THEN
         IF (gencost_avgperiod(igen_gfo)(1:5).EQ.'month' .OR.
      &      gencost_avgperiod(igen_gfo)(1:5).EQ.'MONTH' ) THEN
           use_mon_int = use_mon_int + 1
@@ -726,7 +726,7 @@ C Here we check for inconsistency:
         ENDIF
        ENDIF
 
-       IF ( use_mon_int .GT. 0 .AND. use_day_in .GT. 0) THEN
+       IF ( use_mon_int .GT. 0 .AND. use_day_int .GT. 0) THEN
          WRITE(msgBuf,'(2A)')
      &    'ECCO_CHECK: cost sshv4: data set TP/ERS/GFO must be all ',
      &    'daily or monthly, but cannot be mixed.'
