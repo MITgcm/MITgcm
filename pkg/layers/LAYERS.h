@@ -73,7 +73,7 @@ C  -- We also need the thermal / saline expansion coefficients for diapycnal flu
 C      layers_alpha      :: alpha factor for density eqn (-drhodT/rho)
 C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
 
-#ifdef LAYERS_THERMODYNAMICS
+# ifdef LAYERS_THERMODYNAMICS
       COMMON /LAYERS_VAR_THERMODYNAMICS/
      &    layers_bounds_w, layers_recip_delta,
      &    layers_TtendSurf, layers_TtendDiffh, layers_TtendDiffr,
@@ -137,7 +137,7 @@ C      layers_beta       :: alpha factor for density eqn (-drhodS/rho)
       _RL layers_beta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-#endif /* LAYERS_THERMODYAMICS */
+# endif /* LAYERS_THERMODYAMICS */
 
 #ifdef ALLOW_TIMEAVE
 C-- The same variables, time-averaged

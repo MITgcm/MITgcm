@@ -377,15 +377,9 @@ C     !INTERFACE:
       SUBROUTINE LAYERS_DIAPYCNAL(
      I                  tracer,iLa,
      O                  TtendSurf, TtendDiffh, TtendDiffr,
-     O                  TtendAdvh, TtendAdvr,
-#ifdef LAYERS_DIAG_TOTTEND
-     O                  Ttendtot,
-#endif /* LAYERS_DIAG_TOTTEND */
+     O                  TtendAdvh, TtendAdvr, Ttendtot,
      O                  StendSurf, StendDiffh, StendDiffr,
-     O                  StendAdvh, StendAdvr,
-#ifdef LAYERS_DIAG_TOTTEND
-     O                  Stendtot,
-#endif /* LAYERS_DIAG_TOTTEND */
+     O                  StendAdvh, StendAdvr, Stendtot,
      O                  Hc, PIc,
      I                  myThid )
 
@@ -429,17 +423,13 @@ C     PIw       :: 1 if layer exists, 0 otherwise (at tracer point)
       _RL TtendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL TtendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-#ifdef LAYERS_DIAG_TOTTEND
       _RL Ttendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-#endif /* LAYERS_DIAG_TOTTEND */
       _RL StendSurf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendDiffh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendDiffr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendAdvh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
       _RL StendAdvr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-#ifdef LAYERS_DIAG_TOTTEND
       _RL Stendtot  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nlayers-1,nSx,nSy)
-#endif /* LAYERS_DIAG_TOTTEND */
 CEOP
 
 #ifdef LAYERS_THERMODYNAMICS
@@ -504,17 +494,13 @@ C --- These are at the w point
          TtendDiffr(i,j,kg,bi,bj) = 0. _d 0
          TtendAdvh(i,j,kg,bi,bj)  = 0. _d 0
          TtendAdvr(i,j,kg,bi,bj)  = 0. _d 0
-#ifdef LAYERS_DIAG_TOTTEND
          Ttendtot(i,j,kg,bi,bj)   = 0. _d 0
-#endif /* LAYERS_DIAG_TOTTEND */
          StendSurf (i,j,kg,bi,bj) = 0. _d 0
          StendDiffh(i,j,kg,bi,bj) = 0. _d 0
          StendDiffr(i,j,kg,bi,bj) = 0. _d 0
          StendAdvh(i,j,kg,bi,bj)  = 0. _d 0
          StendAdvr(i,j,kg,bi,bj)  = 0. _d 0
-#ifdef LAYERS_DIAG_TOTTEND
          Stendtot(i,j,kg,bi,bj)   = 0. _d 0
-#endif /* LAYERS_DIAG_TOTTEND */
          Hcw(i,j,kg,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
@@ -689,7 +675,6 @@ C ------- Advection
          StendAdvr(i,j,kloc,bi,bj) =
      &     StendAdvr(i,j,kloc,bi,bj) +
      &     dzfac * Sfac * layers_afr(i,j,kci,2,bi,bj)
-#ifdef LAYERS_DIAG_TOTTEND
 C -------- Total Tendency
          Ttendtot(i,j,kloc,bi,bj) =
      &     Ttendtot(i,j,kloc,bi,bj) +
@@ -697,7 +682,6 @@ C -------- Total Tendency
          Stendtot(i,j,kloc,bi,bj) =
      &     Stendtot(i,j,kloc,bi,bj) +
      &     dzfac * Sfac * layers_tottend(i,j,kci,2,bi,bj)
-#endif /* LAYERS_DIAG_TOTTEND */
         ENDDO
        ENDDO
       ENDDO

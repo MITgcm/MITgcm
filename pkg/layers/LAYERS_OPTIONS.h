@@ -17,10 +17,6 @@ C Keep track of layer thicknesses?
 #define LAYERS_THICKNESS
 C Do water mass thermodynamics?
 #undef LAYERS_THERMODYNAMICS
-C Do diagnostics of tottend?
-#ifdef LAYERS_THERMODYNAMICS
-# define LAYERS_DIAG_TOTTEND
-#endif
 C Use refined grid for diapycnal terms? (gives worse results)
 #undef LAYERS_FINEGRID_DIAPYCNAL
 
