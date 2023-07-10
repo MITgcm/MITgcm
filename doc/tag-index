@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68q (2023/06/29)
+o pkg/ggl90:
+  - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;
+  - fix RI-Number calculation for IDEMIX ; new flag GGL90_IDEMIX_CVMIX_VERSION
+    (defined by default) to update IDEMIX to CVMix version ;
+  - add new diagnostics ;
+  - update Fwd ref. output of exp. isomip.obcs, global_ocean.90x40x15.idemix
+    and global_ocean.cs32x15.in_p.
 o pkg/tapenade + other Tapenade addition:
   - add new capability to use Tapenade to generate Adjoint & Tang-Linear model:
     new package (pkg/tapenade), new tools (tools/TAP_support), update genmake2
