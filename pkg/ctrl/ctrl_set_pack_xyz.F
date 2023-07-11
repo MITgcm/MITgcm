@@ -130,8 +130,6 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2,'(a)') ' '
-         write(cfile3,'(a)') ' '
          if ( lxxadxx ) then
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
@@ -160,7 +158,6 @@ c--   Only the master thread will do I/O.
 #ifdef CTRL_PACK_PRECISE
       if (weighttype.NE.' ') then
        il=ilnblnk( weighttype)
-       write(weightname,'(a)') ' '
        write(weightname,'(a)') weighttype(1:il)
        call MDSREADFIELD_3D_GL(
      &     weightname, ctrlprec, 'RL',
@@ -278,8 +275,6 @@ c-- part 1: preliminary reads and definitions
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2,'(a)') ' '
-         write(cfile3,'(a)') ' '
          il = ilnblnk( fname )
          if ( lxxadxx ) then
             write(cfile2,'(2a)') fname(1:il),'.pack_ctrl_adim'

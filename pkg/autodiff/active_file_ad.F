@@ -438,7 +438,7 @@ CEOP
 
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      WRITE(fname,'(2A)') adpref, active_var_file(1:il)
 
       CALL ACTIVE_READ_1D_RL(
      &                 fname, adactive_var, active_var_length,
@@ -812,7 +812,7 @@ CEOP
 
       adpref = 'ad'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
+      WRITE(fname,'(2A)') adpref, active_var_file(1:il)
 
       CALL ACTIVE_WRITE_1D_RL(
      &                 fname, adactive_var, active_var_length,

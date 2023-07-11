@@ -315,34 +315,30 @@ c----------------------------------------------------------------------
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype    = 11
-          write(weighttype,'(a)') ' '
-          write(weighttype,'(a)') "wobcsn"
+          write(weighttype,'(a)') 'wobcsn'
           call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
+     &         cunit, ivartype, fname_obcsn(ictrlgrad), 'maskobcsn',
      &         weighttype, wobcsn, nWetobcsnGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
           ivartype    = 12
-          write(weighttype,'(a)') ' '
-          write(weighttype,'(a)') "wobcss"
+          write(weighttype,'(a)') 'wobcss'
           call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
+     &         cunit, ivartype, fname_obcss(ictrlgrad), 'maskobcss',
      &         weighttype, wobcss, nWetobcssGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
           ivartype    = 13
-          write(weighttype,'(a)') ' '
-          write(weighttype,'(a)') "wobcsw"
+          write(weighttype,'(a)') 'wobcsw'
           call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
+     &         cunit, ivartype, fname_obcsw(ictrlgrad), 'maskobcsw',
      &         weighttype, wobcsw, nWetobcswGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
           ivartype    = 14
-          write(weighttype,'(a)') ' '
-          write(weighttype,'(a)') "wobcse"
+          write(weighttype,'(a)') 'wobcse'
           call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
+     &         cunit, ivartype, fname_obcse(ictrlgrad), 'maskobcse',
      &         weighttype, wobcse, nWetobcseGlo, mythid)
 #endif
 #endif /* ALLOW_OBCS */
@@ -367,7 +363,7 @@ c----------------------------------------------------------------------
      O                         fname_local, mythid )
           ivartype    = 100+iarr
 cc          write(weighttype,'(a)') ' '
-cc          write(weighttype,'(a)') "wunit"
+cc          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
@@ -384,9 +380,9 @@ cc          write(weighttype,'(a)') "wunit"
      O                         fname_local, mythid )
           ivartype    = 200+iarr
 c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') "wunit"
+c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
      &         wunit, nwetcglobal, mythid)
         endif
@@ -412,7 +408,7 @@ c          write(weighttype,'(a)') "wunit"
      O                         fname_local, mythid )
           ivartype    = 300+iarr
 c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') "wunit"
+c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
