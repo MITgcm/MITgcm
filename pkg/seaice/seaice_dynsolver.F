@@ -97,11 +97,11 @@ C     TAUY    :: meridional wind stress over seaice at V point
 #ifdef ALLOW_AUTODIFF
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
-          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
+          PRESS0     (i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
-          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          SEAICE_ZMAX(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+          SEAICE_ZMIN(i,j,bi,bj) = SEAICE_zetaMin
+          PRESS0     (i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
 # ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
@@ -458,7 +458,8 @@ C     first recompute strainrates from up-to-date velocities
 C     but use old viscosities and pressure for the
 C     principle stress components
 CML     CALL SEAICE_CALC_VISCOSITIES(
-CML  I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+CML  I     e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+CML  I     tensileStrFac,
 CML  O     eta, etaZ, zeta, zetaZ, press, deltaC,
 CML  I     0, myTime, myIter, myThid )
        ENDIF
