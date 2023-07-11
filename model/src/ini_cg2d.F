@@ -25,7 +25,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #include "CG2D.h"
-#include "PCSI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

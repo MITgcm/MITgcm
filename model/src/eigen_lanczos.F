@@ -35,7 +35,6 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-#include "PCSI.h"
 #ifdef ALLOW_USE_MPI
 # include "EESUPPORT.h"
 #endif /* ALLOW_USE_MPI */

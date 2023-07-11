@@ -40,7 +40,6 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-#include "PCSI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     pcsi_b    :: The source term or "right hand side" (output: normalised RHS)
