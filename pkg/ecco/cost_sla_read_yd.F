@@ -33,12 +33,10 @@ c     == global variables ==
 #include "ECCO.h"
 
 c     == routine arguments ==
+C     use_mon :: switch from using daily to monthly data if true
       character*(MAX_LEN_FNAM) sla_file
       integer sla_startdate(4)
       logical use_mon
-c     _RL sla_period
-c     _RL sla_intercept
-c     _RL sla_slope
       _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer year, irec

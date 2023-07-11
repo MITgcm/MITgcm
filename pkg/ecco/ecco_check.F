@@ -346,15 +346,15 @@ c altimetry related checks
 
          IF (gencost_name(k).EQ.'sshv4-tp') THEN
            igen_tp = k
-           using_tpj=using_gencost(k)
+           using_tpj = using_gencost(k)
          ENDIF
          IF (gencost_name(k).EQ.'sshv4-ers') THEN
            igen_ers = k
-           using_ers=using_gencost(k)
+           using_ers = using_gencost(k)
          ENDIF
          IF (gencost_name(k).EQ.'sshv4-gfo') THEN
            igen_gfo = k
-           using_gfo=using_gencost(k)
+           using_gfo = using_gencost(k)
          ENDIF
          IF (gencost_name(k).EQ.'sshv4-mdt') using_mdt=using_gencost(k)
 
@@ -692,47 +692,42 @@ c print result to screen
      &                      SQUEEZE_RIGHT , myThid)
       ENDIF
 
-C If more than one within the data set [tp,ers,gfo] are present,
-C they must have the same avgperiod, e.g., day or month.
-C Here we check for inconsistency:
+C If more than one within the data set [tp,ers,gfo] are present, they must have
+C the same avgperiod, e.g., day or month. Here we check for inconsistency:
       IF (using_cost_altim) THEN
        use_mon_int = 0
        use_day_int = 0
        IF ( using_tpj ) THEN
-        IF (gencost_avgperiod(igen_tp)(1:5) .EQ.'month' .OR.
-     &      gencost_avgperiod(igen_tp)(1:5) .EQ.'MONTH') THEN
+        IF (gencost_avgperiod(igen_tp) .EQ.'month' .OR.
+     &      gencost_avgperiod(igen_tp) .EQ.'MONTH') THEN
           use_mon_int = use_mon_int + 1
-        ELSEIF (gencost_avgperiod(igen_tp)(1:3) .EQ.'day' .OR.
-     &          gencost_avgperiod(igen_tp)(1:3) .EQ.'DAY') THEN
+        ELSE
           use_day_int = use_day_int + 1
         ENDIF
        ENDIF
        IF ( using_ers ) THEN
-        IF (gencost_avgperiod(igen_ers)(1:5) .EQ.'month' .OR.
-     &      gencost_avgperiod(igen_ers)(1:5) .EQ.'MONTH') THEN
+        IF (gencost_avgperiod(igen_ers) .EQ.'month' .OR.
+     &      gencost_avgperiod(igen_ers) .EQ.'MONTH') THEN
           use_mon_int = use_mon_int + 1
-        ELSEIF (gencost_avgperiod(igen_ers)(1:3) .EQ.'day' .OR.
-     &          gencost_avgperiod(igen_ers)(1:3) .EQ.'DAY') THEN
+        ELSE
           use_day_int = use_day_int + 1
         ENDIF
        ENDIF
        IF ( using_gfo ) THEN
-        IF (gencost_avgperiod(igen_gfo)(1:5).EQ.'month' .OR.
-     &      gencost_avgperiod(igen_gfo)(1:5).EQ.'MONTH' ) THEN
+        IF (gencost_avgperiod(igen_gfo).EQ.'month' .OR.
+     &      gencost_avgperiod(igen_gfo).EQ.'MONTH' ) THEN
           use_mon_int = use_mon_int + 1
-        ELSEIF (gencost_avgperiod(igen_gfo)(1:3).EQ.'day' .OR.
-     &          gencost_avgperiod(igen_gfo)(1:3).EQ.'DAY' ) THEN
+        ELSE
           use_day_int = use_day_int + 1
         ENDIF
        ENDIF
-
-       IF ( use_mon_int .GT. 0 .AND. use_day_int .GT. 0) THEN
+       IF ( use_mon_int .GT. 0 .AND. use_day_int .GT. 0 ) THEN
          WRITE(msgBuf,'(2A)')
      &    'ECCO_CHECK: cost sshv4: data set TP/ERS/GFO must be all ',
      &    'daily or monthly, but cannot be mixed.'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                   SQUEEZE_RIGHT , myThid )
-         CALL PRINT_ERROR( msgBuf , myThid )
+     &                       SQUEEZE_RIGHT, myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R ECCO_CHECK'
        ENDIF
       ENDIF

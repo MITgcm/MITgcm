@@ -276,19 +276,16 @@ c switch for excluding global mean
 
 C Check to determine use_mon and nrec_year. Check all igen_[tp,ers,gfo]
 C in case some of the data files are not defined.
-      use_mon=.FALSE.
-      IF ( igen_tp.GT.0 .AND.
-     &    (gencost_avgperiod(igen_tp)(1:5) .EQ.'month' .OR.
-     &     gencost_avgperiod(igen_tp)(1:5) .EQ.'MONTH') )
-     &    use_mon = .TRUE.
-      IF ( igen_ers.GT.0 .AND.
-     &    (gencost_avgperiod(igen_ers)(1:5) .EQ.'month' .OR.
-     &     gencost_avgperiod(igen_ers)(1:5) .EQ.'MONTH') )
-     &    use_mon = .TRUE.
-      IF ( igen_gfo.GT.0 .AND.
-     &     (gencost_avgperiod(igen_gfo)(1:5).EQ.'month' .OR.
-     &      gencost_avgperiod(igen_gfo)(1:5).EQ.'MONTH' ) )
-     &    use_mon = .TRUE.
+      use_mon = .FALSE.
+      IF ( igen_tp.GT.0 ) use_mon = use_mon .OR.
+     &     gencost_avgperiod(igen_tp) .EQ.'month' .OR.
+     &     gencost_avgperiod(igen_tp) .EQ.'MONTH'
+      IF ( igen_ers.GT.0 ) use_mon = use_mon .OR.
+     &     gencost_avgperiod(igen_ers) .EQ.'month' .OR.
+     &     gencost_avgperiod(igen_ers) .EQ.'MONTH'
+      IF ( igen_gfo.GT.0 ) use_mon = use_mon .OR.
+     &      gencost_avgperiod(igen_gfo).EQ.'month' .OR.
+     &      gencost_avgperiod(igen_gfo).EQ.'MONTH'
 
 c minimum number of observations to consider re-referenced MDT
       nrec_year=366
@@ -488,7 +485,7 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
      &                     SQUEEZE_RIGHT , myThid)
 #endif
        if (using_tpj)
-     & call cost_sla_read_yd( tpfi, tpsta,use_mon,
+     & call cost_sla_read_yd( tpfi, tpsta, use_mon,
      &                tpob, tpma,
      &                year, irec, myThid )
        if (using_ers)
