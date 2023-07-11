@@ -34,6 +34,7 @@ c     == global variables ==
 #include "ECCO.h"
 
 c     == routine arguments ==
+C     use_mon :: switch from using daily to monthly data if true
       character*(MAX_LEN_FNAM) sla_file
       integer sla_startdate(4)
       _RL sla_period
@@ -73,8 +74,6 @@ cnew(
       character*(80) fnametmp
       logical exst
 cnew)
-
-      integer beginlocal, beginmodel, obsrec
       integer mody, modm
       _RL daysperavgperiod
 
@@ -92,20 +91,12 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-
       IF (use_mon) THEN
-        beginlocal = sla_startdate(1)/10000
-        beginmodel = modelstartdate(1)/10000
-        obsrec =  ( beginmodel - beginlocal )*nmonthyear
-     &          + ( mod(modelstartdate(1)/100,100)
-     &             -mod(sla_startdate(1)/100,100) )
-     &          + irec
-
+        daysperavgperiod = 30.5
         mody = modelstartdate(1)/10000
         modm = modelstartdate(1)/100 - mody*100
         yobs = mody + INT((modm-1+irec-1)/12)
         sshrec = 1 + MOD(modm-1+irec-1,12)
-        daysperavgperiod = 30.5
 
       ELSE
 
