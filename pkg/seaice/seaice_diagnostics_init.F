@@ -376,15 +376,6 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-C term for dheff associated with flooding
-      diagName  = 'SIdhefld'
-      diagTitle = 'dHEFF associated with flooding'
-      diagUnits = 'm               '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 #ifdef SEAICE_USE_GROWTH_ADX
       diagName  = 'SIeprflx'
       diagTitle = 'heat flux adjustment associated with EmPmR'

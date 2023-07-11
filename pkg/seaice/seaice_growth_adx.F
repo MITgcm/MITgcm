@@ -191,7 +191,7 @@ C   used in budget
       _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIhsnwNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CAB
-      _RL d_HEFFbyFlood                (1:sNx,1:sNy)
+      _RL d_HEFFbyFLOODING              (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
 C     to sea ice (Joules)
@@ -412,7 +412,7 @@ C NEW VARIABLE NAMES
           S_h(I,J)       = 0.0 _d 0
           S_hsnow(I,J)   = 0.0 _d 0
 
-          d_HEFFbyFlood(I,J) = 0.0 _d 0
+          d_HEFFbyFLOODING(I,J) = 0.0 _d 0
 #ifdef ALLOW_SALT_PLUME
           IceGrowthRateInLeads            (I,J) = 0. _d 0
           leadPlumeFraction               (I,J) = 0. _d 0
@@ -1223,18 +1223,21 @@ C     convert snow to ice if submerged.
           DO I=1,sNx
            tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
      &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
-           d_HEFFbyFlood(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
-           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFlood(I,J)
+           d_HEFFbyFLOODING(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
+           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFLOODING(I,J)
            HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
-     &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
+     &                           - d_HEFFbyFLOODING(I,J)*ICE2SNOW
 
           ENDDO
          ENDDO
 c     SEAICEuseFlooding
         ENDIF
 #ifdef ALLOW_DIAGNOSTICS
-        IF (useDiagnostics) CALL DIAGNOSTICS_FILL(
-     &    d_HEFFbyFLood,'SIdhefld',0,1,3,bi,bj,myThid)
+        IF (useDiagnostics) THEN
+         tmpscal1=1. _d 0 * recip_deltaTtherm
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyFLOODING,
+     &      tmpscal1,1,'SIdHbFLO',0,1,3,bi,bj,myThid)
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C     Sea Ice Load on the sea surface.
