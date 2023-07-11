@@ -92,14 +92,13 @@ C     i,j,bi,bj  :: Loop counters
       _RL WFAU, WFAV, WFAU2, WFAV2
       _RL S1, S2, S1A, S2A
       _RL recip_deltaT
-      _RL residini
 
 #ifdef SEAICE_LSR_FLEX
+      _RL residini
       _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
-      _RL residkm1, residkm2, residiniFac
+      _RL residkm1, residkm2
       _RL residUm, residVm
 #endif /* SEAICE_LSR_FLEX */
-
 
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -135,8 +134,6 @@ C     intermediate time level centered (C) between n and n-1
 C     auxillary fields
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL uTmp2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vTmp2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     auxillary fields to store intermediate FORCEX/Y0
       _RL fxTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fyTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -156,7 +153,9 @@ C     tkey  :: tape key (depends on tile indices and lnkey)
 #endif
       _RL COSWAT
       _RS SINWAT
+#ifndef SEAICE_LSR_FLEX
       _RL UERR
+#endif
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
@@ -171,14 +170,10 @@ C     tkey  :: tape key (depends on tile indices and lnkey)
 #endif /* SEAICE_ALLOW_FREEDRIFT */
       _RL areaMinLoc
 
-      LOGICAL CompResIni
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       printResidual = debugLevel.GE.debLevA
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
-
-      CompResIni = .TRUE.
 
 C     extra overlap for (restricted) additive Schwarz method
       jMin = 1   - SEAICE_OLy
@@ -571,7 +566,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_DEBUG */
 
 C--   Calculate initial residual of the linearised system
-      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 .OR. CompResIni)
+      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 )
      & CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
@@ -685,15 +680,15 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
       ICOUNT1 = linearIterLoc
       ICOUNT2 = linearIterLoc
 
+#ifdef SEAICE_LSR_FLEX
       residini = SQRT(residUini*residUini+residVini*residVini)
 
-      IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GT. 2 ) exit
+      IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GT. 2 ) EXIT
 
-#ifdef SEAICE_LSR_FLEX
 C     From Lemieux et al. 2010
 C       LSRflexFac = MIN(LSRflexFac/residkm2*0.9,LSRflexFac)
 C     Other possibilities
-      LSRflexFac = 1 _d 0 / (1 _d 0 + ABS( LOG10(residini) ) )
+      LSRflexFac = 1. _d 0 / (1. _d 0 + ABS( LOG10(residini) ) )
 C       LSRflexFac = ABS(LOG10(residkm2))/ABS(LOG10(residkm1))
 C       LSRflexFac = (residkm1/residkm2)/(1+ABS(LOG10(residini)))
       LSRflexFac = MIN(LSRflexFac, 0.99 _d 0 )
@@ -703,15 +698,17 @@ C       IF ( ipass .LE. 3 ) THEN
 C        LSRflexFac = 0.99 _d 0
 C       ENDIF
 
-      IF ( printResidual ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(standardMessageUnit,'(A,1X,I9,1X,F10.6)')
-     &    ' SEAICE_LSR: FLEX_FACTOR =', ipass, LSRflexFac
-       _END_MASTER( myThid )
-      ENDIF
-
       LSR_ERRORfu = residUini*LSRflexFac
       LSR_ERRORfv = residVini*LSRflexFac
+
+      IF ( printResidual ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(standardMessageUnit,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
+     &      ' SEAICE_LSR: ipass, FLEX_FACTOR,'//
+     &      ' LSR_ERRORfu, LSR_ERRORfv, residIni =',
+     &      ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residini
+       _END_MASTER( myThid )
+      ENDIF
 
 #endif /* SEAICE_LSR_FLEX */
 
@@ -850,29 +847,25 @@ C     end bi,bj-loops
 #endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
 
 #ifdef SEAICE_LSR_FLEX
-        IF ( MOD(m,SOLV_NCHECK) .EQ. 0 ) THEN
+        IF ( MOD(m,SOLV_NCHECK) .EQ. 0
+     &       .AND. (doIterate4u.OR.doIterate4v) ) THEN
          CALL SEAICE_RESIDUAL(
      I       rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I       AU, BU, CU, AV, BV, CV, uIce, vIce,
-     O       residUm, residVm, uTmp2, vTmp2,
+     O       residUm, residVm, uTmp, vTmp,
      I       printResidual, myIter, myThid )
-         IF ( doIterate4u ) THEN
-          IF( (residUm.LT.LSR_ERRORfu) ) THEN
-           ICOUNT1=m
-           doIterate4u = .FALSE.
-          ENDIF
+         IF( residUm.LT.LSR_ERRORfu ) THEN
+          ICOUNT1=m
+          S1 = residUm
+          doIterate4u = .FALSE.
          ENDIF
-
-         IF ( doIterate4v ) THEN
-          IF( (residVm.LT.LSR_ERRORfv) ) THEN
-           ICOUNT2=m
-           doIterate4v = .FALSE.
-          ENDIF
+         IF( residVm.LT.LSR_ERRORfv ) THEN
+          ICOUNT2=m
+          S2 = residVm
+          doIterate4v = .FALSE.
          ENDIF
         ENDIF
-
 #else /* SEAICE_LSR_FLEX */
-
         IF ( doIterate4u.AND.MOD(m,SOLV_NCHECK).EQ.0) THEN
          S1=ZERO
          DO bj=myByLo(myThid),myByHi(myThid)
@@ -934,9 +927,6 @@ C--    end doIterate4u or doIterate4v
 #endif /* SEAICE_LSR_FLEX */
 
 C ITERATION END -----------------------------------------------------
-C       residm=SQRT(residUm*residUm+residVm*residVm)
-
-C       if (residm.LT.SEAICEnonLinTol) exit
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -1217,12 +1207,17 @@ C--   Calculate residual of the linearised system
       IF ( calcMeanResid ) THEN
        _GLOBAL_SUM_RL( residU, myThid )
        _GLOBAL_SUM_RL( residV, myThid )
-C     scale residuals by globalArea so that they do not get ridiculously large
-C        IF ( residU.GT.0. ) residU = SQRT(residU/globalArea)
-C        IF ( residV.GT.0. ) residV = SQRT(residV/globalArea)
-CDR   scale residuals by the number of grid cells so that they do not get ridiculously large
+#ifdef SEAICE_LSR_FLEX
+C     Scale residuals by the number of grid cells so that they do not
+C     get ridiculously large.
        IF ( residU.GT.0. ) residU = SQRT(residU)/(Nx*Ny)
        IF ( residV.GT.0. ) residV = SQRT(residV)/(Nx*Ny)
+#else
+C     Scale residuals by globalArea so that they do not get ridiculously
+C     large.
+       IF ( residU.GT.0. ) residU = SQRT(residU/globalArea)
+       IF ( residV.GT.0. ) residV = SQRT(residV/globalArea)
+#endif
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
