@@ -39,8 +39,6 @@ C     myThid - Thread number for this instance of the routine.
 
 #ifdef ALLOW_COST_STREAMICE
 C     == Local variables
-      _RL thetaRef, HAF
-
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
@@ -70,7 +68,7 @@ C     == Local variables
      &    smooth_cost_bglen_gl, cost_misfit_gl,
      &    cost_thin_gl, cost_misfit_norm_gl,
      &    cost_vel_td_gl
-      _RL rhoi, rhow, r, i_r, h, hf
+      _RL rhoi, rhow, r, i_r, h, hf, r_low_tmp, haf
 
 
       jtlo = mybylo(mythid)
@@ -163,19 +161,6 @@ C--   Calculate cost function on tile of this instance
      &               bglenval) /
      &               (dyC(i,j+1,bi,bj))
 
-!             dCdx = (C_basal_friction(i+1,j,bi,bj)-
-!     &               C_basal_friction(i,j,bi,bj)) /
-!     &              (dxC(i+1,j,bi,bj))
-!             dCdy = (C_basal_friction(i,j+1,bi,bj)-
-!     &               C_basal_friction(i,j,bi,bj)) /
-!     &               (dyC(i,j+1,bi,bj))
-
-!             dBdx = (B_glen(i+1,j,bi,bj)-
-!     &               B_glen(i,j,bi,bj)) /
-!     &              (dxC(i+1,j,bi,bj))
-!             dBdy = (B_glen(i,j+1,bi,bj)-
-!     &               B_glen(i,j,bi,bj)) /
-!     &               (dyC(i,j+1,bi,bj))
 
               dRdx = (R_low_si(i+1,j,bi,bj)-
      &               R_low_si(i,j,bi,bj)) /
@@ -284,6 +269,36 @@ C--   Calculate cost function on tile of this instance
 #ifdef ALLOW_STREAMICE_TC_COST
              ENDIF
 #endif
+    
+             if (streamice_do_verification_cost) then
+              if (streamice_hmask(i,j,bi,bj).eq.1.0) then
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
+     &         u_streamice(i,j,bi,bj)**2+v_streamice(i,j,bi,bj)**2+
+     &         h_streamice(i,j,bi,bj)**2
+              endif
+             endif
+
+             if (streamice_do_vaf_cost) then
+              if (streamice_hmask(i,j,bi,bj).eq.1.0) then
+
+               r_low_tmp = R_low_si (i,j,bi,bj)
+
+               if (r_low_tmp .ge. 0.0) then
+                HAF = h_streamice (i,j,bi,bj)
+               else
+                HAF = h_streamice (i,j,bi,bj) +
+     &           (streamice_density_ocean_avg / streamice_density
+     &           * r_low_tmp)
+               endif
+
+               if (HAF .gt. 0.0) then
+                tile_fc(bi,bj) = tile_fc(bi,bj) +
+     &          HAF * rA (i,j,bi,bj)
+               endif
+
+              endif
+             endif       
+
             end do
           end do
 
@@ -316,20 +331,30 @@ C--   Calculate cost function on tile of this instance
       CALL GLOBAL_SUM_TILE_RL
      &   ( cost_vel_streamice, cost_vel_td_gl, myThid )
 
-      write(standardmessageunit,'(A,D22.15)') 'fric smooth contr = ', 
+      if (STREAMICE_do_timedep_cost .or. 
+     &    STREAMICE_do_snapshot_cost) then
+
+       write(standardmessageunit,'(A,D22.15)') 'fric smooth contr = ', 
      &   smooth_cost_fric_gl
-      write(standardmessageunit,'(A,D22.15)') 'bglen smooth contr = ', 
+       write(standardmessageunit,'(A,D22.15)') 'bglen smooth contr = ', 
      &   smooth_cost_bglen_gl
-      write(standardmessageunit,'(A,D22.15)') 'prior smooth contr = ', 
+       write(standardmessageunit,'(A,D22.15)') 'prior smooth contr = ', 
      &   smooth_cost_prior_gl
-      write(standardmessageunit,'(A,D22.15)') 'vel misfit = ', 
+       write(standardmessageunit,'(A,D22.15)') 'vel misfit = ', 
      &   cost_misfit_gl
-      write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ', 
+       write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ', 
      &   cost_misfit_norm_gl
-      write(standardmessageunit,'(A,D22.15)') 'thinning contr = ', 
+
+      endif
+
+      if (STREAMICE_do_timedep_cost) then
+ 
+       write(standardmessageunit,'(A,D22.15)') 'thinning contr = ', 
      &   cost_thin_gl
-      write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ', 
+       write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ', 
      &   cost_vel_td_gl
+
+      endif
 
 #endif
 

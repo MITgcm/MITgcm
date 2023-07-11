@@ -170,7 +170,9 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_wgt_prior_bglen,
      &     streamice_wgt_prior_gen,
      &     STREAMICE_do_snapshot_cost,
-     &     STREAMICE_do_timedep_cost
+     &     STREAMICE_do_timedep_cost,
+     &     STREAMICE_do_verification_cost,
+     &     STREAMICE_do_vaf_cost
 #ifdef ALLOW_STREAMICE_TC_COST
      &     ,streamice_vel_cost_timesteps,
      &     streamice_surf_cost_timesteps
@@ -399,6 +401,8 @@ c       STREAMICE_hybrid_stress= .FALSE.
       streamice_wgt_prior_gen = 0.
       STREAMICE_do_snapshot_cost = .false.
       STREAMICE_do_timedep_cost = .false.
+      STREAMICE_do_verification_cost = .false.
+      STREAMICE_do_vaf_cost = .false.
 #ifdef ALLOW_STREAMICE_TC_COST
       do iarr = 1, streamiceMaxCostLevel
        streamice_vel_cost_timesteps(iarr) = -1
@@ -504,12 +508,20 @@ C     Read parameters from open data file
      &    'STREAMICE_READPARMS: read cost param block'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
+#endif      
+
+#ifndef STREAMICE_GEOM_FILE_SETUP
+      READ(UNIT=iUnit,NML=STREAMICE_PARM03)
+      WRITE(msgBuf,'(A)')
+     &    'STREAMICE_READPARMS: read bound condn block'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT , 1)
+#endif  
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
-#endif      
 
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c

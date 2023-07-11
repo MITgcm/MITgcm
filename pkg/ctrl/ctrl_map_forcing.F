@@ -52,6 +52,7 @@ C     == Local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER bi,bj
       INTEGER i,j
+      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnam
 #endif
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -62,12 +63,17 @@ C     == Local variables ==
       _RL     tmpVY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+#ifdef ALLOW_STREAMICE
+      _RL LOCsumTile(nSx,nSy), LOCsumGlob, itot_area
+#endif
+#endif
 
 c     == end of interface ==
 CEOP
 
-#ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
+#ifndef ALLOW_OPENAD
 
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),myBxHi(myThid)
@@ -87,6 +93,7 @@ CEOP
         DO j = 1,sNy
          DO i = 1,sNx
           DO iarr = 1, maxCtrlTim2D
+           temp_genarr_fnam=xx_gentim2d_file(iarr)
            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fe') tmpUE
      &       (i,j,bi,bj)=tmpUE(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fn') tmpVN
@@ -109,6 +116,7 @@ CEOP
           fu(i,j,bi,bj)=fu(i,j,bi,bj)+tmpUX(i,j,bi,bj)
           fv(i,j,bi,bj)=fv(i,j,bi,bj)+tmpVY(i,j,bi,bj)
           DO iarr = 1, maxCtrlTim2D
+           temp_genarr_fnam=xx_gentim2d_file(iarr)
            IF (xx_gentim2d_file(iarr)(1:7).EQ.'xx_qnet') Qnet
      &       (i,j,bi,bj)=Qnet(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_empmr') EmPmR
@@ -141,28 +149,76 @@ CEOP
        CALL EXCH_XY_RS( pLoad , myThid )
        CALL EXCH_XY_RS( saltFlux , myThid )
        CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
+#endif
 
 #ifdef ALLOW_STREAMICE
        IF ( useStreamice ) THEN
-        DO iarr = 1, maxCtrlTim2D
-         IF (xx_gentim2d_file(iarr)(1:17).EQ.'xx_bdot_streamice') THEN
-          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j = 1-OLy,sNy+OLy
-             DO i = 1-OLx,sNx+OLx
-              bdot_streamice(i,j,bi,bj) = xx_gentim2d(i,j,bi,bj,iarr)
-             ENDDO
+
+        itot_area=0.0
+        IF (STREAMICE_use_global_ctrl) then
+
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           LOCsumTile(bi,bj)=0. _d 0
+           DO j = 1,sNy
+            DO i = 1,sNx
+             LOCsumTile(bi,bj) = LOCsumTile(bi,bj)
+     &         + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
-          CALL EXCH_XY_RL( bdot_streamice, myThid )
-         ENDIF
+         ENDDO
+
+         CALL GLOBAL_SUM_TILE_RL( LOCsumTile, LOCsumGlob, myThid )
+         itot_area = 1.0/LOCsumGlob
+        ENDIF
+
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+            DO iarr = 1, maxCtrlTim2D
+             temp_genarr_fnam=xx_gentim2d_file(iarr)
+
+             print *,"GOT HERE CTRLMAP 1", temp_genarr_fnam
+
+             IF (temp_genarr_fnam(1:8).EQ.'xx_bglen')
+     &        B_glen(i,j,bi,bj) = 
+     &         xx_gentim2d(i,j,bi,bj,iarr)+
+     &         B_glen_init(i,j,bi,bj)
+             IF (temp_genarr_fnam(1:7).EQ.'xx_beta')
+     &        C_basal_friction(i,j,bi,bj) = 
+     &         xx_gentim2d(i,j,bi,bj,iarr)+
+     &         C_basal_fric_init(i,j,bi,bj)
+             IF (temp_genarr_fnam(1:17).EQ.'xx_bdot_streamice')
+     &        Bdot_streamice(i,j,bi,bj) = 
+     &         xx_gentim2d(i,j,bi,bj,iarr)
+             IF (temp_genarr_fnam(1:11).EQ.'xx_bdot_max') THEN
+              IF (STREAMICE_use_global_ctrl .and. 
+     &            xx_gentim2d_glosum(iarr)) then
+               streamice_bdot_maxmelt_v(i,j,bi,bj) = 
+     &          xx_gentim2d(i,j,bi,bj,iarr)*itot_area
+              ELSE
+               streamice_bdot_maxmelt_v(i,j,bi,bj) = 
+     &          xx_gentim2d(i,j,bi,bj,iarr)
+              ENDIF
+             ENDIF
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDDO
+
+        CALL EXCH_XY_RL( streamice_bdot_maxmelt_v, myThid )
+        CALL EXCH_XY_RL( C_basal_friction, myThid )
+        CALL EXCH_XY_RL( B_glen, myThid )
+        CALL EXCH_XY_RL( bdot_streamice, myThid )
        ENDIF
+
 #endif
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
-#endif /* ndef ALLOW_OPENAD */
 
       RETURN
       END

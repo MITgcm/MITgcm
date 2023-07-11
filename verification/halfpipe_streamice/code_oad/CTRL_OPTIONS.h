@@ -72,7 +72,7 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
 C       >>> Generic Control.
-#define ALLOW_GENARR2D_CONTROL
+!#define ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
 #define ALLOW_GENTIM2D_CONTROL
 
