@@ -39,6 +39,9 @@ C !USES: ============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GGL90.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
