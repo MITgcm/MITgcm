@@ -61,16 +61,18 @@ C     myThid    :: Thread on which I am working.
       INTEGER nIterMin
       INTEGER myThid
 
+#ifdef ALLOW_PCSI
 C     !LOCAL VARIABLES:
 C     bi, bj     :: tile index in X and Y.
-C     i, j, it2d :: Loop counters ( it2d counts CG iterations )
-C     actualIts  :: actual CG iteration number
+C     i, j, it2d :: Loop counters ( it2d counts iterations )
+C     actualIts  :: actual iteration number
 C     err_sq     :: Measure of the square of the residual of Ax - b.
 C     csalpha    :: iteration parameters by eigenvalues
 C     csbeta     :: iteration parameters by eigenvalues
 C     csy        :: iteration parameters by eigenvalues
 C     csomga     :: iteration parameters by eigenvalues
 C     pcsi_min   :: used to store solution corresponding to lowest residual.
+C     pcsi_t     :: local copy of psci_x with smaller overlap
 C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER i, j, it2d
@@ -80,10 +82,11 @@ C     msgBuf     :: Informational/error message buffer
       _RL    rhsMax
       _RL    rhsNorm
       _RL    pcsi_min(1:sNx,1:sNy,nSx,nSy)
-      _RL    pcsi_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    pcsi_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    pcsi_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL    pcsi_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL    csalpha,csbeta,csy,csomga
+      _RL    pcsi_t(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL    csalpha,csbeta,csy,csomga,recip_csy
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL printResidual
 CEOP
@@ -93,6 +96,7 @@ C--   Compute iteration parameters by eigenvalues
       csbeta = (PcsiMaxEigs+PcsiMinEigs)/(PcsiMaxEigs-PcsiMinEigs)
       csy = csbeta/csalpha
       csomga = 2. _d 0/csy
+      recip_csy = 1. _d 0/csy
 
 C--   Initialise auxiliary constant, some output variable and inverter
       pcsiTolerance_sq = PcsiTolerance*PcsiTolerance
@@ -142,13 +146,14 @@ C-    Initialise local working arrays:
           pcsi_q(i,j,bi,bj) = 0. _d 0
           pcsi_r(i,j,bi,bj) = 0. _d 0
           pcsi_s(i,j,bi,bj) = 0. _d 0
+          pcsi_t(i,j,bi,bj) = pcsi_x(i,j,bi,bj)
          ENDDO
         ENDDO
         IF ( nIterMin.GE.0 ) THEN
 C-    Initialise saved solution
          DO j=1,sNy
           DO i=1,sNx
-           pcsi_min(i,j,bi,bj) = pcsi_x(i,j,bi,bj)
+           pcsi_min(i,j,bi,bj) = pcsi_t(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -159,11 +164,11 @@ C-    Initialise saved solution
         DO j=1,sNy
          DO i=1,sNx
           pcsi_r(i,j,bi,bj) = pcsi_b(i,j,bi,bj) -
-     &    (aW2d(i  ,j  ,bi,bj)*pcsi_x(i-1,j  ,bi,bj)
-     &    +aW2d(i+1,j  ,bi,bj)*pcsi_x(i+1,j  ,bi,bj)
-     &    +aS2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j-1,bi,bj)
-     &    +aS2d(i  ,j+1,bi,bj)*pcsi_x(i  ,j+1,bi,bj)
-     &    +aC2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j  ,bi,bj)
+     &    (aW2d(i  ,j  ,bi,bj)*pcsi_t(i-1,j  ,bi,bj)
+     &    +aW2d(i+1,j  ,bi,bj)*pcsi_t(i+1,j  ,bi,bj)
+     &    +aS2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j-1,bi,bj)
+     &    +aS2d(i  ,j+1,bi,bj)*pcsi_t(i  ,j+1,bi,bj)
+     &    +aC2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j  ,bi,bj)
      &    )
           errTile(bi,bj) = errTile(bi,bj)
      &                 + pcsi_r(i,j,bi,bj)*pcsi_r(i,j,bi,bj)
@@ -203,7 +208,7 @@ C-    Initialise saved solution
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          pcsi_q(i,j,bi,bj) = (1. _d 0/csy)*pcsi_s(i,j,bi,bj)
+          pcsi_q(i,j,bi,bj) = recip_csy*pcsi_s(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -213,27 +218,23 @@ C-    Initialise saved solution
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          pcsi_x(i,j,bi,bj) = pcsi_x(i,j,bi,bj) + pcsi_q(i,j,bi,bj)
+          pcsi_t(i,j,bi,bj) = pcsi_t(i,j,bi,bj) + pcsi_q(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-#ifdef xy_rl
-      CALL EXCH_S3D_xy_RL(pcsi_x, myThid)
-#else
-      _EXCH_XY_RL(pcsi_x, myThid )
-#endif
+      CALL EXCH_S3D_RL(pcsi_t, 1, myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
           pcsi_r(i,j,bi,bj) = pcsi_b(i,j,bi,bj) -
-     &    (aW2d(i  ,j  ,bi,bj)*pcsi_x(i-1,j  ,bi,bj)
-     &    +aW2d(i+1,j  ,bi,bj)*pcsi_x(i+1,j  ,bi,bj)
-     &    +aS2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j-1,bi,bj)
-     &    +aS2d(i  ,j+1,bi,bj)*pcsi_x(i  ,j+1,bi,bj)
-     &    +aC2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j  ,bi,bj)
+     &    (aW2d(i  ,j  ,bi,bj)*pcsi_t(i-1,j  ,bi,bj)
+     &    +aW2d(i+1,j  ,bi,bj)*pcsi_t(i+1,j  ,bi,bj)
+     &    +aS2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j-1,bi,bj)
+     &    +aS2d(i  ,j+1,bi,bj)*pcsi_t(i  ,j+1,bi,bj)
+     &    +aC2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j  ,bi,bj)
      &    )
          ENDDO
         ENDDO
@@ -278,33 +279,28 @@ C--     step 5 : compute X increment and update X and R
            DO i=1,sNx
             pcsi_q(i,j,bi,bj) = csomga*pcsi_s(i,j,bi,bj)+
      &                        (csy*csomga-1. _d 0)*pcsi_q(i,j,bi,bj)
-            pcsi_x(i,j,bi,bj) = pcsi_x(i,j,bi,bj) + pcsi_q(i,j,bi,bj)
+            pcsi_t(i,j,bi,bj) = pcsi_t(i,j,bi,bj) + pcsi_q(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-#ifdef xy_rl
-        CALL EXCH_S3D_xy_RL(pcsi_x, myThid)
-#else
-        _EXCH_XY_RL(pcsi_x, myThid )
-#endif
+        CALL EXCH_S3D_RL(pcsi_t, 1, myThid)
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
             pcsi_r(i,j,bi,bj) = pcsi_b(i,j,bi,bj) -
-     &      (aW2d(i  ,j  ,bi,bj)*pcsi_x(i-1,j  ,bi,bj)
-     &      +aW2d(i+1,j  ,bi,bj)*pcsi_x(i+1,j  ,bi,bj)
-     &      +aS2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j-1,bi,bj)
-     &      +aS2d(i  ,j+1,bi,bj)*pcsi_x(i  ,j+1,bi,bj)
-     &      +aC2d(i  ,j  ,bi,bj)*pcsi_x(i  ,j  ,bi,bj)
+     &      (aW2d(i  ,j  ,bi,bj)*pcsi_t(i-1,j  ,bi,bj)
+     &      +aW2d(i+1,j  ,bi,bj)*pcsi_t(i+1,j  ,bi,bj)
+     &      +aS2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j-1,bi,bj)
+     &      +aS2d(i  ,j+1,bi,bj)*pcsi_t(i  ,j+1,bi,bj)
+     &      +aC2d(i  ,j  ,bi,bj)*pcsi_t(i  ,j  ,bi,bj)
      &      )
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
 
         actualIts = it2d
 C     test for convergence
@@ -332,7 +328,7 @@ C-       Store lowest residual solution
             DO bi=myBxLo(myThid),myBxHi(myThid)
              DO j=1,sNy
               DO i=1,sNx
-               pcsi_min(i,j,bi,bj) = pcsi_x(i,j,bi,bj)
+               pcsi_min(i,j,bi,bj) = pcsi_t(i,j,bi,bj)
               ENDDO
              ENDDO
             ENDDO
@@ -352,6 +348,10 @@ C-       Store lowest residual solution
            EXIT iterationLoop
          ENDIF
         ENDIF
+C     We save one exchange by moving the exchange call to the end of the
+C     loop. The full pcsi_r is only needed at the beginning of the loop.
+        CALL EXCH_S3D_RL( pcsi_r, 1,  myThid )
+
       ENDDO iterationLoop
 
       IF ( nIterMin.GE.0 .AND. err_sq .GT. minResidualSq ) THEN
@@ -361,6 +361,16 @@ C-    use the lowest residual solution (instead of current one = last residual)
           DO j=1,sNy
            DO i=1,sNx
              pcsi_x(i,j,bi,bj) = pcsi_min(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             pcsi_x(i,j,bi,bj) = pcsi_t(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -392,6 +402,8 @@ C--   Return parameters to caller
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
+
+#endif /* ALLOW_PCSI */
 
       RETURN
       END
