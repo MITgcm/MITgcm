@@ -66,7 +66,9 @@ C--   Init. scalars
       cg2dNorm = 0. _d 0
       cg2dNormaliseRHS = .FALSE.
       cg2dtolerance = 0. _d 0
+#ifdef ALLOW_PCSI
       Pcsitolerance = 0. _d 0
+#endif
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
