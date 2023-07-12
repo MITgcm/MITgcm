@@ -662,6 +662,8 @@ C--   Set model configuration (fixed arrays)
 
 # if defined( ALLOW_TANGENTLINEAR_RUN )
 
+# ifndef ALLOW_TAPENADE
+
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
 #  endif
@@ -669,7 +671,13 @@ C--   Set model configuration (fixed arrays)
       CALL G_THE_MAIN_LOOP ( myTime, myIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',myThid)
 
+# endif /* ndef ALLOW_TAPENADE */
+
 # elif defined( ALLOW_ADJOINT_RUN )
+
+# ifdef ALLOW_TAPENADE
+        CALL THE_MAIN_LOOP_B( myTime, myIter, myThid )
+# else /* ALLOW_TAPENADE */
 
 #  ifdef ALLOW_DIVIDED_ADJOINT
 C-- The following assumes the TAF option '-pure'
@@ -700,6 +708,7 @@ C-- The following assumes the TAF option '-pure'
       CALL ADTHE_MAIN_LOOP ( myThid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', myThid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
+# endif /* ALLOW_TAPENADE */
 
 # else /* forward run only within AD setting */
 
@@ -714,7 +723,7 @@ C--   Call time stepping loop of full model
 # endif /* forward run only within AD setting */
 
 # ifdef ALLOW_CTRL
-# ifndef EXCLUDE_CTRL_PACK
+#  ifndef EXCLUDE_CTRL_PACK
       IF ( useCTRL ) THEN
       IF ( lastdiva .AND. doMainPack ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',myThid)
@@ -728,8 +737,8 @@ C--   Call time stepping loop of full model
          ENDIF
       ENDIF
       ENDIF
-# endif /* EXCLUDE_CTRL_PACK */
-# endif
+#  endif /* EXCLUDE_CTRL_PACK */
+# endif /* ALLOW_CTRL */
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN

@@ -6,6 +6,11 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_OPTIONS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -117,6 +122,33 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "optim.h"
+#  include "ctrl.h"
+#  include "CTRL_GENARR.h"
+#  include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS_FIELDS.h"
+# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
+# ifdef ALLOW_STREAMICE
+#  include "STREAMICE.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid  :: my Thread Id number

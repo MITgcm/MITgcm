@@ -8,8 +8,9 @@ usage()
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
     echo " ---- type of test : ----"
-    echo "  (-tlm)                   perform a Tangent Linear run"
-    echo "  (-adm|-ad)               perform an adjoint run"
+    echo "  (-tlm)                   perform a Tangent-Linear run (defaut: using TAF)"
+    echo "  (-adm|-ad)               perform an Adjoint run (default: using TAF)"
+    echo "  (-tap)                   use Tapenade for Adjoint or Tangent-Linear run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
     echo "  (-oadsingularity|-oadsngl) STRING"
     echo "                           path to singularity container with OpenAD"
@@ -212,13 +213,13 @@ testoutput_run()
 	listChk=$DEF_CHECK_LIST
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
 	if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
-	if test $KIND = 1 ; then kd='g_';
+	if test $KIND = 1 -o $KIND = 4 ; then kd='g_';
 	  #  TLM use same input_ad/tr_checklist --> convert
 	  listChk=`echo $listChk | sed 's/^adm/tlm/' | sed 's/ adm/ tlm/g'`
 	  if test -r $1/$2/tr_checklist.tlm ; then listChk=`cat $1/$2/tr_checklist.tlm` ; fi
-	elif test $KIND = 2 ; then kd='ad';
+	elif test $KIND = 2 -o $KIND = 5 ; then kd='ad';
 	  if test -r $1/$2/tr_checklist.adm ; then listChk=`cat $1/$2/tr_checklist.adm` ; fi
-	elif test $KIND = 4 ; then kd='ad';
+	elif test $KIND = 6 ; then kd='ad';
         else kd=''; fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listChk='$listChk'" 1>&2 ; fi
 	# remove 1rst var and expand the list: + => min max mean s.d
@@ -394,8 +395,10 @@ genmakemodel()
 	    if test "x$MKDEPEND" != x ; then
 		command="$command -makedepend=$MKDEPEND"
 	    fi
-	    if test $KIND = 4 ; then
+	    if test $KIND = 6 ; then
 		command="$command -oad -mods=../$code_dir"
+	    elif [ $KIND -ge 3 ] ; then
+		command="$command -tap -mods=../$code_dir"
 	    else
 		command="$command -mods=../$code_dir"
 	    fi
@@ -624,6 +627,9 @@ makemodel()
 	fi
 	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
 	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
+    fi
+    if test -f make.tr_log && test $KIND = 4 -o $KIND = 5 ; then
+	grep '^Tapenade ' make.tr_log | tail -n 1 >> $CDIR"/summary.txt"
     fi
     if test $mk_fail != 0 ; then return $mk_fail ; fi
     )
@@ -1140,8 +1146,9 @@ OADSINGULARITY=
 CHECK_PASS=f
 
 #- type of testing (KIND):
-#   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
-#   KIND=2 : Adjoint with TAF ;     KIND=4 : Adjoint with OpenAD
+#   KIND=0 : forward (= default) ;     KIND=6 : Adjoint with OpenAD
+#   KIND=1 : Tangent-Linear with TAF ; KIND=2 : Adjoint with TAF ;
+#   KIND=4 : Tang-Lin. with Tapenade ; KIND=5 : Adjoint with Tapenade ;
 KIND=0
 
 # list of pTracers to check for monitor output
@@ -1240,14 +1247,17 @@ for ac_option ; do
 
 	-mth) MULTI_THREAD=t ;;
 
-	-tlm) if test $KIND = 0 ; then KIND=1 ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-tlm) if test $KIND = 0 -o $KIND = 3 ; then KIND=`expr $KIND + 1`; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
-	-adm | -ad) if test $KIND = 0 ; then KIND=2 ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-adm | -ad) if test $KIND = 0 -o $KIND = 3 ; then KIND=`expr $KIND + 2` ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
-	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-tap) if [ $KIND -le 2 ] ; then KIND=`expr $KIND + 3` ; else
+		echo "Error: '-tap' and '-oad' are exclusive + no duplicate" ; usage
+	      fi ;;
+	-oad) if test $KIND = 0 ; then KIND=6 ; NODEPEND=t ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
 	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl) ac_prev=OADSINGULARITY ;;
 	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*) OADSINGULARITY=$ac_optarg ;;
@@ -1308,7 +1318,7 @@ if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then
     fi
 fi
 
-#- setting for forward or ADM testing
+#- setting for forward, TLM or ADM testing
 if test $KIND = 1 ; then
     if test "x$TARG" = x        ; then TARG=ftlall ; fi
     if test "x$TARG" = xobj     ; then TARG=ftlobj ; fi
@@ -1325,7 +1335,13 @@ elif test $KIND = 2 ; then
     inputdir=input_ad
     ref_outp="output_adm.txt"
     EXECUTABLE="mitgcmuv_ad"
-elif test $KIND = 4 ; then
+elif test $KIND = 4 -o $KIND = 5 ; then
+    if test $KIND = 4 ; then TARG=tap_tlm ; else TARG=tap_adj ; fi
+    code_dir=code_tap
+    inputdir=input_tap
+    ref_outp="output_${TARG}.txt"
+    EXECUTABLE="mitgcmuv_${TARG}"
+elif test $KIND = 6 ; then
     TARG=adAll
     code_dir=code_oad
     inputdir=input_oad
@@ -1338,6 +1354,19 @@ else
     EXECUTABLE="mitgcmuv"
 fi
 if test "x$JOBS" != x ; then TARG="-j $JOBS $TARG" ; fi
+
+if [ $verbose -gt 1 ]; then
+    echo ""
+    echo "--- print $0 setting:"
+    echo " KIND     =  '$KIND'"
+    echo " TARG     =  '$TARG'"
+    echo " code_dir =  '$code_dir'"
+    echo " inputdir =  '$inputdir'"
+    echo " ref_outp =  '$ref_outp'"
+    echo " EXECUTABLE= '$EXECUTABLE'"
+    echo "--- printing ends."
+   #exit 0
+fi
 
 xx=`echo $TESTDIRS | awk '{print $1}'`
 if test "x$TESTDIRS" = x ; then
@@ -1526,18 +1555,18 @@ if test $KIND = 0 ; then
     done
 else
   if test $KIND = 1 ; then
-   #echo "TANGLIN=true" >> $SUMMARY
     echo "TangLin generated by TAF" >> $SUMMARY
-  elif test $KIND = 3 ; then
-    echo "TangLin generated by OpenAD" >> $SUMMARY
   elif test $KIND = 2 ; then
-   #echo "ADJOINT=true" >> $SUMMARY
     echo "Adjoint generated by TAF" >> $SUMMARY
+  elif test $KIND = 4 ; then
+    echo "TangLin generated by Tapenade" >> $SUMMARY
+  elif test $KIND = 5 ; then
+    echo "Adjoint generated by Tapenade" >> $SUMMARY
   else
     echo "Adjoint generated by OpenAD" >> $SUMMARY
   fi
     line_0=`printf '%s %2i' 'default   ' $MATCH_CRIT`
-  if test $KIND = 1 -o $KIND = 3 ; then
+  if test $KIND = 1 -o $KIND = 4 ; then
     line_1="G D M    C  T  F"
     line_2="e p a R  o  L  D"
   else
