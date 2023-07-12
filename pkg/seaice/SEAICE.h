@@ -124,17 +124,17 @@ C     DWATN         :: (linear) ice-ocean drag coefficient
 C                      ( units of [rho|u|] = kg/m^2/s )
 C     PRESS0        :: maximal compressive stress/strength (N/m)
 C     FORCEX/Y0     :: external momentum forcing fields (part of FORCEX/Y)
-C     SEAICE_ZMAX/ZMIN :: maximum/minimum bulk viscosities
+C     SEAICE_zMax/zMin :: maximum/minimum bulk viscosities
 C     tensileStrFac :: factor k to compute the maximal tensile stress k*PRESS0
       COMMON/SEAICE_DYNVARS_4/
      &     DWATN, PRESS0, FORCEX0, FORCEY0,
-     &     SEAICE_ZMAX, SEAICE_ZMIN, tensileStrFac
+     &     SEAICE_zMax, SEAICE_zMin, tensileStrFac
       _RL DWATN        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL PRESS0       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEX0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SEAICE_ZMAX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SEAICE_ZMIN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SEAICE_zMax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SEAICE_zMin  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tensileStrFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_CGRID

@@ -99,8 +99,8 @@ C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
           PRESS0     (i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          SEAICE_ZMAX(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-          SEAICE_ZMIN(i,j,bi,bj) = SEAICE_zetaMin
+          SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+          SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
           PRESS0     (i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
 # ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0

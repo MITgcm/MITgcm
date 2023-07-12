@@ -113,8 +113,8 @@ C--   now set up ice pressure and viscosities
          ENDIF
          PRESS0     (I,J,bi,bj) = SEAICE_strength*tmpscal2
      &        *EXP(-SEAICE_cStar*(SEAICE_area_max-AREA(i,j,bi,bj)))
-         SEAICE_ZMAX(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
-         SEAICE_ZMIN(I,J,bi,bj) = SEAICE_zetaMin
+         SEAICE_zMax(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+         SEAICE_zMin(I,J,bi,bj) = SEAICE_zetaMin
          PRESS0     (I,J,bi,bj) = PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
         ENDDO
        ENDDO
@@ -168,8 +168,8 @@ C
         DO i=iMin,iMax
          PRESS0(i,j,bi,bj)      = PRESS0(i,j,bi,bj)/ridgingModeNorm(i,j)
      &        *tmpscal1
-         SEAICE_ZMAX(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
-         SEAICE_ZMIN(I,J,bi,bj) = SEAICE_zetaMin
+         SEAICE_zMax(I,J,bi,bj) = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+         SEAICE_zMin(I,J,bi,bj) = SEAICE_zetaMin
          PRESS0     (I,J,bi,bj) = PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
         ENDDO
        ENDDO
