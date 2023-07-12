@@ -10,7 +10,7 @@
 #
 
 if [ -z "${MITGCM_TROPT}" ]; then
- export MITGCM_TROPT='-devel -of=../tools/build_options/linux_amd64_gfortran -match 14 -pass'
+ export MITGCM_TROPT='-devel -of=../tools/build_options/linux_amd64_gfortran -match 14'
 fi
 if [ -z "${MITGCM_DECMD}" ]; then
  export MITGCM_DECMD='docker exec -i ubuntu_18_04-testreport bash -c'
@@ -19,4 +19,4 @@ if [ -z "${MITGCM_INPUT_DIR_PAT}" ]; then
  export MITGCM_INPUT_DIR_PAT='/input.*'
 fi
 
-${MITGCM_DECMD} "cd /MITgcm/verification; ./testreport -t ${MITGCM_EXP} ${MITGCM_TROPT}"
+${MITGCM_DECMD} "cd /MITgcm/verification; ./testreport -pass -t ${MITGCM_EXP} ${MITGCM_TROPT}"

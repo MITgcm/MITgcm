@@ -148,12 +148,6 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_KAPREDI_CONTROL
         call adexch_xyz_rl( myThid, adKapRedi )
 # endif
-# ifdef ALLOW_SST0_CONTROL
-        call adexch_xy_rl( myThid,adsst )
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-        call adexch_xy_rl( myThid,adsss )
-# endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         call adexch_xy_rl( myThid,adbottomdragfld)
 # endif
@@ -188,12 +182,6 @@ C     problem occurs
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
         CALL ADEXCH_3D_RL( adKapRedi, Nr, myThid )
-# endif
-# ifdef ALLOW_SST0_CONTROL
-        CALL ADEXCH_XY_RS( adSST, myThid )
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-        CALL ADEXCH_XY_RS( adSSS, myThid )
 # endif
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
@@ -259,14 +247,6 @@ C-----------------------------------------------------------------------
      &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
       ENDIF
-# ifdef ALLOW_SST0_CONTROL
-      CALL DUMP_ADJ_XY(adSST, dumRL, 'ADJsst  ', 'ADJsst.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-      CALL DUMP_ADJ_XY(adSSS, dumRL, 'ADJsss  ', 'ADJsss.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
 
 C-----------------------------------------------------------------------
 C---Various packages and parameters
@@ -371,14 +351,6 @@ c       CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw  ', 'ADJqsw.',
 c    &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
       ENDIF
-# ifdef ALLOW_SST0_CONTROL
-      CALL DUMP_ADJ_XY(SST%d, dumRL, 'ADJsst  ', 'ADJsst.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
-# ifdef ALLOW_SSS0_CONTROL
-      CALL DUMP_ADJ_XY(SSS%d, dumRL, 'ADJsss  ', 'ADJsss.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
-# endif
 
 C-----------------------------------------------------------------------
 C---Various packages and parameters
@@ -481,14 +453,6 @@ C=======================================================================
           CALL MNC_CW_RL_W('D','adstate',0,0,'adFu', var2Du, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adFv', var2Dv, myThid)
 
-#ifdef ALLOW_SST0_CONTROL
-          CALL COPY_ADVAR_OUTP( adSST, dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adSST', var2Du, myThid)
-#endif
-#ifdef ALLOW_SSS0_CONTROL
-          CALL COPY_ADVAR_OUTP( adSSS, dumRL, var2Du, 1, 11, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', var2Du, myThid)
-#endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, adBottomDragFld,
      &                                        var2Du, 1, 12, myThid )
@@ -523,12 +487,6 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', adfu, myThid)
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', adfv, myThid)
 
-#ifdef ALLOW_SST0_CONTROL
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adSST', adsst, myThid)
-#endif
-#ifdef ALLOW_SSS0_CONTROL
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adSSS', adsss, myThid)
-#endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adBottomDrag', adbottomdragfld, myThid)

@@ -1,0 +1,66 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#  averagingFreq(n) : frequency (in s) for periodic averaging interval
+#  averagingPhase(n): phase     (in s) for periodic averaging interval
+#  repeatCycle(n)   : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAGNOSTICS_LIST
+# diag_mnc     = .FALSE.,
+# dumpAtLast   = .TRUE.,
+   fields(1:6,1) = 'SI_Uvel ','SI_Vvel ','SI_Thick',
+                 'SI_area ','SI_float','SI_selev'
+#                'SIheff  ','SIarea  ','SIhsnow ','SIatmFW ',
+#                'SHIForcT','SHIForcS',
+#                'surForcT','surForcS','TFLUX   ','SFLUX   ','oceFreez',
+#                 'TRELAX  ','SRELAX  ',
+#                'GM_VisbK',
+   filename(1) = 'land_ice',
+  frequency(1) = 63072000,
+#                'GM_PsiX ','GM_PsiY ',
+#                'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
+#                'GM_Kux  ','GM_Kvy  ',
+#                'GM_Kuz  ','GM_Kvz  ',
+#- disable this output list by commenting out the file name
+#  filename(3) = 'diagsEXF',
+# frequency(3) = 1.,
+#  fields(1,4) = 'ADVx_TH ','ADVy_TH ','ADVr_TH ',
+#                'DIFx_TH ','DIFy_TH ','DFrE_TH ',
+#                'DFrI_TH ',
+#                'ADVx_SLT',
+#  filename(4) = 'flxDiag',
+# frequency(4) = 2592000.,
+ &
+
+# Parameter for Diagnostics of per level statistics:
+#-----------------
+# for each output-stream:
+#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAG_STATIS_PARMS
+#- regional mask: 3 lat. band: 1 : y <= -24 ; 2 : -24<y<24 ; 3 : 24 <= y
+# diagSt_regMaskFile='regMask_lat24.bin',
+# nSetRegMskFile=1,
+# set_regMask(1)= 1,  1,  1,
+# val_regMask(1)= 1., 2., 3.,
+#---
+#stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
+#                  'THETA   ','SALT    ','SIarea  ','SIheff  ',
+#   stat_fname(1)= 'dynStDiag',
+#    stat_freq(1)= 864000.,
+ &
+

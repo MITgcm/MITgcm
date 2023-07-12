@@ -120,8 +120,8 @@ C-    On/Off flags for viscosity coefficients
       useHarmonicVisc   = momViscosity .AND. useHarmonicVisc
       useBiharmonicVisc = momViscosity .AND. useBiharmonicVisc
 #endif /* ALLOW_MOM_COMMON */
-      IF ( bottomDragQuadratic.EQ.0. .OR. .NOT.momViscosity )
-     &  selectBotDragQuadr = -1
+      IF ( ( bottomDragQuadratic.EQ.0. .AND. zRoughBot.EQ.0. )
+     &     .OR. .NOT.momViscosity ) selectBotDragQuadr = -1
 
 C--   Free-surface & pressure method
       uniformFreeSurfLev = usingZCoords
