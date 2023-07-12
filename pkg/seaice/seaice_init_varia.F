@@ -240,7 +240,8 @@ C Western boundary
 C--   Update overlap regions
 #ifdef SEAICE_CGRID
       CALL EXCH_UV_XY_RL(seaiceMaskU,seaiceMaskV,.FALSE.,myThid)
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
       _EXCH_XY_RS(UVM, myThid)
 #endif
 
@@ -253,7 +254,8 @@ C--   Now lets look at all these beasts
      &        nIter0, myThid )
          CALL PLOT_FIELD_XYRL( seaiceMaskV, 'Current seaiceMaskV',
      &        nIter0, myThid )
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
          CALL PLOT_FIELD_XYRS( UVM     , 'Current UVM     ' ,
      &        nIter0, myThid )
 #endif
