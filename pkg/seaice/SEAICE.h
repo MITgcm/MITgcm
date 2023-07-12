@@ -211,13 +211,14 @@ C     Scalar product used in FGMRES needs a metric
 #ifdef SEAICE_BGRID_DYNAMICS
 C     AMASS :: sea ice mass
 C     DAIRN :: (linear) atmosphere-ice drag coefficient
-C     uIceC :: average of UICE between last two time steps
-C     vIceC :: average of VICE between last two time steps
-      COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN, uIceC, vIceC
+C     u/vIceC has been renamed to u/vIceC to avoid conficts with C-grid code
+C     uIceB :: average of UICE between last two time steps
+C     vIceB :: average of VICE between last two time steps
+      COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN, uIceB, vIceB
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL uIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceB      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceB      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/WIND_STRESS_OCE/WINDX,WINDY
 C     WINDX  - zonal      wind stress over water at C points

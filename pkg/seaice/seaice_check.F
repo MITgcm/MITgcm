@@ -541,11 +541,18 @@ C--
 #endif
 
 C--   SEAICE_CGRID, SEAICE_BGRID_DYNAMICS and SEAICEuseDYNAMICS
+#if ( defined SEAICE_CGRID && defined SEAICE_BGRID_DYNAMICS )
+      WRITE(msgBuf,'(A,A)')
+     &     'SEAICE_CHECK: SEAICE_CGRID and SEAICE_BGRID_DYNAMICS ',
+     &     'cannot be defined at the same time.'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      errCount = errCount + 1
+#endif
 #if !( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
       IF (SEAICEuseDYNAMICS) THEN
          WRITE(msgBuf,'(A,A)')
-     &      'either or SEAICE_CGRID or SEAICE_BGRID_DYNAMICS ',
-     &      'needed for SEAICEuseDYNAMICS'
+     &      'SEAICE_CHECK: either SEAICE_CGRID ',
+     &      'or SEAICE_BGRID_DYNAMICS needed for SEAICEuseDYNAMICS = T'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
       ENDIF

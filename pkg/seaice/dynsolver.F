@@ -253,8 +253,8 @@ C NOW DO PREDICTOR TIME STEP
          DO i=1-OLx,sNx+OLx
           UICENM1(i,j,bi,bj)=UICE(i,j,bi,bj)
           VICENM1(i,j,bi,bj)=VICE(i,j,bi,bj)
-          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
-          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
+          UICEB(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEB(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -274,8 +274,8 @@ C NOW DO MODIFIED EULER STEP
          DO i=1-OLx,sNx+OLx
           UICE(i,j,bi,bj)=HALF*(UICE(i,j,bi,bj)+UICENM1(i,j,bi,bj))
           VICE(i,j,bi,bj)=HALF*(VICE(i,j,bi,bj)+VICENM1(i,j,bi,bj))
-          UICEC(i,j,bi,bj)=UICE(i,j,bi,bj)
-          VICEC(i,j,bi,bj)=VICE(i,j,bi,bj)
+          UICEB(i,j,bi,bj)=UICE(i,j,bi,bj)
+          VICEB(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO

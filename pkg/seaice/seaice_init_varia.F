@@ -117,8 +117,8 @@ C
 # endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #endif /* SEAICE_CGRID */
 #ifdef SEAICE_BGRID_DYNAMICS
-          uIceC(i,j,bi,bj)   = 0. _d 0
-          vIceC(i,j,bi,bj)   = 0. _d 0
+          uIceB(i,j,bi,bj)   = 0. _d 0
+          vIceB(i,j,bi,bj)   = 0. _d 0
           AMASS(i,j,bi,bj)   = 0. _d 0
           DAIRN(i,j,bi,bj)   = 0. _d 0
           WINDX(i,j,bi,bj)   = 0. _d 0
