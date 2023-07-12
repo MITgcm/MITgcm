@@ -49,8 +49,7 @@ C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_CGRID \
-      && defined SEAICE_ALLOW_JFNK )
+#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_JFNK )
 C     u/vIceLHS :: left hand side of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -141,7 +140,7 @@ C     Calculate the residual
         ENDDO
        ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS, CGRID, and JFNK */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_JFNK */
 
       RETURN
       END

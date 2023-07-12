@@ -48,7 +48,6 @@ C     myThid     :: my Thread Id. number
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_CGRID
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -62,13 +61,11 @@ C     === Local variables ===
 C     i,j    :: Loop counters
 C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
-#ifdef SEAICE_ALLOW_DYNAMICS
 # ifndef ALLOW_AUTODIFF
       _RL mask_uice, mask_vice
 # endif
 C     phiSurf :: geopotential height at sea surface (including pressure load)
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
 C     TAUX    :: zonal      wind stress over seaice at U point
 C     TAUY    :: meridional wind stress over seaice at V point
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -95,7 +92,6 @@ C     TAUY    :: meridional wind stress over seaice at V point
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 #ifdef ALLOW_AUTODIFF
-# ifdef SEAICE_ALLOW_DYNAMICS
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
@@ -103,10 +99,9 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
-#  ifdef SEAICE_ALLOW_FREEDRIFT
+# ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
-#  endif
 # endif
 # ifdef ALLOW_DIAGNOSTICS
           strDivX(i,j,bi,bj)= 0. _d 0
@@ -121,12 +116,12 @@ C     because they are not completely filled in S/R seaice_get_dynforcing
         ENDDO
        ENDDO
       ENDDO
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--   interface of dynamics with atmopheric forcing fields (wind/stress)
 C     Call this in each time step so that we can use the surface stress
 C     in S/R seaice_ocean_stress
@@ -135,15 +130,15 @@ C     in S/R seaice_ocean_stress
      O     TAUX, TAUY,
      I     myTime, myIter, myThid )
 
-#ifdef SEAICE_ALLOW_DYNAMICS
+#ifdef SEAICE_CGRID
       IF ( SEAICEuseDYNAMICS .AND.
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_EVP)
+# if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_EVP)
 CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC and SEAICE_ALLOW_EVP */
+# endif
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -175,7 +170,7 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
         ENDDO
        ENDDO
 
-#ifndef ALLOW_AUTODIFF
+# ifndef ALLOW_AUTODIFF
        IF ( SEAICE_maskRHS ) THEN
 C     dynamic masking of areas with no ice, not recommended
 C     and only kept for testing purposes
@@ -205,12 +200,12 @@ C     and only kept for testing purposes
         ENDDO
         CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
        ENDIF
-#endif /* ndef ALLOW_AUTODIFF */
+# endif /* ndef ALLOW_AUTODIFF */
 
 C--   NOW SET UP FORCING FIELDS
 
 C     initialise fields
-#if (defined ALLOW_AUTODIFF && defined SEAICE_ALLOW_EVP)
+# if (defined ALLOW_AUTODIFF && defined SEAICE_ALLOW_EVP)
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
@@ -221,7 +216,7 @@ C     initialise fields
          ENDDO
         ENDDO
        ENDDO
-#endif
+# endif
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -240,7 +235,7 @@ C-    use actual sea surface height for tilt computations
            ENDDO
           ENDDO
          ENDIF
-#ifdef ATMOSPHERIC_LOADING
+# ifdef ATMOSPHERIC_LOADING
 C--   add atmospheric loading and Sea-Ice loading as it is done for phi0surf
 C--   in S/R external_forcing_surf
          IF ( usingZCoords ) THEN
@@ -265,7 +260,7 @@ C        ELSEIF ( usingPCoords ) THEN
 C     The true atmospheric P-loading is not yet implemented for P-coord
 C     (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
          ENDIF
-#endif /* ATMOSPHERIC_LOADING */
+# endif /* ATMOSPHERIC_LOADING */
 C--   basic forcing by wind stress
          IF ( SEAICEscaleSurfStress ) THEN
           DO j=1-OLy+1,sNy+OLy
@@ -304,7 +299,7 @@ C--   now add in tilt
         ENDDO
        ENDDO
 
-#ifdef SEAICE_ALLOW_FREEDRIFT
+# ifdef SEAICE_ALLOW_FREEDRIFT
        IF ( SEAICEuseFREEDRIFT .OR. SEAICEuseEVP
      &                         .OR. LSR_mixIniGuess.EQ.0 ) THEN
         CALL SEAICE_FREEDRIFT( myTime, myIter, myThid )
@@ -323,57 +318,57 @@ C--   now add in tilt
          ENDDO
         ENDDO
        ENDIF
-#endif /* SEAICE_ALLOW_FREEDRIFT */
+# endif /* SEAICE_ALLOW_FREEDRIFT */
 
-#ifdef ALLOW_OBCS
+# ifdef ALLOW_OBCS
        IF ( useOBCS ) THEN
          CALL OBCS_APPLY_UVICE( uIce, vIce, myThid )
        ENDIF
-#endif /* ALLOW_OBCS */
+# endif
 
-#ifdef SEAICE_ALLOW_EVP
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_EVP
+#  ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
-# endif /* ALLOW_AUTODIFF_TAMC */
+#  endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
 C     Elastic-Viscous-Plastic solver, following Hunke (2001)
         CALL SEAICE_EVP( myTime, myIter, myThid )
        ENDIF
-#endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_EVP */
 
        IF ( SEAICEuseLSR ) THEN
 C     Picard solver with LSR scheme (Zhang-J/Hibler 1997), ported to a C-grid
         CALL SEAICE_LSR( myTime, myIter, myThid )
        ENDIF
 
-#ifdef SEAICE_ALLOW_KRYLOV
-# ifdef ALLOW_AUTODIFF
+# ifdef SEAICE_ALLOW_KRYLOV
+#  ifdef ALLOW_AUTODIFF
        STOP 'Adjoint does not work with Picard-Krylov solver.'
-# else
+#  else
        IF ( SEAICEuseKrylov ) THEN
 C     Picard solver with Matrix-free Krylov solver (Lemieux et al. 2008)
         CALL SEAICE_KRYLOV( myTime, myIter, myThid )
        ENDIF
-# endif /*  ALLOW_AUTODIFF */
-#endif /* SEAICE_ALLOW_KRYLOV */
+#  endif /*  ALLOW_AUTODIFF */
+# endif /* SEAICE_ALLOW_KRYLOV */
 
-#ifdef SEAICE_ALLOW_JFNK
-# ifdef ALLOW_AUTODIFF
+# ifdef SEAICE_ALLOW_JFNK
+#  ifdef ALLOW_AUTODIFF
        STOP 'Adjoint does not work with JFNK solver.'
-# else
+#  else
        IF ( SEAICEuseJFNK ) THEN
 C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
         CALL SEAICE_JFNK( myTime, myIter, myThid )
        ENDIF
-# endif /*  ALLOW_AUTODIFF */
-#endif /* SEAICE_ALLOW_JFNK */
+#  endif /*  ALLOW_AUTODIFF */
+# endif /* SEAICE_ALLOW_JFNK */
 
 C End of IF (SEAICEuseDYNAMICS and DIFFERENT_MULTIPLE ...
       ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
 
 C Update ocean surface stress
       IF ( SEAICEupdateOceanStress ) THEN
@@ -386,7 +381,7 @@ CADJ STORE stressDivergenceY = comlev1, key=ikey_dynamics, kind=isbyte
      I              TAUX, TAUY, myTime, myIter, myThid )
       ENDIF
 
-#if (defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_ALLOW_CLIPVELS)
+#ifdef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
@@ -408,7 +403,7 @@ c in open water areas (drift of zero thickness ice)
         ENDDO
        ENDDO
       ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_ALLOW_CLIPVELS */
+#endif /* SEAICE_ALLOW_CLIPVELS */
 
 #ifdef ALLOW_DIAGNOSTICS
 C     diagnostics related to mechanics/dynamics/momentum equations
@@ -707,8 +702,7 @@ C     bi/bj-loop
        ENDDO
 C     useDiagnostics
       ENDIF
-#endif   /* ALLOW_DIAGNOSTICS */
-#endif  /* SEAICE_CGRID */
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

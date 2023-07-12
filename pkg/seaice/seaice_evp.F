@@ -51,9 +51,7 @@ C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 
-#if ( defined (SEAICE_CGRID) && \
-      defined (SEAICE_ALLOW_EVP) && \
-      defined (SEAICE_ALLOW_DYNAMICS) )
+#if ( defined SEAICE_CGRID &&  defined SEAICE_ALLOW_EVP )
 
 C     === Local variables ===
 C     i,j,bi,bj      :: Loop counters
@@ -962,7 +960,7 @@ CML     &       myIter*100000+iEvpStep,myThid)
 C     end of the main time loop
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID and SEAICE_ALLOW_EVP */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
 
       RETURN
       END

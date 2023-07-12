@@ -40,8 +40,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifndef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
+#ifdef SEAICE_BGRID_DYNAMICS
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -1197,8 +1196,7 @@ C NOW MAKE COROLIS TERM IMPLICIT
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
+#endif /* SEAICE_BGRID_DYNAMICS */
 
       RETURN
       END

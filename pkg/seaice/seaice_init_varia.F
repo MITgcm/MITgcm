@@ -46,7 +46,7 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef OBCS_UVICE_OLD
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
-#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_DYNAMICS )
+#ifdef SEAICE_CGRID
       _RL recip_tensilDepth
 #endif
 
@@ -86,7 +86,7 @@ C
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
 # endif /* SEAICE_ALLOW_EVP */
 #endif
-#ifdef SEAICE_ALLOW_DYNAMICS
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
           e11    (i,j,bi,bj) = 0. _d 0
           e22    (i,j,bi,bj) = 0. _d 0
           e12    (i,j,bi,bj) = 0. _d 0
@@ -103,18 +103,20 @@ C
           FORCEY0(i,j,bi,bj) = 0. _d 0
           ZMAX(i,j,bi,bj)    = 0. _d 0
           ZMIN(i,j,bi,bj)    = 0. _d 0
-# ifdef SEAICE_CGRID
+#endif
+#ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
           seaiceMassV(i,j,bi,bj)=0. _d 0
-#  ifdef SEAICE_ALLOW_FREEDRIFT
+# ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj) = 0. _d 0
           vice_fd(i,j,bi,bj) = 0. _d 0
-#  endif
-#  ifdef SEAICE_ALLOW_BOTTOMDRAG
+# endif
+# ifdef SEAICE_ALLOW_BOTTOMDRAG
           CbotC(i,j,bi,bj)   = 0. _d 0
-#  endif /* SEAICE_ALLOW_BOTTOMDRAG */
-# else /* SEAICE_CGRID */
+# endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#endif /* SEAICE_CGRID */
+#ifdef SEAICE_BGRID_DYNAMICS
           uIceC(i,j,bi,bj)   = 0. _d 0
           vIceC(i,j,bi,bj)   = 0. _d 0
           AMASS(i,j,bi,bj)   = 0. _d 0
@@ -123,8 +125,7 @@ C
           WINDY(i,j,bi,bj)   = 0. _d 0
           GWATX(i,j,bi,bj)   = 0. _d 0
           GWATY(i,j,bi,bj)   = 0. _d 0
- #endif /* SEAICE_CGRID */
-#endif /* SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_BGRID_DYNAMICS */
 #ifdef SEAICE_VARIABLE_SALINITY
           HSALT(i,j,bi,bj)  = 0. _d 0
 #endif
@@ -222,14 +223,13 @@ C Western boundary
           DO k=1,nITD
            TICES(i,j,k,bi,bj)=273.0 _d 0
           ENDDO
-#ifdef SEAICE_ALLOW_DYNAMICS
-# ifdef SEAICE_CGRID
+#ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=1000.0 _d 0
           seaiceMassU(i,j,bi,bj)=1000.0 _d 0
           seaiceMassV(i,j,bi,bj)=1000.0 _d 0
-# else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
           AMASS      (i,j,bi,bj)=1000.0 _d 0
-# endif
 #endif
          ENDDO
         ENDDO
@@ -443,7 +443,7 @@ c     ENDIF
 C---  Complete initialization
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef SEAICE_ALLOW_DYNAMICS
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
@@ -467,7 +467,7 @@ C---  Complete initialization
         ENDIF
        ENDDO
       ENDDO
-#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_DYNAMICS )
+#ifdef SEAICE_CGRID
 C     compute tensile strength factor k: tensileStrength = k*PRESS
 C     can be done in initialisation phase as long as it depends only
 C     on depth
@@ -502,7 +502,7 @@ C     S/R PACKAGES_INIT_FIXED, so we move this computation here.
       ENDDO
 # endif /* SEAICE_ALLOW_JFNK or KRYLOV */
 
-#endif /* SEAICE_CGRID and SEAICE_ALLOW_DYNAMICS */
+#endif /* SEAICE_CGRID */
 
 #ifdef ALLOW_AUTODIFF
 C-    end if useSEAICE block

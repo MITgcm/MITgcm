@@ -23,7 +23,8 @@ C     |  Snow:          Zhang et al.  , JPO,  28,  191- 217, 1998 |
 C     |  Parallel forward ice model written by Jinlun Zhang PSC/UW|
 C     |  & coupled into MITgcm by Dimitris Menemenlis (JPL) 2/2001|
 C     |  zhang@apl.washington.edu / menemenlis@jpl.nasa.gov       |
-C     *===========================================================*
+C     | o The code has been rewritten substantially to use the    |
+C     |   MITgcm C-grid, see Losch et al. OM, 33,  129- 144, 2010 |
 C     *===========================================================*
       IMPLICIT NONE
 C \ev
@@ -64,7 +65,7 @@ C     i,j,bi,bj :: Loop counters
 #ifdef ALLOW_SITRACER
       INTEGER iTr
 #endif
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
       _RL uLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
@@ -147,7 +148,7 @@ C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
-# if (defined SEAICE_ALLOW_DYNAMICS) && (defined SEAICE_CGRID)
+# ifdef SEAICE_CGRID
 CADJ STORE fu    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fv    = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef SEAICE_ALLOW_EVP
@@ -155,7 +156,7 @@ CADJ STORE seaice_sigma1  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma2  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma12 = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* SEAICE_ALLOW_EVP */
-# endif /* SEAICE_ALLOW_DYNAMICS) && SEAICE_CGRID */
+# endif /* SEAICE_CGRID */
 # ifdef ALLOW_SITRACER
 CADJ STORE siceload = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE sitracer = comlev1, key=ikey_dynamics, kind=isbyte
@@ -170,7 +171,8 @@ C solve ice momentum equations and calculate ocean surface stress
       CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
       CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
       CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
       CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
       CALL DYNSOLVER ( myTime, myIter, myThid )
       CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
@@ -183,8 +185,7 @@ C--   Apply ice velocity open boundary conditions
 # endif /* DISABLE_SEAICE_OBCS */
 #endif /* ALLOW_OBCS */
 
-#if (defined ALLOW_AUTODIFF_TAMC) && (defined SEAICE_ALLOW_DYNAMICS) \
-       && (defined SEAICE_CGRID)
+#if ( defined ALLOW_AUTODIFF_TAMC &&  defined SEAICE_CGRID )
 CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
 C     Note: Storing u/vice **after** seaice_dynsolver (and obcs_adjust_uvice)
@@ -193,7 +194,7 @@ C     anymore. This is important because with the numerous tricks to avoid
 C     complicated code in the backward integration (see pkg/autodiff),
 C     the extra call would update the ice velocities with the wrong
 C     set of flag values.
-#endif /* ALLOW_AUTODIFF_TAMC && SEAICE_ALLOW_DYNAMICS && SEAICE_CGRID */
+#endif
 
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
@@ -215,9 +216,10 @@ C NOW DO ADVECTION and DIFFUSION
 #endif
 #ifdef SEAICE_CGRID
         CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
-#else /* SEAICE_CGRID */
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
         CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
-#endif /* SEAICE_CGRID */
+#endif
        ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte

@@ -47,7 +47,7 @@ C     u/vIceRHS :: RHS of momentum equations
       _RL uIceRHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#if ( defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_CGRID \
+#if ( defined SEAICE_CGRID \
       && ( defined SEAICE_ALLOW_JFNK || defined SEAICE_ALLOW_KRYLOV ) )
 C     i,j,bi,bj,kSrf :: loop indices
       INTEGER i,j,bi,bj
@@ -117,7 +117,7 @@ C     apply masks for interior (important when we have open boundaries)
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_DYNAMICS, CGRID, JFNK and KRYLOV */
+#endif /* SEAICE_CGRID, SEAICE_ALLOW_JFNK and KRYLOV */
 
       RETURN
       END

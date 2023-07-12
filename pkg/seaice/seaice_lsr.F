@@ -65,7 +65,7 @@ C     myThid     :: my Thread Id. number
       INTEGER myThid
 CEOP
 
-#if ( defined SEAICE_ALLOW_DYNAMICS && defined SEAICE_CGRID )
+#ifdef SEAICE_CGRID
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -1984,7 +1984,7 @@ C     relaxation with WFAV
       ENDDO
 #endif /* SEAICE_LSR_ZEBRA */
 
-#endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
 
       RETURN
       END
