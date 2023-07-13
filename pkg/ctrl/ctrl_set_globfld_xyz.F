@@ -27,7 +27,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
       integer ivartype
       integer myThid
 
@@ -37,7 +37,7 @@ c     == local variables ==
       integer i,j,k
       integer irec
 
-      _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 c     == external ==
 
@@ -46,7 +46,7 @@ c     == end of interface ==
 c     Initialise temporary file
       DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
-          DO k = 1,nr
+          DO k = 1,Nr
             DO j = 1-OLy,sNy+OLy
               DO i = 1-OLx,sNx+OLx
                 globfld3d(i,j,k,bi,bj) = 0. _d 0

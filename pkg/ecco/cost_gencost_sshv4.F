@@ -157,8 +157,8 @@ c for PART 4/5: compute smooth/raw anomalies
       integer k2, k2_mdt, k2_lsc
       logical dosumsq
 
-      character*(80) fname
-      character*(80) fname4test
+      character*(MAX_LEN_FNAM) fname
+      character*(MAX_LEN_FNAM) fname4test
       character*(MAX_LEN_MBUF) msgbuf
 
       LOGICAL doReference
@@ -355,9 +355,8 @@ c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-      write(fname(1:80),'(80a)') ' '
       ilps=ilnblnk( gencost_barfile(igen_etaday) )
-      write(fname(1:80),'(2a,i10.10)')
+      write(fname,'(2a,i10.10)')
      &     gencost_barfile(igen_etaday)(1:ilps),'.',eccoiter
 
 cgf =======================================================
@@ -519,7 +518,7 @@ c--   smooth mean_slaobs_mdt:
 
       if (igen_mdt.GT.0) then
        if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sla2mdt_raw'
+        write(fname4test,'(1a)') 'sla2mdt_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_slaobs_mdt, 1, 1, myThid )
        endif
@@ -531,7 +530,7 @@ c--   smooth mean_slaobs_mdt:
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
         if (gencost_outputlevel(igen_mdt).GT.0) then
-         write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
+         write(fname4test,'(1a)') 'sla2mdt_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         mean_slaobs_mdt, 1, 1, myThid )
         endif
@@ -876,10 +875,10 @@ c use the simpler approach
 c--    smooth mean_psMssh_all
       if (igen_mdt.GT.0) then
        if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'mdtdiff_raw'
+        write(fname4test,'(1a)') 'mdtdiff_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_psMssh_all, 1, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'sla2model_raw'
+        write(fname4test,'(1a)') 'sla2model_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        mean_slaobs_model, 1, 1, myThid )
        endif
@@ -894,10 +893,10 @@ c--    smooth mean_psMssh_all
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 
         if (gencost_outputlevel(igen_mdt).GT.0) then
-         write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
+         write(fname4test,'(1a)') 'mdtdiff_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         mean_psMssh_all, 1, 1, myThid )
-         write(fname4test(1:80),'(1a)') 'sla2model_smooth'
+         write(fname4test,'(1a)') 'sla2model_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         mean_slaobs_model, 1, 1, myThid )
         endif
@@ -937,7 +936,7 @@ cgf =======================================================
        enddo
 
        if (gencost_outputlevel(igen_mdt).GT.0) then
-        write(fname4test(1:80),'(1a)') 'misfits_mdt'
+        write(fname4test,'(1a)') 'misfits_mdt'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        diagnosfld, 1, 1, myThid )
        endif
@@ -1196,10 +1195,10 @@ c PART 4.2: smooth anom_psMslaobs in space
 c ----------------------------------------
 
       if (gencost_outputlevel(igen_lsc).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sladiff_raw'
+        write(fname4test,'(1a)') 'sladiff_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_psMslaobs, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_raw'
+        write(fname4test,'(1a)') 'slaobs_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_slaobs, irec, 1, myThid )
       endif
@@ -1214,10 +1213,10 @@ c ----------------------------------------
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 
         if (gencost_outputlevel(igen_lsc).GT.0) then
-         write(fname4test(1:80),'(1a)') 'sladiff_smooth'
+         write(fname4test,'(1a)') 'sladiff_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         anom_psMslaobs, irec, 1, myThid )
-         write(fname4test(1:80),'(1a)') 'slaobs_smooth'
+         write(fname4test,'(1a)') 'slaobs_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         anom_slaobs, irec, 1, myThid )
         endif
@@ -1253,10 +1252,10 @@ c ------------------------------------
        enddo
 
        if (gencost_outputlevel(igen_lsc).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sladiff_subsample'
+        write(fname4test,'(1a)') 'sladiff_subsample'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_psMslaobs_SUB, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_subsample'
+        write(fname4test,'(1a)') 'slaobs_subsample'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_slaobs_SUB, irec, 1, myThid )
        endif
@@ -1381,10 +1380,10 @@ c time associated with this ndaysrec mean
 
       if ( igen_tp .GT. 0 ) then
        if (gencost_outputlevel(igen_tp).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sladiff_tp_raw'
+        write(fname4test,'(1a)') 'sladiff_tp_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_psMtpobs, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_tp_raw'
+        write(fname4test,'(1a)') 'slaobs_tp_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_tpobs, irec, 1, myThid )
        endif
@@ -1392,10 +1391,10 @@ c time associated with this ndaysrec mean
 
       if ( igen_ers .GT. 0 ) then
        if (gencost_outputlevel(igen_ers).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sladiff_ers_raw'
+        write(fname4test,'(1a)') 'sladiff_ers_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_psMersobs, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_ers_raw'
+        write(fname4test,'(1a)') 'slaobs_ers_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_ersobs, irec, 1, myThid )
        endif
@@ -1403,10 +1402,10 @@ c time associated with this ndaysrec mean
 
       if ( igen_gfo .GT. 0 ) then
        if (gencost_outputlevel(igen_gfo).GT.0) then
-        write(fname4test(1:80),'(1a)') 'sladiff_gfo_raw'
+        write(fname4test,'(1a)') 'sladiff_gfo_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_psMgfoobs, irec, 1, myThid )
-        write(fname4test(1:80),'(1a)') 'slaobs_gfo_raw'
+        write(fname4test,'(1a)') 'slaobs_gfo_raw'
         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                        anom_gfoobs, irec, 1, myThid )
        endif

@@ -78,10 +78,10 @@ c     == local variables ==
       _RL tmpx
       _RL tmpy
       _RL wobcsvol
-      character*(80) fnamefldn
-      character*(80) fnameflds
-      character*(80) fnamefldw
-      character*(80) fnameflde
+      character*(MAX_LEN_FNAM) fnamefldn
+      character*(MAX_LEN_FNAM) fnameflds
+      character*(MAX_LEN_FNAM) fnamefldw
+      character*(MAX_LEN_FNAM) fnameflde
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
@@ -143,22 +143,22 @@ cgg   Added a factor of 1000 because its very important to me.
       if (optimcycle .ge. 0) then
 #ifdef ALLOW_OBCSN_CONTROL
         ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefldn(1:80),'(2a,i10.10)')
+        write(fnamefldn,'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
         ilfld=ilnblnk( xx_obcss_file )
-        write(fnameflds(1:80),'(2a,i10.10)')
+        write(fnameflds,'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
         ilfld=ilnblnk( xx_obcsw_file )
-        write(fnamefldw(1:80),'(2a,i10.10)')
+        write(fnamefldw,'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
         ilfld=ilnblnk( xx_obcse_file )
-        write(fnameflde(1:80),'(2a,i10.10)')
+        write(fnameflde,'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 #endif
       else
