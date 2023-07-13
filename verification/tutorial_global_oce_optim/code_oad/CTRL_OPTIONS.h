@@ -31,7 +31,7 @@ C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
 #undef ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
-#define ALLOW_NONDIMENSIONAL_CONTROL_IO
+#undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 #undef ALLOW_PACKUNPACK_METHOD2
 
 C       >>> Initial values.
