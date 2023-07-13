@@ -32,9 +32,9 @@ c     == routine arguments ==
       integer cunit
       integer ivartype
       _RL precondScalar
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*( 80) weighttype
+      character*(MAX_LEN_FNAM) weighttype
       integer nwetglobal(Nr)
       integer mythid
 
@@ -49,7 +49,7 @@ c     == local variables ==
       integer ii, irec
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp
@@ -114,20 +114,18 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
@@ -349,15 +347,13 @@ c-- part 1: preliminary reads and definitions
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          il = ilnblnk( fname )
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_ctrl_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_ctrl_dim'
+            write(cfile2,'(2a)') fname(1:il),'.unpack_ctrl_adim'
+            write(cfile3,'(2a)') fname(1:il),'.unpack_ctrl_dim'
          else
-            write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_grad_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_grad_dim'
+            write(cfile2,'(2a)') fname(1:il),'.unpack_grad_adim'
+            write(cfile3,'(2a)') fname(1:il),'.unpack_grad_dim'
          endif
       endif
 

@@ -72,7 +72,7 @@ c     == local variables ==
 #endif
       _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
 
 c--   == end of interface ==
 
@@ -89,7 +89,6 @@ c     Find ctrlDir (w/o trailing blanks) length
 #ifdef ALLOW_OBCSN_CONTROL
       else if ( grdchkvarindex .eq. 11 ) then
          il=ilnblnk( xx_obcsn_file )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcsn_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSN_CONTROL */
@@ -97,7 +96,6 @@ c     Find ctrlDir (w/o trailing blanks) length
 #ifdef ALLOW_OBCSS_CONTROL
       else if ( grdchkvarindex .eq. 12 ) then
          il=ilnblnk( xx_obcss_file )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcss_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSS_CONTROL */
@@ -105,7 +103,6 @@ c     Find ctrlDir (w/o trailing blanks) length
 #ifdef ALLOW_OBCSW_CONTROL
       else if ( grdchkvarindex .eq. 13 ) then
          il=ilnblnk( xx_obcsw_file )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcsw_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSW_CONTROL */
@@ -113,7 +110,6 @@ c     Find ctrlDir (w/o trailing blanks) length
 #ifdef ALLOW_OBCSE_CONTROL
       else if ( grdchkvarindex .eq. 14 ) then
          il=ilnblnk( xx_obcse_file )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_obcse_file(1:il),'.',optimcycle
 #endif /* ALLOW_OBCSE_CONTROL */
@@ -124,7 +120,6 @@ c     Find ctrlDir (w/o trailing blanks) length
        do iarr = 1, maxCtrlArr2D
         if ( grdchkvarindex .eq. 100+iarr ) then
          il=ilnblnk( xx_genarr2d_file(iarr) )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
         endif
@@ -137,7 +132,6 @@ c     Find ctrlDir (w/o trailing blanks) length
        do iarr = 1, maxCtrlArr3D
         if ( grdchkvarindex .eq. 200+iarr ) then
          il=ilnblnk( xx_genarr3d_file(iarr) )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
         endif
@@ -150,7 +144,6 @@ c     Find ctrlDir (w/o trailing blanks) length
        do iarr = 1, maxCtrlTim2D
         if ( grdchkvarindex .eq. 300+iarr ) then
          il=ilnblnk( xx_gentim2d_file(iarr) )
-         write(fname,'(80a)') ' '
          write(fname,'(3a,i10.10)') ctrlDir(1:ilDir)//
      &        yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
         endif

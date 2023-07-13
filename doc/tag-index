@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+  - for local filenames, replace character*(80) by character*(MAX_LEN_FNAM)
+    declaration, where possible, especially in pkgs: autodiff, ctrl, ecco,
+    profiles, smooth & grdchk.
+
 checkpoint68q (2023/06/29)
 o pkg/ggl90:
   - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;

@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_mask_set_xz(
-     &     jp1, jNone, OB_J, nwetobcs, ymaskobcs, mythid )
+     &     jp1, jNone, OB_J, nwetobcs, ymaskobcs, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_mask_set_xz
@@ -28,10 +28,10 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer jp1, jNone
-      integer OB_J     (1-olx:snx+olx,nsx,nsy)
-      integer nwetobcs (nsx,nsy,nr,nobcs)
-      character*(80)   ymaskobcs
-      integer mythid
+      integer OB_J     (1-OLx:sNx+OLx,nSx,nSy)
+      integer nwetobcs (nSx,nSy,Nr,nobcs)
+      character*(MAX_LEN_FNAM)   ymaskobcs
+      integer myThid
 
 c     == local variables ==
 
@@ -43,10 +43,10 @@ c     == local variables ==
       integer iobcs
       integer il
       _RL     dummy
-      _RL     maskxz   (1-olx:snx+olx,nr,nsx,nsy,nobcs)
-      _RL     gg       (1-olx:snx+olx,nr,nsx,nsy)
+      _RL     maskxz   (1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+      _RL     gg       (1-OLx:sNx+OLx,Nr,nSx,nSy)
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
 
 c     == external ==
 
@@ -55,10 +55,10 @@ c     == external ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
       _BEGIN_MASTER( myThid )
 
@@ -67,8 +67,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do i = 1-olx,snx+olx
+            do k = 1,Nr
+              do i = 1-OLx,sNx+OLx
                 maskxz(i,k,bi,bj,iobcs) = 0. _d 0
               enddo
             enddo
@@ -79,8 +79,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do i = 1,snx
+            do k = 1,Nr
+              do i = 1,sNx
                 j = OB_J(i,bi,bj)
                 if ( j .NE. jNone ) then
 c--               South mask for T, S, V
@@ -106,24 +106,23 @@ c--               West mask for U
 
 #ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') ymaskobcs
+      write(fname,'(a)') ymaskobcs
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do i = 1,snx
+            do k = 1,Nr
+              do i = 1,sNx
                  gg(i,k,bi,bj) = maskxz(i,k,bi,bj,iobcs)
               enddo
             enddo
           enddo
         enddo
-        call active_write_xz( fname, gg, iobcs, 0, mythid, dummy )
+        call active_write_xz( fname, gg, iobcs, 0, myThid, dummy )
       enddo
 #endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       return
       end
