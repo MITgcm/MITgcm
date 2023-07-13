@@ -296,7 +296,7 @@ CML     &      /SEAICE_deltaTevp**2
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           zMax (i,j,bi,bj)   = _rA(i,j,bi,bj) * fac
+           SEAICE_zMax(i,j,bi,bj) = _rA(i,j,bi,bj) * fac
           ENDDO
          ENDDO
         ENDDO

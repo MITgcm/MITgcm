@@ -139,8 +139,8 @@ C     in S/R seaice_ocean_stress
      &   ) THEN
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_EVP)
-CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE press0      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE SEAICE_zMax = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC and SEAICE_ALLOW_EVP */
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
