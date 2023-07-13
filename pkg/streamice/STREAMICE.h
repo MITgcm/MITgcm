@@ -573,9 +573,6 @@ C                                 :: do cost for verification test
 C     STREAMICE_do_vaf_cost       :: do cost for volume above floatation
 C     STREAMICE_shelf_dhdt_ctrl   :: option to apply surface elevation constraint to 
 C                                    floating ice in cost function
-C     STREAMICE_use_global_ctrl   :: placeholder parameter to allow aggregation of 
-C                                 :: controls into spatially constant fields, to be
-C                                 :: used in conjunction with control package
 
       LOGICAL STREAMICEison
       LOGICAL STREAMICE_dump_mdsio
@@ -601,7 +598,6 @@ C                                 :: used in conjunction with control package
       LOGICAL STREAMICE_vel_ext_cgrid
       LOGICAL STREAMICE_do_snapshot_cost
       LOGICAL STREAMICE_do_timedep_cost
-      LOGICAL STREAMICE_use_global_ctrl
       LOGICAL STREAMICE_do_verification_cost
       LOGICAL STREAMICE_do_vaf_cost
       LOGICAL STREAMICE_shelf_dhdt_ctrl
@@ -649,7 +645,6 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_do_verification_cost,
      & STREAMICE_do_vaf_cost,
      & STREAMICE_do_timedep_cost,
-     & STREAMICE_use_global_ctrl,
      & STREAMICE_shelf_dhdt_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,

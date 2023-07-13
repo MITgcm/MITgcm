@@ -63,11 +63,6 @@ C     == Local variables ==
       _RL     tmpVY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-#ifdef ALLOW_STREAMICE
-      _RL LOCsumTile(nSx,nSy), LOCsumGlob, itot_area
-#endif
-#endif
 
 c     == end of interface ==
 CEOP
@@ -154,26 +149,6 @@ CEOP
 #ifdef ALLOW_STREAMICE
        IF ( useStreamice ) THEN
 
-        itot_area=0.0
-        IF (STREAMICE_use_global_ctrl) then
-
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           LOCsumTile(bi,bj)=0. _d 0
-           DO j = 1,sNy
-            DO i = 1,sNx
-             LOCsumTile(bi,bj) = LOCsumTile(bi,bj)
-     &         + rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-
-         CALL GLOBAL_SUM_TILE_RL( LOCsumTile, LOCsumGlob, myThid )
-         itot_area = 1.0/LOCsumGlob
-        ENDIF
-
-
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
@@ -181,7 +156,6 @@ CEOP
             DO iarr = 1, maxCtrlTim2D
              temp_genarr_fnam=xx_gentim2d_file(iarr)
 
-             print *,"GOT HERE CTRLMAP 1", temp_genarr_fnam
 
              IF (temp_genarr_fnam(1:8).EQ.'xx_bglen')
      &        B_glen(i,j,bi,bj) = 
@@ -195,14 +169,8 @@ CEOP
      &        Bdot_streamice(i,j,bi,bj) = 
      &         xx_gentim2d(i,j,bi,bj,iarr)
              IF (temp_genarr_fnam(1:11).EQ.'xx_bdot_max') THEN
-              IF (STREAMICE_use_global_ctrl .and. 
-     &            xx_gentim2d_glosum(iarr)) then
-               streamice_bdot_maxmelt_v(i,j,bi,bj) = 
-     &          xx_gentim2d(i,j,bi,bj,iarr)*itot_area
-              ELSE
                streamice_bdot_maxmelt_v(i,j,bi,bj) = 
      &          xx_gentim2d(i,j,bi,bj,iarr)
-              ENDIF
              ENDIF
             ENDDO
            ENDDO
