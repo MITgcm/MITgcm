@@ -59,7 +59,7 @@ c     == local variables ==
       _RL factor
 cnew(
       integer  il
-      character*(80) fnametmp
+      character*(MAX_LEN_FNAM) fnametmp
       logical exst
 cnew)
       logical read_rec
@@ -94,8 +94,7 @@ c     == end of interface ==
 
       IF (read_rec) THEN
         il=ilnblnk(sla_file)
-
-        WRITE(fnametmp(1:80),'(2a,i4)')
+        WRITE(fnametmp,'(2a,i4)')
      &     sla_file(1:il), '_', year
         inquire( file=fnametmp, exist=exst )
         IF (.NOT. exst) THEN

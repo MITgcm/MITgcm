@@ -84,7 +84,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,k
       INTEGER prec
@@ -252,7 +252,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,k
       INTEGER prec
@@ -419,7 +419,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER j,k
       INTEGER prec
@@ -587,7 +587,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER j,k
       INTEGER prec

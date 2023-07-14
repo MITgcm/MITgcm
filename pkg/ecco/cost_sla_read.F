@@ -71,7 +71,7 @@ cnew(
       integer obsdate(4)
       integer yobs, ymod
       integer md, dd, sd, ld, wd
-      character*(80) fnametmp
+      character*(MAX_LEN_FNAM) fnametmp
       logical exst
 cnew)
       integer mody, modm
@@ -122,7 +122,7 @@ c        sshrec = floor(diffsecs/sla_period) + 1
       ENDIF !use_mon
 
       il=ilnblnk(sla_file)
-      WRITE(fnametmp(1:80),'(2a,i4)')
+      WRITE(fnametmp,'(2a,i4)')
      &     sla_file(1:il), '_', yobs
       inquire( file=fnametmp, exist=exst )
 
