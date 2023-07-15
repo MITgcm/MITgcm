@@ -15,7 +15,7 @@ C !INTERFACE:
      I   filePrec,
      I   useCurrentDir,
      I   arrType,
-     I   kSize,
+     I   kSize, kLo, kHi,
      O   fldRL, fldRS,
      I   irecord,
      I   myThid )
@@ -28,7 +28,9 @@ C filePrec    integer :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
 C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS"
-C kSize       integer :: size of third dimension, normally either 1 or Nr
+C kSize       integer :: size of second dimension, normally either 1 or Nr
+C kLo         integer :: 1rst vertical level (of array fldRL/RS) to read-in
+C kHi         integer :: last vertical level (of array fldRL/RS) to read-in
 C fldRL         RL    :: array to read into if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to read into if arrType="RS", fldRS(:,kSize,:,:)
 C irecord     integer :: record number to read
@@ -64,7 +66,7 @@ C !INPUT PARAMETERS:
       INTEGER filePrec
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
-      INTEGER kSize
+      INTEGER kSize, kLo, kHi
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
@@ -77,16 +79,17 @@ C !FUNCTIONS:
       EXTERNAL ILNBLNK, MDS_RECLEN
 
 C !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_FNAM) dataFName,pfName
-      INTEGER iG,jG,irec,bi,bj,k,dUnit,IL,pIL
+      CHARACTER*(MAX_LEN_FNAM) dataFName, pfName
+      INTEGER IL, pIL, dUnit, nLev, irec
+      INTEGER iG, jG, bi, bj, k, kL
       LOGICAL exst
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-      LOGICAL globalFile,fileIsOpen
+      LOGICAL globalFile, fileIsOpen
       INTEGER length_of_rec
-      CHARACTER*(max_len_mbuf) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
-      INTEGER tGx,tNx,tN
+      INTEGER tGx, tNx, tN
 #endif /* ALLOW_EXCH2 */
 C     ------------------------------------------------------------------
 
@@ -118,6 +121,9 @@ C Assign special directory
        WRITE(pfName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
       ENDIF
       pIL=ILNBLNK( pfName )
+
+C Set number of levels to read:
+      nLev = kHi - kLo + 1
 
 C Assign a free unit number as the I/O channel for this routine
       CALL MDSFINDUNIT( dUnit, myThid )
@@ -201,23 +207,24 @@ C layout of global x-z section files is "xStack"
          tGx = exch2_txXStackLo(tN)
          tNx = exch2_tNx(tN)
 #endif /* ALLOW_EXCH2 */
-         DO k=1,kSize
+         DO k=1,nLev
+           kL = k + kLo - 1
            IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
 C record length is sNx==tNx
             irec = 1 + ( tGx-1
-     &                   + ( k-1 + (irecord-1)*kSize )*exch2_xStack_Nx
+     &                   + ( k-1 + (irecord-1)*nLev )*exch2_xStack_Nx
      &                 )/tNx
 #else /* ALLOW_EXCH2 */
             iG = myXGlobalLo-1 + (bi-1)*sNx
             jG = (myYGlobalLo-1)/sNy + (bj-1)
-            irec=1 + INT(iG/sNx) + nSx*nPx*(k-1)
-     &           + nSx*nPx*kSize*(irecord-1)
+            irec = 1 + INT(iG/sNx) + nSx*nPx*(k-1)
+     &           + nSx*nPx*nLev*(irecord-1)
 #endif /* ALLOW_EXCH2 */
            ELSE
             iG = 0
             jG = 0
-            irec=k + kSize*(irecord-1)
+            irec = k + nLev*(irecord-1)
            ENDIF
            IF (filePrec .EQ. precFloat32) THEN
             READ(dUnit,rec=irec) r4seg
@@ -225,10 +232,10 @@ C record length is sNx==tNx
             CALL MDS_BYTESWAPR4(sNx,r4seg)
 #endif
             IF (arrType .EQ. 'RS') THEN
-             CALL MDS_SEG4toRS_2D( sNx,oLx,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG4toRS_2D( sNx,OLx,kSize,bi,bj,kL,.TRUE.,
      &                             r4seg,fldRS )
             ELSEIF (arrType .EQ. 'RL') THEN
-             CALL MDS_SEG4toRL_2D( sNx,oLx,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG4toRL_2D( sNx,OLx,kSize,bi,bj,kL,.TRUE.,
      &                             r4seg,fldRL )
             ELSE
              WRITE(msgBuf,'(A)')
@@ -242,10 +249,10 @@ C record length is sNx==tNx
             CALL MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             IF (arrType .EQ. 'RS') THEN
-             CALL MDS_SEG8toRS_2D(sNx,oLx,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG8toRS_2D(sNx,OLx,kSize,bi,bj,kL,.TRUE.,
      &                             r8seg,fldRS )
             ELSEIF (arrType .EQ. 'RL') THEN
-             CALL MDS_SEG8toRL_2D(sNx,oLx,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG8toRL_2D(sNx,OLx,kSize,bi,bj,kL,.TRUE.,
      &                             r8seg,fldRL )
             ELSE
              WRITE(msgBuf,'(A)')
@@ -292,7 +299,7 @@ C !INTERFACE:
      I   filePrec,
      I   useCurrentDir,
      I   arrType,
-     I   kSize,
+     I   kSize, kLo, kHi,
      O   fldRL, fldRS,
      I   irecord,
      I   myThid )
@@ -305,7 +312,9 @@ C filePrec    integer :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
 C arrType     char(2) :: which array (fldRL/RS) to read into, either "RL" or "RS"
-C kSize       integer :: size of third dimension, normally either 1 or Nr
+C kSize       integer :: size of second dimension, normally either 1 or Nr
+C kLo         integer :: 1rst vertical level (of array fldRL/RS) to read-in
+C kHi         integer :: last vertical level (of array fldRL/RS) to read-in
 C fldRL         RL    :: array to read into if arrType="RL", fldRL(:,kSize,:,:)
 C fldRS         RS    :: array to read into if arrType="RS", fldRS(:,kSize,:,:)
 C irecord     integer :: record number to read
@@ -341,7 +350,7 @@ C !INPUT PARAMETERS:
       INTEGER filePrec
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
-      INTEGER kSize
+      INTEGER kSize, kLo, kHi
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
@@ -354,16 +363,17 @@ C !FUNCTIONS:
       EXTERNAL ILNBLNK, MDS_RECLEN
 
 C !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_FNAM) dataFName,pfName
-      INTEGER iG,jG,irec,bi,bj,k,dUnit,IL,pIL
+      CHARACTER*(MAX_LEN_FNAM) dataFName, pfName
+      INTEGER IL, pIL, dUnit, nLev, irec
+      INTEGER iG, jG, bi, bj, k, kL
       LOGICAL exst
       Real*4 r4seg(sNy)
       Real*8 r8seg(sNy)
-      LOGICAL globalFile,fileIsOpen
+      LOGICAL globalFile, fileIsOpen
       INTEGER length_of_rec
-      CHARACTER*(max_len_mbuf) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
-      INTEGER tGy,tNy,tN
+      INTEGER tGy, tNy, tN
 #endif /* ALLOW_EXCH2 */
 
 C     ------------------------------------------------------------------
@@ -396,6 +406,9 @@ C Assign special directory
        WRITE(pfName,'(2A)') mdsioLocalDir(1:pIL), fName(1:IL)
       ENDIF
       pIL=ILNBLNK( pfName )
+
+C Set number of levels to read:
+      nLev = kHi - kLo + 1
 
 C Assign a free unit number as the I/O channel for this routine
       CALL MDSFINDUNIT( dUnit, myThid )
@@ -479,23 +492,24 @@ C layout of global y-z section files is "yStack"
          tGy = exch2_tyYStackLo(tN)
          tNy = exch2_tNy(tN)
 #endif /* ALLOW_EXCH2 */
-         DO k=1,kSize
+         DO k=1,nLev
+           kL = k + kLo - 1
            IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
 C record length is sNy==tNy
             irec = 1 + ( tGy-1
-     &                   + ( k-1 + (irecord-1)*kSize )*exch2_yStack_Ny
+     &                   + ( k-1 + (irecord-1)*nLev )*exch2_yStack_Ny
      &                 )/tNy
 #else /* ALLOW_EXCH2 */
             iG = (myXGlobalLo-1)/sNx + (bi-1)
             jG = myYGlobalLo-1 + (bj-1)*sNy
-            irec=1 + INT(jG/sNy) + nSy*nPy*(k-1)
-     &           + nSy*nPy*kSize*(irecord-1)
+            irec = 1 + INT(jG/sNy) + nSy*nPy*(k-1)
+     &           + nSy*nPy*nLev*(irecord-1)
 #endif /* ALLOW_EXCH2 */
            ELSE
             iG = 0
             jG = 0
-            irec=k + kSize*(irecord-1)
+            irec = k + nLev*(irecord-1)
            ENDIF
            IF (filePrec .EQ. precFloat32) THEN
             READ(dUnit,rec=irec) r4seg
@@ -503,10 +517,10 @@ C record length is sNy==tNy
             CALL MDS_BYTESWAPR4(sNy,r4seg)
 #endif
             IF (arrType .EQ. 'RS') THEN
-             CALL MDS_SEG4toRS_2D( sNy,oLy,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG4toRS_2D( sNy,OLy,kSize,bi,bj,kL,.TRUE.,
      &                             r4seg,fldRS )
             ELSEIF (arrType .EQ. 'RL') THEN
-             CALL MDS_SEG4toRL_2D( sNy,oLy,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG4toRL_2D( sNy,OLy,kSize,bi,bj,kL,.TRUE.,
      &                             r4seg,fldRL )
             ELSE
              WRITE(msgBuf,'(A)')
@@ -520,10 +534,10 @@ C record length is sNy==tNy
             CALL MDS_BYTESWAPR8( sNy, r8seg )
 #endif
             IF (arrType .EQ. 'RS') THEN
-             CALL MDS_SEG8toRS_2D( sNy,oLy,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG8toRS_2D( sNy,OLy,kSize,bi,bj,kL,.TRUE.,
      &                             r8seg,fldRS )
             ELSEIF (arrType .EQ. 'RL') THEN
-             CALL MDS_SEG8toRL_2D( sNy,oLy,kSize,bi,bj,k,.TRUE.,
+             CALL MDS_SEG8toRL_2D( sNy,OLy,kSize,bi,bj,kL,.TRUE.,
      &                             r8seg,fldRL )
             ELSE
              WRITE(msgBuf,'(A)')
