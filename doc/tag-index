@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - in cost_gencost_sshv4.F, enable to also process monthly data (previously,
+    only daily) for SSH cost.
 o pkg/ctrl:
   - remove left-over and unused code within ALLOW_NONDIMENSIONAL_CONTROL_IO
     (except in OBCS_CONTROL pack/unpack code); as a consequence, switch back
