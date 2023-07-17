@@ -82,9 +82,9 @@ C     restart parameter
      I       2, tmpFac,
      U       swfracba,
      I       dummyTime, 0, myThid )
-       SWFracB = swfracba(2)
+       SEAICE_SWFrac = swfracba(2)
 #else /* SHORTWAVE_HEATING */
-       SWFracB = 0. _d 0
+       SEAICE_SWFrac = 0. _d 0
 #endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)

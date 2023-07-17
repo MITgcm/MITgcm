@@ -606,19 +606,20 @@ C =============================================================================
 C      Calc air-sea fluxes in the uppermost grid cell
 C =============================================================================
 
-c--   Not all of the sw radiation is absorbed in the uppermost ocean grid cell layer.
-c     Only that fraction which converges in the uppermost ocean grid cell is used to
-c     melt ice.
-c           SWFRACB - the fraction of incoming sw radiation absorbed in the
-c                     uppermost ocean grid cell (calculated in seaice_init_vari.F)
+c--   Not all of the sw radiation is absorbed in the uppermost ocean
+c--   grid cell layer.  c Only that fraction which converges in the
+c--   uppermost ocean grid cell is used to c melt ice.
+
+c     SEAICE_SWFrac - the fraction of incoming sw radiation absorbed in the
+c               uppermost ocean grid cell (calculated in seaice_init_vari.F)
         DO J=1,sNy
          DO I=1,sNx
 
 c The contribution of shortwave heating is
 c not included without #define SHORTWAVE_HEATING
 #ifdef SHORTWAVE_HEATING
-           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*SWFRACB
-           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - SWFRACB)
+           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*SEAICE_SWFrac
+           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - SEAICE_SWFrac)
 #else
            QSWO_BELOW_FIRST_LAYER(I,J)= ZERO
            QSWO_IN_FIRST_LAYER(I,J)   = ZERO
@@ -1378,7 +1379,7 @@ c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j SW(BML IML SW)  ',i,j,
 c     &                 QSW_absorb_below_first_layer(i,j),
 c     &                 QSW_absorb_in_first_layer(i,j),
-c     &                 SWFRACB
+c     &                 SEAICE_SWFrac
 
 c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j ptc(to, qsw, oa)',i,j,
