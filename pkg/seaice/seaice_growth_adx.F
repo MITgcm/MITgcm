@@ -606,12 +606,12 @@ C =============================================================================
 C      Calc air-sea fluxes in the uppermost grid cell
 C =============================================================================
 
-c--   Not all of the sw radiation is absorbed in the uppermost ocean
-c--   grid cell layer.  c Only that fraction which converges in the
-c--   uppermost ocean grid cell is used to c melt ice.
+C--   Not all of the sw radiation is absorbed in the uppermost ocean
+C--   grid cell. Only that fraction which converges in the
+C--   uppermost ocean grid cell is used to melt ice.
 
-c     SEAICE_SWFrac - the fraction of incoming sw radiation absorbed in the
-c               uppermost ocean grid cell (calculated in seaice_init_vari.F)
+C     SEAICE_SWFrac - the fraction of incoming sw radiation absorbed in the
+C               uppermost ocean grid cell (calculated in seaice_init_fixed.F)
         DO J=1,sNy
          DO I=1,sNx
 
