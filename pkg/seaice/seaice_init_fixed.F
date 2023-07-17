@@ -74,10 +74,16 @@ C     restart parameter
       IF ( SEAICEuseBDF2 ) SEAICEmomStartBDF = nIter0
 
 #ifdef SHORTWAVE_HEATING
-       tmpFac    = -1.0
+       tmpFac    = 1.0
        dummyTime = 1.0
-       swfracba(1) = ABS(rF(1))
-       swfracba(2) = ABS(rF(2))
+       IF ( usingZCoords ) THEN
+        swfracba(1) = rF(1)
+        swfracba(2) = rF(2)
+       ELSE
+C     this is the oceanic pressure coordinate case
+        swfracba(1) = -rF(1)*recip_rhoConst*recip_gravity
+        swfracba(2) = -rF(2)*recip_rhoConst*recip_gravity
+       ENDIF
        CALL SWFRAC(
      I       2, tmpFac,
      U       swfracba,
