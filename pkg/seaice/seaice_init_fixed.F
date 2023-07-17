@@ -81,8 +81,8 @@ C     restart parameter
         swfracba(2) = rF(2)
        ELSE
 C     this is the oceanic pressure coordinate case
-        swfracba(1) = -rF(1)*recip_rhoConst*recip_gravity
-        swfracba(2) = -rF(2)*recip_rhoConst*recip_gravity
+        swfracba(1) = -rF(Nr+1)*recip_rhoConst*recip_gravity
+        swfracba(2) = -rF(Nr)  *recip_rhoConst*recip_gravity
        ENDIF
        CALL SWFRAC(
      I       2, tmpFac,
