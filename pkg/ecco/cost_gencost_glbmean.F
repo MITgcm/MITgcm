@@ -1,7 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_glbmean(
-     I                     mythid
+     I                     myThid
      &                   )
 
 c     ==================================================================
@@ -34,7 +34,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -52,15 +52,15 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      _RL locbar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL locbar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locw
 
-      _RL locbarmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL locbaranom ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL loccount ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL locbarmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL locbaranom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL loccount ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL junk, junkweight
 
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
 
       _RL fac
       _RL locbarglbmean
@@ -86,10 +86,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
       do k=1,NGENCOST
       kgen=0
@@ -109,8 +109,8 @@ c convert phibot from m2/s2 to cm
       if(gencost_name(k).EQ.'gmbp') fac = 1. _d 2 * recip_gravity
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = 1,sny
-            do i = 1,snx
+          do j = 1,sNy
+            do i = 1,sNx
               locbarmean(i,j,bi,bj) = 0. _d 0
               locbaranom(i,j,bi,bj) = 0. _d 0
               loccount(i,j,bi,bj) = 0. _d 0
@@ -157,9 +157,8 @@ C now remove the time-mean from the data
 c--
 
 #ifdef ALLOW_CTRL
-      write(fname(1:80),'(80a)') ' '
       il=ilnblnk( gencost_barfile(kgen) )
-      write(fname(1:80),'(2a,i10.10)')
+      write(fname,'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
 #endif
 
@@ -172,13 +171,13 @@ c--   ============
         if(locmask(irec) .NE. 0. _d 0) then
 c--     Compute the mean over all bpdat records.
         call active_read_xy( fname, locbar, irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
+     &                       ladinit, eccoiter, myThid,
      &                       gencost_dummy(kgen) )
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
+            do j = 1,sNy
+              do i = 1,sNx
                 if ( maskc(i,j,1,bi,bj).NE. 0. _d 0 ) then
                   locbarmean(i,j,bi,bj) = locbarmean(i,j,bi,bj) +
      &               fac*locbar(i,j,bi,bj)
@@ -194,8 +193,8 @@ c--     Compute the mean over all bpdat records.
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
+            do j = 1,sNy
+              do i = 1,sNx
                 if (loccount(i,j,bi,bj).GT. 0. _d 0) then
                   locbarmean(i,j,bi,bj) =
      &              locbarmean(i,j,bi,bj)/loccount(i,j,bi,bj)
@@ -214,14 +213,14 @@ c--   Loop over records for the second time.
 
         if(locmask(irec) .NE. 0. _d 0) then
         call active_read_xy( fname, locbar, irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
+     &                       ladinit, eccoiter, myThid,
      &                       gencost_dummy(kgen) )
 
 c--    Compute field of anomalies
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
+            do j = 1,sNy
+              do i = 1,sNx
                 if ( maskc(i,j,1,bi,bj).NE. 0. _d 0) then
                   locbaranom(i,j,bi,bj) =
      &              fac*locbar(i,j,bi,bj) - locbarmean(i,j,bi,bj)
@@ -239,8 +238,8 @@ c--    Remove global mean value
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = 1,sny
-            do i = 1,snx
+          do j = 1,sNy
+            do i = 1,sNx
               if ( maskc(i,j,1,bi,bj).NE. 0. _d 0) then
                 locbarglbmean  = locbarglbmean +
      &           RA(i,j,bi,bj)*locbaranom(i,j,bi,bj)
@@ -251,8 +250,8 @@ c--    Remove global mean value
         enddo
       enddo
 
-      _GLOBAL_SUM_RL( locbarglbmean     , mythid )
-      _GLOBAL_SUM_RL( locbarglbmean_sum , mythid )
+      _GLOBAL_SUM_RL( locbarglbmean     , myThid )
+      _GLOBAL_SUM_RL( locbarglbmean_sum , myThid )
 
       IF (  MASTER_CPU_THREAD(myThid) .AND.
      &     ( locmask(irec) .NE. 0. _d 0 ) .AND.
