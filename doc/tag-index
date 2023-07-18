@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - SEAICE_USE_GROWTH_ADX: fix a bug related to flooding and fix budget closure
+    for linear free-surface case.
+o pkg/ecco:
+  - in cost_gencost_sshv4.F, enable to also process monthly data (previously,
+    only daily) for SSH cost.
+o pkg/ctrl:
+  - remove left-over and unused code within ALLOW_NONDIMENSIONAL_CONTROL_IO
+    (except in OBCS_CONTROL pack/unpack code); as a consequence, switch back
+    ALLOW_PACKUNPACK_METHOD2 to #undef in exp. tutorial_global_oce_optim.
+o pkgs:
+  - for local filenames, replace character*(80) by character*(MAX_LEN_FNAM)
+    declaration, where possible, especially in pkgs: autodiff, ctrl, ecco,
+    profiles, smooth & grdchk.
+
 checkpoint68q (2023/06/29)
 o pkg/ggl90:
   - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;
