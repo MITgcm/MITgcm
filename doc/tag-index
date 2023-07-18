@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - SEAICE_USE_GROWTH_ADX: fix a bug related to flooding and fix budget closure
+    for linear free-surface case.
 o pkg/ecco:
   - in cost_gencost_sshv4.F, enable to also process monthly data (previously,
     only daily) for SSH cost.
