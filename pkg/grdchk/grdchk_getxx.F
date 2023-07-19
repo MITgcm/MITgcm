@@ -40,7 +40,9 @@ c     == global variables ==
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
-#include "CTRL_OBCS.h"
+#ifdef ALLOW_OBCS_CONTROL
+# include "CTRL_OBCS.h"
+#endif
 #include "grdchk.h"
 #include "optim.h"
 

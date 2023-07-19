@@ -27,6 +27,9 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ctrl.h"
+#ifdef ALLOW_OBCS_CONTROL
+# include "CTRL_OBCS.h"
+#endif
 #include "grdchk.h"
 
 c     == routine arguments ==

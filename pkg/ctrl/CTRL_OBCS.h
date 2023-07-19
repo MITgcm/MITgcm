@@ -8,6 +8,9 @@ c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
 
+      integer nobcs
+      parameter ( nobcs = 4 )
+
       _RL  objf_obcsn(nsx,nsy), objf_obcss(nsx,nsy)
       _RL  objf_obcsw(nsx,nsy), objf_obcse(nsx,nsy)
       _RL  objf_obcsvol, objf_ageos(nsx,nsy)

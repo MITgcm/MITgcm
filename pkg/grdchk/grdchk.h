@@ -86,7 +86,11 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                  ichkmem, icompmem, itestmem, ierrmem, icglomem
       integer ncvarcomp
       integer maxncvarcomps
+#ifdef ALLOW_OBCS_CONTROL
       integer nwettile( nsx,nsy,nr,nobcs )
+#else
+      integer nwettile( nsx,nsy,nr,    1 )
+#endif
       integer irecmem ( maxgrdchecks )
       integer bjmem   ( maxgrdchecks )
       integer bimem   ( maxgrdchecks )
@@ -112,5 +116,3 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
 c     ==================================================================
 c     END OF HEADER GRADIENT_CHECK
 c     ==================================================================
-
-

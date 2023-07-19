@@ -27,7 +27,9 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "ctrl.h"
-#include "CTRL_OBCS.h"
+#ifdef ALLOW_OBCS_CONTROL
+# include "CTRL_OBCS.h"
+#endif
 #include "grdchk.h"
 
 c     == routine arguments ==
@@ -41,6 +43,7 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+      integer nobcsmax
 c     == end of interface ==
 
       jtlo = 1
@@ -54,11 +57,17 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
+#ifdef ALLOW_OBCS_CONTROL
+      nobcsmax = nobcs
+#else
+      nobcsmax = 1
+#endif
+
 c--   initialise
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do k = 1,ncvarnrmax(grdchkvarindex)
-               do iobcs = 1, nobcs
+               do iobcs = 1, nobcsmax
                   nwettile(bi,bj,k,iobcs) = 0
                enddo
             enddo
@@ -113,7 +122,7 @@ c--   control variable on the current tile.
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  do iobcs = 1, nobcs
+                  do iobcs = 1, nobcsmax
                      if ( grdchkvarindex .eq. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
                         nwettile(bi,bj,k,iobcs) =
@@ -157,7 +166,7 @@ c--   components of the given control variable.
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do k = 1,ncvarnrmax(grdchkvarindex)
-               do iobcs = 1, nobcs
+               do iobcs = 1, nobcsmax
                   ncvarcomp     = ncvarcomp + nwettile(bi,bj,k,iobcs)
                   maxncvarcomps = maxncvarcomps +
      &                 ncvarxmax(grdchkvarindex)*
