@@ -52,7 +52,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL minusone
       PARAMETER (minusOne=-1.)
 #ifdef SHORTWAVE_HEATING
-      _RL swfracb(2)
+      _RL swfracb(2), swfac
 #endif
 
 C --  These factors convert the units of TFLUX and SFLUX diagnostics
@@ -90,12 +90,20 @@ C --       Loop for diffusive fluxes
 C --       If done correctly, we can overwrite the flux array in place
 C --       with its own divergence
            DO k=1,Nr
-            kdown= MIN(k+1,Nr)
-            IF (k.EQ.Nr) THEN
-              downfac = 0. _d 0
+            downFac = 1. _d 0
+C     note: here kdown is for the mask below current level k
+            IF ( usingZCoords ) THEN
+             kdown = MIN(k+1,Nr)
+             IF ( k.EQ.Nr ) downFac = 0. _d 0
             ELSE
-              downfac = 1. _d 0
+C     this is the oceanic pressure coordinate case
+             kdown = MAX(k-1,1)
+             IF ( k.EQ.1  ) downFac = 0. _d 0
             ENDIF
+#ifdef SHORTWAVE_HEATING
+            swfac = 1. _d 0
+            IF ( k.EQ.kdown ) swfac = 0. _d 0
+#endif
             DO j=1-OLy,sNy+OLy-1
              DO i=1-OLx,sNx+OLx-1
 C -- Diffusion
@@ -123,32 +131,12 @@ C -- Advection
 
 #ifdef SHORTWAVE_HEATING
               IF (iTracer.EQ.1) THEN
-                swfracb(1)=abs(rF(k))
-                swfracb(2)=abs(rF(k+1))
-                CALL SWFRAC(
-     I             2, minusOne,
-     U             swfracb,
-     I             1.0, 1, myThid )
-C  ----- debuggin
-C                IF ((i.EQ.0).AND.(j.EQ.0)) THEN
-C                  WRITE(msgBuf,'(2A,I3,A,F6.2,A,F6.2)')
-C     &             'S/R LAYERS_THERMODYNAMICS:',
-C     &             ' k=', k,
-C     &             ' swfracb(1)=', swfracb(1),
-C     &             ' swfracb(2)=', swfracb(2)
-C                  CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-C     &                         SQUEEZE_RIGHT, myThid )
-C                ENDIF
-C            --- kdown == kp1
-C                kp1 = k+1
-                IF (k.EQ.Nr) THEN
-C                  kp1 = k
-                  swfracb(2)=0. _d 0
-                ENDIF
+                swfracb(1)=SWFrac3D(i,j,k,bi,bj)
+                swfracb(2)=SWFrac3D(i,j,kdown,bi,bj)*swfac
                 layers_sw(i,j,k,iTracer,bi,bj) =
      &            layers_sw(i,j,k,iTracer,bi,bj)
      &            -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
-     &                      -swfracb(2)*maskC(i,j,kdown,bi,bj))
+     &                            -swfracb(2)*maskC(i,j,kdown,bi,bj))
      &            *fluxfac(1)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
               ENDIF
