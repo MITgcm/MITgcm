@@ -8,6 +8,10 @@ c     ==================================================================
 c     HEADER AVERAGES
 c     ==================================================================
 
+c     IMPORTANT NOTE: The declaration of this parameter has been moved
+c     from SIZE.h. If you encounter compile time errors related to
+c     "nobcs", make sure that your SIZE.h does not contain any
+c     declaration of this parameter.
       integer nobcs
       parameter ( nobcs = 4 )
 
