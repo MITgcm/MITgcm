@@ -205,8 +205,8 @@ C  NOW EVALUATE VISCOSITIES
           ENDIF
           ZETA(I,J,bi,bj)  = 0.5 _d 0*PRESS0(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
-          ZETA(I,J,bi,bj)  = MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
-          ZETA(I,J,bi,bj)  = MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
+          ZETA(I,J,bi,bj)  = MIN(SEAICE_zMax(I,J,bi,bj),ZETA(I,J,bi,bj))
+          ZETA(I,J,bi,bj)  = MAX(SEAICE_zMin(I,J,bi,bj),ZETA(I,J,bi,bj))
 C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
           ZETA(I,J,bi,bj)  = ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           ETA(I,J,bi,bj)   = ECM2*ZETA(I,J,bi,bj)
