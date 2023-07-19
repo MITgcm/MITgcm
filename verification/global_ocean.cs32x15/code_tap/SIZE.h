@@ -67,7 +67,4 @@ C                routine buffers.
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
 
-C     for pkg/ctrl:
-      INTEGER nobcs
-      PARAMETER ( nobcs = 4 )
 
