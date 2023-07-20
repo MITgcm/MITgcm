@@ -94,8 +94,8 @@ C       OCeaN surface, or providing heat to the OCeaN surface).
 
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
-C     number of surface interface layer
-      INTEGER kSurface
+C     number of surface interface layer, and second interface layer
+      INTEGER kSurface, kSrfS
 C     IT        :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
 C     msgBuf    :: Informational/error message buffer
@@ -330,17 +330,19 @@ C ===================================================================
 
       IF ( usingPCoords ) THEN
        kSurface = Nr
+       kSrfS    = Nr-1
        dzSurf   = drF(kSurface)*recip_rhoConst*recip_gravity
       ELSE
        kSurface = 1
+       kSrfS    = 2
        dzSurf   = drF(kSurface)
       ENDIF
 
 C     avoid unnecessary divisions in loops
-      recip_multDim        = SEAICE_multDim
-      recip_multDim        = ONE / recip_multDim
+      recip_multDim     = SEAICE_multDim
+      recip_multDim     = ONE / recip_multDim
 C     above/below: double/single precision calculation of recip_multDim
-c     recip_multDim        = 1./float(SEAICE_multDim)
+c     recip_multDim     = ONE / float(SEAICE_multDim)
       recip_deltaTtherm = ONE / SEAICE_deltaTtherm
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
@@ -1588,7 +1590,12 @@ C           heat flux overcoming potential melt by ocean
      &            (1.0 _d 0 - AREApreTH(i,j))
 C           Penetrative shortwave flux beyond first layer
 C           that is therefore not available to ice growth/melt
-            tmpscal2=SEAICE_SWFrac * a_QSWbyATM_open(i,j)
+#ifdef SHORTWAVE_HEATING
+C           tmpscal2 = SWFracB * a_QSWbyATM_open(i,j)
+            tmpscal2 = SWFrac3D(i,j,kSrfS,bi,bj) * a_QSWbyATM_open(i,j)
+#else
+            tmpscal2 = 0. _d 0
+#endif
 C           impose -HEFF as the maxmum melting if SEAICE_doOpenWaterMelt
 C           or 0. otherwise (no melting if not SEAICE_doOpenWaterMelt)
             tmpscal3=facOpenGrow*MAX(tmpscal1-tmpscal2,

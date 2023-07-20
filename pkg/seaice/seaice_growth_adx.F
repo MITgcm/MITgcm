@@ -77,7 +77,8 @@ C AREA is the seaice cover fraction (0<=AREA<=1)
 
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
-C     number of surface interface layer
+C     number of surface interface layer, and second interface layer
+      INTEGER kSurface, kSrfS
       INTEGER kSurface
 C     IT :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
@@ -291,9 +292,11 @@ C =================PART 0: constants and initializations=============
 C ===================================================================
 
       IF ( usingPCoords ) THEN
-       kSurface        = Nr
+       kSurface = Nr
+       kSrfS    = Nr-1
       ELSE
-       kSurface        = 1
+       kSurface = 1
+       kSrfS    = 2
       ENDIF
 
 C     Cutoff for iceload
@@ -594,19 +597,19 @@ C      Calc air-sea fluxes in the uppermost grid cell
 C =============================================================================
 
 C--   Not all of the sw radiation is absorbed in the uppermost ocean
-C--   grid cell. Only that fraction which converges in the
-C--   uppermost ocean grid cell is used to melt ice.
-
-C     SEAICE_SWFrac - the fraction of incoming sw radiation absorbed in the
-C               uppermost ocean grid cell (calculated in seaice_init_fixed.F)
+C     grid cell layer. Only that fraction which converges in the
+C     uppermost ocean grid cell is used to melt ice.
+C     SWFrac3D - the fraction of incoming sw radiation absorbed in the
+C     uppermost ocean grid cell (calculated in initialise_fixed.F)
         DO J=1,sNy
          DO I=1,sNx
 
-c The contribution of shortwave heating is
-c not included without #define SHORTWAVE_HEATING
+C The contribution of shortwave heating is
+C not included without #define SHORTWAVE_HEATING
 #ifdef SHORTWAVE_HEATING
-           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*SEAICE_SWFrac
-           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - SEAICE_SWFrac)
+           tmpscal0 = SWFrac3D(I,J,kSrfS,bi,bj)
+           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*tmpscal0
+           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - tmpscal0)
 #else
            QSWO_BELOW_FIRST_LAYER(I,J)= ZERO
            QSWO_IN_FIRST_LAYER(I,J)   = ZERO

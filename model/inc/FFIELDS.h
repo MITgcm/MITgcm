@@ -134,6 +134,15 @@ C                       to global-mean surf. flux imbalance ; no-units
       _RS weight2BalanceFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
+#ifdef SHORTWAVE_HEATING
+C     SWFrac3D :: fraction of solar short-wave flux penetrating upper
+C                 cell surface (no units), function of depth of cell
+C                 surface, potentially turbidity, cholorphyll
+C                 concentration, or other biogeochemical material
+      COMMON /FFIELDS_SWFRAC/ SWFrac3D
+      _RS  SWFrac3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 C- jmc: commented out until corresponding (ghost-like) code apparition
 C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
 C              Southwest C-grid tracer point

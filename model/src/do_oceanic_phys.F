@@ -279,6 +279,16 @@ C--   dummy statement to end declaration part
       ENDIF
 #endif /* ALLOW_OFFLINE */
 
+#if ( defined ALLOW_GCHEM && defined SHORTWAVE_HEATING )
+C--   This is the place where the 3D array SWFrac3D would need to be
+C--   updated to reflect the current amount of surface radiation
+C--   avaiable in each layer. The routine to do this depends very much
+C--   on the bio-geo-chemical used to compute turbidity or concentration
+C--   of organic matter in the water column, and has not yet been
+C--   written.
+C     IF ( useGCHEM ) CALL GCHEM_SWFRAC( myTime, myIter, myThid )
+#endif
+
 #ifdef  ALLOW_OBCS
       IF (useOBCS) THEN
 C--   Calculate future values on open boundaries
