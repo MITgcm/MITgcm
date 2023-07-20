@@ -28,6 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C o I/O and pack settings
 #undef CTRL_SET_PREC_32
+C   This option is only relevant (for pack/unpack) with OBCS_CONTROL:
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_PACKUNPACK_METHOD2

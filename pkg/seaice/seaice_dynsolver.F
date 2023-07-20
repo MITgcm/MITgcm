@@ -97,11 +97,11 @@ C     TAUY    :: meridional wind stress over seaice at V point
 #ifdef ALLOW_AUTODIFF
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
-          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
+          PRESS0     (i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
-          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+          SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
+          PRESS0     (i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
 # ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
@@ -139,8 +139,8 @@ C     in S/R seaice_ocean_stress
      &   ) THEN
 
 #if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_ALLOW_EVP)
-CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE press0      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE SEAICE_zMax = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC and SEAICE_ALLOW_EVP */
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
@@ -458,7 +458,8 @@ C     first recompute strainrates from up-to-date velocities
 C     but use old viscosities and pressure for the
 C     principle stress components
 CML     CALL SEAICE_CALC_VISCOSITIES(
-CML  I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+CML  I     e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+CML  I     tensileStrFac,
 CML  O     eta, etaZ, zeta, zetaZ, press, deltaC,
 CML  I     0, myTime, myIter, myThid )
        ENDIF

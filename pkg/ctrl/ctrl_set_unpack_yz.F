@@ -37,11 +37,11 @@ c     == routine arguments ==
 
       integer cunit
       integer ivartype
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
       character*  (9) masktype
-      character*( 80) weighttype
-      _RL     weightfld( nr,nobcs )
-      integer nwetglobal(nr,nobcs)
+      character*(MAX_LEN_FNAM) weighttype
+      _RL     weightfld( Nr,nobcs )
+      integer nwetglobal(Nr,nobcs)
       integer mythid
 
 #ifndef EXCLUDE_CTRL_PACK
@@ -61,21 +61,21 @@ c     == local variables ==
 
       integer cbuffindex
 
-      real*4  cbuff     ( nsx*npx*sny*nsy*npy )
-      real*4 globfldtmp2( nsx,npx,sny,nsy,npy )
-      real*4 globfldtmp3( nsx,npx,sny,nsy,npy )
-      _RL     globfldyz( nsx,npx,sny,nsy,npy,nr )
-      _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
-      _RL     globmskyz( nsx,npx,sny,nsy,npy,nr,nobcs )
+      real*4  cbuff     ( nSx*nPx*sNy*nSy*nPy )
+      real*4 globfldtmp2( nSx,nPx,sNy,nSy,nPy )
+      real*4 globfldtmp3( nSx,nPx,sNy,nSy,nPy )
+      _RL     globfldyz( nSx,nPx,sNy,nSy,nPy,Nr )
+      _RL     globfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
+      _RL     globmskyz( nSx,nPx,sNy,nSy,nPy,Nr,nobcs )
 
       integer reclen, irectrue
       integer cunit2, cunit3
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 
 #ifdef CTRL_UNPACK_PRECISE
       integer il
-      character*(80) weightname
-      _RL   weightfldyz( nsx,npx,sny,nsy,npy,nr,nobcs )
+      character*(MAX_LEN_FNAM) weightname
+      _RL   weightfldyz( nSx,nPx,sNy,nSy,nPy,Nr,nobcs )
 
 c     == external ==
 
@@ -86,18 +86,18 @@ c     == external ==
 cc     == end of interface ==
 
       jtlo = 1
-      jthi = nsy
+      jthi = nSy
       itlo = 1
-      ithi = nsx
+      ithi = nSx
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       lxxadxx = .TRUE.
 
 c     Initialise temporary file
-      do k = 1,nr
+      do k = 1,Nr
          do jp = 1,nPy
             do bj = jtlo,jthi
                do j = jmin,jmax
@@ -116,7 +116,7 @@ c     Initialise temporary file
          enddo
       enddo
 c     Initialise temporary file
-      do k = 1,nr
+      do k = 1,Nr
          do jp = 1,nPy
             do bj = jtlo,jthi
                do j = jmin,jmax
@@ -136,25 +136,23 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
 
-         reclen = nsx*npx*sny*nsy*npy*4
+         reclen = nSx*nPx*sNy*nSy*nPy*4
          call mdsfindunit( cunit2, mythid )
          open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
@@ -169,8 +167,7 @@ c--   Only the master thread will do I/O.
      &        Nr, globmskyz(1,1,1,1,1,1,iobcs), iobcs, mythid)
 #ifdef CTRL_UNPACK_PRECISE
          il=ilnblnk( weighttype)
-         write(weightname(1:80),'(80a)') ' '
-         write(weightname(1:80),'(a)') weighttype(1:il)
+         write(weightname,'(a)') weighttype(1:il)
          call MDSREADFIELD_YZ_GL(
      &       weightname, ctrlprec, 'RL',
      &       Nr, weightfldyz(1,1,1,1,1,1,iobcs), iobcs, mythid)
@@ -186,8 +183,8 @@ C     method that works for .not.useSingleCPUio cannot be used
       endif
       do irec = 1, nrec_nl
 c     And now back-calculate what iobcs should be.
-         do i=1,snx
-            iobcs= mod((irec-1)*snx+i-1,nobcs)+1
+         do i=1,sNx
+            iobcs= mod((irec-1)*sNx+i-1,nobcs)+1
 
             read(cunit) filencvarindex(ivartype)
             if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
@@ -199,7 +196,7 @@ c     And now back-calculate what iobcs should be.
             read(cunit) filej
             read(cunit) filei
             do k = 1, Nr
-               irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
+               irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
                cbuffindex = nwetglobal(k,iobcs)
                if ( cbuffindex .gt. 0 ) then
                   read(cunit) filencbuffindex
@@ -222,9 +219,9 @@ c     And now back-calculate what iobcs should be.
                  do j = jmin,jmax
                   do ip = 1,nPx
                    do bi = itlo,ithi
-                    ii=mod((i-1)*nr*sny+(k-1)*sny+j-1,snx)+1
-                    jj=mod(((i-1)*nr*sny+(k-1)*sny+j-1)/snx,sny)+1
-                    kk=int((i-1)*nr*sny+(k-1)*sny+j-1)/(snx*sny)+1
+                    ii=mod((i-1)*Nr*sNy+(k-1)*sNy+j-1,sNx)+1
+                    jj=mod(((i-1)*Nr*sNy+(k-1)*sNy+j-1)/sNx,sNy)+1
+                    kk=int((i-1)*Nr*sNy+(k-1)*sNy+j-1)/(sNx*sNy)+1
                     if ( globmskyz(bi,ip,j,bj,jp,k,iobcs) .ne. 0. ) then
                        cbuffindex = cbuffindex + 1
                        globfld3d(ii,bi,ip,jj,bj,jp,kk) =
@@ -286,7 +283,7 @@ c     And now back-calculate what iobcs should be.
          read(cunit) filej
          read(cunit) filei
          do k = 1, Nr
-            irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
+            irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
             cbuffindex = nwetglobal(k,iobcs)
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
