@@ -330,11 +330,11 @@ C ===================================================================
 
       IF ( usingPCoords ) THEN
        kSurface = Nr
-       kSrfS    = Nr-1
+       kSrfS    = MAX(Nr-1,1)
        dzSurf   = drF(kSurface)*recip_rhoConst*recip_gravity
       ELSE
        kSurface = 1
-       kSrfS    = 2
+       kSrfS    = MIN(2,Nr)
        dzSurf   = drF(kSurface)
       ENDIF
 

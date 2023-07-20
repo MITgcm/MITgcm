@@ -293,10 +293,10 @@ C ===================================================================
 
       IF ( usingPCoords ) THEN
        kSurface = Nr
-       kSrfS    = Nr-1
+       kSrfS    = MAX(Nr-1,1)
       ELSE
        kSurface = 1
-       kSrfS    = 2
+       kSrfS    = MIN(2,Nr)
       ENDIF
 
 C     Cutoff for iceload
