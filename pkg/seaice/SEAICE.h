@@ -124,16 +124,17 @@ C     DWATN         :: (linear) ice-ocean drag coefficient
 C                      ( units of [rho|u|] = kg/m^2/s )
 C     PRESS0        :: maximal compressive stress/strength (N/m)
 C     FORCEX/Y0     :: external momentum forcing fields (part of FORCEX/Y)
-C     ZMAX/ZMIN     :: maximum/minimum bulk viscosities
+C     SEAICE_zMax/zMin :: maximum/minimum bulk viscosities
 C     tensileStrFac :: factor k to compute the maximal tensile stress k*PRESS0
       COMMON/SEAICE_DYNVARS_4/
-     &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN, tensileStrFac
+     &     DWATN, PRESS0, FORCEX0, FORCEY0,
+     &     SEAICE_zMax, SEAICE_zMin, tensileStrFac
       _RL DWATN        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL PRESS0       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEX0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ZMAX         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ZMIN         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SEAICE_zMax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SEAICE_zMin  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tensileStrFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_CGRID
@@ -253,11 +254,17 @@ C     TICES :: Seaice/snow surface temperature for each category
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 
-C     SWFracB :: fraction of surface Short-Wave radiation reaching
-C                the bottom of ocean surface level
-      _RL SWFracB
+C     SEAICE_SWFrac :: Fraction of surface Short-Wave radiation reaching
+C                      the bottom of ocean surface level. Currently,
+C                      this is just a function of surface cell
+C                      thickness, and hence a constant parameter
+C                      computed in seaice_init_fixed.F in a given
+C                      simulation, but in the future this variable may
+C                      depend on variable turbidity or chlorphyll
+C                      concentration and can change with space and time.
+      _RL SEAICE_SWFrac
       COMMON /SEAICE_SW_R/
-     &       SWFracB
+     &       SEAICE_SWFrac
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
