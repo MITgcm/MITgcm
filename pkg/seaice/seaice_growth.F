@@ -1591,7 +1591,6 @@ C           heat flux overcoming potential melt by ocean
 C           Penetrative shortwave flux beyond first layer
 C           that is therefore not available to ice growth/melt
 #ifdef SHORTWAVE_HEATING
-C           tmpscal2 = SWFracB * a_QSWbyATM_open(i,j)
             tmpscal2 = SWFrac3D(i,j,kSrfS,bi,bj) * a_QSWbyATM_open(i,j)
 #else
             tmpscal2 = 0. _d 0
