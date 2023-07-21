@@ -97,7 +97,6 @@ C     i,j,bi,bj  :: Loop counters
       _RL residini
       _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
       _RL residkm1, residkm2
-      _RL residUm, residVm
 #endif /* SEAICE_LSR_FLEX */
 
 C     diagonals of coefficient matrices
@@ -853,16 +852,14 @@ C     end bi,bj-loops
          CALL SEAICE_RESIDUAL(
      I       rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I       AU, BU, CU, AV, BV, CV, uIce, vIce,
-     O       residUm, residVm, uTmp, vTmp,
+     O       S1, S2, uTmp, vTmp,
      I       printResidual, myIter, myThid )
-         IF( residUm.LT.LSR_ERRORfu ) THEN
+         IF( S1.LT.LSR_ERRORfu ) THEN
           ICOUNT1=m
-          S1 = residUm
           doIterate4u = .FALSE.
          ENDIF
-         IF( residVm.LT.LSR_ERRORfv ) THEN
+         IF( S2.LT.LSR_ERRORfv ) THEN
           ICOUNT2=m
-          S2 = residVm
           doIterate4v = .FALSE.
          ENDIF
         ENDIF
