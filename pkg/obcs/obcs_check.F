@@ -135,8 +135,8 @@ C
 C
       CALL WRITE_0D_L( useOBCStides, INDEX_NONE,
      &   'useOBCStides =', ' /* apply tidal forcing through OB */')
-      CALL WRITE_1D_RL( tidalPeriod, tidalComponents, INDEX_I,
-     &   'tidalPeriod = ', ' /* (s) */')
+      CALL WRITE_1D_RL( OBCS_tidalPeriod, OBCS_tideCompSize, INDEX_I,
+     &   'OBCS_tidalPeriod = ', ' /* (s) */')
 C
       CALL WRITE_0D_L( useOrlanskiNorth,   INDEX_NONE,
      & 'useOrlanskiNorth =', '  /* use Orlanski for northern bound. */')
