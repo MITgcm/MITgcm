@@ -54,12 +54,12 @@ C     == local variables ==
 C     Tapenade requires these 4 variables to be declared as arrays of
 C     size maxCtrlTim2D. If declared as scalars, it does not store their
 C     temporary values in the do loop during reverse pass.
-      CHARACTER*(80) fnamegenIn(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamegenOut(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamegenTmp(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamebase(1:maxCtrlTim2D)
-      CHARACTER(80) temp_genarr_fnamA
-      CHARACTER(80) temp_genarr_fnamB
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamebase(1:maxCtrlTim2D)
+      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnamA
+      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnamB
       integer startrec
       integer endrec
       integer diffrec
@@ -120,7 +120,7 @@ C--   generic 2D control variables
 #endif
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        temp_genarr_fnamA = fnamebase(iarr)
+        temp_genarr_fnamA = xx_gentim2d_file(iarr)
         fnamebase(iarr) = temp_genarr_fnamA(1:ilgen)
 
         call ctrl_init_rec ( fnamebase(iarr),
@@ -168,14 +168,14 @@ C print statements are removed. See "Automatic Differentiation" chap. in the doc
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         temp_genarr_fnamA = xx_gentim2d_file(iarr)
         fnamebase(iarr) = temp_genarr_fnamA(1:ilgen)
-        write(temp_genarr_fnamB(1:80),'(2a,i10.10)')
+        write(temp_genarr_fnamB,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen),'.',optimcycle
         fnamegenIn(iarr) = temp_genarr_fnamB
-        write(temp_genarr_fnamB(1:80),'(2a,i10.10)')
+        write(temp_genarr_fnamB,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen)
      &   ,'.effective.',optimcycle
         fnamegenOut(iarr) = temp_genarr_fnamB
-        write(temp_genarr_fnamB(1:80),'(2a,i10.10)')
+        write(temp_genarr_fnamB,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen),'.tmp.',optimcycle
         fnamegenTmp(iarr) = temp_genarr_fnamB
 

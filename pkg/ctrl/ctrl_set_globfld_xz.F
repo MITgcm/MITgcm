@@ -28,7 +28,7 @@ C     == global variables ==
 #include "optim.h"
 
 C     == routine arguments ==
-      CHARACTER*( 80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER ivartype
       INTEGER myThid
 

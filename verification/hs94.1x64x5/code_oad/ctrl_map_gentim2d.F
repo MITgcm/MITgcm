@@ -53,7 +53,6 @@ C     == Local variables ==
       logical doglobalread
       logical ladinit
       character*(MAX_LEN_FNAM) fnamebase
-      character*( 80)   fnamegeneric
 
       _RL fac
       _RL xx_gentim2d_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

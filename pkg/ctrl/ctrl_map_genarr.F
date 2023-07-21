@@ -57,8 +57,8 @@ C     !LOCAL VARIABLES:
       _RL log10initval
       _RL ln10
       _RL xx_gen  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
@@ -114,9 +114,9 @@ C               passed to data.ctrl, (default = 0.0)
       ilgen = ILNBLNK( fnamebase )
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
-      WRITE(fnamegenIn(1:80),'(2A,I10.10)')
+      WRITE(fnamegenIn,'(2A,I10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2A,I10.10)')
+      WRITE(fnamegenOut,'(2A,I10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr2d_weight(iarr), ctrlprec, 1,
@@ -258,8 +258,8 @@ C     !LOCAL VARIABLES:
       _RL log10initval
       _RL ln10
       _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
@@ -313,9 +313,9 @@ C               passed to data.ctrl, (default = 0.0)
       ilgen = ILNBLNK( fnamebase )
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
-      WRITE(fnamegenIn(1:80),'(2a,i10.10)')
+      WRITE(fnamegenIn,'(2a,i10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2a,i10.10)')
+      WRITE(fnamegenOut,'(2a,i10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr3d_weight(iarr), ctrlprec, Nr,
