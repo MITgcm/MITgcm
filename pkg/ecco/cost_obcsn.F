@@ -82,7 +82,7 @@ c     == local variables ==
       _RL tmpx
       _RL tmpfield (1-OLx:sNx+OLx,Nr,nSx,nSy)
       _RL maskxz   (1-OLx:sNx+OLx,Nr,nSx,nSy)
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
       logical doglobalread
       logical ladinit
 #ifdef ECCO_VERBOSE
@@ -124,7 +124,7 @@ c     jp1 = 0
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefld(1:80),'(2a,i10.10)')
+        write(fnamefld,'(2a,i10.10)')
      &       xx_obcsn_file(1:ilfld), '.', optimcycle
       endif
 

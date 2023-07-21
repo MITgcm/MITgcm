@@ -296,7 +296,7 @@ CML     &      /SEAICE_deltaTevp**2
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           zMax (i,j,bi,bj)   = _rA(i,j,bi,bj) * fac
+           SEAICE_zMax(i,j,bi,bj) = _rA(i,j,bi,bj) * fac
           ENDDO
          ENDDO
         ENDDO
@@ -457,18 +457,18 @@ CADJ STORE zetaz(:,:,bi,bj) = comlev1_bibj_evp, key = tkey, byte=isbyte
 C     regularize zeta if necessary
           DO j=0,sNy+1
            DO i=0,sNx+1
-            zetaC(i,j)  = MAX(zMin(i,j,bi,bj),MIN(zMax(i,j,bi,bj)
-     &           ,zetaC(i,j)))
+            zetaC(i,j)  = MAX( SEAICE_zMin(i,j,bi,bj),
+     &           MIN( SEAICE_zMax(i,j,bi,bj), zetaC(i,j) ) )
 CML            zetaC(I,J)   = zetaC(I,J)*HEFFM(I,J,bi,bj)
 C
 C     zMin, zMax are defined at C-points, make sure that they are not
 C     masked by boundaries/land points
             zMaxZ       = MAX(
-     &           MAX(zMax(i,  j,bi,bj),zMax(i,  j-1,bi,bj)),
-     &           MAX(zMax(i-1,j,bi,bj),zMax(i-1,j-1,bi,bj)) )
+     &        MAX(SEAICE_zMax(i,  j,bi,bj),SEAICE_zMax(i,  j-1,bi,bj)),
+     &        MAX(SEAICE_zMax(i-1,j,bi,bj),SEAICE_zMax(i-1,j-1,bi,bj)) )
             zMinZ       = MAX(
-     &           MAX(zMin(i,  j,bi,bj),zMin(i,  j-1,bi,bj)),
-     &           MAX(zMin(i-1,j,bi,bj),zMin(i-1,j-1,bi,bj)) )
+     &        MAX(SEAICE_zMin(i,  j,bi,bj),SEAICE_zMin(i,  j-1,bi,bj)),
+     &        MAX(SEAICE_zMin(i-1,j,bi,bj),SEAICE_zMin(i-1,j-1,bi,bj)) )
             zetaZ(i,j,bi,bj) = MAX(zMinZ,MIN(zMaxZ,zetaZ(i,j,bi,bj)))
            ENDDO
           ENDDO
