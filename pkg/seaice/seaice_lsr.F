@@ -347,8 +347,8 @@ C     bi/bj-loops
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     That is an important one! Note, that
-C     * lsr is called multiple times (twice by default), thus the
-C       ipass index is part of nlkey
+C     * ipass index is part of nlkey because we are inside
+C       the nonlinear iteration
 C     * this storing is still outside the lsr iteration loop
 CADJ STORE uice  = comlev1_dynsol, kind=isbyte, key = nlkey
 CADJ STORE vice  = comlev1_dynsol, kind=isbyte, key = nlkey
@@ -681,6 +681,14 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
       ICOUNT2 = linearIterLoc
 
 #ifdef SEAICE_LSR_FLEX
+C     In case we have not yet computed the initial residual, do it now.
+      IF ( .NOT. ( printResidual .OR. LSR_mixIniGuess.GE.1 ) )
+     &     CALL SEAICE_RESIDUAL(
+     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
+     O                  residUini, residVini, uTmp, vTmp,
+     I     printResidual, myIter, myThid )
+
       residini = SQRT(residUini*residUini+residVini*residVini)
 
       IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GT. 2 ) EXIT
