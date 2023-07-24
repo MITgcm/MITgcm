@@ -13,5 +13,5 @@
  xx_gentim2d_file(1)   = 'xx_bdot_streamice',
  xx_gentim2d_period(1) = 6307200.,
  xx_gentim2d_weight(1) = 'wunit',
- xx_gentim2d_glosum(1) = .false.
+ xx_gentim2d_glosum(1) = .FALSE.,
  &
