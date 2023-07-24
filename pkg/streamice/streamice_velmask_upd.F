@@ -191,8 +191,8 @@ C     === Global variables ===
        ENDDO
       ENDDO
 
-!$TAF STORE streamice_umask = comlev1, key=ikey_dynamics
-!$TAF STORE streamice_vmask = comlev1, key=ikey_dynamics
+c!$TAF STORE streamice_umask = comlev1, key=ikey_dynamics
+c!$TAF STORE streamice_vmask = comlev1, key=ikey_dynamics
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

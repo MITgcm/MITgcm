@@ -61,14 +61,14 @@ C     == Local variables
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
 !       k=1
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE surf_el_streamice = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice       = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+c#endif
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
