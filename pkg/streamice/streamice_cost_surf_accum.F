@@ -67,7 +67,7 @@ C     == Local variables
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-eADJ &     kind = isbyte
+CADJ &     kind = isbyte
 CADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
