@@ -81,7 +81,7 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined(ALLOW_GENARR3D_CONTROL))
       INTEGER iarr
-      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnam
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnam
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
       INTEGER igen_etan, igen_bdrag, igen_geoth
