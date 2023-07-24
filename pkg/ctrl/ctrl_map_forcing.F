@@ -52,7 +52,9 @@ C     == Local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER bi,bj
       INTEGER i,j
+#ifdef ALLOW_STREAMICE
       CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnam
+#endif
 #endif
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -182,7 +184,7 @@ CEOP
         CALL EXCH_XY_RL( bdot_streamice, myThid )
        ENDIF
 
-#endif /* ALLOW_STREAMICE
+#endif /* ALLOW_STREAMICE */
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
