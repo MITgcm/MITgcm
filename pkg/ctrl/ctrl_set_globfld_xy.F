@@ -32,7 +32,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
       integer ivartype
       integer myThid
 
@@ -45,7 +45,7 @@ c     == local variables ==
       integer irec,nrec_nl
 
       _RL globfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 c     == external ==
 
@@ -69,7 +69,7 @@ c     Initialise temporary file
 c     Initialise temporary file
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr
+          do k = 1,Nr
             do j = 1-OLy,sNy+OLy
               do i = 1-OLx,sNx+OLx
                 globfld3d(i,j,k,bi,bj) = 0. _d 0

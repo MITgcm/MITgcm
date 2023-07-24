@@ -101,8 +101,8 @@ C
           PRESS0(i,j,bi,bj)  = 0. _d 0
           FORCEX0(i,j,bi,bj) = 0. _d 0
           FORCEY0(i,j,bi,bj) = 0. _d 0
-          ZMAX(i,j,bi,bj)    = 0. _d 0
-          ZMIN(i,j,bi,bj)    = 0. _d 0
+          SEAICE_zMax(i,j,bi,bj) = 0. _d 0
+          SEAICE_zMin(i,j,bi,bj) = 0. _d 0
 #endif
 #ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
@@ -448,13 +448,13 @@ C---  Complete initialization
 #if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
-          ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
-          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
+          ZETA(i,j,bi,bj)        = HEFF(i,j,bi,bj)*(1.0 _d 11)
+          ETA(i,j,bi,bj)         = ZETA(i,j,bi,bj)/SEAICE_eccen**2
+          PRESS0(i,j,bi,bj)      = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
-          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+          SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
+          PRESS0(i,j,bi,bj)      = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
 #endif

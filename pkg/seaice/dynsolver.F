@@ -223,10 +223,10 @@ C NOW KEEP FORCEX0
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-CML          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
-          ZMAX(i,j,bi,bj)=SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-CML          ZMIN(I,J,bi,bj)=4.0 _d +08
-          ZMIN(i,j,bi,bj)=SEAICE_zetaMin
+CML          SEAICE_zMax(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
+          SEAICE_zMax(i,j,bi,bj)=SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+CML          SEAICE_zMin(I,J,bi,bj)=4.0 _d +08
+          SEAICE_zMin(i,j,bi,bj)=SEAICE_zetaMin
           PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
