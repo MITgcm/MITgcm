@@ -338,8 +338,14 @@ CADJ STORE recip_hFacC = tapelev_init, key = 1
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE
-CADJ STORE H_streamice = tapelev_init, key=1
-CADJ STORE B_glen      = tapelev_init, key=1
+CADJ STORE H_streamice              = tapelev_init, key=1
+CADJ STORE B_glen                   = tapelev_init, key=1
+CADJ STORE bdot_streamice           = tapelev_init, key=1
+CADJ STORE c_basal_friction         = tapelev_init, key=1
+CADJ STORE streamice_bdot_maxmelt_v = tapelev_init, key=1
+#  ifdef USE_ALT_RLOW
+CADJ STORE r_low_si                 = tapelev_init, key=1
+#  endif
 # endif
 # ifdef ALLOW_DIC
 CADJ STORE co2atmos = tapelev_init, key = 1

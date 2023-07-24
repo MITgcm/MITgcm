@@ -21,6 +21,11 @@ CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE cost_func1_streamice
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 
+CADJ STORE base_el_streamice
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE streamice_bdot_maxmelt_v
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+
 #ifdef ALLOW_STREAMICE_2DTRACER
 CADJ STORE trac2d
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
