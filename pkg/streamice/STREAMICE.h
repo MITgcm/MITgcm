@@ -852,14 +852,6 @@ C    REAL ARRAYS
       _RL c_basal_fric_init   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_ext     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bdot_maxmelt0
-     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bdot_maxmelt1
-     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bglen0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_bglen1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_beta0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL streamice_beta1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef STREAMICE_3D_GLEN_CONST
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -867,7 +859,6 @@ C      _RL A_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL B_glen    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
       _RL B_glen_init    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL B_glen_pert    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL B_glen0        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL streamice_sigma_coord (Nr)
       _RL streamice_delsigma (Nr)
@@ -980,6 +971,14 @@ C  POSITIVE WHERE MELTING
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL bdot_streamice1
      &   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt0
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bdot_maxmelt1
+     &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_bglen1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_beta1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON /STREAMICE_COST_RL/
