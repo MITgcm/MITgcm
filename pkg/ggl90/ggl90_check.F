@@ -135,14 +135,15 @@ C     Compatibility with the use of other pkgs:
 #ifdef ALLOW_AUTODIFF_TAMC
 C     Not everything works stably with AD code
       IF ( useGGL90inAdMode .AND. mxlMaxFlag .GT. 1 ) THEN
-       WRITE(msgBuf,'(2A,L,A,I2,A)') 'GGL90_CHECK: ',
+       WRITE(msgBuf,'(2A,L,A,I2,A)') '** WARNING ** GGL90_CHECK: ',
      &      'useGGL90inAdMode = ', useGGL90inAdMode,
      &      ' with mxlMaxFlag =', mxlMaxFlag, ' (> 1)'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'GGL90_CHECK: ',
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
      &      'tends to be unstable, use mxlMaxFag = 0 or 1'
-       CALL PRINT_ERROR( msgBuf, myThid )
-c      errCount = errCount + 1
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif
 
