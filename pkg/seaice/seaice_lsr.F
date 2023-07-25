@@ -94,7 +94,7 @@ C     i,j,bi,bj  :: Loop counters
       _RL recip_deltaT
 
 #ifdef SEAICE_LSR_FLEX
-      _RL residini
+      _RL residini, residIniNonLin
       _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
       _RL residkm1, residkm2
 #endif /* SEAICE_LSR_FLEX */
@@ -262,8 +262,9 @@ C     As a side effect, this avoids TAF recomputation warnings.
       ENDDO
 
 #ifdef SEAICE_LSR_FLEX
-      residkm1=1 _d 0
-      residkm2=1 _d 0
+      residkm1       = 1. _d 0
+      residkm2       = 1. _d 0
+      residIniNonLin = 1. _d 0
 #endif /* SEAICE_LSR_FLEX */
 
 C     Start of non-linear iteration ====================================
@@ -689,9 +690,16 @@ C     In case we have not yet computed the initial residual, do it now.
      O                  residUini, residVini, uTmp, vTmp,
      I     printResidual, myIter, myThid )
 
-      residini = SQRT(residUini*residUini+residVini*residVini)
+      residIni = SQRT(residUini*residUini+residVini*residVini)
 
-      IF ( ( residini .LT. SEAICEnonLinTol ) .AND. ipass .GT. 2 ) EXIT
+#ifndef ALLOW_AUTODIFF
+C     If you want to use SEAICEnonLinTol to be an absolute criterion,
+C     comment out the following line.
+      IF ( ipass .EQ. 1 ) residIniNonLin = residIni
+
+      IF ( ( residini .LT. SEAICEnonLinTol*residIniNonlin )
+     &     .AND. ipass .GT. 2 ) EXIT
+#endif
 
 C     From Lemieux et al. 2010
 C       LSRflexFac = MIN(LSRflexFac/residkm2*0.9,LSRflexFac)
@@ -714,7 +722,7 @@ C       ENDIF
        WRITE(standardMessageUnit,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
      &      ' SEAICE_LSR: ipass, FLEX_FACTOR,'//
      &      ' LSR_ERRORfu, LSR_ERRORfv, residIni =',
-     &      ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residini
+     &      ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residIni
        _END_MASTER( myThid )
       ENDIF
 
