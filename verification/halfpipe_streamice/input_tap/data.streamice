@@ -26,7 +26,7 @@
  STREAMICEtopogFile='topog.box',
  STREAMICEbasalTracConfig='UNIFORM',
  STREAMICEGlenConstConfig='UNIFORM',
- STREAMICEBdotConfig='FILE'
+ STREAMICEBdotConfig='FILE',
  &
 
 #PETSC_SOLVER_TYPE = 'BICG',
@@ -47,7 +47,7 @@
  &
 
  &STREAMICE_COST
- streamice_do_verification_cost=.true.
+ streamice_do_verification_cost=.TRUE.,
  &
 
  &STREAMICE_PARM03

@@ -58,8 +58,8 @@ C     temporary values in the do loop during reverse pass.
       CHARACTER*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) fnamebase(1:maxCtrlTim2D)
-      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnamA
-      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnamB
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamA
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamB
       integer startrec
       integer endrec
       integer diffrec

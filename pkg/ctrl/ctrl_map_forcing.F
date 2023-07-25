@@ -52,7 +52,9 @@ C     == Local variables ==
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER bi,bj
       INTEGER i,j
-      CHARACTER(MAX_LEN_FNAM) temp_genarr_fnam
+#ifdef ALLOW_STREAMICE
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnam
+#endif
 #endif
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -88,7 +90,6 @@ CEOP
         DO j = 1,sNy
          DO i = 1,sNx
           DO iarr = 1, maxCtrlTim2D
-           temp_genarr_fnam=xx_gentim2d_file(iarr)
            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fe') tmpUE
      &       (i,j,bi,bj)=tmpUE(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fn') tmpVN
@@ -111,7 +112,6 @@ CEOP
           fu(i,j,bi,bj)=fu(i,j,bi,bj)+tmpUX(i,j,bi,bj)
           fv(i,j,bi,bj)=fv(i,j,bi,bj)+tmpVY(i,j,bi,bj)
           DO iarr = 1, maxCtrlTim2D
-           temp_genarr_fnam=xx_gentim2d_file(iarr)
            IF (xx_gentim2d_file(iarr)(1:7).EQ.'xx_qnet') Qnet
      &       (i,j,bi,bj)=Qnet(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
            IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_empmr') EmPmR
@@ -144,7 +144,7 @@ CEOP
        CALL EXCH_XY_RS( pLoad , myThid )
        CALL EXCH_XY_RS( saltFlux , myThid )
        CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
-#endif
+#endif /* ifndef ALLOW_OPENAD */ 
 
 #ifdef ALLOW_STREAMICE
        IF ( useStreamice ) THEN
@@ -184,7 +184,7 @@ CEOP
         CALL EXCH_XY_RL( bdot_streamice, myThid )
        ENDIF
 
-#endif
+#endif /* ALLOW_STREAMICE */
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
