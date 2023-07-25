@@ -34,11 +34,11 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer bi, bj
       integer myThid
 
 #ifdef ALLOW_COST_STREAMICE
 C     == Local variables
+      integer bi, bj
       integer i, j, k
       integer ig, jg
       integer itlo,ithi
@@ -95,10 +95,10 @@ C     == Local variables
      &  ILNBLNK(STREAMICEvelOptimSnapBasename))//"err.bin"
 
       if (streamice_do_snapshot_cost) then
-       CALL READ_FLD_XY_RL( STREAMICExvelOptimFile, ' ', 
+       CALL READ_FLD_XY_RL( STREAMICExvelOptimFile, ' ',
      &      U_obs, 0, myThid )
        print *, 'GOT HERE read velobsu'
-       CALL READ_FLD_XY_RL( STREAMICEyvelOptimFile, ' ', 
+       CALL READ_FLD_XY_RL( STREAMICEyvelOptimFile, ' ',
      &      V_obs, 0, myThid )
        print *, 'GOT HERE read velobsv'
        CALL READ_FLD_XY_RL( STREAMICEerrvelOptimFile, ' ',
@@ -144,11 +144,11 @@ C--   Calculate cost function on tile of this instance
 #endif
               cfricval = C_basal_friction(i,j,bi,bj)
               bglenval = B_glen(i,j,bi,bj)
- 
-              cfricvalp1 = C_basal_friction(i+1,j,bi,bj) 
+
+              cfricvalp1 = C_basal_friction(i+1,j,bi,bj)
               dCdx = (Cfricvalp1-cfricval)/
      &              (dxC(i+1,j,bi,bj))
-              cfricvalp1 = C_basal_friction(i,j+1,bi,bj) 
+              cfricvalp1 = C_basal_friction(i,j+1,bi,bj)
               dCdy = (Cfricvalp1-cfricval)/
      &              (dxC(i,j+1,bi,bj))
 
@@ -174,28 +174,18 @@ C--   Calculate cost function on tile of this instance
 #endif
 
              if (STREAMICE_do_snapshot_cost) then
-   
+
               utmp = streamice_u_surf(i,j,bi,bj)
               vtmp = streamice_v_surf(i,j,bi,bj)
               uotmp = U_obs(i,j,bi,bj)
               votmp = V_obs(i,j,bi,bj)
               cotmp = sqrt(uotmp**2+votmp**2)
 
-              IF((cotmp.ne.0.0) .and. 
+              IF((cotmp.ne.0.0) .and.
      &         streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
 
-               tile_fc (bi,bj) = tile_fc (bi,bj) + 
-     &         streamice_wgt_vel *
-     &         ( 
-     &         0.5 * (streamice_u_surf(i,j,bi,bj)-
-     &                U_obs(i,j,bi,bj))**2 +
-     &         0.5 * (streamice_v_surf(i,j,bi,bj)-
-     &                V_obs(i,j,bi,bj))**2
-     &         ) * I_numcells
-     &         / (1.0+U_err(i,j,bi,bj)**2)
-
-               cost_misfit (bi,bj) = cost_misfit (bi,bj) + 
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
      &         streamice_wgt_vel *
      &         (
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
@@ -205,9 +195,19 @@ C--   Calculate cost function on tile of this instance
      &         ) * I_numcells
      &         / (1.0+U_err(i,j,bi,bj)**2)
 
-               tile_fc (bi,bj) = tile_fc (bi,bj) + 
+               cost_misfit (bi,bj) = cost_misfit (bi,bj) +
+     &         streamice_wgt_vel *
+     &         (
+     &         0.5 * (streamice_u_surf(i,j,bi,bj)-
+     &                U_obs(i,j,bi,bj))**2 +
+     &         0.5 * (streamice_v_surf(i,j,bi,bj)-
+     &                V_obs(i,j,bi,bj))**2
+     &         ) * I_numcells
+     &         / (1.0+U_err(i,j,bi,bj)**2)
+
+               tile_fc (bi,bj) = tile_fc (bi,bj) +
      &         streamice_wgt_vel_norm *
-     &         ( 
+     &         (
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
      &                U_obs(i,j,bi,bj))**2 +
      &         0.5 * (streamice_v_surf(i,j,bi,bj)-
@@ -216,7 +216,7 @@ C--   Calculate cost function on tile of this instance
      &         / (U_err(i,j,bi,bj)**2+
      &            U_obs(i,j,bi,bj)**2+V_obs(i,j,bi,bj)**2)
 
-               cost_misfit_norm (bi,bj) = cost_misfit_norm (bi,bj) + 
+               cost_misfit_norm (bi,bj) = cost_misfit_norm (bi,bj) +
      &         streamice_wgt_vel_norm *
      &         (
      &         0.5 * (streamice_u_surf(i,j,bi,bj)-
@@ -237,9 +237,9 @@ C--   Calculate cost function on tile of this instance
 
               if(streamice_hmask(i,j,bi,bj).eq.1.0) then
                tile_fc (bi,bj) = tile_fc (bi,bj) +
-     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells
                smooth_cost_fric (bi,bj) = smooth_cost_fric (bi,bj) +
-     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells 
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * I_numcells
 
                tile_fc (bi,bj) = tile_fc (bi,bj) +
      &         streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * I_numcells
@@ -255,12 +255,12 @@ C--   Calculate cost function on tile of this instance
                IF ((h-hf) .gt. 5. .AND. B_glen0(i,j,bi,bj).gt.0.0 .and.
      &             calc_prior_cost_bglen) then
 
-                 tile_fc (bi,bj) = tile_fc (bi,bj) + 
-     &            streamice_wgt_prior_bglen * I_numcells *  
+                 tile_fc (bi,bj) = tile_fc (bi,bj) +
+     &            streamice_wgt_prior_bglen * I_numcells *
      &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
 
                  smooth_cost_prior (bi,bj) = smooth_cost_prior (bi,bj) +
-     &            streamice_wgt_prior_bglen * I_numcells *  
+     &            streamice_wgt_prior_bglen * I_numcells *
      &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
 
                ENDIF
@@ -269,7 +269,7 @@ C--   Calculate cost function on tile of this instance
 #ifdef ALLOW_STREAMICE_TC_COST
              ENDIF
 #endif
-    
+
              if (streamice_do_verification_cost) then
               if (streamice_hmask(i,j,bi,bj).eq.1.0) then
                tile_fc (bi,bj) = tile_fc (bi,bj) +
@@ -297,7 +297,7 @@ C--   Calculate cost function on tile of this instance
                endif
 
               endif
-             endif       
+             endif
 
             end do
           end do
@@ -331,27 +331,27 @@ C--   Calculate cost function on tile of this instance
       CALL GLOBAL_SUM_TILE_RL
      &   ( cost_vel_streamice, cost_vel_td_gl, myThid )
 
-      if (STREAMICE_do_timedep_cost .or. 
+      if (STREAMICE_do_timedep_cost .or.
      &    STREAMICE_do_snapshot_cost) then
 
-       write(standardmessageunit,'(A,D22.15)') 'fric smooth contr = ', 
+       write(standardmessageunit,'(A,D22.15)') 'fric smooth contr = ',
      &   smooth_cost_fric_gl
-       write(standardmessageunit,'(A,D22.15)') 'bglen smooth contr = ', 
+       write(standardmessageunit,'(A,D22.15)') 'bglen smooth contr = ',
      &   smooth_cost_bglen_gl
-       write(standardmessageunit,'(A,D22.15)') 'prior smooth contr = ', 
+       write(standardmessageunit,'(A,D22.15)') 'prior smooth contr = ',
      &   smooth_cost_prior_gl
-       write(standardmessageunit,'(A,D22.15)') 'vel misfit = ', 
+       write(standardmessageunit,'(A,D22.15)') 'vel misfit = ',
      &   cost_misfit_gl
-       write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ', 
+       write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ',
      &   cost_misfit_norm_gl
 
       endif
 
       if (STREAMICE_do_timedep_cost) then
- 
-       write(standardmessageunit,'(A,D22.15)') 'thinning contr = ', 
+
+       write(standardmessageunit,'(A,D22.15)') 'thinning contr = ',
      &   cost_thin_gl
-       write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ', 
+       write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ',
      &   cost_vel_td_gl
 
       endif

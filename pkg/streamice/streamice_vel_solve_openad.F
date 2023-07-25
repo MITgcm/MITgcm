@@ -33,10 +33,10 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
+#ifdef ALLOW_STREAMICE_OAD_FP
       INTEGER i, j, k, l, bi, bj, loopiter
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
       INTEGER NL_iter
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL err_last_change, cgtol, err_init
       LOGICAL CONVERGED
 
@@ -45,13 +45,9 @@ C     LOCAL VARIABLES
       LOGICAL ADJ_CONVERGED
 #endif
 
-#ifdef ALLOW_STREAMICE_OAD_FP
       isinloop0 =0
       isinloop1 =1
       isinloop2 =2
-#endif
-
-#if (defined (ALLOW_STREAMICE_OAD_FP))
 
       IF (STREAMICE_ppm_driving_stress) THEN
        CALL STREAMICE_DRIVING_STRESS_PPM (myThid)

@@ -38,12 +38,12 @@ C     === Global variables ===
 #ifdef ALLOW_STREAMICE
 
       INTEGER i, j, bi, bj, ki, kj
-      INTEGER maskFlag, myThidCopy
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER maskFlag
 #ifdef ALLOW_USE_MPI
       integer mpiRC, mpiMyWid
 #endif
 #ifdef ALLOW_PETSC
+      INTEGER myThidCopy
       _RS DoFCount
       integer n_dofs_proc_loc (0:nPx*nPy-1)
       integer n_dofs_cum_sum (0:nPx*nPy-1)

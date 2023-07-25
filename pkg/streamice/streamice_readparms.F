@@ -33,7 +33,9 @@ C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+# ifdef ALLOW_STREAMICE_TC_COST
       INTEGER iarr
+# endif
 
 
 !      _RL streamice_bdot_depth_nomelt
@@ -176,7 +178,7 @@ C     iUnit      :: Work variable for IO unit number
      &     ,streamice_vel_cost_timesteps,
      &     streamice_surf_cost_timesteps
 #endif
-#endif      
+#endif
 
 c#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 c      NAMELIST /STREAMICE_PARMFLUXCTRL/
@@ -320,9 +322,9 @@ c      streamice_n_sub_regularize = 4
       STREAMICEvFluxTimeDepFile = ' '
       STREAMICE_vvel_ext_file = ' '
       STREAMICE_uvel_ext_file = ' '
-      bdotMaxmeltTimeDepFile = ' ' 
+      bdotMaxmeltTimeDepFile = ' '
       bglenTimeDepFile = ' '
-      cfricTimeDepFile = ' ' 
+      cfricTimeDepFile = ' '
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       STREAMICETrac2DBCxFile = ''
@@ -506,7 +508,7 @@ C     Read parameters from open data file
      &    'STREAMICE_READPARMS: read cost param block'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
-#endif      
+#endif
 
 #ifndef STREAMICE_GEOM_FILE_SETUP
       READ(UNIT=iUnit,NML=STREAMICE_PARM03)
@@ -514,7 +516,7 @@ C     Read parameters from open data file
      &    'STREAMICE_READPARMS: read bound condn block'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
-#endif  
+#endif
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
 #else

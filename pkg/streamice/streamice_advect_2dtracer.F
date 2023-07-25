@@ -34,7 +34,7 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
-      INTEGER myThid, myIter, Gi, Gj
+      INTEGER myThid, myIter
       _RL time_step
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -45,7 +45,7 @@ C     === Global variables ===
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_STREAMICE_2DTRACER
 
-      INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj, Gi, Gj
       _RL thick_bd
       _RL sec_per_year, time_step_loc, MR, SMB, TMB
       _RL BCVALX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

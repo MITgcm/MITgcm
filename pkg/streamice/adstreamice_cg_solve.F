@@ -63,15 +63,12 @@ C     cg_Bu, cg_Bv - driving stress
       INTEGER myThid
 
 C     !LOCAL VARIABLES
-      INTEGER i, j, bi, bj, cg_halo, conv_flag, tmpiter
-      INTEGER iter, is, js, ie, je, colx, coly, k
+      INTEGER i, j, bi, bj, conv_flag, tmpiter
+      INTEGER colx, coly
       _RL Utemp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Vtemp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UtempSt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VtempSt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dot_p1, dot_p2, alpha_k, beta_k, resid, resid_0
-      _RL dot_p1_tile (nSx,nSy)
-      _RL dot_p2_tile (nSx,nSy)
       _RL ad_tolerance
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -241,4 +238,3 @@ CEOP
 #endif
       RETURN
       END
-

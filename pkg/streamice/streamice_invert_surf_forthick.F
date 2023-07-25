@@ -34,11 +34,11 @@
       type(active) :: X,Y0
       type(modeType) :: our_orig_mode
 #endif
-      
+
 
 #ifdef ALLOW_STREAMICE
 
-      _RL resid, f, fp, hf, htmp
+      _RL resid, fp, hf, htmp
       INTEGER  i, j, bi, bj, ITER
       _RL ETA_GL_PRIME_STREAMICE
 #ifndef ALLOW_OPENAD

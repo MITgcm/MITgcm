@@ -35,7 +35,6 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
       INTEGER maxNLIter
       INTEGER maxCGIter
-      INTEGER i,j,bi,bj
       _RL cgtol
       INTEGER cg_iters
       _RL max_err
@@ -44,6 +43,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
+      INTEGER i,j,bi,bj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _EXCH_XY_RL( U_streamice , myThid )

@@ -26,15 +26,15 @@ C     === Global variables ===
 C     !INPUT/OUTPUT ARGUMENTS
       _RL err_max
       INTEGER myThid
-      Real*8 u_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      Real*8 v_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL err_sum
-      _RL err_sum_tile (nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 #if (defined (ALLOW_STREAMICE_OAD_FP))
 
       INTEGER conv_flag, i, j, bi, bj, myIter
+      Real*8 u_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      Real*8 v_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL err_sum
+      _RL err_sum_tile (nSx,nSy)
 
 
       INTEGER ikey_nl
@@ -48,7 +48,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         err_sum_tile(bi,bj) = 0. _d 0  
+         err_sum_tile(bi,bj) = 0. _d 0
         ENDDO
        ENDDO
 

@@ -25,7 +25,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-      INTEGER bi, bj, i, j, xnode, ynode, xq, yq, m, n, p, kx, ky
+      INTEGER bi, bj, i, j, xnode, ynode, xq, yq, m, n, kx, ky
       REAL gradx(2), grady(2)  ! gradients at quadrature points
 
 C     here the terms used to calculate matrix terms in the

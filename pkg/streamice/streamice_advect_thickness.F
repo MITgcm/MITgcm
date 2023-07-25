@@ -35,8 +35,8 @@ C     === Global variables ===
 
 #ifdef ALLOW_STREAMICE
 
-      INTEGER i, j, bi, bj, Gi, Gj, k
-      _RL thick_bd, uflux, vflux, max_icfl, loc_icfl
+      INTEGER i, j, bi, bj, Gi, Gj
+      _RL uflux, vflux, max_icfl, loc_icfl
       _RL time_step_full, time_step_rem
       _RL sec_per_year, time_step_loc, MR, SMB, TMB, irho
       _RL bdot_depth, bdot_max
