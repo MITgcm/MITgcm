@@ -353,7 +353,7 @@ C     Initialise mixing length (eq. 2.35)
        ENDDO
       ENDDO
 
-      CALL GGL90_CALC_MIXINGLENGTH(
+      CALL GGL90_MIXINGLENGTH(
      U     GGL90mixingLength,
 #ifdef ALLOW_GGL90_LANGMUIR
      O     LCmixingLength,

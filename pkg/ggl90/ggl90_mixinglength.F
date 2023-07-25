@@ -4,10 +4,10 @@
 #endif
 
 CBOP
-C !ROUTINE: GGL90_CALC_MIXINGLENGTH
+C !ROUTINE: GGL90_MIXINGLENGTH
 
 C !INTERFACE: ======================================================
-      SUBROUTINE GGL90_CALC_MIXINGLENGTH(
+      SUBROUTINE GGL90_MIXINGLENGTH(
      U     GGL90mixingLength,
 #ifdef ALLOW_GGL90_LANGMUIR
      O     LCmixingLength,
@@ -18,7 +18,7 @@ C !INTERFACE: ======================================================
 
 C !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GGL90_CALC_MIXINGLENGTH                       |
+C     | SUBROUTINE GGL90_MIXINGLENGTH                            |
 C     | o Compute GGL90mixingLength (and LCmixingLength)         |
 C     *==========================================================*
 C     | Equation numbers refer to                                |
@@ -356,10 +356,10 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
-     &   'GGL90_CALC_MIXINGLENGTH: mxlMaxFlag=',
+     &   'GGL90_MIXINGLENGTH: mxlMaxFlag=',
      &   mxlMaxFlag,' not implemented'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GGL90_CALC_MIXINGLENGTH'
+       STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
       ENDIF
 
 C--   Impose minimum mixing length to avoid division by zero
@@ -560,11 +560,11 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 
        ELSE
         WRITE(msgBuf,'(2A,I5,A)')
-     &       'GGL90_CALC_MIXINGLENGTH: ',
+     &       'GGL90_MIXINGLENGTH: ',
      &       'Langmuir Circ. Parameterization with mxlMaxFlag=',
      &   mxlMaxFlag,' not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R GGL90_CALC_MIXINGLENGTH'
+        STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
        ENDIF
       ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
