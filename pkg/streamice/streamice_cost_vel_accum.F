@@ -1,7 +1,7 @@
 #include "STREAMICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -31,9 +31,9 @@ C     == Global variables ===
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -59,7 +59,7 @@ C     == Local variables
       _RL i_numcells, vel_err, uobs, vobs, verr
 
       WRITE(myIterStr,'(I10.10)') myIter
-      
+
       uvelfilename=STREAMICEvelOptimTCBasename(1:
      & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"u.bin"
       vvelfilename=STREAMICEvelOptimTCBasename(1:
@@ -73,17 +73,16 @@ C     == Local variables
       CALL READ_FLD_XY_RL( errvelfilename, ' ', errvelobs,
      &      0, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+c#endif
 
-      
-      i_numcells = 1.0/(Nx*Ny) 
+      i_numcells = 1.0/(Nx*Ny)
 
 C--   Calculate cost function on tile of this instance
       DO bj=myByLo(myThid),myByHi(myThid)
