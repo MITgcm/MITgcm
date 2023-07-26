@@ -87,7 +87,7 @@ C     sea-ice dynamics can be turned off at runtime (SEAICEuseDYNAMICS=F).
 C--   Historically, the seaice model was discretized on a B-Grid. This
 C     discretization should still work but it is not longer actively
 C     tested and supported. Define this flag to compile it. It cannot be
-C     defined together with SEAICE_CGRID_DYNAMICS
+C     defined together with SEAICE_CGRID
 #undef SEAICE_BGRID_DYNAMICS
 
 C--   The following flag should always be set in order to use C the
