@@ -64,8 +64,10 @@ C     bi,bj  :: tile counters
 # ifndef ALLOW_AUTODIFF
       _RL mask_uice, mask_vice
 # endif
+# ifdef SEAICE_CGRID
 C     phiSurf :: geopotential height at sea surface (including pressure load)
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+# endif
 C     TAUX    :: zonal      wind stress over seaice at U point
 C     TAUY    :: meridional wind stress over seaice at V point
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,7 +93,7 @@ C     TAUY    :: meridional wind stress over seaice at V point
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef ALLOW_AUTODIFF
+#if ( defined ALLOW_AUTODIFF && defined SEAICE_CGRID )
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
           PRESS0     (i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
@@ -107,7 +109,7 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           strDivX(i,j,bi,bj)= 0. _d 0
           strDivY(i,j,bi,bj)= 0. _d 0
 # endif
-#endif /* ALLOW_AUTODIFF */
+#endif /* ALLOW_AUTODIFF and SEAICE_CGRID */
 C     Always initialise these local variables, needed for TAF, but also
 C     because they are not completely filled in S/R seaice_get_dynforcing
           TAUX(i,j,bi,bj) = 0. _d 0
@@ -374,8 +376,10 @@ C Update ocean surface stress
       IF ( SEAICEupdateOceanStress ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice, vice, DWATN = comlev1, key=ikey_dynamics, kind=isbyte
+# ifdef SEAICE_CGRID
 CADJ STORE stressDivergenceX = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE stressDivergenceY = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL SEAICE_OCEAN_STRESS (
      I              TAUX, TAUY, myTime, myIter, myThid )

@@ -167,16 +167,15 @@ C solve ice momentum equations and calculate ocean surface stress
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
 #endif
-#ifdef SEAICE_CGRID
-      CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
-      CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
-      CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
-#endif
 #ifdef SEAICE_BGRID_DYNAMICS
       CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
       CALL DYNSOLVER ( myTime, myIter, myThid )
       CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
-#endif /* SEAICE_CGRID */
+#else /* use default C-grid solver */
+      CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+      CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
+      CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+#endif
 
 C--   Apply ice velocity open boundary conditions
 #ifdef ALLOW_OBCS
@@ -214,11 +213,10 @@ C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
-#ifdef SEAICE_CGRID
-        CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
-#endif
 #ifdef SEAICE_BGRID_DYNAMICS
         CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
+#else /* default C-grid advection */
+        CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
 #endif
        ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
