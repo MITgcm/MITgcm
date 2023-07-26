@@ -1,8 +1,0 @@
-# =========================
-# pkg AUTODIFF parameters :
-# =========================
-#  inAdExact :: get an exact adjoint (no approximation) (def=.True.)
-#
- &AUTODIFF_PARM01
-# inAdExact = .FALSE.,
- &
