@@ -381,6 +381,8 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
+#endif
+#ifdef GGL90_REGULARIZE_MIXINGLENGTH
           MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k)
      &         + GGL90mixingLengthMin**2 )
 #else
@@ -398,18 +400,20 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-#ifdef ALLOW_AUTODIFF
+#ifdef GGL90_REGULARIZE_MIXINGLENGTH
           GGL90mixingLength(i,j,k) = SQRT( GGL90mixingLength(i,j,k)**2
      &         + GGL90mixingLengthMin**2 )
+#else
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+#endif
+#ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
        ENDDO
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-#else
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
 #endif
           rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
