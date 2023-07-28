@@ -141,9 +141,15 @@ C     Not everything works stably with AD code
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
-     &      'tends to be unstable, use mxlMaxFlag = 0 or 1'
+     &      'tends to be unstable, use mxlMaxFlag = 0 or 1.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+# ifdef GGL90_REGULARIZE_MIXINGLENGTH
+       WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
+     &      'Resetting mxlMaxFlag = 1 in AD-mode only.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+# endif
       ENDIF
 #endif
 
