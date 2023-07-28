@@ -229,10 +229,6 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
          ENDDO
         ENDDO
        ELSE
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -247,6 +243,10 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
           ENDDO
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength(:,:,Nr)
+CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     Upward sweep, extra treatment of k=Nr for z-coordinates
 C     because level Nr+1 is not available
         DO j=jMin,jMax
