@@ -111,10 +111,8 @@ CEOP
       recip_coordFac = 1./coordFac
 
       theMxlMaxFlag = mxlMaxFlag
-#if ( defined ALLOW_AUTODIFF && defined GGL90_REGULARIZE_MIXINGLENGTH )
-      IF ( inAdMode ) THEN
-       IF ( theMxlMaxFlag .GT. 1 ) theMxlMaxFlag = 1
-      ENDIF
+#ifdef ALLOW_AUTODIFF
+      IF ( inAdMode ) theMxlMaxFlag = adMxlMaxFlag
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy

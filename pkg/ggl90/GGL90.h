@@ -32,6 +32,8 @@ C                      (default=GGL90TKEmin)
 C     GGL90TKEFile    - File with initial field of TKE
 C     GGL90mixingLengthMin - Mininum mixing length
 C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
+C     adMxlMaxFlag    - in AD-mode reset mxlMaxFlag = adMxlMaxFlag
+C                       (default=mxlMaxFlag)
 C     mxlSurfFlag     - Flag to force mixing near ocean surface (default= F )
 C     calcMeanVertShear :: calculate the mean (@ grid-cell center) of vertical
 C                          shear compon. (instead of vert. shear of mean flow);
@@ -75,6 +77,7 @@ CEOP
       _RL    GGL90viscMax, GGL90diffMax
       _RL    GGL90dumpFreq
       INTEGER mxlMaxFlag
+      INTEGER adMxlMaxFlag
       COMMON /GGL90_PARMS_R/
      &     GGL90ck, GGL90ceps,
      &     GGL90alpha, GGL90m2,
@@ -82,7 +85,7 @@ CEOP
      &     GGL90mixingLengthMin,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90viscMax, GGL90diffMax,
-     &     GGL90dumpFreq, mxlMaxFlag
+     &     GGL90dumpFreq, mxlMaxFlag, adMxlMaxFlag
 
       _RL GGL90TKE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
