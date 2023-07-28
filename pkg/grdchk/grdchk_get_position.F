@@ -34,9 +34,10 @@ c     == global variables ==
 #endif
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "grdchk.h"
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       integer       mythid

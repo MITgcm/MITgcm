@@ -33,14 +33,16 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+C     CTRL_SIZE.h must be included before GRDCHK.h
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
 #include "optim.h"
-#include "grdchk.h"
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       integer icvrec

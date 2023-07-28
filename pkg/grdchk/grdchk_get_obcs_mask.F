@@ -26,14 +26,15 @@ c     == global variables ==
 #include "GRID.h"
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "grdchk.h"
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       integer mythid
 
-#if (defined (ALLOW_GRDCHK) && defined (ALLOW_OBCS_CONTROL))
+#if (defined ALLOW_GRDCHK && defined ALLOW_OBCS_CONTROL)
 c     == local variables ==
       integer bi,bj
       integer i,j,k

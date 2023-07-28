@@ -84,9 +84,10 @@ C     == global variables ==
 #include "g_cost.h"
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "grdchk.h"
+#include "GRDCHK.h"
 
 #ifdef ALLOW_TAPENADE
 # include "COST_TAP_TLM.h"

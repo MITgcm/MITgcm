@@ -41,9 +41,10 @@ C     == Global variables ===
 #include "GRID.h"
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "grdchk.h"
+#include "GRDCHK.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
