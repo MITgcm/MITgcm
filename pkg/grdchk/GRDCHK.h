@@ -1,21 +1,20 @@
-c     ==================================================================
-c     HEADER GRADIENT_CHECK
-c     ==================================================================
-c
-c     o Header for doing gradient checks with the ECCO ocean state
-c       estimation tool.
-c
-c     started: Christian Eckert eckert@mit.edu  01-Mar-2000
-c
-c     changed: Christian Eckert eckert@mit.edu
-c              heimbach@mit.edu 24-Feb-2003
-c
-c
-c     ==================================================================
-c     HEADER GRADIENT_CHECK
-c     ==================================================================
+C     ==================================================================
+C     HEADER GRADIENT_CHECK
+C     ==================================================================
+C
+C     o Header for doing gradient checks with the ECCO ocean state
+C       estimation tool.
+C
+C     started: Christian Eckert eckert@mit.edu  01-Mar-2000
+C
+C     changed: Christian Eckert eckert@mit.edu
+C              heimbach@mit.edu 24-Feb-2003
+C
+C     ==================================================================
+C     HEADER GRADIENT_CHECK
+C     ==================================================================
 
-c     maxgrdchecks - maximum number of gradient checks done per tile.
+C     maxgrdchecks :: maximum number of gradient checks done per tile.
 
       integer     maxgrdchecks
       parameter ( maxgrdchecks = 4000 )
@@ -59,7 +58,7 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer jdep
       integer obcsglo
       integer recglo
-      integer iwetsum(nsx,nsy,0:nr)
+      integer iwetsum(nSx,nSy,0:Nr)
 
       common /grdchk_r/
      &                  fcrmem, fcppmem, fcpmmem,
@@ -87,9 +86,9 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer ncvarcomp
       integer maxncvarcomps
 #ifdef ALLOW_OBCS_CONTROL
-      integer nwettile( nsx,nsy,nr,nobcs )
+      integer nwettile( nSx,nSy,Nr,nobcs )
 #else
-      integer nwettile( nsx,nsy,nr,    1 )
+      integer nwettile( nSx,nSy,Nr,    1 )
 #endif
       integer irecmem ( maxgrdchecks )
       integer bjmem   ( maxgrdchecks )
@@ -107,12 +106,10 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
 #ifdef ALLOW_OBCS_CONTROL
       common /grdchk_obcs_mask_r/
      &                            grdchk_maskxz, grdchk_maskyz
-      _RL     grdchk_maskxz(1-olx:snx+olx,nr,nsx,nsy,nobcs)
-      _RL     grdchk_maskyz(1-oly:sny+oly,nr,nsx,nsy,nobcs)
+      _RL     grdchk_maskxz(1-OLx:sNx+OLx,Nr,nSx,nSy,nobcs)
+      _RL     grdchk_maskyz(1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
 #endif
 
-
-
-c     ==================================================================
-c     END OF HEADER GRADIENT_CHECK
-c     ==================================================================
+C     ==================================================================
+C     END OF HEADER GRADIENT_CHECK
+C     ==================================================================
