@@ -25,7 +25,7 @@ FFIELDS
 g_cost
 GLOBAL_MAX
 GLOBAL_SUM
-grdchk
+GRDCHK
 GRID
 MPI_INFO
 optim
