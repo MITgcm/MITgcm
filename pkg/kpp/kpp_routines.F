@@ -264,7 +264,7 @@ c-----------------------------------------------------------------------
       DO k = 1, Nr
          DO i = 1, imt
             IF (k .LT. kbl(i)) THEN
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C     when there is shelfice on top (msk(i)=0), reset the boundary layer
 C     mixing coefficients blmc to pure Ri-number based mixing
                blmc(i,k,1) = MAX ( blmc(i,k,1)*msk(i),
@@ -273,7 +273,7 @@ C     mixing coefficients blmc to pure Ri-number based mixing
      &              diffus(i,k,2) )
                blmc(i,k,3) = MAX ( blmc(i,k,3)*msk(i),
      &              diffus(i,k,3) )
-#endif /* not ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
                diffus(i,k,1) = MAX ( blmc(i,k,1), viscArNr(1) )
                diffus(i,k,2) = MAX ( blmc(i,k,2), diffusKzS(i,Nr) )
                diffus(i,k,3) = MAX ( blmc(i,k,3), diffusKzT(i,Nr) )

@@ -408,12 +408,20 @@ C-    end bi,bj loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined (ALLOW_SHELFICE))
       IF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+      IF ( useSTIC ) THEN
+#endif
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Prevent seaice to form where Ice-Shelf is present
+#if (defined (ALLOW_SHELFICE))
           CALL SHELFICE_MASK_SEAICE(
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+          CALL STIC_MASK_SEAICE(
+#endif
      U                  HEFFM,
      I                  bi, bj, -1, myThid )
           DO j=2-OLy,sNy+OLy
@@ -430,7 +438,7 @@ C--   Prevent seaice to form where Ice-Shelf is present
        ENDDO
        CALL EXCH_UV_XY_RL( SIMaskU, SIMaskV, .FALSE., myThid )
       ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 #ifndef SEAICE_CGRID
 C--   Choose a proxy level for geostrophic velocity,

@@ -23,6 +23,9 @@ c     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 c     == routine arguments ==
 
@@ -39,7 +42,7 @@ c     == local variables ==
       integer ntmp2(4)
       integer nwetc3d
       integer nwettmp
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       integer ntmpshi
 #endif
 #ifdef ALLOW_OBCS_CONTROL
@@ -75,7 +78,7 @@ c--   Initialise the counters.
             nwetstile(bi,bj,k) = 0
             nwetwtile(bi,bj,k) = 0
             nwetvtile(bi,bj,k) = 0
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
             nwetitile(bi,bj,k) = 0
 #endif
           enddo
@@ -130,12 +133,12 @@ c--             Vertical mask.
                   nwetvtile(bi,bj,k) = nwetvtile(bi,bj,k) + 1
                 endif
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 c--             Ice shelf mask.
                 if (maskSHI(i,j,k,bi,bj) .eq. 1.) then
                  nwetitile(bi,bj,k) = nwetitile(bi,bj,k) + 1
                 endif
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
               enddo
             enddo
           enddo
@@ -193,11 +196,11 @@ c
             nvarlength = nvarlength + ncvarrecs(i)*nwetwtile(bi,bj,k)
            else if ( ncvargrd(i) .eq. 'v' ) then
             nvarlength = nvarlength + ncvarrecs(i)*nwetvtile(bi,bj,k)
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 c--             Ice shelf mask.
            else if ( ncvargrd(i) .eq. 'i') then
             nvarlength = nvarlength + ncvarrecs(i)*nwetitile(bi,bj,k)
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
            else if ( ncvargrd(i) .eq. 'm' ) then
 #ifdef ALLOW_OBCS_CONTROL
             do iobcs = 1, nobcs
@@ -525,7 +528,7 @@ c
       call print_message( msgbuf, standardmessageunit,
      &    SQUEEZE_RIGHT , mythid)
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 17a:surface wet I = ', nwetitile(1,1,1)
       call print_message( msgbuf, standardmessageunit,
@@ -595,7 +598,7 @@ c#endif
 #ifdef ALLOW_EFLUXP0_CONTROL
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
 c#else

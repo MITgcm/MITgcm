@@ -48,6 +48,9 @@ C     == Global variables ===
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER icomp
@@ -188,14 +191,14 @@ cpj)
                         itmp = i
                         jtmp = j
                      ENDIF
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
                   ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
                      IF ( maskSHI(i,j,k,bi,bj) .GT. 0.) THEN
                         icomptest = icomptest + 1
                         itmp = i
                         jtmp = j
                      ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
                   ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
                      IF ( grdchkvarindex .EQ. 11 ) THEN
 #ifdef ALLOW_OBCSN_CONTROL

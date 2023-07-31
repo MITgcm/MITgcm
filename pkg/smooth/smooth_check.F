@@ -54,11 +54,14 @@ C --- Check for legal mask names
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF
 
-#ifndef ALLOW_SHELFICE
+#if (!defined (ALLOW_SHELFICE) && !defined (ALLOW_STEEP_ICECAVITY))
 C --- make sure proper macros are defined for maskI (iceshelf domain)
         IF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI') THEN
-          WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
-     &      'Must compile with shelfice package, ALLOW_SHELFICE'
+          WRITE(msgBuf,'(A,A)') 'SMOOTH_CHECK: ',
+     &      'Must compile with shelfice package, ALLOW_SHELFICE,'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,A)') 'SMOOTH_CHECK: ',
+     &      'or steep_icecavity, ALLOW_steep_icecavity'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF

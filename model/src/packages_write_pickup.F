@@ -45,6 +45,8 @@ C       |-- STREAMICE_WRITE_PICKUP
 C       |
 C       |-- SHELFICE_WRITE_PICKUP
 C       |
+C       |-- STIC_WRITE_PICKUP
+C       |
 C       |-- SEAICE_WRITE_PICKUP
 C       |
 C       |-- THSICE_WRITE_PICKUP
@@ -176,6 +178,13 @@ C     Write restart file for GCHEM pkg & GCHEM sub-packages
 #ifdef ALLOW_SHELFICE
       IF (useShelfIce) THEN
         CALL SHELFICE_WRITE_PICKUP( permPickup,
+     I                    suffix, myTime, myIter, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF (useSTIC) THEN
+        CALL STIC_WRITE_PICKUP( permPickup,
      I                    suffix, myTime, myIter, myThid )
       ENDIF
 #endif

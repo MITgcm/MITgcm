@@ -56,7 +56,7 @@ CEOP
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
-      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+      ELSEIF ( usingZCoords .AND. ( useShelfIce .OR. useSTIC ) ) THEN
        kSurface = -1
       ELSEIF ( usingPCoords ) THEN
        kSurface = Nr

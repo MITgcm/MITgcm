@@ -214,7 +214,7 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
      &     adr_low, adrecip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
       _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

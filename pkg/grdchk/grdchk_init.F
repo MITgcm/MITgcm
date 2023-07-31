@@ -99,7 +99,7 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -108,7 +108,7 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
       else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi

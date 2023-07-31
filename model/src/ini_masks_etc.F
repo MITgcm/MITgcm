@@ -59,6 +59,15 @@ C--   Modify  ocean upper boundary position according to ice-shelf topography
       ENDIF
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC ) THEN
+C--   Modify  ocean upper boundary position according to ice-shelf topography
+       CALL STIC_INIT_DEPTHS(
+     U               R_low, Ro_surf,
+     I               myThid )
+      ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
+
       IF ( selectSigmaCoord.EQ.0 ) THEN
 C---  r-coordinate with partial-cell or full cell mask
 
@@ -234,8 +243,9 @@ C    compute hFacW,hFacS as minimum of adjacent hFacC factor
 C- Method-2 (useMin4hFacEdges = F):
 C    compute hFacW,hFacS from rSurfW,S and rLowW,S by applying
 C    same rules as for hFacC
-C Note: Currently, no difference between methods except when useShelfIce=T and
-C       if, in adjacent columns, ice-draft and bathy are within the same level k
+C Note: Currently, no difference between methods except when
+C       useShelfIce/useSTIC=T and if, in adjacent columns, 
+C       ice-draft and bathy are within the same level k
 
         IF ( useMin4hFacEdges ) THEN
 C--   hFacW and hFacS (at U and V points):

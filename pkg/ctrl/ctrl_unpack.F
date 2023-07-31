@@ -190,7 +190,7 @@ c--       Header information.
 #ifdef ALLOW_CTRL_WETV
           read(cunit) (filenWetvGlobal(k),   k=1,Nr)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
           read(cunit) (filenWetiGlobal(k),   k=1,Nr)
 c         read(cunit) filenWetiGlobal(1)
 #endif
@@ -244,14 +244,14 @@ c
                 STOP
              endif
           end do
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
           do k=1,1
            if ( filenWetiGlobal(k) .NE. nWetiGlobal(k) ) then
             print *, 'WARNING: wrong nWetiGlobal for k = ', k
             STOP
            endif
           enddo
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_OBCS
 cgg(   Lets also check the OBCS mask info in the header.
@@ -354,7 +354,7 @@ c----------------------------------------------------------------------
          DO k=1,Nr
            nwettmp(k) = nwetcglobal(k)
          ENDDO
-# ifdef ALLOW_SHELFICE
+# if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
          if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
      &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetUnpack='maskCtrlI'
@@ -400,7 +400,7 @@ c          write(weighttype(1:80),'(a)') "wunit"
          DO k=1,Nr
            nwettmp(k) = nwetcglobal(k)
          ENDDO
-# ifdef ALLOW_SHELFICE
+# if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
            mskNameForSetUnpack='maskCtrlI'
            DO k=1,Nr

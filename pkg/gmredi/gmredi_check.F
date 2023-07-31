@@ -390,7 +390,7 @@ C-    Some GM pieces of code have not been fixed to work in Pressure-coordinates
        ENDIF
       ENDIF
 
-      IF ( useShelfIce .OR. topoFile.NE.' ' ) THEN
+      IF ( useShelfIce .OR. useSTIC .OR. topoFile.NE.' ' ) THEN
 C-    Some GM options are likely to not work when some dry grid cells are found
 C     near the top (e.g., under ice-shelf). This might change as more pieces of
 C     code get fixed (e.g., once Mixed-Layer depth is fixed) but for now safer

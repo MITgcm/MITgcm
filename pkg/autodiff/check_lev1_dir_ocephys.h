@@ -172,11 +172,11 @@ CADJ STORE DWNSLP_deepK   = comlev1, key = ikey_dynamics
 CADJ STORE DWNSLP_Transp  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 CADJ STORE kTopC           =comlev1, key = ikey_dynamics
 CADJ STORE shelficeForcingT=comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE shelficeForcingS=comlev1, key = ikey_dynamics, kind = isbyte
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 #if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE theta,salt     = comlev1, key = ikey_dynamics, kind = isbyte

@@ -120,13 +120,13 @@ C                            (only used in pkg/autodiff ...)
       integer nwetvglobal     ( Nr )
       integer nbuffglobal
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       common /controlvars_i_shifwflx/
      &     nwetitile, nwetiglobal, filenWetiGlobal
       integer nwetitile     ( nSx,nSy,Nr )
       integer nwetiglobal     ( Nr )
       integer filenWetiGlobal(Nr)
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
       common /controlvars_c/
      &                       ncvargrd

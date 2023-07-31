@@ -8,6 +8,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -60,6 +63,9 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
 #endif
@@ -87,7 +93,7 @@ C     == local variables ==
 # ifdef ALLOW_SEAICE
       INTEGER igen_siarea, igen_siheff
 # endif
-# ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       INTEGER i, j, bi, bj
 #  ifdef SHI_ALLOW_GAMMAFRICT
@@ -128,7 +134,7 @@ C--   generic 2D control variables
       igen_siarea=0
       igen_siheff=0
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       igen_shiCoeffT=0
       igen_shiCoeffS=0
       igen_shiCDrag=0
@@ -151,7 +157,7 @@ C--   generic 2D control variables
         IF (xx_genarr2d_file(iarr)(1:9).EQ.'xx_siheff')
      &     igen_siheff=iarr
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 # ifndef SHI_ALLOW_GAMMAFRICT
         IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
@@ -193,7 +199,7 @@ C--   generic 2D control variables
       IF (igen_siheff.GT.0)
      &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 # ifndef SHI_ALLOW_GAMMAFRICT
       IF (igen_shiCoeffT.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
@@ -249,7 +255,7 @@ C--      u* drag coefficient
        ENDDO
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 #ifdef ALLOW_STREAMICE
       IF (igen_b_glen.GT.0)
      &  CALL CTRL_MAP_GENARR2D( B_glen, igen_b_glen, myThid )

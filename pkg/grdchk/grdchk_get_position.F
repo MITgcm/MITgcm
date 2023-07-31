@@ -29,6 +29,9 @@ c     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
@@ -144,14 +147,14 @@ cph)
                         icomptest = icomptest + 1
                      endif
                      wetlocal = _maskW(i,j,k,bi,bj)
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 c--             Ice shelf mask.
                   else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
                      if ( maskSHI(i,j,k,bi,bj) .gt. 0.) then
                         icomptest = icomptest + 1
                      endif
                      wetlocal = maskSHI(i,j,k,bi,bj)
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL

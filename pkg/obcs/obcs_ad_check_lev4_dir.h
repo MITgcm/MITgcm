@@ -215,7 +215,7 @@ CADJ STORE OBWsn1 = tapelev4, key = ilev_4
 #
 # endif /* ALLOW_SEAICE */
 
-# if (defined ALLOW_SEAICE || defined ALLOW_SHELFICE)
+# if (defined ALLOW_SEAICE || defined ALLOW_SHELFICE || defined ALLOW_STEEP_ICECAVITY)
 #  if (defined NONLIN_FRSURF && defined ALLOW_OBCS_PRESCRIBE)
 CADJ STORE obneta0,obneta1 = tapelev4, key = ilev_4
 CADJ STORE obseta0,obseta1 = tapelev4, key = ilev_4

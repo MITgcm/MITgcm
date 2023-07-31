@@ -1,0 +1,12 @@
+stic_cost_accumulate.f
+stic_cost_final.f
+stic_forcing.f
+stic_forcing_surf.f
+stic_init_varia.f
+stic_read_pickup.f
+stic_step_icemass.f
+stic_thermodynamics.f
+stic_u_drag_coeff.f
+stic_v_drag_coeff.f
+stic_diagnostics_drag.f
+stic_solve4fluxes.F

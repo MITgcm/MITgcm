@@ -29,6 +29,9 @@ C     === Global variables ===
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
       INTEGER myThid, myIter
       _RL time_step
@@ -366,13 +369,13 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
      &       STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
 
            IF (STREAMICE_allow_cpl) THEN
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
             MR = -1. * (1.-float_frac_streamice(i,j,bi,bj)) *
      &        shelfIceFreshWaterFlux(i,j,bi,bj) * irho *
      &        sec_per_year
 
 #else
-            STOP 'SHELFICE IS NOT ENABLED'
+            STOP 'SHELFICE OR STEEP_ICECAVITY IS NOT ENABLED'
 #endif
            ELSE
               MR = (1.-float_frac_streamice(i,j,bi,bj)) *

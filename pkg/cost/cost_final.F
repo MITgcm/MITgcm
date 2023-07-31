@@ -60,6 +60,10 @@ c     == end of interface ==
       IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF (useSTIC) CALL STIC_COST_FINAL (myThid)
+#endif
+
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif

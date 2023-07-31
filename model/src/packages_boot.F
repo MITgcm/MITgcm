@@ -78,6 +78,7 @@ C     data.pkg namelists
      &          useSEAICE,
      &          useSALT_PLUME,
      &          useShelfIce,
+     &          useSTIC,
      &          useStreamIce,
      &          useICEFRONT,
      &          useThSIce,
@@ -142,6 +143,7 @@ c     useGAD          =.FALSE.
       useSEAICE       =.FALSE.
       useSALT_PLUME   =.FALSE.
       useShelfIce     =.FALSE.
+      useSTIC         =.FALSE.
       useStreamIce    =.FALSE.
       useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
@@ -449,6 +451,10 @@ C----- pkgs without standard "usePKG" in "data.pkg":
 #ifdef ALLOW_OCN_COMPON_INTERF
       CALL PACKAGES_PRINT_MSG( useCoupler, 'OCN_COMPON_INTERF',
      &                         'useCoupler' )
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+      CALL PACKAGES_PRINT_MSG( useSTIC,    'STEEP_ICECAVITY',
+     &                         'useSTIC'    )
 #endif
 C----- pkgs without a run-time switch:
       locFlag = .TRUE.

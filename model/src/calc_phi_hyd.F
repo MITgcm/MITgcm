@@ -157,10 +157,14 @@ CADJ &     kind = isbyte
           ENDDO
         ENDIF
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C     mask rho, so that there is no contribution of phiHyd from
 C     overlying shelfice (whose density we do not know)
+#if (defined (ALLOW_SHELFICE))
         IF ( useShelfIce .AND. useDOWN_SLOPE ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+        IF ( useSTIC .AND. useDOWN_SLOPE ) THEN
+#endif
 C- note: does not work for down_slope pkg which needs rho below the bottom.
 C    setting rho=0 above the ice-shelf base is enough (and works in both cases)
 C    but might be slower (--> keep original masking if not using down_slope pkg)
@@ -169,14 +173,18 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
            IF ( k.LT.kSurfC(i,j,bi,bj) ) alphaRho(i,j) = 0. _d 0
           ENDDO
          ENDDO
+#if (defined (ALLOW_SHELFICE))
         ELSEIF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+        ELSEIF ( useSTIC ) THEN
+#endif
          DO j=jMin,jMax
           DO i=iMin,iMax
            alphaRho(i,j) = alphaRho(i,j)*maskC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy

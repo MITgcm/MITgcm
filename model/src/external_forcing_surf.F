@@ -392,6 +392,14 @@ c         ENDDO
         ENDIF
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+        IF ( useSTIC) THEN
+          CALL STIC_FORCING_SURF(
+     I                  bi, bj, iMin, iMax, jMin, jMax,
+     I                  myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
+
 C--   end bi,bj loops.
        ENDDO
       ENDDO

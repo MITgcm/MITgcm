@@ -42,6 +42,9 @@ C !USES: ============================================================
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -164,7 +167,7 @@ C     gTKE     :: right hand side of diffusion equation
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       INTEGER ki
       _RL KE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -371,8 +374,12 @@ C- ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined (ALLOW_SHELFICE))
          IF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+         IF ( useSTIC ) THEN
+#endif
           kSrf = MAX(1,kTopC(i,j,bi,bj))
           kTop = MIN(kSrf+1,Nr)
          ENDIF
@@ -1193,15 +1200,22 @@ C     estimate friction velocity uStar from surface forcing
         ENDDO
        ENDDO
       ENDIF
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C     uStarSquare should not have any effect undernath iceshelves, but
 C     masking uStarSquare underneath ice shelf is not necessary because
 C     surfaceForcingU/V=0 in this case (see shelfice_forcing_surf.F)
 C     Instead, uStarSquare is computed from the sub-glacial drag.
+#if (defined (ALLOW_SHELFICE))
       IF ( useSHELFICE .AND.
      &     ( no_slip_shelfice .OR. SHELFICEDragLinear.NE.zeroRL
      &                        .OR. SHELFICEselectDragQuadr.GE.0 )
      &   ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+      IF ( useSTIC .AND.
+     &     ( no_slip_stic .OR. STICDragLinear.NE.zeroRL
+     &                        .OR. STICselectDragQuadr.GE.0 )
+     &   ) THEN
+#endif
 C     First, we need to compute an early estimate of the drag
 C     coefficients based ond the ocean velocity of the previous time
 C     step only; because kappaRU and kappaRV are not yet available,
@@ -1229,6 +1243,7 @@ C     coefficients.
           vFld(i,j) = vVel(i,j,k,bi,bj)
          ENDDO
         ENDDO
+#if (defined (ALLOW_SHELFICE))
         CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .FALSE.,
      I       uFld, vFld, kappaRX, KE,
      O       cDragU,
@@ -1237,6 +1252,16 @@ C     coefficients.
      I       uFld, vFld, kappaRX, KE,
      O       cDragV,
      I       myIter, myThid )
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+        CALL STIC_U_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragU,
+     I       myIter, myThid )
+        CALL STIC_V_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I       uFld, vFld, kappaRX, KE,
+     O       cDragV,
+     I       myIter, myThid )
+#endif
 C-     compute explicit stress
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -1278,8 +1303,12 @@ CML#endif
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined (ALLOW_SHELFICE))
          IF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+         IF ( useSTIC ) THEN
+#endif
           kSrf = MAX(1,kTopC(i,j,bi,bj))
           kTop = MIN(kSrf+1,Nr)
          ENDIF
@@ -1511,8 +1540,12 @@ CML#endif
          ELSE
           DO j=jMin,jMax
            DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
-            IF ( useShelfIce ) THEN
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined (ALLOW_SHELFICE))
+         IF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+         IF ( useSTIC ) THEN
+#endif
              kSrf = MAX(1,kTopC(i,j,bi,bj))
              kTop = MIN(kSrf+1,Nr)
             ENDIF
@@ -1532,8 +1565,10 @@ CML#endif
          k=kSrf
          DO j=jMin,jMax
           DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE))
            IF ( useShelfIce ) k = MAX(1,kTopC(i,j,bi,bj))
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+           IF ( useSTIC ) k = MAX(1,kTopC(i,j,bi,bj))
 #endif
 C     diagnose work done by the wind
            surf_flx_tke(i,j) =

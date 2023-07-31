@@ -201,7 +201,7 @@ c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
         ncvargrdtmp='c'
-# ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C       Under iceshelf, use maskSHI for these
         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
      &      (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
@@ -251,7 +251,7 @@ c--
         endif
 #endif
         ncvargrdtmp='c'
-# ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 C       Under iceshelf, use maskSHI for these
         if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
      &       ncvargrdtmp='i'
