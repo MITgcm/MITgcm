@@ -194,91 +194,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
         ENDDO
        ENDDO
 
-      ELSEIF ( theMxlMaxFlag .EQ. 2 ) THEN
-
-       IF ( usingPcoords ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C     Downward sweep, extra treatment of k=Nr for p-coordinates
-C     because level Nr+1 is not available
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
-     &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
-         ENDDO
-        ENDDO
-        DO k=Nr-1,2,-1
-#ifdef ALLOW_AUTODIFF_TAMC
-         kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-          ENDDO
-         ENDDO
-        ENDDO
-C     Upward sweep
-        DO k=2,Nr
-#ifdef ALLOW_AUTODIFF_TAMC
-         kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
-          ENDDO
-         ENDDO
-        ENDDO
-       ELSE
-C     Downward sweep
-        DO k=2,Nr
-#ifdef ALLOW_AUTODIFF_TAMC
-         kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k-1)
-CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &          GGL90mixingLength(i,j,k-1)+drF(k-1)*recip_coordFac)
-          ENDDO
-         ENDDO
-        ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C     Upward sweep, extra treatment of k=Nr for z-coordinates
-C     because level Nr+1 is not available
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,Nr) = MIN(GGL90mixingLength(i,j,Nr),
-     &         GGL90mixingLengthMin+drF(Nr)*recip_coordFac)
-         ENDDO
-        ENDDO
-        DO k=Nr-1, 2,-1
-#ifdef ALLOW_AUTODIFF_TAMC
-         kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k+1)
-CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &          GGL90mixingLength(i,j,k+1)+drF(k)*recip_coordFac)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDIF
-
-      ELSEIF ( theMxlMaxFlag .EQ. 3 ) THEN
+      ELSEIF ( theMxlMaxFlag .EQ. 2 .OR. theMxlMaxFlag .EQ. 3 ) THEN
 
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -350,7 +266,7 @@ C     because level Nr+1 is not available
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k-1)
+CADJ STORE GGL90mixingLength(:,:,k+1)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
@@ -361,6 +277,19 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
          ENDDO
         ENDDO
        ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
+#endif
+C     Impose minimum from downward sweep
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
+     &                                  mxLength_Dn(i,j,k))
+         ENDDO
+        ENDDO
+       ENDDO
 
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
@@ -370,26 +299,18 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
        STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
+#endif
 C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
       IF ( theMxlMaxFlag.EQ.3 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
-CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &                                  mxLength_Dn(i,j,k))
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
 #ifdef GGL90_REGULARIZE_MIXINGLENGTH
           MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k)
      &         + GGL90mixingLengthMin**2 )
@@ -402,28 +323,17 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
         ENDDO
        ENDDO
       ELSE
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
-#endif
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
 #ifdef GGL90_REGULARIZE_MIXINGLENGTH
-          GGL90mixingLength(i,j,k) = SQRT( GGL90mixingLength(i,j,k)**2
+          MLtmp = SQRT( GGL90mixingLength(i,j,k)**2
      &         + GGL90mixingLengthMin**2 )
 #else
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
+          MLtmp = MAX(GGL90mixingLength(i,j,k),GGL90mixingLengthMin)
 #endif
-#ifdef ALLOW_AUTODIFF
-         ENDDO
-        ENDDO
-       ENDDO
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#endif
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
+          GGL90mixingLength(i,j,k) = MLtmp
+          rMixingLength(i,j,k) = 1. _d 0 / MLtmp
          ENDDO
         ENDDO
        ENDDO
