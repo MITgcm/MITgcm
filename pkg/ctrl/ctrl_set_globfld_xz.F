@@ -81,13 +81,13 @@ C     --> expect zero difference.
 C     In this call, value "False" is passed to 3rd arg "globalFile"
 C             and   value "False" is passed to 4th arg "useCurrentDir,"
 c       CALL MDS_WRITE_SEC_XZ( fname, ctrlprec, .FALSE., .FALSE.,
-c    I                         'RL', Nr, globfldxz, dummyRS,
+c    I                         'RL', Nr, 1, Nr, globfldxz, dummyRS,
 c    I                         irec, optimcycle, myThid )
 
 C--   The only difference here (vs initial MDSWRITEFIELDXZ call) is that,
-C     in WRITE_REC_XZ_RL, argument "globalFile" is not set to false but
-C     instead is taken from global setting "globalFiles" ;
-C     But this might be more consistent with call to WRITE_REC_3D_RL above
+C     in WRITE_REC_XZ_RL, argument "globalFile" is not set to FALSE but is
+C     instead taken from RD_WR_SEC common block (but currently set to FALSE
+C     in ini_model_io.F if using OBCS)
         CALL WRITE_REC_XZ_RL( fname, ctrlprec,
      I                        Nr, globfldxz,
      I                        irec, optimcycle, myThid )
