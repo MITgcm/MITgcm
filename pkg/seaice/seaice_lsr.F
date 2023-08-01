@@ -719,10 +719,12 @@ C       ENDIF
 
       IF ( printResidual ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(standardMessageUnit,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
-     &      ' SEAICE_LSR: ipass, FLEX_FACTOR,'//
+       WRITE(msgBuf,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
+     &      ' S/R SEAICE_LSR: ipass, FLEX_FACTOR,'//
      &      ' LSR_ERRORfu, LSR_ERRORfv, residIni =',
      &      ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residIni
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
        _END_MASTER( myThid )
       ENDIF
 
@@ -894,8 +896,10 @@ C     end bi,bj-loops
           ENDDO
          ENDDO
          _GLOBAL_MAX_RL( S1, myThid )
-c        WRITE(standardMessageUnit,'(A,2I6,1P4E16.9)')
+c        WRITE(msgBuf,'(A,2I6,1P4E16.9)')
 c    &   ' U iters,error,WF = ',ipass,M,S1,S1A,WFAU
+c        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c    &                       SQUEEZE_RIGHT, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
          IF(m.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
          S1A=S1
@@ -957,25 +961,37 @@ C--   Calculate final residual of the linearised system
      I                  printResidual, myIter, myThid )
 
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,1X,I9,1P3E16.8)')
-     &    ' SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
+        WRITE(msgBuf,'(A,1X,I9,1P3E16.8)')
+     &    ' S/R SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
      &        ipass, residUini, residVini
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 #ifdef SEAICE_ALLOW_FREEDRIFT
-        IF ( LSR_mixIniGuess.GE.0 )
-     &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
-     &    ' SEAICE_LSR: Residual FrDrift U_fd,V_fd=',
+        IF ( LSR_mixIniGuess.GE.0 ) THEN
+         WRITE(msgBuf,'(A,1P3E16.8)')
+     &    ' S/R SEAICE_LSR: Residual FrDrift U_fd,V_fd=',
      &        residU_fd, residV_fd
-        IF ( LSR_mixIniGuess.GE.2 )
-     &  WRITE(standardMessageUnit,'(A,1P3E16.8)')
-     &    ' SEAICE_LSR: Residual Mix-ini Uice,Vice=',
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+        IF ( LSR_mixIniGuess.GE.2 ) THEN
+         WRITE(msgBuf,'(A,1P3E16.8)')
+     &    ' S/R SEAICE_LSR: Residual Mix-ini Uice,Vice=',
      &        residUmix, residVmix
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
 #endif /* SEAICE_ALLOW_FREEDRIFT */
-        WRITE(standardMessageUnit,'(A,I9,A,I9,1P2E16.8)')
-     &    ' SEAICE_LSR (ipass=',ipass,') iters,dU,Resid=',
+        WRITE(msgBuf,'(A,I9,A,I9,1P2E16.8)')
+     &    ' S/R SEAICE_LSR (ipass=',ipass,') iters,dU,Resid=',
      &      ICOUNT1, S1, residUend
-        WRITE(standardMessageUnit,'(A,I9,A,I9,1P2E16.8)')
-     &    ' SEAICE_LSR (ipass=',ipass,') iters,dV,Resid=',
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,I9,A,I9,1P2E16.8)')
+     &    ' S/R SEAICE_LSR (ipass=',ipass,') iters,dV,Resid=',
      &      ICOUNT2, S2, residVend
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
       ENDIF
 #ifdef ALLOW_DEBUG
@@ -1044,9 +1060,11 @@ C--   Compute residual norm and print
        _GLOBAL_SUM_RL( counter, myThid )
        IF ( counter .GT. 0. _d 0 ) EKnorm = EKnorm/counter
        _BEGIN_MASTER( myThid )
-       WRITE(standardMessageUnit,'(A,I7,1X,2E22.14)')
+       WRITE(msgBuf,'(A,I7,1X,2E22.14)')
      &      'S/R SEAICE_LSR: IPSEUDO, RESNORM, EKNORM = ',
      &      ipass, SQRT(resnorm), EKnorm
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
        _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
