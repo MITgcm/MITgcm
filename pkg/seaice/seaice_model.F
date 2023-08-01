@@ -253,17 +253,17 @@ C     thermodynamics growth
 C     must call growth after calling advection
 C     because of ugly time level business
        IF ( usePW79thermodynamics ) THEN
-#ifdef SEAICE_USE_GROWTH_ADX
-#ifdef ALLOW_DEBUG
+# ifdef SEAICE_USE_GROWTH_ADX
+#  ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH_ADX', myThid )
-#endif
+#  endif
         CALL SEAICE_GROWTH_ADX( myTime, myIter, myThid )
-#else
-#ifdef ALLOW_DEBUG
+# else / * SEAICE_USE_GROWTH_ADX */
+#  ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
-#endif
+#  endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
-#endif
+# endif / * SEAICE_USE_GROWTH_ADX */
        ELSE
 #endif /* DISABLE_SEAICE_GROWTH */
         DO bj=myByLo(myThid),myByHi(myThid)
