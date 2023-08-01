@@ -79,7 +79,6 @@ C     computed the "call diagnostics_fill" statement is commented out.
 # undef ALLOW_SITRACER_DEBUG_DIAG
 #endif /* ALLOW_SITRACER */
 
-
 C--   Allow sea-ice dynamic code. These options are provided so that,
 C     if turned off (#undef), to compile (and process with TAF) only the
 C     the thermodynamics component of the code. Note that, if needed,
@@ -271,7 +270,3 @@ C     (requires pkg/cost & ALLOW_COST_ICE defined)
 
 #endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***
