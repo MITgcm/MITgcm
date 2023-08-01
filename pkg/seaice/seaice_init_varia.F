@@ -39,7 +39,7 @@ C     i,j,k,bi,bj :: Loop counters
       INTEGER i, j, bi, bj
       INTEGER kSrf
       INTEGER k
-#ifdef ALLW_SITRACER
+#ifdef ALLOW_SITRACER
       INTEGER iTr, jTh
 #endif
 #ifdef OBCS_UVICE_OLD
