@@ -38,15 +38,15 @@ C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER kSrf
-      _RS  mask_uice
       INTEGER k
-#ifdef ALLOW_SITRACER
+#ifdef ALLW_SITRACER
       INTEGER iTr, jTh
 #endif
 #ifdef OBCS_UVICE_OLD
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
 #ifdef SEAICE_CGRID
+      _RS mask_uice
       _RL recip_tensilDepth
 #endif
 

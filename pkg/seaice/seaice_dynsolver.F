@@ -61,13 +61,13 @@ C     === Local variables ===
 C     i,j    :: Loop counters
 C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
+#ifdef SEAICE_CGRID
 # ifndef ALLOW_AUTODIFF
       _RL mask_uice, mask_vice
 # endif
-# ifdef SEAICE_CGRID
 C     phiSurf :: geopotential height at sea surface (including pressure load)
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-# endif
+#endif
 C     TAUX    :: zonal      wind stress over seaice at U point
 C     TAUY    :: meridional wind stress over seaice at V point
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -705,7 +705,7 @@ C     average from velocity points to pressure points
 C     bi/bj-loop
         ENDDO
        ENDDO
-C     useDiagnostics
+C     useDiagnostics & SEAICEuseDYNAMICS
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
