@@ -617,6 +617,13 @@ directories ``code_oad`` and ``input_oad`` respectively.
 #. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on standard forward experiment,
    TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
 
+#. :filelink:`global_oce_latlon <verification/global_oce_latlon>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
+   Also contains additional OpenAD adjoint setups:
+
+   - using package :filelink:`ggl90 <pkg/ggl90>` (:filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
+
+   - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
+
 #. :filelink:`global_with_exf <verification/global_with_exf>` - Based on standard forward experiment, TAF adjoint setup.
 
 #. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
@@ -641,13 +648,6 @@ directories ``code_oad`` and ``input_oad`` respectively.
 #. :filelink:`offline_exf_seaice <verification/offline_exf_seaice>` - Based on standard forward experiment, TAF adjoint setup.
    Also contains additional TAF adjoint setup
    with sea ice thermodynamics-only using :filelink:`pkg/thsice` (:filelink:`input_ad.thsice <verification/offline_exf_seaice/input_ad.thsice>`).
-
-#. :filelink:`OpenAD <verification/OpenAD>` - Simple adjoint experiment (used also to test OpenAD compiler), TAF and OpenAD adjoint setups.
-   Also contains additional OpenAD adjoint setups:
-
-   - using package :filelink:`ggl90 <pkg/ggl90>` (:filelink:`input_oad.ggl90 <verification/OpenAD/input_oad.ggl90>`).
-
-   - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/OpenAD/input_oad.kpp>`).
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
    to the dissolved inorganic carbon biogeochemistry model (currently NOT documented as a tutorial experiment).
