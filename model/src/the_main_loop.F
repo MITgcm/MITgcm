@@ -290,7 +290,7 @@ CEOP
 c--   Initialize storage for the cost function evaluation.
 c---------------------------------------------------------
 c--   Initialize storage for the initialisation phase.
-# ifdef ALLOW_AUTODIFF_WHTAPEIO
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_init       = COMMON, 1
 # else
 CADJ INIT tapelev_init       = USER
@@ -327,6 +327,10 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# ifdef ALLOW_AUTODIFF_WHTAPEIO
+C     this needs to happen before any store directive to taplev_init
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 0, myThid )
+# endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
@@ -393,6 +397,10 @@ c     Initialize PDAF
       CALL TIMER_START('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
       CALL INIT_PDAF( nIter0, myTime, myIter, myThid )
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
+#endif
+
+#ifdef ALLOW_AUTODIFF_WHTAPEIO
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
 
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

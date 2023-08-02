@@ -135,7 +135,7 @@ c exst needs to have been tested before opening the file
 #  endif
           ENDIF
           iWh=0
-      ENDIF
+        ENDIF
 #endif
       ENDIF
 
