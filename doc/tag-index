@@ -1,6 +1,39 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - adjust amplitude of perturbation (grdchk_eps) to improve Fwd/Adj gradient
+    check comparison in exp. global_ocean.90x40x15, global_with_exf & lab_sea ;
+  - change location of grad-check (away from freezing Temp) in exp. OpenAD
+    and rename experiment "OpenAD" to "global_oce_latlon".
+o pkg/ctrl + pkg/grdchk:
+  - define PARAMETER nobcs = 4 in CTRL_OBCS.h instead of SIZE.h ; update SIZE.h
+    of all code_ad/oad/tap verification exp.
+  - in pkg/grdchk, rename grdchk.h to GRDCHK.h and adjust src code to work
+    without "nobcs" when OBCS_ALLOW_CONTROL is undefined.
+o verification:
+  - Remove duplicated parameter files from input_tap/ dir and adjust prepare_run
+    accordingly ; remove few untested additional files (in OpenAD/ & lab_sea/).
+o pkg/seaice:
+  - rename ZMIN/ZMAX into SEAICE_ZMIN/ZMAX to avoid potential conflicts with kpp
+    variables with the same name ; rename swfracb into SEAICE_SWFrac ;
+  - fix a bug in computing SEAICE_SWFrac in pressure coordinates ; update exp.
+    global_ocean.cs32x15.in_p reference output.
+o pkg/seaice:
+  - SEAICE_USE_GROWTH_ADX: fix a bug related to flooding and fix budget closure
+    for linear free-surface case.
+o pkg/ecco:
+  - in cost_gencost_sshv4.F, enable to also process monthly data (previously,
+    only daily) for SSH cost.
+o pkg/ctrl:
+  - remove left-over and unused code within ALLOW_NONDIMENSIONAL_CONTROL_IO
+    (except in OBCS_CONTROL pack/unpack code); as a consequence, switch back
+    ALLOW_PACKUNPACK_METHOD2 to #undef in exp. tutorial_global_oce_optim.
+o pkgs:
+  - for local filenames, replace character*(80) by character*(MAX_LEN_FNAM)
+    declaration, where possible, especially in pkgs: autodiff, ctrl, ecco,
+    profiles, smooth & grdchk.
+
 checkpoint68q (2023/06/29)
 o pkg/ggl90:
   - non IDEMIX code: fix bug (missing hFac) in matrix coefficient computation ;

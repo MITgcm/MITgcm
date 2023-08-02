@@ -28,7 +28,7 @@ c     == local variables ==
       INTEGER i,j,k, bi, bj, ii, jj, kk
       INTEGER diLoc, djLoc,  dkLoc
       INTEGER nbRand, nbt_in
-      CHARACTER*( 80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -300,7 +300,7 @@ C      end smooth3Dfilter() if block
        ENDIF
 
 c write smooth3Dnorm_3D to file:
-       WRITE(fnamegeneric(1:80),'(2A,I3.3)')
+       WRITE(fnamegeneric,'(2A,I3.3)')
      &       smoothDir(1:IL),
      &       'smooth3Dnorm', smoothOpNb
        CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,

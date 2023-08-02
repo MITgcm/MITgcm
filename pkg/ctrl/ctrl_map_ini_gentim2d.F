@@ -54,10 +54,10 @@ C     == local variables ==
 C     Tapenade requires these 4 variables to be declared as arrays of
 C     size maxCtrlTim2D. If declared as scalars, it does not store their
 C     temporary values in the do loop during reverse pass.
-      CHARACTER*(80) fnamegenIn(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamegenOut(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamegenTmp(1:maxCtrlTim2D)
-      CHARACTER*(80) fnamebase(1:maxCtrlTim2D)
+      character*(MAX_LEN_FNAM) fnamegenIn(1:maxCtrlTim2D)
+      character*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
+      character*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
+      character*(MAX_LEN_FNAM) fnamebase(1:maxCtrlTim2D)
       integer startrec
       integer endrec
       integer diffrec
@@ -119,7 +119,6 @@ C--   generic 2D control variables
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
-
         call ctrl_init_rec ( fnamebase(iarr),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
@@ -164,12 +163,12 @@ C print statements are removed. See "Automatic Differentiation" chap. in the doc
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
-        write(fnamegenIn(iarr)(1:80),'(2a,i10.10)')
+        write(fnamegenIn(iarr),'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.',optimcycle
-        write(fnamegenOut(iarr)(1:80),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen)
-     &   ,'.effective.',optimcycle
-        write(fnamegenTmp(iarr)(1:80),'(2a,i10.10)')
+        write(fnamegenOut(iarr),'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),
+     &   '.effective.',optimcycle
+        write(fnamegenTmp(iarr),'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
 
 C--   docycle

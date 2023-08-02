@@ -53,7 +53,7 @@ c     == routine arguments ==
       integer il,ilDir
 
 c     == local variables ==
-      character*( 80) fname(3), gfname
+      character*(MAX_LEN_FNAM) fname(3), gfname
       character*(MAX_LEN_MBUF) msgBuf
       logical  exst, g_exst
 
