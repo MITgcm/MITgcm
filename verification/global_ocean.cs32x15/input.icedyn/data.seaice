@@ -4,7 +4,8 @@
 #SEAICEwriteState   = .TRUE.,
 #SEAICE_clipVelocities=.FALSE.,
 #SEAICE_maskRHS   = .TRUE.,
- LSR_ERROR        = 1.E-12,
+ SEAICEnonLinIterMax = 10,
+ SEAICEnonLinTol     = 1.e-2,
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
 # for backward compatibility only

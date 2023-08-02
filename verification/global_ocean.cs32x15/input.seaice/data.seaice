@@ -1,6 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
- LSR_ERROR             = 1.E-12,
+  SEAICEnonLinIterMax  = 10,
+  SEAICEnonLinTol      = 1.e-2,
 # test strong implicit coupling method for LSR
  SEAICEuseStrImpCpl    = .TRUE.,
 #SEAICE_deltaTevp = 60.,
