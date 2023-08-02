@@ -10,8 +10,8 @@ CStartOfInterface
       SUBROUTINE DYNSOLVER( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE DYNSOLVER                                     |
-C     | o Ice dynamics using LSR solver                          |
-C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
+C     | o B-grid version of ice dynamics using LSR solver        |
+C     |   Zhang and Hibler, JGR, 102, 8691-8702, 1997            |
 C     *==========================================================*
 C     *==========================================================*
       IMPLICIT NONE

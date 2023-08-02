@@ -163,7 +163,9 @@ CADJ STORE sitracer = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C solve ice momentum equations and calculate ocean surface stress
+C--   Solve ice momentum equations and calculate ocean surface stress.
+C     The surface stress always needs to be updatedn, even if neither B-
+C     or C-grid dynamics are compiled, and SEAICEuseDYNAMICS = F.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
 #endif
@@ -213,6 +215,8 @@ C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
+C--   There always needs to be advection, even if neither B- or C-grid
+C     dynamics are compiled.
 #ifdef SEAICE_BGRID_DYNAMICS
         CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #else /* default C-grid advection */

@@ -8,20 +8,19 @@ C     !ROUTINE: SEAICE_DYNSOLVER
 C     !INTERFACE:
       SUBROUTINE SEAICE_DYNSOLVER( myTime, myIter, myThid )
 
-C     *==========================================================*
-C     | SUBROUTINE SEAICE_DYNSOLVER
-C     | o Ice dynamics using LSR solver
-C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997
-C     |   or EVP explicit solver by Hunke and Dukowicz, JPO 27,
-C     |   1849-1867 (1997)
-C     *==========================================================*
-C     | written by Martin Losch, March 2006
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     *=============================================================*
+C     | SUBROUTINE SEAICE_DYNSOLVER                                 |
+C     | C-grid version of ice dynamics using either                 |
+C     | o free drift                                                |
+C     | o LSR solver, Zhang and Hibler, JGR, 102, 8691-8702, 1997   |
+C     | o Krylov solver, after Lemieux and Tremblay, JGR, 114, 2009 |
+C     | o JFNK solver, Losch et al., JCP, 257 901-911, 2014         |
+C     | o EVP solver, Hunke and Dukowicz, JPO 27, 1849-1867 1997    |
+C     *=============================================================*
 
 C     !USES:
       IMPLICIT NONE
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -38,7 +37,7 @@ C     === Global variables ===
 # include "tamc.h"
 #endif
 
-C     !INPUT/OUTPUT PARAMETERS:
+C     !INPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime     :: Simulation time
 C     myIter     :: Simulation timestep number
@@ -46,15 +45,14 @@ C     myThid     :: my Thread Id. number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEOP
 
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && defined SEAICE_CGRID )
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
-#endif /* ALLOW_DIAGNOSTICS */
+#endif
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -72,7 +70,7 @@ C     TAUX    :: zonal      wind stress over seaice at U point
 C     TAUY    :: meridional wind stress over seaice at V point
       _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && defined SEAICE_CGRID )
 # ifdef ALLOW_AUTODIFF
       _RL strDivX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL strDivY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -87,7 +85,8 @@ C     TAUY    :: meridional wind stress over seaice at V point
       LOGICAL diag_SIsigma_isOn, diag_SIshear_isOn
       LOGICAL diag_SIenpi_isOn, diag_SIenpot_isOn
       LOGICAL diag_SIpRfric_isOn, diag_SIpSfric_isOn
-#endif /* ALLOW_DIAGNOSTICS */
+#endif
+CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -105,7 +104,7 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
 # endif
-# ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && defined SEAICE_CGRID )
           strDivX(i,j,bi,bj)= 0. _d 0
           strDivY(i,j,bi,bj)= 0. _d 0
 # endif
@@ -409,7 +408,7 @@ c in open water areas (drift of zero thickness ice)
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPVELS */
 
-#ifdef ALLOW_DIAGNOSTICS
+#if ( defined ALLOW_DIAGNOSTICS && defined SEAICE_CGRID )
 C     diagnostics related to mechanics/dynamics/momentum equations
       IF ( useDiagnostics .AND. SEAICEuseDYNAMICS ) THEN
        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1,0,1,1,myThid)
@@ -707,7 +706,7 @@ C     bi/bj-loop
        ENDDO
 C     useDiagnostics & SEAICEuseDYNAMICS
       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_DIAGNOSTICS and SEAICE_CGRID */
 
       RETURN
       END
