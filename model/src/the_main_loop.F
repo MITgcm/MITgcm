@@ -327,7 +327,7 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
-# ifdef ALLOW_AUTODIFF_WHTAPEIO
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
 C     this needs to happen before any store directive to taplev_init
       CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 0, myThid )
 # endif
@@ -399,7 +399,8 @@ c     Initialize PDAF
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
 #endif
 
-#ifdef ALLOW_AUTODIFF_WHTAPEIO
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+C     end of initialisation and use of tapelev_init: write buffer to disk
       CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
 

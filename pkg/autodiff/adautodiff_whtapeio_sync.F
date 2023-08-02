@@ -23,26 +23,30 @@ C     myThid - Thread number for this instance of the routine.
       integer myStep
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
+C     reset
+      tapeFileUnit=0
+      tapeFileCounter=0
+      tapeBufferIO=.FALSE.
+# ifdef ALLOW_WHIO_3D
+      writeWh=.FALSE.
+      iWh=0
+      jWh=0
+# endif
+C     This is a hack to make the WHTAPEIO also work for tapelev_init,
+C     which is identified by myLev==1.
       IF ( myLev .EQ. 1 ) THEN
-CML       call autodiff_whtapeio_sync( myLev, myStep, myThid )
-       tapeFileUnit = tapeFileUnitS(myLev)
-       tapeFileCounter=0
-       tapeBufferIO=.TRUE.
-#  ifdef ALLOW_WHIO_3D
-       writeWh=.FALSE.
-       iWh=0
-       jWh=0
-#  endif
-      ELSE
-       tapeFileUnit=0
-       tapeFileCounter=0
-       tapeBufferIO=.FALSE.
-#  ifdef ALLOW_WHIO_3D
-       writeWh=.FALSE.
-       iWh=0
-       jWh=0
-#  endif
+       IF ( myStep .EQ. 1 ) THEN
+        tapeFileUnit = tapeFileUnitS(myLev)
+        tapeFileCounter=0
+        tapeBufferIO=.TRUE.
+# ifdef ALLOW_WHIO_3D
+        writeWh=.FALSE.
+        iWh=0
+        jWh=0
+# endif
+       ENDIF
       ENDIF
 #endif
 
-      end
+      RETURN
+      END
