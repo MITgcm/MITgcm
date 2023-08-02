@@ -94,7 +94,7 @@ C     i,j,bi,bj  :: Loop counters
       _RL recip_deltaT
 
 #ifdef SEAICE_LSR_FLEX
-      _RL residini, residIniNonLin
+      _RL residIni, residIniNonLin
       _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
       _RL residkm1, residkm2
 #endif /* SEAICE_LSR_FLEX */
@@ -690,23 +690,39 @@ C     In case we have not yet computed the initial residual, do it now.
      O                  residUini, residVini, uTmp, vTmp,
      I     printResidual, myIter, myThid )
 
+C     Do not do anything if the initial residuals are zero
+      IF ( residUini .EQ. 0. _d 0) THEN
+       doIterate4u = .FALSE.
+       ICOUNT1 = 0
+       S1      = residUini
+      ENDIF
+      IF ( residVini .EQ. 0. _d 0) THEN
+       doIterate4v = .FALSE.
+       ICOUNT2 = 0
+       S2      = residVini
+      ENDIF
+
       residIni = SQRT(residUini*residUini+residVini*residVini)
 
 #ifndef ALLOW_AUTODIFF
+C     Exit nonlinear loop if there is nothing to do.
+      IF ( .NOT. ( doIterate4u .AND. doIterate4v ) ) EXIT
 C     If you want to use SEAICEnonLinTol to be an absolute criterion,
 C     comment out the following line.
       IF ( ipass .EQ. 1 ) residIniNonLin = residIni
 
-      IF ( ( residini .LT. SEAICEnonLinTol*residIniNonlin )
+      IF ( ( residIni .LT. SEAICEnonLinTol*residIniNonlin )
      &     .AND. ipass .GT. 2 ) EXIT
 #endif
 
+C     Catch the case of zero residual
+      IF  ( residIni .EQ. 0. _d 0 ) residIni = 1. _d -20
 C     From Lemieux et al. 2010
 C       LSRflexFac = MIN(LSRflexFac/residkm2*0.9,LSRflexFac)
 C     Other possibilities
-      LSRflexFac = 1. _d 0 / (1. _d 0 + ABS( LOG10(residini) ) )
+      LSRflexFac = 1. _d 0 / (1. _d 0 + ABS( LOG10(residIni) ) )
 C       LSRflexFac = ABS(LOG10(residkm2))/ABS(LOG10(residkm1))
-C       LSRflexFac = (residkm1/residkm2)/(1+ABS(LOG10(residini)))
+C       LSRflexFac = (residkm1/residkm2)/(1+ABS(LOG10(residIni)))
       LSRflexFac = MIN(LSRflexFac, 0.99 _d 0 )
 C      LSRflexFac = MAX(LSRflexFac, 0.3 _d 0 )
 
@@ -941,7 +957,7 @@ C--    end doIterate4u or doIterate4v
 
 #ifdef SEAICE_LSR_FLEX
       residkm2 = residkm1
-      residkm1 = residini
+      residkm1 = residIni
 #endif /* SEAICE_LSR_FLEX */
 
 C ITERATION END -----------------------------------------------------
