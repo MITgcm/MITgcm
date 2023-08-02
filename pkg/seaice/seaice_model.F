@@ -164,7 +164,7 @@ CADJ STORE sitracer = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Solve ice momentum equations and calculate ocean surface stress.
-C     The surface stress always needs to be updatedn, even if neither B-
+C     The surface stress always needs to be updated, even if neither B-
 C     or C-grid dynamics are compiled, and SEAICEuseDYNAMICS = F.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
