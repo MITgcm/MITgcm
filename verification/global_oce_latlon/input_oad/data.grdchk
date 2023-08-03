@@ -1,0 +1,24 @@
+
+# *******************
+# ECCO gradient check
+# *******************
+ &GRDCHK_NML
+ grdchk_eps       = 1.d-2,
+ iGloTile         = 2,
+ jGloTile         = 2,
+ iGloPos          = 26,
+#jGloPos          = 19,
+# This original setting would start the gradient check for temperatures
+# that are below the freezing point in the inital conditions. Because of
+# allowFreezing=True in data&PARM01 and the unphysical nature of this
+# freezing parameterisation, the FD gradients depend very much on the
+# whether they are evaluated above and below freezing or not leading
+# to inconsistent results. Moving the starting point to jGloPos=17
+# avoids this. This is similar to input_ad but here we use jGloTile = 2.
+ jGloPos          = 17,
+ kGloPos          = 1,
+### nbeg             = 1,
+ nstep            = 1,
+ nend             = 7,
+ grdchkvarindex   = 201,
+ &
