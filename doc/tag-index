@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - new option SEAICE_BGRID_DYNAMICS allows to remove/replace
+    SEAICE_ALLOW_DYNAMICS by ( SEAICE_CGRID or SEAICE_BGRID_DYNAMICS ) ;
+  - exclude more code if SEAICE_CGRID is undefined and clean up/rearrange
+    SEAICE.h to form more consistent groups and common-blocks ;
+  - update SEAICE_OPTIONS.h in verification experiments.
 o pkg/mdsio:
   - Add 2 new arguments (kLo & kHi) to pkg/mdsio Slice I/O routines that allow
     to select which levels in Slice-array to read-in or to write-out to file.
