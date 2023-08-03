@@ -299,7 +299,11 @@ c--   this tape is never used
 cCADJ INIT tapelev_ini_bibj   = USER
 # ifdef INCLUDE_CONVECT_INI_CALL
 c--   currently only used in convective_adjustement_ini.F
+#  if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr
+#  else
+CADJ INIT tapelev_ini_bibj_k = USER
+#  endif
 # endif
 # if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
 c--   exclusive tape for variables with suffix "_dummy"
