@@ -225,7 +225,10 @@ C     Upward sweep
         DO k=2,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k-1)
+C     It is important that the two k-levels of these fields are stored
+C     in one statement because otherwise taf will only store one, which
+C     is wrong (i.e. was wrong in previous versions).
+CADJ STORE GGL90mixingLength(:,:,k-1), GGL90mixingLength(:,:,k)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
@@ -264,7 +267,10 @@ C     because level Nr+1 is not available
         DO k=Nr-1,2,-1
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = k + (tkey-1)*Nr
-CADJ STORE GGL90mixingLength(:,:,k+1)
+C     It is important that the two k-levels of these fields are stored
+C     in one statement because otherwise taf will only store one, which
+C     is wrong (i.e. was wrong in previous versions).
+CADJ STORE GGL90mixingLength(:,:,k+1), GGL90mixingLength(:,:,k)
 CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
