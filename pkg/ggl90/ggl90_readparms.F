@@ -358,8 +358,8 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
 #ifdef ALLOW_AUTODIFF
-      CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
-     &     '   /* Flag for limiting mixing-length method */')
+      CALL WRITE_0D_I(adMxlMaxFlag, INDEX_NONE, 'adMxlMaxFlag =',
+     &     '   /* Flag for limiting mixing-length method in AD-mode */')
 #endif
       CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
      &     'mxlSurfFlag =',

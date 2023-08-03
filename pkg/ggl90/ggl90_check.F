@@ -141,14 +141,14 @@ C     Not everything works stably with AD code
      &      'tends to be unstable, use mxlMaxFlag = 0 or 1.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       IF ( adMxlMaxFlag .NE. mxlMaxFlag ) THEN
-        WRITE(msgBuf,'(2A,I2,A)') '** WARNING ** GGL90_CHECK: ',
-     &       'Resetting mxlMaxFlag = adMxlMaxFlag =',
-     &       adMxlMaxFlag,' in AD-mode only.'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
       ENDIF
+      IF ( adMxlMaxFlag .NE. mxlMaxFlag ) THEN
+       WRITE(msgBuf,'(2A,I2,A)') '** WARNING ** GGL90_CHECK: ',
+     &      'Resetting mxlMaxFlag = adMxlMaxFlag =',
+     &      adMxlMaxFlag,' in AD-mode only.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       ENDIF
 #endif
 
 C-    Stop cleanly when error was detected

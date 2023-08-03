@@ -90,7 +90,7 @@ C     This mixed layer model is not invariant under coordinate
 C     transformation to pressure coordinates, so we need these
 C     factors to scale the vertical (pressure) coordinates
       _RL coordFac, recip_coordFac
-      INTEGER theMxlMaxFlag
+      INTEGER locMxlMaxFlag
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (depends on tiles)
 C     kkey :: tape key (depends on levels and tiles)
@@ -110,9 +110,9 @@ CEOP
       IF ( usingPCoords) coordFac = gravity * rhoConst
       recip_coordFac = 1./coordFac
 
-      theMxlMaxFlag = mxlMaxFlag
+      locMxlMaxFlag = mxlMaxFlag
 #ifdef ALLOW_AUTODIFF
-      IF ( inAdMode ) theMxlMaxFlag = adMxlMaxFlag
+      IF ( inAdMode ) locMxlMaxFlag = adMxlMaxFlag
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
@@ -165,7 +165,7 @@ C--   Impose upper and lower bound for mixing length
 #ifdef ALLOW_AUTODIFF
 CADJ STORE GGL90mixingLength = comlev1_bibj, key=tkey, kind=isbyte
 #endif
-      IF ( theMxlMaxFlag .EQ. 0 ) THEN
+      IF ( locMxlMaxFlag .EQ. 0 ) THEN
 
        DO k=2,Nr
         DO j=jMin,jMax
@@ -180,7 +180,7 @@ C     maximum length.
         ENDDO
        ENDDO
 
-      ELSEIF ( theMxlMaxFlag .EQ. 1 ) THEN
+      ELSEIF ( locMxlMaxFlag .EQ. 1 ) THEN
 
        DO k=2,Nr
         DO j=jMin,jMax
@@ -194,7 +194,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
         ENDDO
        ENDDO
 
-      ELSEIF ( theMxlMaxFlag .EQ. 2 .OR. theMxlMaxFlag .EQ. 3 ) THEN
+      ELSEIF ( locMxlMaxFlag .EQ. 2 .OR. locMxlMaxFlag .EQ. 3 ) THEN
 
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -294,7 +294,7 @@ C     Impose minimum from downward sweep
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
      &   'GGL90_MIXINGLENGTH: mxlMaxFlag=',
-     &   theMxlMaxFlag,' not implemented'
+     &   locMxlMaxFlag,' not implemented'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
       ENDIF
@@ -304,7 +304,7 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif
 C--   Impose minimum mixing length to avoid division by zero
 C     and compute inverse
-      IF ( theMxlMaxFlag.EQ.3 ) THEN
+      IF ( locMxlMaxFlag.EQ.3 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
 #endif
@@ -346,7 +346,7 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 # endif
 C      Compute the mixing length scale with Langmuir circulation.
 C      The calculation closely follows that for GGL90mixingLength.
-       IF ( theMxlMaxFlag .EQ. 1 ) THEN
+       IF ( locMxlMaxFlag .EQ. 1 ) THEN
 
         DO k=2,Nr
          DO j=jMin,jMax
@@ -362,7 +362,7 @@ C      The calculation closely follows that for GGL90mixingLength.
          ENDDO
         ENDDO
 
-       ELSEIF ( theMxlMaxFlag .EQ. 2 ) THEN
+       ELSEIF ( locMxlMaxFlag .EQ. 2 ) THEN
 
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -428,7 +428,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
 
         ENDIF
 
-       ELSEIF ( theMxlMaxFlag .EQ. 3 ) THEN
+       ELSEIF ( locMxlMaxFlag .EQ. 3 ) THEN
 
         IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -484,7 +484,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
         WRITE(msgBuf,'(2A,I5,A)')
      &       'GGL90_MIXINGLENGTH: ',
      &       'Langmuir Circ. Parameterization with mxlMaxFlag=',
-     &   theMxlMaxFlag,' not implemented'
+     &   locMxlMaxFlag,' not implemented'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
        ENDIF
