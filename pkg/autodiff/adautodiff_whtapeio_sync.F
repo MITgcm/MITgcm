@@ -32,19 +32,12 @@ C     reset
       iWh=0
       jWh=0
 # endif
-C     This is a hack to make the WHTAPEIO also work for tapelev_init,
-C     which is identified by myLev==1.
-      IF ( myLev .EQ. 1 ) THEN
-       IF ( myStep .EQ. 1 ) THEN
-        tapeFileUnit = tapeFileUnitS(myLev)
-        tapeFileCounter=0
-        tapeBufferIO=.TRUE.
-# ifdef ALLOW_WHIO_3D
-        writeWh=.FALSE.
-        iWh=0
-        jWh=0
-# endif
-       ENDIF
+C     This subroutine is always called first with myStep = 1 and then
+C     with myStep = 0, so it is probably safe to always set the
+C     tapeFileUnit here.
+      IF ( myStep .EQ. 1 ) THEN
+       tapeFileUnit = tapeFileUnitS(myLev)
+       tapeBufferIO = .TRUE.
       ENDIF
 #endif
 
