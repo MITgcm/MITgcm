@@ -198,8 +198,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
        IF ( usingPcoords ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep, extra treatment of k=Nr for p-coordinates
 C     because level Nr+1 is not available
@@ -238,8 +237,7 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
         ENDDO
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength(:,:,Nr)
-CADJ &     = comlev1_bibj, key = tkey, kind=isbyte
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     Downward sweep
         DO k=2,Nr
