@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - Add 2 new arguments (kLo & kHi) to pkg/mdsio Slice I/O routines that allow
+    to select which levels in Slice-array to read-in or to write-out to file.
+
+checkpoint68r (2023/08/02)
 o verification:
   - adjust amplitude of perturbation (grdchk_eps) to improve Fwd/Adj gradient
     check comparison in exp. global_ocean.90x40x15, global_with_exf & lab_sea ;
