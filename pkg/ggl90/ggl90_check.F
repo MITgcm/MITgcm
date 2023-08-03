@@ -148,7 +148,7 @@ C     Not everything works stably with AD code
      &      adMxlMaxFlag,' in AD-mode only.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       ENDIF
+      ENDIF
 #endif
 
 C-    Stop cleanly when error was detected
