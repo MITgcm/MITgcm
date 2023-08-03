@@ -36,6 +36,8 @@ C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
 C     selectCalciteBottomRemin :: to either remineralize in bottom or top layer
 C                       if flux reaches bottom layer; =0 : bottom, =1 : top
+C     pH_isLoaded(1) :: = T when surface pH is loaded from pickup file
+C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
@@ -43,7 +45,7 @@ C                       if flux reaches bottom layer; =0 : bottom, =1 : top
      &              zca, calcOmegaCalciteFreq,
      &              KierRateK, KierRateExp, WsinkPIC,
      &              selectCalciteBottomRemin, nIterCO3,
-     &              useCalciteSaturation
+     &              useCalciteSaturation, pH_isLoaded
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -62,6 +64,7 @@ C                       if flux reaches bottom layer; =0 : bottom, =1 : top
       INTEGER selectCalciteBottomRemin
       INTEGER nIterCO3
       LOGICAL useCalciteSaturation
+      LOGICAL pH_isLoaded(2)
 
 #ifdef DIC_CALCITE_SAT
 C     silicaDeep  :: 3D-field of silicate concentration for pH and
