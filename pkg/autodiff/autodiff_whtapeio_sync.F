@@ -12,6 +12,12 @@ C !INTERFACE: ==========================================================
      I     myLev, myStep, myThid )
 C !DESCRIPTION:
 
+C     For myStep = 0, open tape file on disk for checkpoint level myLev
+C     and store tape file unit in global variable tapeFileUnitS(myLev).
+C
+C     For myStep = 1, write fld3d_procbuff_rX to tape files for
+C     checkpoint level myLev
+
 C !USES: ===============================================================
       IMPLICIT NONE
 C     == Global variables ===
