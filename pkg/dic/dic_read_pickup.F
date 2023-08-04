@@ -52,7 +52,9 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) tmpNam
-      LOGICAL useCurrentDir, fileExist, stopFlag
+C- note: to avoid beeing caught by tools/OAD_support/stop2print.sed,
+C        change "stopFlag" to "StopFlag"
+      LOGICAL useCurrentDir, fileExist, StopFlag
       INTEGER iL
 CEOP
 
@@ -89,7 +91,7 @@ c      IF ( filePrec.NE.0 .AND. filePrec.NE.fp ) THEN
        _END_MASTER( myThid )
 
        ioUnit = errorMessageUnit
-       stopFlag = .FALSE.
+       StopFlag = .FALSE.
        IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
         IF ( pickupStrictlyMatch ) THEN
@@ -101,7 +103,7 @@ C-      No meta-file or old meta-file without List of Fields
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
      &      ' in file: "data", NameList: "PARM03"'
          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         stopFlag = .TRUE.
+         StopFlag = .TRUE.
         ELSE
          WRITE(msgBuf,'(4A)') 'WARNING >> DIC_READ_PICKUP: ',
      &      ' no field-list found'
@@ -139,11 +141,11 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           WRITE(msgBuf,'(4A)') 'DIC_READ_PICKUP: ',
      &      'no field-list found in meta-file'
           CALL PRINT_ERROR( msgBuf, myThid )
-          stopFlag = .TRUE.
+          StopFlag = .TRUE.
          ENDIF
         ENDIF
        ENDIF
-       IF ( stopFlag ) THEN
+       IF ( StopFlag ) THEN
          CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R DIC_READ_PICKUP'
        ENDIF
@@ -203,21 +205,21 @@ C--    Check for missing fields:
            pH_isLoaded(2) = .FALSE.
            _END_MASTER( myThid )
          ELSE
-          stopFlag = .TRUE.
+          StopFlag = .TRUE.
           WRITE(msgBuf,'(4A)') 'DIC_READ_PICKUP: ',
      &       'cannot restart without field "',missFldList(nj),'"'
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
         ENDDO
-        IF ( pickupStrictlyMatch .AND. .NOT.stopFlag ) THEN
-          stopFlag = .TRUE.
+        IF ( pickupStrictlyMatch .AND. .NOT.StopFlag ) THEN
+          StopFlag = .TRUE.
           WRITE(msgBuf,'(4A)') 'DIC_READ_PICKUP: ',
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
      &      ' in file: "data", NameList: "PARM03"'
           CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
        ENDIF
-       IF ( stopFlag ) THEN
+       IF ( StopFlag ) THEN
          CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R DIC_READ_PICKUP'
        ENDIF
