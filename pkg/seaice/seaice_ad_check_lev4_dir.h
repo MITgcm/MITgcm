@@ -13,10 +13,10 @@ CADJ STORE HSNOW             = tapelev4, key = ilev_4
 CADJ STORE RUNOFF            = tapelev4, key = ilev_4
 CADJ STORE UICE              = tapelev4, key = ilev_4
 CADJ STORE VICE              = tapelev4, key = ilev_4
-CADJ STORE ZETA              = tapelev4, key = ilev_4
-CADJ STORE ETA               = tapelev4, key = ilev_4
 CADJ STORE TICES             = tapelev4, key = ilev_4
 # ifdef SEAICE_CGRID
+CADJ STORE ZETA              = tapelev4, key = ilev_4
+CADJ STORE ETA               = tapelev4, key = ilev_4
 CADJ STORE dwatn             = tapelev4, key = ilev_4
 #  ifdef SEAICE_ALLOW_BOTTOMDRAG
 CADJ STORE cbotc             = tapelev4, key = ilev_4

@@ -66,7 +66,6 @@ C     myThid     :: my Thread Id. number
 CEOP
 
 #ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -1134,9 +1133,6 @@ C     and evaluate divergence of stress and apply to forcing
 C     endif  useHB87StressCoupling
       ENDIF
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
-
       RETURN
       END
 
@@ -1199,9 +1195,6 @@ C-    residual (output)
       INTEGER myIter
       INTEGER myThid
 CEOP
-
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -1270,9 +1263,6 @@ C     large.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
-
       RETURN
       END
 
@@ -1338,8 +1328,6 @@ C     coefficients for lateral points, v(i+/-1)
       _RL vRt2        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
@@ -2151,7 +2139,6 @@ C     relaxation with WFAV
       ENDDO
 #endif /* SEAICE_LSR_ZEBRA */
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
 
       RETURN
