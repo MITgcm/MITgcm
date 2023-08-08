@@ -1,12 +1,16 @@
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
+#ifdef ALLOW_PETSC
+#ifdef STREAMICE_PETSC_3_8
 
+       use STREAMICE_ARG_PETSC_MOD
+#else
       COMMON /STREAMICE_PETSC_MATRIX/
      & matrix, mumpsFac
       Mat matrix
       Mat mumpsFac
-      
+
 
       COMMON /STREAMICE_PETSC_KSP/
      & ksp
@@ -15,7 +19,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       COMMON /STREAMICE_PETSC_PC/
      & pc
       PC  pc
-
+#endif
+#endif
 #endif /* ALLOW_STREAMICE */
 
 CEH3 ;;; Local Variables: ***

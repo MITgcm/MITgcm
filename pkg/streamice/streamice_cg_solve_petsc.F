@@ -37,12 +37,12 @@ C in the include statement
       use petscksp
 #include "petsc/finclude/petscpc.h"
       use petscpc
-      use STREAMICE_PETSC_mod
+      #include "STREAMICE_PETSC_MOD.h"
       IMPLICIT NONE
 # else
       IMPLICIT NONE
 #include "finclude/petsc.h"
-#include "STREAMICE_PETSC.h"
+#include "STREAMICE_PETSC_MOD.h"
 #endif
 #endif
 
