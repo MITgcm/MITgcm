@@ -61,7 +61,7 @@ C  uCFL              :: Courant-Friedrich-Levy number
       _RL smallNo
 c     _RL Rjjm,Rjjp
 
-c     IF (inAdMode) THEN
+c     IF (inAdMode .AND. useApproxAdvectionInAdMode) THEN
 c      smallNo = 1.0D-20
 c     ELSE
        smallNo = 1.0D-20

@@ -34,63 +34,13 @@ C     == Routine arguments ==
 #ifdef ALLOW_CTRL
 cph#ifdef DIC_BIOTIC
 C     == Local arguments ==
+#ifdef ALLOW_DIC_CONTROL
       INTEGER bi, bj
       INTEGER i, j
-      INTEGER il
-      LOGICAL doglobalread
-      LOGICAL ladinit
-      LOGICAL equal
-      CHARACTER*( 80)   fnamegen2d
-      _RL fac
-c     == external ==
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
+#endif
 
 c     == end of interface ==
 CEOP
-
-      doglobalread = .FALSE.
-      ladinit      = .FALSE.
-
-      equal = .TRUE.
-
-      IF ( equal ) THEN
-        fac = 1. _d 0
-      ELSE
-        fac = 0. _d 0
-      ENDIF
-
-      print*,'QQ alpha before', alpha(20,10,1,1)
-
-#ifdef ALLOW_GEN2D_CONTROL
-      il=ILNBLNK( xx_gen2d_file )
-      WRITE(fnamegen2d(1:80),'(2a,i10.10)')
-     &     xx_gen2d_file(1:il),'.',optimcycle
-      CALL ACTIVE_READ_XY( fnamegen2d, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      myThid, xx_gen2d_dummy )
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j = 1, sNy
-          DO i = 1, sNx
-             alpha (i,j,bi,bj) = alpha(i,j,bi,bj)
-     &                         + fac*tmpfld2d(i,j,bi,bj)
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-cswd -- QQ limits!
-cph                IF (alpha(i,j,bi,bj).GT.alphamax) THEN
-cph                   alpha(i,j,bi,bj)=alphamax
-cph                ENDIF
-cph                IF (alpha(i,j,bi,bj).LT.alphamin) THEN
-cph                   alpha(i,j,bi,bj)=alphamin
-cph                ENDIF
-cswd -- QQ limits
-      print*,'QQ - preturb alpha', alpha(20,10,1,1),
-     &                             tmpfld2d(20,10,1,1)
-#endif /* ALLOW_GEN2D_CONTROL */
 
 #ifdef ALLOW_DIC_CONTROL
 

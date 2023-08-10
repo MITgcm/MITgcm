@@ -44,12 +44,16 @@ C     == Local variables ==
 C     i, j, k :: loop indices
       INTEGER i, j, k
       INTEGER kp1
-      _RL maskp1
+      _RL maskp1, flipSign4LHCoord
       _RL delPsi
 #ifdef ALLOW_EDDYPSI
       _RL ustar, vstar
 #endif
 CEOP
+
+C     Since bolus transport is computed as curl of stream-function, needs to
+C     flip sign when using Left-Handed Coordinate system such as P-coordinate
+      flipSign4LHCoord = -gravitySign
 
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
      &     .AND. .NOT.GM_InMomAsStress ) THEN
@@ -61,28 +65,33 @@ CEOP
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           delPsi = GM_PsiX(i,j,kp1,bi,bj)*maskp1
-     &            - GM_PsiX(i,j, k, bi,bj)
+           delPsi = GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &            - GM_PsiX(i,j, k, bi,bj)*deepFacF(k)
            uFld(i,j,k) = uFld(i,j,k)
      &                 + delPsi*recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+     &                         *recip_deepFacC(k)*flipSign4LHCoord
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           delPsi = GM_PsiY(i,j,kp1,bi,bj)*maskp1
-     &            - GM_PsiY(i,j, k, bi,bj)
+           delPsi = GM_PsiY(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &            - GM_PsiY(i,j, k, bi,bj)*deepFacF(k)
            vFld(i,j,k) = vFld(i,j,k)
      &                 + delPsi*recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+     &                         *recip_deepFacC(k)*flipSign4LHCoord
          ENDDO
         ENDDO
+C       deep-model: simplify FacF / Fac2F (from dx,y / rA) to: 1/FacF
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
            delPsi = ( dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &               -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &               +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &               -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
-     &              )*maskC(i,j,k,bi,bj)
-           wFld(i,j,k) = wFld(i,j,k) + delPsi*recip_rA(i,j,bi,bj)
+     &              )
+           wFld(i,j,k) = wFld(i,j,k)
+     &                 + delPsi*recip_rA(i,j,bi,bj)
+     &                         *recip_deepFacF(k)*flipSign4LHCoord
          ENDDO
         ENDDO
 
@@ -100,17 +109,19 @@ C     Calculate the mean velocity from the residual and bolus
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          delPsi = GM_PsiX(i,j,kp1,bi,bj)*maskp1
-     &           - GM_PsiX(i,j, k, bi,bj)
+          delPsi = GM_PsiX(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &           - GM_PsiX(i,j, k, bi,bj)*deepFacF(k)
           ustar = delPsi*recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+     &                  *recip_deepFacC(k)*flipSign4LHCoord
           uEulerMean(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) - ustar
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          delPsi = GM_PsiY(i,j,kp1,bi,bj)*maskp1
-     &           - GM_PsiY(i,j, k, bi,bj)
+          delPsi = GM_PsiY(i,j,kp1,bi,bj)*deepFacF(kp1)*maskp1
+     &           - GM_PsiY(i,j, k, bi,bj)*deepFacF(k)
           vstar  = delPsi*recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+     &                   *recip_deepFacC(k)*flipSign4LHCoord
           vEulerMean(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) - vstar
          ENDDO
         ENDDO

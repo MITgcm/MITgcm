@@ -61,7 +61,7 @@ C      _RL trStar        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error message buffer
-C     plumetend  :: forcing terms [W/m2 or kg/m2/s*psu]
+C     plumetend  :: forcing terms [W/m2 or g/m2/s]
 C     work       :: working array
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i, j, k
@@ -191,7 +191,7 @@ C ======= if trApplyFlag==0: calc SPforcing[T,S] =================
            DO i=1-OLx,sNx+OLx
 C           IF(trIdentity.EQ.GAD_SALINITY) SurfVal=SPbrineSalt(i,j,bi,bj)
            IF(trIdentity.EQ.GAD_TEMPERATURE) SurfVal=tracer(i,j,1,bi,bj)
-Catn: m/s*[degC,psu]
+Catn: m/s*[degC,g/kg]
             gTr_totSurf2Below = SPbrineVolFlux(i,j,bi,bj)*SurfVal
             gTr_Surf2kLev = dSPvolSurf2kLev(i,j,k,bi,bj) * SurfVal
             dSPvolBelow2kLev = -dSPvolkLev2Above(i,j,kp1,bi,bj)
@@ -202,7 +202,7 @@ C was replaced by same volume of brine [salt,heat(from SEAICE_Tfrz)].
 C Note: by design, dSPvolkLev2Above already is negative
             gTr_kLev2Above= dSPvolkLev2Above(i,j,k,bi,bj) * work(i,j,k)
 
-C salt: [m/s * psu * kg/m3] = [kg/s/m2 psu] = unit of saltPlumeFlux
+C salt: [m/s * g/m3] = [g/s/m2] = unit of saltPlumeFlux
 C theta:[m/s * kg/m3 * J/kg/degC * degC] = [W/m2]
             plumetend(i,j,k) = ConvertFac *
      &          ( gTr_Surf2kLev + gTr_Below2kLev + gTr_kLev2Above )
@@ -234,7 +234,7 @@ C            trStar(i,j,k,bi,bj) = 0. _d 0
 
         ELSE
 C ============ updating gTr =====================================
-Catn: updating tendency gTr (gS,gT); unit: [psu/s or degC/s]
+Catn: updating tendency gTr (gS,gT); unit: [g/kg/s or degC/s]
 C         WRITE(msgBuf,'(a,2e24.17)') 'b4SPap: [Tr,gTr](1,1,1,bi,bj):',
 C     &     tracer(1,1,1,bi,bj),trStar(1,1,1,bi,bj)
 C         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

@@ -15,13 +15,13 @@ C     ==================================================================
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_file(maxCtrlArr3D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_weight(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_weight(maxCtrlArr3D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr2d_preproc(maxCtrlProc,maxCtrlArr2D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr3d_preproc(maxCtrlProc,maxCtrlArr3D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr2d_preproc_c(maxCtrlProc,maxCtrlArr2D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr3d_preproc_c(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_RARR/
@@ -75,20 +75,12 @@ C     ==================================================================
 
       common /controlaux_gencost_r/
      &     objf_gentim2d,  num_gentim2d, mult_gentim2d,
-#ifdef ECCO_CTRL_DEPRECATED
-     &     objf_gentim2dm,  objf_gentim2dsmoo, num_gentim2dm,
-#endif /* ECCO_CTRL_DEPRECATED */
      &     objf_genarr2d,  num_genarr2d, mult_genarr2d,
      &     objf_genarr3d,  num_genarr3d, mult_genarr3d
 
       _RL  objf_gentim2d(nsx,nsy,maxCtrlTim2D)
       _RL  num_gentim2d(nsx,nsy,maxCtrlTim2D)
       _RL  mult_gentim2d(maxCtrlTim2D)
-#ifdef ECCO_CTRL_DEPRECATED
-      _RL  objf_gentim2dm(nsx,nsy,maxCtrlTim2D)
-      _RL  objf_gentim2dsmoo(nsx,nsy,maxCtrlTim2D)
-      _RL  num_gentim2dm(nsx,nsy,maxCtrlTim2D)
-#endif /* ECCO_CTRL_DEPRECATED */
       _RL  objf_genarr2d(nsx,nsy,maxCtrlArr2D)
       _RL  num_genarr2d(nsx,nsy,maxCtrlArr2D)
       _RL  mult_genarr2d(maxCtrlArr2D)
@@ -118,9 +110,9 @@ C     ==================================================================
      &                      xx_gentim2d1,
      &                      xx_gentim2d,
      &                      wgentim2d
-      _RL 
+      _RL
      & xx_gentim2d0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
-      _RL 
+      _RL
      & xx_gentim2d1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
       _RL
      & xx_gentim2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)

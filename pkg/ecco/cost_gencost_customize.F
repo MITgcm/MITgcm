@@ -29,7 +29,8 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_ECCO
-# include "ecco.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 #ifdef ALLOW_SEAICE
 #  include "SEAICE_SIZE.h"
@@ -40,6 +41,9 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
@@ -59,6 +63,7 @@ c     == local variables ==
       integer k2,kk
       integer itr
 #endif
+      integer kLev
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
       _RL zontau        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -81,7 +86,6 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-
 
 #ifdef ALLOW_EXF
 c rotated to EW/NS tracer point
@@ -112,36 +116,48 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 
       do k=1,NGENCOST
       itr=gencost_itracer(k)
+      kLev = MAX( 1, MIN( Nr, gencost_kLev_select(k) ) )
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
          do i =  imin,imax
 
-         if (gencost_barfile(k)(1:5).EQ.'m_eta') then
-           gencost_modfld(i,j,bi,bj,k) = 
+         if (gencost_barfile(k)(1:5).EQ.'m_eta' .and.
+     &       gencost_barfile(k)(1:9).NE.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
      &      m_eta(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_boxmean') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:9).EQ.'m_horflux') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sst') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      THETA(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sss') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:4).EQ.'m_bp') then
-           gencost_modfld(i,j,bi,bj,k) = 
-     &      (phiHydLow(i,j,bi,bj)
-#ifdef ALLOW_PSBAR_STERIC
-C add back the correction due to the global mean steric ssh change, 
-C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &       + sterGloH * gravity
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterUE') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_UE(i,j,kLev,bi,bj)*maskC(i,j,kLev,bi,bj)
+         elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_VN(i,j,kLev,bi,bj)*maskC(i,j,kLev,bi,bj)
+         elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
+     &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#ifdef ATMOSPHERIC_LOADING
+#ifdef ALLOW_IB_CORR
+         elseif (gencost_barfile(k)(1:9).EQ.'m_eta_dyn') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_eta_dyn(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+         elseif (gencost_barfile(k)(1:12).EQ.'m_bp_nopabar') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      m_bp_nopabar(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #endif
-     &      )*maskC(i,j,1,bi,bj)
-
+#endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
          elseif (gencost_barfile(k)(1:16).EQ.'m_geothermalflux') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -149,10 +165,10 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 #endif
 #ifdef ALLOW_EXF
          elseif (gencost_barfile(k)(1:9).EQ.'m_ustress') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      zontau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_vstress') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      mertau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:7).EQ.'m_uwind') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -182,7 +198,7 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
          elseif (gencost_barfile(k)(1:8).EQ.'m_wspeed') then
            gencost_modfld(i,j,bi,bj,k) =
      &      wspeed(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-#endif
+#endif /* ALLOW_EXF */
 #ifdef ALLOW_CTRL
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
          elseif (gencost_barfile(k)(1:12).EQ.'m_bottomdrag') then
@@ -193,14 +209,14 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 #ifdef ALLOW_SEAICE
          elseif ( (gencost_name(k).EQ.'siv4-conc').OR.
      &            (gencost_barfile(k)(1:8).EQ.'m_siarea') ) then
-           gencost_modfld(i,j,bi,bj,k) = 
-     &      area(i,j,bi,bj)*maskC(i,j,1,bi,bj) 
+           gencost_modfld(i,j,bi,bj,k) =
+     &      area(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_name(k).EQ.'siv4-deconc') then
-           gencost_modfld(i,j,bi,bj,k) = 
+           gencost_modfld(i,j,bi,bj,k) =
      &      theta(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif ( (gencost_name(k).EQ.'siv4-exconc').OR.
-     &            (gencost_barfile(k)(1:8).EQ.'m_siheff') ) then  
-           gencost_modfld(i,j,bi,bj,k) = 
+     &            (gencost_barfile(k)(1:8).EQ.'m_siheff') ) then
+           gencost_modfld(i,j,bi,bj,k) =
      &      heff(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_sihsnow') then
            gencost_modfld(i,j,bi,bj,k) =
@@ -263,24 +279,24 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
            enddo
 #endif
 #ifdef ALLOW_CTRL
-#ifdef ALLOW_KAPGM_CONTROL
+#if ( defined ALLOW_KAPGM_CONTROL && defined GM_READ_K3D_GM )
          elseif (gencost_barfile(k)(1:7).EQ.'m_kapgm') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
-     &       kapgm(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
+     &       GM_inpK3dGM(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
 #endif
-#ifdef ALLOW_KAPREDI_CONTROL
+#if ( defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
          elseif (gencost_barfile(k)(1:9).EQ.'m_kapredi') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
-     &       kapredi(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
+     &       GM_inpK3dRedi(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
 #endif
 #endif
-#endif
+#endif /* ALLOW_GENCOST3D */
          endif
 
          enddo
@@ -291,4 +307,5 @@ C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-      end
+      RETURN
+      END

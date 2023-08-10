@@ -13,7 +13,7 @@ C !ROUTINE: SEAICE_ADVECTION
 C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_ADVECTION(
      I     tracerIdentity,
-     I     advectionScheme,
+     I     advectionSchArg,
      I     uFld, vFld, uTrans, vTrans, iceFld, r_hFld,
      O     gFld, afx, afy,
      I     bi, bj, myTime, myIter, myThid)
@@ -48,17 +48,19 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE.h"      
+#include "SEAICE.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -68,7 +70,7 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  tracerIdentity  :: tracer identifier
-C  advectionScheme :: advection scheme to use (Horizontal plane)
+C  advectionSchArg :: advection scheme to use (Horizontal plane)
 C  extensiveFld    :: indicates to advect an "extensive" type of ice field
 C  uFld            :: velocity, zonal component
 C  vFld            :: velocity, meridional component
@@ -81,7 +83,7 @@ C  myTime          :: current time
 C  myIter          :: iteration number
 C  myThid          :: my Thread Id number
       INTEGER tracerIdentity
-      INTEGER advectionScheme
+      INTEGER advectionSchArg
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -110,6 +112,7 @@ C  jMin,jMax     :: loop range for called routines
 C [iMin,iMax]Upd :: loop range to update sea-ice field
 C [jMin,jMax]Upd :: loop range to update sea-ice field
 C  i,j,k         :: loop indices
+C advectionScheme:: local copy of routine argument advectionSchArg
 C  af            :: 2-D array for horizontal advective flux
 C  localTij      :: 2-D array, temporary local copy of sea-ice fld
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
@@ -128,6 +131,7 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k
+      INTEGER advectionScheme
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
@@ -147,31 +151,38 @@ C     msgBuf     :: Informational/error message buffer
       LOGICAL dBug
       INTEGER ioUnit
       _RL tmpFac
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (depends on tracer and tile indices)
+C     dkey :: tape key (depends on direction and tkey)
+      INTEGER tkey, dkey
+#endif
 CEOP
 
+C     make local copy to be tampered with if necessary
+      advectionScheme = advectionSchArg
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = tracerIdentity - 1
-          max0 = maxpass
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
-          if (tracerIdentity.GT.maxpass) then
-           WRITE(msgBuf,'(A,2I3)')
-     &      'SEAICE_ADVECTION: maxpass < tracerIdentity ',
-     &      maxpass, tracerIdentity
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
-          endif
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      tkey = tracerIdentity + (tkey-1)*maxpass
+      IF (tracerIdentity.GT.maxpass) THEN
+       WRITE(msgBuf,'(A,2I5)')
+     &      'SEAICE_ADVECTION: tracerIdentity > maxpass ',
+     &      tracerIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
+      ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
+C
+#ifdef ALLOW_AUTODIFF
+      IF ( inAdMode .AND. useApproxAdvectionInAdMode ) THEN
+C     In AD-mode, we change non-linear, potentially unstable AD advection
+C     schemes to linear schemes with more stability. So far only DST3 with
+C     flux limiting is replaced by DST3 without flux limiting, but any
+C     combination is possible.
+       IF ( advectionSchArg.EQ.ENUM_DST3_FLUX_LIMIT )
+     &      advectionScheme = ENUM_DST3
+C     here is room for more advection schemes as this becomes necessary
+      ENDIF
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
@@ -192,7 +203,7 @@ C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         localTij(i,j) = 0. _d 0
@@ -203,14 +214,6 @@ C     uninitialised but inert locations.
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        nipass=3
-#ifdef ALLOW_AUTODIFF_TAMC
-       IF ( nipass.GT.maxcube ) THEN
-           WRITE(msgBuf,'(A)')
-     &      'SEAICE_ADVECTION: maxcube needs to be =3; check tamc.h '
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
-       ENDIF
-#endif
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
@@ -238,12 +241,20 @@ C--   Set tile-specific parameters for horizontal fluxes
       iMax = sNx+OLx
       jMin = 1-OLy
       jMax = sNy+OLy
+#ifdef ALLOW_AUTODIFF_TAMC
+      IF ( nipass.GT.maxcube ) THEN
+         WRITE(msgBuf,'(A,2(I3,A))') 'S/R SEAICE_ADVECTION: nipass =',
+     &     nipass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
+      ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       k = 1
 C--   Start of k loop for horizontal fluxes
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE iceFld =
-CADJ &     comlev1_bibj_k_gadice, key=igadkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice, key=tkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Content of CALC_COMMON_FACTORS, adapted for 2D fields
@@ -263,7 +274,7 @@ C--   Make local copy of sea-ice field and mask West & South
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 C-     Initialise Advective flux in X & Y
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -285,14 +296,7 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-       passkey = ipass + (igadkey-1)*maxpass
-       IF (nipass .GT. maxpass) THEN
-           WRITE(msgBuf,'(A,2I3)')
-     &      'SEAICE_ADVECTION: nipass > max[ass. check tamc.h ',
-     &      nipass, maxpass
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R SEAICE_ADVECTION'
-       ENDIF
+       dkey = ipass + (tkey-1)*maxcube
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        interiorOnly = .FALSE.
@@ -324,11 +328,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ STORE localTij(:,:) =
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ STORE af(:,:) =
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
@@ -358,7 +362,7 @@ cph-exch2#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -373,32 +377,32 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
             WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: xFx=', af(i+1,j),
      &        localTij(i,j), uTrans(i+1,j), af(i+1,j)/uTrans(i+1,j)
           ENDIF
-         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+#ifndef ALLOW_AUTODIFF
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
           CALL GAD_PPM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
           CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
@@ -540,9 +544,9 @@ C--   Y direction
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -570,10 +574,10 @@ C-     Internal exchange for calculations in Y
 cph-exch2#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifndef DISABLE_MULTIDIM_ADVECTION
+# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
-#endif
+CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
@@ -587,32 +591,32 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
             WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: yFx=', af(i,j+1),
      &        localTij(i,j), vTrans(i,j+1), af(i,j+1)/vTrans(i,j+1)
           ENDIF
-         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+         ELSEIF( advectionScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+#ifndef ALLOW_AUTODIFF
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
           CALL GAD_PPM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
           CALL GAD_PQM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
      O         af, myThid )

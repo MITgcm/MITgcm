@@ -68,7 +68,7 @@ C--   Add diagnostics to the (long) list
 
       diagName  = 'LSsalt  '
       diagTitle = 'Salinity'
-      diagUnits = 'psu             '
+      diagUnits = 'g/kg            '
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -147,4 +147,3 @@ C--   Add diagnostics to the (long) list
 
       RETURN
       END
-

@@ -1,7 +1,4 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_CALC_LHS
@@ -46,10 +43,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime :: Simulation time
@@ -67,7 +60,8 @@ C     u/vIceLHS :: LHS of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef SEAICE_ALLOW_JFNK
+#if ( defined SEAICE_CGRID \
+      && ( defined SEAICE_ALLOW_JFNK || defined SEAICE_ALLOW_KRYLOV ) )
 C     i,j,bi,bj,k :: loop indices
       INTEGER i,j,bi,bj
       INTEGER k
@@ -213,7 +207,7 @@ C     therefore, we need to substract gU/Vmom from the left hand side
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_CGRID, SEAICE_ALLOW_JFNK and KRYLOV */
 
       RETURN
       END

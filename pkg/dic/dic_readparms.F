@@ -164,7 +164,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        selectHFconst   = UNSET_I
        selectK1K2const = UNSET_I
        selectPHsolver  = UNSET_I
-       useCalciteSaturation    = .FALSE.
+       useCalciteSaturation = .FALSE.
 C-- Parameters used in Calcite Saturation calculation (useCalciteSaturation=T):
 C set calcite saturation calculation to every timestep - could be expensive
        calcOmegaCalciteFreq = deltaTClock

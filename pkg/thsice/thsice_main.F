@@ -1,5 +1,6 @@
 #include "THSICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
@@ -29,17 +30,17 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "THSICE_TAVE.h"
+#ifdef ALLOW_AUTODIFF
 # include "THSICE_COST.h"
 # include "DYNVARS.h"
-# include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_EXF
-#  include "EXF_FIELDS.h"
 #  include "EXF_PARAM.h"
 #  include "EXF_CONSTANTS.h"
+#  include "EXF_FIELDS.h"
 # endif /* ALLOW_EXF */
+#endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -72,6 +73,10 @@ c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_EXF
       INTEGER grpDiag
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey  :: tape key (depends on tiles)
+      INTEGER tkey
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -98,25 +103,14 @@ C     (excluding overlap) and apply exchanges when needed
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ticekey = (act1 + 1) + act2*max1
-     &                         + act3*max1*max2
-     &                         + act4*max1*max2*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE qsw(:,:,bi,bj)     = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE uvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE uvel  (:,:,1,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE vvel  (:,:,1,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE qsw     (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
         DO j=1-OLy,sNy+OLy
@@ -127,50 +121,29 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
          ENDDO
         ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         IF ( .NOT.useCheapAML ) THEN
 #endif
          CALL THSICE_GET_OCEAN(
      I                          bi, bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
+CADJ STORE iceMask   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE iceHeight (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE snowAge   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE hOceMxL   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE tOceMxL   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE sOceMxL   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE v2ocMxL   (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
-CADJ STORE hOceMxL(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE tOceMxL(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-#else
+#ifndef ALLOW_AUTODIFF
 C-   end if not useCheapAML
         ENDIF
 #endif
 
-#ifdef OLD_THSICE_CALL_SEQUENCE
-C-      do sea-ice advection before getting surface fluxes
-C Note: will inline this S/R once thSIce in Atmos. set-up is settled
-        IF ( thSIceAdvScheme.GT.0 )
-     &   CALL THSICE_DO_ADVECT(
-     I                   bi,bj, myTime, myIter, myThid )
-#endif /* OLD_THSICE_CALL_SEQUENCE */
-
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         IF ( useBulkforce .OR. useCheapAML ) THEN
          CALL THSICE_GET_PRECIP(
      I                  iceMask, tOceMxL,
@@ -189,14 +162,7 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
      I                  iMin,iMax,jMin,jMax, bi,bj, myThid )
         ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-#else
+#ifndef ALLOW_AUTODIFF
         IF ( .NOT.( useCheapAML .OR. thSIce_skipThermo ) ) THEN
 #endif
          CALL THSICE_STEP_TEMP(
@@ -204,27 +170,28 @@ CADJ &     key=ticekey, byte=isbyte
      I                     myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE empmr(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE iceHeight(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-cphCADJ STORE Tsrf(:,:,bi,bj)    = comlev1_bibj,
-cphCADJ &     key=ticekey, byte=isbyte
-CADJ STORE Qice1(:,:,bi,bj)   = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE Qice2(:,:,bi,bj)   = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ticekey, byte=isbyte
-#else
+C     These store directives avoid recomputation of this routine in ad-code.
+CADJ STORE flxCndBt(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE EmPmR   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qnet    (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE snowAge (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE snowPr              = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE icFrwAtm(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+C     This part of the state is generally not necessary, but you never
+C     know so I leave it, but commented out.
+cCADJ STORE Qsw     (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Tice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Tice2   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+cCADJ STORE icFlxAtm(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+#endif
+
+#ifndef ALLOW_AUTODIFF
 C-   end if not skipThermo / useCheapAML
         ENDIF
         IF ( .NOT.thSIce_skipThermo ) THEN
@@ -234,7 +201,7 @@ C-   end if not skipThermo / useCheapAML
      I                     prcAtm(1-OLx,1-OLy,bi,bj),
      I                     snowPr, qPrcRn,
      I                     myTime, myIter, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         ELSE
 C-    Compute sIceLoad (if not previously done)
           DO j=1,sNy
@@ -254,15 +221,11 @@ C--  end bi,bj loop
 #ifdef ALLOW_BALANCE_FLUXES
 C--   Balance net Fresh-Water flux from Atm+Land
       IF ( thSIceBalanceAtmFW.NE.0 ) THEN
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE icFrwAtm =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-# endif
         CALL THSICE_BALANCE_FRW(
      I                      iMin, iMax, jMin, jMax,
      I                      prcAtm, myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_BALANCE_FLUXES */
 
 C     add a small piece of code to check AddFluid implementation:
 c#include "thsice_test_addfluid.h"
@@ -272,10 +235,6 @@ C--   Exchange fields that are advected by seaice dynamics
      &               .OR. stressReduction.GT.zeroRL ) THEN
         CALL THSICE_DO_EXCH( myThid )
       ENDIF
-#ifdef OLD_THSICE_CALL_SEQUENCE
-      IF ( useRealFreshWaterFlux )
-     &  _EXCH_XY_RS( sIceLoad, myThid )
-#else /* OLD_THSICE_CALL_SEQUENCE */
       IF ( thSIceAdvScheme.GT.0 .AND. .NOT.useSEAICE ) THEN
 C-    when useSEAICE=.true., this S/R is called from SEAICE_MODEL;
 C     otherwise, call it from here, after thsice-thermodynamics is done
@@ -284,39 +243,24 @@ C     otherwise, call it from here, after thsice-thermodynamics is done
       ELSEIF ( thSIceAdvScheme.LE.0 .AND. useRealFreshWaterFlux ) THEN
         _EXCH_XY_RS( sIceLoad, myThid )
       ENDIF
-#endif /* OLD_THSICE_CALL_SEQUENCE */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          ticekey = (act1 + 1) + act2*max1
-     &                         + act3*max1*max2
-     &                         + act4*max1*max2*max3
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE fu     (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
+CADJ STORE fv     (:,:,bi,bj) = comlev1_bibj,key=tkey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Cumulate time-averaged fields and also fill-up flux diagnostics
 C     (if not done in THSICE_DO_ADVECT call)
-#ifdef OLD_THSICE_CALL_SEQUENCE
-        IF ( .TRUE. ) THEN
-#else /* OLD_THSICE_CALL_SEQUENCE */
         IF ( thSIceAdvScheme.LE.0 ) THEN
-#endif /* OLD_THSICE_CALL_SEQUENCE */
          CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
         ENDIF
 C--   note: If useSEAICE=.true., the stress is computed in seaice_model,
 C--   and stressReduction is always set to zero
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fu(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
-#endif
         IF ( stressReduction.GT. 0. _d 0 ) THEN
           DO j = 1-OLy,sNy+OLy-1
            DO i = 2-OLx,sNx+OLx-1
@@ -339,7 +283,7 @@ C--  end bi,bj loop
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif  /*ALLOW_THSICE*/
+#endif /* ALLOW_THSICE */
 
       RETURN
       END

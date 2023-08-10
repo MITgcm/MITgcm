@@ -9,6 +9,8 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
+#undef SEAICE_GROWTH_ADX_STORE_MORE
+
 CBOP
 C     !ROUTINE: SEAICE_GROWTH_ADX
 C     !INTERFACE:
@@ -111,7 +113,8 @@ C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
+C     tkey :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
 
 C==   local arrays ==
@@ -143,15 +146,13 @@ C     temporary variables available for the various computations
       _RL F_ia_net_mult     (1:sNx,1:sNy,nITD)
       _RL F_ia_mult     (1:sNx,1:sNy,nITD)
       _RL QSWI_mult     (1:sNx,1:sNy,nITD)
-      _RL FWsublim_mult     (1:sNx,1:sNy,nITD)
 
-#ifdef ALLOW_DIAGNOSTICS
-C     Helper variables for diagnostics
-c     _RL DIAGarrayA    (1:sNx,1:sNy)
-      _RL DIAGarrayB    (1:sNx,1:sNy)
-      _RL DIAGarrayC    (1:sNx,1:sNy)
-      _RL DIAGarrayD    (1:sNx,1:sNy)
-#endif /* ALLOW_DIAGNOSTICS */
+C Variables related to FWsublim are dummies required for call
+C to seaice_solve4temp subroutine and are not used afterwards
+C in this routine (by choice).
+      _RL FWsublim_mult     (1:sNx,1:sNy,nITD)
+      _RL FWsublim          (1:sNx,1:sNy)
+
 #ifdef ALLOW_SALT_PLUME
 c     d(HEFF)/dt from heat fluxes in the open water fraction of the grid cell
       _RL IceGrowthRateInLeads          (1:sNx,1:sNy)
@@ -179,17 +180,18 @@ C     Sea ice growth rates (m/s)
       _RL EnergyInNewTotalIceVolume     (1:sNx,1:sNy)
       _RL NetEnergyFluxOutOfOcean       (1:sNx,1:sNy)
 
-CAB   Terms for closing the budget
+#ifdef ALLOW_DIAGNOSTICS
+C Local arrays for diagnostics
       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIeprflx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
       _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIhsnwNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 CAB
-      _RL d_HEFFbyFlood                (1:sNx,1:sNy)
+      _RL d_HEFFbyFLOODING              (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
 C     to sea ice (Joules)
@@ -269,8 +271,6 @@ C        F_ao > 0
 C     F_mi - heat flux from ocean to the ice (W/m^2)
       _RL F_mi                          (1:sNx,1:sNy)
 
-      _RL FWsublim                      (1:sNx,1:sNy)
-
 C     S_a_from_IGROW : d(AREA)/dt [from ice growth rate from open water fluxes]
       _RL S_a_IGROW                     (1:sNx,1:sNy)
 
@@ -290,7 +290,7 @@ C ===================================================================
 C =================PART 0: constants and initializations=============
 C ===================================================================
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface        = Nr
       ELSE
        kSurface        = 1
@@ -298,6 +298,8 @@ C ===================================================================
 
 C     Cutoff for iceload
       heffTooHeavy=drF(kSurface) / 5. _d 0
+      IF ( usingPCoords )
+     &     heffTooHeavy = heffTooHeavy * recip_rhoConst * recip_gravity
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
@@ -335,28 +337,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = ikey_dynamics - 1
-        iicekey = (act1 + 1) + act2*max1
-     &                       + act3*max1*max2
-     &                       + act4*max1*max2*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
-
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area  = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE heff  = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hsnow = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qnet  = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qsw   = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE tices = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE area (:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE heff (:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE qnet (:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE qsw  (:,:,bi,bj) = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE tices(:,:,:,bi,bj)=comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C array initializations
 C =====================
@@ -422,24 +412,15 @@ C NEW VARIABLE NAMES
           S_h(I,J)       = 0.0 _d 0
           S_hsnow(I,J)   = 0.0 _d 0
 
-          d_HEFFbyFlood(I,J) = 0.0 _d 0
-
+          d_HEFFbyFLOODING(I,J) = 0.0 _d 0
 #ifdef ALLOW_SALT_PLUME
           IceGrowthRateInLeads            (I,J) = 0. _d 0
           leadPlumeFraction               (I,J) = 0. _d 0
           saltPlumeFlux             (I,J,bi,bj) = 0. _d 0
 #endif
-
+          SIeprflx(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
-         ENDDO
-        ENDDO
-#endif
 
 C =====================================================================
 C  PART 1: Store ice and snow state on onset + regularize actual
@@ -473,29 +454,24 @@ CAB
           HSNWpreTH(I,J) = HSNOW(I,J,bi,bj)
           AREApreTH(I,J) = AREA(I,J,bi,bj)
 
-#ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayB(I,J) = AREA(I,J,bi,bj)
-          DIAGarrayC(I,J) = HEFF(I,J,bi,bj)
-          DIAGarrayD(I,J) = HSNOW(I,J,bi,bj)
-#endif
          ENDDO
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(DIAGarrayB,'SIareaPT',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(DIAGarrayC,'SIheffPT',0,1,3,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(DIAGarrayD,'SIhsnoPT',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(AREA, 'SIareaPT',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HEFF, 'SIheffPT',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HSNOW,'SIhsnoPT',0,1,1,bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HEFFpreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HSNWpreTH = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE AREApreTH = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE HEFFpreTH = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE HSNWpreTH = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     COMPUTE ACTUAL ICE/SNOW THICKNESS; USE MIN/MAX VALUES
 C     TO REGULARIZE SEAICE_SOLVE4TEMP/d_AREA COMPUTATIONS
@@ -586,6 +562,14 @@ C wind speed from exf
           UG(I,J) = MAX(SEAICE_EPS, wspeed(I,J,bi,bj))
          ENDDO
         ENDDO
+#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE UG                 = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE SnowAccRateOverIce = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE PrecipRateOverIceSurfaceToSea
+CADJ &                        = comlev1_bibj,key=tkey,byte=isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C =============================================================================
 c           Retrieve the air-sea heat and shortwave radiative fluxes
@@ -597,23 +581,32 @@ C =============================================================================
      O       F_ao, QSWO,
      I       bi, bj, myTime, myIter, myThid )
 
+#if (!defined SEAICE_EXTERNAL_FLUXES && defined ALLOW_AUTODIFF_TAMC)
+C     In this case it might be better save the output of
+C     seaice_budget_ocean rather than recompute the bulkformulae.
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE f_ao = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE qswo = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif
 C =============================================================================
 C      Calc air-sea fluxes in the uppermost grid cell
 C =============================================================================
 
-c--   Not all of the sw radiation is absorbed in the uppermost ocean grid cell layer.
-c     Only that fraction which converges in the uppermost ocean grid cell is used to
-c     melt ice.
-c           SWFRACB - the fraction of incoming sw radiation absorbed in the
-c                     uppermost ocean grid cell (calculated in seaice_init_vari.F)
+C--   Not all of the sw radiation is absorbed in the uppermost ocean
+C--   grid cell. Only that fraction which converges in the
+C--   uppermost ocean grid cell is used to melt ice.
+
+C     SEAICE_SWFrac - the fraction of incoming sw radiation absorbed in the
+C               uppermost ocean grid cell (calculated in seaice_init_fixed.F)
         DO J=1,sNy
          DO I=1,sNx
 
 c The contribution of shortwave heating is
 c not included without #define SHORTWAVE_HEATING
 #ifdef SHORTWAVE_HEATING
-           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*SWFRACB
-           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - SWFRACB)
+           QSWO_BELOW_FIRST_LAYER(I,J)= QSWO(I,J)*SEAICE_SWFrac
+           QSWO_IN_FIRST_LAYER(I,J)   = QSWO(I,J)*(ONE - SEAICE_SWFrac)
 #else
            QSWO_BELOW_FIRST_LAYER(I,J)= ZERO
            QSWO_IN_FIRST_LAYER(I,J)   = ZERO
@@ -624,13 +617,12 @@ c not included without #define SHORTWAVE_HEATING
          ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj)
-CADJ &                  = comlev1_bibj,key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE salt(:,:,kSurface,bi,bj)
+CADJ &                 = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C =============================================================================
 c  calculate heat fluxes within ice (conduction), F_io, and across the
@@ -665,12 +657,12 @@ c find actual snow and ice thickness within categories categories
 C     multDim-loop
         ENDDO
 
+#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_GROWTH_ADX_STORE_MORE)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hiceActualMult = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE hiceActualMult = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE hsnowActualMult= comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c =======================================================================
 c  find calculate heat fluxes within ice (conduction) and across the
@@ -723,6 +715,13 @@ C     update TICES
           ENDDO
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C     This store is needed to avoid recomputing seaice_solve4temp in AD-mode,
+C     because F_ia_net is modified in the block below.
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE F_ia_net  = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 
         DO J=1,sNy
          DO I=1,sNx
@@ -769,7 +768,6 @@ CCHECK: HSNOW ACTUAL SHOULD NOT BE REGULARIZED FOR THIS
 c           Snow melt and melt rate [m] (actual snow thickness)
               SnowMeltFromSurface(I,J)     = hsnowActual(I,J)
 
-c             SnowMeltRateFromSurface(I,J) =
               SnowMeltRateFromSurface(I,J) =
      &           SnowMeltFromSurface(I,J) * recip_deltaTtherm
 
@@ -803,14 +801,25 @@ c          new ice accretion at the base less the rate due to surface melt
 
          ENDDO
         ENDDO
-
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Store F_io/ia_net and QSWI to avoid calling seaice_solve4temp in AD-mode
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE F_io_net      = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE F_ia_net      = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE QSWI          = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE theta(:,:,kSurface,bi,bj)
+CADJ &                   = comlev1_bibj, key = tkey, byte = isbyte
+CADJ STORE salt(:,:,kSurface,bi,bj)
+CADJ &                   = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 c     inflection point
         tmpscal0 = 0.4 _d 0
 c     steepness/inflection point
         tmpscal1 = 7.0 _d 0/tmpscal0
 c     avoid recomputing constant coefficients
         tmpscal2 = STANTON_NUMBER*USTAR_BASE*rhoConst*HeatCapacity_Cp
-C     Calcuate the heat fluxes from the ocean to the sea ice
+C     Calculate the heat fluxes from the ocean to the sea ice
         DO J=1,sNy
          DO I=1,sNx
 c
@@ -837,15 +846,24 @@ C          ENDIF
 
          ENDDO
         ENDDO
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE NetExistingIceGrowthRate
-CADJ &             = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE IceGrowthRateMixedLayer
-CADJ &             = comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+C     The first two store directives are also needed to avoid calling
+C     seaice_solve4temp in AD-mode.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE NetExistingIceGrowthRate      = comlev1_bibj,
+CADJ &     key = tkey, byte = isbyte
+CADJ STORE IceGrowthRateMixedLayer       = comlev1_bibj,
+CADJ &     key = tkey, byte = isbyte
+# ifdef SEAICE_GROWTH_ADX_STORE_MORE
+CADJ STORE SnowMeltRateFromSurface       = comlev1_bibj,
+CADJ &     key = tkey, byte = isbyte
+CADJ STORE IceGrowthRateUnderExistingIce = comlev1_bibj,
+CADJ &     key = tkey, byte = isbyte
+CADJ STORE IceGrowthRateFromSurface      = comlev1_bibj,
+CADJ &     key = tkey, byte = isbyte
+# endif
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C       CALCULATE THICKNESS DERIVATIVES of ice (dhdt) and snow (dhsdt)
         DO J=1,sNy
@@ -864,6 +882,12 @@ c         with area converts to mean snow thickness.
 
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     storing S_h would save one line of recomputation so do not do it
+cnostore CADJ STORE S_h = comlev1_bibj, key = tkey, byte = isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SALT_PLUME
 # ifdef SALT_PLUME_IN_LEADS
@@ -998,23 +1022,30 @@ C         /* NetExistingIceGrowthRate */
 
           S_a(I,J) = S_a(I,J) + S_a_IGRNE(I,J)
 
-         ENDDO /* I,J */
-        ENDDO /* I,J */
-
-C       Update the area, heff, and hsnow
-        DO J=1,sNy
-         DO I=1,sNx
-          HEFF(I,J,bi,bj)  = HEFFpreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_h(I,J)
-
-          AREA(I,J,bi,bj)  = AREApreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_a(I,J)
-
-          HSNOW(I,J,bi,bj) = HSNWpreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_hsnow(I,J)
          ENDDO
         ENDDO
 
+C     Update the area, heff, and hsnow
+        DO J=1,sNy
+         DO I=1,sNx
+          HEFF(I,J,bi,bj)  = HEFFpreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_h(I,J) * HEFFM(I,J,bi,bj)
+
+          AREA(I,J,bi,bj)  = AREApreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_a(I,J) * HEFFM(I,J,bi,bj)
+
+          HSNOW(I,J,bi,bj) = HSNWpreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_hsnow(I,J) * HEFFM(I,J,bi,bj)
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE AREA (:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
 c     Bound area, heff, and hsnow
@@ -1054,21 +1085,6 @@ c         THE EFFECTIVE SHORTWAVE HEATING RATE
          ENDDO
         ENDDO
 
-        IF(SEAICEuseFlooding) THEN
-C     convert snow to ice if submerged.
-         DO J=1,sNy
-          DO I=1,sNx
-           tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
-           d_HEFFbyFlood(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
-           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFlood(I,J)
-           HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
-     &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
-          ENDDO
-         ENDDO
-c     SEAICEuseFlooding
-        ENDIF
-
         DO J=1,sNy
          DO I=1,sNx
 
@@ -1093,7 +1109,6 @@ c     The energy required to melt or form the new ice volume
           EnergyInNewTotalIceVolume(I,J) =
      &         ActualNewTotalVolumeChange(I,J)*recip_QI
 c
-
 c     This is the net energy flux out of the ice+ocean system
 c     Remember -----
 c     F_ia_net : Under ice/snow surface freezing conditions,
@@ -1191,37 +1206,40 @@ c    weighted
      &          + SIhsnwNeg(I,J,bi,bj)*SEAICE_rhoSnow)
      &          *recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-CAB   Budget test , adding the energy stored in snow melt to qnet
-C     Moved bunch of these to line 780
-
-          SItflux(I,J,bi,bj) = 0.0 +
-     &         (AREApreTH(I,J)
-     &         *(F_ia_net(I,J)
-     &         + F_io_net(I,J) + QSWI(I,J))
-     &         +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
-     &         *HEFFM(I,J,bi,bj)
-     &         +(SIheffNeg(I,J,bi,bj)*recip_QI
-     &         +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
-     &          + SnowAccOverIce(I,J) )*recip_QS)
-     &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
-
-          SIaaflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
-     &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
-
-          SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
-     &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
-     &         - PRECIP(I,J,bi,bj)
-#ifdef ALLOW_RUNOFF
-     &          - RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
-     &           )*rhoConstFresh
-     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
-CAB
-
          ENDDO
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C Treat flooding after calculations of QNET and before Sea Ice loading
+        IF(SEAICEuseFlooding) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=tkey,byte=isbyte
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     convert snow to ice if submerged.
+         DO J=1,sNy
+          DO I=1,sNx
+           tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
+           d_HEFFbyFLOODING(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
+           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFLOODING(I,J)
+           HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
+     &                           - d_HEFFbyFLOODING(I,J)*ICE2SNOW
+
+          ENDDO
+         ENDDO
+c     SEAICEuseFlooding
+        ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+        IF (useDiagnostics) THEN
+         tmpscal1=1. _d 0 * recip_deltaTtherm
+         CALL DIAGNOSTICS_SCALE_FILL(d_HEFFbyFLOODING,
+     &      tmpscal1,1,'SIdHbFLO',0,1,3,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     Sea Ice Load on the sea surface.
 C     =================================
@@ -1240,6 +1258,50 @@ C     =================================
           ENDDO
          ENDDO
         ENDIF
+
+C Everything down here is diagnostic, and should reflect what we
+C calculated above and passed out to the ocean instead of computed
+C again.  Otherwise we can end up with mismatch when we modify above
+C and not replicate down here.
+#ifdef ALLOW_DIAGNOSTICS
+        IF (useDiagnostics) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           SItflux(I,J,bi,bj) = 0.0 +
+c     &        (AREApreTH(I,J)
+c     &        *(F_ia_net(I,J)
+c     &        + F_io_net(I,J) + QSWI(I,J))
+c     &        +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
+     &          NetEnergyFluxOutOfOcean(I,J)*recip_deltaTtherm
+     &          *HEFFM(I,J,bi,bj)
+     &          +(SIheffNeg(I,J,bi,bj)*recip_QI
+     &          +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
+     &           + SnowAccOverIce(I,J) )*recip_QS)
+     &          * recip_deltaTtherm * HEFFM(I,J,bi,bj)
+
+           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
+     &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+     &          - PRECIP(I,J,bi,bj)
+#ifdef ALLOW_RUNOFF
+     &          - RUNOFF(I,J,bi,bj)
+#endif /* ALLOW_RUNOFF */
+     &          )*rhoConstFresh
+          ENDDO
+         ENDDO
+
+         IF (useRealFreshWaterFlux.AND.(nonlinFreeSurf.NE.0)) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+C Heat flux term associated with EmPmR:
+            SIeprflx(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+     &           * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
+           ENDDO
+          ENDDO
+c        ELSE
+CAB I  HAVE NOT FIGURED  OUT the QNET for the ELSE case, should not matter 01/14/2021 L2275
+         ENDIF
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
         DO j=1,sNy
@@ -1325,7 +1387,7 @@ c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j SW(BML IML SW)  ',i,j,
 c     &                 QSW_absorb_below_first_layer(i,j),
 c     &                 QSW_absorb_in_first_layer(i,j),
-c     &                 SWFRACB
+c     &                 SEAICE_SWFrac
 
 c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j ptc(to, qsw, oa)',i,j,
@@ -1386,37 +1448,20 @@ C close bi,bj loops
        ENDDO
       ENDDO
 
-      _BEGIN_MASTER( myThid )
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 C these diags need to be done outside of the bi,bj loop so that
 C we may do potential global mean adjustement to them consistently.
-CAB
-CAB        CALL DIAGNOSTICS_FILL(SItflux,
-
-C        CALL DIAGNOSTICS_FILL(SIatmQnt,
-C     &        'SIatmQnt',0,1,0,1,1,myThid)
-C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
-CAB
-C       CALL DIAGNOSTICS_FILL(SIacSubl,
-C     &        'SIacSubl',0,1,3,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(SIeprflx,'SIeprflx',0,1,0,1,1,myThid)
 
-       CALL DIAGNOSTICS_FILL(SIaaflux,'SIaaflux',0,1,0,1,1,myThid)
-
+C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
        tmpscal1= - 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
      &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
-C      WRITE(msgBuf,'(a,a,e24.17)') 'SINegFac ',
-C     &       ' = ', SINegFac
-C      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-C     &                      SQUEEZE_RIGHT, myThid )
-C
-      _END_MASTER( myThid )
 
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
       STOP 'SEAICE_GROWTH_ADX not compiled with EXF and ALLOW_ATM_TEMP'

@@ -1,67 +1,63 @@
-C
 #include "CTRL_OPTIONS.h"
 
-      subroutine ctrl_set_fname( xx_fname, fname, mythid )
+CBOP
+C     !ROUTINE: CTRL_SET_FNAME
+C     !INTERFACE:
+      SUBROUTINE CTRL_SET_FNAME( xx_fname, fname, myThid )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_set_fname
-c     ==================================================================
-c
-c     o get filename for control variable and adjoint thereof
-c     o initialise adjoint field
-c
-c     started: heimbach@mit.edu, 16-Aug-2001
-c
-c     ==================================================================
+C     !DESCRIPTION:
+C     ==================================================================
+C     SUBROUTINE CTRL_SET_FNAME
+C     ==================================================================
+C     o get filename for control variable and adjoint thereof
+C     started: heimbach@mit.edu, 16-Aug-2001
+C     ==================================================================
 
-      implicit none
+C     !USES:
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
-
 #include "ctrl.h"
 #include "optim.h"
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS
+      CHARACTER*(*) xx_fname
+      CHARACTER*(MAX_LEN_FNAM) fname(3)
+      INTEGER myThid
 
-      character*(MAX_LEN_FNAM) xx_fname
-      character*( 80)   fname(3)
-      integer mythid
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-c     == local variables ==
+C     !LOCAL VARIABLES:
+      INTEGER il, ic, l
+CEOP
 
-      integer ii
-      integer il
+      il = ILNBLNK( xx_fname )
 
-c     == external ==
+      IF ( il .GT. 0 .AND. (il+13) .LE. MAX_LEN_FNAM ) THEN
+        ic = 0
+        l = il
+        DO WHILE ( ic .EQ. 0 .AND. l .GE. 1 )
+          IF ( xx_fname(l:l) .EQ. '/' ) ic = l
+          l = l -1
+        ENDDO
 
-      integer  ilnblnk
-      external ilnblnk
+        WRITE(fname(1),'(2A,I10.10)')
+     &        xx_fname(1:il), '.', optimcycle
+        WRITE(fname(2),'(4A,I10.10)')
+     &        xx_fname(1:ic), yadprefix, xx_fname(ic+1:il), '.',
+     &        optimcycle
+        WRITE(fname(3),'(4A,I10.10)')
+     &        xx_fname(1:ic), 'hn', xx_fname(ic+1:il), '.',
+     &        optimcycle
 
-c     == end of interface ==
+      ELSE
+        STOP 'ABNORMAL END: S/R CTRL_SET_FNAME'
+      ENDIF
 
-c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
-
-      il=ilnblnk( xx_fname )
-
-      write(fname(1)(1:80),'(80a)') ' '
-      write(fname(2)(1:80),'(80a)') ' '
-      write(fname(3)(1:80),'(80a)') ' '
-
-      if ( il .GT. 0 .AND. il .LE. 80 ) then
-         write(fname(1)(1:80),'(2a,i10.10)')
-     &        xx_fname(1:il) ,'.', optimcycle
-         write(fname(2)(1:80),'(3a,i10.10)')
-     &        yadprefix, xx_fname(1:il), '.', optimcycle
-         write(fname(3)(1:80),'(3a,i10.10)')
-     &        'hn', xx_fname(1:il), '.', optimcycle
-      endif
-
-      _END_MASTER( mythid )
-
-      end
+      RETURN
+      END

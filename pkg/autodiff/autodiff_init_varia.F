@@ -35,7 +35,9 @@ C     == Local variables ==
 C     bi,bj  :: tile indices
 C     i,j,k  :: Loop counters
       INTEGER bi, bj
+#ifdef ALLOW_EP_FLUX
       INTEGER i, j, k
+#endif
 CEOP
 
 C--   Scalar fields
@@ -49,27 +51,11 @@ C--   Over all tiles
 C-      3D arrays
 #ifdef ALLOW_EP_FLUX
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            EfluxY(i,j,k,bi,bj) = 0.
            EfluxP(i,j,k,bi,bj) = 0.
           ENDDO
-         ENDDO
-        ENDDO
-#endif
-
-#if (defined (ALLOW_AUTODIFF_INIT_OLD) && defined (ECCO_CTRL_DEPRECATED))
-C-      2D arrays
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-#ifdef EXACT_CONSERV
-          dEtaHdt(i,j,bi,bj) = 0. _d 0
-          PmEpR(i,j,bi,bj) = 0. _d 0
-cph       hDivFlow(i,j,bi,bj) = 0. _d 0
-#endif
-#ifdef ALLOW_EXF
-          EmPmR(i,j,bi,bj) = 0. _d 0
-#endif
          ENDDO
         ENDDO
 #endif

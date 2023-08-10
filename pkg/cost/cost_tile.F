@@ -77,7 +77,9 @@ C     == Global variables ===
 #include "GRID.h"
 #include "cost.h"
 #ifdef ALLOW_AUTODIFF
-# include "tamc.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "tamc.h"
+# endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS_FIELDS.h"
@@ -140,10 +142,6 @@ CADJ &     kind = isbyte
 #ifdef ALLOW_COST_TRACER
            CALL COST_TRACER( bi, bj, myThid )
 #endif
-
-#ifdef ALLOW_COST_TRANSPORT
-           CALL COST_TRANSPORT( bi, bj, myTime, myIter, myThid )
-#endif /* ALLOW_COST_TRANSPORT */
 
         ENDDO
       ENDDO

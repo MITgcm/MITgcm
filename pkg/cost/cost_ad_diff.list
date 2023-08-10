@@ -1,9 +1,10 @@
 cost_accumulate_mean.f
 cost_final.f
-cost_init_varia.f	
-cost_tile.f	
-cost_test.f	
-cost_tracer.f	
+cost_init_varia.f
+cost_tile.f
+cost_test.f
+cost_tracer.f
 cost_atlantic_heat.f
-cost_vector.f	
+cost_depth.f
+cost_vector.f
 cost_state_final.f

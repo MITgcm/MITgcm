@@ -256,8 +256,8 @@ C Set fmu and ed to zero for no background diffusion
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (qsat)
 #endif
 #endif
@@ -1795,7 +1795,6 @@ C ---------
        ENDDO
       ENDDO
 
-
 C    NEW CODE FOR MOIST BOUNDARY LAYER - NEW CALCULATION OF DTHV
 
       IF(ITER.EQ.1) THEN
@@ -3219,7 +3218,7 @@ C **************************************
  9014 CONTINUE
       IF(IBIT.LE.0)  GO TO 300
       indx = 0
-#ifdef CRAY
+#ifdef FIZHI_CRAY
 CDIR$ NOVECTOR
 #endif
       DO 9016 I = 1,IRUN
@@ -3230,7 +3229,7 @@ CDIR$ NOVECTOR
         ARG1(indx) = VZH(I)
        ENDIF
  9016 CONTINUE
-#ifdef CRAY
+#ifdef FIZHI_CRAY
 CDIR$ VECTOR
 #endif
 

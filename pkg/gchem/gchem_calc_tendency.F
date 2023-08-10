@@ -69,7 +69,10 @@ C     gchemTendency is re-initialized here
         ENDDO
        ENDDO
       ENDDO
-C
+
+#ifdef ALLOW_AUTODIFF
+      IF ( useGCHEM ) THEN
+#endif
 C     Here is the place for code to compute bio-geochemical
 C     tendency terms (sometimes referred to as source-minus-sink
 C     terms). The tendencies are stored on gchemTendency, as show
@@ -126,6 +129,9 @@ C------------------------
 C     end of tile-loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF
+      ENDIF
+#endif
 #endif /* GCHEM_ADD2TR_TENDENCY */
 
       RETURN

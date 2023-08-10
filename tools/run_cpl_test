@@ -1,0 +1,394 @@
+#! /usr/bin/env bash
+
+#---
+# Description:
+#   script to compile and run MITgcm Atmosphere-Ocean coupled set-up
+#     see, e.g., verification/cpl_aim+ocn/README.md
+#         or     verification_other/cpl_gray+ocn/
+#   Note: currently these coupled set-up are not covered by "testreport"
+# 1) running "./run_cpl_test" show the different steps (+ some options) available
+# 2) some options are not available as argument and require editing this script, e.g.,
+#    a) to run Ocean or Atmos component on more that 1 MPI process (edit: NpOc and Npr)
+#    b) to use compiler Optimisation (edit: GMKopt)
+#---
+
+bdPfx='build'; # build-dir prefix
+
+# Npr  :: total number of MPI procs (including 1 for coupler)
+# NpOc :: number of MPI procs for Ocean component
+# Npr - NpOc - 1 :: number of MPI procs for Atmos. component
+#- default:
+ Npr=3 ; NpOc=1 ;
+#Npr=25; NpOc=12;
+
+# MTH :: genmake2 option for multi-threading compilation
+MTH=
+
+# GMKopt :: other genmake2 option (empty --> use compiler optimisation)
+GMKopt='-devel'
+#GMKopt='-ieee'
+#GMKopt=
+
+rnkO=1 ; rnkA=`expr $rnkO + $NpOc`
+MTHo=
+MTHa=
+#- parse options:
+if [ $# -ge 1 ] ; then if test $1 = '-mth' ; then
+  MTH='-omp' ; shift
+  if test -f input_ocn/eedata.mth ; then MTHo=$MTH ; fi
+  if test -f input_atm/eedata.mth ; then MTHa=$MTH ; fi
+fi ; fi
+sfx=''; chkArg=$# ;
+if [ $chkArg -eq 2 ]; then
+  sfx=$2 ; nInpAlt=`ls -1 -d input_???.$sfx 2> /dev/null | wc -l`
+  if [ $nInpAlt -eq 0 ]; then chkArg=0
+    echo " no second set of input-dir matching suffix '.$sfx'"
+  else chkArg=1 ; fi
+fi
+if [ $chkArg -ge 1 ]; then
+  if [ $1 -lt 0 -o $1 -gt 5 ]; then chkArg=0 ; fi
+  #- allows more argument for building step (step=1)
+  if [ $1 -eq 1 ]; then chkArg=1 ; fi
+fi
+if [ $chkArg -ne 1 ]; then
+  echo 'Usage: '`basename $0`' [typ] step [opt-arg]'
+  echo ' => test coupled set-up on linux box (1.cpu)'
+  echo ' typ = -mth : compile and run (if eedata.mth) 2-threads for ocn & atm'
+  echo ' step = 0 : clean all directories'
+  echo ' step = 1 : compile the 3 executables (cpl,ocn,atm);'
+  echo '       opt-arg: -of Optfile_Name : using option-file "Optfile_Name"'
+  echo ' step = 2 : copy input files and dir(s);'
+  echo " step = 3 : run with $Npr mpi processes"
+  echo ' step = 4 : check the results'
+  echo ' step = 5 : remove output files in rank_0,1,2 dir.'
+  echo ' opt-arg (for step 2 & 4): suffix of second set of input-dir to use'
+  exit
+fi
+kpr=$1
+curDir=`pwd`
+
+#============================================================================
+
+if test $kpr = 0 ; then
+ rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy,pTr}
+ rm -f ${bdPfx}_???/TTT.*make.* ${bdPfx}_???/TTT.mkdepend.*
+ /bin/rm -r -f rank_? rank_1? rank_2?
+ if test -f ${bdPfx}_cpl/Makefile ; then cd ${bdPfx}_cpl ; make Clean ; cd .. ; fi
+ if test -f ${bdPfx}_ocn/Makefile ; then cd ${bdPfx}_ocn ; make Clean ; cd .. ; fi
+ if test -f ${bdPfx}_atm/Makefile ; then cd ${bdPfx}_atm ; make Clean ; cd .. ; fi
+fi
+if test $kpr = 5 ; then
+ echo 'remove output files in rank_0,1,2 dir.'
+ rm -f pr_group std_outp comp_res.{ocn,atm,land,icTh,icDy,pTr}
+ test -f rank_0/Coupler.0000.clog && rm -f rank_0/Coupler.0000.clog
+ if test -d rank_$rnkO ; then
+   ( cd rank_$rnkO ; rm -f *.txt *.log STD???.00?? UV-*.00??.clog
+     mkdir tmp_trash ; mv *.data *.meta tmp_trash
+     listLNK=`find tmp_trash -type l`
+     if test "x$listLNK" != x ; then mv $listLNK .
+       echo -n " move back to rank_$rnkO : " ; echo $listLNK | sed "s|tmp_trash/||g"
+     fi
+     /bin/rm -rf tmp_trash )
+ fi
+ if test -d rank_$rnkA ; then
+   ( cd rank_$rnkA ; rm -f *.txt *.log STD???.00?? UV-*.00??.clog
+     mkdir tmp_trash ; mv *.data *.meta tmp_trash
+     listLNK=`find tmp_trash -type l`
+     if test "x$listLNK" != x ; then mv $listLNK .
+       echo -n " move back to rank_$rnkA : " ; echo $listLNK | sed "s|tmp_trash/||g"
+     fi
+     /bin/rm -rf tmp_trash )
+ fi
+fi
+
+if test $kpr = 1 ; then
+
+#- choice of the optfile:
+#  default: take a local one in dir verification with sufix '+mpi'
+ nbOpF=`ls ../linux_* | grep '+mpi' 2> /dev/null | wc -l`
+#  or take the one given as argument:
+ if [ $# -ge 3 ]; then
+   if test $2 = '-of' -a -f $3 ; then nbOpF=-1 ; OPTFILE=$3 ; fi
+ fi
+ if test $nbOpF = 1 ; then
+   OPTFILE=`ls ../linux_* | grep '+mpi'`
+ elif [ $nbOpF -ge 2 ] ; then
+   echo "pick the 1rst of these ( $nbOpF ) optfiles:"
+   ls ../linux_* | grep '+mpi'
+   OPTFILE=`ls ../linux_* | grep '+mpi' | head -1`
+ elif [ $nbOpF -ne -1 ] ; then
+   echo "Pb in finding optfile: found $nbOpF :"
+   ls ../linux_* | grep '+mpi' ; exit
+ fi
+ zz=`grep '^ *FC=' $OPTFILE | tail -1`
+ echo " Using optfile: $OPTFILE  (compiler: $zz) $MTH"
+ zz=`echo $OPTFILE | grep -c '^\/'`
+ if test $zz = 0 ; then OPTFILE="../$OPTFILE" ; fi
+#---
+ echo '==== compile coupler:'
+ cd ${bdPfx}_cpl
+ echo ' --- genmake2 (cpl):'
+ ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$ 2>&1
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (cpl)" ; exit 11
+ fi
+ echo ' --- make depend (cpl):'
+ make depend > TTT.mkdepend.$$ 2>&1
+ RetVal=$? ; tail -5 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (cpl)" ; exit 12
+ fi
+ echo ' --- make (cpl):' ; touch TTT.make.$$
+#do_make_syntax.sh obj > TTT.make.$$ 2>&1
+ make >> TTT.make.$$ 2>&1
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (cpl)" ; exit 13
+ fi
+ echo ' ' ; cd $curDir
+
+ echo '==== compile OGCM:'
+ cd ${bdPfx}_ocn
+ echo ' --- genmake2 (ocn):'
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (ocn)" ; exit 21
+ fi
+ echo ' --- make depend (ocn):'
+ make depend > TTT.mkdepend.$$ 2>&1
+ RetVal=$? ; tail -10 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (ocn)" ; exit 22
+ fi
+ echo ' --- make (ocn):' ; touch TTT.make.$$
+#do_make_syntax.sh obj > TTT.make.$$ 2>&1
+ make >> TTT.make.$$ 2>&1
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (ocn)" ; exit 23
+ fi
+ echo ' ' ; cd $curDir
+
+ echo '==== compile AGCM:'
+ cd ${bdPfx}_atm
+ echo ' --- genmake2 (atm):'
+ ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
+ RetVal=$? ; tail -5 TTT.genmake.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in genmake2 (atm)" ; exit 31
+ fi
+ echo ' --- make depend (atm):'
+ make depend > TTT.mkdepend.$$ 2>&1
+ RetVal=$? ; tail -10 TTT.mkdepend.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in mkdepend (atm)" ; exit 32
+ fi
+ echo ' --- make (atm):' ; touch TTT.make.$$
+#do_make_syntax.sh obj > TTT.make.$$ 2>&1
+ make >> TTT.make.$$ 2>&1
+ RetVal=$? ; tail -10 TTT.make.$$
+ if test "x$RetVal" != x0 ; then
+   echo "Error in make     (atm)" ; exit 33
+ fi
+ echo ' ' ; cd $curDir
+
+ ls -l ${bdPfx}_???/mitgcmuv
+
+fi
+
+if test $kpr = 2 ; then
+  echo 'rm dir:' rank_? rank_1? rank_2?
+  /bin/rm -r -f rank_? rank_1? rank_2?
+  n=0 ; inpDr='input_cpl';
+  mkdir rank_$n
+  ( cd rank_$n
+    if test -d ../$inpDr.$sfx ; then
+      echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
+      ln -s ../$inpDr.$sfx/* .
+    fi
+    echo 'Link files from dir:' $inpDr '->' rank_$n
+    ln -s ../$inpDr/* .
+    if test -x prepare_run ; then ./prepare_run ; fi
+  )
+
+  n=$rnkO ; inpDr='input_ocn';
+  mkdir rank_$n
+  ( cd rank_$n
+    if test -d ../$inpDr.$sfx ; then
+      echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
+      ln -s ../$inpDr.$sfx/* .
+    fi
+    echo 'Link files from dir:' $inpDr '->' rank_$n
+    ln -s ../$inpDr/* .
+    if test -x prepare_run ; then ./prepare_run ; fi
+    if test "x$MTHo" != x ; then
+      echo " MTH run: mv -f eedata.mth eedata"
+      if test -h eedata ; then rm -f eedata ; fi
+      mv -f eedata.mth eedata
+    fi
+  )
+  n=`expr $n + 1`
+  while [ $n -le $NpOc ] ; do
+    ln -s rank_$rnkO rank_$n
+    n=`expr $n + 1`
+  done
+
+  n=$rnkA ; inpDr='input_atm';
+  mkdir rank_$n
+  ( cd rank_$n
+    if test -d ../$inpDr.$sfx ; then
+      echo 'Link files from dir:' $inpDr.$sfx '->' rank_$n
+      ln -s ../$inpDr.$sfx/* .
+    fi
+    echo 'Link files from dir:' $inpDr '->' rank_$n
+    ln -s ../$inpDr/* .
+    if test -x prepare_run ; then ./prepare_run ; fi
+    if test "x$MTHa" != x ; then
+      echo " MTH run: mv -f eedata.mth eedata"
+      if test -h eedata ; then rm -f eedata ; fi
+      mv -f eedata.mth eedata
+    fi
+  )
+  n=`expr $n + 1`
+  while [ $n -lt $Npr ] ; do
+    ln -s rank_$rnkA rank_$n
+    n=`expr $n + 1`
+  done
+
+fi
+
+if test $kpr = 3 ; then
+  runDir=$curDir
+# rm -f rank_?/pickup*.ckptA.00?.00?.??ta
+  echo $runDir
+  tmpfil=TTT.$$
+
+#--- running on the same node:
+  list='' ; nc=0; xx=`hostname`
+  while [ $nc -lt $Npr ] ; do list="$list $xx" ; nc=`expr $nc + 1` ; done
+#-- On darwin cluster node (from qrsh session):
+# JOB_ID=`qstat | sed -n '3,$ p' | grep " $USER " | awk '{print $1}'`
+# NODEFILE="/tmp/$JOB_ID.1.darwin/machines"
+# echo " JOB_ID = '$JOB_ID' ; NODEFILE = '$NODEFILE'"
+#-- On ACES cluster (in PBS batch job):
+# NODEFILE=$PBS_NODEFILE
+#--- running on different nodes:
+# ls -l $NODEFILE
+# nprc=`cat $NODEFILE | uniq | wc -l`
+# if [ $nprc -ge $Npr ] ; then
+#   list=`cat $NODEFILE | uniq | head -$Npr`
+# else
+#   list=`cat $NODEFILE | head -$Npr`
+# fi
+
+  nc=0; nn=0; dd1=cpl ;
+  rm -f pr_group ; touch pr_group
+  for xx in $list
+  do
+    echo $xx $nn $curDir/${bdPfx}_$dd1/mitgcmuv >> pr_group
+    nc=`expr $nc + 1`
+    if [ $nc -le $NpOc ] ; then dd1=ocn ; else dd1=atm ; fi
+    nn=1
+  done
+  NpAt=`expr $Npr - 1 - $NpOc`
+  RunOpt="-np 1 ./${bdPfx}_cpl/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpOc ./${bdPfx}_ocn/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpAt ./${bdPfx}_atm/mitgcmuv"
+
+  cd $runDir
+  if test "x$MTH" != x ; then
+    export OMP_NUM_THREADS=2 ; export KMP_STACKSIZE=400m
+    if test "x$MTHo" != x ; then
+      echo -n " run OCN ($MTHo) with $OMP_NUM_THREADS threads ;"
+    fi
+    if test "x$MTHa" != x ; then
+      echo -n " run ATM ($MTHa) with $OMP_NUM_THREADS threads ;"
+    fi
+    echo ""
+  fi
+  mpich=`which mpirun`
+  echo $mpich | grep 'mpich-mx' > /dev/null 2>&1
+  mpichmx=$?
+  echo $mpich | grep 'mpich-1' > /dev/null 2>&1
+  mpich1=$?
+  echo $mpich | grep 'mpich2' > /dev/null 2>&1
+  mpich2=$?
+  echo $mpich | grep 'openmpi' > /dev/null 2>&1
+  opnmpi=$?
+  if test $mpich1 == 0 ; then
+  # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $runDir --gm-kill 5 -v  ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
+  #- with mpich-1 (on danton, old aces: ao, geo, itrda):
+    echo "execute 'mpirun -p4pg pr_group -v ./${bdPfx}_cpl/mitgcmuv' :"
+    mpirun -p4pg pr_group -v ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
+  elif test $mpichmx == 0 ; then
+  #- with mpich-mx (on beagle):
+    echo "execute 'mpirun -pg pr_group -v ./${bdPfx}_cpl/mitgcmuv' :"
+    mpirun -pg pr_group -v ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
+  elif test $mpich2 == 0 -o $opnmpi == 0 ; then
+  #- with Hydra mpich2 (on baudelaire) or with openmpi:
+    echo "execute 'mpirun $RunOpt' :"
+    mpirun $RunOpt  > std_outp 2>&1
+  else
+  #- new mpich (mpich2) installation often just put in "mpich" dir
+    echo "execute 'mpirun $RunOpt' :"
+    mpirun $RunOpt  > std_outp 2>&1
+  fi
+  tail -20 std_outp
+  ls -l rank_$rnkO/pickup.ckpt?.*data | tail -1
+  ls -l rank_$rnkA/pickup.ckpt?.*data | tail -1
+
+fi
+
+if test $kpr = 4 ; then
+ CompRes="$HOME/bin/comp_res"
+ if test -x $CompRes ; then
+  if test "x$sfx" = x ; then rfx='0000' ; else rfx=$sfx ; fi
+
+  if test -f rank_$rnkO/STDOUT.0000 ; then
+    echo '==> check Ocean output:'
+    $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.$rfx
+    mv -f comp_res.log comp_res.ocn
+    usePkg=`grep -i '^ *useSEAICE *=' rank_$rnkO/data.pkg | tail -n 1 | grep -i -c '= *\.TRUE\.'`
+    if [ $usePkg -ge 1 ] ; then
+      echo '==> check Seaice output:'
+      $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.$rfx S
+      mv -f comp_res.log comp_res.icDy
+    fi
+    usePkg=`grep -i '^ *usePTRACERS *=' rank_$rnkO/data.pkg | tail -n 1 | grep -i -c '= *\.TRUE\.'`
+    if [ $usePkg -ge 1 ] ; then
+      echo '==> check pTracers output:'
+      nTr=`grep -i '^ *PTRACERS_numInUse *=' rank_$rnkO/data.ptracers \
+           | tail -n 1 | sed 's/^.*=//' | sed 's/,.*$//'`
+      $CompRes rank_$rnkO/STDOUT.0000 results/ocnSTDOUT.$rfx $nTr
+      mv -f comp_res.log comp_res.pTr
+    fi
+    echo ' '
+  else echo "No Ocean output file in rank_$rnkO" ; fi
+
+  if test -f rank_$rnkA/STDOUT.0000 ; then
+    echo '==> check Atmos output:'
+    $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.$rfx
+    mv -f comp_res.log comp_res.atm
+    usePkg=`grep -i '^ *useLand *=' rank_$rnkA/data.pkg | tail -n 1 | grep -i -c '= *\.TRUE\.'`
+    if [ $usePkg -ge 1 ] ; then
+      echo '==> check Land output:'
+      $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.$rfx L
+      mv -f comp_res.log comp_res.land
+    fi
+    usePkg=`grep -i '^ *useThSIce *=' rank_$rnkA/data.pkg | tail -n 1 | grep -i -c '= *\.TRUE\.'`
+    if [ $usePkg -ge 1 ] ; then
+      echo '==> check thSIce output:'
+      $CompRes rank_$rnkA/STDOUT.0000 results/atmSTDOUT.$rfx I
+      mv -f comp_res.log comp_res.icTh
+    fi
+    echo ' '
+  else echo "No Atmos output file in rank_$rnkA" ; fi
+
+  else
+    echo "No file '$CompRes' to run ==> skip step: $kpr "
+  fi
+fi
+
+exit 0

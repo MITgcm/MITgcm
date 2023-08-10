@@ -5,12 +5,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
       SUBROUTINE STREAMICE_PETSC_NUMERATE (myThid)
 
-C     /============================================================\
+C     *============================================================*
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
-C     |============================================================|
-C     |                                                            |
-C     \============================================================/
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -32,13 +30,13 @@ C     === Global variables ===
       INTEGER i, j, bi, bj, ki, kj
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
-      integer mpiRC, mpiMyWid
+      integer mpiRC
 #endif
+      integer mpimywid
 #ifdef ALLOW_PETSC
       _RS DoFCount
       integer n_dofs_proc_loc (0:nPx*nPy-1)
       integer n_dofs_cum_sum (0:nPx*nPy-1)
-
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -56,7 +54,6 @@ C     === Global variables ===
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-
 
 C   DOFS ARE NUMBERED AS FOLLOWS ON PROCESSOR DOMAIN:
 C    grid is stepped through in order bj, bi, j, i
@@ -112,7 +109,8 @@ C    NOTE THESE NUMBERING ARRAYS ARE USED TO CONSTRUCT PETSC VECTORS AND MATRIX
 #else /* ALLOW_USE_MPI */
 
       n_dofs_process (0) = INT(DoFCount)+1
-      n_dofs_cum_sum (0) = INT(DoFCount)+1
+      n_dofs_cum_sum (0) = 0
+      mpimywid = 0
 
 #endif /* ALLOW_USE_MPI */
 
@@ -138,9 +136,7 @@ C    NOTE THESE NUMBERING ARRAYS ARE USED TO CONSTRUCT PETSC VECTORS AND MATRIX
       _EXCH_XY_RS(streamice_petsc_dofs_u,myThid)
       _EXCH_XY_RS(streamice_petsc_dofs_v,myThid)
 
-
 #endif /* ALLOW_PETSC */
-
 
 #endif
       RETURN

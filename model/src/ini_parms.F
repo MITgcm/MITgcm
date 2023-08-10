@@ -36,8 +36,6 @@ C     dxSpacing, dySpacing :: Default spacing in X and Y.
 C                          :: Units are that of coordinate system
 C                          :: i.e. cartesian => metres
 C                          ::       s. polar => degrees
-C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
-C     SadournyCoriolis :: for backward compatibility
 C     deltaTtracer  :: Timestep for tracer equations ( s )
 C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
 C                   :: contribution in (or out of) Adams-Bashforth time stepping.
@@ -52,9 +50,6 @@ C     xxxDefault :: Default value for variable xxx
       _RL  dySpacing
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL useJamartWetPoints
-      LOGICAL useEnergyConservingCoriolis
-      LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
       INTEGER gridNx, gridNy
@@ -121,6 +116,9 @@ C Namelist PARM01:
 C     useConstantF  :: Coriolis coeff set to f0     (replaced by selectCoriMap=0)
 C     useBetaPlaneF :: Coriolis coeff = f0 + beta.y (replaced by selectCoriMap=1)
 C     useSphereF    :: Coriolis = 2.omega.sin(phi)  (replaced by selectCoriMap=2)
+C     useJamartWetPoints :: for backward compat. (replaced by selectCoriScheme=1)
+C                        :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
+C     SadournyCoriolis :: for backward compat. (replaced by selectVortScheme=2)
 C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
 C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
@@ -138,6 +136,13 @@ C     debugMode    :: to print debug msg. now read from parameter file eedata
 C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
 C                              (replaced by pkg/frazil)
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
+C     balanceEmPmR   :: for backward compat. (replaced by selectBalanceEmPmR=1),
+C                    :: substract global mean of EmPmR at every time step
+C Namelist PARM02:
+C     cg2dChkResFreq :: Frequency with which to check 2-D con. grad solver
+C                         residual (was never coded)
+C     cg3dChkResFreq :: Frequency with which to check 3-D con. grad solver
+C                         residual (was never coded)
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -156,6 +161,9 @@ C     dQdTfile     :: File containing thermal relaxation coefficient
 
       INTEGER nRetired
       LOGICAL useConstantF, useBetaPlaneF, useSphereF
+      LOGICAL useJamartWetPoints
+      LOGICAL useEnergyConservingCoriolis
+      LOGICAL SadournyCoriolis
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -166,6 +174,9 @@ c     _RL gravitySign
       LOGICAL usePickupBeforeC35
       LOGICAL saveDebugMode
       LOGICAL allowInteriorFreezing, useOldFreezing
+      LOGICAL balanceEmPmR
+C-
+      INTEGER cg2dChkResFreq, cg3dChkResFreq
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -174,6 +185,7 @@ C-
       _RL Ro_SeaLevel
       _RL rkFac
       _RL thetaMin, phiMin
+C-
       CHARACTER*(MAX_LEN_FNAM) shelfIceFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
 
@@ -192,12 +204,13 @@ C--   Continuous equation parameters
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscA4ReMax, viscAhReMax,
      & cosPower, viscAstrain, viscAtension,
-     & diffKhT, diffK4T, diffKhS, diffK4S,
+     & diffKhT, diffK4T, diffKhS, diffK4S, smag3D_diffCoeff,
      & surf_pRef, tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor, no_slip_bottom, bottomVisc_pCell,
-     & bottomDragLinear, bottomDragQuadratic, selectBotDragQuadr,
+     & bottomDragLinear, bottomDragQuadratic,  zRoughBot,
+     & selectBotDragQuadr,
      & momViscosity,  momAdvection, momForcing, momTidalForcing,
      & useCoriolis, useConstantF, useBetaPlaneF, useSphereF,
      & use3dCoriolis, momPressureForcing,
@@ -235,17 +248,17 @@ C--   Continuous equation parameters
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
-     & smoothAbsFuncRange,
-     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & smoothAbsFuncRange, sIceLoadFac,
+     & selectBalanceEmPmR, balanceEmPmR, balanceQnet, balancePrintMean,
      & balanceThetaClimRelax, balanceSaltClimRelax
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dUseMinResSol,
+     & cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq, cg2dUseMinResSol,
      & cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual,
-     & useSRCGSolver, printResidualFreq
+     & useNSACGSolver, useSRCGSolver, printResidualFreq
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
@@ -291,10 +304,11 @@ C--   Input files
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
-     & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile, addMassFile, tCylIn, tCylOut,
+     & dQdTFile, ploadFile, geoPotAnomFile, addMassFile,
+     & tCylIn, tCylOut,
      & eddyPsiXFile, eddyPsiYFile, geothermalFile,
+     & lambdaThetaFile, lambdaSaltFile, wghtBalanceFile,
      & mdsioLocalDir, adTapeDir,
      & the_run_name
 CEOP
@@ -318,6 +332,7 @@ C     Defaults values for input parameters
       useJamartWetPoints  = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       SadournyCoriolis = .FALSE.
+      balanceEmPmR    = .FALSE.
 
 C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
@@ -343,6 +358,8 @@ C--   Initialise retired parameters to unlikely value
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
       useOldFreezing  = .FALSE.
+      cg2dChkResFreq  = UNSET_I
+      cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -481,7 +498,7 @@ C--  horizontal viscosity (acting on Divergence or Vorticity)
       IF ( viscAhZ .EQ. UNSET_RL ) viscAhZ = viscAh
       IF ( viscA4D .EQ. UNSET_RL ) viscA4D = viscA4
       IF ( viscA4Z .EQ. UNSET_RL ) viscA4Z = viscA4
-C--  horizontal viscosity for vertical moments
+C--  horizontal viscosity for vertical momentum
       IF ( viscAhW .EQ. UNSET_RL ) viscAhW = viscAhD
       IF ( viscA4W .EQ. UNSET_RL ) viscA4W = viscA4D
 C--   z,p,r coord input switching.
@@ -517,8 +534,21 @@ C--   z,p,r coord input switching.
 C-    set default scheme for quadratic bottom-drag
       IF ( selectBotDragQuadr.EQ.-1 .AND. bottomDragQuadratic.NE.0. )
      &  selectBotDragQuadr = 0
+      IF ( selectBotDragQuadr.EQ.-1 .AND. zRoughBot.NE.0. )
+     &  selectBotDragQuadr = 0
 #endif /* ALLOW_MOM_COMMON */
 
+      IF ( smag3D_diffCoeff.NE.zeroRL .AND. .NOT.useSmag3D ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &    'will not use "smag3D_diffCoeff" without useSmag3D'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &    '==> reset "smag3D_diffCoeff" to zero'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       smag3D_diffCoeff = zeroRL
+      ENDIF
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
       IF ( diffKpT .NE. UNSET_RL ) pCoordInputData  = .TRUE.
       IF ( diffKrT .NE. UNSET_RL ) rCoordInputData  = .TRUE.
@@ -650,6 +680,16 @@ C--   for backward compatibility :
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
         ENDIF
+      ENDIF
+      IF ( selectBalanceEmPmR.EQ.UNSET_I ) THEN
+        selectBalanceEmPmR = 0
+        IF ( balanceEmPmR ) selectBalanceEmPmR = 1
+      ELSEIF ( selectBalanceEmPmR.NE.1 .AND. balanceEmPmR ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectBalanceEmPmR=', selectBalanceEmPmR,
+     &     ' conflicts with "balanceEmPmR"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
       IF ( ivdc_kappa.NE.zeroRL .AND. .NOT.implicitDiffusion ) THEN
@@ -857,6 +897,19 @@ C--   Elliptic solver parameters
        WRITE(msgBuf,'(A)') ' INI_PARMS ; read PARM02 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+C     Check for retired parameters still being used
+      IF ( cg2dChkResFreq .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: unused "cg2dChkResFreq"',
+     &  ' is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( cg3dChkResFreq .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: unused "cg3dChkResFreq"',
+     &  ' is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C--   Time stepping parameters

@@ -1,0 +1,41 @@
+#!/bin/bash
+# To be used on ARCHER2 UK HPC with the default Cray compilers (PrgEnv-cray).
+#
+# Default modlues as of 7 June 2022:
+# >> module list
+# Currently Loaded Modules:
+#  1) cce/11.0.4        4) libfabric/1.11.0.4.71    7) xpmem/2.2.40-7.0.1.0_2.7__g1d7a24d.shasta  10) PrgEnv-cray/8.0.0  13) load-epcc-module
+#  2) craype/2.7.6      5) craype-network-ofi       8) cray-mpich/8.1.4                           11) bolt/0.7
+#  3) craype-x86-rome   6) perftools-base/21.02.0   9) cray-libsci/21.04.1.1                      12) epcc-setup-env
+
+CC='cc'
+FC='ftn'
+F90C='ftn'
+
+DEFINES='-DWORDLENGTH=4 -D_BYTESWAPIO -DHAVE_LAPACK -DNML_TERMINATOR'
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+GET_FC_VERSION="-V"
+CHECK_FOR_LAPACK=t
+FC_CHECK=f
+INCLUDES='-I${NETCDF_DIR}/include -I${CRAY_MPICH_DIR}/include'
+LIBS='-L${NETCDF_DIR}/lib -L${CRAY_MPICH_DIR}/include/lib'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+if test "x$IEEE" = x ; then   #- with optimisation:
+	#   FOPTIM='-O2 -hfp3 -Oipa5' for less agressive optimization
+    FOPTIM='-O3 -hfp3 -Oipa5'
+else
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+      FOPTIM='-O0  -hfp0'
+    else                          #- development/check options:
+      FOPTIM='-O0 -hfp0'
+      FOPTIM="$FOPTIM -g -Rbc -rm -hmsgs -hnegmsgs"
+    fi
+fi
+
+FFLAGS="$FFLAGS -em -ef -dynamic  -h pic"
+
+CFLAGS="$CFLAGS -h pic -dynamic"

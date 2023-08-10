@@ -38,8 +38,10 @@
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=100,
+ cg2dMinItersNSA = 10,
 #cg2dTargetResidual=1.E-13,
  cg2dTargetResWunit=1.E-18,
+ useNSACGSolver = .TRUE.,
  &
 # Time stepping parameters
  &PARM03
@@ -54,6 +56,7 @@
  chkptFreq=  0.0,
 #dumpFreq=   1.0,
  monitorFreq = 43200.,
+#ADJdumpFreq=   1.0,
  monitorSelect=1,
  &
 # Gridding parameters
@@ -75,10 +78,10 @@
  bathyFile='noWalls.bigRidge',
 #bathyFile='box.bigRidge',
 #bathyFile='meridchannel.bigRidge',
- hydrogThetaFile=,
- hydrogSaltFile=,
+#hydrogThetaFile=,
+#hydrogSaltFile=,
  zonalWindFile='windx.sin_y',
- meridWindFile=,
- surfQnetFile=,
- EmPmRFile=,
+#meridWindFile=,
+#surfQnetFile=,
+#EmPmRFile=,
  &

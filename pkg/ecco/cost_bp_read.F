@@ -3,7 +3,7 @@
       subroutine cost_bp_read(
      I localobsfile, localstartdate,
      O localobs, localmask,
-     I irec,myThid)
+     I irec, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_bp_read
@@ -30,11 +30,11 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_ECCO
-# include "ecco_cost.h"
+# include "ECCO_SIZE.h"
+# include "ECCO.h"
 #endif
 
 c     == routine arguments ==
-
       character*(MAX_LEN_FNAM) localobsfile
       integer localstartdate(4)
       _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -43,47 +43,31 @@ c     == routine arguments ==
       integer myThid
 
 #ifdef ALLOW_ECCO
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
 c     == local variables ==
-
       integer bi,bj
       integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
       integer nobs
-      integer bprec
-      integer beginbp
-      integer beginrun
-
       INTEGER beginlocal, beginmodel, obsrec
-
       _RL spval
-      _RL vartile
-
 cnew(
       integer  il
       integer mody, modm
       integer iyear, imonth
-      character*(80) fnametmp
+      character*(MAX_LEN_FNAM) fnametmp
       logical exst
 cnew)
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
       parameter (spval = -998. )
 ce    --> there is certainly a better place for this.
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
       jmin = 1
       jmax = sNy
       imin = 1
@@ -102,11 +86,11 @@ ce    --> there is certainly a better place for this.
       imonth = 1 + MOD(modm-1+irec-1,12)
 
       il=ilnblnk(localobsfile)
-      write(fnametmp(1:80),'(2a,i4)')
+      write(fnametmp,'(2a,i4)')
      &     localobsfile(1:il), '_', iyear
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then
-         write(fnametmp(1:80),'(a)') localobsfile(1:il)
+         write(fnametmp,'(a)') localobsfile(1:il)
          imonth = obsrec
       endif
 
@@ -114,8 +98,8 @@ ce    --> there is certainly a better place for this.
        CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
      &                      localobs, imonth, 0, myThid )
       else
-        do bj = jtlo,jthi
-         do bi = itlo,ithi
+        do bj = myByLo(myThid), myByHi(myThid)
+         do bi = myBxLo(myThid), myBxHi(myThid)
           do j = jmin,jmax
            do i = imin,imax
             localobs(i,j,bi,bj) = spval
@@ -127,8 +111,8 @@ ce    --> there is certainly a better place for this.
 
       nobs = 0
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
           k = 1
           do j = jmin,jmax
             do i = imin,imax

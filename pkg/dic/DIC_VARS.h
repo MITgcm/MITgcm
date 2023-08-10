@@ -47,7 +47,6 @@ C                       if flux reaches bottom layer; =0 : bottom, =1 : top
      &              selectCalciteDissolution, 
      &              useCalciteSaturation, nIterCO3
 
-
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -411,5 +410,4 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
       _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL DIC_timeAve(nSx,nSy)
 #endif /* ALLOW_TIMEAVE */
-
 #endif /* DIC_BIOTIC */

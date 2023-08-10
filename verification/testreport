@@ -8,9 +8,12 @@ usage()
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
     echo " ---- type of test : ----"
-    echo "  (-tlm)                   perform a Tangent Linear run"
-    echo "  (-adm|-ad)               perform an adjoint run"
+    echo "  (-tlm)                   perform a Tangent-Linear run (defaut: using TAF)"
+    echo "  (-adm|-ad)               perform an Adjoint run (default: using TAF)"
+    echo "  (-tap)                   use Tapenade for Adjoint or Tangent-Linear run"
     echo "  (-oad)                   perform an OpenAD adjoint run"
+    echo "  (-oadsingularity|-oadsngl) STRING"
+    echo "                           path to singularity container with OpenAD"
     echo "  (-mth)                   run multi-threaded (using eedata.mth)"
     echo "  (-mpi)                   use MPI to compile and run on 2 processors"
     echo "  (-MPI)  NUMBER           use MPI to compile and run on max NUMBER procs"
@@ -47,6 +50,7 @@ usage()
     echo " ---- output options : ----"
     echo "  (-match) NUMBER          Matching Criteria (number of digits)"
     echo "                             (DEF=\"$MATCH_CRIT\")"
+    echo "  (-pass)                  return non-zero exit code if any exp do not pass"
     echo "  (-odir) STRING           used to build output directory name"
     echo "                             (DEF=\"hostname\")"
     echo "  (-addr|-a) STRING        list of email recipients"
@@ -127,7 +131,7 @@ testoutput_var()
     #  using search strings s1 and text label
 
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/$4/$OUTPUTFILE 1>&2
+	echo testoutput_var: grep "'$2'" $1/$4/$OUTPUTFILE 1>&2
     fi
     if [ -r $1/$4/$OUTPUTFILE ]; then
 	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | nl > ${TMP}a.txt
@@ -143,7 +147,7 @@ testoutput_var()
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/$5 1>&2
+	echo testoutput_var: grep "'$2'" $1/$5 1>&2
     fi
     grep "$2" $1/$5 | sed 's/.*=//' | nl > ${TMP}b.txt
     lncntB=`wc -l ${TMP}b.txt | awk '{print $1}' `
@@ -209,11 +213,19 @@ testoutput_run()
 	listChk=$DEF_CHECK_LIST
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
 	if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
-	sVar=`echo $listChk | awk '{print $1}'`
+	if test $KIND = 1 -o $KIND = 4 ; then kd='g_';
+	  #  TLM use same input_ad/tr_checklist --> convert
+	  listChk=`echo $listChk | sed 's/^adm/tlm/' | sed 's/ adm/ tlm/g'`
+	  if test -r $1/$2/tr_checklist.tlm ; then listChk=`cat $1/$2/tr_checklist.tlm` ; fi
+	elif test $KIND = 2 -o $KIND = 5 ; then kd='ad';
+	  if test -r $1/$2/tr_checklist.adm ; then listChk=`cat $1/$2/tr_checklist.adm` ; fi
+	elif test $KIND = 6 ; then kd='ad';
+        else kd=''; fi
+	if [ $debug -gt 0 ]; then echo "testoutput_run: listChk='$listChk'" 1>&2 ; fi
 	# remove 1rst var and expand the list: + => min max mean s.d
+	sVar=`echo $listChk | awk '{print $1}'`
 	listVar=`echo $listChk | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' \
 			       | sed 's/+//g' | sed "s/^$sVar//"`
-	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(I)='$listVar'" 1>&2 ; fi
 	# set ref.outp file-name and, if compressed, uncompress it into subdir
 	refoutp=results/$3
 	if test ! -r $1/results/$3 ; then
@@ -262,7 +274,7 @@ testoutput_run()
 	#- put it back once:
 	  listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
 	fi
-	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
+	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar='$listVar'" 1>&2 ; fi
 	echo "listVar='$listVar'" >> $locDIR"/summary.txt"
 	#---
 	allargs=""
@@ -277,48 +289,52 @@ testoutput_run()
 		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
 		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $refoutp ; yy=$?
 		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
-	  'Cost') testoutput_var $1 "ADM  ref_cost_function" "ADM CostFct" $2 $refoutp ; yy=$? ;;
-	 'AdGrd') testoutput_var $1 "ADM  adjoint_gradient"  "ADM Ad Grad" $2 $refoutp ; yy=$? ;;
-	 'FDGrd') testoutput_var $1 "ADM  finite-diff_grad"  "ADM FD Grad" $2 $refoutp ; yy=$? ;;
+	'admCst') testoutput_var $1 "ADM  ref_cost_function" "ADM CostFct" $2 $refoutp ; yy=$? ;;
+	'admGrd') testoutput_var $1 "ADM  adjoint_gradient"  "ADM Ad Grad" $2 $refoutp ; yy=$? ;;
+	'admFwd') testoutput_var $1 "ADM  finite-diff_grad"  "ADM FD Grad" $2 $refoutp ; yy=$? ;;
 	'tlmCst') testoutput_var $1 "TLM  ref_cost_function" "TLM CostFct" $2 $refoutp ; yy=$? ;;
 	'tlmGrd') testoutput_var $1 "TLM  tangent-lin_grad"  "TLM TL Grad" $2 $refoutp ; yy=$? ;;
-	'fwdGrd') testoutput_var $1 "TLM  finite-diff_grad"  "TLM FD Grad" $2 $refoutp ; yy=$? ;;
-	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $refoutp ; yy=$? ;;
-	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $refoutp ; yy=$? ;;
-	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $refoutp ; yy=$? ;;
-	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "Theta Std.Dev"  $2 $refoutp ; yy=$? ;;
-	   'Smn') testoutput_var $1 "dynstat_salt_min"  "Salt minimum"	  $2 $refoutp ; yy=$? ;;
-	   'Smx') testoutput_var $1 "dynstat_salt_max"  "Salt maximum"	  $2 $refoutp ; yy=$? ;;
-	   'Sav') testoutput_var $1 "dynstat_salt_mean" "Salt mean"	  $2 $refoutp ; yy=$? ;;
-	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "Salt Std.Dev"	  $2 $refoutp ; yy=$? ;;
-	   'Umn') testoutput_var $1 "dynstat_uvel_min"  "U minimum"	  $2 $refoutp ; yy=$? ;;
-	   'Umx') testoutput_var $1 "dynstat_uvel_max"  "U maximum"	  $2 $refoutp ; yy=$? ;;
-	   'Uav') testoutput_var $1 "dynstat_uvel_mean" "U mean"	  $2 $refoutp ; yy=$? ;;
-	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U Std.Dev"	  $2 $refoutp ; yy=$? ;;
-	   'Vmn') testoutput_var $1 "dynstat_vvel_min"  "V minimum"	  $2 $refoutp ; yy=$? ;;
-	   'Vmx') testoutput_var $1 "dynstat_vvel_max"  "V maximum"	  $2 $refoutp ; yy=$? ;;
-	   'Vav') testoutput_var $1 "dynstat_vvel_mean" "V mean"	  $2 $refoutp ; yy=$? ;;
-	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V Std.Dev"	  $2 $refoutp ; yy=$? ;;
-	 'Qntmn') testoutput_var $1 "forcing_qnet_min" "Qnet minimum"  $2 $refoutp ; yy=$? ;;
-	 'Qntmx') testoutput_var $1 "forcing_qnet_max" "Qnet maximum"  $2 $refoutp ; yy=$? ;;
-	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	  $2 $refoutp ; yy=$? ;;
-	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"  "Qnet Std.Dev"  $2 $refoutp ; yy=$? ;;
-	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $refoutp ; yy=$? ;;
-	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $refoutp ; yy=$? ;;
-	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $refoutp ; yy=$? ;;
-	 'aSIsd') testoutput_var $1 "seaice_area_sd"    "SIce Area StDv"  $2 $refoutp ; yy=$? ;;
-	 'hSImn') testoutput_var $1 "seaice_heff_min"   "SIce Heff min"	  $2 $refoutp ; yy=$? ;;
-	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Heff max"	  $2 $refoutp ; yy=$? ;;
-	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Heff mean"  $2 $refoutp ; yy=$? ;;
-	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Heff StDv"  $2 $refoutp ; yy=$? ;;
-	 'uSImn') testoutput_var $1 "seaice_uice_min"   "SIce Uice min"	  $2 $refoutp ; yy=$? ;;
-	 'uSImx') testoutput_var $1 "seaice_uice_max"   "SIce Uice max"	  $2 $refoutp ; yy=$? ;;
-	 'uSIav') testoutput_var $1 "seaice_uice_mean"  "SIce Uice mean"  $2 $refoutp ; yy=$? ;;
-	 'uSIsd') testoutput_var $1 "seaice_uice_sd"    "SIce Uice StDv"  $2 $refoutp ; yy=$? ;;
-	 'vSImn') testoutput_var $1 "seaice_vice_min"   "SIce Vice min"	  $2 $refoutp ; yy=$? ;;
-	 'vSImx') testoutput_var $1 "seaice_vice_max"   "SIce Vice max"	  $2 $refoutp ; yy=$? ;;
-	 'vSIav') testoutput_var $1 "seaice_vice_mean"  "SIce Vice mean"  $2 $refoutp ; yy=$? ;;
-	 'vSIsd') testoutput_var $1 "seaice_vice_sd"    "SIce Vice StDv"  $2 $refoutp ; yy=$? ;;
+	'tlmFwd') testoutput_var $1 "TLM  finite-diff_grad"  "TLM FD Grad" $2 $refoutp ; yy=$? ;;
+	   'Tmn') testoutput_var $1 "dynstat_${kd}theta_min"  "${kd}Theta minimum" $2 $refoutp ; yy=$? ;;
+	   'Tmx') testoutput_var $1 "dynstat_${kd}theta_max"  "${kd}Theta maximum" $2 $refoutp ; yy=$? ;;
+	   'Tav') testoutput_var $1 "dynstat_${kd}theta_mean" "${kd}Theta mean"	   $2 $refoutp ; yy=$? ;;
+	   'Tsd') testoutput_var $1 "dynstat_${kd}theta_sd"   "${kd}Theta Std.Dev" $2 $refoutp ; yy=$? ;;
+	   'Smn') testoutput_var $1 "dynstat_${kd}salt_min"   "${kd}Salt minimum"  $2 $refoutp ; yy=$? ;;
+	   'Smx') testoutput_var $1 "dynstat_${kd}salt_max"   "${kd}Salt maximum"  $2 $refoutp ; yy=$? ;;
+	   'Sav') testoutput_var $1 "dynstat_${kd}salt_mean"  "${kd}Salt mean"	   $2 $refoutp ; yy=$? ;;
+	   'Ssd') testoutput_var $1 "dynstat_${kd}salt_sd"    "${kd}Salt Std.Dev"  $2 $refoutp ; yy=$? ;;
+	   'Umn') testoutput_var $1 "dynstat_${kd}uvel_min"   "${kd}U minimum"	   $2 $refoutp ; yy=$? ;;
+	   'Umx') testoutput_var $1 "dynstat_${kd}uvel_max"   "${kd}U maximum"	   $2 $refoutp ; yy=$? ;;
+	   'Uav') testoutput_var $1 "dynstat_${kd}uvel_mean"  "${kd}U mean"	   $2 $refoutp ; yy=$? ;;
+	   'Usd') testoutput_var $1 "dynstat_${kd}uvel_sd"    "${kd}U Std.Dev"	   $2 $refoutp ; yy=$? ;;
+	   'Vmn') testoutput_var $1 "dynstat_${kd}vvel_min"   "${kd}V minimum"	   $2 $refoutp ; yy=$? ;;
+	   'Vmx') testoutput_var $1 "dynstat_${kd}vvel_max"   "${kd}V maximum"	   $2 $refoutp ; yy=$? ;;
+	   'Vav') testoutput_var $1 "dynstat_${kd}vvel_mean"  "${kd}V mean"	   $2 $refoutp ; yy=$? ;;
+	   'Vsd') testoutput_var $1 "dynstat_${kd}vvel_sd"    "${kd}V Std.Dev"	   $2 $refoutp ; yy=$? ;;
+	 'Etamn') testoutput_var $1 "dynstat_${kd}eta_min"    "${kd}Eta minimum"   $2 $refoutp ; yy=$? ;;
+	 'Etamx') testoutput_var $1 "dynstat_${kd}eta_max"    "${kd}Eta maximum"   $2 $refoutp ; yy=$? ;;
+	 'Etaav') testoutput_var $1 "dynstat_${kd}eta_mean"   "${kd}Eta mean"	   $2 $refoutp ; yy=$? ;;
+	 'Etasd') testoutput_var $1 "dynstat_${kd}eta_sd"     "${kd}Eta Std.Dev"   $2 $refoutp ; yy=$? ;;
+	 'Qntmn') testoutput_var $1 "forcing_qnet_min"  "Qnet minimum"  $2 $refoutp ; yy=$? ;;
+	 'Qntmx') testoutput_var $1 "forcing_qnet_max"  "Qnet maximum"  $2 $refoutp ; yy=$? ;;
+	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	$2 $refoutp ; yy=$? ;;
+	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"   "Qnet Std.Dev"  $2 $refoutp ; yy=$? ;;
+	 'aSImn') testoutput_var $1 "seaice_${kd}area_min"  "SIce ${kd}Area min"   $2 $refoutp ; yy=$? ;;
+	 'aSImx') testoutput_var $1 "seaice_${kd}area_max"  "SIce ${kd}Area max"   $2 $refoutp ; yy=$? ;;
+	 'aSIav') testoutput_var $1 "seaice_${kd}area_mean" "SIce ${kd}Area mean"  $2 $refoutp ; yy=$? ;;
+	 'aSIsd') testoutput_var $1 "seaice_${kd}area_sd"   "SIce ${kd}Area StDv"  $2 $refoutp ; yy=$? ;;
+	 'hSImn') testoutput_var $1 "seaice_${kd}heff_min"  "SIce ${kd}Heff min"   $2 $refoutp ; yy=$? ;;
+	 'hSImx') testoutput_var $1 "seaice_${kd}heff_max"  "SIce ${kd}Heff max"   $2 $refoutp ; yy=$? ;;
+	 'hSIav') testoutput_var $1 "seaice_${kd}heff_mean" "SIce ${kd}Heff mean"  $2 $refoutp ; yy=$? ;;
+	 'hSIsd') testoutput_var $1 "seaice_${kd}heff_sd"   "SIce ${kd}Heff StDv"  $2 $refoutp ; yy=$? ;;
+	 'uSImn') testoutput_var $1 "seaice_${kd}uice_min"  "SIce ${kd}Uice min"   $2 $refoutp ; yy=$? ;;
+	 'uSImx') testoutput_var $1 "seaice_${kd}uice_max"  "SIce ${kd}Uice max"   $2 $refoutp ; yy=$? ;;
+	 'uSIav') testoutput_var $1 "seaice_${kd}uice_mean" "SIce ${kd}Uice mean"  $2 $refoutp ; yy=$? ;;
+	 'uSIsd') testoutput_var $1 "seaice_${kd}uice_sd"   "SIce ${kd}Uice StDv"  $2 $refoutp ; yy=$? ;;
+	 'vSImn') testoutput_var $1 "seaice_${kd}vice_min"  "SIce ${kd}Vice min"   $2 $refoutp ; yy=$? ;;
+	 'vSImx') testoutput_var $1 "seaice_${kd}vice_max"  "SIce ${kd}Vice max"   $2 $refoutp ; yy=$? ;;
+	 'vSIav') testoutput_var $1 "seaice_${kd}vice_mean" "SIce ${kd}Vice mean"  $2 $refoutp ; yy=$? ;;
+	 'vSIsd') testoutput_var $1 "seaice_${kd}vice_sd"   "SIce ${kd}Vice StDv"  $2 $refoutp ; yy=$? ;;
 	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $refoutp ; yy=$? ;;
 	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $refoutp ; yy=$? ;;
 	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $refoutp ; yy=$? ;;
@@ -339,10 +355,10 @@ testoutput_run()
             nn=`echo $xx | sed 's/pt//' | sed 's/..$//'`
             ii=`echo $xx | sed 's/^pt[0-9]*//'`
 	    case $ii in
-	    'mn') testoutput_var $1 "trcstat_ptracer0"$nn"_min"  "p0"$nn"_min"  $2 $refoutp ; yy=$? ;;
-	    'mx') testoutput_var $1 "trcstat_ptracer0"$nn"_max"  "p0"$nn"_max"  $2 $refoutp ; yy=$? ;;
-	    'av') testoutput_var $1 "trcstat_ptracer0"$nn"_mean" "p0"$nn"_mean" $2 $refoutp ; yy=$? ;;
-	    'sd') testoutput_var $1 "trcstat_ptracer0"$nn"_sd"   "p0"$nn"_StDv" $2 $refoutp ; yy=$? ;;
+	    'mn') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_min"  "${kd}pTr0"$nn"_min"  $2 $refoutp ; yy=$? ;;
+	    'mx') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_max"  "${kd}pTr0"$nn"_max"  $2 $refoutp ; yy=$? ;;
+	    'av') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_mean" "${kd}pTr0"$nn"_mean" $2 $refoutp ; yy=$? ;;
+	    'sd') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_sd"   "${kd}pTr0"$nn"_StDv" $2 $refoutp ; yy=$? ;;
 	    esac
           fi
 	  if test $xx = $sVar
@@ -379,8 +395,10 @@ genmakemodel()
 	    if test "x$MKDEPEND" != x ; then
 		command="$command -makedepend=$MKDEPEND"
 	    fi
-	    if test $KIND = 4 ; then
+	    if test $KIND = 6 ; then
 		command="$command -oad -mods=../$code_dir"
+	    elif [ $KIND -ge 3 ] ; then
+		command="$command -tap -mods=../$code_dir"
 	    else
 		command="$command -mods=../$code_dir"
 	    fi
@@ -420,6 +438,9 @@ genmakemodel()
 	    else
 	    if test "x$PCLS" = xt ; then
 		command="$command -pcls"
+	    fi
+	    if test "x$OADSINGULARITY" != x ; then
+		command="$command -oadsingularity \"$OADSINGULARITY\""
 	    fi
 	    fi
 	    printf 'genmake ... '
@@ -480,6 +501,7 @@ run_clean()
 	# part of what is done after "make clean" when doing "make CLEAN"
 	find . -name "*.meta" -exec rm {} \;
 	find . -name "*.data" -exec rm {} \;
+	find . -name "*.tmp"  -exec rm {} \;
 	find . -name "fort.*" -exec rm {} \;
 	find . -type l -exec rm {} \;
 	#- should remove executable only if sym-link (already done above)
@@ -567,12 +589,14 @@ makemodel()
 	fi
     fi
     if test $KIND = 1 -a -f taf_ftl.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ftl.log >> $CDIR"/summary.txt"
     fi
     if test $KIND = 2 -a -f taf_ad.log ; then
+	grep 'Processing files at' make.tr_log | tail -1 >> $CDIR"/summary.txt"
 	head -1 taf_ad.log >> $CDIR"/summary.txt"
 	nerr=`grep -c 'TAF *.* ERROR ' taf_ad.log`
-	nwar=`grep -c 'TAF RECOMPUTATION *.* WARNING ' taf_ad.log`
+	nwar=`grep -c '^TAF *.* RECOMPUTATION *.* WARNING ' taf_ad.log`
 	if test -f taf_output ; then
 	    n2er=`grep -c 'TAF *.* ERROR ' taf_output`
 	    n3er=`grep -c '\*ERROR\* ' taf_output`
@@ -580,6 +604,32 @@ makemodel()
 	fi
 	echo " TAF reports $nerr Errors and $nwar Recomputation Warnings" \
 				>> $CDIR"/summary.txt"
+	if test -f ad_taf_output.f ; then
+	    adfile=ad_taf_output.f
+	elif test -f ad_taf_output.for ; then
+	    adfile=ad_taf_output.for
+	else
+	    echo "WARNING: neither ad_output_ad.f nor ad_output_ad.for found" \
+				>> $CDIR"/summary.txt"
+	    adfile=missing ; nlfd=0 ; ndop=0 ; nsm=0
+	fi
+	if test $adfile != missing ; then
+	    # count number of times load_fields_driver and do_oceanic_phys are called
+	    nlfd=`grep "call load_fields_driver(" ${adfile} | wc -l`
+	    nlfdmd=`grep "call load_fields_drivermd(" ${adfile} | wc -l`
+	    if (( $nlfdmd == 0 )) ; then
+		# if there is no load_fields_driver, we can substract one assuming
+		# that load_fields_driver is called once from forward_stepmd
+		nlfd=$((nlfd-1))
+	    fi
+	    ndop=`grep "call do_oceanic_phys("    ${adfile} | wc -l`
+	    nsm=`grep "call seaice_model(" ${adfile} | wc -l`
+	fi
+	echo " load_fields_driver, do_oceanic_phys, seaice_model are called " \
+	     "( $nlfd , $ndop , $nsm ) time(s)" >> $CDIR"/summary.txt"
+    fi
+    if test -f make.tr_log && test $KIND = 4 -o $KIND = 5 ; then
+	grep '^Tapenade ' make.tr_log | tail -n 1 >> $CDIR"/summary.txt"
     fi
     if test $mk_fail != 0 ; then return $mk_fail ; fi
     )
@@ -832,14 +882,17 @@ runmodel()
 	      echo " Divided Adjoint Run: $adm_diva_nb" >> $RUNLOG
 	      eval "let $adm_diva_nb"
 	      if [ $add_DIVA_runs -ge 1 ] ; then
+		extraRuns=`expr $add_DIVA_runs - 1`
 		rm -f costf* divided.ctrl snapshot*
 		echo -n "(add_DIVA_runs=$add_DIVA_runs) ... "
-		for ii in `seq 1 $add_DIVA_runs` ; do
+		for ii in `seq 0 $extraRuns` ; do
 		  ( eval $COMMAND ) >> $RUNLOG 2>&1
 		  echo " additional DIVA run # $ii : done" >> $RUNLOG
 		  mv -f $OUTPUTFILE ${OUTPUTFILE}.diva_${ii}
 		done
 	      fi
+	    elif test -f run_ADM_DIVA ; then
+		rm -f costf* divided.ctrl snapshot*
 	    fi
 	#- special DIVA processing ends here
 	    ( eval $COMMAND ) >> $RUNLOG 2>&1
@@ -974,10 +1027,12 @@ formatresults()
     fi
     printf '  %s' $nm
     if test $KIND = 2 ; then
-	#-- apppend taf repport summary:
+	#-- append taf report summary:
 	tafrep=`grep -c '^ TAF reports ' $CDIR/summary.txt`
 	if test $tafrep = 1 ; then
-	    grep '^ TAF reports ' $CDIR/summary.txt | awk '{printf "  (e=%i, w=%i)",$3,$6}'
+	    grep '^ TAF reports ' $CDIR/summary.txt | awk '{printf "  (e=%i, w=%i,",$3,$6}'
+	    grep '^ load_fields_driver,' $CDIR/summary.txt \
+		| awk '{printf " lfd=%i, dop=%i, sm=%i)",$7,$9,$11}'
 	fi
     fi
     printf '\n'
@@ -1087,10 +1142,13 @@ USE_R4=
 EXTRFLG=
 NOCATAD=
 MKSMALLF=
+OADSINGULARITY=
+CHECK_PASS=f
 
 #- type of testing (KIND):
-#   KIND=0 : forward (= default) ;  KIND=1 : Tangent Linear with TAF ;
-#   KIND=2 : Adjoint with TAF ;     KIND=4 : Adjoint with OpenAD
+#   KIND=0 : forward (= default) ;     KIND=6 : Adjoint with OpenAD
+#   KIND=1 : Tangent-Linear with TAF ; KIND=2 : Adjoint with TAF ;
+#   KIND=4 : Tang-Lin. with Tapenade ; KIND=5 : Adjoint with Tapenade ;
 KIND=0
 
 # list of pTracers to check for monitor output
@@ -1113,7 +1171,7 @@ for ac_option ; do
     ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
 
     case $ac_option in
-	
+
 	-help | --help | -h | --h) usage ;;
 
 	-optfile | --optfile | -of | --of) ac_prev=OPTFILE ;;
@@ -1178,6 +1236,8 @@ for ac_option ; do
 	-postclean | --postclean | -pc | --pc) POSTCLEAN=2 ;;
 	-deloutp | --deloutp | -do | --do) POSTCLEAN=1 ;;
 
+	-pass) CHECK_PASS=t ;;
+
 	-mpi | --mpi) MPI=2 ;;
 	-MPI | --MPI) ac_prev=MPI ;;
 	-MPI=* | --MPI=*) MPI=$ac_optarg ;;
@@ -1187,15 +1247,21 @@ for ac_option ; do
 
 	-mth) MULTI_THREAD=t ;;
 
-	-tlm) if test $KIND = 0 ; then KIND=1 ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-tlm) if test $KIND = 0 -o $KIND = 3 ; then KIND=`expr $KIND + 1`; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
-	-adm | -ad) if test $KIND = 0 ; then KIND=2 ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-adm | -ad) if test $KIND = 0 -o $KIND = 3 ; then KIND=`expr $KIND + 2` ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
-	-oad) if test $KIND = 0 ; then KIND=4 ; NODEPEND=t ; else
-		echo "Error: '-tlm', '-adm' and '-oad' are exclusive" ; usage
+	-tap) if [ $KIND -le 2 ] ; then KIND=`expr $KIND + 3` ; else
+		echo "Error: '-tap' and '-oad' are exclusive + no duplicate" ; usage
 	      fi ;;
+	-oad) if test $KIND = 0 ; then KIND=6 ; NODEPEND=t ; else
+		echo "Error: '-tlm', '-adm' and '-oad' are exclusive + no duplicate" ; usage
+	      fi ;;
+	-oadsingularity | --oadsingularity | -oadsngl | --oadsngl) ac_prev=OADSINGULARITY ;;
+	-oadsingularity=* | --oadsingularity=* | -oadsngl=* | --oadsngl=*) OADSINGULARITY=$ac_optarg ;;
+
 	-ncad) NOCATAD=t ;;
 	-small_f) MKSMALLF=t ;;
 
@@ -1252,9 +1318,11 @@ if test "x$MPI" != x0 -a "x$MPI_MFILE" != x ; then
     fi
 fi
 
-#- setting for forward or ADM testing
+#- setting for forward, TLM or ADM testing
 if test $KIND = 1 ; then
-    if test "x$TARG" = xsmall_f ; then TARG=ftltaf ; else TARG=ftlall ; fi
+    if test "x$TARG" = x        ; then TARG=ftlall ; fi
+    if test "x$TARG" = xobj     ; then TARG=ftlobj ; fi
+    if test "x$TARG" = xsmall_f ; then TARG=ftltaf ; fi
     code_dir=code_ad
     inputdir=input_ad
     ref_outp="output_tlm.txt"
@@ -1267,7 +1335,13 @@ elif test $KIND = 2 ; then
     inputdir=input_ad
     ref_outp="output_adm.txt"
     EXECUTABLE="mitgcmuv_ad"
-elif test $KIND = 4 ; then
+elif test $KIND = 4 -o $KIND = 5 ; then
+    if test $KIND = 4 ; then TARG=tap_tlm ; else TARG=tap_adj ; fi
+    code_dir=code_tap
+    inputdir=input_tap
+    ref_outp="output_${TARG}.txt"
+    EXECUTABLE="mitgcmuv_${TARG}"
+elif test $KIND = 6 ; then
     TARG=adAll
     code_dir=code_oad
     inputdir=input_oad
@@ -1280,6 +1354,19 @@ else
     EXECUTABLE="mitgcmuv"
 fi
 if test "x$JOBS" != x ; then TARG="-j $JOBS $TARG" ; fi
+
+if [ $verbose -gt 1 ]; then
+    echo ""
+    echo "--- print $0 setting:"
+    echo " KIND     =  '$KIND'"
+    echo " TARG     =  '$TARG'"
+    echo " code_dir =  '$code_dir'"
+    echo " inputdir =  '$inputdir'"
+    echo " ref_outp =  '$ref_outp'"
+    echo " EXECUTABLE= '$EXECUTABLE'"
+    echo "--- printing ends."
+   #exit 0
+fi
 
 xx=`echo $TESTDIRS | awk '{print $1}'`
 if test "x$TESTDIRS" = x ; then
@@ -1354,20 +1441,20 @@ if [ $verbose -gt 1 ]; then echo " temp files: $TMP" ; fi
 #  (use default or load experiment-specific list from file "tr_checklist")
 # content : 1rst = main variable used to decide if it pass or FAIL
 #         others = number of matching digits to be printed in summary.txt
-if test $KIND = 1 ; then
-    DEF_CHECK_LIST='tlmGrd tlmCst tlmGrd fwdGrd'
-    EMPTY_RESULTS='.. .. ..'
-    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
-elif test $KIND = 2 -o $KIND = 4 ; then
-    DEF_CHECK_LIST='AdGrd Cost AdGrd FDGrd'
-    EMPTY_RESULTS='.. .. ..'
-    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
-else
+if test $KIND = 0 ; then
     DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
     EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
     EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
+elif test $KIND = 2 ; then
+    DEF_CHECK_LIST='admGrd admCst admGrd admFwd T+ S+ U+ V+'
+    EMPTY_RESULTS='.. .. .. .. .. .. ..  .. .. .. ..  .. .. .. ..  .. .. .. ..'
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
+else
+    DEF_CHECK_LIST='admGrd admCst admGrd admFwd'
+    EMPTY_RESULTS='.. .. ..'
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
 fi
 
 #  create the FORTRAN comparison code
@@ -1467,19 +1554,19 @@ if test $KIND = 0 ; then
 	line_4="$line_4  n  x  n  ."
     done
 else
-    line_0=`printf '%s %2i' 'default   ' $MATCH_CRIT`
   if test $KIND = 1 ; then
-   #echo "TANGLIN=true" >> $SUMMARY
     echo "TangLin generated by TAF" >> $SUMMARY
-  elif test $KIND = 3 ; then
-    echo "TangLin generated by OpenAD" >> $SUMMARY
   elif test $KIND = 2 ; then
-   #echo "ADJOINT=true" >> $SUMMARY
     echo "Adjoint generated by TAF" >> $SUMMARY
+  elif test $KIND = 4 ; then
+    echo "TangLin generated by Tapenade" >> $SUMMARY
+  elif test $KIND = 5 ; then
+    echo "Adjoint generated by Tapenade" >> $SUMMARY
   else
     echo "Adjoint generated by OpenAD" >> $SUMMARY
   fi
-  if test $KIND = 1 -o $KIND = 3 ; then
+    line_0=`printf '%s %2i' 'default   ' $MATCH_CRIT`
+  if test $KIND = 1 -o $KIND = 4 ; then
     line_1="G D M    C  T  F"
     line_2="e p a R  o  L  D"
   else
@@ -1489,6 +1576,14 @@ else
     line_3="n n k u  s  G  G"
     line_4="2 d e n  t  r  r"
     echo >> $SUMMARY
+  if test $KIND = 2 ; then
+    line_0=`printf '%s %2i   ' 'default   ' $MATCH_CRIT`
+    line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
+    line_1="$line_1        m  s        m  s        m  s        m  s"
+    line_2="$line_2  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
+    line_3="$line_3  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
+    line_4="$line_4  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  ."
+  fi
 fi
 if test "x$CLEANUP" != xt ; then
     echo "$line_0" | tee -a $SUMMARY
@@ -1499,6 +1594,8 @@ if test "x$CLEANUP" != xt ; then
     echo ""        | tee -a $SUMMARY
 fi
 echo "-------------------------------------------------------------------------------"
+
+allpass=t
 
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
@@ -1679,6 +1776,9 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+        if [[ ! "$fres" =~ " pass " ]]; then
+            allpass=f
+        fi
 
 	for ex in $extra_runs ; do
 	    unset run
@@ -1703,6 +1803,9 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
+            if [[ ! "$fres" =~ " pass " ]]; then
+                allpass=f
+            fi
 	    if test "x$POSTCLEAN" = x2 ; then
 		run_clean $dir/$pfxdir.$ex
 	    fi
@@ -1823,4 +1926,9 @@ fi
 if test "x$DELDIR" = xt ; then
     rm -rf $DRESULTS
 fi
+
+if test "$CHECK_PASS" = t && test "$allpass" = f; then
+    exit 1
+fi
+
 echo "======== End of testreport execution ========"

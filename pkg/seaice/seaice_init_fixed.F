@@ -36,25 +36,25 @@ C     k - loop counter for ITD categories
 #endif
 C     i,j, bi,bj  :: Loop counters
       INTEGER i, j, bi, bj
-      INTEGER kSurface
+      INTEGER kSrf
 #ifdef ALLOW_SITRACER
       INTEGER iTracer
 #endif
 #ifdef SHORTWAVE_HEATING
 cif   Helper variable for determining the fraction of sw radiation
 cif   penetrating the model shallowest layer
-      _RL dummyTime
       _RL swfracba(2)
-      _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
-#ifndef SEAICE_CGRID
+C     local copy of surface layer thickness in meters
+      _RL dzSurf
+#ifdef SEAICE_BGRID_DYNAMICS
       _RL mask_uice
 #endif
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface        = Nr
+      IF ( usingPCoords ) THEN
+       kSrf        = Nr
       ELSE
-       kSurface        = 1
+       kSrf        = 1
       ENDIF
 
 C     Initialize MNC variable information for SEAICE
@@ -72,30 +72,38 @@ C     restart parameter
       IF ( SEAICEuseBDF2 ) SEAICEmomStartBDF = nIter0
 
 #ifdef SHORTWAVE_HEATING
-       tmpFac    = -1.0
-       dummyTime = 1.0
-       swfracba(1) = ABS(rF(1))
-       swfracba(2) = ABS(rF(2))
+       IF ( usingZCoords ) THEN
+        swfracba(1) = rF(1)
+        swfracba(2) = rF(2)
+       ELSE
+C     this is the oceanic pressure coordinate case
+        swfracba(1) = -rF(Nr+1)*recip_rhoConst*recip_gravity
+        swfracba(2) = -rF(Nr)  *recip_rhoConst*recip_gravity
+       ENDIF
        CALL SWFRAC(
-     I       2, tmpFac,
+     I       2, oneRL,
      U       swfracba,
-     I       dummyTime, 0, myThid )
-       SWFracB = swfracba(2)
+     I       oneRL, 0, myThid )
+       SEAICE_SWFrac = swfracba(2)
 #else /* SHORTWAVE_HEATING */
-       SWFracB = 0. _d 0
+       SEAICE_SWFrac = 0. _d 0
 #endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
+       dzSurf = drF(kSrf)
+       IF ( usingPCoords )
+     &      dzSurf = drF(kSrf) * recip_rhoConst * recip_gravity
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
           SEAICE_mcPheePiston = SEAICE_availHeatFrac
-     &                        * drF(kSurface)/SEAICE_deltaTtherm
+     &                        * dzSurf/SEAICE_deltaTtherm
         ELSE
           SEAICE_mcPheePiston = MCPHEE_TAPER_FAC
      &                        * STANTON_NUMBER * USTAR_BASE
           SEAICE_mcPheePiston = MIN( SEAICE_mcPheePiston,
-     &                          drF(kSurface)/SEAICE_deltaTtherm )
+     &                          dzSurf/SEAICE_deltaTtherm )
         ENDIF
+
       ENDIF
 
 C--   SItracer specifications for basic tracers
@@ -241,11 +249,6 @@ C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
 
 C--   Initialise grid parameters that do no change during the integration
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface = Nr
-      ELSE
-       kSurface = 1
-      ENDIF
 
 C--   Initialise grid info
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -260,12 +263,12 @@ C-    loops on tile indices bi,bj:
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFM  (i,j,bi,bj) = maskC(i,j,kSurface,bi,bj)
-          SIMaskU(i,j,bi,bj) = maskW(i,j,kSurface,bi,bj)
-          SIMaskV(i,j,bi,bj) = maskS(i,j,kSurface,bi,bj)
+          HEFFM  (i,j,bi,bj) = maskC(i,j,kSrf,bi,bj)
+          SIMaskU(i,j,bi,bj) = maskW(i,j,kSrf,bi,bj)
+          SIMaskV(i,j,bi,bj) = maskS(i,j,kSrf,bi,bj)
          ENDDO
         ENDDO
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           UVM(i,j,bi,bj)=0. _d 0
@@ -274,7 +277,7 @@ C-    loops on tile indices bi,bj:
           IF(mask_uice.GT.3.5 _d 0) UVM(i,j,bi,bj)=1. _d 0
          ENDDO
         ENDDO
-#endif /* ndef SEAICE_CGRID */
+#endif
 
 C     coefficients for metric terms
 #ifdef SEAICE_CGRID
@@ -331,7 +334,9 @@ C     approximation
           ENDDO
          ENDDO
         ENDIF
-#else /* not SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
+
+#ifdef SEAICE_BGRID_DYNAMICS
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           k1AtC(i,j,bi,bj) = 0.0 _d 0
@@ -402,7 +407,30 @@ C     approximation
           ENDDO
          ENDDO
         ENDIF
-#endif /* not SEAICE_CGRID */
+C--   Choose a proxy level for geostrophic velocity,
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          KGEO(i,j,bi,bj)   = 0
+         ENDDO
+        ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#ifdef SEAICE_BICE_STRESS
+          KGEO(i,j,bi,bj) = 1
+#else /* SEAICE_BICE_STRESS */
+          IF (klowc(i,j,bi,bj) .LT. 2) THEN
+           KGEO(i,j,bi,bj) = 1
+          ELSE
+           KGEO(i,j,bi,bj) = 2
+           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 _d 0 .AND.
+     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
+              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
+           ENDDO
+          ENDIF
+#endif /* SEAICE_BICE_STRESS */
+         ENDDO
+        ENDDO
+#endif /* SEAICE_BGRID_DYNAMICS */
 C-    end bi,bj loops
        ENDDO
       ENDDO
@@ -430,36 +458,6 @@ C--   Prevent seaice to form where Ice-Shelf is present
        CALL EXCH_UV_XY_RL( SIMaskU, SIMaskV, .FALSE., myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
-
-#ifndef SEAICE_CGRID
-C--   Choose a proxy level for geostrophic velocity,
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          KGEO(i,j,bi,bj)   = 0
-         ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_BICE_STRESS
-          KGEO(i,j,bi,bj) = 1
-#else /* SEAICE_BICE_STRESS */
-          IF (klowc(i,j,bi,bj) .LT. 2) THEN
-           KGEO(i,j,bi,bj) = 1
-          ELSE
-           KGEO(i,j,bi,bj) = 2
-           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 _d 0 .AND.
-     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
-              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
-           ENDDO
-          ENDIF
-#endif /* SEAICE_BICE_STRESS */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ndef SEAICE_CGRID */
 
       RETURN
       END

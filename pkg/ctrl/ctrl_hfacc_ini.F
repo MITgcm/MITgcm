@@ -3,7 +3,7 @@
 CBOP
 C     !ROUTINE: ctrl_hfacc_ini
 C     !INTERFACE:
-      subroutine ctrl_hfacc_ini( mythid )
+      subroutine ctrl_hfacc_ini( myThid )
 
 C     !DESCRIPTION: \bv
 c     *=================================================================
@@ -28,7 +28,7 @@ c     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_HFACC_CONTROL
 C     !LOCAL VARIABLES:
@@ -46,10 +46,14 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*( 80)   fnamehfacc
+      character*(MAX_LEN_FNAM)   fnamehfacc
       character*(max_len_mbuf) msgbuf
 
       _RL     fac
+      _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+      integer ilDir
 
 c     == external ==
       integer  ilnblnk
@@ -58,17 +62,20 @@ c     == external ==
 c     == end of interface ==
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
       doglobalread = .false.
       ladinit      = .false.
+
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
 
       equal = .true.
 
@@ -78,14 +85,24 @@ CEOP
         fac = 0. _d 0
       endif
 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+
 Cml      write(msgbuf,'(a)')
 Cml     &     'ctrl_hfacc_ini: Re-initialising hFacC,'
 Cml      call print_message( msgbuf, standardmessageunit,
-Cml     &                    SQUEEZE_RIGHT , mythid)
+Cml     &                    SQUEEZE_RIGHT , myThid)
 Cml      write(msgbuf,'(a)')
 Cml     &     '                adding the control vector.'
 Cml      call print_message( msgbuf, standardmessageunit,
-Cml     &                    SQUEEZE_RIGHT , mythid)
+Cml     &                    SQUEEZE_RIGHT , myThid)
       write(standardmessageunit,'(21x,a)')
      &     'ctrl_hfacc_ini: Re-initialising hFacC,'
       write(standardmessageunit,'(21x,a)')
@@ -96,7 +113,7 @@ C     Once hFacC is the control variable, and not its anomaly
 C     this will be no longer necessary
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr
+          do k = 1,Nr
             do j = jmin,jmax
               do i = imin,imax
                 hFacC(i,j,k,bi,bj)    = 0.
@@ -113,15 +130,15 @@ C     this will be no longer necessary
 
 C--
       il=ilnblnk( xx_hfacc_file )
-      write(fnamehfacc(1:80),'(2a,i10.10)')
-     &     xx_hfacc_file(1:il),'.',optimcycle
+      write(fnamehfacc,'(2a,i10.10)')
+     &     ctrlDir(1:ilDir)//xx_hfacc_file(1:il),'.',optimcycle
 #ifdef ALLOW_HFACC3D_CONTROL
       call active_read_xyz( fnamehfacc, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_hfacc_dummy )
+     &                      myThid, xx_hfacc_dummy )
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr
+          do k = 1,Nr
             do j = jmin,jmax
               do i = imin,imax
                 hFacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj) +
@@ -134,7 +151,7 @@ C--
 #else /* ALLOW_HFACC3D_CONTROL undefined */
       call active_read_xy( fnamehfacc, tmpfld2d, 1,
      &                     doglobalread, ladinit, optimcycle,
-     &                     mythid, xx_hfacc_dummy )
+     &                     myThid, xx_hfacc_dummy )
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do j = jmin,jmax

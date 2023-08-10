@@ -69,24 +69,50 @@ C     i,j, bi,bj  :: loop indices
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
 
-            IF ( .NOT.SHELFICEDynMassOnly ) THEN
-             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &        + shelfIceFreshWaterFlux(i,j,bi,bj)*deltaT
-            ENDIF
+           IF ( .NOT.SHELFICEDynMassOnly ) THEN
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &              + shelfIceFreshWaterFlux(i,j,bi,bj)*deltaT
+             ENDDO
+            ENDDO
+           ENDIF
 
-            shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &        + shelfIceMassDynTendency(i,j,bi,bj)*deltaT
-
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &              + shelfIceMassDynTendency(i,j,bi,bj)*deltaT
+            ENDDO
            ENDDO
-          ENDDO
+
+C--    quick fix to prevent ice-shelf mass to become negative
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              shelficeMass(i,j,bi,bj) =
+     &              MAX( shelficeMass(i,j,bi,bj), zeroRL )
+            ENDDO
+           ENDDO
+
          ENDDO
         ENDDO
        ENDIF
 
        _EXCH_XY_RL( shelficeMass, myThid )
+
+#ifndef ALLOW_OPENAD
+C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+     &      *( shelficeMass(i,j,bi,bj) + rhoConst*Ro_surf(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif
 
       ENDIF
 

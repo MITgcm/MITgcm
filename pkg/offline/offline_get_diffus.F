@@ -1,9 +1,12 @@
 #include "OFFLINE_OPTIONS.h"
 #ifdef ALLOW_DIC
-#include "DIC_OPTIONS.h"
+# include "DIC_OPTIONS.h"
 #endif
 #ifdef ALLOW_DARWIN
-#include "DARWIN_OPTIONS.h"
+# include "DARWIN_OPTIONS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
 #endif
 
 CBOP
@@ -107,11 +110,15 @@ C--   Interpolate Diffusivity Components:
      &                        + aWght*gmky1(i,j,k,bi,bj)
             Kwz(i,j,k,bi,bj)  = bWght*gmkz0(i,j,k,bi,bj)
      &                        + aWght*gmkz1(i,j,k,bi,bj)
+#ifndef GM_NON_UNITY_DIAGONAL
+            Kux(i,j,k,bi,bj) = GM_isopycK
+            Kvy(i,j,k,bi,bj) = GM_isopycK
+#endif
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-#endif
+#endif /* ALLOW_GMREDI */
 #ifdef ALLOW_KPP
         IF ( offlineLoadKPP ) THEN
          DO k=1,Nr
@@ -127,7 +134,7 @@ C         the product ghat*diffKzS (and not ghat alone).
           ENDDO
          ENDDO
         ENDIF
-#endif
+#endif /* ALLOW_KPP */
 
 C--   Interpolate surface forcing
 #if ( (defined ALLOW_DIC) || (defined ALLOW_DARWIN) )

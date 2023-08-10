@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_mask_set_yz(
-     &     ip1, iNone, OB_I, nwetobcs, ymaskobcs, mythid )
+     &     ip1, iNone, OB_I, nwetobcs, ymaskobcs, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_mask_set_yz
@@ -28,10 +28,10 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer ip1, iNone
-      integer OB_I     (1-oly:sny+oly,nsx,nsy)
-      integer nwetobcs (nsx,nsy,nr,nobcs)
-      character*(80)   ymaskobcs
-      integer mythid
+      integer OB_I     (1-OLy:sNy+OLy,nSx,nSy)
+      integer nwetobcs (nSx,nSy,Nr,nobcs)
+      character*(MAX_LEN_FNAM)   ymaskobcs
+      integer myThid
 
 c     == local variables ==
 
@@ -39,23 +39,14 @@ c     == local variables ==
       integer i,j,k
       integer itlo,ithi
       integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer ntmp
-      integer ivarindex
 
       integer iobcs
       integer il
-      integer errio
-      integer startrec
-      integer endrec
-      integer difftime(4)
-      _RL     diffsecs
       _RL     dummy
-      _RL     maskyz   (1-oly:sny+oly,nr,nsx,nsy,nobcs)
-      _RL     gg       (1-oly:sny+oly,nr,nsx,nsy)
+      _RL     maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy,nobcs)
+      _RL     gg       (1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
 
 c     == external ==
 
@@ -64,14 +55,10 @@ c     == external ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
       _BEGIN_MASTER( myThid )
 
@@ -81,8 +68,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do j = 1-oly,sny+oly
+            do k = 1,Nr
+              do j = 1-OLy,sNy+OLy
                 maskyz(j,k,bi,bj,iobcs) = 0. _d 0
               enddo
             enddo
@@ -93,8 +80,8 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
+            do k = 1,Nr
+              do j = 1,sNy
                 i = OB_I(j,bi,bj)
                 if ( i .NE. iNone ) then
 c--               West mask for T, S, U on East/West boundaries.
@@ -120,24 +107,23 @@ c--               South mask for V
 
 #ifdef ALLOW_AUTODIFF
       il=ilnblnk( ymaskobcs )
-      write(fname(1:80),'(80a)') ' '
-      write(fname(1:80),'(a)') ymaskobcs
+      write(fname,'(a)') ymaskobcs
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr
-              do j = jmin,jmax
+            do k = 1,Nr
+              do j = 1,sNy
                  gg(j,k,bi,bj) = maskyz(j,k,bi,bj,iobcs)
               enddo
             enddo
           enddo
         enddo
-        call active_write_yz( fname, gg, iobcs, 0, mythid, dummy)
+        call active_write_yz( fname, gg, iobcs, 0, myThid, dummy)
       enddo
 #endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       return
       end

@@ -27,27 +27,24 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 
 c     == routine arguments ==
-
       integer       mythid
 
 #ifdef ALLOW_GRDCHK
 c     == local variables ==
-
       integer bi,bj
-      integer i,j,k
-      integer irec
+      integer k, iobcs
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-
-      integer itest,iobcs
-      integer icomptest
-
+      integer nobcsmax
 c     == end of interface ==
 
       jtlo = 1
@@ -61,11 +58,17 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
+#ifdef ALLOW_OBCS_CONTROL
+      nobcsmax = nobcs
+#else
+      nobcsmax = 1
+#endif
+
 c--   initialise
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do k = 1,ncvarnrmax(grdchkvarindex)
-               do iobcs = 1, nobcs
+               do iobcs = 1, nobcsmax
                   nwettile(bi,bj,k,iobcs) = 0
                enddo
             enddo
@@ -106,7 +109,7 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -115,12 +118,12 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHELFICE */
       else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,ncvarnrmax(grdchkvarindex)
-                  do iobcs = 1, nobcs
+                  do iobcs = 1, nobcsmax
                      if ( grdchkvarindex .eq. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
                         nwettile(bi,bj,k,iobcs) =
@@ -164,7 +167,7 @@ c--   components of the given control variable.
       do bj = jtlo,jthi
          do bi = itlo,ithi
             do k = 1,ncvarnrmax(grdchkvarindex)
-               do iobcs = 1, nobcs
+               do iobcs = 1, nobcsmax
                   ncvarcomp     = ncvarcomp + nwettile(bi,bj,k,iobcs)
                   maxncvarcomps = maxncvarcomps +
      &                 ncvarxmax(grdchkvarindex)*

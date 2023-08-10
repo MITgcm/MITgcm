@@ -8,8 +8,7 @@
      I                       mytime,
      I                       startrec,
      I                       endrec,
-     I                       mythid
-     &                     )
+     I                       mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_obcsvol
@@ -47,17 +46,21 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-
       integer myiter
       _RL     mytime
-      integer mythid
       integer startrec
       integer endrec
+      integer mythid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
-c     == local variables ==
+#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
+#ifdef BAROTROPIC_OBVEL_CONTROL
+c     == external functions ==
+      integer  ilnblnk
+      external ilnblnk
 
+c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
@@ -69,52 +72,40 @@ c     == local variables ==
       integer nrec
       integer ilfld
       integer igg
-
       _RL fctile
       _RL sumvol
       _RL gg
       _RL tmpx
       _RL tmpy
       _RL wobcsvol
-      character*(80) fnamefldn
-      character*(80) fnameflds
-      character*(80) fnamefldw
-      character*(80) fnameflde
-
+      character*(MAX_LEN_FNAM) fnamefldn
+      character*(MAX_LEN_FNAM) fnameflds
+      character*(MAX_LEN_FNAM) fnamefldw
+      character*(MAX_LEN_FNAM) fnameflde
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-
       logical doglobalread
       logical ladinit
-
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
 
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
-
-#ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
-#ifdef BAROTROPIC_OBVEL_CONTROL
 
       stop 's/r cost_obcsvol needs to be fixed'
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(mythid)
+      jthi = myByHi(mythid)
+      itlo = myBxLo(mythid)
+      ithi = myBxHi(mythid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
 c--   Read tiled data.
       doglobalread = .false.
@@ -152,22 +143,22 @@ cgg   Added a factor of 1000 because its very important to me.
       if (optimcycle .ge. 0) then
 #ifdef ALLOW_OBCSN_CONTROL
         ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefldn(1:80),'(2a,i10.10)')
+        write(fnamefldn,'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
         ilfld=ilnblnk( xx_obcss_file )
-        write(fnameflds(1:80),'(2a,i10.10)')
+        write(fnameflds,'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
         ilfld=ilnblnk( xx_obcsw_file )
-        write(fnamefldw(1:80),'(2a,i10.10)')
+        write(fnamefldw,'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
         ilfld=ilnblnk( xx_obcse_file )
-        write(fnameflde(1:80),'(2a,i10.10)')
+        write(fnameflde,'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 #endif
       else
@@ -365,8 +356,8 @@ c--   Do the global summation.
       _GLOBAL_SUM_RL( sumvol, mythid )
       objf_obcsvol =  wobcsvol * sumvol* sumvol
 
-#endif
-#endif
+#endif /* BAROTROPIC_OBVEL_CONTROL */
+#endif /* OBCS_VOLFLUX_COST_CONTRIBUTION */
 
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 

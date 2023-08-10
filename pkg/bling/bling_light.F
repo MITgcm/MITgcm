@@ -72,10 +72,6 @@ C      irr_eff      :: effective light for photosynthesis
       _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     === Local variables ===
-      _RL solar, albedo
-      _RL dayfrac, yday, delta
-      _RL lat, sun1, dayhrs
-      _RL cosz, frac, fluxi
       _RL atten
       _RL irr_surf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ML_MEAN_LIGHT
@@ -84,6 +80,10 @@ C     === Local variables ===
       _RL tmp_ML
 #endif
 #ifndef USE_QSW
+      _RL solar, albedo
+      _RL dayfrac, yday, delta
+      _RL lat, sun1, dayhrs
+      _RL cosz, frac, fluxi
       _RL sfac      (1-OLy:sNy+OLy)
 #endif
 #ifdef PHYTO_SELF_SHADING
@@ -95,14 +95,18 @@ C     === Local variables ===
       _RL atten_bg
       _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_AUTODIFF_TAMC
+C     tkey :: tape key (tile dependent)
+      INTEGER tkey
 #endif
+#endif /* PHYTO_SELF_SHADING */
       INTEGER i,j,k
       LOGICAL QSW_underice
 CEOP
 
 #ifdef PHYTO_SELF_SHADING
 # ifdef ALLOW_AUTODIFF_TAMC
-      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+      tkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* PHYTO_SELF_SHADING */
 
@@ -167,7 +171,7 @@ C convert to sfac
           sfac(j) = MAX(1. _d -5,fluxi)
        ENDDO !j
 
-#endif
+#endif /* ndef USE_QSW */
 
 c ---------------------------------------------------------------------
 c  instantaneous light, mixed layer averaged light
@@ -204,8 +208,8 @@ c  taken into account
 
 #ifdef PHYTO_SELF_SHADING
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE irr_bg = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE irr_rd = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE irr_bg = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE irr_rd = comlev1_bibj, key=tkey, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* PHYTO_SELF_SHADING */
 
