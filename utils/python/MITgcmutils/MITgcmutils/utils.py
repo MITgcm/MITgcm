@@ -43,14 +43,14 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
 
     Examples
     --------
-    >>> blank=gen_blanklist(bathy, 51, 51, tilemap=False)
-    1,2,4..97
-    >>> [blank,fig]=gen_blanklist(bathy, 51, 51, tilemap=True)
-    1,2,4..97
+    >>> blank=gen_blanklist(bathy, 5, 5, tilemap=False)
+    10,11,12,..,103
+    >>> [blank,fig]=gen_blanklist(bathy, 5, 5, tilemap=True)
+    10,11,12,..,103
     >>> test_blanklist()
-    1,2,4..97
+    10,11,12,..,103
     >>> test_blanklist()
-    1,2,4..97
+    10,11,12,..,103
 
     """
 
@@ -67,7 +67,9 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
         tile_order[n, m] = int(n*nPx+m+1)
         if tile_sum == 0:  # the tile with only land cells
           blank.append(tile_order[n, m])
-
+          
+    assert len(blank)>0,'There are not land tiles'
+    
     if tilemap:
 
       # plot ocean and blank tiles
@@ -78,7 +80,7 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
       [cn_x, cn_y] = np.meshgrid(np.arange(sNx//2, Nx, sNx),
                                 np.arange(sNy//2, Ny, sNy))
       p0 = 0
-      fig = plt.figure(1, figsize=(12, 12))
+      fig = plt.figure()
       ax = fig.add_subplot(111)
       ax.pcolor(mland,cmap=cmap_lm)
       major_xticks = np.arange(0, Nx+sNx, sNx)
@@ -86,12 +88,12 @@ def gen_blanklist(depth, sNx, sNy, tilemap=False,fill_value=0):
       for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
         if c==blank[p0]:
          rect = patches.Rectangle((a-sNx//2, b-sNy//2),
-                 sNx, sNy, linewidth=10,edgecolor='r', facecolor='none')
+                 sNx, sNy, linewidth=2,edgecolor='r', facecolor='none')
          ax.add_patch(rect)
          rect.set_clip_path(rect)
          p0+=1
         ax.annotate(str(c), (a, b), color='black',
-                   fontsize=12, ha='center', va='center')
+                    ha='center', va='center')
         if p0==len(blank):p0=0
       ax.set_xticks(major_xticks)
       ax.set_yticks(major_yticks)
@@ -243,10 +245,10 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
 
     Examples
     --------
-    >>> [fig]=tilemap(bathy, 51, 51,)
-    >>> [fig]=tilemap(bathy, 51, 51,58,5)
+    >>> [fig]=tilecmap(bathy, 5, 5)
+    >>> [fig]=tilecmap(bathy, 5, 5, 66, sel_zoom=4)
     >>> test_tilemap()
-    >>> test_tilemap()
+
 
     """
     #Check dimensions of arr
@@ -276,13 +278,13 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
     major_yticks = np.arange(0, Ny+sNy, sNy)
 
 
-    fig = plt.figure(1, figsize=(16, 16))
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.pcolor(mland,cmap=cmap_lm)
 
     for a, b, c in zip(cn_x.flat, cn_y.flat, tile_order.flat):
         ax.annotate(str(c), (a, b), color='black',
-                   fontsize=16, ha='center', va='center')
+                    ha='center', va='center')
 
     if tilen!=None:
 
@@ -301,12 +303,12 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
      arrmin = np.nanmin(arr[Tiy:Tiy+sNy,Tix:Tix+sNx])
      arrmax = np.nanmax(arr[Tiy:Tiy+sNy,Tix:Tix+sNx])
 
-     ax2 = zoomed_inset_axes(ax, zoom=sel_zoom, loc=locz, borderpad=-11)
+     ax2 = zoomed_inset_axes(ax, zoom=sel_zoom, loc=locz, borderpad=-1)
      pc=ax2.pcolor(arr,vmin=arrmin,vmax=arrmax,cmap=plt.cm.jet)
 
      ax2.set_xlim([major_xticks[Tind[1]],major_xticks[Tind[1]]+sNx])
      ax2.set_ylim([major_yticks[Tind[0]],major_xticks[Tind[0]]+sNy])
-     mark_inset(ax, ax2, loc1=locm1, loc2=locm2, fc="none", lw=3, ec='0')
+     mark_inset(ax, ax2, loc1=locm1, loc2=locm2, fc="none", lw=1.5, ec='0')
      plt.xticks(visible=False)
      plt.yticks(visible=False)
      cax = inset_axes(ax2,
@@ -318,7 +320,6 @@ def tilecmap(arr,sNx, sNy, tilen=None, sel_zoom=5, fill_value=0):
                       borderpad=0,
                       )
      cbar=plt.colorbar(pc,cax=cax, orientation='vertical')
-     cbar.ax.tick_params(labelsize=18)
      if cbar_pos<0:
       cax.yaxis.tick_left()
     ax.set_xticks(major_xticks)

@@ -82,13 +82,13 @@ def test_blanklist():
     print('gen_blanklist(bathy, 5, 5, tilemap=False)')
 
     blank=mit.gen_blanklist(bathy, 5, 5, tilemap=False)
-    print(blank[0:3],'..',blank[-1])
+    print(*blank[0:3],'..',blank[-1],sep=',')
 
     print('Test 2: Output blanklist with tilemap')
     print('mit.gen_blanklist(bathy, 5,5, tilemap=True)')
 
     [blank,fig1]=mit.gen_blanklist(bathy, 5, 5, tilemap=True)
-    print(blank[0:3],'..',blank[-1])
+    print(*blank[0:3],'..',blank[-1],sep=',')
 
 def test_tilemap():
     """Test tilemap plot distribution
@@ -97,11 +97,11 @@ def test_tilemap():
     # Test
 
     print('Test 1: Output tilemap without specific tile')
-    print('tilecmap(bathy, 5, 5)')
+    print('mit.tilecmap(bathy, 5, 5)')
 
     mit.tilecmap(bathy, 5, 5)
 
     print('Test 2: Output tilemap without specific tile')
-    print('mit.tilecmap(bathy, 5, 5, 66, sel_zoom=5)')
+    print('mit.tilecmap(bathy, 5, 5, 66, sel_zoom=4)')
 
-    mit.tilecmap(bathy, 5, 5, 66, sel_zoom=5)
+    mit.tilecmap(bathy, 5, 5, 66, sel_zoom=4)
