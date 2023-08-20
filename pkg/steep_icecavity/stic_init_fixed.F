@@ -32,8 +32,8 @@ C     myThid ::  Number of this instance of STIC_INIT_FIXED
 
 #ifdef ALLOW_STEEP_ICECAVITY
 C     === Local variables ===
-C     i, j, bi, bj :: Loop counters
-      INTEGER i, j, bi, bj
+C     i, j, k, bi, bj :: Loop counters
+      INTEGER i, j, k, bi, bj
 #ifdef ALLOW_DIAGNOSTICS
       INTEGER       diagNum
       INTEGER       diagMate
@@ -43,7 +43,6 @@ C     i, j, bi, bj :: Loop counters
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_CTRL
-      INTEGER k
 # ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
       _RL dummy
 # endif
@@ -71,7 +70,7 @@ C     iceFrontWidth    :: the width of the ice front.
 
 #ifdef ALLOW_MNC
 C     Initialize MNC variable information for STIC
-      IF ( useMNC .AND. (shelfice_tave_mnc.OR.shelfice_dump_mnc)
+      IF ( useMNC .AND. (STIC_tave_mnc.OR.STIC_dump_mnc)
      &    ) THEN
         CALL STIC_MNC_INIT( myThid )
       ENDIF
