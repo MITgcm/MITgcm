@@ -580,12 +580,24 @@ C-    retired parameter
 
 #ifdef ALLOW_OBCS_TIDES
       IF ( useOBCStides ) THEN
-c      OBCS_nTidalComp = 0
+C--   Set OBCS_nTidalComp (= the number of tidal components to use)
+C     as the last non-zero tidalPeriod:
+       OBCS_nTidalComp = 0
        DO i = 1, OBCS_tideCompSize
         IF ( OBCS_tidalPeriod(i).NE.zeroRL ) OBCS_nTidalComp = i
        ENDDO
+       WRITE(msgBuf,'(2A,I6)') '  Set number of tidal Components ',
+     &   'in use: OBCS_nTidalComp =', OBCS_nTidalComp
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       IF ( OBCS_nTidalComp .EQ. 0 ) THEN
+        WRITE(msgBuf,'(2A)') 'OBCS_READPARMS: ',
+     &   'useOBCStides=T without any OBCS_tidalPeriod > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R OBCS_READPARMS'
+       ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_OBCS_TIDES */
 
 C-    Acount for single/uniform position OB setting:
       errCount = 0

@@ -10,10 +10,7 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE OBCS_ADD_TIDES
-C     | o Modify OB normal flow to add tidal forcing
-C     |   NOTE that at the moment tidal forcing is applied
-C     |   only to "normal" flow.  Code below should eventually
-C     |   be augmented to also specify flow parallel to boundary.
+C     | o Add barotropic tidal velocity to OB value
 C     *==========================================================*
 
 C     !USES:
@@ -213,7 +210,7 @@ C    end bi,bj loops
          ENDDO
         ENDDO
 
-C    end if (tidalPeriod <> 0) and end td (= tidal comp. index) do-loop
+C    end if (tidalPeriod <> 0) and end loop on td (= tidal comp. index)
        ENDIF
       ENDDO
 
