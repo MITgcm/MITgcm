@@ -1,0 +1,16 @@
+# ==========================================
+# | Parameters for STEEP_ICECAVITY package |
+# ==========================================
+ &STIC_PARM01
+ STICadvDiffHeatFlux = .TRUE.,
+ STICboundaryLayer = .FALSE.,
+ STICtopoFile='icetopo.exp1',
+ STICloadAnomalyFile = 'phi0surf.exp1.jmd95z',
+ STICuseGammaFrict = .FALSE.,
+ STICconserve = .TRUE.,
+ ICEFRONTdepthFile = 'icetopo.exp1',
+ STICkappa = 0.,
+ useISOMIPTD = .FALSE.,
+ no_slip_STIC = .FALSE.,
+ STICwriteState = .TRUE.,
+ &

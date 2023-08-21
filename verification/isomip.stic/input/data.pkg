@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+ useSTIC=.TRUE.,
+#useDiagnostics=.TRUE.,
+#useMNC=.TRUE.,
+ &
