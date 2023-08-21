@@ -1,10 +1,10 @@
 % Generate example of OB input files for tidal-component velocity field
 
 % Tidal-component OB input files are real*4 IEEE big-endian binary
-% with dimenstion OBlength * tidalComponents,
-% where OBlength is the length of the open boundary
-% and tidalComponents is the number of tidal components
-% specified in OBCS_PARAMS.h.
+% with dimension: OBlength x nTidalComp,
+% where OBlength is the length of the open boundary and nTidalComp is the
+% number of tidal components to use (i.e., the last non-zero "OBCS_tidalPeriod"
+%  from "data.obcs"), not larger than "OBCS_tideCompSize" from "OBCS_PARAMS.h".
 
 % OB[N,S,E,W][am,ph][N,T]File :: Files with boundary conditions,
 %                                the letter combinations mean:
@@ -12,7 +12,7 @@
 %     am/ph     :: tidal amplitude (m/s) / phase (s)
 %     N/T       :: for the velocity Normal-component / Tangential-component
 
-% Tidal periods are specified using variable tidalPeriod in data.obcs
+% Tidal periods are specified using variable "OBCS_tidalPeriod" in "data.obcs"
 % Tidal amplitude is the maximum tidal velocity in m/s.
 % Tidal phase indicates time in s of maximum positive tide relative to model Time=0.
 
@@ -20,7 +20,7 @@
 
 % create tidal input files
 nx=10; ny=8;
-tidalComponents=10;
+nTidalComp=4;
 for ob={'N','S','E','W'}
     OBlength=ny;
     if any(strcmp(ob,{'N','S'}))
@@ -29,8 +29,7 @@ for ob={'N','S','E','W'}
     for fld={'am','ph'}
         fnm1=['tidalComp.OB' ob{1} fld{1} 'Nvel.bin'];
         fnm2=['tidalComp.OB' ob{1} fld{1} 'Tvel.bin'];
-        var1=zeros(OBlength,tidalComponents); var2=var1;
-       %var1=randn(OBlength,tidalComponents)/1000;
+        var1=zeros(OBlength,nTidalComp); var2=var1;
 
         % specify (0.03 m/s, 6 hr) for North boundary tidal component 3
         if strcmp(ob,'N')

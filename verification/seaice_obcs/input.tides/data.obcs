@@ -56,8 +56,10 @@
 #- Component/Period (hr):
 #               M2: 12.4206  S2: 12       N2: 12.6583  K2: 11.9672  K1: 23.9345
 #               O1: 25.8193  P1: 24.0659  Q1: 26.8684  Mf:327.8599  Mm: 661.31
- OBCS_tidalPeriod= 44714.16,  43200.,    45569.88,    43081.92,    86164.2,
-                   92949.48,  86637.24,  96726.24,  1180295.64,  2380716.,
+#OBCS_tidalPeriod= 44714.16,  43200.,    45569.88,    43081.92,    86164.2,
+#                  92949.48,  86637.24,  96726.24,  1180295.64,  2380716.,
+#-- only use 4 tidal-components (but vector length is 10 = OBCS_tideCompSize)
+ OBCS_tidalPeriod= 44714.16,  43200.,    45569.88,    43081.92,   6*0.,
 #
  OBS_vTidAmFile ='tidalComp.OBSamNvel.bin',
  OBS_vTidPhFile ='tidalComp.OBSphNvel.bin',
