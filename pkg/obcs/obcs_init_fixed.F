@@ -49,7 +49,9 @@ C     i, j     :: Loop counters
       LOGICAL flag
       INTEGER ioUnit
 #ifdef ALLOW_OBCS_TIDES
+      LOGICAL inCurrentDir
       INTEGER  k, fp
+      _RS dummyRS(1)
       _RL recipPeriod, locPh
 #endif
 
@@ -452,63 +454,83 @@ C--   Initialise Tidal Component coeff:
       IF ( useOBCStides ) THEN
 C--   Read from files Barotropic Tidal Amplitude and Phase:
        fp = readBinaryPrec
-
-# ifdef ALLOW_OBCS_NORTH
+       inCurrentDir = .FALSE.
+# ifdef ALLOW_MDSIO
+#  ifdef ALLOW_OBCS_NORTH
        IF ( OBN_uTidAmFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBN_uTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBN_uTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBN_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_uTideCs, dummyRS, 1, myThid )
        IF ( OBN_uTidPhFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBN_uTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBN_uTideSn, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBN_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_uTideSn, dummyRS, 1, myThid )
        IF ( OBN_vTidAmFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBN_vTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBN_vTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBN_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_vTideCs, dummyRS, 1, myThid )
        IF ( OBN_vTidPhFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBN_vTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBN_vTideSn, 1, nIter0, myThid )
-# endif
-# ifdef ALLOW_OBCS_SOUTH
+     &   CALL MDS_READ_SEC_XZ( OBN_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBN_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_SOUTH
        IF ( OBS_uTidAmFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBS_uTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBS_uTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBS_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_uTideCs, dummyRS, 1, myThid )
        IF ( OBS_uTidPhFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBS_uTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBS_uTideSn, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBS_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_uTideSn, dummyRS, 1, myThid )
        IF ( OBS_vTidAmFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBS_vTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBS_vTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_XZ( OBS_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_vTideCs, dummyRS, 1, myThid )
        IF ( OBS_vTidPhFile .NE. ' '  )
-     &   CALL READ_REC_XZ_RL( OBS_vTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBS_vTideSn, 1, nIter0, myThid )
-# endif
-# ifdef ALLOW_OBCS_EAST
+     &   CALL MDS_READ_SEC_XZ( OBS_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBS_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_EAST
        IF ( OBE_uTidAmFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBE_uTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBE_uTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBE_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_uTideCs, dummyRS, 1, myThid )
        IF ( OBE_uTidPhFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBE_uTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBE_uTideSn, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBE_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_uTideSn, dummyRS, 1, myThid )
        IF ( OBE_vTidAmFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBE_vTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBE_vTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBE_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_vTideCs, dummyRS, 1, myThid )
        IF ( OBE_vTidPhFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBE_vTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBE_vTideSn, 1, nIter0, myThid )
-# endif
-# ifdef ALLOW_OBCS_WEST
+     &   CALL MDS_READ_SEC_YZ( OBE_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBE_vTideSn, dummyRS, 1, myThid )
+#  endif
+#  ifdef ALLOW_OBCS_WEST
        IF ( OBW_uTidAmFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBW_uTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBW_uTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBW_uTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_uTideCs, dummyRS, 1, myThid )
        IF ( OBW_uTidPhFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBW_uTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBW_uTideSn, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBW_uTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_uTideSn, dummyRS, 1, myThid )
        IF ( OBW_vTidAmFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBW_vTidAmFile, fp, OBCS_tideCompSize,
-     &                        OBW_vTideCs, 1, nIter0, myThid )
+     &   CALL MDS_READ_SEC_YZ( OBW_vTidAmFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_vTideCs, dummyRS, 1, myThid )
        IF ( OBW_vTidPhFile .NE. ' '  )
-     &   CALL READ_REC_YZ_RL( OBW_vTidPhFile, fp, OBCS_tideCompSize,
-     &                        OBW_vTideSn, 1, nIter0, myThid )
-# endif
+     &   CALL MDS_READ_SEC_YZ( OBW_vTidPhFile, fp, inCurrentDir, 'RL',
+     &                         OBCS_tideCompSize, 1, OBCS_nTidalComp,
+     &                         OBW_vTideSn, dummyRS, 1, myThid )
+#  endif
+# else /* ALLOW_MDSIO */
+       STOP 'ABNORMAL END: S/R OBCS_INIT_FIXED needs pkg/mdsio'
+# endif /* ALLOW_MDSIO */
        _BARRIER
 
 C--   Set Tidal coeff (= Amplit x COS & SIN of Phase ) from Amplitude and Phase:
