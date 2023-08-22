@@ -131,21 +131,21 @@ C     Compatibility with the use of other pkgs:
 
 #ifdef ALLOW_AUTODIFF
 C     Not everything works stably with AD code
-      IF ( useGGL90inAdMode .AND. mxlMaxFlag .GT. 1 ) THEN
+      IF ( useGGL90inAdMode .AND. adMxlMaxFlag .GT. 1 ) THEN
        WRITE(msgBuf,'(2A,L1,A,I2,A)') '** WARNING ** GGL90_CHECK: ',
      &      'useGGL90inAdMode = ', useGGL90inAdMode,
-     &      ' with mxlMaxFlag =', mxlMaxFlag, ' (> 1)'
+     &      ' with adMxlMaxFlag =', adMxlMaxFlag, ' (> 1)'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
-     &      'tends to be unstable, use mxlMaxFlag = 0 or 1.'
+     &      'tends to be unstable, use (ad)mxlMaxFlag = 0 or 1.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      IF ( adMxlMaxFlag .NE. mxlMaxFlag ) THEN
+      IF ( useGGL90inAdMode .AND. adMxlMaxFlag .NE. mxlMaxFlag ) THEN
        WRITE(msgBuf,'(2A,I2,A)') '** WARNING ** GGL90_CHECK: ',
-     &      'Resetting mxlMaxFlag = adMxlMaxFlag =',
-     &      adMxlMaxFlag,' in AD-mode only.'
+     &      'In AD-mode only, use adMxlMaxFlag =', adMxlMaxFlag,
+     &      ' (instead of mxlMaxFlag).'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
