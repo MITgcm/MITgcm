@@ -27,7 +27,11 @@ c     == global variables ==
 #include "PARAMS.h"
 
 #include "ctrl.h"
-#include "grdchk.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       INTEGER myThid

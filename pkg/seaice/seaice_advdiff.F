@@ -90,26 +90,16 @@ C     tkey :: tape key (depends on tiles)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#if ( defined SEAICE_ITD || !defined ALLOW_GENERIC_ADVDIFF )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   make a local copy of the velocities for compatibility with B-grid
-C--   alternatively interpolate to C-points if necessary
+C--   compute cell areas used by all tracers
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifndef SEAICE_CGRID /* not SEAICE_CGRID = BGRID */
-C--   hack to ensure backward compatibility:
-C     average B-grid seaice velocity to C-grid
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx,sNx+OLx-1
-          uc(i,j,bi,bj)=.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
-          vc(i,j,bi,bj)=.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
-         ENDDO
-        ENDDO
-#endif /* SEAICE_CGRID */
-C-    compute cell areas used by all tracers
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           xA(i,j,bi,bj) = _dyG(i,j,bi,bj)*SIMaskU(i,j,bi,bj)
@@ -119,10 +109,22 @@ C-    compute cell areas used by all tracers
        ENDDO
       ENDDO
 
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_BGRID_DYNAMICS
+C--   hack to ensure backward compatibility:
+C     average B-grid seaice velocity to C-grid
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+          uc(i,j,bi,bj)=.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
+          vc(i,j,bi,bj)=.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 C     Do we need this? I am afraid so.
       CALL EXCH_UV_XY_RL(uc,vc,.TRUE.,myThid)
-#endif /* not SEAICE_CGRID */
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte

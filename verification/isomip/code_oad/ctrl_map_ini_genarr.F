@@ -51,7 +51,7 @@ C     == local variables ==
       LOGICAL doglobalread
       LOGICAL ladinit
       CHARACTER*(MAX_LEN_FNAM) fnamebase
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL     fac
 #ifdef ALLOW_GENARR2D_CONTROL
       _RL     tmpfld2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
@@ -90,7 +90,7 @@ C     ctrl_map_gentim2d.F
        ENDDO
        fnamebase = xx_genarr2d_file(iarr)
        il=ILNBLNK( fnamebase )
-       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+       WRITE(fnamegeneric,'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XY ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
@@ -173,7 +173,7 @@ C--   generic - user-defined control vars
        ENDDO
        fnamebase = xx_genarr3d_file(iarr)
        il=ILNBLNK( fnamebase )
-       WRITE(fnamegeneric(1:80),'(2A,I10.10)')
+       WRITE(fnamegeneric,'(2A,I10.10)')
      &     fnamebase(1:il),'.',optimcycle
        CALL ACTIVE_READ_XYZ( fnamegeneric, tmpfld3d, 1,
      &                       doglobalread, ladinit, optimcycle,

@@ -66,9 +66,9 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*(80) fnamegen
+      character*(MAX_LEN_FNAM) fnamegen
 #if ( defined ALLOW_SMOOTH && defined ALLOW_SMOOTH_CTRL2D )
-      character*(80) fnamegeneric
+      character*(MAX_LEN_FNAM) fnamegeneric
 #endif
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file

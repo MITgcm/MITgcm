@@ -66,7 +66,6 @@ C     myThid     :: my Thread Id. number
 CEOP
 
 #ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -342,7 +341,8 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+     I     e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+     I     tensileStrFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
@@ -987,9 +987,6 @@ C     and evaluate divergence of stress and apply to forcing
 C     endif  useHB87StressCoupling
       ENDIF
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
-
       RETURN
       END
 
@@ -1053,9 +1050,6 @@ C-    residual (output)
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
-
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
@@ -1114,9 +1108,6 @@ C     scale residuals by globalArea so that they do not get ridiculously large
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
 
       RETURN
       END
@@ -1183,8 +1174,6 @@ C     coefficients for lateral points, v(i+/-1)
       _RL vRt2        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
@@ -1996,7 +1985,6 @@ C     relaxation with WFAV
       ENDDO
 #endif /* SEAICE_LSR_ZEBRA */
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
 
       RETURN

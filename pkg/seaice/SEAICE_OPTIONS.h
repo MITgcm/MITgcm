@@ -79,10 +79,19 @@ C     computed the "call diagnostics_fill" statement is commented out.
 # undef ALLOW_SITRACER_DEBUG_DIAG
 #endif /* ALLOW_SITRACER */
 
+C--   Allow sea-ice dynamic code. These options are provided so that,
+C     if turned off (#undef), to compile (and process with TAF) only the
+C     the thermodynamics component of the code. Note that, if needed,
+C     sea-ice dynamics can be turned off at runtime (SEAICEuseDYNAMICS=F).
+
 C--   Historically, the seaice model was discretized on a B-Grid. This
-C     discretization should still work but it is not longer actively tested
-C     and supported. The following flag should always be set in order to use
-C     the operational C-grid discretization.
+C     discretization should still work but it is not longer actively
+C     tested and supported. Define this flag to compile it. It cannot be
+C     defined together with SEAICE_CGRID
+#undef SEAICE_BGRID_DYNAMICS
+
+C--   The following flag should always be set in order to use C the
+C--   operational C-grid discretization.
 #define SEAICE_CGRID
 
 #ifdef SEAICE_CGRID
@@ -174,7 +183,9 @@ C     Use parameterisation of grounding ice for a better representation
 C     of fastice in shallow seas
 # undef SEAICE_ALLOW_BOTTOMDRAG
 
-#else /* not SEAICE_CGRID, but old B-grid */
+#endif /* SEAICE_CGRID */
+
+#ifdef SEAICE_BGRID_DYNAMICS
 C--   Options for the B-grid version only:
 
 C-    By default for B-grid dynamics solver wind stress under sea-ice is
@@ -192,7 +203,7 @@ C     It is smoother and includes all metric terms, similar to C-grid solvers.
 C     It is here for completeness, but its usefulness is unclear.
 # undef SEAICE_LSRBNEW
 
-#endif /* SEAICE_CGRID */
+#endif /* SEAICE_BGRID_DYNAMICS */
 
 C--   Some regularisations
 C-    When set limit the Ice-Loading to mass of 1/5 of Surface ocean grid-box
@@ -241,12 +252,6 @@ C     some finite sea ice thickness
 C-    Do not compile growth/thermodynamics code (avoiding this code can
 C     also be done by setting runtime parameter usePWthermodynamics=F)
 #undef DISABLE_SEAICE_GROWTH
-
-C-    Allow sea-ice dynamic code. This option is provided so that,
-C     if turned off (#undef), to compile (and process with TAF) only the
-C     the thermodynamics component of the code. Note that, if needed,
-C     sea-ice dynamics can be turned off at runtime (SEAICEuseDYNAMICS=F).
-#define SEAICE_ALLOW_DYNAMICS
 
 C-    Do not compile/use seaice-related obcs code when using obcs.
 #undef DISABLE_SEAICE_OBCS

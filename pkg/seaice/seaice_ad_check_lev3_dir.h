@@ -14,16 +14,14 @@ CADJ STORE UICE              = tapelev3, key = ilev_3
 CADJ STORE VICE              = tapelev3, key = ilev_3
 CADJ STORE TICES             = tapelev3, key = ilev_3
 # ifdef SEAICE_CGRID
+CADJ STORE dwatn             = tapelev3, key = ilev_3
 CADJ STORE stressDivergenceX = tapelev3, key = ilev_3
 CADJ STORE stressDivergenceY = tapelev3, key = ilev_3
-#  ifdef SEAICE_ALLOW_DYNAMICS
-CADJ STORE dwatn             = tapelev3, key = ilev_3
-#   ifdef SEAICE_ALLOW_EVP
+#  ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1     = tapelev3, key = ilev_3
 CADJ STORE seaice_sigma2     = tapelev3, key = ilev_3
 CADJ STORE seaice_sigma12    = tapelev3, key = ilev_3
-#   endif /* SEAICE_ALLOW_EVP */
-#  endif /* SEAICE_ALLOW_DYNAMICS */
+#  endif /* SEAICE_ALLOW_EVP */
 # endif /* SEAICE_CGRID */
 # ifdef SEAICE_VARIABLE_SALINITY
 CADJ STORE HSALT             = tapelev3, key = ilev_3

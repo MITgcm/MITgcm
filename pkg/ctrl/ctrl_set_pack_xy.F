@@ -31,9 +31,9 @@ c     == routine arguments ==
       integer cunit
       integer ivartype
       _RL precondScalar
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*( 80) weighttype
+      character*(MAX_LEN_FNAM) weighttype
       logical lxxadxx
       integer mythid
 
@@ -48,7 +48,7 @@ c     == local variables ==
       integer ii, irec
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp
@@ -59,13 +59,6 @@ C========================================================================
       integer imin,imax
       _RL     globmsk  ( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
       _RL     globfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      integer il
-      _RL     weightfld2d( sNx,nSx,nPx,sNy,nSy,nPy )
-#endif
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      character*( 80) weightname
-#endif
       integer reclen, irectrue
       integer cunit2, cunit3
       real*4 globfldtmp2( sNx,nSx,nPx,sNy,nSy,nPy )
@@ -79,7 +72,6 @@ C========================================================================
       real*8 fld2d_buf_glo(Nx,Ny)
       _RL fld2dDim  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld2dNodim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL wei2d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dummy
 # endif /* ALLOW_PACKUNPACK_METHOD2 */
 c     == end of interface ==
@@ -120,20 +112,18 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+            write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
@@ -146,31 +136,6 @@ c--   Only the master thread will do I/O.
          open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
-
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      if (weighttype.NE.' ') then
-       il=ilnblnk( weighttype)
-       write(weightname(1:80),'(80a)') ' '
-       write(weightname(1:80),'(a)') weighttype(1:il)
-       call MDSREADFIELD_2D_GL(
-     &     weightname, ctrlprec, 'RL',
-     &     1, weightfld2d, 1, mythid)
-      else
-        do jp = 1,nPy
-         do bj = jtlo,jthi
-          do j = jmin,jmax
-           do ip = 1,nPx
-            do bi = itlo,ithi
-             do i = imin,imax
-              weightfld2d(i,bi,ip,j,bj,jp) = 1. _d 0
-             enddo
-            enddo
-           enddo
-          enddo
-         enddo
-        enddo
-      endif
-#endif
 
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
@@ -323,15 +288,6 @@ c     -- end of irec loop --
 
 c-- part 1: preliminary reads and definitions
 
-#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-#ifdef ALLOW_AUTODIFF
-      call active_read_xy(weighttype, wei2d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
-#else
-      CALL READ_REC_XY_RL( weighttype, wei2d, 1, 1, myThid )
-#endif
-#endif
-
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
      &    .FALSE., .FALSE., 0 , mythid, dummy)
@@ -340,15 +296,13 @@ c-- part 1: preliminary reads and definitions
 #endif
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          il = ilnblnk( fname )
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(2a)') fname(1:il),'.pack_ctrl_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.pack_ctrl_dim'
+            write(cfile2,'(2a)') fname(1:il),'.pack_ctrl_adim'
+            write(cfile3,'(2a)') fname(1:il),'.pack_ctrl_dim'
          else
-            write(cfile2(1:80),'(2a)') fname(1:il),'.pack_grad_adim'
-            write(cfile3(1:80),'(2a)') fname(1:il),'.pack_grad_dim'
+            write(cfile2,'(2a)') fname(1:il),'.pack_grad_adim'
+            write(cfile3,'(2a)') fname(1:il),'.pack_grad_dim'
          endif
       endif
 

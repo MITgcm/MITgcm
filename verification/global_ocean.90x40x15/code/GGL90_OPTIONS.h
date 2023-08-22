@@ -21,11 +21,19 @@ C     Use horizontal averaging for viscosity and diffusivity as
 C     originally implemented in OPA.
 #undef ALLOW_GGL90_SMOOTH
 
-c-----------------------------------------------------------------------
-c       include IDEMIX model
-c-----------------------------------------------------------------------
+C     allow IDEMIX model
 #define ALLOW_GGL90_IDEMIX
+#ifdef ALLOW_GGL90_IDEMIX
+C     The cvmix version of idemix uses different regularisations for the
+C     Coriolis parameter, buoyancy frequency etc, when used in the denominator
+# undef GGL90_IDEMIX_CVMIX_VERSION
+#endif
 
+C     include Langmuir circulation parameterization
+#undef ALLOW_GGL90_LANGMUIR
+
+C     recover old bug prior to Jun 2023
+#undef GGL90_MISSING_HFAC_BUG
 
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */
