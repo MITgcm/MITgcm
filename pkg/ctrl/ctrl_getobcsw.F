@@ -66,7 +66,7 @@ cgg      _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-      character*(80) fnameobcsw
+      character*(MAX_LEN_FNAM) fnameobcsw
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
       _RL     tmpz (Nr,nSx,nSy)
@@ -93,7 +93,7 @@ c     Find ctrlDir (w/o trailing blanks) length
 
       if (optimcycle .ge. 0) then
        ilobcsw=ilnblnk( xx_obcsw_file )
-       write(fnameobcsw(1:80),'(2a,i10.10)')
+       write(fnameobcsw,'(2a,i10.10)')
      &      ctrlDir(1:ilDir)//xx_obcsw_file(1:ilobcsw), '.', optimcycle
       endif
 

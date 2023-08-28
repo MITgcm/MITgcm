@@ -13,6 +13,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GGL90.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid   :: Number of this instance of GGL90_CHECK
@@ -125,6 +128,28 @@ C     Compatibility with the use of other pkgs:
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
       ENDIF
+
+#ifdef ALLOW_AUTODIFF
+C     Not everything works stably with AD code
+      IF ( useGGL90inAdMode .AND. adMxlMaxFlag .GT. 1 ) THEN
+       WRITE(msgBuf,'(2A,L1,A,I2,A)') '** WARNING ** GGL90_CHECK: ',
+     &      'useGGL90inAdMode = ', useGGL90inAdMode,
+     &      ' with adMxlMaxFlag =', adMxlMaxFlag, ' (> 1)'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '** WARNING ** GGL90_CHECK: ',
+     &      'tends to be unstable, use (ad)mxlMaxFlag = 0 or 1.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( useGGL90inAdMode .AND. adMxlMaxFlag .NE. mxlMaxFlag ) THEN
+       WRITE(msgBuf,'(2A,I2,A)') '** WARNING ** GGL90_CHECK: ',
+     &      'In AD-mode only, using adMxlMaxFlag =', adMxlMaxFlag,
+     &      ' (instead of mxlMaxFlag).'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif
 
 C-    Stop cleanly when error was detected
       IF ( errCount.GE.1 ) THEN

@@ -40,8 +40,11 @@ c     == global variables ==
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 #include "optim.h"
 
 c     == routine arguments ==
@@ -80,7 +83,7 @@ c     == local variables ==
       _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      character*(80) fname
+      character*(MAX_LEN_FNAM) fname
 
 c--   == external ==
 
@@ -95,7 +98,7 @@ c--   == end of interface ==
       dumtime      = 0. _d 0
 c     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
-      write(fname,'(80a)') ' '
+      write(fname,'(a)') ' '
 
       if ( grdchkvarindex .eq. 0 ) then
          STOP 'GRDCHK INDEX 0 NOT ALLOWED'

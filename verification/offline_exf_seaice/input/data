@@ -47,14 +47,16 @@
  &PARM03
  startTime=0.0,
 #endTime=432000.,
- deltaT=1800.0,
+# Use half the original time step to test the option of stepping
+# the sea ice dynamics solver with a longer timestep.
+ deltaT= 900.0,
  abEps=0.1,
  forcing_In_AB = .FALSE.,
  pChkptFreq=3600000.,
  dumpFreq = 864000.,
  monitorFreq=86400.,
  monitorSelect=2,
- nTimeSteps=12,
+ nTimeSteps=24,
  monitorFreq=21600.,
  &
 

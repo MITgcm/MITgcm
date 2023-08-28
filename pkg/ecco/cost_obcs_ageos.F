@@ -89,10 +89,10 @@ c     == local variables ==
       _RL maskyzageos   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL dummy
 
-      character*(80) fnametheta
-      character*(80) fnamesalt
-      character*(80) fnameuvel
-      character*(80) fnamevvel
+      character*(MAX_LEN_FNAM) fnametheta
+      character*(MAX_LEN_FNAM) fnamesalt
+      character*(MAX_LEN_FNAM) fnameuvel
+      character*(MAX_LEN_FNAM) fnamevvel
 
       logical doglobalread
       logical ladinit
@@ -136,16 +136,16 @@ c--   Read tiled data.
 
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)')
+        write(fnametheta,'(2a,i10.10)')
      &    tbarfile(1:iltheta),'.',optimcycle
         ilsalt = ilnblnk( sbarfile )
-        write(fnamesalt(1:80),'(2a,i10.10)')
+        write(fnamesalt,'(2a,i10.10)')
      &    sbarfile(1:ilsalt),'.',optimcycle
         iluvel = ilnblnk( ubarfile )
-        write(fnameuvel(1:80),'(2a,i10.10)')
+        write(fnameuvel,'(2a,i10.10)')
      &    ubarfile(1:iluvel),'.',optimcycle
         ilvvel = ilnblnk( vbarfile )
-        write(fnamevvel(1:80),'(2a,i10.10)')
+        write(fnamevvel,'(2a,i10.10)')
      &    vbarfile(1:ilvvel),'.',optimcycle
       endif
 
