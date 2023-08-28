@@ -403,7 +403,7 @@ c     Initialize PDAF
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
 #endif
 
-# if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+#if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
 C     end of initialisation and use of tapelev_init: write buffer to disk
       CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
