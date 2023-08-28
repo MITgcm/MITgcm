@@ -76,18 +76,18 @@ C     method that works for .not.useSingleCPUio cannot be used
       ENDDO
 
       DO irec = nrec_nl*Nx+1, ncvarrecs(ivartype)
-C--   Call directly MDS_WRITE_SEC_yZ (instead of indirectly via MDSWRITEFIELDyZ)
+C--   Call directly MDS_WRITE_SEC_YZ (instead of indirectly via MDSWRITEFIELDYZ)
 C     --> expect zero difference.
 C     In this call, value "False" is passed to 3rd arg "globalFile"
 C             and   value "False" is passed to 4th arg "useCurrentDir,"
 c       CALL MDS_WRITE_SEC_YZ( fname, ctrlprec, .FALSE., .FALSE.,
-c    I                         'RL', Nr, globfldyz, dummyRS,
+c    I                         'RL', Nr, 1, Nr, globfldyz, dummyRS,
 c    I                         irec, optimcycle, myThid )
 
 C--   The only difference here (vs initial MDSWRITEFIELDYZ call) is that,
-C     in WRITE_REC_YZ_RL, argument "globalFile" is not set to false but
-C     instead is taken from global setting "globalFiles" ;
-C     But this might be more consistent with call to WRITE_REC_3D_RL above
+C     in WRITE_REC_YZ_RL, argument "globalFile" is not set to FALSE but is
+C     instead taken from RD_WR_SEC common block (but currently set to FALSE
+C     in ini_model_io.F if using OBCS)
         CALL WRITE_REC_YZ_RL( fname, ctrlprec,
      I                        Nr, globfldyz,
      I                        irec, optimcycle, myThid )

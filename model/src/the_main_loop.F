@@ -512,7 +512,7 @@ CADJ INIT comlev1_exf_2 = COMMON,niter_bulk*nchklev_1*sNx*nSx*sNy*nSy
 #   endif /* ALLOW_BULKFORMULAE */
 c--
 #   ifdef ALLOW_SEAICE
-#    ifdef SEAICE_ALLOW_DYNAMICS
+#    ifdef SEAICE_CGRID
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #     ifdef SEAICE_LSR_ADJOINT_ITER
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
