@@ -144,7 +144,7 @@ C     Not everything works stably with AD code
       ENDIF
       IF ( useGGL90inAdMode .AND. adMxlMaxFlag .NE. mxlMaxFlag ) THEN
        WRITE(msgBuf,'(2A,I2,A)') '** WARNING ** GGL90_CHECK: ',
-     &      'In AD-mode only, use adMxlMaxFlag =', adMxlMaxFlag,
+     &      'In AD-mode only, using adMxlMaxFlag =', adMxlMaxFlag,
      &      ' (instead of mxlMaxFlag).'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
