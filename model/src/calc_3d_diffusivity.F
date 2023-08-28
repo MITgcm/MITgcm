@@ -311,6 +311,9 @@ C-    Increase KappaRTr above bottom level:
              ENDIF
            ENDDO
           ENDDO
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tmpFac          = loctape_3d_diff, key = k
+# endif
           IF ( mixBott.EQ.2 ) THEN
            DO j = 2-OLy, sNy+OLy
             DO i = 2-OLx, sNx+OLx
@@ -364,10 +367,10 @@ C-    Increase KappaRTr below surface level:
              ENDIF
            ENDDO
           ENDDO
-          IF ( mixSurf.EQ.2 ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tmpFac          = loctape_3d_diff, key = k
 # endif
+          IF ( mixSurf.EQ.2 ) THEN
            DO j = 2-OLy, sNy+OLy
             DO i = 2-OLx, sNx+OLx
              tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
