@@ -40,8 +40,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "GRID.h"
 #include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
@@ -120,7 +123,11 @@ c         iobcswrk  = iobcsmem (ichknum-1)
 
 C--   set max loop index for obcs multiplicities
         IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-          nobcsmax = nobcs
+#ifdef ALLOW_OBCS_CONTROL
+         nobcsmax = nobcs
+#else
+         print *, 'S/R grdchk_loc: Ooops!'
+#endif
         ELSE
           nobcsmax = 1
         ENDIF
