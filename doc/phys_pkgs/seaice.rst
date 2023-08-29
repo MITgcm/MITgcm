@@ -46,7 +46,10 @@ Parts of the :filelink:`seaice <pkg/seaice>` code can be enabled or disabled at
 compile time via CPP preprocessor flags. These options are set in
 :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
-options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
+options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`. Note
+that defining :varlink:`SEAICE_BGRID_DYNAMICS` turns on legacy code and thus
+automatically undefines more recent features, see :filelink:`SEAICE_OPTIONS.h
+<pkg/seaice/SEAICE_OPTIONS.h>` for details.
 
 .. tabularcolumns:: |\Y{.375}|\Y{.1}|\Y{.55}|
 
@@ -56,8 +59,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :name: tab_phys_pkg_seaice_cpp
 
    :varlink:`SEAICE_DEBUG`, #undef, enhance STDOUT for debugging
-   :varlink:`SEAICE_ALLOW_DYNAMICS`, #define, sea ice dynamics code
-   :varlink:`SEAICE_CGRID`, #define, LSR solver on C-grid (rather than original B-grid)
+   :varlink:`SEAICE_CGRID`, #define, use sea ice dynamics on C-grid
    :varlink:`SEAICE_ALLOW_EVP`, #define, enable use of EVP rheology solver
    :varlink:`SEAICE_ALLOW_JFNK`, #define, enable use of JFNK rheology solver
    :varlink:`SEAICE_ALLOW_KRYLOV`, #define, enable use of Krylov rheology solver
@@ -71,12 +73,14 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
    :varlink:`SEAICE_DELTA_SMOOTHREG`, #undef, use differentiable regularization for :math:`1/\Delta`
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
+   :varlink:`SEAICE_BGRID_DYNAMICS`, #undef, use sea ice dynamics code on legacy B-grid; most of the previous flags are not available with B-grid
+   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities; defined by default if :varlink:`SEAICE_BGRID_DYNAMICS` is defined
+   :varlink:`SEAICE_LSRBNEW`, #undef, FV discretization for B-grid
    :varlink:`SEAICE_ITD`, #undef, run with dynamical sea Ice Thickness Distribution (ITD)
    :varlink:`SEAICE_VARIABLE_SALINITY`, #undef, enable sea ice with variable salinity
    :varlink:`SEAICE_CAP_ICELOAD`, #undef, enable to limit seaice load (:varlink:`siceLoad`) on the sea surface
    :varlink:`ALLOW_SITRACER`, #undef, enable sea ice tracer package
-   :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean
-   :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities
    :varlink:`SEAICE_USE_GROWTH_ADX`, #undef, use of adjointable but more simplified sea ice thermodynamics model in :filelink:`seaice_growth_adx.F <pkg/seaice/seaice_growth_adx.F>` instead of :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
 
 .. _ssub_phys_pkg_seaice_runtime:
