@@ -67,7 +67,7 @@ C                            of A*Xp=Yp with subsequent call to this routine
 
 C/*   This flag combination is only false if INCLUDE_IMPLVERTADV_CODE is
 C     not defined while ALLOW_AUTODIFF is. */
-#if !(!defined INCLUDE_IMPLVERTADV_CODE && (defined ALLOW_AUTODIFF))
+#if ( defined INCLUDE_IMPLVERTADV_CODE || !defined ALLOW_AUTODIFF )
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
