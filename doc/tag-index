@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - move computing the mixingLength to a dedicated routine ggl90_mixinglength.F
+  - adjust/add TAF store directives to avoid hidden recomputations.
 o pkg/seaice:
   - new option SEAICE_BGRID_DYNAMICS allows to remove/replace
     SEAICE_ALLOW_DYNAMICS by ( SEAICE_CGRID or SEAICE_BGRID_DYNAMICS ) ;
