@@ -81,7 +81,6 @@ C  uT           :: zonal advective flux
       _RL sm_yz (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef GAD_ALLOW_TS_SOM_ADV
 C !LOCAL VARIABLES: ====================================================
 C  i,j           :: loop indices
 C  uLoc          :: volume transported (per time step)
@@ -124,7 +123,7 @@ C  nbStrips      :: number of strips (if region to update is splitted)
       _RL  fn_yz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ INIT somtape_x = COMMON, 2
 #endif
       recip_dT = 0.
@@ -159,7 +158,7 @@ C--   start 1rst loop on strip number "ns"
       DO ns=1,nbStrips
 
       IF ( limiter.EQ.1 ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE sm_o,sm_x,sm_xx,sm_xy,sm_xz
 CADJ &     = somtape_x, key = ns, kind = isbyte
 #endif
@@ -181,7 +180,7 @@ C     appropriate moments before transport.
        ENDDO
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE sm_o,sm_v,sm_x,sm_xx,sm_xy,sm_xz,sm_y,sm_yy,sm_yz,sm_z,sm_zz
 CADJ &     = somtape_x, key = ns, kind = isbyte
 #endif
@@ -236,7 +235,7 @@ C--    Save zero-order flux:
 C--   end 1rst loop on strip number "ns"
 c     ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE sm_o,sm_v,sm_x,sm_y,sm_z,sm_xx,sm_xy,sm_xz
 CADJ &     = somtape_x, key = ns, kind = isbyte
 #endif
@@ -321,7 +320,6 @@ C      add into grid box (i): positive U(i) and negative U(i+1)
 
 C--   end 2nd loop on strip number "ns"
       ENDDO
-#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

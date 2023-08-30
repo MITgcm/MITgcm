@@ -1,5 +1,8 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -236,8 +239,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDIF
 #endif /* ndef GAD_SMOLARKIEWICZ_HACK */
        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-#ifdef  PTRACERS_ALLOW_DYN_STATE
-# ifndef GAD_ALLOW_TS_SOM_ADV
+#ifdef PTRACERS_ALLOW_DYN_STATE
+# if ( defined ALLOW_AUTODIFF_TAMC && !defined GAD_ALLOW_TS_SOM_ADV )
         WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
      &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -254,11 +257,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &    ' PTRACERS_ALLOW_DYN_STATE is not defined',
      &    ' in PTRACERS_OPTIONS.h.'
         CALL PRINT_ERROR( msgBuf, myThid )
-# ifndef GAD_ALLOW_TS_SOM_ADV
-        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
-     &    ' and GAD_ALLOW_TS_SOM_ADV is not defined in GAD_OPTIONS.h.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-# endif
         errCount = errCount + 1
 #endif
        ENDIF

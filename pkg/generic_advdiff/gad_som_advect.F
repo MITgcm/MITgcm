@@ -73,7 +73,6 @@ C  gTracer           :: tendency array
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef GAD_ALLOW_TS_SOM_ADV
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
 C  i,j,k         :: loop indices
@@ -247,7 +246,7 @@ C--   Set tile-specific parameters for horizontal fluxes
 
       limiter = MOD(advectionScheme, 10)
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
       IF ( npass.GT.maxcube ) THEN
         WRITE(msgBuf,'(A,2(I3,A))') 'S/R GAD_SOM_ADVECT: npass =',
      &     npass, ' >', maxcube, ' = maxcube, ==> check "tamc.h"'
@@ -292,7 +291,7 @@ C-    fill empty grid-box:
         ENDDO
        ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE smtr(:,:,k,bi,bj,:) = somtape_k, key=k, kind=isbyte
 CADJ STORE smtr0(:,:,k)        = somtape_k, key=k, kind=isbyte
 CADJ STORE smVol(:,:,k)        = somtape_k, key=k, kind=isbyte
@@ -329,7 +328,7 @@ C-    not CubedSphere
           calc_fluxes_X = MOD(ipass,2).EQ.1
           calc_fluxes_Y = .NOT.calc_fluxes_X
         ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE smtr(:,:,k,bi,bj,:) =somtape_k_pass,key=ipasskey,kind=isbyte
 CADJ STORE smtr0(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
 CADJ STORE smVol(:,:,k)        =somtape_k_pass,key=ipasskey,kind=isbyte
@@ -489,7 +488,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.implicitAdvection ) THEN
 C--   Apply limiter (if any):
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE smtr(:,:,:,bi,bj,:) = somtape, key=1, kind=isbyte
 CADJ STORE smtr0               = somtape, key=1, kind=isbyte
 #endif
@@ -509,7 +508,7 @@ CADJ STORE smtr0               = somtape, key=1, kind=isbyte
 
 C--   Start of k loop for vertical flux
        DO k=Nr,1,-1
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE smtr(:,:,k,bi,bj,:) = somtape_k, key=k, kind=isbyte
 CADJ STORE smtr0(:,:,k)        = somtape_k, key=k, kind=isbyte
 CADJ STORE smVol(:,:,k)        = somtape_k, key=k, kind=isbyte
@@ -667,7 +666,6 @@ C--   End of k loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block
       ENDIF
-#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

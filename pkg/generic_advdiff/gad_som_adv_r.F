@@ -106,7 +106,6 @@ C  wT           :: vertical advective flux
       _RL  fn_yz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef GAD_ALLOW_TS_SOM_ADV
 C !LOCAL VARIABLES: ====================================================
 C  i,j          :: loop indices
 C  wLoc         :: volume transported (per time step)
@@ -122,7 +121,7 @@ C  wLoc         :: volume transported (per time step)
 CEOP
 
 #ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_AUTODIFF_TAMC
+# if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ INIT somtape_r = COMMON, 1
 # endif
       alp(1,1,kDw) = alp(1,1,kDw)
@@ -156,7 +155,7 @@ CADJ INIT somtape_r = COMMON, 1
       noFlowAcrossSurf = rigidLid .OR. nonlinFreeSurf.GE.1
      &                            .OR. select_rStar.NE.0
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#if ( defined ALLOW_AUTODIFF_TAMC && defined GAD_ALLOW_TS_SOM_ADV )
 CADJ STORE sm_o,sm_v,sm_x,sm_xz,sm_y,sm_yz,sm_z,sm_zz
 CADJ &     = somtape_r, key = 1, kind = isbyte
 #endif
@@ -361,7 +360,6 @@ C      add into grid box (k): positive W(kDw) and negative W(kUp)
 #endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
-#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END
