@@ -238,18 +238,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
        ENDIF
 #endif /* ndef GAD_SMOLARKIEWICZ_HACK */
+#ifndef PTRACERS_ALLOW_DYN_STATE
        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-#ifdef PTRACERS_ALLOW_DYN_STATE
-# if ( defined ALLOW_AUTODIFF_TAMC && !defined GAD_ALLOW_TS_SOM_ADV )
-        WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
-     &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK:',
-     &    ' GAD_ALLOW_TS_SOM_ADV is not defined in GAD_OPTIONS.h.'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-# endif
-#else
         WRITE(msgBuf,'(2A,I4,A)') 'PTRACERS_CHECK:',
      &    ' PTRACERS_SOM_Advection(', iTracer, ') = T, but'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -258,8 +248,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &    ' in PTRACERS_OPTIONS.h.'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-#endif
        ENDIF
+#endif
       ENDDO
 
       IF ( errCount.GE.1 ) THEN
