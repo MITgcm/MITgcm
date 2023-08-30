@@ -101,7 +101,7 @@ C----
      &  useCalciteSaturation, calcOmegaCalciteFreq,
      &  nIterCO3, selectCalciteDissolution,
      &  WsinkPIC, selectCalciteBottomRemin,
-     &  CalciteDissolutionRateExp, 
+     &  CalciteDissolutionRateExp,
      &  CalciteDissolutionRateK,
      &  zca
 
@@ -173,16 +173,18 @@ C number of iterations for the Follows 3d pH solver
 C flag to either remineralize in bottom or top layer if flux
 C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
-C flag to control calcite dissolution rate method
-C 0=Follows default, 1=Keir (1980) Geochem. Cosmochem. Acta.,
-C 2=Naviaux et al. 2019, Marine Chemistry
+C selectCalciteDissolution :: flag to control calcite dissolution rate method:
+C   =0 : Follows default ; =1 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C   =2 : Naviaux et al. 2019, Marine Chemistry
        selectCalciteDissolution = 0
 C set nominal particulate sinking rate (m/s)
        WsinkPIC                 = 100. _d 0/86400. _d 0
 C Calcite dissoltion rate exponent (4.2 for aragonite)
-       CalciteDissolutionRateExp= 4.54 _d 0
+       CalciteDissolutionRateExp(1) = 4.54 _d 0
+       CalciteDissolutionRateExp(2) = 4.54 _d 0
 C Calcite dissolution rate constant (%/day)
-       CalciteDissolutionRateK  = 7.177 _d 0
+       CalciteDissolutionRateK(1)   = 7.177 _d 0
+       CalciteDissolutionRateK(2)   = 7.177 _d 0
 C-- setting default values for Calcite Saturation params ends here.
        zca                      = 3500. _d 0
 
@@ -400,42 +402,40 @@ C- namelist ABIOTIC_PARMS
      &  'calcOmegaCalciteFreq =',
      &  ' /* Frequency of calcite saturation calculation (s) */')
        IF ( selectCalciteDissolution .EQ. 0 ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'Using Follows default dissolution method'
+        WRITE(msgBuf,'(A)') 'Using Follows default dissolution method'
         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissolutionRateK(1), 
-     &   INDEX_NONE, 'CalciteDissolutionRateK =',
-     &  ' /* Rate constant for calcite dissolution (%/day) */')
-        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1), 
-     &  INDEX_NONE, 'CalciteDissolutionRateExp =',
-     &  ' /* Rate exponent for calcite dissolution */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateK(1), INDEX_NONE,
+     &   'CalciteDissolutionRateK =',
+     &   ' /* Rate constant for calcite dissolution (%/day) */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1), INDEX_NONE,
+     &   'CalciteDissolutionRateExp =',
+     &   ' /* Rate exponent for calcite dissolution */')
        ELSEIF ( selectCalciteDissolution .EQ. 1 ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'Using Keir (1980) dissolution method'
+        WRITE(msgBuf,'(A)') 'Using Keir (1980) dissolution method'
         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissolutionRateK(1),
-     &  INDEX_NONE, 'CalciteDissolutionRateK =',
-     &  ' /* Rate constant for calcite dissolution (%/day) */')
-        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1),
-     &  INDEX_NONE, 'CalciteDissolutionRateExp =',
-     &  ' /* Rate exponent for calcite dissolution */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateK(1), INDEX_NONE,
+     &   'CalciteDissolutionRateK =',
+     &   ' /* Rate constant for calcite dissolution (%/day) */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1), INDEX_NONE,
+     &   'CalciteDissolutionRateExp =',
+     &   ' /* Rate exponent for calcite dissolution */')
        ELSEIF ( selectCalciteDissolution .EQ. 2 ) THEN
         WRITE(msgBuf,'(A)')
-     &  'Using Naviaux et al. (2019) dissolution rates'
+     &               'Using Naviaux et al. (2019) dissolution rates'
         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissolutionRateK(1),
-     &  INDEX_NONE, 'CalciteDissolutionRateK(1) =',
-     &  ' /* Rate constant for dissolution (%/day) omega > 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissolutionRateK(2),
-     &  INDEX_NONE, 'CalciteDissolutionRateK(2) =',
-     &  ' /* Rate constant for dissolution (%/day) omega > 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1),
-     &  INDEX_NONE, 'CalciteDissolutionRateExp(1) =',
-     &  ' /* Rate exponent for dissolution  omega > 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissolutionRateExp(2),
-     &  INDEX_NONE, 'CalciteDissolutionRateExp(2) =',
-     &  ' /* Rate exponent for dissolution  omega > 0.8272 */')
-       ENDIF   
+        CALL WRITE_0D_RL( CalciteDissolutionRateK(1), INDEX_NONE,
+     &   'CalciteDissolutionRateK(1) =',
+     &   ' /* Rate constant for dissolution (%/day) omega > 0.8272 */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateK(2), INDEX_NONE,
+     &   'CalciteDissolutionRateK(2) =',
+     &   ' /* Rate constant for dissolution (%/day) omega < 0.8272 */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateExp(1), INDEX_NONE,
+     &   'CalciteDissolutionRateExp(1) =',
+     &   ' /* Rate exponent for dissolution  omega > 0.8272 */')
+        CALL WRITE_0D_RL( CalciteDissolutionRateExp(2), INDEX_NONE,
+     &   'CalciteDissolutionRateExp(2) =',
+     &   ' /* Rate exponent for dissolution  omega < 0.8272 */')
+       ENDIF
        CALL WRITE_0D_RL( WsinkPIC, INDEX_NONE, 'WsinkPIC =',
      &  ' /* Sinking speed of particulate inorganic carbon (m/s) */')
        CALL WRITE_0D_I( selectCalciteBottomRemin, INDEX_NONE,
