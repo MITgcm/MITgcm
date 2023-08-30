@@ -84,7 +84,8 @@ CADJ STORE rstarfacc,rstarfacs,rstarfacw
 CADJ &     = tapelev3, key = ilev_3
 CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = tapelev3, key = ilev_3
-#  if (defined ALLOW_CG2D_NSA || defined ALLOW_DEPTH_CONTROL)
+#  if (defined ALLOW_MOM_FLUXFORM || \
+       defined ALLOW_CG2D_NSA || defined ALLOW_DEPTH_CONTROL)
 CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev3, key = ilev_3
 #  endif
