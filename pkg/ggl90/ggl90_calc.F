@@ -770,12 +770,6 @@ C     by averaging (@ grid-cell center) the 4 components @ U,V pos.
      &        ( tempU*tempU + tempUp*tempUp
      &        + tempV*tempV + tempVp*tempVp
      &        )*halfRL
-#ifdef ALLOW_AUTODIFF
-         IF ( uStarSquare(i,j) .GT. zeroRL )
-     &        uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#else
-         uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#endif
 C Note: adding parenthesis in 4 terms sum (-> 2 group of 2) as below:
 c        uStarSquare(i,j) =
 c    &        ( ( tempU*tempU + tempUp*tempUp )
@@ -793,12 +787,6 @@ C     estimate friction velocity uStar from surface forcing
      &               + surfaceForcingU(i+1,j,  bi,bj) ) )**2
      &   + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
      &               + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-#ifdef ALLOW_AUTODIFF
-         IF ( uStarSquare(i,j) .GT. zeroRL )
-     &        uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#else
-         uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#endif
         ENDDO
        ENDDO
       ENDIF
@@ -862,12 +850,6 @@ C
      &         ( stressU(i,j)*stressU(i,j)+stressU(i+1,j)*stressU(i+1,j)
      &         + stressV(i,j)*stressV(i,j)+stressV(i,j+1)*stressV(i,j+1)
      &         )*halfRL
-#ifdef ALLOW_AUTODIFF
-          IF ( uStarSquare(i,j) .GT. zeroRL )
-     &         uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#else
-          uStarSquare(i,j) = SQRT(uStarSquare(i,j))*recip_coordFac
-#endif
          ENDIF
         ENDDO
        ENDDO
