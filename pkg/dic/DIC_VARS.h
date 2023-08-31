@@ -1,6 +1,3 @@
-#ifdef ALLOW_OPENAD
-# include "DIC_OPTIONS.h"
-#endif
 C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Abiotic Carbon Variables
