@@ -58,8 +58,8 @@ c     == local variables ==
       _RL bpdatanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpcount ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL junk
-      character*(80) fname
-      character*(80) fname4test
+      character*(MAX_LEN_FNAM) fname
+      character*(MAX_LEN_FNAM) fname4test
       _RL fac
       _RL offset
       _RL offset_sum
@@ -138,7 +138,7 @@ c-- map global variable to local variables
 
 #ifdef ALLOW_CTRL
        il=ilnblnk( gencost_barfile(kgen) )
-       write(fname(1:80),'(2a,i10.10)')
+       write(fname,'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
 #endif
 
@@ -174,7 +174,7 @@ c--     Compute the mean over all bpdat records.
      &        gencost_datafile(kgen)(1:il), irec
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        write(fname4test(1:80),'(2a,i4.4)')
+        write(fname4test,'(2a,i4.4)')
      &       gencost_datafile(kgen)(1:il),'.',irec
         call write_rec_xy_rl( fname4test, locbpdat, 1, 1, myThid)
 #endif
@@ -291,10 +291,10 @@ c--    Remove global mean value
 
 c--    Smooth field of anomalies
         if (gencost_outputlevel(kgen).GT.0) then
-         write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
+         write(fname4test,'(1a)') 'bpdifanom_raw'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         bpdifanom, irec, 1, myThid )
-         write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
+         write(fname4test,'(1a)') 'bpdatanom_raw'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         bpdatanom, irec, 1, myThid )
         endif
@@ -337,10 +337,10 @@ c         inquire(file=gencost_posproc_c(k2_bp,kgen)(1:il), exist=exst)
          ENDIF
 #endif
 
-         write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
+         write(fname4test,'(1a)') 'bpdifanom_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         bpdifanom, irec, 1, myThid )
-         write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
+         write(fname4test,'(1a)') 'bpdatanom_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
      &                         bpdatanom, irec, 1, myThid )
         endif

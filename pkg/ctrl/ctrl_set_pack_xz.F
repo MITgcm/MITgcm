@@ -38,10 +38,10 @@ c     == routine arguments ==
 
       integer cunit
       integer ivartype
-      character*( 80) fname
+      character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*( 80) weighttype
-      _RL     weightfld( nr,nobcs )
+      character*(MAX_LEN_FNAM) weighttype
+      _RL     weightfld( Nr,nobcs )
       logical lxxadxx
       integer mythid
 
@@ -61,18 +61,18 @@ c     == local variables ==
       integer cbuffindex
       integer reclen, irectrue
       integer cunit2, cunit3
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 
-      real*4  cbuff      ( snx*nsx*npx*nsy*npy )
-      real*4  globfldtmp2( snx,nsx,npx,nsy,npy )
-      real*4  globfldtmp3( snx,nsx,npx,nsy,npy )
-      _RL     globfldxz  ( snx,nsx,npx,nsy,npy,nr )
-      _RL     globfld3d  ( snx,nsx,npx,sny,nsy,npy,nr )
-      _RL     globmskxz  ( snx,nsx,npx,nsy,npy,nr,nobcs )
+      real*4  cbuff      ( sNx*nSx*nPx*nSy*nPy )
+      real*4  globfldtmp2( sNx,nSx,nPx,nSy,nPy )
+      real*4  globfldtmp3( sNx,nSx,nPx,nSy,nPy )
+      _RL     globfldxz  ( sNx,nSx,nPx,nSy,nPy,Nr )
+      _RL     globfld3d  ( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
+      _RL     globmskxz  ( sNx,nSx,nPx,nSy,nPy,Nr,nobcs )
 #ifdef CTRL_PACK_PRECISE
       integer il
-      character*(80) weightname
-      _RL     weightfldxz( snx,nsx,npx,nsy,npy,nr,nobcs )
+      character*(MAX_LEN_FNAM) weightname
+      _RL     weightfldxz( sNx,nSx,nPx,nSy,nPy,Nr,nobcs )
 
 c     == external ==
 
@@ -83,16 +83,16 @@ c     == external ==
 c     == end of interface ==
 
       jtlo = 1
-      jthi = nsy
+      jthi = nSy
       itlo = 1
-      ithi = nsx
+      ithi = nSx
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
 c     Initialise temporary file
-      do k = 1,nr
+      do k = 1,Nr
          do jp = 1,nPy
             do bj = jtlo,jthi
                do ip = 1,nPx
@@ -111,7 +111,7 @@ c     Initialise temporary file
          enddo
       enddo
 c     Initialise temporary file
-      do k = 1,nr
+      do k = 1,Nr
          do jp = 1,nPy
             do bj = jtlo,jthi
                do j = jmin,jmax
@@ -131,25 +131,23 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       if ( doPackDiag ) then
-         write(cfile2(1:80),'(80a)') ' '
-         write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
-            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+            write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
 
-         reclen = snx*nsx*npx*nsy*npy*4
+         reclen = sNx*nSx*nPx*nSy*nPy*4
          call mdsfindunit( cunit2, mythid )
          open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
@@ -164,8 +162,7 @@ c--   Only the master thread will do I/O.
      &        Nr, globmskxz(1,1,1,1,1,1,iobcs), iobcs, mythid)
 #ifdef CTRL_PACK_PRECISE
          il=ilnblnk( weighttype)
-         write(weightname(1:80),'(80a)') ' '
-         write(weightname(1:80),'(a)') weighttype(1:il)
+         write(weightname,'(a)') weighttype(1:il)
          call MDSREADFIELD_XZ_GL(
      &        weightname, ctrlprec, 'RL',
      &        Nr, weightfldxz(1,1,1,1,1,1,iobcs), iobcs, mythid)
@@ -181,23 +178,23 @@ C     method that works for .not.useSingleCPUio cannot be used
       endif
       do irec = 1, nrec_nl
          call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
-     &        nr, globfld3d, irec, mythid)
-         do j=1,sny
-            iobcs= mod((irec-1)*sny+j-1,nobcs)+1
+     &        Nr, globfld3d, irec, mythid)
+         do j=1,sNy
+            iobcs= mod((irec-1)*sNy+j-1,nobcs)+1
 
             write(cunit) ncvarindex(ivartype)
             write(cunit) 1
             write(cunit) 1
-            do k = 1,nr
-             irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
+            do k = 1,Nr
+             irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
              cbuffindex = 0
              do jp = 1,nPy
               do bj = jtlo,jthi
                do ip = 1,nPx
                 do bi = itlo,ithi
                  do i = imin,imax
-                  jj=mod((j-1)*nr+k-1,sny)+1
-                  kk=int((j-1)*nr+K-1)/sny+1
+                  jj=mod((j-1)*Nr+k-1,sNy)+1
+                  kk=int((j-1)*Nr+K-1)/sNy+1
                   if (globmskxz(i,bi,ip,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
 cph(
@@ -258,13 +255,13 @@ c     Need to solve for what iobcs would have been.
          iobcs= mod(irec-1,nobcs)+1
 
          call MDSREADFIELD_XZ_GL( fname, ctrlprec, 'RL',
-     &        nr, globfldxz, irec, mythid)
+     &        Nr, globfldxz, irec, mythid)
 
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
          write(cunit) 1
-         do k = 1,nr
-            irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
+         do k = 1,Nr
+            irectrue = (irec-1)*nobcs*Nr + (iobcs-1)*Nr + k
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -330,8 +327,4 @@ c     -- end of irec loop --
 
       return
       end
-
-
-
-
 
