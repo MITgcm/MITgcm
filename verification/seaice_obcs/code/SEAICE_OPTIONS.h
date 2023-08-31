@@ -67,7 +67,7 @@ C--   Tracers of ice and/or ice cover.
 C     SEAICE_GREASE code requires to define ALLOW_SITRACER
 # define ALLOW_SITRACER
 #else
-# define ALLOW_SITRACER
+# undef ALLOW_SITRACER
 #endif
 #ifdef ALLOW_SITRACER
 C-    To try avoid 'spontaneous generation' of tracer maxima by advdiff.
