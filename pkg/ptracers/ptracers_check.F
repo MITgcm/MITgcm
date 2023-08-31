@@ -1,8 +1,5 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GAD_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
