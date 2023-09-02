@@ -66,7 +66,6 @@ C     myThid     :: my Thread Id. number
 CEOP
 
 #ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -175,7 +174,7 @@ C
 C
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 cph break artificial dependencies
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -342,7 +341,8 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = nlkey
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+     I     e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+     I     tensileStrFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
@@ -934,7 +934,7 @@ C--   Compute residual norm and print
      &            - (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
      &          + ( (vIceNm1(i,j,bi,bj)+vIceNm1(i,j+1,bi,bj))
      &            - (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
-           IF ( area(i,j,bi,bj) .gt. 0.5 _d 0 ) THEN
+           IF ( area(i,j,bi,bj) .GT. 0.5 _d 0 ) THEN
             EKnorm = EKnorm + 0.5 _d 0 * heff(i,j,bi,bj) *
      &           ( ( (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
      &           + ( (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
@@ -947,11 +947,11 @@ C--   Compute residual norm and print
        _GLOBAL_SUM_RL( resnorm, myThid )
        _GLOBAL_SUM_RL( EKnorm, myThid )
        _GLOBAL_SUM_RL( counter, myThid )
-       IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
+       IF ( counter .GT. 0. _d 0 ) EKnorm = EKnorm/counter
        _BEGIN_MASTER( myThid )
        WRITE(standardMessageUnit,'(A,I7,1X,2E22.14)')
      &      'S/R SEAICE_LSR: IPSEUDO, RESNORM, EKNORM = ',
-     &      ipass, sqrt(resnorm), EKnorm
+     &      ipass, SQRT(resnorm), EKnorm
        _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
@@ -986,9 +986,6 @@ C     and evaluate divergence of stress and apply to forcing
        ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
-
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
 
       RETURN
       END
@@ -1053,9 +1050,6 @@ C-    residual (output)
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
-
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
@@ -1114,9 +1108,6 @@ C     scale residuals by globalArea so that they do not get ridiculously large
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#endif /* SEAICE_ALLOW_DYNAMICS */
-#endif /* SEAICE_CGRID */
 
       RETURN
       END
@@ -1183,8 +1174,6 @@ C     coefficients for lateral points, v(i+/-1)
       _RL vRt2        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
-#ifdef SEAICE_CGRID
-#ifdef SEAICE_ALLOW_DYNAMICS
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
@@ -1348,7 +1337,7 @@ C     normalizing
           BU(i,j,bi,bj)    = BU(i,j,bi,bj)  * recip_rAw(i,j,bi,bj)
      &         + seaiceMaskU(i,j,bi,bj) *
      &         ( bdfAlphaOverDt*seaiceMassU(i,j,bi,bj)
-     &         + 0.5 _d 0 * ( dragSym(i,  J,bi,bj)
+     &         + 0.5 _d 0 * ( dragSym(i,  j,bi,bj)
      &                      + dragSym(i-1,j,bi,bj) )*areaW(i,j)
      &         )
           uRt1(i,j,bi,bj) = uRt1(i,j,bi,bj) * recip_rAw(i,j,bi,bj)
@@ -1816,12 +1805,12 @@ CADJ loop = sequential
       ENDDO
 CADJ loop = sequential
       DO i=iMin,iMax-1
-       iM=sNx-I
+       iM=sNx-i
        DO j=jMinLoc,jMax,jStep
 #else
 CADJ loop = sequential
        DO i=iMin,iMax-1
-        iM=sNx-I
+        iM=sNx-i
 #endif /* SEAICE_VECTORIZE_LSR */
         URT(iM,j)=URT(iM,j)-CUU(iM,j)*URT(iM+1,j)
        ENDDO
@@ -1996,7 +1985,6 @@ C     relaxation with WFAV
       ENDDO
 #endif /* SEAICE_LSR_ZEBRA */
 
-#endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
 
       RETURN

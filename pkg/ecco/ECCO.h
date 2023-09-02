@@ -90,20 +90,16 @@ C     using_ers :: flag that indicates the use of ERS data
      &                         using_ers,
      &                         using_gfo,
      &                         using_cost_altim,
-     &                         using_cost_bp,
      &                         using_cost_sst,
-     &                         using_cost_scat,
-     &                         using_cost_seaice
-     &                        ,using_cost_transp
+     &                         using_cost_seaice,
+     &                         using_cost_transp
       LOGICAL using_mdt
       LOGICAL using_tpj
       LOGICAL using_topex
       LOGICAL using_ers
       LOGICAL using_gfo
       LOGICAL using_cost_altim
-      LOGICAL using_cost_bp
       LOGICAL using_cost_sst
-      LOGICAL using_cost_scat
       LOGICAL using_cost_seaice
       LOGICAL using_cost_transp
 
@@ -126,40 +122,37 @@ C                 the current model integration.
       INTEGER ndaysrec
 
       COMMON /ECCO_R/
-     &                    m_eta, m_UE, m_VN,
-     &                    m_bp,
-#ifdef ALLOW_PSBAR_STERIC
-     &                    sterGloH,
-#endif
-#ifdef ATMOSPHERIC_LOADING
-#ifdef ALLOW_IB_CORR
-     &                    m_bp_nopabar,
-     &                    m_eta_dyn,
-#endif
-#endif
+     &                    m_eta, m_UE, m_VN, m_bp,
      &                    trVol, trHeat, trSalt,
-     &                    VOLsumGlob_0, VOLsumGlob,
-     &                    RHOsumGlob_0, RHOsumGlob,
-     &                    frame, eccoVol_0
-      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
-      _RL frame   (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
-      _RL m_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL m_bp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+     &                    eccoVol_0, frame
+      _RL m_eta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL m_UE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL m_VN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL m_bp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL trVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trHeat   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trSalt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
+
 #ifdef ALLOW_PSBAR_STERIC
+      COMMON /ECCO_R2/
+     &                    sterGloH,
+     &                    VOLsumGlob_0, VOLsumGlob,
+     &                    RHOsumGlob_0, RHOsumGlob
       _RL sterGloH
+      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
 #endif
+
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
+      COMMON /ECCO_R3/
+     &                    m_bp_nopabar,
+     &                    m_eta_dyn
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL m_eta_dyn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL m_eta_dyn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
 #endif
 #endif
-      _RL m_UE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL m_VN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true

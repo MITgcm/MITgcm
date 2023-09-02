@@ -57,8 +57,8 @@ C     !LOCAL VARIABLES:
       _RL log10initval
       _RL ln10
       _RL xx_gen  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
@@ -67,11 +67,16 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR2D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
+#ifndef ALLOW_TAPENADE
       CALL CTRL_ASSIGN(xx_gen, 1, zeroRL, myThid)
+#endif
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.
@@ -109,9 +114,9 @@ C               passed to data.ctrl, (default = 0.0)
       ilgen = ILNBLNK( fnamebase )
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
-      WRITE(fnamegenIn(1:80),'(2A,I10.10)')
+      WRITE(fnamegenIn,'(2A,I10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2A,I10.10)')
+      WRITE(fnamegenOut,'(2A,I10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr2d_weight(iarr), ctrlprec, 1,
@@ -181,9 +186,18 @@ C avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, myThid )
 
+#ifdef ALLOW_TAPENADE
+C$AD DO-NOT-DIFF
+#endif
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
      &                      fld, 1, optimcycle, myThid )
+#ifdef ALLOW_TAPENADE
+C$AD END-DO-NOT-DIFF
+#endif
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR2D', myThid )
+#endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
@@ -244,8 +258,8 @@ C     !LOCAL VARIABLES:
       _RL log10initval
       _RL ln10
       _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(80) fnamegenIn
-      CHARACTER*(80) fnamegenOut
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut
       CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
@@ -254,12 +268,15 @@ C     !LOCAL VARIABLES:
       INTEGER ilDir
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('CTRL_MAP_GENARR3D', myThid )
+#endif
 C--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
-
+#ifndef ALLOW_TAPENADE
       CALL CTRL_ASSIGN(xx_gen, Nr, zeroRL, myThid)
-
+#endif
       dosmooth=.FALSE.
       dowc01  = .FALSE.
       doscaling=.TRUE.
@@ -296,9 +313,9 @@ C               passed to data.ctrl, (default = 0.0)
       ilgen = ILNBLNK( fnamebase )
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
-      WRITE(fnamegenIn(1:80),'(2a,i10.10)')
+      WRITE(fnamegenIn,'(2a,i10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.',optimcycle
-      WRITE(fnamegenOut(1:80),'(2a,i10.10)')
+      WRITE(fnamegenOut,'(2a,i10.10)')
      & ctrlDir(1:ilDir)//fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL READ_REC_3D_RL( xx_genarr3d_weight(iarr), ctrlprec, Nr,
@@ -381,9 +398,18 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, myThid )
 
+#ifdef ALLOW_TAPENADE
+C$AD DO-NOT-DIFF
+#endif
       CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
      &                      fld, 1, optimcycle, myThid )
+#ifdef ALLOW_TAPENADE
+C$AD END-DO-NOT-DIFF
+#endif
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('CTRL_MAP_GENARR3D', myThid )
+#endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 #endif /* ALLOW_OPENAD */
 

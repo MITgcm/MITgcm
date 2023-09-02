@@ -77,7 +77,7 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
 
 c     == external functions ==
 
@@ -132,7 +132,7 @@ c--   >>> Loop 1 to compute mean forcing:
       enddo
 
 c--   >>> Loop over records.
-      do irec = 1,nrec
+      do irec = startrec,endrec
 
 #ifdef ALLOW_AUTODIFF
         call active_read_xy(
@@ -241,7 +241,7 @@ c     == local variables ==
       logical ladinit
       _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
 
 c     == external functions ==
 

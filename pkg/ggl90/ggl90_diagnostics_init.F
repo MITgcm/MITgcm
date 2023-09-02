@@ -51,6 +51,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        diagName  = 'GGL90Emn'
+        diagTitle = 'rate of TKE energy added by applying GGL90TKEmin'
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
         diagName  = 'GGL90Lmx'
         diagTitle = 'Mixing length scale              '
         diagUnits = 'm               '
@@ -86,13 +93,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        diagName  = 'GGL90KN2'
+        diagTitle = 'GGL90 diffusivity times buoyancy frequency'
+        diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
         diagName  = 'GGL90flx'
         diagTitle = 'Surface flux of TKE                       '
         diagUnits = 'm^3/s^3         '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 
         diagName  = 'GGL90tau'
         diagTitle = 'Work done by the wind                     '
@@ -105,6 +118,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'IDEMIX_E'
         diagTitle = 'IDEMIX internal wave energy            '
         diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'IDEMgTKE'
+        diagTitle = 'IDEMIX tendency: tau_d times IDEMIX_E^2'
+        diagUnits = 'm^2/s^3         '
         diagCode  = 'SM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

@@ -71,7 +71,7 @@ jobs:
        env:
         MITGCM_EXP: ${{ matrix.exp }}
         MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_oad.*'
        run: |
          . tools/ci/runtr.sh
@@ -83,10 +83,10 @@ jobs:
    strategy:
      matrix:
       include:
+        - exp: "global_oce_latlon"
         - exp: "halfpipe_streamice"
         - exp: "hs94.1x64x5"
         - exp: "isomip"
-        - exp: "OpenAD"
         - exp: "tutorial_global_oce_biogeo"
         - exp: "tutorial_global_oce_optim"
         - exp: "tutorial_tracer_adjsens"
@@ -107,7 +107,7 @@ jobs:
        env:
         MITGCM_EXP: ${{ matrix.exp }}
         MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_oad.*'
        run: |
          . tools/ci/runtr.sh

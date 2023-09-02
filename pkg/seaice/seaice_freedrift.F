@@ -27,8 +27,7 @@ C     myThid :: my Thread Id. number
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_ALLOW_FREEDRIFT
-#ifdef SEAICE_CGRID
+#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_FREEDRIFT )
 
 C     === Local variables ===
       INTEGER i, j, kSrf, bi, bj
@@ -172,7 +171,6 @@ C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
        ENDDO
       ENDDO
 
-#endif /* SEAICE_CGRID */
-#endif /* SEAICE_ALLOW_FREEDRIFT */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_FREEDRIFT */
       RETURN
       END

@@ -27,7 +27,7 @@
  thSIceFract_InitFile='const100.bin',
  thSIceThick_InitFile='const+20.bin',
 #thSIce_diagFreq=2592000.,
- thSIce_monFreq =21600.,
+#thSIce_monFreq =21600.,
  thSIce_monFreq =1800.,
  &
 
