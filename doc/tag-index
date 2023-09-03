@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkgs, TAF storage dir:
+  - rearrange and add storing of variables to reduce number of (unwarned)
+    recomp. in fluxform & vecinv pkgs and in model/src (e.g., calc_phi_hyd.F) ;
+  - add store directives in solve_tri/pentadiagonal.F to avoid recomputation
+    warnings with SOLVE_DIAGONAL_KINNER defined ;
+  - add CPP condition inside GAD SOM advection S/R (-> empty ".f" file if
+    neither GAD_ALLOW_TS_SOM_ADV nor PTRACERS_ALLOW_DYN_STATE is defined ) ;
+  - clean-up/refine many unnecessary store directives -> less TAF warnings ;
+  - remove unnecessary checkpointing code from pkg/smooth_diff2/3d.F
 o pkg/ggl90:
   - move computing the mixingLength to a dedicated routine ggl90_mixinglength.F
   - adjust/add TAF store directives to avoid hidden recomputations.
