@@ -44,7 +44,7 @@ C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef SEAICE_ALLOW_KRYLOV
+#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_KRYLOV )
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -520,7 +520,7 @@ C     Print more debugging information
        _END_MASTER( myThid )
       ENDIF
 
-#endif /* SEAICE_ALLOW_KRYLOV */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_KRYLOV */
 
       RETURN
       END

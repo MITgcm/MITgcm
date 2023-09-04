@@ -71,7 +71,7 @@ C o Exclude/allow partial-cell effect (physical or enhanced) in vertical mixing
 C   this allows to account for partial-cell in vertical viscosity and diffusion,
 C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
-#define EXCLUDE_PCELL_MIX_CODE
+#undef EXCLUDE_PCELL_MIX_CODE
 
 C-- Time-stepping code options:
 

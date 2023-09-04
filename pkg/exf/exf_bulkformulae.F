@@ -418,7 +418,9 @@ C--   Large&Pond1981:
      &               ( exf_two*LOG(exf_half*(exf_one+xsq)) )
 
             IF ( solve4Stress ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rdn(i,j)       = comlev1_exf_2, key = ikey_2
+#endif
 C-   Shift wind speed using old coefficient
 #ifdef ALLOW_BULK_LARGEYEAGER04
 C--   Large&Yeager04:

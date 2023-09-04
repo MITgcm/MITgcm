@@ -305,7 +305,7 @@ CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr
 CADJ INIT tapelev_ini_bibj_k = USER
 #  endif
 # endif
-# if (defined ALLOW_GENTIM2D_CONTROL || defined ALLOW_ECCO)
+# ifdef ALLOW_GENTIM2D_CONTROL
 c--   exclusive tape for variables with suffix "_dummy"
 CADJ INIT dummytape          = COMMON, 1
 # endif
@@ -337,10 +337,6 @@ C     this needs to happen before any store directive to taplev_init
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
-# endif
-# ifdef NONLIN_FRSURF
-CADJ STORE hFacC       = tapelev_init, key = 1
-CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
 # ifdef ALLOW_SHELFICE
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
@@ -525,7 +521,7 @@ CADJ INIT comlev1_exf_2 = COMMON,niter_bulk*nchklev_1*sNx*nSx*sNy*nSy
 #   endif /* ALLOW_BULKFORMULAE */
 c--
 #   ifdef ALLOW_SEAICE
-#    ifdef SEAICE_ALLOW_DYNAMICS
+#    ifdef SEAICE_CGRID
 CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #     ifdef SEAICE_LSR_ADJOINT_ITER
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
@@ -535,10 +531,10 @@ CADJ &  nchklev_1*nSx*nSy*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 CADJ INIT comlev1_lsr      = COMMON,        nchklev_1*MPSEUDOTIMESTEPS
 CADJ INIT comlev1_bibj_lsr = COMMON,nSx*nSy*nchklev_1*MPSEUDOTIMESTEPS
 #     endif
-#    endif
-#    ifdef SEAICE_ALLOW_EVP
+#     ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp      = COMMON,        nEVPstepMax*nchklev_1
 CADJ INIT comlev1_bibj_evp = COMMON,nSx*nSy*nEVPstepMax*nchklev_1
+#     endif
 #    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim = COMMON,nchklev_1*nSx*nSy*nitd
