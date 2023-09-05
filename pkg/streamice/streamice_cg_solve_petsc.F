@@ -37,7 +37,7 @@ C in the include statement
       use petscksp
 #include "petsc/finclude/petscpc.h"
       use petscpc
-      #include "STREAMICE_PETSC_MOD.h"
+#include "STREAMICE_PETSC_MOD.h"
       IMPLICIT NONE
 # else
       IMPLICIT NONE
