@@ -6,9 +6,11 @@
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_reg_accum ( myThid, myIter )
+      subroutine streamice_cost_reg_accum ( myIter, myThid )
 C     *==========================================================*
 C     | subroutine streamice_cost_reg_accum                      |
+C     | o this routine calculates the regularisation contri-     |
+C     |   bution to the per-timestep STREAMICE cost              |
 C     *==========================================================*
 C     |                                                          |
 C     | Notes                                                    |
@@ -35,7 +37,7 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid, myIter
+      integer myIter, myThid
 
 #ifdef ALLOW_STREAMICE_TC_COST
 C     == Local variables

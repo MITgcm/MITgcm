@@ -130,7 +130,7 @@ CADJ &     kind = isbyte
 #endif
 
 #ifdef ALLOW_COST_STREAMICE
-         IF (useStreamice) CALL STREAMICE_COST_ACCUM (myThid, myIter)
+         IF (useStreamice) CALL STREAMICE_COST_ACCUM (myIter, myThid)
 #endif
 
 #if (defined ALLOW_THSICE && defined ALLOW_THSICE_COST_TEST)

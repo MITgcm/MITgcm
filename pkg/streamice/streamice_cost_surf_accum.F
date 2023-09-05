@@ -6,11 +6,11 @@ c#endif
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_surf_accum ( myThid, myIter )
+      subroutine streamice_cost_surf_accum ( myIter, myThid )
 C     *==========================================================*
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
+C     | subroutine streamice_cost_surf_accum                     |
+C     | o this routine calculates the surface misfit contri-     |
+C     |   bution to the per-timestep STREAMICE cost              |
 C     *==========================================================*
 C     |                                                          |
 C     | Notes                                                    |
@@ -37,7 +37,7 @@ c#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid, myIter
+      integer myIter, myThid
 
 #ifdef ALLOW_STREAMICE_TC_COST
 C     == Local variables

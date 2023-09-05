@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/dgoldberg/code_ad_flowline/cost_test.F,v 1.1 2012/07/20 13:42:08 heimbach Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 #ifdef ALLOW_COST
 #include "COST_OPTIONS.h"
@@ -8,9 +5,10 @@ C $Name:  $
 
       subroutine streamice_cost_final( myThid )
 C     /==========================================================\
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
+C     | subroutine streamice_cost_final                          |
+C     | o this routine computes the cost function contribution   |
+C     |   from the STREAMICE package for the tiles of this       |
+C     |   processor. Called from cost_final                      |
 C     |==========================================================|
 C     |                                                          |
 C     | Notes                                                    |

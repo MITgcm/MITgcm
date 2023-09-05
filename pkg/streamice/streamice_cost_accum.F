@@ -6,11 +6,11 @@
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_accum ( myThid, myIter )
+      subroutine streamice_cost_accum ( myIter, myThid )
 C     *==========================================================*
 C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
+C     | o this routine accumulates the STREAMICE cost func-      |
+C     |   tion at each time step, called from cost_tile          |
 C     *==========================================================*
 C     |                                                          |
 C     | Notes                                                    |
@@ -37,7 +37,7 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid, myIter
+      integer myIter, myThid
 
 #ifdef ALLOW_COST
 C     == Local variables
@@ -76,7 +76,6 @@ C--   Calculate cost function on tile of this instance
           do j=1,sNy
             do i=1,sNx
 
-!             S_obs(i,j,bi,bj) = 0.0
              if (streamice_cost_mask(i,j,bi,bj).eq.1.0) THEN
               cost_func1_streamice (bi,bj) =
      &        cost_func1_streamice (bi,bj) + 0.0
