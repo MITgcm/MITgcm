@@ -64,8 +64,8 @@ C o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
 C o Include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC
 #ifdef ATMOSPHERIC_LOADING
-C   Apply inverse barometer correction
-# define ALLOW_IB_CORR
+C   Apply inverse barometer correction (coded within ATMOSPHERIC_LOADING)
+# undef ALLOW_IB_CORR
 #endif
 C o Allow for near-shore and high-latitude altimetry
 #undef ALLOW_SHALLOW_ALTIMETRY
