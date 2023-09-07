@@ -24,14 +24,15 @@ C     *============================================================*
 
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
+
+C     THE FOLLOWING MODULES ARE PART OF THE PETSC 
+C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE 
+C     SOLVES OF LINEAR SYSTEMS
+
 C assumes paths
 C {petsc_dir}/include/petsc/finclude/
 C {petsc_dir}/include
 C in the include statement
-
-C     THE FOLLOWING MODULES PART OF THE PETSC 
-C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE 
-C     SOLVES OF LINEAR SYSTEMS
 
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
