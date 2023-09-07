@@ -14,7 +14,7 @@
 # freezing parameterisation, the FD gradients depend very much on the
 # whether they are evaluated above and below freezing or not leading
 # to inconsistent results. Moving the starting point to jGloPos=17
-# avoids this. This is similar to input_ad but here we use jGloTile = 2.
+# avoids this.
  jGloPos          = 17,
  kGloPos          = 1,
 ### nbeg             = 1,
