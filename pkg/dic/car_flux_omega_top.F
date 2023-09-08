@@ -111,6 +111,10 @@ C ... at bottom
               else
 C if dissolution
                IF (selectCalciteDissolution .eq. 0) THEN
+C Use constant dissolution rate
+                flux_l = flux_u
+     &                 *(1.0-CalciteDissolutionRateK(1)*drF(k)/WsinkPIC)
+               ELSEIF (selectCalciteDissolution .eq. 1) THEN
 C Use Micks version of dissolution rate based on vertical sinking/remin balance
                 DissolutionRate = CalciteDissolutionRateK(1)*(
      &             (
@@ -121,7 +125,7 @@ C Use Micks version of dissolution rate based on vertical sinking/remin balance
                 dumrate = -1. _d 0*DissolutionRate*drF(ko)*
      &                       hFacC(i,j,ko,bi,bj)/WsinkPIC
                 flux_l = flux_u*exp(dumrate)
-               ELSEIF (selectCalciteDissolution .eq. 1) THEN
+               ELSEIF (selectCalciteDissolution .eq. 2) THEN
 C Use Karstens version of dissolution rate based on from Keir (1980) Geochem.
 C     Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in log(%))
                 DissolutionRate = EXP(CalciteDissolutionRateK(1))*(
@@ -131,7 +135,7 @@ C     Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in lo
      &             )/(100. _d 0 * 86400. _d 0)
 
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
-               ELSEIF (selectCalciteDissolution .eq. 2) THEN
+               ELSEIF (selectCalciteDissolution .eq. 3) THEN
 C Use Naviaux et al. 2019, Marine Chemistry dissolution rates
                 IF (omegaC(i,j,ko,bi,bj) .GT. 0.8272 _d 0) THEN
                  DissolutionRate = CalciteDissolutionRateK(1) * (

@@ -80,6 +80,11 @@ C                          is calculated.
 C  nIterCO3             :: Number of iterations of the Follows 3D pH solver to
 C                          calculate deep carbonate ion concenetration (no
 C                          effect when using the Munhoven/SolveSapHe solvers).
+C  selectCalciteDissolution :: flag to control calcite dissolution rate method:
+C          =0 : Constant dissolution rate
+C          =1 : Follows sinking flux (default);
+C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C          =3 : Naviaux et al. 2019, Marine Chemistry
 C  CalciteDissolutionRateK  :: Rate constant (%) for calcite dissolution from
 C                          e.g. Keir (1980) Geochem. Cosmochem. Acta. or
 C                           Naviaux et al. (2019)
@@ -174,17 +179,15 @@ C flag to either remineralize in bottom or top layer if flux
 C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
 C selectCalciteDissolution :: flag to control calcite dissolution rate method:
-C   =0 : Follows default ; =1 : Keir (1980) Geochem. Cosmochem. Acta. ;
-C   =2 : Naviaux et al. 2019, Marine Chemistry
-       selectCalciteDissolution = 0
+       selectCalciteDissolution = 1
+C Calcite dissoltion rate exponent (defaults set later if not read in)
+       CalciteDissolutionRateExp(1) = UNSET_RL
+       CalciteDissolutionRateExp(2) = UNSET_RL
+C Calcite dissolution rate constant (%/day, defaults set later if not read in)
+       CalciteDissolutionRateK(1)   = UNSET_RL
+       CalciteDissolutionRateK(2)   = UNSET_RL
 C set nominal particulate sinking rate (m/s)
        WsinkPIC                 = 100. _d 0/86400. _d 0
-C Calcite dissoltion rate exponent (4.2 for aragonite)
-       CalciteDissolutionRateExp(1) = 4.54 _d 0
-       CalciteDissolutionRateExp(2) = 4.54 _d 0
-C Calcite dissolution rate constant (%/day)
-       CalciteDissolutionRateK(1)   = 7.177 _d 0
-       CalciteDissolutionRateK(2)   = 7.177 _d 0
 C-- setting default values for Calcite Saturation params ends here.
        zca                      = 3500. _d 0
 
@@ -272,6 +275,46 @@ C-    set parameter default values
       IF ( selectHFconst  .EQ.UNSET_I ) selectHFconst   = 1
       IF ( selectK1K2const.EQ.UNSET_I ) selectK1K2const = 1
       IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
+      
+      IF ( CalciteDissolutionRateExp(1) .EQ. UNSET_RL ) THEN
+         IF (selectCalciteDissolution .EQ. 0 ) THEN
+C Calcite dissoltion rate exponent not used for constant dissolution
+                CalciteDissolutionRateExp(1) = 0.0 _d 0
+                CalciteDissolutionRateExp(2) = 0.0 _d 0
+         ELSEIF (selectCalciteDissolution .EQ. 3 ) THEN
+C Calcite dissoltion rate exponent for the Naviaux et al. 2019 scheme
+             CalciteDissolutionRateExp(1) = 0.11 _d 0
+
+             IF CalciteDissolutionRateExp(2) .EQ. UNSET_RL ) THEN
+                CalciteDissolutionRateExp(2) = 4.76 _d 0
+             ENDIF
+         ELSE
+C Calcite dissoltion rate exponent for Keir dissolution (4.2 for aragonite)
+                CalciteDissolutionRateExp(1) = 4.54 _d 0
+                CalciteDissolutionRateExp(2) = 4.54 _d 0
+         ENDIF
+      ENDIF
+
+      IF ( CalciteDissolutionRateK(1) .EQ. UNSET_RL ) THEN
+         IF (selectCalciteDissolution .EQ. 0 ) THEN
+C Calcite dissoltion rate constant
+            CalciteDissolutionRateK(1)   = 1 _d 0/(360 _d 0*86400.0 _d 0)
+            CalciteDissolutionRateK(2)   = 1 _d 0/(360 _d 0*86400.0 _d 0)
+         ELSEIF (selectCalciteDissolution .EQ. 3 ) THEN
+C Calcite dissoltion rate constant for the Naviaux et al. 2019 scheme
+            CalciteDissolutionRateK(1)   = 5.22 _d -9
+
+            IF CalciteDissolutionRateK(2) .EQ. UNSET_RL ) THEN
+               CalciteDissolutionRateK(2) = 1.65 _d -5
+            ENDIF
+         ELSE
+C Calcite dissolution rate constant (%/day) for Keir dissolution
+            CalciteDissolutionRateK(1)   = 7.177 _d 0
+            CalciteDissolutionRateK(2)   = 7.177 _d 0
+         ENDIF
+      ENDIF
+         
+
 #ifdef DIC_BIOTIC
        QSW_underice = .FALSE.
 #ifdef USE_QSW_UNDERICE

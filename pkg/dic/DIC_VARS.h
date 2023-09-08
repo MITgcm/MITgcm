@@ -29,16 +29,18 @@ C     nIterCO3    :: Number of iterations of the Follows 3D pH solver to
 C                       calculate deep carbonate ion concenetration (no
 C                       effect when using the Munhoven/SolveSapHe solvers).
 C     CalciteDissolutionRateK   :: Rate constant (%) for calcite dissolution
-C                       from Kier (1980) Geochem. Cosmochem. Acta.
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
 C     CalciteDissolutionRateExp :: Rate exponent for calcite dissolution
-C                       from Kier (1980) Geochem. Cosmochem. Acta.
+C                       from Keir (1980) Geochem. Cosmochem. Acta.
 C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
 C     selectCalciteBottomRemin :: to either remineralize in bottom or top layer
 C                       if flux reaches bottom layer; =0 : bottom, =1 : top
 C  selectCalciteDissolution :: flag to control calcite dissolution rate method:
-C          =0 : Follows default ; =1 : Keir (1980) Geochem. Cosmochem. Acta. ;
-C          =2 : Naviaux et al. 2019, Marine Chemistry
+C          =0 : Constant dissolution rate;
+C          =1 : Follows (default) ;
+C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
+C          =3 : Naviaux et al. 2019, Marine Chemistry
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
