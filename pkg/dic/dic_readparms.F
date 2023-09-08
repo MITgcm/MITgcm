@@ -277,15 +277,15 @@ C-    set parameter default values
       IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
       
       IF ( CalciteDissolutionRateExp(1) .EQ. UNSET_RL ) THEN
-         IF (selectCalciteDissolution .EQ. 0 ) THEN
+         IF ( selectCalciteDissolution .EQ. 0 ) THEN
 C Calcite dissoltion rate exponent not used for constant dissolution
                 CalciteDissolutionRateExp(1) = 0.0 _d 0
                 CalciteDissolutionRateExp(2) = 0.0 _d 0
-         ELSEIF (selectCalciteDissolution .EQ. 3 ) THEN
+         ELSEIF ( selectCalciteDissolution .EQ. 3 ) THEN
 C Calcite dissoltion rate exponent for the Naviaux et al. 2019 scheme
              CalciteDissolutionRateExp(1) = 0.11 _d 0
 
-             IF CalciteDissolutionRateExp(2) .EQ. UNSET_RL ) THEN
+             IF ( CalciteDissolutionRateExp(2) .EQ. UNSET_RL ) THEN
                 CalciteDissolutionRateExp(2) = 4.76 _d 0
              ENDIF
          ELSE
@@ -296,15 +296,15 @@ C Calcite dissoltion rate exponent for Keir dissolution (4.2 for aragonite)
       ENDIF
 
       IF ( CalciteDissolutionRateK(1) .EQ. UNSET_RL ) THEN
-         IF (selectCalciteDissolution .EQ. 0 ) THEN
+         IF ( selectCalciteDissolution .EQ. 0 ) THEN
 C Calcite dissoltion rate constant
             CalciteDissolutionRateK(1)   = 1 _d 0/(360 _d 0*86400.0 _d 0)
             CalciteDissolutionRateK(2)   = 1 _d 0/(360 _d 0*86400.0 _d 0)
-         ELSEIF (selectCalciteDissolution .EQ. 3 ) THEN
+         ELSEIF ( selectCalciteDissolution .EQ. 3 ) THEN
 C Calcite dissoltion rate constant for the Naviaux et al. 2019 scheme
             CalciteDissolutionRateK(1)   = 5.22 _d -9
 
-            IF CalciteDissolutionRateK(2) .EQ. UNSET_RL ) THEN
+            IF ( CalciteDissolutionRateK(2) .EQ. UNSET_RL ) THEN
                CalciteDissolutionRateK(2) = 1.65 _d -5
             ENDIF
          ELSE
@@ -314,7 +314,6 @@ C Calcite dissolution rate constant (%/day) for Keir dissolution
          ENDIF
       ENDIF
          
-
 #ifdef DIC_BIOTIC
        QSW_underice = .FALSE.
 #ifdef USE_QSW_UNDERICE
