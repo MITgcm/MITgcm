@@ -113,13 +113,13 @@ C if dissolution
                IF (selectCalciteDissolution .eq. 0) THEN
 C Use constant dissolution rate
                 flux_l = flux_u
-     &                 *(1.0-CalciteDissolutionRateK(1)*drF(k)/WsinkPIC)
+     &                 *(1.0-CalciteDissRate(1)*drF(k)/WsinkPIC)
                ELSEIF (selectCalciteDissolution .eq. 1) THEN
 C Use Micks version of dissolution rate based on vertical sinking/remin balance
-                DissolutionRate = CalciteDissolutionRateK(1)*(
+                DissolutionRate = CalciteDissRate(1)*(
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissolutionRateExp(1)
+     &             )**CalciteDissExp(1)
      &             )/(86400. _d 0)
 
                 dumrate = -1. _d 0*DissolutionRate*drF(ko)*
@@ -128,25 +128,25 @@ C Use Micks version of dissolution rate based on vertical sinking/remin balance
                ELSEIF (selectCalciteDissolution .eq. 2) THEN
 C Use Karstens version of dissolution rate based on from Keir (1980) Geochem.
 C     Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in log(%))
-                DissolutionRate = EXP(CalciteDissolutionRateK(1))*(
+                DissolutionRate = EXP(CalciteDissRate(1))*(
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissolutionRateExp(1)
+     &             )**CalciteDissExp(1)
      &             )/(100. _d 0 * 86400. _d 0)
 
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
                ELSEIF (selectCalciteDissolution .eq. 3) THEN
 C Use Naviaux et al. 2019, Marine Chemistry dissolution rates
                 IF (omegaC(i,j,ko,bi,bj) .GT. 0.8272 _d 0) THEN
-                 DissolutionRate = CalciteDissolutionRateK(1) * (
+                 DissolutionRate = CalciteDissRate(1) * (
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissolutionRateExp(1))
+     &             )**CalciteDissExp(1))
                 ELSE
-                 DissolutionRate = CalciteDissolutionRateK(2) * (
+                 DissolutionRate = CalciteDissRate(2) * (
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissolutionRateExp(2))
+     &             )**CalciteDissExp(2))
                 ENDIF
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
                ENDIF
