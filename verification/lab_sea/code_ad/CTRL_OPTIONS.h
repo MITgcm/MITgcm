@@ -89,9 +89,6 @@ C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
 C  o Impose bounds on controls
 #undef ALLOW_ADCTRLBOUND
 
-C  o Impose bounds on controls
-#undef ALLOW_ADCTRLBOUND
-
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
 #undef ALLOW_ROTATE_UV_CONTROLS
