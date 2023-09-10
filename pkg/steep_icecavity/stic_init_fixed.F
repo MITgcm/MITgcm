@@ -412,16 +412,6 @@ C--   with water in the neighboring cell.
 C--   Only proceed if iceFrontVertContactFrac is > 0, the
 C--   ice draft at (I,J)
 C--   is in contact with some water in the neighboring grid cell.
-      WRITE(msgBuf,'(A,3I4,L3,8e14.5)')
-     &'ZZZ, CURI, CURJ, K', CURI,CURJ,K,
-     & iceFrontVertContactFrac .GT. epsilon_H,
-     &  wet_top_Z_N, iceFrontWetContact_Z_max,
-     &  ice_bottom_Z_C, wet_bottom_Z_N,
-     &  rF(K+1), Ro_surf(I,J, bi,bj), rF(K)
-
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
                       IF (iceFrontVertContactFrac .GT. epsilon_H) THEN
                         mask3dSHIICF(CURI,CURJ,K,bi,bj) = 1. _d 0
                         mask2dSHIICF(CURI,CURJ,bi,bj) = 1. _d 0

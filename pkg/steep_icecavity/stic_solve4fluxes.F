@@ -129,14 +129,14 @@ C--   DEFINE SOME CONSTANTS
       eps7 = eps4 - thetaIceConduction
 
       IF ( debugLevel.GE.debLevE ) THEN
-      WRITE(msgBuf,'(A25,9E16.8)')
-     &'ZZZ7 r2mass, Cp, gmaT,SIlh,gmaS, rhoSI, SI_Cp, Kap, ICondDis ',
-     & rUnit2mass,HeatCapacity_Cp,gammaT, STIClatentHeat,gammaS,
-     & rhoSTIC, STICheatCapacity_Cp, STICkappa,
-     & iceConductionDistance
+         WRITE(msgBuf,'(A,9E16.8)')
+     &   'r2mass, Cp, gmaT,SIlh,gmaS, rhoSI, SI_Cp, Kap, ICondDis ',
+     &   rUnit2mass,HeatCapacity_Cp,gammaT, STIClatentHeat,gammaS,
+     &   rhoSTIC, STICheatCapacity_Cp, STICkappa,
+     &   iceConductionDistance
 
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , 1)
       ENDIF
 
 C--   Default thermodynamics specify a linear T gradient
@@ -295,19 +295,19 @@ C--   are the turbulent fluxes.
       ENDIF
 
       IF ( debugLevel.GE.debLevE ) THEN
-      WRITE(msgBuf,'(A25,7E16.8)')
-     &   'ZZZ6 aqe, bqe, ceq ',
+         WRITE(msgBuf,'(A,7E16.8)')
+     &   'aqe, bqe, ceq ',
      &   aqe,bqe,cqe
 
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A25,7E16.8)')
-     &   'ZZZ2 T,S,P,t,TFrz,SFrz,w_B ',
+         WRITE(msgBuf,'(A,7E16.8)')
+     &   'T,S,P,t,TFrz,SFrz,w_B ',
      &   tLoc,sLoc,pLoc, insitutLoc, thetaFreeze, saltFreeze, w_B
 
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , 1)
       ENDIF
 
 
