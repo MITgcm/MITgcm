@@ -9,4 +9,4 @@ stic_thermodynamics.f
 stic_u_drag_coeff.f
 stic_v_drag_coeff.f
 stic_diagnostics_drag.f
-stic_solve4fluxes.F
+stic_solve4fluxes.f
