@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - change default ALLOW_IB_CORR (in pkg/ecco/ECCO_OPTIONS.h) to "#undef" and
+    test that this code compiles in experiment global_oce_biogeo_bling ;
+  - clean/update AD related CPP header files across all experiments and reduce
+    differences with standard version in pkg autodiff, cost, ctrl and ecco.
+o verification:
+  - change global_oce_latlon TAF set-up to multi-tiles (4 tiles, as in code_oad
+    & code_tap) and add SIZE.h_mpi to enable MPI tests (in all 3 code_* dir).
 o model/src & pkgs, TAF storage dir:
   - rearrange and add storing of variables to reduce number of (unwarned)
     recomp. in fluxform & vecinv pkgs and in model/src (e.g., calc_phi_hyd.F) ;
