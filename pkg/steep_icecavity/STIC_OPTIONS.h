@@ -14,9 +14,6 @@ C     *==========================================================*
 #ifdef ALLOW_STEEP_ICECAVITY
 C     Package-specific Options & Macros go here
 
-C     allow Ian Fenty's shelfice/icefront merged code
-#define shelfice_new_thermo
-
 C     allow code for simple ISOMIP thermodynamics
 #define ALLOW_ISOMIP_TD
 

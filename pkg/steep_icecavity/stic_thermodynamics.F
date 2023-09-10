@@ -155,8 +155,8 @@ C     (Holland and Jenkins, 1999, eq.21)
             DO I = 1-OLx,sNx+OLx
               shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
               shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
-              SHIICFHeatFlux      (I,J,bi,bj) = 0. _d 0
-              SHIICFFreshWaterFlux(I,J,bi,bj) = 0. _d 0
+              SHIICFHeatFlux      (I,J,bi,bj)   = 0. _d 0
+              SHIICFFreshWaterFlux(I,J,bi,bj)   = 0. _d 0
               shelficeForcingT      (I,J,bi,bj) = 0. _d 0
               shelficeForcingS      (I,J,bi,bj) = 0. _d 0
 #ifdef ALLOW_GENTIM2D_CONTROL

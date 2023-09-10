@@ -77,8 +77,8 @@ C     print stic summary here before checking the parameter combinations
      & 'STIClatentHeat      =', ' /* latent heat of ice */')
        CALL WRITE_0D_RL( STICheatCapacity_Cp, INDEX_NONE,
      & 'STICheatCapacity_Cp =', ' /* heat capacity of ice shelf */')
-       CALL WRITE_0D_RL( rhoShelfice, INDEX_NONE,
-     & 'rhoShelfice   =', ' /* density of ice shelf */')
+       CALL WRITE_0D_RL( rhoSTIC, INDEX_NONE,
+     & 'rhoSTIC   =', ' /* density of ice shelf */')
        CALL WRITE_0D_RL( STICkappa, INDEX_NONE,
      & 'STICkappa =', ' /* thermal conductivity of ice shelf */')
        CALL WRITE_0D_RL( STICthetaSurface, INDEX_NONE,

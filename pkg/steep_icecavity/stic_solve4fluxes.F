@@ -122,7 +122,7 @@ C--   convert potential T into in-situ T relative to surface
 C--   DEFINE SOME CONSTANTS
       eps1 = rUnit2mass*HeatCapacity_Cp * gammaT
       eps2 = rUnit2mass*STIClatentHeat * gammaS
-      eps3 = rhoShelfIce*STICheatCapacity_Cp * STICkappa
+      eps3 = rhoSTIC*STICheatCapacity_Cp * STICkappa
      &       /iceConductionDistance;
       eps4 = b0*pLoc + c0
       eps6 = eps4 - insitutLoc
@@ -132,7 +132,7 @@ C--   DEFINE SOME CONSTANTS
       WRITE(msgBuf,'(A25,9E16.8)')
      &'ZZZ7 r2mass, Cp, gmaT,SIlh,gmaS, rhoSI, SI_Cp, Kap, ICondDis ',
      & rUnit2mass,HeatCapacity_Cp,gammaT, STIClatentHeat,gammaS,
-     & rhoShelfIce, STICheatCapacity_Cp, STICkappa,
+     & rhoSTIC, STICheatCapacity_Cp, STICkappa,
      & iceConductionDistance
 
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

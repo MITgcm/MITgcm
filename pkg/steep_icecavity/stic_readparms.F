@@ -43,7 +43,7 @@ CEOP
      &     STICheatTransCoeff,
      &     STICsaltTransCoeff,
      &     STICMassStepping,
-     &     rhoShelfice, STICkappa,
+     &     rhoSTIC, STICkappa,
      &     STIClatentHeat, STICHeatCapacity_Cp,
      &     no_slip_stic, STICDragLinear,
      &     STICDragQuadratic, STICselectDragQuadr,
@@ -109,7 +109,7 @@ C Set defaults values for parameters in STIC.h
       ICEFRONTdepthFile        = ' '
       STIClatentHeat       =  334.0 _d 3
       STICHeatCapacity_Cp  = 2000.0 _d 0
-      rhoShelfIce              =  917.0 _d 0
+      rhoSTIC              =  917.0 _d 0
       STICsaltToHeatRatio  =   5.05 _d -03
       STICheatTransCoeff   =    1.0 _d -04
       STICsaltTransCoeff   = UNSET_RL

@@ -78,7 +78,7 @@ C                                 or quadratic drag)
 C     STIClatentHeat       :: latent heat of fusion (def: 334000 J/kg)
 C     STICwriteState       :: enable output
 C     STICHeatCapacity_Cp  :: heat capacity of ice shelf (def: 2000 J/K/kg)
-C     rhoShelfIce              :: density of ice shelf (def: 917.0 kg/m^3)
+C     rhoSTIC              :: density of ice shelf (def: 917.0 kg/m^3)
 C
 C     STIC_dump_mnc        :: use netcdf for snapshot output
 C     STIC_tave_mnc        :: use netcdf for time-averaged output
@@ -128,7 +128,7 @@ CEOP
      &     STIC_dumpFreq, STIC_taveFreq,
      &     STICsaltToHeatRatio,
      &     STICheatTransCoeff, STICsaltTransCoeff,
-     &     rhoShelfice, STICkappa,
+     &     rhoSTIC, STICkappa,
      &     STIClatentHeat,
      &     STICheatCapacity_Cp,
      &     STICthetaSurface,
@@ -147,7 +147,7 @@ CEOP
       _RL STICsaltTransCoeff
       _RL STIClatentHeat
       _RL STICheatCapacity_Cp
-      _RL rhoShelfice
+      _RL rhoSTIC
       _RL STICkappa
       _RL STICDragLinear
       _RL STICDragQuadratic
@@ -169,22 +169,22 @@ CEOP
      &     iceFrontForcingT, iceFrontForcingS,
      &     shiCDragFld, shiDragQuadFld
 
-      _RL sticMass              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL sticMassInit          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sticMass           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sticMassInit       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shelficeLoadAnomaly(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shelficeForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shelficeForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifndef ALLOW_shiTransCoeff_3d
-      _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
       _RL iceFrontForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL iceFrontForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiCDragFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiDragQuadFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /STIC_FIELDS_RS/
      &     R_shelfIce,
@@ -299,8 +299,7 @@ C      icefrontwidth_arr: ice-front width in meters
      &     STICTransCoeffTFile
 
       COMMON /ICEFRONT_FIELDS_RS/
-     &     R_icefront,
-     &     icefrontlength
+     &     R_icefront, icefrontlength
       _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 

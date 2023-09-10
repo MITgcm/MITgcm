@@ -94,7 +94,6 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        ENDDO
       ENDIF
 
-#ifdef shelfice_new_thermo
       DO j=1,sNy
        DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
@@ -106,7 +105,6 @@ C--     TENDENCY FROM ICE SHELF
         ENDIF
        ENDDO
       ENDDO
-#endif /* shelfice_new_thermo */
 
 #endif /* ALLOW_STEEP_ICECAVITY */
       RETURN
@@ -200,7 +198,6 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        ENDDO
       ENDIF
 
-#ifdef shelfice_new_thermo
       DO j=1,sNy
        DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
@@ -211,7 +208,6 @@ C--     TENDENCY FROM ICE SHELF
         ENDIF
        ENDDO
       ENDDO
-#endif /* shelfice_new_thermo */
 
 #endif /* ALLOW_STEEP_ICECAVITY */
       RETURN
