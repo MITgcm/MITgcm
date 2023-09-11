@@ -254,6 +254,21 @@ C     put up with the OpenAD version of tutorial_global_oce_optim
       errCount = errCount + 1
 #endif /* ALLOW_HFLUXM_CONTROL */
 
+#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_HFACC_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+# endif
+# ifdef ALLOW_HFACC3D_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC3D_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+# endif
+#endif
+
 #ifdef ALLOW_GENARR2D_CONTROL
 c     Warn user: doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr2D
