@@ -10,7 +10,7 @@ c     *=================================================================
 c     | SUBROUTINE ctrl_hfacc_ini
 c     | Add the hFacC part of the control vector to the model state
 c     | and update the tile halos.
-c     | The control vector is defined in the header file "ctrl.h".
+c     | The control vector is defined in the header file "CTRL.h".
 c     *=================================================================
 C     \ev
 
@@ -22,7 +22,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 

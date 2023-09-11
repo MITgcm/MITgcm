@@ -27,7 +27,7 @@ c     == global variables ==
 # include "AUTODIFF_PARAMS.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_SIZE.h"
 # if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
 #  include "CTRL_GENARR.h"

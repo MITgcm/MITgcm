@@ -31,7 +31,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_FIELDS.h"
 # include "CTRL_GENARR.h"
 #endif

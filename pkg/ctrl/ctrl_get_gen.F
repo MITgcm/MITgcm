@@ -25,7 +25,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==

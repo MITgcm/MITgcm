@@ -34,7 +34,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==

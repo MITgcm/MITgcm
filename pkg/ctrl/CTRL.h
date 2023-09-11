@@ -10,7 +10,7 @@ c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
 c     ==================================================================
-c     HEADER CONTROLVARS ctrl.h
+c     HEADER CONTROLVARS CTRL.h
 c     ==================================================================
 
       integer     maxcvars
@@ -249,5 +249,5 @@ C
 
 #endif
 c     ==================================================================
-c     END OF HEADER CONTROLVARS ctrl.h
+c     END OF HEADER CONTROLVARS CTRL.h
 c     ==================================================================

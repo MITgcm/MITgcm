@@ -85,7 +85,7 @@ c**************************************
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
+#  include "CTRL.h"
 #  include "ctrl_dummy.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"

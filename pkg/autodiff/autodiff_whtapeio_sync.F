@@ -14,7 +14,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #ifndef ALLOW_OPENAD
 # include "AUTODIFF.h"
 #endif
