@@ -344,12 +344,6 @@ CADJ STORE alpha    = tapelev_init, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
-# ifdef ALLOW_DIFFKR_CONTROL
-c$openad INDEPENDENT(xx_diffkr_dummy)
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
-c$openad INDEPENDENT(xx_kapgm)
-# endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)
