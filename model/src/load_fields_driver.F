@@ -59,7 +59,7 @@ C     == Global variables ==
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"
 #  include "CTRL_GENARR.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL_DUMMY.h"
 # endif
 # ifdef ALLOW_COST
 #  include "cost.h"

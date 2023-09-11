@@ -28,7 +28,7 @@ C     == global variables ==
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "optim.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"

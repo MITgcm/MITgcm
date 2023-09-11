@@ -136,7 +136,7 @@ c# endif
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif

@@ -23,7 +23,7 @@ C     === Global variables ===
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"
 #endif

@@ -53,7 +53,7 @@ c we may need these for the checkpointing
       use cost_mod
       use g_cost_mod
       use ctrl_mod
-      use ctrl_dummy_mod
+      use CTRL_DUMMY_mod
       use optim_mod
       use GRDCHK_mod
 

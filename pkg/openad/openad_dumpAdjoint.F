@@ -79,7 +79,7 @@ c They provide the fields to be stored.
 # endif
 
 # include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL_DUMMY.h"
 # include "cost.h"
 
 #endif /* ALLOW_AUTODIFF */

@@ -9,7 +9,7 @@ cost
 CTRL_SIZE
 CTRL_GENARR
 CTRL_OBCS
-ctrl_dummy
+CTRL_DUMMY
 ctrl
 ctrl_local_params
 DIAGNOSTICS_SIZE
