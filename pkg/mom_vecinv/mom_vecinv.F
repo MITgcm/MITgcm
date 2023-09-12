@@ -259,8 +259,6 @@ C     Make local copies of horizontal flow field
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ufld(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE vfld(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE hFacZ(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE r_hFacZ(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE fverukm(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
@@ -275,12 +273,6 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:)      = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE vort3bc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
-#endif
-
 C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -293,6 +285,7 @@ C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:)      = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE vort3bc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
@@ -316,12 +309,10 @@ C      and mask relative vorticity (free-slip case):
          ENDDO
         ENDDO
        ENDIF
-#endif /* NONLIN_FRSURF */
-
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE h0FacZ(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE hFacZ(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
-#endif
+# endif
+#endif /* NONLIN_FRSURF */
 
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
@@ -352,10 +343,10 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hdiv(:,:)     = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE hDiv(:,:)     = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE tension(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE strain(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE strainbc(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE strainBC(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C--    Calculate Lateral Viscosities
@@ -486,6 +477,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                  uFld, vFld, kappaRU, KE,
      O                  cDrag,
      I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
         DO j=jMin,jMax
          DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j)
@@ -511,6 +505,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                  uFld, vFld, kappaRU, KE,
      O                  cDrag,
      I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
         DO j=jMin,jMax
          DO i=iMin,iMax
            gUdiss(i,j) = gUdiss(i,j)
@@ -574,6 +571,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                  uFld, vFld, kappaRV, KE,
      O                  cDrag,
      I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
         DO j=jMin,jMax
          DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j)
@@ -599,6 +599,9 @@ CADJ STORE KE(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
      I                  uFld, vFld, kappaRV, KE,
      O                  cDrag,
      I                  myIter, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+#endif
         DO j=jMin,jMax
          DO i=iMin,iMax
            gvDiss(i,j) = gvDiss(i,j)

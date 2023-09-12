@@ -1,3 +1,8 @@
+#ifndef CTRL_OPTIONS_H
+#define CTRL_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:
@@ -10,11 +15,6 @@ C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
 
-#ifndef CTRL_OPTIONS_H
-#define CTRL_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
 #ifdef ALLOW_CTRL
 #ifdef ECCO_CPPOPTIONS_H
 
@@ -26,60 +26,68 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
-C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
-C  o  In this experiment, this option and the corresponding necessary flags
-C     to reproduce this experiment are commented by CTRL
-CTRL#define ECCO_CTRL_DEPRECATED
-
-#define EXCLUDE_CTRL_PACK
+C o I/O and pack settings
+#undef CTRL_SET_PREC_32
+C   This option is only relevant (for pack/unpack) with OBCS_CONTROL:
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
+#define EXCLUDE_CTRL_PACK
+#undef ALLOW_PACKUNPACK_METHOD2
+#undef CTRL_DO_PACK_UNPACK_ONLY
+#undef CTRL_PACK_PRECISE
+#undef CTRL_UNPACK_PRECISE
+#undef CTRL_DELZNORM
+#undef ALLOW_CTRL_WETV
 
-CTRLC       >>> Initial values.
-CTRL#define ALLOW_THETA0_CONTROL
-CTRL#define ALLOW_SALT0_CONTROL
-CTRL#undef ALLOW_UVEL0_CONTROL
-CTRL#undef ALLOW_VVEL0_CONTROL
-CTRL#undef ALLOW_TR10_CONTROL
-CTRL#undef ALLOW_TAUU0_CONTROL
-CTRL#undef ALLOW_TAUV0_CONTROL
-CTRL#undef ALLOW_SFLUX0_CONTROL
-CTRL#undef ALLOW_HFLUX0_CONTROL
-CTRL#undef ALLOW_SSS0_CONTROL
-CTRL#undef ALLOW_SST0_CONTROL
-CTRL
-CTRLC       >>> Surface fluxes.
-CTRL#undef ALLOW_HFLUX_CONTROL
-CTRL#undef ALLOW_SFLUX_CONTROL
-CTRL#undef ALLOW_USTRESS_CONTROL
-CTRL#undef ALLOW_VSTRESS_CONTROL
-CTRL#undef ALLOW_SWFLUX_CONTROL
-CTRL#undef ALLOW_LWFLUX_CONTROL
-CTRL
-CTRLC       >>> Atmospheric state.
-CTRL#undef ALLOW_ATEMP_CONTROL
-CTRL#undef ALLOW_AQH_CONTROL
-CTRL#undef ALLOW_UWIND_CONTROL
-CTRL#undef ALLOW_VWIND_CONTROL
-CTRL#undef ALLOW_PRECIP_CONTROL
-CTRL
-CTRLC       >>> Other Control.
-CTRL#define ALLOW_DIFFKR_CONTROL
-CTRL#undef ALLOW_KAPGM_CONTROL
-CTRL#undef ALLOW_KAPREDI_CONTROL
-CTRL#undef ALLOW_BOTTOMDRAG_CONTROL
-CTRL
-CTRLC       >>> Backward compatibility option (before checkpoint 65p)
-CTRL#undef ALLOW_KAPGM_CONTROL_OLD
-CTRL#undef ALLOW_KAPREDI_CONTROL_OLD
-CTRL
-CTRLC     >>> pkg/shelfice fluxes.
-CTRL#define ALLOW_SHIFWFLX_CONTROL
+C       >>> Other Control.
+C   Allows for GMREDI controls
+#undef ALLOW_KAPGM_CONTROL
+#undef ALLOW_KAPREDI_CONTROL
+C   Allows for Vertical Diffusivity controls
+#undef ALLOW_DIFFKR_CONTROL
+#undef ALLOW_BOTTOMDRAG_CONTROL
+#undef ALLOW_DIC_CONTROL
+
+C   Allows bathymetry as a control vector
+C   Note: keep this Option separated from generic control since this control
+C     involves many new dependencies that we would like to avoid in general.
+#undef ALLOW_DEPTH_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
+C   Only relevant within DEPTH_CONTROL code:
+# define USE_SMOOTH_MIN
+# undef ALLOW_HFACC_CONTROL
+# undef ALLOW_HFACC3D_CONTROL
+#endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 #define ALLOW_GENTIM2D_CONTROL
+# undef ALLOW_UVEL0_CONTROL
+# undef ALLOW_VVEL0_CONTROL
+# undef CTRL_SET_OLD_MAXCVARS_30
+# undef CTRL_SET_OLD_MAXCVARS_40
+
+C       >>> Open boundaries
+#ifdef ALLOW_OBCS
+C    Control of Open-Boundaries is meaningless without compiling pkg/obcs
+C    Note: Make sure that corresponding OBCS N/S/W/E Option is defined
+# define ALLOW_OBCSN_CONTROL
+# define ALLOW_OBCSS_CONTROL
+# define ALLOW_OBCSW_CONTROL
+# define ALLOW_OBCSE_CONTROL
+# undef ALLOW_OBCS_CONTROL_MODES
+#endif /* ALLOW_OBCS */
+
+C  o Set ALLOW_OBCS_CONTROL (Do not edit/modify):
+#if (defined (ALLOW_OBCSN_CONTROL) || \
+     defined (ALLOW_OBCSS_CONTROL) || \
+     defined (ALLOW_OBCSW_CONTROL) || \
+     defined (ALLOW_OBCSE_CONTROL))
+# define ALLOW_OBCS_CONTROL
+#endif
+
+C  o Impose bounds on controls
+#undef ALLOW_ADCTRLBOUND
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
@@ -91,19 +99,16 @@ C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
 C    to the other the time variable atmospheric controls.
 #undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
 
-C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL2D
-C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
-C    This CPP option just sets the default for ctrlSmoothCorrel3D to .TRUE.
-#undef ALLOW_SMOOTH_CORREL3D
-
-C  o apply pkg/ctrl/ctrl_smooth.F to 2D controls (outside of ctrlSmoothCorrel2D)
-#undef ALLOW_CTRL_SMOOTH
-C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
+C  Note: this flag turns on extra smoothing code in ctrl_get_gen.F which
+C  is inconsistent with the Weaver and Courtier, 2001 algorithm, and
+C  should probably not be used. The corresponding 3D flag applied only
+C  to deprecated code that is now removed. At some point we will remove
+C  this flag and associated code as well.
+C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of Smooth_Correl2D)
 #undef ALLOW_SMOOTH_CTRL2D
-C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
-#undef ALLOW_SMOOTH_CTRL3D
+
+C  o Print more debug info to STDOUT
+#undef ALLOW_CTRL_DEBUG
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

@@ -118,8 +118,6 @@ CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE surfaceForcingU, surfaceForcingV =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 cph the following needed to be moved here from do_oceanic_physics
@@ -191,5 +189,24 @@ CADJ STORE pTracer        = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rStarExpC      = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif
+
+#ifndef EXCLUDE_PCELL_MIX_CODE
+# ifdef ALLOW_KPP
+CADJ STORE KPPviscAz      = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_PP81
+CADJ STORE PPviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_KL10
+CADJ STORE KLviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_MY82
+CADJ STORE MYviscAz       = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ALLOW_GGL90
+CADJ STORE GGL90viscArU   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE GGL90viscArV   = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif

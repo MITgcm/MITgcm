@@ -14,16 +14,8 @@ CADJ STORE hflux0   = tapelev2, key = ilev_2
 CADJ STORE hflux1   = tapelev2, key = ilev_2
 CADJ STORE sflux0   = tapelev2, key = ilev_2
 CADJ STORE sflux1   = tapelev2, key = ilev_2
-CADJ STORE ustress0 = tapelev2, key = ilev_2
-CADJ STORE ustress1 = tapelev2, key = ilev_2
-CADJ STORE vstress0 = tapelev2, key = ilev_2
-CADJ STORE vstress1 = tapelev2, key = ilev_2
 CADJ STORE wspeed0  = tapelev2, key = ilev_2
 CADJ STORE wspeed1  = tapelev2, key = ilev_2
-# ifdef SHORTWAVE_HEATING
-CADJ STORE swflux0  = tapelev2, key = ilev_2
-CADJ STORE swflux1  = tapelev2, key = ilev_2
-# endif
 # ifdef ALLOW_RUNOFF
 CADJ STORE runoff0  = tapelev2, key = ilev_2
 CADJ STORE runoff1  = tapelev2, key = ilev_2
@@ -46,14 +38,16 @@ CADJ STORE saltflx0 = tapelev2, key = ilev_2
 CADJ STORE saltflx1 = tapelev2, key = ilev_2
 # endif
 # ifdef ALLOW_ATM_TEMP
+CADJ STORE ustress0    = tapelev2, key = ilev_2
+CADJ STORE ustress1    = tapelev2, key = ilev_2
+CADJ STORE vstress0    = tapelev2, key = ilev_2
+CADJ STORE vstress1    = tapelev2, key = ilev_2
 CADJ STORE aqh0        = tapelev2, key = ilev_2
 CADJ STORE aqh1        = tapelev2, key = ilev_2
 CADJ STORE atemp0      = tapelev2, key = ilev_2
 CADJ STORE atemp1      = tapelev2, key = ilev_2
 CADJ STORE precip0     = tapelev2, key = ilev_2
 CADJ STORE precip1     = tapelev2, key = ilev_2
-CADJ STORE lwflux0     = tapelev2, key = ilev_2
-CADJ STORE lwflux1     = tapelev2, key = ilev_2
 CADJ STORE snowprecip0 = tapelev2, key = ilev_2
 CADJ STORE snowprecip1 = tapelev2, key = ilev_2
 #  ifdef ALLOW_READ_TURBFLUXES
@@ -66,13 +60,18 @@ CADJ STORE hl1         = tapelev2, key = ilev_2
 CADJ STORE evap0       = tapelev2, key = ilev_2
 CADJ STORE evap1       = tapelev2, key = ilev_2
 #  endif /* EXF_READ_EVAP */
-#  ifdef ALLOW_DOWNWARD_RADIATION
+# endif /* ALLOW_ATM_TEMP */
+# ifdef ALLOW_DOWNWARD_RADIATION
 CADJ STORE swdown0     = tapelev2, key = ilev_2
 CADJ STORE swdown1     = tapelev2, key = ilev_2
 CADJ STORE lwdown0     = tapelev2, key = ilev_2
 CADJ STORE lwdown1     = tapelev2, key = ilev_2
+# else
+#  ifdef SHORTWAVE_HEATING
+CADJ STORE swflux0     = tapelev2, key = ilev_2
+CADJ STORE swflux1     = tapelev2, key = ilev_2
 #  endif
-# endif /* ALLOW_ATM_TEMP */
+# endif /* ALLOW_DOWNWARD_RADIATION */
 CADJ STORE uwind0      = tapelev2, key = ilev_2
 CADJ STORE uwind1      = tapelev2, key = ilev_2
 CADJ STORE vwind0      = tapelev2, key = ilev_2
