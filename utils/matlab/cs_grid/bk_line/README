@@ -1,3 +1,8 @@
+NOTE: bk_line files in this subdirectory use the old, non-recommended
+method (pre- PR#729, Sept. 2023). Newer routines to generate broken lines
+needed to compute meridional transports are located a directory level up in cs_grid.
+At this time however, there is no routine written to compute single, great circle
+broken lines between specified lat-lon coordinates using the recommended method.
 
 %- Feb 12 2013:
 needs MDS (binary) grid files (XC,YC,XG,YG & RAC) in dir "./grid_files/"
