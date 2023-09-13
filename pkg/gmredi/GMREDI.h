@@ -12,11 +12,14 @@ C--   COMMON /GM_PARAMS_L/ GM/Redi Logical-type parameters
 C     GM_AdvForm       :: use Advective Form (instead of Skew-Flux form)
 C     GM_AdvSeparate   :: do separately advection by Eulerian and Bolus velocity
 C     GM_useBVP        :: use Boundary-Value-Problem method for Bolus transport
-C     GM_useSubMeso    :: use parameterization of mixed layer (Sub-Mesoscale) eddies
+C     GM_useSubMeso    :: use parameterization of mixed layer (Sub-Mesoscale)
+C                         eddies
 C     GM_ExtraDiag     :: select extra diagnostics
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::
+C     GM_useVarKforRedi  :: use dynamically computed variable K (e.g. Visbeck)
+C                           also for Redi tensor (default = .TRUE.)
 C     GM_useBatesK3d     :: use Bates etal (2014) calculation for 3-d K
 C     GM_Bates_beta_eq_0 :: Ignores the beta term when calculating grad(q)
 C     GM_Bates_ThickSheet:: Use a thick PV sheet
@@ -34,6 +37,7 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
       LOGICAL GM_InMomAsStress
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
+      LOGICAL GM_useVarKforRedi
       LOGICAL GM_useBatesK3d
       LOGICAL GM_Bates_ThickSheet
       LOGICAL GM_Bates_surfK
@@ -47,6 +51,7 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
      &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
+     &                   GM_useVarKforRedi,
      &                   GM_useBatesK3d, GM_Bates_smooth,
      &                   GM_Bates_use_constK, GM_Bates_beta_eq_0,
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
@@ -192,11 +197,12 @@ C     (derived from previous block and not directly user configured)
       _RL GM_rMaxSlope
       _RL GM_skewflx
       _RL GM_advect
+      _RL GM_varKredi
       _RL GM_BVP_rModeNumber
       _RL GM_BVP_cHat2Min
       COMMON /GM_DERIVED_PAR/
      &                   GM_rMaxSlope,
-     &                   GM_skewflx, GM_advect,
+     &                   GM_skewflx, GM_advect, GM_varKredi,
      &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
 
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients

@@ -65,7 +65,7 @@ CEOP
         GM_useLeithQG = .FALSE.
        ENDIF
 
-C- print out some kee parameters :
+C- print out some key parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
      &  'GM_AdvForm =', '     /* if FALSE => use SkewFlux Form */')
        CALL WRITE_0D_L( GM_InMomAsStress, INDEX_NONE,
@@ -74,6 +74,8 @@ C- print out some kee parameters :
      & 'GM_AdvSeparate =',' /* Calc Bolus & Euler Adv. separately */')
        CALL WRITE_0D_L( GM_ExtraDiag, INDEX_NONE,
      &  'GM_ExtraDiag =','   /* Tensor Extra Diag (line 1&2) non 0 */')
+       CALL WRITE_0D_L( GM_useVarKforRedi, INDEX_NONE,
+     &  'GM_useVarKforRedi =', ' /* apply dynamic K to Redi tensor */')
        CALL WRITE_0D_RL( GM_isopycK, INDEX_NONE, 'GM_isopycK =',
      &  '    /* Background Isopyc. Diffusivity [m^2/s] */')
        CALL WRITE_0D_RL( GM_background_K*GM_skewflx, INDEX_NONE,
