@@ -40,11 +40,17 @@ C     myLev     :: tape level identifier
 C     myStep    :: identifies from where this routine is called
 C                  (1,0 = before after ad-routines)
 C     myThid    :: my Thread Id number
-      INTEGER myThid
       INTEGER myLev
       INTEGER myStep
+      INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
+
+C !FUNCTIONS: =========================================================
+      INTEGER  ILNBLNK
+      INTEGER  MDS_RECLEN
+      EXTERNAL ILNBLNK
+      EXTERNAL MDS_RECLEN
 
 C !LOCAL VARIABLES: ====================================================
       CHARACTER*(MAX_LEN_FNAM) fName
@@ -59,20 +65,14 @@ C     gloNyWh :: global sum of sNyWh
       INTEGER sNyWh
       INTEGER procNyWh
       INTEGER gloNyWh
-      PARAMETER ( sNxWh = sNx+2*Olx )
-      PARAMETER ( sNyWh = sNy+2*Oly )
+      PARAMETER ( sNxWh = sNx+2*OLx )
+      PARAMETER ( sNyWh = sNy+2*OLy )
       PARAMETER ( procNyWh = sNyWh*nSy*nSx )
       PARAMETER ( gloNyWh = procNyWh*nPy*nPx )
       logical  exst
 #ifdef ALLOW_WHIO_3D
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
-
-C !FUNCTIONS: =========================================================
-      INTEGER  ILNBLNK
-      INTEGER  MDS_RECLEN
-      EXTERNAL ILNBLNK
-      EXTERNAL MDS_RECLEN
 CEOP
 
       IF ( .NOT.useAUTODIFF ) THEN
@@ -194,4 +194,5 @@ c exst needs to have been tested before opening the file
 
 #endif /* ALLOW_AUTODIFF_WHTAPEIO */
 
-      end
+      RETURN
+      END
