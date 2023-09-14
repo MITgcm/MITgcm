@@ -85,9 +85,9 @@ C          =0 : Constant dissolution rate
 C          =1 : Follows sinking flux (default);
 C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
 C          =3 : Naviaux et al. 2019, Marine Chemistry
-C  CalciteDissRate  :: Rate constant (%) for calcite dissolution from
+C  calciteDissolRate :: Rate constant (%) for calcite dissolution from
 C          e.g. Keir (1980) Geochem. Cosmochem. Acta. or Naviaux et al. (2019)
-C  CalciteDissExp:: Rate exponent for calcite dissolution from
+C  calciteDissolExp  :: Rate exponent for calcite dissolution from
 C          e.g. Keir (1980) Geochem. Cosmochem. Acta. or Naviaux et al. (2019)
 C  WsinkPIC             :: sinking speed (m/s) of particulate inorganic carbon
 C                          for calcite dissolution through the watercolumn
@@ -104,8 +104,7 @@ C----
      &  useCalciteSaturation, calcOmegaCalciteFreq,
      &  nIterCO3, selectCalciteDissolution,
      &  WsinkPIC, selectCalciteBottomRemin,
-     &  CalciteDissExp,
-     &  CalciteDissRate,
+     &  calciteDissolRate, calciteDissolExp,
      &  zca
 
 #ifdef DIC_BIOTIC
@@ -178,16 +177,16 @@ C reaches bottom layer 0=bottom, 1=top
        selectCalciteBottomRemin = 1
 C selectCalciteDissolution :: flag to control calcite dissolution rate method:
        selectCalciteDissolution = 1
-C Calcite dissolution rate exponent (defaults set later if not read in)
-       CalciteDissExp(1) = UNSET_RL
-       CalciteDissExp(2) = UNSET_RL
 C Calcite dissolution rate constant (%/day, defaults set later if not read in)
-       CalciteDissRate(1)   = UNSET_RL
-       CalciteDissRate(2)   = UNSET_RL
+       calciteDissolRate(1) = UNSET_RL
+       calciteDissolRate(2) = UNSET_RL
+C Calcite dissolution rate exponent (defaults set later if not read in)
+       calciteDissolExp(1)  = UNSET_RL
+       calciteDissolExp(2)  = UNSET_RL
 C set nominal particulate sinking rate (m/s)
-       WsinkPIC                 = 100. _d 0/86400. _d 0
+       WsinkPIC             = 100. _d 0/86400. _d 0
 C-- setting default values for Calcite Saturation params ends here.
-       zca                      = 3500. _d 0
+       zca                  = 3500. _d 0
 
 #ifdef DIC_BIOTIC
        DOPfraction = 0.67 _d 0
@@ -276,33 +275,33 @@ C-    set parameter default values
 
       IF ( selectCalciteDissolution .EQ. 3 ) THEN
 C     Calcite dissolution rate constant for the Naviaux et al. 2019 scheme
-        IF ( CalciteDissRate(1).EQ.UNSET_RL )
-     &       CalciteDissRate(1) = 5.22 _d -9
-        IF ( CalciteDissRate(2).EQ.UNSET_RL )
-     &       CalciteDissRate(2) = 1.65 _d -5
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 5.22 _d -9
+        IF ( calciteDissolRate(2).EQ.UNSET_RL )
+     &       calciteDissolRate(2) = 1.65 _d -5
 C     Calcite dissolution rate exponent for the Naviaux et al. 2019 scheme
-        IF ( CalciteDissExp(1).EQ.UNSET_RL )
-     &       CalciteDissExp(1) = 0.11 _d 0
-        IF ( CalciteDissExp(2).EQ.UNSET_RL )
-     &       CalciteDissExp(2) = 4.76 _d 0
+        IF ( calciteDissolExp(1).EQ.UNSET_RL )
+     &       calciteDissolExp(1) = 0.11 _d 0
+        IF ( calciteDissolExp(2).EQ.UNSET_RL )
+     &       calciteDissolExp(2) = 4.76 _d 0
       ELSE
 C     use second set of Coeff only if select case =3
-       CalciteDissRate(2)   = 0.0 _d 0
-       CalciteDissExp(2) = 0.0 _d 0
+       calciteDissolRate(2) = 0.0 _d 0
+       calciteDissolExp(2)  = 0.0 _d 0
 C     set default for other cases:
        IF ( selectCalciteDissolution .EQ. 0 ) THEN
 C     Calcite dissolution rate constant
-        IF ( CalciteDissRate(1).EQ.UNSET_RL )
-     &       CalciteDissRate(1) = 1 _d 0/(360 _d 0*86400.0 _d 0)
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 1 _d 0/(360 _d 0*86400.0 _d 0)
 C     Calcite dissolution rate exponent not used for constant dissolution
-        CalciteDissExp(1) = 0.0 _d 0
+        calciteDissolExp(1) = 0.0 _d 0
        ELSE
 C     Calcite dissolution rate constant (%/day) for Keir dissolution
-        IF ( CalciteDissRate(1).EQ.UNSET_RL )
-     &       CalciteDissRate(1) = 7.177 _d 0
+        IF ( calciteDissolRate(1).EQ.UNSET_RL )
+     &       calciteDissolRate(1) = 7.177 _d 0
 C     Calcite dissolution rate exponent for Keir dissolution (4.2 for aragonite)
-        IF ( CalciteDissExp(1).EQ.UNSET_RL )
-     &       CalciteDissExp(1) = 4.54 _d 0
+        IF ( calciteDissolExp(1).EQ.UNSET_RL )
+     &       calciteDissolExp(1) = 4.54 _d 0
        ENDIF
       ENDIF
 
@@ -435,46 +434,40 @@ C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_RL( calcOmegaCalciteFreq, INDEX_NONE,
      &  'calcOmegaCalciteFreq =',
      &  ' /* Frequency of calcite saturation calculation (s) */')
-       IF ( selectCalciteDissolution .EQ. 0 ) THEN
-        WRITE(msgBuf,'(A)') 'Using Constant dissolution rate method'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissRate(1), INDEX_NONE,
-     &   'CalciteDissRate =',
+       IF ( selectCalciteDissolution .LT. 3 ) THEN
+        IF ( selectCalciteDissolution .EQ. 0 )
+     &  WRITE(msgBuf,'(A)') 'Using Constant dissolution rate method'
+        IF ( selectCalciteDissolution .EQ. 1 )
+     &  WRITE(msgBuf,'(A)') 'Using Follows default dissolution method'
+        IF ( selectCalciteDissolution .EQ. 2 )
+     &  WRITE(msgBuf,'(A)') 'Using Keir (1980) dissolution method'
+        IF ( selectCalciteDissolution .GE. 0 ) THEN
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+         CALL WRITE_0D_RL( calciteDissolRate(1), INDEX_NONE,
+     &   'calciteDissolRate =',
      &   ' /* Rate constant for calcite dissolution (%/day) */')
-       ELSEIF ( selectCalciteDissolution .EQ. 1 ) THEN
-        WRITE(msgBuf,'(A)') 'Using Follows default dissolution method'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissRate(1), INDEX_NONE,
-     &   'CalciteDissRate =',
-     &   ' /* Rate constant for calcite dissolution (%/day) */')
-        CALL WRITE_0D_RL( CalciteDissExp(1), INDEX_NONE,
-     &   'CalciteDissExp =',
+        ENDIF
+        IF ( selectCalciteDissolution .GE. 1  ) THEN
+         CALL WRITE_0D_RL( calciteDissolExp(1), INDEX_NONE,
+     &   'calciteDissolExp = ',
      &   ' /* Rate exponent for calcite dissolution */')
-       ELSEIF ( selectCalciteDissolution .EQ. 2 ) THEN
-        WRITE(msgBuf,'(A)') 'Using Keir (1980) dissolution method'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissRate(1), INDEX_NONE,
-     &   'CalciteDissRate =',
-     &   ' /* Rate constant for calcite dissolution (%/day) */')
-        CALL WRITE_0D_RL( CalciteDissExp(1), INDEX_NONE,
-     &   'CalciteDissExp =',
-     &   ' /* Rate exponent for calcite dissolution */')
+        ENDIF
        ELSEIF ( selectCalciteDissolution .EQ. 3 ) THEN
         WRITE(msgBuf,'(A)')
      &               'Using Naviaux et al. (2019) dissolution rates'
         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        CALL WRITE_0D_RL( CalciteDissRate(1), INDEX_NONE,
-     &   'CalciteDissRate(1) =',
-     &   ' /* Rate constant for dissolution (%/day) omega > 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissRate(2), INDEX_NONE,
-     &   'CalciteDissRate(2) =',
-     &   ' /* Rate constant for dissolution (%/day) omega < 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissExp(1), INDEX_NONE,
-     &   'CalciteDissExp(1) =',
-     &   ' /* Rate exponent for dissolution  omega > 0.8272 */')
-        CALL WRITE_0D_RL( CalciteDissExp(2), INDEX_NONE,
-     &   'CalciteDissExp(2) =',
-     &   ' /* Rate exponent for dissolution  omega < 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolRate(1), INDEX_NONE,
+     &   'calciteDissolRate(1) =',
+     &   ' /* Rate constant for dissolution (%/day), omega > 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolRate(2), INDEX_NONE,
+     &   'calciteDissolRate(2) =',
+     &   ' /* Rate constant for dissolution (%/day), omega < 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolExp(1), INDEX_NONE,
+     &   'calciteDissolExp(1) = ',
+     &   ' /* Rate exponent for dissolution, omega > 0.8272 */')
+        CALL WRITE_0D_RL( calciteDissolExp(2), INDEX_NONE,
+     &   'calciteDissolExp(2) = ',
+     &   ' /* Rate exponent for dissolution, omega < 0.8272 */')
        ENDIF
        CALL WRITE_0D_RL( WsinkPIC, INDEX_NONE, 'WsinkPIC =',
      &  ' /* Sinking speed of particulate inorganic carbon (m/s) */')

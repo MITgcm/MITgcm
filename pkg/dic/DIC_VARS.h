@@ -28,9 +28,9 @@ C                             omegaC, is updated (s).
 C     nIterCO3    :: Number of iterations of the Follows 3D pH solver to
 C                       calculate deep carbonate ion concenetration (no
 C                       effect when using the Munhoven/SolveSapHe solvers).
-C     CalciteDissRate   :: Rate constant (%) for calcite dissolution
+C     calciteDissolRate :: Rate constant (%) for calcite dissolution
 C                       from Keir (1980) Geochem. Cosmochem. Acta.
-C     CalciteDissExp :: Rate exponent for calcite dissolution
+C     calciteDissolExp  :: Rate exponent for calcite dissolution
 C                       from Keir (1980) Geochem. Cosmochem. Acta.
 C     WsinkPIC    :: sinking speed (m/s) of particulate inorganic carbon for
 C                    calculation of calcite dissolution through the watercolumn
@@ -45,8 +45,7 @@ C          =3 : Naviaux et al. 2019, Marine Chemistry
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &              wind, fIce, Kwexch_Pre, silicaSurf,
-     &              CalciteDissExp,
-     &              CalciteDissRate,
+     &              calciteDissolRate, calciteDissolExp,
      &              calcOmegaCalciteFreq, zca,
      &              WsinkPIC, selectCalciteBottomRemin,
      &              selectCalciteDissolution,
@@ -61,8 +60,7 @@ C          =3 : Naviaux et al. 2019, Marine Chemistry
       _RL  fIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  silicaSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  CalciteDissExp(2)
-      _RL  CalciteDissRate(2)
+      _RL  calciteDissolRate(2), calciteDissolExp(2)
       _RL  calcOmegaCalciteFreq
       _RL  zca
       _RL  WsinkPIC

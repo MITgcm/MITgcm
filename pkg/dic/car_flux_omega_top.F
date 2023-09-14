@@ -84,7 +84,7 @@ c        exp_tot=0
      &           (1. _d 0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
 c          exp_tot=exp_tot+caexport(i,j)
 C calculate flux to each layer from base of k
-           Do ko=k+1,Nr
+           DO ko=k+1,Nr
             if (hFacC(i,j,ko,bi,bj).gt.0. _d 0) then
               if (ko .eq. k+1) then
                 flux_u = caexport(i,j)
@@ -113,13 +113,13 @@ C if dissolution
                IF (selectCalciteDissolution .eq. 0) THEN
 C Use constant dissolution rate
                 flux_l = flux_u
-     &                 *(1.0-CalciteDissRate(1)*drF(k)/WsinkPIC)
+     &                 *(1.0-calciteDissolRate(1)*drF(k)/WsinkPIC)
                ELSEIF (selectCalciteDissolution .eq. 1) THEN
 C Use Micks version of dissolution rate based on vertical sinking/remin balance
-                DissolutionRate = CalciteDissRate(1)*(
+                DissolutionRate = calciteDissolRate(1)*(
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissExp(1)
+     &             )**calciteDissolExp(1)
      &             )/(86400. _d 0)
 
                 dumrate = -1. _d 0*DissolutionRate*drF(ko)*
@@ -128,25 +128,25 @@ C Use Micks version of dissolution rate based on vertical sinking/remin balance
                ELSEIF (selectCalciteDissolution .eq. 2) THEN
 C Use Karstens version of dissolution rate based on from Keir (1980) Geochem.
 C     Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in log(%))
-                DissolutionRate = EXP(CalciteDissRate(1))*(
+                DissolutionRate = EXP(calciteDissolRate(1))*(
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissExp(1)
+     &             )**calciteDissolExp(1)
      &             )/(100. _d 0 * 86400. _d 0)
 
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
                ELSEIF (selectCalciteDissolution .eq. 3) THEN
 C Use Naviaux et al. 2019, Marine Chemistry dissolution rates
                 IF (omegaC(i,j,ko,bi,bj) .GT. 0.8272 _d 0) THEN
-                 DissolutionRate = CalciteDissRate(1) * (
+                 DissolutionRate = calciteDissolRate(1) * (
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissExp(1))
+     &             )**calciteDissolExp(1))
                 ELSE
-                 DissolutionRate = CalciteDissRate(2) * (
+                 DissolutionRate = calciteDissolRate(2) * (
      &             (
      &              1. _d 0-omegaC(i,j,ko,bi,bj)
-     &             )**CalciteDissExp(2))
+     &             )**calciteDissolExp(2))
                 ENDIF
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
                ENDIF
@@ -165,7 +165,7 @@ C no flux to ocean bottom
               endif
 
 C flux divergence
-             cflux(i,j,ko)=cflux(i,j,ko) +
+              cflux(i,j,ko)=cflux(i,j,ko) +
      &          ( (flux_u-flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) )
 C TEST ............................
 c            if(i .eq. 76 .and. j .eq. 36)then
@@ -173,7 +173,7 @@ c               write(6,*)'k,flux_l/flux_u',ko,(flux_l/flux_u)
 c              write(6,*)'k,flux_l,cflux ',ko,flux_l,cflux(i,j,ko)
 c            endif
 C TEST ............................
-           else
+            else
 C if no layer below initial layer, remineralize
                if (ko.eq.k+1) then
                 if ( selectCalciteBottomRemin.EQ.1 .AND.
@@ -191,8 +191,8 @@ C ... at bottom
      &                    R_CP*rain_ratio(i,j,bi,bj)
                 endif
                endif
-           endif
-          ENDDO
+            endif
+           ENDDO
 
           endif
          ENDDO
