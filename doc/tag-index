@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68s (2023/09/11)
 o verification:
   - change default ALLOW_IB_CORR (in pkg/ecco/ECCO_OPTIONS.h) to "#undef" and
     test that this code compiles in experiment global_oce_biogeo_bling ;
