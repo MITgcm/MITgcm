@@ -2,6 +2,9 @@
  &ABIOTIC_PARMS
   useCalciteSaturation= .TRUE.,
 # calcOmegaCalciteFreq= 86400.,
+#- Calcite-Dissolution option:  =0 : Constant rate ; =1 : Follows sinking flux (default) ;
+#  =2 : Keir (1980) Geochem. Cosmochem. Acta. ; =3 : Naviaux et al. 2019, Marine Chemistry
+  selectCalciteDissolution= 2,
  &
 
  &BIOTIC_PARMS
