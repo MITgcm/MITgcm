@@ -112,6 +112,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k + (tkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Initialize phiHydF to zero :
@@ -137,11 +138,8 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = k + (tkey-1)*Nr
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
@@ -186,6 +184,9 @@ C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy
      I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
+#endif
 
 #ifdef NONLIN_FRSURF
         IF ( addSurfPhiAnom .AND.
@@ -301,11 +302,8 @@ CADJ GENERAL
         IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = k + (tkey-1)*Nr
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
@@ -313,10 +311,6 @@ CADJ &     kind = isbyte
      I              salt(1-OLx,1-OLy,k,bi,bj),
      O              alphaRho,
      I              k, bi, bj, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
         ELSE
           DO j=jMin,jMax
            DO i=iMin,iMax
@@ -325,6 +319,9 @@ CADJ &     kind = isbyte
           ENDDO
         ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
+#endif
 C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
         DO j=jMin,jMax
           DO i=iMin,iMax
@@ -342,6 +339,9 @@ C--     Quasi-hydrostatic terms are added as if they modify the specific-volume
      I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
+#endif
 
 C----  Hydrostatic pressure at cell centers
 
@@ -450,6 +450,9 @@ C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
      I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
+#endif
 
 C---    Integrate d Phi / d pi
 
@@ -604,6 +607,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
         STOP 'CALC_PHI_HYD: Bad value of buoyancyRelation !'
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+CADJ STORE alphaRho = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE phiHydC  = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE phiHydF  = comlev1_bibj_k, key = kkey, kind = isbyte
+# endif
+#endif
 
       IF ( .NOT. useFVgradPhi ) THEN
 C--   r-coordinate and r*-coordinate cases:

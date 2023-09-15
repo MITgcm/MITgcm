@@ -301,8 +301,8 @@ C Use the original Follows et al. (2006) solver
               ENDIF
 #endif
               DO it=1,10
-C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
-C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
+cC$TAF STORE pH(i,j,bi,bj)                              = dic_surf
+cC$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
                CALL CALC_PCO2_APPROX(
      I          surftemp(i,j),surfsalt(i,j),
      I          surfdic(i,j), surfphos(i,j),

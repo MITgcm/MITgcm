@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68s (2023/09/11)
+o verification:
+  - change default ALLOW_IB_CORR (in pkg/ecco/ECCO_OPTIONS.h) to "#undef" and
+    test that this code compiles in experiment global_oce_biogeo_bling ;
+  - clean/update AD related CPP header files across all experiments and reduce
+    differences with standard version in pkg autodiff, cost, ctrl and ecco.
+o verification:
+  - change global_oce_latlon TAF set-up to multi-tiles (4 tiles, as in code_oad
+    & code_tap) and add SIZE.h_mpi to enable MPI tests (in all 3 code_* dir).
+o model/src & pkgs, TAF storage dir:
+  - rearrange and add storing of variables to reduce number of (unwarned)
+    recomp. in fluxform & vecinv pkgs and in model/src (e.g., calc_phi_hyd.F) ;
+  - add store directives in solve_tri/pentadiagonal.F to avoid recomputation
+    warnings with SOLVE_DIAGONAL_KINNER defined ;
+  - add CPP condition inside GAD SOM advection S/R (-> empty ".f" file if
+    neither GAD_ALLOW_TS_SOM_ADV nor PTRACERS_ALLOW_DYN_STATE is defined ) ;
+  - clean-up/refine many unnecessary store directives -> less TAF warnings ;
+  - remove unnecessary checkpointing code from pkg/smooth_diff2/3d.F
 o pkg/ggl90:
   - move computing the mixingLength to a dedicated routine ggl90_mixinglength.F
   - adjust/add TAF store directives to avoid hidden recomputations.

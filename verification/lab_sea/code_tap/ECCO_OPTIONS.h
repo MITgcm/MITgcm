@@ -1,3 +1,8 @@
+#ifndef ECCO_OPTIONS_H
+#define ECCO_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: ECCO_OPTIONS.h
 C !INTERFACE:
@@ -10,11 +15,6 @@ C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
 
-#ifndef ECCO_OPTIONS_H
-#define ECCO_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
 #ifdef ALLOW_ECCO
 #ifdef ECCO_CPPOPTIONS_H
 
@@ -26,80 +26,65 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 
 C-- Package-specific Options & Macros go here
 
-# define ALLOW_ATEMP_COST_CONTRIBUTION
-# define ALLOW_AQH_COST_CONTRIBUTION
-# define ALLOW_UWIND_COST_CONTRIBUTION
-# define ALLOW_VWIND_COST_CONTRIBUTION
-# define ALLOW_PRECIP_COST_CONTRIBUTION
-# define ALLOW_SNOWPRECIP_COST_CONTRIBUTION
-# define ALLOW_SWDOWN_COST_CONTRIBUTION
-# define ALLOW_LWDOWN_COST_CONTRIBUTION
-# undef ALLOW_EVAP_COST_CONTRIBUTION
-# define ALLOW_APRESSURE_COST_CONTRIBUTION
-# undef ALLOW_RUNOFF_COST_CONTRIBUTION
-
-# define ALLOW_THETA0_COST_CONTRIBUTION
-# define ALLOW_SALT0_COST_CONTRIBUTION
-# define ALLOW_THETA_COST_CONTRIBUTION
-# define ALLOW_SALT_COST_CONTRIBUTION
-# define ALLOW_SST_COST_CONTRIBUTION
-# define ALLOW_SSS_COST_CONTRIBUTION
-
-CML# define ALLOW_SSH_MEAN_COST_CONTRIBUTION
-CML# define ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-CML# define ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-CML# undef  ALLOW_SPH_PROJECTION
-CML# if (defined (ALLOW_SSH_MEAN_COST_CONTRIBUTION) || \
-CML      defined (ALLOW_SSH_TPANOM_COST_CONTRIBUTION) || \
-CML      defined (ALLOW_SSH_ERSANOM_COST_CONTRIBUTION))
-CML#  define ALLOW_SSH_COST_CONTRIBUTION
-CML# endif
-
-C allow for generic cost function and integral terms
+C o Allow for generic cost function and integral terms with pkg/ecco:
 #define ALLOW_GENCOST_CONTRIBUTION
-C allow for 3 dimensional generic terms
+C o Allow for 3 dimensional generic cost terms with pkg/ecco:
 #define ALLOW_GENCOST3D
+C   Note regarding GENCOST usage:
+C   > In data.ecco, this requires the specification of data file (name,
+C     frequency, etc.), bar file name for corresp. model average, standard
+C     error file name, etc.
+C   > In addition, adding such cost terms requires editing ECCO_SIZE.h to
+C     increase NGENCOST/NGENCOST3D, and editing cost_gencost_customize.F to
+C     implement the actual model average (i.e. the bar file content).
+# undef ALLOW_GENCOST_1D
+# undef ALLOW_GENCOST_SSTV4_OUTPUT
 
-C include global mean steric sea level correction
+C o Allow Open-Boundary cost contributions
+#ifdef ALLOW_OBCS
+C   Open-Boundary cost is meaningless without compiling pkg/obcs
+C   Note: Make sure that coresponding OBCS N/S/W/E Option is defined
+# define ALLOW_OBCSN_COST_CONTRIBUTION
+# define ALLOW_OBCSS_COST_CONTRIBUTION
+# define ALLOW_OBCSW_COST_CONTRIBUTION
+# define ALLOW_OBCSE_COST_CONTRIBUTION
+#  undef OBCS_AGEOS_COST_CONTRIBUTION
+#  undef OBCS_VOLFLUX_COST_CONTRIBUTION
+#  undef BAROTROPIC_OBVEL_CONTROL
+#endif /* ALLOW_OBCS */
+
+C o Set ALLOW_OBCS_COST_CONTRIBUTION (Do not edit/modify):
+#if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCSS_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCSW_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCSE_COST_CONTRIBUTION))
+# define ALLOW_OBCS_COST_CONTRIBUTION
+#endif
+
+C o Include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC
-C allow for near-shore and high-latitude altimetry
+#ifdef ATMOSPHERIC_LOADING
+C   Apply inverse barometer correction (coded within ATMOSPHERIC_LOADING)
+# undef ALLOW_IB_CORR
+#endif
+C o Allow for near-shore and high-latitude altimetry
 #undef ALLOW_SHALLOW_ALTIMETRY
 #undef ALLOW_HIGHLAT_ALTIMETRY
 
-C allow for In-Situ Profiles cost function contribution
+C o Allow for In-Situ Profiles cost function contribution
 #undef ALLOW_PROFILES_CONTRIBUTION
 
-C cost function output format
+C o Cost function output format
 #undef ALLOW_ECCO_OLD_FC_PRINT
 
-C-- real options?
-
-C include dump of snap shots for checks
-#undef ALLOW_SNAPSHOTS
-
-cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
-c#define SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
-cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
-
-C generate more text in STDOUT.0000
+C o Generate more text in STDOUT
 #undef ECCO_VERBOSE
+#undef ALLOW_ECCO_DEBUG
 
-C allow cost function term for sigmaR
-#undef ALLOW_SIGMAR_COST_CONTRIBUTION
-
-C--  fake options (only used to be printed in S/R ECCO_SUMMARY):
-
-C allow ???
-#define  ALLOW_ECCO_FORWARD_RUN
-#undef  ALLOW_ECCO_DIAGNOSTIC_RUN
-C Just do a "dry" run ( useful for testing ).
-#undef  ALLOW_NO_DYNAMICS
-C Use the Yearly-Monthly-Daily-Stepping call tree.
-#undef  ALLOW_YMDS_TREE
-C Do not call stepping
-#define ALLOW_STEPPING_CALL
-C Projection onto Spherical Harmonics
-#undef  ALLOW_SPH_PROJECTION
+C-- partially retired options (i.e., only used to set default switch):
+# undef ALLOW_SSH_COST_CONTRIBUTION
+#define ALLOW_SST_COST_CONTRIBUTION
+# undef ALLOW_SEAICE_COST_CONTRIBUTION
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
