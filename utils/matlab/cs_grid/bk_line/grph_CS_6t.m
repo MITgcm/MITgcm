@@ -57,11 +57,12 @@ if c1 >= c2
   c2=mx+mb*c2;
 end
  fprintf(' min,max %8.3e %8.3e ; Cmin,max %8.3e %8.3e \n',mn,mx,c1,c2)
- [xyP]=def_subP(6);
+ have_subP=exist('def_subP');
+ if have_subP == 2, [xyP]=def_subP(6,0.04,0.08); end
+ xtxt=xax(4); ytxt=yax(1)-ny/8;
 %------
  for n=1:6
-% subplot(320+n);
-  axes('position',xyP(n,:));
+  if have_subP == 2, axes('position',xyP(n,:)); else subplot(320+n); end
   v1t=var(:,:,n);
   imagesc(xax,yax,v1t') ; caxis([c1 c2]);set(gca,'YDir','normal') ;
   grid;
@@ -71,21 +72,12 @@ end
     hold off; set(L,'color',[0 0 0]);
   end
   title(['Face Nb : ',int2str(n)]);
+  if n == 5, text(xtxt,ytxt,sprintf('min= %9.5g ', mn)); end
+  if n == 6, text(xtxt,ytxt,sprintf('Max= %9.5g ', mx)); end
  end
 %------
-%- matlab 6 :
-%pp=get(gca,'position');
-%H=colorbar('vertical');
-%set(gca,'position',pp);
-%set(H,'position',[0.13 0.03 0.64  0.031]);
-%set(H,'position',[0.49 0.036 0.02  0.26]);
-%text(22.,-5.,sprintf('min= %9.5g ', mn));
-%text(22.,-8.,sprintf('Max= %9.5g ', mx));
-%- matlab 7 :
 H=colorbar('WestOutside');
-set(H,'position',[0.512 0.036 0.008 0.26]);
-text(22.,-5.,sprintf('min= %9.5g ', mn));
-text(22.,-8.,sprintf('Max= %9.5g ', mx));
+set(H,'position',[0.510 0.036 0.008 0.25]);
 if ktit == 1,
  axes('position',[.01,.01,.99,.99],'Visible','off');
  [T]=text(0.5,0.97,titv);

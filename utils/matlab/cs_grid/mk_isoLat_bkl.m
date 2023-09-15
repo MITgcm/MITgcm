@@ -223,7 +223,7 @@ end
 %===============================================================================
 %- a quick plot to check:
 if kplot > 0,
-figure(1);clf;
+figure(1); clf; colormap('jet');
  ccB=[0 0]; shift=-1; cbV=1; AxBx=[-180 180 -90 90]; kEnv=0;
  var=tagC; titv='tagC';
 %var=tagU; titv='tagU';
@@ -241,8 +241,7 @@ figure(1);clf;
  if kplot == 1,
    grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
  else
-   ng0=210; %cB=[56 61];
-   grph_CS_2t(var,ng0,ccB,'tagC',ycs,yLat);
+   grph_CS_6t(var,ccB(1),ccB(2),nc,'tagC');
  end
 end
 
