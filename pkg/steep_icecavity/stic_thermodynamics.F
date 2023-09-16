@@ -169,12 +169,12 @@ C     (Holland and Jenkins, 1999, eq.21)
               ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #ifndef ALLOW_shiTransCoeff_3d
-              shiTransCoeffS(I,J,bi,bj) = 5.05 _d -3 * 
+              shiTransCoeffS(I,J,bi,bj) = STICsaltToHeatRatio * 
      &              shiTransCoeffT(I,J,bi,bj)
 #endif
               DO K = 1, NR
 #ifdef ALLOW_shiTransCoeff_3d
-                shiTransCoeffS(I,J,K,bi,bj) = 5.05 _d -3 * 
+                shiTransCoeffS(I,J,K,bi,bj) = STICsaltToHeatRatio * 
      &                shiTransCoeffT(I,J,K,bi,bj)
 #endif
                 iceFrontHeatFlux(I,J,K,bi,bj)       = 0. _d 0
