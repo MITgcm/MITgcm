@@ -177,6 +177,9 @@ C     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
       integer myIter
@@ -337,6 +340,18 @@ C     the routine ecco_cprsrl does not copy overlaps
            ENDDO
           ENDDO
          ENDDO
+
+#ifdef ALLOW_STEEP_ICECAVITY
+        ELSEIF ( ylocmask .EQ. 'I' .OR. ylocmask .EQ. 'i' ) THEN
+
+         DO k = 1, 1
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+            localmask(i,j,k,bi,bj) = mask2dSHIICF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+#endif
 
         ELSE
          CALL ECCO_ERROR('COST_GENLOOP', 'wrong ylocmask', myThid)
