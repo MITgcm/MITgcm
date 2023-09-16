@@ -214,7 +214,11 @@ C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            shiTransCoeffS(i,j,bi,bj) =
+#  ifdef ALLOW_SHELFICE
      &       SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+#  elif defined (ALLOW_STEEP_ICECAVITY)
+     &       STICsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+#  endif
           ENDDO
          ENDDO
         ENDDO
@@ -226,7 +230,11 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            shiTransCoeffT(i,j,bi,bj) =
+#  ifdef ALLOW_SHELFICE
      &       shiTransCoeffS(i,j,bi,bj)/SHELFICEsaltToHeatRatio
+#  elif defined (ALLOW_STEEP_ICECAVITY)
+     &       shiTransCoeffS(i,j,bi,bj)/STICsaltToHeatRatio
+#  endif
           ENDDO
          ENDDO
         ENDDO
