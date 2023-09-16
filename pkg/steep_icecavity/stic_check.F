@@ -195,7 +195,7 @@ C-    Check that CPP option is "defined" when corresponding run-time parameter i
       ENDIF
 #else
       WRITE(msgBuf,'(A,A,A)')
-     &     'CPP flag SHI_ALLOW_GAMMAFRICT has to be undefined'
+     &     'CPP flag SHI_ALLOW_GAMMAFRICT has to be undefined,',
      &     ' because related code is not implemented.'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
