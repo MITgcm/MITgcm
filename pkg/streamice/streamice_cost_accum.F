@@ -88,13 +88,13 @@ C--   Calculate cost function on tile of this instance
 
 #ifdef ALLOW_STREAMICE_TC_COST
       IF ( STREAMICE_do_timedep_cost ) THEN
-       CALL STREAMICE_COST_REG_ACCUM (myThid, myIter)
+       CALL STREAMICE_COST_REG_ACCUM (myIter, myThid)
        DO itime = 1,streamiceMaxCostLevel
         IF (myIter==streamice_surf_cost_timesteps(itime)) THEN
-         CALL STREAMICE_COST_SURF_ACCUM (myThid, myIter)
+         CALL STREAMICE_COST_SURF_ACCUM (myIter, myThid)
         ENDIF
         IF (myIter==streamice_vel_cost_timesteps(itime)) THEN
-         CALL STREAMICE_COST_VEL_ACCUM (myThid, myIter)
+         CALL STREAMICE_COST_VEL_ACCUM (myIter, myThid)
         ENDIF
        ENDDO
       ENDIF
