@@ -19,7 +19,10 @@ C     allow code for simple ISOMIP thermodynamics
 
 C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
-#define SHI_ALLOW_GAMMAFRICT
+C     The code for friction velocity-dependent transfer coefficient 
+C     is not implemented for STEEP_ICECAVITY. The CPP option 
+C     SHI_ALLOW_GAMMAFRICT has to be undefined for STEEP_ICECAVITY.
+#undef SHI_ALLOW_GAMMAFRICT
 
 C     in uStar expression, use wet-point method to average velocity
 C     at grid-cell center
