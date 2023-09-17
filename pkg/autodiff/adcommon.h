@@ -214,7 +214,7 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
      &     adr_low, adrecip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
 
-#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#ifdef ALLOW_SHELFICE
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
       _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -227,5 +227,20 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
      &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
      &  adshitranscoeffs, adshicdragfld, adshidragquadfld
 #endif
+
+#ifdef ALLOW_STEEP_ICECAVITY
+C Special Care: more forward vars in FWD common block ; check TAF AD-code !
+      _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adicefrontforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adicefrontforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /adSTIC_FIELDS_RL/ 
+     &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
+     &  adshitranscoeffs, adicefrontforcingt, adicefrontforcings
+#endif
+
+
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
