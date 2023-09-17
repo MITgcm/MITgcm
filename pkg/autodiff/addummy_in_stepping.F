@@ -285,7 +285,7 @@ C-----------------------------------------------------------------------
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
       CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffS,
-     &                 'ADJshics','ADJshict.',
+     &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  else
       CALL DUMP_ADJ_XY(dumRS, adshiCDragFld,
