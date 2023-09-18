@@ -1,0 +1,19 @@
+# ******************
+# ECCO cost function
+# ******************
+ &ECCO_COST_NML
+ cost_iprec  = 64,
+ &
+ &ECCO_GENCOST_NML
+ gencost_avgperiod(1)  = 'month',
+ gencost_barfile(1) = 'm_shifwflxmon',
+ gencost_datafile(1) = 'obs_melt.bin',
+ gencost_errfile(1) = 'ones_64b.bin',
+ gencost_name(1) = 'shifwflxmean',
+ gencost_spmin(1) = -999.,
+ gencost_spmax(1) = 999.,
+ gencost_spzero(1) = 0.,
+ gencost_preproc(1,1)='mean',
+ mult_gencost(1) = 1.D12,
+#
+ &
