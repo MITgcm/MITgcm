@@ -42,6 +42,9 @@ C !USES: ============================================================
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_PARAMS.h"
 #endif
@@ -150,8 +153,12 @@ C- ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+# ifdef ALLOW_SHELFICE
          IF ( useShelfIce ) THEN
+# elif (defined (ALLOW_STEEP_ICECAVITY))
+         IF ( useSTIC ) THEN
+# endif
           kSrf = MAX(1,kTopC(i,j,bi,bj))
           kTop = MIN(kSrf+1,Nr)
          ENDIF
