@@ -1,4 +1,5 @@
 #ifdef ALLOW_STEEP_ICECAVITY
+CADJ STORE phi0surf         = tapelev2, key = ilev_2
 CADJ STORE sticMass         = tapelev2, key = ilev_2
 CADJ STORE kTopC            = tapelvi2, key = ilev_2
 CADJ STORE shelficeForcingT = tapelev2, key = ilev_2
