@@ -232,10 +232,15 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
       _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef ALLOW_shiTransCoeff_3d
       _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL adicefrontforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL adicefrontforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+      _RL adicefrontforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL adicefrontforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /adSTIC_FIELDS_RL/ 
      &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
      &  adshitranscoeffs, adicefrontforcingt, adicefrontforcings

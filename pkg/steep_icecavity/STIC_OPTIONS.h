@@ -28,8 +28,8 @@ C     in uStar expression, use wet-point method to average velocity
 C     at grid-cell center
 #undef SHI_USTAR_WETPOINT
 
-CC use 3d shiTransCoeffT and shiTransCoeffS
-C#define ALLOW_shiTransCoeff_3d
+C use 3d shiTransCoeffT and shiTransCoeffS
+#define ALLOW_shiTransCoeff_3d
 
 C     allow (vertical) remeshing whenever ocean top thickness factor
 C     exceeds thresholds

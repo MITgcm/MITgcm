@@ -189,13 +189,17 @@ C     problem occurs
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
-#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+# if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 #  ifndef SHI_ALLOW_GAMMAFRICT
         CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
         CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
 #  else
         CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
 #  endif
+# endif
+# if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -282,19 +286,27 @@ C-----------------------------------------------------------------------
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif
-#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+# if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffT,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
       CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffS,
-     &                 'ADJshics','ADJshict.',
+     &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  else
       CALL DUMP_ADJ_XY(dumRS, adshiCDragFld,
      &                 'ADJshicd','ADJshicd.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
+# endif
+# if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS,
+     &                 'ADJshics','ADJshics.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
@@ -387,19 +399,27 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+# if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
       CALL DUMP_ADJ_XY(dumRS, shiTransCoeffS%d,
-     &                 'ADJshics','ADJshict.',
+     &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  else
       CALL DUMP_ADJ_XY(dumRS, shiCDragFld%d,
      &                 'ADJshicd','ADJshicd.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
+# endif
+# if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT%d,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS%d,
+     &                 'ADJshics','ADJshics.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
