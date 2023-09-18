@@ -60,7 +60,8 @@ C     u/vIceLHS :: LHS of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef SEAICE_ALLOW_JFNK
+#if ( defined SEAICE_CGRID \
+      && ( defined SEAICE_ALLOW_JFNK || defined SEAICE_ALLOW_KRYLOV ) )
 C     i,j,bi,bj,k :: loop indices
       INTEGER i,j,bi,bj
       INTEGER k
@@ -206,7 +207,7 @@ C     therefore, we need to substract gU/Vmom from the left hand side
        ENDDO
       ENDDO
 
-#endif /* SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_CGRID, SEAICE_ALLOW_JFNK and KRYLOV */
 
       RETURN
       END

@@ -36,8 +36,11 @@ c     == global variables ==
 # include "OBCS_GRID.h"
 #endif
 #include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 
 c     == routine arguments ==
       integer       mythid
@@ -110,7 +113,11 @@ c     biwrk     = 1
 
 c--   set max loop index for obcs multiplicities
       if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
+#ifdef ALLOW_OBCS_CONTROL
          nobcsmax = nobcs
+#else
+         print *, 'S/R grdchk_get_position: Ooops!'
+#endif
       else
          nobcsmax = 1
       endif

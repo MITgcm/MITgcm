@@ -86,7 +86,7 @@ C-    Provided we set the file name just before calling ctrl_set_unpack,
 C     the same local file name variable can be used for different variables.
 C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       integer iarr
-      character*(80) fname_local(3)
+      character*(MAX_LEN_FNAM) fname_local(3)
 #endif
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       integer nwettmp(Nr)
@@ -94,11 +94,11 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
 #endif
 
 #ifdef ALLOW_OBCS
-      character*(80) weighttype
-      character*(80) fname_obcsn(3)
-      character*(80) fname_obcss(3)
-      character*(80) fname_obcsw(3)
-      character*(80) fname_obcse(3)
+      character*(MAX_LEN_FNAM) weighttype
+      character*(MAX_LEN_FNAM) fname_obcsn(3)
+      character*(MAX_LEN_FNAM) fname_obcss(3)
+      character*(MAX_LEN_FNAM) fname_obcsw(3)
+      character*(MAX_LEN_FNAM) fname_obcse(3)
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(Nr,nobcs)
@@ -315,34 +315,30 @@ c----------------------------------------------------------------------
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCSN_CONTROL
           ivartype    = 11
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcsn"
+          write(weighttype,'(a)') 'wobcsn'
           call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
+     &         cunit, ivartype, fname_obcsn(ictrlgrad), 'maskobcsn',
      &         weighttype, wobcsn, nWetobcsnGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
           ivartype    = 12
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcss"
+          write(weighttype,'(a)') 'wobcss'
           call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
+     &         cunit, ivartype, fname_obcss(ictrlgrad), 'maskobcss',
      &         weighttype, wobcss, nWetobcssGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
           ivartype    = 13
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcsw"
+          write(weighttype,'(a)') 'wobcsw'
           call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
+     &         cunit, ivartype, fname_obcsw(ictrlgrad), 'maskobcsw',
      &         weighttype, wobcsw, nWetobcswGlo, mythid)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
           ivartype    = 14
-          write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wobcse"
+          write(weighttype,'(a)') 'wobcse'
           call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
+     &         cunit, ivartype, fname_obcse(ictrlgrad), 'maskobcse',
      &         weighttype, wobcse, nWetobcseGlo, mythid)
 #endif
 #endif /* ALLOW_OBCS */
@@ -366,8 +362,8 @@ c----------------------------------------------------------------------
           call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
-cc          write(weighttype(1:80),'(80a)') ' '
-cc          write(weighttype(1:80),'(a)') "wunit"
+cc          write(weighttype,'(a)') ' '
+cc          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
@@ -383,10 +379,10 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr3d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 200+iarr
-c          write(weighttype(1:80),'(80a)') ' '
-c          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype,'(a)') ' '
+c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
      &         wunit, nwetcglobal, mythid)
         endif
@@ -411,8 +407,8 @@ c          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_fname( ctrlDir(1:ilDir)//xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
-c          write(weighttype(1:80),'(80a)') ' '
-c          write(weighttype(1:80),'(a)') "wunit"
+c          write(weighttype,'(a)') ' '
+c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,

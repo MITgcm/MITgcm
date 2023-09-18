@@ -50,8 +50,8 @@ C ==================== Routine Variables ==========================
       _RL lat_fac, lon_fac
       integer prof_i, prof_j
       integer vec_start(2), vec_count(2), profno_div1000, kk
-      character*(80) profilesfile, fnamedatanc
-      character*(80) fnameequinc, adfnameequinc
+      character*(MAX_LEN_FNAM) profilesfile, fnamedatanc
+      character*(MAX_LEN_FNAM) fnameequinc, adfnameequinc
       integer IL, JL, KL, err
       logical  exst
 
@@ -163,7 +163,7 @@ c--   == end of interface ==
       profilesfile=' '
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
-        write(profilesfile(1:80),'(1a)')
+        write(profilesfile,'(1a)')
      &     profilesfiles(num_file)(1:IL)
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
@@ -181,7 +181,7 @@ C===========================================================
 c open data files and read information
 C===========================================================
 
-      write(fnamedatanc(1:80),'(2a)') profilesfile(1:IL),'.nc'
+      write(fnamedatanc,'(2a)') profilesfile(1:IL),'.nc'
       err = NF_OPEN(fnamedatanc, 0, fiddata(num_file,bi,bj))
 
 c1)  read the number of profiles :
@@ -669,9 +669,9 @@ C===========================================================
 
       if (profilesDoNcOutput) then
 
-      write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+      write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
-      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)')
+      write(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
 
@@ -698,9 +698,9 @@ C===========================================================
 #endif
       else
 
-      write(fnameequinc(1:80),'(3a,i3.3,a,i3.3,a)')
+      write(fnameequinc,'(3a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
-      write(adfnameequinc(1:80),'(4a,i3.3,a,i3.3,a)')
+      write(adfnameequinc,'(4a,i3.3,a,i3.3,a)')
      & profilesDir(1:JL),'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
@@ -873,7 +873,7 @@ c1) you want to provide interpolation information
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 cgf XC grid
        call MDSFINDUNIT( fid , mythid )
-       write(fnameequinc(1:80),'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
+       write(fnameequinc,'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
      & 'profilesXCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
          k=MDS_RECLEN(64,(sNx+2)*(sNy+2),mythid)
             WRITE(standardMessageUnit,'(A,/,2A)')
@@ -893,7 +893,7 @@ cgf XC grid
        close(fid)
 cgf YC grid
        call MDSFINDUNIT( fid , mythid )
-       write(fnameequinc(1:80),'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
+       write(fnameequinc,'(a,i3.3,a,i3.3,a,i4.4,a,i4.4,a)')
      & 'profilesYCincl1PointOverlap.',iG,'.',jG,'.',sNx,'.',sNy,'.data'
          k=MDS_RECLEN(64,(sNx+2)*(sNy+2),mythid)
             WRITE(standardMessageUnit,'(A,/,A)')
