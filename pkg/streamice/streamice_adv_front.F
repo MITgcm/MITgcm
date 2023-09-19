@@ -108,7 +108,7 @@ CADJ &     = comlev1_stream_front, key = ikey_front
         ENDDO
        ENDIF
 
-!       iter_count = iter_count + 1
+c       iter_count = iter_count + 1
        iter_rpt = iter_rpt + 1
 
        DO bj=myByLo(myThid),myByHi(myThid)

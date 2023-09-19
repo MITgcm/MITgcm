@@ -81,11 +81,9 @@ CADJ &     = tapelev3, key = ilev_3
 #endif
 #endif
 
-
 #ifdef STREAMICE_TRACER_AB
 CADJ STORE GAD_trac_2d
 CADJ &     = tapelev3, key = ilev_3
 #endif
-
 
 #endif /* ALLOW_STREAMICE */

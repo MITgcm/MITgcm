@@ -7,7 +7,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE STREAMICE_VEL_SOLVE_OPENAD ( myThid, maxNLIter,
-     &                                maxCGiter, myiter )
+     &                                maxCGiter, myIter )
 C     /============================================================\
 C     | SUBROUTINE                                                 |
 C     | o                                                          |
@@ -134,7 +134,7 @@ C     LOCAL VARIABLES
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
 
-!        IF (.not.CONVERGED) THEN
+c        IF (.not.CONVERGED) THEN
 
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
@@ -162,16 +162,16 @@ C       but after convergence loop does nothing
      I                   isinloop1)
 #endif
 
-       !DO bj = myByLo(myThid), myByHi(myThid)
-       ! DO bi = myBxLo(myThid), myBxHi(myThid)
-       !  DO j=1-OLy,sNy+OLy
-       !   DO i=1-OLx,sNx+OLx
-       !    U_streamice (i,j,bi,bj)=u_new_SI (i,j,bi,bj)
-       !    V_streamice (i,j,bi,bj)=v_new_SI (i,j,bi,bj)
-       !   ENDDO
-       !  ENDDO
-       ! ENDDO
-       !ENDDO
+c      DO bj = myByLo(myThid), myByHi(myThid)
+c       DO bi = myBxLo(myThid), myBxHi(myThid)
+c        DO j=1-OLy,sNy+OLy
+c         DO i=1-OLx,sNx+OLx
+c          U_streamice (i,j,bi,bj)=u_new_SI (i,j,bi,bj)
+c          V_streamice (i,j,bi,bj)=v_new_SI (i,j,bi,bj)
+c         ENDDO
+c        ENDDO
+c       ENDDO
+c      ENDDO
 
       ENDDO
 

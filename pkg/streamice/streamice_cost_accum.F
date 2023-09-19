@@ -52,14 +52,13 @@ C     == Local variables
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-      jtlo = mybylo(myThid)
-      jthi = mybyhi(myThid)
-      itlo = mybxlo(myThid)
-      ithi = mybxhi(myThid)
-
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
-!       k=1
+c       k=1
 
 c#ifdef ALLOW_AUTODIFF_TAMC
 cCADJ STORE surf_el_streamice = comlev1, key = ikey_dynamics,

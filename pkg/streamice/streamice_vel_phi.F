@@ -27,9 +27,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
-!#ifdef ALLOW_PETSC
-!#include "finclude/petsc.h"
-!#endif
+c#ifdef ALLOW_PETSC
+c#include "finclude/petsc.h"
+c#endif
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid

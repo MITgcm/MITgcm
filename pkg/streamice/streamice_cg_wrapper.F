@@ -28,7 +28,6 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-
 C     !INPUT/OUTPUT ARGUMENTS
 C     cg_Uin, cg_Vin - input and output velocities
 C     cg_Bu, cg_Bv - driving stress
@@ -46,8 +45,6 @@ C     cg_Bu, cg_Bv - driving stress
 #ifdef ALLOW_STREAMICE
 
       INTEGER i, j, bi, bj
-
-
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -72,11 +69,11 @@ C     DIRICHLET BOUNDARY VALUES ADDED TO RHS
       _EXCH_XY_RL(ubd_SI, myThid)
       _EXCH_XY_RL(vbd_SI, myThid)
 
-!      CALL WRITE_FLD_XY_RL ( "ubd_SI", "",
-!     &   ubd_SI, 0, myThid )
+c      CALL WRITE_FLD_XY_RL ( "ubd_SI", "",
+c     &   ubd_SI, 0, myThid )
 
-!      CALL WRITE_FLD_XY_RL ( "vbd_SI", "",
-!     &   STREAMICE_vmask, 0, myThid )
+c      CALL WRITE_FLD_XY_RL ( "vbd_SI", "",
+c     &   STREAMICE_vmask, 0, myThid )
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -114,21 +111,19 @@ C     ccccc
           IF (STREAMICE_vmask(i,j,bi,bj).ne.1.0)
      &     cg_Vin(i,j,bi,bj)=0.0
 
-!           print *, "rhs", i,j,RHSu_SI(i,j,bi,bj)
+c           print *, "rhs", i,j,RHSu_SI(i,j,bi,bj)
 
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-
 #ifdef STREAMICE_CONSTRUCT_MATRIX
-
 
       CALL STREAMICE_CG_MAKE_A(myThid)
 
-!      call write_fld_xy_rl ("streamicb_cg_A1_m1_m1","",
-!     & streamice_cg_A1(:,:,1,1,-1,-1),0,myThid)
+c      call write_fld_xy_rl ("streamicb_cg_A1_m1_m1","",
+c     & streamice_cg_A1(:,:,1,1,-1,-1),0,myThid)
 c      call write_fld_xy_rl ("streamicb_cg_A1_m1_0","",
 c     & streamice_cg_A1(:,:,1,1,-1,0),0,myThid)
 c      call write_fld_xy_rl ("streamicb_cg_A1_m1_p1","",
@@ -204,21 +199,21 @@ c      call write_fld_xy_rl ("streamicb_cg_A4_p1_p1","",
 c     & streamice_cg_A4(:,:,1,1,1,1),0,myThid)
 c
 
-!       print *, "MATRIX 1"
-!       do i=1,sNx
-!        print *, i,
-!      & streamice_cg_A1(i,1,1,1,-1,0),
-!      & streamice_cg_A1(i,1,1,1,0,0),
-!      & streamice_cg_A1(i,1,1,1,1,0),
-!      & streamice_cg_A1(i,2,1,1,-1,0),
-!      & streamice_cg_A1(i,2,1,1,0,0),
-!      & streamice_cg_A1(i,2,1,1,1,0),
-!      & streamice_cg_A1(i,3,1,1,-1,0),
-!      & streamice_cg_A1(i,3,1,1,0,0),
-!      & streamice_cg_A1(i,3,1,1,1,0),
-!      & visc_streamice(i,1,1,1),visc_streamice(i,2,1,1),
-!      & visc_streamice(i,3,1,1)
-!       enddo
+c       print *, "MATRIX 1"
+c       do i=1,sNx
+c        print *, i,
+c      & streamice_cg_A1(i,1,1,1,-1,0),
+c      & streamice_cg_A1(i,1,1,1,0,0),
+c      & streamice_cg_A1(i,1,1,1,1,0),
+c      & streamice_cg_A1(i,2,1,1,-1,0),
+c      & streamice_cg_A1(i,2,1,1,0,0),
+c      & streamice_cg_A1(i,2,1,1,1,0),
+c      & streamice_cg_A1(i,3,1,1,-1,0),
+c      & streamice_cg_A1(i,3,1,1,0,0),
+c      & streamice_cg_A1(i,3,1,1,1,0),
+c      & visc_streamice(i,1,1,1),visc_streamice(i,2,1,1),
+c      & visc_streamice(i,3,1,1)
+c       enddo
 
       CALL STREAMICE_CG_SOLVE(
      &  cg_Uin,
@@ -237,20 +232,18 @@ c
       _EXCH_XY_RL( RHSu_SI, myThid )
       _EXCH_XY_RL( RHSv_SI, myThid )
 
-!       DO bj = myByLo(myThid), myByHi(myThid)
-!        DO bi = myBxLo(myThid), myBxHi(myThid)
-!         DO j=1-OLy,sNy+OLy
-!          DO i=1-OLx,sNx+OLx
-!           cg_Uin(i,j,bi,bj) = cg_Uin(i,j,bi,bj) +
-!      &     0.0 * cg_Uin(i,j,bi,bj)**2
-!           cg_Vin(i,j,bi,bj) = cg_Vin(i,j,bi,bj) +
-!      &     0.0 * cg_Vin(i,j,bi,bj)**2
-!          ENDDO
-!         ENDDO
-!        ENDDO
-!       ENDDO
-
-
+c       DO bj = myByLo(myThid), myByHi(myThid)
+c        DO bi = myBxLo(myThid), myBxHi(myThid)
+c         DO j=1-OLy,sNy+OLy
+c          DO i=1-OLx,sNx+OLx
+c           cg_Uin(i,j,bi,bj) = cg_Uin(i,j,bi,bj) +
+c      &     0.0 * cg_Uin(i,j,bi,bj)**2
+c           cg_Vin(i,j,bi,bj) = cg_Vin(i,j,bi,bj) +
+c      &     0.0 * cg_Vin(i,j,bi,bj)**2
+c          ENDDO
+c         ENDDO
+c        ENDDO
+c       ENDDO
 
 #else
 
@@ -265,11 +258,7 @@ c
 
 #endif
 
-
 C    ACTUAL CG CALL
-
-
-
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -280,7 +269,7 @@ C    ACTUAL CG CALL
           IF (STREAMICE_vmask(i,j,bi,bj).eq.3.0)
      &     cg_Vin(i,j,bi,bj)=v_bdry_values_SI(i,j,bi,bj)
 
-!           print *, "rhs", i,j,RHSu_SI(i,j,bi,bj)
+c           print *, "rhs", i,j,RHSu_SI(i,j,bi,bj)
 
          ENDDO
         ENDDO
@@ -289,7 +278,6 @@ C    ACTUAL CG CALL
 
       _EXCH_XY_RL( cg_Uin, myThid )
       _EXCH_XY_RL( cg_Vin, myThid )
-
 
 #endif
       RETURN

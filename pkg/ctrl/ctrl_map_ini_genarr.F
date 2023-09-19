@@ -267,15 +267,15 @@ C--      u* drag coefficient
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
-#ifdef ALLOW_STREAMICE
 
+#ifdef ALLOW_STREAMICE
       IF (igen_bdot_max_streamice.GT.0) THEN
 #ifdef ALLOW_OPENAD
-       streamice_bdot_maxmelt_v(1,1,1,1) = 
+       streamice_bdot_maxmelt_v(1,1,1,1) =
      &  streamice_bdot_maxmelt_v(1,1,1,1) +
      &  0.0 * xx_genarr2d_dummy(igen_bdot_max_streamice)
 #endif
-       CALL CTRL_MAP_GENARR2D( streamice_bdot_maxmelt_v, 
+       CALL CTRL_MAP_GENARR2D( streamice_bdot_maxmelt_v,
      &  igen_bdot_max_streamice, myThid )
       ENDIF
       IF (igen_bdot_streamice.GT.0) THEN
@@ -283,7 +283,7 @@ C--      u* drag coefficient
        bdot_streamice(1,1,1,1) = bdot_streamice(1,1,1,1) +
      &  0.0 * xx_genarr2d_dummy(igen_bdot_streamice)
 #endif
-       CALL CTRL_MAP_GENARR2D( bdot_streamice, igen_bdot_streamice, 
+       CALL CTRL_MAP_GENARR2D( bdot_streamice, igen_bdot_streamice,
      &  myThid )
       ENDIF
       IF (igen_beta.GT.0) THEN
@@ -315,6 +315,7 @@ C--      u* drag coefficient
        CALL CTRL_MAP_GENARR2D( h_streamice, igen_h_streamice, myThid )
       ENDIF
 #endif /* ALLOW_STREAMICE */
+
 #if (defined ALLOW_DIC && defined DIC_BIOTIC)
       IF (igen_alpha.GT.0)
      &  CALL CTRL_MAP_GENARR2D( alpha, igen_alpha, myThid )

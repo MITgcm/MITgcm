@@ -1,5 +1,12 @@
 #include "STREAMICE_OPTIONS.h"
 
+C--   File streamice_cg_functions.F:
+C--    Contents:
+C--    o STREAMICE_CG_ACTION
+C--    o STREAMICE_CG_MAKE_A
+C--    o STREAMICE_CG_ADIAG
+C--    o STREAMICE_CG_BOUND_VALS
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
@@ -80,7 +87,6 @@ C     == Local variables ==
 
             n = 2*(jq-1)+iq
 
-
             uq = u(i,j,bi,bj) * Xquad(3-iq) * Xquad(3-jq) +
      &       u(i+1,j,bi,bj) * Xquad(iq) * Xquad(3-jq) +
      &       u(i,j+1,bi,bj) * Xquad(3-iq) * Xquad(jq) +
@@ -120,7 +126,7 @@ C     == Local variables ==
              if (jnode.eq.jq) jlq = 2
              phival(inode,jnode) = Xquad(ilq)*Xquad(jlq)
 
-             if (STREAMICE_umask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then            
+             if (STREAMICE_umask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then
 
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -129,7 +135,6 @@ C     == Local variables ==
      &          DPhi(i,j,bi,bj,m,n,1)*(4*exx+2*eyy) +
      &          DPhi(i,j,bi,bj,m,n,2)*(2*exy))
 
-
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
@@ -137,13 +142,11 @@ C     == Local variables ==
      &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
      &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
 
-
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
      &         tau_beta_eff_streamice (i,j,bi,bj) * uq
-
 
              endif
 
@@ -238,11 +241,11 @@ C     == Local variables ==
       _RL ux, vx, uy, vy, uq, vq, exx, eyy, exy, tmpval
       _RL phival(2,2)
 
-!       do i=1,3
-!        do j=0,2
-!         col_index_a = i + j*3
-!        enddo
-!       enddo
+c       do i=1,3
+c        do j=0,2
+c         col_index_a = i + j*3
+c        enddo
+c       enddo
 
       cg_halo = min(OLx-1,OLy-1)
 
@@ -305,9 +308,9 @@ c$openad xxx simple loop
                    if (jnodx.eq.iq) ilqx = 2
                    if (jnody.eq.jq) ilqy = 2
 
-!                    col_j = col_index_a (
-!      &              jnodx+mod(inodx,2),
-!      &              jnody+mod(inody,2) )
+c                    col_j = col_index_a (
+c      &              jnodx+mod(inodx,2),
+c      &              jnody+mod(inody,2) )
 
                    col_x = mod(inodx,2)+jnodx-2
                    colx_rev = mod(jnodx,2)+inodx-2
@@ -315,13 +318,10 @@ c$openad xxx simple loop
                    coly_rev = mod(jnody,2)+inody-2
 c
 
-
                    IF ( (inodx.eq.jnodx .and. inody.eq.jnody) .or.
      &                  (inodx.eq.1 .and. inody.eq.1) .or.
      &                  (jnody.eq.2 .and. inody.eq.1) .or.
      &                  (jnody.eq.2 .and. jnodx.eq.2)) THEN
-
-
 
                    ux = DPhi (i,j,bi,bj,m_j,n,1)
                    uy = DPhi (i,j,bi,bj,m_j,n,2)
@@ -358,7 +358,7 @@ c
      &               tmpval
                    ENDIF
 
-!!!
+c!!
 
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -373,7 +373,7 @@ c
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
      &                  mod(inody,2)+jnody-2)+tmpval
 
-                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN 
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
                     streamice_cg_A2
      &               (i-1+jnodx,j-1+jnody,bi,bj,mod(jnodx,2)+inodx-2,
      &                mod(jnody,2)+inody-2)=
@@ -383,7 +383,7 @@ c
      &               tmpval
                    ENDIF
 
-!!!
+c!!
 
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -408,7 +408,7 @@ c
      &               tmpval
                    ENDIF
 
-!!!
+c!!
 
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -433,8 +433,7 @@ c
      &               tmpval
                    ENDIF
 
-
-!!!
+c!!
 
                     tmpval = .25*phival(inodx,inody) *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -457,8 +456,7 @@ c
      &               tmpval
                    ENDIF
 
-
-!!!
+c!!
                     tmpval = .25*phival(inodx,inody) *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              tau_beta_eff_streamice (i,j,bi,bj) * vq
@@ -470,7 +468,7 @@ c
      &                 (i-1+inodx,j-1+inody,bi,bj,mod(inodx,2)+jnodx-2,
      &                  mod(inody,2)+jnody-2)+tmpval
 
-                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN 
+                   IF (.not. (inodx.eq.jnodx .and. inody.eq.jnody)) THEN
                     streamice_cg_A2
      &               (i-1+jnodx,j-1+jnody,bi,bj,mod(jnodx,2)+inodx-2,
      &                mod(jnody,2)+inody-2)=
@@ -480,9 +478,7 @@ c
      &               tmpval
                    ENDIF
 
-
-
-!!!
+c!!
 
                    vx = DPhi (i,j,bi,bj,m_j,n,1)
                    vy = DPhi (i,j,bi,bj,m_j,n,2)
@@ -519,7 +515,6 @@ c
      &               tmpval
                    ENDIF
 
-
                     tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * (
@@ -542,7 +537,6 @@ c
      &                mod(jnody,2)+inody-2)+
      &               tmpval
                    ENDIF
-
 
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -567,7 +561,6 @@ c
      &               tmpval
                    ENDIF
 
-
                    tmpval = .25 *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              visc_streamice(i,j,bi,bj) * phival(inodx,inody) *
@@ -591,7 +584,6 @@ c
      &               tmpval
                    ENDIF
 
-
                     tmpval = .25*phival(inodx,inody) *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
      &              tau_beta_eff_streamice (i,j,bi,bj) * uq
@@ -612,7 +604,6 @@ c
      &                mod(jnody,2)+inody-2)+
      &               tmpval
                    ENDIF
-
 
                     tmpval = .25*phival(inodx,inody) *
      &              grid_jacq_streamice(i,j,bi,bj,n) *
@@ -635,7 +626,6 @@ c
      &               tmpval
                    ENDIF
 
-
                    endif
                   endif
                  enddo
@@ -651,13 +641,11 @@ c
        enddo
       enddo
 
-
-
 #endif
 #endif
       RETURN
       END SUBROUTINE
-! END MAKE_A
+c END MAKE_A
 
       SUBROUTINE STREAMICE_CG_ADIAG( myThid,
      O      uret,
@@ -685,7 +673,6 @@ C     is, ie, js, je - starting and ending cells
       INTEGER myThid
       _RL uret (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vret (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
 #ifdef ALLOW_STREAMICE
 
@@ -770,12 +757,10 @@ C     == Local variables ==
      &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
      &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
 
-
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) * grid_jacq_streamice(i,j,bi,bj,n) *
      &         tau_beta_eff_streamice (i,j,bi,bj) * uq
-
 
               vx = DPhi (i,j,bi,bj,m,n,1)
               vy = DPhi (i,j,bi,bj,m,n,2)
@@ -802,7 +787,6 @@ C     == Local variables ==
      &         (4*k1AtC_str(i,j,bi,bj)*exx+2*k1AtC_str(i,j,bi,bj)*eyy+
      &          4*0.5*k2AtC_str(i,j,bi,bj)*exy)
 
-
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) * grid_jacq_streamice(i,j,bi,bj,n) *
@@ -823,8 +807,6 @@ C     == Local variables ==
 #endif
       RETURN
       END SUBROUTINE
-
-
 
       SUBROUTINE STREAMICE_CG_BOUND_VALS( myThid,
      O    uret,
@@ -931,7 +913,6 @@ C     == Local variables ==
             exy = .5*(uy+vx) +
      &       k1AtC_str(i,j,bi,bj)*uq + k2AtC_str(i,j,bi,bj)*vq
 
-
             do inode = 1,2
              do jnode = 1,2
 
@@ -942,8 +923,7 @@ C     == Local variables ==
              if (jnode.eq.jq) jlq = 2
              phival(inode,jnode) = Xquad(ilq)*Xquad(jlq)
 
-             if (STREAMICE_umask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then          
-
+             if (STREAMICE_umask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then
 
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
@@ -952,7 +932,6 @@ C     == Local variables ==
      &          DPhi(i,j,bi,bj,m,n,1)*(4*exx+2*eyy) +
      &          DPhi(i,j,bi,bj,m,n,2)*(2*exy))
 
-
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *
@@ -960,17 +939,15 @@ C     == Local variables ==
      &         (4*k2AtC_str(i,j,bi,bj)*eyy+2*k2AtC_str(i,j,bi,bj)*exx+
      &          4*0.5*k1AtC_str(i,j,bi,bj)*exy)
 
-
-!               if (STREAMICE_float_cond(i,j,bi,bj) .eq. 1) then
+c               if (STREAMICE_float_cond(i,j,bi,bj) .eq. 1) then
               uret(i-1+inode,j-1+jnode,bi,bj) =
      &         uret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         phival(inode,jnode) * grid_jacq_streamice(i,j,bi,bj,n) *
      &         tau_beta_eff_streamice (i,j,bi,bj) * uq
 
-
-!               endif
+c               endif
              endif
-             if (STREAMICE_vmask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then 
+             if (STREAMICE_vmask(i-1+inode,j-1+jnode,bi,bj).eq.1.0) then
               vret(i-1+inode,j-1+jnode,bi,bj) =
      &         vret(i-1+inode,j-1+jnode,bi,bj) + .25 *
      &         grid_jacq_streamice(i,j,bi,bj,n) *

@@ -97,7 +97,6 @@ C--   Calculate cost function on tile of this instance
              if (uobs.gt.-999990. .and. vobs.gt.-999990. .and.
      &           verr.gt.-999990.) then
 
-
               vel_err = streamice_wgt_vel * i_numcells * (
      &         (streamice_u_surf(i,j,bi,bj)-uobs)**2
      &        +(streamice_v_surf(i,j,bi,bj)-vobs)**2)

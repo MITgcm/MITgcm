@@ -3,7 +3,6 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
@@ -36,7 +35,6 @@ C     !INPUT/OUTPUT ARGUMENTS
       _RL err_sum
       _RL err_sum_tile (nSx,nSy)
 
-
       INTEGER ikey_nl
       _RL err_tempu, err_tempv
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
@@ -54,8 +52,8 @@ C     !INPUT/OUTPUT ARGUMENTS
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-oly,sNy+oly
-           DO i=1-olx,sNx+olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             Au_SI (i,j,bi,bj) = 0. _d 0
             Av_SI (i,j,bi,bj) = 0. _d 0
             u_dummy (i,j,bi,bj) = u_streamice(i,j,bi,bj)
@@ -77,7 +75,6 @@ C     !INPUT/OUTPUT ARGUMENTS
      I    U_dummy,
      I    V_dummy,
      I    0, sNx+1, 0, sNy+1 )
-
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -102,8 +99,6 @@ C     !INPUT/OUTPUT ARGUMENTS
           ENDDO
          ENDDO
         ENDDO
-
-
 
         CALL GLOBAL_MAX_R8 (err_max, myThid)
 

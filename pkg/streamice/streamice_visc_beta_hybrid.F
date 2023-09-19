@@ -226,10 +226,10 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
            if (.not.STREAMICE_use_log_ctrl) THEN
-            C_fric_val = 
+            C_fric_val =
      &      (C_basal_friction(i,j,bi,bj))**2
            else
-            C_fric_val = 
+            C_fric_val =
      &      exp(C_basal_friction(i,j,bi,bj))
            endif
 

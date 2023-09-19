@@ -66,14 +66,14 @@ C--   find which month to use for surface BC
 C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)
 C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
 
-      upd_cfric = .FALSE. 
-      upd_bdot_maxmelt = .FALSE. 
+      upd_cfric = .FALSE.
+      upd_bdot_maxmelt = .FALSE.
       upd_bglen = .FALSE.
-      IF ( bdotMaxmeltTimeDepFile .NE. ' ' .and. 
+      IF ( bdotMaxmeltTimeDepFile .NE. ' ' .and.
      &  STREAMICEbasalTracConfig.eq.'FILE' ) THEN
         upd_bdot_maxmelt = .TRUE.
       ENDIF
-      IF ( bglenTimeDepFile .NE. ' ' .and. 
+      IF ( bglenTimeDepFile .NE. ' ' .and.
      &  STREAMICEGlenConstConfig.eq.'FILE' ) THEN
         upd_bglen = .TRUE.
       ENDIF
@@ -84,7 +84,7 @@ C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
       myRelTime = myTime - startTime
       first = (myRelTime .lt. 0.5*deltaTClock)
       if ( streamice_forcing_period .eq. 0.D0 ) THEN
-!     &     .or. externForcingCycle .eq. 0.D0 ) then
+c     &     .or. externForcingCycle .eq. 0.D0 ) then
 C     control parameter is constant in time and only needs to be updated
 C     once in the beginning
        changed = .false.
@@ -118,7 +118,6 @@ C--   Now calculate whether it is time to update the forcing arrays
        IF ( first ) changed = .false.
       endif
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-     Load new data:
@@ -130,7 +129,6 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
         IF ( first ) THEN
 
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
-
 
          IF ( STREAMICEuNormalTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEuNormalTimeDepFile,
@@ -169,7 +167,6 @@ C-    Wait for everyone to set loadNewData before Master updates prevMnthIndex
      &                        nm0,myIter,myThid)
          ENDIF
 #endif
-
 
          IF ( STREAMICEBdotTimeDepFile .NE. ' '  ) THEN
           CALL READ_REC_XY_RL(STREAMICEBdotTimeDepFile,
@@ -275,7 +272,6 @@ C-      endif 1rst iter.
          ENDIF
 
 #endif
-
 
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -420,8 +416,8 @@ C-      endif 1rst iter.
      & (v_flux_bdry_pert, myThid)
 #endif
 
-!      print *, "GOT HERE STREAMICE FIELDS LOAD",
-!     &  first,changed,nm0,nm1,fac
+c      print *, "GOT HERE STREAMICE FIELDS LOAD",
+c     &  first,changed,nm0,nm1,fac
 #endif
 #endif
 

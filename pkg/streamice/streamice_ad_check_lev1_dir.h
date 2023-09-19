@@ -92,8 +92,6 @@ CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #endif
 
-
-
 #ifdef STREAMICE_TRACER_AB
 CADJ STORE GAD_trac_2d
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte

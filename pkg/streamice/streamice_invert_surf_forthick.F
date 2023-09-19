@@ -8,8 +8,7 @@
      I            delta,
      I            myThid)
 
-!      This S/R finds a thickness (H) that gives surf elev S with bed R
-
+c      This S/R finds a thickness (H) that gives surf elev S with bed R
 
 #include "SIZE.h"
 #include "GRID.h"
@@ -35,7 +34,6 @@
       type(modeType) :: our_orig_mode
 #endif
 
-
 #ifdef ALLOW_STREAMICE
 
       _RL resid, fp, hf, htmp
@@ -45,7 +43,7 @@
       _RL ETA_GL_STREAMICE
       EXTERNAL ETA_GL_STREAMICE
 #endif
-!      EXTERNAL PHI_GL_STREAMICE_PRIME
+c      EXTERNAL PHI_GL_STREAMICE_PRIME
 
         DO bj=myByLo(myThid), myByHi(myThid)
          DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -126,7 +124,6 @@
           ENDDO
          ENDDO
         ENDDO
-
 
 #endif
       RETURN

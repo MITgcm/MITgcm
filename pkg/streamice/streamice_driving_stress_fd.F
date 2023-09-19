@@ -4,8 +4,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE STREAMICE_DRIVING_STRESS_FD( myThid )
-!      O taudx,
-!      O taudy )
+c      O taudx,
+c      O taudy )
 
 C     /============================================================\
 C     | SUBROUTINE                                                 |
@@ -25,11 +25,10 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
-
 
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj
@@ -39,7 +38,6 @@ c     INTEGER Gi, Gj
       _RL dsdy
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL face_factor, grd_below_sl, i_rhow
-
 
       i_rhow = 1./streamice_density_ocean_avg
 
@@ -61,7 +59,7 @@ c     INTEGER Gi, Gj
 
           IF (streamice_hmask(i,j,bi,bj) .eq. 1) THEN
 
-!    ds/dx ------------------------------------------------
+c    ds/dx ------------------------------------------------
 
            IF (streamice_hmask(i-1,j,bi,bj) .eq. 1) THEN
 
@@ -84,7 +82,7 @@ c     INTEGER Gi, Gj
             dsdx(i,j,bi,bj) = 0.0
            ENDIF
 
-!    ds/dy ------------------------------------------------
+c    ds/dy ------------------------------------------------
 
            IF (streamice_hmask(i,j-1,bi,bj) .eq. 1) THEN
 
@@ -107,12 +105,12 @@ c     INTEGER Gi, Gj
             dsdx(i,j,bi,bj) = 0.0
            ENDIF
 
-!    end ------------------------------------------------
+c    end ------------------------------------------------
 
           ELSEIF(streamice_hmask(i,j,bi,bj).eq.0.or.
      &            streamice_hmask(i,j,bi,bj).eq.2) THEN
 
-!    ds/dx ------------------------------------------------
+c    ds/dx ------------------------------------------------
 
            IF(streamice_hmask(i-1,j,bi,bj).eq.1.and.
      &         streamice_hmask(i-2,j,bi,bj).eq.1) THEN
@@ -126,7 +124,7 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-!    ds/dy ------------------------------------------------
+c    ds/dy ------------------------------------------------
 
            IF(streamice_hmask(i,j-1,bi,bj).eq.1.and.
      &         streamice_hmask(i,j-2,bi,bj).eq.1) THEN
@@ -140,7 +138,7 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-!    end ------------------------------------------------
+c    end ------------------------------------------------
 
           ENDIF
          ENDDO
@@ -148,8 +146,8 @@ c     INTEGER Gi, Gj
        ENDDO
       ENDDO
 
-      _EXCH_XY_RL(dsdy, mythid)
-      _EXCH_XY_RL(dsdx, mythid)
+      _EXCH_XY_RL(dsdy, myThid)
+      _EXCH_XY_RL(dsdx, myThid)
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -157,8 +155,8 @@ c     INTEGER Gi, Gj
         DO i=1,sNx
          DO j=1,sNy
 
-!           Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
-!           Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
+c           Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
+c           Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
 
           IF (streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
@@ -236,8 +234,7 @@ c     INTEGER Gi, Gj
               grd_below_sl = 0. _d 0
            endif
 
-
-! check face to right
+c check face to right
            IF (streamice_hmask(i+1,j,bi,bj).eq.0.or.
      &         streamice_hmask(i+1,j,bi,bj).eq.2.or.
      &         streamice_ufacemask(i+1,j,bi,bj).eq.2) THEN
@@ -274,7 +271,7 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-! check face to left
+c check face to left
            IF (streamice_hmask(i-1,j,bi,bj).eq.0.or.
      &         streamice_hmask(i-1,j,bi,bj).eq.2.or.
      &         streamice_ufacemask(i,j,bi,bj).eq.2) THEN
@@ -311,7 +308,7 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-! Y FORCES
+c Y FORCES
 
            IF (streamice_vmask(i,j,bi,bj).eq.1.0) THEN
 
@@ -387,8 +384,7 @@ c     INTEGER Gi, Gj
               grd_below_sl = 0. _d 0
            endif
 
-
-! check face to right
+c check face to right
            IF (streamice_hmask(i,j+1,bi,bj).eq.0.or.
      &         streamice_hmask(i,j+1,bi,bj).eq.2.or.
      &         streamice_vfacemask(i,j+1,bi,bj).eq.2) THEN
@@ -425,7 +421,7 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-! check face to left
+c check face to left
            IF (streamice_hmask(i,j-1,bi,bj).eq.0.or.
      &         streamice_hmask(i,j-1,bi,bj).eq.2.or.
      &         streamice_vfacemask(i,j,bi,bj).eq.2) THEN
@@ -462,7 +458,6 @@ c     INTEGER Gi, Gj
 
            ENDIF
 
-
           ENDIF
 
          ENDDO
@@ -480,7 +475,7 @@ c     INTEGER Gi, Gj
         ENDDO
        ENDDO
       ENDDO
-!       call write_fld_xy_rl ('driving_taux','',taudx_si,0,mythid)
+c       call write_fld_xy_rl ('driving_taux','',taudx_si,0,myThid)
 
 #endif
       RETURN

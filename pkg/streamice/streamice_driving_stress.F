@@ -4,8 +4,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
       SUBROUTINE STREAMICE_DRIVING_STRESS( myThid )
-!      O taudx,
-!      O taudy )
+c      O taudx,
+c      O taudy )
 
 C     /============================================================\
 C     | SUBROUTINE                                                 |
@@ -25,8 +25,8 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 C     LOCAL VARIABLES
@@ -42,7 +42,6 @@ c     _RL geom_fac
 #ifdef STREAMICE_FIRN_CORRECTION
       _RL firn_depth, h
 #endif
-
 
       IF (myXGlobalLo.eq.1) at_west_bdry = .true.
       IF (myYGlobalLo.eq.1) at_south_bdry = .true.
@@ -104,9 +103,8 @@ c     _RL geom_fac
            IF (streamice_hmask(i-1,j,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
-!             geom_fac = sqrt(rA(i-1,j,bi,bj)*recip_rA(i,j,bi,bj)*
-!      &        dxF(i,j,bi,bj)*recip_dxF(i-1,j,bi,bj))
-
+c             geom_fac = sqrt(rA(i-1,j,bi,bj)*recip_rA(i,j,bi,bj)*
+c      &        dxF(i,j,bi,bj)*recip_dxF(i-1,j,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &       0.25 * dyG(i,j,bi,bj) *
@@ -246,17 +244,16 @@ CCC
              endif
 #endif
 
-
             END IF
            END IF
 
-! cells below
+c cells below
 
            IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j-1,bi,bj).eq.1.0) THEN
 
-!             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i,j-1,bi,bj)*
-!      &             dxF(i,j-1,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
+c             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i,j-1,bi,bj)*
+c      &             dxF(i,j-1,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
 
             taudx_si(i,j,bi,bj) = taudx_si(i,j,bi,bj) -
      &       0.25 * dyg(i,j-1,bi,bj) *
@@ -331,8 +328,6 @@ CCC
              endif
 #endif
 
-
-
             ENDIF
 
            ELSE IF (streamice_hmask(i,j-1,bi,bj).eq.1.0) THEN
@@ -394,20 +389,19 @@ CCC
              endif
 #endif
 
-
             END IF
            END IF
           END IF       ! if umask==1
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+c!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
           IF (streamice_vmask(i,j,bi,bj).eq.1.0) THEN
 
            IF (streamice_hmask(i,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
-!             geom_fac = sqrt(rA(i,j-1,bi,bj)*recip_rA(i,j,bi,bj)*
-!      &        dxF(i,j,bi,bj)*recip_dyF(i,j-1,bi,bj))
+c             geom_fac = sqrt(rA(i,j-1,bi,bj)*recip_rA(i,j,bi,bj)*
+c      &        dxF(i,j,bi,bj)*recip_dyF(i,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &       0.25 * dxG(i,j,bi,bj) *
@@ -481,7 +475,6 @@ CCC
              endif
 #endif
 
-
             ENDIF
 
            ELSE IF (streamice_hmask(i,j,bi,bj).eq.1.0) THEN
@@ -511,7 +504,6 @@ CCC
 #endif
 
             ELSE
-
 
 #ifdef STREAMICE_FIRN_CORRECTION
              if (STREAMICE_apply_firn_correction) then
@@ -544,17 +536,16 @@ CCC
              endif
 #endif
 
-
             END IF
            END IF
 
-! cells to left
+c cells to left
 
            IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0.AND.
      &      streamice_hmask(i-1,j,bi,bj).eq.1.0) THEN
 
-!             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i-1,j,bi,bj)*
-!      &        dxF(i-1,j,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
+c             geom_fac = sqrt(rA(i-1,j-1,bi,bj)*recip_rA(i-1,j,bi,bj)*
+c      &        dxF(i-1,j,bi,bj)*recip_dxF(i-1,j-1,bi,bj))
 
             taudy_si(i,j,bi,bj) = taudy_si(i,j,bi,bj) -
      &       0.25 * dxG(i-1,j,bi,bj) *
@@ -568,7 +559,6 @@ CCC
      &       streamice_density * gravity *
      &       streamice_bg_surf_slope_y * .25 * rA(i-1,j,bi,bj) *
      &       (H_streamice(i-1,j-1,bi,bj) + H_streamice(i-1,j,bi,bj))
-
 
            ELSE IF (streamice_hmask(i-1,j-1,bi,bj).eq.1.0) THEN
 
@@ -627,8 +617,6 @@ CCC
 #ifdef STREAMICE_FIRN_CORRECTION
              endif
 #endif
-
-
 
             ENDIF
 
@@ -690,7 +678,6 @@ CCC
              endif
 #endif
 
-
             END IF
            END IF
           END IF      ! if vmask ==1
@@ -700,12 +687,10 @@ CCC
        ENDDO
       ENDDO
 
-!      taudx_SI (1,1,1,1) = taudx_SI (1,1,1,1) +
-!     & streamice_v_normal_pert (1,1,1,1)
-!       call write_fld_xy_rl("TAUDX_SI","",taudx_si,0,mythid)
-!       call write_fld_xy_rl("TAUDY_SI","",taudy_si,0,mythid)
-
-
+c      taudx_SI (1,1,1,1) = taudx_SI (1,1,1,1) +
+c     & streamice_v_normal_pert (1,1,1,1)
+c       call write_fld_xy_rl("TAUDX_SI","",taudx_si,0,myThid)
+c       call write_fld_xy_rl("TAUDY_SI","",taudy_si,0,myThid)
 
 #endif
       RETURN

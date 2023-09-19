@@ -73,7 +73,7 @@ C     !LOCAL VARIABLES
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-!       iters = streamice_max_cg_iter
+c       iters = streamice_max_cg_iter
 
 #ifdef ALLOW_STREAMICE
 
@@ -81,7 +81,7 @@ CEOP
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
-!      print *, "GOT HERE mythid=", mythid, tolerance
+c      print *, "GOT HERE myThid=", myThid, tolerance
 
       conv_flag = 0
       ad_tolerance = 1.e-14
@@ -103,7 +103,7 @@ CEOP
        ENDDO
       ENDDO
 
-!      print *, "GOT HERE 2 mythid=", mythid, tolerance
+c      print *, "GOT HERE 2 myThid=", myThid, tolerance
 
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_CG_SOLVE(
@@ -121,7 +121,7 @@ CEOP
      &  myThid )
 #endif
 
-!      print *, "GOT HERE 3 mythid=", mythid, tolerance
+c      print *, "GOT HERE 3 myThid=", myThid, tolerance
 
       tmpiter = 0
 
@@ -142,7 +142,7 @@ CEOP
      &  maxiters,
      &  myThid )
 
-!      print *, "GOT HERE 4 mythid=", mythid, tolerance
+c      print *, "GOT HERE 4 myThid=", myThid, tolerance
 
       _EXCH_XY_RL( cg_Uin, myThid )
       _EXCH_XY_RL( cg_Vin, myThid )

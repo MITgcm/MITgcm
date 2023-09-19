@@ -61,26 +61,21 @@ C     == Local variables
       _RL cost_misfit (nSx,nSy)
       _RL cost_misfit_norm (nSx,nSy)
 
-
       _RL smooth_cost_fric_gl, smooth_cost_prior_gl,
      &    smooth_cost_bglen_gl, cost_misfit_gl,
      &    cost_thin_gl, cost_misfit_norm_gl,
      &    cost_vel_td_gl
       _RL rhoi, rhow, r, i_r, h, hf, r_low_tmp, haf
 
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
       i_numcells = 1.0/(Nx*Ny)
       idt = 1.0/deltaT*365.0*86400.0
 
-
       _BARRIER
-
 
        STREAMICExvelOptimFile=
      &  STREAMICEvelOptimSnapBasename(1:
@@ -112,11 +107,10 @@ C     == Local variables
      &      R0, 0, myThid )
       print *, 'GOT HERE read topo file'
 
-      _EXCH_XY_RL (R0, mythid)
-
+      _EXCH_XY_RL (R0, myThid)
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
-!       k=1
+c       k=1
 
 C--   Calculate cost function on tile of this instance
 
@@ -159,7 +153,6 @@ C--   Calculate cost function on tile of this instance
      &               bglenval) /
      &               (dyC(i,j+1,bi,bj))
 
-
               dRdx = (R_low_si(i+1,j,bi,bj)-
      &               R_low_si(i,j,bi,bj)) /
      &              (dxC(i+1,j,bi,bj))
@@ -181,7 +174,6 @@ C--   Calculate cost function on tile of this instance
 
               IF((cotmp.ne.0.0) .and.
      &         streamice_hmask(i,j,bi,bj).eq.1.0) THEN
-
 
                tile_fc (bi,bj) = tile_fc (bi,bj) +
      &         streamice_wgt_vel *
@@ -227,7 +219,6 @@ C--   Calculate cost function on tile of this instance
 
               ENDIF
              endif
-
 
 #ifdef ALLOW_STREAMICE_TC_COST
              IF ( .not. STREAMICE_do_timedep_cost ) THEN
@@ -332,24 +323,24 @@ C--   Calculate cost function on tile of this instance
       if (STREAMICE_do_timedep_cost .or.
      &    STREAMICE_do_snapshot_cost) then
 
-       write(standardmessageunit,'(A,D22.15)') 'fric smooth contr = ',
+       write(standardMessageUnit,'(A,D22.15)') 'fric smooth contr = ',
      &   smooth_cost_fric_gl
-       write(standardmessageunit,'(A,D22.15)') 'bglen smooth contr = ',
+       write(standardMessageUnit,'(A,D22.15)') 'bglen smooth contr = ',
      &   smooth_cost_bglen_gl
-       write(standardmessageunit,'(A,D22.15)') 'prior smooth contr = ',
+       write(standardMessageUnit,'(A,D22.15)') 'prior smooth contr = ',
      &   smooth_cost_prior_gl
-       write(standardmessageunit,'(A,D22.15)') 'vel misfit = ',
+       write(standardMessageUnit,'(A,D22.15)') 'vel misfit = ',
      &   cost_misfit_gl
-       write(standardmessageunit,'(A,D22.15)') 'vel misfit norm = ',
+       write(standardMessageUnit,'(A,D22.15)') 'vel misfit norm = ',
      &   cost_misfit_norm_gl
 
       endif
 
       if (STREAMICE_do_timedep_cost) then
 
-       write(standardmessageunit,'(A,D22.15)') 'thinning contr = ',
+       write(standardMessageUnit,'(A,D22.15)') 'thinning contr = ',
      &   cost_thin_gl
-       write(standardmessageunit,'(A,D22.15)') 'td vel misfit = ',
+       write(standardMessageUnit,'(A,D22.15)') 'td vel misfit = ',
      &   cost_vel_td_gl
 
       endif

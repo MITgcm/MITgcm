@@ -37,11 +37,9 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iarr
 # endif
 
-
-!      _RL streamice_bdot_depth_nomelt
-!      _RL streamice_bdot_depth_maxmelt
-!      _RL streamice_bdot_maxmelt
-
+c      _RL streamice_bdot_depth_nomelt
+c      _RL streamice_bdot_depth_maxmelt
+c      _RL streamice_bdot_maxmelt
 
       NAMELIST /STREAMICE_PARM01/
      &     streamice_density, streamice_density_ocean_avg,
@@ -386,7 +384,6 @@ c      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_vel_ext = .FALSE.
       STREAMICE_vel_ext_cgrid = .FALSE.
 c       STREAMICE_hybrid_stress= .FALSE.
-
 
       STREAMICEvelOptimSnapBasename = ''
       STREAMICEvelOptimTCBasename = ''

@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "STREAMICE.h"
 #include "STREAMICE_CG.h"
 
-
 C     !INPUT/OUTPUT ARGUMENTS
 C     cg_Uin, cg_Vin - input and output velocities
 C     cg_Bu, cg_Bv - driving stress
@@ -37,7 +36,6 @@ C     cg_Bu, cg_Bv - driving stress
       _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj, cg_halo, conv_flag
@@ -51,7 +49,6 @@ c     INTEGER colx, coly
       iters = streamice_max_cg_iter
 
 #ifdef ALLOW_STREAMICE
-
 
       conv_flag = 0
 
@@ -74,32 +71,32 @@ c     INTEGER colx, coly
 
 C     FIND INITIAL RESIDUAL, and initialize r
 
-! #ifdef STREAMICE_CONSTRUCT_MATRIX
+c #ifdef STREAMICE_CONSTRUCT_MATRIX
 
-!         DO bj = myByLo(myThid), myByHi(myThid)
-!          DO bi = myBxLo(myThid), myBxHi(myThid)
-!           DO j=js,je
-!            DO i=is,ie
-!             DO colx=-1,1
-!              DO coly=-1,1
-!               Au_SI(i,j,bi,bj) = Au_SI(i,j,bi,bj) +
-!      &         streamice_cg_A1(i,j,bi,bj,colx,coly)*
-!      &         cg_Uin(i+colx,j+coly,bi,bj)+
-!      &         streamice_cg_A2(i,j,bi,bj,colx,coly)*
-!      &         cg_Vin(i+colx,j+coly,bi,bj)
-!               Av_SI(i,j,bi,bj) = Av_SI(i,j,bi,bj) +
-!      &         streamice_cg_A3(i,j,bi,bj,colx,coly)*
-!      &         cg_Uin(i+colx,j+coly,bi,bj)+
-!      &         streamice_cg_A4(i,j,bi,bj,colx,coly)*
-!      &         cg_Vin(i+colx,j+coly,bi,bj)
-!              ENDDO
-!             ENDDO
-!            ENDDO
-!           ENDDO
-!          ENDDO
-!         ENDDO
+c         DO bj = myByLo(myThid), myByHi(myThid)
+c          DO bi = myBxLo(myThid), myBxHi(myThid)
+c           DO j=js,je
+c            DO i=is,ie
+c             DO colx=-1,1
+c              DO coly=-1,1
+c               Au_SI(i,j,bi,bj) = Au_SI(i,j,bi,bj) +
+c      &         streamice_cg_A1(i,j,bi,bj,colx,coly)*
+c      &         cg_Uin(i+colx,j+coly,bi,bj)+
+c      &         streamice_cg_A2(i,j,bi,bj,colx,coly)*
+c      &         cg_Vin(i+colx,j+coly,bi,bj)
+c               Av_SI(i,j,bi,bj) = Av_SI(i,j,bi,bj) +
+c      &         streamice_cg_A3(i,j,bi,bj,colx,coly)*
+c      &         cg_Uin(i+colx,j+coly,bi,bj)+
+c      &         streamice_cg_A4(i,j,bi,bj,colx,coly)*
+c      &         cg_Vin(i+colx,j+coly,bi,bj)
+c              ENDDO
+c             ENDDO
+c            ENDDO
+c           ENDDO
+c          ENDDO
+c         ENDDO
 
-! #else
+c #else
 
       CALL STREAMICE_CG_ACTION( myThid,
      O    Au_SI,
@@ -108,7 +105,7 @@ C     FIND INITIAL RESIDUAL, and initialize r
      I    cg_Vin,
      I    0, sNx+1, 0, sNy+1 )
 
-! #endif
+c #endif
 
       _EXCH_XY_RL( Au_SI, myThid )
       _EXCH_XY_RL( Av_SI, myThid )
@@ -182,17 +179,13 @@ c  !! MAIN CG LOOP !!
 c  !!              !!
 c  !!!!!!!!!!!!!!!!!!
 
-
-
-
 c  ! initially, b-grid data is valid up to 3 halo nodes out -- right? (check for MITgcm!!)
 
        WRITE(msgBuf,'(A)') 'BEGINNING MAIN CG LOOP'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
-!       IF(STREAMICE_construct_matrix) CALL STREAMICE_CG_MAKE_A(myThid)
-
+c       IF(STREAMICE_construct_matrix) CALL STREAMICE_CG_MAKE_A(myThid)
 
       do iter = 1, streamice_max_cg_iter
        if (resid .gt. tolerance*resid_0) then
@@ -216,35 +209,35 @@ c      to avoid using "exit"
         ENDDO
        ENDDO
 
-!        IF (STREAMICE_construct_matrix) THEN
+c        IF (STREAMICE_construct_matrix) THEN
 
-! #ifdef STREAMICE_CONSTRUCT_MATRIX
-!
-!         DO bj = myByLo(myThid), myByHi(myThid)
-!          DO bi = myBxLo(myThid), myBxHi(myThid)
-!           DO j=js,je
-!            DO i=is,ie
-!             DO colx=-1,1
-!              DO coly=-1,1
-!               Au_SI(i,j,bi,bj) = Au_SI(i,j,bi,bj) +
-!      &         streamice_cg_A1(i,j,bi,bj,colx,coly)*
-!      &         Du_SI(i+colx,j+coly,bi,bj)+
-!      &         streamice_cg_A2(i,j,bi,bj,colx,coly)*
-!      &         Dv_SI(i+colx,j+coly,bi,bj)
-!               Av_SI(i,j,bi,bj) = Av_SI(i,j,bi,bj) +
-!      &         streamice_cg_A3(i,j,bi,bj,colx,coly)*
-!      &         Du_SI(i+colx,j+coly,bi,bj)+
-!      &         streamice_cg_A4(i,j,bi,bj,colx,coly)*
-!      &         Dv_SI(i+colx,j+coly,bi,bj)
-!              ENDDO
-!             ENDDO
-!            ENDDO
-!           ENDDO
-!          ENDDO
-!         ENDDO
-!
-! !        else
-! #else
+c #ifdef STREAMICE_CONSTRUCT_MATRIX
+c
+c         DO bj = myByLo(myThid), myByHi(myThid)
+c          DO bi = myBxLo(myThid), myBxHi(myThid)
+c           DO j=js,je
+c            DO i=is,ie
+c             DO colx=-1,1
+c              DO coly=-1,1
+c               Au_SI(i,j,bi,bj) = Au_SI(i,j,bi,bj) +
+c      &         streamice_cg_A1(i,j,bi,bj,colx,coly)*
+c      &         Du_SI(i+colx,j+coly,bi,bj)+
+c      &         streamice_cg_A2(i,j,bi,bj,colx,coly)*
+c      &         Dv_SI(i+colx,j+coly,bi,bj)
+c               Av_SI(i,j,bi,bj) = Av_SI(i,j,bi,bj) +
+c      &         streamice_cg_A3(i,j,bi,bj,colx,coly)*
+c      &         Du_SI(i+colx,j+coly,bi,bj)+
+c      &         streamice_cg_A4(i,j,bi,bj,colx,coly)*
+c      &         Dv_SI(i+colx,j+coly,bi,bj)
+c              ENDDO
+c             ENDDO
+c            ENDDO
+c           ENDDO
+c          ENDDO
+c         ENDDO
+c
+c !        else
+c #else
 
         CALL STREAMICE_CG_ACTION( myThid,
      O     Au_SI,
@@ -253,10 +246,9 @@ c      to avoid using "exit"
      I     Dv_SI,
      I     is,ie,js,je)
 
-!        ENDIF
+c        ENDIF
 
-! #endif
-
+c #endif
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -287,7 +279,7 @@ c      to avoid using "exit"
        ENDDO
 
        CALL GLOBAL_SUM_TILE_RL( dot_p1_tile, dot_p1, myThid )
-       CALL GLOBAL_SUM_TILE_RL( dot_p2_tile, dot_p2, myThid )            
+       CALL GLOBAL_SUM_TILE_RL( dot_p2_tile, dot_p2, myThid )
        alpha_k = dot_p1/dot_p2
 
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -395,9 +387,9 @@ c      to avoid using "exit"
        CALL GLOBAL_SUM_TILE_RL( dot_p1_tile, dot_p1, myThid )
        resid = sqrt(dot_p1)
 
-!        IF (iter .eq. 1) then
-!         print *, alpha_k, beta_k, resid
-!        ENDIF
+c        IF (iter .eq. 1) then
+c         print *, alpha_k, beta_k, resid
+c        ENDIF
 
        cg_halo = cg_halo - 1
 
@@ -421,21 +413,21 @@ c     if iters has reached max_iters there is no convergence
        conv_flag = 1
       ENDIF
 
-!       DO bj = myByLo(myThid), myByHi(myThid)
-!        DO bi = myBxLo(myThid), myBxHi(myThid)
-!         DO j=1-OLy,sNy+OLy
-!          DO i=1-OLy,sNx+OLy
-!           IF (STREAMICE_umask(i,j,bi,bj).eq.3.0)
-!      &     cg_Uin(i,j,bi,bj)=u_bdry_values_SI(i,j,bi,bj)
-!           IF (STREAMICE_vmask(i,j,bi,bj).eq.3.0)
-!      &     cg_Vin(i,j,bi,bj)=v_bdry_values_SI(i,j,bi,bj)
-!          ENDDO
-!         ENDDO
-!        ENDDO
-!       ENDDO
-!
-!       _EXCH_XY_RL( cg_Uin, myThid )
-!       _EXCH_XY_RL( cg_Vin, myThid )
+c       DO bj = myByLo(myThid), myByHi(myThid)
+c        DO bi = myBxLo(myThid), myBxHi(myThid)
+c         DO j=1-OLy,sNy+OLy
+c          DO i=1-OLy,sNx+OLy
+c           IF (STREAMICE_umask(i,j,bi,bj).eq.3.0)
+c      &     cg_Uin(i,j,bi,bj)=u_bdry_values_SI(i,j,bi,bj)
+c           IF (STREAMICE_vmask(i,j,bi,bj).eq.3.0)
+c      &     cg_Vin(i,j,bi,bj)=v_bdry_values_SI(i,j,bi,bj)
+c          ENDDO
+c         ENDDO
+c        ENDDO
+c       ENDDO
+c
+c       _EXCH_XY_RL( cg_Uin, myThid )
+c       _EXCH_XY_RL( cg_Vin, myThid )
 
 #endif
       RETURN

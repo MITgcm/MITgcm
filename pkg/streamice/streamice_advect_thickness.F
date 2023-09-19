@@ -289,10 +289,10 @@ CADJ STORE H_streamice  = comlev1, key=ikey_dynamics
 CADJ STORE h_after_uflux_SI = comlev1, key = ikey_dynamics
 #endif
 
-!      CALL STREAMICE_ADVECT_THICKNESS_Y ( myThid,
-!     O   hflux_y_SI,
-!     O   h_after_vflux_SI,
-!     I   time_step_loc )
+c      CALL STREAMICE_ADVECT_THICKNESS_Y ( myThid,
+c     O   hflux_y_SI,
+c     O   h_after_vflux_SI,
+c     I   time_step_loc )
 
       CALL STREAMICE_ADV_FLUX_FL_Y ( myThid ,
      I   vtrans ,
@@ -342,7 +342,7 @@ CADJ STORE h_after_uflux_SI = comlev1, key = ikey_dynamics
        ENDDO
       ENDDO
 
-! NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
+c NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
 
       if (streamice_move_front) then
       CALL STREAMICE_ADV_FRONT (
@@ -372,8 +372,8 @@ CADJ STORE streamice_hmask        = comlev1, key=ikey_dynamics
       enddo
 #endif /* ALLOW_AUTODIFF */
 
-! NOW WE APPLY MELT RATES !!
-! THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
+c NOW WE APPLY MELT RATES !!
+c THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
       irho = 1./streamice_density
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

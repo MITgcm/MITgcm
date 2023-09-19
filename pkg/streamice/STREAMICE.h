@@ -279,7 +279,7 @@ C                                    overridden in coupled mode
 C     STREAMICEAdotConfig         :: mode of SMB init
 C                                    FILE - via STREAMICEAdotFile
 C                                    o/w streamice_adot_uniform
-C     STREAMICEBglenCostMaskFile  :: prior values for Bglen in 
+C     STREAMICEBglenCostMaskFile  :: prior values for Bglen in
 C                                    transient or snapshot inversion
 C     STREAMICEvelOptimSnapBasename
 C                                 :: file prefix for obs velocities
@@ -315,7 +315,7 @@ C     STREAMICEvMassFluxFile      :: file to set v_flux_bdry_SI
 C                                    see EXPLANATION OF MASKS below
 C     STREAMICEBdotDepthFile      :: file giving a spatially dependent
 C                                    depth below which const melt
-C                                    when Bdot_config='PARAM'. 
+C                                    when Bdot_config='PARAM'.
 C                                    overrides streamice_bdot_depth_maxmelt
 C     STREAMICEBdotMaxMeltFile    :: file giving a spatially dependent
 C                                    max melt at depth
@@ -325,7 +325,7 @@ C     BdotMaxMeltTimeDepFile      :: file giving a time and spatially dependent
 C                                    max melt at depth
 C                                    when Bdot_config='PARAM'
 C                                    overrides streamice_bdot_maxmelt and
-C                                    STREAMICEBdotMaxMeltFile 
+C                                    STREAMICEBdotMaxMeltFile
 C     cfricTimeDepFile            :: file giving a time and spatially dependent
 C                                    sliding param
 C                                    when STREAMICEbasalTracConfig is 'FILE'
@@ -398,7 +398,7 @@ C     STREAMICE_vvel_ext_file     :: y-velocity file to replace velocity calc
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimSnapBasename
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimTCBasename
       CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimTCBasename
-      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotDepthFile 
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotDepthFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotMaxMeltFile
 
 C     THE FOLLOWING FILENAMES ARE FOR SPECIFYING IRREGULAR DOMAIN GEOMETRIES
@@ -565,13 +565,13 @@ C                                        (if false, sqrt is used)
 C     STREAMICE_vel_ext           :: impose velocity with external files
 C     STREAMICE_vel_ext_cgrid     :: impose velocity with external files on C grid
 C                                 ::  (over-rides STREAMICE_vel_ext)
-C     STREAMICE_do_snapshot_cost  :: accumulate snapshot cost function at 
+C     STREAMICE_do_snapshot_cost  :: accumulate snapshot cost function at
 C                                    final time step
 C     STREAMICE_do_timedep_cost   :: accumulate cost at specified time steps
-C     STREAMICE_do_verification_cost  
-C                                 :: do cost for verification test 
+C     STREAMICE_do_verification_cost
+C                                 :: do cost for verification test
 C     STREAMICE_do_vaf_cost       :: do cost for volume above floatation
-C     STREAMICE_shelf_dhdt_ctrl   :: option to apply surface elevation constraint to 
+C     STREAMICE_shelf_dhdt_ctrl   :: option to apply surface elevation constraint to
 C                                    floating ice in cost function
 
       LOGICAL STREAMICEison
@@ -824,8 +824,6 @@ C    REAL ARRAYS
      &     GAD_trac_2d
 #endif
 #endif
-
-
 
 #ifdef USE_ALT_RLOW
       COMMON /STREAMICE_RLOW/

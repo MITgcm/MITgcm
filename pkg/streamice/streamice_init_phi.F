@@ -50,8 +50,8 @@ C     this will not be updated in overlap cells - so we extend it as far as we c
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
 
           DO xq = 1,2
            gradx(xq) = Xquad(3-xq) * recip_dxG (i,j,bi,bj) +
@@ -73,7 +73,6 @@ C     this will not be updated in overlap cells - so we extend it as far as we c
             kx = 1 ; ky = 1
             if (xq.eq.xnode) kx = 2
             if (yq.eq.ynode) ky = 2
-
 
             Dphi (i,j,bi,bj,m,n,1) =
      &       (2*xnode-3) * Xquad(ky) * gradx(yq)

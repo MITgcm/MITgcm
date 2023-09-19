@@ -23,12 +23,11 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-!       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 #ifdef STREAMICE_HYBRID_STRESS
-
 
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj, k, l
@@ -49,10 +48,10 @@ cph(
 cph)
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1) THEN
 
-!            streamice_taubx (i,j,bi,bj) =
-!      &      tau_beta_eff_streamice(i,j,bi,bj) * U_streamice(i,j,bi,bj)
-!            streamice_tauby (i,j,bi,bj) =
-!      &      tau_beta_eff_streamice(i,j,bi,bj) * V_streamice(i,j,bi,bj)
+c            streamice_taubx (i,j,bi,bj) =
+c      &      tau_beta_eff_streamice(i,j,bi,bj) * U_streamice(i,j,bi,bj)
+c            streamice_tauby (i,j,bi,bj) =
+c      &      tau_beta_eff_streamice(i,j,bi,bj) * V_streamice(i,j,bi,bj)
 
            umid = 0.0
            vmid = 0.0
@@ -94,7 +93,6 @@ cph)
         ENDDO
        ENDDO
       ENDDO
-
 
 #endif
 #endif

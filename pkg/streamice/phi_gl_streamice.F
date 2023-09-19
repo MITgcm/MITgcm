@@ -2,10 +2,10 @@
 
       _RL FUNCTION PHI_GL_STREAMICE (X, W)
 
-!      This function returns a "smoothed indicator function"
-!      that is zero when x<0, 1 when x>w, and continuously diff.
+c      This function returns a "smoothed indicator function"
+c      that is zero when x<0, 1 when x>w, and continuously diff.
 
-       _RL X, W 
+       _RL X, W
        _RL TMP1, PI
 
        IF (X.le.0.0) THEN
@@ -19,4 +19,4 @@
        ENDIF
 
        RETURN
-       END 
+       END

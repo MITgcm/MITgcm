@@ -93,7 +93,7 @@ CEOP
 
       _EXCH_XY_RL(tmpUE,myThid)
       _EXCH_XY_RL(tmpVN,myThid)
-      CALL rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
+      CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
      &     .FALSE.,.TRUE.,.TRUE.,1,myThid)
 
       DO bj = myByLo(myThid),myByHi(myThid)
@@ -139,7 +139,7 @@ CEOP
        CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
 # ifdef ALLOW_STREAMICE
-       IF ( useStreamice ) THEN
+       IF ( useStreamIce ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
@@ -179,7 +179,7 @@ CEOP
        CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
 # ifdef ALLOW_STREAMICE
-       IF ( useStreamice ) THEN
+       IF ( useStreamIce ) THEN
         CALL EXCH_XY_RL( streamice_bdot_maxmelt_v, myThid )
         CALL EXCH_XY_RL( C_basal_friction, myThid )
         CALL EXCH_XY_RL( B_glen, myThid )

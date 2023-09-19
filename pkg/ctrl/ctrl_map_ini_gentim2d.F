@@ -213,7 +213,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           IF (kRec.LE.endrec) THEN
 #ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenIn(iarr) )
-           temp_genarr_fnamA = fnamegenIn(iarr) 
+           temp_genarr_fnamA = fnamegenIn(iarr)
            write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,iRec,jrec,lRec
            write(*,*) 'AF: fnamegenIn: ', temp_genarr_fnamA(1:ilgen)
 #endif
@@ -305,7 +305,7 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_CTRL_DEBUG
            write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
            ilgen=ilnblnk( fnamegenOut(iarr) )
-           temp_genarr_fnamA = fnamegenOut(iarr) 
+           temp_genarr_fnamA = fnamegenOut(iarr)
            write(*,*) 'AL: fnamegenOut: ',temp_genarr_fnamA(1:ilgen)
 #endif
 #ifdef ALLOW_AUTODIFF

@@ -57,7 +57,7 @@ C     === Global variables ===
 #if (defined(STREAMICE_SMOOTH_FLOATATION2) || defined(STREAMICE_SMOOTH_FLOATATION))
            float_frac_diag(i,j,bi,bj) =
      &         float_frac_streamice(i,j,bi,bj)%v
-#endif           
+#endif
            surf_diag(i,j,bi,bj) =
      &         surf_el_streamice(i,j,bi,bj)%v
            bdot_diag(i,j,bi,bj) =

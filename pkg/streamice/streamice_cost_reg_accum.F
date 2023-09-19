@@ -63,9 +63,8 @@ C     == Local variables
       rhow = streamice_density_ocean_avg
       r=rhoi/rhow
       i_r = 1./r
-      i_numcells = 1.0/(Nx*Ny) 
+      i_numcells = 1.0/(Nx*Ny)
       gridtimfac = i_numcells / nTimeSteps
-
 
 C--   Calculate cost function on tile of this instance
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -76,10 +75,10 @@ C--   Calculate cost function on tile of this instance
              cfricval = C_basal_friction(i,j,bi,bj)
              bglenval = B_glen(i,j,bi,bj)
 
-             cfricvalp1 = C_basal_friction(i+1,j,bi,bj) 
+             cfricvalp1 = C_basal_friction(i+1,j,bi,bj)
              dCdx = (Cfricvalp1-cfricval)/
      &              (dxC(i+1,j,bi,bj))
-             cfricvalp1 = C_basal_friction(i,j+1,bi,bj) 
+             cfricvalp1 = C_basal_friction(i,j+1,bi,bj)
              dCdy = (Cfricvalp1-cfricval)/
      &              (dxC(i,j+1,bi,bj))
 
@@ -100,24 +99,24 @@ C--   Calculate cost function on tile of this instance
 
              if (streamice_hmask(i,j,bi,bj).eq.1.0) then
 
-              cost_func1_streamice(bi,bj) = 
+              cost_func1_streamice(bi,bj) =
      &         cost_func1_streamice(bi,bj) +
-     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * gridtimfac 
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * gridtimfac
               cost_smooth_fric_streamice(bi,bj) =
-     &         cost_smooth_fric_streamice(bi,bj) + 
-     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * gridtimfac 
+     &         cost_smooth_fric_streamice(bi,bj) +
+     &         streamice_wgt_tikh_beta * (dCdx**2+dCdy**2) * gridtimfac
 
               cost_func1_streamice(bi,bj) =
      &         cost_func1_streamice(bi,bj) +
      &         streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * gridtimfac
-              cost_smooth_glen_streamice(bi,bj) = 
+              cost_smooth_glen_streamice(bi,bj) =
      &         cost_smooth_glen_streamice(bi,bj) +
      &         streamice_wgt_tikh_bglen * (dBdx**2+dBdy**2) * gridtimfac
 
               cost_func1_streamice(bi,bj) =
      &         cost_func1_streamice(bi,bj) +
      &         streamice_wgt_tikh_gen * (dMdx**2+dMdy**2) * gridtimfac
-              cost_smooth_glen_streamice(bi,bj) = 
+              cost_smooth_glen_streamice(bi,bj) =
      &         cost_smooth_glen_streamice(bi,bj) +
      &         streamice_wgt_tikh_gen * (dMdx**2+dMdy**2) * gridtimfac
 
@@ -127,15 +126,14 @@ C--   Calculate cost function on tile of this instance
               IF ((h-hf) .gt. 5. .AND. B_glen0(i,j,bi,bj).gt.0.0 .and.
      &            calc_prior_cost_bglen) then
 
-                 cost_func1_streamice(bi,bj) =  
-     &            cost_func1_streamice(bi,bj) + 
-     &            streamice_wgt_prior_bglen * gridtimfac *  
+                 cost_func1_streamice(bi,bj) =
+     &            cost_func1_streamice(bi,bj) +
+     &            streamice_wgt_prior_bglen * gridtimfac *
      &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
-                 cost_prior_streamice(bi,bj) =  
-     &            cost_prior_streamice(bi,bj) + 
-     &            streamice_wgt_prior_bglen * gridtimfac *  
+                 cost_prior_streamice(bi,bj) =
+     &            cost_prior_streamice(bi,bj) +
+     &            streamice_wgt_prior_bglen * gridtimfac *
      &            (B_glen(i,j,bi,bj)-B_glen0(i,j,bi,bj))**2
-
 
               ENDIF
 
