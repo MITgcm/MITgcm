@@ -119,13 +119,11 @@ C     Initialize arrays in common blocks :
 #ifdef GM_GEOM_VARIABLE_K
            GEOMK(i,j,k,bi,bj)      = 0. _d 0
            GEOM_ene(i,j,bi,bj)     = 0. _d 0
-           GEOM_ene_old(i,j,bi,bj) = 0. _d 0
-           ene_rhs_now(i,j,bi,bj)  = 0. _d 0
            ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
            ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
 C     doing below k=1,Nr times too many, but only doing it once...
            IF( energy_init == 0 ) THEN
-             GEOM_ene_old(i,j,bi,bj) = ene_init * maskC(i,j,1,bi,bj)
+             GEOM_ene(i,j,bi,bj) = ene_init * maskC(i,j,1,bi,bj)
            ENDIF
 #endif
 #ifdef ALLOW_GM_LEITH_QG

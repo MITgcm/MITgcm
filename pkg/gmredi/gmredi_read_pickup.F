@@ -258,7 +258,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
      &         'in routine but no pickup option specified!'
           WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &         'WARNING! going to (re)initialise ene_old!'
+     &         'WARNING! going to (re)initialise GEOM_ene!'
 
         ENDIF
 
@@ -344,14 +344,6 @@ C         GEOMETRIC energy
           CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene,
      &         nm, fp, 1, myIter, myThid )
           CALL EXCH_XY_RL(GEOM_ene, myThid)
-          CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene_old,
-     &         nm, fp, 1, myIter, myThid )
-          CALL EXCH_XY_RL(GEOM_ene_old, myThid)
-
-          fieldname='erhs_now'
-          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_now,
-     &         nm, fp, 1, myIter, myThid )
-          CALL EXCH_XY_RL(ene_rhs_now, myThid)
 
           fieldname='erhs_nm1'
           CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
@@ -408,13 +400,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           CALL MNC_CW_SET_UDIM(fn, 1, myThid)
           CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'GEOM_ene',GEOM_ene,    myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'GEOM_ene',GEOM_ene_old,myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_now',ene_rhs_now,myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
           CALL EXCH_XY_RL(GEOM_ene, myThid)
-          CALL EXCH_XY_RL(GEOM_ene_old, myThid)
-          CALL EXCH_XY_RL(ene_rhs_now, myThid)
           CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
           CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
 

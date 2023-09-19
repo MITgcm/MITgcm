@@ -44,7 +44,6 @@ C !INOUT PARAMETERS: ==================================================
 C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC          in horizontal,
 C                             structure function in vertical)
 C  GEOM_ene     :: GEOMETRIC parameterised energy
-C  GEOM_ene_old ::     -          -          -
 C              not really an output, passed around as common block
 
 C !LOCAL VARIABLES: ====================================================
@@ -87,7 +86,9 @@ C     general variables, overwritten every time step
       _RL energy_avg
       _RL deltaTloc
 
-      _RL vert_struc_func(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
+C     local version of current rhs of eddy energy equation
+      _RL ene_rhs_now(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vert_struc_func(1-OLx:sNx+OLx,1-OLy:sNy+OLy, Nr)
 
       _RL SNloc_zint (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  Nloc_zint (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -307,7 +308,7 @@ C-- compute kgm as per GEOMETRIC in horizontal, then extend
 C-- vertically by structure function if required
 C-- do other tapering things here
 
-C   TODO: cap GEOM_ene_old from below?
+C   TODO: cap GEOM_ene from below?
 
 C     1. compute the 2d k_GEOM first
 C        bound the denominator from below (choice following NEMO)
@@ -317,7 +318,7 @@ C        bound the denominator from below (choice following NEMO)
 C     for cubed sphere setups, depthC can be zero in the halo, so we
 C     include it in the masking
         IF (maskC(i,j,kSurf,bi,bj)*depthC(i,j) .GT. 0.0 _d 0) THEN
-         GEOMK(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_ene_old(i,j,bi,bj)
+         GEOMK(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_ene(i,j,bi,bj)
      &        / MAX( SNloc_zint(i,j), 1. _d -7 * depthC(i,j) )
         ENDIF
 CML        IF(.not. ene_local) THEN
@@ -420,27 +421,19 @@ C ----------------------------------------------
 CCCCCCCCCCCCCCCCCCCCCCCCCC
 C     TODO: note for the 1-pixel energy test for advection,
 C
-C           1. re-define GEOM_ene_old(idum,jdum,bi,bj), such as below
-C           2. make ene_rhs_now(i,j,bi,bj) = -trd_ene_adv(i,j) or the wav one
+C           1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
+C           2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
 C              (so everything else still calculated, but only advection does anything)
 
 !      if (energy_init .EQ. 1) then
-!        GEOM_ene_old(:, :, bi, bj) = 0.0 _d 0
-!        GEOM_ene_old(10, 5, bi, bj) = 1.0 _d 0
-!        GEOM_ene_old(5, 25, bi, bj) = 1.0 _d 0
-!        GEOM_ene_old(30, 17, bi, bj) = 1.0 _d 0
+!        GEOM_ene(:, :, bi, bj) = 0.0 _d 0
+!        GEOM_ene(10, 5, bi, bj) = 1.0 _d 0
+!        GEOM_ene(5, 25, bi, bj) = 1.0 _d 0
+!        GEOM_ene(30, 17, bi, bj) = 1.0 _d 0
 !      endif
 CCCCCCCCCCCCCCCCCCCCCCCCCC
 
 CML      IF (ene_local) THEN
-
-C       update energy field
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        ene_rhs_nm2(i,j,bi,bj) = ene_rhs_nm1(i,j,bi,bj)
-        ene_rhs_nm1(i,j,bi,bj) = ene_rhs_now(i,j,bi,bj)
-       ENDDO
-      ENDDO
 
 C ----  form the energy fluxes
 
@@ -468,22 +461,22 @@ C       second: form the tendencies
      &       ) THEN
 C ---- second ordered centre difference
 !              ene_adv_x(i,j) = -U_depth_avg(i,j)
-!     &          * (dxG(i-1,j,bi,bj) * GEOM_ene_old(i  ,j,bi,bj)
-!     &          +  dxG(i  ,j,bi,bj) * GEOM_ene_old(i-1,j,bi,bj))
+!     &          * (dxG(i-1,j,bi,bj) * GEOM_ene(i  ,j,bi,bj)
+!     &          +  dxG(i  ,j,bi,bj) * GEOM_ene(i-1,j,bi,bj))
 !     &          / (dxG(i  ,j,bi,bj) + dxG(i-1,j,bi,bj))
 C ---- 1st order upwinding
          fp_ui = U_depth_avg(i,j) + ABS( U_depth_avg(i,j) )
          fm_ui = U_depth_avg(i,j) - ABS( U_depth_avg(i,j) )
-         ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_ene_old(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_ene_old(i-1,j,bi,bj))
+         ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
+     &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
 C ---- 1st order upwinding wave stuff
          c_ros_u = 0.5 * ( c_ros(i-1,j) + c_ros(i,j) )
          fp_ui = c_ros_u + ABS( c_ros_u )
          fm_ui = c_ros_u - ABS( c_ros_u )
-         ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene_old(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_ene_old(i-1,j,bi,bj))
+         ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
+     &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
          ene_lap_x(i,j) = ene_kappa * (2.0 _d 0)
-     &        * (GEOM_ene_old(i,j,bi,bj) - GEOM_ene_old(i-1,j,bi,bj))
+     &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i-1,j,bi,bj))
      &        / (dxG(i,j,bi,bj) + dxG(i-1,j,bi,bj))
         ENDIF
        ENDDO
@@ -496,16 +489,16 @@ C ---- 1st order upwinding wave stuff
      &       ) THEN
 C ---- second ordered centre difference
 !              ene_adv_y(i, j) = -V_depth_avg(i,j)
-!     &          * (dyG(i,j-1,bi,bj) * GEOM_ene_old(i,j  ,bi,bj)
-!     &          +  dyG(i,j  ,bi,bj) * GEOM_ene_old(i,j-1,bi,bj))
+!     &          * (dyG(i,j-1,bi,bj) * GEOM_ene(i,j  ,bi,bj)
+!     &          +  dyG(i,j  ,bi,bj) * GEOM_ene(i,j-1,bi,bj))
 !     &          / (dyG(i,j  ,bi,bj) + dyG(i,j-1,bi,bj))
 C ---- 1st order upwinding
          fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
          fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
-         ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_ene_old(i,j  ,bi,bj)
-     &                        +  fp_ui * GEOM_ene_old(i,j-1,bi,bj))
+         ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
+     &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
          ene_lap_y(i, j) = ene_kappa * (2.0 _d 0)
-     &        * (GEOM_ene_old(i,j,bi,bj) - GEOM_ene_old(i,j-1,bi,bj))
+     &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i,j-1,bi,bj))
      &        / (dyG(i,j,bi,bj) + dyG(i,j-1,bi,bj))
         ENDIF
        ENDDO
@@ -513,7 +506,7 @@ C ---- 1st order upwinding
 
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
-        trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene_old(i,j,bi,bj)
+        trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene(i,j,bi,bj)
         trd_ene_adv(i,j) =
      &           (ene_adv_x(i+1,j) - ene_adv_x(i,j))
      &           * recip_dxG(i,j,bi,bj)
@@ -522,7 +515,7 @@ C ---- 1st order upwinding
 C        add in a bit to take into account linear free surface
 c         IF(implicitFreeSurface) THEN
 c          IF(maskC(i,j,kSurf,bi,bj) .GT. 0.0 _d 0) THEN
-c           trd_ene_adv(i,j) = wVel(i,j,kSurf,bi,bj) * GEOM_ene_old(i,j)
+c           trd_ene_adv(i,j) = wVel(i,j,kSurf,bi,bj) * GEOM_ene(i,j)
 c     &                         / depthC(i,j)
 c          ENDIF
 c         ENDIF
@@ -534,36 +527,36 @@ c         ENDIF
      &          +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
      &           * recip_dyG(i,j,bi,bj)
 C           form the RHS
-        ene_rhs_now(i,j,bi,bj) = trd_ene_gen(i,j)
-     &                         + trd_ene_dis(i,j)
-     &                         - trd_ene_adv(i,j)
-     &                         + trd_ene_wav(i,j)
-     &                         + trd_ene_lap(i,j)
-!        ene_rhs_now(i,j,bi,bj) = - trd_ene_adv(i,j)
+        ene_rhs_now(i,j) = trd_ene_gen(i,j)
+     &                   + trd_ene_dis(i,j)
+     &                   - trd_ene_adv(i,j)
+     &                   + trd_ene_wav(i,j)
+     &                   + trd_ene_lap(i,j)
+!        ene_rhs_now(i,j) = - trd_ene_adv(i,j)
 
        ENDDO
       ENDDO
 
 C     At this point, the new ene_rhs_now is defined and correctly
 C     computed for all i,j except for 1-OLx/y and sNx/y+Olx/y, and we do
-C     not need any exchange. We need to exchange the solution GEOM_ene
+C     not need any exchange. We od need to exchange the solution GEOM_ene
 C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
       IF (energy_init .EQ. 0 ) THEN
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
-     &            + deltaTloc * ene_rhs_now(i,j,bi,bj)
+         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
+     &            + deltaTloc * ene_rhs_now(i,j)
         ENDDO
        ENDDO
        energy_init = 1
       ELSEIF ( energy_init .EQ. 1 ) THEN
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
+         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
      &             + deltaTloc * (
-     &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j,bi,bj)
+     &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j)
      &             -(1.0 _d 0 / 2.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
      &        )
         ENDDO
@@ -572,9 +565,9 @@ C     third: time stepping
       ELSE
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
+         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
      &             + deltaTloc * (
-     &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j,bi,bj)
+     &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j)
      &             -( 4.0 _d 0 /  3.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
      &             +( 5.0 _d 0 / 12.0 _d 0) * ene_rhs_nm2(i,j,bi,bj)
      &                        )
@@ -601,7 +594,7 @@ CMLC       time step and allocate it as a field with same entries
 CML        DO j=1-OLy,sNy+OLy
 CML          DO i=1-OLx,sNx+OLx
 CML            GEOM_ene(i,j,bi,bj) =
-CML     &           (deltaTloc * energy_int + GEOM_ene_old(1,1,bi,bj))
+CML     &           (deltaTloc * energy_int + GEOM_ene(1,1,bi,bj))
 CML     &           / (1.0 _d 0 + GEOM_lmbda * deltaTloc)
 CML          ENDDO
 CML        ENDDO
@@ -609,11 +602,14 @@ CML        energy_init = 1
 CML      ENDIF
 
 
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-        GEOM_ene_old(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
+C       update rhs fields for the next time step
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        ene_rhs_nm2(i,j,bi,bj) = ene_rhs_nm1(i,j,bi,bj)
+        ene_rhs_nm1(i,j,bi,bj) = ene_rhs_now(i,j)
        ENDDO
       ENDDO
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   diagnostics and restarts

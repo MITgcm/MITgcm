@@ -69,7 +69,7 @@ CCCCCC
      &                   GM_Bates_use_constK, GM_Bates_beta_eq_0,
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
-     &                   GM_useLeithQG, 
+     &                   GM_useLeithQG,
      &                   GM_useGEOM, ene_local, vert_struc,
      &                   GEOM_pickup_write_mdsio,
      &                   GEOM_pickup_read_mdsio,
@@ -326,24 +326,22 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 #endif
 
 #ifdef GM_GEOM_VARIABLE_K
-C     GEOMK       :: mixing/stirring coefficient (spatially variable in 
+C     GEOMK       :: mixing/stirring coefficient (spatially variable in
 C                    horizontal for Marshall et al. (2012) parameterization)
-C     GEOM_ene*   :: parameterised total eddy energy in GEOMETRIC at now/old
-C                    time (GEOM_ene_old is the one that is used to update GEOMK)
+C     GEOM_ene    :: parameterised total eddy energy in GEOMETRIC;
+C                    used to update GEOMK
 C     ene_rhs*    :: RHS of eddy energy equation for time-stepping
 C     energy_init :: is 0/1/2 to control time-stepping routine of parameterised
 C                    eddy energy in gmredi_calc_geom.F
 C
       _RL GEOMK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GEOM_ene(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL GEOM_ene_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ene_rhs_now(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GM_GEOM/ GEOMK,
-     &                 GEOM_ene, GEOM_ene_old, 
-     &                 ene_rhs_now, ene_rhs_nm1, ene_rhs_nm2
+     &                 GEOM_ene,
+     &                 ene_rhs_nm1, ene_rhs_nm2
       INTEGER energy_init
       COMMON /GM_GEOM_I/ energy_init
 #endif

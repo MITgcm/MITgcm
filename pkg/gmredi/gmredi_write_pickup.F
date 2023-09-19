@@ -227,12 +227,6 @@ C--------------------------
 
         m = m + 1
         nm = nm-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_now,nm,myIter,myThid )
-        fieldname = 'erhs_now'
-        IF (m.LE.listDim) wrFldList(m) = fieldname
-
-        m = m + 1
-        nm = nm-1
         CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm1,nm,myIter,myThid )
         fieldname = 'erhs_nm1'
         IF (m.LE.listDim) wrFldList(m) = fieldname
@@ -295,7 +289,6 @@ C       Then set the actual unlimited dimension
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'GEOM_ene',   GEOM_ene,   myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_now',ene_rhs_now,myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
 
