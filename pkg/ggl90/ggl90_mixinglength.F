@@ -293,9 +293,10 @@ C     Impose minimum from downward sweep
          ENDDO
         ENDDO
        ENDDO
+#ifndef ALLOW_AUTODIFF
        CALL DIAGNOSTICS_FILL(GGL90mixingLength,'UDIAG1  ',
      &                        0,Nr,2,bi,bj,myThid)
-
+#endif
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
      &   'GGL90_MIXINGLENGTH: mxlMaxFlag=',
@@ -351,6 +352,10 @@ C
 C Langmuir circulation effect
 C
       IF (useLANGMUIR) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
+CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
+#endif
        IF ( locMxlMaxFlag .EQ. 1 ) THEN
 
         DO k=2,Nr
@@ -390,14 +395,10 @@ C
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
+CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
 #endif
 C--   Impose minimum mixing length to avoid division by zero
-C     and compute inverse
        IF ( locMxlMaxFlag .EQ. 1 .OR. locMxlMaxFlag .EQ. 2 ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
-#endif
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
