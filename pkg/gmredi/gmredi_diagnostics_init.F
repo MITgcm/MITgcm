@@ -63,23 +63,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-CCCCCCCCCCCCCCCCCCCCCCC
-C  stuff here probably can be removed, aux variables for checking purposes
-        diagName  = 'depthC'
-        diagTitle = 'depthC'
-        diagUnits = 'm               '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-        diagName  = 'd_taper'
-        diagTitle = 'depth_taper     '
-        diagUnits = '--              '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-CCCCCCCCCCCCCCCCCCCCCCC
-
         diagName  = 'GEOMeE  '
         diagTitle = 'GEOM parameterised depth-int eddy energy'
         diagUnits = 'm^3/s^2         '

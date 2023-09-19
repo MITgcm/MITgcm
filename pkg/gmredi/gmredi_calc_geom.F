@@ -618,30 +618,26 @@ C       (m2/s2, but done per tile via multiplication by the number of tiles)
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(GEOMK(:,:,1,bi,bj),
-     &                       'GEOMkap0', 0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(GEOMK,
+     &                       'GEOMkap0', 1,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(vert_struc_func,
-     &                       'GEOMstru', 0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(depthC,
-     &                       'depthC  ', 0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(depth_taper,
-     &                       'd_taper ', 0,1,0,1,1,myThid)
-       IF(ene_local) THEN
-         CALL DIAGNOSTICS_FILL(trd_ene_gen,
-     &                         'GEOMEgen', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(trd_ene_dis,
-     &                         'GEOMEdis', 0,1,0,1,1,myThid)
+     &                       'GEOMstru', 0,Nr,2,bi,bj,myThid)
+       IF (ene_local) THEN
+       CALL DIAGNOSTICS_FILL(trd_ene_gen,
+     &                       'GEOMEgen', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(trd_ene_dis,
+     &                       'GEOMEdis', 0,1,2,bi,bj,myThid)
 C        advective trends are dE/dt + -(u - c) dot grad E
-         CALL DIAGNOSTICS_FILL(trd_ene_adv,
-     &                         'GEOMEadv', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(trd_ene_wav,
-     &                         'GEOMEwav', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(trd_ene_lap,
-     &                         'GEOMElap', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(c1,
-     &                         'GEOM_c1 ', 0,1,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(c_ros,
-     &                         'GEOMcros', 0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(trd_ene_adv,
+     &                       'GEOMEadv', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(trd_ene_wav,
+     &                       'GEOMEwav', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(trd_ene_lap,
+     &                       'GEOMElap', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(c1,
+     &                       'GEOM_c1 ', 0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(c_ros,
+     &                       'GEOMcros', 0,1,2,bi,bj,myThid)
        ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
