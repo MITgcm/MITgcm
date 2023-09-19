@@ -89,25 +89,25 @@ C     general variables, overwritten every time step
 
       _RL vert_struc_func(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
 
-      _RL SNloc_zint(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL  Nloc_zint(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL trd_ene_gen(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL trd_ene_dis(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL trd_ene_adv(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL trd_ene_wav(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL trd_ene_lap(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL SNloc_zint (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  Nloc_zint (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL trd_ene_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL trd_ene_dis(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL trd_ene_adv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL trd_ene_wav(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL trd_ene_lap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      _RL U_depth_avg(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL V_depth_avg(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL U_depth_avg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL V_depth_avg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      _RL c1   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL c_ros(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL c1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_ros(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      _RL ene_adv_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL ene_adv_y(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL ene_wav_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL ene_lap_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL ene_lap_y(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL ene_adv_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ene_adv_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ene_wav_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ene_lap_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ene_lap_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -184,8 +184,8 @@ C-- 1st k loop : compute vertical structure to be used later
        ENDDO
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
 
 C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
@@ -246,8 +246,8 @@ C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
       DO k=Nr,2,-1
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
           N2loc = N2loc3D(i,j,k)
           SNloc = SNloc3D(i,j,k)
@@ -277,8 +277,8 @@ CML      ENDIF
 
 C     work out the implied long Rossby phase speeds at T pts
 C     average it onto U points later
-      DO j=1-OLy, sNy+OLy
-       DO i=1-OLx, sNx+OLx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
 C         only compute the Rossby phase speed if deep enough
         IF (depthC(i,j) .GT. 300.0 _d 0) THEN
          c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI)
@@ -383,8 +383,8 @@ C     loop over k
       DO k=Nr,2,-1
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
           SNloc = SNloc3D(i,j,k)
           trd_ene_gen(i,j) = trd_ene_gen(i,j)
@@ -446,8 +446,8 @@ C ----  form the energy fluxes
 
 C       first: form the depth-AVG velocity
       DO k=Nr,2,-1
-       DO j=1-OLy, sNy+OLy
-        DO i=1-OLx+1, sNx+OLx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
          U_depth_avg(i, j) = U_depth_avg(i,j)
      &                     + uVel(i,j,k,bi,bj) * drF(k)
      &                     * hFacW(i,j,k,bi,bj)
@@ -461,8 +461,8 @@ C       first: form the depth-AVG velocity
       ENDDO
 
 C       second: form the tendencies
-      DO j=1-OLy, sNy+OLy
-       DO i=1-OLx+1, sNx+OLx
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx+1,sNx+OLx
         IF ( maskC(i-1,j,kSurf,bi,bj)*dxG(i-1,j,bi,bj) .GT. 0.0 _d 0
      & .AND. maskC(i  ,j,kSurf,bi,bj)*dxG(i  ,j,bi,bj) .GT. 0.0 _d 0
      &       ) THEN
@@ -489,8 +489,8 @@ C ---- 1st order upwinding wave stuff
        ENDDO
       ENDDO
 
-      DO j=1-OLy+1, sNy+OLy
-       DO i=1-OLx, sNx+OLx
+      DO j=1-OLy+1,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         IF ( maskC(i,j-1,kSurf,bi,bj)*dyG(i,j-1,bi,bj) .GT. 0.0 _d 0
      & .AND. maskC(i,j  ,kSurf,bi,bj)*dyG(i,j  ,bi,bj) .GT. 0.0 _d 0
      &       ) THEN
@@ -511,8 +511,8 @@ C ---- 1st order upwinding
        ENDDO
       ENDDO
 
-      DO j=1-OLy+1, sNy+OLy-1
-       DO i=1-OLx+1, sNx+OLx-1
+      DO j=1-OLy+1,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
         trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene_old(i,j,bi,bj)
         trd_ene_adv(i,j) =
      &           (ene_adv_x(i+1,j) - ene_adv_x(i,j))
@@ -544,21 +544,23 @@ C           form the RHS
        ENDDO
       ENDDO
 
-CMLC       call exchange to make sure transmission occurs in mpi runs
-CML        _EXCH_XY_RL( ene_rhs_now , myThid )
+C     At this point, the new ene_rhs_now is defined and correctly
+C     computed for all i,j except for 1-OLx/y and sNx/y+Olx/y, and we do
+C     not need any exchange. We need to exchange the solution GEOM_ene
+C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
       IF (energy_init .EQ. 0 ) THEN
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
      &            + deltaTloc * ene_rhs_now(i,j,bi,bj)
         ENDDO
        ENDDO
        energy_init = 1
       ELSEIF ( energy_init .EQ. 1 ) THEN
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
      &             + deltaTloc * (
      &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j,bi,bj)
@@ -568,8 +570,8 @@ C     third: time stepping
        ENDDO
        energy_init = 2
       ELSE
-       DO j=1-OLy+1, sNy+OLy-1
-        DO i=1-OLx+1, sNx+OLx-1
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
          GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
      &             + deltaTloc * (
      &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j,bi,bj)
@@ -587,8 +589,8 @@ CMLC       Horizontally integrate and time step the energy
 CML
 CMLC       form integrand
 CML        energy_int = 0.0 _d 0
-CML        DO j=1-OLy, sNy+OLy
-CML          DO i=1-OLx, sNx+OLx
+CML        DO j=1-OLy,sNy+OLy
+CML          DO i=1-OLx,sNx+OLx
 CML            energy_int = energy_int +
 CML     &                   trd_ene_gen(i,j)
 CML     &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
@@ -596,8 +598,8 @@ CML     &                 * maskC(i,j,kSurf,bi,bj)
 CML          ENDDO
 CML        ENDDO
 CMLC       time step and allocate it as a field with same entries
-CML        DO j=1-OLy, sNy+OLy
-CML          DO i=1-OLx, sNx+OLx
+CML        DO j=1-OLy,sNy+OLy
+CML          DO i=1-OLx,sNx+OLx
 CML            GEOM_ene(i,j,bi,bj) =
 CML     &           (deltaTloc * energy_int + GEOM_ene_old(1,1,bi,bj))
 CML     &           / (1.0 _d 0 + GEOM_lmbda * deltaTloc)
@@ -607,8 +609,8 @@ CML        energy_init = 1
 CML      ENDIF
 
 
-      DO j=1-OLy, sNy+OLy
-       DO i=1-OLx, sNx+OLx
+       DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
         GEOM_ene_old(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
        ENDDO
       ENDDO
@@ -632,8 +634,8 @@ CML        IF(ene_local) THEN
          ENDDO
         ENDDO
        ENDDO
-       DO j=1, sNy
-        DO i=1, sNx
+       DO j=1,sNy
+        DO i=1,sNx
          energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
      &        * rA(i,j,bi,bj) * maskC(i,j,kSurf,bi,bj)
         ENDDO

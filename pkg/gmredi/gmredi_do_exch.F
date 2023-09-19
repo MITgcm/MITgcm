@@ -55,5 +55,12 @@ C     with GM-bolus 2-D mapping factor (GM_bolFac2d).
       ENDIF
 #endif /* GM_BOLUS_ADVEC */
 
+#ifdef GM_GEOM_VARIABLE_K
+      IF ( GM_useGEOM ) THEN
+       _EXCH_XY_RL( GEOM_ene , myThid )
+       _EXCH_XY_RL( GEOM_ene_old , myThid )
+      ENDIF
+#endif
+
       RETURN
       END
