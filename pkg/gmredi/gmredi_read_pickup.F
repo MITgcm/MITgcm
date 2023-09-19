@@ -48,7 +48,6 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
-CEOP
 
 #endif /* GM_BATES_K3D */
 
@@ -65,9 +64,9 @@ CEOP
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
-CEOP
 
 #endif /* GM_GEOM_VARIABLE_K */
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -253,7 +252,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef GM_GEOM_VARIABLE_K
 
       IF (GM_useGEOM) THEN
-      
+
         IF (.NOT. (GEOM_pickup_read_mnc .OR.
      &             GEOM_pickup_read_mdsio ) ) THEN
           WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
@@ -262,10 +261,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &         'WARNING! going to (re)initialise ene_old!'
 
         ENDIF
-      
+
 C--------------------------
 #ifdef ALLOW_MDSIO
-      
+
       IF ( GEOM_pickup_read_mdsio ) THEN
 
         IF ( pickupSuff.EQ.' ' ) THEN
@@ -348,17 +347,17 @@ C         GEOMETRIC energy
           CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene_old,
      &         nm, fp, 1, myIter, myThid )
           CALL EXCH_XY_RL(GEOM_ene_old, myThid)
-          
+
           fieldname='erhs_now'
           CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_now,
      &         nm, fp, 1, myIter, myThid )
           CALL EXCH_XY_RL(ene_rhs_now, myThid)
-          
+
           fieldname='erhs_nm1'
           CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
      &         nm, fp, 1, myIter, myThid )
           CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
-          
+
           fieldname='erhs_nm2'
           CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm2,
      &         nm, fp, 1, myIter, myThid )
@@ -389,7 +388,7 @@ C--     Check for missing fields:
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
         ENDIF
-        
+
         WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
      &        'reading mdsio pickup'
 
@@ -418,7 +417,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           CALL EXCH_XY_RL(ene_rhs_now, myThid)
           CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
           CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
-          
+
           WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
      &        'reading mnc pickup'
         ENDIF

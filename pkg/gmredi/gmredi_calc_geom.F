@@ -63,6 +63,7 @@ C     trd_ene_*    :: trends for energy
 C                       gen, adv, lap, dis
 
       INTEGER i,j,k
+      INTEGER kSurf
       _RL dSigmaDx
       _RL dSigmaDy
       _RL dSigmaDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -77,13 +78,14 @@ C                       gen, adv, lap, dis
 
 C     metric variables
       _RL domain_vol
-      _RL recip_depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL recip_depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL depthC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_depthS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL depthC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL depth_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     general variables, overwritten every time step
-      _RL energy_int, energy_avg
+      _RL energy_avg
+      _RL deltaTloc
 
       _RL vert_struc_func(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
 
@@ -107,10 +109,18 @@ C     general variables, overwritten every time step
       _RL ene_lap_x(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL ene_lap_y(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C     === Functions ====
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      kSurf = 1
+      deltaTloc = dtTracerLev(kSurf)
       recipMaxSlope = 0. _d 0
       IF ( GM_maxSlope.GT.0. _d 0 ) THEN
         recipMaxSlope = 1. _d 0 / GM_maxSlope
@@ -169,7 +179,7 @@ C-- 1st k loop : compute vertical structure to be used later
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
-            IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+            IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
 
 C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
               dSigmaR = (dSigmaDr(i,j) * 4.0 _d 0
@@ -192,8 +202,8 @@ C      Compute M^2 rho_0 / g on vertical interfaces
      &                      ) *  maskC(i,j,k,bi,bj)
               dSigmaH = sqrt(dSigmaDx * dSigmaDx
      &                     + dSigmaDy * dSigmaDy)
-              IF(dSigmaH > 0.0 _d 0) THEN
-                IF(abs(dSigmaR) > dSigmaH*recipMaxSlope) THEN
+              IF(dSigmaH .GT. 0.0 _d 0) THEN
+                IF(abs(dSigmaR) .GT. dSigmaH*recipMaxSlope) THEN
                   Sloc = dSigmaH / abs(dSigmaR)
                 ELSE
                   Sloc = abs(GM_maxSlope)
@@ -231,7 +241,7 @@ C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
-            IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+            IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
               N2loc = N2loc3D(i,j,k)
               SNloc = SNloc3D(i,j,k)
 
@@ -245,27 +255,27 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         ENDDO
       ENDDO
 
-      IF(.NOT. ene_local) THEN
-C       Horizontal integral
-        SNloc = 0.0 _d 0
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            SNLoc = SNLoc + SNloc_zint(i,j)
-     &                    * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                    * maskC(i,j,1,bi,bj)
-          ENDDO
-        ENDDO
-        SNloc_zint = SNloc / globalArea
-      ENDIF
+CML      IF(.NOT. ene_local) THEN
+CMLC       Horizontal integral
+CML        SNloc = 0.0 _d 0
+CML        DO j=1-OLy+1,sNy+OLy-1
+CML          DO i=1-OLx+1,sNx+OLx-1
+CML            SNLoc = SNLoc + SNloc_zint(i,j)
+CML     &                    * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+CML     &                    * maskC(i,j,1,bi,bj)
+CML          ENDDO
+CML        ENDDO
+CML        SNloc_zint = SNloc / globalArea
+CML      ENDIF
 
 C     work out the implied long Rossby phase speeds at T pts
 C     average it onto U points later
       DO j=1-OLy, sNy+OLy
         DO i=1-OLx, sNx+OLx
 C         only compute the Rossby phase speed if deep enough
-          IF (depthC(i,j) > 300.0 _d 0) THEN
+          IF (depthC(i,j) .GT. 300.0 _d 0) THEN
             c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI)
-     &              * maskC(i,j,1,bi,bj)
+     &              * maskC(i,j,kSurf,bi,bj)
           ELSE
             c1(i,j) = 0.0 _d 0
           ENDIF
@@ -298,33 +308,32 @@ C        bound the denominator from below (choice following NEMO)
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
 C     for cubed sphere setups, depthC can be zero in the halo, so we
-C     include in the masking
-          IF(maskC(i,j,k,bi,bj)*depthC(i,j) /= 0.0 _d 0) THEN
-            GEOMK(i,j,1,bi,bj) = GEOM_alpha
+C     include it in the masking
+          IF (maskC(i,j,k,bi,bj)*depthC(i,j) .GT. 0.0 _d 0) THEN
+            GEOMK(i,j,kSurf,bi,bj) = GEOM_alpha
      &                         * GEOM_ene_old(i,j,bi,bj)
      &                         / max(        SNloc_zint(i,j),
      &                               1. _d -7 * depthC(i,j)
      &                               )
           ENDIF
-          IF(.not. ene_local) THEN
-            GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) / globalArea
-          ENDIF
+CML          IF(.not. ene_local) THEN
+CML            GEOMK(i,j,kSurf,bi,bj) = GEOMK(i,j,kSurf,bi,bj) / globalArea
+CML          ENDIF
         ENDDO
       ENDDO
 
 C     2. cap k_GEOM from above! (stop it being too big)
 
-      IF(GEOM_alpha /= 0.0 _d 0) THEN
-        GEOMK(:,:,1,bi,bj) = min(GEOMK(:,:,1,bi,bj), GEOM_maxVal_K)
-      ENDIF
+      IF (GEOM_alpha .GT. 0.0 _d 0) GEOMK(:,:,kSurf,bi,bj) =
+     &     MIN(GEOMK(:,:,kSurf,bi,bj), GEOM_maxVal_K)
 
 C     3. taper it according to depth to kill k_GEOM in shallow regions
 
       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) * depth_taper(i,j)
-     &                       * maskC(i,j,1,bi,bj)
-        ENDDO
+       DO i=1-OLx,sNx+OLx
+        GEOMK(i,j,kSurf,bi,bj) = GEOMK(i,j,kSurf,bi,bj)
+     &       * depth_taper(i,j) * maskC(i,j,kSurf,bi,bj)
+       ENDDO
       ENDDO
 
 C     4. extend the (tapered) k_GEOM in depth
@@ -333,7 +342,7 @@ C     4. extend the (tapered) k_GEOM in depth
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k)
-     &                         * GEOMK(i,j,1,bi,bj)
+     &                         * GEOMK(i,j,kSurf,bi,bj)
      &                         * maskC(i,j,k,bi,bj)
           ENDDO
         ENDDO
@@ -341,7 +350,7 @@ C     4. extend the (tapered) k_GEOM in depth
 
 C     5. cap k_GEOM from below (do not strictly need this)
 
-      IF(GEOM_alpha /= 0.0 _d 0) THEN
+      IF (GEOM_alpha .NE. 0.0 _d 0) THEN
         GEOMK(:,:,:,bi,bj) = max(GEOMK(:,:,:,bi,bj),GEOM_minVal_K)
       ENDIF
 
@@ -356,7 +365,7 @@ C     loop over k
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
-            IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
+            IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
               SNloc = SNloc3D(i,j,k)
               trd_ene_gen(i,j) = trd_ene_gen(i,j)
      &                         + GEOMK(i,j,k,bi,bj)
@@ -399,7 +408,7 @@ C              (so everything else still calculated, but only advection does any
 !      endif
 CCCCCCCCCCCCCCCCCCCCCCCCCC
 
-      IF(ene_local) THEN
+CML      IF (ene_local) THEN
 
 C       update energy field
         DO j=1-OLy,sNy+OLy
@@ -430,8 +439,9 @@ C       first: form the depth-AVG velocity
 C       second: form the tendencies
         DO j=1-OLy, sNy+OLy
           DO i=1-OLx+1, sNx+OLx
-            IF(    maskC(i-1,j,1,bi,bj)*dxG(i-1,j,bi,bj) /= 0.0 _d 0
-     &       .AND. maskC(i  ,j,1,bi,bj)*dxG(i,j,bi,bj) /= 0.0 _d 0) THEN
+            IF ( maskC(i-1,j,kSurf,bi,bj)*dxG(i-1,j,bi,bj) .GT. 0.0 _d 0
+     &     .AND. maskC(i  ,j,kSurf,bi,bj)*dxG(i  ,j,bi,bj) .GT. 0.0 _d 0
+     &          ) THEN
 C ---- second ordered centre difference
 !              ene_adv_x(i,j) = -U_depth_avg(i,j)
 !     &          * (dxG(i-1,j,bi,bj) * GEOM_ene_old(i  ,j,bi,bj)
@@ -457,8 +467,9 @@ C ---- 1st order upwinding wave stuff
 
         DO j=1-OLy+1, sNy+OLy
           DO i=1-OLx, sNx+OLx
-            IF(    maskC(i,j-1,1,bi,bj)*dyG(i,j-1,bi,bj) /= 0.0 _d 0
-     &       .AND. maskC(i,j  ,1,bi,bj)*dyG(i,j,bi,bj) /= 0.0 _d 0) THEN
+            IF ( maskC(i,j-1,kSurf,bi,bj)*dyG(i,j-1,bi,bj) .GT. 0.0 _d 0
+     &     .AND. maskC(i,j  ,kSurf,bi,bj)*dyG(i,j  ,bi,bj) .GT. 0.0 _d 0
+     &          ) THEN
 C ---- second ordered centre difference
 !              ene_adv_y(i, j) = -V_depth_avg(i,j)
 !     &          * (dyG(i,j-1,bi,bj) * GEOM_ene_old(i,j  ,bi,bj)
@@ -486,8 +497,8 @@ C ---- 1st order upwinding
      &           * recip_dyG(i,j,bi,bj)
 C        add in a bit to take into account linear free surface
 c         IF(implicitFreeSurface) THEN
-c          IF(maskC(i,j,1,bi,bj) /= 0.0 _d 0) THEN
-c           trd_ene_adv(i,j) = wVel(i,j,1,bi,bj) * GEOM_ene_old(i,j)
+c          IF(maskC(i,j,kSurf,bi,bj) .GT. 0.0 _d 0) THEN
+c           trd_ene_adv(i,j) = wVel(i,j,kSurf,bi,bj) * GEOM_ene_old(i,j)
 c     &                         / depthC(i,j)
 c          ENDIF
 c         ENDIF
@@ -518,7 +529,7 @@ C       third: time stepping
             DO j=1-OLy+1, sNy+OLy-1
               DO i=1-OLx+1, sNx+OLx-1
                 GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
-     &                              + deltaT * ene_rhs_now(i,j,bi,bj)
+     &                              + deltaTloc * ene_rhs_now(i,j,bi,bj)
               ENDDO
             ENDDO
             energy_init = 1
@@ -526,7 +537,7 @@ C       third: time stepping
             DO j=1-OLy+1, sNy+OLy-1
               DO i=1-OLx+1, sNx+OLx-1
                 GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
-     &             + deltaT * (
+     &             + deltaTloc * (
      &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j,bi,bj)
      &             -(1.0 _d 0 / 2.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
      &                        )
@@ -537,7 +548,7 @@ C       third: time stepping
             DO j=1-OLy+1, sNy+OLy-1
               DO i=1-OLx+1, sNx+OLx-1
                 GEOM_ene(i,j,bi,bj) = GEOM_ene_old(i,j,bi,bj)
-     &             + deltaT * (
+     &             + deltaTloc * (
      &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j,bi,bj)
      &             -( 4.0 _d 0 /  3.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
      &             +( 5.0 _d 0 / 12.0 _d 0) * ene_rhs_nm2(i,j,bi,bj)
@@ -548,29 +559,29 @@ C       third: time stepping
 C ----------------------------------------------
 C ---- end advection of energy -----------------
 C ----------------------------------------------
-      ELSE
-C       Horizontally integrate and time step the energy
-
-C       form integrand
-        energy_int = 0.0 _d 0
-        DO j=1-OLy, sNy+OLy
-          DO i=1-OLx, sNx+OLx
-            energy_int = energy_int +
-     &                   trd_ene_gen(i,j)
-     &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                 * maskC(i,j,1,bi,bj)
-          ENDDO
-        ENDDO
-C       time step and allocate it as a field with same entries
-        DO j=1-OLy, sNy+OLy
-          DO i=1-OLx, sNx+OLx
-            GEOM_ene(i,j,bi,bj) =
-     &           (deltaT * energy_int + GEOM_ene_old(1,1,bi,bj))
-     &           / (1.0 _d 0 + GEOM_lmbda * deltaT)
-          ENDDO
-        ENDDO
-        energy_init = 1
-      ENDIF
+CML      ELSE
+CMLC       Horizontally integrate and time step the energy
+CML
+CMLC       form integrand
+CML        energy_int = 0.0 _d 0
+CML        DO j=1-OLy, sNy+OLy
+CML          DO i=1-OLx, sNx+OLx
+CML            energy_int = energy_int +
+CML     &                   trd_ene_gen(i,j)
+CML     &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
+CML     &                 * maskC(i,j,kSurf,bi,bj)
+CML          ENDDO
+CML        ENDDO
+CMLC       time step and allocate it as a field with same entries
+CML        DO j=1-OLy, sNy+OLy
+CML          DO i=1-OLx, sNx+OLx
+CML            GEOM_ene(i,j,bi,bj) =
+CML     &           (deltaTloc * energy_int + GEOM_ene_old(1,1,bi,bj))
+CML     &           / (1.0 _d 0 + GEOM_lmbda * deltaTloc)
+CML          ENDDO
+CML        ENDDO
+CML        energy_init = 1
+CML      ENDIF
 
 
       DO j=1-OLy, sNy+OLy
@@ -583,43 +594,45 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   diagnostics and restarts
 
 C--   on screen diagnostics
-      IF(mod(myTime, monitorFreq) == 0. _d 0) THEN
+      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock) ) THEN
 
 C       estimate of domain AVERAGED energy
 C       (m2/s2, but done per tile via multiplication by the number of tiles)
         energy_avg = 0. _d 0
-        IF(ene_local) THEN
-         domain_vol = 0.0 _d 0
-         DO k=1,Nr
-          DO j=1,sNy
-           DO i=1,sNx
-            domain_vol = domain_vol
-     &           + rA(i,j,bi,bj) * drF(k) * hFacC(i,j,k,bi,bj)
-           ENDDO
+CML        IF(ene_local) THEN
+        domain_vol = 0.0 _d 0
+        DO k=1,Nr
+         DO j=1,sNy
+          DO i=1,sNx
+           domain_vol = domain_vol
+     &          + rA(i,j,bi,bj) * drF(k) * hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
-         DO j=1, sNy
-          DO i=1, sNx
-           energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
-     &          * rA(i,j,bi,bj) * maskC(i,j,1,bi,bj)
-          ENDDO
+        ENDDO
+        DO j=1, sNy
+         DO i=1, sNx
+          energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
+     &         * rA(i,j,bi,bj) * maskC(i,j,kSurf,bi,bj)
          ENDDO
-         energy_avg = energy_avg / domain_vol * (nPx * nPy)
-        ELSE
-         energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
-        ENDIF
+        ENDDO
+        energy_avg = energy_avg / domain_vol * (nPx * nPy)
+CML       ELSE
+CML        energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
+CML       ENDIF
 
-        write(*,'(a,3(x,a,f11.5,a))') "GMREDI_CALC_GEOM: tile diag"
-     &   , " t       = ", myTime / (3600 * 24 * 360), " yr, "
-     &   , " kgm_max = ", maxval(GEOMK(1:sNx,1:sNy,1,bi,bj))
-     &   ,                    " m2/s, "
-     &   , " eE_avg  = ", energy_avg, " m2/s2 "
+        WRITE(msgBuf,'(A,3(X,A,F11.5,A))') "GMREDI_CALC_GEOM: tile diag"
+     &    , " t       = ", myTime / (3600. * 24. * 360.), " yr, "
+     &    , " kgm_max = ", maxval(GEOMK(1:sNx,1:sNy,kSurf,bi,bj))
+     &    , " m2/s, "
+     &    , " eE_avg  = ", energy_avg, " m2/s2 "
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , 1)
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
        CALL DIAGNOSTICS_FILL(GEOMK,
-     &                       'GEOMkap0', 1,Nr,1,bi,bj,myThid)
+     &                       'GEOMkap0', kSurf,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(vert_struc_func,
      &                       'GEOMstru', 0,Nr,2,bi,bj,myThid)
        IF (ene_local) THEN
