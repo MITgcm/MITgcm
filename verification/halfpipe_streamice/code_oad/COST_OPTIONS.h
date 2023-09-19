@@ -37,13 +37,13 @@ C       >>> Cost function contributions
 #undef ALLOW_COST_TSQUARED
 #undef ALLOW_COST_DEPTH
 #undef ALLOW_COST_TRACER
-#define ALLOW_COST_STREAMICE
 
 C   List these options here:
 #undef ALLOW_COST_TEMP
 #undef ALLOW_COST_HFLUXM
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
+#define ALLOW_COST_STREAMICE
 #undef ALLOW_COST_SHELFICE
 
 C   ==================================================================

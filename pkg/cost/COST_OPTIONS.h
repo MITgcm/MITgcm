@@ -43,6 +43,7 @@ C   List these options here:
 #undef ALLOW_COST_HFLUXM
 #undef ALLOW_DIC_COST
 #undef ALLOW_THSICE_COST_TEST
+#undef ALLOW_COST_STREAMICE
 #undef ALLOW_COST_SHELFICE
 
 C   ==================================================================
