@@ -159,7 +159,7 @@ C--   Default values GEOMETRIC
       GEOM_alpha              = 0. _d  0
       ene_init                = 1. _d -3
       ene_kappa               = 1. _d +3
-      ene_local               = .FALSE.
+      ene_local               = .TRUE.
       vert_struc              = .FALSE.
       vert_struc_min          = 1. _d -1
       vert_struc_max          = 1. _d 0
