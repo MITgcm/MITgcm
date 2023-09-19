@@ -80,7 +80,6 @@ C     metric variables
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_depthS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL depthC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL depth_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     general variables, overwritten every time step
       _RL energy_avg
@@ -139,17 +138,6 @@ C     depths for doing depth-averaging
         IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
      &       recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
         depthC(i,j)      = ABS(R_low(i,j,bi,bj))
-        depth_taper(i,j) = 0.0 _d 0
-       ENDDO
-      ENDDO
-
-C     temporary variable for depth tapering later
-      DO j=1-OLy+1,sNy+OLy-1
-       DO i=1-OLx+1,sNx+OLx-1
-        depth_taper(i,j) = (0.5 _d 0 *
-     &       (1.0 _d 0 - TANH(
-     &       (-depthC(i,j) + 800.0 _d 0) / 300.0 _d 0
-     &       ) ) ) ** 2
        ENDDO
       ENDDO
 
@@ -343,7 +331,7 @@ C     3. taper it according to depth to kill k_GEOM in shallow regions
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         GEOMK(i,j,kSurf,bi,bj) = GEOMK(i,j,kSurf,bi,bj)
-     &       * depth_taper(i,j) * maskC(i,j,kSurf,bi,bj)
+     &       * GEOM_taper(i,j,bi,bj) * maskC(i,j,kSurf,bi,bj)
        ENDDO
       ENDDO
 

@@ -334,14 +334,16 @@ C     ene_rhs*    :: RHS of eddy energy equation for time-stepping
 C     energy_init :: is 0/1/2 to control time-stepping routine of parameterised
 C                    eddy energy in gmredi_calc_geom.F
 C
-      _RL GEOMK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL GEOM_ene(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_ene   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GM_GEOM/ GEOMK,
      &                 GEOM_ene,
-     &                 ene_rhs_nm1, ene_rhs_nm2
+     &                 ene_rhs_nm1, ene_rhs_nm2,
+     &                 GEOM_taper
       INTEGER energy_init
       COMMON /GM_GEOM_I/ energy_init
 #endif
