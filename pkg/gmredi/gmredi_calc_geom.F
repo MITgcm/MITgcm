@@ -63,17 +63,19 @@ C     trd_ene_*    :: trends for energy
 C                       gen, adv, lap, dis
 
       INTEGER i,j,k
-      _RL dSigmaDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dSigmaDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dSigmaDx
+      _RL dSigmaDy
       _RL dSigmaDr(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       _RL dSigmaH, dSigmaR
       _RL N2loc, SNloc, Sloc
+      _RL SNloc3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL N2loc3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       _RL recipMaxSlope
       _RL c_ros_u, fm_ui, fp_ui
 
-C     metric variables, computed once only
+C     metric variables
       _RL domain_vol
       _RL recip_depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL recip_depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -81,7 +83,7 @@ C     metric variables, computed once only
       _RL depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
 C     general variables, overwritten every time step
-      _RL :: energy_int, energy_avg
+      _RL energy_int, energy_avg
 
       _RL vert_struc_func(1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr)
 
@@ -119,8 +121,8 @@ C--   initialise some variables for calculations
 C     depths for doing depth-averaging
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        recip_depthW(i,j,bi,bj) = 0.0 _d 0
-        recip_depthS(i,j,bi,bj) = 0.0 _d 0
+        recip_depthW(i,j) = 0.0 _d 0
+        recip_depthS(i,j) = 0.0 _d 0
         IF ( rLowW(i,j,bi,bj) .NE. 0. _d 0 )
      &       recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
         IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
@@ -152,20 +154,12 @@ C     initialisations, put this in a loop if need be
       SNloc_zint = 0.0 _d 0
       Nloc_zint  = 0.0 _d 0
       vert_struc_func = 1.0 _d 0
+      N2loc3D    = 0.0 _d 0
+      SNloc3D    = 0.0 _d 0
 
 C-- 1st k loop : compute vertical structure to be used later
       DO k=Nr,2,-1
 
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            dSigmaDx(i,j) = op25 * (sigmaX(i+1,j,k-1) + sigmaX(i,j,k-1)
-     &                           +  sigmaX(i+1,j,k  ) + sigmaX(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-            dSigmaDy(i,j) = op25 * (sigmaY(i,j+1,k-1) + sigmaY(i,j,k-1)
-     &                           +  sigmaY(i,j+1,k  ) + sigmaY(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
@@ -190,98 +184,68 @@ C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
      &                    + maskC(i,j+1,k,bi,bj)
      &                     )
 C      Compute M^2 rho_0 / g on vertical interfaces
-              dSigmaH = sqrt(dSigmaDx(i,j) * dSigmaDx(i,j)
-     &                     + dSigmaDy(i,j) * dSigmaDy(i,j))
+              dSigmaDx = op25 * (sigmaX(i+1,j,k-1) + sigmaX(i,j,k-1)
+     &                        +  sigmaX(i+1,j,k  ) + sigmaX(i,j,k  )
+     &                      ) *  maskC(i,j,k,bi,bj)
+              dSigmaDy = op25 * (sigmaY(i,j+1,k-1) + sigmaY(i,j,k-1)
+     &                        +  sigmaY(i,j+1,k  ) + sigmaY(i,j,k  )
+     &                      ) *  maskC(i,j,k,bi,bj)
+              dSigmaH = sqrt(dSigmaDx * dSigmaDx
+     &                     + dSigmaDy * dSigmaDy)
               IF(dSigmaH > 0.0 _d 0) THEN
                 IF(abs(dSigmaR) > dSigmaH*recipMaxSlope) THEN
                   Sloc = dSigmaH / abs(dSigmaR)
                 ELSE
                   Sloc = abs(GM_maxSlope)
                 ENDIF
-                N2loc = abs(gravity * recip_rhoConst * dSigmaR)
-                SNloc = Sloc * sqrt(N2loc)
-              ELSE
-                SNloc = 0.0 _d 0
-              ENDIF
-              IF(vert_struc) THEN
-                vert_struc_func(i,j,k) = N2loc
-              ELSE
-                vert_struc_func(i,j,k) = 1.0 _d 0
+                N2loc3D(i,j,k) = abs(gravity * recip_rhoConst * dSigmaR)
+                SNloc3D(i,j,k) = Sloc * SQRT(N2loc3D(i,j,k))
               ENDIF
             ENDIF
           ENDDO
         ENDDO
       ENDDO
+      IF ( vert_struc ) THEN
+       k=2
+C     avoid division by zero
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k), vert_struc_min)
+        ENDDO
+       ENDDO
+C     Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
+       DO k=Nr,2,-1
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          vert_struc_func(i,j,k) = MAX( MIN(
+     &         vert_struc_max, N2loc3D(i,j,k)/vert_struc_func(i,j,2)),
+     &         vert_struc_min)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
       DO k=Nr,2,-1
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            dSigmaDx(i,j) = op25 * (sigmaX(i+1,j,k-1) + sigmaX(i,j,k-1)
-     &                           +  sigmaX(i+1,j,k  ) + sigmaX(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-            dSigmaDy(i,j) = op25 * (sigmaY(i,j+1,k-1) + sigmaY(i,j,k-1)
-     &                           +  sigmaY(i,j+1,k  ) + sigmaY(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
-          ENDDO
-        ENDDO
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
             IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
-              dSigmaR = (dSigmaDr(i,j) * 4.0 _d 0
-     &                + maskC(i-1,j,k,bi,bj)*dSigmaDr(i-1,j)
-     &                + maskC(i+1,j,k,bi,bj)*dSigmaDr(i+1,j)
-     &                + maskC(i,j-1,k,bi,bj)*dSigmaDr(i,j-1)
-     &                + maskC(i,j+1,k,bi,bj)*dSigmaDr(i,j+1)
-     &                ) / (4.0 _d 0
-     &                  + maskC(i-1,j,k,bi,bj)
-     &                  + maskC(i+1,j,k,bi,bj)
-     &                  + maskC(i,j-1,k,bi,bj)
-     &                  + maskC(i,j+1,k,bi,bj)
-     &                    )
-C      Compute M^2 rho_0 / g on vertical interfaces
-              dSigmaH = sqrt(dSigmaDx(i,j) * dSigmaDx(i,j)
-     &                     + dSigmaDy(i,j) * dSigmaDy(i,j))
-              IF(dSigmaH > 0.0 _d 0) THEN
-                IF(abs(dSigmaR) > dSigmaH*recipMaxSlope) THEN
-                  Sloc = dSigmaH / abs(dSigmaR)
-                ELSE
-                  Sloc = abs(GM_maxSlope)
-                ENDIF
-                  N2loc = abs(gravity * recip_rhoConst * dSigmaR)
-                  SNloc = Sloc * sqrt(N2loc)
-              ELSE
-                SNloc = 0.0 _d 0
-              ENDIF
+              N2loc = N2loc3D(i,j,k)
+              SNloc = SNloc3D(i,j,k)
 
-              IF(vert_struc) THEN
-C      Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
-                vert_struc_func(i,j,k) =
-     &           max(min(vert_struc_max,
-     &                   vert_struc_func(i,j,k)/vert_struc_func(i,j,2)),
-     &               vert_struc_min)
-              ELSE
-                vert_struc_func(i,j,k) = 1.0 _d 0
-              ENDIF
               SNloc_zint(i,j) = SNloc_zint(i,j)
      &                        + SNloc * drC(k) * hFacC(i,j,k,bi,bj)
      &                        * vert_struc_func(i,j,k)
-              Nloc_zint(i,j)  = Nloc_zint(i,j) + sqrt(N2loc)
+              Nloc_zint(i,j)  = Nloc_zint(i,j) + SQRT(N2loc)
      &                        * drC(k) * hFacC(i,j,k,bi,bj)
             ENDIF
           ENDDO
         ENDDO
       ENDDO
 
-      IF(.not. ene_local) THEN
+      IF(.NOT. ene_local) THEN
 C       Horizontal integral
         SNloc = 0.0 _d 0
         DO j=1-OLy+1,sNy+OLy-1
@@ -388,53 +352,12 @@ C     allocate and initialise
 
 C     loop over k
       DO k=Nr,2,-1
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            dSigmaDx(i,j) = op25 * (sigmaX(i+1,j,k-1) + sigmaX(i,j,k-1)
-     &                           +  sigmaX(i+1,j,k  ) + sigmaX(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-            dSigmaDy(i,j) = op25 * (sigmaY(i,j+1,k-1) + sigmaY(i,j,k-1)
-     &                           +  sigmaY(i,j+1,k  ) + sigmaY(i,j,k  )
-     &                         ) *  maskC(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
-          ENDDO
-        ENDDO
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
         DO j=1-OLy+1, sNy+OLy-1
           DO i=1-OLx+1, sNx+OLx-1
             IF(maskC(i,j,k,bi,bj) /= 0.0 _d 0) THEN
-
-C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
-              dSigmaR = (dSigmaDr(i,j) * 4.0 _d 0
-     &                + maskC(i-1,j,k,bi,bj)*dSigmaDr(i-1,j)
-     &                + maskC(i+1,j,k,bi,bj)*dSigmaDr(i+1,j)
-     &                + maskC(i,j-1,k,bi,bj)*dSigmaDr(i,j-1)
-     &                + maskC(i,j+1,k,bi,bj)*dSigmaDr(i,j+1)
-     &                  ) / (4.0 _d 0
-     &                    + maskC(i-1,j,k,bi,bj)
-     &                    + maskC(i+1,j,k,bi,bj)
-     &                    + maskC(i,j-1,k,bi,bj)
-     &                    + maskC(i,j+1,k,bi,bj)
-     &                      )
-C      Compute M^2 rho_0 / g on vertical interfaces
-              dSigmaH = sqrt(dSigmaDx(i,j) * dSigmaDx(i,j)
-     &                     + dSigmaDy(i,j) * dSigmaDy(i,j))
-              IF(dSigmaH > 0.0 _d 0) THEN
-                IF(abs(dSigmaR) > dSigmaH*recipMaxSlope) THEN
-                  Sloc = dSigmaH / abs(dSigmaR)
-                ELSE
-                  Sloc = abs(GM_maxSlope)
-                ENDIF
-                N2loc = abs(gravity * recip_rhoConst * dSigmaR)
-                SNloc = Sloc * sqrt(N2loc)
-              ELSE
-                SNloc = 0.0 _d 0
-              ENDIF
+              SNloc = SNloc3D(i,j,k)
               trd_ene_gen(i,j) = trd_ene_gen(i,j)
      &                         + GEOMK(i,j,k,bi,bj)
      &                         * SNloc * SNloc
@@ -586,8 +509,8 @@ C           form the RHS
           ENDDO
         ENDDO
 
-C       call exchange to make sure transmission occurs in mpi runs
-        _EXCH_XY_RL( ene_rhs_now , myThid )
+CMLC       call exchange to make sure transmission occurs in mpi runs
+CML        _EXCH_XY_RL( ene_rhs_now , myThid )
 
 C       third: time stepping
         select case(energy_init)
