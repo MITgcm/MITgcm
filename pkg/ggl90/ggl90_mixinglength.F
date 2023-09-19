@@ -354,7 +354,6 @@ C
       IF (useLANGMUIR) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
-CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
 #endif
        IF ( locMxlMaxFlag .EQ. 1 ) THEN
 
@@ -373,6 +372,9 @@ CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
 
        ELSEIF ( locMxlMaxFlag .EQ. 2 .OR. locMxlMaxFlag .EQ. 3 ) THEN
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
+#endif
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -394,11 +396,11 @@ CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
         STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
        ENDIF
 
+C--   Impose minimum mixing length to avoid division by zero
+       IF ( locMxlMaxFlag .EQ. 1 .OR. locMxlMaxFlag .EQ. 2 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
 #endif
-C--   Impose minimum mixing length to avoid division by zero
-       IF ( locMxlMaxFlag .EQ. 1 .OR. locMxlMaxFlag .EQ. 2 ) THEN
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
