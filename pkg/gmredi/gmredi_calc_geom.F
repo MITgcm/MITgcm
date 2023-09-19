@@ -74,12 +74,11 @@ C                       gen, adv, lap, dis
       _RL c_ros_u, fm_ui, fp_ui
 
 C     metric variables, computed once only
-      logical, save :: metric_init = .false.
-      _RL, save :: surface_area, domain_vol
-      _RL, save :: recip_depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL, save :: recip_depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL, save :: depthC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL, save :: depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL domain_vol
+      _RL recip_depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL recip_depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL depthC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
 C     general variables, overwritten every time step
       _RL :: energy_int, energy_avg
@@ -115,64 +114,31 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         recipMaxSlope = 1. _d 0 / GM_maxSlope
       ENDIF
 
-C--   TODO: do these not already exist and get passed round?
-C--   initialise some variables for calculations, only does it once
-      IF( .NOT. metric_init ) THEN
+C--   initialise some variables for calculations
 
-C       surface area
-        surface_area = 0.0 _d 0
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            surface_area = surface_area
-     &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                   * maskC(i,j,1,bi,bj)
-          ENDDO
-        ENDDO
+C     depths for doing depth-averaging
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        recip_depthW(i,j,bi,bj) = 0.0 _d 0
+        recip_depthS(i,j,bi,bj) = 0.0 _d 0
+        IF ( rLowW(i,j,bi,bj) .NE. 0. _d 0 )
+     &       recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
+        IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
+     &       recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
+        depthC(i,j)      = ABS(R_low(i,j,bi,bj))
+        depth_taper(i,j) = 0.0 _d 0
+       ENDDO
+      ENDDO
 
-C       domain volume
-        domain_vol = 0.0 _d 0
-        DO k=1,Nr
-          DO j=1,sNy
-            DO i=1,sNx
-              domain_vol = domain_vol
-     &                   + dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                   * drF(k) * hFacC(i,j,k,bi,bj)
-            ENDDO
-          ENDDO
-        ENDDO
-
-C       depths for doing depth-averaging
-        recip_depthW = 0.0 _d 0
-        recip_depthS = 0.0 _d 0
-        depthC = 0.0 _d 0
-
-        DO j=1-OLy, sNy+OLy
-         DO i=1-OLx, sNx+OLx
-          IF ( rLowW(i,j,bi,bj) .NE. 0. _d 0 )
-     &         recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
-          IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
-     &         recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
-          depthC(i,j) = ABS(R_low(i,j,bi,bj))
-         ENDDO
-        ENDDO
-
-C       temporary variable for depth tapering later
-        depth_taper = 0.0 _d 0
-
-        DO j=1-OLy+1,sNy+OLy-1
-          DO i=1-OLx+1,sNx+OLx-1
-            depth_taper(i,j) = (0.5 _d 0 *
-     &          (1.0 _d 0 - TANH(
-     &                (-depthC(i,j) + 800.0 _d 0) / 300.0 _d 0
-     &                          )
-     &          )
-     &                         ) ** 2
-          ENDDO
-        ENDDO
-
-        metric_init = .true.
-
-      ENDIF
+C     temporary variable for depth tapering later
+      DO j=1-OLy+1,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
+        depth_taper(i,j) = (0.5 _d 0 *
+     &       (1.0 _d 0 - TANH(
+     &       (-depthC(i,j) + 800.0 _d 0) / 300.0 _d 0
+     &       ) ) ) ** 2
+       ENDDO
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- TODO: potentially move the energy calculation into here given
@@ -325,7 +291,7 @@ C       Horizontal integral
      &                    * maskC(i,j,1,bi,bj)
           ENDDO
         ENDDO
-        SNloc_zint = SNloc / surface_area
+        SNloc_zint = SNloc / globalArea
       ENDIF
 
 C     work out the implied long Rossby phase speeds at T pts
@@ -377,7 +343,7 @@ C     include in the masking
      &                               )
           ENDIF
           IF(.not. ene_local) THEN
-            GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) / surface_area
+            GEOMK(i,j,1,bi,bj) = GEOMK(i,j,1,bi,bj) / globalArea
           ENDIF
         ENDDO
       ENDDO
@@ -700,16 +666,24 @@ C       estimate of domain AVERAGED energy
 C       (m2/s2, but done per tile via multiplication by the number of tiles)
         energy_avg = 0. _d 0
         IF(ene_local) THEN
-          DO j=1, sNy
-            DO i=1, sNx
-              energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
-     &                   * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-     &                   * maskC(i,j,1,bi,bj)
-            ENDDO
+         domain_vol = 0.0 _d 0
+         DO k=1,Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            domain_vol = domain_vol
+     &           + rA(i,j,bi,bj) * drF(k) * hFacC(i,j,k,bi,bj)
+           ENDDO
           ENDDO
-          energy_avg = energy_avg / domain_vol * (nPx * nPy)
+         ENDDO
+         DO j=1, sNy
+          DO i=1, sNx
+           energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
+     &          * rA(i,j,bi,bj) * maskC(i,j,1,bi,bj)
+          ENDDO
+         ENDDO
+         energy_avg = energy_avg / domain_vol * (nPx * nPy)
         ELSE
-          energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
+         energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
         ENDIF
 
         write(*,'(a,3(x,a,f11.5,a))') "GMREDI_CALC_GEOM: tile diag"
