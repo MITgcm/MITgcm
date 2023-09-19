@@ -75,9 +75,9 @@ C                       gen, adv, lap, dis
 
 C     metric variables, computed once only
       logical, save :: metric_init = .false.
-      _RL, save :: surface_area, domain_vol, max_depth
-      _RL, save :: depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL, save :: depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL, save :: surface_area, domain_vol
+      _RL, save :: recip_depthW(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL, save :: recip_depthS(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL, save :: depthC(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL, save :: depth_taper(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
@@ -131,7 +131,6 @@ C       surface area
 
 C       domain volume
         domain_vol = 0.0 _d 0
-        max_depth = 0.0 _d 0
         DO k=1,Nr
           DO j=1,sNy
             DO i=1,sNx
@@ -140,32 +139,21 @@ C       domain volume
      &                   * drF(k) * hFacC(i,j,k,bi,bj)
             ENDDO
           ENDDO
-          max_depth = max_depth + drF(k)
         ENDDO
 
 C       depths for doing depth-averaging
-        depthW = 0.0 _d 0
-        depthS = 0.0 _d 0
+        recip_depthW = 0.0 _d 0
+        recip_depthS = 0.0 _d 0
         depthC = 0.0 _d 0
 
-        DO k=1,Nr
-          DO j=1-OLy, sNy+OLy
-            DO i=1-OLx, sNx+OLx
-              depthW(i,j) = depthW(i,j) + drF(k) * hFacW(i,j,k,bi,bj)
-            ENDDO
-          ENDDO
-
-          DO j=1-OLy, sNy+OLy
-            DO i=1-OLx, sNx+OLx
-              depthS(i,j) = depthS(i,j) + drF(k) * hFacS(i,j,k,bi,bj)
-            ENDDO
-          ENDDO
-
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              depthC(i,j) = depthC(i,j) + drF(k) * hFacC(i,j,k,bi,bj)
-            ENDDO
-          ENDDO
+        DO j=1-OLy, sNy+OLy
+         DO i=1-OLx, sNx+OLx
+          IF ( rLowW(i,j,bi,bj) .NE. 0. _d 0 )
+     &         recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
+          IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
+     &         recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
+          depthC(i,j) = ABS(R_low(i,j,bi,bj))
+         ENDDO
         ENDDO
 
 C       temporary variable for depth tapering later
@@ -536,26 +524,18 @@ C ----  form the energy fluxes
 
 C       first: form the depth-AVG velocity
         DO k=Nr,2,-1
-          DO j=1-OLy, sNy+OLy
-            DO i=1-OLx+1, sNx+OLx
-              IF(maskW(i,j,k,bi,bj)*depthW(i,j) /= 0.0 _d 0) THEN
-                U_depth_avg(i, j) = U_depth_avg(i,j)
-     &                            + uVel(i,j,k,bi,bj) * drF(k)
-     &                            * hFacW(i,j,k,bi,bj)
-     &                            / depthW(i,j)
-              ENDIF
-            ENDDO
+         DO j=1-OLy, sNy+OLy
+          DO i=1-OLx+1, sNx+OLx
+           U_depth_avg(i, j) = U_depth_avg(i,j)
+     &                       + uVel(i,j,k,bi,bj) * drF(k)
+     &                       * hFacW(i,j,k,bi,bj)
+     &                       * recip_depthW(i,j)
+           V_depth_avg(i, j) = V_depth_avg(i,j)
+     &                       + vVel(i,j,k,bi,bj) * drF(k)
+     &                       * hFacS(i,j,k,bi,bj)
+     &                       * recip_depthS(i,j)
           ENDDO
-          DO j=1-OLy, sNy+OLy
-            DO i=1-OLx, sNx+OLx
-              IF(maskS(i,j,k,bi,bj)*depthS(i,j) /= 0.0 _d 0) THEN
-                V_depth_avg(i, j) = V_depth_avg(i,j)
-     &                            + vVel(i,j,k,bi,bj) * drF(k)
-     &                            * hFacS(i,j,k,bi,bj)
-     &                            / depthS(i,j)
-              ENDIF
-            ENDDO
-          ENDDO
+         ENDDO
         ENDDO
 
 C       second: form the tendencies
