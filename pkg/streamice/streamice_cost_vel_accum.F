@@ -6,10 +6,10 @@ c#endif
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_surf_accum ( myIter, myThid )
+      subroutine streamice_cost_vel_accum ( myIter, myThid )
 C     *==========================================================*
-C     | subroutine streamice_cost_surf_accum                     |
-C     | o this routine calculates the surface misfit contri-     |
+C     | subroutine streamice_cost_vel_accum                      |
+C     | o this routine calculates the velocity misfit contri-    |
 C     |   bution to the per-timestep STREAMICE cost              |
 C     *==========================================================*
 C     |                                                          |
@@ -20,10 +20,10 @@ C     *==========================================================*
 
 C     == Global variables ===
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
 #endif
@@ -47,22 +47,31 @@ C     == Local variables
       integer itlo,ithi
       integer jtlo,jthi
       integer il
-      CHARACTER*(10) myIterStr
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) surffilename, errsurffilename
-      _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL errsurfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL rhoi, rhow, r, i_r, i_numcells, surf_err, h, hf
+      CHARACTER*(MAX_LEN_FNAM) uvelfilename
+      CHARACTER*(MAX_LEN_FNAM) vvelfilename
+      CHARACTER*(MAX_LEN_FNAM) errvelfilename
+      CHARACTER*(10) myIterStr
+      _RL uvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL errvelobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL i_numcells, vel_err, uobs, vobs, verr
+
       WRITE(myIterStr,'(I10.10)') myIter
-      surffilename=STREAMICEsurfOptimTCBasename(1:
-     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//".bin"
-      errsurffilename=STREAMICEsurfOptimTCBasename(1:
-     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//"err.bin"
-      CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
-     &  0, myThid )
-      CALL READ_FLD_XY_RL( errsurffilename, ' ', errsurfobs,
-     &  0, myThid )
+
+      uvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"u.bin"
+      vvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"v.bin"
+      errvelfilename=STREAMICEvelOptimTCBasename(1:
+     & ILNBLNK(STREAMICEvelOptimTCBasename))//myIterStr//"err.bin"
+      CALL READ_FLD_XY_RL( uvelfilename, ' ', uvelobs,
+     &      0, myThid )
+      CALL READ_FLD_XY_RL( vvelfilename, ' ', vvelobs,
+     &      0, myThid )
+      CALL READ_FLD_XY_RL( errvelfilename, ' ', errvelobs,
+     &      0, myThid )
 
 c#ifdef ALLOW_AUTODIFF_TAMC
 cCADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
@@ -73,10 +82,6 @@ cCADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
 cCADJ &     kind = isbyte
 c#endif
 
-      rhoi = streamice_density
-      rhow = streamice_density_ocean_avg
-      r=rhoi/rhow
-      i_r = 1./r
       i_numcells = 1.0/(Nx*Ny)
 
 C--   Calculate cost function on tile of this instance
@@ -84,30 +89,27 @@ C--   Calculate cost function on tile of this instance
         DO bi=myBxLo(myThid),myBxHi(myThid)
           do j=1,sNy
             do i=1,sNx
-             if (SURFOBS(i,j,bi,bj).ge.-999990. .and.
-     &           streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
-             h = H_streamice(i,j,bi,bj)
-             hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
+             uobs = uvelobs(i,j,bi,bj)
+             vobs = vvelobs(i,j,bi,bj)
+             verr = errvelobs(i,j,bi,bj)
 
-              if (((h-hf) .gt. 5.) .OR.
-     &             STREAMICE_shelf_dhdt_ctrl) then
+             if (uobs.gt.-999990. .and. vobs.gt.-999990. .and.
+     &           verr.gt.-999990.) then
 
-               surf_err = streamice_wgt_surf * i_numcells *
-     &         (surf_el_streamice(i,j,bi,bj) -
-     &          surfobs(i,j,bi,bj))**2 /
-     &          (.001 + errSurfObs(i,j,bi,bj)**2)
+              vel_err = streamice_wgt_vel * i_numcells * (
+     &         (streamice_u_surf(i,j,bi,bj)-uobs)**2
+     &        +(streamice_v_surf(i,j,bi,bj)-vobs)**2)
+     &        /(1. + verr**2)
 
-               cost_func1_streamice (bi,bj) =
-     &         cost_func1_streamice (bi,bj) +
-     &              surf_err
-               cost_surf_streamice (bi,bj) =
-     &         cost_surf_streamice (bi,bj) +
-     &              surf_err
+              cost_func1_streamice (bi,bj) =
+     &        cost_func1_streamice (bi,bj) +
+     &              vel_err
+              cost_vel_streamice (bi,bj) =
+     &        cost_vel_streamice (bi,bj) +
+     &              vel_err
 
-              endif
-
-             endif
+             end if
 
             end do
           end do

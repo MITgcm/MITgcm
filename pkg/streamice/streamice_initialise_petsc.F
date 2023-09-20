@@ -28,7 +28,7 @@ C     SOLVES OF LINEAR SYSTEMS
 #endif
 
 C     !INPUT/OUTPUT ARGUMENTS
-      INTEGER myThid
+c     INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
 
@@ -40,4 +40,3 @@ C     !INPUT/OUTPUT ARGUMENTS
 #endif
       RETURN
       END
-
