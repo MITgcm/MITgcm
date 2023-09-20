@@ -77,7 +77,7 @@ end
 %- Oceanic example:
 %delR=[50 70 100 140 190 240 290 340 390 440 490 540 590 640 690]; % = delR in m
 delR=G.dRf;
-psiFac=1.e-6; g=1; % <- convert to Sv. [10^6 m3/s]
+psiFac=-1.e-6; g=1; % <- convert to Sv. [10^6 m3/s]
 
 %- compute the horizontal transport ut,vt :
 ut=reshape(uu,[nPg nr]); vt=reshape(vv,[nPg nr]);

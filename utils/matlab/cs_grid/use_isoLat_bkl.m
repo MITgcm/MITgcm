@@ -51,6 +51,8 @@ if krd > 1,
    load([lDir,bk_lineF]);
  end
  if krd == 3,
+%-- new method has not been applied yet to great-circle broken line:
+   error(' transport through great-circle line (krd=3) not supported here');
    bk_lineF='bkl_AB_cs32';
 %- load broken line (great-circle arc AB):
 % ab_Npts, ab_Flg, ab_IJuv, ab_Xsg, ab_Ysg
@@ -78,7 +80,7 @@ end
 %- Oceanic example:
 %delR=[50 70 100 140 190 240 290 340 390 440 490 540 590 640 690]; % = delR in m
 delR=G.dRf;
-psiFac=1.e-6; g=1; % <- convert to Sv. [10^6 m3/s]
+psiFac=-1.e-6; g=1; % <- convert to Sv. [10^6 m3/s]
 
 %- compute the horizontal transport ut,vt :
 ut=reshape(uu,[nPg nr]); vt=reshape(vv,[nPg nr]);
