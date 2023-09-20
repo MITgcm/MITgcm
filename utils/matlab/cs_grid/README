@@ -65,7 +65,7 @@ use_psiLine.m :: an example that uses "psiLine_N2S_cs32.mat" to compute & plot
 mk_isoLat_bkl.m :: define "broken-lines" as close to latitude-target vector
         "yLat", for computing Meridional Transport stream-function.
         => write matlab file: isoLat_${ydim}_cs32.mat (with ydim = length(yLat))
-use_bk_line.m :: an example that uses "isoLat_59_cs32.mat" to compute & plot
+use_isoLat_bkl.m :: an example that uses "isoLat_59_cs32.mat" to compute & plot
         Meridional Transport Stream-function.
 
 %--------------------------------------------------
