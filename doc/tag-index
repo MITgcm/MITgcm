@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - fix a bug in ALLOW_AUTODIFF_WHTAPEIO code with ALLOW_DIVIDED_ADJOINT ;
+  - refine grad-check + update output for AD test "lab_sea.noseaicedyn".
+
 checkpoint68s (2023/09/11)
 o verification:
   - change default ALLOW_IB_CORR (in pkg/ecco/ECCO_OPTIONS.h) to "#undef" and
