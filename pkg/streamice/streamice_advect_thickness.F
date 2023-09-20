@@ -35,10 +35,11 @@ C     === Global variables ===
 
 #ifdef ALLOW_STREAMICE
 
-      INTEGER i, j, bi, bj, Gi, Gj, k
-      _RL thick_bd, uflux, vflux, max_icfl, loc_icfl
+      INTEGER i, j, bi, bj, Gi, Gj
+      _RL uflux, vflux, max_icfl, loc_icfl
       _RL time_step_full, time_step_rem
       _RL sec_per_year, time_step_loc, MR, SMB, TMB, irho
+      _RL bdot_depth, bdot_max
       _RL BCVALX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BCVALY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS BCMASKX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -62,7 +63,9 @@ C     === Global variables ===
       PRINT *, "time_step_loc ", time_step_loc
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
+CADJ INIT loctape_stream_adv = COMMON, 1
+CADJ STORE area_shelf_streamice = loctape_stream_adv, key = 1
+CADJ STORE bdot_streamice       = loctape_stream_adv, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
@@ -73,6 +76,9 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       ENDDO
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
+#endif
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy+1
@@ -196,6 +202,14 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       _EXCH_XY_RL(hflux_x_SI,myThid)
       _EXCH_XY_RL(hflux_y_SI,myThid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE BCMASKx, BCMASKy= comlev1, key=ikey_dynamics
+CADJ STORE BCVALX, BCVALY  = comlev1, key=ikey_dynamics
+CADJ STORE utrans, vtrans  = comlev1, key=ikey_dynamics
+CADJ STORE streamice_hmask = comlev1, key=ikey_dynamics
+CADJ STORE H_streamice     = comlev1, key=ikey_dynamics
+#endif
+
 #ifndef ALLOW_AUTODIFF
 
       max_icfl = 1.e-20
@@ -272,13 +286,13 @@ CADJ STORE H_streamice  = comlev1, key=ikey_dynamics
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
+CADJ STORE h_after_uflux_SI = comlev1, key = ikey_dynamics
 #endif
 
-!      CALL STREAMICE_ADVECT_THICKNESS_Y ( myThid,
-!     O   hflux_y_SI,
-!     O   h_after_vflux_SI,
-!     I   time_step_loc )
+c      CALL STREAMICE_ADVECT_THICKNESS_Y ( myThid,
+c     O   hflux_y_SI,
+c     O   h_after_vflux_SI,
+c     I   time_step_loc )
 
       CALL STREAMICE_ADV_FLUX_FL_Y ( myThid ,
      I   vtrans ,
@@ -328,13 +342,19 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
        ENDDO
       ENDDO
 
-! NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
+c NOTE: AT THIS POINT H IS NOT VALID ON OVERLAP!!!
 
       if (streamice_move_front) then
       CALL STREAMICE_ADV_FRONT (
      &  myThid, time_step_loc,
      &  hflux_x_SI, hflux_y_SI )
       endif
+#ifdef ALLOW_AUTODIFF_TAMC
+C     These make calling S/R STREAMICE_ADV_FRONT in
+C     S/R STREAMICE_ADVECTION_THICKNESS_AD go away.
+CADJ STORE H_streamice            = comlev1, key=ikey_dynamics
+CADJ STORE streamice_hmask        = comlev1, key=ikey_dynamics
+#endif
 
 #ifdef ALLOW_STREAMICE_2DTRACER
       CALL STREAMICE_ADVECT_2DTRACER(
@@ -352,16 +372,20 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       enddo
 #endif /* ALLOW_AUTODIFF */
 
-! NOW WE APPLY MELT RATES !!
-! THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
+c NOW WE APPLY MELT RATES !!
+c THIS MAY BE MOVED TO A SEPARATE SUBROUTINE
       irho = 1./streamice_density
-
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
           Gi = (myXGlobalLo-1)+(bi-1)*sNx+i
           Gj = (myYGlobalLo-1)+(bj-1)*sNy+j
+#ifdef ALLOW_AUTODIFF
+C     Interestingly, this helps avoiding 10 recomputation warnings;
+C     hopefully it does not change results.
+          MR = 0. _d 0
+#endif
           IF (STREAMICE_hmask(i,j,bi,bj).eq.1.0 .or.
      &       STREAMICE_hmask(i,j,bi,bj).eq.2.0) THEN
 
@@ -375,9 +399,46 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
             STOP 'SHELFICE IS NOT ENABLED'
 #endif
            ELSE
-              MR = (1.-float_frac_streamice(i,j,bi,bj)) *
+
+              IF (STREAMICEBdotConfig.EQ.'FILE' ) THEN
+
+               MR = (1.-float_frac_streamice(i,j,bi,bj)) *
      &             (BDOT_STREAMICE(i,j,bi,bj) +
      &              BDOT_pert(i,j,bi,bj))
+
+              ELSEIF (STREAMICEBdotConfig.EQ.'PARAM') THEN
+
+               bdot_depth =
+     &            streamice_bdot_depth_maxmelt_v(i,j,bi,bj) +
+     &            streamice_bdot_depth_maxmelt
+
+               bdot_max =
+     &           streamice_bdot_maxmelt_v(i,j,bi,bj) +
+     &           streamice_bdot_maxmelt
+
+               IF (base_el_streamice(i,j,bi,bj) .lt.
+     &             streamice_bdot_depth_nomelt) THEN
+                IF (base_el_streamice(i,j,bi,bj) .lt.
+     &             bdot_depth) THEN
+                 MR = ABS(bdot_max)**streamice_bdot_exp
+                ELSE
+                 MR = (ABS((streamice_bdot_depth_nomelt-
+     &                 base_el_streamice(i,j,bi,bj)) /
+     &                (streamice_bdot_depth_nomelt-
+     &                 bdot_depth) *
+     &                 bdot_max))**streamice_bdot_exp
+                ENDIF
+               ELSE
+                 MR = 0.0
+               ENDIF
+               MR = (1.-float_frac_streamice(i,j,bi,bj)) *
+     &             (MR + BDOT_pert(i,j,bi,bj))
+               BDOT_STREAMICE(i,j,bi,bj) = MR
+              ELSE
+               MR = 0.
+               BDOT_STREAMICE(i,j,bi,bj) = MR
+              ENDIF
+
            ENDIF
 
            SMB = ADOT_STREAMICE(i,j,bi,bj)

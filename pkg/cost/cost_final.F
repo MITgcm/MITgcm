@@ -60,6 +60,10 @@ c     == end of interface ==
       IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
 #endif
 
+#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
+      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
+#endif
+
 #ifdef ALLOW_THSICE
       IF (useThSIce) CALL THSICE_COST_FINAL (myThid)
 #endif
