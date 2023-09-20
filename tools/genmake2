@@ -3229,6 +3229,7 @@ cat >>$MAKEFILE <<EOF
 TAPENADE_SUPPORT_C_SRC_FILES = \
 ${TAPTOOLS}/ADFirstAidKit/adStack.c \
 ${TAPTOOLS}/ADFirstAidKit/adBinomial.c
+${TAPTOOLS}/ADFirstAidKit/adFixedPoint.c
 EOF
 echo 'TAP_SUPPORT_OBJFILES = $(TAPENADE_SUPPORT_C_SRC_FILES:.c=.o)' >> $MAKEFILE
 fi

@@ -33,7 +33,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 
 C     LOCAL VARIABLES
 
-#ifdef ALLOW_STREAMICE_OAD_FP
+#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))       
       INTEGER i, j, k, l, bi, bj, loopiter
       INTEGER NL_iter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -103,6 +103,7 @@ C     LOCAL VARIABLES
 
        endif
 
+#ifdef ALLOW_STREAMICE_OAD_FP         
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
@@ -128,8 +129,19 @@ C     LOCAL VARIABLES
      O                   err_init,
      I                   isinloop0)
 #endif
+#endif      
 
+
+#ifdef ALLOW_STREAMICE_TAP_FP
+#ifdef STREAMICE_HYBRID_STRESS
+!$AD FP-LOOP "u_streamice,v_streamice,streamice_taubx,streamice_tauby,visc_streamice_full" adj_reduction=5.e-7
+#else
+!$AD FP-LOOP "u_streamice,v_streamice" adj_reduction=5.e-7      
+#endif      
+      DO WHILE (.not.CONVERGED)
+#else
       DO loopiter=1,maxNLIter
+#endif      
 
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
@@ -175,6 +187,7 @@ c      ENDDO
 
       ENDDO
 
+#ifdef ALLOW_STREAMICE_OAD_FP      
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_VEL_PHISTAGE (
      I                   myThid,
@@ -200,6 +213,7 @@ c      ENDDO
      O                   err_init,
      I                   isinloop2)
 #endif
+#endif      
 
 C END NL ITER. LOOP
 C-------------------------------------------------------------------

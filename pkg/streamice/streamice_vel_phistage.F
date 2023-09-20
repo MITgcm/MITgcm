@@ -62,7 +62,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       LOGICAL adj_CONVERGED
 #endif
 
-#ifdef ALLOW_STREAMICE_OAD_FP
+#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))       
 
 C     LOCAL VARIABLES
 
@@ -148,6 +148,6 @@ C!!!!!!!!!!! end conv check
         ENDIF
       ENDIF
 
-#endif /* ALLOW_STREAMICE_OAD_FP */
+#endif /* ALLOW_STREAMICE_OAD_FP) ||(ALLOW_STREAMICE_TAP_FP) */
       RETURN
       END

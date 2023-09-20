@@ -232,7 +232,7 @@ c     &     streamice_n_sub_regularize
 #endif
 c      INTEGER streamice_n_sub_regularize
 
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP))
       COMMON /STREAMICE_PARMS_I_OPENAD/
      &     isinloop0, isinloop1, isinloop2
 
@@ -1020,7 +1020,7 @@ C        velocity initial guess, so they are kept
 #endif
 
 #if (defined (ALLOW_STREAMICE_OAD_FP))
-      COMMON /STREAMICE_PHISTAGE_ARRS/
+      COMMON /STREAMICE_PHISTAGE_ADARRS/
      &      U_streamice_dvals,
      &      V_streamice_dvals
       _RL U_streamice_dvals
@@ -1029,7 +1029,7 @@ C        velocity initial guess, so they are kept
      & (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef STREAMICE_HYBRID_STRESS
-      COMMON /STREAMICE_PHISTAGE_ARRS_HYBRID/
+      COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
      & taubx_dvals, tauby_dvals,
      & visc_full_dvals,
      & taubx_new_si, tauby_new_si,
@@ -1042,6 +1042,16 @@ C        velocity initial guess, so they are kept
       _RL visc_full_dvals (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #endif
+
+#if (defined(ALLOW_STREAMICE_OAD_FP) || defined(ALLOW_STREAMICE_TAP_FP)) 
+#ifdef STREAMICE_HYBRID_STRESS
+      COMMON /STREAMICE_PHISTAGE_ADARRS_HYBRID/
+     & taubx_new_si, tauby_new_si,
+     & visc_full_new_si
+      _RL taubx_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif	
 
 #endif /* ALLOW_STREAMICE */
 

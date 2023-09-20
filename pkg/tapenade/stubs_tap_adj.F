@@ -1,4 +1,5 @@
 #include "CPP_EEOPTIONS.h"
+#include "TAPENADE_OPTIONS.h"      
 
       SUBROUTINE GLOBAL_MAX_R8_B(rhsmax, rhsmaxb, myThid)
       IMPLICIT NONE
@@ -114,3 +115,102 @@
       WRITE(*,*) "Called not yet defined"
       END
 
+      SUBROUTINE STREAMICE_CG_SOLVE_D(cg_uin, cg_uinb, cg_vin, cg_vinb,
+     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
+     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
+     &                                , a_vv, a_vvb, tolerance, iters,
+     &                                maxiter, mythid)
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+      INTEGER myThid
+      INTEGER iters
+      INTEGER maxIter
+      _RL tolerance
+      _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      _RL cg_Uinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      END
+
+
+      SUBROUTINE STREAMICE_CG_SOLVE_B(cg_uin, cg_uinb, cg_vin, cg_vinb,
+     &                                cg_bu, cg_bub, cg_bv, cg_bvb, a_uu
+     &                                , a_uub, a_uv, a_uvb, a_vu, a_vub
+     &                                , a_vv, a_vvb, tolerance, iters,
+     &                                maxiter, mythid)
+
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#ifdef ALLOW_STREAMICE
+#include "STREAMICE.h"
+#include "STREAMICE_CG.h"
+#endif
+
+      INTEGER myThid
+      INTEGER iters
+      INTEGER maxIter
+      _RL tolerance
+      _RL cg_Uin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vin (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vu (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+      _RL cg_Uinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Vinb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg_Bvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & A_uub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vub (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_uvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
+     & A_vvb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
+
+#ifdef ALLOW_STREAMICE
+
+      CALL ADSTREAMICE_CG_SOLVE(
+     U                               cg_Uin,    ! velocities - need to be recalc ed
+     I                               cg_Uinb,      ! adjoint of vel (input)
+     U                               cg_Vin,    ! velocities - need to be recalc ed
+     I                               cg_Vinb,      ! adjoint of vel (input)
+     I                               cg_Bu,   ! to recalc velocities
+     U                               cg_Bub,     ! adjoint of RHS (output)
+     I                               cg_Bv,   ! to recalc velocities
+     U                               cg_Bvb,     ! adjoint of RHS (output)
+     I                               A_uu,       ! section of matrix that multiplies u and projects on u
+     U                               A_uub,     ! adjoint of matrix coeffs (output)
+     I                               A_uv,       ! section of matrix that multiplies v and projects on u
+     U                               A_uvb,     ! adjoint of matrix coeffs (output)
+     I                               A_vu,       ! section of matrix that multiplies u and projects on v
+     U                               A_vub,     ! adjoint of matrix coeffs (output)
+     I                               A_vv,       ! section of matrix that multiplies v and projects on v
+     U                               A_vvb,     ! adjoint of matrix coeffs (output)
+     I                               tolerance,
+     I                               maxiter,
+     I                               myThid )
+#endif
+      END
