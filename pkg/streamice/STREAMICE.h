@@ -1052,6 +1052,7 @@ C        velocity initial guess, so they are kept
       _RL tauby_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL visc_full_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif	
+#endif
 
 #endif /* ALLOW_STREAMICE */
 

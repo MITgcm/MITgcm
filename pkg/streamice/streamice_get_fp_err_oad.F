@@ -25,7 +25,7 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-#if (defined (ALLOW_STREAMICE_OAD_FP))
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))      
       INTEGER conv_flag, i, j, bi, bj
 
       INTEGER ikey_nl

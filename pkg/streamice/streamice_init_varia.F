@@ -679,6 +679,7 @@ c     IT IS WRITTEN OVER IN FIRST TIMESTEP
 
 #if (defined (ALLOW_AUTODIFF))
 #ifndef ALLOW_STREAMICE_OAD_FP
+#ifndef ALLOW_STREAMICE_TAP_FP
 
        CALL STREAMICE_UPD_FFRAC_UNCOUPLED ( myThid )
        CALL STREAMICE_VELMASK_UPD (myThid)
@@ -690,6 +691,7 @@ c     IT IS WRITTEN OVER IN FIRST TIMESTEP
 
 #endif
 #endif
+#endif       
 
       CALL WRITE_FLD_XY_RL ( "C_basal_fric", "",
      & C_basal_friction, 0, myThid )

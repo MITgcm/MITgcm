@@ -70,9 +70,11 @@ C     cg_Bu, cg_Bv - driving stress
      & A_uv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1),
      & A_vv (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,-1:1,-1:1)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))
        LOGICAL create_mat, destroy_mat
 #endif
+#endif      
 
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_PETSC
@@ -202,9 +204,11 @@ c---------------
       call VecAssemblyBegin(solution, ierr)
       call VecAssemblyEnd(solution, ierr)
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))
 #ifdef ALLOW_PETSC
       if (STREAMICE_need2createmat) then
+#endif
 #endif
 #endif
 
@@ -409,11 +413,13 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
       END SELECT
 
       CALL TIMER_STOP ('STREAMICE_PETSC_SETUP',myThid)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))      
 #ifdef ALLOW_PETSC
       endif
 #endif
 #endif
+#endif      
 
       CALL TIMER_START ('STREAMICE_PETSC_SOLVE',myThid)
 
@@ -448,13 +454,17 @@ C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        ENDDO
       ENDDO
 
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))
       if (streamice_need2destroymat) then
 #endif
+#endif              
       call KSPDestroy (ksp, ierr)
       call MatDestroy (matrix, ierr)
-#if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
+#ifdef ALLOW_AUTODIFF
+#if (defined(ALLOW_STREAMICE_TAP_FP) || defined(ALLOW_STREAMICE_OAD_FP))      
       endif
+#endif      
 #endif
       call VecDestroy (rhs, ierr)
       call VecDestroy (solution, ierr)
