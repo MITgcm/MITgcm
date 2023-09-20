@@ -16,15 +16,15 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 # dumpAtLast   = .TRUE.,
-   fields(1:6,1) = 'SI_Uvel ','SI_Vvel ','SI_Thick',
-                 'SI_area ','SI_float','SI_selev'
+   fields(1:8,1) = 'SI_usurf','SI_vsurf','SI_Thick',
+                 'SI_hmask','SI_float','SI_selev'
 #                'SIheff  ','SIarea  ','SIhsnow ','SIatmFW ',
 #                'SHIForcT','SHIForcS',
 #                'surForcT','surForcS','TFLUX   ','SFLUX   ','oceFreez',
 #                 'TRELAX  ','SRELAX  ',
 #                'GM_VisbK',
    filename(1) = 'land_ice',
-  frequency(1) = 63072000,
+  frequency(1) = 63072000.,
 #                'GM_PsiX ','GM_PsiY ',
 #                'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
 #                'GM_Kux  ','GM_Kvy  ',
