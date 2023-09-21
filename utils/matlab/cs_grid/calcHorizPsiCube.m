@@ -68,6 +68,9 @@ for it = 1:nt
     utrs(:,it) = sum((dyg*delR).*hu(:,:,it),2);
     vtrs(:,it) = sum((dxg*delR).*hv(:,:,it),2);
 end
+%-- To use psiLine indices, put long-vector utrs,vtrs in "compact-format":
+utrs=reshape(permute(reshape(utrs,[nc 6 nc nt]),[1 3 2 4]),[nc*nc*6 nt]);
+vtrs=reshape(permute(reshape(vtrs,[nc 6 nc nt]),[1 3 2 4]),[nc*nc*6 nt]);
 
 % Compute barotropic stream function.  A little description of what the
 % variables are and how the computation is done would be nice.
@@ -104,7 +107,7 @@ for it = 1:nt
   % [nx ny nt]=size(temp); %- resetting "nt" to 1 inside loop it=1:nt is not great
   % temp=permute( reshape(temp,[nx/6 6 ny]),[1 3 2]);
  %-- now "long-vector" psiH is in "compact-format", no need to permute dims
-    temp  = reshape(psiH(1:end-2,it),[nc,nc,6]);
+    temp  = reshape(psiH(1:end-2,it),[nc nc 6]);
  %--- update ends here.
     temp(end+1,:,:)=NaN;
     temp(:,end+1,:)=NaN;
