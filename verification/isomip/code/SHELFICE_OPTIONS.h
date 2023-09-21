@@ -14,15 +14,22 @@ C     *==========================================================*
 #ifdef ALLOW_SHELFICE
 C     Package-specific Options & Macros go here
 
+C     New flags to be documented
 #define ALLOW_STEEP_ICECAVITY
-c#define ALLOW_SHITRANSCOEFF_3D
+#undef ALLOW_SHITRANSCOEFF_3D
 
 C     allow code for simple ISOMIP thermodynamics
 #define ALLOW_ISOMIP_TD
 
 C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
-#undef SHI_ALLOW_GAMMAFRICT
+#define SHI_ALLOW_GAMMAFRICT
+
+C     allow (vertical) remeshing whenever ocean top thickness factor
+C     exceeds thresholds
+#undef ALLOW_SHELFICE_REMESHING
+C     and allow to print message to STDOUT when this happens
+#define SHELFICE_REMESH_PRINT
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */

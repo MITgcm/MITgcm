@@ -35,6 +35,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       character*(max_len_mbuf) msgbuf
+      character*(1) ylocmask
       integer nnzbar
       integer nnzobs
       integer k
@@ -57,6 +58,11 @@ c     == end of interface ==
          ENDIF
 #endif
 
+         ylocmask = 'c'
+#ifdef ALLOW_SHELFICE
+         if ( gencost_name(k)(1:8).EQ.'shifwflx' ) ylocmask = 'i'
+#endif
+
          if ( .NOT.gencost_is3d(k) ) then
            nnzbar = 1
            nnzobs = 1
@@ -72,7 +78,7 @@ c     == end of interface ==
      &     nnzbar, gencost_barfile(k), gencost_dummy(k),
      &     nnzobs, gencost_datafile(k), gencost_errfile(k),
      &     mult_gencost(k), nrecloc, nrecperiodloc,
-     &     gencost_startdate(1,k), gencost_period(k), 'c',
+     &     gencost_startdate(1,k), gencost_period(k), ylocmask,
      &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
      &     gencost_preproc(1,k), gencost_preproc_c(1,k),
      &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),

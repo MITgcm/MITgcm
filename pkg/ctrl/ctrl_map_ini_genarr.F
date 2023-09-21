@@ -132,7 +132,7 @@ C--   generic 2D control variables
       igen_siarea=0
       igen_siheff=0
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
       igen_shiCoeffT=0
       igen_shiCoeffS=0
       igen_shiCDrag=0
@@ -160,7 +160,7 @@ C--   generic 2D control variables
         IF (temp_genarr_fnam(1:9).EQ.'xx_siheff')
      &     igen_siheff=iarr
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
 # ifndef SHI_ALLOW_GAMMAFRICT
         IF (temp_genarr_fnam(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
@@ -210,7 +210,7 @@ C--   generic 2D control variables
       IF (igen_siheff.GT.0)
      &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
 # ifndef SHI_ALLOW_GAMMAFRICT
       IF (igen_shiCoeffT.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
@@ -266,7 +266,7 @@ C--      u* drag coefficient
        ENDDO
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE and not ALLOW_SHITRANSCOEFF_3D */
 
 #ifdef ALLOW_STREAMICE
       IF (igen_bdot_max_streamice.GT.0) THEN
@@ -352,6 +352,13 @@ C--   generic 3D control variables
      &     igen_kapredi=iarr
         IF (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
      &     igen_diffkr=iarr
+#if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+# ifndef SHI_ALLOW_GAMMAFRICT
+        IF (xx_genarr3d_file(iarr)(1:17).EQ.'xx_shiTransCoeffT')
+     &     igen_shiCoeffT=iarr
+# endif
+#endif
+
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
         IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
      &     igen_uvel0=iarr
@@ -388,6 +395,10 @@ C--   generic 3D control variables
       IF (igen_diffkr.GT.0)
      &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
+#if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+      IF (igen_shiCoeffT.GT.0)
+     &  CALL CTRL_MAP_GENARR3D(shiTransCoeffT, igen_shiCoeffT, myThid)
+#endif
 
 # ifdef ALLOW_PTRACERS
 CADJ loop = parallel

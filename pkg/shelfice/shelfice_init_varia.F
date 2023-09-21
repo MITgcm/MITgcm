@@ -28,7 +28,7 @@ CEndOfInterface
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-      INTEGER i, j, bi, bj
+      INTEGER i, j, k, bi, bj
 CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -39,11 +39,29 @@ CEOP
            shelficeForcingS      (i,j,bi,bj) = 0. _d 0
            shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
            shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_STEEP_ICECAVITY
+           SHIICFHeatFlux        (I,J,bi,bj)      = 0. _d 0
+           SHIICFFreshWaterFlux  (I,J,bi,bj)      = 0. _d 0
+#endif
+#ifndef ALLOW_SHITRANSCOEFF_3D
            shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
            shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
+#endif
            shelficeMass          (i,j,bi,bj) = 0. _d 0
            shiCDragFld           (i,j,bi,bj) = 0. _d 0
            shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
+           DO k = 1, NR
+#ifdef ALLOW_SHITRANSCOEFF_3D
+            shiTransCoeffT     (i,j,k,bi,bj) = 0. _d 0
+            shiTransCoeffS     (i,j,k,bi,bj) = 0. _d 0
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+            iceFrontHeatFlux(i,j,k,bi,bj)       = 0. _d 0
+            iceFrontFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
+            iceFrontForcingT(i,j,k,bi,bj)       = 0. _d 0
+            iceFrontForcingS(i,j,k,bi,bj)       = 0. _d 0
+#endif
+           ENDDO
          ENDDO
         ENDDO
        ENDDO
@@ -58,15 +76,28 @@ C        Therefore, in this case, the "If useShelfIce" is added back here:
 
       IF ( .NOT. SHELFICEuseGammaFrict ) THEN
        IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
+#ifndef ALLOW_SHITRANSCOEFF_3D
         CALL READ_FLD_XY_RL( SHELFICETransCoeffTFile, ' ',
      &                       shiTransCoeffT, 0, myThid )
         _EXCH_XY_RL( shiTransCoeffT, myThid )
+#else
+        CALL READ_FLD_XYZ_RL( SHELFICETransCoeffTFile, ' ',
+     &                       shiTransCoeffT, 0, myThid )
+        _EXCH_XYZ_RL( shiTransCoeffT, myThid )
+#endif
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
+#ifndef ALLOW_SHITRANSCOEFF_3D
             shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltToHeatRatio *
      &                                  shiTransCoeffT(i,j,bi,bj)
+#else
+            DO k = 1, Nr
+            shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
+     &                                  shiTransCoeffT(i,j,k,bi,bj)
+            ENDDO
+#endif
            ENDDO
           ENDDO
          ENDDO
@@ -77,8 +108,15 @@ C     set coefficients to constant values
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
+#ifndef ALLOW_SHITRANSCOEFF_3D
             shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
             shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
+#else
+            DO k = 1, Nr
+             shiTransCoeffT(i,j,k,bi,bj) = SHELFICEheatTransCoeff
+             shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltTransCoeff
+            ENDDO
+#endif
            ENDDO
           ENDDO
          ENDDO

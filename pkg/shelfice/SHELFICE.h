@@ -49,6 +49,7 @@ C     SHELFICEsaltTransCoeff   :: constant salinity transfer coefficient that
 C                                 determines salt flux into shelfice
 C                                 (def: SHELFICEsaltToHeatRatio * SHELFICEheatTransCoeff)
 C     -----------------------------------------------------------------------
+C     SHELFICEuseSTIC          :: use steep ice cavity code (STIC)
 C     SHELFICEuseGammaFrict    :: use velocity dependent exchange coefficients,
 C                                 see Holland and Jenkins (1999), eq.11-18,
 C                                 with the following parameters (def: F):
@@ -87,6 +88,7 @@ C     SHELFICE_taveFreq        :: analoguous to taveFreq (= default)
 C
 C--   Fields
 C     kTopC                  :: index of the top "wet cell" (2D)
+C     K_icefront             :: index of the bottommost ice front cell (2D)
 C     R_shelfIce             :: shelfice topography [m]
 C     shelficeMassInit       :: ice-shelf mass (per unit area) (kg/m^2)
 C     shelficeMass           :: ice-shelf mass (per unit area) (kg/m^2)
@@ -117,9 +119,10 @@ C-----------------------------------------------------------------------
 C \ev
 CEOP
 
-      COMMON /SHELFICE_PARMS_I/  kTopC,
+      COMMON /SHELFICE_PARMS_I/  kTopC, K_icefront,
      &     SHELFICEselectDragQuadr
       INTEGER kTopC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER K_icefront (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER SHELFICEselectDragQuadr
 
       COMMON /SHELFICE_PARMS_R/
@@ -130,9 +133,12 @@ CEOP
      &     SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
+     &     SHELFICEsalinity,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
+     &     iceFrontThetaHorizDiffusionLength,
+     &     iceFrontThetaInterior,
      &     SHELFICEremeshFrequency,
      &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
@@ -152,12 +158,16 @@ CEOP
       _RL SHELFICEremeshFrequency
       _RL SHELFICEsplitThreshold
       _RL SHELFICEmergeThreshold
+      _RL SHELFICEsalinity
+      _RL iceFrontThetaHorizDiffusionLength
+      _RL iceFrontThetaInterior
 
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
      &     shiTransCoeffT, shiTransCoeffS,
+     &     iceFrontForcingT, iceFrontForcingS,
      &     shiCDragFld, shiDragQuadFld
 
       _RL shelficeMass          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -165,26 +175,74 @@ CEOP
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef ALLOW_SHITRANSCOEFF_3D
       _RL shiTransCoeffT        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiTransCoeffS        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+      _RL iceFrontForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL iceFrontForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL shiCDragFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiDragQuadFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,
      &     shelficeHeatFlux,
      &     shelfIceFreshWaterFlux,
-     &     shelfIceMassDynTendency
+     &     shelfIceMassDynTendency,
+     &     iceFrontHeatFlux, iceFrontFreshWaterFlux,
+     &     SHIICFHeatFlux, SHIICFFreshWaterFlux
       _RS R_shelfIce            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS shelficeFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS
      &   shelfIceMassDynTendency(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL
+     & iceFrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL
+     & iceFrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL SHIICFHeatFlux        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SHIICFFreshWaterFlux  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_CTRL
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_CTRL */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+C ow - 06/29/2018
+C ow - maskSHI above is not consistent with the spirit of gencost.
+C ow -   Use the following masks below instead.
+C ow - mask2dSHIICF: 2d shelf-ice & ice-front mask:
+C         1 for having shelf-ice and/or ice-front at one or more vertical levels
+C         and 0 otherwise.
+C      mask3dSHIICF: 3d shelf-ice & ice-front mask.
+C      mask2dSHI: 2d shelf-ice mask
+C      mask3dSHI: 3d shelf-ice mask
+C      mask2dICF: 2d ice-front mask: 1 for having ice-front at one or more vertical levels.
+C      mask3dICF: 3d ice-front mask
+      COMMON /STIC_MASKS/ mask2dSHIICF, mask3dSHIICF,
+     &        mask2dSHI, mask3dSHI, mask2dICF, mask3dICF
+      _RS mask2dSHIICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dSHIICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask2dSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask2dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+C ow - 07/23/2020
+C ow - CURI_ARR, CURJ_AA,
+C      CURI_ARR: i-index for neighboring ice-front points
+C      CURJ_ARR: j-index for neighboring ice-front points
+C      icefrontwidth_arr: ice-front width in meters
+      COMMON /STIC_ICEFRONT_I/CURI_ARR, CURJ_ARR
+      INTEGER CURI_ARR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
+      INTEGER CURJ_ARR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
+      COMMON /STIC_ICEFRONT_R/icefrontwidth_arr
+      _RL icefrontwidth_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_DIAGNOSTICS
       COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
@@ -193,6 +251,7 @@ CEOP
 #endif /* ALLOW_DIAGNOSTICS */
 
       LOGICAL SHELFICEisOn
+      LOGICAL SHELFICEuseSTIC
       LOGICAL useISOMIPTD
       LOGICAL SHELFICEconserve
       LOGICAL SHELFICEboundaryLayer
@@ -212,6 +271,7 @@ CEOP
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
+     &     SHELFICEuseSTIC,
      &     SHELFICEconserve,
      &     SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux,
@@ -239,5 +299,18 @@ CEOP
      &     SHELFICEtopoFile,
      &     SHELFICEMassDynTendFile,
      &     SHELFICETransCoeffTFile
+
+# ifdef ALLOW_STEEP_ICECAVITY
+      COMMON /ICEFRONT_FIELDS_RS/
+     &     R_icefront, icefrontlength
+      _RS R_icefront     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS icefrontlength (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif
+
+      CHARACTER*(MAX_LEN_FNAM) ICEFRONTlengthFile
+      CHARACTER*(MAX_LEN_FNAM) ICEFRONTdepthFile
+      COMMON /ICEFRONT_PARM_C/
+     &     ICEFRONTlengthFile,
+     &     ICEFRONTdepthFile
 
 #endif /* ALLOW_SHELFICE */

@@ -183,6 +183,28 @@ C-    Check that CPP option is "defined" when corresponding run-time parameter i
       ENDIF
 #endif /* ALLOW_ISOMIP_TD */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+# ifndef ALLOW_ADDFLUID
+       WRITE(msgBuf,'(A,A,A)')
+     &      'CPP flag ALLOW_STEEP_ICECAVITY requires'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A,A)')
+     &      'CPP flag ALLOW_ADDFLUID to be defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+# endif
+#else / ndef ALLOW_STEEP_ICECAVITY */
+      IF ( SHELFICEuseSTIC ) THEN
+       WRITE(msgBuf,'(A,A,A)')
+     &      'Run-time control flag SHELFICEuseSTIC was used'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A,A)')
+     &      'when CPP flag ALLOW_STEEP_ICECAVITY was unset'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
+
 #ifndef SHI_ALLOW_GAMMAFRICT
       IF ( SHELFICEuseGammaFrict ) THEN
        WRITE(msgBuf,'(A,A,A)')

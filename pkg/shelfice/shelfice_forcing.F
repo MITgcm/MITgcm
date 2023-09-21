@@ -94,6 +94,17 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        ENDDO
       ENDIF
 
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( SHELFICEuseSTIC ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+C--     TENDENCY FROM ICE FRONT
+         gT_arr(i,j) = gT_arr(i,j) + iceFrontForcingT(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+# endif /* ALLOW_STEEP_ICECAVITY */
+
 #endif /* ALLOW_SHELFICE */
       RETURN
       END
@@ -185,6 +196,17 @@ C                         }/[drF(k+1)*hFacC(k+1)]
         ENDDO
        ENDDO
       ENDIF
+
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( SHELFICEuseSTIC ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+C--     TENDENCY FROM ICE FRONT
+         gS_arr(i,j) = gS_arr(i,j) + iceFrontForcingS(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+# endif /* ALLOW_STEEP_ICECAVITY */
 
 #endif /* ALLOW_SHELFICE */
       RETURN

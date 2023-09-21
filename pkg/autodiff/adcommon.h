@@ -221,8 +221,13 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
       _RL adshelficemass    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshicdragfld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshidragquadfld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef ALLOW_SHITRANSCOEFF_3D
       _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
       COMMON /adSHELFICE_FIELDS_RL/ adshelficemass,
      &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
      &  adshitranscoeffs, adshicdragfld, adshidragquadfld

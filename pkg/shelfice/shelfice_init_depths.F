@@ -93,6 +93,37 @@ C--   Modify ocean upper boundary position according to ice-shelf topography
         STOP 'SHELFICE_INIT_DEPTHS: Missing code for P-coords'
       ENDIF
 
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( SHELFICEuseSTIC ) THEN
+C---- ICEFRONT BEGIN
+       IF ( ICEFRONTlengthFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RS( ICEFRONTlengthFile, ' ',
+     &       icefrontlength, 0, myThid )
+        _EXCH_XY_RS( icefrontlength, myThid )
+       ENDIF
+
+       IF ( ICEFRONTdepthFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RS( ICEFRONTdepthFile, ' ',
+     &       R_icefront, 0, myThid )
+        _EXCH_XY_RS( R_icefront, myThid )
+       ENDIF
+
+C     Make sure that R_icefront is positive
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO J = 1-OLy, sNy+OLy
+          DO I = 1-OLx, sNx+OLx
+           R_icefront(I,J,bi,bj) = ABS(R_icefront(I,J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C---- ICEFRONT END
+      ENDIF
+
+# endif /* ALLOW_STEEP_ICECAVITY */
+
 #endif /* ALLOW_SHELFICE */
 
       RETURN
