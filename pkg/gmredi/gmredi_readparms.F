@@ -60,11 +60,11 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Kmin_horiz,
      &          GM_Small_Number, GM_slopeSqCutoff,
      &          GM_Scrit, GM_Sd,
+     &          GM_isoFac_calcK,
      &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &          GM_UseBVP, GM_BVP_cMin, GM_BVP_ModeNumber,
      &          GM_useSubMeso, subMeso_Ceff, subMeso_invTau,
      &          subMeso_LfMin, subMeso_Lmax,
-     &          GM_useVarKforRedi,
      &          GM_Visbeck_alpha, GM_Visbeck_length,
      &          GM_Visbeck_depth,
      &          GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
@@ -101,7 +101,6 @@ C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
       GM_AdvSeparate      = .FALSE.
       GM_InMomAsStress    = .FALSE.
-      GM_useVarKforRedi   = .TRUE.
       GM_isopycK          = -999.
       GM_background_K     = 0. _d 0
       GM_maxSlope         = 1. _d -2
@@ -114,6 +113,7 @@ C--   Default values GM/Redi
       GM_maxTransLay      = 500.
       GM_Scrit            = 0.004 _d 0
       GM_Sd               = 0.001 _d 0
+      GM_isoFac_calcK     = 1. _d 0
       GM_MNC              = useMNC
       GM_iso2dFile        = ' '
       GM_iso1dFile        = ' '
@@ -209,9 +209,6 @@ C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
 C     Some constants
       GM_rMaxSlope = 0.
       if (GM_maxSlope.NE.0.) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
-
-      GM_varKredi = 0. _d 0
-      IF ( GM_useVarKforRedi ) GM_varKredi = 1. _d 0
 
       IF (GM_AdvForm) THEN
         GM_skewflx = 0.

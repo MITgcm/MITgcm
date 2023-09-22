@@ -18,8 +18,6 @@ C     GM_ExtraDiag     :: select extra diagnostics
 C     GM_InMomAsStress :: apply GM as a stress in momentum Eq.
 C     GM_MNC           ::
 C     GM_MDSIO         ::
-C     GM_useVarKforRedi  :: use dynamically computed variable K (e.g. Visbeck)
-C                           also for Redi tensor (default = .TRUE.)
 C     GM_useBatesK3d     :: use Bates etal (2014) calculation for 3-d K
 C     GM_Bates_beta_eq_0 :: Ignores the beta term when calculating grad(q)
 C     GM_Bates_ThickSheet:: Use a thick PV sheet
@@ -97,6 +95,8 @@ C     GM_Kmin_horiz    :: minimum horizontal diffusivity [m^2/s]
 C     GM_Small_Number  :: epsilon used in computing the slope
 C     GM_slopeSqCutoff :: slope^2 cut-off value
 C     GM_Scrit, GM_Sd  :: parameter for 'dm95' & 'ldd97' tapering fct
+C     GM_isoFac_calcK  :: add fraction of  dynamically computed variable K,
+C                         e.g. Visbeck, also to Redi tensor (default = 1.)
 C-    Transition layer thickness definition:
 C     GM_facTrL2dz   :: minimum Trans. Layer Thick. as a factor of local dz
 C     GM_facTrL2ML   :: maximum Trans. Layer Thick. as a factor of Mix-Layer Depth
@@ -135,6 +135,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Small_Number
       _RL GM_slopeSqCutoff
       _RL GM_Scrit, GM_Sd
+      _RL GM_isoFac_calcK
       _RL GM_facTrL2dz
       _RL GM_facTrL2ML
       _RL GM_maxTransLay
@@ -172,7 +173,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_maxSlope,
      &                 GM_Kmin_horiz,
      &                 GM_Small_Number, GM_slopeSqCutoff,
-     &                 GM_Scrit, GM_Sd,
+     &                 GM_Scrit, GM_Sd, GM_isoFac_calcK,
      &                 GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                 GM_BVP_cMin,
      &                 subMeso_Ceff, subMeso_invTau, subMeso_LfMin,
@@ -197,12 +198,11 @@ C     (derived from previous block and not directly user configured)
       _RL GM_rMaxSlope
       _RL GM_skewflx
       _RL GM_advect
-      _RL GM_varKredi
       _RL GM_BVP_rModeNumber
       _RL GM_BVP_cHat2Min
       COMMON /GM_DERIVED_PAR/
      &                   GM_rMaxSlope,
-     &                   GM_skewflx, GM_advect, GM_varKredi,
+     &                   GM_skewflx, GM_advect,
      &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
 
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients

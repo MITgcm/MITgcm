@@ -568,17 +568,17 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + GM_skewflx*bolus_K*GM_bolFac2d(i,j,bi,bj)
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
-     &           + VisbeckK(i,j,bi,bj)*(GM_varKredi + GM_skewflx)
+     &           + VisbeckK(i,j,bi,bj)*(GM_isoFac_calcK + GM_skewflx)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &           + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
      &                 + GM_LeithQG_K(i,j,k,bi,bj) )
-     &                *(GM_varKredi + GM_skewflx)
+     &                *(GM_isoFac_calcK + GM_skewflx)
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &           + op5*( GM_BatesK3d(i,j,km1,bi,bj)
      &                 + GM_BatesK3d(i,j,k,bi,bj) )
-     &                *(GM_varKredi + GM_skewflx)
+     &                *(GM_isoFac_calcK + GM_skewflx)
 #endif
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
@@ -755,15 +755,15 @@ c      IF ( GM_nonUnitDiag ) THEN
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*(GM_LeithQG_K(i-1,j,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &     + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
      &     )*taperFct(i,j)
          ENDDO
@@ -806,15 +806,17 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         *(GM_varKredi - GM_skewflx)
+     &         *(GM_isoFac_calcK - GM_skewflx)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
-     &           + GM_LeithQG_K(i,j,k,bi,bj) )*(GM_varKredi-GM_skewflx)
+     &           + GM_LeithQG_K(i,j,k,bi,bj) )
+     &         *(GM_isoFac_calcK-GM_skewflx)
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &     + op5*( GM_BatesK3d(i-1,j,k,bi,bj)
-     &           + GM_BatesK3d(i,j,k,bi,bj) )*(GM_varKredi - GM_skewflx)
+     &           + GM_BatesK3d(i,j,k,bi,bj) )
+     &         *(GM_isoFac_calcK-GM_skewflx)
 #endif
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -844,16 +846,16 @@ C         store in tmp1k Kuz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
      &            + GM_LeithQG_K(i,j,k,bi,bj) )
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &      + op5*(GM_BatesK3d(i-1,j,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
      &      )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -989,15 +991,15 @@ c      IF ( GM_nonUnitDiag ) THEN
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*(GM_LeithQG_K(i,j-1,k,bi,bj)+GM_LeithQG_K(i,j,k,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &     + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &         *GM_varKredi
+     &         *GM_isoFac_calcK
 #endif
      &     )*taperFct(i,j)
          ENDDO
@@ -1040,15 +1042,17 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         *(GM_varKredi - GM_skewflx)
+     &         *(GM_isoFac_calcK - GM_skewflx)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)
-     &           + GM_LeithQG_K(i,j,k,bi,bj) )*(GM_varKredi -GM_skewflx)
+     &           + GM_LeithQG_K(i,j,k,bi,bj) )
+     &          *(GM_isoFac_calcK-GM_skewflx)
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &     + op5*( GM_BatesK3d(i,j-1,k,bi,bj)
-     &           + GM_BatesK3d(i,j,k,bi,bj) )*(GM_varKredi - GM_skewflx)
+     &           + GM_BatesK3d(i,j,k,bi,bj) )
+     &          *(GM_isoFac_calcK-GM_skewflx)
 #endif
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
@@ -1078,16 +1082,16 @@ C         store in tmp1k Kvz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)
      &            + GM_LeithQG_K(i,j,k,bi,bj) )
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &      + op5*(GM_BatesK3d(i,j-1,k,bi,bj)+GM_BatesK3d(i,j,k,bi,bj))
-     &         * GM_varKredi
+     &         * GM_isoFac_calcK
 #endif
      &      )*SlopeY(i,j)*taperFct(i,j)
          ENDDO
@@ -1135,7 +1139,7 @@ C-- end 3rd  loop on vertical level index k
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
-     &        *GM_varKredi
+     &        *GM_isoFac_calcK
 #endif
      &                       )
         ENDDO
@@ -1151,7 +1155,7 @@ C-- end 3rd  loop on vertical level index k
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
-     &        *GM_varKredi
+     &        *GM_isoFac_calcK
 #endif
      &                       )
         ENDDO
