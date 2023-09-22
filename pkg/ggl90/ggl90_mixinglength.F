@@ -352,9 +352,9 @@ C
 C Langmuir circulation effect
 C
       IF (useLANGMUIR) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
-#endif
+# endif
        IF ( locMxlMaxFlag .EQ. 1 ) THEN
 
         DO k=2,Nr
@@ -372,9 +372,9 @@ CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 
        ELSEIF ( locMxlMaxFlag .EQ. 2 .OR. locMxlMaxFlag .EQ. 3 ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
-#endif
+# endif
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -398,9 +398,9 @@ CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
 
 C--   Impose minimum mixing length to avoid division by zero
        IF ( locMxlMaxFlag .EQ. 1 .OR. locMxlMaxFlag .EQ. 2 ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
-#endif
+# endif
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
@@ -411,7 +411,7 @@ CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
         ENDDO
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 
 #endif /* ALLOW_GGL90 */
