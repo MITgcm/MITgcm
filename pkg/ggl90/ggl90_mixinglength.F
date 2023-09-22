@@ -413,7 +413,6 @@ CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
       ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
 
-
 #endif /* ALLOW_GGL90 */
 
       RETURN
