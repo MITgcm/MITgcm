@@ -30,19 +30,14 @@
    fileName(2) = 'dynDiag',
   frequency(2) = 432000.,
 
-#  fields(1:6,3)  = 'GGL90TKE','GGL90Lmx','GGL90Kr ',
-#                   'GGL90ArU','GGL90ArV','GGL90Prl',
-#   fileName(3) = 'DiagMXL_3d',
-#  frequency(3) = -1200.,
+  fields(1:6,3)  = 'GGL90TKE','GGL90Lmx','GGL90Kr ',
+                   'GGL90ArU','GGL90ArV','GGL90Prl',
+   fileName(3) = 'DiagMXL_3d',
+  frequency(3) = 432000.,
 
-#  fields(1,4)  = 'MXLDEPTH',
-#   fileName(4) = 'DiagMXL_2d',
-#  frequency(4) = 432000.,
-
-  fields(1:4,5)  = 'UDIAG1  ','UDIAG2  ','UDIAG3  ','UDIAG4  ',
-   fileName(5) = 'DiagMXL_Dn',
-  frequency(5) = -1200.,
-#  frequency(5) = 432000.,
+  fields(1,4)  = 'MXLDEPTH',
+   fileName(4) = 'DiagMXL_2d',
+  frequency(4) = 432000.,
  &
 
 #--------------------

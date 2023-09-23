@@ -293,10 +293,6 @@ C     Impose minimum from downward sweep
          ENDDO
         ENDDO
        ENDDO
-#ifndef ALLOW_AUTODIFF
-       CALL DIAGNOSTICS_FILL(GGL90mixingLength,'UDIAG1  ',
-     &                        0,Nr,2,bi,bj,myThid)
-#endif
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
      &   'GGL90_MIXINGLENGTH: mxlMaxFlag=',
@@ -344,8 +340,6 @@ CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
         ENDDO
        ENDDO
       ENDIF
-
-
 
 #ifdef ALLOW_GGL90_LANGMUIR
 C
