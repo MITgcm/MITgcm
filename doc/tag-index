@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - simplify file name handling in ctrl_map_ini_gentim2d.F to please TAF (fixes
+    hs94.1x64x5 TL test) without upsetting Tapenade & OpenAD.
 o pkg/autodiff + ecco:
   - fix a typo in AD-var output file name (addummy_in_stepping.F);
   - fix and improve weight output in pkg/ecco/cost_generic.F
