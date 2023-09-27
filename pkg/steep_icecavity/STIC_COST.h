@@ -13,10 +13,10 @@ C \ev
 CEOP
 
 #ifdef ALLOW_COST
-      COMMON /STIC_COST_FIELDS_RL/ 
+      COMMON /STIC_COST_FIELDS_RL/
      &     cMeanSHIforT,
      &     cMeanSHIforS,
-     &     objf_stic 
+     &     objf_stic
       _RL cMeanSHIforT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cMeanSHIforS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL objf_stic(nSx,nSy)

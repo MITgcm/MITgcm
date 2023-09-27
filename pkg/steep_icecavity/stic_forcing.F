@@ -99,8 +99,8 @@ C                         }/[drF(k+1)*hFacC(k+1)]
 C--     TENDENCY FROM ICE FRONT
         gT_arr(i,j) = gT_arr(i,j) + iceFrontForcingT(i,j,kLev,bi,bj)
 
-C--     TENDENCY FROM ICE SHELF     
-        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN  
+C--     TENDENCY FROM ICE SHELF
+        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
          gT_arr(i,j) = gT_arr(i,j) + shelficeForcingT(i,j,bi,bj)
         ENDIF
        ENDDO
@@ -202,8 +202,8 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
         gS_arr(i,j) = gS_arr(i,j) + iceFrontForcingS(i,j,kLev,bi,bj)
-C--     TENDENCY FROM ICE SHELF     
-        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN  
+C--     TENDENCY FROM ICE SHELF
+        IF ( kLev .EQ. kTopC(I,J,bi,bj) ) THEN
          gS_arr(i,j) = gS_arr(i,j)  + shelficeForcingS(i,j,bi,bj)
         ENDIF
        ENDDO
