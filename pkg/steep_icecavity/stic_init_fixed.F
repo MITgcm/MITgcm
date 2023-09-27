@@ -441,9 +441,9 @@ C--   nonzero wet point below the shelf in the grid cell.
       ENDDO /* bj */
 
 c fill in the hilos
-      _EXCH_XY_RS (mask2dSHIICF    , myThid )
-      _EXCH_XY_RS (mask2dICF       , myThid )
-      _EXCH_XY_RS (mask2dSHI       , myThid )
+      _EXCH_XY_RS(mask2dSHIICF    , myThid )
+      _EXCH_XY_RS(mask2dICF       , myThid )
+      _EXCH_XY_RS(mask2dSHI       , myThid )
       _EXCH_XYZ_RS(mask3dSHIICF    , myThid )
       _EXCH_XYZ_RS(mask3dICF       , myThid )
       _EXCH_XYZ_RS(mask3dSHI       , myThid )
