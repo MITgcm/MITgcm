@@ -2,6 +2,9 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
