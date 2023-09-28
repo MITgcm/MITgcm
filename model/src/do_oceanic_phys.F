@@ -3,9 +3,6 @@
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -196,10 +193,10 @@ C     == Global variables ===
 c# ifdef ALLOW_KPP
 c#  include "KPP_PARAMS.h"
 c# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
 #endif /* ALLOW_TAPENADE */
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -452,37 +449,20 @@ CADJ STORE area              = comlev1, key=ikey_dynamics, kind=isbyte
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce .AND. fluidIsWater ) THEN
-#  ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE salt, theta       = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uvel, vvel        = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif
-# ifdef ALLOW_STEEP_ICECAVITY
-       IF ( SHELFICEuseSTIC ) THEN
-#  ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
-#  endif
+#endif
 C     compute temperature and (virtual) salt flux at the
 C     shelf-ice ocean interface
-        CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
-     &        myThid)
-        CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
-        CALL TIMER_STOP( 'STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+       CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
      &       myThid)
-       ELSE
-# else
-       IF ( .TRUE. ) THEN
-# endif /* ALLOW_STEEP_ICECAVITY */
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
-# endif
-C     compute temperature and (virtual) salt flux at the
-C     shelf-ice ocean interface
-        CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
-     &        myThid)
-        CALL SHELFICE_THERMODYNAMICS( myTime, myIter, myThid )
-        CALL TIMER_STOP( 'SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
-     &       myThid)
-       ENDIF
+       CALL SHELFICE_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &      myThid)
       ENDIF
 #endif /* ALLOW_SHELFICE */
 
