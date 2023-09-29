@@ -65,6 +65,7 @@ C     !LOCAL VARIABLES :
 C     === Local variables ===
 C     I,J,K,Kp1,bi,bj  :: loop counters
 C     tLoc, sLoc, pLoc :: local potential temperature, salinity, pressure
+C     gammaTLoc, gammaSLoc :: local heat and salt transfer coefficients
 C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
 C     freshWaterFlux   :: local variable for fresh water melt flux due
@@ -84,6 +85,8 @@ C     iceFrontWidth    :: the width of the ice front.  unit meters.
       _RL tLoc
       _RL sLoc
       _RL pLoc
+      _RL gammaTLoc
+      _RL gammaSLoc
 
       _RL uLoc(1-olx:snx+olx,1-oly:sny+oly)
       _RL vLoc(1-olx:snx+olx,1-oly:sny+oly)
@@ -349,16 +352,17 @@ C--   points of the ice front where the ice front is in contact with
 C--   open water.
                         pLoc = 0.5 _d 0 * ABS(wet_top_Z_N +
      &                    iceFrontWetContact_Z_max)
+#ifndef ALLOW_shiTransCoeff_3d
+                        gammaTLoc = shiTransCoeffT(CURI,CURJ,bi,bj)
+                        gammaSLoc = shiTransCoeffS(CURI,CURJ,bi,bj)
+#else
+                        gammaTLoc = shiTransCoeffT(CURI,CURJ,K,bi,bj)
+                        gammaSLoc = shiTransCoeffS(CURI,CURJ,K,bi,bj)
+#endif
 
                         CALL STIC_SOLVE4FLUXES(
      I                    tLoc, sLoc, pLoc,
-#ifndef ALLOW_shiTransCoeff_3d
-     I                    shiTransCoeffT(CURI,CURJ,bi,bj),
-     I                    shiTransCoeffS(CURI,CURJ,bi,bj),
-#else
-     I                    shiTransCoeffT(CURI,CURJ,K,bi,bj),
-     I                    shiTransCoeffS(CURI,CURJ,K,bi,bj),
-#endif
+     I                    gammaTLoc, gammaSLoc,
      I                    thermalConductionDistance,
      I                    thermalConductionTemp,
      O                    tmpHeatFlux, tmpFWFLX,
@@ -477,9 +481,11 @@ C--   I am assuming K is only .GT. when there is at least some
 C--   nonzero wet point below the shelf in the grid cell.
               IF (K .GT. 0) THEN
 C--   Initialize these values to zero
-                pLoc = 0 _d 0
-                tLoc = 0 _d 0
-                sLoc = 0 _d 0
+                pLoc = 0. _d 0
+                tLoc = 0. _d 0
+                sLoc = 0. _d 0
+                gammaTLoc = 0. _d 0
+                gammaSLoc = 0. _d 0
 
 C--   make local copies of temperature, salinity and depth
 C--   (pressure in deci-bar) underneath the ice
@@ -489,16 +495,16 @@ C--   base of the ice shelf, top of the cavity.
                 pLoc = ABS(R_shelfIce(I,J,bi,bj))
                 tLoc = theta(I,J,K,bi,bj)
                 sLoc = MAX(salt(I,J,K,bi,bj), zeroRL)
-
+#ifndef ALLOW_shiTransCoeff_3d
+                gammaTLoc = shiTransCoeffT(I,J,bi,bj)
+                gammaSLoc = shiTransCoeffS(I,J,bi,bj)
+#else
+                gammaTLoc = shiTransCoeffT(I,J,K,bi,bj)
+                gammaSLoc = shiTransCoeffS(I,J,K,bi,bj)
+#endif
                 CALL STIC_SOLVE4FLUXES(
      I            tLoc, sLoc, pLoc,
-#ifndef ALLOW_shiTransCoeff_3d
-     I            shiTransCoeffT(I,J,bi,bj),
-     I            shiTransCoeffS(I,J,bi,bj),
-#else
-     I            shiTransCoeffT(I,J,K,bi,bj),
-     I            shiTransCoeffS(I,J,K,bi,bj),
-#endif
+     I            gammaTLoc, gammaSLoc,
      I            pLoc, thermalConductionTemp,
      O            tmpHeatFlux, tmpFWFLX,
      O            tmpForcingT, tmpForcingS,
