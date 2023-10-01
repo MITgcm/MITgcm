@@ -34,6 +34,9 @@ C     == Global data ==
 c#include "DYNVARS.h"
 c#include "FFIELDS.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gT_arr    :: the tendency array
@@ -95,7 +98,7 @@ C                         }/[drF(k+1)*hFacC(k+1)]
       ENDIF
 
 # ifdef ALLOW_STEEP_ICECAVITY
-      IF ( SHELFICEuseSTIC ) THEN
+      IF ( useSTIC ) THEN
        DO j=1,sNy
         DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
@@ -138,6 +141,9 @@ C     == Global data ==
 c#include "DYNVARS.h"
 c#include "FFIELDS.h"
 #include "SHELFICE.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     gS_arr    :: the tendency array
@@ -198,7 +204,7 @@ C                         }/[drF(k+1)*hFacC(k+1)]
       ENDIF
 
 # ifdef ALLOW_STEEP_ICECAVITY
-      IF ( SHELFICEuseSTIC ) THEN
+      IF ( useSTIC ) THEN
        DO j=1,sNy
         DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT

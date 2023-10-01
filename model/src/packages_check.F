@@ -351,10 +351,9 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_STEEP_ICECAVITY
-      IF (useShelfIce) CALL STIC_CHECK( myThid )
+      IF (useSTIC) CALL STIC_CHECK( myThid )
 #else
-      IF (useShelfIce)
-     &          CALL PACKAGES_ERROR_MSG('STEEP_ICECAVITY',' ',myThid)
+      IF (useSTIC) CALL PACKAGES_ERROR_MSG('STEEP_ICECAVITY',' ',myThid)
 #endif
 
 #ifdef ALLOW_SMOOTH

@@ -1,6 +1,7 @@
 # Packages
  &PACKAGES
  useSHELFICE=.TRUE.,
+ useSTIC=.TRUE.,
 #useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,
  &

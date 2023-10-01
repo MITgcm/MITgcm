@@ -9,5 +9,3 @@ shelfice_thermodynamics.f
 shelfice_u_drag_coeff.f
 shelfice_v_drag_coeff.f
 shelfice_diagnostics_drag.f
-stic_thermodynamics.f
-stic_solve4fluxes.f

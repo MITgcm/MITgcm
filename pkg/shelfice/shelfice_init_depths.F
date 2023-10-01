@@ -94,34 +94,7 @@ C--   Modify ocean upper boundary position according to ice-shelf topography
       ENDIF
 
 # ifdef ALLOW_STEEP_ICECAVITY
-      IF ( SHELFICEuseSTIC ) THEN
-C---- ICEFRONT BEGIN
-       IF ( STIClengthFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RS( STIClengthFile, ' ',
-     &       sticfLength, 0, myThid )
-        _EXCH_XY_RS( sticfLength, myThid )
-       ENDIF
-
-       IF ( STICdepthFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RS( STICdepthFile, ' ',
-     &       R_stic, 0, myThid )
-        _EXCH_XY_RS( R_stic, myThid )
-       ENDIF
-
-C     Make sure that R_stic is positive
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-OLy, sNy+OLy
-          DO I = 1-OLx, sNx+OLx
-           R_stic(I,J,bi,bj) = ABS(R_stic(I,J,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-C---- ICEFRONT END
-      ENDIF
-
+      IF ( useSTIC ) CALL STIC_INIT_DEPTHS( myThid )
 # endif /* ALLOW_STEEP_ICECAVITY */
 
 #endif /* ALLOW_SHELFICE */

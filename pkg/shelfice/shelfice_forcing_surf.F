@@ -82,7 +82,7 @@ C-    just for consistent diagnostics, also reset Qnet:
          ENDDO
         ENDDO
 
-        IF ( .NOT. SHELFICEuseSTIC ) THEN
+        IF ( .NOT. useSTIC ) THEN
 C--   Forcing term
 
          IF ( .NOT.SHELFICEboundaryLayer ) THEN
@@ -110,7 +110,7 @@ c           ENDIF
            ENDDO
           ENDDO
          ENDIF
-C        .NOT. SHELFICEuseSTIC
+C        .NOT. useSTIC
         ENDIF
 
 #ifdef EXACT_CONSERV

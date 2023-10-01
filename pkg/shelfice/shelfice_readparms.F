@@ -59,10 +59,6 @@ CEOP
      &     SHELFICEtopoFile,
      &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
      &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
-#ifdef ALLOW_STEEP_ICECAVITY
-     &     SHELFICEuseSTIC,
-     &     STIClengthFile, STICdepthFile,
-#endif
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
@@ -107,11 +103,6 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEloadAnomalyFile  = ' '
       SHELFICEMassDynTendFile  = ' '
       SHELFICETransCoeffTFile  = ' '
-#ifdef ALLOW_STEEP_ICECAVITY
-      SHELFICEuseSTIC          = .FALSE.
-      STIClengthFile           = ' '
-      STICdepthFile            = ' '
-#endif
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0

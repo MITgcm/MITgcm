@@ -14,9 +14,8 @@ C     *==========================================================*
 #ifdef ALLOW_SHELFICE
 C     Package-specific Options & Macros go here
 
-C     New flags to be documented
-#define ALLOW_STEEP_ICECAVITY
-#undef ALLOW_SHITRANSCOEFF_3D
+C     New flag to be documented
+#define ALLOW_SHITRANSCOEFF_3D
 
 C     allow code for simple ISOMIP thermodynamics
 #define ALLOW_ISOMIP_TD

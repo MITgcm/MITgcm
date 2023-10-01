@@ -135,10 +135,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE shiTransCoeffS    = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-      IF ( SHELFICEuseSTIC ) THEN
-#  ifdef ALLOW_DEBUG
+      IF ( useSTIC ) THEN
+# ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
-#  endif
+# endif
 C     use alternative thermodynamics that includes icefront melt processes
        CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
      &        myThid)
@@ -146,28 +146,28 @@ C     use alternative thermodynamics that includes icefront melt processes
        CALL TIMER_STOP( 'STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
      &       myThid)
       ELSE
-# else
+#else
       IF ( .TRUE. ) THEN
-# endif /* ALLOW_STEEP_ICECAVITY */
+#endif /* ALLOW_STEEP_ICECAVITY */
 #ifdef SHI_ALLOW_GAMMAFRICT
 #ifdef ALLOW_AUTODIFF
 C     re-initialize here again, curtesy to TAF
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-# ifndef ALLOW_SHITRANSCOEFF_3D
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
-          shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
-         ENDDO
-        ENDDO
-# else
+# ifdef ALLOW_SHITRANSCOEFF_3D
         DO k = 1,Nr
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            shiTransCoeffT(i,j,k,bi,bj) = SHELFICEheatTransCoeff
            shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltTransCoeff
           ENDDO
+         ENDDO
+        ENDDO
+# else
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
+          shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
          ENDDO
         ENDDO
 # endif
@@ -512,15 +512,15 @@ C            gammaTurb = MAX(0.D0, gammaTurb)
             ELSE
              gammaTurb = gammaTurbConst
             ENDIF
-#ifndef ALLOW_SHITRANSCOEFF_3D
-            shiTransCoeffT(i,j,bi,bj) = MAX( zeroRL,
-     &           ustar/(gammaTurb + gammaTmoleT) )
-            shiTransCoeffS(i,j,bi,bj) = MAX( zeroRL,
-     &           ustar/(gammaTurb + gammaTmoleS) )
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
             shiTransCoeffT(i,j,k,bi,bj) = MAX( zeroRL,
      &           ustar/(gammaTurb + gammaTmoleT) )
             shiTransCoeffS(i,j,k,bi,bj) = MAX( zeroRL,
+     &           ustar/(gammaTurb + gammaTmoleS) )
+#else
+            shiTransCoeffT(i,j,bi,bj) = MAX( zeroRL,
+     &           ustar/(gammaTurb + gammaTmoleT) )
+            shiTransCoeffS(i,j,bi,bj) = MAX( zeroRL,
      &           ustar/(gammaTurb + gammaTmoleS) )
 #endif
            ENDIF
@@ -531,15 +531,15 @@ C            gammaTurb = MAX(0.D0, gammaTurb)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
-#  ifndef ALLOW_SHITRANSCOEFF_3D
-CADJ STORE shiTransCoeffS(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ikey, byte=isbyte
-CADJ STORE shiTransCoeffT(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key=ikey, byte=isbyte
-#  else
+#  ifdef ALLOW_SHITRANSCOEFF_3D
 CADJ STORE shiTransCoeffS(:,:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ikey, byte=isbyte
 CADJ STORE shiTransCoeffT(:,:,:,bi,bj) = comlev1_bibj,
+CADJ &     key=ikey, byte=isbyte
+#  else
+CADJ STORE shiTransCoeffS(:,:,bi,bj) = comlev1_bibj,
+CADJ &     key=ikey, byte=isbyte
+CADJ STORE shiTransCoeffT(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ikey, byte=isbyte
 #  endif
 # endif /* SHI_ALLOW_GAMMAFRICT */
@@ -556,10 +556,10 @@ C--   Calculate freezing temperature as a function of salinity and pressure
      &           + b*pLoc(I,J) + c0
 C--   Calculate the upward heat and  fresh water fluxes
             shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj)
-#ifndef ALLOW_SHITRANSCOEFF_3D
-     &           * shiTransCoeffT(i,j,bi,bj)
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
      &           * shiTransCoeffT(i,j,k,bi,bj)
+#else
+     &           * shiTransCoeffT(i,j,bi,bj)
 #endif
      &           * ( tLoc(I,J) - thetaFreeze )
      &           * HeatCapacity_Cp*rUnit2mass
@@ -610,16 +610,16 @@ C     (Holland and Jenkins, 1999, eq.21)
             fwflxFac    = 0. _d 0
             IF ( tLoc(I,J) .GT. thetaFreeze ) fwflxFac = dFac
 C     a few abbreviations
-#ifndef ALLOW_SHITRANSCOEFF_3D
-            eps1 = rUnit2mass*HeatCapacity_Cp
-     &           *shiTransCoeffT(i,j,bi,bj)
-            eps2 = rUnit2mass*SHELFICElatentHeat
-     &           *shiTransCoeffS(i,j,bi,bj)
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
             eps1 = rUnit2mass*HeatCapacity_Cp
      &           *shiTransCoeffT(i,j,k,bi,bj)
             eps2 = rUnit2mass*SHELFICElatentHeat
      &           *shiTransCoeffS(i,j,k,bi,bj)
+#else
+            eps1 = rUnit2mass*HeatCapacity_Cp
+     &           *shiTransCoeffT(i,j,bi,bj)
+            eps2 = rUnit2mass*SHELFICElatentHeat
+     &           *shiTransCoeffS(i,j,bi,bj)
 #endif
 
 C     solve quadratic equation for salinity at shelfice-ocean interface
@@ -637,10 +637,10 @@ C     code of typ (pLoc-const)/pLoc
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
             eps8 = rUnit2mass*SHELFICEheatCapacity_Cp
-#ifndef ALLOW_SHITRANSCOEFF_3D
-     &           *shiTransCoeffS(i,j,bi,bj) * fwflxFac
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
      &           *shiTransCoeffS(i,j,k,bi,bj) * fwflxFac
+#else
+     &           *shiTransCoeffS(i,j,bi,bj) * fwflxFac
 #endif
             aqe = a0  *(eps1+eps3-eps8)
             recip_aqe = 0. _d 0
@@ -694,10 +694,10 @@ cph            freshWaterFlux = rUnit2mass
 cph     &           * shiTransCoeffS(i,j,bi,bj)
 cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
             freshWaterFlux = rUnit2mass
-#ifndef ALLOW_SHITRANSCOEFF_3D
-     &           * shiTransCoeffS(i,j,bi,bj)
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
      &           * shiTransCoeffS(i,j,k,bi,bj)
+#else
+     &           * shiTransCoeffS(i,j,bi,bj)
 #endif
      &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -717,20 +717,20 @@ C--   compute surface tendencies
 C--   DNG: correction to use cell value for flux rather than BL values
 C--        in order to conserve salt and temp even with real FW Flux
             shelficeForcingT(i,j,bi,bj) =
-#ifndef ALLOW_SHITRANSCOEFF_3D
-     &           ( shiTransCoeffT(i,j,bi,bj)
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
      &           ( shiTransCoeffT(i,j,k,bi,bj)
+#else
+     &           ( shiTransCoeffT(i,j,bi,bj)
 #endif
      &           - cFac*freshWaterFlux*mass2rUnit
      &           )*( thetaFreeze - tLoc(I,J) )
      &           - rFWinBL*freshWaterFlux*mass2rUnit
      &            *( tLoc(I,J) - theta(I,J,K,bi,bj) )
             shelficeForcingS(i,j,bi,bj) =
-#ifndef ALLOW_SHITRANSCOEFF_3D
-     &           ( shiTransCoeffS(i,j,bi,bj)
-#else
+#ifdef ALLOW_SHITRANSCOEFF_3D
      &           ( shiTransCoeffS(i,j,k,bi,bj)
+#else
+     &           ( shiTransCoeffS(i,j,bi,bj)
 #endif
      &           - cFac*freshWaterFlux*mass2rUnit
      &           )*( saltFreeze - sLoc(I,J) )
@@ -769,16 +769,16 @@ C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
        CALL DIAGNOSTICS_SCALE_FILL(shelficeForcingS,tmpFac,1,
      &      'SHIForcS',0,1,0,1,1,myThid)
 C     Transfer coefficients
-#ifndef ALLOW_SHITRANSCOEFF_3D
+#ifdef ALLOW_SHITRANSCOEFF_3D
        CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',
-     &      0,1,0,1,1,myThid)
+     &      0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
-     &      0,1,0,1,1,myThid)
+     &      0,Nr,0,1,1,myThid)
 #else
        CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',
-     &      0,Nr,0,1,1,myThid)
+     &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
-     &      0,Nr,0,1,1,myThid)
+     &      0,1,0,1,1,myThid)
 #endif
 
 C     Friction velocity
@@ -795,7 +795,7 @@ C     Friction velocity
 #endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-C     not SHELFICEuseSTIC
+C     not useSTIC
       ENDIF
 
 #endif /* ALLOW_SHELFICE */

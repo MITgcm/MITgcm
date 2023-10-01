@@ -132,7 +132,7 @@ C--   generic 2D control variables
       igen_siarea=0
       igen_siheff=0
 #endif
-#if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
+#ifdef ALLOW_SHELFICE
       igen_shiCoeffT=0
       igen_shiCoeffS=0
       igen_shiCDrag=0

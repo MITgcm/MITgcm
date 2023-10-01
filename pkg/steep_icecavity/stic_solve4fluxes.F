@@ -1,4 +1,7 @@
-#include "SHELFICE_OPTIONS.h"
+#include "STIC_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -35,8 +38,10 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "SHELFICE.h"
-#include "SHELFICE_COST.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
+#include "STIC.h"
 #ifdef ALLOW_AUTODIFF
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
@@ -77,7 +82,6 @@ C----------
       character*200 msgBuf
 CEOP
 
-#ifdef ALLOW_STEEP_ICECAVITY
 #ifndef ALLOW_OPENAD
       _RL SW_TEMP
       EXTERNAL SW_TEMP
@@ -311,7 +315,5 @@ C--   are the turbulent fluxes.
      &                       SQUEEZE_RIGHT , 1)
       ENDIF
 
-
-#endif /* ALLOW_STEEP_ICECAVITY */
       RETURN
       END
