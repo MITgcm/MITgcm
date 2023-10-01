@@ -264,12 +264,12 @@ C--  ICEFRONT parameters (BEGIN)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J = 1-OLy, sNy+OLy
          DO I = 1-OLx, sNx+OLx
-          K_icefront(i,j,bi,bj) = 0
+          kIcf(i,j,bi,bj) = 0
           DO K = 1 , Nr
            IF ( R_icefront(I,J,bi,bj) .GT. ABS(rF(K)))
-     &          K_icefront(I,J,bi,bj) = K
+     &          kIcf(I,J,bi,bj) = K
           ENDDO
-          fK_icefront(i,j,bi,bj) = 0.+K_icefront(i,j,bi,bj)
+          fK_icefront(i,j,bi,bj) = FLOAT(kIcf(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -290,7 +290,7 @@ C--   process ice fronts in k, then process ice shelf.
             DO I = 1-OLx+1,sNx+OLx-1
 
 C--   The K index where the ice front ends (0 if no ice front)
-              FRONT_K = K_icefront(I,J,bi,bj)
+              FRONT_K = kIcf(I,J,bi,bj)
 
 C--   If there is an ice front at this (I,J) continue
               IF (FRONT_K .GT. 0) THEN

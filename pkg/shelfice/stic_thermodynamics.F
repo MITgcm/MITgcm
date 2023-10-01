@@ -233,7 +233,7 @@ C--   process ice fronts in k, then process ice shelf.
 #endif
 
 C--   The K index where the ice front ends (0 if no ice front)
-              FRONT_K = K_icefront(I,J,bi,bj)
+              FRONT_K = kIcf(I,J,bi,bj)
 
 C--   If there is an ice front at this (I,J) continue
               IF (FRONT_K .GT. 0) THEN

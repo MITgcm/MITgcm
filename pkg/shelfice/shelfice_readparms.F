@@ -48,7 +48,6 @@ CEOP
      &     no_slip_shelfice, SHELFICEDragLinear,
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface, SHELFICEsalinity,
-     &     SHELFICEuseSTIC,
      &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
@@ -60,7 +59,10 @@ CEOP
      &     SHELFICEtopoFile,
      &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
      &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
+#ifdef ALLOW_STEEP_ICECAVITY
+     &     SHELFICEuseSTIC,
      &     ICEFRONTlengthFile, ICEFRONTdepthFile,
+#endif
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
@@ -94,7 +96,6 @@ C internal flag to indicate we are in business
 
 C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
-      SHELFICEuseSTIC          = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
       SHI_withBL_realFWflux    = .FALSE.
@@ -106,8 +107,11 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEloadAnomalyFile  = ' '
       SHELFICEMassDynTendFile  = ' '
       SHELFICETransCoeffTFile  = ' '
+#ifdef ALLOW_STEEP_ICECAVITY
+      SHELFICEuseSTIC          = .FALSE.
       ICEFRONTlengthFile       = ' '
       ICEFRONTdepthFile        = ' '
+#endif
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0
