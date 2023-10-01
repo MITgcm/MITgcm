@@ -99,7 +99,7 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        DO j=1,sNy
         DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
-         gT_arr(i,j) = gT_arr(i,j) + iceFrontForcingT(i,j,kLev,bi,bj)
+         gT_arr(i,j) = gT_arr(i,j) + icfForcingT(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -202,7 +202,7 @@ C                         }/[drF(k+1)*hFacC(k+1)]
        DO j=1,sNy
         DO i=1,sNx
 C--     TENDENCY FROM ICE FRONT
-         gS_arr(i,j) = gS_arr(i,j) + iceFrontForcingS(i,j,kLev,bi,bj)
+         gS_arr(i,j) = gS_arr(i,j) + icfForcingS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF

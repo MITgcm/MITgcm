@@ -97,7 +97,7 @@ C-----------------------------------------------------------------------
           shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
           shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_STEEP_ICECAVITY
-          icefrontlength     (i,j,bi,bj) = 0. _d 0
+          sticfLength        (i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO
@@ -163,7 +163,7 @@ C ow - the vertical, then mask2dSHI at i,j is one.
              DO SI = 1,4
                 CURI_ARR(I,J,bi,bj,SI) = -9999
                 CURJ_ARR(I,J,bi,bj,SI) = -9999
-                icefrontwidth_arr(I,J,bi,bj,SI) = 0. _d 0
+                sticfWidth_arr(I,J,bi,bj,SI) = 0. _d 0
              ENDDO /* SI */
           ENDDO /* I */
         ENDDO /* J */
@@ -266,8 +266,7 @@ C--  ICEFRONT parameters (BEGIN)
          DO I = 1-OLx, sNx+OLx
           kIcf(i,j,bi,bj) = 0
           DO K = 1 , Nr
-           IF ( R_icefront(I,J,bi,bj) .GT. ABS(rF(K)))
-     &          kIcf(I,J,bi,bj) = K
+           IF ( R_stic(I,J,bi,bj) .GT. ABS(rF(K))) kIcf(I,J,bi,bj) = K
           ENDDO
           fK_icefront(i,j,bi,bj) = FLOAT(kIcf(i,j,bi,bj))
          ENDDO
@@ -331,7 +330,7 @@ C--   Looking to south
 
                     CURI_ARR(I,J,bi,bj,SI) = CURI
                     CURJ_ARR(I,J,bi,bj,SI) = CURJ
-                    iceFrontWidth_arr(I,J,bi,bj,SI) = iceFrontWidth
+                    sticfWidth_arr(I,J,bi,bj,SI) = iceFrontWidth
 
 C--                 cell depth describes the average distance
 C--                 perpendicular to the ice front fact
@@ -463,8 +462,8 @@ C output the masks
       CALL WRITE_FLD_XYZ_RS( 'mask3dSHI',' ',mask3dSHI, 0,myThid)
       CALL WRITE_FLD_XY_RS( 'mask2dICF',' ',mask2dICF,-1,myThid)
       CALL WRITE_FLD_XYZ_RS( 'mask3dICF',' ',mask3dICF, 0,myThid)
-      CALL WRITE_FLD_XY_RS( 'R_icefront',' ',R_icefront,-1,myThid)
-      CALL WRITE_FLD_XY_RS( 'K_icefront',' ',fK_icefront,-1,myThid)
+      CALL WRITE_FLD_XY_RS( 'R_stic',' ',R_stic,-1,myThid)
+      CALL WRITE_FLD_XY_RS( 'kIcf',' ',fK_icefront,-1,myThid)
       ENDIF
 #endif /* ALLOW_STEEP_ICECAVITY */
 

@@ -40,8 +40,8 @@ CEOP
            shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
            shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_STEEP_ICECAVITY
-           SHIICFHeatFlux        (I,J,bi,bj)      = 0. _d 0
-           SHIICFFreshWaterFlux  (I,J,bi,bj)      = 0. _d 0
+           sticfHeatFlux         (i,j,bi,bj) = 0. _d 0
+           sticfFreshWaterFlux   (i,j,bi,bj) = 0. _d 0
 #endif
 #ifndef ALLOW_SHITRANSCOEFF_3D
            shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
@@ -56,10 +56,10 @@ CEOP
             shiTransCoeffS     (i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef ALLOW_STEEP_ICECAVITY
-            iceFrontHeatFlux(i,j,k,bi,bj)       = 0. _d 0
-            iceFrontFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
-            iceFrontForcingT(i,j,k,bi,bj)       = 0. _d 0
-            iceFrontForcingS(i,j,k,bi,bj)       = 0. _d 0
+            icfHeatFlux        (i,j,k,bi,bj) = 0. _d 0
+            icfFreshWaterFlux  (i,j,k,bi,bj) = 0. _d 0
+            icfForcingT        (i,j,k,bi,bj) = 0. _d 0
+            icfForcingS        (i,j,k,bi,bj) = 0. _d 0
 #endif
            ENDDO
          ENDDO

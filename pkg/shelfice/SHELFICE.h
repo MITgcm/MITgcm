@@ -252,27 +252,27 @@ CEOP
 
 #ifdef ALLOW_STEEP_ICECAVITY
 C--   Constants that can be set in data.shelfice
-C     iceFrontThetaHorizDiffusionLength ::
-C     iceFrontThetaInterior  ::
-C     ICEFRONTdepthFile      :: name of icefront depth file (m)
-C                               2D file containing depth of the ice front
-C                               at each model grid cell
-C     ICEFRONTlengthFile     :: name of icefront length file (m/m^2)
-C                               2D file containing the ratio of the horizontal
-C                               length of the ice front in each model grid cell
-C                               divided by the grid cell area
+C     icfThetaHorizDiffusionLength ::
+C     icfThetaInterior  ::
+C     STICdepthFile     :: name of icefront depth file (m)
+C                          2D file containing depth of the ice front
+C                          at each model grid cell
+C     STIClengthFile    :: name of icefront length file (m/m^2)
+C                          2D file containing the ratio of the horizontal
+C                          length of the ice front in each model grid cell
+C                          divided by the grid cell area
 
       COMMON /STIC_PARMS_R/
-     &     iceFrontThetaHorizDiffusionLength,
-     &     iceFrontThetaInterior
-      _RL iceFrontThetaHorizDiffusionLength
-      _RL iceFrontThetaInterior
+     &     icfThetaHorizDiffusionLength,
+     &     icfThetaInterior
+      _RL icfThetaHorizDiffusionLength
+      _RL icfThetaInterior
 
-      CHARACTER*(MAX_LEN_FNAM) ICEFRONTlengthFile
-      CHARACTER*(MAX_LEN_FNAM) ICEFRONTdepthFile
+      CHARACTER*(MAX_LEN_FNAM) STIClengthFile
+      CHARACTER*(MAX_LEN_FNAM) STICdepthFile
       COMMON /STIC_PARM_C/
-     &     ICEFRONTlengthFile,
-     &     ICEFRONTdepthFile
+     &     STIClengthFile,
+     &     STICdepthFile
 
 C     ow - 06/29/2018
 C     maskSHI of pkg/shelflice is not consistent with the spirit of gencost.
@@ -295,37 +295,34 @@ C     mask3dICF: 3d ice-front mask
       _RS mask2dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS mask3dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-C ow - 07/23/2020
-C ow - CURI_ARR, CURJ_AA,
-C      CURI_ARR: i-index for neighboring ice-front points
-C      CURJ_ARR: j-index for neighboring ice-front points
-C      icefrontwidth_arr: ice-front width in meters
-C     kIcf                   :: index of the bottommost ice front cell (2D)
+C     INTEGER arrays
+C     CURI_ARR       :: i-index for neighboring ice-front points
+C     CURJ_ARR       :: j-index for neighboring ice-front points
+C     sticfWidth_arr :: ice-front width in meters
+C     kIcf           :: index of the bottommost ice front cell (2D)
       COMMON /STIC_ICEFRONT_I/ kIcf, CURI_ARR, CURJ_ARR
-      INTEGER kIcf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER kIcf    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER CURI_ARR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
       INTEGER CURJ_ARR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
 
       COMMON /STIC_FIELDS_RL/
-     &     iceFrontForcingT, iceFrontForcingS,
-     &     icefrontwidth_arr
-      _RL iceFrontForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL iceFrontForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL icefrontwidth_arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
+     &     icfForcingT, icfForcingS,
+     &     sticfWidth_arr
+      _RL icfForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icfForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sticfWidth_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
 
 
       COMMON /STIC_FIELDS_RS/
-     &     R_icefront, icefrontlength,
-     &     iceFrontHeatFlux, iceFrontFreshWaterFlux,
-     &     SHIICFHeatFlux, SHIICFFreshWaterFlux
-      _RS R_icefront            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS icefrontlength        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL
-     & iceFrontHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL
-     & iceFrontFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL SHIICFHeatFlux        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SHIICFFreshWaterFlux  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     &     R_stic, sticfLength,
+     &     icfHeatFlux, icfFreshWaterFlux,
+     &     sticfHeatFlux, sticfFreshWaterFlux
+      _RS R_stic             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS sticfLength        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icfHeatFlux        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL icfFreshWaterFlux  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sticfHeatFlux      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sticfFreshWaterFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_STEEP_ICECAVITY */
 #endif /* ALLOW_SHELFICE */

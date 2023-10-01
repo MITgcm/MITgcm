@@ -63,7 +63,7 @@ C     myThid :: thread number for this instance of the routine.
 #ifdef ALLOW_STEEP_ICECAVITY
 C     !LOCAL VARIABLES :
 C     === Local variables ===
-C     I,J,K,bi,bj      :: loop counters
+C     i,j,k,bi,bj      :: loop counters
 C     tLoc, sLoc, pLoc :: local potential temperature, salinity, pressure
 C     gammaT/SLoc      :: local heat and salt transfer coefficients
 C     theta/saltFreeze :: temperature and salinity of water at the
@@ -75,7 +75,7 @@ C                         column perpendicular to the ice front extended
 C                         to the far side of the tracer cell.
 C     iceFrontWidth    :: the width of the ice front.  unit meters.
 
-      INTEGER I,J,K
+      INTEGER i,j,k
       INTEGER bi,bj
       INTEGER CURI, CURJ, FRONT_K
 
@@ -102,16 +102,16 @@ C     iceFrontWidth    :: the width of the ice front.  unit meters.
 # ifdef SHI_ALLOW_GAMMAFRICT
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 # endif
-      _RL tmpdiag(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpdiagT(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpDiag(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpDiagT(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-      _RL tmpdiagiceFrontForcingT(1-olx:snx+olx,
+      _RL tmpDiagIcfForcingT(1-olx:snx+olx,
      & 1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpdiagiceFrontForcingS(1-olx:snx+olx,
+      _RL tmpDiagIcfForcingS(1-olx:snx+olx,
      & 1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpdiagshelficeForcingT(1-olx:snx+olx,
+      _RL tmpDiagShelficeForcingT(1-olx:snx+olx,
      & 1-oly:sny+oly,nsx,nsy)
-      _RL tmpdiagshelficeForcingS(1-olx:snx+olx,
+      _RL tmpDiagShelficeForcingS(1-olx:snx+olx,
      & 1-oly:sny+oly,nsx,nsy)
 
 #endif /* ALLOW_DIAGNOSTICS */
@@ -153,43 +153,43 @@ C     (Holland and Jenkins, 1999, eq.21)
         DO bi = myBxLo(myThid), myBxHi(myThid)
           DO J = 1-OLy,sNy+OLy
             DO I = 1-OLx,sNx+OLx
-              shelfIceHeatFlux        (I,J,bi,bj) = 0. _d 0
-              shelfIceFreshWaterFlux  (I,J,bi,bj) = 0. _d 0
-              SHIICFHeatFlux          (I,J,bi,bj) = 0. _d 0
-              SHIICFFreshWaterFlux    (I,J,bi,bj) = 0. _d 0
-              shelficeForcingT        (I,J,bi,bj) = 0. _d 0
-              shelficeForcingS        (I,J,bi,bj) = 0. _d 0
+              shelfIceHeatFlux        (i,j,bi,bj) = 0. _d 0
+              shelfIceFreshWaterFlux  (i,j,bi,bj) = 0. _d 0
+              sticfHeatFlux           (i,j,bi,bj) = 0. _d 0
+              sticfFreshWaterFlux     (i,j,bi,bj) = 0. _d 0
+              shelficeForcingT        (i,j,bi,bj) = 0. _d 0
+              shelficeForcingS        (i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_GENTIM2D_CONTROL
-              xx_shifwflx_loc         (I,J,bi,bj) = 0. _d 0
+              xx_shifwflx_loc         (i,j,bi,bj) = 0. _d 0
 #endif /* ALLOW_GENTIM2D_CONTROL */
 #ifdef ALLOW_DIAGNOSTICS
               IF ( useDiagnostics ) THEN
-               tmpdiagshelficeForcingT(I,J,bi,bj) = 0. _d 0
-               tmpdiagshelficeForcingS(I,J,bi,bj) = 0. _d 0
+               tmpDiagShelficeForcingT(i,j,bi,bj) = 0. _d 0
+               tmpDiagShelficeForcingS(i,j,bi,bj) = 0. _d 0
               ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #ifndef ALLOW_SHITRANSCOEFF_3D
-              shiTransCoeffS(I,J,bi,bj) = SHELFICEsaltToHeatRatio *
-     &              shiTransCoeffT(I,J,bi,bj)
+              shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltToHeatRatio *
+     &              shiTransCoeffT(i,j,bi,bj)
 #endif
               DO K = 1, NR
 #ifdef ALLOW_SHITRANSCOEFF_3D
-                shiTransCoeffS(I,J,K,bi,bj) = SHELFICEsaltToHeatRatio *
-     &                shiTransCoeffT(I,J,K,bi,bj)
+                shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
+     &                shiTransCoeffT(i,j,k,bi,bj)
 #endif
-                iceFrontHeatFlux(I,J,K,bi,bj)       = 0. _d 0
-                iceFrontFreshWaterFlux(I,J,K,bi,bj) = 0. _d 0
-                iceFrontForcingT(I,J,K,bi,bj)       = 0. _d 0
-                iceFrontForcingS(I,J,K,bi,bj)       = 0. _d 0
+                icfHeatFlux(i,j,k,bi,bj)       = 0. _d 0
+                icfFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
+                icfForcingT(i,j,k,bi,bj)       = 0. _d 0
+                icfForcingS(i,j,k,bi,bj)       = 0. _d 0
 #ifdef ALLOW_DIAGNOSTICS
                 IF ( useDiagnostics ) THEN
-                 tmpdiagiceFrontForcingT(I,J,K,bi,bj)       = 0. _d 0
-                 tmpdiagiceFrontForcingS(I,J,K,bi,bj)       = 0. _d 0
+                 tmpDiagIcfForcingT(i,j,k,bi,bj) = 0. _d 0
+                 tmpDiagIcfForcingS(i,j,k,bi,bj) = 0. _d 0
 
                  IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &                   .AND. useRealFreshWaterFlux ) THEN
-                  tmpdiag(I,J,K,bi,bj)              = 0. _d 0
-                  tmpdiagT(I,J,K,bi,bj)              = 0. _d 0
+                  tmpDiag(i,j,k,bi,bj)           = 0. _d 0
+                  tmpDiagT(i,j,k,bi,bj)          = 0. _d 0
                  ENDIF
                 ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -208,7 +208,7 @@ C     (Holland and Jenkins, 1999, eq.21)
           DO bi = myBxLo(myThid),myBxHi(myThid)
            DO J = 1,sNy
             DO I = 1,sNx
-             xx_shifwflx_loc(I,J,bi,bj)=xx_gentim2d(I,J,bi,bj,iarr)
+             xx_shifwflx_loc(i,j,bi,bj)=xx_gentim2d(i,j,bi,bj,iarr)
             ENDDO
            ENDDO
           ENDDO
@@ -233,22 +233,22 @@ C--   process ice fronts in k, then process ice shelf.
 #endif
 
 C--   The K index where the ice front ends (0 if no ice front)
-              FRONT_K = kIcf(I,J,bi,bj)
+              FRONT_K = kIcf(i,j,bi,bj)
 
-C--   If there is an ice front at this (I,J) continue
+C--   If there is an ice front at this (i,j) continue
               IF (FRONT_K .GT. 0) THEN
 
 C--   Loop through all depths where the ice front is fround
                 DO K = 1, FRONT_K
 C--   Loop around the four laterally neighboring cells of the ice front.
 C--   If any neighboring points has wet volume in contact with the ice
-C--   front at (I,J) then calculate ice-ocean exchanges.
+C--   front at (i,j) then calculate ice-ocean exchanges.
 C--   The four laterally neighboring point are at (CURI,CURJ)
 
                   DO SI = 1,4
-                     CURI=CURI_ARR(I,J,bi,bj,SI)
-                     CURJ=CURJ_ARR(I,J,bi,bj,SI)
-                     iceFrontWidth=iceFrontWidth_arr(I,J,bi,bj,SI)
+                     CURI=CURI_ARR(i,j,bi,bj,SI)
+                     CURJ=CURJ_ARR(i,j,bi,bj,SI)
+                     iceFrontWidth=sticfWidth_arr(i,j,bi,bj,SI)
 
 C--                 cell depth describes the average distance
 C--                 perpendicular to the ice front fact
@@ -260,7 +260,7 @@ C--                 perpendicular to the ice front fact
                     iceFrontFaceArea  = DRF(K)*iceFrontWidth
 
 C--   First, make sure the adjacent point has at least some water in it.
-                    IF (_hFacC(CURI,CURJ,K,bi,bj) .GT. zeroRL) THEN
+                    IF (_hFacC(CURI,CURJ,k,bi,bj) .GT. zeroRL) THEN
 
 C--   we need to determine how much of the ice front is in contact with
 C--   water in the neighboring grid cell at this depth level.
@@ -277,7 +277,7 @@ C--               * If the ice extends past the bottom of the cell then
 C--                 ice_bottom_Z_C = rF(K+1)
 C--               [rF(k) >= ice_bottom_Z_C >= rF(K+1)]  (rF is negative)
                       ice_bottom_Z_C = max(rF(K+1),
-     &                  min(Ro_surf(I,J, bi,bj), rF(K)))
+     &                  min(Ro_surf(i,j, bi,bj), rF(K)))
 
 C--   wet_top_Z_N: the depth (m) of the bottom of the ice in the
 C--              neighboring grid.  If the neighboring cell has ice in
@@ -309,14 +309,14 @@ C--              [rF(k) >= wet_bottom_Z >= rF(K+1)]     (rF is negative)
      &                  max(R_low(CURI,CURJ, bi,bj), rF(K+1)))
 
 C--   iceFrontWetContact_Z_max:  The deepest point where the
-C--              the ice front at (I,J) is in contact with water
+C--              the ice front at (i,j) is in contact with water
 C--              in the neighboring cell.  The shallower of
 C--              wet_bottom_Z_N (seafloor depth of neighboring point) and
 C--              ice_bottom_Z_C (bottom of ice front in this center cell).
 
 C--              * wet_bottom_Z_N if the seafloor of the neighboring
-C--                cell is shallower than the ice draft at (I,J).
-C--              * ice_bottom_Z_C if the ice draft at (I,J) is shallower
+C--                cell is shallower than the ice draft at (i,j).
+C--              * ice_bottom_Z_C if the ice draft at (i,j) is shallower
 C--                than the seafloor of the neighboring cell.
 
                       IF (ice_bottom_Z_C .GT. wet_bottom_Z_N) THEN
@@ -325,10 +325,10 @@ C--                than the seafloor of the neighboring cell.
                         iceFrontWetContact_Z_max = wet_bottom_Z_N
                       ENDIF
 
-C--   The shallowest depth where the ice front at (I,J) is in contact
+C--   The shallowest depth where the ice front at (i,j) is in contact
 C--   with water in the neighboring cell.  If the neighboring cell has
 C--   no ice draft then wet_top_Z_N = rF(k), the top of the cell.
-C--   Otherwise, the shallowest depth where the ice front at (I,J) can
+C--   Otherwise, the shallowest depth where the ice front at (i,j) can
 C--   be in in contact with water (not ice) in (CURI, CURJ)
 C--   is wet_top_Z_N.
 
@@ -339,11 +339,11 @@ C--   with water in the neighboring cell.
 
 
 C--   Only proceed if iceFrontVertContactFrac is > 0, the
-C--   ice draft at (I,J)
+C--   ice draft at (i,j)
 C--   is in contact with some water in the neighboring grid cell.
                       IF (iceFrontVertContactFrac .GT. epsilon_H) THEN
-                        tLoc = theta(CURI,CURJ,K,bi,bj)
-                        sLoc = MAX(salt(CURI,CURJ,K,bi,bj), zeroRL)
+                        tLoc = theta(CURI,CURJ,k,bi,bj)
+                        sLoc = MAX(salt(CURI,CURJ,k,bi,bj), zeroRL)
 
 C--   use pressure at the halfway point between the top and bottom of
 C--   points of the ice front where the ice front is in contact with
@@ -354,8 +354,8 @@ C--   open water.
                         gammaTLoc = shiTransCoeffT(CURI,CURJ,bi,bj)
                         gammaSLoc = shiTransCoeffS(CURI,CURJ,bi,bj)
 #else
-                        gammaTLoc = shiTransCoeffT(CURI,CURJ,K,bi,bj)
-                        gammaSLoc = shiTransCoeffS(CURI,CURJ,K,bi,bj)
+                        gammaTLoc = shiTransCoeffT(CURI,CURJ,k,bi,bj)
+                        gammaSLoc = shiTransCoeffS(CURI,CURJ,k,bi,bj)
 #endif
 
                         CALL STIC_SOLVE4FLUXES(
@@ -392,16 +392,16 @@ C--   In units W/m^2
                         tmpHeatFluxscaled =
      &                    tmpHeatFlux*iceFrontVertContactFrac
      &                    *icfgridareaFrac
-                        iceFrontHeatFlux(CURI,CURJ,K,bi,bj) =
-     &                    iceFrontHeatFlux(CURI,CURJ,K,bi,bj) +
+                        icfHeatFlux(CURI,CURJ,k,bi,bj) =
+     &                    icfHeatFlux(CURI,CURJ,k,bi,bj) +
      &                    tmpHeatFluxscaled
 
 C     In units of kg/s/m^2
                         tmpFWFLXscaled =
      &                    tmpFWFLX*iceFrontVertContactFrac
      &                    *icfgridareaFrac
-                        iceFrontFreshWaterFlux(CURI,CURJ,K,bi,bj) =
-     &                    iceFrontFreshWaterFlux(CURI,CURJ,K,bi,bj) +
+                        icfFreshWaterFlux(CURI,CURJ,k,bi,bj) =
+     &                    icfFreshWaterFlux(CURI,CURJ,k,bi,bj) +
      &                    tmpFWFLXscaled
 
 C ow - 06/29/2018
@@ -410,17 +410,17 @@ C ow -  compute the total flux for the water column. The shelfice fluxes,
 C ow -  which are 2D, will be added later. NOTE that only
 C ow -  ice-front melts below shelf-ice are included to be consistent
 C ow -  with Rignot s data
-                  if(k.GE.kTopC(I,J,bi,bj))then
+                  if(k.GE.kTopC(i,j,bi,bj))then
                    if(RA(CURI,CURJ,bi,bj).NE.0. _d 0)then
-                        SHIICFHeatFlux(CURI,CURJ,bi,bj) =
-     &                   SHIICFHeatFlux(CURI,CURJ,bi,bj) +
+                        sticfHeatFlux(CURI,CURJ,bi,bj) =
+     &                   sticfHeatFlux(CURI,CURJ,bi,bj) +
      &                   tmpHeatFluxscaled
-                        SHIICFFreshWaterFlux(CURI,CURJ,bi,bj) =
-     &                   SHIICFFreshWaterFlux(CURI,CURJ,bi,bj) +
+                        sticfFreshWaterFlux(CURI,CURJ,bi,bj) =
+     &                   sticfFreshWaterFlux(CURI,CURJ,bi,bj) +
      &                   tmpFWFLXscaled
                    endif
                   endif
-C     iceFrontForcing[T,S] X m/s but these rates only apply to the
+C     icfForcing[T,S] X m/s but these rates only apply to the
 C--   fraction of the grid cell that has ice in contact with seawater.
 C--   we must scale by iceFrontVertContactFrac to get to the average
 C--   fluxes in this grid cell.  We must also divide the by the length
@@ -428,31 +428,31 @@ C--   of the grid cell perpendicular to the face.
 
                        IF (iceFrontCellThickness .NE. 0. _d 0) THEN
 C     In units of K / s
-                        iceFrontForcingT(CURI,CURJ,K,bi,bj) =
-     &                    iceFrontForcingT(CURI,CURJ,K,bi,bj) +
+                        icfForcingT(CURI,CURJ,k,bi,bj) =
+     &                    icfForcingT(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingT/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
-     &                    _recip_hFacC(CURI,CURJ,K,bi,bj)
-                        tmpdiagiceFrontForcingT(CURI,CURJ,K,bi,bj) =
-     &                    tmpdiagiceFrontForcingT(CURI,CURJ,K,bi,bj) +
+     &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
+                        tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) =
+     &                    tmpDiagIcfForcingT(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingT/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    DRF(k)
 C     In units of psu /s
-                        iceFrontForcingS(CURI,CURJ,K,bi,bj) =
-     &                    iceFrontForcingS(CURI,CURJ,K,bi,bj) +
+                        icfForcingS(CURI,CURJ,k,bi,bj) =
+     &                    icfForcingS(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingS/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
-     &                    _recip_hFacC(CURI,CURJ,K,bi,bj)
-                        tmpdiagiceFrontForcingS(CURI,CURJ,K,bi,bj) =
-     &                    tmpdiagiceFrontForcingS(CURI,CURJ,K,bi,bj) +
+     &                    _recip_hFacC(CURI,CURJ,k,bi,bj)
+                        tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) =
+     &                    tmpDiagIcfForcingS(CURI,CURJ,k,bi,bj) +
      &                    tmpForcingS/iceFrontCellThickness*
      &                    iceFrontVertContactFrac*
      &                    DRF(k)
                        ENDIF /* iceFrontCellThickness */
 C     In units of kg /s
-                         addMass(CURI,CURJ,K,bi,bj) =
-     &                     addMass(CURI,CURJ,K,bi,bj) -
+                         addMass(CURI,CURJ,k,bi,bj) =
+     &                     addMass(CURI,CURJ,k,bi,bj) -
      &                     tmpFWFLX*iceFrontFaceArea*
      &                     iceFrontVertContactFrac
 #ifdef ALLOW_DIAGNOSTICS
@@ -460,8 +460,8 @@ C     In units of kg /s
 #ifdef NONLIN_FRSURF
                         IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &                   .AND. useRealFreshWaterFlux ) THEN
-                         tmpdiagT(CURI,CURJ,k,bi,bj) =
-     &                     addMass(CURI,CURJ,K, bi,bj)/
+                         tmpDiagT(CURI,CURJ,k,bi,bj) =
+     &                     addMass(CURI,CURJ,k, bi,bj)/
      &                     RA(CURI,CURJ,bi,bj)*
      &                     insituT*HeatCapacity_Cp
                         ENDIF
@@ -469,15 +469,15 @@ C     In units of kg /s
                        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
                       ENDIF /* iceFrontVertContactFrac */
-                    ENDIF /* hFacC(CURI,CURJ,K,bi,bj) */
+                    ENDIF /* hFacC(CURI,CURJ,k,bi,bj) */
                   ENDDO /* SI loop for adjacent cells */
                 ENDDO /* K LOOP */
               ENDIF /* FRONT K */
 
 C--   ice shelf
-              K = kTopC(I,J,bi,bj)
+              K = kTopC(i,j,bi,bj)
 
-C--   If there is an ice front at this (I,J) continue
+C--   If there is an ice front at this (i,j) continue
 C--   I am assuming K is only .GT. when there is at least some
 C--   nonzero wet point below the shelf in the grid cell.
               IF (K .GT. 0) THEN
@@ -493,15 +493,15 @@ C--   (pressure in deci-bar) underneath the ice
 C--   for the ice shelf case we use hydrostatic pressure at the ice
 C--   base of the ice shelf, top of the cavity.
 
-                pLoc = ABS(R_shelfIce(I,J,bi,bj))
-                tLoc = theta(I,J,K,bi,bj)
-                sLoc = MAX(salt(I,J,K,bi,bj), zeroRL)
-#ifndef ALLOW_shiTransCoeff_3d
-                gammaTLoc = shiTransCoeffT(I,J,bi,bj)
-                gammaSLoc = shiTransCoeffS(I,J,bi,bj)
+                pLoc = ABS(R_shelfIce(i,j,bi,bj))
+                tLoc = theta(i,j,k,bi,bj)
+                sLoc = MAX(salt(i,j,k,bi,bj), zeroRL)
+#ifndef ALLOW_SHITRANSCOEFF_3D
+                gammaTLoc = shiTransCoeffT(i,j,bi,bj)
+                gammaSLoc = shiTransCoeffS(i,j,bi,bj)
 #else
-                gammaTLoc = shiTransCoeffT(I,J,K,bi,bj)
-                gammaSLoc = shiTransCoeffS(I,J,K,bi,bj)
+                gammaTLoc = shiTransCoeffT(i,j,k,bi,bj)
+                gammaSLoc = shiTransCoeffS(i,j,k,bi,bj)
 #endif
                 CALL STIC_SOLVE4FLUXES(
      I            tLoc, sLoc, pLoc,
@@ -515,43 +515,42 @@ C--   base of the ice shelf, top of the cavity.
 CADJ STORE tmpForcingT, tmpForcingS = comlev1_stic_bibj_ij, key = ikey
 #endif
 C     In units of W/m^2
-                shelficeHeatFlux(I,J,bi,bj) = tmpHeatFlux
+                shelficeHeatFlux(i,j,bi,bj) = tmpHeatFlux
 #ifdef ALLOW_GENTIM2D_CONTROL
-     &           - xx_shifwflx_loc(I,J,bi,bj)*SHELFICElatentHeat
+     &           - xx_shifwflx_loc(i,j,bi,bj)*SHELFICElatentHeat
 #endif /*  ALLOW_GENTIM2D_CONTROL */
 C     In units of kg/m^2/s
-                shelfIceFreshWaterFlux(I,J,bi,bj) = tmpFWFLX
+                shelfIceFreshWaterFlux(i,j,bi,bj) = tmpFWFLX
 #ifdef ALLOW_GENTIM2D_CONTROL
-     &           + xx_shifwflx_loc(I,J,bi,bj)
+     &           + xx_shifwflx_loc(i,j,bi,bj)
 #endif /*  ALLOW_GENTIM2D_CONTROL */
 C ow - 06/29/2018
 C ow - Now add shelfice heat and freshwater fluxes
-                        SHIICFHeatFlux(i,j,bi,bj) =
-     &                   SHIICFHeatFlux(i,j,bi,bj) +
+                        sticfHeatFlux(i,j,bi,bj) =
+     &                   sticfHeatFlux(i,j,bi,bj) +
      &                   shelficeHeatFlux(i,j,bi,bj)
-                        SHIICFFreshWaterFlux(i,j,bi,bj) =
-     &                   SHIICFFreshWaterFlux(i,j,bi,bj) +
+                        sticfFreshWaterFlux(i,j,bi,bj) =
+     &                   sticfFreshWaterFlux(i,j,bi,bj) +
      &                   shelfIceFreshWaterFlux(i,j,bi,bj)
 C     In units of K/s -- division by drF required first
-                shelficeForcingT(I,J,bi,bj) = tmpForcingT*
-     &              recip_drF(K)* _recip_hFacC(i,j,K,bi,bj)
-                tmpdiagshelficeForcingT(I,J,bi,bj) = tmpForcingT
+                shelficeForcingT(i,j,bi,bj) = tmpForcingT*
+     &              recip_drF(K)* _recip_hFacC(i,j,k,bi,bj)
+                tmpDiagShelficeForcingT(i,j,bi,bj) = tmpForcingT
 C     In units of psu/s  -- division by drF required first
-                shelficeForcingS(I,J,bi,bj) = tmpForcingS*
-     &              recip_drF(K)* _recip_hFacC(i,j,K,bi,bj)
-                tmpdiagshelficeForcingS(I,J,bi,bj) = tmpForcingS
+                shelficeForcingS(i,j,bi,bj) = tmpForcingS*
+     &              recip_drF(K)* _recip_hFacC(i,j,k,bi,bj)
+                tmpDiagShelficeForcingS(i,j,bi,bj) = tmpForcingS
 C     In units of kg/s  -- multiplication of area required first
-                addMass(I,J,K, bi,bj) = addMass(I,J,K, bi,bj) -
-     &              tmpFWFLX*RA(I,J,bi,bj)
+                addMass(i,j,k,bi,bj) = addMass(i,j,k,bi,bj) -
+     &              tmpFWFLX*RA(i,j,bi,bj)
 #ifdef ALLOW_DIAGNOSTICS
                 IF ( useDiagnostics ) THEN
 #ifdef NONLIN_FRSURF
                  IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &            .AND. useRealFreshWaterFlux ) THEN
-                  tmpdiagT(i,j,k,bi,bj) =
-     &              addMass(i,j,K, bi,bj)/
-     &              RA(i,j,bi,bj)*
-     &              insituT*HeatCapacity_Cp
+                  tmpDiagT(i,j,k,bi,bj) =
+     &                 addMass(i,j,k,bi,bj) / rA(i,j,bi,bj)*
+     &                 insituT*HeatCapacity_Cp
                  ENDIF
 #endif /* NONLIN_FRSURF */
                 ENDIF
@@ -590,31 +589,31 @@ c     ENDIF
           DO K = 1, NR
            DO j=1,sNy
             DO i=1,sNx
-             tmpdiag(i,j,k,bi,bj) =
-     &        addMass(I,J,K, bi,bj)/RA(i,j,bi,bj)*
+             tmpDiag(i,j,k,bi,bj) =
+     &        addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*
      &        theta(i,j,k,bi,bj)*HeatCapacity_Cp
             ENDDO
            ENDDO
           ENDDO
          ENDDO /* bi */
         ENDDO /* bj */
-        CALL DIAGNOSTICS_FILL( tmpdiag,'TFLUXMLT',0,Nr,0,1,1,myThid )
+        CALL DIAGNOSTICS_FILL( tmpDiag,'TFLUXMLT',0,Nr,0,1,1,myThid )
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO K = 1, NR
            DO j=1,sNy
             DO i=1,sNx
-             tmpdiag(i,j,k,bi,bj) =
-     &        addMass(I,J,K, bi,bj)/RA(i,j,bi,bj)*salt(i,j,k,bi,bj)
+             tmpDiag(i,j,k,bi,bj) =
+     &        addMass(i,j,k,bi,bj)/RA(i,j,bi,bj)*salt(i,j,k,bi,bj)
             ENDDO
            ENDDO
           ENDDO
          ENDDO /* bi */
         ENDDO /* bj */
-        CALL DIAGNOSTICS_FILL( tmpdiag,'SFLUXMLT',0,Nr,0,1,1,myThid )
+        CALL DIAGNOSTICS_FILL( tmpDiag,'SFLUXMLT',0,Nr,0,1,1,myThid )
 
-        CALL DIAGNOSTICS_FILL( tmpdiagT,'TFLUXMTI',0,Nr,0,1,1,myThid )
+        CALL DIAGNOSTICS_FILL( tmpDiagT,'TFLUXMTI',0,Nr,0,1,1,myThid )
        ENDIF
 #endif /* NONLIN_FRSURF */
 
@@ -623,32 +622,34 @@ c     ENDIF
        CALL DIAGNOSTICS_FILL_RS(shelfIceHeatFlux,      'SHIhtFlx',
      &      0,1,0,1,1,myThid)
 
-       CALL DIAGNOSTICS_FILL_RS(SHIICFFreshWaterFlux,'SHIICFfw',
+#ifdef ALLOW_STEEP_ICECAVITY
+       CALL DIAGNOSTICS_FILL_RS(sticfFreshWaterFlux,'SHIICFfw',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL_RS(SHIICFHeatFlux,      'SHIICFht',
+       CALL DIAGNOSTICS_FILL_RS(sticfHeatFlux,      'SHIICFht',
      &      0,1,0,1,1,myThid)
+#endif
 
-        CALL DIAGNOSTICS_FILL(iceFrontFreshWaterFlux, 'ICFfwFlx',
+        CALL DIAGNOSTICS_FILL(icfFreshWaterFlux, 'ICFfwFlx',
      &      0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(iceFrontHeatFlux, 'ICFhtFlx',
+        CALL DIAGNOSTICS_FILL(icfHeatFlux, 'ICFhtFlx',
      &      0,Nr,0,1,1,myThid)
 
 C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
-       CALL DIAGNOSTICS_SCALE_FILL(tmpdiagshelficeForcingT,tmpFac,1,
+       CALL DIAGNOSTICS_SCALE_FILL(tmpDiagShelficeForcingT,tmpFac,1,
      &      'SHIForcT',0,1,0,1,1,myThid)
 C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
        tmpFac = rUnit2mass
-       CALL DIAGNOSTICS_SCALE_FILL(tmpdiagshelficeForcingS,tmpFac,1,
+       CALL DIAGNOSTICS_SCALE_FILL(tmpDiagShelficeForcingS,tmpFac,1,
      &      'SHIForcS',0,1,0,1,1,myThid)
 
 C     ICFForcT (Ice front forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
-       CALL DIAGNOSTICS_SCALE_FILL(tmpdiagiceFrontForcingT,tmpFac,1,
+       CALL DIAGNOSTICS_SCALE_FILL(tmpDiagIcfForcingT,tmpFac,1,
      &      'ICFForcT',0,Nr,0,1,1,myThid)
 C     ICFForcS (Ice front forcing for salt [g/m2/s], >0 increases salt)
        tmpFac = rUnit2mass
-       CALL DIAGNOSTICS_SCALE_FILL(tmpdiagiceFrontForcingS,tmpFac,1,
+       CALL DIAGNOSTICS_SCALE_FILL(tmpDiagIcfForcingS,tmpFac,1,
      &      'ICFForcS',0,Nr,0,1,1,myThid)
 
 C     Transfer coefficients

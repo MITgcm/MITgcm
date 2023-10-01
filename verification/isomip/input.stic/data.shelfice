@@ -9,7 +9,7 @@
  SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
  SHELFICEuseGammaFrict = .FALSE.,
  SHELFICEconserve = .TRUE.,
- ICEFRONTdepthFile = 'icetopo.exp1',
+ STICdepthFile = 'icetopo.exp1',
  SHELFICEkappa = 0.,
  useISOMIPTD = .FALSE.,
  no_slip_shelfice = .FALSE.,
