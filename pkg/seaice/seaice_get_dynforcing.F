@@ -67,7 +67,6 @@ C   myThid (inp) :: my Thread Id. number
       INTEGER myThid
 CEOP
 
-#ifdef SEAICE_CGRID
 C     !LOCAL VARIABLES:
 C     i,j,bi,bj :: Loop counters
 C     ks        :: vertical index of surface layer
@@ -156,7 +155,7 @@ C     make local copies of wind field
           ENDDO
          ENDDO
          IF ( useRelativeWind ) THEN
-C     undo subtraction of ocean velocities and subtract ice velocities
+C     subtract ice velocities from each component wind-speed
           DO j=1-OLy,sNy+OLy-1
            DO i=1-OLx,sNx+OLx-1
             uTmp(i,j)=uwind(i,j,bi,bj)
@@ -277,8 +276,6 @@ C--   end bi,bj loops
        ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
-#endif /* SEAICE_CGRID */
 
       RETURN
       END

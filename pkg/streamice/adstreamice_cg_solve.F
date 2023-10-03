@@ -63,20 +63,17 @@ C     cg_Bu, cg_Bv - driving stress
       INTEGER myThid
 
 C     !LOCAL VARIABLES
-      INTEGER i, j, bi, bj, cg_halo, conv_flag, tmpiter
-      INTEGER iter, is, js, ie, je, colx, coly, k
+      INTEGER i, j, bi, bj, conv_flag, tmpiter
+      INTEGER colx, coly
       _RL Utemp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Vtemp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UtempSt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VtempSt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dot_p1, dot_p2, alpha_k, beta_k, resid, resid_0
-      _RL dot_p1_tile (nSx,nSy)
-      _RL dot_p2_tile (nSx,nSy)
       _RL ad_tolerance
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-!       iters = streamice_max_cg_iter
+c       iters = streamice_max_cg_iter
 
 #ifdef ALLOW_STREAMICE
 
@@ -84,7 +81,7 @@ CEOP
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
-!      print *, "GOT HERE mythid=", mythid, tolerance
+c      print *, "GOT HERE myThid=", myThid, tolerance
 
       conv_flag = 0
       ad_tolerance = 1.e-14
@@ -106,7 +103,7 @@ CEOP
        ENDDO
       ENDDO
 
-!      print *, "GOT HERE 2 mythid=", mythid, tolerance
+c      print *, "GOT HERE 2 myThid=", myThid, tolerance
 
 #ifndef ALLOW_OPENAD
       CALL STREAMICE_CG_SOLVE(
@@ -124,7 +121,7 @@ CEOP
      &  myThid )
 #endif
 
-!      print *, "GOT HERE 3 mythid=", mythid, tolerance
+c      print *, "GOT HERE 3 myThid=", myThid, tolerance
 
       tmpiter = 0
 
@@ -145,7 +142,7 @@ CEOP
      &  maxiters,
      &  myThid )
 
-!      print *, "GOT HERE 4 mythid=", mythid, tolerance
+c      print *, "GOT HERE 4 myThid=", myThid, tolerance
 
       _EXCH_XY_RL( cg_Uin, myThid )
       _EXCH_XY_RL( cg_Vin, myThid )
@@ -241,4 +238,3 @@ CEOP
 #endif
       RETURN
       END
-

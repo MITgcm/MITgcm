@@ -9,6 +9,7 @@
  LSR_mixIniGuess    = 1,
  SEAICE_no_Slip     = .FALSE.,
  SEAICEwriteState   = .TRUE.,
+ SEAICE_deltaTdyn   = 1800.,
  SEAICE_monFreq = 21600.,
  SEAICE_monFreq = 1800.,
  &

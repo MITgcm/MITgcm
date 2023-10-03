@@ -234,7 +234,7 @@ C     print a (weak) warning if data.seaice is found
       _BEGIN_MASTER(myThid)
 
 C--   set default sea ice parameters
-#ifdef SEAICE_ALLOW_DYNAMICS
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
       SEAICEuseDYNAMICS  = .TRUE.
 #else
       SEAICEuseDYNAMICS  = .FALSE.
