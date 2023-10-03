@@ -917,9 +917,13 @@ C  biomass, which is required to calculate the uptake fluxes.
      &                * PTRACERS_dTLev(k)
 
           Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) +
-     &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k) - lambda_0
+     &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k)-20*lambda_0
      &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
+
+           Phy_lg_local(i,j,k) =  max( epsln, Phy_lg_local(i,j,k) )
+           Phy_sm_local(i,j,k) =  max( epsln, Phy_sm_local(i,j,k) )
+           Phy_diaz_local(i,j,k) =  max( epsln, Phy_diaz_local(i,j,k) )
 
          ENDIF
         ENDDO
@@ -1895,6 +1899,8 @@ C 3d local variables
         CALL DIAGNOSTICS_FILL(N_reminp,  'BLGNREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp,  'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(no3_adj,   'BLGNONEN',0,Nr,2,bi,bj,myThid)
+C 2d global variables
+        CALL DIAGNOSTICS_FILL(chl_sat,   'BLGCHLSA',0,1,1,bi,bj,myThid)
 C 2d local variables
         CALL DIAGNOSTICS_FILL(mld,       'BLGMLD  ',0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_burial, 'BLGFEBUR',0,1,2,bi,bj,myThid)

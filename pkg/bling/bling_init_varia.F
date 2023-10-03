@@ -48,6 +48,7 @@ C--   Initialise global variables
             phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
 #endif
           ENDDO
+          chl_sat(i,j,bi,bj)        = 0. _d 0
           gamma_POM_2d(i,j,bi,bj)   = gamma_POM
           wsink0_2d(i,j,bi,bj)      = wsink0
           phi_DOM_2d(i,j,bi,bj)     = phi_DOM
@@ -119,7 +120,22 @@ C Read in 2d bio related variables
         ENDIF
 #endif
 
-C     Now read phyto plankton abundance ICs and exchange
+#ifdef ADVECT_PHYTO
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            phyto_sm(i,j,k,bi,bj)   = 0.5 _d 0
+            phyto_lg(i,j,k,bi,bj)   = 0.5 _d 0
+            phyto_diaz(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#else
+C     Read phyto plankton abundance ICs and exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
         IF ( bling_psmFile .NE. ' ' ) THEN
          CALL READ_FLD_XYZ_RL(bling_psmFile,' ',
@@ -139,6 +155,7 @@ C     Now read phyto plankton abundance ICs and exchange
         ENDIF
 #endif
       ENDIF
+#endif /* ifdef ADVECT_PHYTO */
 C     Apply mask
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

@@ -253,6 +253,7 @@ C ==========================================================
      &                     phyto_lg,
      &                     phyto_sm,
      &                     chl,
+     &                     chl_sat,
      &                     poc,
      &                     Pc_0_2d,
      &                     k_Fe_2d,
@@ -353,6 +354,7 @@ C ==========================================================
       _RL phyto_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phyto_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL chl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL chl_sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL poc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Pc_0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

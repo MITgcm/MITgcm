@@ -72,6 +72,10 @@ C      irr_eff      :: effective light for photosynthesis
       _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     === Local variables ===
+      _RL solar, albedo
+      _RL dayfrac, yday, delta
+      _RL lat, sun1, dayhrs
+      _RL cosz, frac, fluxi
       _RL atten
       _RL irr_surf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ML_MEAN_LIGHT
@@ -80,10 +84,6 @@ C     === Local variables ===
       _RL tmp_ML
 #endif
 #ifndef USE_QSW
-      _RL solar, albedo
-      _RL dayfrac, yday, delta
-      _RL lat, sun1, dayhrs
-      _RL cosz, frac, fluxi
       _RL sfac      (1-OLy:sNy+OLy)
 #endif
 #ifdef PHYTO_SELF_SHADING
@@ -100,6 +100,12 @@ C     tkey :: tape key (tile dependent)
       INTEGER tkey
 #endif
 #endif /* PHYTO_SELF_SHADING */
+      _RL localtime
+      _RL diffutc
+      _RL sat_atten
+      _RL sat_atten_sum 
+      _RL chl_sat_sum 
+      INTEGER mydate(4)
       INTEGER i,j,k
       LOGICAL QSW_underice
 CEOP
@@ -173,6 +179,11 @@ C convert to sfac
 
 #endif /* ndef USE_QSW */
 
+C local time:
+#ifdef ALLOW_CAL
+         CALL CAL_GETDATE(myIter, myTime, mydate, myThid )
+#endif
+
 c ---------------------------------------------------------------------
 c  instantaneous light, mixed layer averaged light
 
@@ -203,6 +214,20 @@ c  taken into account
         SumMLIrr   = 0. _d 0
         tmp_ML     = 0. _d 0
 #endif
+
+C Satellite chlorophyll
+#ifdef ALLOW_CAL
+c mydate is utc time
+        diffutc = XC(i,j,bi,bj)/360.*24
+        localtime = mydate(2) + diffutc*10000
+        if (localtime.gt.240000) then
+          localtime = localtime-240000
+        endif
+#else
+        localtime=123000
+#endif
+        chl_sat_sum = 0. _d 0
+        sat_atten_sum = 0. _d 0
 
         DO k=1,Nr
 
@@ -274,6 +299,19 @@ c  Attenuation from one more layer
 
 #endif /* if BLING_USE_SHADING */
 
+C Satellite chl
+         IF (irr_surf(i,j).gt.0) THEN
+c           sat_atten = irr_inst(i,j,k)/irr_surf(i,j)
+#ifdef BLING_USE_SHADING
+           sat_atten = exp(-2. _d 0 * k0_bg * (-RC(k)))
+#else
+           sat_atten = exp(-2. _d 0 * k0 * (-RC(k)))
+#endif
+           chl_sat_sum = chl_sat_sum + 
+     &          chl(i,j,k,bi,bj)*sat_atten
+           sat_atten_sum = sat_atten_sum + sat_atten
+         ENDIF
+
 #ifdef ML_MEAN_LIGHT
 c  Mean irradiance in the mixed layer
          IF ((-rf(k+1) .le. mld(i,j)).and.
@@ -287,6 +325,10 @@ c  Mean irradiance in the mixed layer
          ENDIF
 
         ENDDO
+C Update diagnostic only if ~13:30 local time, when satellite observes
+        IF ((localtime.gt.120000).and.(localtime.lt.133000)) THEN
+          chl_sat(i,j,bi,bj) = chl_sat_sum/(sat_atten_sum + epsln)
+        ENDIF
        ENDDO
       ENDDO
 
