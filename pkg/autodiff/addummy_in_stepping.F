@@ -198,8 +198,8 @@ C     problem occurs
 #  endif
 # endif
 # if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
-        CALL ADEXCH_3D_RL( adshiTransCoeffT, myThid )
-        CALL ADEXCH_3D_RL( adshiTransCoeffS, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -301,10 +301,10 @@ C-----------------------------------------------------------------------
 #  endif
 # endif
 # if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
-      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT,
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT3d,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS,
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS3d,
      &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
@@ -414,10 +414,10 @@ C-----------------------------------------------------------------------
 #  endif
 # endif
 # if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT%d,
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT3d%d,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS%d,
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS3d%d,
      &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif

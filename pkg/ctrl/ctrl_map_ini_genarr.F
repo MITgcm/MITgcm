@@ -412,7 +412,8 @@ C--   generic 3D control variables
 #if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
       IF (useSTIC) THEN
         IF (igen_shiCoeffT.GT.0) 
-     &    CALL CTRL_MAP_GENARR3D(shiTransCoeffT, igen_shiCoeffT, myThid)
+     &    CALL CTRL_MAP_GENARR3D(shiTransCoeffT3d, igen_shiCoeffT, 
+     &         myThid)
       ENDIF
 #endif
 

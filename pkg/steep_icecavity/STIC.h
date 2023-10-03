@@ -165,7 +165,6 @@ CEOP
      &     sticMass, sticMassInit,
      &     shelficeLoadAnomaly,
      &     shelficeForcingT, shelficeForcingS,
-     &     shiTransCoeffT, shiTransCoeffS,
      &     iceFrontForcingT, iceFrontForcingS,
      &     shiCDragFld, shiDragQuadFld
 
@@ -174,17 +173,22 @@ CEOP
       _RL shelficeLoadAnomaly(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifndef ALLOW_shiTransCoeff_3d
-      _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else
-      _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
       _RL iceFrontForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL iceFrontForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL shiCDragFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shiDragQuadFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifndef ALLOW_shiTransCoeff_3d
+      COMMON /STIC_GAMMA_RL/
+     &     shiTransCoeffT, shiTransCoeffS
+      _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      COMMON /STIC_GAMMA3D_RL/
+     &     shiTransCoeffT3d, shiTransCoeffS3d
+      _RL shiTransCoeffT3d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL shiTransCoeffS3d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 
       COMMON /STIC_FIELDS_RS/
      &     R_shelfIce,

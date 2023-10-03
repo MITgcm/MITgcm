@@ -50,8 +50,8 @@ CEOP
            shiDragQuadFld        (i,j,bi,bj)      = 0. _d 0
           DO k = 1, NR
 #ifdef ALLOW_shiTransCoeff_3d
-             shiTransCoeffT        (i,j,k,bi,bj)  = 0. _d 0
-             shiTransCoeffS        (i,j,k,bi,bj)  = 0. _d 0
+             shiTransCoeffT3d      (i,j,k,bi,bj)  = 0. _d 0
+             shiTransCoeffS3d      (i,j,k,bi,bj)  = 0. _d 0
 #endif
             iceFrontHeatFlux(i,j,k,bi,bj)         = 0. _d 0
             iceFrontFreshWaterFlux(i,j,k,bi,bj)   = 0. _d 0
@@ -80,8 +80,8 @@ C        here:
         _EXCH_XY_RL( shiTransCoeffT, myThid )
 #else
         CALL READ_FLD_XYZ_RL( STICTransCoeffTFile, ' ',
-     &                       shiTransCoeffT, 0, myThid )
-        _EXCH_XYZ_RL( shiTransCoeffT, myThid )
+     &                       shiTransCoeffT3d, 0, myThid )
+        _EXCH_XYZ_RL( shiTransCoeffT3d, myThid )
 #endif
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -92,8 +92,8 @@ C        here:
      &                                  shiTransCoeffT(i,j,bi,bj)
 #else
             DO k = 1, Nr
-            shiTransCoeffS(i,j,k,bi,bj) = STICsaltToHeatRatio *
-     &                                  shiTransCoeffT(i,j,k,bi,bj)
+            shiTransCoeffS3d(i,j,k,bi,bj) = STICsaltToHeatRatio *
+     &                                  shiTransCoeffT3d(i,j,k,bi,bj)
             ENDDO
 #endif
            ENDDO
@@ -111,8 +111,8 @@ C     set coefficients to constant values
             shiTransCoeffS(i,j,bi,bj) = STICsaltTransCoeff
 #else
             DO k = 1, Nr
-            shiTransCoeffT(i,j,k,bi,bj) = STICheatTransCoeff
-            shiTransCoeffS(i,j,k,bi,bj) = STICsaltTransCoeff
+            shiTransCoeffT3d(i,j,k,bi,bj) = STICheatTransCoeff
+            shiTransCoeffS3d(i,j,k,bi,bj) = STICsaltTransCoeff
             ENDDO
 #endif
            ENDDO

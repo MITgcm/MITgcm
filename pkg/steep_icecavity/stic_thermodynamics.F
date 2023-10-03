@@ -177,8 +177,8 @@ C     (Holland and Jenkins, 1999, eq.21)
 #endif
               DO K = 1, NR
 #ifdef ALLOW_shiTransCoeff_3d
-                shiTransCoeffS(I,J,K,bi,bj) = STICsaltToHeatRatio *
-     &                shiTransCoeffT(I,J,K,bi,bj)
+                shiTransCoeffS3d(I,J,K,bi,bj) = STICsaltToHeatRatio *
+     &                shiTransCoeffT3d(I,J,K,bi,bj)
 #endif
                 iceFrontHeatFlux(I,J,K,bi,bj)       = 0. _d 0
                 iceFrontFreshWaterFlux(I,J,K,bi,bj) = 0. _d 0
@@ -356,8 +356,8 @@ C--   open water.
                         gammaTLoc = shiTransCoeffT(CURI,CURJ,bi,bj)
                         gammaSLoc = shiTransCoeffS(CURI,CURJ,bi,bj)
 #else
-                        gammaTLoc = shiTransCoeffT(CURI,CURJ,K,bi,bj)
-                        gammaSLoc = shiTransCoeffS(CURI,CURJ,K,bi,bj)
+                        gammaTLoc = shiTransCoeffT3d(CURI,CURJ,K,bi,bj)
+                        gammaSLoc = shiTransCoeffS3d(CURI,CURJ,K,bi,bj)
 #endif
 
                         CALL STIC_SOLVE4FLUXES(
@@ -499,8 +499,8 @@ C--   base of the ice shelf, top of the cavity.
                 gammaTLoc = shiTransCoeffT(I,J,bi,bj)
                 gammaSLoc = shiTransCoeffS(I,J,bi,bj)
 #else
-                gammaTLoc = shiTransCoeffT(I,J,K,bi,bj)
-                gammaSLoc = shiTransCoeffS(I,J,K,bi,bj)
+                gammaTLoc = shiTransCoeffT3d(I,J,K,bi,bj)
+                gammaSLoc = shiTransCoeffS3d(I,J,K,bi,bj)
 #endif
                 CALL STIC_SOLVE4FLUXES(
      I            tLoc, sLoc, pLoc,
@@ -655,9 +655,9 @@ C     Transfer coefficients
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
      &      0,1,0,1,1,myThid)
 #else
-       CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffT3d,'SHIgammT',
      &      0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffS3d,'SHIgammS',
      &      0,Nr,0,1,1,myThid)
 #endif
 C     Friction velocity
