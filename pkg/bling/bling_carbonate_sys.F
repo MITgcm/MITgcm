@@ -49,25 +49,24 @@ C     == Local variables ==
 C     i,j,k             :: loop indices
 C     carbonate         :: local value of calcium carbonate
 C     calcium           :: local value of Ca
+C     sitlocal          :: local value of Si
 C     diclocal          :: local value of DIC
 C     alklocal          :: local value of ALK
 C     pCO2local         :: local value of pCO2
 C     pHlocal           :: local value of pH
 C     CO3iter           :: iterations counter for CO3 ion calculation
 C     CO3iterMax        :: total number of iterations
-C     silicaDEEP        :: subsurface silica concentration
        INTEGER i,j,k
        _RL carbonate
        _RL calcium
        _RL po4local
+       _RL sitlocal
        _RL diclocal
        _RL alklocal
        _RL pCO2local
        _RL pHlocal
-       _RL silicaDEEP
-
-       _RL ttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       _RL stmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL locTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 c      INTEGER CO3iter
 c      INTEGER CO3iterMax
@@ -83,30 +82,26 @@ C determine calcite saturation state
 C$TAF LOOP = parallel
        DO k=1,Nr
 
-          DO j=jMin,jMax
-            DO i=iMin,iMax
-             ttmp(i,j) = theta(i,j,k,bi,bj)
-             stmp(i,j) = salt(i,j,k,bi,bj)
-            ENDDO
+        DO j=jMin,jMax
+          DO i=iMin,iMax
+            locTemp(i,j) = theta(i,j,k,bi,bj)
+            locSalt(i,j) = salt (i,j,k,bi,bj)
           ENDDO
+        ENDDO
 
 #ifdef CARBONCHEM_SOLVESAPHE
-cav  I'm using ttmp and stmp instead of surftemp and surfsalt like
-cav  Jonathan / they are not surf when k>1
-cav  Does new carbon_chem in DICpkg need theta (3d) or ttmp (2d)???
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
      &   'DIC_COEFFS_DEEP',myThid)
 #endif
 C Calculate carbon coefficients
         CALL DIC_COEFFS_SURF(
-     I                       ttmp,stmp,
+     I                       locTemp,locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
         CALL DIC_COEFFS_DEEP(
-     I                       ttmp,stmp,
+     I                       locTemp,locSalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
 
@@ -119,9 +114,9 @@ C Now correct the coefficients for pressure dependence
 
 C  Get coefficients for carbonate calculations
           CALL CARBON_COEFFS_PRESSURE_DEP(
-     I                       ttmp, stmp,
-     I                       bi, bj, imin, imax, jmin, jmax,
-     I                       k, myThid)
+     I                       locTemp,locSalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,
+     I                       k,myThid)
 #endif
 
 C--------------------------------------------------
@@ -150,9 +145,9 @@ C  Assume constant deep silica value
 C  30 micromol = 0.03 mol m-3
 C  unless SIBLING is used
 #ifdef USE_SIBLING
-             silicaDEEP = PTR_SI(i,j,k)
+             sitlocal = PTR_SI(i,j,k)
 #else
-             silicaDEEP = 0.03 _d 0
+             sitlocal = 0.03 _d 0
 #endif
 
 #ifdef CARBONCHEM_SOLVESAPHE
@@ -172,11 +167,14 @@ c     I           i,j,k,bi,bj,myIter,myThid )
          IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
             CALL CALC_PCO2_SOLVESAPHE(
-     I          theta(i,j,k,bi,bj),salt(i,j,k,bi,bj),
-     I          diclocal, po4local,
-     I          silicaDEEP,alklocal,
+     I          locTemp(i,j),locSalt(i,j),
+     I          diclocal,po4local,
+     I          sitlocal,alklocal,
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj,myIter,myThid )
+
+C- convert carbonate to mol kg^-1-SW for calculation of saturation state
+            carbonate = carbonate*permil
       ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -192,9 +190,9 @@ c             DO CO3iter = 1, CO3iterMax
 C--------------------------------------------------
 
                CALL CALC_PCO2_APPROX(
-     I          ttmp(i,j),stmp(i,j),
+     I          locTemp(i,j),locSalt(i,j),
      I          diclocal, po4local,
-     I          silicaDEEP,alklocal,
+     I          sitlocal,alklocal,
      I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
      I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
      I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
