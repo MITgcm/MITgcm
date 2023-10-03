@@ -44,21 +44,24 @@ end
 if krd > 1,
  lDir='grid_files/';
  if krd == 2,
-   bk_lineF='isoLat_cs32_59';
+   bk_lineF='isoLat_59_cs32';
+  %bk_lineF='isoLat_89_cs32';
 %- load broken lines (iso-lat) :
-% bkl_Ylat, bkl_Npts, bkl_Flg, bkl_IJuv, bkl_Xsg, bkl_Ysg, bkl_Zon
+% bkl_yLat, bkl_Npts, bkl_Flag, bkl_IJuv, bkl_tagC
    load([lDir,bk_lineF]);
  end
  if krd == 3,
+%-- new method has not been applied yet to great-circle broken line:
+   error(' transport through great-circle line (krd=3) not supported here');
    bk_lineF='bkl_AB_cs32';
 %- load broken line (great-circle arc AB):
 % ab_Npts, ab_Flg, ab_IJuv, ab_Xsg, ab_Ysg
    load([lDir,bk_lineF]);
-   bkl_Ylat=0; bkl_Npts=ab_Npts;
-   bkl_Flg=ab_Flg'; bkl_IJuv=ab_IJuv'; bkl_Xsg=ab_Xsg'; bkl_Ysg=ab_Ysg';
+   bkl_yLat=0; bkl_Npts=ab_Npts;
+   bkl_Flag=ab_Flg'; bkl_IJuv=ab_IJuv'; bkl_Xsg=ab_Xsg'; bkl_Ysg=ab_Ysg';
  end
 
- ufac=rem(bkl_Flg,2) ; vfac=fix(bkl_Flg/2) ;
+ ufac=rem(bkl_Flag,2) ; vfac=fix(bkl_Flag/2) ;
 
 %- load the grid dx,dy :
 %- set ncdf=1 to load MNC (NetCDF) grid-files ;
@@ -85,34 +88,29 @@ for k=nr:-1:1,
  ut(:,k)=psiFac*dyg.*ut(:,k);
  vt(:,k)=psiFac*dxg.*vt(:,k);
 end
-if n2h == 6*nc,
-%- to use this (older) bk-line file, long-vector is in "old-format" style, i.e., nc*6*nc:
- ut=reshape(ut,[nc nc 6 nr]); ut=permute(ut,[1 3 2 4]);
- vt=reshape(vt,[nc nc 6 nr]); vt=permute(vt,[1 3 2 4]);
+if n1h == 6*nc,
+%- to use bk-line, long-vector needs to be "compact" format compatible:
+ ut=reshape(ut,[nc 6 nc nr]); ut=permute(ut,[1 3 2 4]);
+ vt=reshape(vt,[nc 6 nc nr]); vt=permute(vt,[1 3 2 4]);
  ut=reshape(ut,[nPg nr]); vt=reshape(vt,[nPg nr]);
 end
 
 %- integrate along a broken-line (~ iso Latitude)
-ydim=length(bkl_Ylat); ylat=bkl_Ylat;
+ydim=length(bkl_yLat); ylat=bkl_yLat;
 vz=zeros(ydim,nr);
 for jl=1:ydim,
-  if jl == jprt, fprintf(' jl= %2i , lat= %8.3f , Npts= %3i :\n', ...
+ if jl == jprt, fprintf(' jl= %2i , lat= %8.3f , Npts= %3i :\n', ...
                         jl,ylat(jl),bkl_Npts(jl)); end
  if 1 < 0,
- %-- slower version (with debug print):
+ %-- slower version:
   for ii=1:bkl_Npts(jl),
    ij=bkl_IJuv(ii,jl);
-   if jl == jprt,
-    i = 1+rem(ij-1,6*nc); j=1+fix((ij-1)/nc/6); f=1+fix((i-1)/nc); i=1+rem(i-1,nc);
-    fprintf(' no= %3i : Flg,I,J= %2i (%2i,%2i) %3i %3i (nf=%1i)\n', ...
-    ii,bkl_Flg(ii,jl),ufac(ii,jl),vfac(ii,jl),i,j,f);
-   end
    for k=1:nr,
     vz(jl,k)=vz(jl,k)+ufac(ii,jl)*ut(ij,k)+vfac(ii,jl)*vt(ij,k);
    end
   end
  else
- %-- faster version (no debug print):
+ %-- faster version:
  % Note: could reduce memory if permute k & jl loop and compute ut,vt within same k loop
  %       and then can also cumulate stream-function within same single k loop
   ie=bkl_Npts(jl);
