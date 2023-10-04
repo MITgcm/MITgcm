@@ -177,8 +177,8 @@ C     (Holland and Jenkins, 1999, eq.21)
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
 #ifdef ALLOW_SHITRANSCOEFF_3D
-           shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
-     &          shiTransCoeffT(i,j,k,bi,bj)
+           shiTransCoeffS3d(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
+     &          shiTransCoeffT3d(i,j,k,bi,bj)
 #endif
            icfHeatFlux(i,j,k,bi,bj)       = 0. _d 0
            icfFreshWaterFlux(i,j,k,bi,bj) = 0. _d 0
@@ -364,8 +364,8 @@ C--   open water.
                         pLoc = 0.5 _d 0 * ABS(wet_top_Z_N +
      &                    iceFrontWetContact_Z_max)
 #ifdef ALLOW_SHITRANSCOEFF_3D
-                        gammaTLoc = shiTransCoeffT(CURI,CURJ,k,bi,bj)
-                        gammaSLoc = shiTransCoeffS(CURI,CURJ,k,bi,bj)
+                        gammaTLoc = shiTransCoeffT3d(CURI,CURJ,k,bi,bj)
+                        gammaSLoc = shiTransCoeffS3d(CURI,CURJ,k,bi,bj)
 #else
                         gammaTLoc = shiTransCoeffT(CURI,CURJ,bi,bj)
                         gammaSLoc = shiTransCoeffS(CURI,CURJ,bi,bj)
@@ -510,8 +510,8 @@ C--   base of the ice shelf, top of the cavity.
                 tLoc = theta(i,j,k,bi,bj)
                 sLoc = MAX(salt(i,j,k,bi,bj), zeroRL)
 #ifdef ALLOW_SHITRANSCOEFF_3D
-                gammaTLoc = shiTransCoeffT(i,j,k,bi,bj)
-                gammaSLoc = shiTransCoeffS(i,j,k,bi,bj)
+                gammaTLoc = shiTransCoeffT3d(i,j,k,bi,bj)
+                gammaSLoc = shiTransCoeffS3d(i,j,k,bi,bj)
 #else
                 gammaTLoc = shiTransCoeffT(i,j,bi,bj)
                 gammaSLoc = shiTransCoeffS(i,j,bi,bj)
@@ -667,9 +667,9 @@ C     ICFForcS (Ice front forcing for salt [g/m2/s], >0 increases salt)
 
 C     Transfer coefficients
 #ifdef ALLOW_SHITRANSCOEFF_3D
-       CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffT3d,'SHIgammT',
      &      0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffS3d,'SHIgammS',
      &      0,Nr,0,1,1,myThid)
 #else
        CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',

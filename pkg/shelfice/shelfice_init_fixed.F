@@ -1,4 +1,7 @@
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -242,20 +245,17 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef ALLOW_SHITRANSCOEFF_3D
-       diagCode  = 'SMR     MR      '
-#else
-       diagCode  = 'SM      L1      '
-#endif
        diagName  = 'SHIgammT'
        diagTitle = 'Ice shelf exchange coefficient for theta'
        diagUnits = 'm/s             '
+       diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
        diagName  = 'SHIgammS'
        diagTitle = 'Ice shelf exchange coefficient for salt'
        diagUnits = 'm/s             '
+       diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 

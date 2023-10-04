@@ -300,6 +300,22 @@ C     output the masks
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 
+# ifdef ALLOW_SHITRANSCOEFF_3D
+       diagName  = 'SHIgam3T'
+       diagTitle = '3D-Ice shelf exchange coefficient for theta'
+       diagUnits = 'm/s             '
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SHIgam3S'
+       diagTitle = '3D-Ice shelf exchange coefficient for salt'
+       diagUnits = 'm/s             '
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
        diagName  = 'SHIICFfw'
        diagTitle = 'total ice shelf and front FW flux (+ upward)'
        diagUnits = 'kg/m^2/s        '

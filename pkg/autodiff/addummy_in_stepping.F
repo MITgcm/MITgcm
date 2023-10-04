@@ -14,8 +14,8 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
 #endif
 #include "AD_CONFIG.h"
 
@@ -195,8 +195,8 @@ C     problem occurs
 #  endif
 # endif
 # if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
-        CALL ADEXCH_3D_RL( adshiTransCoeffT, myThid )
-        CALL ADEXCH_3D_RL( adshiTransCoeffS, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -298,10 +298,10 @@ C-----------------------------------------------------------------------
 #  endif
 # endif
 # if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
-      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT,
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT3d,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS,
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS3d,
      &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
@@ -411,10 +411,10 @@ C-----------------------------------------------------------------------
 #  endif
 # endif
 # if (defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D)
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT%d,
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT3d%d,
      &                 'ADJshict','ADJshict.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
-      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS%d,
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS3d%d,
      &                 'ADJshics','ADJshics.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
@@ -525,10 +525,17 @@ C     dumpAdVarExch.NE.2
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
+#  ifdef ALLOW_SHITRANSCOEFF_3D
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshict', adshiTransCoeffT3d, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshics', adshiTransCoeffS3d, myThid)
+#  else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshics', adshiTransCoeffS, myThid)
+#  endif
 # else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshicd', adshiCDragFld, myThid)

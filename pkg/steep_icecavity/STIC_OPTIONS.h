@@ -18,5 +18,9 @@ CEOP
 #ifdef ALLOW_STEEP_ICECAVITY
 C Place CPP define/undef flag here
 
+C     use 3D version of transfer coefficients (needed for variable
+C     transfer coefficients)
+#define ALLOW_SHITRANSCOEFF_3D
+
 #endif /* ALLOW_STEEP_ICECAVITY */
 #endif /* STIC_OPTIONS_H */

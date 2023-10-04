@@ -2,9 +2,6 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -54,6 +51,9 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
 #endif
 
 c     == routine arguments ==

@@ -42,15 +42,8 @@ CEOP
            shelficeMass          (i,j,bi,bj) = 0. _d 0
            shiCDragFld           (i,j,bi,bj) = 0. _d 0
            shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_SHITRANSCOEFF_3D
-           DO k = 1, NR
-            shiTransCoeffT     (i,j,k,bi,bj) = 0. _d 0
-            shiTransCoeffS     (i,j,k,bi,bj) = 0. _d 0
-           ENDDO
-#else
            shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
            shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
@@ -65,28 +58,15 @@ C        Therefore, in this case, the "If useShelfIce" is added back here:
 
       IF ( .NOT. SHELFICEuseGammaFrict ) THEN
        IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
-#ifdef ALLOW_SHITRANSCOEFF_3D
-        CALL READ_FLD_XYZ_RL( SHELFICETransCoeffTFile, ' ',
-     &                       shiTransCoeffT, 0, myThid )
-        _EXCH_XYZ_RL( shiTransCoeffT, myThid )
-#else
         CALL READ_FLD_XY_RL( SHELFICETransCoeffTFile, ' ',
      &                       shiTransCoeffT, 0, myThid )
         _EXCH_XY_RL( shiTransCoeffT, myThid )
-#endif
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
-#ifdef ALLOW_SHITRANSCOEFF_3D
-            DO k = 1, Nr
-            shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
-     &                                  shiTransCoeffT(i,j,k,bi,bj)
-            ENDDO
-#else
             shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltToHeatRatio *
      &                                  shiTransCoeffT(i,j,bi,bj)
-#endif
            ENDDO
           ENDDO
          ENDDO
@@ -97,15 +77,8 @@ C     set coefficients to constant values
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
-#ifdef ALLOW_SHITRANSCOEFF_3D
-            DO k = 1, Nr
-             shiTransCoeffT(i,j,k,bi,bj) = SHELFICEheatTransCoeff
-             shiTransCoeffS(i,j,k,bi,bj) = SHELFICEsaltTransCoeff
-            ENDDO
-#else
             shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
             shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
-#endif
            ENDDO
           ENDDO
          ENDDO

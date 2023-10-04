@@ -39,7 +39,7 @@ CEOP
      &     STICdepthFile
 
 C     ow - 06/29/2018
-C     maskSHI of pkg/shelflice is not consistent with the spirit of gencost.
+C     maskSHI of pkg/shelfice is not consistent with the spirit of gencost.
 C       Use the following masks below instead.
 C     mask2dSHIICF: 2d shelf-ice & ice-front mask:
 C       1 for having shelf-ice and/or ice-front at one or more vertical levels
@@ -52,12 +52,12 @@ C                vertical levels.
 C     mask3dICF: 3d ice-front mask
       COMMON /STIC_MASKS/ mask2dSHIICF, mask3dSHIICF,
      &        mask2dSHI, mask3dSHI, mask2dICF, mask3dICF
-      _RS mask2dSHIICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS mask3dSHIICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS mask2dSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS mask3dSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS mask2dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS mask3dICF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask2dSHIICF(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dSHIICF(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask2dSHI   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dSHI   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS mask2dICF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask3dICF   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 C     INTEGER arrays
 C     CURI_ARR       :: i-index for neighboring ice-front points
@@ -75,6 +75,13 @@ C     kIcf           :: index of the bottommost ice front cell (2D)
       _RL icfForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL icfForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sticfWidth_arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,4)
+
+#ifdef ALLOW_SHITRANSCOEFF_3D
+       COMMON /SHELFICE_GAMMA3D_RL/
+     &     shiTransCoeffT3D, shiTransCoeffS3D
+       _RL shiTransCoeffT3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+       _RL shiTransCoeffS3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 
 
       COMMON /STIC_FIELDS_RS/

@@ -8,6 +8,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -59,6 +62,9 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
@@ -397,7 +403,7 @@ C--   generic 3D control variables
 # endif
 #if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
       IF (igen_shiCoeffT.GT.0)
-     &  CALL CTRL_MAP_GENARR3D(shiTransCoeffT, igen_shiCoeffT, myThid)
+     &  CALL CTRL_MAP_GENARR3D(shiTransCoeffT3d, igen_shiCoeffT, myThid)
 #endif
 
 # ifdef ALLOW_PTRACERS

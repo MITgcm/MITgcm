@@ -18,6 +18,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "STIC.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  my Thread Id number
@@ -54,6 +57,42 @@ C     2-dim.
 C- end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_SHITRANSCOEFF_3D
+      IF ( .NOT. SHELFICEuseGammaFrict ) THEN
+       IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
+        CALL READ_FLD_XYZ_RL( SHELFICETransCoeffTFile, ' ',
+     &                       shiTransCoeffT3d, 0, myThid )
+        _EXCH_XYZ_RL( shiTransCoeffT3d, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, Nr
+           DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
+             shiTransCoeffS3d(i,j,k,bi,bj) = SHELFICEsaltToHeatRatio *
+     &            shiTransCoeffT3d(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE
+C     set coefficients to constant values
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO k = 1, Nr
+           DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
+             shiTransCoeffT3d(i,j,k,bi,bj) = SHELFICEheatTransCoeff
+             shiTransCoeffS3d(i,j,k,bi,bj) = SHELFICEsaltTransCoeff
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif
 
       RETURN
       END
