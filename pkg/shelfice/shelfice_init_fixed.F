@@ -1,7 +1,4 @@
 #include "SHELFICE_OPTIONS.h"
-#ifdef ALLOW_STEEP_ICECAVITY
-# include "STIC_OPTIONS.h"
-#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
