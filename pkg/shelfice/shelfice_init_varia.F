@@ -28,7 +28,7 @@ CEndOfInterface
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
 CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -39,11 +39,11 @@ CEOP
            shelficeForcingS      (i,j,bi,bj) = 0. _d 0
            shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
            shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
+           shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
+           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
            shelficeMass          (i,j,bi,bj) = 0. _d 0
            shiCDragFld           (i,j,bi,bj) = 0. _d 0
            shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
-           shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
-           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
