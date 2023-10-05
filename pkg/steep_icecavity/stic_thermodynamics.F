@@ -642,9 +642,9 @@ c     ENDIF
      &      0,1,0,1,1,myThid)
 #endif
 
-        CALL DIAGNOSTICS_FILL(icfFreshWaterFlux, 'ICFfwFlx',
+        CALL DIAGNOSTICS_FILL(icfFreshWaterFlux, 'STCfwFlx',
      &      0,Nr,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(icfHeatFlux, 'ICFhtFlx',
+        CALL DIAGNOSTICS_FILL(icfHeatFlux, 'STChtFlx',
      &      0,Nr,0,1,1,myThid)
 
 C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
@@ -656,20 +656,20 @@ C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
        CALL DIAGNOSTICS_SCALE_FILL(tmpDiagShelficeForcingS,tmpFac,1,
      &      'SHIForcS',0,1,0,1,1,myThid)
 
-C     ICFForcT (Ice front forcing for theta [W/m2], >0 increases theta)
+C     STCForcT (Ice front forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(tmpDiagIcfForcingT,tmpFac,1,
-     &      'ICFForcT',0,Nr,0,1,1,myThid)
-C     ICFForcS (Ice front forcing for salt [g/m2/s], >0 increases salt)
+     &      'STCForcT',0,Nr,0,1,1,myThid)
+C     STCForcS (Ice front forcing for salt [g/m2/s], >0 increases salt)
        tmpFac = rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL(tmpDiagIcfForcingS,tmpFac,1,
-     &      'ICFForcS',0,Nr,0,1,1,myThid)
+     &      'STCForcS',0,Nr,0,1,1,myThid)
 
 C     Transfer coefficients
 #ifdef ALLOW_SHITRANSCOEFF_3D
-       CALL DIAGNOSTICS_FILL(shiTransCoeffT3d,'SHIgammT',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffT3d,'SHIgam3T',
      &      0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(shiTransCoeffS3d,'SHIgammS',
+       CALL DIAGNOSTICS_FILL(shiTransCoeffS3d,'SHIgam3S',
      &      0,Nr,0,1,1,myThid)
 #else
        CALL DIAGNOSTICS_FILL(shiTransCoeffT,'SHIgammT',

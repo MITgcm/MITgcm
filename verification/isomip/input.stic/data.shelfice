@@ -1,15 +1,13 @@
-# ==========================================
-# | Parameters for STEEP_ICECAVITY package |
-# ==========================================
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
  &SHELFICE_PARM01
  SHELFICEadvDiffHeatFlux = .TRUE.,
- SHELFICEboundaryLayer = .FALSE.,
  SHELFICEtopoFile='icetopo.exp1',
  SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
- SHELFICEuseGammaFrict = .FALSE.,
  SHELFICEconserve = .TRUE.,
  SHELFICEkappa = 0.,
- useISOMIPTD = .FALSE.,
- no_slip_shelfice = .FALSE.,
+# defaults to no_slip_bottom (=F in input_ad/data)
+#no_slip_shelfice = .FALSE.,
  SHELFICEwriteState = .TRUE.,
  &

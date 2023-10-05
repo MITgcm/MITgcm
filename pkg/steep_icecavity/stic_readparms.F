@@ -17,6 +17,9 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "STIC.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -45,8 +48,11 @@ C     print a (weak) warning if data.stic is found
 
 C--   Default values for STIC
 C-    file names for initial conditions:
+C     the default topography should be the same as for pkg/shelfice, but
+C     we allow different files and issue a warning. For the following
+C     line to work, S/R SHELFICE_READPARMS needs to be called first.
+      STICdepthFile  = SHELFICEtopoFile
       STIClengthFile = ' '
-      STICdepthFile  = ' '
 
       WRITE(msgBuf,'(A)') 'STIC_READPARMS: opening data.stic'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

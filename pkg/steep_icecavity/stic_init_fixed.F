@@ -314,7 +314,7 @@ C     output the masks
        diagCode  = 'SMR     MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif
+# endif
 
        diagName  = 'SHIICFfw'
        diagTitle = 'total ice shelf and front FW flux (+ upward)'
@@ -330,47 +330,48 @@ C     output the masks
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'ICFfwFlx'
+       diagName  = 'STCfwFlx'
        diagTitle ='Ice front freshwater flux (+ve increases ocean salt)'
        diagUnits = 'kg/m^2/s        '
        diagCode  = 'SM      MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'ICFhtFlx'
+       diagName  = 'STChtFlx'
        diagTitle = 'Ice front heat flux  (+ve cools ocean)'
        diagUnits = 'W/m^2           '
        diagCode  = 'SM      MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'ICFForcT'
+       diagName  = 'STCForcT'
        diagTitle = 'Ice front forcing for theta, >0 increases theta'
        diagUnits = 'W/m^2           '
        diagCode  = 'SM      MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'ICFForcS'
+       diagName  = 'STCForcS'
        diagTitle = 'Ice front forcing for salt, >0 increases salt'
        diagUnits = 'g/m^2/s         '
        diagCode  = 'SM      MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'SHIICFFT'
-       diagTitle = 'total SHI and ICF forcing for T, >0 increases theta'
-       diagUnits = 'W/m^2           '
-       diagCode  = 'SM      L1      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C     these diagnostics are never filled
+c      diagName  = 'SHIICFFT'
+c      diagTitle = 'total SHI and ICF forcing for T, >0 increases theta'
+c      diagUnits = 'W/m^2           '
+c      diagCode  = 'SM      L1      '
+c      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'SHIICFFS'
-       diagTitle = 'total SHI and ICF forcing for S, >0 increases salt'
-       diagUnits = 'g/m^2/s         '
-       diagCode  = 'SM      L1      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+c      diagName  = 'SHIICFFS'
+c      diagTitle = 'total SHI and ICF forcing for S, >0 increases salt'
+c      diagUnits = 'g/m^2/s         '
+c      diagCode  = 'SM      L1      '
+c      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       ENDIF
 #endif
