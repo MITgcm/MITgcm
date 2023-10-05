@@ -21,6 +21,8 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_CHECK
 C       |
+C       |-- STIC_CHECK
+C       |
 C       |-- OBCS_CHECK
 C       |
 C       |-- OPPS_CHECK
@@ -196,6 +198,13 @@ C     If taveFreq is finite, make sure the pkg/timeave is being compiled
 #ifndef ALLOW_CD_CODE
        IF (useCDscheme) CALL PACKAGES_ERROR_MSG(
      &                  'CD_CODE', 'useCDscheme=.T.', myThid )
+#endif
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF (useSTIC) CALL STIC_CHECK( myThid )
+#else
+      IF (useSTIC) CALL PACKAGES_ERROR_MSG('STEEP_ICECAVITY',
+     &             'useSTIC', myThid)
 #endif
 
 C---  Continue with standard packages (with standard usePKG flag)
@@ -514,6 +523,18 @@ C---  Exclusive packages (which cannot be used together):
       IF ( useDOWN_SLOPE .AND. useBBL ) THEN
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  'both useDOWN_SLOPE and useBBL are set'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
+     &  ' but cannot be used together => need to select only one.'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R PACKAGES_CHECK'
+      ENDIF
+
+C---  Exclusive packages (which cannot be used together):
+      IF ( useSTIC .AND. (useShelfIce .OR. useICEFRONT) ) THEN
+        WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
+     &  'both useSTIC and useShelfIce/useICEFRONT are set'
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(2A)') 'PACKAGES_CHECK: ',
      &  ' but cannot be used together => need to select only one.'

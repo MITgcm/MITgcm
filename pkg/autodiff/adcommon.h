@@ -228,4 +228,19 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
      &  adshitranscoeffs, adshicdragfld, adshidragquadfld
 #endif
 
+#ifdef ALLOW_STEEP_ICECAVITY
+C Special Care: more forward vars in FWD common block ; check TAF AD-code !
+# ifndef ALLOW_shiTransCoeff_3d
+      _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /adSTIC_GAMMA_RL/
+     &  adshitranscoefft, adshitranscoeffs
+# else
+      _RL adshitranscoeffs3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL adshitranscoefft3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /adSTIC_GAMMA3D_RL/
+     &  adshitranscoefft3d, adshitranscoeffs3d
+# endif
+#endif
+
 #endif /* ALLOW_AUTODIFF_MONITOR */

@@ -121,6 +121,9 @@ C !USES: ===============================================================
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif /* ALLOW_STEEP_ICECAVITY */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -319,8 +322,10 @@ c     of the cell; therefore the proper masking is maskC(k)*maskC(k+1)
      &        * maskC(i,j,kp1,bi,bj)
          ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kp1,bi,bj)
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE))
          IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+         IF ( useSTIC ) kSurf = MAX(1,kTopC(i,j,bi,bj))
 #endif /* ALLOW_SHELFICE */
          Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,kSurf,bi,bj)
@@ -578,9 +583,11 @@ c-----------------------------------------------------------------------
       kSurf = 1
       DO j = jMin, jMax
        DO i = iMin, iMax
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE))
         IF ( useShelfIce ) kSurf = MAX(1,kTopC(i,j,bi,bj))
-#endif /* ALLOW_SHELFICE */
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+        IF ( useSTIC ) kSurf = MAX(1,kTopC(i,j,bi,bj))
+#endif 
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,kSurf,bi,bj)
        ENDDO
       ENDDO

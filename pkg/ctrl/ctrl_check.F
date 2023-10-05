@@ -12,6 +12,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_CHECK
@@ -271,7 +274,7 @@ C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO
-# ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 #  ifdef SHI_ALLOW_GAMMAFRICT
 C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
       DO iarr = 1, maxCtrlArr2D
@@ -307,7 +310,7 @@ C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  endif /* SHI_ALLOW_GAMMAFRICT */
-# endif /* ALLOW_SHELFICE */
+# endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL

@@ -49,6 +49,9 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 c     == routine arguments ==
 
@@ -144,6 +147,12 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
          elseif (gencost_barfile(k)(1:11).EQ.'m_drifterVN') then
            gencost_modfld(i,j,bi,bj,k) =
      &      m_VN(i,j,kLev,bi,bj)*maskC(i,j,kLev,bi,bj)
+#ifdef ALLOW_STEEP_ICECAVITY
+         elseif (gencost_barfile(k)(1:10).EQ.'m_shifwflx') then
+           gencost_modfld(i,j,bi,bj,k) =
+     &      SHIICFFreshWaterFlux(i,j,bi,bj)
+     &      *mask2dSHIICF(i,j,bi,bj)
+#endif
          elseif (gencost_barfile(k)(1:4).EQ.'m_bp' .and.
      &           gencost_barfile(k)(1:12).NE.'m_bp_nopabar') then
            gencost_modfld(i,j,bi,bj,k) =

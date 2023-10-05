@@ -188,7 +188,7 @@ C     place holder of obsolete variable jG
 #ifdef ALLOW_CTRL_WETV
           write(cunit) (nWetvGlobal(k), k=1,Nr)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
           write(cunit) (nWetiGlobal(k), k=1,Nr)
 c          write(cunit) nWetiGlobal(1)
 #endif
@@ -257,7 +257,7 @@ c          write(cunit) nWetiGlobal(1)
        do iarr = 1, maxCtrlArr2D
         if (xx_genarr2d_weight(iarr).NE.' ') then
          mskNameForSetPack='maskCtrlC'
-# ifdef ALLOW_SHELFICE
+# if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
          if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
      &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetPack='maskCtrlI'
@@ -295,7 +295,7 @@ cc          write(weighttype,'(a)') 'wunit'
        do iarr = 1, maxCtrlTim2D
         if (xx_gentim2d_weight(iarr).NE.' ') then
          mskNameForSetPack='maskCtrlC'
-# ifdef ALLOW_SHELFICE
+# if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
      &          mskNameForSetPack='maskCtrlI'
 # endif

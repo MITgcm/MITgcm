@@ -43,6 +43,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -120,6 +123,8 @@ C       |
 C       |-- AUTODIFF_INADMODE_UNSET
 C       |
 C       |-- SHELFICE_REMESHING
+C       |
+C       |-- STIC_REMESHING
 C       |
 C       |-- RESET_NLFS_VARS
 C       |-- UPDATE_R_STAR
@@ -351,6 +356,10 @@ C     == Global variables ==
 #  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
 # endif
+# ifdef ALLOW_STEEP_ICECAVITY
+#  include "STIC.h"
+#  include "STIC_COST.h"
+# endif
 # ifdef ALLOW_STREAMICE
 #  include "STREAMICE.h"
 #  include "STREAMICE_ADV.h"
@@ -459,6 +468,15 @@ C--   Remesh shelfice
         CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* ALLOW_SHELFICE_REMESHING */
+
+#ifdef ALLOW_STIC_REMESHING
+      IF ( useSTIC ) THEN
+C--   Remesh steep_icecavity
+        CALL TIMER_START('STIC_REMESHING     [FORWARD_STEP]',myThid)
+        CALL STIC_REMESHING ( myTime, myIter, myThid )
+        CALL TIMER_STOP('STIC_REMESHING     [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_STIC_REMESHING */
 
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run

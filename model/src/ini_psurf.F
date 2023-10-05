@@ -33,6 +33,9 @@ C     === Global variables ===
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -107,6 +110,21 @@ C--   By default, initialize etaH with etaN :
         ENDDO
       ENDIF
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC .AND. usingZCoords ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
+     &          + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
 
       RETURN
       END

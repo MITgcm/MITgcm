@@ -157,7 +157,7 @@ C--   Zonal & Meridional gradient of potential anomaly
 # ifndef DISABLE_RSTAR_CODE
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
 C-     need to use general form anytime r* @ Top is not uniformly zero:
-       generalForm = useShelfIce .OR.
+       generalForm = useShelfIce .OR. useSTIC .OR.
      &  ( usingPCoords .AND. ( rF(Nr+1).NE.zeroRS ) ) .OR.
      &  ( usingZCoords .AND. ( topoFile.NE.' ' .OR. rF(1).NE.zeroRS ) )
 c      generalForm = .TRUE.

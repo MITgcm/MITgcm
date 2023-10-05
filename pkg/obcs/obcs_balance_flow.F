@@ -322,6 +322,20 @@ C     displacement fluxes from advancing ice sheets or imported sea ice
         ENDIF
        ENDIF
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_STEEP_ICECAVITY
+       IF ( useSTIC ) THEN
+        CALL STIC_NETMASSFLUX_SURF(
+     O                        shelfIceNetMassFlux,
+     I                        myTime, myIter, myThid )
+        IF ( debugLevel.GE.debLevC ) THEN
+         WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
+     &        myIter, ' ) correct for shelfIceNetMassFlux:',
+     &        shelfIceNetMassFlux
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -341,6 +355,10 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
          inFlow = inFlow + netFreshWaterFlux*mass2rUnit
 #ifdef ALLOW_SHELFICE
          IF ( useShelfIce )
+     &        inFlow = inFlow + shelfIceNetMassFlux*mass2rUnit
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+         IF ( useSTIC )
      &        inFlow = inFlow + shelfIceNetMassFlux*mass2rUnit
 #endif
         ENDIF

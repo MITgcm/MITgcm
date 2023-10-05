@@ -159,6 +159,10 @@ c They provide the fields to be stored.
 #   include "SHELFICE.h"
 #   include "SHELFICE_COST.h"
 #  endif
+#  ifdef ALLOW_STEEP_ICECAVITY
+#   include "STIC.h"
+#   include "STIC_COST.h"
+#  endif
 #  ifdef ALLOW_STREAMICE
 #   include "STREAMICE.h"
 #   include "STREAMICE_ADV.h"
@@ -339,6 +343,9 @@ C     this needs to happen before any store directive to taplev_init
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
 # ifdef ALLOW_SHELFICE
+CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
+# endif
+# ifdef ALLOW_STEEP_ICECAVITY
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE

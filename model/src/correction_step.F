@@ -294,6 +294,14 @@ C         kSurfS = Nr+1 if dry column
      I                bi, bj, myIter, myThid )
       ENDIF
 # endif /* ALLOW_SHELFICE */
+# ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC .AND. useDiagnostics ) THEN
+        CALL STIC_DIAGNOSTICS_DRAG(
+     I                uVel(1-OLx,1-OLy,1,bi,bj),
+     I                vVel(1-OLx,1-OLy,1,bi,bj),
+     I                bi, bj, myIter, myThid )
+      ENDIF
+# endif /* ALLOW_STEEP_ICECAVITY */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

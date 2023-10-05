@@ -2,6 +2,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -33,6 +36,9 @@ c     == global variables ==
 #endif
 #if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_SHELFICE)
 # include "SHELFICE.h"
+#endif
+#if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_STEEP_ICECAVITY)
+# include "STIC.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -435,7 +441,7 @@ cts ---
 #endif
             IF (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
            ENDIF
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
 cts ---
 c Shelfice:
 c   Simply accumulate shelfice FWF or HF into tmpfld here
@@ -463,7 +469,7 @@ cts ---
             ENDIF
             IF (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
            ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 cts ---
 c Fill 2D field

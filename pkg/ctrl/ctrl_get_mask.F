@@ -95,6 +95,9 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
@@ -111,7 +114,7 @@ CEOP
       iAmDone = .FALSE.
 
 C --- Shelfice
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
       IF ((xx_filename(1:11).EQ.'xx_shicoeff').OR.
      &    (xx_filename(1:11).EQ.'xx_shicdrag').OR.
      &    (xx_filename(1:11).EQ.'xx_shifwflx')) THEN

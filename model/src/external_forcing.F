@@ -348,7 +348,7 @@ CEOP
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
-      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+      ELSEIF ( usingZCoords .AND. ( useShelfIce .OR. useSTIC ) ) THEN
        kSurface = -1
       ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
@@ -566,6 +566,14 @@ c     ENDIF
      I                   myTime, 0, myThid )
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC )
+     &     CALL STIC_FORCING_T(
+     U                   gT(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
+#endif /* ALLOW_STEEP_ICECAVITY */
+
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_T(
@@ -671,7 +679,7 @@ CEOP
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
-      ELSEIF ( usingZCoords .AND. useShelfIce ) THEN
+      ELSEIF ( usingZCoords .AND. ( useShelfIce .OR. useSTIC ) ) THEN
        kSurface = -1
       ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
@@ -769,6 +777,14 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
      I                   myTime, 0, myThid )
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC )
+     &     CALL STIC_FORCING_S(
+     U                   gS(1-OLx,1-OLy,kLev,bi,bj),
+     I                   iMin,iMax,jMin,jMax, kLev, bi,bj,
+     I                   myTime, 0, myThid )
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )

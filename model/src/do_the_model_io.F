@@ -222,6 +222,12 @@ C     Do SBO diagnostics.
       ENDIF
 #endif  /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC ) THEN
+        CALL STIC_OUTPUT( myTime, myIter, myThid )
+      ENDIF
+#endif  /* ALLOW_STEEP_ICECAVITY */
+
 #ifdef ALLOW_BULK_FORCE
 C     Do bulkf output.
       IF ( useBulkForce .AND. myIter.NE.nIter0 )

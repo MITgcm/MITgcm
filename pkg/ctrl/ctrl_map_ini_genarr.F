@@ -8,6 +8,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
@@ -60,6 +63,9 @@ C     == global variables ==
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
 #endif
@@ -88,7 +94,7 @@ C     == local variables ==
 # ifdef ALLOW_SEAICE
       INTEGER igen_siarea, igen_siheff
 # endif
-# ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE || defined ALLOW_STEEP_ICECAVITY)
       INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       INTEGER i, j, bi, bj
 #  ifdef SHI_ALLOW_GAMMAFRICT
@@ -132,7 +138,7 @@ C--   generic 2D control variables
       igen_siarea=0
       igen_siheff=0
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
       igen_shiCoeffT=0
       igen_shiCoeffS=0
       igen_shiCDrag=0
@@ -160,7 +166,7 @@ C--   generic 2D control variables
         IF (temp_genarr_fnam(1:9).EQ.'xx_siheff')
      &     igen_siheff=iarr
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 # ifndef SHI_ALLOW_GAMMAFRICT
         IF (temp_genarr_fnam(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
@@ -210,7 +216,7 @@ C--   generic 2D control variables
       IF (igen_siheff.GT.0)
      &  CALL CTRL_MAP_GENARR2D(HEFF,igen_siheff,myThid)
 #endif
-#ifdef ALLOW_SHELFICE
+#if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 # ifndef SHI_ALLOW_GAMMAFRICT
       IF (igen_shiCoeffT.GT.0)
      &  CALL CTRL_MAP_GENARR2D(shiTransCoeffT,igen_shiCoeffT,myThid)
@@ -225,7 +231,11 @@ C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            shiTransCoeffS(i,j,bi,bj) =
+#  ifdef ALLOW_SHELFICE
      &       SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+#  elif ( defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d )
+     &       STICsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+#  endif
           ENDDO
          ENDDO
         ENDDO
@@ -237,7 +247,11 @@ C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
            shiTransCoeffT(i,j,bi,bj) =
+#  ifdef ALLOW_SHELFICE
      &       shiTransCoeffS(i,j,bi,bj)/SHELFICEsaltToHeatRatio
+#  elif ( defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d )
+     &       shiTransCoeffS(i,j,bi,bj)/STICsaltToHeatRatio
+#  endif
           ENDDO
          ENDDO
         ENDDO
@@ -266,7 +280,7 @@ C--      u* drag coefficient
        ENDDO
       ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || (ALLOW_STEEP_ICECAVITY && undef ALLOW_shiTransCoeff_3d) */
 
 #ifdef ALLOW_STREAMICE
       IF (igen_bdot_max_streamice.GT.0) THEN
@@ -352,6 +366,13 @@ C--   generic 3D control variables
      &     igen_kapredi=iarr
         IF (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
      &     igen_diffkr=iarr
+#if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+# ifndef SHI_ALLOW_GAMMAFRICT
+        IF (xx_genarr3d_file(iarr)(1:17).EQ.'xx_shiTransCoeffT')
+     &     igen_shiCoeffT=iarr
+# endif
+#endif
+
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
         IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
      &     igen_uvel0=iarr
@@ -388,6 +409,13 @@ C--   generic 3D control variables
       IF (igen_diffkr.GT.0)
      &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
+#if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+      IF (useSTIC) THEN
+        IF (igen_shiCoeffT.GT.0) 
+     &    CALL CTRL_MAP_GENARR3D(shiTransCoeffT3d, igen_shiCoeffT, 
+     &         myThid)
+      ENDIF
+#endif
 
 # ifdef ALLOW_PTRACERS
 CADJ loop = parallel

@@ -52,6 +52,9 @@ C     == Global variables ===
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 # endif
+# ifdef ALLOW_STEEP_ICECAVITY
+#  include "STIC.h"
+# endif
 # ifdef ALLOW_STREAMICE
 #  include "STREAMICE.h"
 # endif

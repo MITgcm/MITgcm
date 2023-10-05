@@ -2,6 +2,9 @@
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 
       SUBROUTINE SMOOTH_FILTERVAR2D( smoothOpNb, myThid )
 
@@ -23,6 +26,9 @@ c     == global variables ==
 #include "SMOOTH.h"
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
+#endif
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
 #endif
 
 c     == routine arguments ==
@@ -67,7 +73,7 @@ c     filter variance without actually running the model
            smooth2Dmask(i,j,bi,bj) = maskW(i,j,1,bi,bj)
           ELSEIF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskS') THEN
            smooth2Dmask(i,j,bi,bj) = maskS(i,j,1,bi,bj)
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
           ELSEIF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI') THEN
            smooth2Dmask(i,j,bi,bj) = maskSHI(i,j,1,bi,bj)
 #endif

@@ -140,6 +140,10 @@ CADJ STORE phiHydLow  = tapelev3, key = ilev_3
 # include "shelfice_ad_check_lev3_dir.h"
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "stic_ad_check_lev3_dir.h"
+#endif /* ALLOW_STEEP_ICECAVITY */
+
 #ifdef ALLOW_STREAMICE
 # include "streamice_ad_check_lev3_dir.h"
 #endif /* ALLOW_STREAMICE */

@@ -181,11 +181,19 @@ C-   End k loop
         ENDDO
        ENDIF
 
-#ifdef ALLOW_SHELFICE
+#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined (ALLOW_SHELFICE))
        IF ( useShelfIce ) THEN
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+       IF ( useSTIC ) THEN
+#endif
 C--   Add shelfice drag coeff to main diagonal "c5d":
         DO k=1,Nr
+#if (defined (ALLOW_SHELFICE))
           CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .FALSE.,
+#elif (defined (ALLOW_STEEP_ICECAVITY))
+          CALL STIC_U_DRAG_COEFF( bi, bj, k, .FALSE.,
+#endif
      I                     uVel(1-OLx,1-OLy,k,bi,bj),
      I                     vVel(1-OLx,1-OLy,k,bi,bj),
      I                     kappaRU,
@@ -202,7 +210,7 @@ C--   Add shelfice drag coeff to main diagonal "c5d":
 C-   End k loop
         ENDDO
        ENDIF
-#endif /* ALLOW_SHELFICE */
+#endif /* ALLOW_SHELFICE || ALLOW_STEEP_ICECAVITY */
 
 C--   end if selectImplicitDrag > 0
       ENDIF

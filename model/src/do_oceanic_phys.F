@@ -196,6 +196,9 @@ c# endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 # endif
+# ifdef ALLOW_STEEP_ICECAVITY
+#  include "STIC.h"
+# endif
 #endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -465,6 +468,25 @@ C     shelf-ice ocean interface
      &      myThid)
       ENDIF
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC .AND. fluidIsWater ) THEN
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE salt, theta       = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uvel, vvel        = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+C     compute temperature and (virtual) salt flux at the
+C     shelf-ice ocean interface
+       CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+       CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT .AND. fluidIsWater ) THEN
