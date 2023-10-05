@@ -93,10 +93,6 @@ C--   Modify ocean upper boundary position according to ice-shelf topography
         STOP 'SHELFICE_INIT_DEPTHS: Missing code for P-coords'
       ENDIF
 
-# ifdef ALLOW_STEEP_ICECAVITY
-      IF ( useSTIC ) CALL STIC_INIT_DEPTHS( myThid )
-# endif /* ALLOW_STEEP_ICECAVITY */
-
 #endif /* ALLOW_SHELFICE */
 
       RETURN

@@ -177,8 +177,8 @@ C     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -341,7 +341,7 @@ C     the routine ecco_cprsrl does not copy overlaps
           ENDDO
          ENDDO
 
-#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_STEEP_ICECAVITY
         ELSEIF ( ylocmask .EQ. 'I' .OR. ylocmask .EQ. 'i' ) THEN
 
          DO k = 1, 1

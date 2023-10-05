@@ -49,9 +49,6 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif
 #ifdef ALLOW_STEEP_ICECAVITY
 # include "STIC.h"
 #endif
