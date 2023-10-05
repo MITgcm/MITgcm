@@ -526,7 +526,7 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adKapRedi, myThid)
 #endif
-#if (defined (ALLOW_SHELFICE) || defined (ALLOW_STEEP_ICECAVITY))
+#if (defined ALLOW_SHELFICE || (defined ALLOW_STEEP_ICECAVITY && !defined ALLOW_shiTransCoeff_3d))
 # ifndef SHI_ALLOW_GAMMAFRICT
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)
@@ -536,6 +536,12 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshicd', adshiCDragFld, myThid)
 # endif
+#endif
+#if ( defined ALLOW_STEEP_ICECAVITY && defined ALLOW_shiTransCoeff_3d )
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshict', adshiTransCoeffT3d, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshics', adshiTransCoeffS3d, myThid)
 #endif
          ENDIF
 C     endif mnc

@@ -230,22 +230,17 @@ C Special Care: more forward vars in FWD common block ; check TAF AD-code !
 
 #ifdef ALLOW_STEEP_ICECAVITY
 C Special Care: more forward vars in FWD common block ; check TAF AD-code !
-      _RL adshelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL adshelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifndef ALLOW_shiTransCoeff_3d
+# ifndef ALLOW_shiTransCoeff_3d
       _RL adshitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL adshitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else
+      COMMON /adSTIC_GAMMA_RL/
+     &  adshitranscoefft, adshitranscoeffs
+# else
       _RL adshitranscoeffs3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL adshitranscoefft3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /adSTIC_GAMMA3D_RL/
+     &  adshitranscoefft3d, adshitranscoeffs3d
+# endif
 #endif
-      _RL adicefrontforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL adicefrontforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /adSTIC_FIELDS_RL/ 
-     &  adshelficeforcingt, adshelficeforcings, adshitranscoefft,
-     &  adshitranscoeffs, adicefrontforcingt, adicefrontforcings
-#endif
-
-
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

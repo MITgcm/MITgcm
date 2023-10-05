@@ -93,8 +93,11 @@ c$taf COMMON seaice_salinity_r FTLNAME = g_seaice_salinity_r
 c$taf COMMON shelfice_fields_rl  ADNAME = adshelfice_fields_rl
 c$taf COMMON shelfice_fields_rl FTLNAME = g_shelfice_fields_rl
 
-c$taf COMMON stic_fields_rl  ADNAME = adstic_fields_rl
-c$taf COMMON stic_fields_rl FTLNAME = g_stic_fields_rl
+c$taf COMMON stic_gamma_rl  ADNAME = adstic_gamma_rl
+c$taf COMMON stic_gamma_rl FTLNAME = g_stic_gamma_rl
+
+c$taf COMMON stic_gamma3d_rl  ADNAME = adstic_gamma3d_rl
+c$taf COMMON stic_gamma3d_rl FTLNAME = g_stic_gamma3d_rl
 
 c$taf COMMON ggl90_fields  ADNAME = adggl90_fields
 c$taf COMMON ggl90_fields FTLNAME = g_ggl90_fields
