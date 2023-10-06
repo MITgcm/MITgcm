@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - rename header file "ctrl.h" to "CTRL.h".
 o utils/matlab/cs_grid:
   - update some basic matlab-scripts for CS-grid (split_*_cub.m,
     rotate_uv2uvEN.m, mk_psiLine_CS.m & use_psiLine.m) to a) also work with
