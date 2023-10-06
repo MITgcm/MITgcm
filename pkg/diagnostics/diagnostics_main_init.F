@@ -993,7 +993,7 @@ C--   surface fluxes:
 
       diagName  = 'ADJempmr'
       diagTitle = 'dJ/dEmPmR: Sensitivity to net surface Fresh-Water'
-     &          //' flux into the ocean'
+     &          //' flux out of the ocean'
       diagUnits = 'dJ/(kg/m^2/s)   '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
