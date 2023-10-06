@@ -1,20 +1,19 @@
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
 
-      subroutine ctrl_init_ctrlvar(
-     &       xx_fname
-     &     , ivarindex
-     &     , ncvarindex_loc
-     &     , ncvarrecs_loc
-     &     , ncvarrecstart_loc
-     &     , ncvarrecsend_loc
-     &     , ncvarxmax_loc
-     &     , ncvarymax_loc
-     &     , ncvarnrmax_loc
-     &     , ncvargrd_loc
-     &     , whichxyz
-     &     , mythid
-     &     )
+      SUBROUTINE CTRL_INIT_CTRLVAR(
+     &       xx_fname,
+     &       ivarindex,
+     &       ncvarindex_loc,
+     &       ncvarrecs_loc,
+     &       ncvarrecstart_loc,
+     &       ncvarrecsend_loc,
+     &       ncvarxmax_loc,
+     &       ncvarymax_loc,
+     &       ncvarnrmax_loc,
+     &       ncvargrd_loc,
+     &       whichxyz,
+     &       myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_init_ctrlvar
@@ -29,12 +28,11 @@ c     ==================================================================
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==
@@ -47,22 +45,22 @@ c     == routine arguments ==
       integer ncvarxmax_loc
       integer ncvarymax_loc
       integer ncvarnrmax_loc
-      character ncvargrd_loc*1
-      character whichxyz*2
-      integer mythid
-      integer il,ilDir
-
-c     == local variables ==
-      character*(MAX_LEN_FNAM) fname(3), gfname
-      character*(MAX_LEN_MBUF) msgBuf
-      logical  exst, g_exst
+      character*(1) ncvargrd_loc
+      character*(2) whichxyz
+      integer myThid
 
 C     == external ==
       integer ILNBLNK
       external ILNBLNK
+
+c     == local variables ==
+      integer il,ilDir
+      character*(MAX_LEN_FNAM) fname(3), gfname
+      character*(MAX_LEN_MBUF) msgBuf
+      logical  exst, g_exst
 C     == end of interface ==
 
-c     _BEGIN_MASTER( mythid )
+c     _BEGIN_MASTER( myThid )
       ncvarindex(ivarindex)    = ncvarindex_loc
       ncvarrecs (ivarindex)    = ncvarrecs_loc
       ncvarrecstart(ivarindex) = ncvarrecstart_loc
@@ -71,17 +69,17 @@ c     _BEGIN_MASTER( mythid )
       ncvarymax (ivarindex)    = ncvarymax_loc
       ncvarnrmax(ivarindex)    = ncvarnrmax_loc
       ncvargrd  (ivarindex)    = ncvargrd_loc
-c     _END_MASTER( mythid )
+c     _END_MASTER( myThid )
 
 cph add following flag to make pack/unpack only less error-prone
 #ifndef CTRL_DO_PACK_UNPACK_ONLY
 
       ilDir=ilnblnk( ctrlDir )
-      call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, mythid )
+      call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, myThid )
 
-c     _BEGIN_MASTER( mythid )
+c     _BEGIN_MASTER( myThid )
       inquire( file='costfinal', exist=exst )
-c     _END_MASTER( mythid )
+c     _END_MASTER( myThid )
 
 C     In an adjoint run, adxx_ files should always be initialized with zeros
 C     For TLM, all zeros means zero sensitivity, so check
@@ -111,31 +109,31 @@ C     initialize to zero and warn user
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
+     &           call ctrl_set_globfld_xyz( fname(2), ivarindex, myThid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
+     &           call ctrl_set_globfld_xyz( fname(1), ivarindex, myThid)
          else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
+     &           call ctrl_set_globfld_xy( fname(2), ivarindex, myThid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_xy( fname(1), ivarindex, myThid )
          else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
+     &           call ctrl_set_globfld_xz( fname(2), ivarindex, myThid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_xz( fname(1), ivarindex, myThid )
          else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
+     &           call ctrl_set_globfld_yz( fname(2), ivarindex, myThid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_yz( fname(1), ivarindex, myThid )
          else
             STOP 'whichxyz option not implemented'
          end if
@@ -149,5 +147,5 @@ c-- for DIVA, avoid forward-related output in adjoint part
 
 #endif /* CTRL_DO_PACK_UNPACK_ONLY */
 
-      return
-      end
+      RETURN
+      END

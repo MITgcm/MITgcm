@@ -10,7 +10,7 @@ CTRL_SIZE
 CTRL_GENARR
 CTRL_OBCS
 ctrl_dummy
-ctrl
+CTRL
 ctrl_local_params
 DIAGNOSTICS_SIZE
 DIAGNOSTICS
