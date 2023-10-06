@@ -110,7 +110,7 @@ c--   Get the counters, flags, and the interpolation factor.
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcss_dummy )
+     &                       myThid, xx_obcss_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -179,7 +179,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcss_dummy )
+     &                       myThid, xx_obcss_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
