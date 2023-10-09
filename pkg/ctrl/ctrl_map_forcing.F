@@ -10,7 +10,7 @@ c     *=================================================================
 c     | SUBROUTINE CTRL_MAP_FORCING
 c     | Add the surface flux anomalies of the control vector
 c     | to the model flux fields and update the tile halos.
-c     | The control vector is defined in the header file "ctrl.h".
+c     | The control vector is defined in the header file "CTRL.h".
 c     *=================================================================
 C     \ev
 
@@ -25,7 +25,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 #include "optim.h"

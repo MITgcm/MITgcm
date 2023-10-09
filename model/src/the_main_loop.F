@@ -204,7 +204,7 @@ C     it is important that this file is included after SEAICE_SIZE.h
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_DUMMY.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"

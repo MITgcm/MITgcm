@@ -25,7 +25,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 #ifdef ALLOW_COST

@@ -29,7 +29,7 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 #include "CTRL_DUMMY.h"
 #include "CTRL_GENARR.h"
