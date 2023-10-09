@@ -41,15 +41,12 @@ C     myThid    :: My Thread Id. number
 #ifdef GM_GEOM_VARIABLE_K
 
 C !INOUT PARAMETERS: ==================================================
-C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC          in horizontal,
+C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC in horizontal,
 C                             structure function in vertical)
 C  GEOM_ene     :: GEOMETRIC parameterised energy
 C              not really an output, passed around as common block
 
 C !LOCAL VARIABLES: ====================================================
-C     TODO: add commnents of variables
-C     TODO: have some aux variables for checking purposes, leaving in for now
-C           but delete it later when having production code
 C     i,j,k        :: Loop counters
 C     Slope(XY)    :: isopycnal slopes
 C     dSigmaD(xyr) :: derivative of density variables
@@ -60,6 +57,10 @@ C     (S)Nloc_zint :: depth integrated M^2/N and N
 C                       (for calculating trd_ene_gen and trd_ene_wav)
 C     trd_ene_*    :: trends for energy
 C                       gen, adv, lap, dis
+C     ene_*        :: intermediate variables for computing trends
+C     depth*       :: various depth variables for computation purposes
+C     c1, c_ros    :: long Rossby wave phase speeds for trd_ene_wav
+C     UV_depth_avg :: depth-avg flow for                trd_ene_adv
 
       INTEGER i,j,k
       INTEGER kSurf
@@ -107,12 +108,6 @@ C     local version of current rhs of eddy energy equation
       _RL ene_wav_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_lap_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_lap_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C     === Functions ====
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 CEOP
 
