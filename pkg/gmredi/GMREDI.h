@@ -63,7 +63,7 @@ C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
      &                   GM_useLeithQG,
      &                   GM_useGEOM, GEOM_vert_struc,
      &                   GEOM_pickup_write_mdsio,
-     &                   GEOM_pickup_read_mdsio,
+     &                   GEOM_pickup_read_mdsio
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
