@@ -122,8 +122,8 @@ C     Initialize arrays in common blocks :
             GEOM_ene(i,j,bi,bj)    = 0. _d 0
             ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
             ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
-            IF( energy_init == 0 ) THEN
-             GEOM_ene(i,j,bi,bj)   = ene_init * maskC(i,j,1,bi,bj)
+            IF( energy_init .EQ. 0 ) THEN
+             GEOM_ene(i,j,bi,bj)   = GEOM_ene_init * maskC(i,j,1,bi,bj)
             ENDIF
 C     compute depth tapering only once
             GEOM_taper(i,j,bi,bj)  = (0.5 _d 0 *
@@ -228,6 +228,13 @@ C     Computing beta = df/dy
       ENDIF
       CALL EXCH_XY_RL( gradf, myThid)
 #endif /* GM_BATES_K3D */
+
+#ifdef GM_GEOM_VARIABLE_K
+      IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &     .AND. pickupSuff.EQ.' ' )) THEN
+        IF (GM_useGEOM) CALL GMREDI_READ_PICKUP( nIter0, myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF
       ENDIF

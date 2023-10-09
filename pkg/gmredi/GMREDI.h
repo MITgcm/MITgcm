@@ -26,17 +26,13 @@ C     GM_Bates_use_constK:: Imposes a constant K for the eddy transport
 C     GM_Bates_smooth    :: Expand PV closure in terms of baroclinic modes
 C                           (=.FALSE. for debugging only!)
 C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
-CCCCCC
-C TODO: change variable namings probably
-C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
-C     ene_local     :: use the horizontally varying energy formulation
-C                      (so kgm = kgm(x,y,t))
-C     vert_struc    :: allow for kgm = kgm * Gamma(z,t) [N2 structure function]
-C     GM_pickup_write_mdsio :: write binary GEOM pickups
-C     GM_pickup_read_mdsio  :: read  binary GEOM pickups
-C     GM_pickup_write_mnc   :: write MNC GEOM pickups
-C     GM_pickup_read_mnc    :: read  MNC GEOM pickups
-CCCCCC
+C     GM_useGEOM              :: use the GEOME formulation to calculate kgm
+C     GEOM_vert_struc         :: allow for N2 structure function
+C     GEOM_pickup_write_mdsio :: write binary GEOM pickups
+C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
+C     GEOM_pickup_write_mnc   :: write MNC GEOM pickups
+C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
+
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -54,8 +50,7 @@ CCCCCC
       LOGICAL GM_Bates_smooth
       LOGICAL GM_useLeithQG
       LOGICAL GM_useGEOM
-      LOGICAL ene_local
-      LOGICAL vert_struc
+      LOGICAL GEOM_vert_struc
       LOGICAL GEOM_pickup_write_mdsio
       LOGICAL GEOM_pickup_read_mdsio
       LOGICAL GEOM_pickup_write_mnc
@@ -70,7 +65,7 @@ CCCCCC
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
      &                   GM_useLeithQG,
-     &                   GM_useGEOM, ene_local, vert_struc,
+     &                   GM_useGEOM, GEOM_vert_struc,
      &                   GEOM_pickup_write_mdsio,
      &                   GEOM_pickup_read_mdsio,
      &                   GEOM_pickup_write_mnc,
@@ -127,6 +122,15 @@ C     subMeso_invTau :: inverse of mixing time-scale in sub-meso parameteriz. [s
 C     subMeso_LfMin  :: minimum value for length-scale "Lf" [m]
 C     subMeso_Lmax   :: maximum horizontal grid-scale length [m]
 C-    Variable K parameters for Visbeck etal (1997) scheme:
+C-    Variable K parameters for Marshall etal (2012) GEOM scheme:
+C     GEOM_alpha       :: non-dim eddy efficiency param (=<1 in QG)
+C     GEOM_lmbda       :: lin eddy energy dissipation rate
+C     GEOM_ene_init    :: init depth-int param eddy energy level
+C     GEOM_ene_kappa   :: depth-int param eddy energy diffusion coeff
+C     GEOM_minval_K    :: lower bound on diffusivity
+C     GEOM_maxval_K    :: upper bound on diffusivity
+C     GEOM_vert_struc_min   :: lower bound on N2/Nref vertical structure func
+C     GEOM_vert_struc_max   :: upper bound on N2/Nref vertical structure func
 C-    Variable K parameters for PV diffusion based, Bates etal (2014) scheme:
 C     GM_Bates_gamma   :: mixing efficiency for 3D eddy diffusivity [-]
 C     GM_Bates_b1      :: an empirically determined constant of O(1)
@@ -170,12 +174,12 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Visbeck_maxVal_K
       _RL GEOM_alpha
       _RL GEOM_lmbda
-      _RL ene_init
-      _RL ene_kappa
+      _RL GEOM_ene_init
+      _RL GEOM_ene_kappa
       _RL GEOM_minval_K
       _RL GEOM_maxval_K
-      _RL vert_struc_min
-      _RL vert_struc_max
+      _RL GEOM_vert_struc_min
+      _RL GEOM_vert_struc_max
       _RL GM_Bates_gamma
       _RL GM_Bates_b1
       _RL GM_Bates_EadyMinDepth
@@ -206,9 +210,10 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_depth,
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
-     &                 GEOM_alpha, GEOM_lmbda, ene_init,
-     &                 ene_kappa, GEOM_minval_K, GEOM_maxval_K,
-     &                 vert_struc_min, vert_struc_max,
+     &                 GEOM_alpha, GEOM_lmbda, 
+     &                 GEOM_ene_init, GEOM_ene_kappa,
+     &                 GEOM_minval_K, GEOM_maxval_K,
+     &                 GEOM_vert_struc_min, GEOM_vert_struc_max,
      &                 GM_Bates_gamma, GM_Bates_b1,
      &                 GM_Bates_EadyMinDepth, GM_Bates_EadyMaxDepth,
      &                 GM_Bates_Lambda, GM_Bates_smallK, GM_Bates_maxK,
