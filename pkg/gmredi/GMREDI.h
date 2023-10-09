@@ -29,8 +29,6 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
 CCCCCC
 C TODO: change variable namings probably
 C     GM_useGEOM    :: use the GEOMETRIC formulation to calculate kgm
-C     ene_local     :: use the horizontally varying energy formulation
-C                      (so kgm = kgm(x,y,t))
 C     vert_struc    :: allow for kgm = kgm * Gamma(z,t) [N2 structure function]
 C     GM_pickup_write_mdsio :: write binary GEOM pickups
 C     GM_pickup_read_mdsio  :: read  binary GEOM pickups
@@ -54,7 +52,6 @@ CCCCCC
       LOGICAL GM_Bates_smooth
       LOGICAL GM_useLeithQG
       LOGICAL GM_useGEOM
-      LOGICAL ene_local
       LOGICAL vert_struc
       LOGICAL GEOM_pickup_write_mdsio
       LOGICAL GEOM_pickup_read_mdsio
@@ -70,7 +67,7 @@ CCCCCC
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
      &                   GM_useLeithQG,
-     &                   GM_useGEOM, ene_local, vert_struc,
+     &                   GM_useGEOM, vert_struc,
      &                   GEOM_pickup_write_mdsio,
      &                   GEOM_pickup_read_mdsio,
      &                   GEOM_pickup_write_mnc,

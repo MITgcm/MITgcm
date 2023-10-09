@@ -263,19 +263,6 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
        ENDDO
       ENDDO
 
-CML      IF(.NOT. ene_local) THEN
-CMLC       Horizontal integral
-CML        SNloc = 0.0 _d 0
-CML        DO j=1-OLy+1,sNy+OLy-1
-CML          DO i=1-OLx+1,sNx+OLx-1
-CML            SNLoc = SNLoc + SNloc_zint(i,j)
-CML     &                    * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-CML     &                    * maskC(i,j,1,bi,bj)
-CML          ENDDO
-CML        ENDDO
-CML        SNloc_zint = SNloc / globalArea
-CML      ENDIF
-
 C     work out the implied long Rossby phase speeds at T pts
 C     average it onto U points later
       DO j=1-OLy,sNy+OLy
@@ -321,9 +308,6 @@ C     include it in the masking
          GEOMK(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_ene(i,j,bi,bj)
      &        / MAX( SNloc_zint(i,j), 1. _d -7 * depthC(i,j) )
         ENDIF
-CML        IF(.not. ene_local) THEN
-CML         GEOMK(i,j,kSurf,bi,bj) = GEOMK(i,j,kSurf,bi,bj) / globalArea
-CML        ENDIF
        ENDDO
       ENDDO
 
@@ -432,8 +416,6 @@ C              (so everything else still calculated, but only advection does any
 !        GEOM_ene(30, 17, bi, bj) = 1.0 _d 0
 !      endif
 CCCCCCCCCCCCCCCCCCCCCCCCCC
-
-CML      IF (ene_local) THEN
 
 C ----  form the energy fluxes
 
@@ -577,30 +559,6 @@ C     third: time stepping
 C ----------------------------------------------
 C ---- end advection of energy -----------------
 C ----------------------------------------------
-CML      ELSE
-CMLC       Horizontally integrate and time step the energy
-CML
-CMLC       form integrand
-CML        energy_int = 0.0 _d 0
-CML        DO j=1-OLy,sNy+OLy
-CML          DO i=1-OLx,sNx+OLx
-CML            energy_int = energy_int +
-CML     &                   trd_ene_gen(i,j)
-CML     &                 * dxG(i,j,bi,bj) * dyG(i,j,bi,bj)
-CML     &                 * maskC(i,j,kSurf,bi,bj)
-CML          ENDDO
-CML        ENDDO
-CMLC       time step and allocate it as a field with same entries
-CML        DO j=1-OLy,sNy+OLy
-CML          DO i=1-OLx,sNx+OLx
-CML            GEOM_ene(i,j,bi,bj) =
-CML     &           (deltaTloc * energy_int + GEOM_ene(1,1,bi,bj))
-CML     &           / (1.0 _d 0 + GEOM_lmbda * deltaTloc)
-CML          ENDDO
-CML        ENDDO
-CML        energy_init = 1
-CML      ENDIF
-
 
 C       update rhs fields for the next time step
       DO j=1-OLy,sNy+OLy
@@ -620,7 +578,6 @@ C--   on screen diagnostics
 C       estimate of domain AVERAGED energy
 C       (m2/s2, but done per tile via multiplication by the number of tiles)
        energy_avg = 0. _d 0
-CML        IF(ene_local) THEN
        domain_vol = 0.0 _d 0
        DO k=1,Nr
         DO j=1,sNy
@@ -637,9 +594,6 @@ CML        IF(ene_local) THEN
         ENDDO
        ENDDO
        energy_avg = energy_avg / domain_vol * (nPx * nPy)
-CML       ELSE
-CML        energy_avg = GEOM_ene(1,1,bi,bj) / domain_vol
-CML       ENDIF
 
        WRITE(msgBuf,'(A,3(X,A,F11.5,A))') "GMREDI_CALC_GEOM: tile diag"
      &      , " t       = ", myTime / (3600. * 24. * 360.), " yr, "
@@ -656,7 +610,6 @@ CML       ENDIF
      &                       'GEOMkap0', kSurf,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(vert_struc_func,
      &                       'GEOMstru', 0,Nr,2,bi,bj,myThid)
-       IF (ene_local) THEN
        CALL DIAGNOSTICS_FILL(trd_ene_gen,
      &                       'GEOMEgen', 0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(trd_ene_dis,
@@ -672,7 +625,6 @@ C        advective trends are dE/dt + -(u - c) dot grad E
      &                       'GEOM_c1 ', 0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(c_ros,
      &                       'GEOMcros', 0,1,2,bi,bj,myThid)
-       ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
