@@ -606,8 +606,6 @@ C       (m2/s2, but done per tile via multiplication by the number of tiles)
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-       CALL DIAGNOSTICS_FILL(GEOMK,
-     &                       'GEOMkap0', kSurf,Nr,1,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(vert_struc_func,
      &                       'GEOMstru', 0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(trd_ene_gen,

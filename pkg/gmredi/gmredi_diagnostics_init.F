@@ -56,13 +56,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'GEOMkap0'
-        diagTitle = 'GEOM 2d kgm field'
-        diagUnits = 'm/s^2           '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
         diagName  = 'GEOMeE  '
         diagTitle = 'GEOM parameterised depth-int eddy energy'
         diagUnits = 'm^3/s^2         '
