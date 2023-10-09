@@ -131,10 +131,6 @@ C- print out some kee parameters :
      &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
        CALL WRITE_0D_L( GM_useGEOM, INDEX_NONE,
      &  'GM_useGEOM =', ' /* using GEOMETRIC */')
-       CALL WRITE_0D_RL( GEOM_alpha, INDEX_NONE,
-     &  'GEOM_alpha =', ' /* GEOM alpha coeff. [-] */')
-       CALL WRITE_0D_RL( GEOM_lmbda, INDEX_NONE,
-     &  'GEOM_lmbda =', ' /* GEOM energy diss time-scale [/s] */')
 
 C--  Check parameters:
 
@@ -196,6 +192,31 @@ C     Make sure we are not trying to use something that is unavailable
 
 #ifdef GM_GEOM_VARIABLE_K
       IF ( GM_useGEOM ) THEN
+       CALL WRITE_0D_RL( GEOM_alpha, INDEX_NONE,
+     &  'GEOM_alpha      =', ' /* GEOM alpha coeff. [-] */')
+       CALL WRITE_0D_RL( GEOM_lmbda, INDEX_NONE,
+     &  'GEOM_lmbda      =', ' /* GEOM ene diss rate [/s] */')
+       CALL WRITE_0D_RL( GEOM_ene_kappa, INDEX_NONE,
+     &  'GEOM_ene_kappa  =', ' /* GEOM ene diffusion coeff [m2/s] */')
+       CALL WRITE_0D_L( GEOM_vert_struc, INDEX_NONE,
+     &  'GEOM_vert_struc =', ' /* GEOM vertical structure function */')
+       CALL WRITE_0D_RL( GEOM_vert_struc_min, INDEX_NONE,
+     &  'GEOM_vert_struc_min =', ' /* vert struc min [-] */')
+       CALL WRITE_0D_RL( GEOM_vert_struc_max, INDEX_NONE,
+     &  'GEOM_vert_struc_min =', ' /* vert struc min [-] */')
+       CALL WRITE_0D_RL( GEOM_minVal_K, INDEX_NONE,
+     &  'GEOM_minVal_K   =', ' /* GEOMK lower bound [m2/s] */')
+       CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
+     &  'GEOM_maxVal_K   =', ' /* GEOMK upper bound [m2/s] */')
+       CALL WRITE_0D_L( GEOM_pickup_write_mdsio, INDEX_NONE,
+     &  'GEOM_pickup_write_mdsio =', ' /* GEOM binary pickup write */')
+       CALL WRITE_0D_L( GEOM_pickup_read_mdsio, INDEX_NONE,
+     &  'GEOM_pickup_read_mdsio  =', ' /* GEOM binary pickup read  */')
+       CALL WRITE_0D_L( GEOM_pickup_write_mnc, INDEX_NONE,
+     &  'GEOM_pickup_write_mnc =', ' /* GEOM netCDF pickup write */')
+       CALL WRITE_0D_L( GEOM_pickup_read_mnc, INDEX_NONE,
+     &  'GEOM_pickup_read_mnc  =', ' /* GEOM netCDF pickup read  */')
+     
        IF (usingCurvilinearGrid) THEN
         WRITE(msgBuf,'(3A)') '** WARNING ** GMREDI_CHECK:',
      &       ' grid opt for wav adv not supported, c_ros = 0.0 ',
