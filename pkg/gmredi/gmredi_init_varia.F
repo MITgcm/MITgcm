@@ -122,8 +122,18 @@ C     Initialize arrays in common blocks :
            ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
            ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
 C     doing below k=1,Nr times too many, but only doing it once...
-           IF( GEOM_ene_ctrl == 0 ) THEN
-             GEOM_ene(i,j,bi,bj) = GEOM_ene_init * maskC(i,j,1,bi,bj)
+           IF ( k.EQ.1 ) THEN
+            GEOM_ene(i,j,bi,bj)    = 0. _d 0
+            ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
+            ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
+            IF( GEOM_ene_ctrl .EQ. 0 ) THEN
+             GEOM_ene(i,j,bi,bj)   = GEOM_ene_init * maskC(i,j,1,bi,bj)
+            ENDIF
+C     compute depth tapering only once
+            GEOM_taper(i,j,bi,bj)  = (0.5 _d 0 *
+     &           (1.0 _d 0 - TANH(
+     &           (-ABS(R_low(i,j,bi,bj)) + 800.0 _d 0) / 300.0 _d 0
+     &           ) ) ) ** 2
            ENDIF
 #endif
 #ifdef ALLOW_GM_LEITH_QG

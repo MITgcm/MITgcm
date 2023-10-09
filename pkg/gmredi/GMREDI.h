@@ -332,16 +332,19 @@ C                    used to update GEOMK
 C     ene_rhs*      :: RHS of eddy energy equation for time-stepping
 C     GEOM_ene_ctrl :: is 0/1/2 to control time-stepping routine of parameterised
 C                    eddy energy in gmredi_calc_geom.F
+C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth)
 C
-      _RL GEOMK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL GEOM_ene(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_ene   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER GEOM_ene_ctrl
 
       COMMON /GM_GEOM/ GEOMK,
      &                 GEOM_ene,
-     &                 ene_rhs_nm1, ene_rhs_nm2
-      INTEGER GEOM_ene_ctrl
+     &                 ene_rhs_nm1, ene_rhs_nm2,
+     &                 GEOM_taper
       COMMON /GM_GEOM_I/ GEOM_ene_ctrl
 #endif
 
