@@ -167,8 +167,8 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Visbeck_maxVal_K
       _RL GEOM_alpha
       _RL GEOM_lmbda
-      _RL ene_init
-      _RL ene_kappa
+      _RL GEOM_ene_init
+      _RL GEOM_ene_kappa
       _RL GEOM_minval_K
       _RL GEOM_maxval_K
       _RL vert_struc_min
@@ -203,8 +203,9 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_depth,
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
-     &                 GEOM_alpha, GEOM_lmbda, ene_init,
-     &                 ene_kappa, GEOM_minval_K, GEOM_maxval_K,
+     &                 GEOM_alpha, GEOM_lmbda, 
+     &                 GEOM_ene_init, GEOM_ene_kappa,
+     &                 GEOM_minval_K, GEOM_maxval_K,
      &                 vert_struc_min, vert_struc_max,
      &                 GM_Bates_gamma, GM_Bates_b1,
      &                 GM_Bates_EadyMinDepth, GM_Bates_EadyMaxDepth,

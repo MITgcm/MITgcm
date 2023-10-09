@@ -458,7 +458,7 @@ C ---- 1st order upwinding wave stuff
          fm_ui = c_ros_u - ABS( c_ros_u )
          ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
      &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
-         ene_lap_x(i,j) = ene_kappa * (2.0 _d 0)
+         ene_lap_x(i,j) = GEOM_ene_kappa * (2.0 _d 0)
      &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i-1,j,bi,bj))
      &        / (dxG(i,j,bi,bj) + dxG(i-1,j,bi,bj))
         ENDIF
@@ -480,7 +480,7 @@ C ---- 1st order upwinding
          fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
          ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
      &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
-         ene_lap_y(i, j) = ene_kappa * (2.0 _d 0)
+         ene_lap_y(i, j) = GEOM_ene_kappa * (2.0 _d 0)
      &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i,j-1,bi,bj))
      &        / (dyG(i,j,bi,bj) + dyG(i,j-1,bi,bj))
         ENDIF
