@@ -271,14 +271,14 @@ C     initialise GEOMETRIC energy or not
      &       'WARNING! nIter0 = 0, force energy initialisation...'
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , 1)
-          energy_init = 0
+          GEOM_ene_ctrl = 0
         ENDIF
       ELSE
         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
      &      'initialising GEOM_ene'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , 1)
-        energy_init = 0
+        GEOM_ene_ctrl = 0
       ENDIF
 
 #endif

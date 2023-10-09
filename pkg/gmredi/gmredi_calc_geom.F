@@ -404,7 +404,7 @@ C           1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
 C           2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
 C              (so everything else still calculated, but only advection does anything)
 
-!      if (energy_init .EQ. 1) then
+!      if (GEOM_ene_ctrl .EQ. 1) then
 !        GEOM_ene(:, :, bi, bj) = 0.0 _d 0
 !        GEOM_ene(10, 5, bi, bj) = 1.0 _d 0
 !        GEOM_ene(5, 25, bi, bj) = 1.0 _d 0
@@ -520,15 +520,15 @@ C     not need any exchange. We od need to exchange the solution GEOM_ene
 C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
-      IF (energy_init .EQ. 0 ) THEN
+      IF (GEOM_ene_ctrl .EQ. 0 ) THEN
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
          GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
      &            + deltaTloc * ene_rhs_now(i,j)
         ENDDO
        ENDDO
-       energy_init = 1
-      ELSEIF ( energy_init .EQ. 1 ) THEN
+       GEOM_ene_ctrl = 1
+      ELSEIF ( GEOM_ene_ctrl .EQ. 1 ) THEN
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
          GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
@@ -538,7 +538,7 @@ C     third: time stepping
      &        )
         ENDDO
        ENDDO
-       energy_init = 2
+       GEOM_ene_ctrl = 2
       ELSE
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1

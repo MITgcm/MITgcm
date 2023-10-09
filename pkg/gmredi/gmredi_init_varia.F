@@ -122,7 +122,7 @@ C     Initialize arrays in common blocks :
            ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
            ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
 C     doing below k=1,Nr times too many, but only doing it once...
-           IF( energy_init == 0 ) THEN
+           IF( GEOM_ene_ctrl == 0 ) THEN
              GEOM_ene(i,j,bi,bj) = GEOM_ene_init * maskC(i,j,1,bi,bj)
            ENDIF
 #endif
