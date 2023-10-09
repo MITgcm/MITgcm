@@ -82,9 +82,9 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_useLeithQG,
      &          GM_MNC,
      &          GM_useGEOM,
-     &          GEOM_lmbda, GEOM_alpha, 
+     &          GEOM_lmbda, GEOM_alpha,
      &          GEOM_ene_init, GEOM_ene_kappa,
-     &          GEOM_vert_struc, 
+     &          GEOM_vert_struc,
      &          GEOM_vert_struc_min, GEOM_vert_struc_max,
      &          GEOM_minval_K, GEOM_maxval_K,
      &          GEOM_pickup_write_mdsio, GEOM_pickup_write_mnc,
@@ -165,9 +165,9 @@ C--   Default values GEOMETRIC
       GEOM_vert_struc_max     = 1. _d 0
       GEOM_minVal_K           = 0. _d 0
       GEOM_maxVal_K           = 2500. _d 0
-      GEOM_pickup_write_mdsio = .FALSE.
+      GEOM_pickup_write_mdsio = .TRUE.
       GEOM_pickup_write_mnc   = .FALSE.
-      GEOM_pickup_read_mdsio  = .FALSE.
+      GEOM_pickup_read_mdsio  = .TRUE.
       GEOM_pickup_read_mnc    = .FALSE.
 
 C--   Default values for BatesK3d

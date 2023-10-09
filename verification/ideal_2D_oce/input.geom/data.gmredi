@@ -25,9 +25,9 @@
   GEOM_alpha         = 0.08,
   GEOM_minval_K      = 50.,
   GEOM_maxval_K      = 2.e+4,
-  ene_init           = 1.e-2,
-  ene_kappa          = 500.,
-  vert_struc         = .TRUE.,
-  GEOM_pickup_write_mdsio = .TRUE.,
-  GEOM_pickup_read_mdsio  = .TRUE.,
+  GEOM_ene_init      = 1.e-2,
+  GEOM_ene_kappa     = 500.,
+  GEOM_vert_struc    = .TRUE.,
+# there is no pickup file, so do not try to read one (default=T)
+  GEOM_pickup_read_mdsio  = .FALSE.,
  &
