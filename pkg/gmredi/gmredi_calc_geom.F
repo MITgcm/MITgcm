@@ -76,14 +76,12 @@ C                       gen, adv, lap, dis
       _RL c_ros_u, fm_ui, fp_ui
 
 C     metric variables
-      _RL domain_vol
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_depthS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL depthC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL depth_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     general variables, overwritten every time step
-      _RL energy_avg
       _RL deltaTloc
 
 C     local version of current rhs of eddy energy equation
@@ -573,38 +571,6 @@ C       update rhs fields for the next time step
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   diagnostics and restarts
-
-C--   on screen diagnostics
-      IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock) ) THEN
-
-C       estimate of domain AVERAGED energy
-C       (m2/s2, but done per tile via multiplication by the number of tiles)
-       energy_avg = 0. _d 0
-       domain_vol = 0.0 _d 0
-       DO k=1,Nr
-        DO j=1,sNy
-         DO i=1,sNx
-          domain_vol = domain_vol
-     &         + rA(i,j,bi,bj) * drF(k) * hFacC(i,j,k,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-       DO j=1,sNy
-        DO i=1,sNx
-         energy_avg = energy_avg + GEOM_ene(i,j,bi,bj)
-     &        * rA(i,j,bi,bj) * maskC(i,j,kSurf,bi,bj)
-        ENDDO
-       ENDDO
-       energy_avg = energy_avg / domain_vol * (nPx * nPy)
-
-       WRITE(msgBuf,'(A,3(X,A,F11.5,A))') "GMREDI_CALC_GEOM: tile diag"
-     &      , " t       = ", myTime / (3600. * 24. * 360.), " yr, "
-     &      , " kgm_max = ", maxval(GEOMK(1:sNx,1:sNy,kSurf,bi,bj))
-     &      , " m2/s, "
-     &      , " eE_avg  = ", energy_avg, " m2/s2 "
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , 1)
-      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
