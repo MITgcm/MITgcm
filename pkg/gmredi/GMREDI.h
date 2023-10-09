@@ -30,8 +30,6 @@ C     GM_useGEOM              :: use the GEOME formulation to calculate kgm
 C     GEOM_vert_struc         :: allow for N2 structure function
 C     GEOM_pickup_write_mdsio :: write binary GEOM pickups
 C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
-C     GEOM_pickup_write_mnc   :: write MNC GEOM pickups
-C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
 
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
@@ -53,8 +51,6 @@ C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
       LOGICAL GEOM_vert_struc
       LOGICAL GEOM_pickup_write_mdsio
       LOGICAL GEOM_pickup_read_mdsio
-      LOGICAL GEOM_pickup_write_mnc
-      LOGICAL GEOM_pickup_read_mnc
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -68,8 +64,6 @@ C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
      &                   GM_useGEOM, GEOM_vert_struc,
      &                   GEOM_pickup_write_mdsio,
      &                   GEOM_pickup_read_mdsio,
-     &                   GEOM_pickup_write_mnc,
-     &                   GEOM_pickup_read_mnc
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
