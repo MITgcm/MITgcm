@@ -84,7 +84,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_useGEOM,
      &          GEOM_lmbda, GEOM_alpha, 
      &          GEOM_ene_init, GEOM_ene_kappa,
-     &          vert_struc, vert_struc_min, vert_struc_max,
+     &          GEOM_vert_struc, 
+     &          GEOM_vert_struc_min, GEOM_vert_struc_max,
      &          GEOM_minval_K, GEOM_maxval_K,
      &          GEOM_pickup_write_mdsio, GEOM_pickup_write_mnc,
      &          GEOM_pickup_read_mdsio, GEOM_pickup_read_mnc
@@ -159,9 +160,9 @@ C--   Default values GEOMETRIC
       GEOM_alpha              = 0. _d  0
       GEOM_ene_init           = 1. _d -3
       GEOM_ene_kappa          = 1. _d +3
-      vert_struc              = .FALSE.
-      vert_struc_min          = 1. _d -1
-      vert_struc_max          = 1. _d 0
+      GEOM_vert_struc         = .FALSE.
+      GEOM_vert_struc_min     = 1. _d -1
+      GEOM_vert_struc_max     = 1. _d 0
       GEOM_minVal_K           = 0. _d 0
       GEOM_maxVal_K           = 2500. _d 0
       GEOM_pickup_write_mdsio = .FALSE.

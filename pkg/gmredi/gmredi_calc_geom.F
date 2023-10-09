@@ -223,21 +223,23 @@ C      Compute M^2 rho_0 / g on vertical interfaces
         ENDDO
        ENDDO
       ENDDO
-      IF ( vert_struc ) THEN
+      IF ( GEOM_vert_struc ) THEN
        k=2
 C     avoid division by zero
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k), vert_struc_min)
+         vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k), 
+     &                                GEOM_vert_struc_min)
         ENDDO
        ENDDO
 C     Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
        DO k=Nr,2,-1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          vert_struc_func(i,j,k) = MAX( MIN(
-     &         vert_struc_max, N2loc3D(i,j,k)/vert_struc_func(i,j,2)),
-     &         vert_struc_min)
+          vert_struc_func(i,j,k) = 
+     &         MAX(MIN(GEOM_vert_struc_max, 
+     &                 N2loc3D(i,j,k)/vert_struc_func(i,j,2)),
+     &             GEOM_vert_struc_min)
          ENDDO
         ENDDO
        ENDDO
