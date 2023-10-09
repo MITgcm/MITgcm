@@ -223,6 +223,13 @@ C     Computing beta = df/dy
       CALL EXCH_XY_RL( gradf, myThid)
 #endif /* GM_BATES_K3D */
 
+#ifdef GM_GEOM_VARIABLE_K
+      IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &     .AND. pickupSuff.EQ.' ' )) THEN
+        IF (GM_useGEOM) CALL GMREDI_READ_PICKUP( nIter0, myThid )
+      ENDIF
+#endif
+
 #ifdef ALLOW_AUTODIFF
       ENDIF
 #endif
