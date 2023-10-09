@@ -275,7 +275,8 @@ C         only compute the Rossby phase speed if deep enough
          c1(i,j) = 0.0 _d 0
         ENDIF
         IF (usingCartesianGrid) THEN
-         c_ros(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
+         c_ros(i,j) = c1(i,j) * c1(i,j) * beta
+     &              / (fCori(i,j,bi,bj) * fCori(i,j,bi,bj))
         ELSE IF (usingSphericalPolarGrid) THEN
          c_ros(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
      &              / ( rSphere * fCori(i,j,bi,bj) ** 2 )
