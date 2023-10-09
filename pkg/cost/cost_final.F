@@ -24,7 +24,7 @@ c     == global variables ==
 
 #include "cost.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 #endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"

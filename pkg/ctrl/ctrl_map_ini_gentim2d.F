@@ -26,7 +26,7 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 #include "ctrl_dummy.h"
 #include "CTRL_GENARR.h"
@@ -57,7 +57,6 @@ C     temporary values in the do loop during reverse pass.
       CHARACTER*(MAX_LEN_FNAM) fnamegenIn(1:maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
-      CHARACTER*(MAX_LEN_FNAM) fnamebase(1:maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamA
       CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamB
       integer startrec
@@ -121,9 +120,8 @@ C--   generic 2D control variables
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         temp_genarr_fnamA = xx_gentim2d_file(iarr)
-        fnamebase(iarr) = temp_genarr_fnamA(1:ilgen)
 
-        call ctrl_init_rec ( fnamebase(iarr),
+        call ctrl_init_rec ( temp_genarr_fnamA(1:ilgen),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -165,9 +163,6 @@ C print statements are removed. See "Automatic Differentiation" chap. in the doc
          endif
         enddo
 
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        temp_genarr_fnamA = xx_gentim2d_file(iarr)
-        fnamebase(iarr) = temp_genarr_fnamA(1:ilgen)
         write(temp_genarr_fnamB,'(2a,i10.10)')
      &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen),'.',optimcycle
         fnamegenIn(iarr) = temp_genarr_fnamB

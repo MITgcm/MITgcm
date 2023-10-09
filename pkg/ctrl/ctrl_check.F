@@ -33,7 +33,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif

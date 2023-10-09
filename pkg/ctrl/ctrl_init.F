@@ -24,7 +24,7 @@ c     == global variables ==
 #include "GRID.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
 #endif
@@ -46,7 +46,7 @@ c     == local variables ==
       integer ivar
 
       _RL dummy
-      _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_OBCS_CONTROL_MODES
       INTEGER  length_of_rec,dUnit
@@ -93,8 +93,8 @@ c
          do bi=1,nSx
             do k=1,Nr
              wunit(k,bi,bj) = 1. _d 0
-             do j=1-oly,sNy+oly
-              do i=1-olx,sNx+olx
+             do j=1-OLy,sNy+OLy
+              do i=1-OLx,sNx+OLx
                loctmp3d(i,j,k,bi,bj) = 1. _d 0
               enddo
              enddo
@@ -103,7 +103,7 @@ c
       enddo
 
 #ifdef ALLOW_AUTODIFF
-      call active_write_xyz( 'wunit', loctmp3d, 1, 0, mythid, dummy)
+      call active_write_xyz( 'wunit', loctmp3d, 1, 0, myThid, dummy)
 #else
       CALL WRITE_REC_XYZ_RL( 'wunit', loctmp3d, 1, 1, myThid )
 #endif
@@ -124,7 +124,7 @@ c--   Northern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xz', myThid )
+     &     sNx, 1, Nr, 'm', 'xz', myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c----------------------------------------------------------------------
@@ -137,7 +137,7 @@ c--   Southern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xz', myThid )
+     &     sNx, 1, Nr, 'm', 'xz', myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c----------------------------------------------------------------------
@@ -150,7 +150,7 @@ c--   Western obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yz', myThid )
+     &     1, sNy, Nr, 'm', 'yz', myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
@@ -163,7 +163,7 @@ c--   Eastern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yz', myThid )
+     &     1, sNy, Nr, 'm', 'yz', myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
@@ -217,7 +217,7 @@ C       Under iceshelf, use maskSHI for these
 # endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
-     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
 
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -235,7 +235,7 @@ c--
 #endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
-     &       snx, sny, nr, ncvargrdtmp, '3d', myThid )
+     &       sNx, sNy, Nr, ncvargrdtmp, '3d', myThid )
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -301,7 +301,7 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
@@ -310,14 +310,14 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
 C
 C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       endrec, 1, endrec,
-     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
 C
 #ifndef ALLOW_OPENAD
        endif
