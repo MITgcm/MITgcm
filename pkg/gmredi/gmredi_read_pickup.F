@@ -70,8 +70,12 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef GM_BATES_K3D
+#if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
 
+      IF ( GM_useBatesK3d .OR.
+     &     ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) ) THEN
+
+       print *, 'ml-gm hallo 0'
        IF ( pickupSuff.EQ.' ' ) THEN
         IF ( rwSuffixType.EQ.0 ) THEN
           WRITE(fn,'(A,I10.10)') 'pickup_gmredi.', myIter
@@ -142,10 +146,22 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
        ENDIF
 
+      ENDIF
+
+#endif /* GM_BATES_K3D or GM_GEOM_VARIABLE_K */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef GM_BATES_K3D
+
+      IF ( GM_useBatesK3d ) THEN
 
        IF ( nbFields.EQ.0 ) THEN
 C---   Old way to read pickup:
+
+         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &        'old way of reading pickups not implemented, continuing'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
        ELSE
 
@@ -245,96 +261,29 @@ C--    Check for missing fields:
 
 C--    Update overlap regions:
 C        CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
+
+c     GM_useBates3D
+      ENDIF
+
 #endif /* GM_BATES_K3D */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
 
-      IF (GM_useGEOM) THEN
+      IF ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) THEN
 
-        IF (.NOT. GEOM_pickup_read_mdsio ) THEN
-          WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &         'in routine but no pickup option specified!'
-          WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &         'WARNING! going to (re)initialise GEOM_ene!'
-
-        ENDIF
-
-C--------------------------
 #ifdef ALLOW_MDSIO
-
-      IF ( GEOM_pickup_read_mdsio ) THEN
-
-        IF ( pickupSuff.EQ.' ' ) THEN
-          IF ( rwSuffixType.EQ.0 ) THEN
-            WRITE(fn,'(A,I10.10)') 'pickup_gmredi.', myIter
-          ELSE
-            CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
-            WRITE(fn,'(A,A)') 'pickup_gmredi.', suff
-          ENDIF
-        ELSE
-          WRITE(fn,'(A,A10)') 'pickup_gmredi.', pickupSuff
-        ENDIF
-        fp = precFloat64
-
-        CALL READ_MFLDS_SET(
-     I                      fn,
-     O                      nbFields, filePrec,
-     I                      Nr, myIter, myThid )
-        _BEGIN_MASTER( myThid )
-        IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
-          WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &      'pickup-file binary precision do not match !'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,2(A,I4))') 'GMREDI_READ_PICKUP: ',
-     &      'file prec.=', filePrec, ' but expecting prec.=', fp
-          CALL PRINT_ERROR( msgBuf, myThid )
-          CALL ALL_PROC_DIE( 0 )
-          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (data-prec Pb)'
-        ENDIF
-        _END_MASTER( myThid )
-
-        IF ( nbFields.LE.0 ) THEN
-C-      No meta-file or old meta-file without List of Fields
-          ioUnit = errorMessageUnit
-          IF ( pickupStrictlyMatch ) THEN
-            WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
-     &        'no field-list found in meta-file',
-     &        ' => cannot check for strick-matching'
-            CALL PRINT_ERROR( msgBuf, myThid )
-            WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
-     &        'try with " pickupStrictlyMatch=.FALSE.,"',
-     &        ' in file: "data", NameList: "PARM03"'
-            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
-          ELSE
-            WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
-     &        ' no field-list found'
-            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-            IF ( nbFields.EQ.-1 ) THEN
-C-      No meta-file
-              WRITE(msgBuf,'(4A)') 'WARNING >> ',
-     &          ' try to read pickup as currently written'
-              CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid)
-            ELSE
-              WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
-     &          'no field-list found in meta-file'
-                CALL PRINT_ERROR( msgBuf, myThid )
-                CALL ALL_PROC_DIE( myThid )
-                STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
-            ENDIF
-          ENDIF
-        ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         IF ( nbFields.EQ.0 ) THEN
 C---    Old way to read pickup:
 
+         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &        'old way of reading pickups not implemented, continuing'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+
         ELSE
 
+       print *, 'ml-gm hallo 1'
 C---    read GMREDI fields for restart
           nm = nm*Nr
 C         ---2D fields---
@@ -354,6 +303,9 @@ C         GEOMETRIC energy
      &         nm, fp, 1, myIter, myThid )
           CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
 
+C     use AB3 time stepping
+          GEOM_ene_ctrl = 2
+          print *, 'ml-gm hallo 2', GEOM_ene_ctrl
         ENDIF
 
 C--     Check for missing fields:
@@ -380,14 +332,19 @@ C--     Check for missing fields:
           STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
         ENDIF
 
-        WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
-     &        'reading mdsio pickup'
-
-      ENDIF
 #endif /* ALLOW_MDSIO */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ELSE
+        ioUnit = standardMessageUnit
+        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &       'in routine but GEOM_pickup_read_mdsio = F'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &       'WARNING! going to (re)initialise GEOM_ene!'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+      print *, 'ml-gm hallo 2', GEOM_ene_ctrl
       RETURN
       END

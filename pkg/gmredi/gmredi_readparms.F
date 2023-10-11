@@ -260,19 +260,12 @@ C     Fix to avoid running without getting any output:
 
 #ifdef GM_GEOM_VARIABLE_K
 
-C     initialise GEOMETRIC energy or not
       IF( GEOM_pickup_read_mdsio ) THEN
         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
      &      'read pickup option on, no init of GEOM_ene'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , 1)
-        IF( nIter0.EQ.0 ) THEN
-          WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
-     &       'WARNING! nIter0 = 0, force energy initialisation...'
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , 1)
-          GEOM_ene_ctrl = 0
-        ENDIF
+        GEOM_ene_ctrl = 2
       ELSE
         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
      &      'initialising GEOM_ene'

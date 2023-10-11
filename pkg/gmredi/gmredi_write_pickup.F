@@ -84,7 +84,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_BATES_K3D
 
-      IF (.NOT. GM_useK3D) RETURN
+      IF ( GM_useK3D ) THEN
 
       lChar = ILNBLNK(suff)
       IF ( lChar.EQ.0 ) THEN
@@ -196,18 +196,15 @@ C     uses this specific S/R to write (with more informations) only meta files
 #endif /* ALLOW_MDSIO */
 C--------------------------
 
+c     if GM_useK3D
+      ENDIF
 #endif /* GM_BATES_K3D */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
 
-      IF (GM_useGEOM) THEN
-
-C--------------------------
-#ifdef ALLOW_MDSIO
-
-      IF ( GEOM_pickup_write_mdsio ) THEN
+      IF (GM_useGEOM .AND. GEOM_pickup_write_mdsio ) THEN
 
         lChar = ILNBLNK(suff)
         IF ( lChar.EQ.0 ) THEN
@@ -237,7 +234,6 @@ C--------------------------
         fieldname = 'erhs_nm2'
         IF (m.LE.listDim) wrFldList(m) = fieldname
 
-
         nWrFlds = m
         IF ( nWrFlds.GT.listDim ) THEN
           WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
@@ -249,6 +245,7 @@ C--------------------------
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R GMREDI_WRITE_PICKUP (list-size Pb)'
         ENDIF
+#ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
         m  = 1
         nm = ABS(nm)
@@ -263,13 +260,10 @@ C     uses this specific S/R to write (with more informations) only meta files
      &       nWrFlds, wrFldList,
      &       1, timList, oneRL,
      &       nm, myIter, myThid )
-
-        WRITE(*,'(2A)') 'GMREDI_WRITE_PICKUP: ',
-     &       'writing GEOM msdio pickup'
-
-      ENDIF
 #endif /* ALLOW_MDSIO */
 C--------------------------
+
+C     GM_useGEOM
       ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 

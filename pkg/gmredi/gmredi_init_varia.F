@@ -182,16 +182,17 @@ C--   write GM scaling factors to file:
         CALL WRITE_FLD_XY_RS( 'GM_bolFac2d',' ',GM_bolFac2d,-1,myThid )
       ENDIF
 
-#ifdef GM_BATES_K3D
+#if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
       IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
      &     .AND. pickupSuff.EQ.' ' )) THEN
-        IF (GM_useBatesK3d) CALL GMREDI_READ_PICKUP( nIter0, myThid )
+        CALL GMREDI_READ_PICKUP( nIter0, myThid )
       ENDIF
 #endif
 
 #ifdef GM_BATES_K3D
-C This is put here, but really should be in gmredi_init_fixed.F. The problem is that
-C fCori, fCoriCos, etc are not initialized when gmredi_init_fixed.F is called. To be fixed.
+C     This is put here, but really should be in gmredi_init_fixed.F. The
+C     problem is that fCori, fCoriCos, etc are not initialized when
+C     gmredi_init_fixed.F is called. To be fixed.
 C     Computing beta = df/dy
       IF ( selectCoriMap.EQ.1 ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -232,13 +233,6 @@ C     Computing beta = df/dy
       ENDIF
       CALL EXCH_XY_RL( gradf, myThid)
 #endif /* GM_BATES_K3D */
-
-#ifdef GM_GEOM_VARIABLE_K
-      IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
-     &     .AND. pickupSuff.EQ.' ' )) THEN
-        IF (GM_useGEOM) CALL GMREDI_READ_PICKUP( nIter0, myThid )
-      ENDIF
-#endif
 
 #ifdef ALLOW_AUTODIFF
       ENDIF
