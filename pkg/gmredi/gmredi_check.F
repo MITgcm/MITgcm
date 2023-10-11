@@ -212,10 +212,6 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_pickup_write_mdsio =', ' /* GEOM binary pickup write */')
        CALL WRITE_0D_L( GEOM_pickup_read_mdsio, INDEX_NONE,
      &  'GEOM_pickup_read_mdsio  =', ' /* GEOM binary pickup read  */')
-       CALL WRITE_0D_L( GEOM_pickup_write_mnc, INDEX_NONE,
-     &  'GEOM_pickup_write_mnc =', ' /* GEOM netCDF pickup write */')
-       CALL WRITE_0D_L( GEOM_pickup_read_mnc, INDEX_NONE,
-     &  'GEOM_pickup_read_mnc  =', ' /* GEOM netCDF pickup read  */')
      
        IF (usingCurvilinearGrid) THEN
         WRITE(msgBuf,'(3A)') '** WARNING ** GMREDI_CHECK:',

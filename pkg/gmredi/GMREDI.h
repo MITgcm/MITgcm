@@ -30,8 +30,6 @@ C     GM_useGEOM              :: use the GEOME formulation to calculate kgm
 C     GEOM_vert_struc         :: allow for N2 structure function
 C     GEOM_pickup_write_mdsio :: write binary GEOM pickups
 C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
-C     GEOM_pickup_write_mnc   :: write MNC GEOM pickups
-C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
 
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
@@ -53,8 +51,6 @@ C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
       LOGICAL GEOM_vert_struc
       LOGICAL GEOM_pickup_write_mdsio
       LOGICAL GEOM_pickup_read_mdsio
-      LOGICAL GEOM_pickup_write_mnc
-      LOGICAL GEOM_pickup_read_mnc
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -67,9 +63,7 @@ C     GEOM_pickup_read_mnc    :: read  MNC GEOM pickups
      &                   GM_useLeithQG,
      &                   GM_useGEOM, GEOM_vert_struc,
      &                   GEOM_pickup_write_mdsio,
-     &                   GEOM_pickup_read_mdsio,
-     &                   GEOM_pickup_write_mnc,
-     &                   GEOM_pickup_read_mnc
+     &                   GEOM_pickup_read_mdsio
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -331,26 +325,27 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 #endif
 
 #ifdef GM_GEOM_VARIABLE_K
-C     GEOMK       :: mixing/stirring coefficient (spatially variable in
+C     GEOMK         :: mixing/stirring coefficient (spatially variable in
 C                    horizontal for Marshall et al. (2012) parameterization)
-C     GEOM_ene    :: parameterised total eddy energy in GEOMETRIC;
+C     GEOM_ene      :: parameterised total eddy energy in GEOMETRIC;
 C                    used to update GEOMK
-C     ene_rhs*    :: RHS of eddy energy equation for time-stepping
-C     energy_init :: is 0/1/2 to control time-stepping routine of parameterised
+C     ene_rhs*      :: RHS of eddy energy equation for time-stepping
+C     GEOM_ene_ctrl :: is 0/1/2 to control time-stepping routine of parameterised
 C                    eddy energy in gmredi_calc_geom.F
+C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth)
 C
       _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GEOM_ene   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL GEOM_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER GEOM_ene_ctrl
 
       COMMON /GM_GEOM/ GEOMK,
      &                 GEOM_ene,
      &                 ene_rhs_nm1, ene_rhs_nm2,
      &                 GEOM_taper
-      INTEGER energy_init
-      COMMON /GM_GEOM_I/ energy_init
+      COMMON /GM_GEOM_I/ GEOM_ene_ctrl
 #endif
 
 #ifdef ALLOW_GM_LEITH_QG

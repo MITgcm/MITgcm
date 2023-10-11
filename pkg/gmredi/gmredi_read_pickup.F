@@ -253,8 +253,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (GM_useGEOM) THEN
 
-        IF (.NOT. (GEOM_pickup_read_mnc .OR.
-     &             GEOM_pickup_read_mdsio ) ) THEN
+        IF (.NOT. GEOM_pickup_read_mdsio ) THEN
           WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
      &         'in routine but no pickup option specified!'
           WRITE(*,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
@@ -387,30 +386,6 @@ C--     Check for missing fields:
       ENDIF
 #endif /* ALLOW_MDSIO */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_MNC
-
-      IF ( GEOM_pickup_read_mnc ) THEN
-        IF ( GEOM_pickup_read_mdsio ) THEN
-          WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
-     &         'GEOM mdsio and mnc read both on, skipping mnc read'
-        ELSE
-          WRITE(fn,'(A)') 'pickup_gmredi'
-          CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
-          CALL MNC_CW_SET_UDIM(fn, 1, myThid)
-          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'GEOM_ene',GEOM_ene,    myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
-          CALL MNC_CW_RL_R('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
-          CALL EXCH_XY_RL(GEOM_ene, myThid)
-          CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
-          CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
-
-          WRITE(*,'(2A)') 'GMREDI_READ_PICKUP: ',
-     &        'reading mnc pickup'
-        ENDIF
-      ENDIF
-#endif  /* ALLOW_MNC */
       ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 

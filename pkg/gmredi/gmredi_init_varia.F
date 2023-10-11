@@ -118,11 +118,15 @@ C     Initialize arrays in common blocks :
 #endif
 #ifdef GM_GEOM_VARIABLE_K
            GEOMK(i,j,k,bi,bj)      = 0. _d 0
+           GEOM_ene(i,j,bi,bj)     = 0. _d 0
+           ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
+           ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
+C     doing below k=1,Nr times too many, but only doing it once...
            IF ( k.EQ.1 ) THEN
             GEOM_ene(i,j,bi,bj)    = 0. _d 0
             ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
             ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
-            IF( energy_init .EQ. 0 ) THEN
+            IF( GEOM_ene_ctrl .EQ. 0 ) THEN
              GEOM_ene(i,j,bi,bj)   = GEOM_ene_init * maskC(i,j,1,bi,bj)
             ENDIF
 C     compute depth tapering only once

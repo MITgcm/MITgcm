@@ -270,33 +270,6 @@ C     uses this specific S/R to write (with more informations) only meta files
       ENDIF
 #endif /* ALLOW_MDSIO */
 C--------------------------
-#ifdef ALLOW_MNC
-      IF ( GEOM_pickup_write_mnc ) THEN
-
-        IF ( permPickup ) THEN
-          WRITE(fn,'(A)') 'pickup_gmredi'
-        ELSE
-          WRITE(fn,'(A,A)') 'pickup_gmredi.',suff
-        ENDIF
-C       First ***define*** the file group name
-        CALL MNC_CW_SET_UDIM(fn, 0, myThid)
-        IF ( permPickup ) THEN
-          CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
-        ELSE
-          CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)
-        ENDIF
-C       Then set the actual unlimited dimension
-        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
-        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'GEOM_ene',   GEOM_ene,   myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm1',ene_rhs_nm1,myThid)
-        CALL MNC_CW_RL_W('D',fn,0,0,'ene_rhs_nm2',ene_rhs_nm2,myThid)
-
-        WRITE(*,'(2A)') 'GMREDI_WRITE_PICKUP: ',
-     &       'writing GEOM mnc pickup'
-      ENDIF
-#endif /* ALLOW_MNC */
-C--------------------------
       ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 

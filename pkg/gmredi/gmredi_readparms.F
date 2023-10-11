@@ -87,8 +87,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GEOM_vert_struc,
      &          GEOM_vert_struc_min, GEOM_vert_struc_max,
      &          GEOM_minval_K, GEOM_maxval_K,
-     &          GEOM_pickup_write_mdsio, GEOM_pickup_write_mnc,
-     &          GEOM_pickup_read_mdsio, GEOM_pickup_read_mnc
+     &          GEOM_pickup_write_mdsio, GEOM_pickup_read_mdsio
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -166,9 +165,7 @@ C--   Default values GEOMETRIC
       GEOM_minVal_K           = 0. _d 0
       GEOM_maxVal_K           = 2500. _d 0
       GEOM_pickup_write_mdsio = .TRUE.
-      GEOM_pickup_write_mnc   = .FALSE.
       GEOM_pickup_read_mdsio  = .TRUE.
-      GEOM_pickup_read_mnc    = .FALSE.
 
 C--   Default values for BatesK3d
       GM_useBatesK3d     = .FALSE.
@@ -264,7 +261,7 @@ C     Fix to avoid running without getting any output:
 #ifdef GM_GEOM_VARIABLE_K
 
 C     initialise GEOMETRIC energy or not
-      IF( (GEOM_pickup_read_mdsio .OR. GEOM_pickup_read_mnc) ) THEN
+      IF( GEOM_pickup_read_mdsio ) THEN
         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
      &      'read pickup option on, no init of GEOM_ene'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -274,14 +271,14 @@ C     initialise GEOMETRIC energy or not
      &       'WARNING! nIter0 = 0, force energy initialisation...'
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , 1)
-          energy_init = 0
+          GEOM_ene_ctrl = 0
         ENDIF
       ELSE
         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
      &      'initialising GEOM_ene'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , 1)
-        energy_init = 0
+        GEOM_ene_ctrl = 0
       ENDIF
 
 #endif
