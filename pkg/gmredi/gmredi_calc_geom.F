@@ -61,6 +61,7 @@ C     ene_*        :: intermediate variables for computing trends
 C     depth*       :: various depth variables for computation purposes
 C     c1, c_ros    :: long Rossby wave phase speeds for trd_ene_wav
 C     UV_depth_avg :: depth-avg flow for                trd_ene_adv
+C     ab0, ab1, ab2:: Adams-Bashforth weights
 
       INTEGER i,j,k
       INTEGER kSurf
@@ -75,6 +76,7 @@ C     UV_depth_avg :: depth-avg flow for                trd_ene_adv
 
       _RL recipMaxSlope
       _RL c_ros_u, fm_ui, fp_ui
+      _RL ab0, ab1, ab2
 
 C     metric variables
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -209,7 +211,7 @@ C      Compute M^2 rho_0 / g on vertical interfaces
 C     avoid division by zero
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k), 
+         vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k),
      &                                GEOM_vert_struc_min)
         ENDDO
        ENDDO
@@ -217,8 +219,8 @@ C     Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
        DO k=Nr,2,-1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          vert_struc_func(i,j,k) = 
-     &         MAX(MIN(GEOM_vert_struc_max, 
+          vert_struc_func(i,j,k) =
+     &         MAX(MIN(GEOM_vert_struc_max,
      &                 N2loc3D(i,j,k)/vert_struc_func(i,j,2)),
      &             GEOM_vert_struc_min)
          ENDDO
@@ -382,15 +384,16 @@ C ----------------------------------------------
         ene_wav_x(i,j)   = 0.0 _d 0
         ene_lap_x(i,j)   = 0.0 _d 0
         ene_lap_y(i,j)   = 0.0 _d 0
+        ene_rhs_now(i,j) = 0.0 _d 0
        ENDDO
       ENDDO
 
 CCCCCCCCCCCCCCCCCCCCCCCCCC
 C     TODO: note for the 1-pixel energy test for advection,
 C
-C           1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
-C           2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
-C              (so everything else still calculated, but only advection does anything)
+C      1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
+C      2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
+C        (so everything else still calculated, but only advection does anything)
 
 !      if (GEOM_ene_ctrl .EQ. 1) then
 !        GEOM_ene(:, :, bi, bj) = 0.0 _d 0
@@ -406,14 +409,12 @@ C       first: form the depth-AVG velocity
       DO k=Nr,2,-1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
-         U_depth_avg(i, j) = U_depth_avg(i,j)
-     &                     + uVel(i,j,k,bi,bj) * drF(k)
-     &                     * hFacW(i,j,k,bi,bj)
-     &                     * recip_depthW(i,j)
-         V_depth_avg(i, j) = V_depth_avg(i,j)
-     &                     + vVel(i,j,k,bi,bj) * drF(k)
-     &                     * hFacS(i,j,k,bi,bj)
-     &                     * recip_depthS(i,j)
+         U_depth_avg(i,j) = U_depth_avg(i,j)
+     &                    + uVel(i,j,k,bi,bj) * drF(k)
+     &                    * hFacW(i,j,k,bi,bj) * recip_depthW(i,j)
+         V_depth_avg(i,j) = V_depth_avg(i,j)
+     &                    + vVel(i,j,k,bi,bj) * drF(k)
+     &                    * hFacS(i,j,k,bi,bj) * recip_depthS(i,j)
         ENDDO
        ENDDO
       ENDDO
@@ -509,36 +510,30 @@ C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
       IF (GEOM_ene_ctrl .EQ. 0 ) THEN
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
-     &            + deltaTloc * ene_rhs_now(i,j)
-        ENDDO
-       ENDDO
+       ab0 = 1.0 _d 0
+       ab1 = 0.0 _d 0
+       ab2 = 0.0 _d 0
        GEOM_ene_ctrl = 1
       ELSEIF ( GEOM_ene_ctrl .EQ. 1 ) THEN
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
-     &             + deltaTloc * (
-     &             +(3.0 _d 0 / 2.0 _d 0) * ene_rhs_now(i,j)
-     &             -(1.0 _d 0 / 2.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
-     &        )
-        ENDDO
-       ENDDO
+       ab0 =   3.0 _d 0 / 2.0 _d 0
+       ab1 = - 1.0 _d 0 / 2.0 _d 0
+       ab2 =   0.0 _d 0
        GEOM_ene_ctrl = 2
       ELSE
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
-         GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
-     &             + deltaTloc * (
-     &             +(23.0 _d 0 / 12.0 _d 0) * ene_rhs_now(i,j)
-     &             -( 4.0 _d 0 /  3.0 _d 0) * ene_rhs_nm1(i,j,bi,bj)
-     &             +( 5.0 _d 0 / 12.0 _d 0) * ene_rhs_nm2(i,j,bi,bj)
-     &                        )
-        ENDDO
-       ENDDO
+       ab0 =  23.0 _d 0 / 12.0 _d 0
+       ab1 = - 4.0 _d 0 /  3.0 _d 0
+       ab2 =   5.0 _d 0 / 12.0 _d 0
       ENDIF
+      DO j=1-OLy+1,sNy+OLy-1
+       DO i=1-OLx+1,sNx+OLx-1
+        GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
+     &            + deltaTloc * (
+     &            + ab0 * ene_rhs_now(i,j)
+     &            + ab1 * ene_rhs_nm1(i,j,bi,bj)
+     &            + ab2 * ene_rhs_nm2(i,j,bi,bj)
+     &                        )
+       ENDDO
+      ENDDO
 C ----------------------------------------------
 C ---- end advection of energy -----------------
 C ----------------------------------------------

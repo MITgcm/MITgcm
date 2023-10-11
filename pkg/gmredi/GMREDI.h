@@ -204,7 +204,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_depth,
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
-     &                 GEOM_alpha, GEOM_lmbda, 
+     &                 GEOM_alpha, GEOM_lmbda,
      &                 GEOM_ene_init, GEOM_ene_kappa,
      &                 GEOM_minval_K, GEOM_maxval_K,
      &                 GEOM_vert_struc_min, GEOM_vert_struc_max,
@@ -326,12 +326,12 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 
 #ifdef GM_GEOM_VARIABLE_K
 C     GEOMK         :: mixing/stirring coefficient (spatially variable in
-C                    horizontal for Marshall et al. (2012) parameterization)
+C                      horizontal for Marshall et al. (2012) parameterization)
 C     GEOM_ene      :: parameterised total eddy energy in GEOMETRIC;
-C                    used to update GEOMK
+C                      used to update GEOMK
 C     ene_rhs*      :: RHS of eddy energy equation for time-stepping
-C     GEOM_ene_ctrl :: is 0/1/2 to control time-stepping routine of parameterised
-C                    eddy energy in gmredi_calc_geom.F
+C     GEOM_ene_ctrl :: controls time-stepping routine of parameterised
+C                      eddy energy in gmredi_calc_geom.F (=0/1/2)
 C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth)
 C
       _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
