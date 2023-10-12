@@ -35,7 +35,7 @@ c     == global variables ==
 # include "optim.h"
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
-# include "ctrl_dummy.h"
+# include "CTRL_DUMMY.h"
 #endif
 
 c     == routine arguments ==

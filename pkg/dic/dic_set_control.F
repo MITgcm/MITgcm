@@ -25,7 +25,7 @@ C     == GLobal variables ==
 #ifdef ALLOW_CTRL
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 #endif
 C     == Routine arguments ==

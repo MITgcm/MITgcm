@@ -29,7 +29,7 @@ CML#include "DYNVARS.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
