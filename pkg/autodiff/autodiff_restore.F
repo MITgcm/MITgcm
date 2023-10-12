@@ -58,7 +58,7 @@ C They provide the fields to be stored.
 # include "SEAICE.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_OBCS.h"
 #endif
 C     it is important that this file is included after SEAICE_SIZE.h

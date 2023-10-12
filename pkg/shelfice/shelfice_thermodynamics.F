@@ -38,8 +38,8 @@ C     === Global variables ===
 #include "SHELFICE_COST.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # ifdef ALLOW_GENTIM2D_CONTROL
 #  include "CTRL_GENARR.h"
 # endif
