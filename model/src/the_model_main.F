@@ -586,7 +586,7 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 # include "optim.h"
 #endif
 

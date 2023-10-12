@@ -52,7 +52,7 @@ endif
 if ( ${fileName} != 'PARAMS' && ${fileName} != 'EEPARAMS' &&  ${fileName} != 'SIZE' &&  ${fileName} != 'MNC_COMMON' && ${fileName} != 'GAD' && ${fileName} != 'GRID' ) then
   echo '      use PARAMS_mod'	     >> ${fileName}_temp
 endif
-if ( ${fileName} == 'ctrl' || ${fileName} == 'ctrl_dummy' || ${fileName} == 'CTRL_GENARR' ) then
+if ( ${fileName} == 'CTRL' || ${fileName} == 'CTRL_DUMMY' || ${fileName} == 'CTRL_GENARR' ) then
   echo '      use CTRL_SIZE_mod'     >> ${fileName}_temp
 endif
 if ( ${fileName} == 'DIAGSTATS_REGIONS' || ${fileName} == 'DIAGNOSTICS' ) then

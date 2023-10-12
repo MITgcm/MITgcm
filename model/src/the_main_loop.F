@@ -204,8 +204,8 @@ C     it is important that this file is included after SEAICE_SIZE.h
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
 # endif
@@ -290,7 +290,7 @@ CEOP
 c--   Initialize storage for the cost function evaluation.
 c---------------------------------------------------------
 c--   Initialize storage for the initialisation phase.
-# ifdef ALLOW_AUTODIFF_WHTAPEIO
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_init       = COMMON, 1
 # else
 CADJ INIT tapelev_init       = USER
@@ -299,7 +299,11 @@ c--   this tape is never used
 cCADJ INIT tapelev_ini_bibj   = USER
 # ifdef INCLUDE_CONVECT_INI_CALL
 c--   currently only used in convective_adjustement_ini.F
+#  if ( defined ALLOW_AUTODIFF_WHTAPEIO && !defined ALLOW_DIVIDED_ADJOINT )
 CADJ INIT tapelev_ini_bibj_k = COMMON, nSx*nSy*Nr
+#  else
+CADJ INIT tapelev_ini_bibj_k = USER
+#  endif
 # endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 c--   exclusive tape for variables with suffix "_dummy"
@@ -327,6 +331,10 @@ CADJ  INIT tapelvi3 = USER,'adi'
 
 #ifdef ALLOW_AUTODIFF_TAMC
       ikey_dynamics = 1
+# if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+C     this needs to happen before any store directive to taplev_init
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 0, myThid )
+# endif
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 # endif
@@ -334,8 +342,14 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 CADJ STORE shelficeLoadAnomaly = tapelev_init, key=1, kind=isbyte
 # endif
 # ifdef ALLOW_STREAMICE
-CADJ STORE H_streamice = tapelev_init, key=1
-CADJ STORE B_glen      = tapelev_init, key=1
+CADJ STORE H_streamice              = tapelev_init, key=1
+CADJ STORE B_glen                   = tapelev_init, key=1
+CADJ STORE bdot_streamice           = tapelev_init, key=1
+CADJ STORE c_basal_friction         = tapelev_init, key=1
+CADJ STORE streamice_bdot_maxmelt_v = tapelev_init, key=1
+#  ifdef USE_ALT_RLOW
+CADJ STORE r_low_si                 = tapelev_init, key=1
+#  endif
 # endif
 # ifdef ALLOW_DIC
 CADJ STORE co2atmos = tapelev_init, key = 1
@@ -344,12 +358,6 @@ CADJ STORE alpha    = tapelev_init, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
-# ifdef ALLOW_DIFFKR_CONTROL
-c$openad INDEPENDENT(xx_diffkr_dummy)
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
-c$openad INDEPENDENT(xx_kapgm)
-# endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)
@@ -389,6 +397,11 @@ c     Initialize PDAF
       CALL TIMER_START('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
       CALL INIT_PDAF( nIter0, myTime, myIter, myThid )
       CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
+#endif
+
+#if ( defined ALLOW_AUTODIFF_WHTAPEIO && defined ALLOW_DIVIDED_ADJOINT )
+C     end of initialisation and use of tapelev_init: write buffer to disk
+      CALL AUTODIFF_WHTAPEIO_SYNC( 1 , 1, myThid )
 #endif
 
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -44,13 +44,13 @@
  nIter0=0,
  nTimeSteps=10,
  abEps=0.1,
- deltaT=1200.0,
- cAdjFreq=0.,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=2592000.0,
- monitorFreq=1.,
- adjmonitorFreq=1.,
+ deltaT= 1200.,
+ pChkptFreq= 0.,
+ chkptFreq=  0.,
+ dumpFreq= 2592000.,
+#adjDumpFreq= 6000.,
+ monitorFreq= 1.,
+ adjmonitorFreq= 1.,
  &
 
 # Gridding parameters

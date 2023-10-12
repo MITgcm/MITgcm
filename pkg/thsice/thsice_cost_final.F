@@ -22,7 +22,7 @@ C     == global variables ==
 #ifdef ALLOW_COST
 #include "THSICE_COST.h"
 #include "cost.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 #endif
 
