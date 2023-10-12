@@ -26,7 +26,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #ifdef ALLOW_TAPENADE
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 # include "ECCO_SIZE.h"
 # include "ECCO.h"

@@ -1,4 +1,5 @@
 #ifdef ALLOW_SHELFICE
+CADJ STORE phi0surf         = tapelev2, key = ilev_2
 CADJ STORE shelficeMass     = tapelev2, key = ilev_2
 CADJ STORE kTopC            = tapelvi2, key = ilev_2
 CADJ STORE shelficeForcingT = tapelev2, key = ilev_2
