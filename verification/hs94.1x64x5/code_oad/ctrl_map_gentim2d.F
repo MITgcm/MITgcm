@@ -21,9 +21,9 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"

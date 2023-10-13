@@ -26,9 +26,9 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
@@ -54,10 +54,11 @@ C     == local variables ==
 C     Tapenade requires these 4 variables to be declared as arrays of
 C     size maxCtrlTim2D. If declared as scalars, it does not store their
 C     temporary values in the do loop during reverse pass.
-      character*(MAX_LEN_FNAM) fnamegenIn(1:maxCtrlTim2D)
-      character*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
-      character*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
-      character*(MAX_LEN_FNAM) fnamebase(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamegenIn(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamegenOut(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) fnamegenTmp(1:maxCtrlTim2D)
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamA
+      CHARACTER*(MAX_LEN_FNAM) temp_genarr_fnamB
       integer startrec
       integer endrec
       integer diffrec
@@ -118,8 +119,9 @@ C--   generic 2D control variables
 #endif
 
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
-        call ctrl_init_rec ( fnamebase(iarr),
+        temp_genarr_fnamA = xx_gentim2d_file(iarr)
+
+        call ctrl_init_rec ( temp_genarr_fnamA(1:ilgen),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -161,15 +163,16 @@ C print statements are removed. See "Automatic Differentiation" chap. in the doc
          endif
         enddo
 
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        fnamebase(iarr) = xx_gentim2d_file(iarr)(1:ilgen)
-        write(fnamegenIn(iarr),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.',optimcycle
-        write(fnamegenOut(iarr),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),
-     &   '.effective.',optimcycle
-        write(fnamegenTmp(iarr),'(2a,i10.10)')
-     &   ctrlDir(1:ilDir)//fnamebase(iarr)(1:ilgen),'.tmp.',optimcycle
+        write(temp_genarr_fnamB,'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen),'.',optimcycle
+        fnamegenIn(iarr) = temp_genarr_fnamB
+        write(temp_genarr_fnamB,'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen)
+     &   ,'.effective.',optimcycle
+        fnamegenOut(iarr) = temp_genarr_fnamB
+        write(temp_genarr_fnamB,'(2a,i10.10)')
+     &   ctrlDir(1:ilDir)//temp_genarr_fnamA(1:ilgen),'.tmp.',optimcycle
+        fnamegenTmp(iarr) = temp_genarr_fnamB
 
 C--   docycle
 
@@ -205,8 +208,9 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
           IF (kRec.LE.endrec) THEN
 #ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenIn(iarr) )
+           temp_genarr_fnamA = fnamegenIn(iarr)
            write(*,*) 'AE: iarr,[i,j,k,l]rec: ',iarr,iRec,jrec,lRec
-           write(*,*) 'AF: fnamegenIn: ', fnamegenIn(iarr)(1:ilgen)
+           write(*,*) 'AF: fnamegenIn: ', temp_genarr_fnamA(1:ilgen)
 #endif
 C fnamegenIn is xx_*.$iter.data, so the required access records starts at
 C startrec+iRec-1 instead of iRec in the read call below. In adjoint mode, S/R
@@ -227,8 +231,9 @@ C Here, we write record kRec (from 1 to diffrec) to file xx_*.effective.$iter
 #ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_CTRL_DEBUG
            ilgen=ilnblnk( fnamegenOut(iarr) )
+           temp_genarr_fnamA = fnamegenOut(iarr)
            write(*,*) 'AG: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
-           write(*,*) 'AH: fnamegenOut: ', fnamegenOut(iarr)(1:ilgen)
+           write(*,*) 'AH: fnamegenOut: ', temp_genarr_fnamA(1:ilgen)
 #endif
            CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, kRec,
      &          optimcycle, myThid, xx_gentim2d_dummy(iarr) )
@@ -295,7 +300,8 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_CTRL_DEBUG
            write(*,*) 'AK: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
            ilgen=ilnblnk( fnamegenOut(iarr) )
-           write(*,*) 'AL: fnamegenOut: ',fnamegenOut(iarr)(1:ilgen)
+           temp_genarr_fnamA = fnamegenOut(iarr)
+           write(*,*) 'AL: fnamegenOut: ',temp_genarr_fnamA(1:ilgen)
 #endif
 #ifdef ALLOW_AUTODIFF
            CALL ACTIVE_READ_XY( fnamegenOut(iarr), xx_gen_tmp, kRec,
@@ -352,7 +358,8 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 #ifdef ALLOW_CTRL_DEBUG
            write(*,*) 'AM: iarr,[i,j,k]rec: ',iarr,iRec,jrec,kRec
            ilgen=ilnblnk( fnamegenOut(iarr) )
-           write(*,*) 'AN: fnamegenOut: ',fnamegenOut(iarr)(1:ilgen)
+           temp_genarr_fnamA = fnamegenOut(iarr)
+           write(*,*) 'AN: fnamegenOut: ',temp_genarr_fnamA(1:ilgen)
 #endif
            IF (kRec.LE.diffrec) THEN
 #ifdef ALLOW_AUTODIFF
@@ -407,9 +414,10 @@ CADJ STORE xx_gentim2d_dummy = dummytape, key = 1 , kind = isbyte
 
 #ifdef ALLOW_CTRL_DEBUG
          ilgen=ilnblnk( fnamegenOut(iarr) )
+         temp_genarr_fnamA = fnamegenOut(iarr)
          lRec=startrec+iRec-1
          write(*,'(A,1x,A,1x,2I6)') 'AO: fnamegenOut, iRec,lRec ',
-     &       fnamegenOut(iarr)(1:ilgen),iRec,lRec
+     &       temp_genarr_fnamA(1:ilgen),iRec,lRec
 #endif
 #ifdef ALLOW_AUTODIFF
          CALL ACTIVE_READ_XY( fnamegenOut(iarr), xx_gen, iRec,
@@ -468,8 +476,9 @@ C--   Get appropriate mask
 
 #ifdef ALLOW_CTRL_DEBUG
          ilgen=ilnblnk( fnamegenOut(iarr) )
+         temp_genarr_fnamA = fnamegenOut(iarr)
          write(*,'(A,1x,I6,1x,A)')
-     &      'AQ: iRec,fnamegenOut: ',iRec,fnamegenOut(iarr)(1:ilgen)
+     &      'AQ: iRec,fnamegenOut: ',iRec,temp_genarr_fnamA(1:ilgen)
 #endif
 #ifdef ALLOW_AUTODIFF
          CALL ACTIVE_WRITE_XY( fnamegenOut(iarr), xx_gen, iRec,

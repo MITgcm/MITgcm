@@ -54,8 +54,6 @@ C     involves many new dependencies that we would like to avoid in general.
 #ifdef ALLOW_DEPTH_CONTROL
 C   Only relevant within DEPTH_CONTROL code:
 # define USE_SMOOTH_MIN
-# undef ALLOW_HFACC_CONTROL
-# undef ALLOW_HFACC3D_CONTROL
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.

@@ -119,9 +119,9 @@ C     == Global variables ==
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
 #  include "optim.h"
-#  include "ctrl.h"
+#  include "CTRL.h"
 #  include "CTRL_GENARR.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL_DUMMY.h"
 # endif
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"

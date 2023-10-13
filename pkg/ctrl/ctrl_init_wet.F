@@ -14,7 +14,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_OBCS.h"
 
 #ifdef ALLOW_OBCS_CONTROL
@@ -236,24 +236,24 @@ cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 cph(
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 1:    nvarlength = ', nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 2: surface wet C = ', nwetctile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 3: surface wet W = ', nwetwtile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 4: surface wet S = ', nwetstile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 4a:surface wet V = ', nwetvtile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       nwetc3d = 0
       do k = 1, Nr
@@ -261,14 +261,14 @@ cph(
       end do
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 5: 3D wet points = ', nwetc3d
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       do i = 1, maxcvars
          write(msgbuf,'(a,2x,I3,2x,I10)')
      &     'ctrl-wet 6: no recs for i = ', i, ncvarrecs(i)
-        call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+        call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
       end do
 
       nwettmp =
@@ -279,8 +279,8 @@ cph(
      &     ncvarrecs(6)*nwetstile(1,1,1)
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 7: flux  ', nwettmp
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       nwettmp =
      &     2*nwetc3d +
@@ -290,59 +290,59 @@ cph(
      &     ncvarrecs(10)*nwetstile(1,1,1)
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 8: atmos ', nwettmp
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_OBCSN_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 9: surface wet obcsn = '
      &     , nwetobcsn(1,1,1,1), nwetobcsn(1,1,1,2)
      &     , nwetobcsn(1,1,1,3), nwetobcsn(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 10: surface wet obcss = '
      &     , nwetobcss(1,1,1,1), nwetobcss(1,1,1,2)
      &     , nwetobcss(1,1,1,3), nwetobcss(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 11: surface wet obcsw = '
      &     , nwetobcsw(1,1,1,1), nwetobcsw(1,1,1,2)
      &     , nwetobcsw(1,1,1,3), nwetobcsw(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
       write(msgbuf,'(a,2x,4I10)')
      &     'ctrl-wet 12: surface wet obcse = '
      &     , nwetobcse(1,1,1,1), nwetobcse(1,1,1,2)
      &     , nwetobcse(1,1,1,3), nwetobcse(1,1,1,4)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 #endif
 cph)
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       CALL GLOBAL_SUM_INT( nvarlength,  myThid )
 
       write(msgbuf,'(a,2x,I3,2x,I10)')
      &     'ctrl-wet 13: global nvarlength for Nr =', Nr, nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
 c
 c     Summation of wet point counters
@@ -387,15 +387,15 @@ c
 
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &        'ctrl-wet 14: global nWet C/S/W/V k=', k, ntmp2
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 
       enddo
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       do k = 1, Nr
 
@@ -412,8 +412,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15a: global obcsN T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
          do iobcs = 1, nobcs
@@ -428,8 +428,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15b: global obcsS T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
          do iobcs = 1, nobcs
@@ -444,8 +444,8 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15c: global obcsW T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
          do iobcs = 1, nobcs
@@ -460,16 +460,16 @@ c
          enddo
          write(msgbuf,'(a,2x,I3,4(2x,I10))')
      &       'ctrl-wet 15d: global obcsE T,S,U,V k=', k, ntmpob
-         call print_message( msgbuf, standardmessageunit,
-     &       SQUEEZE_RIGHT , myThid)
+         call print_message( msgbuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
 #endif
 
       enddo
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_OBCSN_CONTROL
       do iobcs = 1, nobcs
@@ -480,8 +480,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16a: global SUM(K) obcsN T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
       do iobcs = 1, nobcs
@@ -492,8 +492,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16b: global SUM(K) obcsS T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
       do iobcs = 1, nobcs
@@ -504,8 +504,8 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16c: global SUM(K) obcsW T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
       do iobcs = 1, nobcs
@@ -516,20 +516,20 @@ c
       enddo
       write(msgbuf,'(a,4(2x,I10))')
      &    'ctrl-wet 16d: global SUM(K) obcsE T,S,U,V ', ntmpob
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_SHELFICE
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl-wet 17a:surface wet I = ', nwetitile(1,1,1)
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       do k = 1, Nr
        ntmpshi=0
@@ -546,8 +546,8 @@ c
        endif
        write(msgbuf,'(a,2x,I3,2x,I10)')
      &      'ctrl-wet 17b: global nWet I k=', k, ntmpshi
-       call print_message( msgbuf, standardmessageunit,
-     &      SQUEEZE_RIGHT , myThid)
+       call print_message( msgbuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
       enddo
 
       ntmpshi=0
@@ -556,23 +556,23 @@ c
       enddo
       write(msgbuf,'(a,2x,I10)')
      &    'ctrl-wet 17c: global SUM(K) shelfice ', ntmpshi
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 
       write(msgbuf,'(a)')
      &    'ctrl-wet -------------------------------------------------'
-      call print_message( msgbuf, standardmessageunit,
-     &    SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &    SQUEEZE_RIGHT, myThid )
 #endif
 
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init_wet: no. of control variables: ', nvartype
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a,2x,I10)')
      &     'ctrl_init_wet: control vector length:    ', nvarlength
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , myThid)
+      call print_message( msgbuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
 
       _END_MASTER( myThid )
 

@@ -10,8 +10,8 @@ cost
 CTRL_SIZE
 CTRL_GENARR
 CTRL_OBCS
-ctrl_dummy
-ctrl
+CTRL_DUMMY
+CTRL
 ctrl_local_params
 DYNVARS
 EESUPPORT
