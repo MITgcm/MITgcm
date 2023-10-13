@@ -75,7 +75,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( GM_useBatesK3d .OR.
      &     ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) ) THEN
 
-       print *, 'ml-gm hallo 0'
        IF ( pickupSuff.EQ.' ' ) THEN
         IF ( rwSuffixType.EQ.0 ) THEN
           WRITE(fn,'(A,I10.10)') 'pickup_gmredi.', myIter
@@ -283,7 +282,6 @@ C---    Old way to read pickup:
 
         ELSE
 
-       print *, 'ml-gm hallo 1'
 C---    read GMREDI fields for restart
           nm = nm*Nr
 C         ---2D fields---
@@ -305,7 +303,6 @@ C         GEOMETRIC energy
 
 C     use AB3 time stepping
           GEOM_ene_ctrl = 2
-          print *, 'ml-gm hallo 2', GEOM_ene_ctrl
         ENDIF
 
 C--     Check for missing fields:
@@ -345,6 +342,5 @@ C--     Check for missing fields:
 #endif /* GM_GEOM_VARIABLE_K */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      print *, 'ml-gm hallo 2', GEOM_ene_ctrl
       RETURN
       END
