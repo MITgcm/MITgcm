@@ -368,6 +368,53 @@ the formula for :math:`\kappa_{\rm GM}` gives:
    \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |{\bf S}| N }^z
+   
+Marshall et al. 2012 GM diffusivity :math:`\kappa_{GM}(x,y)`
+------------------------------------------------------------
+
+Marshall et al. (2012) :cite:`marshall:12b` via the GEOMETRIC framework suggest
+that the eddy coefficient :math:`\kappa_{\rm GM}` to be a linear function of a
+parameterized total eddy energy :math:`E`, a non-dimensional constant
+:math:`\alpha` (provably bounded in magnitude by 1 in the QG setting) and the
+model stratification. Following Mak et al. (2022) :cite:`mak:22`, the
+depth-integrated coefficient is given by
+
+.. math::
+   \kappa_{\rm GM} = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma (M^2 / N)\; \mathrm{d}z} \Gamma(z) = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma |{\bf S}| N\; \mathrm{d}z} \Gamma(z),
+   
+with the same notaton as above, and :math:`\Gamma(z)` is some vertical structure
+function that can be prescribed if required (default is :math:`\Gamma(z)\equiv1`,
+with an option for :math:`\Gamma(z)\equiv N^2 / N^2_{\rm ref}` following 
+Ferreria et al. (2005) :cite:`ferriera:05`). The depth-integrated eddy energy
+follows its own prognostic equation as
+
+.. math::
+   \frac{\mathrm{d}}{\mathrm{d} t} \int E\; \mathrm{d}z +
+   \nabla \cdot \left( (\tilde{\boldsymbol{u}} - |c|\boldsymbol{e}_x ) \int E\; \mathrm{d}z \right) =
+   \int \kappa_{\rm gm} |{\bf S}|^2 N^2\; \mathrm{d}z -
+   \lambda \int E\; \mathrm{d}z +
+   \nu_E \nabla^2 \int E\; \mathrm{d}z,
+   
+respectively the time-evolution, advection, source, dissipation and diffusion of
+depth-integrated parameterized total eddy energy, with
+:math:`\tilde{\boldsymbol{u}}` is the depth-averaged velocity, :math:`c` is a
+long Rossby phase speed (computed from a WKB approximation), :math:`\lambda` a
+dissipation rate, and :math:`\nu_E` an energy diffusion coefficient. The latter
+two coefficients, as well as option to write and read pickups of time-stepping
+the parameterized eddy energy, can be specified through namelist parameters in
+``data.gmredi``. 
+
+.. admonition:: note
+  :class: note
+  
+  As of writing (13 Oct 2023), the Rossby west-ward advection of parameterised
+  eddy energy is forced to be off (:math:`c=0`) for curvilinear grids
+  (``usingCurvilinearGrid = .true.``). Rotation of velocity vectors to be
+  implemented.
+
+  The present GEOMETRIC implementation is strictly for the GM coefficient, and
+  makes no assumptions about it being equal to the Redi coefficient, unlike for
+  example the default Visbeck implementation.
 
 .. _sub_gmredi_tapering_stability:
 
@@ -563,6 +610,7 @@ options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
    :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
    :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
    :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
+   :varlink:`GM_GEOM_VARIABLE_K`, #undef, allows Marshall et al. formulation to compute :math:`\kappa_{\rm GM}`
 
 .. _ssub_phys_pkg_gmredi_runtime:
 
@@ -652,6 +700,31 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GM_use_GEOM`             |     FALSE                    | use GEOM scheme if compiled                                             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_alpha`              |     0.0                      | :math:`\alpha` parameter for GEOM scheme (non-dim.)                     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_lmbda`              |     2.0E-07                  | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_ene_kappa`          |     1.0E+03                  | eddy energy diffusion coefficient GEOM scheme (m\ :sup:`2`\ /s)         |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_ene_init`           |     1.0E-03                  | initial value for parameterized total depth eddy energy for GEOM scheme |
+  |                                    |                              | (m\ :sup:`3`\ / s\ :sup:`2`)                                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_vert_struc`         |     FALSE                    | use imposed vertical structure function in GEOM scheme                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_vert_struc_min`     |     0.1                      | minimum value of vertical structure function in GEOM scheme (non-dim.)  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_vert_struc_max`     |     1.0                      | maximum value of vertical structure function in GEOM scheme (non-dim.)  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_minVal_K`           |     0.0                      | minimum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using GEOM scheme     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_maxVal_K`           |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using GEOM scheme     |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_pickup_write_mdsio` |     TRUE                     | write pickups for GEOM scheme                                           |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`GEOM_pickup_read_mdsio`  |     FALSE                    | read pickups for GEOM scheme                                            |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_iso2dFile`            |     ' '                      | input file for 2D (:math:`x,y`) scaling of isopycnal diffusivity        |
@@ -702,6 +775,17 @@ GMREDI Diagnostics
    GM_vbT  | 18 |VVr     MR|degC.m^3/s      |Meridional Mass-Weight Bolus Transp of Pot Temp
    GM_BVPcW|  1 |SU P    M1|m/s             |WKB wave speed (at Western edge location)
    GM_BVPcS|  1 |SV P    M1|m/s             |WKB wave speed (at Southern edge location)
+   GM_GEOMK| 15 |SMRP    MR|m/s^2           |GEOM 3d kgm field
+   GEOMeE  |  1 |SM P    M1|m^3/s^2         |GEOM parameterized depth-int eddy energy
+   GEOMstru| 15 |SMRP    MR|                |spatial structure function
+   GEOMEgen|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy generation tendency
+   GEOMEdis|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy dissipation tendency
+   GEOMEadv|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy advective tendency
+   GEOMEwav|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy wave advection tendency
+   GEOMElap|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy diffusion tendency
+   GEOM_c1 |  1 |SM P    M1|m/s             |first baroclinic wave phase speed
+   GEOMcros|  1 |SM P    M1|m/s             |signed long Rossby wave phase speed
+
 
 
 Experiments and tutorials that use GMREDI
