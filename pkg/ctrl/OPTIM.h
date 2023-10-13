@@ -30,8 +30,8 @@ c     lsoptversion - Version of the large scale optimization.
       character*(5)  lsoptversion
       parameter    ( lsoptversion = '2.1.0' )
 
-      character*(5)  offlineversion
-      parameter    ( offlineversion = '0.1.1' )
+      character*(5)  optimversion
+      parameter    ( optimversion = '0.1.1' )
 
 c     The off-line optimization part:
 c     ===============================
@@ -80,5 +80,3 @@ c     optimcycle - cycle number of the off-line optimization.
 c     ==================================================================
 c     END OF HEADER OPTIMIZATION
 c     ==================================================================
-
-
