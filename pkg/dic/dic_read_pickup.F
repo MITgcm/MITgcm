@@ -153,7 +153,7 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( nbFields.EQ.0 ) THEN
-C---   Old way to read pickup:
+C---   Old meta-file without List of Fields: use the old way to read pickup
 
        ELSEIF ( nbFields.NE.-2 ) THEN
 C---   New way to read DIC pickup:

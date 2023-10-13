@@ -107,7 +107,7 @@ C    for now, just collect here few check & stop from various places:
 #ifdef USE_QSW
 c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
       WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
-     &     'You can not use READ_PAR  and USE_QSW'
+     &     'You can not use READ_PAR  and USE_QSW together'
       CALL PRINT_ERROR( msgBuf, myThid )
       STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
 #endif
@@ -115,7 +115,7 @@ c     WRITE(msgBuf,'(2A)') ' DIC_INI_FORCING: ',
      &     .AND. DIC_parFile .EQ. ' '  ) THEN
 c       WRITE(msgBuf,'(2A)') ' DIC_FIELDS_LOAD: ',
         WRITE(msgBuf,'(2A)') 'DIC_INIT_FIXED: ',
-     &     'You need to provide  a file if you want to use READ_PAR'
+     &     'You need to provide a file if you want to use READ_PAR'
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R DIC_INIT_FIXED'
       ENDIF

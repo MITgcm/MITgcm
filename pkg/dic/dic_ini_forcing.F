@@ -215,7 +215,7 @@ C-    Get reccord number and weight for time interpolation:
        _BARRIER
        _BEGIN_MASTER(myThid)
         WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' DIC_SURFFORCING_INIT, it=', nIter0,
+     &   ' DIC_INI_FORCING, it=', nIter0,
      &   ' : Reading new data, i0,i1=', intime0, intime1
        _END_MASTER(myThid)
 
