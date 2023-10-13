@@ -165,7 +165,7 @@ C--   Default values GEOMETRIC
       GEOM_minVal_K           = 0. _d 0
       GEOM_maxVal_K           = 2500. _d 0
       GEOM_pickup_write_mdsio = .TRUE.
-      GEOM_pickup_read_mdsio  = .FALSE.
+      GEOM_pickup_read_mdsio  = .TRUE.
 
 C--   Default values for BatesK3d
       GM_useBatesK3d     = .FALSE.
