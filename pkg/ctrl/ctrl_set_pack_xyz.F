@@ -28,7 +28,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIM.h"
 
 c     == routine arguments ==
 

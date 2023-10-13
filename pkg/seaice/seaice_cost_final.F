@@ -31,7 +31,7 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL.h"
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

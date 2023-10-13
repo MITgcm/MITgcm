@@ -37,7 +37,7 @@ c     == global variables ==
 
 #ifdef ALLOW_CTRL
 # include "CTRL.h"
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 c     == routine arguments ==
@@ -208,7 +208,7 @@ c     == global variables ==
 
 #ifdef ALLOW_CTRL
 # include "CTRL.h"
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 c     == routine arguments ==

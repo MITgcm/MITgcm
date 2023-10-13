@@ -23,7 +23,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "optim.h"
+#include "OPTIM.h"
 
 c     == routine arguments ==
       integer mythid

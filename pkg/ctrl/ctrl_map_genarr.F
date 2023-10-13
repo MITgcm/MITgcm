@@ -32,7 +32,7 @@ C     == global variables ==
 
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIM.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 
@@ -230,7 +230,7 @@ C     == global variables ==
 
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIM.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
 

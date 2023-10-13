@@ -46,7 +46,7 @@ c     == global variables ==
 # include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 c     == routine arguments ==

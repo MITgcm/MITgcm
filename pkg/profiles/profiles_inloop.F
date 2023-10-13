@@ -25,7 +25,7 @@ C ==================== Global Variables ===========================
 #include "cal.h"
 #endif
 #ifdef ALLOW_CTRL
-#include "optim.h"
+#include "OPTIM.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"

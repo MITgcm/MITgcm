@@ -28,7 +28,7 @@ C     ======== Global data ============================
 # include "netcdf.inc"
 #endif
 #ifdef ALLOW_CTRL
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 c     == routine arguments ==

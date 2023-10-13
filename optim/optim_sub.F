@@ -31,7 +31,7 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "ctrl.h"
-#include "optim.h"
+#include "OPTIM.h"
 
 c     == routine arguments ==
 

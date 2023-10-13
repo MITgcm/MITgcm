@@ -48,7 +48,7 @@ C     === Global variables ===
 #include "SURFACE.h"
 Cml we need optimcycle for storing the new hFaC(C/W/S) and depth
 #ifdef ALLOW_AUTODIFF
-# include "optim.h"
+# include "OPTIM.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
