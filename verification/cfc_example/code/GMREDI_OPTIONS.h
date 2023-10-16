@@ -18,24 +18,11 @@ C #define GM_EXCLUDE_AC02_TAP
 C #define GM_EXCLUDE_TAPERING
 C #define GM_EXCLUDE_SUBMESO
 
-C Allows to read-in background 3-D Redi and GM diffusivity coefficients
-C Note: need these to be defined for use as control (pkg/ctrl) parameters
-#undef GM_READ_K3D_REDI
-#undef GM_READ_K3D_GM
-
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K
 C Use old calculation (before 2007/05/24) of Visbeck etal K_GM+Redi
 C (which depends on tapering scheme)
 #undef OLD_VISBECK_CALC
-
-C This allows to use the GEOMETRIC formulation to compute K_GM
-#define GM_GEOM_VARIABLE_K
-
-C This allows the Bates et al formulation to calculate the
-C bolus transport and K for Redi
-#undef GM_BATES_K3D
-#undef GM_BATES_PASSIVE
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
@@ -43,17 +30,14 @@ C (a feature required when tapering adiabatically).
 
 C Allows to use different values of K_GM and K_Redi ; also to
 C be used with the advective form (Bolus velocity) of GM
-#define GM_EXTRA_DIAGONAL
+#undef GM_EXTRA_DIAGONAL
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
-#define GM_BOLUS_ADVEC
+#undef GM_BOLUS_ADVEC
 
 C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
-#define GM_BOLUS_BVP
-
-C Allow QG Leith variable viscosity to be added to GMRedi coefficient
-#undef ALLOW_GM_LEITH_QG
+#undef GM_BOLUS_BVP
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
