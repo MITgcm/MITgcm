@@ -1,0 +1,14 @@
+ simulation = { 'Testing CFC code' };
+ nDims = [   2 ];
+ dimList = [
+   128,    1,   64,
+    64,    1,   32
+ ];
+ dataprec = [ 'float64' ];
+ nrecords = [          3 ];
+ timeStepNumber = [      36000 ];
+ timeInterval = [  3.110400000000E+09 ];
+ nFlds = [    3 ];
+ fldList = {
+ 'GEOM_ene' 'erhs_nm1' 'erhs_nm2'
+ };
