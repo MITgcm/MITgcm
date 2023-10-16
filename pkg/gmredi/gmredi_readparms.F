@@ -212,12 +212,11 @@ C     Some constants
 
       IF (GM_AdvForm) THEN
         GM_skewflx = 0.
-        GM_advect  = 1.
         GM_ExtraDiag = GM_Visbeck_alpha.NE.0. .OR. GM_isopycK.NE.0.
       ELSE
         GM_skewflx = 1.
-        GM_advect  = 0.
         GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+     &       .OR. GM_isoFac_calcK .NE. 1 _d 0
       ENDIF
       IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
      &     GM_iso1dFile .NE. GM_bol1dFile ) THEN

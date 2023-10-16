@@ -197,12 +197,11 @@ C--   COMMON /GM_DERIVED_PAR/ other GM/Redi parameters
 C     (derived from previous block and not directly user configured)
       _RL GM_rMaxSlope
       _RL GM_skewflx
-      _RL GM_advect
       _RL GM_BVP_rModeNumber
       _RL GM_BVP_cHat2Min
       COMMON /GM_DERIVED_PAR/
      &                   GM_rMaxSlope,
-     &                   GM_skewflx, GM_advect,
+     &                   GM_skewflx,
      &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
 
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients

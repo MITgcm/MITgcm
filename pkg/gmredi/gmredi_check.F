@@ -76,12 +76,12 @@ C- print out some key parameters :
      &  'GM_ExtraDiag =','   /* Tensor Extra Diag (line 1&2) non 0 */')
        CALL WRITE_0D_RL( GM_isopycK, INDEX_NONE, 'GM_isopycK =',
      &  '    /* Background Isopyc. Diffusivity [m^2/s] */')
+       CALL WRITE_0D_RL( GM_background_K, INDEX_NONE,
+     &  'GM_background_K =',
+     &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s]*/')
        CALL WRITE_0D_RL( GM_background_K*GM_skewflx, INDEX_NONE,
      &  'GM_skewflx*K =',
      &  '  /* Background GM_SkewFlx Diffusivity [m^2/s] */')
-       CALL WRITE_0D_RL( GM_background_K*GM_advect, INDEX_NONE,
-     &  'GM_advec*K =',
-     &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s]*/')
        CALL WRITE_0D_RL( GM_isoFac_calcK, INDEX_NONE,
      &  'GM_isoFac_calcK =', ' /* apply dynamic K to Redi tensor */')
        CALL WRITE_0D_RL( GM_Kmin_horiz, INDEX_NONE, 'GM_Kmin_horiz =',

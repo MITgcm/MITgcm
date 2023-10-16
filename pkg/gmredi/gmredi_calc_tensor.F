@@ -589,15 +589,17 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
          Kwz(i,j,k,bi,bj)= ( isopycK*GM_isoFac2d(i,j,bi,bj)
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
-     &                     + VisbeckK(i,j,bi,bj)
+     &                     + VisbeckK(i,j,bi,bj)*GM_isoFac_calcK
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &                     + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
      &                           + GM_LeithQG_K(i,j,k,bi,bj) )
+     &                                          *GM_isoFac_calcK
 #endif
 #if ((defined GM_BATES_K3D) && ! (defined GM_BATES_PASSIVE))
      &                     + op5*( GM_BatesK3d(i,j,km1,bi,bj)
      &                           + GM_BatesK3d(i,j,k,bi,bj) )
+     &                                          *GM_isoFac_calcK
 #endif
      &                     )*Kwz(i,j,k,bi,bj)
         ENDDO
