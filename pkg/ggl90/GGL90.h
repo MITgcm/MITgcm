@@ -4,13 +4,13 @@ CBOP
 C !ROUTINE: GGL90.h
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | GGL90.h                                                  |
 C     | o Basic header for Garpar et al. (1990)                  |
 C     |   vertical mixing parameterization. Implementation       |
 C     |   follows OPA implementation of Blanke+Delecuse (1993)   |
 C     |   Contains all GGL90 field declarations.                 |
-C     \==========================================================/
+C     *==========================================================*
 
 C-----------------------------------------------------------------------
 C
@@ -26,12 +26,16 @@ C     GGL90alpha      - constant relating viscosity to GGL90 diffusivity
 C                      (default=1 in Gaspar etal.)
 C     GGL90TKEsurfmin - minimum of surface kinetic energy boundary condition
 C                      (default=GGL90TKEmin)
-C     GGL90TKEmin     - minimum kinetic energy, leads to minimum mixing if TKE=0.
+C     GGL90TKEmin     - minimum kinetic energy, both numerical regularisation
+C                       and source of due to unresolved processes,
+C                       e.g. internal gravity waves
 C     GGL90TKEbottom  - bottom bounardy condition for kinetic energy
 C                      (default=GGL90TKEmin)
 C     GGL90TKEFile    - File with initial field of TKE
 C     GGL90mixingLengthMin - Mininum mixing length
 C     mxlMaxFlag      - Flag for limiting mixing-length method (default=0)
+C     adMxlMaxFlag    - in AD-mode, use adMxlMaxFlag instead of mxlMaxFlag
+C                       (default=mxlMaxFlag)
 C     mxlSurfFlag     - Flag to force mixing near ocean surface (default= F )
 C     calcMeanVertShear :: calculate the mean (@ grid-cell center) of vertical
 C                          shear compon. (instead of vert. shear of mean flow);
@@ -41,6 +45,9 @@ C     useIDEMIX       - turn on internal wave mixing contribution modeled by
 C                       IDEMIX version 1:
 C                     - Olbers, D. and Eden, C. (2013), J. Phys. Oceano.
 C                       doi:10.1175/JPO-D-12-0207.1
+C
+C     useLANGMUIR     - turn on the parameterization of Langmuir circulation
+C                       by Tak, Song et al. (2022), Ocean Modelling
 C
 C     GGL90dumpFreq   - analogue of dumpFreq (= default)
 C     GGL90mixingMaps - output to standard out (default = .FALSE.)
@@ -72,6 +79,7 @@ CEOP
       _RL    GGL90viscMax, GGL90diffMax
       _RL    GGL90dumpFreq
       INTEGER mxlMaxFlag
+      INTEGER adMxlMaxFlag
       COMMON /GGL90_PARMS_R/
      &     GGL90ck, GGL90ceps,
      &     GGL90alpha, GGL90m2,
@@ -79,7 +87,7 @@ CEOP
      &     GGL90mixingLengthMin,
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90viscMax, GGL90diffMax,
-     &     GGL90dumpFreq, mxlMaxFlag
+     &     GGL90dumpFreq, mxlMaxFlag, adMxlMaxFlag
 
       _RL GGL90TKE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GGL90viscArU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -91,10 +99,11 @@ CEOP
       LOGICAL GGL90isOn, GGL90mixingMaps, GGL90writeState
       LOGICAL GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear
       LOGICAL useIDEMIX
+      LOGICAL useLANGMUIR
       COMMON /GGL90_PARMS_L/
      &     GGL90isOn, GGL90mixingMaps, GGL90writeState,
      &     GGL90_dirichlet, mxlSurfFlag, calcMeanVertShear,
-     &     useIDEMIX
+     &     useIDEMIX, useLANGMUIR
 
 #ifdef ALLOW_GGL90_SMOOTH
       COMMON /GGL90_CORNER/ mskCor
@@ -157,5 +166,13 @@ C-----------------------------------------------------------------------
       COMMON /GLL90_IDEMIX_L/
      &            IDEMIX_include_GM, IDEMIX_include_GM_bottom
 #endif /* ALLOW_GGL90_IDEMIX */
+
+#ifdef ALLOW_GGL90_LANGMUIR
+C     LC_Gamma  :: mixing-length Amplification factor from Langmuir Circ.
+C     LC_num    :: Value for the Langmuir number (no unit)
+C     LC_lambda :: vertical scale for Stokes velocity profile ( m )
+      _RL LC_Gamma, LC_num, LC_lambda
+      COMMON /GGL90_LCPARA/ LC_Gamma, LC_num, LC_lambda
+#endif /* ALLOW_GGL90_LANGMUIR */
 
 #endif /* ALLOW_GGL90 */

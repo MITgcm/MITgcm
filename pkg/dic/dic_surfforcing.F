@@ -8,8 +8,8 @@ C !ROUTINE: DIC_SURFFORCING
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_SURFFORCING( PTR_CO2 , PTR_ALK, PTR_PO4, GDC,
-     I           bi,bj,iMin,iMax,jMin,jMax,
-     I           myIter,myTime,myThid)
+     I           bi, bj, iMin, iMax, jMin, jMax,
+     I           myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Calculate the carbon air-sea flux terms
@@ -29,19 +29,19 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
-C  myIter               :: current timestep
+C  PTR_CO2              :: DIC tracer field
 C  myTime               :: current time
-c  PTR_CO2              :: DIC tracer field
-      INTEGER myIter, myThid
-      _RL myTime
+C  myIter               :: current timestep
+C  myThid               :: thread number
       _RL  PTR_CO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+      _RL myTime
+      INTEGER myIter, myThid
 
 C !OUTPUT PARAMETERS: ===================================================
-c GDC                   :: tendency due to air-sea exchange
+C GDC                   :: tendency due to air-sea exchange
       _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_DIC
@@ -67,16 +67,14 @@ C local variables for carbon chem
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ikey_dic
+      INTEGER tkey
 #endif
 CEOP
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      kLev = 1
 
-      kLev=1
-
-cc if coupled to atmsopheric model, use the
-cc Co2 value passed from the coupler
+cC if coupled to atmsopheric model, use the
+cC Co2 value passed from the coupler
 c#ifndef USE_ATMOSCO2
 cC PRE-INDUSTRIAL STEADY STATE pCO2 = 278.0 ppmv
 c       DO j=1-OLy,sNy+OLy
@@ -88,58 +86,55 @@ c#endif
 
 C =================================================================
 C determine inorganic carbon chem coefficients
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-
+       DO j=jMin,jMax
+        DO i=iMin,iMax
 #ifdef DIC_BIOTIC
 cQQQQ check ptracer numbers
 #ifdef DIC_BOUNDS
-             surfalk(i,j) = max(0.4 _d 0,
-     &                          min(10. _d 0,PTR_ALK(i,j,klev)))
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = max(1.0 _d -11,
-     &                          min(1. _d -1,PTR_PO4(i,j,klev)))
-     &                          * maskC(i,j,kLev,bi,bj)
+          surfalk(i,j)  = MAX( 0.4 _d 0,
+     &                         MIN( 10. _d 0, PTR_ALK(i,j,klev) ) )
+     &                  * maskC(i,j,kLev,bi,bj)
+          surfphos(i,j) = MAX( 1.0 _d -11,
+     &                         MIN( 1. _d -1, PTR_PO4(i,j,klev) ) )
+     &                  * maskC(i,j,kLev,bi,bj)
 #else
-             surfalk(i,j) = PTR_ALK(i,j,klev)
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = PTR_PO4(i,j,klev)
-     &                          * maskC(i,j,kLev,bi,bj)
+          surfalk(i,j)  = PTR_ALK(i,j,klev)*maskC(i,j,kLev,bi,bj)
+          surfphos(i,j) = PTR_PO4(i,j,klev)*maskC(i,j,kLev,bi,bj)
 #endif
 #else /* DIC_BIOTIC */
-             surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
-     &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
+          surfalk(i,j)  = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
+     &                  * maskC(i,j,kLev,bi,bj)
+          surfphos(i,j) = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif /* DIC_BIOTIC */
-C FOR NON-INTERACTIVE Si
-             surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
+C for non-interactive Si
+          surfsi(i,j)   = silicaSurf(i,j,bi,bj)*maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
-            surftemp(i,j) = max(-4. _d 0,
-     &                          min(50. _d 0, theta(i,j,kLev,bi,bj)))
-            surfsalt(i,j) = max(4. _d 0,
-     &                          min(50. _d 0, salt(i,j,kLev,bi,bj)))
-            surfdic(i,j)  = max(0.4 _d 0,
-     &                          min(10. _d 0, PTR_CO2(i,j,kLev)))
+          surftemp(i,j) = MAX( -4. _d 0,
+     &                         MIN( 50. _d 0, theta(i,j,kLev,bi,bj) ) )
+          surfsalt(i,j) = MAX( 4. _d 0,
+     &                         MIN( 50. _d 0, salt(i,j,kLev,bi,bj) ) )
+          surfdic(i,j)  = MAX( 0.4 _d 0,
+     &                         MIN( 10. _d 0, PTR_CO2(i,j,kLev) ) )
 #else
-            surftemp(i,j) = theta(i,j,kLev,bi,bj)
-            surfsalt(i,j) = salt(i,j,kLev,bi,bj)
-            surfdic(i,j)  = PTR_CO2(i,j,kLev)
+          surftemp(i,j) = theta(i,j,kLev,bi,bj)
+          surfsalt(i,j) = salt(i,j,kLev,bi,bj)
+          surfdic(i,j)  = PTR_CO2(i,j,kLev)
 #endif
-          ENDDO
-         ENDDO
+        ENDDO
+       ENDDO
 
 #ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
 #endif
-        CALL DIC_COEFFS_SURF(
+       CALL DIC_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 #else /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
 #endif
-        CALL CARBON_COEFFS(
+       CALL CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -160,19 +155,18 @@ C       average AtmosP is about 1 Atm.
 
 C Pre-compute part of exchange coefficient: pisvel*(1-fice)
 C Schmidt number is accounted for later
-              pisvel(i,j)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
-              Kwexch_Pre(i,j,bi,bj) = pisvel(i,j)
-     &                              * (1. _d 0 - FIce(i,j,bi,bj))
-
+          pisvel(i,j) = 0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
+          Kwexch_Pre(i,j,bi,bj) = pisvel(i,j)
+     &                          * (1. _d 0 - fIce(i,j,bi,bj))
         ENDDO
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       ikey_dic = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = ikey_dic, kind = isbyte
+       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+CADJ STORE pH(:,:,bi,bj) = comlev1_bibj, key = tkey, kind = isbyte
 #endif
        debugPrt = debugMode
-c pCO2 solver...
+C pCO2 solver...
 C$TAF LOOP = parallel
        DO j=jMin,jMax
 C$TAF LOOP = parallel
@@ -227,39 +221,40 @@ C Use the original Follows et al. (2006) solver
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
 C calculate SCHMIDT NO. for CO2
-              SchmidtNoDIC(i,j) =
+            SchmidtNoDIC(i,j) =
      &            sca1
      &          + sca2 * theta(i,j,kLev,bi,bj)
      &          + sca3 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
      &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj)
      &                *theta(i,j,kLev,bi,bj)
-c make sure Schmidt number is not negative (will happen if temp>39C)
-             SchmidtNoDIC(i,j)=max(1.0 _d -2, SchmidtNoDIC(i,j))
+C make sure Schmidt number is not negative (will happen if temp>39C)
+            SchmidtNoDIC(i,j) = MAX( 1.0 _d -2, SchmidtNoDIC(i,j) )
 
 C Determine surface flux (FDIC)
 C first correct pCO2at for surface atmos pressure
-              pCO2sat(i,j) =
+            pCO2sat(i,j) =
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
 
 C then account for Schmidt number
-              Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
-     &                    / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
+            Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
+     &                  / SQRT(SchmidtNoDIC(i,j)/660.0 _d 0)
 
 #ifdef WATERVAP_BUG
 C Calculate flux in terms of DIC units using K0, solubility
 C Flux = Vp * ([CO2sat] - [CO2])
 C CO2sat = K0*pCO2atmos*P/P0
 C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
-              FluxCO2(i,j,bi,bj) =
+            FluxCO2(i,j,bi,bj) =
      &         Kwexch(i,j)*(
      &         ak0(i,j,bi,bj)*pCO2sat(i,j) -
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj)
      &         )
 #else
+
 C Corrected by Val Bennington Nov 2010 per G.A. McKinley s finding
 C of error in application of water vapor correction
-c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
-               FluxCO2(i,j,bi,bj) =
+C Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
+            FluxCO2(i,j,bi,bj) =
      &          Kwexch(i,j)*(
      &            ff(i,j,bi,bj)*pCO2sat(i,j) -
      &            pCO2(i,j,bi,bj)*fugf(i,j,bi,bj)
@@ -267,44 +262,43 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
 
 #endif
           ELSE
-              FluxCO2(i,j,bi,bj) = 0. _d 0
+            FluxCO2(i,j,bi,bj) = 0. _d 0
           ENDIF
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
-            FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
+          FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
-            IF (maskC(i,j,kLev,bi,bj).NE.0. _d 0) THEN
-c calculate virtual flux
-c EminusPforV = dS/dt*(1/Sglob)
+          IF (maskC(i,j,kLev,bi,bj).NE.0. _d 0) THEN
+C calculate virtual flux
+C EminusPforV = dS/dt*(1/Sglob)
 C NOTE: Be very careful with signs here!
 C Positive EminusPforV => loss of water to atmos and increase
 C in salinity. Thus, also increase in other surface tracers
 C (i.e. positive virtual flux into surface layer)
 C ...so here, VirtualFLux = dC/dt!
               VirtualFlux(i,j)=gsm_DIC*surfaceForcingS(i,j,bi,bj)/gsm_s
-c OR
-c let virtual flux be zero
-c              VirtualFlux(i,j)=0.d0
-c
-            ELSE
+C OR
+C let virtual flux be zero
+C              VirtualFlux(i,j)=0.d0
+          ELSE
               VirtualFlux(i,j)=0. _d 0
-            ENDIF
+          ENDIF
 #endif /* ALLOW_OLD_VIRTUALFLUX */
-          ENDDO
-         ENDDO
+        ENDDO
+       ENDDO
 
 C update tendency
-         DO j=jMin,jMax
-          DO i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
            GDC(i,j)= recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
      &              *(FluxCO2(i,j,bi,bj)
 #ifdef ALLOW_OLD_VIRTUALFLUX
      &              + VirtualFlux(i,j)
 #endif
      &               )
-          ENDDO
-         ENDDO
+        ENDDO
+       ENDDO
 
 #endif /* ALLOW_DIC */
-        RETURN
-        END
+      RETURN
+      END

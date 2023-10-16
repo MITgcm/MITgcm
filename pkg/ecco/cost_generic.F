@@ -27,10 +27,9 @@ c       cost function contribution
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -42,12 +41,8 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_COST.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
       integer myIter
       integer myThid
       integer nnzbar, nnzobs
@@ -80,32 +75,21 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) outname
 
 #ifdef ALLOW_ECCO
-
-c     == local variables ==
-
+C     !LOCAL VARIABLES:
       integer bi,bj,k2
-      integer itlo,ithi
-      integer jtlo,jthi
       logical domean, doanom
-
       _RL localdifmean1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifmean2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-
 CEOP
-
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
 
 c--   Initialise local variables.
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           objf_local(bi,bj) = 0. _d 0
           num_local(bi,bj) = 0. _d 0
-        enddo
-      enddo
+        ENDDO
+      ENDDO
 
       call ecco_zero(localdifmean1,Nr,zeroRL,myThid)
       call ecco_zero(localdifmean2,Nr,zeroRL,myThid)
@@ -153,11 +137,13 @@ C Extra time loop to compute time-mean fields and costs
 
 #endif /* ALLOW_ECCO */
 
-      return
-      end
+      RETURN
+      END
 
-C--------------
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: cost_genloop
+C     !INTERFACE:
       subroutine cost_genloop(
      &     localdifmeanIn,localdifmeanOut, addVariaCost,
      &     nnzbar, localbarfile, dummy,
@@ -177,10 +163,9 @@ c       cost function contribution
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -192,12 +177,8 @@ c     == global variables ==
 # include "ECCO_SIZE.h"
 # include "ECCO.h"
 #endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_COST.h"
-#endif
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
       integer myIter
       integer myThid
       integer nnzbar, nnzobs
@@ -234,9 +215,11 @@ c     == routine arguments ==
       _RL localdifmeanOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #ifdef ALLOW_ECCO
+C     !FUNCTIONS:
+      integer  ilnblnk
+      external ilnblnk
 
-c     == local variables ==
-
+C     !LOCAL VARIABLES:
       integer bi,bj
       integer i,j,k
       integer irec, jrec
@@ -270,12 +253,6 @@ c     == local variables ==
       character*(128) fname1, fname2, fname3
 
       logical exst
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 CEOP
 
       call ecco_zero(localbar,Nr,zeroRL,myThid)
@@ -424,7 +401,7 @@ c--     Compute masked model-data difference
      &     localdif, difmask, myThid )
 
         if ( domaskmindepth ) call ecco_maskmindepth(
-     &       difmask, Nr, nnzobs, topomin, mythid )
+     &       difmask, Nr, nnzobs, topomin, myThid )
 
         if ( doanom ) call ecco_subtract( localdif,
      &       localdifmeanIn, Nr, nnzobs, myThid )
@@ -473,10 +450,20 @@ c--     output model-data difference to disk
           write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
           if ( nnzobs.EQ.1 ) CALL
      &    WRITE_REC_XY_RL( fname3, localdif,irec, eccoiter, myThid )
-          if ( nnzobs.EQ.nr ) CALL
+          if ( nnzobs.EQ.Nr ) CALL
      &    WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, myThid )
          endif
 
+         if ( outlev.GT.1 ) then
+          if ( dovarwei ) then
+           il=ilnblnk(outname)
+           write(fname3(1:128),'(2a)') 'weight_', outname(1:il)
+           if ( nnzobs.EQ.1 ) CALL WRITE_REC_XY_RL( fname3,
+     &                           localweight, irec, eccoiter, myThid )
+           if ( nnzobs.EQ.Nr ) CALL WRITE_REC_XYZ_RL( fname3,
+     &                           localweight, irec, eccoiter, myThid )
+          endif
+         endif
         endif
 
       enddo
@@ -510,17 +497,19 @@ c--     output model-data difference to disk
           write(fname3(1:128),'(2a)') 'misfit_', outname(1:il)
           if ( nnzobs.EQ.1 ) CALL
      &    WRITE_REC_XY_RL(fname3,localdifmeanOut,1,eccoiter,myThid)
-          if ( nnzobs.EQ.nr ) CALL
+          if ( nnzobs.EQ.Nr ) CALL
      &    WRITE_REC_XYZ_RL(fname3,localdifmeanOut,1,eccoiter,myThid)
         endif
       endif
       if ( outlev.GT.1 ) then
+       if ( .NOT.dovarwei ) then
           il=ilnblnk(outname)
           write(fname3(1:128),'(2a)') 'weight_', outname(1:il)
           if ( nnzobs.EQ.1 ) CALL
-     &    WRITE_REC_XY_RL( fname3, localweight,irec, eccoiter, myThid )
-          if ( nnzobs.EQ.nr ) CALL
-     &    WRITE_REC_XYZ_RL( fname3, localweight,irec, eccoiter, myThid )
+     &    WRITE_REC_XY_RL( fname3, localweight, 1, eccoiter, myThid )
+          if ( nnzobs.EQ.Nr ) CALL
+     &    WRITE_REC_XYZ_RL( fname3, localweight, 1, eccoiter, myThid )
+       endif
       endif
 
 #endif /* ALLOW_ECCO */

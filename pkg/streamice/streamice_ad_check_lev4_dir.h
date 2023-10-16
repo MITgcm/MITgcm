@@ -7,13 +7,19 @@ CADJ STORE v_streamice = tapelev4, key = ilev_4
 CADJ STORE h_streamice = tapelev4, key = ilev_4
 CADJ STORE visc_streamice = tapelev4, key = ilev_4
 CADJ STORE tau_beta_eff_streamice = tapelev4, key = ilev_4
-CADJ STORE bdot_streamice         = tapelev4, key = ilev_4
+CADJ STORE streamice_cg_a1 = tapelev4, key = ilev_4
+CADJ STORE streamice_cg_a2 = tapelev4, key = ilev_4
+CADJ STORE streamice_cg_a3 = tapelev4, key = ilev_4
+CADJ STORE streamice_cg_a4 = tapelev4, key = ilev_4
+CADJ STORE bdot_streamice  = tapelev4, key = ilev_4
+CADJ STORE b_glen          = tapelev4, key = ilev_4
+CADJ STORE streamice_bdot_maxmelt_v = tapelev4, key = ilev_4
+CADJ STORE base_el_streamice        = tapelev4, key = ilev_4
 
 #ifdef ALLOW_STREAMICE_2DTRACER
 CADJ STORE trac2d
-CADJ &     = tapelev4, key = ilev_4
+CADJ &     = tapelev4, key= ilev_4
 #endif
-
 
 CADJ STORE cost_func1_streamice
 CADJ &     = tapelev4, key = ilev_4
@@ -32,7 +38,6 @@ CADJ &     = tapelev4, key = ilev_4
 # endif
 
 #ifdef  STREAMICE_STRESS_BOUNDARY_CONTROL
-CADJ &     = tapelev4, key = ilev_4
 CADJ STORE streamice_u_normal_stress
 CADJ &     = tapelev4, key = ilev_4
 CADJ STORE streamice_v_normal_stress

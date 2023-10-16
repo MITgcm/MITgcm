@@ -1,4 +1,7 @@
 #include "SEAICE_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CStartOfInterface
       SUBROUTINE SEAICE_BUDGET_OCEAN(
@@ -25,7 +28,6 @@ C     === Global variables ===
 # include "SEAICE_SIZE.h"
 # include "SEAICE_PARAMS.h"
 # ifdef ALLOW_EXF
-#  include "EXF_OPTIONS.h"
 #  include "EXF_FIELDS.h"
 # endif
 #endif
@@ -79,20 +81,20 @@ C
       recip_lhEvap = 1./SEAICE_lhEvap
       recip_rhoConstFresh = 1./rhoConstFresh
 
-      DO J=1,sNy
-       DO I=1,sNx
-        netHeatFlux(I,J) = 0. _d 0
-        SWHeatFlux (I,J) = 0. _d 0
+      DO j=1,sNy
+       DO i=1,sNx
+        netHeatFlux(i,j) = 0. _d 0
+        SWHeatFlux (i,j) = 0. _d 0
 C
 C     MAX_TICE does not exist anly longer, lets see if it works without
 C       tsurfLoc (I,J) = MIN(celsius2K+MAX_TICE,TSURF(I,J))
-        tsurfLoc (I,J) = TSURF(I,J)
+        tsurfLoc (i,j) = TSURF(i,j)
 # ifdef ALLOW_ATM_TEMP
 C     Is this necessary?
-        atempLoc (I,J) = MAX(celsius2K+MIN_ATEMP,ATEMP(I,J,bi,bj))
+        atempLoc (i,j) = MAX(celsius2K+MIN_ATEMP,ATEMP(i,j,bi,bj))
 # endif
 # ifdef ALLOW_DOWNWARD_RADIATION
-        lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
+        lwdownLoc(i,j) = MAX(MIN_LWDOWN,LWDOWN(i,j,bi,bj))
 # endif
        ENDDO
       ENDDO
@@ -100,11 +102,11 @@ C     Is this necessary?
 
 C NOW DETERMINE OPEN WATER HEAT BUD. ASSUMING TSURF=WATER TEMP.
 C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy
+       DO i=1,sNx
 #ifdef SEAICE_EXTERNAL_FLUXES
-        netHeatFlux(I,J) = Qnet(I,J,bi,bj)
-        SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
+        netHeatFlux(i,j) = Qnet(i,j,bi,bj)
+        SWHeatFlux (i,j) =  Qsw(i,j,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
 C     This is an example of how one could implement surface fluxes
 C     over the ocean (if one dislikes the fluxes computed in pkg/exf).
@@ -114,28 +116,28 @@ C     diagnostics (e.g., hl, hs, lwflux, sflux). To properly
 C     diagnose them, one has to save them again as different (SI-)fields.
 # ifdef ALLOW_DOWNWARD_RADIATION
 C     net upward short wave heat flux
-        SWHeatFlux(I,J) = (SEAICE_waterAlbedo - 1. _d 0)
-     &       *swdown(I,J,bi,bj)
+        SWHeatFlux(i,j) = (SEAICE_waterAlbedo - 1. _d 0)
+     &       *swdown(i,j,bi,bj)
 C     lwup = emissivity*stefanBoltzmann*Tsrf^4 + (1-emissivity)*lwdown
 C     the second terms is the reflected incoming long wave radiation
 C     so that the net upward long wave heat flux is:
-        lwflux(I,J,bi,bj) = - lwdownLoc(I,J)*SEAICE_emissivity
-     &       + D3*tsurfLoc(I,J)**4
-        sstdegC = tsurfLoc(I,J) - TMELT
+        lwflux(i,j,bi,bj) = - lwdownLoc(i,j)*SEAICE_emissivity
+     &       + D3*tsurfLoc(i,j)**4
+        sstdegC = tsurfLoc(i,j) - TMELT
 C     downward sensible heat
-        hs(I,J,bi,bj) = D1*UG(I,J)*(atempLoc(I,J)-tsurfLoc(I,J))
+        hs(i,j,bi,bj) = D1*UG(i,j)*(atempLoc(i,j)-tsurfLoc(i,j))
 C     saturation humidity
         ssq = QS1*6.11 _d 0 *EXP( 17.2694 _d 0
      &                           *sstdegC/(sstdegC+237.3 _d 0) )
 C     downward latent heat
-        hl(I,J,bi,bj) = D1W*UG(I,J)*(AQH(I,J,bi,bj)-ssq)
+        hl(i,j,bi,bj) = D1W*UG(i,j)*(AQH(i,j,bi,bj)-ssq)
 C     net heat is positive upward
-        netHeatFlux(I,J)=SWHeatFlux(I,J)
-     &       + lwflux(I,J,bi,bj)
-     &       - hs(I,J,bi,bj) - hl(I,J,bi,bj)
+        netHeatFlux(i,j)=SWHeatFlux(i,j)
+     &       + lwflux(i,j,bi,bj)
+     &       - hs(i,j,bi,bj) - hl(i,j,bi,bj)
 C     compute evaporation here again because latent heat is different
 C     from its previous value
-        evap(i,j,bi,bj) = -hl(I,J,bi,bj)
+        evap(i,j,bi,bj) = -hl(i,j,bi,bj)
      &       *recip_lhEvap*recip_rhoConstFresh
 C     Salt flux from Precipitation and Evaporation.
         sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)

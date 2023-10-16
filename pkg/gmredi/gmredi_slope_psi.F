@@ -70,7 +70,8 @@ C     !LOCAL VARIABLES:
       _RL slopeMaxSpec
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER igmkey, kkey
+C     kkey :: tape key (depends on levels and tiles)
+      INTEGER kkey
 #endif
 CEOP
 
@@ -87,8 +88,8 @@ C     |sigmaX/Y| > 1.e+4
       loc_rMaxSlope = GM_rMaxSlope*rVel2wUnit(k)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      igmkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
-      kkey   = (igmkey-1)*Nr + k
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = k + (kkey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
@@ -385,9 +386,10 @@ c (~ strong clipping, reducing non linearity of psi=f(K))
 
         slopeMaxSpec=1. _d -4
 
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-
+#endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           Smod = ABS(SlopeX(i,j))

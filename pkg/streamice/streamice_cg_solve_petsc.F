@@ -388,7 +388,7 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
        PRINT *, "PETSC PRECOND: SELECTED GAMG"
        call PCSetType(pc, PCGAMG, ierr)
        call PCGAMGSetCoarseEqLim(pc,10000,ierr)
-       call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
+C       call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
        call PCGAMGSetNSmooths(pc, 0,ierr)
 C       call PCGAMGSetThreshold(pc, .001,ierr)
 C       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)

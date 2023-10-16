@@ -12,6 +12,9 @@ CADJ STORE streamice_cg_a2 = tapelev2, key = ilev_2
 CADJ STORE streamice_cg_a3 = tapelev2, key = ilev_2
 CADJ STORE streamice_cg_a4 = tapelev2, key = ilev_2
 CADJ STORE bdot_streamice  = tapelev2, key = ilev_2
+CADJ STORE b_glen          = tapelev2, key = ilev_2
+CADJ STORE streamice_bdot_maxmelt_v = tapelev2, key = ilev_2
+CADJ STORE base_el_streamice        = tapelev2, key = ilev_2
 
 #ifdef ALLOW_STREAMICE_2DTRACER
 CADJ STORE trac2d
@@ -78,11 +81,9 @@ CADJ &     = tapelev2, key = ilev_2
 #endif
 #endif
 
-
 #ifdef STREAMICE_TRACER_AB
 CADJ STORE GAD_trac_2d
 CADJ &     = tapelev2, key = ilev_2
 #endif
-
 
 #endif /* ALLOW_STREAMICE */

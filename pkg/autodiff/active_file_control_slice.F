@@ -56,7 +56,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -84,7 +84,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,k
       INTEGER prec
@@ -102,7 +102,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
 
@@ -124,7 +124,7 @@ C     adjoint variable file. These files are tiled.
           CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_SEC_XZ(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -137,7 +137,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -157,7 +157,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -179,7 +179,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
       ENDIF
@@ -224,7 +224,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -252,7 +252,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,k
       INTEGER prec
@@ -270,7 +270,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
 
@@ -292,7 +292,7 @@ C     adjoint variable file. These files are tiled.
           CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_SEC_XZ(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -305,7 +305,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -325,7 +325,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -347,7 +347,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
       ENDIF
@@ -391,7 +391,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -419,7 +419,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER j,k
       INTEGER prec
@@ -437,7 +437,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
 
@@ -459,7 +459,7 @@ C     adjoint variable file. These files are tiled.
           CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_SEC_YZ(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -472,7 +472,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -492,7 +492,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -514,7 +514,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
       ENDIF
@@ -559,7 +559,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -587,7 +587,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER j,k
       INTEGER prec
@@ -605,7 +605,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
 
@@ -627,7 +627,7 @@ C     adjoint variable file. These files are tiled.
           CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_SEC_YZ(
      I                adfname, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -640,7 +640,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -660,7 +660,7 @@ C     Store the result on disk.
         w_globFile = .FALSE.
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, w_globFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -682,7 +682,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
       ENDIF
@@ -723,7 +723,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -761,7 +761,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -771,7 +771,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -789,7 +789,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -799,7 +799,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -840,7 +840,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -878,7 +878,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -888,7 +888,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -906,7 +906,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -916,7 +916,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
         CALL MDS_WRITE_SEC_XZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -957,7 +957,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -995,7 +995,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -1005,7 +1005,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -1023,7 +1023,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
      I                iRec, myOptimIter, myThid )
 
@@ -1033,7 +1033,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -1074,7 +1074,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -1112,7 +1112,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
      I                iRec, myOptimIter, myThid )
       ENDIF
@@ -1122,7 +1122,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -1140,7 +1140,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
      I                iRec, myOptimIter, myThid )
 
@@ -1150,7 +1150,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
         CALL MDS_WRITE_SEC_YZ(
      I                activeVar_file, prec, globalFile, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
      I                iRec, myOptimIter, myThid )
       ENDIF

@@ -42,7 +42,20 @@ c#endif
 c#ifdef ALLOW_ECCO
 c# include "ECCO_OPTIONS.h"
 c#endif
-
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME_OPTIONS.h"
+# endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
+c# ifdef ALLOW_THSICE
+c# include "THSICE_OPTIONS.h"
+c# endif
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 CBOP
 C     !ROUTINE: MAIN_DO_LOOP
 C     !INTERFACE:
@@ -68,12 +81,12 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 c**************************************
-#ifdef ALLOW_OPENAD
+#if (defined ALLOW_OPENAD || defined ALLOW_TAPENADE)
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif
@@ -119,7 +132,57 @@ c**************************************
 #  include "STREAMICE_CG.h"
 # endif
 
-#endif /* ALLOW_OPENAD */
+#endif /* ALLOW_OPENAD or ALLOW_TAPENADE */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_SIZE.h"
+#  include "EXF_INTERP_PARAM.h"
+#  include "EXF_FIELDS.h"
+# endif
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+#  include "GMREDI_TAVE.h"
+# endif
+# ifdef ALLOW_TIMEAVE
+#  include "TIMEAVE_STATV.h"
+# endif
+# include "FFIELDS.h"
+# include "DYNVARS.h"
+# include "SURFACE.h"
+# include "GRID.h"
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+c#  include "KPP_PARAMS.h"
+# endif
+# ifdef ALLOW_DOWN_SLOPE
+#  include "DWNSLP_SIZE.h"
+#  include "DWNSLP_VARS.h"
+# endif
+# ifdef ALLOW_THSICE
+#  include "THSICE_VARS.h"
+# endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME.h"
+# endif
+# ifdef ALLOW_ECCO
+#  include "ECCO_SIZE.h"
+#  include "ECCO.h"
+# endif
+# ifdef ALLOW_BLING
+#  include "BLING_VARS.h"
+#  include "BLING_LOAD.h"
+# endif
+#endif /* ALLOW_TAPENADE */
+
 c**************************************
 
 C     !INPUT/OUTPUT PARAMETERS:

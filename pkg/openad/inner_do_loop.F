@@ -135,8 +135,8 @@ c# endif
 
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif
@@ -222,7 +222,7 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
-      
+
 #ifdef ALLOW_ATM2D
         CALL TIMER_START('FORWARD_STEP_ATM2D  [INNER_DO_LOOP]',myThid)
 #ifdef ALLOW_OPENAD

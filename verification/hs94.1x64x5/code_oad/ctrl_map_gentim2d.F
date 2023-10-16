@@ -21,9 +21,9 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"
@@ -53,7 +53,6 @@ C     == Local variables ==
       logical doglobalread
       logical ladinit
       character*(MAX_LEN_FNAM) fnamebase
-      character*( 80)   fnamegeneric
 
       _RL fac
       _RL xx_gentim2d_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

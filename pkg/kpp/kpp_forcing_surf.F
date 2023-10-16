@@ -1,7 +1,4 @@
 #include "KPP_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 #ifdef ALLOW_SALT_PLUME
 #include "SALT_PLUME_OPTIONS.h"
 #endif
@@ -26,7 +23,7 @@ C !INTERFACE: ==========================================================
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
-     I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
+     I     ikey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 C !DESCRIPTION: \bv
 C     *==========================================================*
@@ -55,7 +52,7 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
-C     ikppkeyb - key for storing trajectory for adjoint (taf)
+C     ikey   - key for storing trajectory for adjoint (taf)
 C     imin, imax, jmin, jmax  - array computation indices
 C     bi, bj - array indices on which to apply calculations
 C     myTime - Current time in simulation
@@ -95,7 +92,7 @@ C     boplume(nx,ny,Nr+1)  - surface haline buoyancy forcing        (m^2/s^3)
 C     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
 C                            at grid levels for bldepth             (m^2/s^2)
 
-      INTEGER ikppkey
+      INTEGER ikey
       INTEGER iMin, iMax, jMin, jMax
       INTEGER bi, bj
       INTEGER myThid
@@ -198,9 +195,6 @@ C initialize arrays to zero
      &   (surfForcV(i,j,bi,bj) + surfForcV(i,jp1,bi,bj))
        ENDDO
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store work3 = comlev1_kpp, key = ikppkey
-#endif
       epsLocSq = phepsi*phepsi*drF(1)*drF(1)
       epsLoc   = SQRT ( p5*phepsi*drF(1) )
       DO j = jmin, jmax
@@ -276,10 +270,6 @@ CML  &              * recip_rhoConst * work3(i,j)
 #endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ustar = comlev1_kpp, key = ikppkey
-#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

@@ -1,16 +1,16 @@
 C----------------------------------------
 C subroutine mds_read_field
 C----------------------------------------
-CADJ SUBROUTINE mds_read_field  INPUT  = 1,2,3,4,5,6,7,    10,11
-CADJ SUBROUTINE mds_read_field  OUTPUT =               8,9
-CADJ SUBROUTINE mds_read_field  DEPEND = 1,2,3,4,5,6,7,8,9,10,11
-CADJ SUBROUTINE mds_read_field  REQUIRED
+CADJ SUBROUTINE MDS_READ_FIELD  INPUT  = 1,2,3,4,5,6,7,    10,11
+CADJ SUBROUTINE MDS_READ_FIELD  OUTPUT =               8,9
+CADJ SUBROUTINE MDS_READ_FIELD  DEPEND = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE MDS_READ_FIELD  REQUIRED
 
 C----------------------------------------
 C subroutine mds_write_field
 C----------------------------------------
-CADJ SUBROUTINE mds_write_field  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
-CADJ SUBROUTINE mds_write_field  OUTPUT =
+CADJ SUBROUTINE MDS_WRITE_FIELD  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
+CADJ SUBROUTINE MDS_WRITE_FIELD  OUTPUT =
 
 C----------------------------------------
 C subroutine mds_read_rec_xz
@@ -31,30 +31,30 @@ cCADJ SUBROUTINE mds_read_rec_yz  REQUIRED
 C----------------------------------------
 C subroutine mds_read_sec_xz
 C----------------------------------------
-CADJ SUBROUTINE mds_read_sec_xz  INPUT  = 1,2,3,4,5,    8,9
-CADJ SUBROUTINE mds_read_sec_xz  OUTPUT =           6,7
-CADJ SUBROUTINE mds_read_sec_xz  DEPEND = 1,2,3,4,5,6,7,8,9
-CADJ SUBROUTINE mds_read_sec_xz  REQUIRED
+CADJ SUBROUTINE MDS_READ_SEC_XZ  INPUT  = 1,2,3,4,5,6,7,    10,11
+CADJ SUBROUTINE MDS_READ_SEC_XZ  OUTPUT =               8,9
+CADJ SUBROUTINE MDS_READ_SEC_XZ  DEPEND = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE MDS_READ_SEC_XZ  REQUIRED
 
 C----------------------------------------
 C subroutine mds_read_sec_yz
 C----------------------------------------
-CADJ SUBROUTINE mds_read_sec_yz  INPUT  = 1,2,3,4,5,    8,9
-CADJ SUBROUTINE mds_read_sec_yz  OUTPUT =           6,7
-CADJ SUBROUTINE mds_read_sec_yz  DEPEND = 1,2,3,4,5,6,7,8,9
-CADJ SUBROUTINE mds_read_sec_yz  REQUIRED
+CADJ SUBROUTINE MDS_READ_SEC_YZ  INPUT  = 1,2,3,4,5,6,7,    10,11
+CADJ SUBROUTINE MDS_READ_SEC_YZ  OUTPUT =               8,9
+CADJ SUBROUTINE MDS_READ_SEC_YZ  DEPEND = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE MDS_READ_SEC_YZ  REQUIRED
 
 C----------------------------------------
 C subroutine mds_write_sec_xz
 C----------------------------------------
-CADJ SUBROUTINE mds_write_sec_xz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
-CADJ SUBROUTINE mds_write_sec_xz  OUTPUT =
+CADJ SUBROUTINE MDS_WRITE_SEC_XZ  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
+CADJ SUBROUTINE MDS_WRITE_SEC_XZ  OUTPUT =
 
 C----------------------------------------
 C subroutine mds_write_sec_yz
 C----------------------------------------
-CADJ SUBROUTINE mds_write_sec_yz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
-CADJ SUBROUTINE mds_write_sec_yz  OUTPUT =
+CADJ SUBROUTINE MDS_WRITE_SEC_YZ  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
+CADJ SUBROUTINE MDS_WRITE_SEC_YZ  OUTPUT =
 
 C----------------------------------------
 C subroutine mdsreadfield

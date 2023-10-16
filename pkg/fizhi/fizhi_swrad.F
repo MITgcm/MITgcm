@@ -756,8 +756,8 @@ c**************************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif
 #endif
@@ -803,7 +803,6 @@ c     see equation (12) of Lacis and Hansen (1974, JAS)
        enddo
       enddo
 
-
       do k= 1, np
        do j= 1, n
          do i= 1, m
@@ -828,7 +827,6 @@ c-----compute ozone amount, unit is (cm-atm)stp.
         enddo
        enddo
       enddo
-
 
 c-----scale cloud optical thickness in each layer from taucld (with
 c     cloud amount fcld) to tauclb and tauclf (with cloud amount cc).
@@ -1020,7 +1018,6 @@ c-----include the pre-computed table for cai
 
 #include "cai-dat.h"
       save caib,caif
-
 
 c-----clouds within each of the high, middle, and low clouds are
 c     assumed maximally overlapped, and the cloud cover (cc)
@@ -1216,8 +1213,8 @@ c*************************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
 cfpp$ expand (expmn)
@@ -1640,8 +1637,8 @@ c***********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
 #endif
@@ -1969,8 +1966,8 @@ c*********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif
 #endif
@@ -2093,8 +2090,8 @@ c*********************************************************************
 
 c-----Explicit Inline Directives
 
-#ifdef CRAY
-#ifdef f77
+#ifdef FIZHI_CRAY
+#ifdef FIZHI_F77_COMPIL
 cfpp$ expand (expmn)
 #endif
 #endif

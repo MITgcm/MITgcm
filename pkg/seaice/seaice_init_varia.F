@@ -38,7 +38,6 @@ C     i,j,k,bi,bj :: Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER kSrf
-      _RS  mask_uice
       INTEGER k
 #ifdef ALLOW_SITRACER
       INTEGER iTr, jTh
@@ -47,6 +46,7 @@ C     i,j,k,bi,bj :: Loop counters
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
 #ifdef SEAICE_CGRID
+      _RS mask_uice
       _RL recip_tensilDepth
 #endif
 
@@ -63,36 +63,21 @@ C--   Initialise all variables in common blocks:
          DO i=1-OLx,sNx+OLx
           HEFF(i,j,bi,bj)=0. _d 0
           AREA(i,j,bi,bj)=0. _d 0
-CToM<<<
+          HSNOW(i,j,bi,bj)   = 0. _d 0
 #ifdef SEAICE_ITD
           DO k=1,nITD
            AREAITD(i,j,k,bi,bj) =0. _d 0
            HEFFITD(i,j,k,bi,bj) =0. _d 0
+           HSNOWITD(i,j,k,bi,bj)=0. _d 0
           ENDDO
 #endif
-C>>>ToM
           UICE(i,j,bi,bj)=0. _d 0
           VICE(i,j,bi,bj)=0. _d 0
-#ifdef SEAICE_ALLOW_FREEDRIFT
-          uice_fd(i,j,bi,bj)=0. _d 0
-          vice_fd(i,j,bi,bj)=0. _d 0
-#endif
 C
           uIceNm1(i,j,bi,bj) = 0. _d 0
           vIceNm1(i,j,bi,bj) = 0. _d 0
-          e11    (i,j,bi,bj) = 0. _d 0
-          e22    (i,j,bi,bj) = 0. _d 0
-          e12    (i,j,bi,bj) = 0. _d 0
-          deltaC (i,j,bi,bj) = 0. _d 0
-          ETA    (i,j,bi,bj) = 0. _d 0
-          etaZ   (i,j,bi,bj) = 0. _d 0
-          ZETA   (i,j,bi,bj) = 0. _d 0
-          FORCEX (i,j,bi,bj) = 0. _d 0
-          FORCEY (i,j,bi,bj) = 0. _d 0
+          DWATN  (i,j,bi,bj) = 0. _d 0
 #ifdef SEAICE_CGRID
-          seaiceMassC(i,j,bi,bj)=0. _d 0
-          seaiceMassU(i,j,bi,bj)=0. _d 0
-          seaiceMassV(i,j,bi,bj)=0. _d 0
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # ifdef SEAICE_ALLOW_EVP
@@ -100,35 +85,47 @@ C
           seaice_sigma2 (i,j,bi,bj) = 0. _d 0
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
 # endif /* SEAICE_ALLOW_EVP */
-#else /* SEAICE_CGRID */
-          uIceC(i,j,bi,bj)   = 0. _d 0
-          vIceC(i,j,bi,bj)   = 0. _d 0
+#endif
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
+          e11    (i,j,bi,bj) = 0. _d 0
+          e22    (i,j,bi,bj) = 0. _d 0
+          e12    (i,j,bi,bj) = 0. _d 0
+          deltaC (i,j,bi,bj) = 0. _d 0
+          PRESS  (i,j,bi,bj) = 0. _d 0
+          ETA    (i,j,bi,bj) = 0. _d 0
+          etaZ   (i,j,bi,bj) = 0. _d 0
+          ZETA   (i,j,bi,bj) = 0. _d 0
+          FORCEX (i,j,bi,bj) = 0. _d 0
+          FORCEY (i,j,bi,bj) = 0. _d 0
+          tensileStrFac(i,j,bi,bj) = 0. _d 0
+          PRESS0(i,j,bi,bj)  = 0. _d 0
+          FORCEX0(i,j,bi,bj) = 0. _d 0
+          FORCEY0(i,j,bi,bj) = 0. _d 0
+          SEAICE_zMax(i,j,bi,bj) = 0. _d 0
+          SEAICE_zMin(i,j,bi,bj) = 0. _d 0
+#endif
+#ifdef SEAICE_CGRID
+          seaiceMassC(i,j,bi,bj)=0. _d 0
+          seaiceMassU(i,j,bi,bj)=0. _d 0
+          seaiceMassV(i,j,bi,bj)=0. _d 0
+# ifdef SEAICE_ALLOW_FREEDRIFT
+          uice_fd(i,j,bi,bj) = 0. _d 0
+          vice_fd(i,j,bi,bj) = 0. _d 0
+# endif
+# ifdef SEAICE_ALLOW_BOTTOMDRAG
+          CbotC(i,j,bi,bj)   = 0. _d 0
+# endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#endif /* SEAICE_CGRID */
+#ifdef SEAICE_BGRID_DYNAMICS
+          uIceB(i,j,bi,bj)   = 0. _d 0
+          vIceB(i,j,bi,bj)   = 0. _d 0
           AMASS(i,j,bi,bj)   = 0. _d 0
           DAIRN(i,j,bi,bj)   = 0. _d 0
           WINDX(i,j,bi,bj)   = 0. _d 0
           WINDY(i,j,bi,bj)   = 0. _d 0
           GWATX(i,j,bi,bj)   = 0. _d 0
           GWATY(i,j,bi,bj)   = 0. _d 0
-#endif /* SEAICE_CGRID */
-          DWATN(i,j,bi,bj)   = 0. _d 0
-#ifdef SEAICE_ALLOW_BOTTOMDRAG
-          CbotC(i,j,bi,bj)   = 0. _d 0
-#endif /* SEAICE_ALLOW_BOTTOMDRAG */
-          PRESS0(i,j,bi,bj)  = 0. _d 0
-          PRESS (i,j,bi,bj)  = 0. _d 0
-          FORCEX0(i,j,bi,bj) = 0. _d 0
-          FORCEY0(i,j,bi,bj) = 0. _d 0
-          ZMAX(i,j,bi,bj)    = 0. _d 0
-          ZMIN(i,j,bi,bj)    = 0. _d 0
-          HSNOW(i,j,bi,bj)   = 0. _d 0
-          tensileStrFac(i,j,bi,bj) = 0. _d 0
-CToM<<<
-#ifdef SEAICE_ITD
-          DO k=1,nITD
-           HSNOWITD(i,j,k,bi,bj)=0. _d 0
-          ENDDO
-#endif
-C>>>ToM
+#endif /* SEAICE_BGRID_DYNAMICS */
 #ifdef SEAICE_VARIABLE_SALINITY
           HSALT(i,j,bi,bj)  = 0. _d 0
 #endif
@@ -149,21 +146,20 @@ c "ice concentration" tracer that should remain .EQ.1.
           DO k=1,nITD
             TICES(i,j,k,bi,bj)=0. _d 0
           ENDDO
-#ifdef ALLOW_SEAICE_COST_EXPORT
-          uHeffExportCell(i,j,bi,bj) = 0. _d 0
-          vHeffExportCell(i,j,bi,bj) = 0. _d 0
-          icevolMeanCell(i,j,bi,bj) = 0. _d 0
-#endif
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-          frWtrAtm(i,j,bi,bj)   = 0. _d 0
-          AREAforAtmFW(i,j,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF
+C- Note: To simplify dependency & avoid recomputations, when compiling
+C        pkg/autodiff, we always call SEAICE_INIT_VARIA to initialise control
+C        variables (as done above) without condition on useSEAICE.
+C        Therefore, in this case, the "If useSEAICE" is added back here:
+      IF ( useSEAICE ) THEN
+#endif
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
@@ -186,9 +182,9 @@ C     Initialize averages to zero
 C--   Initialize (variable) grid info. As long as we allow masking of
 C--   velocities outside of ice covered areas (in seaice_dynsolver)
 C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
-#ifdef SEAICE_CGRID
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_CGRID
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           seaiceMaskU(i,j,bi,bj)=   0.0 _d 0
@@ -199,14 +195,7 @@ C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
           IF(mask_uice.GT.1.5 _d 0) seaiceMaskV(i,j,bi,bj)=1.0 _d 0
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-#endif /* SEAICE_CGRID */
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-#ifdef OBCS_UVICE_OLD
-#ifdef SEAICE_CGRID
+# ifdef OBCS_UVICE_OLD
         IF (useOBCS) THEN
 C--   If OBCS is turned on, close southern and western boundaries
          DO i=1-OLx,sNx+OLx
@@ -226,20 +215,21 @@ C Western boundary
           ENDIF
          ENDDO
         ENDIF
+# endif /* OBCS_UVICE_OLD */
 #endif /* SEAICE_CGRID */
-#endif /* OBCS_UVICE_OLD */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           DO k=1,nITD
            TICES(i,j,k,bi,bj)=273.0 _d 0
           ENDDO
-#ifndef SEAICE_CGRID
-          AMASS      (i,j,bi,bj)=1000.0 _d 0
-#else
+#ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=1000.0 _d 0
           seaiceMassU(i,j,bi,bj)=1000.0 _d 0
           seaiceMassV(i,j,bi,bj)=1000.0 _d 0
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
+          AMASS      (i,j,bi,bj)=1000.0 _d 0
 #endif
          ENDDO
         ENDDO
@@ -250,7 +240,8 @@ C Western boundary
 C--   Update overlap regions
 #ifdef SEAICE_CGRID
       CALL EXCH_UV_XY_RL(seaiceMaskU,seaiceMaskV,.FALSE.,myThid)
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
       _EXCH_XY_RS(UVM, myThid)
 #endif
 
@@ -263,7 +254,8 @@ C--   Now lets look at all these beasts
      &        nIter0, myThid )
          CALL PLOT_FIELD_XYRL( seaiceMaskV, 'Current seaiceMaskV',
      &        nIter0, myThid )
-#else
+#endif
+#ifdef SEAICE_BGRID_DYNAMICS
          CALL PLOT_FIELD_XYRS( UVM     , 'Current UVM     ' ,
      &        nIter0, myThid )
 #endif
@@ -429,18 +421,6 @@ C--   Read initial sea ice age from file if available.
 
       ENDIF
 
-#if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          AREAforAtmFW(i,j,bi,bj) = AREA(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
-
 #ifdef ALLOW_OBCS
 C--   In case we use scheme with a large stencil that extends into overlap:
 C     no longer needed with the right masking in advection & diffusion S/R.
@@ -462,36 +442,22 @@ c       ENDDO
 c     ENDIF
 #endif /* ALLOW_OBCS */
 
-#ifdef SEAICE_ALLOW_JFNK
-C     Computing this metric cannot be done in S/R SEAICE_INIT_FIXED
-C     where it belongs, because globalArea is only defined later after
-C     S/R PACKAGES_INIT_FIXED, so we move this computation here.
-      CALL SEAICE_MAP_RS2VEC( nVec, rAw, rAs,
-     &     scalarProductMetric, .TRUE., myThid )
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO i=1,nVec
-         scalarProductMetric(i,1,bi,bj) =
-     &        scalarProductMetric(i,1,bi,bj)/globalArea
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* SEAICE_ALLOW_JFNK */
-
 C---  Complete initialization
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
-          ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
-          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
+          ZETA(i,j,bi,bj)        = HEFF(i,j,bi,bj)*(1.0 _d 11)
+          ETA(i,j,bi,bj)         = ZETA(i,j,bi,bj)/SEAICE_eccen**2
+          PRESS0(i,j,bi,bj)      = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
-          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          SEAICE_zMax(i,j,bi,bj) = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
+          SEAICE_zMin(i,j,bi,bj) = SEAICE_zetaMin
+          PRESS0(i,j,bi,bj)      = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
+#endif
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -522,7 +488,28 @@ C     on depth
         ENDDO
        ENDDO
       ENDIF
+# if ( defined SEAICE_ALLOW_JFNK || defined SEAICE_ALLOW_KRYLOV )
+C     Computing this metric cannot be done in S/R SEAICE_INIT_FIXED
+C     where it belongs, because globalArea is only defined later after
+C     S/R PACKAGES_INIT_FIXED, so we move this computation here.
+      CALL SEAICE_MAP_RS2VEC( nVec, rAw, rAs,
+     &     scalarProductMetric, .TRUE., myThid )
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO i=1,nVec
+         scalarProductMetric(i,1,bi,bj) =
+     &        scalarProductMetric(i,1,bi,bj)/globalArea
+        ENDDO
+       ENDDO
+      ENDDO
+# endif /* SEAICE_ALLOW_JFNK or KRYLOV */
+
 #endif /* SEAICE_CGRID */
+
+#ifdef ALLOW_AUTODIFF
+C-    end if useSEAICE block
+      ENDIF
+#endif
 
       RETURN
       END

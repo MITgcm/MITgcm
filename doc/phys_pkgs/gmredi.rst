@@ -54,6 +54,8 @@ formulation and Redi scheme, substantial cancellations take place to the
 point that the horizontal fluxes are unmodified from the lateral
 diffusion parameterization.
 
+.. _GM_redi_desc:
+
 Redi scheme: Isopycnal diffusion
 --------------------------------
 

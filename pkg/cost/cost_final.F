@@ -24,7 +24,7 @@ c     == global variables ==
 
 #include "cost.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 #endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
@@ -53,11 +53,15 @@ c     == local variables ==
 c     == end of interface ==
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_COST_FINAL (myThid)
+      IF (useSEAICE) CALL SEAICE_COST_FINAL( myThid )
 #endif
 
 #ifdef ALLOW_SHELFICE
       IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
+#endif
+
+#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
+      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
 #endif
 
 #ifdef ALLOW_THSICE
@@ -120,11 +124,9 @@ c--   Sum up all contributions.
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj)    = ', objf_tracer(bi,bj)
 #endif
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
-# ifdef ALLOW_COST_ATLANTIC_HEAT
+#ifdef ALLOW_COST_ATLANTIC_HEAT
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)       = ', objf_atl(bi,bj)
-# endif
 #endif
 #ifdef ALLOW_COST_TEMP
          WRITE(standardMessageUnit,'(A,D22.15)')
@@ -133,10 +135,6 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_HFLUXM
          WRITE(standardMessageUnit,'(A,D22.15)')
      &         ' --> objf_hflux_tut(bi,bj) = ', objf_hflux_tut(bi,bj)
-#endif
-#ifdef ALLOW_COST_TRANSPORT
-         WRITE(standardMessageUnit,'(A,D22.15)')
-     &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
 #ifdef ALLOW_COST_DEPTH
          WRITE(standardMessageUnit,'(A,D22.15)')
@@ -150,13 +148,8 @@ c--   Sum up all contributions.
 #ifdef ALLOW_COST_TRACER
      &            + mult_tracer * objf_tracer(bi,bj)
 #endif
-#if ( !defined (ALLOW_ECCO) || !defined (ALLOW_COST_ATLANTIC) )
-# ifdef ALLOW_COST_ATLANTIC_HEAT
+#ifdef ALLOW_COST_ATLANTIC_HEAT
      &            + mult_atl    * objf_atl(bi,bj)
-# endif
-#endif
-#ifdef ALLOW_COST_TRANSPORT
-     &            + mult_transport * objf_transport(bi,bj)
 #endif
 #ifdef ALLOW_COST_TEMP
      &            + mult_temp_tut  * objf_temp_tut(bi,bj)

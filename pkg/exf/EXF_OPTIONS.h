@@ -1,3 +1,8 @@
+#ifndef EXF_OPTIONS_H
+#define EXF_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: EXF_OPTIONS.h
 C !INTERFACE:
@@ -9,11 +14,6 @@ C | CPP options file for EXternal Forcing (EXF) package:
 C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
-
-#ifndef EXF_OPTIONS_H
-#define EXF_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_EXF
 #ifdef ECCO_CPPOPTIONS_H
@@ -98,12 +98,12 @@ C   >>> EXF_SEAICE_FRACTION <<<
 C       If defined, seaice fraction can be read-in from files (areaMaskFile)
 C
 C   >>> ALLOW_CLIMSST_RELAXATION <<<
-C       Allow the relaxation to a monthly climatology of sea surface
-C       temperature, e.g. the Reynolds climatology.
+C       Allow the relaxation of surface level temperature to SST (climatology),
+C       e.g. the Reynolds climatology.
 C
 C   >>> ALLOW_CLIMSSS_RELAXATION <<<
-C       Allow the relaxation to a monthly climatology of sea surface
-C       salinity, e.g. the Levitus climatology.
+C       Allow the relaxation of surface level salinity to SSS (climatology),
+C       e.g. the Levitus climatology.
 C
 C   >>> USE_EXF_INTERPOLATION <<<
 C       Allows to provide input field on arbitrary Lat-Lon input grid
@@ -206,7 +206,7 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 # define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
-C-  Relaxation to monthly climatologies.
+C-  Surface level relaxation to prescribed fields (e.g., climatologies)
 #define ALLOW_CLIMSST_RELAXATION
 #define ALLOW_CLIMSSS_RELAXATION
 
@@ -230,6 +230,10 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 #if ( defined USE_EXF_INTERPOLATION && defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
+
+C-  Not recommended (not tested nor maintained) and un-documented Options:
+#undef ALLOW_BULK_OFFLINE
+#undef ALLOW_CLIMSTRESS_RELAXATION
 
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_EXF */

@@ -12,8 +12,8 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #if (defined (ALLOW_ADMTLM) && defined (ALLOW_BYPASSAD))
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # include "optim.h"
 # include "adcost.h"
 # include "g_cost.h"
