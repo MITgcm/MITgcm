@@ -207,19 +207,40 @@ C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
      &     GM_Visbeck_maxSlope = GM_maxSlope
 
 C     Some constants
-      GM_rMaxSlope = 0.
-      if (GM_maxSlope.NE.0.) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
+      GM_rMaxSlope = 0. _d 0
+      IF (GM_maxSlope.NE.zeroRL) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
 
-      IF (GM_AdvForm) THEN
-        GM_skewflx = 0.
-        GM_ExtraDiag = GM_Visbeck_alpha.NE.0. .OR. GM_isopycK.NE.0.
-      ELSE
-        GM_skewflx = 1.
-        GM_ExtraDiag = GM_isopycK.NE.GM_background_K
-     &       .OR. GM_isoFac_calcK .NE. 1 _d 0
+C     Set (or reset) some switches:
+      IF ( GM_useLeithQG .AND. viscC2LeithQG.EQ.zeroRL ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_READPARMS: ',
+     &   'switch OFF GM_useLeithQG since viscC2LeithQG = 0'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        GM_useLeithQG = .FALSE.
       ENDIF
-      IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
-     &     GM_iso1dFile .NE. GM_bol1dFile ) THEN
+
+      IF ( GM_AdvForm ) THEN
+        GM_skewflx = 0. _d 0
+        IF ( GM_K3dRediFile .NE. ' ' ) THEN
+          GM_ExtraDiag = .TRUE.
+        ELSE
+          GM_ExtraDiag = GM_isopycK.NE.zeroRL
+        ENDIF
+      ELSE
+        GM_skewflx = 1. _d 0
+        IF ( GM_K3dRediFile .NE. ' ' .OR.
+     &       GM_K3dGMFile   .NE. ' ' ) THEN
+          GM_ExtraDiag = .TRUE.
+        ELSEIF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
+     &           GM_iso1dFile .NE. GM_bol1dFile ) THEN
+          GM_ExtraDiag = .TRUE.
+        ELSE
+          GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+        ENDIF
+      ENDIF
+      IF ( GM_isoFac_calcK .NE. GM_skewflx .AND.
+     &     ( GM_Visbeck_alpha.NE.zeroRL .OR.
+     &       GM_useBatesK3d .OR. GM_useLeithQG ) ) THEN
         GM_ExtraDiag = .TRUE.
       ENDIF
 
