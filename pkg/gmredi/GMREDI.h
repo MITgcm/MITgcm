@@ -35,7 +35,6 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
       LOGICAL GM_InMomAsStress
       LOGICAL GM_MNC
       LOGICAL GM_MDSIO
-      LOGICAL GM_useVarKforRedi
       LOGICAL GM_useBatesK3d
       LOGICAL GM_Bates_ThickSheet
       LOGICAL GM_Bates_surfK
@@ -49,7 +48,6 @@ C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
      &                   GM_useBVP,  GM_useSubMeso,
      &                   GM_ExtraDiag, GM_MNC, GM_MDSIO,
      &                   GM_InMomAsStress,
-     &                   GM_useVarKforRedi,
      &                   GM_useBatesK3d, GM_Bates_smooth,
      &                   GM_Bates_use_constK, GM_Bates_beta_eq_0,
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
