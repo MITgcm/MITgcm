@@ -27,7 +27,7 @@ C     == Global variables ===
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"

@@ -34,7 +34,7 @@ C     == global variables ==
 #include "CTRL.h"
 #include "optim.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -232,7 +232,7 @@ C     == global variables ==
 #include "CTRL.h"
 #include "optim.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
+#include "CTRL_DUMMY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

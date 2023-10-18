@@ -43,7 +43,7 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_CTRL
 #  include "optim.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL_DUMMY.h"
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
