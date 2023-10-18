@@ -230,7 +230,7 @@ C     Set (or reset) some switches:
         GM_skewflx = 1. _d 0
         IF ( GM_K3dRediFile .NE. ' ' .OR.
      &       GM_K3dGMFile   .NE. ' ' ) THEN
-          GM_ExtraDiag = .TRUE.
+          GM_ExtraDiag = GM_K3dRediFile .NE. GM_K3dGMFile
         ELSEIF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
      &           GM_iso1dFile .NE. GM_bol1dFile ) THEN
           GM_ExtraDiag = .TRUE.
