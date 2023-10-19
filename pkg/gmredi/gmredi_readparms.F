@@ -1,4 +1,7 @@
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_READPARMS
@@ -226,6 +229,9 @@ C     Set (or reset) some switches:
         ELSE
           GM_ExtraDiag = GM_isopycK.NE.zeroRL
         ENDIF
+#ifdef ALLOW_KAPREDI_CONTROL
+        IF ( useCTRL ) GM_ExtraDiag = .TRUE.
+#endif
       ELSE
         GM_skewflx = 1. _d 0
         IF ( GM_K3dRediFile .NE. ' ' .OR.
@@ -237,6 +243,9 @@ C     Set (or reset) some switches:
         ELSE
           GM_ExtraDiag = GM_isopycK.NE.GM_background_K
         ENDIF
+#if (defined ALLOW_KAPREDI_CONTROL || defined ALLOW_KAPGM_CONTROL )
+        IF ( useCTRL ) GM_ExtraDiag = .TRUE.
+#endif
       ENDIF
       IF ( GM_isoFac_calcK .NE. GM_skewflx .AND.
      &     ( GM_Visbeck_alpha.NE.zeroRL .OR.
