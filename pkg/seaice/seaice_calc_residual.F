@@ -49,7 +49,7 @@ C     u/vIceRes :: residual of sea-ice momentum equations
       _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef SEAICE_ALLOW_JFNK
+#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_JFNK )
 C     u/vIceLHS :: left hand side of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -96,7 +96,8 @@ C     viscosities are required
      O     e11, e22, e12,
      I     krylovIter, myTime, myIter, myThid )
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+     I     e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+     I     tensileStrFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     krylovIter, myTime, myIter, myThid )
 
@@ -140,7 +141,7 @@ C     Calculate the residual
         ENDDO
        ENDDO
 
-#endif /* SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_JFNK */
 
       RETURN
       END

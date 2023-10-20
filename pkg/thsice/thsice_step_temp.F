@@ -77,9 +77,8 @@ C     so it has to be defined with overlaps
       LOGICAL dBugFlag
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ticekey
+C     tkey  :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -89,16 +88,7 @@ C-    define grid-point location where to print debugging values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      ticekey = (act1 + 1) + act2*max1
-     &                     + act3*max1*max2
-     &                     + act4*max1*max2*max3
+      tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Initialise some local arrays
@@ -126,7 +116,7 @@ C-    Initialise flxAtm,evpAtm
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 c     IF ( fluidIsWater ) THEN
        CALL THSICE_ALBEDO(
@@ -145,9 +135,9 @@ C-------
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid calling s/r thsice_albedosolve4temp in adjoint routine again
-CADJ STORE siceAlb (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
-CADJ STORE icAlbNIR(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
-CADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE siceAlb (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE icAlbNIR(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE icFlxSW (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
 
 #ifdef ALLOW_DBUG_THSICE
@@ -178,10 +168,10 @@ C-      surface net SW flux:
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
-CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
-CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
-CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE Qice1   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Qice2   (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
+CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
        CALL THSICE_SOLVE4TEMP(
      I          bi, bj,
@@ -198,7 +188,7 @@ CADJ STORE Tsrf    (:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid calling s/r thsice_solve4temp in adjoint routine again
-CADJ STORE icFlxSW(:,:,bi,bj) = comlev1_bibj, key=ticekey, kind=isbyte
+CADJ STORE icFlxSW(:,:,bi,bj) = comlev1_bibj, key=tkey, kind=isbyte
 #endif
        DO j = jMin, jMax
         DO i = iMin, iMax

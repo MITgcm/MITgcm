@@ -1,3 +1,5 @@
+.. _sub_phys_pkg_shelfice:
+
 SHELFICE Package
 ----------------
 
@@ -411,7 +413,8 @@ where :math:`\gamma_S =` :varlink:`SHELFICEsaltToHeatRatio` :math:`*
 assumed that :math:`\kappa_{I,S} =0`; moreover, the salinity of the ice
 shelf is generally neglected (:math:`S_{I}=0`).
 
-The budget equations for temperature :eq:`dTdzdiffus` and salinity
+The budget equations for temperature :eq:`jenkinsheatbudget` (with
+:eq:`dTdzdiffus`) and salinity
 :eq:`hellmersaltbalance`, together with the freezing point temperature of
 sea-water :eq:`hellmerfreeze`, form the so-called three-equation-model
 (e.g., Hellmer and Olbers (1989) :cite:`hellmer:89`, Jenkins et al. (2001)
@@ -490,7 +493,7 @@ non-negative root is used. In the MITgcm code, the ice shelf salinity
    + (\epsilon_{q}  - \epsilon_{2}) \,S_{b} + \epsilon_{2}\,S \\
      S_{b} &= \frac{\epsilon_{2} - \epsilon_{q}\mp
      \sqrt{(\epsilon_{q}  - \epsilon_{2})^2
-     - 4\, a_{0}\,(\epsilon_{1} + \epsilon_{3})\,\epsilon_{2}}}
+     - 4\, a_{0}\,(\epsilon_{1} + \epsilon_{3})\,\epsilon_{2}\,S}}
      {2\,a_{0}\,(\epsilon_{1} + \epsilon_{3})}
    \end{aligned}
 

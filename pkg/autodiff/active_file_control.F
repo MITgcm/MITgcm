@@ -58,7 +58,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -84,18 +84,13 @@ C     myThid         :: thread number for this instance
       INTEGER  myOptimIter
       INTEGER  myThid
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER jRec
       INTEGER prec
-      INTEGER il
       LOGICAL w_globFile
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -104,11 +99,6 @@ CEOP
 C     force 64-bit io
       prec = ctrlprec
       jRec = -ABS(iRec)
-
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname,'(A)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -136,6 +126,8 @@ C     adjoint variable file. These files are tiled.
            ENDDO
           ENDDO
 
+          adpref = 'ad'
+          CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_FIELD(
      I                adfname, prec, globalFile, useCurrentDir,
      I                'RL', Nr, 1, myNr,
@@ -242,7 +234,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -268,18 +260,13 @@ C     myThid         :: thread number for this instance
       INTEGER  myOptimIter
       INTEGER  myThid
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER jRec
       INTEGER prec
-      INTEGER il
       LOGICAL w_globFile
       _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
@@ -288,11 +275,6 @@ CEOP
 C     force 64-bit io
       prec = ctrlprec
       jRec = -ABS(iRec)
-
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname,'(A)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -320,6 +302,8 @@ C     adjoint variable file. These files are tiled.
            ENDDO
           ENDDO
 
+          adpref = 'ad'
+          CALL ADD_PREFIX( adpref, activeVar_file, adfname )
           CALL MDS_WRITE_FIELD(
      I                adfname, prec, globalFile, useCurrentDir,
      I                'RS', Nr, 1, myNr,
@@ -424,7 +408,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -452,7 +436,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER i, bi, bj
       INTEGER jRec
       INTEGER prec
@@ -472,10 +456,6 @@ C     set these to zero otherwise looks for tiled file
 
 C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname,'(A)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -495,6 +475,10 @@ C     adjoint variable file. These files are tiled.
           DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
           ENDDO
+
+          adpref = 'ad'
+          il = ILNBLNK( activeVar_file )
+          WRITE(adfname,'(2A)') adpref, activeVar_file(1:il)
           IF ( myProcId.EQ.0 ) THEN
             CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
@@ -589,7 +573,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -617,7 +601,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
+      CHARACTER*(MAX_LEN_FNAM) adfname
       INTEGER i, bi, bj
       INTEGER jRec
       INTEGER prec
@@ -637,10 +621,6 @@ C     set these to zero otherwise looks for tiled file
 
 C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname,'(A)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -660,6 +640,10 @@ C     adjoint variable file. These files are tiled.
           DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
           ENDDO
+
+          adpref = 'ad'
+          il = ILNBLNK( activeVar_file )
+          WRITE(adfname,'(2A)') adpref, activeVar_file(1:il)
           IF ( myProcId.EQ.0 ) THEN
             CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
@@ -752,7 +736,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -873,7 +857,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -993,7 +977,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -1122,7 +1106,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename

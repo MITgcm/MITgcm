@@ -194,26 +194,6 @@ C      create directory
       CALL MNC_CW_ADD_VATTR_TEXT('adFv',
      &     'coordinates','XC YC RC iter', myThid)
 
-#ifdef ALLOW_SST0_CONTROL
-      CALL MNC_CW_ADD_VNAME(    'adSST', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSST',
-     &     'units','[cost]/[degC]', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSST','long_name',
-     &     'adjoint sea_surface_temperature', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSST',
-     &     'coordinates','XC YC RC iter', myThid)
-#endif
-
-#ifdef ALLOW_SSS0_CONTROL
-      CALL MNC_CW_ADD_VNAME(    'adSSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
-     &     'units','[cost]/[g/kg]', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSSS','long_name',
-     &     'adjoint sea_surface_salinity', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
-     &     'coordinates','XC YC RC iter', myThid)
-#endif
-
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       CALL MNC_CW_ADD_VNAME('adBottomDrag', 'Cen_xy_Hn__-__t',
      &                       3,4, myThid)
@@ -405,7 +385,7 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('adhsnow',
      &     'coordinates','XC YC RC iter', myThid)
 c
-# ifdef SEAICE_ALLOW_DYNAMICS
+# ifdef SEAICE_CGRID
       CALL MNC_CW_ADD_VNAME('aduice', 'U_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aduice',
      &     'units','[cost]/[m/s]', myThid)

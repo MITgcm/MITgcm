@@ -3,7 +3,6 @@ cost_averagesfields.f
 cost_averagesflags.f
 cost_averagesinit.f
 cost_bp_read.f
-cost_forcing.f
 cost_generic.f
 cost_gencost_all.f
 cost_gencost_moc.f
@@ -18,11 +17,8 @@ cost_gencost_glbmean.f
 cost_gencost_transp.f
 cost_gencal.f
 cost_genread.f
-cost_hyd.f
 cost_sla_read.f
 cost_sla_read_yd.f
-cost_ssh.f
-cost_internal_params.f
 cost_obcs.f
 cost_obcsn.f
 cost_obcss.f
@@ -34,5 +30,6 @@ ecco_cost_driver.f
 ecco_cost_final.f
 ecco_cost_init_varia.f
 ecco_init_varia.f
+ecco_read_pickup.f
 ecco_phys.f
 ecco_toolbox.f

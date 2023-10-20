@@ -74,9 +74,8 @@ C     Helper variables for diagnostics
       _RL DIAGarrayA    (1:sNx,1:sNy)
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iicekey
+C     tkey :: tape key (depends on tiles)
+      INTEGER tkey
 #endif
 CEOP
 
@@ -89,28 +88,19 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        act1 = bi - myBxLo(myThid)
-        max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-        act2 = bj - myByLo(myThid)
-        max2 = myByHi(myThid) - myByLo(myThid) + 1
-        act3 = myThid - 1
-        max3 = nTx*nTy
-        act4 = ikey_dynamics - 1
-        iicekey = (act1 + 1) + act2*max1
-     &                       + act3*max1*max2
-     &                       + act4*max1*max2*max3
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-        DO J=1-OLy,sNy+OLy
-         DO I=1-OLx,sNx+OLx
-          d_HEFFbyNEG(I,J,bi,bj)    = 0.0 _d 0
-          d_HSNWbyNEG(I,J,bi,bj)    = 0.0 _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          d_HEFFbyNEG(i,j,bi,bj)    = 0.0 _d 0
+          d_HSNWbyNEG(i,j,bi,bj)    = 0.0 _d 0
 #ifdef EXF_SEAICE_FRACTION
-          d_AREAbyRLX(I,J,bi,bj)    = 0.0 _d 0
-          d_HEFFbyRLX(I,J,bi,bj)    = 0.0 _d 0
+          d_AREAbyRLX(i,j,bi,bj)    = 0.0 _d 0
+          d_HEFFbyRLX(i,j,bi,bj)    = 0.0 _d 0
 #endif /* EXF_SEAICE_FRACTION */
 #ifdef SEAICE_VARIABLE_SALINITY
-          saltFluxAdjust(I,J,bi,bj) = 0.0 _d 0
+          saltFluxAdjust(i,j,bi,bj) = 0.0 _d 0
 #endif /* SEAICE_VARIABLE_SALINITY */
          ENDDO
         ENDDO
@@ -119,36 +109,36 @@ C =====================================================================
 C ========== PART 1: treat pathological cases (post advdiff) ==========
 C =====================================================================
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 Cgf no dependency through pathological cases treatment
         IF ( SEAICEadjMODE.EQ.0 ) THEN
 #endif
 
 #ifdef EXF_SEAICE_FRACTION
-CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
 C--   (0) relax sea ice concentration towards observation
         IF ( SEAICE_tauAreaObsRelax .GT. zeroRL ) THEN
-         DO J=1,sNy
-          DO I=1,sNx
-           IF ( exf_iceFraction(I,J,bi,bj).GT.AREA(I,J,bi,bj) ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           IF ( exf_iceFraction(i,j,bi,bj).GT.AREA(i,j,bi,bj) ) THEN
             d_AREAbyRLX(i,j,bi,bj) =
      &       SEAICE_deltaTtherm/SEAICE_tauAreaObsRelax
-     &       * (exf_iceFraction(I,J,bi,bj) - AREA(I,J,bi,bj))
+     &       * (exf_iceFraction(i,j,bi,bj) - AREA(i,j,bi,bj))
            ENDIF
-           IF ( exf_iceFraction(I,J,bi,bj).GT.zeroRS .AND.
-     &          AREA(I,J,bi,bj).EQ.0. _d 0) THEN
+           IF ( exf_iceFraction(i,j,bi,bj).GT.zeroRS .AND.
+     &          AREA(i,j,bi,bj).EQ.0. _d 0) THEN
 C           d_HEFFbyRLX(i,j,bi,bj) = 1. _d 1 * siEps * d_AREAbyRLX(i,j,bi,bj)
             d_HEFFbyRLX(i,j,bi,bj) = 1. _d 1 * siEps
            ENDIF
 #ifdef SEAICE_ITD
-           AREAITD(I,J,1,bi,bj) = AREAITD(I,J,1,bi,bj)
+           AREAITD(i,j,1,bi,bj) = AREAITD(i,j,1,bi,bj)
      &                          +  d_AREAbyRLX(i,j,bi,bj)
-           HEFFITD(I,J,1,bi,bj) = HEFFITD(I,J,1,bi,bj)
+           HEFFITD(i,j,1,bi,bj) = HEFFITD(i,j,1,bi,bj)
      &                          +  d_HEFFbyRLX(i,j,bi,bj)
 #endif /* SEAICE_ITD */
-           AREA(I,J,bi,bj) = AREA(I,J,bi,bj) +  d_AREAbyRLX(i,j,bi,bj)
-           HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj) +  d_HEFFbyRLX(i,j,bi,bj)
+           AREA(i,j,bi,bj) = AREA(i,j,bi,bj) +  d_AREAbyRLX(i,j,bi,bj)
+           HEFF(i,j,bi,bj) = HEFF(i,j,bi,bj) +  d_HEFFbyRLX(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -158,17 +148,17 @@ C--   (1) treat the case of negative values:
 
 #ifdef SEAICE_ITD
         DO IT=1,SEAICE_multDim
-         DO J=1,sNy
-          DO I=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
            tmpscal1=0. _d 0
            tmpscal2=0. _d 0
-           tmpscal1=MAX(-HEFFITD(I,J,IT,bi,bj),0. _d 0)
-           HEFFITD(I,J,IT,bi,bj)=HEFFITD(I,J,IT,bi,bj)+tmpscal1
-           d_HEFFbyNEG(I,J,bi,bj)=d_HEFFbyNEG(I,J,bi,bj)+tmpscal1
-           tmpscal2=MAX(-HSNOWITD(I,J,IT,bi,bj),0. _d 0)
-           HSNOWITD(I,J,IT,bi,bj)=HSNOWITD(I,J,IT,bi,bj)+tmpscal2
-           d_HSNWbyNEG(I,J,bi,bj)=d_HSNWbyNEG(I,J,bi,bj)+tmpscal2
-           AREAITD(I,J,IT,bi,bj)=MAX(AREAITD(I,J,IT,bi,bj),0. _d 0)
+           tmpscal1=MAX(-HEFFITD(i,j,IT,bi,bj),0. _d 0)
+           HEFFITD(i,j,IT,bi,bj)=HEFFITD(i,j,IT,bi,bj)+tmpscal1
+           d_HEFFbyNEG(i,j,bi,bj)=d_HEFFbyNEG(i,j,bi,bj)+tmpscal1
+           tmpscal2=MAX(-HSNOWITD(i,j,IT,bi,bj),0. _d 0)
+           HSNOWITD(i,j,IT,bi,bj)=HSNOWITD(i,j,IT,bi,bj)+tmpscal2
+           d_HSNWbyNEG(i,j,bi,bj)=d_HSNWbyNEG(i,j,bi,bj)+tmpscal2
+           AREAITD(i,j,IT,bi,bj)=MAX(AREAITD(i,j,IT,bi,bj),0. _d 0)
 C     AREA, HEFF, and HSNOW will be updated at end of PART 1
 C     by calling SEAICE_ITD_SUM
           ENDDO
@@ -179,17 +169,17 @@ C     concentration AREA to match single category values
         CALL SEAICE_ITD_SUM   ( bi, bj, myTime, myIter, myThid )
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
-          d_HEFFbyNEG(I,J,bi,bj)=MAX(-HEFF(I,J,bi,bj),0. _d 0)
-          HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+d_HEFFbyNEG(I,J,bi,bj)
-          d_HSNWbyNEG(I,J,bi,bj)=MAX(-HSNOW(I,J,bi,bj),0. _d 0)
-          HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+d_HSNWbyNEG(I,J,bi,bj)
-          AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),0. _d 0)
+        DO j=1,sNy
+         DO i=1,sNx
+          d_HEFFbyNEG(i,j,bi,bj)=MAX(-HEFF(i,j,bi,bj),0. _d 0)
+          HEFF(i,j,bi,bj)=HEFF(i,j,bi,bj)+d_HEFFbyNEG(i,j,bi,bj)
+          d_HSNWbyNEG(i,j,bi,bj)=MAX(-HSNOW(i,j,bi,bj),0. _d 0)
+          HSNOW(i,j,bi,bj)=HSNOW(i,j,bi,bj)+d_HSNWbyNEG(i,j,bi,bj)
+          AREA(i,j,bi,bj)=MAX(AREA(i,j,bi,bj),0. _d 0)
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
@@ -203,18 +193,18 @@ C     We avoid applying the correction to each class because that leads to
 C     funny structures in the net heat and freshwater flux into the ocean.
 C     Let us keep our fingers crossed, that the model will be benign!
         DO IT=1,SEAICE_multDim
-         DO J=1,sNy
-          DO I=1,sNx
-           IF (HEFF(I,J,bi,bj).LE.siEps) THEN
-            HEFFITD(I,J,IT,bi,bj) = 0. _d 0
-            HSNOWITD(I,J,IT,bi,bj) = 0. _d 0
+         DO j=1,sNy
+          DO i=1,sNx
+           IF (HEFF(i,j,bi,bj).LE.siEps) THEN
+            HEFFITD(i,j,IT,bi,bj) = 0. _d 0
+            HSNOWITD(i,j,IT,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
 C     The following statement helps TAF to understand that TICES is not
 C     modified/reset everywhere so that it is correctly stored in the
 C     outer checkpoint levels. This is a TAF bug and this statement can
@@ -222,21 +212,21 @@ C     probably be removed again, once this bug is fixed (but it does not
 C     hurt, either).
 CADJ INCOMPLETE TICES
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
           tmpscal1=0. _d 0
           tmpscal2=0. _d 0
-          IF (HEFF(I,J,bi,bj).LE.siEps) THEN
-           tmpscal1=-HEFF(I,J,bi,bj)
-           tmpscal2=-HSNOW(I,J,bi,bj)
+          IF (HEFF(i,j,bi,bj).LE.siEps) THEN
+           tmpscal1=-HEFF(i,j,bi,bj)
+           tmpscal2=-HSNOW(i,j,bi,bj)
            DO IT=1,SEAICE_multDim
-            TICES(I,J,IT,bi,bj)=celsius2K
+            TICES(i,j,IT,bi,bj)=celsius2K
            ENDDO
           ENDIF
-          HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+tmpscal1
-          HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+tmpscal2
-          d_HEFFbyNEG(I,J,bi,bj)=d_HEFFbyNEG(I,J,bi,bj)+tmpscal1
-          d_HSNWbyNEG(I,J,bi,bj)=d_HSNWbyNEG(I,J,bi,bj)+tmpscal2
+          HEFF(i,j,bi,bj)=HEFF(i,j,bi,bj)+tmpscal1
+          HSNOW(i,j,bi,bj)=HSNOW(i,j,bi,bj)+tmpscal2
+          d_HEFFbyNEG(i,j,bi,bj)=d_HEFFbyNEG(i,j,bi,bj)+tmpscal1
+          d_HSNWbyNEG(i,j,bi,bj)=d_HSNWbyNEG(i,j,bi,bj)+tmpscal2
          ENDDO
         ENDDO
 
@@ -244,23 +234,23 @@ C--   (3) treat the case of area but no ice/snow:
 
 #ifdef SEAICE_ITD
         DO IT=1,SEAICE_multDim
-         DO J=1,sNy
-          DO I=1,sNx
-           IF ( (HEFFITD(I,J,IT,bi,bj) .EQ.0. _d 0).AND.
-     &          (HSNOWITD(I,J,IT,bi,bj).EQ.0. _d 0))
-     &          AREAITD(I,J,IT,bi,bj)=0. _d 0
+         DO j=1,sNy
+          DO i=1,sNx
+           IF ( (HEFFITD(i,j,IT,bi,bj) .EQ.0. _d 0).AND.
+     &          (HSNOWITD(i,j,IT,bi,bj).EQ.0. _d 0))
+     &          AREAITD(i,j,IT,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-         DO J=1,sNy
-          DO I=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
            IF ((HEFF(i,j,bi,bj).EQ.0. _d 0).AND.
-     &        (HSNOW(i,j,bi,bj).EQ.0. _d 0)) AREA(I,J,bi,bj)=0. _d 0
+     &        (HSNOW(i,j,bi,bj).EQ.0. _d 0)) AREA(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 #endif /* SEAICE_ITD */
@@ -271,27 +261,27 @@ C--   (4) treat the case of very small area:
 #ifdef SEAICE_ITD
         recip_nitd = 1. _d 0 / float(SEAICE_multDim)
         DO IT=1,SEAICE_multDim
-         DO J=1,sNy
-          DO I=1,sNx
-           IF ((HEFFITD(I,J,IT,bi,bj).GT.0).OR.
-     &          (HSNOWITD(I,J,IT,bi,bj).GT.0)) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           IF ((HEFFITD(i,j,IT,bi,bj).GT.0).OR.
+     &          (HSNOWITD(i,j,IT,bi,bj).GT.0)) THEN
 C     SEAICE_area_floor*SEAICE_multDim cannot be allowed to exceed 1
 C     hence use SEAICE_area_floor devided by SEAICE_multDim
 C     (or install a warning in e.g. seaice_readparms.F)
-            AREAITD(I,J,IT,bi,bj)=
-     &        MAX(AREAITD(I,J,IT,bi,bj),SEAICE_area_floor*recip_nitd)
+            AREAITD(i,j,IT,bi,bj)=
+     &        MAX(AREAITD(i,j,IT,bi,bj),SEAICE_area_floor*recip_nitd)
           ENDIF
          ENDDO
         ENDDO
        ENDDO
 #else /* ndef SEAICE_ITD */
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-       DO J=1,sNy
-        DO I=1,sNx
+       DO j=1,sNy
+        DO i=1,sNx
          IF ((HEFF(i,j,bi,bj).GT.0).OR.(HSNOW(i,j,bi,bj).GT.0)) THEN
-          AREA(I,J,bi,bj)=MAX(AREA(I,J,bi,bj),SEAICE_area_floor)
+          AREA(i,j,bi,bj)=MAX(AREA(i,j,bi,bj),SEAICE_area_floor)
          ENDIF
         ENDDO
        ENDDO
@@ -301,16 +291,16 @@ CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
 C     (5) treat sea ice salinity pathological cases
 #ifdef SEAICE_VARIABLE_SALINITY
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, key = tkey,byte=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
-          IF ( (HSALT(I,J,bi,bj) .LT. 0.0).OR.
-     &         (HEFF(I,J,bi,bj) .EQ. 0.0)  ) THEN
-             saltFluxAdjust(I,J,bi,bj) = - HEFFM(I,J,bi,bj) *
-     &            HSALT(I,J,bi,bj) * recip_deltaTtherm
-             HSALT(I,J,bi,bj) = 0.0 _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( (HSALT(i,j,bi,bj) .LT. 0.0).OR.
+     &         (HEFF(i,j,bi,bj) .EQ. 0.0)  ) THEN
+             saltFluxAdjust(i,j,bi,bj) = - HEFFM(i,j,bi,bj) *
+     &            HSALT(i,j,bi,bj) * recip_deltaTtherm
+             HSALT(i,j,bi,bj) = 0.0 _d 0
           ENDIF
          ENDDO
         ENDDO
@@ -325,37 +315,37 @@ C     treat case of excessive ice cover, e.g., due to ridging:
 #ifdef SEAICE_ITD
 
 C     catch up with item (2) that involves category sums AREA and HEFF
-        DO J=1,sNy
-         DO I=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
           tmpscal1itd(i,j) = 0. _d 0
           tmpscal2itd(i,j) = 0. _d 0
           tmpscal3itd(i,j) = 0. _d 0
          ENDDO
         ENDDO
         DO IT=1,SEAICE_multDim
-         DO J=1,sNy
-          DO I=1,sNx
+         DO j=1,sNy
+          DO i=1,sNx
 C     TICES was changed above (item 2), now update TICE as ice volume
 C     weighted average of TICES
            tmpscal1itd(i,j)=tmpscal1itd(i,j)
-     &          +        TICES(I,J,IT,bi,bj) * HEFFITD(I,J,IT,bi,bj)
-           tmpscal2itd(i,j)=tmpscal2itd(i,j) + HEFFITD(I,J,IT,bi,bj)
+     &          +        TICES(i,j,IT,bi,bj) * HEFFITD(i,j,IT,bi,bj)
+           tmpscal2itd(i,j)=tmpscal2itd(i,j) + HEFFITD(i,j,IT,bi,bj)
 C     also compute total of AREAITD for diagnostics and SItrArea
-           tmpscal3itd(i,j)=tmpscal3itd(i,j) + AREAITD(I,J,IT,bi,bj)
+           tmpscal3itd(i,j)=tmpscal3itd(i,j) + AREAITD(i,j,IT,bi,bj)
           ENDDO
          ENDDO
         ENDDO
-        DO J=1,sNy
-         DO I=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
 C     save pre-ridging ice concentration for diagnostics:
 C     these lines are executed before "ridging" is applied to AREA
 C     hence we execute them here before SEAICE_ITD_REDIST is called
 C     although this means that AREA has not been completely regularized
 #ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA(I,J) = tmpscal3itd(i,j)
+          DIAGarrayA(i,j) = tmpscal3itd(i,j)
 #endif
 #ifdef ALLOW_SITRACER
-          SItrAREA(I,J,bi,bj,1)=tmpscal3itd(i,j)
+          SItrAREA(i,j,bi,bj,1)=tmpscal3itd(i,j)
 #endif
          ENDDO
         ENDDO
@@ -372,26 +362,26 @@ C     concentration AREA to match single category values
 #else /* ifndef SEAICE_ITD */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key = tkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO J=1,sNy
-         DO I=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
 C     save pre-ridging ice concentration for diagnostics
 #ifdef ALLOW_DIAGNOSTICS
-          DIAGarrayA(I,J) = AREA(I,J,bi,bj)
+          DIAGarrayA(i,j) = AREA(i,j,bi,bj)
 #endif /*  ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_SITRACER
-          SItrAREA(I,J,bi,bj,1)=AREA(I,J,bi,bj)
+          SItrAREA(i,j,bi,bj,1)=AREA(i,j,bi,bj)
 #endif /*  ALLOW_SITRACER */
 C     this is the simple Hibler (1979)-type ridging (capping of
 C     concentrations > 1) for the non-ITD sea ice model
-          AREA(I,J,bi,bj)=MIN(AREA(I,J,bi,bj),SEAICE_area_max)
+          AREA(i,j,bi,bj)=MIN(AREA(i,j,bi,bj),SEAICE_area_max)
          ENDDO
         ENDDO
 
 #endif /* SEAICE_ITD */
 
-#if (defined ALLOW_AUTODIFF_TAMC && defined SEAICE_MODIFY_GROWTH_ADJ)
+#if (defined ALLOW_AUTODIFF && defined SEAICE_MODIFY_GROWTH_ADJ)
 C        end SEAICEadjMODE.EQ.0 statement:
         ENDIF
 #endif

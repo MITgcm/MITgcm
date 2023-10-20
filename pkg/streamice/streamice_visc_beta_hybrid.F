@@ -51,10 +51,6 @@ C     LOCAL VARIABLES
       EXTERNAL ETA_GL_STREAMICE
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-#endif
       INTEGER ikey_1
 #endif
       _RL STREAMICE_BSTRESS_EXP
@@ -127,22 +123,8 @@ c       _RL total_vol_out
            DO m=Nr,1,-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-
-          ikey_1 = m
-     &         + Nr*(i-1)
-     &         + Nr*sNx*(j-1)
-     &         + Nr*sNx*sNy*act1
-     &         + Nr*sNx*sNy*max1*act2
-     &         + Nr*sNx*sNy*max1*max2*act3
-     &         + Nr*sNx*sNy*max1*max2*max3*act4
-
+            ikey_1 = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+            ikey_1 = m + ((i-1) + (j-1)*sNx + (ikey_1-1)*sNx*sNy)*Nr
 CADJ STORE visc_streamice_full(i,j,m,bi,bj)
 CADJ &     = comlev1_stream_hybrid, key=ikey_1
 #endif
@@ -162,13 +144,13 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
 #ifdef STREAMICE_3D_GLEN_CONST
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,m,bi,bj)**2
+             Bglen_val = (B_glen(i,j,m,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,m,bi,bj))
             ENDIF
 #else
             IF (.not.STREAMICE_use_log_ctrl) THEN
-             Bglen_val = B_glen(i,j,bi,bj)**2
+             Bglen_val = (B_glen(i,j,bi,bj))**2
             ELSE
              Bglen_val = exp(B_glen(i,j,bi,bj))
             ENDIF
@@ -244,9 +226,11 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
            if (.not.STREAMICE_use_log_ctrl) THEN
-            C_fric_val = C_basal_friction(i,j,bi,bj)**2
+            C_fric_val =
+     &      (C_basal_friction(i,j,bi,bj))**2
            else
-            C_fric_val = exp(C_basal_friction(i,j,bi,bj))
+            C_fric_val =
+     &      exp(C_basal_friction(i,j,bi,bj))
            endif
 
 #ifdef STREAMICE_COULOMB_SLIDING

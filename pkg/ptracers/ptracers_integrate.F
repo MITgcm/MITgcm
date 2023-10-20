@@ -111,9 +111,10 @@ C  gTr_trp          :: passive tracer total transport tendency before gchem
       INTEGER iterNb
       _RL dummy(Nr)
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER  iptrkey, kkey
+C     tkey :: tape key (depends on tiles)
+C     ikey :: tape key (depends on tracer and tiles)
+C     kkey :: tape key (depends on levels, tracer, and tiles)
+      INTEGER  tkey, ikey, kkey
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -180,20 +181,8 @@ C-    Initialise tracer tendency to zero
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = iTracer - 1
-          max0 = PTRACERS_num
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-          iptrkey = (act0 + 1)
-     &                      + act1*max0
-     &                      + act2*max0*max1
-     &                      + act3*max0*max1*max2
-     &                      + act4*max0*max1*max2*max3
+        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+        ikey = iTracer + (tkey-1)*PTRACERS_num
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Apply AB on Tracer :
@@ -223,17 +212,23 @@ C     compute pTr^n+1/2 (stored in gpTrNm1) extrapolating pTr forward in time
         ENDDO
 #endif /* ALLOW_AUTODIFF */
 
+C     salt_integrate.F uses INCLUDE_CALC_DIFFUSIVITY_CALL
+c#ifdef INCLUDE_CALC_DIFFUSIVITY_CALL
         CALL CALC_3D_DIFFUSIVITY(
      I         bi, bj, iMin,iMax,jMin,jMax,
      I         GAD_TR,
      I         PTRACERS_useGMRedi(iTracer), PTRACERS_useKPP(iTracer),
      O         kappaRk,
      I         myThid)
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kappaRk = comlev1_bibj_ptracers, key = ikey, byte = isbyte
+# endif
+c#endif /* INCLUDE_CALC_DIFFUSIVITY_CALL */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
-CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
+CADJ &      = comlev1_bibj_ptracers, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
@@ -275,7 +270,7 @@ C-    Start vertical index (k) loop (Nr:1)
      &                  .AND. (PTRACERS_advScheme(iTracer).NE.0)
         DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
-          kkey = (iptrkey-1)*Nr + k
+          kkey = k + (ikey-1)*Nr
 #endif /* ALLOW_AUTODIFF_TAMC */
 
           kM1  = MAX(1,k-1)
@@ -283,12 +278,12 @@ C-    Start vertical index (k) loop (Nr:1)
           kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fVer(:,:,:) = comlev1_bibj_k_ptracers,
-CADJ &     key = kkey, byte = isbyte, kind = isbyte
-CADJ STORE gTracer(:,:,k) = comlev1_bibj_k_ptracers,
-CADJ &     key = kkey, byte = isbyte, kind = isbyte
+CADJ STORE fVer(:,:,:)                  = comlev1_bibj_k_ptracers,
+CADJ &     key = kkey, kind = isbyte
+CADJ STORE gTracer(:,:,k)               = comlev1_bibj_k_ptracers,
+CADJ &     key = kkey, kind = isbyte
 CADJ STORE gpTrNm1(:,:,k,bi,bj,iTracer) = comlev1_bibj_k_ptracers,
-CADJ &     key = kkey, byte = isbyte, kind = isbyte
+CADJ &     key = kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL CALC_ADV_FLOW(
      I                uFld, vFld, wFld,
@@ -379,17 +374,25 @@ C-    External forcing term(s) outside Adams-Bashforth:
           ENDIF
 
 #ifdef NONLIN_FRSURF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gTracer(:,:,k) = comlev1_bibj_k, key = kkey, kind = isbyte
+# endif
 C-    Account for change in level thickness
           IF (nonlinFreeSurf.GT.0) THEN
            CALL FREESURF_RESCALE_G(
      I                           bi, bj, k,
      U                           gTracer,
      I                           myThid )
-           IF ( PTRACERS_AdamsBashGtr(iTracer) )
-     &     CALL FREESURF_RESCALE_G(
+           IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gpTrNm1(:,:,k,bi,bj,iTracer) = comlev1_bibj_k_ptracers,
+CADJ &     key = kkey, kind = isbyte
+# endif
+            CALL FREESURF_RESCALE_G(
      I                           bi, bj, k,
      U                           gpTrNm1(1-OLx,1-OLy,1,bi,bj,iTracer),
      I                           myThid )
+           ENDIF
           ENDIF
 #endif /* NONLIN_FRSURF */
 
@@ -398,6 +401,11 @@ C-    end of vertical index (k) loop (Nr:1)
 
 #ifdef ALLOW_DOWN_SLOPE
         IF ( PTRACERS_useDWNSLP(iTracer) ) THEN
+# ifdef ALLOW_AUTODIFF_TAMC
+C     Here we can store on comlev1_bibj to save memory, because
+C     recip_hfac is the same for all tracers
+CADJ STORE recip_hfac = comlev1_bibj, key = tkey, kind = isbyte
+# endif
           IF ( usingPCoords ) THEN
             CALL DWNSLP_APPLY(
      I                  GAD_TR, bi, bj, kSurfC,
@@ -439,8 +447,7 @@ C       tracer field for implicit matrix calculation
 C--   Vertical advection & diffusion (implicit) for passive tracers
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers,
-CADJ &     key=iptrkey, byte=isbyte
+CADJ STORE gTracer(:,:,:) = comlev1_bibj_ptracers, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_IMPLVERTADV_CODE

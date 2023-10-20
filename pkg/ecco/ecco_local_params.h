@@ -1,33 +1,12 @@
-c     ==================================================================
-c     HEADER ECCO_legacy
-c     ==================================================================
+C     ==================================================================
+C     HEADER ECCO_legacy
+C     ==================================================================
 
       INTEGER NSSHV4COST
       PARAMETER ( NSSHV4COST=5 )
 
-      common /averages_c/
-     &                    tbarfile,
-     &                    sbarfile,
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-     &                    sigmaRbarfile,
-#endif
-     &                    sstbarfile,
-     &                    psbarfile,
-     &                    bpbarfile,
-     &                    iestaubarfile,
-     &                    ubarfile,
-     &                    vbarfile,
-     &                    wbarfile,
-     &                    tauxbarfile,
-     &                    tauybarfile,
-     &                    hfluxmeanbarfile,
-     &                    sfluxmeanbarfile,
-     &                    costTranspDataFile
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRbarfile
-#endif
       character*(MAX_LEN_FNAM) sstbarfile
       character*(MAX_LEN_FNAM) psbarfile
       character*(MAX_LEN_FNAM) bpbarfile
@@ -41,81 +20,6 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) sfluxmeanbarfile
       character*(MAX_LEN_FNAM) costTranspDataFile
 
-#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      common /averages_transp_r/
-     &                     transpbar
-     &                   , transpobs
-     &                   , wtransp
-      _RL transpbar(maxNumDays,nsx,nsy)
-      _RL transpobs(maxNumDays)
-      _RL wtransp(maxNumDays)
-#endif
-
-      common /ecco_cost_aux_r/
-     &                    mult_hflux,
-     &                    mult_sflux,
-     &                    mult_hfluxmm,
-     &                    mult_sfluxmm,
-     &                    mult_tauu,
-     &                    mult_tauv,
-     &                    mult_hmean,
-     &                    mult_h,
-     &                    mult_tp,
-     &                    mult_ers,
-     &                    mult_gfo,
-     &                    mult_sshv4cost,
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-     &                    mult_sigmaR,
-#endif
-     &                    mult_temp,
-     &                    mult_salt,
-     &                    mult_temp0,
-     &                    mult_salt0,
-     &                    mult_etan0,
-     &                    mult_uvel0,
-     &                    mult_vvel0,
-     &                    mult_sst,
-     &                    mult_tmi,
-     &                    mult_sss,
-     &                    mult_bp,
-     &                    mult_ies,
-     &                    mult_ctdt,
-     &                    mult_ctds,
-     &                    mult_ctdtclim,
-     &                    mult_ctdsclim,
-     &                    mult_xbt,
-     &                    mult_argot,
-     &                    mult_argos,
-     &                    mult_usercost,
-     &                    mult_drift,
-     &                    mult_tdrift,
-     &                    mult_sdrift,
-     &                    mult_wdrift,
-     &                    mult_scatx,
-     &                    mult_scaty,
-     &                    mult_atemp,
-     &                    mult_aqh,
-     &                    mult_precip,
-     &                    mult_swflux,
-     &                    mult_swdown,
-     &                    mult_snowprecip,
-     &                    mult_lwflux,
-     &                    mult_lwdown,
-     &                    mult_evap,
-     &                    mult_apressure,
-     &                    mult_runoff,
-     &                    mult_uwind,
-     &                    mult_vwind,
-     &                    mult_curmtr,
-     &                    mult_kapgm,
-     &                    mult_kapredi,
-     &                    mult_diffkr,
-     &                    mult_ini_fin,
-     &                    mult_edtau,
-     &                    mult_bottomdrag,
-     &                    mult_smooth_ic,
-     &                    mult_smooth_bc,
-     &                    mult_transp
       _RL  mult_hflux
       _RL  mult_sflux
       _RL  mult_hfluxmm
@@ -128,9 +32,6 @@ c     ==================================================================
       _RL  mult_ers
       _RL  mult_gfo
       _RL  mult_sshv4cost(NSSHV4COST)
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      _RL  mult_sigmaR
-#endif
       _RL  mult_temp
       _RL  mult_salt
       _RL  mult_temp0
@@ -167,91 +68,32 @@ c     ==================================================================
       _RL  mult_lwdown
       _RL  mult_evap
       _RL  mult_apressure
-      _RL  mult_runoff
+c     _RL  mult_runoff
       _RL  mult_uwind
       _RL  mult_vwind
       _RL  mult_curmtr
       _RL  mult_kapgm
       _RL  mult_kapredi
       _RL  mult_diffkr
-      _RL  mult_ini_fin
+c     _RL  mult_ini_fin
       _RL  mult_edtau
       _RL  mult_bottomdrag
       _RL  mult_smooth_ic
       _RL  mult_smooth_bc
       _RL  mult_transp
 
-      common /ecco_cost_c/
-     &                hflux_errfile,
-     &                hfluxm_errfile,
-     &                sflux_errfile,
-     &                sfluxm_errfile,
-     &                tauu_errfile,
-     &                tauum_errfile,
-     &                tauv_errfile,
-     &                tauvm_errfile,
-     &                scatx_errfile,
-     &                scaty_errfile,
-     &                data_errfile,
-     &                geoid_errfile,
-     &                geoid_covariancefile,
-     &                ssh_errfile,
-     &                tp_errfile,
-     &                ers_errfile,
-     &                gfo_errfile,
-     &                sshv4cost_scalefile,
-     &                sshv4cost_errfile,
-     &                ctdt_errfile,
-     &                ctds_errfile,
-     &                drift_errfile,
-     &                udrifterrfile,
-     &                vdrifterrfile,
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-     &                sigmaRerrfile,
-#endif
-     &                salterrfile,
-     &                temperrfile,
-     &                velerrfile,
-     &                salt0errfile,
-     &                temp0errfile,
-     &                etan0errfile,
-     &                uvel0errfile,
-     &                vvel0errfile,
-     &                vel0errfile,
-     &                ssterrfile,
-     &                ssserrfile,
-     &                bperrfile,
-     &                ieserrfile,
-     &                atemp_errfile,
-     &                aqh_errfile,
-     &                precip_errfile,
-     &                swflux_errfile,
-     &                swdown_errfile,
-     &                snowprecip_errfile,
-     &                lwflux_errfile,
-     &                lwdown_errfile,
-     &                evap_errfile,
-     &                apressure_errfile,
-     &                runoff_errfile,
-     &                edtau_errfile,
-     &                kapgm_errfile,
-     &                kapredi_errfile,
-     &                diffkr_errfile,
-     &                bottomdrag_errfile,
-     &                usercost_errfile,
-     &                uwind_errfile,
-     &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
       character*(MAX_LEN_FNAM) sflux_errfile
       character*(MAX_LEN_FNAM) tauu_errfile
       character*(MAX_LEN_FNAM) tauv_errfile
-      character*(MAX_LEN_FNAM) hfluxm_errfile
-      character*(MAX_LEN_FNAM) sfluxm_errfile
-      character*(MAX_LEN_FNAM) tauum_errfile
-      character*(MAX_LEN_FNAM) tauvm_errfile
+c     character*(MAX_LEN_FNAM) hfluxm_errfile
+c     character*(MAX_LEN_FNAM) sfluxm_errfile
+c     character*(MAX_LEN_FNAM) tauum_errfile
+c     character*(MAX_LEN_FNAM) tauvm_errfile
       character*(MAX_LEN_FNAM) scatx_errfile
       character*(MAX_LEN_FNAM) scaty_errfile
-      character*(MAX_LEN_FNAM) data_errfile
+C     moved to OBCS_CTRL.h because this file is used for obcs-ctrl parameters
+c     character*(MAX_LEN_FNAM) data_errfile
       character*(MAX_LEN_FNAM) geoid_errfile
       character*(MAX_LEN_FNAM) geoid_covariancefile
       character*(MAX_LEN_FNAM) ssh_errfile
@@ -260,14 +102,11 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) gfo_errfile
       character*(MAX_LEN_FNAM) sshv4cost_scalefile(NSSHV4COST)
       character*(MAX_LEN_FNAM) sshv4cost_errfile(NSSHV4COST)
-      character*(MAX_LEN_FNAM) ctdt_errfile
-      character*(MAX_LEN_FNAM) ctds_errfile
-      character*(MAX_LEN_FNAM) drift_errfile
+c     character*(MAX_LEN_FNAM) ctdt_errfile
+c     character*(MAX_LEN_FNAM) ctds_errfile
+c     character*(MAX_LEN_FNAM) drift_errfile
       character*(MAX_LEN_FNAM) udrifterrfile
       character*(MAX_LEN_FNAM) vdrifterrfile
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRerrfile
-#endif
       character*(MAX_LEN_FNAM) salterrfile
       character*(MAX_LEN_FNAM) temperrfile
       character*(MAX_LEN_FNAM) velerrfile
@@ -291,7 +130,7 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) lwdown_errfile
       character*(MAX_LEN_FNAM) evap_errfile
       character*(MAX_LEN_FNAM) apressure_errfile
-      character*(MAX_LEN_FNAM) runoff_errfile
+c     character*(MAX_LEN_FNAM) runoff_errfile
       character*(MAX_LEN_FNAM) edtau_errfile
       character*(MAX_LEN_FNAM) kapgm_errfile
       character*(MAX_LEN_FNAM) kapredi_errfile
@@ -301,12 +140,6 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
-      common /ecco_cost_weights_0_r/
-     &        whflux0, wsflux0, wtau0,
-     &        watemp0, waqh0, wprecip0, wsnowprecip0, wwind0,
-     &        wswflux0, wswdown0, wlwflux0, wlwdown0,
-     &        wevap0, wapressure0, wrunoff0, wkapredi0,
-     &        wbottomdrag0,wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
       _RL wsflux0
       _RL wtau0
@@ -320,7 +153,7 @@ c     ==================================================================
       _RL wlwdown0
       _RL wevap0
       _RL wapressure0
-      _RL wrunoff0
+c     _RL wrunoff0
       _RL wbottomdrag0
       _RL wwind0
       _RL wdiffkr0
@@ -328,12 +161,6 @@ c     ==================================================================
       _RL wkapredi0
       _RL wedtau0
 
-      common /ecco_cost_weights_mean_r/
-     &        wmean_hflux, wmean_sflux, wmean_tau,
-     &        wmean_atemp, wmean_aqh,
-     &        wmean_precip, wmean_snowprecip, wmean_wind,
-     &        wmean_swflux, wmean_swdown, wmean_lwflux, wmean_lwdown,
-     &        wmean_evap, wmean_apressure, wmean_runoff
       _RL wmean_hflux
       _RL wmean_sflux
       _RL wmean_tau
@@ -347,42 +174,9 @@ c     ==================================================================
       _RL wmean_lwdown
       _RL wmean_evap
       _RL wmean_apressure
-      _RL wmean_runoff
+c     _RL wmean_runoff
       _RL wmean_wind
 
-      common /ecco_cost_data_c/
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-     &                     sigmaRdatfile,
-#endif
-     &                     tdatfile,
-     &                     sdatfile,
-     &                     scatxdatfile,
-     &                     scatydatfile,
-     &                     sstdatfile,
-     &                     tmidatfile,
-     &                     sssdatfile,
-     &                     bpdatfile,
-     &                     iesdatfile,
-     &                     mdtdatfile,
-     &                     topexfile,
-     &                     ersfile,
-     &                     gfofile,
-     &                     ctdtfile,
-     &                     ctdsfile,
-     &                     ctdtclimfile,
-     &                     ctdsclimfile,
-     &                     xbtfile,
-     &                     argotfile,
-     &                     argosfile,
-     &                     udriftfile,
-     &                     vdriftfile,
-     &                     usercost_datafile,
-     &                     curmtrufile,
-     &                     curmtrvfile
-
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      character*(MAX_LEN_FNAM) sigmaRdatfile
-#endif
       character*(MAX_LEN_FNAM) tdatfile
       character*(MAX_LEN_FNAM) sdatfile
       character*(MAX_LEN_FNAM) scatxdatfile
@@ -409,63 +203,20 @@ c     ==================================================================
       character*(MAX_LEN_FNAM) curmtrufile
       character*(MAX_LEN_FNAM) curmtrvfile
 
-      common /ecco_cost_data_times_i/
-     &                           scatxstartdate,
-     &                           scatystartdate,
-     &                           sststartdate,
-     &                           argotstartdate,
-     &                           argosstartdate,
-     &                           tmistartdate,
-     &                           sssstartdate,
-     &                           bpstartdate,
-     &                           iesstartdate,
-     &                           topexstartdate,
-     &                           ersstartdate,
-     &                           gfostartdate,
-     &                           mdtstartdate,
-     &                           mdtenddate
-      integer scatxstartdate(4)
-      integer scatystartdate(4)
-      integer sststartdate(4)
-      integer argotstartdate(4)
-      integer argosstartdate(4)
-      integer tmistartdate(4)
-      integer sssstartdate(4)
-      integer bpstartdate(4)
-      integer iesstartdate(4)
-      integer topexstartdate(4)
-      integer ersstartdate(4)
-      integer gfostartdate(4)
-      integer mdtstartdate(4)
-      integer mdtenddate(4)
-
-      common /ecco_cost_data_aux_i/
-     &                           tmistartdate1,
-     &                           tmistartdate2,
-     &                           sststartdate1,
-     &                           sststartdate2,
-     &                           sssstartdate1,
-     &                           sssstartdate2,
-     &                           bpstartdate1,
-     &                           bpstartdate2,
-     &                           iesstartdate1,
-     &                           iesstartdate2,
-     &                           argotstartdate1,
-     &                           argotstartdate2,
-     &                           argosstartdate1,
-     &                           argosstartdate2,
-     &                           topexstartdate1,
-     &                           topexstartdate2,
-     &                           ersstartdate1,
-     &                           ersstartdate2,
-     &                           gfostartdate1,
-     &                           gfostartdate2,
-     &                           scatstartdate1,
-     &                           scatstartdate2,
-     &                           mdtstartdate1,
-     &                           mdtstartdate2,
-     &                           mdtenddate1,
-     &                           mdtenddate2
+c     integer scatxstartdate(4)
+c     integer scatystartdate(4)
+c     integer sststartdate(4)
+c     integer argotstartdate(4)
+c     integer argosstartdate(4)
+c     integer tmistartdate(4)
+c     integer sssstartdate(4)
+c     integer bpstartdate(4)
+c     integer iesstartdate(4)
+c     integer topexstartdate(4)
+c     integer ersstartdate(4)
+c     integer gfostartdate(4)
+c     integer mdtstartdate(4)
+c     integer mdtenddate(4)
 
       integer tmistartdate1
       integer tmistartdate2
@@ -494,23 +245,11 @@ c     ==================================================================
       integer mdtenddate1
       integer mdtenddate2
 
-      common /ecco_cost_data_times_r/
-     &                           topexperiod,
-     &                           ersperiod,
-     &                           gfoperiod,
-     &                           scatperiod
       _RL topexperiod
       _RL ersperiod
       _RL gfoperiod
       _RL scatperiod
 
-      common /ecco_cost_data_detrend/
-     &                           topexintercept,
-     &                           ersintercept,
-     &                           gfointercept,
-     &                           topexslope,
-     &                           ersslope,
-     &                           gfoslope
       _RL topexintercept
       _RL ersintercept
       _RL gfointercept
@@ -518,16 +257,12 @@ c     ==================================================================
       _RL ersslope
       _RL gfoslope
 
-      common /ecco_cost_errfactor/
-     &         sshv4cost_errfactor
       _RL  sshv4cost_errfactor(NSSHV4COST)
 
-      common /ecco_ssh_daymask_c/
-     &       tpTimeMaskFile, ersTimeMaskFile, gfoTimeMaskFile
       character*(MAX_LEN_FNAM) tpTimeMaskFile
       character*(MAX_LEN_FNAM) ersTimeMaskFile
       character*(MAX_LEN_FNAM) gfoTimeMaskFile
 
-c     ==================================================================
-c     END OF HEADER ECCO_legacy
-c     ==================================================================
+C     ==================================================================
+C     END OF HEADER ECCO_legacy
+C     ==================================================================

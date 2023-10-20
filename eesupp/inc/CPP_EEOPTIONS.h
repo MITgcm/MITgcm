@@ -1,3 +1,6 @@
+#ifndef _CPP_EEOPTIONS_H_
+#define _CPP_EEOPTIONS_H_
+
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:
@@ -27,9 +30,6 @@ C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
 C     *==========================================================*
 CEOP
-
-#ifndef _CPP_EEOPTIONS_H_
-#define _CPP_EEOPTIONS_H_
 
 C     In general the following convention applies:
 C     ALLOW  - indicates an feature will be included but it may
@@ -105,7 +105,6 @@ CXXX #undef  ALLOW_USE_MPI
 
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
-#define ALLOW_ASYNC_COMMUNICATION
 #undef  ALLOW_ASYNC_COMMUNICATION
 #undef  ALWAYS_USE_ASYNC_COMMUNICATION
 C--   Control use of communication that is atomic to computation.
@@ -151,7 +150,7 @@ C     allow to import and export from/to Coupler interface.
 C--   Activate some pieces of code for coupling to GEOS AGCM
 #undef HACK_FOR_GMAO_CPL
 
-#endif /* _CPP_EEOPTIONS_H_ */
-
+C=== And define Macros ===
 #include "CPP_EEMACROS.h"
 
+#endif /* _CPP_EEOPTIONS_H_ */

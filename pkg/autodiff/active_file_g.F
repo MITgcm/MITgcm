@@ -82,22 +82,15 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy, g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = 1
       useCurrentDir = .FALSE.
 
@@ -170,22 +163,15 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy, g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -258,22 +244,15 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy, g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -346,22 +325,15 @@ C     myThid         :: thread number for this instance
       INTEGER myThid
       _RL     dummy, g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       useCurrentDir = .FALSE.
 
@@ -440,14 +412,13 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      WRITE(fname,'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_READ_1D_RL(
      &                 active_var_file, active_var, active_var_length,
@@ -511,23 +482,16 @@ C     myThid         :: thread number for this instance
       _RL     dummy
       _RL     g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = 1
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -594,23 +558,16 @@ C     myThid         :: thread number for this instance
       _RL     dummy
       _RL     g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -677,23 +634,16 @@ C     myThid         :: thread number for this instance
       _RL     dummy
       _RL     g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -760,23 +710,16 @@ C     myThid         :: thread number for this instance
       _RL     dummy
       _RL     g_dummy
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
-      INTEGER il
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER myNr
       LOGICAL globalFile
       LOGICAL useCurrentDir
 CEOP
 
       pref = 'g_'
-      il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      CALL ADD_PREFIX( pref, active_var_file, fname )
       myNr = Nr
       globalFile = .FALSE.
       useCurrentDir = .FALSE.
@@ -852,14 +795,13 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
-      CHARACTER*(80) fname
+      CHARACTER*(MAX_LEN_FNAM) fname
       INTEGER il
 CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname,'(A)') ' '
-      WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
+      WRITE(fname,'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_WRITE_1D_RL(
      &                 active_var_file, active_var, active_var_length,

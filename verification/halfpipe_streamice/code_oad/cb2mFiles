@@ -9,10 +9,9 @@ cost
 CTRL_SIZE
 CTRL_GENARR
 CTRL_OBCS
-ctrl_dummy
-ctrl
+CTRL_DUMMY
+CTRL
 ctrl_local_params
-ctrl_weights
 DIAGNOSTICS_SIZE
 DIAGNOSTICS
 DIAGSTATS_REGIONS
@@ -26,7 +25,7 @@ FFIELDS
 g_cost
 GLOBAL_MAX
 GLOBAL_SUM
-grdchk
+GRDCHK
 GRID
 MPI_INFO
 optim

@@ -220,10 +220,7 @@ C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculatio
       _RL windStress            ! surface wind-stress (@ grid cell center)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ikey_1
-      INTEGER ikey_2
+      INTEGER ikey, ikey_1, ikey_2
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -265,24 +262,14 @@ CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+        ikey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+#endif
         DO j = 1,sNy
          DO i = 1,sNx
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          max3 = nTx*nTy
-          act4 = ikey_dynamics - 1
-
-          ikey_1 = i
-     &         + sNx*(j-1)
-     &         + sNx*sNy*act1
-     &         + sNx*sNy*max1*act2
-     &         + sNx*sNy*max1*max2*act3
-     &         + sNx*sNy*max1*max2*max3*act4
+          ikey_1 = i + (j-1)*sNx + (ikey-1)*sNx*sNy
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -376,13 +363,8 @@ C     atemp(i,j,bi,bj) .EQ. 0.
 C--- iterate with psi-functions to find transfer coefficients
 
 #ifdef ALLOW_AUTODIFF_TAMC
-            ikey_2 = i
-     &           + sNx*(j-1)
-     &           + sNx*sNy*(iter-1)
-     &           + sNx*sNy*niter_bulk*act1
-     &           + sNx*sNy*niter_bulk*max1*act2
-     &           + sNx*sNy*niter_bulk*max1*max2*act3
-     &           + sNx*sNy*niter_bulk*max1*max2*max3*act4
+            ikey_2 = i + (j-1)*sNx + (iter-1)*sNx*sNy
+     &           + (ikey-1)*sNx*sNy*niter_bulk
 CADJ STORE rdn   (i,j)       = comlev1_exf_2, key = ikey_2
 CADJ STORE ustar (i,j)       = comlev1_exf_2, key = ikey_2
 CADJ STORE qstar (i,j)       = comlev1_exf_2, key = ikey_2
@@ -436,7 +418,9 @@ C--   Large&Pond1981:
      &               ( exf_two*LOG(exf_half*(exf_one+xsq)) )
 
             IF ( solve4Stress ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rdn(i,j)       = comlev1_exf_2, key = ikey_2
+#endif
 C-   Shift wind speed using old coefficient
 #ifdef ALLOW_BULK_LARGEYEAGER04
 C--   Large&Yeager04:
@@ -502,12 +486,7 @@ C end of iteration loop
           IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-           ikey_1 = i
-     &          + sNx*(j-1)
-     &          + sNx*sNy*act1
-     &          + sNx*sNy*max1*act2
-     &          + sNx*sNy*max1*max2*act3
-     &          + sNx*sNy*max1*max2*max3*act4
+           ikey_1 = i + (j-1)*sNx + (ikey-1)*sNx*sNy
 CADJ STORE qstar(i,j)    = comlev1_exf_1, key = ikey_1
 CADJ STORE tstar(i,j)    = comlev1_exf_1, key = ikey_1
 CADJ STORE tau  (i,j)    = comlev1_exf_1, key = ikey_1

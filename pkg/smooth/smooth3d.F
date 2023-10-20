@@ -20,10 +20,18 @@ C     *==========================================================*
       INTEGER myThid
 
       INTEGER nbt_in
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
+      INTEGER IL
 
-c read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      IL = ILNBLNK( smoothDir )
+
+C read smoothing [i.e diffusion] operator:
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
      &      'smooth3Doperator', smoothOpNb
       CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
      &           Nr, smooth3D_Kwx, 1, 1, myThid )

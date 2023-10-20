@@ -11,35 +11,34 @@ function [u6t,v6t] = split_UV_cub(u3d,v3d,ksign,kad)
 %           add 1 column to U and one row to V <== at the begining !!!
 %   => output is u6t(nc+1,nc,[nr],6) & v6t(nc,nc+1,[nr],6)
 %----------------------------------------------
-% Written by jmc@ocean.mit.edu, 2005.
+% Written by jmc@mit.edu, 2005.
+
 if nargin < 3 , ksign = 0; end
 if nargin < 4 , kad = 1; end
 % ksign = 0 ==> no sign ; ksign = 1 ==> change the sign where needed
 % ==> in fact, used only if kad=2
 plmn = 1 - 2*ksign ;
 
-dims=size(u3d);
-if dims(1) ~= 6*dims(2),
-  fprintf(' ERROR in split_UV_cub: 1rst array has the wrong shape !\n');
-  fprintf(' dimensions:'); fprintf(' %i',dims); fprintf(' ; => STOP\n');
-  u6t=0; v6t=0; return;
-end
-dims=size(v3d); nDim=length(dims);
+%------------------------------
+ if ~isequal(size(u3d),size(v3d))
+   error(['Error in Input-array dimensions: ',...
+           'u = ',mat2str(size(u3d)),', ','v = ',mat2str(size(v3d))]);
+ end
+ dims=size(u3d); nDim=length(dims); n1h=dims(1); n2h=dims(2);
 %fprintf(' nDim= %i , dims:',nDim);fprintf(' %i',dims);fprintf('\n');
-if dims(1) ~= 6*dims(2),
-  fprintf(' ERROR in split_UV_cub:  2nd array has the wrong shape !\n');
-  fprintf(' dimensions:'); fprintf(' %i',dims); fprintf(' ; => STOP\n');
-  u6t=0; v6t=0; return;
-end
-nx=dims(1); nc=dims(2); ncp=nc+1; n2p=nc+2;
-if nDim == 2, nr=1; else nr=prod(dims(3:end)); end
-
+ if nDim == 2, nr=1; else nr=prod(dims(3:end)); end
+ if n1h == 6*n2h, nc=n2h;
+   u3d=permute(reshape(u3d,[nc 6 nc nr]),[1 3 4 2]);
+   v3d=permute(reshape(v3d,[nc 6 nc nr]),[1 3 4 2]);
+ elseif n1h*6 == n2h, nc=n1h;
+   u3d=permute(reshape(u3d,[nc nc 6 nr]),[1 2 4 3]);
+   v3d=permute(reshape(v3d,[nc nc 6 nr]),[1 2 4 3]);
+ else
+  error([' input var size: ',int2str(n1h),' x ',int2str(n2h),' does not fit regular cube !']);
+ end
+ ncp=nc+1 ; n2p=nc+2; %nye=nc+kad;
+%--
 %=================================================================
-
- u3d=reshape(u3d,[nc 6 nc nr]);
- v3d=reshape(v3d,[nc 6 nc nr]);
- u3d=permute(u3d,[1 3 4 2]);
- v3d=permute(v3d,[1 3 4 2]);
 
 if kad == 0,
 %- split on to 6 faces with no overlap:
@@ -50,6 +49,7 @@ if kad == 0,
 elseif kad == 1,
 
  dims(1)=ncp;
+ dims(2)=nc;
 %- split on to 6 faces with overlap in i+1 for u and j+1 for v :
  u6t=zeros(ncp,nc,nr,6);
  v6t=zeros(nc,ncp,nr,6);
@@ -127,6 +127,7 @@ elseif kad == 2,
 elseif kad == -1,
 
  dims(1)=ncp;
+ dims(2)=nc;
 %- split on to 6 faces with overlap in i-1 for u and j-1 for v :
  u6t=zeros(ncp,nc,nr,6);
  v6t=zeros(nc,ncp,nr,6);

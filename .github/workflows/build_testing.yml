@@ -12,29 +12,17 @@ jobs:
      matrix:
       include:
         - exp: "offline_exf_seaice"
-          precs: "16 16 16 16 16 16 16 16 16"
         - exp: "global_ocean.cs32x15"
-          precs: "16 16 16 16 16 16"
         - exp: "tutorial_deep_convection"
-          precs: "16 16"
         - exp: "aim.5l_cs"
-          precs: "14 16"
         - exp: "isomip"
-          precs: "16 16 16 16"
         - exp: "global_ocean.90x40x15"
-          precs: "16 16 16"
         - exp: "tutorial_plume_on_slope"
-          precs: "16"
         - exp: "tutorial_advection_in_gyre"
-          precs: "16"
         - exp: "hs94.cs-32x32x5"
-          precs: "13 16"
         - exp: "tutorial_global_oce_biogeo"
-          precs: "16"
         - exp: "tutorial_global_oce_in_p"
-          precs: "16"
         - exp: "tutorial_cfc_offline"
-          precs: "16"
 
    continue-on-error: true
 
@@ -56,7 +44,6 @@ jobs:
      - name: Run a test
        env:
         MITGCM_EXP: ${{ matrix.exp }}
-        MITGCM_PRECS: ${{ matrix.precs }}
        run: |
          . tools/ci/runtr.sh
 
@@ -67,7 +54,6 @@ jobs:
      matrix:
       include:
         - exp: "global_ocean.90x40x15"
-          precs: "16"
 
    continue-on-error: true
 
@@ -84,9 +70,8 @@ jobs:
      - name: Run testreport
        env:
         MITGCM_EXP: ${{ matrix.exp }}
-        MITGCM_PRECS: ${{ matrix.precs }}
         MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_oad.*'
        run: |
          . tools/ci/runtr.sh
@@ -98,20 +83,13 @@ jobs:
    strategy:
      matrix:
       include:
+        - exp: "global_oce_latlon"
         - exp: "halfpipe_streamice"
-          precs: "16"
         - exp: "hs94.1x64x5"
-          precs: "14"
         - exp: "isomip"
-          precs: "16"
-        - exp: "OpenAD"
-          precs: "15 12 16"
         - exp: "tutorial_global_oce_biogeo"
-          precs: "16"
         - exp: "tutorial_global_oce_optim"
-          precs: "16"
         - exp: "tutorial_tracer_adjsens"
-          precs: "16"
 
    continue-on-error: true
 
@@ -128,9 +106,8 @@ jobs:
      - name: Run testreport
        env:
         MITGCM_EXP: ${{ matrix.exp }}
-        MITGCM_PRECS: ${{ matrix.precs }}
         MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
-        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran -match 14"
         MITGCM_INPUT_DIR_PAT: '/input_oad.*'
        run: |
          . tools/ci/runtr.sh
@@ -147,7 +124,7 @@ jobs:
      - name: Set up Python
        uses: actions/setup-python@v2
        with:
-         python-version: 3.6
+         python-version: 3.11
 
      - name: install dependencies
        run: tools/ci/install_doc_dependencies.sh
@@ -169,7 +146,7 @@ jobs:
      - name: Set up Python
        uses: actions/setup-python@v2
        with:
-         python-version: 3.6
+         python-version: 3.11
 
      - name: install dependencies
        run: tools/ci/install_doc_dependencies.sh

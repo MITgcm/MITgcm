@@ -9,7 +9,7 @@ def writefield(fname,data):
     """Call signatures::
 
     writefield(filename, numpy.ndarray)
-    
+
     Write unblocked binary data.
     """
 
@@ -26,7 +26,7 @@ def readfield(fname,dims,datatype):
     """Call signatures::
 
     readfield(filename, dims, numpy.datatype)
-    
+
     Read unblocked binary data with dimentions "dims".
     """
     fid = open(fname,"rb")
@@ -38,7 +38,7 @@ def readfield(fname,dims,datatype):
     if   len(v) == np.prod(dims):     v = v.reshape(dims)
     elif len(v) == np.prod(dims[1:]): v = v.reshape(dims[1:])
     else:
-        errstr = (  "dimensions do not match: \n len(data) = " + str(len(v)) 
+        errstr = (  "dimensions do not match: \n len(data) = " + str(len(v))
                   + ", but prod(dims) = " + str(np.prod(dims)) )
         raise RuntimeError(errstr)
 
@@ -66,3 +66,14 @@ writefield("iceShelf_MassTend.obcs",iceMassTend)
 msk = np.ones(iceMass.shape)
 msk[y0:,:] = 2.
 writefield("iceMask.obcs",msk)
+
+# salinity profile for stability
+dz = 30.
+N2 = 1.e-5
+sBeta = 7e-4
+gravity=9.81
+dSdz = N2/gravity/sBeta * np.ones((30,))
+S0 = 34.4
+sRef0 = np.cumsum(dSdz*dz)
+sRef = np.maximum(sRef0-sRef0[9],0.) + S0
+#sRef = np.maximum(sRef0-sRef0[0],0.) + S0

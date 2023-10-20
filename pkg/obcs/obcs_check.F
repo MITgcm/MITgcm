@@ -78,9 +78,17 @@ C--   Print OBCS set-up summary:
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 
-      WRITE(msgBuf,'(A)') 'OBCS_CHECK: start summary:'
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-
+      WRITE(msgBuf,'(A)') '// OBCS_CHECK: OBCS configuration summary'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+C
       CALL WRITE_0D_L( useOBCSprescribe, INDEX_NONE,
      &   'useOBCSprescribe =', ' /* prescribe OB values */')
       CALL WRITE_0D_L( useOBCSbalance, INDEX_NONE,
@@ -101,6 +109,10 @@ C--   Print OBCS set-up summary:
      &   'OBCS_balanceFacW =',
      &   ' /* Western  OB Factor for balancing OB flow [-] */')
       ENDIF
+C
+      CALL WRITE_0D_L( OBCSfixTopo,   INDEX_NONE,
+     & 'OBCSfixTopo =',
+     & '  /* mod. topo to have zero gradient across boundaries. */')
       CALL WRITE_0D_RL( OBCS_uvApplyFac, INDEX_NONE,
      &   'OBCS_uvApplyFac =',
      &   ' /* Factor to apply to U,V 2nd column/row */')
@@ -118,10 +130,84 @@ C--   Print OBCS set-up summary:
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
      &                  ' /* select group of variables to monitor */')
+      CALL WRITE_0D_L( OBCSprintDiags,   INDEX_NONE,
+     & 'OBCSprintDiags =', '  /* print some OBCS diagnostics. */')
+C
       CALL WRITE_0D_L( useOBCStides, INDEX_NONE,
      &   'useOBCStides =', ' /* apply tidal forcing through OB */')
       CALL WRITE_1D_RL( tidalPeriod, tidalComponents, INDEX_I,
      &   'tidalPeriod = ', ' /* (s) */')
+C
+      CALL WRITE_0D_L( useOrlanskiNorth,   INDEX_NONE,
+     & 'useOrlanskiNorth =', '  /* use Orlanski for northern bound. */')
+      CALL WRITE_0D_L( useOrlanskiSouth,   INDEX_NONE,
+     & 'useOrlanskiSouth =', '  /* use Orlanski for southern bound. */')
+      CALL WRITE_0D_L( useOrlanskiEast,    INDEX_NONE,
+     & 'useOrlanskiEast  =', '  /* use Orlanski for eastern bound. */')
+      CALL WRITE_0D_L( useOrlanskiWest,    INDEX_NONE,
+     & 'useOrlanskiWest  =', '  /* use Orlanski for western bound. */')
+C
+      CALL WRITE_0D_L( useStevensNorth,   INDEX_NONE,
+     & 'useStevensNorth =', '  /* use Stevens for northern bound. */')
+      CALL WRITE_0D_L( useStevensSouth,   INDEX_NONE,
+     & 'useStevensSouth =', '  /* use Stevens for southern bound. */')
+      CALL WRITE_0D_L( useStevensEast,    INDEX_NONE,
+     & 'useStevensEast  =', '  /* use Stevens for eastern bound. */')
+      CALL WRITE_0D_L( useStevensWest,    INDEX_NONE,
+     & 'useStevensWest  =', '  /* use Stevens for western bound. */')
+      CALL WRITE_0D_L( useStevensPhaseVel,    INDEX_NONE,
+     & 'useStevensPhaseVel  =', '  /* include phase vel. term. */')
+      CALL WRITE_0D_L( useStevensAdvection,    INDEX_NONE,
+     & 'useStevensAdvection  =', '  /* include advection term. */')
+      CALL WRITE_0D_RS( TrelaxStevens, INDEX_NONE,
+     & 'TrelaxStevens =',
+     & ' /* relaxation time scale for theta ( s ). */')
+      CALL WRITE_0D_RS( SrelaxStevens, INDEX_NONE,
+     & 'SrelaxStevens =',
+     & ' /* relaxation time scale for salinity ( s ). */')
+C
+      CALL WRITE_0D_L( useOBCSsponge,   INDEX_NONE,
+     & 'useOBCSSponge =', '  /* use sponge along boundaries */')
+      IF ( useOBCSSponge ) THEN
+       CALL WRITE_0D_L( OBCSsponge_N,   INDEX_NONE,
+     & 'OBCSSponge_N =', '  /* use sponge for northern boundary */')
+       CALL WRITE_0D_L( OBCSsponge_S,   INDEX_NONE,
+     & 'OBCSSponge_S =', '  /* use sponge for southern boundary */')
+       CALL WRITE_0D_L( OBCSsponge_E,    INDEX_NONE,
+     & 'OBCSSponge_E =', '  /* use sponge for eastern boundary */')
+       CALL WRITE_0D_L( OBCSsponge_W,    INDEX_NONE,
+     & 'OBCSSponge_W =', '  /* use sponge for western boundary */')
+       CALL WRITE_0D_L( OBCSsponge_UatNS,   INDEX_NONE,
+     & 'OBCSSponge_UatNS =', '  /* use u-vel. sponge at N/S bound. */')
+       CALL WRITE_0D_L( OBCSsponge_UatEW,   INDEX_NONE,
+     & 'OBCSSponge_UatEW =', '  /* use u-vel. sponge at E/W bound. */')
+       CALL WRITE_0D_L( OBCSsponge_VatNS,   INDEX_NONE,
+     & 'OBCSSponge_VatNS =', '  /* use v-vel. sponge at N/S bound. */')
+       CALL WRITE_0D_L( OBCSsponge_UatEW,   INDEX_NONE,
+     & 'OBCSSponge_VatEW =', '  /* use v-vel. sponge at E/W bound. */')
+       CALL WRITE_0D_L( OBCSsponge_Theta,   INDEX_NONE,
+     & 'OBCSSponge_Theta =', '  /* use sponge for Theta. */')
+       CALL WRITE_0D_L( OBCSsponge_Salt,   INDEX_NONE,
+     & 'OBCSSponge_Salt =', '  /* use sponge for salinity. */')
+       CALL WRITE_0D_L( useLinearSponge,   INDEX_NONE,
+     & 'useLinearSponge =', '  /* use linear sponge. */')
+       CALL WRITE_0D_I( spongeThickness, INDEX_NONE,
+     & 'spongeThickness =',
+     & ' /* number grid points in sponge */')
+       CALL WRITE_0D_RS( Urelaxobcsinner, INDEX_NONE,
+     &  'Urelaxobcsinner =',
+     & ' /* innermost relaxation time scale, u-velocity ( s ). */')
+       CALL WRITE_0D_RS( Urelaxobcsbound, INDEX_NONE,
+     &  'Urelaxobcsbound =',
+     & ' /* boudnary relaxation time scale, u-velocity ( s ). */')
+       CALL WRITE_0D_RS( Vrelaxobcsinner, INDEX_NONE,
+     &  'Vrelaxobcsinner =',
+     & ' /* innermost relaxation time scale, v-velocity ( s ). */')
+       CALL WRITE_0D_RS( Vrelaxobcsbound, INDEX_NONE,
+     &  'Vrelaxobcsbound =',
+     & ' /* boundary relaxation time scale, v-velocity ( s ). */')
+      ENDIF
+C
       ln = ILNBLNK(insideOBmaskFile)
       IF ( ln.GT.0 ) THEN
         CALL WRITE_0D_C( insideOBmaskFile, ln, INDEX_NONE,
@@ -157,7 +243,15 @@ C--   Print OBCS set-up summary:
        ENDDO
       ENDIF
 
-      WRITE(msgBuf,'(A)') 'OBCS_CHECK: end summary.'
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of OBCS config. summary'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)

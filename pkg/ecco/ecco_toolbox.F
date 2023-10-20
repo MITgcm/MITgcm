@@ -112,12 +112,7 @@ c--   Determine the model-data difference mask
         DO k = 1,nLev
          DO j = 1,sNy
           DO i = 1,sNx
-#ifdef ECCO_CTRL_DEPRECATED
-           difMask(i,j,k,bi,bj) = cosphi(i,j,bi,bj)
-     &                          * localMask(i,j,k,bi,bj)
-#else
            difMask(i,j,k,bi,bj) = localMask(i,j,k,bi,bj)
-#endif
            IF ( localObs(i,j,k,bi,bj) .LT. spMinLoc .OR.
      &          localObs(i,j,k,bi,bj) .GT. spMaxLoc .OR.
      &          localObs(i,j,k,bi,bj) .EQ. spzeroLoc ) THEN

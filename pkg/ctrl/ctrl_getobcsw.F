@@ -32,8 +32,8 @@ c#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#include "CTRL.h"
+#include "CTRL_DUMMY.h"
 #include "CTRL_OBCS.h"
 #include "optim.h"
 #endif /* ALLOW_OBCSW_CONTROL */
@@ -66,12 +66,13 @@ cgg      _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-      character*(80) fnameobcsw
+      character*(MAX_LEN_FNAM) fnameobcsw
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
       _RL     tmpz (Nr,nSx,nSy)
       _RL     stmp
 #endif
+      integer ilDir
 
 c     == end of interface ==
 
@@ -87,10 +88,13 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
+c     Find ctrlDir (w/o trailing blanks) length
+      ilDir = ilnblnk(ctrlDir)
+
       if (optimcycle .ge. 0) then
        ilobcsw=ilnblnk( xx_obcsw_file )
-       write(fnameobcsw(1:80),'(2a,i10.10)')
-     &      xx_obcsw_file(1:ilobcsw), '.', optimcycle
+       write(fnameobcsw,'(2a,i10.10)')
+     &      ctrlDir(1:ilDir)//xx_obcsw_file(1:ilobcsw), '.', optimcycle
       endif
 
 c--   Get the counters, flags, and the interpolation factor.
@@ -106,7 +110,7 @@ c--   Get the counters, flags, and the interpolation factor.
         call active_read_yz( fnameobcsw, tmpfldyz,
      &                       (obcswcount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcsw_dummy )
+     &                       myThid, xx_obcsw_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -175,7 +179,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
         call active_read_yz( fnameobcsw, tmpfldyz,
      &                       (obcswcount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcsw_dummy )
+     &                       myThid, xx_obcsw_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi

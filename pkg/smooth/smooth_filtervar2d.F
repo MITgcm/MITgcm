@@ -36,12 +36,21 @@ c     == local variables ==
       INTEGER i,j,bi, bj, ii, jj
       INTEGER diLoc,djLoc
       INTEGER nbRand, nbt_in
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS smooth2Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      INTEGER IL
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 c     == end of interface ==
+
+      IL = ILNBLNK( smoothDir )
 
 c --- allow a different mask other than maskC
 c     Note: this is essentially a copy of ctrl_get_mask
@@ -77,8 +86,9 @@ c so this routine does not do anything
       nbt_in=smooth2Dnbt(smoothOpNb)/2
 
 c read smoothing [i.e diffusion] operator:
-      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
-     &    'smooth2Doperator',smoothOpNb
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
+     &      'smooth2Doperator',smoothOpNb
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
      &           1,smooth2D_Kux,1,1,myThid)
       CALL READ_REC_3D_RL(fnamegeneric,smoothprec,
@@ -256,8 +266,9 @@ c compute variance and convert it to normalization factor:
       ENDIF
 
 c write smooth2Dnorm to file:
-      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
-     &    'smooth2Dnorm',smoothOpNb
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
+     &      'smooth2Dnorm',smoothOpNb
       CALL WRITE_REC_3D_RL(fnamegeneric,smoothprec,
      &            1,smooth2Dnorm,1,1,myThid)
       CALL EXCH_XY_RL ( smooth2Dnorm,  myThid )

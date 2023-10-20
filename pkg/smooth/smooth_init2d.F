@@ -21,14 +21,23 @@ Cgf the choices of smooth2Dtype and smooth2Dsize need comments...
       INTEGER myThid
 
       INTEGER i, j, bi, bj
-      CHARACTER*( 80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
+
+      INTEGER IL
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      IL = ILNBLNK( smoothDir )
 
       smooth2DtotTime = smooth2Dnbt(smoothOpNb)*smooth2DdelTime
 
       IF ( (smooth2Dtype(smoothOpNb).NE.0).AND.
      &     (smooth2Dsize(smoothOpNb).EQ.2) ) THEN
-        WRITE(fnamegeneric(1:80),'(1A,I3.3)')
-     &    'smooth2Dscales',smoothOpNb
+        WRITE(fnamegeneric,'(2A,I3.3)')
+     &        smoothDir(1:IL),
+     &        'smooth2Dscales',smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
      &                       1, smooth2D_Lx, 1, 1, myThid )
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
@@ -65,8 +74,9 @@ Cgf the choices of smooth2Dtype and smooth2Dsize need comments...
       CALL EXCH_XY_RL( smooth2D_Kvy, myThid )
 
 C write diffusion operator to file
-      WRITE(fnamegeneric(1:80),'(1A,I3.3)')
-     &    'smooth2Doperator', smoothOpNb
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
+     &      'smooth2Doperator', smoothOpNb
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,
      &                      1, smooth2D_Kux, 1, 1, myThid )
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,

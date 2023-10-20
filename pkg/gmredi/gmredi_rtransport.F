@@ -64,9 +64,9 @@ C     !LOCAL VARIABLES:
 C     i, j    ::  Loop counters
       INTEGER i, j
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act0, act1, act2, act3, act4
-      INTEGER max0, max1, max2, max3
-      INTEGER igadkey, kkey
+C     kkey :: tape key (depends on levels, tiles, and tracers)
+      INTEGER kkey
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
       _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -75,23 +75,15 @@ C     i, j    ::  Loop counters
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      act0 = trIdentity - 1
-      max0 = maxpass
-      act1 = bi - myBxLo(myThid)
-      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-      act2 = bj - myByLo(myThid)
-      max2 = myByHi(myThid) - myByLo(myThid) + 1
-      act3 = myThid - 1
-      max3 = nTx*nTy
-      act4 = ikey_dynamics - 1
-      igadkey = (act0 + 1) + act1*max0
-     &                     + act2*max0*max1
-     &                     + act3*max0*max1*max2
-     &                     + act4*max0*max1*max2*max3
-      kkey = (igadkey-1)*Nr + k
+      kkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
+      kkey = trIdentity + (kkey-1)*maxpass
+      kkey = k + (kkey-1)*Nr
       IF (trIdentity.GT.maxpass) THEN
-       PRINT *, 'ph-pass gmredi_rtrans ', maxpass, trIdentity
-       STOP 'maxpass seems smaller than trIdentity'
+       WRITE(msgBuf,'(A,2I5)')
+     &      'GMREDI_RTRANSPORT: trIdentity > maxpass ',
+     &      trIdentity, maxpass
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_RTRANSPORT'
       ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -166,14 +158,17 @@ C-    Off-diagonal components of vertical flux
 #ifdef GM_BOLUS_ADVEC
       IF (GM_AdvForm .AND. GM_AdvSeparate
      & .AND. .NOT.GM_InMomAsStress) THEN
+C      Since bolus transport is computed as curl of stream-function, needs to
+C      flip sign when using Left-Handed Coordinate system such as P-coordinate
+c      flipSign4LHCoord = -gravitySign
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rTrans(i,j) = (
+         rTrans(i,j) = -gravitySign*(
      &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
-     &                 )*deepFacF(k)
+     &                              )*deepFacF(k)
         ENDDO
        ENDDO
 #ifdef GM_AUTODIFF_EXCESSIVE_STORE

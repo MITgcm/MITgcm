@@ -26,15 +26,24 @@ Cgf for now I focus on the simpler smooth3DtypeH=1 case
       INTEGER myThid
 
       INTEGER i, j, k, bi, bj
-      CHARACTER*(80) fnamegeneric
+      CHARACTER*(MAX_LEN_FNAM) fnamegeneric
       _RL smooth3D_KzMax
+
+      INTEGER IL
+
+c     == functions ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+      IL = ILNBLNK( smoothDir )
 
       smooth3DtotTime = smooth3Dnbt(smoothOpNb)*smooth3DdelTime
 
 C vertical smoothing:
 
       IF ( smooth3DsizeZ(smoothOpNb).EQ.3 ) THEN
-        WRITE(fnamegeneric(1:80),'(1A,I3.3)')
+        WRITE(fnamegeneric,'(2A,I3.3)')
+     &        smoothDir(1:IL),
      &        'smooth3DscalesZ', smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
      &                       Nr, smooth3D_Lz, 1, 1, myThid )
@@ -91,7 +100,8 @@ C avoid excessive vertical smoothing:
 C horizontal smoothing:
 
       IF ( smooth3DsizeH(smoothOpNb).EQ.3 ) THEN
-        WRITE(fnamegeneric(1:80),'(1A,I3.3)')
+        WRITE(fnamegeneric,'(2A,I3.3)')
+     &        smoothDir(1:IL),
      &        'smooth3DscalesH', smoothOpNb
         CALL READ_REC_3D_RL( fnamegeneric, smoothprec,
      &                       Nr, smooth3D_Lx, 1, 1, myThid )
@@ -151,7 +161,8 @@ C is exchange useful here?
 
 C write diffusion operator to file
 
-      WRITE(fnamegeneric(1:80),'(1a,i3.3)')
+      WRITE(fnamegeneric,'(2A,I3.3)')
+     &      smoothDir(1:IL),
      &      'smooth3Doperator', smoothOpNb
       CALL WRITE_REC_3D_RL( fnamegeneric, smoothprec,
      &                      Nr, smooth3D_Kwx, 1, 1, myThid )

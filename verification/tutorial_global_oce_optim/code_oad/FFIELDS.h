@@ -134,10 +134,6 @@ C                       to global-mean surf. flux imbalance ; no-units
       _RS weight2BalanceFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-C     Extra mean heat flux field specific to this experiment
-      COMMON /Mean_qnet/ Qnetm
-      _RS  Qnetm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C- jmc: commented out until corresponding (ghost-like) code apparition
 C     dQdT  :: Thermal relaxation coefficient in W/m^2/degrees
 C              Southwest C-grid tracer point
@@ -272,3 +268,16 @@ C                Units are N/m^2 ;   > 0 increase vVel @ bottom
       _RS  botDragV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C-    Extra mean heat flux field specific to this experiment
+      COMMON /Mean_qnet/ Qnetm
+      _RS  Qnetm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+c  #include "../code_ad/cost_local.h"
+C-    Content of this experiment specific header file above is added here:
+C     Define some local weights specific to this experiment
+C     whfluxm     :: weight for heat flux
+C     wtheta      :: dummy weight for temperature
+      COMMON /COST_LOCAL_WEIGHTS/ whfluxm, wtheta
+      _RL whfluxm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL wtheta ( Nr,nSx,nSy )

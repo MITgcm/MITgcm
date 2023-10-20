@@ -64,29 +64,12 @@ CEOP
        DO bi=myBxLo(myThid), myBxHi(myThid)
 
 c#ifdef ALLOW_AUTODIFF_TAMC
-c          act1 = bi - myBxLo(myThid)
-c          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-c          act2 = bj - myByLo(myThid)
-c          max2 = myByHi(myThid) - myByLo(myThid) + 1
-c          act3 = myThid - 1
-c          max3 = nTx*nTy
-c          act4 = ikey_dynamics - 1
-c          idynkey = (act1 + 1) + act2*max1
-c     &                      + act3*max1*max2
-c     &                      + act4*max1*max2*max3
+c        tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 c#endif /* ALLOW_AUTODIFF_TAMC */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c#ifdef ALLOW_OBCS
-c# ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE rStarFacC(:,:,bi,bj) =
-cCADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-cCADJ STORE rStarFacS(:,:,bi,bj) =
-cCADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-cCADJ STORE rStarFacW(:,:,bi,bj) =
-cCADJ &     comlev1_bibj, key = idynkey, byte = isbyte
-c# endif /* ALLOW_AUTODIFF_TAMC */
 cC-- Apply OBC to rStar_Factor_W,S before updating hFacW,S
 c       IF (useOBCS) THEN
 c        CALL OBCS_APPLY_R_STAR(
