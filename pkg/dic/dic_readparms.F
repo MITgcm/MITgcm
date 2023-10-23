@@ -275,6 +275,10 @@ C-    set parameter default values
 
       IF ( selectCalciteDissolution .EQ. 3 ) THEN
 C     Calcite dissolution rate constant for the Naviaux et al. 2019 scheme
+C      Default values are slightly different from the paper, but consistent with
+C      the Dawin model. Values include a ~1e5 cm2/mol conversion factor for  
+C      specific surface area (SSA) of CaCO3 (e.g. benthic forams or synthetic
+C      calcite), for example, Subhas et al. 2018 (Marine Chemistry).
         IF ( calciteDissolRate(1).EQ.UNSET_RL )
      &       calciteDissolRate(1) = 5.22 _d -9
         IF ( calciteDissolRate(2).EQ.UNSET_RL )

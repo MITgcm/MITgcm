@@ -137,6 +137,8 @@ C     Cosmochem. Acta, and bugfix H/T Oliver Jahn (Keir,s dissolution rate in lo
                 flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
                ELSEIF (selectCalciteDissolution .eq. 3) THEN
 C Use Naviaux et al. 2019, Marine Chemistry dissolution rates
+C  The value of 0.8272 differs slightly from the paper (0.8)), but reduces the  
+C  large discontinuity in dissolution rates between the two states.
                 IF (omegaC(i,j,ko,bi,bj) .GT. 0.8272 _d 0) THEN
                  DissolutionRate = calciteDissolRate(1) * (
      &             (
