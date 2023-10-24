@@ -14,6 +14,9 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_STEEP_ICECAVITY
 # include "STIC_OPTIONS.h"
 #endif
