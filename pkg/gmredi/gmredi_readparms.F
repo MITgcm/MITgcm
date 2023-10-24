@@ -1,4 +1,7 @@
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_READPARMS
@@ -60,6 +63,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Kmin_horiz,
      &          GM_Small_Number, GM_slopeSqCutoff,
      &          GM_Scrit, GM_Sd,
+     &          GM_isoFac_calcK,
      &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &          GM_UseBVP, GM_BVP_cMin, GM_BVP_ModeNumber,
      &          GM_useSubMeso, subMeso_Ceff, subMeso_invTau,
@@ -112,6 +116,7 @@ C--   Default values GM/Redi
       GM_maxTransLay      = 500.
       GM_Scrit            = 0.004 _d 0
       GM_Sd               = 0.001 _d 0
+      GM_isoFac_calcK     = 1. _d 0
       GM_MNC              = useMNC
       GM_iso2dFile        = ' '
       GM_iso1dFile        = ' '
@@ -205,20 +210,46 @@ C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
      &     GM_Visbeck_maxSlope = GM_maxSlope
 
 C     Some constants
-      GM_rMaxSlope = 0.
-      if (GM_maxSlope.NE.0.) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
+      GM_rMaxSlope = 0. _d 0
+      IF (GM_maxSlope.NE.zeroRL) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
 
-      IF (GM_AdvForm) THEN
-        GM_skewflx = 0.
-        GM_advect  = 1.
-        GM_ExtraDiag = GM_Visbeck_alpha.NE.0. .OR. GM_isopycK.NE.0.
-      ELSE
-        GM_skewflx = 1.
-        GM_advect  = 0.
-        GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+C     Set (or reset) some switches:
+      IF ( GM_useLeithQG .AND. viscC2LeithQG.EQ.zeroRL ) THEN
+        WRITE(msgBuf,'(2A,I3)') '** WARNING ** GMREDI_READPARMS: ',
+     &   'switch OFF GM_useLeithQG since viscC2LeithQG = 0'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        GM_useLeithQG = .FALSE.
       ENDIF
-      IF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
-     &     GM_iso1dFile .NE. GM_bol1dFile ) THEN
+
+      IF ( GM_AdvForm ) THEN
+        GM_skewflx = 0. _d 0
+        IF ( GM_K3dRediFile .NE. ' ' ) THEN
+          GM_ExtraDiag = .TRUE.
+        ELSE
+          GM_ExtraDiag = GM_isopycK.NE.zeroRL
+        ENDIF
+#ifdef ALLOW_KAPREDI_CONTROL
+        IF ( useCTRL ) GM_ExtraDiag = .TRUE.
+#endif
+      ELSE
+        GM_skewflx = 1. _d 0
+        IF ( GM_K3dRediFile .NE. ' ' .OR.
+     &       GM_K3dGMFile   .NE. ' ' ) THEN
+          GM_ExtraDiag = GM_K3dRediFile .NE. GM_K3dGMFile
+        ELSEIF ( GM_iso2dFile .NE. GM_bol2dFile .OR.
+     &           GM_iso1dFile .NE. GM_bol1dFile ) THEN
+          GM_ExtraDiag = .TRUE.
+        ELSE
+          GM_ExtraDiag = GM_isopycK.NE.GM_background_K
+        ENDIF
+#if (defined ALLOW_KAPREDI_CONTROL || defined ALLOW_KAPGM_CONTROL )
+        IF ( useCTRL ) GM_ExtraDiag = .TRUE.
+#endif
+      ENDIF
+      IF ( GM_isoFac_calcK .NE. GM_skewflx .AND.
+     &     ( GM_Visbeck_alpha.NE.zeroRL .OR.
+     &       GM_useBatesK3d .OR. GM_useLeithQG ) ) THEN
         GM_ExtraDiag = .TRUE.
       ENDIF
 
