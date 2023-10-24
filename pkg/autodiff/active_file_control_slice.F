@@ -56,7 +56,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -224,7 +224,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -391,7 +391,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -559,7 +559,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -723,7 +723,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -840,7 +840,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -957,7 +957,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename
@@ -1074,7 +1074,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     activeVar_file :: filename

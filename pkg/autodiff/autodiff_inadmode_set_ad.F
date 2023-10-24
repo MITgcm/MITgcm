@@ -3,7 +3,13 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
+CBOP
+C !ROUTINE: ADAUTODIFF_INADMODE_SET
+
+C !INTERFACE:
       SUBROUTINE ADAUTODIFF_INADMODE_SET( myTime, myIter, myThid )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE ADAUTODIFF_INADMODE_SET
 C     *==========================================================*
@@ -16,18 +22,16 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_SEAICE
-#include "SEAICE_SIZE.h"
-#include "SEAICE_PARAMS.h"
+# include "SEAICE_SIZE.h"
+# include "SEAICE_PARAMS.h"
 #endif
 #ifdef ALLOW_CTRL
-#include "ctrl.h"
+# include "CTRL.h"
 #endif
-#ifdef ALLOW_AUTODIFF_MONITOR
-# ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
-# endif
-#endif /* ALLOW_AUTODIFF_MONITOR */
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAGNOSTICS_SIZE.h"
+# include "DIAGNOSTICS.h"
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime    :: Current time in simulation
@@ -39,17 +43,25 @@ C     myThid    :: my Thread Id number
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_DIAGNOSTICS
+      _RL wrTime
+      INTEGER wrIter
+#endif /* ALLOW_DIAGNOSTICS */
+CEOP
 
-#ifdef ALLOW_AUTODIFF_MONITOR
-# ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp ) THEN
-        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-      ENDIF
-# endif /* ALLOW_DIAGNOSTICS */
-#endif /* ALLOW_AUTODIFF_MONITOR */
-
+C--   Set backward-sweep switch:
       inAdMode  = .TRUE.
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+C-    Consistent with S/R DIAGNOSTICS_WRITE_ADJ and where both S/R are called:
+        wrIter = myIter - 1
+        wrTime = myTime - deltaTClock
+        CALL DIAGNOSTICS_SWITCH_ONOFF( wrTime, wrIter, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C--   Update some pkg and scheme switches:
       useKPP    = useKPPinAdMode
       useGMRedi = useGMRediInAdMode
       useSEAICE = useSEAICEinAdMode
@@ -70,6 +82,7 @@ C     SIregFacInAd = UNSET_RL by default, so we need to check this here
       viscFacAdj=viscFacInAd
 
       IF ( debugLevel.GE.debLevC ) THEN
+C--   Print status of some switches:
 
        WRITE(msgBuf,'(A,L5)')
      &      'S/R ADAUTODIFF_INADMODE_SET: useKPP    =', useKPP
@@ -123,6 +136,7 @@ C     SIregFacInAd = UNSET_RL by default, so we need to check this here
        ENDIF
 #endif /* ALLOW_SEAICE */
 
+C--   end printing switch status (if debugLevel >= debLevC).
       ENDIF
 
       RETURN

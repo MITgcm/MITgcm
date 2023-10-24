@@ -27,7 +27,7 @@ C     == Global variables ===
 # ifdef ALLOW_AUTODIFF_TAMC
 #  include "tamc.h"
 # endif
-# include "ctrl.h"
+# include "CTRL.h"
 # include "optim.h"
 #endif
 

@@ -3,7 +3,7 @@
       subroutine ctrl_set_unpack_xy(
      &     lxxadxx, cunit, ivartype, PrecondScalar,
      &     fname, masktype, weighttype,
-     &     nwetglobal, mythid )
+     &     nwetglobal, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_unpack_xy
@@ -23,7 +23,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==
@@ -36,7 +36,7 @@ c     == routine arguments ==
       character*(  9) masktype
       character*(MAX_LEN_FNAM) weighttype
       integer nwetglobal(Nr)
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external ==
@@ -111,7 +111,7 @@ c     Initialise temporary file
       enddo
 
 c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
       if ( doPackDiag ) then
          if ( lxxadxx ) then
@@ -131,17 +131,17 @@ c--   Only the master thread will do I/O.
          endif
 
          reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
-         call mdsfindunit( cunit2, mythid )
+         call mdsfindunit( cunit2, myThid )
          open( cunit2, file=cfile2, status='unknown',
      &        access='direct', recl=reclen )
-         call mdsfindunit( cunit3, mythid )
+         call mdsfindunit( cunit3, myThid )
          open( cunit3, file=cfile3, status='unknown',
      &        access='direct', recl=reclen )
       endif
 
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
-     &     Nr, globmsk, 1, mythid)
+     &     Nr, globmsk, 1, myThid)
 
       nrec_nl=int(ncvarrecs(ivartype)/Nr)
       do irec = 1, nrec_nl
@@ -232,7 +232,7 @@ cph)
 
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &                             NR, globfld3d,
-     &                             irec,  optimcycle, mythid)
+     &                             irec,  optimcycle, myThid)
 
       enddo
 
@@ -324,7 +324,7 @@ cph)
 
          call MDSWRITEFIELD_2D_GL( fname, ctrlprec, 'RL',
      &                             1, globfld3d(1,1,1,1,1,1,1),
-     &                             irec,  optimcycle, mythid)
+     &                             irec,  optimcycle, myThid)
 
       enddo
 
@@ -333,7 +333,7 @@ cph)
          close ( cunit3 )
       endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
@@ -341,7 +341,7 @@ c-- part 1: preliminary reads and definitions
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
+     &    .FALSE., .FALSE., 0 , myThid, dummy)
 #else
       CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
 #endif
@@ -364,7 +364,7 @@ c-- part 2: loop over records
 c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
         IF ( myProcId .eq. 0 ) THEN
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
@@ -376,7 +376,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
          read(cunit) filej
          read(cunit) filei
         ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif /* ALLOW_ADMTLM */
 
@@ -389,7 +389,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
      &                       Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
          cbuffindex = nwetglobal(k)
         IF ( myProcId .eq. 0 ) THEN
 
@@ -422,7 +422,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
         ENDDO
 
         ENDIF
-        _END_MASTER( mythid )
+        _END_MASTER( myThid )
         _BARRIER
 
         CALL BAR2( myThid )
@@ -463,14 +463,14 @@ c-- 2.2: normalize field if needed
 c-- 2.3:
       if ( doPackDiag ) then
       call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &        1, fld2dNodim, irec, 0, mythid)
+     &        1, fld2dNodim, irec, 0, myThid)
       call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
       endif
 
 c-- 2.4:
       call WRITE_REC_3D_RL( fname, ctrlprec,
-     &        1, fld2dDim, irec, 0, mythid)
+     &        1, fld2dDim, irec, 0, myThid)
 
       enddo !do irec = 1, ncvarrecs(ivartype)
 

@@ -38,7 +38,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h
