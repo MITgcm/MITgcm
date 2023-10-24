@@ -41,7 +41,7 @@ C in the include statement
 #include "STREAMICE.h"
 
 C     !INPUT/OUTPUT ARGUMENTS
-      INTEGER myThid
+c     INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
 
@@ -58,4 +58,3 @@ C     !INPUT/OUTPUT ARGUMENTS
 #endif
       RETURN
       END
-

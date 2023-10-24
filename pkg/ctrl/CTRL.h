@@ -1,51 +1,52 @@
-c     ==================================================================
-c     HEADER CONTROLVARS
-c     ==================================================================
-c
-c     o Control variables of the ECCO state estimation tool.
-c
-c     Depending on the specific problem to be studied users will have to
-c     modify this header file.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     ==================================================================
-c     HEADER CONTROLVARS ctrl.h
-c     ==================================================================
+CBOP
+C     !ROUTINE: CTRL.h
+C     !INTERFACE:
+C     #include "CTRL.h"
 
-      integer     maxcvars
+C     !DESCRIPTION:
+C     *================================================================*
+C     | CTRL.h
+C     | o Header file defining control variables of the ECCO state
+C     |   estimation tool.
+C     | o Depending on the specific problem to be studied users will
+C     |   have to modify this header file.
+C     | o started: Christian Eckert eckert@mit.edu  30-Jun-1999
+C     *================================================================*
+CEOP
+
+      INTEGER     maxcvars
 #if (defined (CTRL_SET_OLD_MAXCVARS_30))
-      parameter ( maxcvars = 30 )
+      PARAMETER ( maxcvars = 30 )
 #elif (defined (CTRL_SET_OLD_MAXCVARS_40))
-      parameter ( maxcvars = 40 )
+      PARAMETER ( maxcvars = 40 )
 #elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      parameter ( maxcvars = 400 )
+      PARAMETER ( maxcvars = 400 )
 #else
-      parameter ( maxcvars = 60 )
+      PARAMETER ( maxcvars = 60 )
 #endif
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be
 cph set to 64 by default.
-      integer     ctrlprec
-      common /controlparams_i/ ctrlprec
+      INTEGER     ctrlprec
+      COMMON /controlparams_i/ ctrlprec
 
 #ifdef ALLOW_ADMTLM
-      integer admtlmrec
-      parameter( admtlmrec = Nx*Ny*(4*Nr+1) )
-      common / controlvars_admtlm_r /
+      INTEGER admtlmrec
+      PARAMETER( admtlmrec = Nx*Ny*(4*Nr+1) )
+      COMMON /controlvars_admtlm_r/
      &                       cbuffGlobal
       _RL cbuffGlobal( admtlmrec )
 #endif
 
-      common /controlparams_r/
+      COMMON /controlparams_r/
      &                       delZexp,
      &                       forcingPrecond
 
       _RL delZexp
       _RL forcingPrecond
 
-      common /controlparams_c/
+      COMMON /controlparams_c/
      &                       ctrlDir
 
       CHARACTER*(MAX_LEN_FNAM) ctrlDir
@@ -61,7 +62,7 @@ C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
 
-      common /controlvars_l /
+      COMMON /controlvars_l /
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -72,17 +73,17 @@ C                            (only used in pkg/autodiff ...)
      &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD
 
-      logical doInitXX
-      logical doAdmTlm
-      logical doPackDiag
-      logical doZscaleUnpack
-      logical doZscalePack
-      logical doMainUnpack
-      logical doMainPack
-      logical doSinglePrecTapelev
-      logical doAdmtlmBypassAD
+      LOGICAL doInitXX
+      LOGICAL doAdmTlm
+      LOGICAL doPackDiag
+      LOGICAL doZscaleUnpack
+      LOGICAL doZscalePack
+      LOGICAL doMainUnpack
+      LOGICAL doMainPack
+      LOGICAL doSinglePrecTapelev
+      LOGICAL doAdmtlmBypassAD
 
-      common /controlvars_i/
+      COMMON /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
      &                       ncvarindex,
@@ -101,40 +102,40 @@ C                            (only used in pkg/autodiff ...)
      &                       nwetwglobal,
      &                       nwetvglobal,
      &                       nbuffglobal
-      integer nvartype
-      integer nvarlength
-      integer ncvarindex    ( maxcvars )
-      integer ncvarrecs     ( maxcvars )
-      integer ncvarrecstart ( maxcvars )
-      integer ncvarrecsend  ( maxcvars )
-      integer ncvarxmax     ( maxcvars )
-      integer ncvarymax     ( maxcvars )
-      integer ncvarnrmax    ( maxcvars )
-      integer nwetctile     ( nSx,nSy,Nr )
-      integer nwetstile     ( nSx,nSy,Nr )
-      integer nwetwtile     ( nSx,nSy,Nr )
-      integer nwetvtile     ( nSx,nSy,Nr )
-      integer nwetcglobal     ( Nr )
-      integer nwetsglobal     ( Nr )
-      integer nwetwglobal     ( Nr )
-      integer nwetvglobal     ( Nr )
-      integer nbuffglobal
+      INTEGER nvartype
+      INTEGER nvarlength
+      INTEGER ncvarindex    ( maxcvars )
+      INTEGER ncvarrecs     ( maxcvars )
+      INTEGER ncvarrecstart ( maxcvars )
+      INTEGER ncvarrecsend  ( maxcvars )
+      INTEGER ncvarxmax     ( maxcvars )
+      INTEGER ncvarymax     ( maxcvars )
+      INTEGER ncvarnrmax    ( maxcvars )
+      INTEGER nwetctile     ( nSx,nSy,Nr )
+      INTEGER nwetstile     ( nSx,nSy,Nr )
+      INTEGER nwetwtile     ( nSx,nSy,Nr )
+      INTEGER nwetvtile     ( nSx,nSy,Nr )
+      INTEGER nwetcglobal     ( Nr )
+      INTEGER nwetsglobal     ( Nr )
+      INTEGER nwetwglobal     ( Nr )
+      INTEGER nwetvglobal     ( Nr )
+      INTEGER nbuffglobal
 
 #ifdef ALLOW_SHELFICE
-      common /controlvars_i_shifwflx/
+      COMMON /controlvars_i_shifwflx/
      &     nwetitile, nwetiglobal, filenWetiGlobal
-      integer nwetitile     ( nSx,nSy,Nr )
-      integer nwetiglobal     ( Nr )
-      integer filenWetiGlobal(Nr)
+      INTEGER nwetitile     ( nSx,nSy,Nr )
+      INTEGER nwetiglobal     ( Nr )
+      INTEGER filenWetiGlobal(Nr)
 #endif /* ALLOW_SHELFICE */
 
-      common /controlvars_c/
+      COMMON /controlvars_c/
      &                       ncvargrd
      &                     , yadprefix
-      character*(1) ncvargrd(maxcvars)
-      character*(2) yadprefix
+      CHARACTER*(1) ncvargrd(maxcvars)
+      CHARACTER*(2) yadprefix
 
-      common /controlvec_header_i/
+      COMMON /controlvec_header_i/
      &        filenvartype,
      &        filenvarlength,
      &        fileOptimCycle,
@@ -155,43 +156,43 @@ C                            (only used in pkg/autodiff ...)
      &        filencvarxmax,
      &        filencvarymax,
      &        filencvarnrmax
-      integer        filenvartype
-      integer        filenvarlength
-      integer        fileOptimCycle
-      integer        filencbuffindex
-      integer        fileIg
-      integer        fileJg
-      integer        fileI
-      integer        fileJ
-      integer        filensx
-      integer        filensy
-      integer        filek
-      integer        filenWetcGlobal(Nr)
-      integer        filenWetsGlobal(Nr)
-      integer        filenWetwGlobal(Nr)
-      integer        filenWetvGlobal(Nr)
-      integer        filencvarindex(maxcvars)
-      integer        filencvarrecs(maxcvars)
-      integer        filencvarxmax(maxcvars)
-      integer        filencvarymax(maxcvars)
-      integer        filencvarnrmax(maxcvars)
+      INTEGER filenvartype
+      INTEGER filenvarlength
+      INTEGER fileOptimCycle
+      INTEGER filencbuffindex
+      INTEGER fileIg
+      INTEGER fileJg
+      INTEGER fileI
+      INTEGER fileJ
+      INTEGER filensx
+      INTEGER filensy
+      INTEGER filek
+      INTEGER filenWetcGlobal(Nr)
+      INTEGER filenWetsGlobal(Nr)
+      INTEGER filenWetwGlobal(Nr)
+      INTEGER filenWetvGlobal(Nr)
+      INTEGER filencvarindex(maxcvars)
+      INTEGER filencvarrecs(maxcvars)
+      INTEGER filencvarxmax(maxcvars)
+      INTEGER filencvarymax(maxcvars)
+      INTEGER filencvarnrmax(maxcvars)
 
-      common /controlvec_header_r/
+      COMMON /controlvec_header_r/
      &               filefc
       _RL            filefc
 
-      common /controlvec_header_c/
+      COMMON /controlvec_header_c/
      &        fileYctrlid,
      &        filencvargrd
-      character*(10) fileYctrlid
-      character*( 1) filencvargrd(maxcvars)
+      CHARACTER*(10) fileYctrlid
+      CHARACTER*( 1) filencvargrd(maxcvars)
 
 c     Define unit weight as a placeholder
-      common /ctrl_weights_unit_r/
+      COMMON /ctrl_weights_unit_r/
      &                        wunit
       _RL wunit     (Nr,nSx,nSy)
 
-      common /packnames_c/
+      COMMON /packnames_c/
      &                      yadmark,
      &                      ctrlname,
      &                      costname,
@@ -201,25 +202,25 @@ c     Define unit weight as a placeholder
      &                      yctrlid,
      &                      yctrlposunpack,
      &                      yctrlpospack
-      character*2 yadmark
-      character*9 ctrlname
-      character*9 costname
-      character*9 scalname
-      character*9 maskname
-      character*9 metaname
-      character*10 yctrlid
-      character*4 yctrlposunpack
-      character*4 yctrlpospack
+      CHARACTER*2 yadmark
+      CHARACTER*9 ctrlname
+      CHARACTER*9 costname
+      CHARACTER*9 scalname
+      CHARACTER*9 maskname
+      CHARACTER*9 metaname
+      CHARACTER*10 yctrlid
+      CHARACTER*4 yctrlposunpack
+      CHARACTER*4 yctrlpospack
 
 #ifdef ALLOW_ADMTLM
-      integer          maxm, maxn
-      parameter       ( maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1) )
+      INTEGER          maxm, maxn
+      PARAMETER       ( maxm = Nx*Ny*(4*Nr+1), maxn=Nx*Ny*(4*Nr+1) )
 
-      common /admtlm_i/ nveccount
-      integer nveccount
+      COMMON /admtlm_i/ nveccount
+      INTEGER nveccount
 
-      common /admtlm_r/ phtmpadmtlm
-      double precision phtmpadmtlm(maxn)
+      COMMON /admtlm_r/ phtmpadmtlm
+      DOUBLE PRECISION phtmpadmtlm(maxn)
 #endif
 
 c     Control variables:
@@ -227,7 +228,7 @@ c     ==================
 c
 #ifdef ALLOW_OPENAD
 C
-      common /controlvars_r_openad/
+      COMMON /controlvars_r_openad/
      &        xx_place_holder
 # ifdef ALLOW_GENARR2D_CONTROL
      &      , xx_genarr2d
@@ -248,6 +249,5 @@ C
 # endif
 
 #endif
-c     ==================================================================
-c     END OF HEADER CONTROLVARS ctrl.h
-c     ==================================================================
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
