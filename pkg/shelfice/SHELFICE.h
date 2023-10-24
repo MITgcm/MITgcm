@@ -166,13 +166,13 @@ CEOP
       _RL shelficeLoadAnomaly   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL shelficeForcingS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiCDragFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL shiDragQuadFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiCDragFld           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL shiDragQuadFld        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
        COMMON /SHELFICE_GAMMA_RL/
      &     shiTransCoeffT, shiTransCoeffS
-       _RL shiTransCoeffT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL shiTransCoeffS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL shiTransCoeffT       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL shiTransCoeffS       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
        COMMON /SHELFICE_FIELDS_RS/
      &     R_shelfIce,

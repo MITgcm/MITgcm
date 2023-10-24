@@ -83,7 +83,6 @@ C     kIcf           :: index of the bottommost ice front cell (2D)
        _RL shiTransCoeffS3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-
       COMMON /STIC_FIELDS_RS/
      &     R_stic, sticfLength,
      &     icfHeatFlux, icfFreshWaterFlux,

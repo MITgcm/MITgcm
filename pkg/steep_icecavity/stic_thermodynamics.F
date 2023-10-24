@@ -574,7 +574,6 @@ C     In units of kg/s  -- multiplication of area required first
         ENDDO /* bi */
       ENDDO /* bj */
 
-
 C--  Calculate new loading anomaly (in case the ice-shelf mass was updated)
 #ifndef ALLOW_AUTODIFF
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
@@ -682,7 +681,6 @@ C     Friction velocity
        IF ( SHELFICEuseGammaFrict )
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
-
 
       ENDIF
 #endif

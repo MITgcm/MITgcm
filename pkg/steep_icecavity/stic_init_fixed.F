@@ -3,7 +3,6 @@
 # include "SHELFICE_OPTIONS.h"
 #endif
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: STIC_INIT_FIXED

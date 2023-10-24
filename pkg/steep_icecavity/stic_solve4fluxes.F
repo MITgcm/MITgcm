@@ -87,7 +87,6 @@ CEOP
       EXTERNAL SW_TEMP
 #endif
 
-
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL thetaFreeze, saltFreeze
