@@ -1,9 +1,9 @@
 
-c ECCO_CPPOPTIONS used to affect maxcvars 
+c ECCO_CPPOPTIONS used to affect maxcvars
 c and def ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
 c#include ECCO_CPPOPTIONS.h
 
-c CTRL_OPTIONS affects maxcvars and may def 
+c CTRL_OPTIONS affects maxcvars and may def
 c ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
 #include "CTRL_OPTIONS.h"
 
@@ -41,8 +41,8 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ctrl.h"
-#include "OPTIM.h"
+#include "CTRL.h"
+#include "optim.h"
 #include "minimization.h"
 
 c     == routine arguments ==
@@ -196,12 +196,12 @@ cph      if (lheaderonly) then
          print *, 'pathei: filejG ', filejG
          print *, 'pathei: filensx ', filensx
          print *, 'pathei: filensy ', filensy
-         
-         print *, 'pathei: nWetcGlobal ', 
+
+         print *, 'pathei: nWetcGlobal ',
      &        (nWetcGlobal(k),  k=1,nr)
-         print *, 'pathei: nWetsGlobal ', 
+         print *, 'pathei: nWetsGlobal ',
      &        (nWetsGlobal(k),  k=1,nr)
-         print *, 'pathei: nWetwGlobal ', 
+         print *, 'pathei: nWetwGlobal ',
      &        (nWetwGlobal(k),  k=1,nr)
          print *, 'pathei: nWetvGlobal ',
      &        (nWetvGlobal(k),  k=1,nr)
@@ -233,17 +233,17 @@ cph      if (lheaderonly) then
      &         (nWetobcseGlo(k,iobcs), k=1,nr)
          enddo
 #endif
-         print *, 'pathei: ncvarindex ', 
+         print *, 'pathei: ncvarindex ',
      &        (ncvarindex(i), i=1,maxcvars)
-         print *, 'pathei: ncvarrecs ', 
+         print *, 'pathei: ncvarrecs ',
      &        (ncvarrecs(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarxmax ', 
+         print *, 'pathei: ncvarxmax ',
      &        (ncvarxmax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarymax ', 
+         print *, 'pathei: ncvarymax ',
      &        (ncvarymax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarnrmax ', 
+         print *, 'pathei: ncvarnrmax ',
      &        (ncvarnrmax(i), i=1,maxcvars)
-         print *, 'pathei: ncvargrd ', 
+         print *, 'pathei: ncvargrd ',
      &        (ncvargrd(i),   i=1,maxcvars)
 cph      end if
 cph)
@@ -258,7 +258,7 @@ cph         print*,'              input optim  cycle = ',filenopt
 cph         print*
 cph         stop   ' ... stopped in READ_HEADER.'
 cph      endif
-      
+
       if ( (fileiG .ne. biG) .or. (filejG .ne. bjG) ) then
          print*
          print*,' READ_HEADER: Tile indices of loop and data '
@@ -270,7 +270,7 @@ cph      endif
          print*
          stop   ' ... stopped in READ_HEADER.'
       endif
-      
+
       if ( (filensx .ne. nsx) .or. (filensy .ne. nsy) ) then
          print*
          print*,' READ_HEADER: Numbers of tiles do not match.'
@@ -309,6 +309,7 @@ cph           do bi = 1,nsx
              else if (ncvargrd(icvar) .eq. 'i') then
               cbuffindex = nWetiGlobal(k)
 #endif
+#ifdef ALLOW_OBCS_CONTROL
 cgg(   O.B. points have the grid mask "m".
              else if (ncvargrd(icvar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.
@@ -316,7 +317,7 @@ cgg    From "icvrec", calculate what iobcs must be.
               igg  = int(gg)
               iobcs= icvrec - igg*nobcs
 #ifdef ALLOW_OBCSN_CONTROL
-              if (icvar .eq. 11) then                    
+              if (icvar .eq. 11) then
                cbuffindex = nWetobcsnGlo(k,iobcs)
               endif
 #endif
@@ -324,7 +325,7 @@ cgg    From "icvrec", calculate what iobcs must be.
               if (icvar .eq. 12) then
                cbuffindex = nWetobcssGlo(k,iobcs)
               endif
-#endif 
+#endif
 #ifdef ALLOW_OBCSW_CONTROL
               if (icvar .eq. 13) then
                cbuffindex = nWetobcswGlo(k,iobcs)
@@ -336,13 +337,14 @@ cgg    From "icvrec", calculate what iobcs must be.
               endif
 #endif
 cgg)
+#endif /* ALLOW_OBCS_CONTROL */
              endif
              if ( icvoffset + cbuffindex .gt. nvarlength ) then
               print*
               print *, ' ERROR:'
               print *, ' There are at least ', icvoffset+cbuffindex,
      &             ' records in '//fname(1:28)//'.'
-              print *, ' This is more than expected from nvarlength =', 
+              print *, ' This is more than expected from nvarlength =',
      &             nvarlength, '.'
               print *, ' Something is wrong in the computation of '//
      &             'the wet points or'
@@ -370,12 +372,12 @@ cph          enddo
          enddo
         endif
        enddo
-         
+
       else
 
 c--   Assign the number of control variables.
        nn = nvarlength
-         
+
       endif
 
       close( funit )

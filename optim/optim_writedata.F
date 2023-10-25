@@ -13,7 +13,7 @@ c ALLOW_OBCSN_CONTROL etc (OBCS masks etc)
      I                       lheaderonly,
      I                       ff,
      I                       vv
-     &                     ) 
+     &                     )
 
 c     ==================================================================
 c     SUBROUTINE optim_writedata
@@ -38,8 +38,8 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "ctrl.h"
-#include "OPTIM.h"
+#include "CTRL.h"
+#include "optim.h"
 #include "minimization.h"
 
 c     == routine arguments ==
@@ -116,26 +116,26 @@ cph(
          print *, 'pathei: jG ', bjG
          print *, 'pathei: nsx ', nsx
          print *, 'pathei: nsy ', nsy
-         
-         print *, 'pathei: nWetcGlobal ', 
+
+         print *, 'pathei: nWetcGlobal ',
      &        (nWetcGlobal(k), k=1,nr)
-         print *, 'pathei: nWetsGlobal ', 
+         print *, 'pathei: nWetsGlobal ',
      &        (nWetsGlobal(k), k=1,nr)
-         print *, 'pathei: nWetwGlobal ', 
+         print *, 'pathei: nWetwGlobal ',
      &        (nWetwGlobal(k), k=1,nr)
-         print *, 'pathei: nWetvGlobal ', 
+         print *, 'pathei: nWetvGlobal ',
      &        (nWetvGlobal(k), k=1,nr)
-         print *, 'pathei: ncvarindex ', 
+         print *, 'pathei: ncvarindex ',
      &        (ncvarindex(i), i=1,maxcvars)
-         print *, 'pathei: ncvarrecs ', 
+         print *, 'pathei: ncvarrecs ',
      &        (ncvarrecs(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarxmax ', 
+         print *, 'pathei: ncvarxmax ',
      &        (ncvarxmax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarymax ', 
+         print *, 'pathei: ncvarymax ',
      &        (ncvarymax(i),  i=1,maxcvars)
-         print *, 'pathei: ncvarnrmax ', 
+         print *, 'pathei: ncvarnrmax ',
      &        (ncvarnrmax(i), i=1,maxcvars)
-         print *, 'pathei: ncvargrd ', 
+         print *, 'pathei: ncvargrd ',
      &        (ncvargrd(i),   i=1,maxcvars)
 cph)
 
@@ -208,13 +208,14 @@ cph                  do bi = 1,nsx
                            cbuffindex = nWetiGlobal(k)
 #endif
 cgg(   O.B. points have the grid mask "m".
+#ifdef ALLOW_OBCS_CONTROL
                         else if (ncvargrd(icvar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.
                           gg   = (icvrec-1)/nobcs
                           igg  = int(gg)
                           iobcs= icvrec - igg*nobcs
 #ifdef ALLOW_OBCSN_CONTROL
-                          if (icvar .eq. 11) then                    
+                          if (icvar .eq. 11) then
                              cbuffindex = nWetobcsnGlo(k,iobcs)
                           endif
 #endif
@@ -222,7 +223,7 @@ cgg    From "icvrec", calculate what iobcs must be.
                           if (icvar .eq. 12) then
                              cbuffindex = nWetobcssGlo(k,iobcs)
                           endif
-#endif 
+#endif
 #ifdef ALLOW_OBCSW_CONTROL
                           if (icvar .eq. 13) then
                              cbuffindex = nWetobcswGlo(k,iobcs)
@@ -233,6 +234,7 @@ cgg    From "icvrec", calculate what iobcs must be.
                              cbuffindex = nWetobcseGlo(k,iobcs)
                           endif
 #endif
+#endif /* ALLOW_OBCS_CONTROL */
                         endif
 cgg)
                         if (cbuffindex .gt. 0) then
@@ -262,7 +264,3 @@ cph)
 
       return
       end
-
-
-
-

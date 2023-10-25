@@ -75,8 +75,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ctrl.h"
-#include "OPTIM.h"
+#include "CTRL.h"
+#include "optim.h"
 #include "minimization.h"
 #include "CTRL_OBCS.h"
 #ifndef ECCO_CTRL_DEPRECATED
