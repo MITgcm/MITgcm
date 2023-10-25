@@ -31,7 +31,7 @@ c     == global variables ==
 
 #include "CTRL.h"
 #include "CTRL_OBCS.h"
-#include "OPTIM.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 

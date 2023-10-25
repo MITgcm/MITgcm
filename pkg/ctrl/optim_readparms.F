@@ -23,7 +23,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "OPTIM.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
       integer mythid
@@ -34,7 +34,23 @@ c     this is a dummy parameter that is never used; it is introduced here
 c     so that we can have compatible namelists between mitgmcuv_ad and
 c     optim.x compiled from optim_m1qn3
       _RL dfminFrac
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C     These variables were formerly defined in optim.h, but they are
+C     only used in the offline optimization, but never within the
+C     MITgcm.  packages. We define them here locally to allow to keep
+C     the namelist intact.
+      INTEGER nvars
+      INTEGER numiter
+      INTEGER nfunc
+      INTEGER iprint
+      INTEGER nupdate
+      _RL epsf
+      _RL epsx
+      _RL fmin
+      _RL epsg
+      _RL eps
+      LOGICAL nondimcontrol
 
 c     == end of interface ==
 

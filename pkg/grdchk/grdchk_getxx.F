@@ -45,7 +45,7 @@ C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
 #include "GRDCHK.h"
-#include "OPTIM.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 

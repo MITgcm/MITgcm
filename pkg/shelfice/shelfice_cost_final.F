@@ -32,7 +32,7 @@ C     == Global variables ===
 #ifdef ALLOW_COST
 # include "cost.h"
 # ifndef ALLOW_OPENAD
-#  include "OPTIM.h"
+#  include "OPTIMCYCLE.h"
 # endif
 #endif
 

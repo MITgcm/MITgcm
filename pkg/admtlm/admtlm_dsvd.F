@@ -144,7 +144,7 @@ C     == Global variables ===
 #  include "tamc.h"
 # endif
 # include "CTRL.h"
-# include "OPTIM.h"
+# include "OPTIMCYCLE.h"
 # include "cost.h"
 # include "adcost.h"
 # include "g_cost.h"

@@ -596,7 +596,7 @@ C <<-- OpenAD
 
 #ifdef ALLOW_CTRL
 # include "CTRL.h"
-# include "OPTIM.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_GENARR.h"
 #endif
 
