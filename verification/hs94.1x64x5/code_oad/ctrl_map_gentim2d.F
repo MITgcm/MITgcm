@@ -24,7 +24,7 @@ C     === Global variables ===
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
-#include "OPTIM.h"
+#include "OPTIMCYCLE.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"
 #endif
