@@ -140,14 +140,14 @@ C-----------------------------------------------------------------------
      &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
       CALL DUMP_ADJ_XY( dumRS, adhsnow, 'ADJhsnow', 'ADJhsnow.',
      &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C     IF (SEAICEuseDYNAMICS) THEN
       CALL DUMP_ADJ_XY_UV(
      &     dumRS, aduice, 'ADJuice ', 'ADJuice.',
      &     dumRS, advice, 'ADJvice ', 'ADJvice.',
      &     34, doDump, dumpAdRecSi, myTime, myIter, myThid)
 C     ENDIF
-# endif /* SEAICE_ALLOW_DYNAMICS */
+# endif
 
       IF ( doDump ) THEN
 #ifdef ALLOW_MNC
@@ -170,7 +170,7 @@ c
           CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         var2Du, myThid)
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
      &         var2Du, var2Dv, 1, 34, myThid )
@@ -187,7 +187,7 @@ C          ENDIF
      &         adheff, myThid)
           CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
      &         adhsnow, myThid)
-# ifdef SEAICE_ALLOW_DYNAMICS
+# if ( defined SEAICE_CGRID || defined SEAICE_BGRID_DYNAMICS )
 C          IF (SEAICEuseDYNAMICS) THEN
           CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
      &         aduice, myThid)

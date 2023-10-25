@@ -31,8 +31,8 @@ c#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#include "CTRL.h"
+#include "CTRL_DUMMY.h"
 #include "optim.h"
 #include "CTRL_OBCS.h"
 #endif /* ALLOW_OBCSE_CONTROL */
@@ -65,7 +65,7 @@ cgg      _RL maskyz   (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-      character*(80) fnameobcse
+      character*(MAX_LEN_FNAM) fnameobcse
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
       _RL     tmpz (Nr,nSx,nSy)
@@ -92,7 +92,7 @@ c     Find ctrlDir (w/o trailing blanks) length
 
       if (optimcycle .ge. 0) then
        ilobcse=ilnblnk( xx_obcse_file )
-       write(fnameobcse(1:80),'(2a,i10.10)')
+       write(fnameobcse,'(2a,i10.10)')
      &      ctrlDir(1:ilDir)//xx_obcse_file(1:ilobcse), '.', optimcycle
       endif
 
@@ -109,7 +109,7 @@ c--   Get the counters, flags, and the interpolation factor.
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcse_dummy )
+     &                       myThid, xx_obcse_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -178,7 +178,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
         call active_read_yz( fnameobcse, tmpfldyz,
      &                       (obcsecount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcse_dummy )
+     &                       myThid, xx_obcse_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi

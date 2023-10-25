@@ -1,11 +1,9 @@
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_sla_read_yd(
-     I                sla_file, sla_startdate,
-c     I                sla_startdate, sla_period,
-c     I                sla_intercept, sla_slope,
+     I                sla_file, sla_startdate, use_mon,
      O                sla_obs, sla_mask,
-     I                year, day, myThid )
+     I                year, irec, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
@@ -14,6 +12,8 @@ c
 c     o Read a given record of the SLA data.
 c
 c     started: Gael Forget 20-Oct-2009
+c
+c     Apr-2023: argument use_mon, switches read daily to monthly if true
 c
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
@@ -33,14 +33,13 @@ c     == global variables ==
 #include "ECCO.h"
 
 c     == routine arguments ==
+C     use_mon :: switch from using daily to monthly data if true
       character*(MAX_LEN_FNAM) sla_file
       integer sla_startdate(4)
-c     _RL sla_period
-c     _RL sla_intercept
-c     _RL sla_slope
+      logical use_mon
       _RL sla_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sla_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      integer year, day
+      integer year, irec
       integer myThid
 
 c     == external functions ==
@@ -60,9 +59,10 @@ c     == local variables ==
       _RL factor
 cnew(
       integer  il
-      character*(80) fnametmp
+      character*(MAX_LEN_FNAM) fnametmp
       logical exst
 cnew)
+      logical read_rec
 
 c     == end of interface ==
 
@@ -78,74 +78,84 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990.
 
-      if ( (day.GE.1).AND.( (
-     & (cal_IsLeap(year,myThid).eq.2).AND.(day.LE.366)
-     & ).OR.(day.LE.365) ) ) then
+      read_rec=.FALSE.
+      IF (use_mon) THEN
+        IF ( (irec.GE.1).AND.(irec.LE.12 ) ) THEN
+          read_rec = .TRUE.
+        ENDIF
+      ELSE
 
-      il=ilnblnk(sla_file)
+        IF ( (irec.GE.1).AND.( (
+     &   (cal_IsLeap(year,myThid).EQ.2).AND.(irec.LE.366)
+     &   ).OR.(irec.LE.365) ) ) THEN
+          read_rec = .TRUE.
+        ENDIF
+      ENDIF
 
-      write(fnametmp(1:80),'(2a,i4)')
+      IF (read_rec) THEN
+        il=ilnblnk(sla_file)
+        WRITE(fnametmp,'(2a,i4)')
      &     sla_file(1:il), '_', year
-      inquire( file=fnametmp, exist=exst )
-      if (.NOT. exst) then
-         stop
-      endif
+        inquire( file=fnametmp, exist=exst )
+        IF (.NOT. exst) THEN
+           STOP
+        ENDIF
 
-      CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
-     &                   sla_obs, day, 1, myThid )
+        CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
+     &                     sla_obs, irec, 1, myThid )
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          k = 1
-          do j = jmin,jmax
-            do i = imin,imax
+        DO bj = jtlo,jthi
+          DO bi = itlo,ithi
+            k = 1
+            DO j = jmin,jmax
+              DO i = imin,imax
 
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-              else
-                 sla_mask(i,j,bi,bj) = 1. _d 0
-              endif
-              if (sla_obs(i,j,bi,bj) .le. spval) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
-              if (abs(sla_obs(i,j,bi,bj)) .lt. 1.d-8 ) then
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF (_hFacC(i,j,k,bi,bj) .EQ. 0.) THEN
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+                ELSE
+                   sla_mask(i,j,bi,bj) = 1. _d 0
+                ENDIF
+                IF (sla_obs(i,j,bi,bj) .LE. spval) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
+                IF (abs(sla_obs(i,j,bi,bj)) .LT. 1.d-8 ) THEN
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 
 #ifndef ALLOW_SHALLOW_ALTIMETRY
-              if ( R_low(i,j,bi,bj) .GT. -200. ) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF ( R_low(i,j,bi,bj) .GT. -200. ) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 #endif
 #ifndef ALLOW_HIGHLAT_ALTIMETRY
-              if ( abs(YC(i,j,bi,bj)) .GT. 66. ) then
-                sla_mask(i,j,bi,bj) = 0. _d 0
-              endif
+                IF ( abs(YC(i,j,bi,bj)) .GT. 66. ) THEN
+                  sla_mask(i,j,bi,bj) = 0. _d 0
+                ENDIF
 #endif
 
-              sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
-              sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
-     &             sla_obs(i,j,bi,bj)
+                sla_mask(i,j,bi,bj) = sla_mask(i,j,bi,bj)*frame(i,j)
+                sla_obs(i,j,bi,bj)  = sla_mask(i,j,bi,bj)*factor*
+     &               sla_obs(i,j,bi,bj)
 
-            enddo
-          enddo
-        enddo
-      enddo
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
 
-      else !if ( (day.GE.1).AND...
+      ELSE !IF ( (irec.GE.1).AND...
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-                 sla_obs(i,j,bi,bj) = 0. _d 0
-                 sla_mask(i,j,bi,bj) = 0. _d 0
-            enddo
-          enddo
-        enddo
-      enddo
+        DO bj = jtlo,jthi
+          DO bi = itlo,ithi
+            DO j = jmin,jmax
+              DO i = imin,imax
+                   sla_obs(i,j,bi,bj) = 0. _d 0
+                   sla_mask(i,j,bi,bj) = 0. _d 0
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
 
-      endif !if ( (day.GE.1).AND...
+      ENDIF !IF ( (irec.GE.1).AND...
 
       RETURN
       END

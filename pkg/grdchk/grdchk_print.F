@@ -26,7 +26,7 @@ c     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "grdchk.h"
+#include "GRDCHK.h"
 
 c     == routine arguments ==
 
