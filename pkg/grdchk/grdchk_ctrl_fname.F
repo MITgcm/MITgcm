@@ -28,7 +28,9 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid     :: my Thread Id number
+C     fName        :: name of the CTRL var/file matching grdchk_index
+C     grdchk_index :: grdchk index of CTRL variable to perturb
+C     myThid       :: my Thread Id number
       CHARACTER*(MAX_LEN_FNAM) fName
       INTEGER grdchk_index
       INTEGER myThid
@@ -39,12 +41,16 @@ c     INTEGER  ILNBLNK
 c     EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iarr
 CEOP
 
-      IF ( grdchk_index .EQ. 0 ) THEN
-        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME,'
-     &     //' grdchk_index = 0 NOT ALLOWED'
+      IF ( grdchk_index.LE.0 .OR. grdchk_index.GT.maxcvars ) THEN
+        WRITE(msgBuf,'(2A,I8)') 'GRDCHK_CTRL_FNAME: ',
+     &        'Invalid grdchk_index=', grdchk_index
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
 
 #ifdef ALLOW_OBCSN_CONTROL
       ELSEIF ( grdchk_index .EQ. 11 ) THEN
