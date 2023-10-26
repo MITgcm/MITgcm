@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      SUBROUTINE grdchk_setxx(
+      SUBROUTINE GRDCHK_SETXX(
      I                       icvrec,
      I                       theSimulationMode,
      I                       iGrdC, jGrdC, layer,
@@ -54,20 +54,22 @@ C     == local variables ==
       _RL     dummy
       LOGICAL doglobalread
       LOGICAL ladinit
+      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_FNAM) ctrl_name
+      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_GENARR3D_CONTROL
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-      _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(MAX_LEN_FNAM) fName
-      CHARACTER*(MAX_LEN_FNAM) ctrl_name
 C--   == end of interface ==
 
-      doglobalread = .false.
-      ladinit      = .false.
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ILNBLNK(ctrlDir)
 
@@ -85,18 +87,9 @@ C-    get the name of varIndex_gc corresponding CTRL:
         WRITE(fName,'(A)') ' '
       ENDIF
 
-      IF ( varIndex_gc.EQ.1 .OR. varIndex_gc.EQ.2 .OR.
-     &     varIndex_gc.EQ.27 .OR. varIndex_gc.EQ.28 .OR.
-     &     varIndex_gc.EQ.15 .OR. varIndex_gc.EQ.16 .OR.
-     &     varIndex_gc.EQ.17 .OR. varIndex_gc.EQ.21 .OR.
-     &     varIndex_gc.EQ.22 .OR. varIndex_gc.EQ.31 .OR.
-     &     varIndex_gc.EQ.44
 #ifdef ALLOW_GENARR3D_CONTROL
-     &     .OR. ( varIndex_gc .GE. 201 .AND.
-     &     varIndex_gc .LE. 200+maxCtrlArr3D )
-#endif
-     &                                            ) THEN
-
+      IF ( varIndex_gc .GE. 201 .AND.
+     &     varIndex_gc .LE. 200+maxCtrlArr3D ) THEN
         CALL active_read_xyz( fName, loctmp3d, 1,
      &                        doglobalread, ladinit, optimcycle,
      &                        myThid, dummy )
@@ -105,6 +98,9 @@ C-    get the name of varIndex_gc corresponding CTRL:
         CALL active_write_xyz( fName, loctmp3d, 1,
      &                         optimcycle,
      &                         myThid, dummy )
+#else
+      IF ( .FALSE. ) THEN
+#endif
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       ELSEIF ( varIndex_gc.EQ.11 .OR. varIndex_gc.EQ.12) THEN
