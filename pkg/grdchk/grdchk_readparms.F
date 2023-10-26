@@ -9,7 +9,7 @@ C     ==================================================================
 C     SUBROUTINE grdchk_readparms
 C     ==================================================================
 C
-C     o Initialize the ECCO gradient check.
+C     o Read Gradient-check package parameters
 C
 C     started: Christian Eckert eckert@mit.edu 03-Mar-2000
 C     continued: heimbach@mit.edu: 13-Jun-2001
@@ -42,7 +42,7 @@ C     == local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     == end of interface ==
 
-C--   Optimization parameters.
+C--   Gradient-Check parameters.
       NAMELIST /grdchk_nml/
      &                  grdchk_eps,
      &                  nbeg,
@@ -92,7 +92,7 @@ C--     Set default values.
         obcsglo         = 1
         recglo          = 1
 
-C       Next, read the calendar data file.
+C       Next, read the GRDCHK parameter file.
         WRITE(msgBuf,'(A)') 'GRDCHK_READPARMS: opening data.grdchk'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )

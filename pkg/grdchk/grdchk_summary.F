@@ -64,7 +64,7 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(3A)')
-     &  '  CTRL xx_file :               "', fName(1:iL), '"'
+     &  '  matching CTRL xx_file:       "', fName(1:iL), '"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A,1PE10.3)')
