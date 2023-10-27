@@ -74,10 +74,6 @@ c     optimcycle - cycle number of the off-line optimization.
      &                    nondimcontrol
       logical nondimcontrol
 
-      common /optiparm_c/
-     &                    copt
-      character*( 3) copt
-
 c     ==================================================================
 c     END OF HEADER OPTIMIZATION
 c     ==================================================================
