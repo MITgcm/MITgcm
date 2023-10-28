@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68t (2023/10/28)
 o pkg/dic:
   - improve carbonate dissolution options (new params: selectCalciteDissolution)
     and fix a minor bug in dissolution rates according to Keir et al (1980);
