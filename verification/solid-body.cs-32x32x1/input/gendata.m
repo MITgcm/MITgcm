@@ -40,7 +40,7 @@ yZ=zeros(nPp2,1);
 if n1h == 6*n2h, nc=n2h;
   yZ(1:nPg,1)=reshape(permute(reshape(yG,[nc 6 nc]),[1 3 2]),[nPg 1]);
   yZ(nPg+1)=yG(1+nc*2,1); %- take lat of SW corner of face 3
-else
+else nc=n1h;
   yZ(1:nPg,1)=reshape(yG,[nPg 1]);
   yZ(nPg+1)=yG(1,1+nc*2); %- take lat of SW corner of face 3
 end
