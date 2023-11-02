@@ -44,7 +44,6 @@ c               - finished, revised and debugged
 c
 c     ==================================================================
 
-
       subroutine optim_numbmod(
      O                    nn
      &                  )

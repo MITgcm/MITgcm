@@ -2,7 +2,7 @@
       subroutine optim_write_control(
      I                          nv,
      I                          xx
-     &                        ) 
+     &                        )
 
 c     ==================================================================
 c     SUBROUTINE optim_write_control

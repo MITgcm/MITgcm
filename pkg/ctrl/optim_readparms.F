@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine optim_readparms(
-     I                            mythid )
+     I                            myThid )
 
 c     ==================================================================
 c     SUBROUTINE optim_readparms
@@ -17,7 +17,7 @@ c     ==================================================================
 c     SUBROUTINE optim_readparms
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 #include "EEPARAMS.h"
@@ -26,10 +26,10 @@ c     == global variables ==
 #include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
-      integer mythid
+      INTEGER myThid
 
 c     == local variables ==
-      integer iUnit
+      INTEGER iUnit
 c     this is a dummy parameter that is never used; it is introduced here
 c     so that we can have compatible namelists between mitgmcuv_ad and
 c     optim.x compiled from optim_m1qn3
@@ -55,7 +55,7 @@ C     the namelist intact.
 c     == end of interface ==
 
 c--   Optimization parameters.
-      namelist /optim/
+      NAMELIST /optim/
      &                 optimcycle, nvars,
      &                 nondimcontrol,
      &                 numiter, nfunc, fmin, dfminFrac, iprint,
@@ -73,7 +73,7 @@ C     print a (weak) warning if data.optim is found
         RETURN
       ENDIF
 
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
 c--     Set default values.
         optimcycle    =   0
@@ -111,7 +111,7 @@ c--     Set default values.
         CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
       _BARRIER
 

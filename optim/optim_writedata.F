@@ -133,7 +133,6 @@ c--         Generate file name and open the file.
        print *, prefix, 'ncvargrd ',    (ncvargrd(i),   i=1,maxcvars)
       endif
 
-
 c--   Write the header.
       write( funit ) nvartype
       write( funit ) nvarlength
