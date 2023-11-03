@@ -34,8 +34,6 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER i,j, kLev, it
       INTEGER iMin,iMax,jMin,jMax, bi, bj
        _RL co3dummy
-C Number of iterations for pCO2 solvers...
-C Solubility relation coefficients
 C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -45,8 +43,8 @@ C local variables for carbon chem
       _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
       LOGICAL debugPrt
-C     msgBuf     :: Informational/error message buffer
 #ifdef ALLOW_DEBUG
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 CEOP
@@ -59,6 +57,7 @@ C =================================================================
       iMin=1
       iMax=sNx
 
+C Solubility relation coefficients
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
