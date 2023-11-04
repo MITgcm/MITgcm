@@ -21,7 +21,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 C     !INPUT/OUTPUT PARAMETERS
       CHARACTER*(*) xx_fname

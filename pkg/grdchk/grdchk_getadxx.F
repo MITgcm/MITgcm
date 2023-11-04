@@ -32,7 +32,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 C     == routine arguments ==
       INTEGER icvrec

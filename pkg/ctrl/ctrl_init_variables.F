@@ -42,7 +42,6 @@ C     == Global variables ===
 #  include "GMREDI.h"
 # endif
 # ifdef ALLOW_CTRL
-#  include "optim.h"
 #  include "CTRL_DUMMY.h"
 # endif
 # ifdef ALLOW_PTRACERS

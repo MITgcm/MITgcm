@@ -28,7 +28,6 @@ C     == Global variables ===
 #  include "tamc.h"
 # endif
 # include "CTRL.h"
-# include "optim.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
