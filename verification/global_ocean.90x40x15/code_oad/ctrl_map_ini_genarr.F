@@ -31,7 +31,7 @@ C     == global variables ==
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 c#include "PTRACERS_PARAMS.h"

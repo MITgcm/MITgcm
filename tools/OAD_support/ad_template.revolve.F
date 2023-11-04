@@ -62,7 +62,7 @@ c we may need these for the checkpointing
       use g_cost_mod
       use CTRL_mod
       use CTRL_DUMMY_mod
-      use optim_mod
+      use OPTIMCYCLE_mod
       use GRDCHK_mod
 
 !$TEMPLATE_PRAGMA_DECLARATIONS
