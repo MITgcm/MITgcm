@@ -418,7 +418,7 @@ cts ---
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
-     &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
+     &          +tmpmsk2*tmpvol
 
            ENDDO ! Ends do k=1,Nr
 
