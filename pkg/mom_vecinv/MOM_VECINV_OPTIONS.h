@@ -10,7 +10,7 @@ C Use this file for selecting CPP options within the mom_vecinv package
 C     Package-specific Options & Macros go here
 
 C-- For Deep-Model: do vertical advection of product deepFac x (u,v)
-C   which remove the needs for NHMTerms w.(u,v)/r
+C   which remove the needs for NH-metric terms: w.(u,v)/r
 #define MOM_VI_DEEP_VERTSHEAR
 
 C use the original discretization (not recommended) for biharmonic viscosity
