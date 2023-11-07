@@ -171,7 +171,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  AhDudxFac
       _RL  vDudyFac
       _RL  AhDudyFac
-      _RL  rVelDudrFac
+      _RL  wDudrFac
       _RL  ArDudrFac
       _RL  fuFac
       _RL  mtFacU
@@ -180,12 +180,13 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  AhDvdxFac
       _RL  vDvdyFac
       _RL  AhDvdyFac
-      _RL  rVelDvdrFac
+      _RL  wDvdrFac
       _RL  ArDvdrFac
       _RL  fvFac
       _RL  mtFacV
       _RL  mtNHFacV
       _RL  sideMaskFac
+      _RL  rAdvDeepFac
       LOGICAL bottomDragTerms
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
@@ -237,7 +238,7 @@ C     o U momentum equation
       AhDudxFac    = vfFacMom*1.
       vDudyFac     = afFacMom*1.
       AhDudyFac    = vfFacMom*1.
-      rVelDudrFac  = afFacMom*1.
+      wDudrFac     = afFacMom*1.
       ArDudrFac    = vfFacMom*1.
       mtFacU       = mtFacMom*1.
       mtNHFacU     = 1.
@@ -247,7 +248,7 @@ C     o V momentum equation
       AhDvdxFac    = vfFacMom*1.
       vDvdyFac     = afFacMom*1.
       AhDvdyFac    = vfFacMom*1.
-      rVelDvdrFac  = afFacMom*1.
+      wDvdrFac     = afFacMom*1.
       ArDvdrFac    = vfFacMom*1.
       mtFacV       = mtFacMom*1.
       mtNHFacV     = 1.
@@ -379,7 +380,6 @@ CADJ STORE hDiv(:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE vort3(:,:)   = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
-
 C---  First call (k=1): compute vertical adv. flux fVerUkm & fVerVkm
       IF (momAdvection.AND.k.EQ.1) THEN
 
@@ -474,6 +474,10 @@ C---- Zonal momentum equation starts here
       IF (momAdvection) THEN
 C---  Calculate mean fluxes (advection)   between cells for zonal flow.
 
+C--   For Deep-Model (deepAtmosphere=T), no needs for NHMTerm w*u/r since
+C     vertical advective flux (in MOM_U_ADV_WU) is changed to W*(u*deepFacC)
+C     with rAdvDeepFac factor in flux divergence
+
 #ifdef MOM_BOUNDARY_CONSERVE
         CALL MOM_U_ADV_UU( bi,bj,k,uTrans,uBnd(1-OLx,1-OLy,k,bi,bj),
      O                     fZon,myThid )
@@ -499,6 +503,7 @@ C     Mean flow component of vertical flux (at k+1) -> fVer
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
+        rAdvDeepFac = wDudrFac*rkSign*recip_deepFacC(k)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) =
@@ -511,7 +516,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 #endif
      &     *( ( fZon(i,j  )  - fZon(i-1,j)  )*uDudxFac
      &       +( fMer(i,j+1)  - fMer(i,  j)  )*vDudyFac
-     &       +( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign*rVelDudrFac
+     &       +( fVerUkp(i,j) - fVerUkm(i,j) )*rAdvDeepFac
      &     )
          ENDDO
         ENDDO
@@ -702,7 +707,7 @@ c    I     iMin,iMax,jMin,jMax,bi,bj,k,
 c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
-      IF (useNHMTerms) THEN
+      IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
 C      o Non-Hydrostatic (spherical) metric terms
        CALL MOM_U_METRIC_NH( bi,bj,k,uFld,wVel,mT,myThid )
        DO j=jMin,jMax
@@ -736,6 +741,10 @@ C---- Meridional momentum equation starts here
 
       IF (momAdvection) THEN
 
+C--   For Deep-Model (deepAtmosphere=T), no needs for NHMTerm w*v/r since
+C     vertical advective flux (in MOM_V_ADV_WV) is changed to W*(v*deepFacC)
+C     with rAdvDeepFac factor in flux divergence
+
 #ifdef MOM_BOUNDARY_CONSERVE
         CALL MOM_V_ADV_UV( bi,bj,k,uTrans,vBnd(1-OLx,1-OLy,k,bi,bj),
      O                     fZon,myThid )
@@ -759,6 +768,7 @@ C     Mean flow component of vertical flux (at k+1) -> fVerV
 #endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
+        rAdvDeepFac = wDvdrFac*rkSign*recip_deepFacC(k)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV(i,j,k,bi,bj) =
@@ -771,7 +781,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 #endif
      &     *( ( fZon(i+1,j)  - fZon(i,j  )  )*uDvdxFac
      &       +( fMer(i,  j)  - fMer(i,j-1)  )*vDvdyFac
-     &       +( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign*rVelDvdrFac
+     &       +( fVerVkp(i,j) - fVerVkm(i,j) )*rAdvDeepFac
      &     )
          ENDDO
         ENDDO
@@ -961,7 +971,7 @@ c    I     iMin,iMax,jMin,jMax,bi,bj,k,
 c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
-      IF (useNHMTerms) THEN
+      IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
 C      o Non-Hydrostatic (spherical) metric terms
        CALL MOM_V_METRIC_NH( bi,bj,k,vFld,wVel,mT,myThid )
        DO j=jMin,jMax

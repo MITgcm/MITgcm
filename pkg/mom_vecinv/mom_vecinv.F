@@ -856,7 +856,11 @@ C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
       ENDIF
 
 C--   Non-Hydrostatic (spherical) metric terms
+#ifdef MOM_VI_DEEP_VERTSHEAR
+      IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
+#else
       IF ( useNHMTerms ) THEN
+#endif
        CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,uCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
