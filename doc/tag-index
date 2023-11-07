@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - fix loading of forcing file for the case DIC_forcingCycle = 0 ;
+  - fix inconsistent timing params for loading initial surface-silica file ;
+  - clean-up initialise-varia level S/R, now all called from dic_init_varia.F
+    and move all forcing field initialisation to dic_ini_forcing.F ;
+  - read and process pickup_dic meta file with error/warning (depending on
+    pickupStrictlyMatch = T/F) if missing file or field.
 o pkg/ctrl:
   - reduce pkg/ctrl/optim.h to just "optimcycle" and rename into OPTIMCYCLE.h ;
   - keep optim_readparms.F namelist unchanged and define variables locally.
