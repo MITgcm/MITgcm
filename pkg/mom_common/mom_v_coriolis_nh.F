@@ -42,24 +42,43 @@ C  i,j                  :: loop indices
       _RL wMsk
 CEOP
 
-
       kp1=min(k+1,Nr)
       wMsk=1.
       IF (k.EQ.Nr) wMsk=0.
 
-C Energy conserving discretization of 2*Omega*cos(phi)*w
-      DO j=2-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        vCoriolisTerm(i,j) =
-     &   -0.5*( fCoriCos( i ,j,bi,bj)*angleSinC(i, j ,bi,bj)
-     &         *0.5*( wFld( i ,j, k ,bi,bj)*rVel2wUnit( k )
-     &               +wFld( i ,j,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
+      IF ( selectCoriScheme.GE.4 ) THEN
+C-    Using averaged transport:
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         vCoriolisTerm(i,j) = -gravitySign*0.5 _d 0
+     &    *( fCoriCos(i, j ,bi,bj)*angleSinC(i, j ,bi,bj)
+     &      *( wFld(i, j , k ,bi,bj)*rVel2wUnit( k )*deepFac2F( k )
+     &       + wFld(i, j ,kp1,bi,bj)*rVel2wUnit(kp1)*deepFac2F(kp1)*wMsk
+     &         )*rA(i, j ,bi,bj)*0.5 _d 0
+     &     + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)
+     &      *( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )*deepFac2F( k )
+     &       + wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*deepFac2F(kp1)*wMsk
+     &         )*rA(i,j-1,bi,bj)*0.5 _d 0
+     &     )*recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
+C--   might be more consistent to add this line (but concerns for CFL/stability)
+c    &      *recip_hFacS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ELSE
+C-    Energy conserving discretization of 2*Omega*cos(phi)*w
+       DO j=2-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         vCoriolisTerm(i,j) = -gravitySign*0.5 _d 0
+     &       *( fCoriCos(i, j ,bi,bj)*angleSinC(i, j ,bi,bj)
+     &         *0.5*( wFld(i, j , k ,bi,bj)*rVel2wUnit( k )
+     &               +wFld(i, j ,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
      &        + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)
      &         *0.5*( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )
      &               +wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
-     &        )*gravitySign
+     &        )
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
       RETURN
       END

@@ -43,33 +43,46 @@ C  i,j                  :: loop indices
       PARAMETER( one = 1. _d 0 )
 CEOP
 
-      IF ( selectCoriScheme.GE.2 ) THEN
-C Energy conserving discretization
+      IF ( selectCoriScheme.LE.1 ) THEN
+C-    Original discretization
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-         vCoriolisTerm(i,j) =
-     &    -0.5*( _fCori(i, j ,bi,bj)
+         vCoriolisTerm(i,j) = -0.5 _d 0
+     &   *( _fCori(i, j ,bi,bj) + _fCori(i,j-1,bi,bj) )
+     &   *0.25*( uFld(i, j )+uFld(i+1, j )
+     &          +uFld(i,j-1)+uFld(i+1,j-1)
+     &         )
+        ENDDO
+       ENDDO
+      ELSEIF ( selectCoriScheme.LE.3 ) THEN
+C-    Energy conserving discretization
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx,sNx+OLx-1
+         vCoriolisTerm(i,j) = -0.5 _d 0
+     &        *( _fCori(i, j ,bi,bj)
      &          *0.5*( uFld( i , j )+uFld(i+1, j ) )
      &         + _fCori(i,j-1,bi,bj)
      &          *0.5*( uFld( i ,j-1)+uFld(i+1,j-1) ) )
         ENDDO
        ENDDO
       ELSE
-C Original discretization
+C-    Using averaged transport:
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
-        vCoriolisTerm(i,j) =
-     &    -0.5*(_fCori(i, j ,bi,bj)+_fCori(i,j-1,bi,bj))
-     &   *0.25*( uFld(i, j )+uFld(i+1, j )
-     &          +uFld(i,j-1)+uFld(i+1,j-1)
-     &         )
+         vCoriolisTerm(i,j) = -0.5 _d 0
+     &   *( _fCori(i, j ,bi,bj) + _fCori(i,j-1,bi,bj) )
+     &   *( uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &    + uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
+     &    + uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
+     &    + uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj)
+     &    )*0.25 _d 0*recip_dyC(i,j,bi,bj)*recip_hFacS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
 
       IF ( selectCoriScheme.EQ.1 .OR. selectCoriScheme.EQ.3 ) THEN
-C Scale term so that only "wet" points are used
-C Due to: Jamart and Ozer, 1986, JGR 91 (C9), 10,621-10,631
+C-    Scale term so that only "wet" points are used
+C     Due to: Jamart and Ozer, 1986, JGR 91 (C9), 10,621-10,631
 C         "Numerical Boundary Layers and Spurious Residual Flows"
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx,sNx+OLx-1

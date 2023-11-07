@@ -44,11 +44,43 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-
-C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+
+       IF ( selectCoriScheme.GE.4 ) THEN
+C-    Using averaged transport:
+C     for now, without dyG*deepFacC weight and without recip_hFacI factor:
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+           wCoriolisTerm(i,j) = -gravitySign
+     &      *fCoriCos(i,j,bi,bj)
+     &      *( angleCosC(i,j,bi,bj)
+     &        *( ( uFld( i ,j,k-1,bi,bj)*hFacW( i ,j,k-1,bi,bj)
+     &           + uFld(i+1,j,k-1,bi,bj)*hFacW(i+1,j,k-1,bi,bj)
+     &           )*drF(k-1)
+c    &            *deepFacC(k-1)
+     &         + ( uFld( i ,j, k ,bi,bj)*hFacW( i ,j, k ,bi,bj)
+     &           + uFld(i+1,j, k ,bi,bj)*hFacW(i+1,j, k ,bi,bj)
+     &           )*drF( k )
+c    &            *deepFacC( k )
+     &         )*0.25 _d 0
+     &        -angleSinC(i,j,bi,bj)
+     &        *( ( vFld(i, j ,k-1,bi,bj)*hFacS(i, j ,k-1,bi,bj)
+     &           + vFld(i,j+1,k-1,bi,bj)*hFacS(i,j+1,k-1,bi,bj)
+     &           )*drF(k-1)
+c    &            *deepFacC(k-1)
+     &         + ( vFld(i, j , k ,bi,bj)*hFacS(i, j , k ,bi,bj)
+     &           + vFld(i,j+1, k ,bi,bj)*hFacS(i,j+1, k ,bi,bj)
+     &           )*drF( k )
+c    &            *deepFacC( k )
+     &         )*0.25 _d 0
+     &       )*recip_drC(k)*wUnit2rVel(k)
+c    &       )*recip_drC(k)*recip_deepFacF(k)*wUnit2rVel(k)
+         ENDDO
+        ENDDO
+       ELSE
+C-    Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wCoriolisTerm(i,j) =
      &      -gravitySign*fCoriCos(i,j,bi,bj)*
      &       ( angleCosC(i,j,bi,bj)*(
@@ -62,9 +94,11 @@ C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
      &       )*wUnit2rVel(k)
          ENDDO
         ENDDO
+       ENDIF
+
       ELSE
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
+        DO j=1-OLy,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            wCoriolisTerm(i,j) = 0. _d 0
          ENDDO
         ENDDO

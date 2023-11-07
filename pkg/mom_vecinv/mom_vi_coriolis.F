@@ -87,7 +87,9 @@ C     (formerly called: useJamartWetPoints)
      &         )*vBarXY*recip_dxC(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
-      ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
+c     ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
+      ELSEIF ( selectCoriScheme .EQ. 2
+     &    .OR. selectCoriScheme .EQ. 4 ) THEN
 C- hFac weighted average :
        DO j=1-OLy,sNy+OLy-1
         DO i=2-OLx,sNx+OLx
@@ -154,7 +156,9 @@ C     (formerly called: useJamartWetPoints)
      &         )*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
-      ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
+c     ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
+      ELSEIF ( selectCoriScheme .EQ. 2
+     &    .OR. selectCoriScheme .EQ. 4 ) THEN
 C- hFac weighted average :
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
