@@ -33,7 +33,7 @@ c#include "OBCS_PARAMS.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_DUMMY.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #include "CTRL_OBCS.h"
 #endif /* ALLOW_OBCSE_CONTROL */
 

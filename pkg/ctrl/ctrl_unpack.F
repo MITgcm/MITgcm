@@ -51,7 +51,7 @@ c     == global variables ==
 # include "CTRL.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_COST

@@ -41,7 +41,7 @@ c     == global variables ==
 C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #include "GRDCHK.h"
 
 c     == routine arguments ==

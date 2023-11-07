@@ -4,7 +4,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      subroutine ecco_cost_init_barfiles( mythid )
+      subroutine ecco_cost_init_barfiles( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_cost_init_barfiles
@@ -19,7 +19,7 @@ c     ==================================================================
 c     SUBROUTINE ecco_cost_cost_init_barfiles
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -32,7 +32,6 @@ c     == global variables ==
 # include "ECCO.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "optim.h"
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "CTRL_DUMMY.h"
@@ -40,7 +39,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -54,12 +53,12 @@ c     == local variables ==
       integer ilt, irec
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      character*(128) fname_gencostbar
-      character*(128) adfname_gencostbar
+      CHARACTER*(128) fname_gencostbar
+      CHARACTER*(128) adfname_gencostbar
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-      _RL tmpfld2d (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL tmpfld3d (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL tmpfld3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 c     == external functions ==
 
@@ -68,14 +67,14 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -88,7 +87,7 @@ c     == end of interface ==
       enddo
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr
+          do k = 1,Nr
             do j = jmin,jmax
               do i =  imin,imax
                 tmpfld3d(i,j,k,bi,bj) = 0. _d 0
@@ -114,10 +113,10 @@ c--   Save gencost_barfile on file.
 #ifdef ALLOW_ADJOINT_RUN
         if (.NOT.gencost_is3d(k))
      &  call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
-     &       eccoiter, mythid, gencost_dummy(k) )
+     &       eccoiter, myThid, gencost_dummy(k) )
         if (gencost_is3d(k))
      &  call active_write_xyz( adfname_gencostbar, tmpfld3d, irec,
-     &       eccoiter, mythid, gencost_dummy(k) )
+     &       eccoiter, myThid, gencost_dummy(k) )
 #endif
       enddo
       endif
