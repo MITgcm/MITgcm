@@ -33,7 +33,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
@@ -251,14 +251,24 @@ C-    to use KAPREDI_CONTROL, needs to define GM_READ_K3D_REDI in GMREDI_OPTIONS
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'to achieve the same thing.'
       CALL PRINT_ERROR( msgBuf, myThid )
-C     For now only print the error message, but do not increase the
-C     error count so that the model does not stop as along as we have to
-C     put up with the OpenAD version of tutorial_global_oce_optim
       errCount = errCount + 1
 #endif /* ALLOW_HFLUXM_CONTROL */
 
+#ifdef ALLOW_HFACC_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+#endif
+#ifdef ALLOW_HFACC3D_CONTROL
+      WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
+     &     'CPP-flag ALLOW_HFACC3D_CONTROL has been retired.'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      errCount = errCount + 1
+#endif
+
 #ifdef ALLOW_GENARR2D_CONTROL
-c     Warn user: doscaling must be true to do log10 ctrl
+C     doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr2D
         DO k2 = 1, maxCtrlProc
           IF ( (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') .AND.
@@ -270,7 +280,6 @@ c     Warn user: doscaling must be true to do log10 ctrl
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,').'
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
-C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO
@@ -288,7 +297,6 @@ C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
      &    'is defined'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
-C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  else
@@ -306,7 +314,6 @@ C     but is probably not what the user wants or expects.
      &    'is NOT defined'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
-C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
         ENDIF
       ENDDO
 #  endif /* SHI_ALLOW_GAMMAFRICT */
@@ -314,7 +321,7 @@ C         STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-c     Warn user: doscaling must be true to do log10 ctrl
+C     doscaling must be true to do log10 ctrl
       DO iarr = 1, maxCtrlArr3D
         DO k2 = 1, maxCtrlProc
           IF ( (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') .AND.
@@ -326,7 +333,6 @@ c     Warn user: doscaling must be true to do log10 ctrl
      &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,'). '
             CALL PRINT_ERROR( msgBuf, myThid )
             errCount = errCount + 1
-C           STOP 'ABNORMAL END: S/R CTRL_CHECK'
           ENDIF
         ENDDO
       ENDDO

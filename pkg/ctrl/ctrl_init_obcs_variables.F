@@ -23,7 +23,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 c#include "GRID.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_OBCS.h"
 
 c     == routine arguments ==
@@ -42,7 +42,7 @@ c     == end of interface ==
         do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
             do k = 1,Nr
-              do i = 1-OLx, sNx+OLx 
+              do i = 1-OLx, sNx+OLx
                 xx_obcsn0(i,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcsn1(i,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -57,7 +57,7 @@ c     == end of interface ==
         do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
             do k = 1,Nr
-              do i = 1-OLx, sNx+OLx 
+              do i = 1-OLx, sNx+OLx
                 xx_obcss0(i,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcss1(i,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -72,7 +72,7 @@ c     == end of interface ==
         do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
             do k = 1,Nr
-              do j = 1-OLy, sNy+OLy 
+              do j = 1-OLy, sNy+OLy
                 xx_obcsw0(j,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcsw1(j,k,bi,bj,iobcs) = 0. _d 0
               enddo
@@ -87,7 +87,7 @@ c     == end of interface ==
         do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
             do k = 1,Nr
-              do j = 1-OLy, sNy+OLy 
+              do j = 1-OLy, sNy+OLy
                 xx_obcse0(j,k,bi,bj,iobcs) = 0. _d 0
                 xx_obcse1(j,k,bi,bj,iobcs) = 0. _d 0
               enddo

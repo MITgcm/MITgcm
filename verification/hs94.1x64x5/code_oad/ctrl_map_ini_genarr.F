@@ -10,7 +10,7 @@ C     *=================================================================
 C     | SUBROUTINE CTRL_MAP_INI_GENARR
 C     | Add the generic arrays of the
 C     | control vector to the model state and update the tile halos.
-C     | The control vector is defined in the header file "ctrl.h".
+C     | The control vector is defined in the header file "CTRL.h".
 C     *=================================================================
 C     | local version for OpenAD exp. hs94.1x64x5
 C     *=================================================================
@@ -27,10 +27,10 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#include "CTRL_DUMMY.h"
+#include "OPTIMCYCLE.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 c#include "PTRACERS_PARAMS.h"

@@ -35,13 +35,13 @@ c     == global variables ==
 #include "SIZE.h"
 C     CTRL_SIZE.h must be included before GRDCHK.h
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h
 # include "CTRL_OBCS.h"
 #endif
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #include "GRDCHK.h"
 
 c     == routine arguments ==

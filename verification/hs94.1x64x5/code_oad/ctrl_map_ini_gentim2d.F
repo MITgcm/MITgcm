@@ -29,9 +29,9 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "optim.h"
-#include "ctrl_dummy.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
+#include "CTRL_DUMMY.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
