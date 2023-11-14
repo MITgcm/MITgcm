@@ -53,6 +53,7 @@ C     msgBuf      - Informational/error message buffer
       LOGICAL exst
       CHARACTER*(128) tempfile
       INTEGER icount_transp
+      INTEGER k
 #endif
       INTEGER nRetired
 
