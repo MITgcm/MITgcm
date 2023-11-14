@@ -16,7 +16,7 @@ echo '#endif'                         >> ${fileName}_temp
 echo '#ifdef ALLOW_ECCO'              >> ${fileName}_temp
 echo '# include "ECCO_OPTIONS.h"'     >> ${fileName}_temp
 echo '#endif'                         >> ${fileName}_temp
-if ( ${fileName} == 'DIC_LOAD' ) then
+if ( ${fileName} == 'DIC_LOAD' || ${fileName} == 'DIC_VARS' ) then
   echo '#include "DIC_OPTIONS.h"'    >> ${fileName}_temp
 endif
 if ( ${fileName} == 'GAD' ) then

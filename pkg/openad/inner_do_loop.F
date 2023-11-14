@@ -1,5 +1,3 @@
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
 #include "OPENAD_OPTIONS.h"
 c#ifdef ALLOW_AUTODIFF
 c# include "AUTODIFF_OPTIONS.h"
@@ -12,6 +10,9 @@ c#endif
 #endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
+#endif
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
 #endif
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
