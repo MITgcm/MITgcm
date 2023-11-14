@@ -124,7 +124,7 @@ C                 the current model integration.
       COMMON /ECCO_R/
      &                    m_eta, m_UE, m_VN, m_bp,
      &                    trVol, trHeat, trSalt,
-     &                    eccoVol_0, frame
+     &                    frame
       _RL m_eta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_UE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL m_VN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -132,7 +132,6 @@ C                 the current model integration.
       _RL trVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trHeat   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL trSalt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
 
 #ifdef ALLOW_PSBAR_STERIC
