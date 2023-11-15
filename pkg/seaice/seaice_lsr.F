@@ -1080,6 +1080,10 @@ C     end outer ipass pseudo-time stepping loop
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( DIAGNOSTICS_IS_ON('SIlsrRe ',myThid) ) THEN
+C     S/R SEAICE_CALC_RESIDUAL does not compute residual velocities on
+C     halos, so we need an exchange here to get the correct diagnostics
+C     at cell centers
+       CALL EXCH_UV_XY_RL( uTmp, vTmp,.TRUE.,myThid)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
