@@ -60,8 +60,7 @@ C-    Using averaged transport:
      &       + wFld(i-1,j,kp1,bi,bj)*rVel2wUnit(kp1)*deepFac2F(kp1)*wMsk
      &       )*rA(i-1,j,bi,bj)*0.5 _d 0
      &     )*recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)
-C--   might be more consistent to add this line (but concerns for CFL/stability)
-c    &      *recip_hFacW(i,j,k,bi,bj)
+     &      *recip_hFacW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSE
