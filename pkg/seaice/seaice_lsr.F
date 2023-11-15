@@ -92,11 +92,11 @@ C     i,j,bi,bj  :: Loop counters
       _RL S1, S2, S1A, S2A
       _RL recip_deltaT
 
-#ifdef SEAICE_LSR_FLEX
+#ifdef SEAICE_ALLOW_LSR_FLEX
       _RL residIni, residIniNonLin
       _RL LSRflexFac, LSR_ERRORfu, LSR_ERRORfv
       _RL residkm1, residkm2
-#endif /* SEAICE_LSR_FLEX */
+#endif /* SEAICE_ALLOW_LSR_FLEX */
 
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -151,9 +151,7 @@ C     tkey  :: tape key (depends on tile indices and lnkey)
 #endif
       _RL COSWAT
       _RS SINWAT
-#ifndef SEAICE_LSR_FLEX
       _RL UERR
-#endif
 #ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
       _RL resnorm, EKnorm, counter
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
@@ -260,11 +258,13 @@ C     As a side effect, this avoids TAF recomputation warnings.
        ENDDO
       ENDDO
 
-#ifdef SEAICE_LSR_FLEX
-      residkm1       = 1. _d 0
-      residkm2       = 1. _d 0
-      residIniNonLin = 1. _d 0
-#endif /* SEAICE_LSR_FLEX */
+#ifdef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
+       residkm1       = 1. _d 0
+       residkm2       = 1. _d 0
+       residIniNonLin = 1. _d 0
+      ENDIF
+#endif /* SEAICE_ALLOW_LSR_FLEX */
 
 C     Start of non-linear iteration ====================================
       DO ipass=1,nonLinIterLoc
@@ -680,68 +680,70 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
       ICOUNT1 = linearIterLoc
       ICOUNT2 = linearIterLoc
 
-#ifdef SEAICE_LSR_FLEX
+#ifdef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
 C     In case we have not yet computed the initial residual, do it now.
-      IF ( .NOT. ( printResidual .OR. LSR_mixIniGuess.GE.1 ) )
-     &     CALL SEAICE_RESIDUAL(
+       IF ( .NOT. ( printResidual .OR. LSR_mixIniGuess.GE.1 ) )
+     &      CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
      O                  residUini, residVini, uTmp, vTmp,
-     I     printResidual, myIter, myThid )
+     I                  printResidual, myIter, myThid )
 
 C     Do not do anything if the initial residuals are zero
-      IF ( residUini .EQ. 0. _d 0) THEN
-       doIterate4u = .FALSE.
-       ICOUNT1 = 0
-       S1      = residUini
-      ENDIF
-      IF ( residVini .EQ. 0. _d 0) THEN
-       doIterate4v = .FALSE.
-       ICOUNT2 = 0
-       S2      = residVini
-      ENDIF
+       IF ( residUini .EQ. 0. _d 0) THEN
+        doIterate4u = .FALSE.
+        ICOUNT1 = 0
+        S1      = residUini
+       ENDIF
+       IF ( residVini .EQ. 0. _d 0) THEN
+        doIterate4v = .FALSE.
+        ICOUNT2 = 0
+        S2      = residVini
+       ENDIF
 
-      residIni = SQRT(residUini*residUini+residVini*residVini)
+       residIni = SQRT(residUini*residUini+residVini*residVini)
 
 #ifndef ALLOW_AUTODIFF
 C     Exit nonlinear loop if there is nothing to do.
-      IF ( .NOT. ( doIterate4u .AND. doIterate4v ) ) EXIT
+       IF ( .NOT. ( doIterate4u .AND. doIterate4v ) ) EXIT
 C     If you want to use SEAICEnonLinTol to be an absolute criterion,
 C     comment out the following line.
-      IF ( ipass .EQ. 1 ) residIniNonLin = residIni
+       IF ( ipass .EQ. 1 ) residIniNonLin = residIni
 
-      IF ( ( residIni .LT. SEAICEnonLinTol*residIniNonlin )
-     &     .AND. ipass .GT. 2 ) EXIT
+       IF ( ( residIni .LT. SEAICEnonLinTol*residIniNonlin )
+     &      .AND. ipass .GT. 2 ) EXIT
 #endif
 
 C     Catch the case of zero residual
-      IF  ( residIni .EQ. 0. _d 0 ) residIni = 1. _d -20
+       IF  ( residIni .EQ. 0. _d 0 ) residIni = 1. _d -20
 C     From Lemieux et al. 2010
 C       LSRflexFac = MIN(LSRflexFac/residkm2*0.9,LSRflexFac)
 C     Other possibilities
-      LSRflexFac = 1. _d 0 / (1. _d 0 + ABS( LOG10(residIni) ) )
+       LSRflexFac = 1. _d 0 / (1. _d 0 + ABS( LOG10(residIni) ) )
 C       LSRflexFac = ABS(LOG10(residkm2))/ABS(LOG10(residkm1))
 C       LSRflexFac = (residkm1/residkm2)/(1+ABS(LOG10(residIni)))
-      LSRflexFac = MIN(LSRflexFac, 0.99 _d 0 )
+       LSRflexFac = MIN(LSRflexFac, 0.99 _d 0 )
 C      LSRflexFac = MAX(LSRflexFac, 0.3 _d 0 )
 
 C       IF ( ipass .LE. 3 ) THEN
 C        LSRflexFac = 0.99 _d 0
 C       ENDIF
 
-      LSR_ERRORfu = residUini*LSRflexFac
-      LSR_ERRORfv = residVini*LSRflexFac
+       LSR_ERRORfu = residUini*LSRflexFac
+       LSR_ERRORfv = residVini*LSRflexFac
 
-      IF ( printResidual ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(standardMessageUnit,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
-     &      ' SEAICE_LSR: ipass, FLEX_FACTOR,'//
-     &      ' LSR_ERRORfu, LSR_ERRORfv, residIni =',
-     &      ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residIni
-       _END_MASTER( myThid )
+       IF ( printResidual ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(standardMessageUnit,'(A,1X,I5,1X,F10.6,3(1X,E12.6))')
+     &       ' SEAICE_LSR: ipass, FLEX_FACTOR,'//
+     &       ' LSR_ERRORfu, LSR_ERRORfv, residIni =',
+     &       ipass, LSRflexFac, LSR_ERRORfu, LSR_ERRORfv, residIni
+        _END_MASTER( myThid )
+       ENDIF
+
       ENDIF
-
-#endif /* SEAICE_LSR_FLEX */
+#endif /* SEAICE_ALLOW_LSR_FLEX */
 
       DO m = 1, linearIterLoc
 
@@ -877,24 +879,26 @@ C     end bi,bj-loops
         ENDIF
 #endif /* SEAICE_GLOBAL_3DIAG_SOLVER */
 
-#ifdef SEAICE_LSR_FLEX
-        IF ( MOD(m,SOLV_NCHECK) .EQ. 0
-     &       .AND. (doIterate4u.OR.doIterate4v) ) THEN
-         CALL SEAICE_RESIDUAL(
-     I       rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
-     I       AU, BU, CU, AV, BV, CV, uIce, vIce,
-     O       S1, S2, uTmp, vTmp,
-     I       printResidual, myIter, myThid )
-         IF( S1.LT.LSR_ERRORfu ) THEN
-          ICOUNT1=m
-          doIterate4u = .FALSE.
+#ifdef SEAICE_ALLOW_LSR_FLEX
+        IF ( SEAICEuseLSRflex ) THEN
+         IF ( MOD(m,SOLV_NCHECK) .EQ. 0
+     &        .AND. (doIterate4u.OR.doIterate4v) ) THEN
+          CALL SEAICE_RESIDUAL(
+     I         rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
+     I         AU, BU, CU, AV, BV, CV, uIce, vIce,
+     O         S1, S2, uTmp, vTmp,
+     I         printResidual, myIter, myThid )
+          IF( S1.LT.LSR_ERRORfu ) THEN
+           ICOUNT1=m
+           doIterate4u = .FALSE.
+          ENDIF
+          IF( S2.LT.LSR_ERRORfv ) THEN
+           ICOUNT2=m
+           doIterate4v = .FALSE.
+          ENDIF
          ENDIF
-         IF( S2.LT.LSR_ERRORfv ) THEN
-          ICOUNT2=m
-          doIterate4v = .FALSE.
-         ENDIF
-        ENDIF
-#else /* SEAICE_LSR_FLEX */
+        ELSE
+#endif
         IF ( doIterate4u.AND.MOD(m,SOLV_NCHECK).EQ.0) THEN
          S1=ZERO
          DO bj=myByLo(myThid),myByHi(myThid)
@@ -942,7 +946,9 @@ C SAFEGUARD AGAINST BAD FORCING ETC
           doIterate4v = .FALSE.
          ENDIF
         ENDIF
-#endif /* SEAICE_LSR_FLEX */
+#ifdef SEAICE_ALLOW_LSR_FLEX
+        ENDIF
+#endif
 
         CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
 
@@ -950,10 +956,12 @@ C--    end doIterate4u or doIterate4v
        ENDIF
       ENDDO
 
-#ifdef SEAICE_LSR_FLEX
-      residkm2 = residkm1
-      residkm1 = residIni
-#endif /* SEAICE_LSR_FLEX */
+#ifdef SEAICE_ALLOW_LSR_FLEX
+      IF ( SEAICEuseLSRflex ) THEN
+       residkm2 = residkm1
+       residkm1 = residIni
+      ENDIF
+#endif /* SEAICE_ALLOW_LSR_FLEX */
 
 C ITERATION END -----------------------------------------------------
 
