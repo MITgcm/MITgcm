@@ -83,9 +83,9 @@ C     i,j,bi,bj  :: Loop counters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL  DIAGNOSTICS_IS_ON, diag_SIlsrRe_isOn
+      LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
-      _RL RTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL RTmp (1:sNx,1:sNy)
 #endif /* ALLOW_DIAGNOSTICS */
 
       _RL WFAU, WFAV, WFAU2, WFAV2
@@ -1071,18 +1071,20 @@ C     end outer ipass pseudo-time stepping loop
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-      diag_SIlsrRe_isOn  = DIAGNOSTICS_IS_ON('SIlsrRe ',myThid)
-
-      IF ( diag_SIlsrRe_isOn ) THEN
+      IF ( DIAGNOSTICS_IS_ON('SIlsrRe ',myThid) ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           RTmp(i,j,bi,bj)=SQRT( uTmp(i,j,bi,bj) * uTmp(i,j,bi,bj)
-     &       + vTmp(i,j,bi,bj) * vTmp(i,j,bi,bj) )
+           RTmp(i,j) = SQRT( HALF * (
+     &            uTmp(i,  j,bi,bj) * uTmp(i,  j,bi,bj)
+     &          + uTmp(i+1,j,bi,bj) * uTmp(i+1,j,bi,bj)
+     &          + vTmp(i,j,  bi,bj) * vTmp(i,j,  bi,bj)
+     &          + vTmp(i,j+1,bi,bj) * vTmp(i,j+1,bi,bj)
+     &          ) )
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL(RTmp,'SIlsrRe ',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(RTmp,'SIlsrRe ',0,1,3,bi,bj,myThid)
         ENDDO
        ENDDO
       ENDIF
