@@ -1232,17 +1232,9 @@ C--   Calculate residual of the linearised system
       IF ( calcMeanResid ) THEN
        _GLOBAL_SUM_RL( residU, myThid )
        _GLOBAL_SUM_RL( residV, myThid )
-#ifdef SEAICE_LSR_FLEX
-C     Scale residuals by the number of grid cells so that they do not
-C     get ridiculously large.
-       IF ( residU.GT.0. ) residU = SQRT(residU)/(Nx*Ny)
-       IF ( residV.GT.0. ) residV = SQRT(residV)/(Nx*Ny)
-#else
-C     Scale residuals by globalArea so that they do not get ridiculously
-C     large.
+C     scale residuals by globalArea so that they do not get ridiculously large
        IF ( residU.GT.0. ) residU = SQRT(residU/globalArea)
        IF ( residV.GT.0. ) residV = SQRT(residV/globalArea)
-#endif
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
