@@ -504,6 +504,19 @@ C     Mean flow component of vertical flux (at k+1) -> fVer
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         rAdvDeepFac = wDudrFac*rkSign*recip_deepFacC(k)
+        IF ( selectVortScheme.EQ.2 ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           mT(i,j) = ( fMer(i,j+1) - fMer(i,j) )*recip_dxC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           mT(i,j) = ( fMer(i,j+1) - fMer(i,j) )
+          ENDDO
+         ENDDO
+        ENDIF
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) =
@@ -515,7 +528,8 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &     *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
 #endif
      &     *( ( fZon(i,j  )  - fZon(i-1,j)  )*uDudxFac
-     &       +( fMer(i,j+1)  - fMer(i,  j)  )*vDudyFac
+c    &       +( fMer(i,j+1)  - fMer(i,  j)  )*vDudyFac
+     &       +           mT(i,j)             *vDudyFac
      &       +( fVerUkp(i,j) - fVerUkm(i,j) )*rAdvDeepFac
      &     )
          ENDDO
@@ -716,7 +730,9 @@ C      o Non-Hydrostatic (spherical) metric terms
         ENDDO
        ENDDO
       ENDIF
-      IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
+c     IF ( metricTerms .AND. usingSphericalPolarGrid ) THEN
+      IF ( metricTerms .AND. usingSphericalPolarGrid
+     &                 .AND. selectVortScheme.NE.2 ) THEN
 C      o Spherical polar grid metric terms
        CALL MOM_U_METRIC_SPHERE( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
@@ -725,7 +741,7 @@ C      o Spherical polar grid metric terms
         ENDDO
        ENDDO
       ENDIF
-      IF ( usingCylindricalGrid .AND. metricTerms ) THEN
+      IF ( metricTerms .AND. usingCylindricalGrid ) THEN
 C      o Cylindrical grid metric terms
        CALL MOM_U_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
@@ -980,7 +996,7 @@ C      o Non-Hydrostatic (spherical) metric terms
         ENDDO
        ENDDO
       ENDIF
-      IF ( usingSphericalPolarGrid .AND. metricTerms ) THEN
+      IF ( metricTerms .AND. usingSphericalPolarGrid ) THEN
 C      o Spherical polar grid metric terms
        CALL MOM_V_METRIC_SPHERE( bi,bj,k,uFld,mT,myThid )
        DO j=jMin,jMax
@@ -989,7 +1005,7 @@ C      o Spherical polar grid metric terms
         ENDDO
        ENDDO
       ENDIF
-      IF ( usingCylindricalGrid .AND. metricTerms ) THEN
+      IF ( metricTerms .AND. usingCylindricalGrid ) THEN
 C      o Cylindrical grid metric terms
        CALL MOM_V_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax
