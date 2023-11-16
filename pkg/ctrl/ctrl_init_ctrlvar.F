@@ -13,6 +13,7 @@
      &       ncvarnrmax_loc,
      &       ncvargrd_loc,
      &       whichxyz,
+     &       costfinal_exists,
      &       myThid )
 
 c     ==================================================================
@@ -47,6 +48,7 @@ c     == routine arguments ==
       integer ncvarnrmax_loc
       character*(1) ncvargrd_loc
       character*(2) whichxyz
+      logical  costfinal_exists
       integer myThid
 
 C     == external ==
@@ -57,7 +59,7 @@ c     == local variables ==
       integer il,ilDir
       character*(MAX_LEN_FNAM) fname(3), gfname
       character*(MAX_LEN_MBUF) msgBuf
-      logical  exst, g_exst
+      logical  g_exst
 C     == end of interface ==
 
 c     _BEGIN_MASTER( myThid )
@@ -78,7 +80,7 @@ cph add following flag to make pack/unpack only less error-prone
       call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, myThid )
 
 c     _BEGIN_MASTER( myThid )
-      inquire( file='costfinal', exist=exst )
+      inquire( file='costfinal', exist=costfinal_exists )
 c     _END_MASTER( myThid )
 
 C     In an adjoint run, adxx_ files should always be initialized with zeros
@@ -104,7 +106,7 @@ C     initialize to zero and warn user
         g_exst = .FALSE.
       endif
 
-      IF ( .NOT. exst) THEN
+      IF ( .NOT. costfinal_exists ) THEN
 
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
@@ -137,11 +139,6 @@ C     initialize to zero and warn user
          else
             STOP 'whichxyz option not implemented'
          end if
-
-      ELSE
-
-c-- for DIVA, avoid forward-related output in adjoint part
-         CALL TURNOFF_MODEL_IO( 1, myThid )
 
       ENDIF
 

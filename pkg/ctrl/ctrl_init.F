@@ -44,6 +44,7 @@ c     == local variables ==
       integer bi,bj
       integer i,j,k
       integer ivar
+      LOGICAL costfinal_exists
 
       _RL dummy
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -108,6 +109,17 @@ c
       CALL WRITE_REC_XYZ_RL( 'wunit', loctmp3d, 1, 1, myThid )
 #endif
 
+#ifdef CTRL_DO_PACK_UNPACK_ONLY
+      costfinal_exists=.FALSE.
+#else
+c     _BEGIN_MASTER( myThid )
+      inquire( file='costfinal', exist=costfinal_exists )
+c     _END_MASTER( myThid )
+
+c-- for DIVA, avoid forward-related output in adjoint part
+      IF ( costfinal_exists ) CALL TURNOFF_MODEL_IO( 1, myThid )
+#endif
+
       _BARRIER
 
 c--   ===========================
@@ -124,7 +136,7 @@ c--   Northern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
-     &     sNx, 1, Nr, 'm', 'xz', myThid )
+     &     sNx, 1, Nr, 'm', 'xz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c----------------------------------------------------------------------
@@ -137,7 +149,7 @@ c--   Southern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
-     &     sNx, 1, Nr, 'm', 'xz', myThid )
+     &     sNx, 1, Nr, 'm', 'xz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c----------------------------------------------------------------------
@@ -150,7 +162,7 @@ c--   Western obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
-     &     1, sNy, Nr, 'm', 'yz', myThid )
+     &     1, sNy, Nr, 'm', 'yz', costfinal_exists, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
@@ -163,7 +175,7 @@ c--   Eastern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
-     &     1, sNy, Nr, 'm', 'yz', myThid )
+     &     1, sNy, Nr, 'm', 'yz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
@@ -217,7 +229,7 @@ C       Under iceshelf, use maskSHI for these
 # endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
-     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -235,7 +247,7 @@ c--
 #endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
-     &       sNx, sNy, Nr, ncvargrdtmp, '3d', myThid )
+     &       sNx, sNy, Nr, ncvargrdtmp, '3d', costfinal_exists, myThid )
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -301,7 +313,7 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
@@ -310,14 +322,14 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C
 C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       endrec, 1, endrec,
-     &       sNx, sNy, 1, ncvargrdtmp, 'xy', myThid )
+     &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C
 #ifndef ALLOW_OPENAD
        endif
