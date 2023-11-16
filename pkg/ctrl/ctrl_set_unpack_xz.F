@@ -72,6 +72,14 @@ c     == local variables ==
       integer cunit2, cunit3
       character*(MAX_LEN_FNAM) cfile2, cfile3
 
+C     These are variables needed to read the header, but subsequently
+C     they are not used.
+      integer filencbuffindex
+      integer filei
+      integer filej
+      integer filek
+      integer filencvarindex(maxcvars)
+
 #ifdef CTRL_UNPACK_PRECISE
       integer il
       character*(MAX_LEN_FNAM) weightname
@@ -356,4 +364,3 @@ c     -- end of irec loop --
 
       return
       end
-

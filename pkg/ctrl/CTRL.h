@@ -135,58 +135,6 @@ C                            (only used in pkg/autodiff ...)
       CHARACTER*(1) ncvargrd(maxcvars)
       CHARACTER*(2) yadprefix
 
-      COMMON /controlvec_header_i/
-     &        filenvartype,
-     &        filenvarlength,
-     &        fileOptimCycle,
-     &        filencbuffindex,
-     &        fileIg,
-     &        fileJg,
-     &        fileI,
-     &        fileJ,
-     &        filensx,
-     &        filensy,
-     &        filek,
-     &        filenWetcGlobal,
-     &        filenWetsGlobal,
-     &        filenWetwGlobal,
-     &        filenWetvGlobal,
-     &        filencvarindex,
-     &        filencvarrecs,
-     &        filencvarxmax,
-     &        filencvarymax,
-     &        filencvarnrmax
-      INTEGER filenvartype
-      INTEGER filenvarlength
-      INTEGER fileOptimCycle
-      INTEGER filencbuffindex
-      INTEGER fileIg
-      INTEGER fileJg
-      INTEGER fileI
-      INTEGER fileJ
-      INTEGER filensx
-      INTEGER filensy
-      INTEGER filek
-      INTEGER filenWetcGlobal(Nr)
-      INTEGER filenWetsGlobal(Nr)
-      INTEGER filenWetwGlobal(Nr)
-      INTEGER filenWetvGlobal(Nr)
-      INTEGER filencvarindex(maxcvars)
-      INTEGER filencvarrecs(maxcvars)
-      INTEGER filencvarxmax(maxcvars)
-      INTEGER filencvarymax(maxcvars)
-      INTEGER filencvarnrmax(maxcvars)
-
-      COMMON /controlvec_header_r/
-     &               filefc
-      _RL            filefc
-
-      COMMON /controlvec_header_c/
-     &        fileYctrlid,
-     &        filencvargrd
-      CHARACTER*(10) fileYctrlid
-      CHARACTER*( 1) filencvargrd(maxcvars)
-
 c     Define unit weight as a placeholder
       COMMON /ctrl_weights_unit_r/
      &                        wunit

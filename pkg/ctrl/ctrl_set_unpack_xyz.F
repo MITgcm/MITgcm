@@ -53,6 +53,13 @@ c     == local variables ==
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
       character*(MAX_LEN_FNAM) cfile2, cfile3
+C     These are variables needed to read the header, but subsequently
+C     they are not used.
+      integer filencbuffindex
+      integer filei
+      integer filej
+      integer filek
+      integer filencvarindex(maxcvars)
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp

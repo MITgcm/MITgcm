@@ -79,6 +79,30 @@ c     == local variables ==
       character*(128) cfile
       integer ilDir
 
+C     These are variables needed to read the header, but subsequently
+C     they are not used.
+      integer filenvartype
+      integer filenvarlength
+      integer fileOptimCycle
+      integer fileIg
+      integer fileJg
+      integer filensx
+      integer filensy
+      integer filenWetcGlobal(Nr)
+      integer filenWetsGlobal(Nr)
+      integer filenWetwGlobal(Nr)
+      integer filenWetvGlobal(Nr)
+      integer filencvarindex(maxcvars)
+      integer filencvarrecs(maxcvars)
+      integer filencvarxmax(maxcvars)
+      integer filencvarymax(maxcvars)
+      integer filencvarnrmax(maxcvars)
+
+      _RL            filefc
+
+      character*(10) fileYctrlid
+      character*( 1) filencvargrd(maxcvars)
+
 #if (defined ALLOW_GENARR2D_CONTROL) \
       || (defined ALLOW_GENARR3D_CONTROL) \
       || (defined ALLOW_GENTIM2D_CONTROL)
