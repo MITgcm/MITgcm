@@ -43,21 +43,23 @@ C     bi,bj  :: tiles indices
 C     i, j   :: Loop counters
       INTEGER bi, bj
       INTEGER i, j
-      _RL omegaprime, fac
+      _RL omegaPrime, snFac, psFac
 CEOP
 
 C--   Initialise surface position anomaly to zero
-      omegaprime = 80. _d 0 / rSphere
-c     fac=-(rSphere**2)*omegaprime*(Omega+omegaprime)/(4.d0*(Omega**2))
+      omegaPrime = 80. _d 0 / rSphere
+c     psFac = -(rSphere**2)*omegaPrime*(Omega+omegaPrime)
 C     previous expression above was missing one "half" factor:
-      fac = -(rSphere*rSphere)*omegaprime*(Omega+omegaprime*0.5 _d 0)
-     &    / (4. _d 0*Omega*Omega)
+      psfac = -rhoConst*(rSphere*rSphere)
+     &                 *omegaPrime*( Omega + omegaPrime*0.5 _d 0 )
+      snFac = 1. _d 0 / (4. _d 0*Omega*Omega)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           etaN(i,j,bi,bj) = 0. _d 0
-     &                    + fac*fCori(i,j,bi,bj)*fCori(i,j,bi,bj)
+     &     + psFac*( snFac*fCori(i,j,bi,bj)*fCori(i,j,bi,bj)
+     &             - 1. _d 0 / 3. _d 0 )
          ENDDO
         ENDDO
        ENDDO

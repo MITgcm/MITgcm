@@ -64,13 +64,12 @@ end
 %- define surface pressure anomaly from the norm of velocity at grid-cell center
 %  using analytical expression: cos^2(lat) x fac with:
  fac=rhoConst*(Omega*rSphere + Ueq/2)*Ueq;
- ps1=cos(rad*yC); ps1=ps1.*ps1; ps1=fac*ps1;
+%- and since shifting by const has no effect on grad(P), substract 2/3(*fac) (= analytical mean)
+%  to get closer to zero global-mean:
+ ps1=cos(rad*yC); ps1=ps1.*ps1-2./3.; ps1=fac*ps1;
 
  psAvr=mean(ps1(:));
-fprintf('Ps stats: %8.2f , %8.2f , %8.2f',min(ps1(:)),psAvr,max(ps1(:)));
- psAvr=round(psAvr*1.e-3)*1.e3;
-fprintf(' : <-- substract %8.2f\n',psAvr); ps1=ps1-psAvr;
-fprintf('\n');
+ fprintf('Ps stats: %8.2f , %13.6e , %8.2f\n',min(ps1(:)),psAvr,max(ps1(:)));
 
 %- write initial conditions:
 kwr=1; prec='real*8';
