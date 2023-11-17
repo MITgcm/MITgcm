@@ -131,9 +131,13 @@ C                            (only used in pkg/autodiff ...)
 
       COMMON /controlvars_c/
      &                       ncvargrd
+     &                     , ncvartype
+     &                     , ncvarfname
      &                     , yadprefix
-      CHARACTER*(1) ncvargrd(maxcvars)
-      CHARACTER*(2) yadprefix
+      CHARACTER*(1)            ncvargrd  ( maxcvars )
+      CHARACTER*(2)            ncvartype ( maxcvars )
+      CHARACTER*(MAX_LEN_FNAM) ncvarfname( maxcvars )
+      CHARACTER*(2)            yadprefix
 
 c     Define unit weight as a placeholder
       COMMON /ctrl_weights_unit_r/

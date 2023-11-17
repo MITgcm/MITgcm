@@ -85,6 +85,8 @@ c--     Set default values.
        ncvarymax(ivar)  =  0
        ncvarnrmax(ivar) =  0
        ncvargrd(ivar)   = '?'
+       ncvartype(ivar)  = '?'
+       ncvarfname(ivar) = ' '
       enddo
 
 c     Set unit weight to 1

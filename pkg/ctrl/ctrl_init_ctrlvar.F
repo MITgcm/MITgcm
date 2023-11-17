@@ -71,6 +71,8 @@ c     _BEGIN_MASTER( myThid )
       ncvarymax (ivarindex)    = ncvarymax_loc
       ncvarnrmax(ivarindex)    = ncvarnrmax_loc
       ncvargrd  (ivarindex)    = ncvargrd_loc
+      ncvartype (ivarindex)    = whichxyz
+      ncvarfname(ivarindex)    = xx_fname
 c     _END_MASTER( myThid )
 
 cph add following flag to make pack/unpack only less error-prone
