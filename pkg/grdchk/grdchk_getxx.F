@@ -95,8 +95,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
       ENDIF
 
 #ifdef ALLOW_GENARR3D_CONTROL
-      IF ( varIndex_gc .GE. 201 .AND.
-     &     varIndex_gc .LE. 200+maxCtrlArr3D ) THEN
+      IF ( ncvartype(varIndex_gc) .EQ. '3d' ) THEN
          CALL active_read_xyz( fName, loctmp3d, 1,
      &                         doglobalread, ladinit, optimcycle,
      &                         myThid, dummy )
@@ -114,7 +113,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
 #endif
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
-      ELSEIF ( varIndex_gc.EQ.11 .OR. varIndex_gc.EQ.12) THEN
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'xz' ) THEN
          CALL active_read_xz( fName, tmpfldxz, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        myThid, dummy )
@@ -130,7 +129,7 @@ C-    get the name of varIndex_gc corresponding CTRL:
 #endif
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
-      ELSEIF ( varIndex_gc.EQ.13 .OR. varIndex_gc.EQ.14) THEN
+      ELSEIF ( ncvartype(varIndex_gc) .EQ. 'yz' ) THEN
          CALL active_read_yz( fName, tmpfldyz, icvrec,
      &                        doglobalread, ladinit, optimcycle,
      &                        myThid, dummy )
