@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff + ecco:
+  - fix a typo in AD-var output file name (addummy_in_stepping.F);
+  - fix and improve weight output in pkg/ecco/cost_generic.F
 o pkg/streamice:
   - implementation of parameterized depth-dependent ice-shelf melt rate ;
   - new subroutines added to accumulate misfit cost based on time-dependent
