@@ -100,8 +100,8 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"
@@ -294,8 +294,8 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 C- OpenAD: this header is not converted to a module --> go after the others
 #include "AUTODIFF.h"

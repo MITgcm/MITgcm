@@ -1,5 +1,4 @@
 
-
       subroutine optim_sub(
      I                 nn
      &               )
@@ -30,7 +29,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 
 c     == routine arguments ==
