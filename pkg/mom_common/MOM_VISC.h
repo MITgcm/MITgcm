@@ -20,6 +20,12 @@ C     useVariableVisc   :: variable (in space or time) viscosity is used
       _RL L4rdt_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL L4rdt_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+C--   COMMON /MOM_FLUXFORM_GRID/ just to hold a copy of deepFacC
+C     deepFacAdv :: copy of deepFacC or just Nr-length vector of 1 when
+C                   MOM_USE_OLD_DEEP_VERT_ADV is defined or useNHMTerms=F
+      COMMON /MOM_GRID_COPY/ deepFacAdv
+      _RL deepFacAdv(Nr)
+
 #ifdef ALLOW_SMAG_3D
 C     smag3D_hLsC :: horiz. grid length scale (power 2/3) at grid cell center
 C     smag3D_hLsW :: horiz. grid length scale (power 2/3) at western  edge
@@ -64,7 +70,7 @@ C     viscA4_W  :: Horizontal biharmonic viscosity for vertical momentum
 #ifdef ALLOW_BOTTOMDRAG_ROUGHNESS
 C--   bottom drag coefficents as a function of grid cell thickness
 C     and roughness length
-      COMMON /GRID_DRAGCOEFFS_RS/
+      COMMON /MOM_DRAGCOEFFS_RS/
      &     bottomDragCoeffW, bottomDragCoeffS
       _RS bottomDragCoeffW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS bottomDragCoeffS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

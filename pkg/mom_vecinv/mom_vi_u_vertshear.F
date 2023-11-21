@@ -5,7 +5,7 @@ C     !ROUTINE: MOM_VI_U_VERTSHEAR
 
 C     !INTERFACE:
       SUBROUTINE MOM_VI_U_VERTSHEAR(
-     I        bi, bj, k,
+     I        bi, bj, k, deepFacA,
      I        uFld, wFld,
      U        uShearTerm,
      I        myThid )
@@ -24,7 +24,9 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C  deepFacA             :: deep-model grid factor at level center
       INTEGER bi, bj, k
+      _RL deepFacA(Nr)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL uShearTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -32,11 +34,11 @@ C     !INPUT/OUTPUT PARAMETERS:
 
 C     !LOCAL VARIABLES:
       INTEGER i, j, kp1, km1
-      _RL  mask_Kp1, mask_Km1, wBarXm, wBarXp
-      _RL  uZm, uZp
+      _RL mask_Kp1, mask_Km1, wBarXm, wBarXp
+      _RL uZm, uZp, recip_drDeepRho
       LOGICAL rAdvAreaWeight
-c     _RL  umask_Kp1,umask_K,umask_Km1
-c1    _RL  wBarXZ,uZbarZ
+c     _RL umask_Kp1,umask_K,umask_Km1
+c1    _RL wBarXZ,uZbarZ
 CEOP
 
       rAdvAreaWeight =.TRUE.
@@ -50,6 +52,9 @@ C-    Area-weighted average either in KE or in vert. advection:
       km1 = MAX(k-1,1)
       mask_Km1 = oneRL
       IF (k.EQ.1) mask_Km1 = zeroRL
+
+      recip_drDeepRho = recip_drF(k)/deepFacA(k)
+     &                * recip_deepFac2C(k)*recip_rhoFacC(k)
 
       DO j=1-OLy,sNy+OLy
        DO i=2-OLx,sNx+OLx
@@ -89,29 +94,21 @@ C     Transport at interface k+1 (here wFld is already masked)
      &                  )*mask_Kp1*deepFac2F(kp1)*rhoFacF(kp1)
        ENDIF
 
-#ifdef MOM_VI_DEEP_VERTSHEAR
-C     delta_Z( U*deepFac )  @ interface k
-        uZm = ( uFld(i,j, k ,bi,bj)*deepFacC( k )
-     &        - uFld(i,j,km1,bi,bj)*deepFacC(km1)*mask_Km1 )*rkSign
-C     delta_Z( U*deepFac )  @ interface k+1
-        uZp = ( uFld(i,j,kp1,bi,bj)*deepFacC(kp1)*mask_Kp1
-     &        - uFld(i,j, k ,bi,bj)*deepFacC( k ) )*rkSign
-
-#else /* MOM_VI_DEEP_VERTSHEAR */
-C delta_Z( U )  @ interface k
+C-    delta_Z( U*deepFac )  @ interface k
 c       umask_Km1=mask_Km1*maskW(i,j,Km1,bi,bj)
-        uZm=(uFld(i,j,k,bi,bj)-mask_Km1*uFld(i,j,km1,bi,bj))*rkSign
+        uZm = ( uFld(i,j, k ,bi,bj)*deepFacA( k )
+     &        - uFld(i,j,km1,bi,bj)*deepFacA(km1)*mask_Km1 )*rkSign
 c2   &      *recip_dRC(K)
 c       IF (freeslip1) uZm=uZm*umask_Km1
 c       IF (noslip1.AND.umask_Km1.EQ.0.) uZm=uZm*2.
 
-C delta_Z( U )  @ interface k+1
+C-    delta_Z( U*deepFac )  @ interface k+1
 c       umask_Kp1=mask_Kp1*maskW(i,j,Kp1,bi,bj)
-        uZp=(mask_Kp1*uFld(i,j,kp1,bi,bj)-uFld(i,j,k,bi,bj))*rkSign
+        uZp = ( uFld(i,j,kp1,bi,bj)*deepFacA(kp1)*mask_Kp1
+     &        - uFld(i,j, k ,bi,bj)*deepFacA( k ) )*rkSign
 c2   &      *recip_dRC(Kp1)
 c       IF (freeslipK) uZp=uZp*umask_Kp1
 c       IF (noslipK.AND.umask_Kp1.EQ.0.) uZp=uZp*2.
-#endif /* MOM_VI_DEEP_VERTSHEAR */
 
 c1      IF (upwindShear) THEN
 c1       wBarXZ=0.5*( wBarXm + wBarXp )
@@ -131,20 +128,10 @@ c2   &                  *_maskW(I,J,K,bi,bj)
          uShearTerm(i,j) = -halfRL*
      &                  (    (     wBarXp *uZp +     wBarXm *uZm )
      &                     + ( ABS(wBarXp)*uZp - ABS(wBarXm)*uZm )
-     &                  )*_recip_hFacW(i,j,k,bi,bj)
-     &                   * recip_drF(k)
-     &                   * recip_deepFac2C(k)*recip_rhoFacC(k)
-#ifdef MOM_VI_DEEP_VERTSHEAR
-     &                   * recip_deepFacC(k)
-#endif
+     &                  )*_recip_hFacW(i,j,k,bi,bj)*recip_drDeepRho
         ELSE
          uShearTerm(i,j) = -halfRL*( wBarXp*uZp + wBarXm*uZm )
-     &                   *_recip_hFacW(i,j,k,bi,bj)
-     &                   * recip_drF(k)
-     &                   * recip_deepFac2C(k)*recip_rhoFacC(k)
-#ifdef MOM_VI_DEEP_VERTSHEAR
-     &                   * recip_deepFacC(k)
-#endif
+     &                   *_recip_hFacW(i,j,k,bi,bj)*recip_drDeepRho
         ENDIF
        ENDDO
       ENDDO

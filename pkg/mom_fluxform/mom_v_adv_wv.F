@@ -5,7 +5,7 @@ C !ROUTINE: MOM_V_ADV_WV
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_ADV_WV(
-     I        bi, bj, k,
+     I        bi, bj, k, deepFacA,
      I        vFld, wFld, rTrans,
      O        advectiveFluxWV,
      I        myThid )
@@ -26,11 +26,13 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi, bj               :: tile indices
 C  k                    :: vertical level
+C  deepFacA             :: deep-model grid factor at level center
 C  vFld                 :: meridional velocity
 C  wFld                 :: vertical velocity
 C  rTrans               :: vertical transport (above V point)
 C  myThid               :: my Thread Id number
-      INTEGER bi,bj,k
+      INTEGER bi, bj, k
+      _RL deepFacA(Nr)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -50,7 +52,7 @@ CEOP
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
          advectiveFluxWV(i,j) = rTrans(i,j)*vFld(i,j,k-1,bi,bj)
-     &                                     *deepFacC(k-1)
+     &                                     *deepFacA(k-1)
         ENDDO
        ENDDO
 
@@ -69,7 +71,7 @@ C     (linear) Free-surface correction at k=1
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
          advectiveFluxWV(i,j) = rTrans(i,j)*vFld(i,j,k,bi,bj)
-     &                                     *deepFacC(k)
+     &                                     *deepFacA(k)
         ENDDO
        ENDDO
 
@@ -80,11 +82,11 @@ C     Vertical advection - interior ; assume vFld & wFld are masked
         DO i=1-OLx+1,sNx+OLx
          advectiveFluxWV(i,j) = rTrans(i,j)*0.5 _d 0
 #ifdef MOM_BOUNDARY_CONSERVE
-     &    *( vFld(i,j, k ,bi,bj)*deepFacC( k )*_maskS(i,j,k-1,bi,bj)
-     &     + vFld(i,j,k-1,bi,bj)*deepFacC(k-1)*_maskS(i,j, k ,bi,bj) )
+     &    *( vFld(i,j, k ,bi,bj)*deepFacA( k )*_maskS(i,j,k-1,bi,bj)
+     &     + vFld(i,j,k-1,bi,bj)*deepFacA(k-1)*_maskS(i,j, k ,bi,bj) )
 #else
-     &    *( vFld(i,j, k ,bi,bj)*deepFacC( k )
-     &     + vFld(i,j,k-1,bi,bj)*deepFacC(k-1) )
+     &    *( vFld(i,j, k ,bi,bj)*deepFacA( k )
+     &     + vFld(i,j,k-1,bi,bj)*deepFacA(k-1) )
 #endif
         ENDDO
        ENDDO
@@ -101,7 +103,7 @@ C     (linear) Free-surface correction at k>1
      &         +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)*
      &          (maskC(i,j-1,k,bi,bj)-maskC(i,j-1,k-1,bi,bj))
      &                )*deepFac2F(k)*rhoFacF(k)
-     &                 *vFld(i,j,k,bi,bj)*deepFacC(k)
+     &                 *vFld(i,j,k,bi,bj)*deepFacA(k)
          ENDDO
         ENDDO
 C- endif NOT rigidLid
