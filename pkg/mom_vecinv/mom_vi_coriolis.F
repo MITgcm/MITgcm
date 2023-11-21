@@ -89,7 +89,8 @@ C     (formerly called: useJamartWetPoints)
        ENDDO
 c     ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
       ELSEIF ( selectCoriScheme .EQ. 2
-     &    .OR. selectCoriScheme .EQ. 4 ) THEN
+     &    .OR. selectCoriScheme .EQ. 4
+     &    .OR. selectCoriScheme .EQ. 6 ) THEN
 C- hFac weighted average :
        DO j=1-OLy,sNy+OLy-1
         DO i=2-OLx,sNx+OLx
@@ -158,7 +159,8 @@ C     (formerly called: useJamartWetPoints)
        ENDDO
 c     ELSEIF ( selectCoriScheme .EQ. 2 ) THEN
       ELSEIF ( selectCoriScheme .EQ. 2
-     &    .OR. selectCoriScheme .EQ. 4 ) THEN
+     &    .OR. selectCoriScheme .EQ. 4
+     &    .OR. selectCoriScheme .EQ. 6 ) THEN
 C- hFac weighted average :
        DO j=2-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx-1

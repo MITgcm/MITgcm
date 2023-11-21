@@ -5,8 +5,8 @@ C !ROUTINE: MOM_W_CORIOLIS_NH
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_W_CORIOLIS_NH(
-     I               bi,bj,k,
-     I               uFld, vFld,
+     I               bi, bj, k,
+     I               uFld, vFld, recip_rThickC,
      U               wCoriolisTerm,
      I               myThid )
 
@@ -24,14 +24,17 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: horizontal flow, u component
 C  vFld                 :: horizontal flow, v component
+C  rThickC              :: thickness of W-cell (r units)
+C  recip_rThickC        :: reciprocal of W-cell thickness
 C  myThid               :: my Thread Id number
-      INTEGER bi,bj,k
+      INTEGER bi, bj, k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL recip_rThickC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -73,7 +76,8 @@ c    &            *deepFacC(k-1)
      &           )*drF( k )
 c    &            *deepFacC( k )
      &         )*0.25 _d 0
-     &       )*recip_drC(k)*wUnit2rVel(k)
+c    &       )*recip_drC(k)*wUnit2rVel(k)
+     &       )*recip_rThickC(i,j)*wUnit2rVel(k)
 c    &       )*recip_drC(k)*recip_deepFacF(k)*wUnit2rVel(k)
          ENDDO
         ENDDO

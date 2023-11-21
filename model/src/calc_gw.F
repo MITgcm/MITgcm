@@ -83,7 +83,7 @@ C     yA            :: W-Cell face area normal to Y
 C     rThickC_W     :: thickness (in r-units) of W-Cell at Western Edge
 C     rThickC_S     :: thickness (in r-units) of W-Cell at Southern Edge
 C     rThickC_C     :: thickness (in r-units) of W-Cell (centered on W pt)
-C     recip_rThickC :: reciprol thickness of W-Cell (centered on W-point)
+C     recip_rThickC :: reciprocal thickness of W-Cell (centered on W-point)
 C     flx_NS        :: vertical momentum flux, meridional direction
 C     flx_EW        :: vertical momentum flux, zonal direction
 C     flxAdvUp      :: vertical mom. advective   flux, vertical direction (@ level k-1)
@@ -604,7 +604,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( useNHMTerms .AND. k.GT.1 ) THEN
           CALL MOM_W_METRIC_NH(
-     I               bi,bj,k,
+     I               bi, bj, k,
      I               uVel, vVel,
      O               gwAdd,
      I               myThid )
@@ -616,8 +616,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
         IF ( use3dCoriolis .AND. k.GT.1 ) THEN
           CALL MOM_W_CORIOLIS_NH(
-     I               bi,bj,k,
-     I               uVel, vVel,
+     I               bi, bj, k,
+     I               uVel, vVel, recip_rThickC,
      O               gwAdd,
      I               myThid )
           DO j=jMin,jMax
