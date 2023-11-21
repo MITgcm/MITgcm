@@ -54,7 +54,8 @@ c     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) \
       || defined (ALLOW_GENARR3D_CONTROL) \
       || defined (ALLOW_GENTIM2D_CONTROL))
-      INTEGER iarr, jarr
+      INTEGER iarr, jarr, iw
+      logical isgentim2d, isgenarr2d
 #endif
 #if ( defined ALLOW_GENTIM2D_CONTROL && defined ALLOW_CAL )
       integer i, timeint(4)
@@ -125,191 +126,172 @@ c     == end of interface ==
         enddo
       enddo
 
-#if (defined (ALLOW_GENARR2D_CONTROL) \
-      || defined (ALLOW_GENARR3D_CONTROL) \
-      || defined (ALLOW_GENTIM2D_CONTROL))
+      do k = 1, maxcvars
+C     only print active variables for which ncvarindex has be set
+C     (default = -1)
+       if ( ncvarindex(k) .GT. 0 ) then
 
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)')
-     &' Settings of generic controls:'
-      call print_message( msgbuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)')
-     &' -----------------------------'
-      call print_message( msgbuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a,L5,a)')
-
-#ifdef ALLOW_GENARR2D_CONTROL
-      do iarr = 1, maxCtrlArr2D
-       if (xx_genarr2d_weight(iarr).NE.' ') then
-
-        write(msgbuf,'(a,i2,a)')
-     &' -> 2D control, genarr2d no. ',iarr,
-     &' is in use'
+        write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-
-        il   = ILNBLNK( xx_genarr2d_file(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      file       = ',xx_genarr2d_file(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        il   = ILNBLNK( xx_genarr2d_weight(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      weight     = ',xx_genarr2d_weight(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      index      = ', 100+iarr
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      ncvarindex = ', ncvarindex(100+iarr)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-        do jarr=1,maxCtrlProc
-         if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
-          il = ilnblnk(xx_genarr2d_preproc(jarr,iarr))
-          write(msgbuf,'(a,a)') ' preprocess = ',
-     &                            xx_genarr2d_preproc(jarr,iarr)(1:il)
-          call print_message( msgbuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-         endif
-        enddo
-
-       endif
-      enddo
-#endif
-
+        il   = ILNBLNK( ncvarfname(k) )
+C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENARR3D_CONTROL
-      do iarr = 1, maxCtrlArr3D
-       if (xx_genarr3d_weight(iarr).NE.' ') then
-
-        write(msgbuf,'(a,i2,a)')
+        if ( ncvartype(k) .eq. '3d') then
+         do iarr = 1, maxCtrlArr3D
+          if (xx_genarr3d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+           jarr = iarr
+           write(msgbuf,'(a,i2,a)')
      &' -> 3d control, genarr3d no. ',iarr,
      &' is in use'
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-        il   = ILNBLNK( xx_genarr3d_file(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      file       = ',xx_genarr3d_file(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        il   = ILNBLNK( xx_genarr3d_weight(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      weight     = ',xx_genarr3d_weight(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      index      = ', 200+iarr
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      ncvarindex = ', ncvarindex(200+iarr)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-        do jarr=1,maxCtrlProc
-         if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then
-          il = ilnblnk(xx_genarr3d_preproc(jarr,iarr))
-          write(msgbuf,'(a,a)') ' preprocess = ',
-     &         xx_genarr3d_preproc(jarr,iarr)(1:il)
-          call print_message( msgbuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
-         endif
-        enddo
-
-       endif
-      enddo
-#endif
-
-#ifdef ALLOW_GENTIM2D_CONTROL
-      do iarr = 1, maxCtrlTim2D
-       if (xx_gentim2d_weight(iarr).NE.' ') then
-
-        write(msgbuf,'(a,i2,a)')
-     &' -> time variable 2D control, gentim2d no. ',iarr,
-     &' is in use'
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-        il   = ILNBLNK( xx_gentim2d_file(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      file       = ',xx_gentim2d_file(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-        il   = ILNBLNK( xx_gentim2d_weight(iarr) )
-        write(msgbuf,'(a,a)')
-     &'      weight     = ',xx_gentim2d_weight(iarr)(1:il)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      index      = ', 300+iarr
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
-     &'      ncvarindex = ', ncvarindex(300+iarr)
-        call print_message( msgbuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-
-#ifdef ALLOW_CAL
-        if ( useCAL ) then
-         call cal_TimeInterval( xx_gentim2d_period(iarr),
-     &                          'secs', timeint, myThid )
-         write(msgbuf,'(a,i9.8,i7.6)')
-     &        '      period     = ',(timeint(i), i=1,2)
-         call print_message( msgbuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif
+         enddo
         endif
 #endif
-
-        do jarr=1,maxCtrlProc
-         if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
-          il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
-          write(msgbuf,'(a,a)') '      preprocess = ',
-     &         xx_gentim2d_preproc(jarr,iarr)(1:il)
+#ifdef ALLOW_GENARR2D_CONTROL
+        isgenarr2d=.FALSE.
+        if ( ncvartype(k) .eq. 'xy') then
+         do iarr = 1, maxCtrlArr2D
+          if (xx_genarr2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+           isgenarr2d=.TRUE.
+           jarr = iarr
+           write(msgbuf,'(a,i2,a)')
+     &' -> 2d control, genarr2d no. ',iarr,
+     &' is in use'
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif
+         enddo
+        endif
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+        isgentim2d=.FALSE.
+        if ( ncvartype(k) .eq. 'xy') then
+         do iarr = 1, maxCtrlTim2D
+          if (xx_gentim2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+           isgentim2d=.TRUE.
+           jarr = iarr
+           write(msgbuf,'(a,i2,a)')
+     &' -> time variable 2D control, gentim2d no. ',iarr,
+     &' is in use'
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif
+         enddo
+        endif
+#endif
+        write(msgbuf,'(a,a)')
+     &'      file       = ',ncvarfname(k)(1:il)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        write(msgbuf,'(a,a)')
+     &'      ncvartype  = ', ncvartype(k)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        write(msgbuf,'(a,i5.4,a)')
+     &'      index      = ', k, '  (use this for pkg/grdchk)'
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        write(msgbuf,'(a,i5.4)')
+     &'      ncvarindex = ', ncvarindex(k)
+        call print_message( msgbuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+C     extra information only available for generic control variables
+#ifdef ALLOW_GENARR3D_CONTROL
+        if ( ncvartype(k) .eq. '3d') then
+         iarr = jarr
+         iw   = ILNBLNK( xx_genarr3d_weight(iarr) )
+         write(msgbuf,'(a,a)')
+     &'      weight     = ',xx_genarr3d_weight(iarr)(1:iw)
+         call print_message( msgbuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         do jarr=1,maxCtrlProc
+          if (xx_genarr3d_preproc(jarr,iarr).NE.' ') then
+           il = ilnblnk(xx_genarr3d_preproc(jarr,iarr))
+           write(msgbuf,'(a,a)') ' preprocess = ',
+     &          xx_genarr3d_preproc(jarr,iarr)(1:il)
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif
+         enddo
+        endif
+#endif
+#ifdef ALLOW_GENARR2D_CONTROL
+        if ( ncvartype(k) .eq. 'xy' .and. isgenarr2d ) then
+         iarr = jarr
+         iw   = ILNBLNK( xx_genarr2d_weight(iarr) )
+         write(msgbuf,'(a,a)')
+     &'      weight     = ',xx_genarr2d_weight(iarr)(1:iw)
+         call print_message( msgbuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         do jarr=1,maxCtrlProc
+          if (xx_genarr2d_preproc(jarr,iarr).NE.' ') then
+           il = ilnblnk(xx_genarr2d_preproc(jarr,iarr))
+           write(msgbuf,'(a,a)') ' preprocess = ',
+     &          xx_genarr2d_preproc(jarr,iarr)(1:il)
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif
+         enddo
+        endif
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+        if ( ncvartype(k) .eq. 'xy' .and. isgentim2d ) then
+         iarr = jarr
+         iw   = ILNBLNK( xx_gentim2d_weight(iarr) )
+         write(msgbuf,'(a,a)')
+     &'      weight     = ',xx_gentim2d_weight(iarr)(1:iw)
+         call print_message( msgbuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+#ifdef ALLOW_CAL
+         if ( useCAL ) then
+          call cal_TimeInterval( xx_gentim2d_period(iarr),
+     &                          'secs', timeint, myThid )
+          write(msgbuf,'(a,i9.8,i7.6)')
+     &'      period     = ',(timeint(i), i=1,2)
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
-C
-          if (xx_gentim2d_preproc_c(jarr,iarr).NE.' ') then
-           il = ilnblnk(xx_gentim2d_preproc_c(jarr,iarr))
-           write(msgbuf,'(a,a)') '        param. (text)= ',
-     &          xx_gentim2d_preproc_c(jarr,iarr)(1:il)
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-C
-          if (xx_gentim2d_preproc_i(jarr,iarr).NE.0) then
-           write(msgbuf,'(a,i6)') '        param. (int.)= ',
-     &          xx_gentim2d_preproc_i(jarr,iarr)
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-C
-          if (xx_gentim2d_preproc_r(jarr,iarr).NE.0. _d 0) then
-           write(msgbuf,'(a,e10.3)') '        param. (real)= ',
-     &          xx_gentim2d_preproc_r(jarr,iarr)
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-
          endif
-        enddo
+#endif
 
+         do jarr=1,maxCtrlProc
+          if (xx_gentim2d_preproc(jarr,iarr).NE.' ') then
+           il = ilnblnk(xx_gentim2d_preproc(jarr,iarr))
+           write(msgbuf,'(a,a)') '      preprocess = ',
+     &          xx_gentim2d_preproc(jarr,iarr)(1:il)
+           call print_message( msgbuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+C
+           if (xx_gentim2d_preproc_c(jarr,iarr).NE.' ') then
+            il = ilnblnk(xx_gentim2d_preproc_c(jarr,iarr))
+            write(msgbuf,'(a,a)') '        param. (text)= ',
+     &           xx_gentim2d_preproc_c(jarr,iarr)(1:il)
+            call print_message( msgbuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+           endif
+C
+           if (xx_gentim2d_preproc_i(jarr,iarr).NE.0) then
+            write(msgbuf,'(a,i6)') '        param. (int.)= ',
+     &           xx_gentim2d_preproc_i(jarr,iarr)
+            call print_message( msgbuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+           endif
+C
+           if (xx_gentim2d_preproc_r(jarr,iarr).NE.0. _d 0) then
+            write(msgbuf,'(a,e10.3)') '        param. (real)= ',
+     &           xx_gentim2d_preproc_r(jarr,iarr)
+            call print_message( msgbuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+           endif
+
+          endif
+         enddo
+        endif
+#endif
        endif
       enddo
-#endif
-
-#endif
 
       write(msgbuf,'(a)')
      &' '
