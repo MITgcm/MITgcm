@@ -1,6 +1,43 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk:
+  - new S/R to get CTRL var/file name from grdchk-index ; use it to simplify
+    (with new arguments) the 3 routines that handle CTRL var/file perturbations
+  - rename grdchk_init to grdchk_get_mask ; move GRDCHK_SUMMARY call ;
+  - report (in summary & in results section) CTRL var/file name used in grdchk.
+o pkg/dic:
+  - fix loading of forcing file for the case DIC_forcingCycle = 0 ;
+  - fix inconsistent timing params for loading initial surface-silica file ;
+  - clean-up initialise-varia level S/R, now all called from dic_init_varia.F
+    and move all forcing field initialisation to dic_ini_forcing.F ;
+  - read and process pickup_dic meta file with error/warning (depending on
+    pickupStrictlyMatch = T/F) if missing file or field.
+o pkg/ctrl:
+  - reduce pkg/ctrl/optim.h to just "optimcycle" and rename into OPTIMCYCLE.h ;
+  - keep optim_readparms.F namelist unchanged and define variables locally.
+
+checkpoint68t (2023/10/28)
+o pkg/dic:
+  - improve carbonate dissolution options (new params: selectCalciteDissolution)
+    and fix a minor bug in dissolution rates according to Keir et al (1980);
+  - change exp. so_box_biogeo secondary tests caSat0/3 to test option 2 & 3.
+o pkg/gmredi:
+  - fix setting of GM_ExtraDiag that was not (always) turned on with 3D Kappa
+    read from file, with Bates-K3d or QG-Leith, therefore missing 2 terms in
+    isopycnal diffusion tensor; update ref. output of MLAdjust.QGLthGM test ;
+  - add more check and stop for the case #undef GM_NON_UNITY_DIAGONAL ;
+  - add runtime parameter GM_isoFac_calcK to allow to scale dynamically computed
+    Kappa contribution in the Redi-tensor (default = 1.).
+o pkg/autodiff:
+  - adjust call to S/R DIAGNOSTICS_SWITCH_ONOFF in autodiff_inadmode_set_ad.F
+    so that snap-shot Adjoint diagnostics are filled within the same time-step
+    as they are written to output file.
+o pkg/ctrl:
+  - rename ctrl_dummy.h to CTRL_DUMMY.h, remove unused variables & common blocks
+  - retire CPP-flag ALLOW_HFACC/HFACC3D_CONTROL and remove related code.
+o pkg/ctrl:
+  - rename header file "ctrl.h" to "CTRL.h".
 o utils/matlab/cs_grid:
   - update some basic matlab-scripts for CS-grid (split_*_cub.m,
     rotate_uv2uvEN.m, mk_psiLine_CS.m & use_psiLine.m) to a) also work with

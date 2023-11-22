@@ -29,9 +29,9 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
+#include "CTRL.h"
 #include "CTRL_OBCS.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 

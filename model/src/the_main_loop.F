@@ -204,8 +204,8 @@ C     it is important that this file is included after SEAICE_SIZE.h
 
 # ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
+# include "CTRL.h"
+# include "CTRL_DUMMY.h"
 # include "CTRL_GENARR.h"
 # include "CTRL_OBCS.h"
 # endif
@@ -223,9 +223,6 @@ C     it is important that this file is included after SEAICE_SIZE.h
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
-# endif
-# ifdef ALLOW_CTRL
-#  include "optim.h"
 # endif
 # ifdef ALLOW_TIMEAVE
 #  include "TIMEAVE_STATV.h"
@@ -358,12 +355,6 @@ CADJ STORE alpha    = tapelev_init, key = 1
 #endif
 
 #ifdef ALLOW_OPENAD
-# ifdef ALLOW_DIFFKR_CONTROL
-c$openad INDEPENDENT(xx_diffkr_dummy)
-# endif
-# ifdef ALLOW_KAPGM_CONTROL
-c$openad INDEPENDENT(xx_kapgm)
-# endif
 # ifdef ALLOW_GENARR2D_CONTROL
 cphc$openad INDEPENDENT(xx_genarr2d)
 c$openad INDEPENDENT(xx_genarr2d_dummy)

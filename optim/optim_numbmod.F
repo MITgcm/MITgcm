@@ -44,7 +44,6 @@ c               - finished, revised and debugged
 c
 c     ==================================================================
 
-
       subroutine optim_numbmod(
      O                    nn
      &                  )
@@ -75,7 +74,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ctrl.h"
+#include "CTRL.h"
 #include "optim.h"
 #include "minimization.h"
 #include "CTRL_OBCS.h"
