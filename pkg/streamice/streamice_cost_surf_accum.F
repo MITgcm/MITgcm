@@ -1,16 +1,16 @@
 #include "STREAMICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
+c#ifdef ALLOW_AUTODIFF
+c# include "AUTODIFF_OPTIONS.h"
+c#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
 
-      subroutine streamice_cost_surf_accum ( myThid, myIter )
+      subroutine streamice_cost_surf_accum ( myIter, myThid )
 C     *==========================================================*
-C     | subroutine cost_test                                     |
-C     | o this routine computes the cost function for the tiles  |
-C     |   of this processor                                      |
+C     | subroutine streamice_cost_surf_accum                     |
+C     | o this routine calculates the surface misfit contri-     |
+C     |   bution to the per-timestep STREAMICE cost              |
 C     *==========================================================*
 C     |                                                          |
 C     | Notes                                                    |
@@ -20,10 +20,10 @@ C     *==========================================================*
 
 C     == Global variables ===
 #include "SIZE.h"
+#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "GRID.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE.h"
 #endif
@@ -31,65 +31,82 @@ C     == Global variables ===
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
+c#ifdef ALLOW_AUTODIFF_TAMC
+c# include "tamc.h"
+c#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid, myIter
+      integer myIter, myThid
 
-#ifdef ALLOW_COST_TEST
+#ifdef ALLOW_STREAMICE_TC_COST
 C     == Local variables
-      _RL thetaRef, HAF
-
+      _RL HAF
       integer i, j, k, bi, bj
       integer ig, jg
       integer itlo,ithi
       integer jtlo,jthi
       integer il
+      CHARACTER*(10) myIterStr
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
-      CHARACTER*(MAX_LEN_FNAM) suff
-      CHARACTER*(MAX_LEN_FNAM) STREAMICEsurfOptimFile
-      _RL S_obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      CHARACTER*(MAX_LEN_FNAM) surffilename, errsurffilename
+      _RL surfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL errsurfobs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL rhoi, rhow, r, i_r, i_numcells, surf_err, h, hf
+      WRITE(myIterStr,'(I10.10)') myIter
+      surffilename=STREAMICEsurfOptimTCBasename(1:
+     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//".bin"
+      errsurffilename=STREAMICEsurfOptimTCBasename(1:
+     & ILNBLNK(STREAMICEsurfOptimTCBasename))//myIterStr//"err.bin"
+      CALL READ_FLD_XY_RL( surffilename, ' ', surfobs,
+     &  0, myThid )
+      CALL READ_FLD_XY_RL( errsurffilename, ' ', errsurfobs,
+     &  0, myThid )
 
-      jtlo = mybylo(myThid)
-      jthi = mybyhi(myThid)
-      itlo = mybxlo(myThid)
-      ithi = mybxhi(myThid)
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+cCADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
+cCADJ &     kind = isbyte
+c#endif
 
-      WRITE(suff,'(a,I10.10,a)') 'land_ice_surf.',myIter, '.bin'
-
-      CALL READ_FLD_XY_RL( suff, ' ',
-     &      S_obs, 0, myThid )
-
-C--   Calculate mask for tracer cells  (0 => land, 1 => water)
-!       k=1
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surf_el_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice_prev  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE H_streamice  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
+      rhoi = streamice_density
+      rhow = streamice_density_ocean_avg
+      r=rhoi/rhow
+      i_r = 1./r
+      i_numcells = 1.0/(Nx*Ny)
 
 C--   Calculate cost function on tile of this instance
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           do j=1,sNy
             do i=1,sNx
+             if (SURFOBS(i,j,bi,bj).ge.-999990. .and.
+     &           streamice_hmask(i,j,bi,bj).eq.1.0) THEN
 
-!             S_obs(i,j,bi,bj) = 0.0
-             if (streamice_cost_mask(i,j,bi,bj).eq.1.0) THEN
-              cost_func1_streamice (bi,bj) =
-     &        cost_func1_streamice (bi,bj) +
-     &        streamice_wgt_surf * (S_obs(i,j,bi,bj)-
-     &               surf_el_streamice(i,j,bi,bj))**2 / Nx / Ny +
-     &        streamice_wgt_drift * (H_streamice(i,j,bi,bj)-
-     &               H_streamice_prev(i,j,bi,bj))**2 / Nx / Ny
+             h = H_streamice(i,j,bi,bj)
+             hf = -1.0 * i_r * R_low_si (i,j,bi,bj)
+
+              if (((h-hf) .gt. 5.) .OR.
+     &             STREAMICE_shelf_dhdt_ctrl) then
+
+               surf_err = streamice_wgt_surf * i_numcells *
+     &         (surf_el_streamice(i,j,bi,bj) -
+     &          surfobs(i,j,bi,bj))**2 /
+     &          (.001 + errSurfObs(i,j,bi,bj)**2)
+
+               cost_func1_streamice (bi,bj) =
+     &         cost_func1_streamice (bi,bj) +
+     &              surf_err
+               cost_surf_streamice (bi,bj) =
+     &         cost_surf_streamice (bi,bj) +
+     &              surf_err
+
+              endif
+
              endif
 
             end do

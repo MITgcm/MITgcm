@@ -454,6 +454,16 @@ c--     output model-data difference to disk
      &    WRITE_REC_XYZ_RL( fname3, localdif,irec, eccoiter, myThid )
          endif
 
+         if ( outlev.GT.1 ) then
+          if ( dovarwei ) then
+           il=ilnblnk(outname)
+           write(fname3(1:128),'(2a)') 'weight_', outname(1:il)
+           if ( nnzobs.EQ.1 ) CALL WRITE_REC_XY_RL( fname3,
+     &                           localweight, irec, eccoiter, myThid )
+           if ( nnzobs.EQ.Nr ) CALL WRITE_REC_XYZ_RL( fname3,
+     &                           localweight, irec, eccoiter, myThid )
+          endif
+         endif
         endif
 
       enddo
@@ -492,12 +502,14 @@ c--     output model-data difference to disk
         endif
       endif
       if ( outlev.GT.1 ) then
+       if ( .NOT.dovarwei ) then
           il=ilnblnk(outname)
           write(fname3(1:128),'(2a)') 'weight_', outname(1:il)
           if ( nnzobs.EQ.1 ) CALL
-     &    WRITE_REC_XY_RL( fname3, localweight,irec, eccoiter, myThid )
+     &    WRITE_REC_XY_RL( fname3, localweight, 1, eccoiter, myThid )
           if ( nnzobs.EQ.Nr ) CALL
-     &    WRITE_REC_XYZ_RL( fname3, localweight,irec, eccoiter, myThid )
+     &    WRITE_REC_XYZ_RL( fname3, localweight, 1, eccoiter, myThid )
+       endif
       endif
 
 #endif /* ALLOW_ECCO */

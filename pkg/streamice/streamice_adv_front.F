@@ -108,7 +108,7 @@ CADJ &     = comlev1_stream_front, key = ikey_front
         ENDDO
        ENDIF
 
-!       iter_count = iter_count + 1
+c       iter_count = iter_count + 1
        iter_rpt = iter_rpt + 1
 
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -146,8 +146,7 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
              tot_flux = 0. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hflux_x_SI(i,j,bi,bj)
-CADJ &     = comlev1_stream_ij, key = ikey_1
+CADJ STORE hflux_x_SI(i,j,bi,bj) = comlev1_stream_ij, key = ikey_1
 #endif
              IF (hflux_x_SI(i,j,bi,bj).gt. 0. _d 0) THEN
               n_flux_1 = n_flux_1 + 1. _d 0
@@ -158,8 +157,7 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
              ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hflux_x_SI(i,j,bi,bj)
-CADJ &     = comlev1_stream_ij, key = ikey_1
+CADJ STORE hflux_x_SI(i+1,j,bi,bj) = comlev1_stream_ij, key = ikey_1
 #endif
              IF (hflux_x_SI(i+1,j,bi,bj).lt. 0. _d 0) THEN
               n_flux_1 = n_flux_1 + 1. _d 0
@@ -170,8 +168,7 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
              ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hflux_y_SI(i,j,bi,bj)
-CADJ &     = comlev1_stream_ij, key = ikey_1
+CADJ STORE hflux_y_SI(i,j,bi,bj) = comlev1_stream_ij, key = ikey_1
 #endif
              IF (hflux_y_SI(i,j,bi,bj).gt. 0. _d 0) THEN
               n_flux_1 = n_flux_1 + 1. _d 0
@@ -182,8 +179,7 @@ CADJ &     = comlev1_stream_ij, key = ikey_1
              ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hflux_y_SI(i,j,bi,bj)
-CADJ &     = comlev1_stream_ij, key = ikey_1
+CADJ STORE hflux_y_SI(i,j+1,bi,bj) = comlev1_stream_ij, key = ikey_1
 #endif
              IF (hflux_y_SI(i,j+1,bi,bj).lt. 0. _d 0) THEN
               n_flux_1 = n_flux_1 + 1. _d 0
