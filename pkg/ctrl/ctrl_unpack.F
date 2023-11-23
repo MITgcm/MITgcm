@@ -48,10 +48,10 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"
 #endif
 #ifdef ALLOW_COST
