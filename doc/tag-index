@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - fix 2 small bugs in carbonate and aragonite saturation states: a) both Ksp
+    coeff are fct of log of temperature (and not log10); b) add missing unit
+    conversion factor to carbonate variable in OmegaC & OmegaAr calculation.
 o pkg/grdchk:
   - new S/R to get CTRL var/file name from grdchk-index ; use it to simplify
     (with new arguments) the 3 routines that handle CTRL var/file perturbations
