@@ -21,7 +21,6 @@
  implicitViscosity=.TRUE.,
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
- useCDscheme=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
@@ -43,10 +42,9 @@
 # startTime  =          0.,
 # endTime    = 3110400000.,
  deltaTMom = 1200.0,
- tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
-# deltaTFreeSurf = 43200.0,
+ deltaTFreeSurf = 43200.0,
  abEps = 0.1,
 # 2 months restoring timescale for temperature
  tauThetaClimRelax =  5184000.0,
