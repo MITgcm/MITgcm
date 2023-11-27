@@ -182,7 +182,7 @@ C     for rbcsSingleTimeFiles=.TRUE.
         CALL EXCH_XYZ_RS( rbcs1 , myThid )
        ENDIF
 
-       IF (useRBCEeta .AND. nonlinFreeSurf.GT.0 .AND.
+       IF (useRBCeta .AND. nonlinFreeSurf.GT.0 .AND.
      &     relaxEtaFile .NE. ' ' ) THEN
         IF ( rbcsSingleTimeFiles ) THEN
          IL=ILNBLNK( relaxEtaFile )
@@ -196,7 +196,7 @@ C     for rbcsSingleTimeFiles=.TRUE.
         ENDIF
         CALL EXCH_XYZ_RS( rbceta0 , myThid )
         CALL EXCH_XYZ_RS( rbceta1 , myThid )
-
+       ENDIF
 #ifdef ALLOW_PTRACERS
        IF ( usePTRACERS ) THEN
         DO iTracer = 1, PTRACERS_numInUse

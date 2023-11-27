@@ -56,17 +56,21 @@ C--   RBCS parameters:
      &          tauRelaxV,
      &          tauRelaxT,
      &          tauRelaxS,
+     &          tauRelaxEta,
      &          relaxMaskUFile,
      &          relaxMaskVFile,
+     &          relaxMaskEtaFile,
      &          relaxMaskFile,
      &          relaxUFile,
      &          relaxVFile,
      &          relaxTFile,
      &          relaxSFile,
+     &          relaxEtaFile,
      &          useRBCuVel,
      &          useRBCvVel,
      &          useRBCtemp,
      &          useRBCsalt,
+     &          useRBCeta,
      &          useRBCptracers,
      &          rbcsIniter,
      &          rbcsForcingPeriod,
@@ -102,6 +106,7 @@ C--   Default values
       useRBCvVel =.FALSE.
       useRBCtemp =.FALSE.
       useRBCsalt =.FALSE.
+      useRBCeta =.FALSE.
       tauRelaxU = 0.
       tauRelaxV = 0.
       tauRelaxT = 0.
@@ -242,7 +247,7 @@ C---  Check RBCS config and params:
       ENDIF
       IF ( useRBCsalt .AND. tauRelaxS.LE.0. ) THEN
             WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
-         &    'tauRelaxS cannot be zero with useRBCsalt'
+     &    'tauRelaxS cannot be zero with useRBCsalt'
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R RBCS_READPARMS'
           ENDIF

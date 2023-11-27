@@ -23,11 +23,13 @@ C---  RBCS 3-D Fields:
      &          RBCvVel
 #endif
       _RS RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
+      _RS RBC_Etamask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL RBCtemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCeta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /RBCS_MASKS_TR/
-     &          RBC_mask
+     &          RBC_mask,
+     &          RBC_Etamask
       COMMON /RBCS_FIELDS_TS/
      &          RBCtemp,
      &          RBCsalt,
