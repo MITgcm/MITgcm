@@ -25,11 +25,14 @@ C---  RBCS 3-D Fields:
       _RS RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
       _RL RBCtemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL RBCeta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /RBCS_MASKS_TR/
      &          RBC_mask
       COMMON /RBCS_FIELDS_TS/
      &          RBCtemp,
-     &          RBCsalt
+     &          RBCsalt,
+     &          RBCeta
+
 
 #ifdef ALLOW_PTRACERS
       _RL RBC_ptracers(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
@@ -52,11 +55,14 @@ C     rbcsLdRec     :: time-record currently loaded (in temp arrays *[1])
 #endif
       COMMON /RBCS_LOADED_TS/
      &                 rbct0, rbcs0,
-     &                 rbct1, rbcs1
+     &                 rbct1, rbcs1,
+     &                 rbceta0, rbceta1
       _RS  rbct0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  rbct1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  rbcs0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  rbcs1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  rbceta0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  rbceta1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_PTRACERS
        COMMON /RBCS_LOADED_PTR/

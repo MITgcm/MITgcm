@@ -24,6 +24,7 @@ C
       _RL tauRelaxV
       _RL tauRelaxT
       _RL tauRelaxS
+      _RL tauRelaxEta
       _RL rbcsForcingPeriod
       _RL rbcsForcingCycle
       _RL rbcsForcingOffset
@@ -35,6 +36,8 @@ C
       LOGICAL useRBCvVel
       LOGICAL useRBCtemp
       LOGICAL useRBCsalt
+      LOGICAL useRBCeta
+      CHARACTER*(MAX_LEN_FNAM) relaxMaskEtaFile
       CHARACTER*(MAX_LEN_FNAM) relaxMaskUFile
       CHARACTER*(MAX_LEN_FNAM) relaxMaskVFile
       CHARACTER*(MAX_LEN_FNAM) relaxMaskTrFile(maskLEN)
@@ -42,12 +45,15 @@ C
       CHARACTER*(MAX_LEN_FNAM) relaxVFile
       CHARACTER*(MAX_LEN_FNAM) relaxTFile
       CHARACTER*(MAX_LEN_FNAM) relaxSFile
+      CHARACTER*(MAX_LEN_FNAM) relaxEtaFile
+
 
       COMMON /RBCS_PARM01_R/
      &          tauRelaxU,
      &          tauRelaxV,
      &          tauRelaxT,
      &          tauRelaxS,
+     &          tauRelaxEta,
      &          rbcsForcingPeriod,
      &          rbcsForcingCycle,
      &          rbcsForcingOffset,
@@ -59,16 +65,20 @@ C
      &          rbcsSingleTimeFiles,
      &          useRBCuVel,
      &          useRBCvVel,
+     &          useRBCeta,
      &          useRBCtemp,
      &          useRBCsalt
       COMMON /RBCS_PARM01_C/
      &          relaxMaskUFile,
      &          relaxMaskVFile,
      &          relaxMaskTrFile,
+     &          relaxMaskEtaFile,
      &          relaxUFile,
      &          relaxVFile,
      &          relaxTFile,
-     &          relaxSFile
+     &          relaxSFile,
+     &          relaxEtaFile
+
 
 #ifdef ALLOW_PTRACERS
       LOGICAL useRBCpTrNum(PTRACERS_num)

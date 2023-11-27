@@ -106,8 +106,10 @@ C--   Default values
       tauRelaxV = 0.
       tauRelaxT = 0.
       tauRelaxS = 0.
+      tauRelaxEta = 0.
       relaxMaskUFile = ' '
       relaxMaskVFile = ' '
+      relaxMaskEtaFile = ' '
       DO irbc=1,locSize
         relaxMaskFile(irbc) = ' '
       ENDDO
@@ -115,6 +117,7 @@ C--   Default values
       relaxVFile = ' '
       relaxTFile = ' '
       relaxSFile = ' '
+      relaxEtaFile = ' '
       rbcsIniter = 0
       rbcsForcingPeriod = 0. _d 0
       rbcsForcingCycle  = 0. _d 0
@@ -238,8 +241,14 @@ C---  Check RBCS config and params:
         STOP 'ABNORMAL END: S/R RBCS_READPARMS'
       ENDIF
       IF ( useRBCsalt .AND. tauRelaxS.LE.0. ) THEN
+            WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
+         &    'tauRelaxS cannot be zero with useRBCsalt'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+          ENDIF
+      IF ( useRBCeta .AND. tauRelaxEta.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
-     &    'tauRelaxS cannot be zero with useRBCsalt'
+     &    'tauRelaxEta cannot be zero with useRBCeta'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R RBCS_READPARMS'
       ENDIF
