@@ -2,16 +2,16 @@
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine ctrl_init( myThid )
+      subroutine ctrl_init_fixed( myThid )
 
 c     ==================================================================
-c     SUBROUTINE ctrl_init
+c     SUBROUTINE ctrl_init_fixed
 c     ==================================================================
 c
 c     o The vector of control variables is defined here.
 c
 c     ==================================================================
-c     SUBROUTINE ctrl_init
+c     SUBROUTINE ctrl_init_fixed
 c     ==================================================================
 
       implicit none

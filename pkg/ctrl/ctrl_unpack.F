@@ -19,7 +19,7 @@ c     started: Christian Eckert eckert@mit.edu  10-Mar-2000
 c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
+c                from here to namelist in ctrl_init_fixed
 c
 c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
 c              - single file name convention with or without
