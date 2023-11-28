@@ -1,34 +1,39 @@
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CTRL_INIT_CTRLVAR
+
+C     !INTERFACE: ======================================================
       SUBROUTINE CTRL_INIT_CTRLVAR(
-     &       xx_fname,
-     &       ivarindex,
-     &       ncvarindex_loc,
-     &       ncvarrecs_loc,
-     &       ncvarrecstart_loc,
-     &       ncvarrecsend_loc,
-     &       ncvarxmax_loc,
-     &       ncvarymax_loc,
-     &       ncvarnrmax_loc,
-     &       ncvargrd_loc,
-     &       whichxyz,
-     &       costfinal_exists,
-     &       myThid )
+     I       xx_fname,
+     I       ivarindex,
+     I       ncvarindex_loc,
+     I       ncvarrecs_loc,
+     I       ncvarrecstart_loc,
+     I       ncvarrecsend_loc,
+     I       ncvarxmax_loc,
+     I       ncvarymax_loc,
+     I       ncvarnrmax_loc,
+     I       ncvargrd_loc,
+     I       whichxyz,
+     I       costfinal_exists,
+     I       myThid )
 
-c     ==================================================================
-c     SUBROUTINE ctrl_init_ctrlvar
-c     ==================================================================
-c
-c     started: heimbach@mit.edu 28-Oct-2003
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_init_ctrlvar
-c     ==================================================================
+C     !DESCRIPTION:
+C
+C     Generic routine to initialize control variable xx_fname and store
+C     specifier in global arrays for later reference.
+C
+C     Called from S/R CTRL_INIT_FIXED, this is where the crucial
+C     information for a given control variable is set.
+C
+C     started: heimbach@mit.edu 28-Oct-2003
 
-      implicit none
-
-c     == global variables ==
+C     !USES: ===========================================================
+      IMPLICIT NONE
+C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -36,33 +41,49 @@ c     == global variables ==
 #include "CTRL.h"
 #include "OPTIMCYCLE.h"
 
-c     == routine arguments ==
-      character*(MAX_LEN_FNAM) xx_fname
-      integer ivarindex
-      integer ncvarindex_loc
-      integer ncvarrecs_loc
-      integer ncvarrecstart_loc
-      integer ncvarrecsend_loc
-      integer ncvarxmax_loc
-      integer ncvarymax_loc
-      integer ncvarnrmax_loc
-      character*(1) ncvargrd_loc
-      character*(2) whichxyz
-      logical  costfinal_exists
-      integer myThid
+C     !INPUT PARAMETERS: ===============================================
+C     myThid ::  my Thread Id number
+      CHARACTER*(MAX_LEN_FNAM) xx_fname
+      INTEGER ivarindex
+      INTEGER ncvarindex_loc
+      INTEGER ncvarrecs_loc
+      INTEGER ncvarrecstart_loc
+      INTEGER ncvarrecsend_loc
+      INTEGER ncvarxmax_loc
+      INTEGER ncvarymax_loc
+      INTEGER ncvarnrmax_loc
+      CHARACTER*(1) ncvargrd_loc
+      CHARACTER*(2) whichxyz
+      LOGICAL costfinal_exists
+      INTEGER myThid
 
-C     == external ==
-      integer ILNBLNK
-      external ILNBLNK
+C     !OUTPUT PARAMETERS: ==============================================
+C     none
 
-c     == local variables ==
-      integer il,ilDir
-      character*(MAX_LEN_FNAM) fname(3), gfname
-      character*(MAX_LEN_MBUF) msgBuf
-      logical  g_exst
-C     == end of interface ==
+C     === Functions ====
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER il,ilDir
+      CHARACTER*(MAX_LEN_FNAM) fname(3), gfname
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL g_exst
+CEOP
 
 c     _BEGIN_MASTER( myThid )
+C     First check if the control variable index is within the allowed range.
+      IF ( ivarindex .LE. 0 .OR. ivarindex .GT. maxcvars ) THEN
+       WRITE(msgBuf,'(A,I4,A)') 'S/R CTRL_INIT_CTRLVAR: ivarindex = ',
+     &      ivarindex, ' is not valid.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,I4)')
+     &      'S/R CTRL_INIT_CTRLVAR: allowed values: '//
+     &      '0 < ivarindex <= maxcvars = ', maxcvars
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R CTRL_INIT_CTRLVAR'
+      ENDIF
+C
       ncvarindex(ivarindex)    = ncvarindex_loc
       ncvarrecs (ivarindex)    = ncvarrecs_loc
       ncvarrecstart(ivarindex) = ncvarrecstart_loc
@@ -79,68 +100,64 @@ cph add following flag to make pack/unpack only less error-prone
 #ifndef CTRL_DO_PACK_UNPACK_ONLY
 
       ilDir=ilnblnk( ctrlDir )
-      call ctrl_set_fname( ctrlDir(1:ilDir)//xx_fname, fname, myThid )
-
-c     _BEGIN_MASTER( myThid )
-      inquire( file='costfinal', exist=costfinal_exists )
-c     _END_MASTER( myThid )
+      CALL CTRL_SET_FNAME( ctrlDir(1:ilDir)//xx_fname, fname, myThid )
 
 C     In an adjoint run, adxx_ files should always be initialized with zeros
 C     For TLM, all zeros means zero sensitivity, so check
 C     for existing perturbation file g_xx_, otherwise
 C     initialize to zero and warn user
-      if (yadprefix.eq.'g_') then
+      IF (yadprefix.eq.'g_') then
         il = ILNBLNK(fname(2))
-        write(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
-        inquire(file=gfname,exist=g_exst)
-        if (.not. g_exst) then
-            write(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
+        WRITE(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
+        INQUIRE(file=gfname,exist=g_exst)
+        IF (.not. g_exst) then
+            WRITE(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
      &          'could not find ', gfname(1:il+5)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
-            write(msgBuf,'(3A)')'** WARNING ** ',
+            WRITE(msgBuf,'(3A)')'** WARNING ** ',
      &          'for TLM perturbation ',
      &          'so will initialize this file with all zeros'
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
-        endif
-      else
+        ENDIF
+      ELSE
         g_exst = .FALSE.
-      endif
+      ENDIF
 
       IF ( .NOT. costfinal_exists ) THEN
 
-         if ( whichxyz .EQ. '3d') then
+         IF ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
+            IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, myThid)
 #endif
-            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
+            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, myThid)
-         else if ( whichxyz .EQ. 'xy') then
+         ELSEIF ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
+            IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, myThid)
 #endif
-            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
+            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, myThid )
-         else if ( whichxyz .EQ. 'xz') then
+         ELSEIF ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
+            IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xz( fname(2), ivarindex, myThid)
 #endif
-            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
+            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, myThid )
-         else if ( whichxyz .EQ. 'yz') then
+         ELSEIF ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
+            IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_yz( fname(2), ivarindex, myThid)
 #endif
-            if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
+            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_yz( fname(1), ivarindex, myThid )
-         else
+         ELSE
             STOP 'whichxyz option not implemented'
-         end if
+         ENDIF
 
       ENDIF
 
