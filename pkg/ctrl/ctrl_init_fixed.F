@@ -137,7 +137,7 @@ c--   Northern obc.
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
+     &     xx_obcsn_file, 11, 0, diffrec, startrec, endrec,
      &     sNx, 1, Nr, 'm', 'xz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
@@ -150,7 +150,7 @@ c--   Southern obc.
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
+     &     xx_obcss_file, 12, 0, diffrec, startrec, endrec,
      &     sNx, 1, Nr, 'm', 'xz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
@@ -163,7 +163,7 @@ c--   Western obc.
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
+     &     xx_obcsw_file, 13, 0, diffrec, startrec, endrec,
      &     1, sNy, Nr, 'm', 'yz', costfinal_exists, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
@@ -176,7 +176,7 @@ c--   Eastern obc.
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
+     &     xx_obcse_file, 14, 0, diffrec, startrec, endrec,
      &     1, sNy, Nr, 'm', 'yz', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
@@ -230,7 +230,7 @@ C       Under iceshelf, use maskSHI for these
         call ctrl_init_ctrlvar (
 # endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
-     &       100+iarr, 200+iarr, 1, 1, 1,
+     &       100+iarr, iarr, 1, 1, 1,
      &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 
        enddo
@@ -248,7 +248,7 @@ c--
         call ctrl_init_ctrlvar (
 #endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
-     &       200+iarr, 300+iarr, 1, 1, 1,
+     &       200+iarr, iarr, 1, 1, 1,
      &       sNx, sNy, Nr, ncvargrdtmp, '3d', costfinal_exists, myThid )
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
@@ -313,7 +313,7 @@ C
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),
-     &       300+iarr, 400+iarr,
+     &       300+iarr, iarr,
      &       diffrecFull, startrec, endrecFull,
      &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C
@@ -322,14 +322,14 @@ C
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
      &       fnamegen(1:MAX_LEN_FNAM),
-     &       300+iarr, 400+iarr,
+     &       300+iarr, iarr,
      &       diffrecFull, startrec, endrecFull,
      &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C
 C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     &       300+iarr, 400+iarr,
+     &       300+iarr, iarr,
      &       endrec, 1, endrec,
      &       sNx, sNy, 1, ncvargrdtmp, 'xy', costfinal_exists, myThid )
 C

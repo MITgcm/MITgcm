@@ -45,6 +45,7 @@ c     == local variables ==
       integer bi,bj
       integer k
       integer il
+      integer errCount
       integer nwetcenter
       integer nwetsouth
       integer nwetwest
@@ -62,6 +63,8 @@ c     == local variables ==
 #endif
 
 c     == end of interface ==
+
+      errCount = 0
 
       write(msgbuf,'(a)')
      &' '
@@ -129,7 +132,7 @@ c     == end of interface ==
       do k = 1, maxcvars
 C     only print active variables for which ncvarindex has be set
 C     (default = -1)
-       if ( ncvarindex(k) .GT. 0 ) then
+       if ( ncvarindex(k) .GE. 0 ) then
 
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardMessageUnit,
@@ -138,48 +141,61 @@ C     (default = -1)
 C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENARR3D_CONTROL
         if ( ncvartype(k) .eq. '3d') then
-         do iarr = 1, maxCtrlArr3D
-          if (xx_genarr3d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
-           jarr = iarr
-           write(msgbuf,'(a,i2,a)')
+         iarr = ncvarindex(k)
+         if (xx_genarr3d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+          jarr = iarr
+          write(msgbuf,'(a,i2,a)')
      &' -> 3d control, genarr3d no. ',iarr,
      &' is in use'
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-         enddo
+          call print_message( msgbuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         else
+          write(msgbuf,'(a,i2)')
+     &' -> something is wrong with 3d control, genarr3d no. ',iarr
+          call print_error( msgbuf, myThid )
+          errCount = errCount + 1
+         endif
         endif
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
         isgenarr2d=.FALSE.
         if ( ncvartype(k) .eq. 'xy') then
-         do iarr = 1, maxCtrlArr2D
-          if (xx_genarr2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
-           isgenarr2d=.TRUE.
-           jarr = iarr
-           write(msgbuf,'(a,i2,a)')
+         iarr = ncvarindex(k)
+         if (xx_genarr2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+          isgenarr2d=.TRUE.
+          jarr = iarr
+          write(msgbuf,'(a,i2,a)')
      &' -> 2d control, genarr2d no. ',iarr,
      &' is in use'
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-         enddo
+          call print_message( msgbuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         else
+          write(msgbuf,'(a,i2)')
+     &' -> something is wrong with 2d control, genarr2d no. ',iarr
+          call print_error( msgbuf, myThid )
+          errCount = errCount + 1
+         endif
         endif
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
         isgentim2d=.FALSE.
         if ( ncvartype(k) .eq. 'xy') then
-         do iarr = 1, maxCtrlTim2D
-          if (xx_gentim2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
-           isgentim2d=.TRUE.
-           jarr = iarr
-           write(msgbuf,'(a,i2,a)')
-     &' -> time variable 2D control, gentim2d no. ',iarr,
+         iarr = ncvarindex(k)
+         if (xx_gentim2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
+          isgentim2d=.TRUE.
+          jarr = iarr
+          write(msgbuf,'(a,i2,a)')
+     &' -> time variable 2d control, gentim2d no. ',iarr,
      &' is in use'
-           call print_message( msgbuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-          endif
-         enddo
+          call print_message( msgbuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+         else
+          write(msgbuf,'(a,i2)')
+     &' -> something is wrong with time variable  2d control, '//
+     &'gentim2d no. ',iarr
+          call print_error( msgbuf, myThid )
+          errCount = errCount + 1
+         endif
         endif
 #endif
         write(msgbuf,'(a,a)')
@@ -292,6 +308,13 @@ C
 #endif
        endif
       enddo
+
+      if ( errCount.GE.1 ) then
+        write(msgbuf,'(a,i3,a)')
+     &       'ctrl_summary: detected', errCount,' fatal error(s)'
+        call print_error( msgbuf, myThid )
+        stop 'ABNORMAL END: S/R CTRL_SUMMARY'
+      endif
 
       write(msgbuf,'(a)')
      &' '

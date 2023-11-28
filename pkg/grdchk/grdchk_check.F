@@ -45,7 +45,7 @@ C     == end of interface ==
 C--   Summarize the gradient check setup.
       CALL GRDCHK_SUMMARY( myThid )
 
-      IF ( ncvarindex(grdchkvarindex) .LE. 0 ) THEN
+      IF ( ncvarindex(grdchkvarindex) .LT. 0 ) THEN
          WRITE(msgBuf,'(A,I4)')
      &        'Control variable not enabled for grdchkvarindex = ',
      &        grdchkvarindex
