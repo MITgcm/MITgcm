@@ -135,7 +135,7 @@ C                            (only used in pkg/autodiff ...)
      &                     , ncvarfname
      &                     , yadprefix
       CHARACTER*(1)            ncvargrd  ( maxcvars )
-      CHARACTER*(2)            ncvartype ( maxcvars )
+      CHARACTER*(5)            ncvartype ( maxcvars )
       CHARACTER*(MAX_LEN_FNAM) ncvarfname( maxcvars )
       CHARACTER*(2)            yadprefix
 

@@ -56,7 +56,6 @@ c     == local variables ==
       || defined (ALLOW_GENARR3D_CONTROL) \
       || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr, jarr, iw
-      logical isgentim2d, isgenarr2d
 #endif
 #if ( defined ALLOW_GENTIM2D_CONTROL && defined ALLOW_CAL )
       integer i, timeint(4)
@@ -140,13 +139,12 @@ C     (default = -1)
         il   = ILNBLNK( ncvarfname(k) )
 C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENARR3D_CONTROL
-        if ( ncvartype(k) .eq. '3d') then
+        if ( ncvartype(k) .eq. 'Arr3D') then
          iarr = ncvarindex(k)
          if (xx_genarr3d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
           jarr = iarr
           write(msgbuf,'(a,i2,a)')
-     &' -> 3d control, genarr3d no. ',iarr,
-     &' is in use'
+     &' -> 3d control, genarr3d no. ',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
@@ -158,15 +156,12 @@ C     find out if current variable is a generic control variable name
         endif
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-        isgenarr2d=.FALSE.
-        if ( ncvartype(k) .eq. 'xy') then
+        if ( ncvartype(k) .eq. 'Arr2D') then
          iarr = ncvarindex(k)
          if (xx_genarr2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
-          isgenarr2d=.TRUE.
           jarr = iarr
           write(msgbuf,'(a,i2,a)')
-     &' -> 2d control, genarr2d no. ',iarr,
-     &' is in use'
+     &' -> 2d control, genarr2d no. ',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
@@ -178,15 +173,12 @@ C     find out if current variable is a generic control variable name
         endif
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
-        isgentim2d=.FALSE.
-        if ( ncvartype(k) .eq. 'xy') then
+        if ( ncvartype(k) .eq. 'Tim2D') then
          iarr = ncvarindex(k)
          if (xx_gentim2d_file(iarr)(1:il).EQ.ncvarfname(k)(1:il)) then
-          isgentim2d=.TRUE.
           jarr = iarr
           write(msgbuf,'(a,i2,a)')
-     &' -> time variable 2d control, gentim2d no. ',iarr,
-     &' is in use'
+     &' -> time variable 2d control, gentim2d no. ',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
@@ -216,7 +208,7 @@ C     find out if current variable is a generic control variable name
      &                      SQUEEZE_RIGHT, myThid )
 C     extra information only available for generic control variables
 #ifdef ALLOW_GENARR3D_CONTROL
-        if ( ncvartype(k) .eq. '3d') then
+        if ( ncvartype(k) .eq. 'Arr3D') then
          iarr = jarr
          iw   = ILNBLNK( xx_genarr3d_weight(iarr) )
          write(msgbuf,'(a,a)')
@@ -235,7 +227,7 @@ C     extra information only available for generic control variables
         endif
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-        if ( ncvartype(k) .eq. 'xy' .and. isgenarr2d ) then
+        if ( ncvartype(k) .eq. 'Arr2D' ) then
          iarr = jarr
          iw   = ILNBLNK( xx_genarr2d_weight(iarr) )
          write(msgbuf,'(a,a)')
@@ -254,7 +246,7 @@ C     extra information only available for generic control variables
         endif
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
-        if ( ncvartype(k) .eq. 'xy' .and. isgentim2d ) then
+        if ( ncvartype(k) .eq. 'Tim2D' ) then
          iarr = jarr
          iw   = ILNBLNK( xx_gentim2d_weight(iarr) )
          write(msgbuf,'(a,a)')

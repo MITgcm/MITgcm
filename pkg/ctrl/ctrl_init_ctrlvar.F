@@ -53,7 +53,7 @@ C     myThid ::  my Thread Id number
       INTEGER ncvarymax_loc
       INTEGER ncvarnrmax_loc
       CHARACTER*(1) ncvargrd_loc
-      CHARACTER*(2) whichxyz
+      CHARACTER*(5) whichxyz
       LOGICAL costfinal_exists
       INTEGER myThid
 
@@ -127,28 +127,28 @@ C     initialize to zero and warn user
 
       IF ( .NOT. costfinal_exists ) THEN
 
-         IF ( whichxyz .EQ. '3d') then
+         IF ( whichxyz .EQ. 'Arr3D') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, myThid)
 #endif
             IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, myThid)
-         ELSEIF ( whichxyz .EQ. 'xy') then
+         ELSEIF ( whichxyz(4:5) .EQ. '2D' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, myThid)
 #endif
             IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, myThid )
-         ELSEIF ( whichxyz .EQ. 'xz') then
+         ELSEIF ( whichxyz .EQ. 'SecXZ') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xz( fname(2), ivarindex, myThid)
 #endif
             IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, myThid )
-         ELSEIF ( whichxyz .EQ. 'yz') then
+         ELSEIF ( whichxyz .EQ. 'SecYZ') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_yz( fname(2), ivarindex, myThid)
