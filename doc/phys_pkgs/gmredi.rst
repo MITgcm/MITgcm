@@ -378,17 +378,21 @@ Marshall et al. (2012) :cite:`marshall:12b` via the GEOMETRIC framework suggest
 that the eddy coefficient :math:`\kappa_{\rm GM}` to be a linear function of a
 parameterized total eddy energy :math:`E`, a non-dimensional constant
 :math:`\alpha` (provably bounded in magnitude by 1 in the QG setting) and the
-model stratification. Following Mak et al. (2022) :cite:`mak:22`, the
+model stratification. A key impact of GEOMETRIC is to make the sensitivity of
+the Antarctic Circumpolar Current (ACC) and AMOC to changes in the Southern
+Ocean wind forcing closer to those in analogous high resolution models (e.g.,
+Mak et al. 2018 :cite:`mak:18`). Following Mak et al. (2022) :cite:`mak:22`, the
 depth-integrated coefficient is given by
 
 .. math::
    \kappa_{\rm GM} = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma (M^2 / N)\; \mathrm{d}z} \Gamma(z) = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma |{\bf S}| N\; \mathrm{d}z} \Gamma(z),
    
-with the same notaton as above, and :math:`\Gamma(z)` is some vertical structure
-function that can be prescribed if required (default is :math:`\Gamma(z)\equiv1`,
-with an option for :math:`\Gamma(z)\equiv N^2 / N^2_{\rm ref}` following 
-Ferreria et al. (2005) :cite:`ferriera:05`). The depth-integrated eddy energy
-follows its own prognostic equation as
+where :math:`|{\bf S}| = M^2 / N^2` is the magnitude of the isopycnal slopes,
+and :math:`\Gamma(z)` is some vertical structure function that can be prescribed
+if required (default is :math:`\Gamma(z)\equiv1`, with an option for
+:math:`\Gamma(z)\equiv N^2 / N^2_{\rm ref}` following Ferreria et al. (2005)
+:cite:`ferriera:05`). The depth-integrated eddy energy follows its own
+prognostic equation as
 
 .. math::
    \frac{\mathrm{d}}{\mathrm{d} t} \int E\; \mathrm{d}z +
@@ -414,9 +418,10 @@ the parameterized eddy energy, can be specified through namelist parameters in
   (``usingCurvilinearGrid = .true.``). Rotation of velocity vectors to be
   implemented.
 
-  The present GEOMETRIC implementation is strictly for the GM coefficient, and
-  makes no assumptions about it being equal to the Redi coefficient, unlike for
-  example the default Visbeck implementation.
+  The present GEOMETRIC implementation is strictly for the GM coefficient and
+  overrides any other specifications in ``data.gmredi`` for the GM coefficient.
+  The choice of Redi coefficient, clipping/tapering options and others however
+  are still controlled by the analogous entries in ``data.gmredi``.
 
 .. _sub_gmredi_tapering_stability:
 
@@ -704,11 +709,11 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_use_GEOM`             |     FALSE                    | use GEOM scheme if compiled                                             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_alpha`              |     0.0                      | :math:`\alpha` parameter for GEOM scheme (non-dim.)                     |
+  | :varlink:`GEOM_alpha`              |     0.06                     | :math:`\alpha` parameter for GEOM scheme (non-dim.)                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_lmbda`              |     2.0E-07                  | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
+  | :varlink:`GEOM_lmbda`              |     1.2E-07                  | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_ene_kappa`          |     1.0E+03                  | eddy energy diffusion coefficient GEOM scheme (m\ :sup:`2`\ /s)         |
+  | :varlink:`GEOM_ene_kappa`          |     5.0E+02                  | eddy energy diffusion coefficient GEOM scheme (m\ :sup:`2`\ /s)         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_ene_init`           |     1.0E-03                  | initial value for parameterized total depth eddy energy for GEOM scheme |
   |                                    |                              | (m\ :sup:`3`\ / s\ :sup:`2`)                                            |
@@ -726,6 +731,7 @@ General flags and parameters
   | :varlink:`GEOM_pickup_write_mdsio` |     TRUE                     | write pickups for GEOM scheme                                           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_pickup_read_mdsio`  |     TRUE                     | read pickups for GEOM scheme                                            |
+  |                                    |                              | if FALSE or nIter0 = 0, the value of `GEOM_ene_init` is used instead    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
