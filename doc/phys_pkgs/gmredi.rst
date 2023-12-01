@@ -342,6 +342,8 @@ and becomes "isomorphic" to the :math:`z-`\ coordinate form :eq:`GM_bolus_psi`,
 with the sign reversal of all three components of the bolus transport,
 due to the expression of the curl in a left-handed coordinate system.
 
+.. _sub_gmredi_visbeck:
+
 Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
 -----------------------------------------------------------
 
@@ -375,9 +377,10 @@ Marshall et al. 2012 GM diffusivity :math:`\kappa_{GM}(x,y)`
 ------------------------------------------------------------
 
 Marshall et al. (2012) :cite:`marshall:12b` via the GEOMETRIC framework suggest
-that the eddy coefficient :math:`\kappa_{\rm GM}` to be a linear function of a
+that the eddy coefficient :math:`\kappa_{\rm GM}` be a linear function of a
 parameterized total eddy energy :math:`E`, a non-dimensional constant
-:math:`\alpha` (provably bounded in magnitude by 1 in the QG setting) and the
+:math:`\alpha` (namelist parameter :varlink:`GEOM_alpha`; note
+bounded in magnitude by 1 in the QG setting) and the
 model stratification. A key impact of GEOMETRIC is to make the sensitivity of
 the Antarctic Circumpolar Current (ACC) and AMOC to changes in the Southern
 Ocean wind forcing closer to those in analogous high resolution models (e.g.,
@@ -387,11 +390,12 @@ depth-integrated coefficient is given by
 .. math::
    \kappa_{\rm GM} = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma (M^2 / N)\; \mathrm{d}z} \Gamma(z) = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma |{\bf S}| N\; \mathrm{d}z} \Gamma(z),
    
-where notation is as above in :ref:`GM_redi_desc`, noting that :math:`|{\bf S}|
+where notation is as :numref:`sub_gmredi_visbeck`, noting that :math:`|{\bf S}|
 = M^2 / N^2` is the magnitude of the isopycnal slopes. :math:`\Gamma(z)` is some
-vertical structure function that can be prescribed if required (default is
+vertical structure function that can be prescribed if required; default is
 :math:`\Gamma(z)\equiv1`, with an option for :math:`\Gamma(z)\equiv N^2 /
-N^2_{\rm ref}` following Ferreria et al. (2005) :cite:`ferriera:05`). The
+N^2_{\rm ref}` following Ferreria et al. (2005) :cite:`ferriera:05`,
+activated by setting parameter :varlink:`GEOM_vert_struc` ``= .TRUE.``. The
 depth-integrated eddy energy follows its own prognostic equation as
 
 .. math::
@@ -399,15 +403,16 @@ depth-integrated eddy energy follows its own prognostic equation as
    \nabla \cdot \left( (\tilde{\boldsymbol{u}} - |c|\boldsymbol{e}_x ) \int E\; \mathrm{d}z \right) =
    \int \kappa_{\rm gm} |{\bf S}|^2 N^2\; \mathrm{d}z -
    \lambda \int E\; \mathrm{d}z +
-   \nu_E \nabla^2 \int E\; \mathrm{d}z,
+   \nu_E \nabla^2 \int E\; \mathrm{d}z
    
-respectively the time-evolution, advection, source, dissipation and diffusion of
+Terms above, respectively, are the time-evolution, advection, source, dissipation and diffusion of
 depth-integrated parameterized total eddy energy, with
-:math:`\tilde{\boldsymbol{u}}` is the depth-averaged velocity, :math:`c` is a
+:math:`\tilde{\boldsymbol{u}}` the depth-averaged velocity, :math:`c` a
 long Rossby phase speed (computed from a WKB approximation), :math:`\lambda` a
-dissipation rate, and :math:`\nu_E` an energy diffusion coefficient. The latter
-two coefficients, as well as option to write and read pickups of time-stepping
-the parameterized eddy energy, can be specified through namelist parameters in
+dissipation rate (namelist parameter :varlink:`GEOM_lmbda`), and :math:`\nu_E` an energy
+diffusion coefficient (namelist parameter :varlink:`GEOM_ene_kappa`). Note that bit-for-bit
+restart reproducibility GEOM requires an additional pickup file (``pickup_gmredi``), which can be activated through
+namelist parameters :varlink:`GEOM_pickup_read_mdsio` and :varlink:`GEOM_pickup_write_mdsio` in
 ``data.gmredi``. 
 
 .. admonition:: note
@@ -415,7 +420,7 @@ the parameterized eddy energy, can be specified through namelist parameters in
   
   As of writing (13 Oct 2023), the Rossby west-ward advection of parameterised
   eddy energy is forced to be off (:math:`c=0`) for curvilinear grids
-  (``usingCurvilinearGrid = .true.``). Rotation of velocity vectors to be
+  (``usingCurvilinearGrid = .TRUE.``). Rotation of velocity vectors to be
   implemented.
 
   The present GEOMETRIC implementation is strictly for the GM coefficient and
@@ -707,13 +712,13 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_Visbeck_maxVal_K`     |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using Visbeck et al.  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_use_GEOM`             |     FALSE                    | use GEOM scheme if compiled                                             |
+  | :varlink:`GM_use_GEOM`             |     FALSE                    | use GEOM scheme if #define :varlink:`GM_GEOM_VARIABLE_K`                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_alpha`              |     0.06                     | :math:`\alpha` parameter for GEOM scheme (non-dim.)                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_lmbda`              |     1.16E-07                 | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_ene_kappa`          |     5.0E+02                  | eddy energy diffusion coefficient GEOM scheme (m\ :sup:`2`\ /s)         |
+  | :varlink:`GEOM_ene_kappa`          |     5.0E+02                  | eddy energy diffusion coefficient for GEOM scheme (m\ :sup:`2`\ /s)     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_ene_init`           |     1.0E-03                  | initial value for parameterized total depth eddy energy for GEOM scheme |
   |                                    |                              | (m\ :sup:`3`\ / s\ :sup:`2`)                                            |
@@ -728,10 +733,11 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_maxVal_K`           |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using GEOM scheme     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_pickup_write_mdsio` |     TRUE                     | write pickups for GEOM scheme                                           |
+  | :varlink:`GEOM_pickup_write_mdsio` |     TRUE                     | write pickups for GEOM scheme if #define :varlink:`GM_GEOM_VARIABLE_K`  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_pickup_read_mdsio`  |     TRUE                     | read pickups for GEOM scheme                                            |
-  |                                    |                              | if FALSE or nIter0 = 0, the value of `GEOM_ene_init` is used instead    |
+  | :varlink:`GEOM_pickup_read_mdsio`  |     TRUE                     | read pickups for GEOM scheme if #define :varlink:`GM_GEOM_VARIABLE_K`;  |
+  |                                    |                              | if FALSE or :varlink:`nIter0` = 0, the value of                         |
+  |                                    |                              | :varlink:`GEOM_ene_init` is used instead                                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
