@@ -387,12 +387,12 @@ depth-integrated coefficient is given by
 .. math::
    \kappa_{\rm GM} = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma (M^2 / N)\; \mathrm{d}z} \Gamma(z) = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma |{\bf S}| N\; \mathrm{d}z} \Gamma(z),
    
-where :math:`|{\bf S}| = M^2 / N^2` is the magnitude of the isopycnal slopes,
-and :math:`\Gamma(z)` is some vertical structure function that can be prescribed
-if required (default is :math:`\Gamma(z)\equiv1`, with an option for
-:math:`\Gamma(z)\equiv N^2 / N^2_{\rm ref}` following Ferreria et al. (2005)
-:cite:`ferriera:05`). The depth-integrated eddy energy follows its own
-prognostic equation as
+where notation is as above in :ref:`GM_redi_desc`, noting that :math:`|{\bf S}|
+= M^2 / N^2` is the magnitude of the isopycnal slopes. :math:`\Gamma(z)` is some
+vertical structure function that can be prescribed if required (default is
+:math:`\Gamma(z)\equiv1`, with an option for :math:`\Gamma(z)\equiv N^2 /
+N^2_{\rm ref}` following Ferreria et al. (2005) :cite:`ferriera:05`). The
+depth-integrated eddy energy follows its own prognostic equation as
 
 .. math::
    \frac{\mathrm{d}}{\mathrm{d} t} \int E\; \mathrm{d}z +
@@ -711,7 +711,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_alpha`              |     0.06                     | :math:`\alpha` parameter for GEOM scheme (non-dim.)                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_lmbda`              |     1.2E-07                  | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
+  | :varlink:`GEOM_lmbda`              |     1.16E-07                 | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_ene_kappa`          |     5.0E+02                  | eddy energy diffusion coefficient GEOM scheme (m\ :sup:`2`\ /s)         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
