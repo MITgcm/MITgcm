@@ -80,6 +80,7 @@ C     i,j,bi,bj  :: Loop counters
       INTEGER ICOUNT1, ICOUNT2, linearIterLoc, nonLinIterLoc
       INTEGER kSrf
       LOGICAL doIterate4u, doIterate4v
+      LOGICAL doNonLinLoop
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -266,7 +267,14 @@ C     As a side effect, this avoids TAF recomputation warnings.
       ENDIF
 #endif /* SEAICE_ALLOW_LSR_FLEX */
 
+      doNonLinLoop = .TRUE.
+
 C     Start of non-linear iteration ====================================
+
+C     Note: in S/R SEAICE_CHECK, we make sure that nonLinIterLoc
+C     (=SEAICEnonLinIterMax) is not larger than MPSEUDOTIMESTEPS (which
+C     defines the length of the TAF tape, so it is safe to use the
+C     runtime parameter value here.
       DO ipass=1,nonLinIterLoc
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -278,7 +286,7 @@ CADJ STORE ures,vres        = comlev1_dynsol, key = nlkey, kind=isbyte
 CADJ STORE utmp,vtmp        = comlev1_dynsol, key = nlkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF ( ipass .LE. nonLinIterLoc ) THEN
+      IF ( doNonLinLoop ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1_dynsol, key = nlkey, kind=isbyte
 CADJ STORE vice    = comlev1_dynsol, key = nlkey, kind=isbyte
@@ -566,8 +574,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_DEBUG */
 
 C--   Calculate initial residual of the linearised system
-      IF ( printResidual .OR. LSR_mixIniGuess.GE.1 )
-     & CALL SEAICE_RESIDUAL(
+      IF ( printResidual .OR. LSR_mixIniGuess.GE.1
+#ifdef SEAICE_ALLOW_LSR_FLEX
+     &     .OR. SEAICEuseLSRflex
+#endif
+     &     ) CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
      O                  residUini, residVini, uTmp, vTmp,
@@ -682,14 +693,6 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_ALLOW_LSR_FLEX
       IF ( SEAICEuseLSRflex ) THEN
-C     In case we have not yet computed the initial residual, do it now.
-       IF ( .NOT. ( printResidual .OR. LSR_mixIniGuess.GE.1 ) )
-     &      CALL SEAICE_RESIDUAL(
-     I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
-     I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
-     O                  residUini, residVini, uTmp, vTmp,
-     I                  printResidual, myIter, myThid )
-
 C     Do not do anything if the initial residuals are zero
        IF ( residUini .EQ. 0. _d 0) THEN
         doIterate4u = .FALSE.
@@ -704,16 +707,16 @@ C     Do not do anything if the initial residuals are zero
 
        residIni = SQRT(residUini*residUini+residVini*residVini)
 
-#ifndef ALLOW_AUTODIFF
-C     Exit nonlinear loop if there is nothing to do.
-       IF ( .NOT. ( doIterate4u .AND. doIterate4v ) ) EXIT
 C     If you want to use SEAICEnonLinTol to be an absolute criterion,
 C     comment out the following line.
        IF ( ipass .EQ. 1 ) residIniNonLin = residIni
 
-       IF ( ( residIni .LT. SEAICEnonLinTol*residIniNonlin )
-     &      .AND. ipass .GT. 2 ) EXIT
-#endif
+C     Skip the the rest of the nonlinear loop if there is nothing to do.
+       doNonLinLoop = doIterate4u .OR. doIterate4v
+C     Check convergence of nonlinear loop, but do at least two passes
+       doNonLinLoop = doNonLinLoop .AND. .NOT.
+     &      ( ipass .GT. 2 .AND.
+     &      ( residIni .LT. SEAICEnonLinTol*residIniNonlin ) )
 
 C     Catch the case of zero residual
        IF  ( residIni .EQ. 0. _d 0 ) residIni = 1. _d -20
@@ -745,6 +748,8 @@ C       ENDIF
       ENDIF
 #endif /* SEAICE_ALLOW_LSR_FLEX */
 
+C     evaluate doNonLinLoop a second time, as it may have changed
+      IF ( doNonLinLoop ) THEN
       DO m = 1, linearIterLoc
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1074,6 +1079,9 @@ C--   Compute residual norm and print
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
+C     second IF doNonLinLoop
+      ENDIF
+C     first IF doNonLinLoop
       ENDIF
 C     end outer ipass pseudo-time stepping loop
       ENDDO
