@@ -72,12 +72,14 @@ c     == external functions ==
 c     == local variables ==
 
       integer i, k
-      integer ivartype
+      integer ivar
       integer ictrlgrad
       integer cunit
       logical lxxadxx
       character*(128) cfile
       integer ilDir
+      integer il
+      integer iarr
 
 C     These are variables needed to read the header, but subsequently
 C     they are not used.
@@ -103,27 +105,15 @@ C     they are not used.
       character*(10) fileYctrlid
       character*( 1) filencvargrd(maxcvars)
 
-#if (defined ALLOW_GENARR2D_CONTROL) \
-      || (defined ALLOW_GENARR3D_CONTROL) \
-      || (defined ALLOW_GENTIM2D_CONTROL)
-C-    Provided we set the file name just before calling ctrl_set_unpack,
-C     the same local file name variable can be used for different variables.
-C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
-      integer iarr
       character*(MAX_LEN_FNAM) fname_local(3)
-#endif
+
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       integer nwettmp(Nr)
-      character*( 9) mskNameForSetUnpack
+      character*(9) mskNameForSetUnpack
 #endif
 
 #ifdef ALLOW_OBCS
-      character*(MAX_LEN_FNAM) weighttype
-      character*(MAX_LEN_FNAM) fname_obcsn(3)
-      character*(MAX_LEN_FNAM) fname_obcss(3)
-      character*(MAX_LEN_FNAM) fname_obcsw(3)
-      character*(MAX_LEN_FNAM) fname_obcse(3)
-cgg(  Add OBCS mask names.
+      integer iobcs
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(Nr,nobcs)
 #endif
@@ -136,8 +126,6 @@ cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSE_CONTROL
       integer        filenWetobcseGlo(Nr,nobcs)
 #endif
-      integer iobcs
-cgg)
 #endif /* ALLOW_OBCS */
 
 c     == end of interface ==
@@ -148,21 +136,8 @@ c--   Initialise
 c--   Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
 
-c--   Assign file names.
-
-#ifdef ALLOW_OBCS
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsn_file,
-     & fname_obcsn, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcss_file,
-     & fname_obcss, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcsw_file,
-     & fname_obcsw, mythid)
-      call ctrl_set_fname(ctrlDir(1:ilDir)//xx_obcse_file,
-     & fname_obcse, mythid)
-#endif
-
-c--     Only the master thread will do I/O.
-        _BEGIN_MASTER( mythid )
+c--   Only the master thread will do I/O.
+      _BEGIN_MASTER( mythid )
 
 c *********************************************************************
 
@@ -336,111 +311,101 @@ cgg)  End OBCS mask check.
 
 c----------------------------------------------------------------------
 
+      do ivar = 1, maxcvars
+       if ( ncvarindex(ivar) .GE. 0 ) THEN
+        il = ilnblnk(ncvarfname(ivar))
+        iarr = ncvarindex(ivar)
+        call ctrl_set_fname(ctrlDir(1:ilDir)//ncvarfname(ivar),
+     &                      fname_local, mythid)
+        if ( .false. ) then
 #ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCSN_CONTROL
-          ivartype    = 11
-          write(weighttype,'(a)') 'wobcsn'
-          call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcsn(ictrlgrad), 'maskobcsn',
-     &         weighttype, wobcsn, nWetobcsnGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-          ivartype    = 12
-          write(weighttype,'(a)') 'wobcss'
-          call ctrl_set_unpack_xz(
-     &         cunit, ivartype, fname_obcss(ictrlgrad), 'maskobcss',
-     &         weighttype, wobcss, nWetobcssGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-          ivartype    = 13
-          write(weighttype,'(a)') 'wobcsw'
-          call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcsw(ictrlgrad), 'maskobcsw',
-     &         weighttype, wobcsw, nWetobcswGlo, mythid)
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-          ivartype    = 14
-          write(weighttype,'(a)') 'wobcse'
-          call ctrl_set_unpack_yz(
-     &         cunit, ivartype, fname_obcse(ictrlgrad), 'maskobcse',
-     &         weighttype, wobcse, nWetobcseGlo, mythid)
-#endif
+# ifdef ALLOW_OBCSN_CONTROL
+        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcsn_file(1:il) ) then
+         call ctrl_set_unpack_xz(
+     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcsn',
+     &        'wobcsn', wobcsn, nWetobcsnGlo, mythid)
+# endif
+# ifdef ALLOW_OBCSS_CONTROL
+        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcss_file(1:il) ) then
+         call ctrl_set_unpack_xz(
+     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcss',
+     &        'wobcss', wobcss, nWetobcssGlo, mythid)
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcsw_file(1:il) ) then
+         call ctrl_set_unpack_yz(
+     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcsw',
+     &        'wobcsw', wobcsw, nWetobcswGlo, mythid)
+# endif
+# ifdef ALLOW_OBCSE_CONTROL
+        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcse_file(1:il) ) then
+         call ctrl_set_unpack_yz(
+     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcse',
+     &        'wobcse', wobcse, nWetobcseGlo, mythid)
+# endif
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_GENARR2D_CONTROL
-       do iarr = 1, maxCtrlArr2D
-        if (xx_genarr2d_weight(iarr).NE.' ') then
-         mskNameForSetUnpack='maskCtrlC'
-         DO k=1,Nr
-           nwettmp(k) = nwetcglobal(k)
-         ENDDO
-# ifdef ALLOW_SHELFICE
-         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
-     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
-          mskNameForSetUnpack='maskCtrlI'
+        elseif ( ncvartype(ivar).EQ.'Arr2D' ) then
+         if ( xx_genarr2d_weight(iarr).NE.' ') then
+          mskNameForSetUnpack='maskCtrlC'
           DO k=1,Nr
-           nwettmp(k) = nwetiglobal(k)
+           nwettmp(k) = nwetcglobal(k)
           ENDDO
-         endif
+# ifdef ALLOW_SHELFICE
+          if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &        (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
+           mskNameForSetUnpack='maskCtrlI'
+           DO k=1,Nr
+            nwettmp(k) = nwetiglobal(k)
+           ENDDO
+          endif
 # endif
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr2d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 100+iarr
-cc          write(weighttype,'(a)') ' '
-cc          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, genarr2dPrecond(iarr),
+     &         lxxadxx, cunit, ivar, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_genarr2d_weight(iarr),
      &         nwettmp, mythid)
-        endif
-       enddo
+         endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-       do iarr = 1, maxCtrlArr3D
-        if (xx_genarr3d_weight(iarr).NE.' ') then
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_genarr3d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 200+iarr
-c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') 'wunit'
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+        elseif ( ncvartype(ivar).EQ.'Arr3D' ) then
+         if ( xx_genarr3d_weight(iarr).NE.' ') then
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivar,
      &         fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
      &         wunit, nwetcglobal, mythid)
-        endif
-       enddo
+         endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
-       do iarr = 1, maxCtrlTim2D
-        if (xx_gentim2d_weight(iarr).NE.' ') then
-         mskNameForSetUnpack='maskCtrlC'
-         DO k=1,Nr
+        elseif ( ncvartype(ivar).EQ.'Tim2D' ) then
+         if ( xx_gentim2d_weight(iarr).NE.' ') then
+          mskNameForSetUnpack='maskCtrlC'
+          DO k=1,Nr
            nwettmp(k) = nwetcglobal(k)
-         ENDDO
+          ENDDO
 # ifdef ALLOW_SHELFICE
-         if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
+          if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
            mskNameForSetUnpack='maskCtrlI'
            DO k=1,Nr
-             nwettmp(k) = nwetiglobal(k)
+            nwettmp(k) = nwetiglobal(k)
            ENDDO
-         endif
+          endif
 # endif
-          call ctrl_set_fname( ctrlDir(1:ilDir)//xx_gentim2d_file(iarr),
-     O                         fname_local, mythid )
-          ivartype    = 300+iarr
-c          write(weighttype,'(a)') ' '
-c          write(weighttype,'(a)') 'wunit'
           call ctrl_set_unpack_xy(
-     &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
+     &         lxxadxx, cunit, ivar, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_gentim2d_weight(iarr),
      &         nwettmp, mythid)
-        endif
-       enddo
+         endif
 #endif /* ALLOW_GENTIM2D_CONTROL */
+        endif
+C     if ( ncvarindex(ivar) .ge. 0 ) then
+       endif
+C     do k = 1, maxcvars
+      enddo
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       _BEGIN_MASTER( mythid )

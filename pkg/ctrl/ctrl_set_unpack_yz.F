@@ -39,7 +39,7 @@ c     == routine arguments ==
       integer ivartype
       character*(MAX_LEN_FNAM)   fname
       character*  (9) masktype
-      character*(MAX_LEN_FNAM) weighttype
+      character*  (*) weighttype
       _RL     weightfld( Nr,nobcs )
       integer nwetglobal(Nr,nobcs)
       integer mythid

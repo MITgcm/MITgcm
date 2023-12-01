@@ -40,7 +40,7 @@ c     == routine arguments ==
       integer ivartype
       character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
-      character*(MAX_LEN_FNAM) weighttype
+      character*(  *) weighttype
       _RL     weightfld( Nr,nobcs )
       logical lxxadxx
       integer mythid
@@ -331,4 +331,3 @@ c     -- end of irec loop --
 
       return
       end
-
