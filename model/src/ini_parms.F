@@ -1544,12 +1544,12 @@ C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g
          rUnit2mass = rhoConst
       ENDIF
 
-#ifndef ALLOW_STEEP_ICECAVITY
+      IF ( useSTIC ) THEN
 C--   For backward compatibility, set temp_addMass and salt_addMass
 C     to temp_EvPrRn and salt_EvPrRn if not set in parameter file "data"
-      IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
-      IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
-#else
+        IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
+        IF (salt_addMass .EQ. UNSET_RL) salt_addMass = salt_EvPrRn
+      ELSE
 C--   If ALLOW_STEEP_ICECAVITY is defined, shelfice and icefront
 C--   melt water contributions to temperature and salinity tendencies 
 C--   are from shelficeForcingT/S and iceFrontForcingT/S. Set
@@ -1557,9 +1557,9 @@ C--   temp_addMass and salt_addMass to UNSET_RL so we skip the
 C--   the #ifdef ALLOW_ADDFLUID blocks in apply_forcing.F in order
 C--   not to double count the melt water contributions to 
 C--   temperature and salinity tendencies. 
-      temp_addMass = UNSET_RL
-      salt_addMass = UNSET_RL
-#endif
+        temp_addMass = UNSET_RL
+        salt_addMass = UNSET_RL
+      ENDIF
 
 C--   Make a choice (if unset) regarding using CG2D solver min.-residual sol.
 C      for simple set-up (cartesian grid + flat bottom), default is to

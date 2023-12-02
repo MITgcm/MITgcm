@@ -33,6 +33,12 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+C Need to include STIC_OPTIONS.h as some CPP flags
+C defined in STIC_OPTIONS.h are used in
+C checkpoint_lev2_directives.h, checkpoint_lev3_directives.h, etc.
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif

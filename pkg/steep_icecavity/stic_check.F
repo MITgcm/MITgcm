@@ -67,16 +67,23 @@ C--  Check parameters:
         errCount = errCount + 1
        ELSE
 #ifdef ALLOW_SHELFICE
-       IF ( STICdepthFile .NE. SHELFICEtopoFile ) THEN
-        iL = ILNBLNK(STICdepthFile)
-        jL = ILNBLNK(SHELFICEtopoFile)
-        WRITE(msgBuf,'(6A)') '** WARNING ** STIC_CHECK: ',
-     &       'STICdepthFile = ''', STICdepthFile(1:iL),
-     &       ''' .NE. SHELFICEtopoFile = ''',
-     &       SHELFICEtopoFile(1:jL), ''''
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-       ENDIF
+        IF ( STICdepthFile .NE. SHELFICEtopoFile ) THEN
+         iL = ILNBLNK(STICdepthFile)
+         jL = ILNBLNK(SHELFICEtopoFile)
+         WRITE(msgBuf,'(6A)') '** WARNING ** STIC_CHECK: ',
+     &        'STICdepthFile = ''', STICdepthFile(1:iL),
+     &        ''' .NE. SHELFICEtopoFile = ''',
+     &        SHELFICEtopoFile(1:jL), ''''
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+        IF ( SHELFICEboundaryLayer ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &        'pkg/steep_icecavity requires SHELFICEboundaryLayer = F',
+     &        'remove SHELFICEboundaryLayer = .TRUE., in data.shelfice'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+        ENDIF
 #endif
        ENDIF
 
@@ -90,10 +97,10 @@ C--  Check parameters:
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
-     &       'SHELFICE_CHECK: detected', errCount,' fatal error(s)'
+     &       'STIC_CHECK: detected', errCount,' fatal error(s)'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
-        STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+        STOP 'ABNORMAL END: S/R STIC_CHECK'
       ENDIF
 
       _END_MASTER(myThid)

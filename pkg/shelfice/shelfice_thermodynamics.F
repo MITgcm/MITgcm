@@ -150,10 +150,10 @@ CADJ STORE shiTransCoeffS    = comlev1, key=ikey_dynamics, kind=isbyte
        IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
 # endif
 C     use alternative thermodynamics that includes icefront melt processes
-       CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+       CALL TIMER_START('STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]',
      &        myThid)
        CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
-       CALL TIMER_STOP( 'STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+       CALL TIMER_STOP( 'STIC_THERMODYNAMICS [SHELFICE_THERMODYNAMICS]',
      &       myThid)
       ELSE
 #else
@@ -621,7 +621,10 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
      &                   + ( c0 - SHELFICEthetaSurface )/pLoc(I,J) )
      &           - eps2
      &           + eps8*( a0*sLoc(I,J) - eps7 )
+     &           + (eps1*a0*dFac + (1.-dFac)*aqe) * SHELFICEsalinity
             cqe = ( eps2 + eps8*eps7 )*sLoc(I,J)
+     &           - (eps1*dFac + (1.-dFac)*(eps1*eps6+eps3*eps7))
+     &           * SHELFICEsalinity
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
