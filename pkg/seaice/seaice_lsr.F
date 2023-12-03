@@ -184,8 +184,18 @@ C
        linearIterLoc = SEAICEpreconlinIter
        nonLinIterLoc = SEAICEpreconNL_Iter
       ENDIF
-C
+
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
+
+C     surface level
+      IF ( usingPCoords ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
+C--   introduce turning angles
+      SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+      COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 #ifdef ALLOW_AUTODIFF
 cph break artificial dependencies
@@ -293,16 +303,6 @@ CADJ STORE vice    = comlev1_dynsol, key = nlkey, kind=isbyte
 CADJ STORE uicenm1 = comlev1_dynsol, key = nlkey, kind=isbyte
 CADJ STORE vicenm1 = comlev1_dynsol, key = nlkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-C     surface level
-      IF ( usingPCoords ) THEN
-       kSrf = Nr
-      ELSE
-       kSrf = 1
-      ENDIF
-C--   introduce turning angles
-      SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
-      COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 C SET SOME VALUES
       WFAU=SEAICE_LSRrelaxU
@@ -575,10 +575,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Calculate initial residual of the linearised system
       IF ( printResidual .OR. LSR_mixIniGuess.GE.1
-#ifdef SEAICE_ALLOW_LSR_FLEX
-     &     .OR. SEAICEuseLSRflex
-#endif
-     &     ) CALL SEAICE_RESIDUAL(
+     &     .OR. SEAICEuseLSRflex )
+     &    CALL SEAICE_RESIDUAL(
      I                  rhsU, rhsV, uRt1, uRt2, vRt1, vRt2,
      I                  AU, BU, CU, AV, BV, CV, uIce, vIce,
      O                  residUini, residVini, uTmp, vTmp,
@@ -675,8 +673,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C NOW DO ITERATION
 
-cph--- iteration starts here
-cph--- need to kick out goto
       doIterate4u = .TRUE.
       doIterate4v = .TRUE.
 
@@ -692,6 +688,9 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
       ICOUNT2 = linearIterLoc
 
 #ifdef SEAICE_ALLOW_LSR_FLEX
+C     first IF doNonLinLoop
+      ENDIF
+
       IF ( SEAICEuseLSRflex ) THEN
 C     Do not do anything if the initial residuals are zero
        IF ( residUini .EQ. 0. _d 0) THEN
@@ -712,7 +711,7 @@ C     comment out the following line.
        IF ( ipass .EQ. 1 ) residIniNonLin = residIni
 
 C     Skip the the rest of the nonlinear loop if there is nothing to do.
-       doNonLinLoop = doIterate4u .OR. doIterate4v
+       doNonLinLoop = doNonLinLoop .AND.( doIterate4u .OR. doIterate4v )
 C     Check convergence of nonlinear loop, but do at least two passes
        doNonLinLoop = doNonLinLoop .AND. .NOT.
      &      ( ipass .GT. 2 .AND.
@@ -746,10 +745,11 @@ C       ENDIF
        ENDIF
 
       ENDIF
+
+C     test doNonLinLoop a second time, as it may have changed
+      IF ( doNonLinLoop ) THEN
 #endif /* SEAICE_ALLOW_LSR_FLEX */
 
-C     evaluate doNonLinLoop a second time, as it may have changed
-      IF ( doNonLinLoop ) THEN
       DO m = 1, linearIterLoc
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -960,6 +960,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
 C--    end doIterate4u or doIterate4v
        ENDIF
       ENDDO
+C ITERATION END -----------------------------------------------------
 
 #ifdef SEAICE_ALLOW_LSR_FLEX
       IF ( SEAICEuseLSRflex ) THEN
@@ -967,8 +968,6 @@ C--    end doIterate4u or doIterate4v
        residkm1 = residIni
       ENDIF
 #endif /* SEAICE_ALLOW_LSR_FLEX */
-
-C ITERATION END -----------------------------------------------------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -1080,8 +1079,6 @@ C--   Compute residual norm and print
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
 C     second IF doNonLinLoop
-      ENDIF
-C     first IF doNonLinLoop
       ENDIF
 C     end outer ipass pseudo-time stepping loop
       ENDDO
