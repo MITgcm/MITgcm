@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - new/improved LSR convergence criteria (CPP: SEAICE_ALLOW_LSR_FLEX, run-time:
+    SEAICEuseLSRflex) accounting for both Non-Lin and Linear solver residual;
+    tested in offline_exf_seaice.dyn_lsr; also add 2-D diagnostics for residual.
 o pkg/streamice:
   - rename STREAMICE_PETSC.h to STREAMICE_PETSC_MOD.h and rename
     STREAMICE_ARG_PETSC_mod code module to STREAMICE_PETSC_mod;
