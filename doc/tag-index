@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - rename STREAMICE_PETSC.h to STREAMICE_PETSC_MOD.h and rename
+    STREAMICE_ARG_PETSC_mod code module to STREAMICE_PETSC_mod;
+  - include STREAMICE_PETSC_MOD.h in src files rather than the module directly:
+    this obviates the need for alphabetical order in names or serial compilation
 o pkg/bling:
   - fix 2 small bugs in carbonate and aragonite saturation states: a) both Ksp
     coeff are fct of log of temperature (and not log10); b) add missing unit
