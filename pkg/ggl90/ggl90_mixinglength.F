@@ -350,11 +350,14 @@ C
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 # endif
        IF ( locMxlMaxFlag .EQ. 1 ) THEN
-
         DO k=2,Nr
          DO j=jMin,jMax
           DO i=iMin,iMax
-           MaxLength=(Ro_surf(i,j,bi,bj)-rF(k)) * recip_coordFac
+           IF ( usingPcoords ) THEN
+            MaxLength=(rF(k)-R_low(i,j,bi,bj))*recip_coordFac
+           ELSE
+            MaxLength=(Ro_surf(i,j,bi,bj)-rF(k)) * recip_coordFac
+           ENDIF
            IF (GGL90mixingLength(i,j,k) .EQ. MaxLength) THEN
             LCmixingLength(i,j,k) = LC_Gamma * GGL90mixingLength(i,j,k)
            ELSE
