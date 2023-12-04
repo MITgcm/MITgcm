@@ -28,7 +28,7 @@ C |-- ctrl_pack                  adjoint gradient are computed here
 C |
 C |-- grdchk_main
 C     |
-C     |-- grdchk_init
+C     |-- grdchk_get_mask
 C     |-- do icomp=...        - loop over control vector elements
 C         |
 C         |-- grdchk_loc      - determine location of icomp on grid
@@ -153,7 +153,7 @@ C     note: already called in AD run so that only needed for TLM run
 #endif
 
 C--   initialise variables
-      CALL GRDCHK_INIT( myThid )
+      CALL GRDCHK_GET_MASK( myThid )
 
 C--   Compute the adjoint model gradients.
 C--   Compute the unperturbed cost function.
@@ -204,17 +204,17 @@ C--   forward run with unperturbed control vector
          grdchk_epsfac = 1. _d 0
       ENDIF
 
-      WRITE(standardmessageunit,'(A)')
+      WRITE(standardMessageUnit,'(A)')
      &    'grad-res -------------------------------'
-      WRITE(standardmessageunit,'(2a)')
+      WRITE(standardMessageUnit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '       fc ref            fc + eps           fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
-      WRITE(standardmessageunit,'(2a)')
+      WRITE(standardMessageUnit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '      tlm grad            fd grad          1 - fd/tlm'
 #else
-      WRITE(standardmessageunit,'(2a)')
+      WRITE(standardMessageUnit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '      adj grad            fd grad          1 - fd/adj'
 #endif
@@ -271,9 +271,10 @@ C******************************************************
 
 C--   get gradient component calculated via adjoint
           CALL GRDCHK_GETADXX( icvrec,
-     &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              adxxmemo, ierr, myThid )
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
+     &              adxxmemo, myThid )
 C--   Add a global-sum call so that all proc will get the adjoint gradient
           _GLOBAL_SUM_RL( adxxmemo, myThid )
 
@@ -286,10 +287,11 @@ C--   1. perturb control vector component: xx(i)=1.
 
           localEps = 1. _d 0
           CALL GRDCHK_GETXX( icvrec, TANGENT_SIMULATION,
-     &              itile, jtile, layer,
      &              itilepos, jtilepos,
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
      &              xxmemo_ref, xxmemo_pert, localEps,
-     &              ierr, myThid )
+     &              myThid )
 
 C--   2. perform tangent linear run
           myTime = startTime
@@ -324,9 +326,10 @@ C--   2. perform tangent linear run
 
 C--   3. reset control vector
           CALL GRDCHK_SETXX( icvrec, TANGENT_SIMULATION,
-     &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              xxmemo_ref, ierr, myThid )
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
+     &              xxmemo_ref, myThid )
 
 #endif /* ALLOW_TANGENTLINEAR_RUN */
 
@@ -340,10 +343,11 @@ C--   (C-1) positive perturbation:
 C--   get control vector component from file
 C--   perturb it and write back to file
           CALL GRDCHK_GETXX( icvrec, FORWARD_SIMULATION,
-     &              itile, jtile, layer,
      &              itilepos, jtilepos,
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
      &              xxmemo_ref, xxmemo_pert, localEps,
-     &              ierr, myThid )
+     &              myThid )
 
 C--   forward run with perturbed control vector
           myTime = startTime
@@ -367,9 +371,10 @@ C--   forward run with perturbed control vector
 
 C--   Reset control vector.
           CALL GRDCHK_SETXX( icvrec, FORWARD_SIMULATION,
-     &              itile, jtile, layer,
      &              itilepos, jtilepos,
-     &              xxmemo_ref, ierr, myThid )
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
+     &              xxmemo_ref, myThid )
 
           fcpertminus = fcref
           IF ( useCentralDiff ) THEN
@@ -379,10 +384,11 @@ C--   (C-2) repeat the proceedure for a negative perturbation:
 C--   get control vector component from file
 C--   perturb it and write back to file
             CALL GRDCHK_GETXX( icvrec, FORWARD_SIMULATION,
-     &                 itile, jtile, layer,
-     &                 itilepos, jtilepos,
-     &                 xxmemo_ref, xxmemo_pert, localEps,
-     &                 ierr, myThid )
+     &              itilepos, jtilepos,
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
+     &              xxmemo_ref, xxmemo_pert, localEps,
+     &              myThid )
 
 C--   forward run with perturbed control vector
             myTime = startTime
@@ -406,9 +412,10 @@ C--   forward run with perturbed control vector
 
 C--   Reset control vector.
             CALL GRDCHK_SETXX( icvrec, FORWARD_SIMULATION,
-     &                 itile, jtile, layer,
-     &                 itilepos, jtilepos,
-     &                 xxmemo_ref, ierr, myThid )
+     &              itilepos, jtilepos,
+     &              layer, itile, jtile,
+     &              grdchkwhichproc, grdchkvarindex,
+     &              xxmemo_ref, myThid )
 
 C-- end of if useCentralDiff ...
           ENDIF
@@ -468,20 +475,20 @@ C******************************************************
           ENDIF
 
           IF ( myProcId .EQ. grdchkwhichproc .AND. ierr .EQ. 0 ) THEN
-            WRITE(standardmessageunit,'(A)')
+            WRITE(standardMessageUnit,'(A)')
      &          'grad-res -------------------------------'
-            WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
+            WRITE(standardMessageUnit,'(A,8I5,1x,1P3E19.11)')
      &           ' grad-res ',myprocid,ichknum,itilepos,jtilepos,
      &             layer,itile,jtile,obcspos,
      &             fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-            WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
+            WRITE(standardMessageUnit,'(A,8I5,1x,1P3E19.11)')
      &           ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &             icompmem(ichknum),itestmem(ichknum),
      &             bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),
      &             ftlxxmemo, gfd, ratio_ftl
 #else
-            WRITE(standardmessageunit,'(A,8I5,1x,1P3E19.11)')
+            WRITE(standardMessageUnit,'(A,8I5,1x,1P3E19.11)')
      &           ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &             icompmem(ichknum),itestmem(ichknum),
      &             bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),

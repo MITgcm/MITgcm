@@ -41,7 +41,6 @@ C     == global variables ==
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "optim.h"
 #include "CTRL_DUMMY.h"
 #include "CTRL_FIELDS.h"
 #include "CTRL_GENARR.h"
