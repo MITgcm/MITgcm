@@ -26,7 +26,6 @@ C     == GLobal variables ==
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "CTRL_DUMMY.h"
-#include "optim.h"
 #endif
 C     == Routine arguments ==
       INTEGER myThid

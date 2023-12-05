@@ -23,7 +23,6 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-#include "DIC_LOAD.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -32,13 +31,10 @@ C  myThid               :: thread number
 #ifdef ALLOW_DIC
 
 C !LOCAL VARIABLES: ====================================================
-       INTEGER i,j, kLev, it
-       INTEGER intimeP, intime0, intime1
-       _RL aWght, bWght, co3dummy
-C Number of iterations for pCO2 solvers...
-C Solubility relation coefficients
-C local variables for carbon chem
+      INTEGER i,j, kLev, it
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+       _RL co3dummy
+C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -47,109 +43,21 @@ C local variables for carbon chem
       _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
       LOGICAL debugPrt
-      LOGICAL pH_isLoaded
+#ifdef ALLOW_DEBUG
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
+C =================================================================
+
       kLev = 1
-
-      CALL DIC_INI_ATMOS( startTime, nIter0, myThid )
-
-C =================================================================
-
-      IF ( periodicExternalForcing ) THEN
-
-C read in surface silica field
-C--   Get reccord number and weight for time interpolation:
-       CALL GET_PERIODIC_INTERVAL(
-     O                   intimeP, intime0, intime1, bWght, aWght,
-     I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTClock, startTime, myThid )
-
-       _BARRIER
-       _BEGIN_MASTER(myThid)
-        WRITE(standardMessageUnit,'(A,I10,A,2(2I5,A))')
-     &   ' DIC_SURFFORCING_INIT, it=', nIter0,
-     &   ' : Reading new data, i0,i1=', intime0, intime1
-       _END_MASTER(myThid)
-
-       IF ( DIC_silicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf0,intime0,
-     &        nIter0,myThid )
-         CALL READ_REC_XY_RS( DIC_silicaFile,silicaSurf1,intime1,
-     &        nIter0,myThid )
-#ifndef ALLOW_AUTODIFF
-#ifdef DIC_CALCITE_SAT
-       ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep0,
-     &                         intime0, nIter0, myThid )
-         CALL READ_REC_XYZ_RS( DIC_deepSilicaFile, silicaDeep1,
-     &                         intime1, nIter0, myThid )
-#endif /* DIC_CALCITE_SAT */
-#endif /* ndef ALLOW_AUTODIFF */
-       ENDIF
-
-c#ifdef ALLOW_OFFLINE
-C--    This call has been moved to S/R OFFLINE_INIT_VARIA
-c      IF ( useOffLine ) THEN
-c        CALL OFFLINE_FIELDS_LOAD( startTime, nIter0, myThid )
-c      ENDIF
-c#endif
-
-       _EXCH_XY_RS(silicaSurf0, myThid )
-       _EXCH_XY_RS(silicaSurf1, myThid )
-
-       IF ( DIC_silicaFile .NE. ' '  ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-C If file provided for surface silicate, read it in
-             silicaSurf(i,j,bi,bj) = bWght*silicaSurf0(i,j,bi,bj)
-     &                             + aWght*silicaSurf1(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-#ifndef ALLOW_AUTODIFF
-#ifdef DIC_CALCITE_SAT
-       ELSEIF ( DIC_deepSilicaFile .NE. ' '  ) THEN
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-C If no surface silicate file but deep (3d) silicate provided, use top level
-             silicaSurf(i,j,bi,bj) = bWght*silicaDeep0(i,j,kLev,bi,bj)
-     &                             + aWght*silicaDeep1(i,j,kLev,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-#endif /* DIC_CALCITE_SAT */
-#endif /* ndef ALLOW_AUTODIFF */
-       ENDIF
-
-C end periodicExternalForcing
-      ENDIF
-
-C =================================================================
-
       jMin=1
       jMax=sNy
       iMin=1
       iMax=sNx
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            pH(i,j,bi,bj) = 8. _d 0
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-
+C Solubility relation coefficients
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -173,16 +81,6 @@ C =================================================================
         ENDDO
        ENDDO
       ENDDO
-
-      pH_isLoaded = .FALSE.
-      IF ( nIter0.GT.PTRACERS_Iter0 .OR.
-     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
-     &   ) THEN
-C       Read pH from a pickup file if needed
-        CALL DIC_READ_PICKUP(
-     O                        pH_isLoaded,
-     I                        nIter0, myThid )
-      ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -246,7 +144,7 @@ C for non-interactive Si
 
 C====================================================================
 
-        IF ( .NOT.pH_isLoaded ) THEN
+        IF ( .NOT.pH_isLoaded(1) ) THEN
 C set guess of pH for first step here
 #ifdef ALLOW_DEBUG
           IF (debugMode) THEN

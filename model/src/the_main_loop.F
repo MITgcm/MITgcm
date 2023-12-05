@@ -224,9 +224,6 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
 # endif
-# ifdef ALLOW_CTRL
-#  include "optim.h"
-# endif
 # ifdef ALLOW_TIMEAVE
 #  include "TIMEAVE_STATV.h"
 # endif

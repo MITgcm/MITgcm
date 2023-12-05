@@ -14,7 +14,7 @@ C     == Global variables ===
 #if (defined (ALLOW_ADMTLM) && defined (ALLOW_BYPASSAD))
 # include "CTRL.h"
 # include "CTRL_DUMMY.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 # include "adcost.h"
 # include "g_cost.h"
 # include "adcommon.h"

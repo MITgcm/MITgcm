@@ -25,7 +25,7 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 C     == routine arguments ==
       CHARACTER*(MAX_LEN_FNAM) fname
