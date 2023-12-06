@@ -301,46 +301,6 @@ C     Impose minimum from downward sweep
        STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
-#endif
-C--   Impose minimum mixing length to avoid division by zero
-C     and compute inverse
-      IF ( locMxlMaxFlag.EQ.3 ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
-#endif
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#ifdef GGL90_REGULARIZE_MIXINGLENGTH
-          MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k)
-     &         + GGL90mixingLengthMin**2 )
-#else
-          MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k) )
-          MLtmp = MAX( MLtmp, GGL90mixingLengthMin )
-#endif
-          rMixingLength(i,j,k) = 1. _d 0 / MLtmp
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-#ifdef GGL90_REGULARIZE_MIXINGLENGTH
-          MLtmp = SQRT( GGL90mixingLength(i,j,k)**2
-     &         + GGL90mixingLengthMin**2 )
-#else
-          MLtmp = MAX(GGL90mixingLength(i,j,k),GGL90mixingLengthMin)
-#endif
-          GGL90mixingLength(i,j,k) = MLtmp
-          rMixingLength(i,j,k) = 1. _d 0 / MLtmp
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-
 #ifdef ALLOW_GGL90_LANGMUIR
 C
 C Langmuir circulation effect
@@ -409,6 +369,46 @@ CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
        ENDIF
       ENDIF
 #endif /* ALLOW_GGL90_LANGMUIR */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
+#endif
+C--   Impose minimum mixing length to avoid division by zero
+C     and compute inverse
+      IF ( locMxlMaxFlag.EQ.3 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
+#endif
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#ifdef GGL90_REGULARIZE_MIXINGLENGTH
+          MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k)
+     &         + GGL90mixingLengthMin**2 )
+#else
+          MLtmp = SQRT( GGL90mixingLength(i,j,k)*mxLength_Dn(i,j,k) )
+          MLtmp = MAX( MLtmp, GGL90mixingLengthMin )
+#endif
+          rMixingLength(i,j,k) = 1. _d 0 / MLtmp
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+#ifdef GGL90_REGULARIZE_MIXINGLENGTH
+          MLtmp = SQRT( GGL90mixingLength(i,j,k)**2
+     &         + GGL90mixingLengthMin**2 )
+#else
+          MLtmp = MAX(GGL90mixingLength(i,j,k),GGL90mixingLengthMin)
+#endif
+          GGL90mixingLength(i,j,k) = MLtmp
+          rMixingLength(i,j,k) = 1. _d 0 / MLtmp
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_GGL90 */
 
