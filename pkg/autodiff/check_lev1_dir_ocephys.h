@@ -178,7 +178,7 @@ CADJ STORE shelficeForcingS=comlev1, key = ikey_dynamics, kind = isbyte
 C     need to add this to avoid recomputing s/r do_oceanic_phys in
 C     s/r forward_step, this implies that ALLOW_ADDFLUID is defined
 CADJ STORE addMass         =comlev1, key = ikey_dynamics, kind = isbyte
-# endf
+# endif
 #endif /* ALLOW_SHELFICE */
 
 #if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)

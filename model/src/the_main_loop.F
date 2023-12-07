@@ -165,6 +165,9 @@ c They provide the fields to be stored.
 #   include "SHELFICE.h"
 #   include "SHELFICE_COST.h"
 #  endif
+#  ifdef ALLOW_STEEP_ICECAVITY
+#   include "STIC.h"
+#  endif
 #  ifdef ALLOW_STREAMICE
 #   include "STREAMICE.h"
 #   include "STREAMICE_ADV.h"

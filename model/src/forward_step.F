@@ -45,7 +45,7 @@
 #endif
 #ifdef ALLOW_STEEP_ICECAVITY
 C Need to include STIC_OPTIONS.h as some CPP flags
-C defined in STIC_OPTIONS.h are used in 
+C defined in STIC_OPTIONS.h are used in
 C checkpoint_lev1_directives.h.
 # include "STIC_OPTIONS.h"
 #endif
@@ -356,6 +356,9 @@ C     == Global variables ==
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
+# endif
+# ifdef ALLOW_STEEP_ICECAVITY
+#  include "STIC.h"
 # endif
 # ifdef ALLOW_STREAMICE
 #  include "STREAMICE.h"
