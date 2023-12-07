@@ -710,6 +710,11 @@ C     endif (not) useISOMIPTD
 C     end bi,bj loops
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Avoid recomputing most of the routine body in the AD-code
+CADJ STORE shelfIceFreshWaterFlux
+CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
       IF (SHELFICEMassStepping) THEN
        CALL SHELFICE_STEP_ICEMASS( myTime, myIter, myThid )
