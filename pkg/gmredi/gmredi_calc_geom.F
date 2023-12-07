@@ -75,7 +75,7 @@ C     ab0, ab1, ab2:: Adams-Bashforth weights
       _RL N2loc3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       _RL recipMaxSlope
-      _RL c_ros_u, fm_ui, fp_ui
+      _RL c_dum, fm_ui, fp_ui
       _RL ab0, ab1, ab2
 
 C     metric variables
@@ -101,12 +101,16 @@ C     local version of current rhs of eddy energy equation
       _RL U_depth_avg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL V_depth_avg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      _RL c1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL c_ros(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_rosX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_rosY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_rosE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_rosN(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       _RL ene_adv_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_adv_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_wav_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ene_wav_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_lap_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_lap_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -249,7 +253,17 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
       ENDDO
 
 C     work out the implied long Rossby phase speeds at T pts
-C     average it onto U points later
+C     average it onto UV points later
+
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        c_rosX(i,j) = 0.0 _d 0
+        c_rosY(i,j) = 0.0 _d 0
+        c_rosE(i,j) = 0.0 _d 0
+        c_rosN(i,j) = 0.0 _d 0
+       ENDDO
+      ENDDO
+
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
 C         only compute the Rossby phase speed if deep enough
@@ -260,20 +274,26 @@ C         only compute the Rossby phase speed if deep enough
          c1(i,j) = 0.0 _d 0
         ENDIF
         IF (usingCartesianGrid) THEN
-         c_ros(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
-        ELSE IF (usingSphericalPolarGrid) THEN
-         c_ros(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
-     &              / ( rSphere * fCori(i,j,bi,bj) ** 2 )
+         c_rosX(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
         ELSE
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C switch off wave advection for now in curvilinear grid options
-C TODO: better to make it be aware of rotations
-         c_ros(i,j) = 0.0 _d 0
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+         c_rosX(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
+     &               / ( rSphere * fCori(i,j,bi,bj) ** 2 )
         ENDIF
-        c_ros(i,j) = -min( c1(i,j) / 3.0 _d 0, c_ros(i,j) )
+        c_rosX(i,j) = -min( c1(i,j) / 3.0 _d 0, c_rosX(i,j) )
        ENDDO
       ENDDO
+      
+C     rotating the Rossby velocity if needed
+      IF (usingCurvilinearGrid) THEN
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         c_rosE(i,j) = c_rosX(i,j)
+         c_rosX(i,j) = 0.0 _d 0
+        ENDDO
+       ENDDO
+       CALL ROTATE_UV2EN_RL(c_rosX,c_rosY,c_rosE,c_rosN,
+     &      .FALSE.,.FALSE.,.TRUE.,1,myThid)
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- compute kgm as per GEOMETRIC in horizontal, then extend
@@ -382,6 +402,7 @@ C ----------------------------------------------
         ene_adv_x(i,j)   = 0.0 _d 0
         ene_adv_y(i,j)   = 0.0 _d 0
         ene_wav_x(i,j)   = 0.0 _d 0
+        ene_wav_y(i,j)   = 0.0 _d 0
         ene_lap_x(i,j)   = 0.0 _d 0
         ene_lap_y(i,j)   = 0.0 _d 0
         ene_rhs_now(i,j) = 0.0 _d 0
@@ -436,9 +457,9 @@ C ---- 1st order upwinding
          ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
      &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
 C ---- 1st order upwinding wave stuff
-         c_ros_u = 0.5 * ( c_ros(i-1,j) + c_ros(i,j) )
-         fp_ui = c_ros_u + ABS( c_ros_u )
-         fm_ui = c_ros_u - ABS( c_ros_u )
+         c_dum = 0.5 * ( c_rosX(i-1,j) + c_rosX(i,j) )
+         fp_ui = c_dum + ABS( c_dum )
+         fm_ui = c_dum - ABS( c_dum )
          ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
      &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
          ene_lap_x(i,j) = GEOM_ene_kappa * (2.0 _d 0)
@@ -463,6 +484,12 @@ C ---- 1st order upwinding
          fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
          ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
      &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
+C ---- 1st order upwinding wave stuff
+         c_dum = 0.5 * ( c_rosY(i,j-1) + c_rosY(i,j) )
+         fp_ui = c_dum + ABS( c_dum )
+         fm_ui = c_dum - ABS( c_dum )
+         ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
+     &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
          ene_lap_y(i, j) = GEOM_ene_kappa * (2.0 _d 0)
      &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i,j-1,bi,bj))
      &        / (dyG(i,j,bi,bj) + dyG(i,j-1,bi,bj))
@@ -473,11 +500,10 @@ C ---- 1st order upwinding
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
         trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene(i,j,bi,bj)
-        trd_ene_adv(i,j) =
-     &           (ene_adv_x(i+1,j) - ene_adv_x(i,j))
-     &           * recip_dxG(i,j,bi,bj)
-     &          +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
-     &           * recip_dyG(i,j,bi,bj)
+        trd_ene_adv(i,j) = (ene_adv_x(i+1,j) - ene_adv_x(i,j))
+     &                     * recip_dxG(i,j,bi,bj)
+     &                    +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
+     &                     * recip_dyG(i,j,bi,bj)
 C        add in a bit to take into account linear free surface
 c         IF(implicitFreeSurface) THEN
 c          IF(maskC(i,j,kSurf,bi,bj) .GT. 0.0 _d 0) THEN
@@ -485,8 +511,10 @@ c           trd_ene_adv(i,j) = wVel(i,j,kSurf,bi,bj) * GEOM_ene(i,j)
 c     &                         / depthC(i,j)
 c          ENDIF
 c         ENDIF
-        trd_ene_wav(i,j) = -(ene_wav_x(i+1,j) - ene_wav_x(i,j))
+        trd_ene_wav(i,j) =  (ene_wav_x(i+1,j) - ene_wav_x(i,j))
      &                      * recip_dxG(i,j,bi,bj)
+     &                     +(ene_wav_y(i,j+1) - ene_wav_y(i,j))
+     &                      * recip_dyG(i,j,bi,bj)
         trd_ene_lap(i,j) =
      &           (ene_lap_x(i+1,j) - ene_lap_x(i,j))
      &           * recip_dxG(i,j,bi,bj)
@@ -567,8 +595,6 @@ C        advective trends are dE/dt + -(u - c) dot grad E
      &                       'GEOMElap', 0,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(c1,
      &                       'GEOM_c1 ', 0,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(c_ros,
-     &                       'GEOMcros', 0,1,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

@@ -213,9 +213,8 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_pickup_read_mdsio  =', ' /* GEOM binary pickup read  */')
      
        IF (usingCurvilinearGrid) THEN
-        WRITE(msgBuf,'(3A)') '** WARNING ** GMREDI_CHECK:',
-     &       ' grid opt for wav adv not supported, c_ros = 0.0 ',
-     &       ' forced in GMREDI_CALC_GEOM.F unless manual override'
+        WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',
+     &       ' curvilinear grid detected, doing rotation of velocities'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
