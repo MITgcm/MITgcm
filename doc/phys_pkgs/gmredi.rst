@@ -408,7 +408,7 @@ depth-integrated eddy energy follows its own prognostic equation as
 Terms above, respectively, are the time-evolution, advection, source, dissipation and diffusion of
 depth-integrated parameterized total eddy energy, with
 :math:`\tilde{\boldsymbol{u}}` the depth-averaged velocity, :math:`c` a
-long Rossby phase speed (computed from a WKB approximation), :math:`\lambda` a
+long Rossby phase speed (computed from a WKB approximation, rotated accordingly if ``usingCurvilinearGrid = .TRUE.``), :math:`\lambda` a
 dissipation rate (namelist parameter :varlink:`GEOM_lmbda`), and :math:`\nu_E` an energy
 diffusion coefficient (namelist parameter :varlink:`GEOM_ene_kappa`). Note that bit-for-bit
 restart reproducibility GEOM requires an additional pickup file (``pickup_gmredi``), which can be activated through
@@ -417,11 +417,6 @@ namelist parameters :varlink:`GEOM_pickup_read_mdsio` and :varlink:`GEOM_pickup_
 
 .. admonition:: note
   :class: note
-  
-  As of writing (13 Oct 2023), the Rossby west-ward advection of parameterised
-  eddy energy is forced to be off (:math:`c=0`) for curvilinear grids
-  (``usingCurvilinearGrid = .TRUE.``). Rotation of velocity vectors to be
-  implemented.
 
   The present GEOMETRIC implementation is strictly for the GM coefficient and
   overrides any other specifications in ``data.gmredi`` for the GM coefficient.
