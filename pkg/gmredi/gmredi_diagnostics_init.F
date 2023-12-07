@@ -112,13 +112,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-        diagName  = 'GEOMcros'
-        diagTitle = 'signed long Rossby wave phase speed'
-        diagUnits = 'm/s             '
-        diagCode  = 'SM P    M1      '
-        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 #endif
 
         diagName  = 'GM_VisbK'
