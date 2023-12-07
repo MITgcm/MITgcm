@@ -600,10 +600,10 @@ C     solve quadratic equation for salinity at shelfice-ocean interface
 C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
-C     only make sense in connection with my notes on this (M.Losch)
+C     are explained in the documentation.
 C
 C     eps3a was introduced as a constant variant of eps3 to avoid AD of
-C     code of typ (pLoc-const)/pLoc
+C     code of type (pLoc-const)/pLoc
             eps3a = rhoShelfIce*SHELFICEheatCapacity_Cp
      &           * SHELFICEkappa *  ( 1. _d 0 - dFac )
             eps3 = eps3a/pLoc(I,J)

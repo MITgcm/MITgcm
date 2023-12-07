@@ -79,8 +79,8 @@ C--  Check parameters:
         ENDIF
         IF ( SHELFICEboundaryLayer ) THEN
          WRITE(msgBuf,'(A,A)')
-     &        'pkg/steep_icecavity requires SHELFICEboundaryLayer = F',
-     &        'remove SHELFICEboundaryLayer = .TRUE., in data.shelfice'
+     &     'pkg/steep_icecavity requires SHELFICEboundaryLayer = F, ',
+     &     'remove SHELFICEboundaryLayer = .TRUE., in data.shelfice'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
         ENDIF
