@@ -47,21 +47,21 @@ C  GEOM_ene     :: GEOMETRIC parameterised energy
 C              not really an output, passed around as common block
 
 C !LOCAL VARIABLES: ====================================================
-C     i,j,k        :: Loop counters
-C     Slope(XY)    :: isopycnal slopes
-C     dSigmaD(xyr) :: derivative of density variables
-C     dSigma(HR)   :: variables to compute isopycnal slopes
-C     (MN)2loc     :: local M^2 and N^2
-C     S(N)loc      :: local M^2/N^2 and M^2/N
-C     (S)Nloc_zint :: depth integrated M^2/N and N
+C     i,j,k           :: Loop counters
+C     Slope(XY)       :: isopycnal slopes
+C     dSigmaD(xyr)    :: derivative of density variables
+C     dSigma(HR)      :: variables to compute isopycnal slopes
+C     (MN)2loc        :: local M^2 and N^2
+C     S(N)loc         :: local M^2/N^2 and M^2/N
+C     (S)Nloc_zint    :: depth integrated M^2/N and N
 C                       (for calculating trd_ene_gen and trd_ene_wav)
-C     trd_ene_*    :: trends for energy
-C                       gen, adv, lap, dis
-C     ene_*        :: intermediate variables for computing trends
-C     depth*       :: various depth variables for computation purposes
-C     c1, c_ros    :: long Rossby wave phase speeds for trd_ene_wav
-C     UV_depth_avg :: depth-avg flow for                trd_ene_adv
-C     ab0, ab1, ab2:: Adams-Bashforth weights
+C     trd_ene_*       :: trends for energy
+C                        gen, adv, lap, dis
+C     ene_*           :: intermediate variables for computing trends
+C     depth*          :: various depth variables for computation purposes
+C     c1, c_ros[XYEN] :: long Rossby wave phase speeds for trd_ene_wav
+C     UV_depth_avg    :: depth-avg flow for                trd_ene_adv
+C     ab0, ab1, ab2   :: Adams-Bashforth weights
 
       INTEGER i,j,k
       INTEGER kSurf
@@ -300,8 +300,6 @@ C-- compute kgm as per GEOMETRIC in horizontal, then extend
 C-- vertically by structure function if required
 C-- do other tapering things here
 
-C   TODO: cap GEOM_ene from below?
-
 C     1. compute the 2d k_GEOM first
 C        bound the denominator from below (choice following NEMO)
 
@@ -416,7 +414,7 @@ C      1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
 C      2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
 C        (so everything else still calculated, but only advection does anything)
 
-!      if (GEOM_ene_ctrl .EQ. 1) then
+!      if (GEOM_ene_ctrl .EQ. 0) then
 !        GEOM_ene(:, :, bi, bj) = 0.0 _d 0
 !        GEOM_ene(10, 5, bi, bj) = 1.0 _d 0
 !        GEOM_ene(5, 25, bi, bj) = 1.0 _d 0
@@ -524,7 +522,7 @@ C           form the RHS
         ene_rhs_now(i,j) = trd_ene_gen(i,j)
      &                   + trd_ene_dis(i,j)
      &                   - trd_ene_adv(i,j)
-     &                   + trd_ene_wav(i,j)
+     &                   - trd_ene_wav(i,j)
      &                   + trd_ene_lap(i,j)
 !        ene_rhs_now(i,j) = - trd_ene_adv(i,j)
 
@@ -533,7 +531,7 @@ C           form the RHS
 
 C     At this point, the new ene_rhs_now is defined and correctly
 C     computed for all i,j except for 1-OLx/y and sNx/y+Olx/y, and we do
-C     not need any exchange. We od need to exchange the solution GEOM_ene
+C     not need any exchange. We do need to exchange the solution GEOM_ene
 C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
