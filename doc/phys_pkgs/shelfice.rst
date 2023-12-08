@@ -477,17 +477,26 @@ to be substituted into :eq:`hellmersaltbalance`:
      - a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{I} \}\,S_{b}
      + \epsilon_{2}\,S - \epsilon_{q}\,S_{I} \\
    \Leftrightarrow 0 &= A\,S_{b}^{2} + B\,S_{b} + C \\
-   \Rightarrow S_{b} &= \frac{-B \pm \sqrt{ B^{2} + 4AC }}{2A}
+   \Rightarrow S_{b} &= \frac{-B \pm \sqrt{ B^{2} - 4AC }}{2A}
    \end{aligned}
 
-where the abbrevations :math:`\epsilon_{1} = c_{p} \, \rho_c \, \gamma_{T}`,
-:math:`\epsilon_{2} = \rho_c L \, \gamma_{S}`, :math:`\epsilon_{3} =
-\frac{\rho_{I} \, c_{p,I} \, \kappa}{h}`, :math:`\epsilon_{4}=b_{0}p + c_{0}`,
-:math:`\epsilon_{q} = \epsilon_{1}\,(\epsilon_{4} - T) +
-\epsilon_{3}\,(\epsilon_{4} - T_{S})`, :math:`A = a_{0}\,(\epsilon_{1} +
-\epsilon_{3})`, :math:`B = \epsilon_{2} - \epsilon_{q} - a_{0}\,(\epsilon_{1} +
-\epsilon_{3})\,S_{I}`, and :math:`C = \epsilon_{2}\,S-\epsilon_{q}\,S_{I}`. The
-smaller non-negative root of the quadratic equation in :math:`S_{b}` is
+with the abbrevations
+
+.. math::
+   \begin{aligned}
+   \epsilon_{1} &= c_{p} \, \rho_c \, \gamma_{T}, \quad
+   \epsilon_{2} = \rho_c L \, \gamma_{S}, \quad
+   \epsilon_{3} = \frac{\rho_{I} \, c_{p,I} \, \kappa}{h}, \quad
+   \epsilon_{4} = b_{0}p + c_{0}, \\
+   \epsilon_{q} &= \epsilon_{1}\,(\epsilon_{4} - T)
+                  + \epsilon_{3}\,(\epsilon_{4} - T_{S}), \\
+   A &= a_{0}\,(\epsilon_{1} + \epsilon_{3}), \quad
+   B = \epsilon_{q} - \epsilon_{2} - a_{0}\,(\epsilon_{1} +
+   \epsilon_{3})\,S_{I}, \quad
+   C = \epsilon_{2}\,S -\epsilon_{q}\,S_{I}.
+   \end{aligned}
+
+The smaller non-negative root of the quadratic equation in :math:`S_{b}` is
 used. By default, the ice shelf salinity :math:`S_{I}` is zero and the
 quadratic equation simplifies to
 
