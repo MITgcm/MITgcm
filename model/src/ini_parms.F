@@ -1544,7 +1544,7 @@ C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g
          rUnit2mass = rhoConst
       ENDIF
 
-      IF ( useSTIC ) THEN
+      IF ( .NOT. useSTIC ) THEN
 C--   For backward compatibility, set temp_addMass and salt_addMass
 C     to temp_EvPrRn and salt_EvPrRn if not set in parameter file "data"
         IF (temp_addMass .EQ. UNSET_RL) temp_addMass = temp_EvPrRn
