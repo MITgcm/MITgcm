@@ -284,16 +284,14 @@ C         only compute the Rossby phase speed if deep enough
       ENDDO
       
 C     rotating the Rossby velocity if needed
-      IF (usingCurvilinearGrid) THEN
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         c_rosE(i,j) = c_rosX(i,j)
-         c_rosX(i,j) = 0.0 _d 0
-        ENDDO
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        c_rosE(i,j) = c_rosX(i,j)
+        c_rosX(i,j) = 0.0 _d 0
        ENDDO
-       CALL ROTATE_UV2EN_RL(c_rosX,c_rosY,c_rosE,c_rosN,
-     &      .FALSE.,.FALSE.,.TRUE.,1,myThid)
-      ENDIF
+      ENDDO
+      CALL ROTATE_UV2EN_RL(c_rosX,c_rosY,c_rosE,c_rosN,
+     &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- compute kgm as per GEOMETRIC in horizontal, then extend
