@@ -41,36 +41,44 @@ C  myThid         :: my Thread Id number
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j            :: loop indices
-      INTEGER i,j
-      INTEGER irbc
+      INTEGER i, j
       _RL rbcsVanishingFac
       _RL rec_tauRlx
 CEOP
 
 #ifdef ALLOW_RBCS
 
-      IF ( rbcsVanishingTime.GT.0. _d 0 ) THEN
-        rbcsVanishingFac =
-     &      MAX( 0. _d 0 , 1. _d 0 - myTime / rbcsVanishingTime )
-      ELSE
-        rbcsVanishingFac = 1. _d 0
+      IF (useRBCeta .AND. nonlinFreeSurf.GT.0) THEN
+
+        IF ( rbcsVanishingTime.GT.0. _d 0 ) THEN
+          rbcsVanishingFac =
+     &        MAX( 0. _d 0 , 1. _d 0 - myTime / rbcsVanishingTime )
+        ELSE
+          rbcsVanishingFac = 1. _d 0
+        ENDIF
+
+        rec_tauRlx = rbcsVanishingFac/tauRelaxEta
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          etaFld(i,j, bi, bj) = etaFld(i,j,bi,bj)
+     &         - RBC_Etamask(i,j,bi,bj)*rec_tauRlx
+     &          *( etaFld(i,j,bi,bj) - RBCeta(i,j,bi,bj) )
+
+         ENDDO
+        ENDDO
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel.GE.debLevC ) THEN
+          _BEGIN_MASTER( myThid )
+          WRITE(msgBuf,'(A,1PE13.6,1PE13.6)')
+     &    ' RBCS_APPLY_ETA: finished!', RBC_Etamask(sNx-10,1,bi,bj),
+     &    RBCeta(sNx-10,1, bi,bj)
+          CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , 1)
+          _END_MASTER( myThid )
+        ENDIF
+#endif /* ALLOW_DEBUG */
+
       ENDIF
-
-      rec_tauRlx = rbcsVanishingFac/tauRelaxEta
-      DO j=0,sNy+1
-       DO i=0,sNx+1
-        etaFld(i,j, bi, bj) = etaFld(i,j,bi,bj)
-     &       - RBC_Etamask(i,j,bi,bj)*rec_tauRlx
-     &        *( etaFld(i,j,bi,bj) - RBCeta(i,j,bi,bj) )
-
-       ENDDO
-      ENDDO
-      WRITE(msgBuf,'(A,1PE13.6,1PE13.6)')
-     &  ' RBCS_APPLY_ETA: finished!', RBC_Etamask(sNx-10,1,bi,bj),
-     &  RBCeta(sNx-10,1, bi,bj)
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
-
 #endif /* ALLOW_RBCS */
 
       RETURN
