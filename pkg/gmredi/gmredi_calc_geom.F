@@ -167,7 +167,7 @@ C-- 1st k loop : compute vertical structure to be used later
 
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         dSigmaDr(i,j) = min(sigmaR(i,j,k), 0.0 _d 0)
+         dSigmaDr(i,j) = MIN(sigmaR(i,j,k), 0.0 _d 0)
         ENDDO
        ENDDO
 
@@ -195,15 +195,15 @@ C      Compute M^2 rho_0 / g on vertical interfaces
           dSigmaDy = op25 * (sigmaY(i,j+1,k-1) + sigmaY(i,j,k-1)
      &                    +  sigmaY(i,j+1,k  ) + sigmaY(i,j,k  )
      &                       ) *  maskC(i,j,k,bi,bj)
-          dSigmaH = sqrt(dSigmaDx * dSigmaDx
+          dSigmaH = SQRT(dSigmaDx * dSigmaDx
      &                 + dSigmaDy * dSigmaDy)
           IF(dSigmaH .GT. 0.0 _d 0) THEN
-           IF(abs(dSigmaR) .GT. dSigmaH*recipMaxSlope) THEN
-            Sloc = dSigmaH / abs(dSigmaR)
+           IF(ABS(dSigmaR) .GT. dSigmaH*recipMaxSlope) THEN
+            Sloc = dSigmaH / ABS(dSigmaR)
            ELSE
-            Sloc = abs(GM_maxSlope)
+            Sloc = ABS(GM_maxSlope)
            ENDIF
-           N2loc3D(i,j,k) = abs(gravity * recip_rhoConst * dSigmaR)
+           N2loc3D(i,j,k) = ABS(gravity * recip_rhoConst * dSigmaR)
            SNloc3D(i,j,k) = Sloc * SQRT(N2loc3D(i,j,k))
           ENDIF
          ENDIF
@@ -279,7 +279,7 @@ C       bound the f factors away from zero
         IF (usingCartesianGrid) THEN
          IF ( ABS(f0) .GT. 0.0 d_ 0 ) fCoriFac = beta / (f0 * f0)
         ELSE
-         fCoriFac = MAX( ABS(fCori(i,j,bi,bj), 1.2676 _d -05) )
+         fCoriFac = MAX( ABS(fCori(i,j,bi,bj)), 1.2676 _d -05 )
         ENDIF
 
 C       compute the Rossby phase speed, and bound above by 
@@ -291,7 +291,7 @@ C       (this is the **EW** speed here, even if c_rosX is used)
          c_rosX(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
      &               / ( rSphere * fCoriFac ** 2 )
         ENDIF
-        c_rosX(i,j) = -min( c1(i,j) / 3.0 _d 0, c_rosX(i,j) )
+        c_rosX(i,j) = -MIN( c1(i,j) / 3.0 _d 0, c_rosX(i,j) )
        ENDDO
       ENDDO
       
