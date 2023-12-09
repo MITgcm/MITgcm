@@ -407,21 +407,6 @@ C ----------------------------------------------
        ENDDO
       ENDDO
 
-CCCCCCCCCCCCCCCCCCCCCCCCCC
-C     TODO: note for the 1-pixel energy test for advection,
-C
-C      1. re-define GEOM_ene(idum,jdum,bi,bj), such as below
-C      2. make ene_rhs_now(i,j) = -trd_ene_adv(i,j) or the wav one
-C        (so everything else still calculated, but only advection does anything)
-
-!      if (GEOM_ene_ctrl .EQ. 0) then
-!        GEOM_ene(:, :, bi, bj) = 0.0 _d 0
-!        GEOM_ene(10, 5, bi, bj) = 1.0 _d 0
-!        GEOM_ene(5, 25, bi, bj) = 1.0 _d 0
-!        GEOM_ene(30, 17, bi, bj) = 1.0 _d 0
-!      endif
-CCCCCCCCCCCCCCCCCCCCCCCCCC
-
 C ----  form the energy fluxes
 
 C       first: form the depth-AVG velocity
@@ -514,17 +499,16 @@ c         ENDIF
      &                     +(ene_wav_y(i,j+1) - ene_wav_y(i,j))
      &                      * recip_dyG(i,j,bi,bj)
         trd_ene_lap(i,j) =
-     &           (ene_lap_x(i+1,j) - ene_lap_x(i,j))
-     &           * recip_dxG(i,j,bi,bj)
-     &          +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
-     &           * recip_dyG(i,j,bi,bj)
-C           form the RHS
+     &                      (ene_lap_x(i+1,j) - ene_lap_x(i,j))
+     &                      * recip_dxG(i,j,bi,bj)
+     &                     +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
+     &                      * recip_dyG(i,j,bi,bj)
+C       form the RHS
         ene_rhs_now(i,j) = trd_ene_gen(i,j)
      &                   + trd_ene_dis(i,j)
      &                   - trd_ene_adv(i,j)
      &                   - trd_ene_wav(i,j)
      &                   + trd_ene_lap(i,j)
-!        ene_rhs_now(i,j) = - trd_ene_adv(i,j)
 
        ENDDO
       ENDDO
