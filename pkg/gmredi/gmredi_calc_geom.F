@@ -212,14 +212,14 @@ C      Compute M^2 rho_0 / g on vertical interfaces
       ENDDO
       IF ( GEOM_vert_struc ) THEN
        k=2
-C     avoid division by zero
+C      avoid division by zero
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          vert_struc_func(i,j,k) = MAX(N2loc3D(i,j,k),
      &                                GEOM_vert_struc_min)
         ENDDO
        ENDDO
-C     Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
+C      Cap the (N^2 / N^2_surf) between something (1 and 0.1 default)
        DO k=Nr,2,-1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -266,7 +266,7 @@ C     average it onto UV points later
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-C         only compute the Rossby phase speed if deep enough
+C       only compute the Rossby phase speed if deep enough
         IF (depthC(i,j) .GT. 300.0 _d 0) THEN
          c1(i,j) = MIN(10.0 _d 0, Nloc_zint(i,j) / PI)
      &              * maskC(i,j,kSurf,bi,bj)
@@ -274,7 +274,7 @@ C         only compute the Rossby phase speed if deep enough
          c1(i,j) = 0.0 _d 0
         ENDIF
 
-C         bound the f factors away from zero
+C       bound the f factors away from zero
         fCoriFac = 0.0 _d 0
         IF (usingCartesianGrid) THEN
          IF ( ABS(f0) .GT. 0.0 d_ 0 ) fCoriFac = beta / (f0 * f0)
@@ -282,9 +282,9 @@ C         bound the f factors away from zero
          fCoriFac = MAX( ABS(fCori(i,j,bi,bj), 1.2676 _d -05) )
         ENDIF
 
-C         compute the Rossby phase speed, and bound above by 
-C         1st baroclinic equatorial Rossby wave phase speed
-C         (this is the **EW** speed here, even if c_rosX is used)
+C       compute the Rossby phase speed, and bound above by 
+C       1st baroclinic equatorial Rossby wave phase speed
+C       (this is the **EW** speed here, even if c_rosX is used)
         IF (usingCartesianGrid) THEN
          c_rosX(i,j) = c1(i,j) * c1(i,j) * fCoriFac
         ELSE
@@ -420,7 +420,7 @@ C ----------------------------------------------
 
 C ----  form the energy fluxes
 
-C       first: form the depth-AVG velocity
+C     1. form the depth-AVG velocity
       DO k=Nr,2,-1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
@@ -434,7 +434,7 @@ C       first: form the depth-AVG velocity
        ENDDO
       ENDDO
 
-C       second: form the tendencies
+C     2. form the advective + diffusive tendencies
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx+1,sNx+OLx
         IF ( maskC(i-1,j,kSurf,bi,bj)*dxG(i-1,j,bi,bj) .GT. 0.0 _d 0
@@ -491,6 +491,7 @@ C ---- 1st order upwinding wave stuff
        ENDDO
       ENDDO
 
+C     3. form tendencies on cell and sum
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
         trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene(i,j,bi,bj)
@@ -498,19 +499,11 @@ C ---- 1st order upwinding wave stuff
      &                     * recip_dxG(i,j,bi,bj)
      &                    +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
      &                     * recip_dyG(i,j,bi,bj)
-C        add in a bit to take into account linear free surface
-c         IF(implicitFreeSurface) THEN
-c          IF(maskC(i,j,kSurf,bi,bj) .GT. 0.0 _d 0) THEN
-c           trd_ene_adv(i,j) = wVel(i,j,kSurf,bi,bj) * GEOM_ene(i,j)
-c     &                         / depthC(i,j)
-c          ENDIF
-c         ENDIF
         trd_ene_wav(i,j) =  (ene_wav_x(i+1,j) - ene_wav_x(i,j))
      &                      * recip_dxG(i,j,bi,bj)
      &                     +(ene_wav_y(i,j+1) - ene_wav_y(i,j))
      &                      * recip_dyG(i,j,bi,bj)
-        trd_ene_lap(i,j) =
-     &                      (ene_lap_x(i+1,j) - ene_lap_x(i,j))
+        trd_ene_lap(i,j) =  (ene_lap_x(i+1,j) - ene_lap_x(i,j))
      &                      * recip_dxG(i,j,bi,bj)
      &                     +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
      &                      * recip_dyG(i,j,bi,bj)
@@ -559,7 +552,7 @@ C ----------------------------------------------
 C ---- end advection of energy -----------------
 C ----------------------------------------------
 
-C       update rhs fields for the next time step
+C     update rhs fields for the next time step
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         ene_rhs_nm2(i,j,bi,bj) = ene_rhs_nm1(i,j,bi,bj)
