@@ -76,7 +76,7 @@ C     ab0, ab1, ab2   :: Adams-Bashforth weights
 
       _RL recipMaxSlope
       _RL c_dum, fm_ui, fp_ui
-      _RL ab0, ab1, ab2
+      _RL ab0, ab1, ab2, fCoriFac
 
 C     metric variables
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -268,22 +268,35 @@ C     average it onto UV points later
        DO i=1-OLx,sNx+OLx
 C         only compute the Rossby phase speed if deep enough
         IF (depthC(i,j) .GT. 300.0 _d 0) THEN
-         c1(i,j) = min(10.0 _d 0, Nloc_zint(i,j) / PI)
+         c1(i,j) = MIN(10.0 _d 0, Nloc_zint(i,j) / PI)
      &              * maskC(i,j,kSurf,bi,bj)
         ELSE
          c1(i,j) = 0.0 _d 0
         ENDIF
+
+C         bound the f factors away from zero
+        fCoriFac = 0.0 _d 0
         IF (usingCartesianGrid) THEN
-         c_rosX(i,j) = c1(i,j) * c1(i,j) * beta / (f0 * f0)
+         IF ( ABS(f0) .GT. 0.0 d_ 0 ) fCoriFac = beta / (f0 * f0)
+        ELSE
+         fCoriFac = MAX( ABS(fCori(i,j,bi,bj), 1.2676 _d -05) )
+        ENDIF
+
+C         compute the Rossby phase speed, and bound above by 
+C         1st baroclinic equatorial Rossby wave phase speed
+C         (this is the **EW** speed here, even if c_rosX is used)
+        IF (usingCartesianGrid) THEN
+         c_rosX(i,j) = c1(i,j) * c1(i,j) * fCoriFac
         ELSE
          c_rosX(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
-     &               / ( rSphere * fCori(i,j,bi,bj) ** 2 )
+     &               / ( rSphere * fCoriFac ** 2 )
         ENDIF
         c_rosX(i,j) = -min( c1(i,j) / 3.0 _d 0, c_rosX(i,j) )
        ENDDO
       ENDDO
       
-C     rotating the Rossby velocity if needed
+C     rotating EW Rossby velocity to XY for the grid
+C     (trivial rotation for Cartesian plane)
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         c_rosE(i,j) = c_rosX(i,j)
