@@ -261,8 +261,13 @@ C     average it onto UV points later
         c_rosY(i,j) = 0.0 _d 0
         c_rosE(i,j) = 0.0 _d 0
         c_rosN(i,j) = 0.0 _d 0
+        c1    (i,j) = 0.0 _d 0
        ENDDO
       ENDDO
+
+      fCoriFac = 0.0 _d 0
+      IF ( usingCartesianGrid .AND. f0 .NE. 0.0 _d 0 )
+     &     fCoriFac = beta / (f0 * f0)
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -270,41 +275,24 @@ C       only compute the Rossby phase speed if deep enough
         IF (depthC(i,j) .GT. 300.0 _d 0) THEN
          c1(i,j) = MIN(10.0 _d 0, Nloc_zint(i,j) / PI)
      &              * maskC(i,j,kSurf,bi,bj)
-        ELSE
-         c1(i,j) = 0.0 _d 0
-        ENDIF
 
-C       bound the f factors away from zero
-        fCoriFac = 0.0 _d 0
-        IF (usingCartesianGrid) THEN
-         IF ( ABS(f0) .GT. 0.0 d_ 0 ) fCoriFac = beta / (f0 * f0)
-        ELSE
-         fCoriFac = MAX( ABS(fCori(i,j,bi,bj)), 1.2676 _d -05 )
-        ENDIF
-
-C       compute the Rossby phase speed, and bound above by 
+C       bound the f factors away from zero (inside Eq +/- 5degN/S),
+C       compute the Rossby phase speed, and bound above by
 C       1st baroclinic equatorial Rossby wave phase speed
-C       (this is the **EW** speed here, even if c_rosX is used)
-        IF (usingCartesianGrid) THEN
-         c_rosX(i,j) = c1(i,j) * c1(i,j) * fCoriFac
-        ELSE
-         c_rosX(i,j) = c1(i,j) ** 2  * fCoriCos(i,j,bi,bj)
-     &               / ( rSphere * fCoriFac ** 2 )
+         IF (.NOT.usingCartesianGrid) THEN
+          fCoriFac = MAX( ABS(fCori(i,j,bi,bj)), 1.2676 _d -05 )
+          fCoriFac = fCoriCos(i,j,bi,bj) / ( rSphere * fCoriFac ** 2 )
+         ENDIF
+         c_rosE(i,j) = - MIN( c1(i,j) / 3.0 _d 0,
+     &        c1(i,j) * c1(i,j) * fCoriFac )
         ENDIF
-        c_rosX(i,j) = -MIN( c1(i,j) / 3.0 _d 0, c_rosX(i,j) )
        ENDDO
       ENDDO
-      
+
 C     rotating EW Rossby velocity to XY for the grid
 C     (trivial rotation for Cartesian plane)
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        c_rosE(i,j) = c_rosX(i,j)
-        c_rosX(i,j) = 0.0 _d 0
-       ENDDO
-      ENDDO
-      CALL ROTATE_UV2EN_RL(c_rosX,c_rosY,c_rosE,c_rosN,
-     &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
+      CALL ROTATE_UV2EN_TILE_RL(c_rosX,c_rosY,c_rosE,c_rosN,
+     &     .FALSE.,.FALSE.,.TRUE.,1,bi,bj,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- compute kgm as per GEOMETRIC in horizontal, then extend
