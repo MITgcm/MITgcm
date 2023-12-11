@@ -135,7 +135,8 @@ C-    read SHELFICE 3-D fields for restart
         nj = nj*Nr
 C-    read SHELFICE 2-D fields for restart
 
-        IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping ) THEN
+        IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping .OR.
+     &       seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
           CALL READ_MFLDS_3D_RL( 'SHI_mass', shelficeMass,
      &                                 nj, fp, 1 , nIter0, myThid )
         ENDIF
@@ -175,7 +176,8 @@ C--   Check for missing fields:
       ENDIF
 
 C--   Update overlap regions:
-      IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping ) THEN
+      IF ( seqFlag.EQ.1 .AND. SHELFICEMassStepping .OR.
+     &     seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
         CALL EXCH_XY_RL( shelficeMass, myThid )
       ENDIF
 #ifdef ALLOW_SHELFICE_REMESHING
