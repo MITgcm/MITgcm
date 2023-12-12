@@ -207,6 +207,7 @@ cpj)
                         jtmp = j
                      ENDIF
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
                   ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
                      IF ( ncvarfname(grdchkvarindex)
      &                  .EQ.xx_obcsn_file ) THEN
@@ -249,6 +250,7 @@ cpj)
                         ENDIF
 #endif
                      ENDIF
+#endif /* ALLOW_OBCS_CONTROL */
                   ENDIF
 cph(
 cph-print                  print *, 'ph-grd icomp, icomptest, icomploc, i, j ',

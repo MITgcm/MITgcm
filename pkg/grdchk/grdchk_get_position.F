@@ -159,6 +159,7 @@ c--             Ice shelf mask.
                      endif
                      wetlocal = maskSHI(i,j,k,bi,bj)
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
                      if ( ncvarfname(grdchkvarindex)
      &                  .eq.xx_obcsn_file ) then
@@ -197,6 +198,7 @@ c--             Ice shelf mask.
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
                      endif
+#endif /* ALLOW_OBCS_CONTROL */
                   endif
 c
                   if ( i     .EQ. itilepos .AND.

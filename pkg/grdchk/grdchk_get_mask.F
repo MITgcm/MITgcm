@@ -111,6 +111,7 @@ C--   control variable on the current tile.
          ENDDO
         ENDDO
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
       ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
        DO bj = jtlo,jthi
          DO bi = itlo,ithi
@@ -137,6 +138,7 @@ C--   control variable on the current tile.
           ENDDO
          ENDDO
         ENDDO
+#endif /* ALLOW_OBCS_CONTROL */
       ELSE
 Ce        --> wrong grid specification for the control variable.
       ENDIF
