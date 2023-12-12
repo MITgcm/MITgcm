@@ -204,20 +204,24 @@ c--             Ice shelf mask.
 cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
 cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 #ifdef ALLOW_OBCSN_CONTROL
-             if ( i .eq. 11 ) nvarlength = nvarlength
+             if ( ncvarfname(i) .eq. xx_obcsn_file )
+     &            nvarlength = nvarlength
      &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-             if ( i .eq. 12 ) nvarlength = nvarlength
+             if ( ncvarfname(i) .eq. xx_obcss_file )
+     &            nvarlength = nvarlength
      &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
 #endif
-#ifdef ALLOW_OBCSW_CONTROL
-             if ( i .eq. 13 ) nvarlength = nvarlength
-     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
-#endif
 #ifdef ALLOW_OBCSE_CONTROL
-             if ( i .eq. 14 ) nvarlength = nvarlength
+             if ( ncvarfname(i) .eq. xx_obcse_file )
+     &            nvarlength = nvarlength
      &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+             if ( ncvarfname(i) .eq. xx_obcsw_file )
+     &            nvarlength = nvarlength
+     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
 #endif
             enddo
 #endif
