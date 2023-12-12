@@ -160,7 +160,8 @@ c--             Ice shelf mask.
                      wetlocal = maskSHI(i,j,k,bi,bj)
 #endif /* ALLOW_SHELFICE */
                   else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
-                     if ( grdchkvarindex .EQ. 11 ) then
+                     if ( ncvarfname(grdchkvarindex)
+     &                  .eq.xx_obcsn_file ) then
 #ifdef ALLOW_OBCSN_CONTROL
                         if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Jn(I,bi,bj) ) then
@@ -168,7 +169,8 @@ c--             Ice shelf mask.
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( grdchkvarindex .EQ. 12 ) then
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcss_file ) then
 #ifdef ALLOW_OBCSS_CONTROL
                         if (grdchk_maskxz(i,k,bi,bj,iobcs) .gt. 0.
      &                       .and. j.eq. OB_Js(I,bi,bj) ) then
@@ -176,18 +178,20 @@ c--             Ice shelf mask.
                         endif
                         wetlocal = grdchk_maskxz(i,k,bi,bj,iobcs)
 #endif
-                     else if ( grdchkvarindex .EQ. 13 ) then
-#ifdef ALLOW_OBCSW_CONTROL
-                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcse_file ) then
+#ifdef ALLOW_OBCSE_CONTROL
+                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
+     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)
 #endif
-                     else if ( grdchkvarindex .EQ. 14 ) then
-#ifdef ALLOW_OBCSE_CONTROL
-                        if (grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
-     &                       .and. i.eq. OB_Ie(J,bi,bj) ) then
+                     else if ( ncvarfname(grdchkvarindex)
+     &                       .eq.xx_obcsw_file ) then
+#ifdef ALLOW_OBCSW_CONTROL
+                        if ( grdchk_maskyz(j,k,bi,bj,iobcs) .gt. 0.
+     &                      .and. i.eq. OB_Iw(J,bi,bj) ) then
                            icomptest = icomptest + 1
                         endif
                         wetlocal = grdchk_maskyz(j,k,bi,bj,iobcs)

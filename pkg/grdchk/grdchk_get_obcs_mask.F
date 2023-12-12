@@ -65,7 +65,7 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
-      if ( grdchkvarindex .EQ. 11 ) then
+      if ( ncvarfname(grdchkvarindex).EQ.xx_obcsn_file ) then
 #ifdef ALLOW_OBCSN_CONTROL
       write(fname,'(a)') 'maskobcsn'
 c
@@ -87,7 +87,7 @@ c
       enddo
 #endif
 
-      else if ( grdchkvarindex .EQ. 12 ) then
+      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcss_file ) then
 #ifdef ALLOW_OBCSS_CONTROL
       write(fname,'(a)') 'maskobcss'
 c
@@ -109,7 +109,29 @@ c
       enddo
 #endif
 
-      else if ( grdchkvarindex .EQ. 13 ) then
+      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcse_file ) then
+#ifdef ALLOW_OBCSE_CONTROL
+      write(fname,'(a)') 'maskobcse'
+c
+      do iobcs = 1,nobcs
+         call active_read_yz(  fname, tmpfldyz, iobcs,
+     &        .false., .false., 0, mythid, dummy)
+c
+         do bj = jtlo,jthi
+            do bi = itlo,ithi
+               do k = 1,nr
+                  do j = jmin,jmax
+                     grdchk_maskyz(j,k,bi,bj,iobcs) =
+     &                    tmpfldyz(j,k,bi,bj)
+                  enddo
+               enddo
+            enddo
+         enddo
+c
+      enddo
+#endif
+
+      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcsw_file ) then
 #ifdef ALLOW_OBCSW_CONTROL
       write(fname,'(a)') 'maskobcsw'
 c
@@ -131,27 +153,6 @@ c
       enddo
 #endif
 
-      else if ( grdchkvarindex .EQ. 14 ) then
-#ifdef ALLOW_OBCSE_CONTROL
-      write(fname,'(a)') 'maskobcse'
-c
-      do iobcs = 1,nobcs
-         call active_read_yz(  fname, tmpfldyz, iobcs,
-     &        .false., .false., 0, mythid, dummy)
-c
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do j = jmin,jmax
-                     grdchk_maskyz(j,k,bi,bj,iobcs) =
-     &                    tmpfldyz(j,k,bi,bj)
-                  enddo
-               enddo
-            enddo
-         enddo
-c
-      enddo
-#endif
       endif
 
       _END_MASTER( mythid )

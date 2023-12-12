@@ -67,6 +67,10 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
+C--   == external ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
       INTEGER i,j,k
@@ -204,7 +208,8 @@ cpj)
                      ENDIF
 #endif /* ALLOW_SHELFICE */
                   ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-                     IF ( grdchkvarindex .EQ. 11 ) THEN
+                     IF ( ncvarfname(grdchkvarindex)
+     &                  .EQ.xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                         IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. j.EQ. OB_Jn(i,bi,bj) ) THEN
@@ -213,7 +218,8 @@ cpj)
                            jtmp = OB_Jn(i,bi,bj)
                         ENDIF
 #endif
-                     ELSEIF ( grdchkvarindex .EQ. 12 ) THEN
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                         IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. j.EQ. OB_Js(i,bi,bj) ) THEN
@@ -222,21 +228,23 @@ cpj)
                            jtmp = OB_Js(i,bi,bj)
                         ENDIF
 #endif
-                     ELSEIF ( grdchkvarindex .EQ. 13 ) THEN
-#ifdef ALLOW_OBCSW_CONTROL
-                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
-     &                       .AND. i.EQ. OB_Iw(j,bi,bj) ) THEN
-                           icomptest = icomptest + 1
-                           itmp = OB_Iw(j,bi,bj)
-                           jtmp = j
-                        ENDIF
-#endif
-                     ELSEIF ( grdchkvarindex .EQ. 14 ) THEN
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                         IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. i.EQ. OB_Ie(j,bi,bj) ) THEN
                            icomptest = icomptest + 1
                            itmp = OB_Ie(j,bi,bj)
+                           jtmp = j
+                        ENDIF
+#endif
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcsw_file ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. i.EQ. OB_Iw(j,bi,bj) ) THEN
+                           icomptest = icomptest + 1
+                           itmp = OB_Iw(j,bi,bj)
                            jtmp = j
                         ENDIF
 #endif

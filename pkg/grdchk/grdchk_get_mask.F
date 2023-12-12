@@ -112,25 +112,25 @@ C--   control variable on the current tile.
         ENDDO
 #endif /* ALLOW_SHELFICE */
       ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-        DO bj = jtlo,jthi
+       DO bj = jtlo,jthi
          DO bi = itlo,ithi
           DO k = 1,ncvarnrmax(grdchkvarindex)
            DO iobcs = 1, nobcsmax
-             IF ( grdchkvarindex .EQ. 11 ) THEN
+             IF ( ncvarfname(grdchkvarindex).EQ.xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcsn(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( grdchkvarindex .EQ. 12 ) THEN
+             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcss(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( grdchkvarindex .EQ. 13 ) THEN
-#ifdef ALLOW_OBCSW_CONTROL
-               nwettile(bi,bj,k,iobcs) = nwetobcsw(bi,bj,k,iobcs)
-#endif
-             ELSEIF ( grdchkvarindex .EQ. 14 ) THEN
+             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcse(bi,bj,k,iobcs)
+#endif
+             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcsw_file ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+               nwettile(bi,bj,k,iobcs) = nwetobcsw(bi,bj,k,iobcs)
 #endif
              ENDIF
            ENDDO
