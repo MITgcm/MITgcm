@@ -560,7 +560,7 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with package :filelink:`ggl90 <pkg/ggl90>` scheme (Gaspar et al. 1990 :cite:`gas-eta:90`) scheme
      (:filelink:`input.ggl90 <verification/vermix/input.ggl90>`)
 
-   - with package :filelink:`ggl90 <pkg/ggl90>` scheme and parameterized Langmuir circulation effects
+   - with :filelink:`ggl90 <pkg/ggl90>` package and parameterized Langmuir circulation effects
      (:varlink:`useLANGMUIR` ``= .TRUE.`` in ``data.ggl90``,
      :filelink:`input.gglLC <verification/vermix/input.gglLC>`)
 
