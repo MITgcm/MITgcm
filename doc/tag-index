@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68u (2023/12/10)
 o pkg/seaice:
   - new/improved LSR convergence criteria (CPP: SEAICE_ALLOW_LSR_FLEX, run-time:
     SEAICEuseLSRflex) accounting for both Non-Lin and Linear solver residual;
