@@ -562,7 +562,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - with package :filelink:`ggl90 <pkg/ggl90>` scheme and parameterized Langmuir circulation effects
      (:varlink:`useLANGMUIR` ``= .TRUE.`` in ``data.ggl90``,
-      :filelink:`input.gglLC <verification/vermix/input.gglLC>`)
+     :filelink:`input.gglLC <verification/vermix/input.gglLC>`)
 
    - with Mellor and Yamada (1982) :cite:`mellor:82` level 2 (:filelink:`pkg/my82`)
      scheme (:filelink:`input.my82 <verification/vermix/input.my82>`)
@@ -626,7 +626,7 @@ directories ``code_oad`` and ``input_oad`` respectively.
 
    - using package :filelink:`ggl90 <pkg/ggl90>`
      (:filelink:`input_ad.ggl90 <verification/global_oce_latlon/input_ad.ggl90>`,
-      :filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
+     :filelink:`input_oad.ggl90 <verification/global_oce_latlon/input_oad.ggl90>`).
 
    - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/global_oce_latlon/input_oad.kpp>`).
 
