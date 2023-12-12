@@ -34,6 +34,10 @@ C     == global variables ==
 #include "SIZE.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
+#ifdef ALLOW_OBCS_CONTROL
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 #include "OPTIMCYCLE.h"
 
 C     == routine arguments ==
@@ -59,7 +63,6 @@ C     == local variables ==
       LOGICAL doglobalread
       LOGICAL ladinit
       CHARACTER*(MAX_LEN_FNAM) fName
-      CHARACTER*(MAX_LEN_FNAM) ctrl_name
       _RL loctmp2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_GENARR3D_CONTROL
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -80,16 +83,14 @@ C--   == end of interface ==
 C     Find ctrlDir (w/o trailing blanks) length
       ilDir = ILNBLNK(ctrlDir)
 
-C-    get the name of varIndex_gc corresponding CTRL:
-      CALL GRDCHK_CTRL_FNAME( ctrl_name, varIndex_gc, myThid )
-      iL = ILNBLNK( ctrl_name )
+      iL = ILNBLNK( grdchkvarname )
 
       IF ( theSimulationMode .EQ. TANGENT_SIMULATION ) THEN
         WRITE(fName,'(3A,I10.10)') ctrlDir(1:ilDir)//yadmark,
-     &           ctrl_name(1:iL), '.', optimcycle
+     &           grdchkvarname(1:iL), '.', optimcycle
       ELSEIF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
         WRITE(fName,'(3A,I10.10)') ctrlDir(1:ilDir),
-     &           ctrl_name(1:iL), '.', optimcycle
+     &           grdchkvarname(1:iL), '.', optimcycle
       ELSE
         WRITE(fName,'(A)') ' '
       ENDIF

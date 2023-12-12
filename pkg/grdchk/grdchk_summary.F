@@ -37,7 +37,8 @@ CEOP
 
       _BEGIN_MASTER( myThid )
 
-      CALL GRDCHK_CTRL_FNAME( fName, grdchkvarindex, myThid )
+      CALL GRDCHK_CTRL_FNAME( grdchkvarname, grdchkvarindex, myThid )
+      fName = grdchkvarname
       iL = ILNBLNK( fName )
 
       WRITE(msgBuf,'(A)') ' '

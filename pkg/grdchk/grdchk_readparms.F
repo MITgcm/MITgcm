@@ -48,6 +48,7 @@ C--   Gradient-Check parameters.
      &                  nbeg,
      &                  nstep,
      &                  nend,
+     &                  grdchkvarname,
      &                  grdchkvarindex,
      &                  useCentralDiff,
      &                  grdchkwhichproc,
@@ -91,6 +92,8 @@ C--     Set default values.
         jdep            = 1
         obcsglo         = 1
         recglo          = 1
+        grdchkvarname   = ' '
+        grdchkvarindex  = UNSET_I
 
 C       Next, read the GRDCHK parameter file.
         WRITE(msgBuf,'(A)') 'GRDCHK_READPARMS: opening data.grdchk'
