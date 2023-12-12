@@ -51,20 +51,20 @@ C !USES: ============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
+C     GGL90mixingLength :: mixing length (m) following Banke+Delecuse
+C     rMixingLength     :: inverse of mixing length
 C     iMin,iMax,jMin,jMax :: index boundaries of computation domain
 C     bi, bj :: Current tile indices
-C     GGL90mixingLength :: mixing length (m) following Banke+Delecuse
-C     rMixingLength:: inverse of mixing length
 C     myTime :: Current time in simulation
 C     myIter :: Current time-step number
 C     myThid :: My Thread Id number
-      INTEGER iMin ,iMax ,jMin ,jMax
-      INTEGER bi, bj
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_LANGMUIR
       _RL     LCmixingLength   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       _RL     rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      INTEGER iMin ,iMax ,jMin ,jMax
+      INTEGER bi, bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -82,13 +82,13 @@ C     or at the very surface level (like uStarSquare)
       INTEGER kSrf, kTop
       _RL MaxLength
       _RL mxLength_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL MLtmp
 C     This mixed layer model is not invariant under coordinate
 C     transformation to pressure coordinates, so we need these
 C     factors to scale the vertical (pressure) coordinates
       _RL coordFac, recip_coordFac
       INTEGER locMxlMaxFlag
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_AUTODIFF_TAMC
 C     tkey :: tape key (depends on tiles)
 C     kkey :: tape key (depends on levels and tiles)
@@ -116,7 +116,7 @@ CEOP
       tkey = bi + (bj-1)*nSx + (ikey_dynamics-1)*nSx*nSy
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     Initialize local fields
+C--   Initialize local fields
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -144,7 +144,7 @@ c       rMixingLength(i,j,1)  = 0. _d 0
       ENDIF
 #endif
 
-C- ensure mixing between first and second level
+C-    Ensure mixing between first and second level
       IF (mxlSurfFlag) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -236,7 +236,9 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
           ENDDO
          ENDDO
         ENDDO
+
        ELSE
+C-    Z-coordinate case
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -279,7 +281,9 @@ CADJ &     = comlev1_bibj_k, key = kkey, kind=isbyte
           ENDDO
          ENDDO
         ENDDO
+C-    end if P/Z-coordinate
        ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
@@ -293,6 +297,7 @@ C     Impose minimum from downward sweep
          ENDDO
         ENDDO
        ENDDO
+
       ELSE
        WRITE(msgBuf,'(A,I5,A)')
      &   'GGL90_MIXINGLENGTH: mxlMaxFlag=',
@@ -302,9 +307,9 @@ C     Impose minimum from downward sweep
       ENDIF
 
 #ifdef ALLOW_GGL90_LANGMUIR
-C
-C Langmuir circulation effect
-C
+C----------------------------------
+C--   Langmuir circulation effect :
+C----------------------------------
       IF (useLANGMUIR) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE GGL90mixingLength = comlev1_bibj, key = tkey, kind=isbyte
@@ -353,7 +358,7 @@ CADJ STORE mxLength_Dn       = comlev1_bibj, key = tkey, kind=isbyte
         STOP 'ABNORMAL END: S/R GGL90_MIXINGLENGTH'
        ENDIF
 
-C--   Impose minimum mixing length to avoid division by zero
+C--   Impose minimum LC-mixing length to avoid division by zero
        IF ( locMxlMaxFlag .EQ. 1 .OR. locMxlMaxFlag .EQ. 2 ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE LCmixingLength    = comlev1_bibj, key = tkey, kind=isbyte
