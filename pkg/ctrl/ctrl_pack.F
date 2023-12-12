@@ -186,12 +186,12 @@ c          write(cunit) nWetiGlobal(1)
 # endif
 #endif
 
-          write(cunit) (ncvarindex(i), i=1,maxcvars)
-          write(cunit) (ncvarrecs(i),  i=1,maxcvars)
-          write(cunit) (ncvarxmax(i),  i=1,maxcvars)
-          write(cunit) (ncvarymax(i),  i=1,maxcvars)
-          write(cunit) (ncvarnrmax(i), i=1,maxcvars)
-          write(cunit) (ncvargrd(i),   i=1,maxcvars)
+          write(cunit) (ncvarindex(ivar), ivar=1,maxcvars)
+          write(cunit) (ncvarrecs(ivar),  ivar=1,maxcvars)
+          write(cunit) (ncvarxmax(ivar),  ivar=1,maxcvars)
+          write(cunit) (ncvarymax(ivar),  ivar=1,maxcvars)
+          write(cunit) (ncvarnrmax(ivar), ivar=1,maxcvars)
+          write(cunit) (ncvargrd(ivar),   ivar=1,maxcvars)
           write(cunit)
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
@@ -280,7 +280,7 @@ c          write(cunit) nWetiGlobal(1)
         endif
 C     if ( ncvarindex(ivar) .ge. 0 ) then
        endif
-C     do k = 1, maxcvars
+C     do ivar = 1, maxcvars
       enddo
 
 #ifdef ALLOW_PACKUNPACK_METHOD2

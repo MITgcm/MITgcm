@@ -44,16 +44,16 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER il, k
+      INTEGER il, ivar
 CEOP
 
       IF ( grdchk_index .EQ. UNSET_I ) THEN
 C--   If not set, determine grdchk_index from fName (= grdchkvarname)
        IF ( fName .NE. ' ' ) THEN
         il = ILNBLNK(fName)
-        DO k = 1, maxcvars
-         IF ( ncvarfname(k)(1:il).EQ.fName(1:il) ) THEN
-          grdchk_index = k
+        DO ivar = 1, maxcvars
+         IF ( ncvarfname(ivar)(1:il).EQ.fName(1:il) ) THEN
+          grdchk_index = ivar
           GOTO 99
          ENDIF
         ENDDO

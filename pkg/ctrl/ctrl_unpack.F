@@ -215,12 +215,12 @@ cgg(     Add OBCS mask information to the header.
 cgg)
 #endif /* ALLOW_OBCS */
 
-          read(cunit) (filencvarindex(i), i=1,maxcvars)
-          read(cunit) (filencvarrecs(i),  i=1,maxcvars)
-          read(cunit) (filencvarxmax(i),  i=1,maxcvars)
-          read(cunit) (filencvarymax(i),  i=1,maxcvars)
-          read(cunit) (filencvarnrmax(i), i=1,maxcvars)
-          read(cunit) (filencvargrd(i),   i=1,maxcvars)
+          read(cunit) (filencvarindex(ivar), ivar=1,maxcvars)
+          read(cunit) (filencvarrecs(ivar),  ivar=1,maxcvars)
+          read(cunit) (filencvarxmax(ivar),  ivar=1,maxcvars)
+          read(cunit) (filencvarymax(ivar),  ivar=1,maxcvars)
+          read(cunit) (filencvarnrmax(ivar), ivar=1,maxcvars)
+          read(cunit) (filencvargrd(ivar),   ivar=1,maxcvars)
           read(cunit)
 
 c         Check file header info.
@@ -404,7 +404,7 @@ c----------------------------------------------------------------------
         endif
 C     if ( ncvarindex(ivar) .ge. 0 ) then
        endif
-C     do k = 1, maxcvars
+C     do ivar = 1, maxcvars
       enddo
 
 #ifdef ALLOW_PACKUNPACK_METHOD2

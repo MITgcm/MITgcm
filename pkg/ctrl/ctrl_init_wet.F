@@ -36,6 +36,7 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+      integer ivar
       integer ntmp2(4)
       integer nwetc3d
       integer nwettmp
@@ -178,57 +179,57 @@ c--   mask conventions are adopted from obcs_apply_ts, obcs_apply_uv
 c--   Determine the total number of control variables.
       nvartype   = 0
       nvarlength = 0
-      do i = 1,maxcvars
+      do ivar = 1, maxcvars
 c
-       if ( ncvarindex(i) .ne. -1 ) then
+       if ( ncvarindex(ivar) .ne. -1 ) then
         nvartype = nvartype + 1
         do bj = jtlo,jthi
          do bi = itlo,ithi
-          do k = 1,ncvarnrmax(i)
-           if ( ncvargrd(i) .eq. 'c' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetctile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 's' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetstile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 'w' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetwtile(bi,bj,k)
-           else if ( ncvargrd(i) .eq. 'v' ) then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetvtile(bi,bj,k)
+          do k = 1,ncvarnrmax(ivar)
+           if ( ncvargrd(ivar) .eq. 'c' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetctile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 's' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetstile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 'w' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetwtile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 'v' ) then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetvtile(bi,bj,k)
 #ifdef ALLOW_SHELFICE
 c--             Ice shelf mask.
-           else if ( ncvargrd(i) .eq. 'i') then
-            nvarlength = nvarlength + ncvarrecs(i)*nwetitile(bi,bj,k)
+           else if ( ncvargrd(ivar) .eq. 'i') then
+            nvarlength = nvarlength + ncvarrecs(ivar)*nwetitile(bi,bj,k)
 #endif /* ALLOW_SHELFICE */
-           else if ( ncvargrd(i) .eq. 'm' ) then
+           else if ( ncvargrd(ivar) .eq. 'm' ) then
 #ifdef ALLOW_OBCS_CONTROL
             do iobcs = 1, nobcs
 cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
 cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 #ifdef ALLOW_OBCSN_CONTROL
-             if ( ncvarfname(i) .eq. xx_obcsn_file )
+             if ( ncvarfname(ivar) .eq. xx_obcsn_file )
      &            nvarlength = nvarlength
-     &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+     &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-             if ( ncvarfname(i) .eq. xx_obcss_file )
+             if ( ncvarfname(ivar) .eq. xx_obcss_file )
      &            nvarlength = nvarlength
-     &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+     &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-             if ( ncvarfname(i) .eq. xx_obcse_file )
+             if ( ncvarfname(ivar) .eq. xx_obcse_file )
      &            nvarlength = nvarlength
-     &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+     &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-             if ( ncvarfname(i) .eq. xx_obcsw_file )
+             if ( ncvarfname(ivar) .eq. xx_obcsw_file )
      &            nvarlength = nvarlength
-     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(i)/nobcs)
+     &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
             enddo
 #endif
            else
             print*,'ctrl_init_wet: invalid grid location'
-            print*,'     control variable = ',ncvarindex(i)
-            print*,'     grid location    = ',ncvargrd(i)
+            print*,'     control variable = ',ncvarindex(ivar)
+            print*,'     grid location    = ',ncvargrd(ivar)
             stop   ' ... stopped in ctrl_init_wet'
            endif
           enddo
@@ -268,9 +269,9 @@ cph(
       call print_message( msgbuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
 
-      do i = 1, maxcvars
+      do ivar = 1, maxcvars
          write(msgbuf,'(a,2x,I3,2x,I10)')
-     &     'ctrl-wet 6: no recs for i = ', i, ncvarrecs(i)
+     &     'ctrl-wet 6: no recs for ivar = ', ivar, ncvarrecs(ivar)
         call print_message( msgbuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
       end do
