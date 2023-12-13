@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - revisit Langmuir Circulation (LC) mixing-length calculation: fix bugs in
+    some "mxlMaxFlag" implementation and ensure it works with P-coordinate.
+    Update vermix.gglLC ref. output and add new secondary AD test (with LC on)
+    in global_oce_latlon experiment.
+
 checkpoint68u (2023/12/10)
 o pkg/seaice:
   - new/improved LSR convergence criteria (CPP: SEAICE_ALLOW_LSR_FLEX, run-time:
