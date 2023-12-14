@@ -69,7 +69,7 @@ CM      integer bi,bj
       integer biG,bjG
       integer i,j
       integer ii,k
-      integer icvar
+      integer ivar
       integer icvrec
       integer icvcomp
       integer icvoffset
@@ -83,13 +83,13 @@ CM      integer bi,bj
       character*(17)  prefix
       parameter ( prefix =  " OPTIM_READDATA: " )
 
-c      integer         filei
-c      integer         filej
-c      integer         filek
-c      integer         fileiG
-c      integer         filejG
-c      integer         filensx
-c      integer         filensy
+      integer         filei
+      integer         filej
+      integer         filek
+      integer         fileiG
+      integer         filejG
+      integer         filensx
+      integer         filensy
       integer         filenopt
       _RL             fileff
 
@@ -100,8 +100,6 @@ cgg(
 cgg)
 
 c     == end of interface ==
-
-      print *, 'pathei-lsopt in optim_readdata'
 
 c--   The reference i/o unit.
       funit = 20
@@ -189,7 +187,7 @@ cgg)
       read( funit ) (ncvarymax(i),  i=1,maxcvars)
       read( funit ) (ncvarnrmax(i), i=1,maxcvars)
       read( funit ) (ncvargrd(i),   i=1,maxcvars)
-      read( funit )
+      read( funit ) (ncvartype(i),  i=1,maxcvars)
 
       print *, prefix, 'nvartype ', nvartype
       print *, prefix, 'nvarlength ', nvarlength
@@ -239,6 +237,7 @@ cgg)
        print *, prefix, 'ncvarymax  ', (ncvarymax(i),  i=1,maxcvars)
        print *, prefix, 'ncvarnrmax ', (ncvarnrmax(i), i=1,maxcvars)
        print *, prefix, 'ncvargrd   ', (ncvargrd(i),   i=1,maxcvars)
+       print *, prefix, 'ncvartype  ', (ncvartype(i),  i=1,maxcvars)
       end if
 c--   Check the header information for consistency.
 
@@ -279,46 +278,50 @@ ce    Add some more checks. ...
       if (.NOT. lheaderonly) then
 c--   Read the data.
        icvoffset = 0
-       do icvar = 1,maxcvars
-        if ( ncvarindex(icvar) .ne. -1 ) then
-         do icvrec = 1,ncvarrecs(icvar)
+       do ivar = 1,maxcvars
+        if ( ncvarindex(ivar) .ne. -1 ) then
+         do icvrec = 1,ncvarrecs(ivar)
 cph          do bj = 1,nsy
 cph           do bi = 1,nsx
-            read( funit ) ncvarindex(icvar)
+            read( funit ) ncvarindex(ivar)
             read( funit ) filej
             read( funit ) filei
-            do k = 1,ncvarnrmax(icvar)
+            do k = 1,ncvarnrmax(ivar)
              cbuffindex = 0
-             if (ncvargrd(icvar) .eq. 'c') then
+             if (ncvargrd(ivar) .eq. 'c') then
               cbuffindex = nWetcGlobal(k)
-             else if (ncvargrd(icvar) .eq. 's') then
+             else if (ncvargrd(ivar) .eq. 's') then
               cbuffindex = nWetsGlobal(k)
-             else if (ncvargrd(icvar) .eq. 'w') then
+             else if (ncvargrd(ivar) .eq. 'w') then
               cbuffindex = nWetwGlobal(k)
-             else if (ncvargrd(icvar) .eq. 'v') then
+             else if (ncvargrd(ivar) .eq. 'v') then
               cbuffindex = nWetvGlobal(k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-             else if (ncvargrd(icvar) .eq. 'i') then
+             else if (ncvargrd(ivar) .eq. 'i') then
               cbuffindex = nWetiGlobal(k)
 #endif
 #ifdef ALLOW_OBCS_CONTROL
 cgg(   O.B. points have the grid mask "m".
-             else if (ncvargrd(icvar) .eq. 'm') then
+             else if (ncvargrd(ivar) .eq. 'm') then
 cgg    From "icvrec", calculate what iobcs must be.
               gg   = (icvrec-1)/nobcs
               igg  = int(gg)
               iobcs= icvrec - igg*nobcs
 # ifdef ALLOW_OBCSN_CONTROL
-              if (icvar .eq. 11) cbuffindex = nWetobcsnGlo(k,iobcs)
+              if (ncvarindex(ivar) .eq. 1)
+     &             cbuffindex = nWetobcsnGlo(k,iobcs)
 # endif
 # ifdef ALLOW_OBCSS_CONTROL
-              if (icvar .eq. 12) cbuffindex = nWetobcssGlo(k,iobcs)
-# endif
-# ifdef ALLOW_OBCSW_CONTROL
-              if (icvar .eq. 13) cbuffindex = nWetobcswGlo(k,iobcs)
+              if (ncvarindex(ivar) .eq. 2)
+     &             cbuffindex = nWetobcssGlo(k,iobcs)
 # endif
 # ifdef ALLOW_OBCSE_CONTROL
-              if (icvar .eq. 14) cbuffindex = nWetobcseGlo(k,iobcs)
+              if (ncvarindex(ivar) .eq. 3)
+     &             cbuffindex = nWetobcseGlo(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+              if (ncvarindex(ivar) .eq. 4)
+     &             cbuffindex = nWetobcswGlo(k,iobcs)
 # endif
 cgg)
 #endif /* ALLOW_OBCS_CONTROL */

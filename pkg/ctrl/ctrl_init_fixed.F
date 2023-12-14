@@ -137,7 +137,7 @@ c--   Northern obc.
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     I     xx_obcsn_file, 11, 0, diffrec, startrec, endrec,
+     I     xx_obcsn_file, 1, 1, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
@@ -150,22 +150,9 @@ c--   Southern obc.
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     I     xx_obcss_file, 12, 0, diffrec, startrec, endrec,
+     I     xx_obcss_file, 2, 2, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
-
-c----------------------------------------------------------------------
-c--
-#ifdef ALLOW_OBCSW_CONTROL
-c--   Western obc.
-      call ctrl_init_rec ( xx_obcsw_file,
-     I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
-     O     xx_obcswstartdate, diffrec, startrec, endrec,
-     I     myThid )
-      call ctrl_init_ctrlvar (
-     I     xx_obcsw_file, 13, 0, diffrec, startrec, endrec,
-     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
-#endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
 c--
@@ -176,9 +163,22 @@ c--   Eastern obc.
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     myThid )
       call ctrl_init_ctrlvar (
-     I     xx_obcse_file, 14, 0, diffrec, startrec, endrec,
+     I     xx_obcse_file, 3, 3, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_OBCSW_CONTROL
+c--   Western obc.
+      call ctrl_init_rec ( xx_obcsw_file,
+     I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
+     O     xx_obcswstartdate, diffrec, startrec, endrec,
+     I     myThid )
+      call ctrl_init_ctrlvar (
+     I     xx_obcsw_file, 4, 4, diffrec, startrec, endrec,
+     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
+#endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
 c--

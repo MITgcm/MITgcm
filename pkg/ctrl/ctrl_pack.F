@@ -192,7 +192,7 @@ c          write(cunit) nWetiGlobal(1)
           write(cunit) (ncvarymax(ivar),  ivar=1,maxcvars)
           write(cunit) (ncvarnrmax(ivar), ivar=1,maxcvars)
           write(cunit) (ncvargrd(ivar),   ivar=1,maxcvars)
-          write(cunit)
+          write(cunit) (ncvartype(ivar),  ivar=1,maxcvars)
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF

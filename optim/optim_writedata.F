@@ -63,7 +63,7 @@ CML      integer bi,bj
       integer icvcomp
       integer icvoffset
       integer icvrec
-      integer icvar
+      integer ivar
       integer funit
       integer cbuffindex
 
@@ -174,52 +174,52 @@ c     Add OBCS Mask information into the header section for optimization.
       write( funit ) (ncvarymax(i),  i=1,maxcvars)
       write( funit ) (ncvarnrmax(i), i=1,maxcvars)
       write( funit ) (ncvargrd(i),   i=1,maxcvars)
-      write( funit )
+      write( funit ) (ncvartype(i),  i=1,maxcvars)
 
 c--         Write the data.
       icvoffset = 0
-      do icvar = 1,maxcvars
-       if ( ncvarindex(icvar) .ne. -1 ) then
-        do icvrec = 1,ncvarrecs(icvar)
+      do ivar = 1,maxcvars
+       if ( ncvarindex(ivar) .ne. -1 ) then
+        do icvrec = 1,ncvarrecs(ivar)
 cph         do bj = 1,nsy
 cph          do bi = 1,nsx
-         write( funit ) ncvarindex(icvar)
+         write( funit ) ncvarindex(ivar)
 CML         write( funit ) bi
 CML         write( funit ) bj
          write( funit ) nsx
          write( funit ) nsy
-         do k = 1,ncvarnrmax(icvar)
+         do k = 1,ncvarnrmax(ivar)
           cbuffindex = 0
-          if (ncvargrd(icvar) .eq. 'c') then
+          if (ncvargrd(ivar) .eq. 'c') then
            cbuffindex = nWetcGlobal(k)
-          else if (ncvargrd(icvar) .eq. 's') then
+          else if (ncvargrd(ivar) .eq. 's') then
            cbuffindex = nWetsGlobal(k)
-          else if (ncvargrd(icvar) .eq. 'w') then
+          else if (ncvargrd(ivar) .eq. 'w') then
            cbuffindex = nWetwGlobal(k)
-          else if (ncvargrd(icvar) .eq. 'v') then
+          else if (ncvargrd(ivar) .eq. 'v') then
            cbuffindex = nWetvGlobal(k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
-          else if (ncvargrd(icvar) .eq. 'i') then
+          else if (ncvargrd(ivar) .eq. 'i') then
            cbuffindex = nWetiGlobal(k)
 #endif
 #ifdef ALLOW_OBCS_CONTROL
 c     O.B. points have the grid mask "m".
-          else if (ncvargrd(icvar) .eq. 'm') then
+          else if (ncvargrd(ivar) .eq. 'm') then
 c     From "icvrec", calculate what iobcs must be.
            gg   = (icvrec-1)/nobcs
            igg  = int(gg)
            iobcs= icvrec - igg*nobcs
 # ifdef ALLOW_OBCSN_CONTROL
-           if (icvar .eq. 11) cbuffindex = nWetobcsnGlo(k,iobcs)
+           if (ncvarindex(ivar).eq.1) cbuffindex=nWetobcsnGlo(k,iobcs)
 # endif
 # ifdef ALLOW_OBCSS_CONTROL
-           if (icvar .eq. 12) cbuffindex = nWetobcssGlo(k,iobcs)
-# endif
-# ifdef ALLOW_OBCSW_CONTROL
-           if (icvar .eq. 13) cbuffindex = nWetobcswGlo(k,iobcs)
+           if (ncvarindex(ivar).eq.2) cbuffindex=nWetobcssGlo(k,iobcs)
 # endif
 # ifdef ALLOW_OBCSE_CONTROL
-           if (icvar .eq. 14) cbuffindex = nWetobcseGlo(k,iobcs)
+           if (ncvarindex(ivar).eq.3) cbuffindex=nWetobcseGlo(k,iobcs)
+# endif
+# ifdef ALLOW_OBCSW_CONTROL
+           if (ncvarindex(ivar).eq.4) cbuffindex=nWetobcswGlo(k,iobcs)
 # endif
 #endif /* ALLOW_OBCS_CONTROL */
           endif

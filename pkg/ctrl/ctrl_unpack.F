@@ -104,6 +104,7 @@ C     they are not used.
 
       character*(10) fileYctrlid
       character*( 1) filencvargrd(maxcvars)
+      character*( 5) filencvartype(maxcvars)
 
       character*(MAX_LEN_FNAM) fname_local(3)
 
@@ -132,6 +133,19 @@ c     == end of interface ==
 
 c--   Initialise
       nbuffGlobal = 0
+      DO k = 1, Nr
+       filenWetcGlobal(k) = 0
+       filenWetsGlobal(k) = 0
+       filenWetwGlobal(k) = 0
+       filenWetvGlobal(k) = 0
+      ENDDO
+      DO ivar = 1, maxcvars
+       filencvarindex(ivar) = 0
+       filencvarrecs(ivar)  = 0
+       filencvarxmax(ivar)  = 0
+       filencvarymax(ivar)  = 0
+       filencvarnrmax(ivar) = 0
+      ENDDO
 
 c--   Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
@@ -221,7 +235,7 @@ cgg)
           read(cunit) (filencvarymax(ivar),  ivar=1,maxcvars)
           read(cunit) (filencvarnrmax(ivar), ivar=1,maxcvars)
           read(cunit) (filencvargrd(ivar),   ivar=1,maxcvars)
-          read(cunit)
+          read(cunit) (filencvargrd(ivar),   ivar=1,maxcvars)
 
 c         Check file header info.
 c
@@ -240,6 +254,10 @@ c
      &            filenWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
      &            filenWetvGlobal(k) .NE. nWetvGlobal(k)  ) then
                 print *, 'WARNING: wrong nWet?Global for k = ', k
+                print *, 'c', filenWetcGlobal(k), nWetcGlobal(k)
+                print *, 's', filenWetsGlobal(k), nWetsGlobal(k)
+                print *, 'w', filenWetwGlobal(k), nWetwGlobal(k)
+                print *, 'v', filenWetvGlobal(k), nWetvGlobal(k)
                 STOP
              endif
           end do
