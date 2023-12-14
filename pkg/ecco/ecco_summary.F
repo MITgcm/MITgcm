@@ -24,18 +24,22 @@ c     == routine arguments ==
 c     integer mythid - thread number for this instance of the routine.
       integer mythid
 
-c     == local variables ==
-      character*(max_len_mbuf) msgbuf
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      integer k, k2, il, msgunit
-#endif
-
 c     == external ==
+#ifdef ALLOW_GENCOST_CONTRIBUTION
       integer  ilnblnk
       external ilnblnk
+#endif
+
+c     == local variables ==
+      character*(max_len_mbuf) msgbuf
+      integer msgunit
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      integer k, k2, il
+#endif
 
 c     == end of interface ==
 
+      msgUnit = standardMessageUnit
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
@@ -53,12 +57,10 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-      msgunit=standardmessageunit
-c--
       write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
-c--
+      call print_message( msgbuf, msgunit, SQUEEZE_RIGHT, mythid )
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
       do k = 1, NGENCOST
        if (using_gencost(k)) then
 c
@@ -149,14 +151,8 @@ c
        endif
       enddo
 c--
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
