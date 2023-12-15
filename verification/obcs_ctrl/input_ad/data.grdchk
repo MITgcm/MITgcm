@@ -12,9 +12,7 @@
 ### jgloTile         = 1,
  nstep            = 1,
  nend             = 4,
- grdchkvarname    = "xx_obcsw",
-# this is equivalent, and we put is here only to enable a consistency check
- grdchkvarindex   = 4,
-# currently only 2 and 4 work,
-# and only for South j=1 or West i=1
+ grdchkvarindex   = 13,
+#ph: currently only 12 and 13 work,
+#ph: and only for South j=1 or West i=1
  &

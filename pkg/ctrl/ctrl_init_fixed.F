@@ -14,7 +14,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init_fixed
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -136,8 +136,9 @@ c--   Northern obc.
      I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
+      ivar = 11
       call ctrl_init_ctrlvar (
-     I     xx_obcsn_file, 1, 1, diffrec, startrec, endrec,
+     I     xx_obcsn_file, ivar, 1, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
@@ -149,23 +150,11 @@ c--   Southern obc.
      I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
+      ivar = 12
       call ctrl_init_ctrlvar (
-     I     xx_obcss_file, 2, 2, diffrec, startrec, endrec,
+     I     xx_obcss_file, ivar, 2, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
-
-c----------------------------------------------------------------------
-c--
-#ifdef ALLOW_OBCSE_CONTROL
-c--   Eastern obc.
-      call ctrl_init_rec ( xx_obcse_file,
-     I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
-     O     xx_obcsestartdate, diffrec, startrec, endrec,
-     I     myThid )
-      call ctrl_init_ctrlvar (
-     I     xx_obcse_file, 3, 3, diffrec, startrec, endrec,
-     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
-#endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
 c--
@@ -175,10 +164,25 @@ c--   Western obc.
      I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     myThid )
+      ivar = 13
       call ctrl_init_ctrlvar (
-     I     xx_obcsw_file, 4, 4, diffrec, startrec, endrec,
+     I     xx_obcsw_file, ivar, 4, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_OBCSE_CONTROL
+c--   Eastern obc.
+      call ctrl_init_rec ( xx_obcse_file,
+     I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
+     O     xx_obcsestartdate, diffrec, startrec, endrec,
+     I     myThid )
+      ivar = 14
+      call ctrl_init_ctrlvar (
+     I     xx_obcse_file, ivar, 3, diffrec, startrec, endrec,
+     I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
+#endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
 c--
@@ -223,6 +227,7 @@ C       Under iceshelf, use maskSHI for these
         endif
 # endif
 
+        ivar = 100+iarr
 # ifndef ALLOW_OPENAD
         if (xx_genarr2d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
@@ -230,7 +235,7 @@ C       Under iceshelf, use maskSHI for these
         call ctrl_init_ctrlvar (
 # endif
      I       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
-     I       100+iarr, iarr, 1, 1, 1,
+     I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costfinal_exists,
      I       myThid )
 
@@ -242,6 +247,7 @@ c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
         ncvargrdtmp='c'
+        ivar = 200+iarr
 #ifndef ALLOW_OPENAD
         if (xx_genarr3d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
@@ -249,7 +255,7 @@ c--
         call ctrl_init_ctrlvar (
 #endif
      I       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
-     I       200+iarr, iarr, 1, 1, 1,
+     I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costfinal_exists,
      I       myThid )
        enddo
@@ -310,12 +316,13 @@ C
          endif
         enddo
 C
+        ivar = 300+iarr
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
      I       fnamegen(1:MAX_LEN_FNAM),
-     I       300+iarr, iarr,
+     I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
@@ -325,7 +332,7 @@ C
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
      I       fnamegen(1:MAX_LEN_FNAM),
-     I       300+iarr, iarr,
+     I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
@@ -333,7 +340,7 @@ C
 C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
      I       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     I       300+iarr, iarr,
+     I       ivar, iarr,
      I       endrec, 1, endrec,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
