@@ -271,7 +271,8 @@ cph(
 
       do ivar = 1, maxcvars
          write(msgbuf,'(a,2x,I3,2x,I10)')
-     &     'ctrl-wet 6: no recs for ivar = ', ivar, ncvarrecs(ivar)
+     &     'ctrl-wet 6: no recs for i = ', ivar, ncvarrecs(ivar)
+c    &     'ctrl-wet 6: no recs for ivar = ', ivar, ncvarrecs(ivar)
         call print_message( msgbuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
       end do
