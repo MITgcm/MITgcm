@@ -34,7 +34,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_pack
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -70,17 +70,13 @@ c     == local variables ==
       logical ladinit
       logical lxxadxx
 
-      integer i, k
-c     integer ig,jg
-      integer ivar
+      integer k, ivar, iarr
       integer cunit
       integer ictrlgrad
       _RL    fcloc
 
       character*(128) cfile
-      integer ilDir
-      integer il
-      integer iarr
+      integer il, ilDir
 
       character*(MAX_LEN_FNAM) fname_local(3)
 
@@ -205,33 +201,30 @@ c          write(cunit) nWetiGlobal(1)
         il = ilnblnk(ncvarfname(ivar))
         iarr = ncvarindex(ivar)
         call ctrl_set_fname(ctrlDir(1:ilDir)//ncvarfname(ivar),
-     &                      fname_local, mythid)
-        if ( .false. ) then
+     &                      fname_local, mythid )
+        if ( ncvargrd(ivar).EQ.'m' ) then
 #ifdef ALLOW_OBCS
+         if ( iarr.EQ.1 ) then
 # ifdef ALLOW_OBCSN_CONTROL
-        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcsn_file(1:il) ) then
-         call ctrl_set_pack_xz(
-     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcsn',
-     &        'wobcsn', wobcsn, lxxadxx, mythid)
+          call ctrl_set_pack_xz( cunit, ivar, fname_local(ictrlgrad),
+     &               'maskobcsn', 'wobcsn', wobcsn, lxxadxx, mythid )
 # endif
+         elseif ( iarr.EQ.2 ) then
 # ifdef ALLOW_OBCSS_CONTROL
-        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcss_file(1:il) ) then
-         call ctrl_set_pack_xz(
-     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcss',
-     &        'wobcss', wobcss, lxxadxx, mythid)
+          call ctrl_set_pack_xz( cunit, ivar, fname_local(ictrlgrad),
+     &               'maskobcss', 'wobcss', wobcss, lxxadxx, mythid )
 # endif
-# ifdef ALLOW_OBCSW_CONTROL
-        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcsw_file(1:il) ) then
-         call ctrl_set_pack_yz(
-     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcsw',
-     &        'wobcsw', wobcsw, lxxadxx, mythid)
-# endif
+         elseif ( iarr.EQ.3 ) then
 # ifdef ALLOW_OBCSE_CONTROL
-        elseif ( ncvarfname(ivar)(1:il).EQ.xx_obcse_file(1:il) ) then
-         call ctrl_set_pack_yz(
-     &        cunit, ivar, fname_local(ictrlgrad), 'maskobcse',
-     &        'wobcse', wobcse, lxxadxx, mythid)
+          call ctrl_set_pack_yz( cunit, ivar, fname_local(ictrlgrad),
+     &               'maskobcse', 'wobcse', wobcse, lxxadxx, mythid )
 # endif
+         elseif ( iarr.EQ.4 ) then
+# ifdef ALLOW_OBCSW_CONTROL
+          call ctrl_set_pack_yz( cunit, ivar, fname_local(ictrlgrad),
+     &               'maskobcsw', 'wobcsw', wobcsw, lxxadxx, mythid )
+# endif
+         endif
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_GENARR2D_CONTROL
@@ -239,16 +232,13 @@ c          write(cunit) nWetiGlobal(1)
          if ( xx_genarr2d_weight(iarr).NE.' ') then
           mskNameForSetPack='maskCtrlC'
 # ifdef ALLOW_SHELFICE
-          if ((ncvarfname(ivar)(1:il).eq.'xx_shicoeff').or.
-     &        (ncvarfname(ivar)(1:il).eq.'xx_shicdrag')) then
-           mskNameForSetPack='maskCtrlI'
-          endif
+          if ( ncvargrd(ivar).EQ.'i' ) mskNameForSetPack='maskCtrlI'
 # endif
           call ctrl_set_pack_xy(
      &         cunit, ivar, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetPack,
      &         xx_genarr2d_weight(iarr),
-     &         lxxadxx, mythid)
+     &         lxxadxx, mythid )
          endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -258,7 +248,7 @@ c          write(cunit) nWetiGlobal(1)
           call ctrl_set_pack_xyz(
      &         cunit, ivar, fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
-     &         wunit, lxxadxx, mythid)
+     &         wunit, lxxadxx, mythid )
          endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -267,14 +257,13 @@ c          write(cunit) nWetiGlobal(1)
          if ( xx_gentim2d_weight(iarr).NE.' ') then
           mskNameForSetPack='maskCtrlC'
 # ifdef ALLOW_SHELFICE
-          if (ncvarfname(ivar)(1:il).eq.'xx_shifwflx')
-     &         mskNameForSetPack='maskCtrlI'
+          if ( ncvargrd(ivar).EQ.'i' ) mskNameForSetPack='maskCtrlI'
 # endif
           call ctrl_set_pack_xy(
      &         cunit, ivar, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetPack,
      &         xx_gentim2d_weight(iarr),
-     &         lxxadxx, mythid)
+     &         lxxadxx, mythid )
          endif
 #endif /* ALLOW_GENTIM2D_CONTROL */
         endif
