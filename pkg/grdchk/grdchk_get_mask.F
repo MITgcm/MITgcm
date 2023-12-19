@@ -117,19 +117,19 @@ C--   control variable on the current tile.
          DO bi = itlo,ithi
           DO k = 1,ncvarnrmax(grdchkvarindex)
            DO iobcs = 1, nobcsmax
-             IF ( ncvarfname(grdchkvarindex).EQ.xx_obcsn_file ) THEN
+             IF ( ncvarindex(grdchkvarindex).EQ.1 ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcsn(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcss_file ) THEN
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.2 ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcss(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcse_file ) THEN
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.3 ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcse(bi,bj,k,iobcs)
 #endif
-             ELSEIF ( ncvarfname(grdchkvarindex).EQ.xx_obcsw_file ) THEN
+             ELSEIF ( ncvarindex(grdchkvarindex).EQ.4 ) THEN
 #ifdef ALLOW_OBCSW_CONTROL
                nwettile(bi,bj,k,iobcs) = nwetobcsw(bi,bj,k,iobcs)
 #endif

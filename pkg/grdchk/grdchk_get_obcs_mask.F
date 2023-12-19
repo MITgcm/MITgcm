@@ -17,7 +17,7 @@ c     ==================================================================
 c     SUBROUTINE grdchk_get_obcs_mask
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -65,95 +65,82 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
-      if ( ncvarfname(grdchkvarindex).EQ.xx_obcsn_file ) then
+      IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
+       IF ( ncvarindex(grdchkvarindex).EQ.1 ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
-      write(fname,'(a)') 'maskobcsn'
-c
-      do iobcs = 1,nobcs
+        write(fname,'(a)') 'maskobcsn'
+        do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do i = imin,imax
-                     grdchk_maskxz(i,k,bi,bj,iobcs) =
-     &                    tmpfldxz(i,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do i = imin,imax
+              grdchk_maskxz(i,k,bi,bj,iobcs) = tmpfldxz(i,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcss_file ) then
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.2 ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
-      write(fname,'(a)') 'maskobcss'
+        write(fname,'(a)') 'maskobcss'
 c
-      do iobcs = 1,nobcs
+        do iobcs = 1,nobcs
          call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do i = imin,imax
-                     grdchk_maskxz(i,k,bi,bj,iobcs) =
-     &                    tmpfldxz(i,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do i = imin,imax
+              grdchk_maskxz(i,k,bi,bj,iobcs) = tmpfldxz(i,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcse_file ) then
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.3 ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
-      write(fname,'(a)') 'maskobcse'
-c
-      do iobcs = 1,nobcs
+        write(fname,'(a)') 'maskobcse'
+        do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do j = jmin,jmax
-                     grdchk_maskyz(j,k,bi,bj,iobcs) =
-     &                    tmpfldyz(j,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+               grdchk_maskyz(j,k,bi,bj,iobcs) = tmpfldyz(j,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      else if ( ncvarfname(grdchkvarindex).EQ.xx_obcsw_file ) then
+       ELSEIF ( ncvarindex(grdchkvarindex).EQ.4 ) THEN
 #ifdef ALLOW_OBCSW_CONTROL
-      write(fname,'(a)') 'maskobcsw'
-c
-      do iobcs = 1,nobcs
+        write(fname,'(a)') 'maskobcsw'
+        do iobcs = 1,nobcs
          call active_read_yz(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
-c
          do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do k = 1,nr
-                  do j = jmin,jmax
-                     grdchk_maskyz(j,k,bi,bj,iobcs) =
-     &                    tmpfldyz(j,k,bi,bj)
-                  enddo
-               enddo
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+              grdchk_maskyz(j,k,bi,bj,iobcs) = tmpfldyz(j,k,bi,bj)
             enddo
+           enddo
+          enddo
          enddo
-c
-      enddo
+        enddo
 #endif
 
-      endif
+       ENDIF
+      ENDIF
 
       _END_MASTER( mythid )
 
@@ -161,5 +148,5 @@ c
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END
