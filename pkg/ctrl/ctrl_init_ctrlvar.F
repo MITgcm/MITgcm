@@ -106,11 +106,11 @@ C     In an adjoint run, adxx_ files should always be initialized with zeros
 C     For TLM, all zeros means zero sensitivity, so check
 C     for existing perturbation file g_xx_, otherwise
 C     initialize to zero and warn user
-      IF (yadprefix.eq.'g_') then
+      IF (yadprefix.EQ.'g_') THEN
         il = ILNBLNK(fname(2))
         WRITE(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
         INQUIRE(file=gfname,exist=g_exst)
-        IF (.not. g_exst) then
+        IF (.NOT. g_exst) THEN
             WRITE(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
      &          'could not find ', gfname(1:il+5)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -127,34 +127,34 @@ C     initialize to zero and warn user
 
       IF ( .NOT. costfinal_exists ) THEN
 
-         IF ( whichxyz .EQ. 'Arr3D') then
+         IF ( whichxyz .EQ. 'Arr3D') THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xyz( fname(2), ivarindex, myThid)
+     &        CALL ctrl_set_globfld_xyz( fname(2), ivarindex, myThid )
 #endif
-            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xyz( fname(1), ivarindex, myThid)
+            IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
+     &        CALL ctrl_set_globfld_xyz( fname(1), ivarindex, myThid )
          ELSEIF ( whichxyz(4:5) .EQ. '2D' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xy( fname(2), ivarindex, myThid)
+     &        CALL ctrl_set_globfld_xy( fname(2), ivarindex, myThid )
 #endif
-            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xy( fname(1), ivarindex, myThid )
-         ELSEIF ( whichxyz .EQ. 'SecXZ') then
+            IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
+     &        CALL ctrl_set_globfld_xy( fname(1), ivarindex, myThid )
+         ELSEIF ( whichxyz .EQ. 'SecXZ') THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xz( fname(2), ivarindex, myThid)
+     &        CALL ctrl_set_globfld_xz( fname(2), ivarindex, myThid )
 #endif
-            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xz( fname(1), ivarindex, myThid )
-         ELSEIF ( whichxyz .EQ. 'SecYZ') then
+            IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
+     &        CALL ctrl_set_globfld_xz( fname(1), ivarindex, myThid )
+         ELSEIF ( whichxyz .EQ. 'SecYZ') THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_yz( fname(2), ivarindex, myThid)
+     &        CALL ctrl_set_globfld_yz( fname(2), ivarindex, myThid )
 #endif
-            IF ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_yz( fname(1), ivarindex, myThid )
+            IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
+     &        CALL ctrl_set_globfld_yz( fname(1), ivarindex, myThid )
          ELSE
             STOP 'whichxyz option not implemented'
          ENDIF

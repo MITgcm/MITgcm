@@ -12,7 +12,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_Summary
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -66,8 +66,7 @@ c     == end of interface ==
 
       errCount = 0
 
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
@@ -82,8 +81,7 @@ c     == end of interface ==
      &'// ======================================================='
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
@@ -98,8 +96,7 @@ c     == end of interface ==
       write(msgbuf,'(a,i8)') ' sNx*sNy*Nr = ',sNx*sNy*Nr
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
@@ -120,10 +117,9 @@ c     == end of interface ==
             nwetsouth  = nwetsouth  + nwetstile(bi,bj,k)
             nwetwest   = nwetwest   + nwetwtile(bi,bj,k)
           enddo
-          write(msgbuf,'(a,i5.4,i5.4,i7.6,i7.6,i7.6)')
-     &    ' bi,bj,#(c/s/w):',bi,bj,nwetcenter,
-     &                             nwetsouth,
-     &                             nwetwest
+c         write(msgbuf,'(a,i5.4,i5.4,i7.6,i7.6,i7.6)')
+          write(msgbuf,'(a,i4.3,i4.3,i8,i8,i8)')
+     &    ' bi,bj,#(c/s/w):',bi,bj,nwetcenter, nwetsouth, nwetwest
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         enddo
@@ -142,16 +138,14 @@ C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENARR3D_CONTROL
         if ( ncvartype(ivar) .eq. 'Arr3D') then
          iarr = ncvarindex(ivar)
-         if (xx_genarr3d_file(iarr)(1:il)
-     &        .eq. ncvarfname(ivar)(1:il)) then
-          jarr = iarr
-          write(msgbuf,'(a,i2,a)')
-     &' -> 3d control, genarr3d no. ',iarr,' is in use'
+         if ( xx_genarr3d_file(iarr) .eq. ncvarfname(ivar) ) then
+          write(msgbuf,'(a,i3,a)')
+     &    ' -> 3d control, genarr3d no.',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
-          write(msgbuf,'(a,i2)')
-     &' -> something is wrong with 3d control, genarr3d no. ',iarr
+          write(msgbuf,'(a,i6)')
+     &    ' -> something is wrong with 3d control, genarr3d no.',iarr
           call print_error( msgbuf, myThid )
           errCount = errCount + 1
          endif
@@ -160,16 +154,14 @@ C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENARR2D_CONTROL
         if ( ncvartype(ivar) .eq. 'Arr2D') then
          iarr = ncvarindex(ivar)
-         if (xx_genarr2d_file(iarr)(1:il)
-     &        .eq. ncvarfname(ivar)(1:il)) then
-          jarr = iarr
-          write(msgbuf,'(a,i2,a)')
-     &' -> 2d control, genarr2d no. ',iarr,' is in use'
+         if ( xx_genarr2d_file(iarr) .eq. ncvarfname(ivar) ) then
+          write(msgbuf,'(a,i3,a)')
+     &    ' -> 2d control, genarr2d no.',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
-          write(msgbuf,'(a,i2)')
-     &' -> something is wrong with 2d control, genarr2d no. ',iarr
+          write(msgbuf,'(a,i6)')
+     &    ' -> something is wrong with 2d control, genarr2d no.',iarr
           call print_error( msgbuf, myThid )
           errCount = errCount + 1
          endif
@@ -178,17 +170,14 @@ C     find out if current variable is a generic control variable name
 #ifdef ALLOW_GENTIM2D_CONTROL
         if ( ncvartype(ivar) .eq. 'Tim2D') then
          iarr = ncvarindex(ivar)
-         if (xx_gentim2d_file(iarr)(1:il)
-     &        .eq. ncvarfname(ivar)(1:il)) then
-          jarr = iarr
-          write(msgbuf,'(a,i2,a)')
-     &' -> time variable 2d control, gentim2d no. ',iarr,' is in use'
+         if ( xx_gentim2d_file(iarr) .eq. ncvarfname(ivar) ) then
+          write(msgbuf,'(2a,i3,a)') ' -> ',
+     &    'time variable 2d control, gentim2d no.',iarr,' is in use'
           call print_message( msgbuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
          else
-          write(msgbuf,'(a,i2)')
-     &' -> something is wrong with time variable  2d control, '//
-     &'gentim2d no. ',iarr
+          write(msgbuf,'(2a,i6)') ' -> something is wrong with ',
+     &    'time variable  2d control, gentim2d no.',iarr
           call print_error( msgbuf, myThid )
           errCount = errCount + 1
          endif
@@ -202,18 +191,18 @@ C     find out if current variable is a generic control variable name
      &'      ncvartype  = ', ncvartype(ivar)
         call print_message( msgbuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4,a)')
+        write(msgbuf,'(a,i5,a)')
      &'      index      = ', ivar, '  (use this for pkg/grdchk)'
         call print_message( msgbuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        write(msgbuf,'(a,i5.4)')
+        write(msgbuf,'(a,i5)')
      &'      ncvarindex = ', ncvarindex(ivar)
         call print_message( msgbuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
 C     extra information only available for generic control variables
 #ifdef ALLOW_GENARR3D_CONTROL
         if ( ncvartype(ivar) .eq. 'Arr3D') then
-         iarr = jarr
+         iarr = ncvarindex(ivar)
          iw   = ILNBLNK( xx_genarr3d_weight(iarr) )
          write(msgbuf,'(a,a)')
      &'      weight     = ',xx_genarr3d_weight(iarr)(1:iw)
@@ -232,7 +221,7 @@ C     extra information only available for generic control variables
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
         if ( ncvartype(ivar) .eq. 'Arr2D' ) then
-         iarr = jarr
+         iarr = ncvarindex(ivar)
          iw   = ILNBLNK( xx_genarr2d_weight(iarr) )
          write(msgbuf,'(a,a)')
      &'      weight     = ',xx_genarr2d_weight(iarr)(1:iw)
@@ -251,7 +240,7 @@ C     extra information only available for generic control variables
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
         if ( ncvartype(ivar) .eq. 'Tim2D' ) then
-         iarr = jarr
+         iarr = ncvarindex(ivar)
          iw   = ILNBLNK( xx_gentim2d_weight(iarr) )
          write(msgbuf,'(a,a)')
      &'      weight     = ',xx_gentim2d_weight(iarr)(1:iw)
@@ -312,8 +301,7 @@ C
         stop 'ABNORMAL END: S/R CTRL_SUMMARY'
       endif
 
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       write(msgbuf,'(a)')
@@ -328,8 +316,7 @@ C
      &'// ======================================================='
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 

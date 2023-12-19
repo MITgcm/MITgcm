@@ -234,7 +234,7 @@ C       Under iceshelf, use maskSHI for these
 # else
         call ctrl_init_ctrlvar (
 # endif
-     I       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
+     I       xx_genarr2d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costfinal_exists,
      I       myThid )
@@ -254,7 +254,7 @@ c--
 #else
         call ctrl_init_ctrlvar (
 #endif
-     I       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
+     I       xx_genarr3d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costfinal_exists,
      I       myThid )
@@ -283,7 +283,7 @@ C       Under iceshelf, use maskSHI for these
         if (xx_gentim2d_file(iarr)(1:5).eq.'xx_fv')
      &       ncvargrdtmp='s'
 
-        call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+        call ctrl_init_rec ( xx_gentim2d_file(iarr),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -318,20 +318,20 @@ C
 C
         ivar = 300+iarr
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
+        write(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
-     I       fnamegen(1:MAX_LEN_FNAM),
+     I       fnamegen,
      I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
+        write(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
-     I       fnamegen(1:MAX_LEN_FNAM),
+     I       fnamegen,
      I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
@@ -339,7 +339,7 @@ C
 C
 C     The length of adxx-files needs to be 1:endrec
         call ctrl_init_ctrlvar (
-     I       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+     I       xx_gentim2d_file(iarr),
      I       ivar, iarr,
      I       endrec, 1, endrec,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
