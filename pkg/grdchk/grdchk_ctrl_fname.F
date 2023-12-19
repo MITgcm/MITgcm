@@ -15,7 +15,7 @@ C !INTERFACE:
 
 C     !DESCRIPTION:
 C     associate control file-name with the grdchk_index,
-C     depending on which on is set
+C     depending on which one is set
 
 C     !USES:
       IMPLICIT NONE
@@ -44,21 +44,21 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER il, ivar
+      INTEGER il, jl, ivar
 CEOP
 
       IF ( grdchk_index .EQ. UNSET_I ) THEN
 C--   If not set, determine grdchk_index from fName (= grdchkvarname)
        IF ( fName .NE. ' ' ) THEN
-        il = ILNBLNK(fName)
+        jl = ILNBLNK(fName)
         DO ivar = 1, maxcvars
-         IF ( ncvarfname(ivar)(1:il).EQ.fName(1:il) ) THEN
-          grdchk_index = ivar
-          GOTO 99
+         IF ( grdchk_index .EQ. UNSET_I ) THEN
+          il = ILNBLNK(ncvarfname(ivar))
+          IF ( il.EQ.jl .AND. ncvarfname(ivar)(1:il).EQ.fName(1:il) )
+     &      grdchk_index = ivar
          ENDIF
         ENDDO
        ENDIF
- 99    CONTINUE
 
        IF ( grdchk_index .EQ. UNSET_I ) THEN
         WRITE(msgBuf,'(3A)') 'S/R GRDCHK_CTRL_FNAME: ',
@@ -68,26 +68,29 @@ C--   If not set, determine grdchk_index from fName (= grdchkvarname)
         STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
        ENDIF
 
-      ELSE
+      ELSEIF ( grdchk_index.LE.0 .OR. grdchk_index.GT.maxcvars ) THEN
+C--   check for valid index value
+
+        WRITE(msgBuf,'(2A,I8)') 'GRDCHK_CTRL_FNAME: ',
+     &        'Invalid grdchk_index=', grdchk_index
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
+
+      ELSEIF ( fName .NE. ' ' ) THEN
 C--   IF both grdchk_index and fName are set, check for consistency
+       jl = ILNBLNK(fName)
        il = ILNBLNK(ncvarfname(grdchk_index))
-       IF ( fName(1:il) .NE. ' '
-     &      .AND. fName(1:il) .NE. ncvarfname(grdchk_index)(1:il) ) THEN
+       IF ( il.NE.jl .OR.
+     &      fName(1:il) .NE. ncvarfname(grdchk_index)(1:il) ) THEN
         WRITE(msgBuf,'(5A)') 'S/R GRDCHK_CTRL_FNAME: ',
-     &       'fName(grdchkvarindex) = ', fName(1:il),
+     &       'fName(grdchkvarindex) = ', fName(1:jl),
      &       ' .NE. ncvarfname = ', ncvarfname(grdchk_index)(1:il)
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
        ENDIF
 
-      ENDIF
-
-      IF ( grdchk_index.LE.0 .OR. grdchk_index.GT.maxcvars ) THEN
-        WRITE(msgBuf,'(2A,I8)') 'GRDCHK_CTRL_FNAME: ',
-     &        'Invalid grdchk_index=', grdchk_index
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R GRDCHK_CTRL_FNAME'
       ELSE
+C--   set fName from grdchk_index:
         fName = ncvarfname( grdchk_index )
       ENDIF
 
