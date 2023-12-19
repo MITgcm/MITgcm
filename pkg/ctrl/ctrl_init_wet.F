@@ -6,7 +6,7 @@ c     ==================================================================
 c     SUBROUTINE ctrl_init_wet
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -181,7 +181,7 @@ c--   Determine the total number of control variables.
       nvarlength = 0
       do ivar = 1, maxcvars
 c
-       if ( ncvarindex(ivar) .ne. -1 ) then
+       if ( ncvarindex(ivar) .ge. 0 ) then
         nvartype = nvartype + 1
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -205,23 +205,19 @@ c--             Ice shelf mask.
 cgg   This overcounts the number of o.b. control points by a factor of "nobcs".
 cgg   As an ad-hoc solution I have divided by nobcs everywhere.
 #ifdef ALLOW_OBCSN_CONTROL
-             if ( ncvarfname(ivar) .eq. xx_obcsn_file )
-     &            nvarlength = nvarlength
+             if ( ncvarindex(ivar) .eq. 1 ) nvarlength = nvarlength
      &            + nwetobcsn(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-             if ( ncvarfname(ivar) .eq. xx_obcss_file )
-     &            nvarlength = nvarlength
+             if ( ncvarindex(ivar) .eq. 2 ) nvarlength = nvarlength
      &            + nwetobcss(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-             if ( ncvarfname(ivar) .eq. xx_obcse_file )
-     &            nvarlength = nvarlength
+             if ( ncvarindex(ivar) .eq. 3 ) nvarlength = nvarlength
      &            + nwetobcse(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-             if ( ncvarfname(ivar) .eq. xx_obcsw_file )
-     &            nvarlength = nvarlength
+             if ( ncvarindex(ivar) .eq. 4 ) nvarlength = nvarlength
      &            + nwetobcsw(bi,bj,k,iobcs)*(ncvarrecs(ivar)/nobcs)
 #endif
             enddo
