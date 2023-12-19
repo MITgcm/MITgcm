@@ -24,7 +24,7 @@ c     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 #include "SIZE.h"
@@ -41,22 +41,16 @@ c     == global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-
       integer myiter
       _RL     mytime
       integer mythid
 
 #if ( defined ALLOW_CTRL && defined ALLOW_OBCS )
-
 C     !LOCAL VARIABLES:
-c     == local variables ==
       integer startrec
       integer endrec
       integer ivar
       integer iobcsn, iobcss, iobcse, iobcsw
-
-c     == end of interface ==
 CEOP
 
 C     Find ctrl-indices
@@ -65,10 +59,12 @@ C     Find ctrl-indices
       iobcse = 0
       iobcsw = 0
       DO ivar = 1, maxcvars
-       IF ( ncvarfname(ivar) .EQ. xx_obcsn_file ) iobcsn = ivar
-       IF ( ncvarfname(ivar) .EQ. xx_obcss_file ) iobcss = ivar
-       IF ( ncvarfname(ivar) .EQ. xx_obcse_file ) iobcse = ivar
-       IF ( ncvarfname(ivar) .EQ. xx_obcsw_file ) iobcsw = ivar
+       IF ( ncvargrd(ivar) .EQ. 'm' ) THEN
+        IF ( ncvarindex(ivar) .EQ. 1 ) iobcsn = ivar
+        IF ( ncvarindex(ivar) .EQ. 2 ) iobcss = ivar
+        IF ( ncvarindex(ivar) .EQ. 3 ) iobcse = ivar
+        IF ( ncvarindex(ivar) .EQ. 4 ) iobcsw = ivar
+       ENDIF
       ENDDO
 #if ( defined ALLOW_OBCSN_CONTROL && defined ALLOW_OBCSN_COST_CONTRIBUTION )
 cgg   North boundary contribution to cost function.
@@ -106,4 +102,5 @@ cgg   East boundary contribution to cost function.
 
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 
-      end
+      RETURN
+      END
