@@ -42,6 +42,12 @@ C     == end of interface ==
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
+C--   Set grdchkvarindex (if not already set from reading data.grdchk)
+      _BEGIN_MASTER( myThid )
+      CALL GRDCHK_CTRL_FNAME( grdchkvarname, grdchkvarindex, myThid )
+      _END_MASTER( myThid )
+      _BARRIER
+
 C--   Summarize the gradient check setup.
       CALL GRDCHK_SUMMARY( myThid )
 
