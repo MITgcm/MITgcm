@@ -32,6 +32,7 @@ c     == global variables ==
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h

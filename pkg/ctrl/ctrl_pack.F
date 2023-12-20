@@ -44,8 +44,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "CTRL.h"
 # include "CTRL_SIZE.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 # include "OPTIMCYCLE.h"
 # include "CTRL_OBCS.h"

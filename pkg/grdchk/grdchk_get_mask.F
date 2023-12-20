@@ -24,6 +24,7 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h
