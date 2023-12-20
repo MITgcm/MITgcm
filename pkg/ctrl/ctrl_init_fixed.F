@@ -124,6 +124,7 @@ c-- for DIVA, avoid forward-related output in adjoint part
 
       _BARRIER
 
+      ivar = 0
 c--   ===========================
 c--   Open boundary contributions.
 c--   ===========================
@@ -136,7 +137,7 @@ c--   Northern obc.
      I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
-      ivar = 11
+      ivar = ivar + 1
       call ctrl_init_ctrlvar (
      I     xx_obcsn_file, ivar, 1, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
@@ -150,7 +151,7 @@ c--   Southern obc.
      I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
-      ivar = 12
+      ivar = ivar+1
       call ctrl_init_ctrlvar (
      I     xx_obcss_file, ivar, 2, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
@@ -164,7 +165,7 @@ c--   Western obc.
      I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     myThid )
-      ivar = 13
+      ivar = ivar+1
       call ctrl_init_ctrlvar (
      I     xx_obcsw_file, ivar, 4, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
@@ -178,7 +179,7 @@ c--   Eastern obc.
      I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     myThid )
-      ivar = 14
+      ivar = ivar+1
       call ctrl_init_ctrlvar (
      I     xx_obcse_file, ivar, 3, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
@@ -227,7 +228,7 @@ C       Under iceshelf, use maskSHI for these
         endif
 # endif
 
-        ivar = 100+iarr
+        ivar = ivar+1
 # ifndef ALLOW_OPENAD
         if (xx_genarr2d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
@@ -247,7 +248,7 @@ c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
         ncvargrdtmp='c'
-        ivar = 200+iarr
+        ivar = ivar+1
 #ifndef ALLOW_OPENAD
         if (xx_genarr3d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
@@ -316,7 +317,7 @@ C
          endif
         enddo
 C
-        ivar = 300+iarr
+        ivar = ivar+1
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'

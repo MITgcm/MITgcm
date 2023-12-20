@@ -15,15 +15,29 @@ C     *================================================================*
 CEOP
 
       INTEGER     maxcvars
-#if (defined (CTRL_SET_OLD_MAXCVARS_30))
-      PARAMETER ( maxcvars = 30 )
-#elif (defined (CTRL_SET_OLD_MAXCVARS_40))
-      PARAMETER ( maxcvars = 40 )
-#elif (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      PARAMETER ( maxcvars = 400 )
-#else
-      PARAMETER ( maxcvars = 60 )
+      PARAMETER ( maxcvars = 0
+#ifdef ALLOW_GENARR2D_CONTROL
+     &     + maxCtrlArr2D
 #endif
+#ifdef ALLOW_GENARR3D_CONTROL
+     &     + maxCtrlArr3D
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
+     &     + maxCtrlTim2D
+#endif
+#ifdef ALLOW_OBCSN_CONTROL
+     &     + 1
+#endif
+#ifdef ALLOW_OBCSS_CONTROL
+     &     + 1
+#endif
+#ifdef ALLOW_OBCSE_CONTROL
+     &     + 1
+#endif
+#ifdef ALLOW_OBCSW_CONTROL
+     &     + 1
+#endif
+     &     )
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be

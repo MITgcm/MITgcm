@@ -14,5 +14,5 @@
  nend             = 4,
  grdchkvarname    = "xx_obcsw",
 # this is equivalent, and we put is here only to enable a consistency check
- grdchkvarindex   = 13,
+ grdchkvarindex   = 3,
  &
