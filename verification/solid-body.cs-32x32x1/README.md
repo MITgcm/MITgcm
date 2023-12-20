@@ -44,8 +44,8 @@ There is comparison output in the directory:
 ## Setup details
 In the current setup, the initial wind field and initial surface pressure anomaly are computed
 from customized version of, respectively,
-`ini_vel.F`(https://github.com/MITgcm/MITgcm/blob/master/verification/solid-body.cs-32x32x1/code/ini_vel.F)
- and `ini_psurf.F` (https://github.com/MITgcm/MITgcm/blob/master/verification/solid-body.cs-32x32x1/code/ini_psurf.F). 
+[ini_vel.F](https://github.com/MITgcm/MITgcm/blob/master/verification/solid-body.cs-32x32x1/code/ini_vel.F)
+ and [ini_psurf.F](https://github.com/MITgcm/MITgcm/blob/master/verification/solid-body.cs-32x32x1/code/ini_psurf.F).
 Note that, $(1/3 - \sin^2)$ is used instead of $(\cos^2 - 2/3)$ in `ini_psurf.F` for $\eta(\phi)$ expression ;
 and the 2 horizontal component of the wind `uVel,vVel` along the local grid direction are computed from a stream-function $\Psi$ which is naturally defined at the grid-cell corner of the C-grid mesh (`XG,YG`) so that the initial flow is divergence free:
 
@@ -54,11 +54,11 @@ $$ \Psi( \phi ) = R \times U_{eq} ~ \sin( \phi ) $$
 $$ \mathrm{uVel} = + \delta^j \Psi / \mathrm{dyG} ~~ ; ~~ \mathrm{vVel} = - \delta^i \Psi / \mathrm{dxG} $$
 
 Alternatively, one could generate initial condition binary files by running matlab script `gendata.m`
-(after changing `kwr=1` to `kwr=2` in gendata.m, line 75) and use these binary files instead of 
+(after changing `kwr=1` to `kwr=2` in gendata.m, line 75) and use these binary files instead of
 customized source code (just by un-commenting lines 67-69 in main parameter file `data`).
 
 ## Comments
-  This set-up uses the "compact format" for all I/O (i.e., one facet after the other, like stacked 
+  This set-up uses the "compact format" for all I/O (i.e., one facet after the other, like stacked
   along the second dimension, as opposed to the default old format with all 6 facets stacked along the first dimension) by setting `W2_mapIO = 1` in `data.exch2`.
   The initial passive tracer (here "salinity") input file is `real*8` and generated using the MATLAB script gendata.m.
   Note that `gendata.m` uses scripts from `MITgcm/utils/matlab/` and `MITgcm/utils/matlab/cd_grid/`.
