@@ -40,7 +40,6 @@ c     == local variables ==
       integer ivar
       integer ntmp2(4)
       integer nwetc3d
-      integer nwettmp
 #ifdef ALLOW_SHELFICE
       integer ntmpshi
 #endif
@@ -273,28 +272,6 @@ c    &     'ctrl-wet 6: no recs for ivar = ', ivar, ncvarrecs(ivar)
         call print_message( msgbuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
       end do
-
-      nwettmp =
-     &     2*nwetc3d +
-     &     ncvarrecs(3)*nwetctile(1,1,1) +
-     &     ncvarrecs(4)*nwetctile(1,1,1) +
-     &     ncvarrecs(5)*nwetwtile(1,1,1) +
-     &     ncvarrecs(6)*nwetstile(1,1,1)
-      write(msgbuf,'(a,2x,I10)')
-     &     'ctrl-wet 7: flux  ', nwettmp
-      call print_message( msgbuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT, myThid )
-
-      nwettmp =
-     &     2*nwetc3d +
-     &     ncvarrecs(7)*nwetctile(1,1,1) +
-     &     ncvarrecs(8)*nwetctile(1,1,1) +
-     &     ncvarrecs(9)*nwetwtile(1,1,1) +
-     &     ncvarrecs(10)*nwetstile(1,1,1)
-      write(msgbuf,'(a,2x,I10)')
-     &     'ctrl-wet 8: atmos ', nwettmp
-      call print_message( msgbuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_OBCSN_CONTROL
       write(msgbuf,'(a,2x,4I10)')
