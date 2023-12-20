@@ -37,10 +37,12 @@ dYg=rdmds([gDir,'DYG']);
 %- put yG into long-vector format and add the 2 missing corners:
 n1h=size(dXg,1); n2h=size(dXg,2); nPg=n1h*n2h; nPp2=nPg+2;
 yZ=zeros(nPp2,1);
-if n1h == 6*n2h, nc=n2h;
+if n1h == 6*n2h,
+  nc=n2h; %- this the "old-format", all facets stacked along first dimension
   yZ(1:nPg,1)=reshape(permute(reshape(yG,[nc 6 nc]),[1 3 2]),[nPg 1]);
   yZ(nPg+1)=yG(1+nc*2,1); %- take lat of SW corner of face 3
-else nc=n1h;
+else
+  nc=n1h; %- this the "compact-format", all facets stacked along 2nd dimension
   yZ(1:nPg,1)=reshape(yG,[nPg 1]);
   yZ(nPg+1)=yG(1,1+nc*2); %- take lat of SW corner of face 3
 end
