@@ -177,48 +177,67 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-!     > Convert input potential temperature [degC] and absolute salinity [g kg-1] to returned
-!     ! conservative temperature [degC] using the polynomial expressions from TEOS-10.
-      real function poTemp_to_consTemp(T, Sa) result(Tc)
-      implicit none
+C     > Convert input potential temperature [degC] and absolute salinity
+C     [g kg-1] to returned conservative temperature [degC] using the
+C     polynomial expressions from TEOS-10.
+      _RL FUNCTION poTemp_to_consTemp(T, Sa)
+
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EOS.h"
-      real, intent(in) :: T     !< Potential temperature [degC]
-      real, intent(in) :: Sa    !< Absolute salinity [g kg-1]
+      _RL T     !< Potential temperature [degC]
+      _RL Sa    !< Absolute salinity [g kg-1]
 
-! Local variables
-      real :: x2                ! Absolute salinity normalized by a plausible salinity range [nondim]
-      real :: x                 ! Square root of normalized absolute salinity [nondim]
+C Local variables
+C     Absolute salinity normalized by a plausible salinity range [nondim]
+      _RL x2
+C     Square root of normalized absolute salinity [nondim]
+      _RL x
 
-      x2 = max(I_S0 * Sa, 0.0)
-      x = sqrt(x2)
+      x2 = MAX(I_S0 * Sa, 0.0)
+#ifdef ALLOW_AUTODIFF
+      x = 0. _ d 0
+      IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
+#else
+      x = SQRT(x2)
+#endif
 
-      Tc = H00 + (T*(H01 + T*(H02 +  T*(H03 +  T*(H04  + T*(H05
-     &     + T*(H06 + T* H07))))))
-     &                  + x2*(H20 + (T*(H21 +  T*(H22  + T*(H23
-     &     + T*(H24 + T*(H25 + T*H26)))))
-     &                            +  x*(H30 + (T*(H31  + T*(H32
-     &     + T*(H33 + T* H34)))
+      poTemp_to_consTemp
+     &     = H00 + (T*(H01 + T*(H02 +  T*(H03 +  T*(H04  + T*(H05
+     &                                     + T*(H06 + T* H07))))))
+     &                    + x2*(H20 + (T*(H21 +  T*(H22  + T*(H23
+     &                              + T*(H24 + T*(H25 + T*H26)))))
+     &                              +  x*(H30 + (T*(H31  + T*(H32
+     &                                        + T*(H33 + T* H34)))
      &     + x*(H40 + (T*(H41 + T*(H42 + T*(H43 + T*(H44 + T*H45))))
-     &     +  x*(H50 + x*(H60 + x* H70)) )) )) )) )
+     &     + x*(H50 + x*(H60 + x* H70)) )) )) )) )
 
-      end function poTemp_to_consTemp
+      RETURN
+      END
 
-!     > Return the partial derivative of conservative temperature with potential temperature [nondim]
-!     ! based on the polynomial expressions from TEOS-10.
-      real function dTc_dTp(T, Sa)
+C     > Return the partial derivative of conservative temperature with
+C     potential temperature [nondim] based on the polynomial
+C     expressions from TEOS-10.
+      _RL function dTc_dTp(T, Sa)
       implicit none
 #include "SIZE.h"
 #include "EOS.h"
-      real, intent(in) :: T     !< Potential temperature [degC]
-      real, intent(in) :: Sa    !< Absolute salinity [g kg-1]
+      _RL T     !< Potential temperature [degC]
+      _RL Sa    !< Absolute salinity [g kg-1]
 
-! Local variables
-      real :: x2                ! Absolute salinity normalized by a plausible salinity range [nondim]
-      real :: x                 ! Square root of normalized absolute salinity [nondim]
+C Local variables
+C     Absolute salinity normalized by a plausible salinity range [nondim]
+      _RL x2
+C     Square root of normalized absolute salinity [nondim]
+      _RL x
 
-      x2 = max(I_S0 * Sa, 0.0)
-      x = sqrt(x2)
+      x2 = MAX(I_S0 * Sa, 0.0)
+#ifdef ALLOW_AUTODIFF
+      x = 0. _ d 0
+      IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
+#else
+      x = SQRT(x2)
+#endif
 
       dTc_dTp = (     H01 + T*(2.*H02 + T*(3.*H03 + T*(4.*H04
      &     + T*(5.*H05 + T*(6.*H06 + T*(7.*H07)))))) )
@@ -228,38 +247,66 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     + x*(H41 + T*(2.*H42 + T*(3.*H43
      &     + T*(4.*H44 + T*(5.*H45))))) ) )
 
-      end function dTc_dTp
+      RETURN
+      END
 
-!     > Convert input potential temperature [degC] and absolute salinity [g kg-1] to returned
-!     ! conservative temperature [degC] by inverting the polynomial expressions from TEOS-10.
-      real function consTemp_to_poTemp(Tc, Sa) result(Tp)
-      implicit none
+C     > Convert input potential temperature [degC] and absolute salinity
+C     [g kg-1] to returned conservative temperature [degC] by
+C     inverting the polynomial expressions from TEOS-10.
+      _RL FUNCTION consTemp_to_poTemp(Tc, Sa)
+
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EOS.h"
-      real, intent(in) :: Tc    !< Conservative temperature [degC]
-      real, intent(in) :: Sa    !< Absolute salinity [g kg-1]
+      _RL Tc    !< Conservative temperature [degC]
+      _RL Sa    !< Absolute salinity [g kg-1]
 
-      real poTemp_to_consTemp, dTc_dTp
-      external poTemp_to_consTemp, dTc_dTp
+      _RL poTemp_to_consTemp, dTc_dTp
+      EXTERNAL poTemp_to_consTemp, dTc_dTp
 
-      real :: Tp_num            ! The numerator  of a simple expression for potential temperature [degC]
-      real :: I_Tp_den          ! The inverse of the denominator of a simple expression for potential temperature [nondim]
-      real :: Tc_diff           ! The difference between an estimate of conservative temperature and its target [degC]
-      real :: Tp_old            ! A previous estimate of the potential tempearture [degC]
-      real :: dTp_dTc           ! The partial derivative of potential temperature with conservative temperature [nondim]
-!     The following are coefficients in the nominator (TPNxx) or denominator (TPDxx) of a simple rational
-!     expression that approximately converts conservative temperature to potential temperature.
-      real, parameter :: TPN00 = -1.446013646344788e-2 ! Simple fit numerator constant [degC]
-      real, parameter :: TPN10 = -3.305308995852924e-3*Sprac_Sref ! Simple fit numerator Sa coef. [degC ppt-1]
-      real, parameter :: TPN20 =  1.062415929128982e-4*Sprac_Sref**2 ! Simple fit numerator Sa**2 coef. [degC ppt-2]
-      real, parameter :: TPN01 =  9.477566673794488e-1 ! Simple fit numerator Tc coef. [nondim]
-      real, parameter :: TPN11 =  2.166591947736613e-3*Sprac_Sref ! Simple fit numerator Sa * Tc coef. [ppt-1]
-      real, parameter :: TPN02 =  3.828842955039902e-3 ! Simple fit numerator Tc**2 coef. [degC-1]
-      real, parameter :: TPD10 =  6.506097115635800e-4*Sprac_Sref ! Simple fit denominator Sa coef. [ppt-1]
-      real, parameter :: TPD01 =  3.830289486850898e-3 ! Simple fit denominator Tc coef. [degC-1]
-      real, parameter :: TPD02 =  1.247811760368034e-6 ! Simple fit denominator Tc**2 coef. [degC-2]
+      _RL Tp
+C     The numerator  of a simple expression for potential temperature [degC]
+      _RL Tp_num
+C     The inverse of the denominator of a simple expression for
+C     potential temperature [nondim]
+      _RL I_Tp_den
+C     The difference between an estimate of conservative temperature and
+C     its target [degC]
+      _RL Tc_diff
+C     A previous estimate of the potential tempearture [degC]
+      _RL Tp_old
+C     The partial derivative of potential temperature with conservative
+C     temperature [nondim]
+      _RL dTp_dTc
 
-! Estimate the potential temperature and its derivative from an approximate rational function fit.
+C     The following are coefficients in the nominator (TPNxx) or
+C     denominator (TPDxx) of a simple rational expression that
+C     approximately converts conservative temperature to potential
+C     temperature.
+      _RL TPN00 ! Simple fit numerator constant [degC]
+      _RL TPN10 ! Simple fit numerator Sa coef. [degC ppt-1]
+      _RL TPN20 ! Simple fit numerator Sa**2 coef. [degC ppt-2]
+      _RL TPN01 ! Simple fit numerator Tc coef. [nondim]
+      _RL TPN11 ! Simple fit numerator Sa * Tc coef. [ppt-1]
+      _RL TPN02 ! Simple fit numerator Tc**2 coef. [degC-1]
+      _RL TPD10 ! Simple fit denominator Sa coef. [ppt-1]
+      _RL TPD01 ! Simple fit denominator Tc coef. [degC-1]
+      _RL TPD02 ! Simple fit denominator Tc**2 coef. [degC-2]
+
+      PARAMETER (
+     &     TPN00 = -1.446013646344788e-2,
+     &     TPN10 = -3.305308995852924e-3*Sprac_Sref,
+     &     TPN20 =  1.062415929128982e-4*Sprac_Sref**2,
+     &     TPN01 =  9.477566673794488e-1,
+     &     TPN11 =  2.166591947736613e-3*Sprac_Sref,
+     &     TPN02 =  3.828842955039902e-3,
+     &     TPD10 =  6.506097115635800e-4*Sprac_Sref,
+     &     TPD01 =  3.830289486850898e-3,
+     &     TPD02 =  1.247811760368034e-6
+     &     )
+
+C--   Estimate the potential temperature and its derivative from an C
+C     approximate rational function fit.
       Tp_num = TPN00 + (Sa*(TPN10 + TPN20*Sa)
      &     + Tc*(TPN01 + (TPN11*Sa + TPN02*Tc)))
       I_Tp_den = 1.0 / (1.0 + (TPD10*Sa + Tc*(TPD01 + TPD02*Tc)))
@@ -267,9 +314,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       dTp_dTc = ((TPN01 + (TPN11*Sa + 2.*TPN02*Tc))
      &     - (TPD01 + 2.*TPD02*Tc)*Tp)*I_Tp_den
 
-! Start the 1.5 iterations through the modified Newton-Raphson iterative method, which is also known
-! as the Newton-McDougall method.  In this case 1.5 iterations converge to 64-bit machine precision
-! for oceanographically relevant temperatures and salinities.
+C--   Start the 1.5 iterations through the modified Newton-Raphson
+C     iterative method, which is also known as the Newton-McDougall
+C     method.  In this case 1.5 iterations converge to 64-bit machine
+C     precision for oceanographically relevant temperatures and
+C     salinities.
 
       Tc_diff = poTemp_to_consTemp(Tp, Sa) - Tc
       Tp_old = Tp
@@ -281,6 +330,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       Tc_diff = poTemp_to_consTemp(Tp, Sa) - Tc
       Tp_old = Tp
 
-      Tp = Tp_old - Tc_diff*dTp_dTc
+      consTemp_to_poTemp = Tp_old - Tc_diff*dTp_dTc
 
-      end function consTemp_to_poTemp
+      RETURN
+      END
