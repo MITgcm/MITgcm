@@ -38,7 +38,8 @@ C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j
 #ifdef ALLOW_ATM_TEMP
-      INTEGER ks, kl
+c     INTEGER ks
+      INTEGER kl
       _RL Tsf, SSTtmp, TsfSq
 #endif
 
@@ -52,10 +53,10 @@ C     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
 C     swflux = - ( 1 - albedo ) * swdown
 
 #ifdef ALLOW_ATM_TEMP
-      ks = 1
+c     ks = 1
       kl = 2
       IF ( usingPCoords ) THEN
-       ks = Nr
+c      ks = Nr
        kl = Nr-1
       ENDIF
 
@@ -67,9 +68,9 @@ C     Loop over tiles.
          IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
           DO j = 1,sNy
            DO i = 1,sNx
-            Tsf = theta(i,j,ks,bi,bj) + cen2kel
+            Tsf = seaSurfTemp(i,j,bi,bj) + cen2kel
             SSTtmp = sstExtrapol
-     &             *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
+     &             *( seaSurfTemp(i,j,bi,bj)-theta(i,j,kl,bi,bj) )
      &             *  maskC(i,j,kl,bi,bj)
             Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
             TsfSq = Tsf*Tsf
@@ -92,7 +93,7 @@ C     does not penetrate the ocean surface)
            DO i = 1,sNx
             lwflux(i,j,bi,bj) =
      &          ocean_emissivity*stefanBoltzmann*
-     &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
+     &          ((seaSurfTemp(i,j,bi,bj)+cen2kel)**4)
      &          - lwdown(i,j,bi,bj)
 #ifdef EXF_LWDOWN_WITH_EMISSIVITY
      &           *ocean_emissivity
@@ -121,7 +122,7 @@ c        DO j = 1,sNy
 c         DO i = 1,sNx
 c          lwdown(i,j,bi,bj) =
 c    &          ocean_emissivity*stefanBoltzmann*
-c    &          ((theta(i,j,ks,bi,bj)+cen2kel)**4)
+c    &          ((seaSurfTemp(i,j,bi,bj)+cen2kel)**4)
 c    &          - lwflux(i,j,bi,bj)
 c         ENDDO
 c        ENDDO

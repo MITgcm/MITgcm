@@ -50,6 +50,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -84,10 +85,15 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+      _RL consTemp_to_poTemp
+      EXTERNAL consTemp_to_poTemp
+
 C     !LOCAL VARIABLES:
 #if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
-      INTEGER i,j,k,bi,bj
+      INTEGER k
 #endif
+      INTEGER ks
+      INTEGER i,j,bi,bj
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -126,6 +132,37 @@ C--   Initialise forcing arrays that may receive multiple contributions
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
+
+C--   Determine surface temperature, usually just a copy of the surface
+C--   level of theta, but for eosType='TEOS10', we need to convert from
+C--   conservative temperature to in-situ surface temperature
+      IF ( usingPCoords ) THEN
+       ks = Nr
+      ELSE
+       ks = 1
+      ENDIF
+      IF ( eosType .EQ. 'TEOS10' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            seaSurfTemp(i,j,bi,bj) = consTemp_to_poTemp(
+     &           theta(i,j,ks,bi,bj), salt(i,j,ks,bi,bj))
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ELSE
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            seaSurfTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
