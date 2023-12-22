@@ -7,6 +7,10 @@ C--   o SW_PTMP: function to compute potential temperature
 C--   o SW_TEMP: function to compute in-situ temperature from pot. temp.
 C--   o SW_ADTG: function to compute adiabatic temperature gradient
 C--              (used by both SW_PTMP & SW_TEMP)
+C     TEOS10 routines (renamed and modified from MOM6 implementation)
+C--   o CONVERT_CT2PT: S/R to convert conservative to potential temperature
+C--   o CONVERT_PT2CT: S/R to convert potential to conservative temperature
+C--                    (used by CONVERT_CT2PT)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -177,121 +181,142 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     > Convert input potential temperature [degC] and absolute salinity
-C     [g kg-1] to returned conservative temperature [degC] using the
+CBOP
+C !ROUTINE: CONVERT_PT2CT
+
+C !INTERFACE:
+      SUBROUTINE CONVERT_PT2CT(
+     I     Tp, Sa,
+     O     Tc,
+     I     myTime, myIter, myThid )
+C     !DESCRIPTION:
+C     Convert input potential temperature (degC) and absolute salinity
+C     (g kg-1) to returned conservative temperature (degC) using the
 C     polynomial expressions from TEOS-10.
-      _RL FUNCTION poTemp_to_consTemp(T, Sa)
 
+C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EOS.h"
-      _RL T     !< Potential temperature [degC]
-      _RL Sa    !< Absolute salinity [g kg-1]
 
-C Local variables
-C     Absolute salinity normalized by a plausible salinity range [nondim]
-      _RL x2
-C     Square root of normalized absolute salinity [nondim]
-      _RL x
+C     !INPUT/OUTPUT PARAMETERS:
+C     Tc        :: Conservative temperature (degC)
+C     Sa        :: Absolute salinity        (g kg-1)
+C     T         :: potential temperature (degC)
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL Tc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Sa(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Tp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL myTime
+      INTEGER myIter, myThid
+CEOP
 
-      x2 = MAX(I_S0 * Sa, 0.0)
+C     !LOCAL VARIABLES:
+      INTEGER i,j
+C     Absolute salinity normalized by a plausible salinity range and its
+C     square root (nondim)
+      _RL x2, x
+
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        x2 = MAX(I_S0 * Sa(i,j), 0.0)
 #ifdef ALLOW_AUTODIFF
-      x = 0. _ d 0
-      IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
+        x = 0. _ d 0
+        IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
 #else
-      x = SQRT(x2)
+        x = SQRT(x2)
 #endif
-
-      poTemp_to_consTemp
-     &     = H00 + (T*(H01 + T*(H02 +  T*(H03 +  T*(H04  + T*(H05
-     &                                     + T*(H06 + T* H07))))))
-     &                    + x2*(H20 + (T*(H21 +  T*(H22  + T*(H23
-     &                              + T*(H24 + T*(H25 + T*H26)))))
-     &                              +  x*(H30 + (T*(H31  + T*(H32
-     &                                        + T*(H33 + T* H34)))
-     &     + x*(H40 + (T*(H41 + T*(H42 + T*(H43 + T*(H44 + T*H45))))
-     &     + x*(H50 + x*(H60 + x* H70)) )) )) )) )
+        Tc(i,j) = H00 + (Tp(i,j)*(H01 + Tp(i,j)*(H02 +  Tp(i,j)*(H03
+     &       +  Tp(i,j)*(H04  + Tp(i,j)*(H05
+     &       + Tp(i,j)*(H06 + Tp(i,j)* H07))))))
+     &       + x2*(H20 + (Tp(i,j)*(H21 +  Tp(i,j)*(H22  + Tp(i,j)*(H23
+     &       + Tp(i,j)*(H24 + Tp(i,j)*(H25 + Tp(i,j)*H26)))))
+     &       +  x*(H30 + (Tp(i,j)*(H31  + Tp(i,j)*(H32
+     &       + Tp(i,j)*(H33 + Tp(i,j)* H34)))
+     &       + x*(H40 + (Tp(i,j)*(H41 + Tp(i,j)*(H42 + Tp(i,j)*(H43
+     &       + Tp(i,j)*(H44 + Tp(i,j)*H45))))
+     &       + x*(H50 + x*(H60 + x* H70)) )) )) )) )
+       ENDDO
+      ENDDO
 
       RETURN
       END
 
-C     > Return the partial derivative of conservative temperature with
-C     potential temperature [nondim] based on the polynomial
-C     expressions from TEOS-10.
-      _RL function dTc_dTp(T, Sa)
-      implicit none
-#include "SIZE.h"
-#include "EOS.h"
-      _RL T     !< Potential temperature [degC]
-      _RL Sa    !< Absolute salinity [g kg-1]
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C Local variables
-C     Absolute salinity normalized by a plausible salinity range [nondim]
-      _RL x2
-C     Square root of normalized absolute salinity [nondim]
-      _RL x
+CBOP
+C !ROUTINE: CONVERT_CT2PT
 
-      x2 = MAX(I_S0 * Sa, 0.0)
-#ifdef ALLOW_AUTODIFF
-      x = 0. _ d 0
-      IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
-#else
-      x = SQRT(x2)
-#endif
+C !INTERFACE:
+      SUBROUTINE CONVERT_CT2PT(
+     I         Tc, Sa,
+     O         Tp,
+     I         myTime, myIter, myThid )
 
-      dTc_dTp = (     H01 + T*(2.*H02 + T*(3.*H03 + T*(4.*H04
-     &     + T*(5.*H05 + T*(6.*H06 + T*(7.*H07)))))) )
-     &     + x2*(     (H21 + T*(2.*H22 + T*(3.*H23 + T*(4.*H24
-     &     + T*(5.*H25 + T*(6.*H26))))))
-     &     +  x*(  (H31 + T*(2.*H32 + T*(3.*H33 + T*(4.*H34))))
-     &     + x*(H41 + T*(2.*H42 + T*(3.*H43
-     &     + T*(4.*H44 + T*(5.*H45))))) ) )
+C     !DESCRIPTION:
+C     Convert input potential temperature (degC) and absolute salinity
+C     (g kg-1) to returned conservative temperature (degC) by inverting
+C     the polynomial expressions from TEOS-10.
 
-      RETURN
-      END
-
-C     > Convert input potential temperature [degC] and absolute salinity
-C     [g kg-1] to returned conservative temperature [degC] by
-C     inverting the polynomial expressions from TEOS-10.
-      _RL FUNCTION consTemp_to_poTemp(Tc, Sa)
-
+C     !USES:
       IMPLICIT NONE
+C     == Global variables ===
 #include "SIZE.h"
 #include "EOS.h"
-      _RL Tc    !< Conservative temperature [degC]
-      _RL Sa    !< Absolute salinity [g kg-1]
 
-      _RL poTemp_to_consTemp, dTc_dTp
-      EXTERNAL poTemp_to_consTemp, dTc_dTp
+C     !INPUT/OUTPUT PARAMETERS:
+C     Tc        :: Conservative temperature (degC)
+C     Sa        :: Absolute salinity        (g kg-1)
+C     Tp        :: potential temperature (degC)
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
+      _RL Tc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Sa(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Tp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL myTime
+      INTEGER myIter, myThid
+CEOP
 
-      _RL Tp
-C     The numerator  of a simple expression for potential temperature [degC]
+C     !LOCAL VARIABLES:
+      INTEGER i,j
+C     The numerator of a simple expression for potential temperature (degC)
       _RL Tp_num
 C     The inverse of the denominator of a simple expression for
-C     potential temperature [nondim]
+C     potential temperature (nondim)
       _RL I_Tp_den
 C     The difference between an estimate of conservative temperature and
-C     its target [degC]
-      _RL Tc_diff
-C     A previous estimate of the potential tempearture [degC]
+C     its target (degC)
+      _RL Tc_diff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     A previous estimate of the potential tempearture (degC)
       _RL Tp_old
 C     The partial derivative of potential temperature with conservative
-C     temperature [nondim]
-      _RL dTp_dTc
+C     temperature and inverse (nondim)
+      _RL dTp_dTc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dTc_dTp
+C     Absolute salinity normalized by a plausible salinity range and its
+C     square root (nondim)
+      _RL x2, x
+C     intermediate temperature (degC)
+      _RL Tmp
 
 C     The following are coefficients in the nominator (TPNxx) or
 C     denominator (TPDxx) of a simple rational expression that
 C     approximately converts conservative temperature to potential
 C     temperature.
-      _RL TPN00 ! Simple fit numerator constant [degC]
-      _RL TPN10 ! Simple fit numerator Sa coef. [degC ppt-1]
-      _RL TPN20 ! Simple fit numerator Sa**2 coef. [degC ppt-2]
-      _RL TPN01 ! Simple fit numerator Tc coef. [nondim]
-      _RL TPN11 ! Simple fit numerator Sa * Tc coef. [ppt-1]
-      _RL TPN02 ! Simple fit numerator Tc**2 coef. [degC-1]
-      _RL TPD10 ! Simple fit denominator Sa coef. [ppt-1]
-      _RL TPD01 ! Simple fit denominator Tc coef. [degC-1]
-      _RL TPD02 ! Simple fit denominator Tc**2 coef. [degC-2]
+      _RL TPN00 ! Simple fit numerator constant (degC)
+      _RL TPN10 ! Simple fit numerator Sa coef. (degC ppt-1)
+      _RL TPN20 ! Simple fit numerator Sa**2 coef. (degC ppt-2)
+      _RL TPN01 ! Simple fit numerator Tc coef. (nondim)
+      _RL TPN11 ! Simple fit numerator Sa * Tc coef. (ppt-1)
+      _RL TPN02 ! Simple fit numerator Tc**2 coef. (degC-1)
+      _RL TPD10 ! Simple fit denominator Sa coef. (ppt-1)
+      _RL TPD01 ! Simple fit denominator Tc coef. (degC-1)
+      _RL TPD02 ! Simple fit denominator Tc**2 coef. (degC-2)
 
       PARAMETER (
      &     TPN00 = -1.446013646344788e-2,
@@ -305,32 +330,66 @@ C     temperature.
      &     TPD02 =  1.247811760368034e-6
      &     )
 
-C--   Estimate the potential temperature and its derivative from an C
-C     approximate rational function fit.
-      Tp_num = TPN00 + (Sa*(TPN10 + TPN20*Sa)
-     &     + Tc*(TPN01 + (TPN11*Sa + TPN02*Tc)))
-      I_Tp_den = 1.0 / (1.0 + (TPD10*Sa + Tc*(TPD01 + TPD02*Tc)))
-      Tp = Tp_num*I_Tp_den
-      dTp_dTc = ((TPN01 + (TPN11*Sa + 2.*TPN02*Tc))
-     &     - (TPD01 + 2.*TPD02*Tc)*Tp)*I_Tp_den
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        Tp_num = TPN00 + (Sa(i,j)*(TPN10 + TPN20*Sa(i,j))
+     &       + Tc(i,j)*(TPN01 + (TPN11*Sa(i,j) + TPN02*Tc(i,j))))
+        I_Tp_den = 1.0 / (1.0
+     &       + (TPD10*Sa(i,j) + Tc(i,j)*(TPD01 + TPD02*Tc(i,j))))
+        Tp(i,j) = Tp_num*I_Tp_den
+        dTp_dTc(i,j) = ((TPN01 + (TPN11*Sa(i,j) + 2.*TPN02*Tc(i,j)))
+     &       - (TPD01 + 2.*TPD02*Tc(i,j))*Tp(i,j))*I_Tp_den
+       ENDDO
+      ENDDO
 
 C--   Start the 1.5 iterations through the modified Newton-Raphson
 C     iterative method, which is also known as the Newton-McDougall
 C     method.  In this case 1.5 iterations converge to 64-bit machine
 C     precision for oceanographically relevant temperatures and
 C     salinities.
+      CALL CONVERT_PT2CT (
+     I     Tp, Sa,
+     O     Tc_diff,
+     I     myTime, myIter, myThid )
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        Tc_diff(i,j) = Tc_diff(i,j) - Tc(i,j)
+        Tp_old = Tp(i,j)
+        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
 
-      Tc_diff = poTemp_to_consTemp(Tp, Sa) - Tc
-      Tp_old = Tp
-      Tp = Tp_old - Tc_diff*dTp_dTc
+C--   Estimate the potential temperature and its derivative from an C
+C     approximate rational function fit.
+        x2 = MAX(I_S0 * Sa(i,j), 0.0)
+#ifdef ALLOW_AUTODIFF
+        x = 0. _ d 0
+        IF ( x2 .GT. 0. _d 0 ) x = SQRT(x2)
+#else
+        x = SQRT(x2)
+#endif
+        Tmp = 0.5*(Tp(i,j) + Tp_old)
+        dTc_dTp = (     H01 + Tmp*(2.*H02 + Tmp*(3.*H03 + Tmp*(4.*H04
+     &       + Tmp*(5.*H05 + Tmp*(6.*H06 + Tmp*(7.*H07)))))) )
+     &       + x2*(     (H21 + Tmp*(2.*H22 + Tmp*(3.*H23 + Tmp*(4.*H24
+     &       + Tmp*(5.*H25 + Tmp*(6.*H26))))))
+     &       +  x*(  (H31 + Tmp*(2.*H32 + Tmp*(3.*H33 + Tmp*(4.*H34))))
+     &       + x*(H41 + Tmp*(2.*H42 + Tmp*(3.*H43
+     &       + Tmp*(4.*H44 + Tmp*(5.*H45))))) ) )
+        dTp_dTc(i,j) = 1.0 / dTc_dTp
 
-      dTp_dTc = 1.0 / dTc_dTp(0.5*(Tp + Tp_old), Sa)
-
-      Tp = Tp_old - Tc_diff*dTp_dTc
-      Tc_diff = poTemp_to_consTemp(Tp, Sa) - Tc
-      Tp_old = Tp
-
-      consTemp_to_poTemp = Tp_old - Tc_diff*dTp_dTc
+        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
+       ENDDO
+      ENDDO
+      CALL CONVERT_PT2CT (
+     I     Tp, Sa,
+     O     Tc_diff,
+     I     myTime, myIter, myThid )
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        Tc_diff(i,j) = Tc_diff(i,j) - Tc(i,j)
+        Tp_old = Tp(i,j)
+        Tp(i,j) = Tp_old - Tc_diff(i,j)*dTp_dTc(i,j)
+       ENDDO
+      ENDDO
 
       RETURN
       END
