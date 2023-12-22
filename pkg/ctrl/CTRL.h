@@ -14,30 +14,22 @@ C     | o started: Christian Eckert eckert@mit.edu  30-Jun-1999
 C     *================================================================*
 CEOP
 
+C--   set maximum number of control variables:
       INTEGER     maxcvars
-      PARAMETER ( maxcvars = 0
-#ifdef ALLOW_GENARR2D_CONTROL
-     &     + maxCtrlArr2D
+#ifdef ALLOW_OBCS_CONTROL
+      PARAMETER( maxcvars = 4
+#else
+      PARAMETER( maxcvars = 0
 #endif
-#ifdef ALLOW_GENARR3D_CONTROL
-     &     + maxCtrlArr3D
+     &         + maxCtrlArr2D + maxCtrlArr3D + maxCtrlTim2D )
+
+#ifdef READ_OLD_CTRL_PACK_FILE
+C--   Just to enable to read-in old packed-ctrl file (specially the header):
+C     set "old_maxcvars" to previous maxcvars value that was used to write
+C     this specific old (prior to PR #796) packed-ctrl file
+      INTEGER old_maxcvars
+      PARAMETER( old_maxcvars = 400 )
 #endif
-#ifdef ALLOW_GENTIM2D_CONTROL
-     &     + maxCtrlTim2D
-#endif
-#ifdef ALLOW_OBCSN_CONTROL
-     &     + 1
-#endif
-#ifdef ALLOW_OBCSS_CONTROL
-     &     + 1
-#endif
-#ifdef ALLOW_OBCSE_CONTROL
-     &     + 1
-#endif
-#ifdef ALLOW_OBCSW_CONTROL
-     &     + 1
-#endif
-     &     )
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be
@@ -144,10 +136,10 @@ C                            (only used in pkg/autodiff ...)
 #endif /* ALLOW_SHELFICE */
 
       COMMON /controlvars_c/
-     &                       ncvargrd
-     &                     , ncvartype
-     &                     , ncvarfname
-     &                     , yadprefix
+     &                       ncvargrd,
+     &                       ncvartype,
+     &                       ncvarfname,
+     &                       yadprefix
       CHARACTER*(1)            ncvargrd  ( maxcvars )
       CHARACTER*(5)            ncvartype ( maxcvars )
       CHARACTER*(MAX_LEN_FNAM) ncvarfname( maxcvars )
@@ -214,6 +206,6 @@ C
      &                maxCtrlArr3D)
 # endif
 
-#endif
+#endif /* ALLOW_OPENAD */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
