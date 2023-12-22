@@ -1,23 +1,21 @@
 #include "CTRL_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CTRL_INIT_FIXED
+C     !INTERFACE:
+      SUBROUTINE CTRL_INIT_FIXED( myThid )
 
-      subroutine ctrl_init_fixed( myThid )
+C     !DESCRIPTION: \bv
+C     *=================================================================
+C     | SUBROUTINE CTRL_INIT_FIXED
+C     | o Define the vector of control variables
+C     *=================================================================
+C     \ev
 
-c     ==================================================================
-c     SUBROUTINE ctrl_init_fixed
-c     ==================================================================
-c
-c     o The vector of control variables is defined here.
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_init_fixed
-c     ==================================================================
-
+C     !USES:
       IMPLICIT NONE
 
-c     == global variables ==
-
+C     === Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -35,25 +33,29 @@ c     == global variables ==
 # include "DIC_CTRL.h"
 #endif
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid     :: my Thread Id number
+      INTEGER myThid
 
-      integer myThid
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer ivar
-      LOGICAL costfinal_exists
-
-      _RL dummy
-      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-
+C     !FUNCTIONS:
+#ifdef ALLOW_GENTIM2D_CONTROL
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
 #ifdef ALLOW_OBCS_CONTROL_MODES
-      INTEGER  length_of_rec,dUnit
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
 #endif
+
+C     !LOCAL VARIABLES:
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER bi, bj
+      INTEGER i, j, k
+      INTEGER ivar
+      LOGICAL costfinal_exists
+      _RL dummy
+      _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if ( defined ALLOW_GENTIM2D_CONTROL || \
       defined ALLOW_GENARR2D_CONTROL || \
@@ -69,16 +71,15 @@ c     == local variables ==
       INTEGER diffrec, startrec, endrec
 #endif
 
-c     == external ==
-#ifdef ALLOW_GENTIM2D_CONTROL
-      integer  ilnblnk
-      external ilnblnk
+#ifdef ALLOW_OBCS_CONTROL_MODES
+      INTEGER  length_of_rec, dUnit
 #endif
+CEOP
 
-c     == end of interface ==
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-c--     Set default values.
-      do ivar = 1,maxcvars
+C--     Set default values.
+      DO ivar = 1,maxcvars
        ncvarindex(ivar) = -1
        ncvarrecs(ivar)  =  0
        ncvarxmax(ivar)  =  0
@@ -87,26 +88,24 @@ c--     Set default values.
        ncvargrd(ivar)   = '?'
        ncvartype(ivar)  = '?'
        ncvarfname(ivar) = ' '
-      enddo
+      ENDDO
 
-c     Set unit weight to 1
-c
-
-      do bj=1,nSy
-         do bi=1,nSx
-            do k=1,Nr
-             wunit(k,bi,bj) = 1. _d 0
-             do j=1-OLy,sNy+OLy
-              do i=1-OLx,sNx+OLx
-               loctmp3d(i,j,k,bi,bj) = 1. _d 0
-              enddo
-             enddo
-            enddo
-         enddo
-      enddo
+C     Set unit weight to 1
+      DO bj=1,nSy
+       DO bi=1,nSx
+        DO k=1,Nr
+          wunit(k,bi,bj) = 1. _d 0
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             loctmp3d(i,j,k,bi,bj) = 1. _d 0
+           ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_AUTODIFF
-      call active_write_xyz( 'wunit', loctmp3d, 1, 0, myThid, dummy)
+      CALL active_write_xyz( 'wunit', loctmp3d, 1, 0, myThid, dummy)
 #else
       CALL WRITE_REC_XYZ_RL( 'wunit', loctmp3d, 1, 1, myThid )
 #endif
@@ -118,173 +117,174 @@ c     _BEGIN_MASTER( myThid )
       inquire( file='costfinal', exist=costfinal_exists )
 c     _END_MASTER( myThid )
 
-c-- for DIVA, avoid forward-related output in adjoint part
+C-- for DIVA, avoid forward-related output in adjoint part
       IF ( costfinal_exists ) CALL TURNOFF_MODEL_IO( 1, myThid )
 #endif
 
       _BARRIER
 
       ivar = 0
-c--   ===========================
-c--   Open boundary contributions.
-c--   ===========================
+C--   ===========================
+C--   Open boundary contributions.
+C--   ===========================
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_OBCSN_CONTROL
-c--   Northern obc.
-      call ctrl_init_rec ( xx_obcsn_file,
+C--   Northern obc.
+      CALL ctrl_init_rec ( xx_obcsn_file,
      I     xx_obcsnstartdate1, xx_obcsnstartdate2, xx_obcsnperiod, 4,
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar + 1
-      call ctrl_init_ctrlvar (
+      CALL ctrl_init_ctrlvar (
      I     xx_obcsn_file, ivar, 1, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_OBCSS_CONTROL
-c--   Southern obc.
-      call ctrl_init_rec ( xx_obcss_file,
+C--   Southern obc.
+      CALL ctrl_init_rec ( xx_obcss_file,
      I     xx_obcssstartdate1, xx_obcssstartdate2, xx_obcssperiod, 4,
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
-      call ctrl_init_ctrlvar (
+      CALL ctrl_init_ctrlvar (
      I     xx_obcss_file, ivar, 2, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_OBCSW_CONTROL
-c--   Western obc.
-      call ctrl_init_rec ( xx_obcsw_file,
+C--   Western obc.
+      CALL ctrl_init_rec ( xx_obcsw_file,
      I     xx_obcswstartdate1, xx_obcswstartdate2, xx_obcswperiod, 4,
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
-      call ctrl_init_ctrlvar (
+      CALL ctrl_init_ctrlvar (
      I     xx_obcsw_file, ivar, 4, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_OBCSE_CONTROL
-c--   Eastern obc.
-      call ctrl_init_rec ( xx_obcse_file,
+C--   Eastern obc.
+      CALL ctrl_init_rec ( xx_obcse_file,
      I     xx_obcsestartdate1, xx_obcsestartdate2, xx_obcseperiod, 4,
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
-      call ctrl_init_ctrlvar (
+      CALL ctrl_init_ctrlvar (
      I     xx_obcse_file, ivar, 3, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_OBCS_CONTROL_MODES
-cih  Get matrices for reconstruction from barotropic-barclinic modes
+Cih  Get matrices for reconstruction from barotropic-barclinic modes
 CMM  To use modes now hardcoded with ECCO_CPPOPTION.  Would be good to have
-c     run-time option and also define filename=baro_invmodes.bin
+C     run-time option and also define filename=baro_invmodes.bin
         CALL MDSFINDUNIT( dUnit, myThid )
-        length_of_rec = MDS_RECLEN( 64, NR*NR, myThid )
-        open(dUnit, file='baro_invmodes.bin', status='old',
-     &         access='direct', recl=length_of_rec )
-        do j = 1,Nr
-           read(dUnit,rec=j) ((modesv(k,i,j), k=1,Nr), i=1,Nr)
-        end do
+        length_of_rec = MDS_RECLEN( 64, Nr*Nr, myThid )
+        OPEN( dUnit, FILE='baro_invmodes.bin', STATUS='old',
+     &         ACCESS='direct', RECL=length_of_rec )
+        DO j = 1,Nr
+           READ(dUnit,rec=j) ((modesv(k,i,j), k=1,Nr), i=1,Nr)
+        ENDDO
         CLOSE( dUnit )
 CMM  double precision modesv is size [NR,NR,NR]
-c     dim one is z-space
-c     dim two is mode space
-c     dim three is the total depth for which this set of modes applies
-c     so for example modesv(:,2,nr) will be the second mode
-c     in z-space for the full model depth
-c    The modes are to be orthogonal when weighted by dz.
-c     i.e. if f_i(z) = mode i, sum_j(f_i(z_j)*f_j(z_j)*dz_j = delta_ij
-c    first mode should also be constant in depth...barotropic
-c    For a matlab code example how to construct the orthonormal modes,
-c     which are ideally the solution of planetary vertical mode equation
-c     using model mean dRho/dz, see
-c     MITgcm/verification/obcs_ctrl/input/gendata.m
-c    This code is compatible with partial cells
+C     dim one is z-space
+C     dim two is mode space
+C     dim three is the total depth for which this set of modes applies
+C     so for example modesv(:,2,nr) will be the second mode
+C     in z-space for the full model depth
+C    The modes are to be orthogonal when weighted by dz.
+C     i.e. if f_i(z) = mode i, sum_j(f_i(z_j)*f_j(z_j)*dz_j = delta_ij
+C    first mode should also be constant in depth...barotropic
+C    For a matlab code example how to construct the orthonormal modes,
+C     which are ideally the solution of planetary vertical mode equation
+C     using model mean dRho/dz, see
+C     MITgcm/verification/obcs_ctrl/input/gendata.m
+C    This code is compatible with partial cells
 #endif
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_GENARR2D_CONTROL
-       do iarr = 1, maxCtrlArr2D
-        ncvargrdtmp='c'
+      DO iarr = 1, maxCtrlArr2D
+       ncvargrdtmp='c'
 # ifdef ALLOW_SHELFICE
-C       Under iceshelf, use maskSHI for these
-        if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
-     &      (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
-            ncvargrdtmp='i'
-        endif
+C      Under iceshelf, use maskSHI for these
+       IF ((xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicoeff').OR.
+     &     (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')) THEN
+         ncvargrdtmp='i'
+       ENDIF
 # endif
 
+#ifndef ALLOW_OPENAD
+       IF (xx_genarr2d_weight(iarr).NE.' ') THEN
+#endif
         ivar = ivar+1
-# ifndef ALLOW_OPENAD
-        if (xx_genarr2d_weight(iarr).NE.' ')
-     &  call ctrl_init_ctrlvar (
-# else
-        call ctrl_init_ctrlvar (
-# endif
+        CALL ctrl_init_ctrlvar (
      I       xx_genarr2d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, 1, ncvargrdtmp, 'Arr2D', costfinal_exists,
      I       myThid )
-
-       enddo
+#ifndef ALLOW_OPENAD
+       ENDIF
+#endif
+      ENDDO
 #endif /* ALLOW_GENARR2D_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_GENARR3D_CONTROL
-       do iarr = 1, maxCtrlArr3D
-        ncvargrdtmp='c'
-        ivar = ivar+1
+      DO iarr = 1, maxCtrlArr3D
+       ncvargrdtmp='c'
 #ifndef ALLOW_OPENAD
-        if (xx_genarr3d_weight(iarr).NE.' ')
-     &  call ctrl_init_ctrlvar (
-#else
-        call ctrl_init_ctrlvar (
+       IF (xx_genarr3d_weight(iarr).NE.' ') THEN
 #endif
+        ivar = ivar+1
+        CALL ctrl_init_ctrlvar (
      I       xx_genarr3d_file(iarr),
      I       ivar, iarr, 1, 1, 1,
      I       sNx, sNy, Nr, ncvargrdtmp, 'Arr3D', costfinal_exists,
      I       myThid )
-       enddo
+#ifndef ALLOW_OPENAD
+       ENDIF
+#endif
+      ENDDO
 #endif /* ALLOW_GENARR3D_CONTROL */
 
-c----------------------------------------------------------------------
-c--
+C----------------------------------------------------------------------
+
 #ifdef ALLOW_GENTIM2D_CONTROL
-       do iarr = 1, maxCtrlTim2D
+      DO iarr = 1, maxCtrlTim2D
 
 #ifdef ALLOW_CAL
-        if (xx_gentim2d_startdate1(iarr).EQ.0) then
+       IF (xx_gentim2d_startdate1(iarr).EQ.0) THEN
           xx_gentim2d_startdate1(iarr)=startdate_1
           xx_gentim2d_startdate2(iarr)=startdate_2
-        endif
+       ENDIF
 #endif
-        ncvargrdtmp='c'
+       ncvargrdtmp='c'
 # ifdef ALLOW_SHELFICE
-C       Under iceshelf, use maskSHI for these
-        if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx')
+C      Under iceshelf, use maskSHI for these
+       IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_shifwflx')
      &       ncvargrdtmp='i'
 # endif
-        if (xx_gentim2d_file(iarr)(1:5).eq.'xx_fu')
+       IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fu')
      &       ncvargrdtmp='w'
-        if (xx_gentim2d_file(iarr)(1:5).eq.'xx_fv')
+       IF (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fv')
      &       ncvargrdtmp='s'
 
-        call ctrl_init_rec ( xx_gentim2d_file(iarr),
+       CALL ctrl_init_rec ( xx_gentim2d_file(iarr),
      I       xx_gentim2d_startdate1(iarr),
      I       xx_gentim2d_startdate2(iarr),
      I       xx_gentim2d_period(iarr),
@@ -292,87 +292,94 @@ C       Under iceshelf, use maskSHI for these
      O       xx_gentim2d_startdate(1,iarr),
      O       diffrec, startrec, endrec,
      I       myThid )
-C
 
 #ifndef ALLOW_OPENAD
-        if (xx_gentim2d_weight(iarr).NE.' ') then
+       IF (xx_gentim2d_weight(iarr).NE.' ') THEN
 #endif
-        do k2 = 1, maxCtrlProc
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'replicate')
-     &   xx_gentim2d_preproc(k2,iarr)='docycle'
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'doglomean')
-     &   xx_gentim2d_glosum(iarr)     = .TRUE.
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'documul')
-     &   xx_gentim2d_cumsum(iarr)     = .TRUE.
-        enddo
-C
+        DO k2 = 1, maxCtrlProc
+         IF (xx_gentim2d_preproc(k2,iarr).EQ.'replicate')
+     &    xx_gentim2d_preproc(k2,iarr)='docycle'
+         IF (xx_gentim2d_preproc(k2,iarr).EQ.'doglomean')
+     &    xx_gentim2d_glosum(iarr)     = .TRUE.
+         IF (xx_gentim2d_preproc(k2,iarr).EQ.'documul')
+     &    xx_gentim2d_cumsum(iarr)     = .TRUE.
+        ENDDO
+
         diffrecFull=diffrec
         endrecFull=endrec
-        do k2 = 1, maxCtrlProc
-         if (xx_gentim2d_preproc(k2,iarr).EQ.'docycle') then
-           if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
+        DO k2 = 1, maxCtrlProc
+          IF (xx_gentim2d_preproc(k2,iarr).EQ.'docycle') THEN
+           IF (xx_gentim2d_preproc_i(k2,iarr).NE.0) THEN
             diffrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
             endrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
-           endif
-         endif
-        enddo
-C
+           ENDIF
+          ENDIF
+        ENDDO
+
         ivar = ivar+1
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen,'(2a)')
+        ilgen = ILNBLNK( xx_gentim2d_file(iarr) )
+        WRITE(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
-        call ctrl_init_ctrlvar (
+        CALL ctrl_init_ctrlvar (
      I       fnamegen,
      I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
-C
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
-        write(fnamegen,'(2a)')
+
+        WRITE(fnamegen,'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
-        call ctrl_init_ctrlvar (
+        CALL ctrl_init_ctrlvar (
      I       fnamegen,
      I       ivar, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
-C
+
 C     The length of adxx-files needs to be 1:endrec
-        call ctrl_init_ctrlvar (
+        CALL ctrl_init_ctrlvar (
      I       xx_gentim2d_file(iarr),
      I       ivar, iarr,
      I       endrec, 1, endrec,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
-C
+
 #ifndef ALLOW_OPENAD
-       endif
+       ENDIF
 #endif
-C
-       enddo
+
+      ENDDO
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
-c----------------------------------------------------------------------
+C----------------------------------------------------------------------
 
-      call ctrl_init_wet( myThid )
+C--   short report before calling INIT_WET:
+      WRITE(msgBuf,'(2A,I4,A)') 'CTRL_INIT_FIXED: ',
+     &     'ivar=', ivar, ' = number of CTRL variables defined'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-c----------------------------------------------------------------------
+C----------------------------------------------------------------------
+
+      CALL CTRL_INIT_WET( myThid )
 
 #ifdef ALLOW_DIC_CONTROL
-      do i = 1, dic_n_control
+      DO i = 1, dic_n_control
        xx_dic(i) = 0. _d 0
-      enddo
+      ENDDO
 #endif
 
-c----------------------------------------------------------------------
+C----------------------------------------------------------------------
 
       _BARRIER
 
-c--   Summarize the cost function setup.
+C--   Summarize the CTRL package setup.
       _BEGIN_MASTER( myThid )
-      call ctrl_summary( myThid )
+      CALL CTRL_SUMMARY( myThid )
       _END_MASTER( myThid )
 
-      return
-      end
+      RETURN
+      END
