@@ -49,6 +49,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 
@@ -144,10 +145,16 @@ C--   conservative temperature to in-situ surface temperature
       IF ( eosType .EQ. 'TEOS10' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL CONVERT_CT2PT(
+     I         theta(1-OLx,1-OLy,ks,bi,bj),
+     I         salt(1-OLx,1-OLy,ks,bi,bj),
+     O         seaSurfTemp(1-OLx,1-OLy,bi,bj),
+     I         myTime, myIter, myThid )
+C     appy mask (because theta=0 will lead to seaSurfTemp<0)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            seaSurfTemp(i,j,bi,bj) = consTemp_to_poTemp(
-     &           theta(i,j,ks,bi,bj), salt(i,j,ks,bi,bj))
+            seaSurfTemp(i,j,bi,bj) =
+     &           seaSurfTemp(i,j,bi,bj)*maskInC(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO
