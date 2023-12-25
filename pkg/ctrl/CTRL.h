@@ -129,10 +129,9 @@ C                            (only used in pkg/autodiff ...)
 
 #ifdef ALLOW_SHELFICE
       COMMON /controlvars_i_shifwflx/
-     &     nwetitile, nwetiglobal, filenWetiGlobal
+     &     nwetitile, nwetiglobal
       INTEGER nwetitile     ( nSx,nSy,Nr )
       INTEGER nwetiglobal     ( Nr )
-      INTEGER filenWetiGlobal(Nr)
 #endif /* ALLOW_SHELFICE */
 
       COMMON /controlvars_c/
