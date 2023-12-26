@@ -1,4 +1,3 @@
-
 #include "CTRL_OPTIONS.h"
 
 cph #ifdef TARGET_CRAY_VECTOR
@@ -74,6 +73,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "optim.h"
 #include "minimization.h"
