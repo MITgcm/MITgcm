@@ -1,0 +1,75 @@
+
+#***********************************************************************
+# Makefile Template for the ECCO off-line large scale optimization.
+#  started: Patrick Heimbach heimbach@mit.edu 19-Jun-2000
+#***********************************************************************
+
+# The optimization routines.
+SRC        =	optim_main.F			\
+		optim_sub.F			\
+		optim_numbmod.F			\
+		optim_initmod.F			\
+		optim_readdata.F		\
+		optim_writedata.F		\
+		ctrl_convert_header.F		\
+		optim_write_control.F		\
+		xerbla.F                        \
+		simul.F
+
+EXEDIR     = .
+TOOLSDIR   = ../tools
+
+INCLUDES   = -I. -I_GET_BLD_DIR
+
+EXTRA_OPT  = _GET_EXTRA_OPT
+EXECUTABLE = $(EXEDIR)/optim.x
+
+# CPP preprocessor command:
+_GET_CPPCMD
+
+# The CPP flags.
+DEFINES    = -DREAL_BYTE=4	-DMAX_INDEPEND=1000000		\
+		-D$(EXTRA_OPT)
+
+# FORTRAN compiler and flags.
+_GET_FC
+_GET_FFLAGS
+_GET_FOPTIM
+
+# Lib path and libs
+LIBDIRS    = -L.  -L../lsopt/
+LIBS       = -llsopt_ecco -lblas
+
+# File removal.
+RM         = rm -f
+
+#--- rules ----
+
+SMALLF     = $(SRC:.F=.f)
+OBJECTS    = $(SRC:.F=.o)
+
+.SUFFIXES: .o .f .F
+
+all: small_f $(EXECUTABLE)
+$(EXECUTABLE): $(OBJECTS)
+	$(FC) -o $@ $(FFLAGS) $(FOPTIM) $(OBJECTS) $(LIBDIRS) $(LIBS)
+
+small_f: $(SMALLF)
+
+depend:
+	makedepend -o .f $(INCLUDES) $(SRC)
+
+# The normal chain of rules is (  .F - .f - .o  )
+.F.f:
+	$(CPPCMD) > $@
+.f.o:
+	$(FC) $(FFLAGS) $(FOPTIM) -c $<
+
+# Cleaning options.
+clean:
+	$(RM) $(EXEDIR)/optim.x *.o *.f
+
+scratch:
+	$(RM) OPWARMD OPWARMI $(EXEDIR)/optim.x $(OBJ)
+
+# DO NOT DELETE
