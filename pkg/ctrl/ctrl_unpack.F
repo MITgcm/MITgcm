@@ -98,7 +98,7 @@ C     they are not used.
       INTEGER file_nWetcGlobal(Nr)
       INTEGER file_nWetsGlobal(Nr)
       INTEGER file_nWetwGlobal(Nr)
-      INTEGER file_nWetvGlobal(Nr)
+c     INTEGER file_nWetvGlobal(Nr)
 #ifdef ALLOW_SHELFICE
       INTEGER file_nWetiGlobal(Nr)
 #endif
@@ -140,7 +140,7 @@ c--   Initialise
        file_nWetcGlobal(k) = 0
        file_nWetsGlobal(k) = 0
        file_nWetwGlobal(k) = 0
-       file_nWetvGlobal(k) = 0
+c      file_nWetvGlobal(k) = 0
       ENDDO
       DO ivar = 1, maxLocal
        file_varIndex(ivar) = 0
@@ -205,9 +205,9 @@ c--       Header information.
           read(cunit) (file_nWetcGlobal(k), k=1,Nr)
           read(cunit) (file_nWetsGlobal(k), k=1,Nr)
           read(cunit) (file_nWetwGlobal(k), k=1,Nr)
-#ifdef ALLOW_CTRL_WETV
-          read(cunit) (file_nWetvGlobal(k), k=1,Nr)
-#endif
+c#ifdef ALLOW_CTRL_WETV
+c         read(cunit) (file_nWetvGlobal(k), k=1,Nr)
+c#endif
 #ifdef ALLOW_SHELFICE
           read(cunit) (file_nWetiGlobal(k), k=1,Nr)
 c         read(cunit)  file_nWetiGlobal(1)
@@ -252,14 +252,14 @@ C--       Check file header info.
           endif
           do k = 1, Nr
              if ( file_nWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
+c    &            file_nWetvGlobal(k) .NE. nWetvGlobal(k) .OR.
      &            file_nWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
-     &            file_nWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
-     &            file_nWetvGlobal(k) .NE. nWetvGlobal(k)  ) then
+     &            file_nWetwGlobal(k) .NE. nWetwGlobal(k)  ) then
                 print *, 'WARNING: wrong nWet?Global for k = ', k
                 print *, 'c', file_nWetcGlobal(k), nWetcGlobal(k)
                 print *, 's', file_nWetsGlobal(k), nWetsGlobal(k)
                 print *, 'w', file_nWetwGlobal(k), nWetwGlobal(k)
-                print *, 'v', file_nWetvGlobal(k), nWetvGlobal(k)
+c               print *, 'v', file_nWetvGlobal(k), nWetvGlobal(k)
                 STOP
              endif
           end do

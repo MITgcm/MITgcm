@@ -159,9 +159,9 @@ C     place holder of obsolete variable jG
           write(cunit) (nWetcGlobal(k), k=1,Nr)
           write(cunit) (nWetsGlobal(k), k=1,Nr)
           write(cunit) (nWetwGlobal(k), k=1,Nr)
-#ifdef ALLOW_CTRL_WETV
-          write(cunit) (nWetvGlobal(k), k=1,Nr)
-#endif
+c#ifdef ALLOW_CTRL_WETV
+c         write(cunit) (nWetvGlobal(k), k=1,Nr)
+c#endif
 #ifdef ALLOW_SHELFICE
           write(cunit) (nWetiGlobal(k), k=1,Nr)
 c          write(cunit) nWetiGlobal(1)

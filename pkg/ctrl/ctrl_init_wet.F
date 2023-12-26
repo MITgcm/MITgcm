@@ -45,9 +45,9 @@ c     == local variables ==
       integer ntmpob(nobcs)
       CHARACTER*(MAX_LEN_FNAM) ymaskobcs
 #endif
-#ifdef ALLOW_EFLUXP0_CONTROL
-      _RL dummy
-#endif /* ALLOW_EFLUXP0_CONTROL */
+c#ifdef REAL4_IS_SLOW
+c     _RL dummy
+c#endif
       _RS dummyRS
       CHARACTER*(MAX_LEN_MBUF) msgbuf
 
@@ -121,12 +121,6 @@ c--             West mask.
                 if (maskW(i,j,k,bi,bj) .eq. 1.) then
                   nwetwtile(bi,bj,k) = nwetwtile(bi,bj,k) + 1
                 endif
-#if (defined (ALLOW_EFLUXP0_CONTROL))
-c--             Vertical mask.
-                if (hFacV(i,j,k,bi,bj) .ne. 0.) then
-                  nwetvtile(bi,bj,k) = nwetvtile(bi,bj,k) + 1
-                endif
-#endif
 #ifdef ALLOW_SHELFICE
 c--             Ice shelf mask.
                 if (maskSHI(i,j,k,bi,bj) .eq. 1.) then
@@ -571,9 +565,6 @@ c#else
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlS', maskS, 'XY', Nr,
      I                          1, .FALSE., 0, myThid, dummyRS )
 c#endif
-#ifdef ALLOW_EFLUXP0_CONTROL
-      call active_write_xyz( 'maskhFacV', hFacV, 1, 0, myThid, dummy)
-#endif
 #ifdef ALLOW_SHELFICE
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, myThid, dummy)

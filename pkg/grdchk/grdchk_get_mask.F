@@ -94,14 +94,14 @@ C--   control variable on the current tile.
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'v' ) THEN
-        DO bj = jtlo,jthi
-         DO bi = itlo,ithi
-          DO k = 1,ncvarnrmax(grdchkvarindex)
-            nwettile(bi,bj,k,1) = nwetvtile(bi,bj,k)
-          ENDDO
-         ENDDO
-        ENDDO
+c     ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'v' ) THEN
+c       DO bj = jtlo,jthi
+c        DO bi = itlo,ithi
+c         DO k = 1,ncvarnrmax(grdchkvarindex)
+c           nwettile(bi,bj,k,1) = nwetvtile(bi,bj,k)
+c         ENDDO
+c        ENDDO
+c       ENDDO
 #ifdef ALLOW_SHELFICE
       ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'i' ) THEN
         DO bj = jtlo,jthi

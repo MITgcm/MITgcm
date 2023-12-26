@@ -122,7 +122,7 @@ c--         Generate file name and open the file.
        print *, prefix, 'nWetcGlobal ', (nWetcGlobal(k), k=1,Nr)
        print *, prefix, 'nWetsGlobal ', (nWetsGlobal(k), k=1,Nr)
        print *, prefix, 'nWetwGlobal ', (nWetwGlobal(k), k=1,Nr)
-       print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,Nr)
+c      print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,Nr)
        print *, prefix, 'ncvarindex ',  (ncvarindex(i), i=1,maxcvars)
        print *, prefix, 'ncvarrecs ',   (ncvarrecs(i),  i=1,maxcvars)
        print *, prefix, 'ncvarxmax ',   (ncvarxmax(i),  i=1,maxcvars)
@@ -144,9 +144,9 @@ c--   Write the header.
       write( funit ) (nWetcGlobal(k), k=1,Nr)
       write( funit ) (nWetsGlobal(k), k=1,Nr)
       write( funit ) (nWetwGlobal(k), k=1,Nr)
-#ifdef ALLOW_CTRL_WETV
-      write( funit ) (nWetvGlobal(k), k=1,Nr)
-#endif
+c#ifdef ALLOW_CTRL_WETV
+c     write( funit ) (nWetvGlobal(k), k=1,Nr)
+c#endif
 #ifdef ALLOW_SHIFWFLX_CONTROL
       write(funit) (nWetiGlobal(k),   k=1,Nr)
 c     write(funit) nWetiGlobal(1)
@@ -195,8 +195,8 @@ CML         write( funit ) bj
            cbuffindex = nWetsGlobal(k)
           else if (ncvargrd(ivar) .eq. 'w') then
            cbuffindex = nWetwGlobal(k)
-          else if (ncvargrd(ivar) .eq. 'v') then
-           cbuffindex = nWetvGlobal(k)
+c         else if (ncvargrd(ivar) .eq. 'v') then
+c          cbuffindex = nWetvGlobal(k)
 #ifdef ALLOW_SHIFWFLX_CONTROL
           else if (ncvargrd(ivar) .eq. 'i') then
            cbuffindex = nWetiGlobal(k)
