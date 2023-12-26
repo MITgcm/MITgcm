@@ -29,15 +29,13 @@ c     ==================================================================
 c     SUBROUTINE optim_writedata
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-# include "CTRL_SIZE.h"
-#endif
+#include "CTRL_SIZE.h"
 #ifdef ALLOW_OBCS_CONTROL
 # include "CTRL_OBCS.h"
 #endif
@@ -99,8 +97,8 @@ c--   Next optimization cycle.
        stop   '  ...  stopped in OPTIM_WRITEDATA.'
       endif
 
-      bjG = 1 + (myygloballo - 1)/sny
-      biG = 1 + (myxgloballo - 1)/snx
+      bjG = 1 + (myYGlobalLo - 1)/sNy
+      biG = 1 + (myXGlobalLo - 1)/sNx
 
 c--         Generate file name and open the file.
       write(fname(1:128),'(4a,i4.4)')
@@ -117,14 +115,14 @@ c--         Generate file name and open the file.
       print *, prefix, 'ff         ', ff
       print *, prefix, 'iG         ', biG
       print *, prefix, 'jG         ', bjG
-      print *, prefix, 'nsx        ', nsx
-      print *, prefix, 'nsy        ', nsy
+      print *, prefix, 'nSx        ', nSx
+      print *, prefix, 'nSy        ', nSy
 
       if ( printlists ) then
-       print *, prefix, 'nWetcGlobal ', (nWetcGlobal(k), k=1,nr)
-       print *, prefix, 'nWetsGlobal ', (nWetsGlobal(k), k=1,nr)
-       print *, prefix, 'nWetwGlobal ', (nWetwGlobal(k), k=1,nr)
-       print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,nr)
+       print *, prefix, 'nWetcGlobal ', (nWetcGlobal(k), k=1,Nr)
+       print *, prefix, 'nWetsGlobal ', (nWetsGlobal(k), k=1,Nr)
+       print *, prefix, 'nWetwGlobal ', (nWetwGlobal(k), k=1,Nr)
+       print *, prefix, 'nWetvGlobal ', (nWetvGlobal(k), k=1,Nr)
        print *, prefix, 'ncvarindex ',  (ncvarindex(i), i=1,maxcvars)
        print *, prefix, 'ncvarrecs ',   (ncvarrecs(i),  i=1,maxcvars)
        print *, prefix, 'ncvarxmax ',   (ncvarxmax(i),  i=1,maxcvars)
@@ -141,44 +139,45 @@ c--   Write the header.
       write( funit ) ff
       write( funit ) big
       write( funit ) bjg
-      write( funit ) nsx
-      write( funit ) nsy
-      write( funit ) (nWetcGlobal(k), k=1,nr)
-      write( funit ) (nWetsGlobal(k), k=1,nr)
-      write( funit ) (nWetwGlobal(k), k=1,nr)
+      write( funit ) nSx
+      write( funit ) nSy
+      write( funit ) (nWetcGlobal(k), k=1,Nr)
+      write( funit ) (nWetsGlobal(k), k=1,Nr)
+      write( funit ) (nWetwGlobal(k), k=1,Nr)
 #ifdef ALLOW_CTRL_WETV
-      write( funit ) (nWetvGlobal(k), k=1,nr)
+      write( funit ) (nWetvGlobal(k), k=1,Nr)
 #endif
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      write(funit) (nWetiGlobal(k),   k=1,nr)
+      write(funit) (nWetiGlobal(k),   k=1,Nr)
 c     write(funit) nWetiGlobal(1)
 #endif
 
 c     Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL
-      write(funit) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      write(funit) ((nWetobcsnGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      write(funit) ((nWetobcssGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      write(funit) ((nWetobcssGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      write(funit) ((nWetobcswGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      write(funit) ((nWetobcswGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      write(funit) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
+      write(funit) ((nWetobcseGlo(k,iobcs), k=1,Nr),iobcs= 1,nobcs)
 #endif
 
-      write( funit ) (ncvarindex(i), i=1,maxcvars)
-      write( funit ) (ncvarrecs(i),  i=1,maxcvars)
-      write( funit ) (ncvarxmax(i),  i=1,maxcvars)
-      write( funit ) (ncvarymax(i),  i=1,maxcvars)
-      write( funit ) (ncvarnrmax(i), i=1,maxcvars)
-      write( funit ) (ncvargrd(i),   i=1,maxcvars)
-      write( funit ) (ncvartype(i),  i=1,maxcvars)
+      write( funit ) (ncvarindex(ivar), ivar=1,nvartype)
+      write( funit ) (ncvarrecs(ivar),  ivar=1,nvartype)
+      write( funit ) (ncvarxmax(ivar),  ivar=1,nvartype)
+      write( funit ) (ncvarymax(ivar),  ivar=1,nvartype)
+      write( funit ) (ncvarnrmax(ivar), ivar=1,nvartype)
+      write( funit ) (ncvargrd(ivar),   ivar=1,nvartype)
+      write( funit ) (ncvartype(ivar),  ivar=1,nvartype)
 
 c--         Write the data.
       icvoffset = 0
-      do ivar = 1,maxcvars
+c     do ivar = 1,maxcvars
+      do ivar = 1,nvartype
        if ( ncvarindex(ivar) .ne. -1 ) then
         do icvrec = 1,ncvarrecs(ivar)
 cph         do bj = 1,nsy
@@ -186,8 +185,8 @@ cph          do bi = 1,nsx
          write( funit ) ncvarindex(ivar)
 CML         write( funit ) bi
 CML         write( funit ) bj
-         write( funit ) nsx
-         write( funit ) nsy
+         write( funit ) nSx
+         write( funit ) nSy
          do k = 1,ncvarnrmax(ivar)
           cbuffindex = 0
           if (ncvargrd(ivar) .eq. 'c') then
