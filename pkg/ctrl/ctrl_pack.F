@@ -182,13 +182,13 @@ c          write(cunit) nWetiGlobal(1)
 # endif
 #endif
 
-          write(cunit) (ncvarindex(ivar), ivar=1,maxcvars)
-          write(cunit) (ncvarrecs(ivar),  ivar=1,maxcvars)
-          write(cunit) (ncvarxmax(ivar),  ivar=1,maxcvars)
-          write(cunit) (ncvarymax(ivar),  ivar=1,maxcvars)
-          write(cunit) (ncvarnrmax(ivar), ivar=1,maxcvars)
-          write(cunit) (ncvargrd(ivar),   ivar=1,maxcvars)
-          write(cunit) (ncvartype(ivar),  ivar=1,maxcvars)
+          write(cunit) (ncvarindex(ivar), ivar=1,nvartype)
+          write(cunit) (ncvarrecs(ivar),  ivar=1,nvartype)
+          write(cunit) (ncvarxmax(ivar),  ivar=1,nvartype)
+          write(cunit) (ncvarymax(ivar),  ivar=1,nvartype)
+          write(cunit) (ncvarnrmax(ivar), ivar=1,nvartype)
+          write(cunit) (ncvargrd(ivar),   ivar=1,nvartype)
+          write(cunit) (ncvartype(ivar),  ivar=1,nvartype)
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF
@@ -196,7 +196,8 @@ c          write(cunit) nWetiGlobal(1)
       _BARRIER
 #endif
 
-      do ivar = 1, maxcvars
+c     do ivar = 1, maxcvars
+      do ivar = 1, nvartype
        if ( ncvarindex(ivar) .GE. 0 ) THEN
         il = ilnblnk(ncvarfname(ivar))
         iarr = ncvarindex(ivar)
