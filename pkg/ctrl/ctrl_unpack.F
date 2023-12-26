@@ -6,7 +6,7 @@
 # include "ECCO_OPTIONS.h"
 #endif
 
-      subroutine ctrl_unpack( first, mythid )
+      subroutine ctrl_unpack( first, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_unpack
@@ -61,7 +61,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       logical first
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external functions ==
@@ -75,52 +75,60 @@ c     == local variables ==
       integer ictrlgrad
       integer cunit
       logical lxxadxx
-      character*(128) cfile
+      CHARACTER*(128) cfile
       integer il, ilDir
 
 C     These are variables needed to read the header, but subsequently
 C     they are not used.
-      integer filenvartype
-      integer filenvarlength
-      integer fileOptimCycle
-      integer fileIg
-      integer fileJg
-      integer filensx
-      integer filensy
-      integer filenWetcGlobal(Nr)
-      integer filenWetsGlobal(Nr)
-      integer filenWetwGlobal(Nr)
-      integer filenWetvGlobal(Nr)
-      integer filencvarindex(maxcvars)
-      integer filencvarrecs(maxcvars)
-      integer filencvarxmax(maxcvars)
-      integer filencvarymax(maxcvars)
-      integer filencvarnrmax(maxcvars)
-      _RL            filefc
-      character*(10) fileYctrlid
-      character*( 1) filencvargrd(maxcvars)
-      character*( 5) filencvartype(maxcvars)
+      INTEGER maxLocal, numLoc
+#ifdef READ_OLD_CTRL_PACK_FILE
+      PARAMETER( maxLocal = old_maxcvars )
+#else
+      PARAMETER( maxLocal = maxcvars )
+#endif
+      INTEGER file_nvarType
+      INTEGER file_nvarLength
+      CHARACTER*(10) file_YctrlId
+      INTEGER file_OptimCycle
+      _RL     file_fc
+      INTEGER file_Ig
+      INTEGER file_Jg
+      INTEGER file_nSx
+      INTEGER file_nSy
+      INTEGER file_nWetcGlobal(Nr)
+      INTEGER file_nWetsGlobal(Nr)
+      INTEGER file_nWetwGlobal(Nr)
+      INTEGER file_nWetvGlobal(Nr)
+#ifdef ALLOW_SHELFICE
+      INTEGER file_nWetiGlobal(Nr)
+#endif
+      INTEGER file_varIndex(maxLocal)
+      INTEGER file_varRecs(maxLocal)
+      INTEGER file_varNxMax(maxLocal)
+      INTEGER file_varNyMax(maxLocal)
+      INTEGER file_varNrMax(maxLocal)
+      CHARACTER*(1) file_varGrid(maxLocal)
+      CHARACTER*(5) file_varType(maxLocal)
 
-      character*(MAX_LEN_FNAM) fname_local(3)
-
+      CHARACTER*(MAX_LEN_FNAM) fname_local(3)
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       integer nwettmp(Nr)
-      character*(9) mskNameForSetUnpack
+      CHARACTER*(9) mskNameForSetUnpack
 #endif
 
 #ifdef ALLOW_OBCS
-      integer iobcs
+      INTEGER iobcs
 #ifdef ALLOW_OBCSN_CONTROL
-      integer        filenWetobcsnGlo(Nr,nobcs)
+      INTEGER file_nWetobcsnGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-      integer        filenWetobcssGlo(Nr,nobcs)
+      INTEGER file_nWetobcssGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-      integer        filenWetobcswGlo(Nr,nobcs)
+      INTEGER file_nWetobcswGlo(Nr,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-      integer        filenWetobcseGlo(Nr,nobcs)
+      INTEGER file_nWetobcseGlo(Nr,nobcs)
 #endif
 #endif /* ALLOW_OBCS */
 
@@ -129,24 +137,26 @@ c     == end of interface ==
 c--   Initialise
       nbuffGlobal = 0
       DO k = 1, Nr
-       filenWetcGlobal(k) = 0
-       filenWetsGlobal(k) = 0
-       filenWetwGlobal(k) = 0
-       filenWetvGlobal(k) = 0
+       file_nWetcGlobal(k) = 0
+       file_nWetsGlobal(k) = 0
+       file_nWetwGlobal(k) = 0
+       file_nWetvGlobal(k) = 0
       ENDDO
-      DO ivar = 1, maxcvars
-       filencvarindex(ivar) = 0
-       filencvarrecs(ivar)  = 0
-       filencvarxmax(ivar)  = 0
-       filencvarymax(ivar)  = 0
-       filencvarnrmax(ivar) = 0
+      DO ivar = 1, maxLocal
+       file_varIndex(ivar) = 0
+       file_varRecs(ivar)  = 0
+       file_varNxMax(ivar) = 0
+       file_varNyMax(ivar) = 0
+       file_varNrMax(ivar) = 0
+       file_varGrid(ivar)  = ' '
+       file_varType(ivar)  = '     '
       ENDDO
 
 c--   Find ctrlDir (w/o trailing blanks) length
       ilDir = ilnblnk(ctrlDir)
 
 c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
 c *********************************************************************
 
@@ -173,92 +183,89 @@ c     >>> Write gradient vector <<<
 c--   Only Proc 0 will do I/O.
       IF ( myProcId .eq. 0 ) THEN
 
-          call mdsfindunit( cunit, mythid )
+          call mdsfindunit( cunit, myThid )
 
 #ifndef ALLOW_ADMTLM
 
-          open( cunit, file   = cfile,
-     &         status = 'old',
-     &         form   = 'unformatted',
-     &         access  = 'sequential'   )
+          open( cunit, file = cfile,
+     &          status = 'old',
+     &          form   = 'unformatted',
+     &          access = 'sequential' )
 
 c--       Header information.
-          read(cunit) filenvartype
-          read(cunit) filenvarlength
-          read(cunit) fileYctrlid
-          read(cunit) fileOptimCycle
-          read(cunit) filefc
-          read(cunit) fileIg
-          read(cunit) fileJg
-          read(cunit) filensx
-          read(cunit) filensy
-          read(cunit) (filenWetcGlobal(k),   k=1,Nr)
-          read(cunit) (filenWetsGlobal(k),   k=1,Nr)
-          read(cunit) (filenWetwGlobal(k),   k=1,Nr)
+          read(cunit)  file_nvarType
+          read(cunit)  file_nvarLength
+          read(cunit)  file_YctrlId
+          read(cunit)  file_OptimCycle
+          read(cunit)  file_fc
+          read(cunit)  file_Ig
+          read(cunit)  file_Jg
+          read(cunit)  file_nSx
+          read(cunit)  file_nSy
+          read(cunit) (file_nWetcGlobal(k), k=1,Nr)
+          read(cunit) (file_nWetsGlobal(k), k=1,Nr)
+          read(cunit) (file_nWetwGlobal(k), k=1,Nr)
 #ifdef ALLOW_CTRL_WETV
-          read(cunit) (filenWetvGlobal(k),   k=1,Nr)
+          read(cunit) (file_nWetvGlobal(k), k=1,Nr)
 #endif
 #ifdef ALLOW_SHELFICE
-          read(cunit) (filenWetiGlobal(k),   k=1,Nr)
-c         read(cunit) filenWetiGlobal(1)
+          read(cunit) (file_nWetiGlobal(k), k=1,Nr)
+c         read(cunit)  file_nWetiGlobal(1)
 #endif
 
 #ifdef ALLOW_OBCS
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
-          read(cunit) ((filenWetobcsnGlo(k,iobcs),
+          read(cunit) ((file_nWetobcsnGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
-          read(cunit) ((filenWetobcssGlo(k,iobcs),
+          read(cunit) ((file_nWetobcssGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
-          read(cunit) ((filenWetobcswGlo(k,iobcs),
+          read(cunit) ((file_nWetobcswGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
-          read(cunit) ((filenWetobcseGlo(k,iobcs),
+          read(cunit) ((file_nWetobcseGlo(k,iobcs),
      &         k=1,Nr), iobcs= 1,nobcs)
 #endif
 cgg)
 #endif /* ALLOW_OBCS */
 
-          read(cunit) (filencvarindex(ivar), ivar=1,maxcvars)
-          read(cunit) (filencvarrecs(ivar),  ivar=1,maxcvars)
-          read(cunit) (filencvarxmax(ivar),  ivar=1,maxcvars)
-          read(cunit) (filencvarymax(ivar),  ivar=1,maxcvars)
-          read(cunit) (filencvarnrmax(ivar), ivar=1,maxcvars)
-          read(cunit) (filencvargrd(ivar),   ivar=1,maxcvars)
-          read(cunit) (filencvartype(ivar),  ivar=1,maxcvars)
+C--       Check file header info.
 
-c         Check file header info.
-c
-          if ( filenvarlength .NE. nvarlength ) then
-             print *, 'WARNING: wrong nvarlength ',
-     &            filenvarlength, nvarlength
+          if ( file_nvarType .NE. nvartype ) then
+             print *, 'ERROR: wrong nvartype ',
+     &            file_nvarType, nvartype
              STOP 'in S/R ctrl_unpack'
-          else if ( filensx .NE. nSx .OR. filensy .NE. nSy ) then
+          endif
+          if ( file_nvarLength .NE. nvarlength ) then
+             print *, 'WARNING: wrong nvarlength ',
+     &            file_nvarLength, nvarlength
+             STOP 'in S/R ctrl_unpack'
+          elseif ( file_nSx .NE. nSx .OR. file_nSy .NE. nSy ) then
              print *, 'WARNING: wrong nSx or nSy ',
-     &            filensx, nSx, filensy, nSy
+     &            file_nSx, nSx, file_nSy, nSy
              STOP 'in S/R ctrl_unpack'
           endif
           do k = 1, Nr
-             if ( filenWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
-     &            filenWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
-     &            filenWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
-     &            filenWetvGlobal(k) .NE. nWetvGlobal(k)  ) then
+             if ( file_nWetcGlobal(k) .NE. nWetcGlobal(k) .OR.
+     &            file_nWetsGlobal(k) .NE. nWetsGlobal(k) .OR.
+     &            file_nWetwGlobal(k) .NE. nWetwGlobal(k) .OR.
+     &            file_nWetvGlobal(k) .NE. nWetvGlobal(k)  ) then
                 print *, 'WARNING: wrong nWet?Global for k = ', k
-                print *, 'c', filenWetcGlobal(k), nWetcGlobal(k)
-                print *, 's', filenWetsGlobal(k), nWetsGlobal(k)
-                print *, 'w', filenWetwGlobal(k), nWetwGlobal(k)
-                print *, 'v', filenWetvGlobal(k), nWetvGlobal(k)
+                print *, 'c', file_nWetcGlobal(k), nWetcGlobal(k)
+                print *, 's', file_nWetsGlobal(k), nWetsGlobal(k)
+                print *, 'w', file_nWetwGlobal(k), nWetwGlobal(k)
+                print *, 'v', file_nWetvGlobal(k), nWetvGlobal(k)
                 STOP
              endif
           end do
 #ifdef ALLOW_SHELFICE
           do k=1,1
-           if ( filenWetiGlobal(k) .NE. nWetiGlobal(k) ) then
+           if ( file_nWetiGlobal(k) .NE. nWetiGlobal(k) ) then
             print *, 'WARNING: wrong nWetiGlobal for k = ', k
             STOP
            endif
@@ -270,7 +277,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSN_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcsnGlo(k,iobcs) .NE.
+           if (file_nWetobcsnGlo(k,iobcs) .NE.
      &           nWetobcsnGlo(k,iobcs)) then
              print *, 'WARNING: OBCSN wrong nWet?Global for k = ', k
              STOP
@@ -281,7 +288,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSS_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcssGlo(k,iobcs) .NE.
+           if (file_nWetobcssGlo(k,iobcs) .NE.
      &           nWetobcssGlo(k,iobcs)) then
              print *, 'WARNING: OBCSS wrong nWet?Global for k = ', k
              STOP
@@ -292,7 +299,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSW_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcswGlo(k,iobcs) .NE.
+           if (file_nWetobcswGlo(k,iobcs) .NE.
      &           nWetobcswGlo(k,iobcs)) then
              print *, 'WARNING: OBCSW wrong nWet?Global for k = ', k
              STOP
@@ -303,7 +310,7 @@ cgg(   Lets also check the OBCS mask info in the header.
 #ifdef ALLOW_OBCSE_CONTROL
        do iobcs = 1, nobcs
          do k = 1, Nr
-           if (filenWetobcseGlo(k,iobcs) .NE.
+           if (file_nWetobcseGlo(k,iobcs) .NE.
      &           nWetobcseGlo(k,iobcs)) then
              print *, 'WARNING: OBCSE wrong nWet?Global for k = ', k
              STOP
@@ -314,43 +321,67 @@ cgg(   Lets also check the OBCS mask info in the header.
 cgg)  End OBCS mask check.
 #endif /* ALLOW_OBCS */
 
+C--   Finish to read header information.
+          numLoc = nvartype
+#ifdef READ_OLD_CTRL_PACK_FILE
+          numLoc = maxLocal
+#endif
+          read(cunit) ( file_varIndex(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varRecs(ivar),  ivar=1,numLoc )
+          read(cunit) ( file_varNxMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varNyMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varNrMax(ivar), ivar=1,numLoc )
+          read(cunit) ( file_varGrid(ivar),  ivar=1,numLoc )
+#ifdef READ_OLD_CTRL_PACK_FILE
+          read(cunit)
+          CALL CTRL_CONVERT_HEADER(
+     I              maxLocal, file_nvarType, errorMessageUnit,
+     U              file_varIndex, file_varRecs,
+     U              file_varNxMax, file_varNyMax, file_varNrMax,
+     U              file_varGrid, file_varType,
+     I              myThid )
+#else
+          read(cunit) ( file_varType(ivar),  ivar=1,numLoc )
+#endif
+
 #endif /* ndef ALLOW_ADMTLM */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
       ENDIF
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif
 
 c----------------------------------------------------------------------
 
-      do ivar = 1, maxcvars
+c     do ivar = 1, maxcvars
+      do ivar = 1, nvartype
        if ( ncvarindex(ivar) .GE. 0 ) THEN
         il = ilnblnk(ncvarfname(ivar))
         iarr = ncvarindex(ivar)
         call ctrl_set_fname(ctrlDir(1:ilDir)//ncvarfname(ivar),
-     &                      fname_local, mythid )
+     &                      fname_local, myThid )
         if ( ncvargrd(ivar).EQ.'m' ) then
 #ifdef ALLOW_OBCS
          if ( iarr.EQ.1 ) then
 # ifdef ALLOW_OBCSN_CONTROL
           call ctrl_set_unpack_xz( cunit, ivar, fname_local(ictrlgrad),
-     &            'maskobcsn', 'wobcsn', wobcsn, nWetobcsnGlo, mythid )
+     &            'maskobcsn', 'wobcsn', wobcsn, nWetobcsnGlo, myThid )
 # endif
          elseif ( iarr.EQ.2 ) then
 # ifdef ALLOW_OBCSS_CONTROL
           call ctrl_set_unpack_xz( cunit, ivar, fname_local(ictrlgrad),
-     &            'maskobcss', 'wobcss', wobcss, nWetobcssGlo, mythid )
+     &            'maskobcss', 'wobcss', wobcss, nWetobcssGlo, myThid )
 # endif
          elseif ( iarr.EQ.3 ) then
 # ifdef ALLOW_OBCSE_CONTROL
           call ctrl_set_unpack_yz( cunit, ivar, fname_local(ictrlgrad),
-     &            'maskobcse', 'wobcse', wobcse, nWetobcseGlo, mythid )
+     &            'maskobcse', 'wobcse', wobcse, nWetobcseGlo, myThid )
 # endif
          elseif ( iarr.EQ.4 ) then
 # ifdef ALLOW_OBCSW_CONTROL
           call ctrl_set_unpack_yz( cunit, ivar, fname_local(ictrlgrad),
-     &            'maskobcsw', 'wobcsw', wobcsw, nWetobcswGlo, mythid )
+     &            'maskobcsw', 'wobcsw', wobcsw, nWetobcswGlo, myThid )
 # endif
          endif
 #endif /* ALLOW_OBCS */
@@ -374,7 +405,7 @@ c----------------------------------------------------------------------
      &         lxxadxx, cunit, ivar, genarr2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_genarr2d_weight(iarr),
-     &         nwettmp, mythid )
+     &         nwettmp, myThid )
          endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -384,7 +415,7 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivar,
      &         fname_local(ictrlgrad), 'maskCtrlC',
      &         xx_genarr3d_weight(iarr),
-     &         wunit, nwetcglobal, mythid )
+     &         wunit, nwetcglobal, myThid )
          endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -407,7 +438,7 @@ c----------------------------------------------------------------------
      &         lxxadxx, cunit, ivar, gentim2dPrecond(iarr),
      &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_gentim2d_weight(iarr),
-     &         nwettmp, mythid )
+     &         nwettmp, myThid )
          endif
 #endif /* ALLOW_GENTIM2D_CONTROL */
         endif
@@ -417,15 +448,15 @@ C     do ivar = 1, maxcvars
       enddo
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       IF ( myProcId .eq. 0 ) THEN
 #endif
 
       close ( cunit )
       ENDIF !IF ( myProcId .eq. 0 )
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       _BARRIER
 #endif /* EXCLUDE_CTRL_PACK */
 
-      return
-      end
+      RETURN
+      END
