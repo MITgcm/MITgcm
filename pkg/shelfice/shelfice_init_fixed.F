@@ -100,30 +100,18 @@ C--   and over land (completely dry column) where kSurfC = Nr+1
 C-----------------------------------------------------------------------
 
 C--   Currently, there is no specific pkg/shelfice criteria to decide when very
-C     thin ice-shelf vanishes: some limits comes from ocean hFacMin/hFacMinDr;
-C     but should depend on shelficeMass if SHELFICEMassStepping or if remehing.
-C     Here SHI_minDepth threshold is just to get around machine round-off
+C     thin ice-shelf vanishes: some limits come from ocean hFacMin/hFacMinDr;
+C     but should depend on shelficeMass if SHELFICEMassStepping is used.
+C     Here the SHI_minDepth threshold is just to get around machine round-off
 C     isssues so does not need to be a run-time params.
       SHI_minDepth = 1. _d -6
       SHI_minDepth = rF(1) - drF(1)*SHI_minDepth
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-C-      remeshing restart case: set kTopC according to shelficeMass
-        IF ( SHELFICEremeshFrequency.GT.zeroRL .AND.
-     &       ( nIter0.NE.0 .OR. startTime.NE.baseTime
-     &                     .OR. pickupSuff.NE.' ') ) THEN
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-     &          shelficeMass(i,j,bi,bj).GT.zeroRL ) THEN
-            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
-           ELSE
-            kTopC(i,j,bi,bj) = 0
-           ENDIF
-          ENDDO
-         ENDDO
-        ELSEIF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
-C-      remeshing starting case: set kTopC according to shelficeMassInit
+        IF ( SHELFICEMassStepping ) THEN
+C-      In this case, it is recommended to initialise ice-shelf Mass (from file)
+C       And if updating "kTopC" is permitted (SHI_update_kTopC=T), kTopC will
+C       be reset in SHELFICE_INIT_VARIA after loading shelficeMass from pickup
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
@@ -135,14 +123,14 @@ C-      remeshing starting case: set kTopC according to shelficeMassInit
           ENDDO
          ENDDO
         ELSE
-C-      not remeshing case: set kTopC according to Ro_surf
-C     Note: use Ro_surf instead of R_shelfIce to stay consistent
-C           with ocean mask & hFac, see issue #99
+C-      no time-evolving Ice-Shelf: set kTopC according to Ro_surf
+C       Note: use Ro_surf instead of R_shelfIce to stay consistent
+C             with ocean mask & hFac, see issue #99
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
      &          Ro_surf(i,j,bi,bj).LT.SHI_minDepth ) THEN
+c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
             kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
            ELSE
             kTopC(i,j,bi,bj) = 0
