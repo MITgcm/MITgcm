@@ -27,7 +27,7 @@ C     == global variables ==
 #include "FFIELDS.h"
 #include "CTRL_SIZE.h"
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #include "CTRL_DUMMY.h"
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS

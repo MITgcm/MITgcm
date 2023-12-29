@@ -26,7 +26,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "CTRL.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 #ifdef ALLOW_COST
 # include "cost.h"
