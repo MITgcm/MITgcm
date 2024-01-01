@@ -43,6 +43,7 @@ C     == Global variables ===
 #include "OPTIMCYCLE.h"
 
 C     !INPUT PARAMETERS: ===============================================
+C     ivar   :: if > 0, index in ctrl-var list to store ctrl-var settings
 C     myThid ::  my Thread Id number
       CHARACTER*(MAX_LEN_FNAM) xx_fname
       INTEGER ivar
@@ -74,7 +75,7 @@ CEOP
 
 c     _BEGIN_MASTER( myThid )
 C     First check if the control variable index is within the allowed range.
-      IF ( ivar .LE. 0 .OR. ivar .GT. maxcvars ) THEN
+      IF ( ivar .LT. 0 .OR. ivar .GT. maxcvars ) THEN
         WRITE(msgBuf,'(A,I4,A)') 'S/R CTRL_INIT_CTRLVAR: ivar = ',
      &       ivar, ' is not valid.'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -83,18 +84,19 @@ C     First check if the control variable index is within the allowed range.
      &       '0 < ivar <= maxcvars = ', maxcvars
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R CTRL_INIT_CTRLVAR'
+      ELSEIF ( ivar .NE. 0 ) THEN
+C     Save this ctrl-var setting in ctrl-var list:
+        ncvarindex(ivar)    = varIndex
+        ncvarrecs (ivar)    = varRecs
+        ncvarrecstart(ivar) = varStartRec
+        ncvarrecsend(ivar)  = varEndRec
+        ncvarxmax (ivar)    = varNxMax
+        ncvarymax (ivar)    = varNyMax
+        ncvarnrmax(ivar)    = varNrMax
+        ncvargrd  (ivar)    = varGrid
+        ncvartype (ivar)    = varType
+        ncvarfname(ivar)    = xx_fname
       ENDIF
-C
-      ncvarindex(ivar)    = varIndex
-      ncvarrecs (ivar)    = varRecs
-      ncvarrecstart(ivar) = varStartRec
-      ncvarrecsend(ivar)  = varEndRec
-      ncvarxmax (ivar)    = varNxMax
-      ncvarymax (ivar)    = varNyMax
-      ncvarnrmax(ivar)    = varNrMax
-      ncvargrd  (ivar)    = varGrid
-      ncvartype (ivar)    = varType
-      ncvarfname(ivar)    = xx_fname
 c     _END_MASTER( myThid )
 
 cph add following flag to make pack/unpack only less error-prone
@@ -131,31 +133,39 @@ C     initialize to zero and warn user
         IF ( varType .EQ. 'Arr3D' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
           IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &      CALL CTRL_SET_GLOBFLD_XYZ( fname(2), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XYZ( fname(2),
+     &                                 varRecs, ctrlprec, myThid )
 #endif
           IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
-     &      CALL CTRL_SET_GLOBFLD_XYZ( fname(1), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XYZ( fname(1),
+     &                                 varRecs, ctrlprec, myThid )
         ELSEIF ( varType(4:5) .EQ. '2D' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
           IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &      CALL CTRL_SET_GLOBFLD_XY( fname(2), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XY( fname(2),
+     &                                 varRecs, ctrlprec, myThid )
 #endif
           IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
-     &      CALL CTRL_SET_GLOBFLD_XY( fname(1), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XY( fname(1),
+     &                                 varRecs, ctrlprec, myThid )
         ELSEIF ( varType .EQ. 'SecXZ' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
           IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &      CALL CTRL_SET_GLOBFLD_XZ( fname(2), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XZ( fname(2),
+     &                                 varRecs, ctrlprec, myThid )
 #endif
           IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
-     &      CALL CTRL_SET_GLOBFLD_XZ( fname(1), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_XZ( fname(1),
+     &                                 varRecs, ctrlprec, myThid )
         ELSEIF ( varType .EQ. 'SecYZ' ) THEN
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
           IF ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &      CALL CTRL_SET_GLOBFLD_YZ( fname(2), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_YZ( fname(2),
+     &                                 varRecs, ctrlprec, myThid )
 #endif
           IF ( ( doInitXX .AND. optimcycle.EQ.0 ) .OR. doAdmTlm )
-     &      CALL CTRL_SET_GLOBFLD_YZ( fname(1), ivar, myThid )
+     &      CALL CTRL_SET_GLOBFLD_YZ( fname(1),
+     &                                 varRecs, ctrlprec, myThid )
         ELSE
           STOP 'CTRL_INIT_CTRLVAR: varType option not implemented'
         ENDIF
