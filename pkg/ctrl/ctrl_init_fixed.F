@@ -52,7 +52,7 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER i, j, k
-      INTEGER ivar
+      INTEGER ivar, iarr
       LOGICAL costfinal_exists
       _RL dummy
       _RL loctmp3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -60,7 +60,6 @@ C     msgBuf     :: Informational/error message buffer
 #if ( defined ALLOW_GENTIM2D_CONTROL || \
       defined ALLOW_GENARR2D_CONTROL || \
       defined ALLOW_GENARR3D_CONTROL )
-      INTEGER iarr
       CHARACTER*(1) ncvargrdtmp
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
@@ -137,8 +136,9 @@ C--   Northern obc.
      O     xx_obcsnstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar + 1
+      iarr = 1
       CALL ctrl_init_ctrlvar (
-     I     xx_obcsn_file, ivar, 1, diffrec, startrec, endrec,
+     I     xx_obcsn_file, ivar, iarr, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
@@ -151,8 +151,9 @@ C--   Southern obc.
      O     xx_obcssstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
+      iarr = 2
       CALL ctrl_init_ctrlvar (
-     I     xx_obcss_file, ivar, 2, diffrec, startrec, endrec,
+     I     xx_obcss_file, ivar, iarr, diffrec, startrec, endrec,
      I     sNx, 1, Nr, 'm', 'SecXZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
@@ -165,8 +166,9 @@ C--   Western obc.
      O     xx_obcswstartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
+      iarr = 4
       CALL ctrl_init_ctrlvar (
-     I     xx_obcsw_file, ivar, 4, diffrec, startrec, endrec,
+     I     xx_obcsw_file, ivar, iarr, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
@@ -179,8 +181,9 @@ C--   Eastern obc.
      O     xx_obcsestartdate, diffrec, startrec, endrec,
      I     myThid )
       ivar = ivar+1
+      iarr = 3
       CALL ctrl_init_ctrlvar (
-     I     xx_obcse_file, ivar, 3, diffrec, startrec, endrec,
+     I     xx_obcse_file, ivar, iarr, diffrec, startrec, endrec,
      I     1, sNy, Nr, 'm', 'SecYZ', costfinal_exists, myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
@@ -322,7 +325,7 @@ C      Under iceshelf, use maskSHI for these
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         CALL ctrl_init_ctrlvar (
      I       fnamegen,
-     I       ivar, iarr,
+     I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
@@ -331,7 +334,7 @@ C      Under iceshelf, use maskSHI for these
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         CALL ctrl_init_ctrlvar (
      I       fnamegen,
-     I       ivar, iarr,
+     I       0, iarr,
      I       diffrecFull, startrec, endrecFull,
      I       sNx, sNy, 1, ncvargrdtmp, 'Tim2D', costfinal_exists,
      I       myThid )
