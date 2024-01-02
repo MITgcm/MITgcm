@@ -28,13 +28,17 @@ EXECUTABLE = $(EXEDIR)/optim.x
 _GET_CPPCMD
 
 # The CPP flags.
-DEFINES    = -DREAL_BYTE=4	-DMAX_INDEPEND=1000000		\
-		-D$(EXTRA_OPT)
+DEFINES    = -DREAL_BYTE=4 -DMAX_INDEPEND=1000000 -D$(EXTRA_OPT)
+
+MAKEDEPEND=makedepend
+# this works after you have built xmakedepend
+#MAKEDEPEND=$(TOOLSDIR)/xmakedepend
 
 # FORTRAN compiler and flags.
 _GET_FC
 _GET_FFLAGS
 _GET_FOPTIM
+SUFF=f
 
 # Lib path and libs
 LIBDIRS    = -L.  -L../lsopt/
@@ -45,10 +49,11 @@ RM         = rm -f
 
 #--- rules ----
 
-SMALLF     = $(SRC:.F=.f)
+SMALLF     = $(SRC:.F=.$(SUFF))
 OBJECTS    = $(SRC:.F=.o)
 
-.SUFFIXES: .o .f .F
+.SUFFIXES:
+.SUFFIXES: .o .$(SUFF) .F
 
 all: small_f $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
@@ -57,9 +62,13 @@ $(EXECUTABLE): $(OBJECTS)
 small_f: $(SMALLF)
 
 depend:
-	makedepend -o .f $(INCLUDES) $(SRC)
+	$(MAKEDEPEND) -o .$(SUFF) $(INCLUDES) $(SRC)
 
 # The normal chain of rules is (  .F - .f - .o  )
+.F.for:
+	$(CPPCMD) > $@
+.for.o:
+	$(FC) $(FFLAGS) $(FOPTIM) -c $<
 .F.f:
 	$(CPPCMD) > $@
 .f.o:
@@ -67,7 +76,7 @@ depend:
 
 # Cleaning options.
 clean:
-	$(RM) $(EXEDIR)/optim.x *.o *.f
+	$(RM) $(EXEDIR)/optim.x *.o *.$(SUFF)
 
 scratch:
 	$(RM) OPWARMD OPWARMI $(EXEDIR)/optim.x $(OBJ)
