@@ -1860,7 +1860,7 @@ for dir in $TESTDIRS ; do
 						>> $DRESULTS/genmake_state
 		ADvers=`head -1 $gmkLog | awk '{print $7,$8}'`
 		sed "s/ by TAF/ by TAF $ADvers/" $SUMMARY > tmp.tr_log
-		mv -f  tmp.tr_log $SUMMARY
+		mv -f tmp.tr_log $SUMMARY
 	      fi
 	    fi
 	    if test $KIND = 4 -o  $KIND = 5 ; then
@@ -1870,7 +1870,7 @@ for dir in $TESTDIRS ; do
 		echo "from '$gmkLog', get: $ADtool" >> $DRESULTS/genmake_state
 		ADvers=`echo $ADtool | awk '{print $1,$2,$3}'`
 		sed "s/ by Tapenade/ by $ADvers/" $SUMMARY > tmp.tr_log
-		mv -f  tmp.tr_log $SUMMARY
+		mv -f tmp.tr_log $SUMMARY
 	      fi
 	    fi
 	    gmkLog=$dir/$builddir/genmake_state
