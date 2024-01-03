@@ -72,7 +72,7 @@ for ff in $LNK_LIST ; do
    fi
 done
 
-#-- Get setting from MITgcm Makefile:
+#-- make a local Makefile from template and account for this script options:
 rm -f $newMkF
 if test $fake = 1 ; then
    EXTRA_OPT='EXCLUDE_LSOPT_TO_CHECK'
@@ -81,10 +81,16 @@ else
    EXTRA_OPT='OFFLINE'
    cp $template $newMkF
 fi
-rm -f $newMkF.tmp
 sed "s|_GET_BLD_DIR|${bldDir}|" $newMkF > $tmpFil
 sed "s/_GET_EXTRA_OPT/${EXTRA_OPT}/" $tmpFil > $newMkF
-rm -f $tmpFil
+
+#-- Get setting from MITgcm Makefile:
+FS=`grep '^\.F\..*:$' $mkFile | head -1 | sed 's/\.F\.//' | sed 's/:$//'`
+if test "x$FS" = x ; then FS=f
+  echo " Failed to get Suffix 'FS' ; continue with default FS='${FS}'"
+fi
+sed "s/_GET_FS_/${FS}/" $newMkF > $tmpFil
+mv -f $tmpFil $newMkF
 
 for KEY in CPPCMD FC FFLAGS FOPTIM
 do

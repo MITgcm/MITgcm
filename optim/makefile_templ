@@ -27,6 +27,9 @@ EXECUTABLE = $(EXEDIR)/optim.x
 # CPP preprocessor command:
 _GET_CPPCMD
 
+# Suffix of preprocessed *.F files:
+FS=_GET_FS_
+
 # The CPP flags.
 DEFINES    = -DREAL_BYTE=4 -DMAX_INDEPEND=1000000 -D$(EXTRA_OPT)
 
@@ -38,7 +41,6 @@ MAKEDEPEND=makedepend
 _GET_FC
 _GET_FFLAGS
 _GET_FOPTIM
-SUFF=f
 
 # Lib path and libs
 LIBDIRS    = -L.  -L../lsopt/
@@ -49,11 +51,11 @@ RM         = rm -f
 
 #--- rules ----
 
-SMALLF     = $(SRC:.F=.$(SUFF))
+SMALLF     = $(SRC:.F=.$(FS))
 OBJECTS    = $(SRC:.F=.o)
 
 .SUFFIXES:
-.SUFFIXES: .o .$(SUFF) .F
+.SUFFIXES: .o .$(FS) .F
 
 all: small_f $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
@@ -62,21 +64,17 @@ $(EXECUTABLE): $(OBJECTS)
 small_f: $(SMALLF)
 
 depend:
-	$(MAKEDEPEND) -o .$(SUFF) $(INCLUDES) $(SRC)
+	$(MAKEDEPEND) -o .$(FS) $(INCLUDES) $(SRC)
 
-# The normal chain of rules is (  .F - .f - .o  )
-.F.for:
+# The normal chain of rules is (  .F - ._GET_FS_ - .o  )
+.F._GET_FS_:
 	$(CPPCMD) > $@
-.for.o:
-	$(FC) $(FFLAGS) $(FOPTIM) -c $<
-.F.f:
-	$(CPPCMD) > $@
-.f.o:
+._GET_FS_.o:
 	$(FC) $(FFLAGS) $(FOPTIM) -c $<
 
 # Cleaning options.
 clean:
-	$(RM) $(EXEDIR)/optim.x *.o *.$(SUFF)
+	$(RM) $(EXEDIR)/optim.x *.o *.$(FS)
 
 scratch:
 	$(RM) OPWARMD OPWARMI $(EXEDIR)/optim.x $(OBJ)
