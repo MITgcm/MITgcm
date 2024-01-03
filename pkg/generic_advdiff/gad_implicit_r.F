@@ -4,9 +4,9 @@ CBOP
 C     !ROUTINE: GAD_IMPLICIT_R
 C     !INTERFACE:
       SUBROUTINE GAD_IMPLICIT_R(
-     I      implicitAdvection, advectionScheme, tracerIdentity,
-     I      deltaTLev,
-     I      kappaRX, recip_hFac, wFld, tracer,
+     I      implicitAdvection, diagAdvVar,
+     I      advectionScheme, tracerIdentity,
+     I      deltaTLev, kappaRX, recip_hFac, wFld, tracer,
      U      gTracer,
      I      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION:
@@ -25,6 +25,7 @@ C     == Global data ==
 C !INPUT/OUTPUT PARAMETERS:
 C == Routine Arguments ==
 C implicitAdvection :: if True, treat vertical advection implicitly
+C diagAdvVar        :: calculate variance budget diagnostics
 C advectionScheme   :: advection scheme to use
 C tracerIdentity    :: Identifier for the tracer
 C kappaRX           :: 3-D array for vertical diffusion coefficient
@@ -36,7 +37,7 @@ C bi,bj             :: tile indices
 C myTime            :: current time
 C myIter            :: current iteration number
 C myThid            :: thread number
-      LOGICAL implicitAdvection
+      LOGICAL implicitAdvection, diagAdvVar
       INTEGER advectionScheme
       INTEGER tracerIdentity
       _RL     deltaTLev(Nr)
@@ -95,6 +96,17 @@ C msgBuf    :: Informational/error message buffer
 # ifdef SOLVE_DIAGONAL_LOWMEMORY
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 # endif /* SOLVE_DIAGONAL_LOWMEMORY */
+#endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL fwdSqGrad, bwdSqGrad
+C--   Select time discretis. for Squared Gradient: Forward, Centered or Backward
+      PARAMETER( fwdSqGrad = .TRUE. , bwdSqGrad = .FALSE. )
+c     PARAMETER( fwdSqGrad = .FALSE., bwdSqGrad = .FALSE. )
+c     PARAMETER( fwdSqGrad = .FALSE., bwdSqGrad = .TRUE.  )
+      _RL diagTrK, diagTrKm, delTr, barTr, maskUp
+      _RL diagVTR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagVPR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL diagSqD (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -255,6 +267,17 @@ C--     end k loop
 C--   end if implicitAdvection
       ENDIF
 
+C--   Make a copy of tracer field before update (for diagnostics only)
+      IF ( diagAdvVar ) THEN
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            localTr(i,j,k) = gTracer(i,j,k)
+           ENDDO
+          ENDDO
+         ENDDO
+      ENDIF
+
       IF ( diagonalNumber .EQ. 3 ) THEN
 C--   Solve tri-diagonal system :
         errCode = -1
@@ -292,7 +315,7 @@ C--   Set diagnostic suffix for the current tracer
         diagAdv = implicitAdvection
         IF ( diagAdv ) diagAdv = DIAGNOSTICS_IS_ON(diagName,myThid)
 
-        IF ( diagDif .OR. diagAdv ) THEN
+        IF ( diagDif .OR. diagAdv .OR. diagAdvVar ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             flx(i,j) = 0. _d 0
@@ -338,7 +361,7 @@ C         since skipping k=1 DIAGNOSTICS_FILL call.
 #endif /* ALLOW_LAYERS */
           ENDIF
 
-          IF ( diagAdv ) THEN
+          IF ( diagAdv .OR. ( diagAdvVar.AND.implicitAdvection ) ) THEN
 #ifdef SOLVE_DIAGONAL_LOWMEMORY
            diagName = 'ADVr'//diagSufx
            WRITE(msgBuf,'(4A)') 'GAD_IMPLICIT_R: ',
@@ -426,6 +449,15 @@ cc#endif
               af(i,j) = flx(i,j) - df(i,j)
             ENDDO
            ENDDO
+          ELSEIF ( diagAdvVar ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+              flx(i,j) = df(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+
+          IF ( diagAdv ) THEN
            diagName = 'ADVr'//diagSufx
            CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
 #ifdef ALLOW_LAYERS
@@ -434,6 +466,39 @@ cc#endif
      &                            k,1,2,bi,bj,myThid)
            ENDIF
 #endif /* ALLOW_LAYERS */
+          ENDIF
+
+          IF ( diagAdvVar .AND. k.GE.2 ) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+              maskUp = 1.
+              IF ( recip_hFac(i,j,k-1).EQ.zeroRS .OR.
+     &             recip_hFac(i,j,k).EQ.zeroRS ) maskUp = 0.
+C-    Calculate centered-in-time average of tracer
+              diagTrKm = ( localTr(i,j,k-1) + gTracer(i,j,k-1) )*halfRl
+              diagTrK  = ( localTr(i,j,k)   + gTracer(i,j,k)   )*halfRl
+C-    Calculate Variance transport and production
+              delTr = ( diagTrK - diagTrKm )*rkSign*maskUp
+              barTr = ( diagTrK + diagTrKm )*halfRL
+              diagVTR(i,j) = twoRL*flx(i,j)*barTr
+              diagVPR(i,j) = twoRL*flx(i,j)*delTr
+C-    Calculate Square of tracer gradient
+              IF ( fwdSqGrad ) THEN
+               delTr = ( localTr(i,j,k)
+     &                 - localTr(i,j,k-1) )*rkSign*maskUp
+              ELSEIF ( bwdSqGrad ) THEN
+               delTr = ( gTracer(i,j,k)
+     &                 - gTracer(i,j,k-1) )*rkSign*maskUp
+              ENDIF
+              diagSqD(i,j) = delTr*delTr*rA(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           diagName = 'VTRi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid)
+           diagName = 'VPRi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid)
+           diagName = 'SqDi'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid)
           ENDIF
 
 C--      end diagnostics k loop

@@ -1,5 +1,11 @@
 #include "GAD_OPTIONS.h"
 
+C--  File gad_diagnostics_init.F:
+C--   Contents
+C--   o GAD_DIAGNOSTICS_INIT
+C--   o GAD_DIAG_SUFX (Function)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: GAD_DIAGNOSTICS_INIT
 C     !INTERFACE:
@@ -32,7 +38,7 @@ C     ! FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf   :: Informational/error meesage buffer
+C     msgBuf   :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       INTEGER        diagNum
@@ -42,7 +48,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
 
-      CHARACTER*10  flxUnits, trUnits
+      CHARACTER*10  flxUnits, trUnits, hvUnits
       CHARACTER*12  locName
       CHARACTER*4   diagSufx
 
@@ -51,8 +57,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Add diagnostics to the (long) list
        IF ( usingPCoords ) THEN
          flxUnits = '.Pa.m^2/s '
+         hvUnits  = '.m.Pa     '
        ELSE
          flxUnits = '.m^3/s    '
+         hvUnits  = '.m^2      '
        ENDIF
 
 C-     add diagnostics of advective & diffusive flux of Temp :
@@ -84,7 +92,7 @@ C-     Advective flux:
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 C-     Diffusive flux:
        diagName  = 'DFrE'//diagSufx
-       diagTitle = 'Vertical Diffusive Flux of Pot.Temperature'
+       diagTitle = 'Vertical Diffusive Flux of Pot.Temp.'
      &           //' (Explicit part)'
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -103,7 +111,7 @@ C-     Diffusive flux:
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
        diagName  = 'DFrI'//diagSufx
-       diagTitle = 'Vertical Diffusive Flux of Pot.Temperature'
+       diagTitle = 'Vertical Diffusive Flux of Pot.Temp.'
      &           //' (Implicit part)'
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -174,6 +182,98 @@ C-     Diffusive flux:
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* GAD_ALLOW_TS_SOM_ADV */
 
+c      diagUnits = DIAGS_MK_UNITS( trUnits//'^2 '//flxUnits, myThid )
+       diagUnits = DIAGS_MK_UNITS(
+     &                   '('//trUnits//')^2'//flxUnits, myThid )
+C-     Transport of tracer variance (splitted by direction):
+       diagName  = 'VTRr'//diagSufx
+       diagTitle = 'Vert. transport Flux of Pot.Temp. Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VTRx'//diagSufx
+       diagTitle = 'Zonal transport Flux of Pot.Temp. Variance'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VTRy'//diagSufx
+       diagTitle = 'Merid transport Flux of Pot.Temp. Variance'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Numerical Production of variance (same units as variance Transport)
+       diagName  = 'VPRr'//diagSufx
+       diagTitle = 'Pot.Temp. Var Production by Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRx'//diagSufx
+       diagTitle = 'Pot.Temp. Var Production by Zonal advection'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VPRy'//diagSufx
+       diagTitle = 'Pot.Temp. Var Production by Merid advection'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Variance Production due to forcing (same units as variance Transport)
+       diagName  = 'VPRf'//diagSufx
+       diagTitle = 'Pot.Temp. Variance Production by Forcing'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     Residual in variance budget (same units as variance Transport)
+       diagName  = 'VRes'//diagSufx
+       diagTitle = 'Pot.Temp. Variance Budget Residual'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C--- for now, add specific diags for vertical implicit part
+       diagName  = 'VTRi'//diagSufx
+       diagTitle = 'Impl.Vert. transport Flux of Pot.Temp. Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRi'//diagSufx
+       diagTitle = 'Pot.Temp. Var Production by Impl.Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     square of tracer difference in each direction (times face area):
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2.m^2', myThid )
+C to do: need to fix units = trUnits ^2 x m^2    (if z-coords or vertical dir)
+C                          = trUnits ^2 x m.Pa   (if p-coords & x,y dir)
+       diagName  = 'SqDi'//diagSufx
+       diagTitle = 'Square of Impl.Vert. gradient of Pot.Temperature'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C---
+       diagName  = 'SqDr'//diagSufx
+       diagTitle = 'Square of Vertical gradient of Pot.Temperature'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2'//hvUnits,myThid )
+       diagName  = 'SqDx'//diagSufx
+       diagTitle = 'Square of Zonal    gradient of Pot.Temperature'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SqDy'//diagSufx
+       diagTitle = 'Square of Meridio. gradient of Pot.Temperature'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-     add diagnostics of advective & diffusive flux of Salt :
@@ -184,9 +284,14 @@ C-     add diagnostics of advective & diffusive flux of Salt :
          ELSE
            trUnits = 'kg/kg'
          ENDIF
-       ELSE
+       ELSEIF ( eosType.EQ.'TEOS10' ) THEN
+c        locName = 'Absolute Salinity'
+c        locName = 'Abs Salinity'
          locName = 'Salinity    '
          trUnits = 'g/kg'
+       ELSE
+         locName = 'Salinity    '
+         trUnits = 'psu'
        ENDIF
        diagUnits = DIAGS_MK_UNITS( trUnits//flxUnits, myThid )
        diagSufx = GAD_DIAG_SUFX( GAD_SALINITY, myThid )
@@ -243,7 +348,6 @@ C-     Diffusive flux:
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef GAD_ALLOW_TS_SOM_ADV
-
        diagUnits = DIAGS_MK_UNITS( trUnits, myThid )
 
        diagName  = 'SM_x'//diagSufx
@@ -308,6 +412,103 @@ C-     Diffusive flux:
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* GAD_ALLOW_TS_SOM_ADV */
 
+c      diagUnits = DIAGS_MK_UNITS( trUnits//'^2 '//flxUnits, myThid )
+       IF ( trUnits(1:5).EQ.'kg/kg' ) THEN
+C      to fit into diagUnits (16c), use a shorter trUnits:
+         diagUnits = DIAGS_MK_UNITS( '(g/g)^2'//flxUnits, myThid )
+       ELSE
+         diagUnits = DIAGS_MK_UNITS(
+     &                   '('//trUnits//')^2'//flxUnits, myThid )
+       ENDIF
+C-     Transport of tracer variance (splitted by direction):
+       diagName  = 'VTRr'//diagSufx
+       diagTitle = 'Vert. transport Flux of '//locName//'Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VTRx'//diagSufx
+       diagTitle = 'Zonal transport Flux of '//locName//'Variance'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VTRy'//diagSufx
+       diagTitle = 'Merid transport Flux of '//locName//'Variance'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Numerical Production of variance (same units as variance Transport)
+       diagName  = 'VPRr'//diagSufx
+       diagTitle = locName//'Var Production by Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRx'//diagSufx
+       diagTitle = locName//'Var Production by Zonal advection'
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'VPRy'//diagSufx
+       diagTitle = locName//'Var Production by Merid advection'
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+C-     Variance Production due to forcing (same units as variance Transport)
+       diagName  = 'VPRf'//diagSufx
+       diagTitle = locName//'Variance Production by Forcing'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     Residual in variance budget (same units as variance Transport)
+       diagName  = 'VRes'//diagSufx
+       diagTitle = locName//'Variance Budget Residual'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I             diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C--- for now, add specific diags for vertical implicit part
+       diagName  = 'VTRi'//diagSufx
+       diagTitle = 'Impl.Vert. transport Flux of '//locName//'Variance'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'VPRi'//diagSufx
+       diagTitle = locName//'Var Production by Impl.Vert. advection'
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C-     square of tracer difference in each direction (times face area):
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2.m^2', myThid )
+C to do: need to fix units = trUnits ^2 x m^2    (if z-coords or vertical dir)
+C                          = trUnits ^2 x m.Pa   (if p-coords & x,y dir)
+       diagName  = 'SqDi'//diagSufx
+       diagTitle = 'Square of Impl.Vert. gradient of '//locName
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+C---
+       diagName  = 'SqDr'//diagSufx
+       diagTitle = 'Square of Vertical gradient of '//locName
+       diagCode  = 'WM      LR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2'//hvUnits,myThid )
+       diagName  = 'SqDx'//diagSufx
+       diagTitle = 'Square of Zonal    gradient of '//locName
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SqDy'//diagSufx
+       diagTitle = 'Square of Meridio. gradient of '//locName
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_DIAGNOSTICS */
@@ -316,7 +517,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP 0
 C     !ROUTINE: GAD_DIAG_SUFX
 
