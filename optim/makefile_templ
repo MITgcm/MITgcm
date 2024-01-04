@@ -28,7 +28,7 @@ EXECUTABLE = $(EXEDIR)/optim.x
 _GET_CPPCMD
 
 # Suffix of preprocessed *.F files:
-FS=_GET_FS_
+SUFX=_GET_SFX_
 
 # The CPP flags.
 DEFINES    = -DREAL_BYTE=4 -DMAX_INDEPEND=1000000 -D$(EXTRA_OPT)
@@ -51,11 +51,11 @@ RM         = rm -f
 
 #--- rules ----
 
-SMALLF     = $(SRC:.F=.$(FS))
+SMALLF     = $(SRC:.F=.$(SUFX))
 OBJECTS    = $(SRC:.F=.o)
 
 .SUFFIXES:
-.SUFFIXES: .o .$(FS) .F
+.SUFFIXES: .o .$(SUFX) .F
 
 all: small_f $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
@@ -64,17 +64,17 @@ $(EXECUTABLE): $(OBJECTS)
 small_f: $(SMALLF)
 
 depend:
-	$(MAKEDEPEND) -o .$(FS) $(INCLUDES) $(SRC)
+	$(MAKEDEPEND) -o .$(SUFX) $(INCLUDES) $(SRC)
 
-# The normal chain of rules is (  .F - ._GET_FS_ - .o  )
-.F._GET_FS_:
+# The normal chain of rules is (  .F - ._GET_SFX_ - .o  )
+.F._GET_SFX_:
 	$(CPPCMD) > $@
-._GET_FS_.o:
+._GET_SFX_.o:
 	$(FC) $(FFLAGS) $(FOPTIM) -c $<
 
 # Cleaning options.
 clean:
-	$(RM) $(EXEDIR)/optim.x *.o *.$(FS)
+	$(RM) $(EXEDIR)/optim.x *.o *.$(SUFX)
 
 scratch:
 	$(RM) OPWARMD OPWARMI $(EXEDIR)/optim.x $(OBJ)

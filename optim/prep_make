@@ -85,11 +85,11 @@ sed "s|_GET_BLD_DIR|${bldDir}|" $newMkF > $tmpFil
 sed "s/_GET_EXTRA_OPT/${EXTRA_OPT}/" $tmpFil > $newMkF
 
 #-- Get setting from MITgcm Makefile:
-FS=`grep '^\.F\..*:$' $mkFile | head -1 | sed 's/\.F\.//' | sed 's/:$//'`
-if test "x$FS" = x ; then FS=f
-  echo " Failed to get Suffix 'FS' ; continue with default FS='${FS}'"
+SFX=`grep '^\.F\..*:$' $mkFile | head -1 | sed 's/\.F\.//' | sed 's/:$//'`
+if test "x$SFX" = x ; then SFX=f
+  echo " Failed to get Suffix 'SFX' ; continue with default SFX='${SFX}'"
 fi
-sed "s/_GET_FS_/${FS}/" $newMkF > $tmpFil
+sed "s/_GET_SFX_/${SFX}/" $newMkF > $tmpFil
 mv -f $tmpFil $newMkF
 
 for KEY in CPPCMD FC FFLAGS FOPTIM
