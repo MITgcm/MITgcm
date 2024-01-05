@@ -196,7 +196,7 @@ C---  Check RBCS config and params:
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'when DISABLE_RBCS_MOM is defined (in RBCS_OPTIONS.h)'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+        errCount = errCount + 1
       ENDIF
 #endif /* DISABLE_RBCS_MOM */
       IF (rbcsIniter.NE.0) THEN
@@ -206,7 +206,7 @@ C---  Check RBCS config and params:
         WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
      &  'which is in seconds. Please change your data.rbcs'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARAMS'
+        errCount = errCount + 1
       ENDIF
       IF (startTime.LT.rbcsForcingOffset+0.5*rbcsForcingPeriod .AND.
      &    .NOT. rbcsSingleTimeFiles) THEN
@@ -224,38 +224,38 @@ C---  Check RBCS config and params:
         WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
      &  'not allowed with rbcsForcingCycle=0 unless rbcsSingleTimeFiles'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARAMS'
+        errCount = errCount + 1
        ENDIF
       ENDIF
       IF ( useRBCuVel .AND. tauRelaxU.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'tauRelaxU cannot be zero with useRBCuVel'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+        errCount = errCount + 1
       ENDIF
       IF ( useRBCvVel .AND. tauRelaxV.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'tauRelaxV cannot be zero with useRBCvVel'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+        errCount = errCount + 1
       ENDIF
       IF ( useRBCtemp .AND. tauRelaxT.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'tauRelaxT cannot be zero with useRBCtemp'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+        errCount = errCount + 1
       ENDIF
       IF ( useRBCsalt .AND. tauRelaxS.LE.0. ) THEN
-            WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
-     &    'tauRelaxS cannot be zero with useRBCsalt'
-            CALL PRINT_ERROR( msgBuf, myThid )
-            STOP 'ABNORMAL END: S/R RBCS_READPARMS'
-          ENDIF
+        WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
+     &     'tauRelaxS cannot be zero with useRBCsalt'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
       IF ( useRBCeta .AND. tauRelaxEta.LE.0. ) THEN
         WRITE(msgBuf,'(2A)') 'RBCS_READPARMS: ',
      &    'tauRelaxEta cannot be zero with useRBCeta'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+        errCount = errCount + 1
       ENDIF
 #ifdef ALLOW_PTRACERS
       DO iTracer=1,PTRACERS_num
@@ -264,7 +264,7 @@ C---  Check RBCS config and params:
          WRITE(msgBuf,'(2A,I6,A)') 'RBCS_READPARMS: ',
      &   'usePTRACERS=F => cannot use RBCS for tracer:', iTracer
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+         errCount = errCount + 1
         ENDIF
 c       IF ( iTracer.GT.PTRACERS_numInUse ) THEN
 c        STOP 'ABNORMAL END: S/R RBCS_READPARMS'
@@ -276,13 +276,20 @@ c       ENDIF
          WRITE(msgBuf,'(2A,I6,A)') 'RBCS_READPARMS: ',
      &     'not allowed with useRBCptr(itr)=T'
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R RBCS_READPARMS'
+         errCount = errCount + 1
         ENDIF
        ENDIF
       ENDDO
 #endif
       _END_MASTER(myThid)
 
+      IF ( errCount.GE.1 ) THEN
+       WRITE(msgBuf,'(A,I6,A)')
+     &      'RBCS_READPARM: found ', errCount,' error(s)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
+       STOP 'ABNORMAL END: S/R RBCS_CHECK'
+      ENDIF
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
