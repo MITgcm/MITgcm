@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/solid-body.cs-32x32x1:
+  - update set up (faster flow, smaller planet ..) and fix initial Ps condition.
 o pkg/ggl90:
   - revisit Langmuir Circulation (LC) mixing-length calculation: fix bugs in
     some "mxlMaxFlag" implementation and ensure it works with P-coordinate.
