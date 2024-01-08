@@ -88,25 +88,23 @@ C msgBuf    :: Informational/error message buffer
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       LOGICAL     diagDif, diagAdv
-      INTEGER km1, km2, kp1, kp2
-      _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL af (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL div(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-# ifdef SOLVE_DIAGONAL_LOWMEMORY
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-# endif /* SOLVE_DIAGONAL_LOWMEMORY */
-#endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_DIAGNOSTICS
       LOGICAL fwdSqGrad, bwdSqGrad
 C--   Select time discretis. for Squared Gradient: Forward, Centered or Backward
       PARAMETER( fwdSqGrad = .TRUE. , bwdSqGrad = .FALSE. )
 c     PARAMETER( fwdSqGrad = .FALSE., bwdSqGrad = .FALSE. )
 c     PARAMETER( fwdSqGrad = .FALSE., bwdSqGrad = .TRUE.  )
+      INTEGER km1, km2, kp1, kp2
+      _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL af (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL div(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diagTrK, diagTrKm, delTr, barTr, maskUp
       _RL diagVTR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diagVPR (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diagSqD (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+# ifdef SOLVE_DIAGONAL_LOWMEMORY
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+# endif /* SOLVE_DIAGONAL_LOWMEMORY */
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
