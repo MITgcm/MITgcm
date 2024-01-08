@@ -87,7 +87,7 @@ C !FUNCTIONS: ==========================================================
 C !LOCAL VARIABLES: ====================================================
 C  tracNew       :: updated tracer field at level k
 C  i,j           :: loop indices
-      INTEGER i, j, kSurface
+      INTEGER i, j, kSurface, dBl
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
       _RL tracNew (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -117,6 +117,8 @@ CEOP
 
       advFac = zeroRL
       IF ( calcAdvection ) advFac = oneRL
+      dBl = 2
+      IF ( trMultiDimAdvec ) dBl = -2
 
       diagAdvVarE = .TRUE.
       diagNumDf1 = .FALSE.
@@ -321,14 +323,14 @@ C--   Update residual by adding divergence in X-direction of var.transport
 C-    fill diagnostics:
       IF ( diagAdvVarE .OR. diagNumDf1 .OR. diagNumDif ) THEN
         diagName = 'VTRx'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,dBl,bi,bj,myThid )
       ENDIF
       IF ( diagAdvVarE .OR. diagNumDf1 ) THEN
         diagName = 'VPRx'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,dBl,bi,bj,myThid )
        IF ( .NOT.trMultiDimAdvec ) THEN
         diagName = 'SqDx'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,dBl,bi,bj,myThid )
        ENDIF
       ENDIF
 
@@ -399,14 +401,14 @@ C--   Update residual by adding divergence in Y-direction of var.transport
 C-    fill diagnostics:
       IF ( diagAdvVarE .OR. diagNumDf1 .OR. diagNumDif ) THEN
         diagName = 'VTRy'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,dBl,bi,bj,myThid )
       ENDIF
       IF ( diagAdvVarE .OR. diagNumDf1 ) THEN
         diagName = 'VPRy'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,dBl,bi,bj,myThid )
        IF ( .NOT.trMultiDimAdvec ) THEN
         diagName = 'SqDy'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,dBl,bi,bj,myThid )
        ENDIF
       ENDIF
 
@@ -462,7 +464,7 @@ c          barT2 = ( diagT2Kp(i,j) + diagT2(i,j) )*halfRL
          ENDDO
         ENDDO
         diagName = 'VTRr'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,dBl,bi,bj,myThid )
 C--   Update residual by adding divergence in R-direction of var.transport
 C     account for lower interf flux:
         DO j=1-OLy,sNy+OLy
@@ -475,21 +477,21 @@ C     added to level k+1, never called with k+1 = 1 --> counter not incremented
         diagName = 'VRes'//diagSufx
         tmpFac = -rkSign
         CALL DIAGNOSTICS_SCALE_FILL( diagVTR, tmpFac, 1, diagName,
-     &                         k+1, 1, 2, bi, bj, myThid )
+     &                         k+1, 1, -2, bi, bj, myThid )
       ENDIF
       IF ( diagNumDif ) THEN
         diagName = 'VRes'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,dBl,bi,bj,myThid )
       ENDIF
 C-    fill diagnostics:
       IF ( k.LT.Nr .AND. ( diagAdvVarE .OR. diagNumDf1 ) ) THEN
         diagName = 'VTRr'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,dBl,bi,bj,myThid )
         diagName = 'VPRr'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k+1,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k+1,1,dBl,bi,bj,myThid )
        IF ( .NOT.trMultiDimAdvec ) THEN
         diagName = 'SqDr'//diagSufx
-        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k+1,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( diagSqD,diagName,k+1,1,dBl,bi,bj,myThid )
        ENDIF
       ENDIF
 

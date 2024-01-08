@@ -625,87 +625,87 @@ C-      keep advective flux (for diagnostics)
            ENDDO
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( ( diagNumDf2 .OR. diagNumDf1 ) .AND. fwdSqGrad ) THEN
-          DO j=1,sNy
-           DO i=1-OLx+2,sNx+OLx-1
-            delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
-            diagSqD(i,j) = delTx*delTx*xA(i,j)
+          IF ( ( diagNumDf2 .OR. diagNumDf1 ) .AND. fwdSqGrad ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
+             diagSqD(i,j) = delTx*delTx*xA(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-        ENDIF
-        IF ( diagNumDf2 ) THEN
-         DO j=1,sNy
-          DO i=1-OLx+1,sNx+OLx-1
-           diagT2(i,j) = ( diagTr(i,j) * localTij(i,j) )
-           diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
-          ENDDO
-         ENDDO
-         DO j=1,sNy
-          DO i=1-OLx+2,sNx+OLx-1
-           delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
-           barTx = ( diagTr(i,j) + diagTr(i-1,j) )*halfRL
+          ENDIF
+          IF ( diagNumDf2 ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+1,sNx+OLx-1
+             diagT2(i,j) = ( diagTr(i,j) * localTij(i,j) )
+             diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
+            ENDDO
+           ENDDO
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
+             barTx = ( diagTr(i,j) + diagTr(i-1,j) )*halfRL
 C- notes: masking delT2 is (most likely) not necessary
-           delT2 = ( diagT2(i,j) - diagT2(i-1,j) )*maskW(i,j,k,bi,bj)
-           barT2 = ( diagT2(i,j) + diagT2(i-1,j) )*halfRL
-           diagVTR(i,j) = twoRL*afx(i,j)*barTx
-     &                  - uTrans(i,j)*barT2
-           diagVPR(i,j) = twoRL*afx(i,j)*delTx
-     &                  - uTrans(i,j)*delT2
-           IF ( .NOT.fwdSqGrad )
-     &     diagSqD(i,j) = delTx*delTx*xA(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDf1 ) THEN
-         DO j=1,sNy
-          DO i=1-OLx+1,sNx+OLx-1
-           diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
-          ENDDO
-         ENDDO
+             delT2 = ( diagT2(i,j) - diagT2(i-1,j) )*maskW(i,j,k,bi,bj)
+             barT2 = ( diagT2(i,j) + diagT2(i-1,j) )*halfRL
+             diagVTR(i,j) = twoRL*afx(i,j)*barTx
+     &                    - uTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*afx(i,j)*delTx
+     &                    - uTrans(i,j)*delT2
+             IF ( .NOT.fwdSqGrad )
+     &       diagSqD(i,j) = delTx*delTx*xA(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDf1 ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+1,sNx+OLx-1
+             diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
+            ENDDO
+           ENDDO
 C--   Compute 2nd Order advective flux in X, to substract to Advective Flux;
 C     this gives the numerical-diffusion flux; then, to get the effect on
 C     tracer variance, multiply by the gradient in X
-         DO j=1,sNy
-          DO i=1-OLx+2,sNx+OLx-1
-           delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
-           barTx = ( diagTr(i,j) + diagTr(i-1,j) )*halfRL
-           barT2 = ( diagTr(i,j) * diagTr(i,j)
-     &             + diagTr(i-1,j)*diagTr(i-1,j) )*halfRL
-           diagVTR(i,j) = twoRL*afx(i,j)*barTx
-     &                  - uTrans(i,j)*barT2
-           diagVPR(i,j) = twoRL*( afx(i,j) - uTrans(i,j)*barTx )*delTx
-           IF ( .NOT.fwdSqGrad )
-     &     diagSqD(i,j) = delTx*delTx*xA(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDif ) THEN
-         DO j=1,sNy
-          DO i=1-OLx+2,sNx+OLx-1
-           IF ( uTrans(i,j).EQ.zeroRL ) THEN
-             diagVTR(i,j) = 0.
-           ELSE
-             diagVTR(i,j) = afx(i,j)*afx(i,j)/uTrans(i,j)
-           ENDIF
-          ENDDO
-         ENDDO
-         DO j=1,sNy
-          DO i=1-OLx+2,sNx+OLx-2
-           diagVPR(i,j) = diagVPR(i,j)
-     &                  - ( diagVTR(i,j) - diagVTR(i+1,j) )
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDf2 .OR. diagNumDf1 .OR. diagNumDif ) THEN
-         diagName = 'VTRx'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,-2,bi,bj,myThid )
-        ENDIF
-        IF ( diagNumDf2 .OR. diagNumDf1 ) THEN
-         diagName = 'VPRx'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,-2,bi,bj,myThid )
-         diagName = 'SqDx'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1, 2,bi,bj,myThid )
-        ENDIF
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             delTx = ( diagTr(i,j) - diagTr(i-1,j) )*maskW(i,j,k,bi,bj)
+             barTx = ( diagTr(i,j) + diagTr(i-1,j) )*halfRL
+             barT2 = ( diagTr(i,j) * diagTr(i,j)
+     &               + diagTr(i-1,j)*diagTr(i-1,j) )*halfRL
+             diagVTR(i,j) = twoRL*afx(i,j)*barTx
+     &                    - uTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*( afx(i,j) - uTrans(i,j)*barTx )*delTx
+             IF ( .NOT.fwdSqGrad )
+     &       diagSqD(i,j) = delTx*delTx*xA(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDif ) THEN
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-1
+             IF ( uTrans(i,j).EQ.zeroRL ) THEN
+               diagVTR(i,j) = 0.
+             ELSE
+               diagVTR(i,j) = afx(i,j)*afx(i,j)/uTrans(i,j)
+             ENDIF
+            ENDDO
+           ENDDO
+           DO j=1,sNy
+            DO i=1-OLx+2,sNx+OLx-2
+             diagVPR(i,j) = diagVPR(i,j)
+     &                    - ( diagVTR(i,j) - diagVTR(i+1,j) )
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDf2 .OR. diagNumDf1 .OR. diagNumDif ) THEN
+           diagName = 'VTRx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
+          IF ( diagNumDf2 .OR. diagNumDf1 ) THEN
+           diagName = 'VPRx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'SqDx'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C-     end if/else update overlap-Only
@@ -934,87 +934,87 @@ C-      keep advective flux (for diagnostics)
            ENDDO
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( ( diagNumDf2 .OR. diagNumDf1 ) .AND. fwdSqGrad ) THEN
-          DO j=1-OLy+2,sNy+OLy-1
-           DO i=1,sNx
-            delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
-            diagSqD(i,j) = delTy*delTy*yA(i,j)
+          IF ( ( diagNumDf2 .OR. diagNumDf1 ) .AND. fwdSqGrad ) THEN
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
+             diagSqD(i,j) = delTy*delTy*yA(i,j)
+            ENDDO
            ENDDO
-          ENDDO
-        ENDIF
-        IF ( diagNumDf2 ) THEN
-         DO j=1-OLy+1,sNy+OLy-1
-          DO i=1,sNx
-           diagT2(i,j) = ( diagTr(i,j) * localTij(i,j) )
-           diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
-          ENDDO
-         ENDDO
-         DO j=1-OLy+2,sNy+OLy-1
-          DO i=1,sNx
-           delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
-           barTy = ( diagTr(i,j) + diagTr(i,j-1) )*halfRL
+          ENDIF
+          IF ( diagNumDf2 ) THEN
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=1,sNx
+             diagT2(i,j) = ( diagTr(i,j) * localTij(i,j) )
+             diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
+            ENDDO
+           ENDDO
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
+             barTy = ( diagTr(i,j) + diagTr(i,j-1) )*halfRL
 C- notes: masking delT2 is (most likely) not necessary
-           delT2 = ( diagT2(i,j) - diagT2(i,j-1) )*maskS(i,j,k,bi,bj)
-           barT2 = ( diagT2(i,j) + diagT2(i,j-1) )*halfRL
-           diagVTR(i,j) = twoRL*afy(i,j)*barTy
-     &                  - vTrans(i,j)*barT2
-           diagVPR(i,j) = twoRL*afy(i,j)*delTy
-     &                  - vTrans(i,j)*delT2
-           IF ( .NOT.fwdSqGrad )
-     &     diagSqD(i,j) = delTy*delTy*yA(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDf1 ) THEN
-         DO j=1-OLy+1,sNy+OLy-1
-          DO i=1,sNx
-           diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
-          ENDDO
-         ENDDO
+             delT2 = ( diagT2(i,j) - diagT2(i,j-1) )*maskS(i,j,k,bi,bj)
+             barT2 = ( diagT2(i,j) + diagT2(i,j-1) )*halfRL
+             diagVTR(i,j) = twoRL*afy(i,j)*barTy
+     &                    - vTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*afy(i,j)*delTy
+     &                    - vTrans(i,j)*delT2
+             IF ( .NOT.fwdSqGrad )
+     &       diagSqD(i,j) = delTy*delTy*yA(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDf1 ) THEN
+           DO j=1-OLy+1,sNy+OLy-1
+            DO i=1,sNx
+             diagTr(i,j) = ( diagTr(i,j) + localTij(i,j) )*halfRL
+            ENDDO
+           ENDDO
 C--   Compute 2nd Order advective flux in Y, to substract to Advective Flux;
 C     this gives the numerical-diffusion flux; then, to get the effect on
 C     tracer variance, multiply by by the gradient in Y
-         DO j=1-OLy+2,sNy+OLy-1
-          DO i=1,sNx
-           delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
-           barTy = ( diagTr(i,j) + diagTr(i,j-1) )*halfRL
-           barT2 = ( diagTr(i,j) * diagTr(i,j)
-     &             + diagTr(i,j-1)*diagTr(i,j-1) )*halfRL
-           diagVTR(i,j) = twoRL*afy(i,j)*barTy
-     &                  - vTrans(i,j)*barT2
-           diagVPR(i,j) = twoRL*( afy(i,j) - vTrans(i,j)*barTy )*delTy
-           IF ( .NOT.fwdSqGrad )
-     &     diagSqD(i,j) = delTy*delTy*yA(i,j)
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDif ) THEN
-         DO j=1-OLy+2,sNy+OLy-1
-          DO i=1,sNx
-           IF ( vTrans(i,j).EQ.zeroRL ) THEN
-             diagVTR(i,j) = 0.
-           ELSE
-             diagVTR(i,j) = afy(i,j)*afy(i,j)/vTrans(i,j)
-           ENDIF
-          ENDDO
-         ENDDO
-         DO j=1-OLy+2,sNy+OLy-2
-          DO i=1,sNx
-           diagVPR(i,j) = diagVPR(i,j)
-     &                  - ( diagVTR(i,j) - diagVTR(i,j+1) )
-          ENDDO
-         ENDDO
-        ENDIF
-        IF ( diagNumDf2 .OR. diagNumDf1 .OR. diagNumDif ) THEN
-         diagName = 'VTRy'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,-2,bi,bj,myThid )
-        ENDIF
-        IF ( diagNumDf2 .OR. diagNumDf1 ) THEN
-         diagName = 'VPRy'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,-2,bi,bj,myThid )
-         diagName = 'SqDy'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1, 2,bi,bj,myThid )
-        ENDIF
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             delTy = ( diagTr(i,j) - diagTr(i,j-1) )*maskS(i,j,k,bi,bj)
+             barTy = ( diagTr(i,j) + diagTr(i,j-1) )*halfRL
+             barT2 = ( diagTr(i,j) * diagTr(i,j)
+     &               + diagTr(i,j-1)*diagTr(i,j-1) )*halfRL
+             diagVTR(i,j) = twoRL*afy(i,j)*barTy
+     &                    - vTrans(i,j)*barT2
+             diagVPR(i,j) = twoRL*( afy(i,j) - vTrans(i,j)*barTy )*delTy
+             IF ( .NOT.fwdSqGrad )
+     &       diagSqD(i,j) = delTy*delTy*yA(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDif ) THEN
+           DO j=1-OLy+2,sNy+OLy-1
+            DO i=1,sNx
+             IF ( vTrans(i,j).EQ.zeroRL ) THEN
+               diagVTR(i,j) = 0.
+             ELSE
+               diagVTR(i,j) = afy(i,j)*afy(i,j)/vTrans(i,j)
+             ENDIF
+            ENDDO
+           ENDDO
+           DO j=1-OLy+2,sNy+OLy-2
+            DO i=1,sNx
+             diagVPR(i,j) = diagVPR(i,j)
+     &                    - ( diagVTR(i,j) - diagVTR(i,j+1) )
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( diagNumDf2 .OR. diagNumDf1 .OR. diagNumDif ) THEN
+           diagName = 'VTRy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
+          IF ( diagNumDf2 .OR. diagNumDf1 ) THEN
+           diagName = 'VPRy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+           diagName = 'SqDy'//diagSufx
+           CALL DIAGNOSTICS_FILL( diagSqD,diagName,k,1,2,bi,bj,myThid )
+          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C      end if/else update overlap-Only
@@ -1058,13 +1058,13 @@ C-    horizontal advection done; store intermediate result in 3D array:
         diagName = 'ADVy'//diagSufx
         CALL DIAGNOSTICS_FILL( afy, diagName, k,1, 2,bi,bj, myThid )
        ENDIF
-        IF ( diagNumDif ) THEN
+       IF ( diagNumDif ) THEN
 C--     Residual is Total change of variance (delT2) per time unit
 C       plus divergence of variance transport (lower interf flux).
 C       Here we only add div of horiz flux ; the rest will be added later
-          diagName = 'VRes'//diagSufx
-          CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,-2,bi,bj,myThid )
-        ENDIF
+        diagName = 'VRes'//diagSufx
+        CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+       ENDIF
 #ifdef ALLOW_LAYERS
        IF ( useLayers ) THEN
         CALL LAYERS_FILL(afx,trIdentity,'AFX',k,1,2,bi,bj,myThid)
@@ -1371,15 +1371,15 @@ c          barT2 = ( diagT2(i,j) + localT2 )*halfRL
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C--     residual is Total change of variance (delT2) per time unit
-            localTr = rA(i,j,bi,bj)*deepFac2C(k)
-     &               *rhoFacC(k)*drF(k)*hFacC(i,j,k,bi,bj)
-            localT2 = tracer(i,j,k,bi,bj)*tracer(i,j,k,bi,bj)*localTr
+           localTr = rA(i,j,bi,bj)*deepFac2C(k)
+     &              *rhoFacC(k)*drF(k)*hFacC(i,j,k,bi,bj)
+           localT2 = tracer(i,j,k,bi,bj)*tracer(i,j,k,bi,bj)*localTr
 #ifdef GAD_MULTIDIM_COMPRESSIBLE
-            delT2 = localTij(i,j)*localTij(i,j)*localVol(i,j)
+           delT2 = localTij(i,j)*localTij(i,j)*localVol(i,j)
 #else
-            delT2 = localTij(i,j)*localTij(i,j)*localTr
+           delT2 = localTij(i,j)*localTij(i,j)*localTr
 #endif
-            diagVPR(i,j) = ( delT2 - localT2 )/ deltaTLev(k)
+           diagVPR(i,j) = ( delT2 - localT2 )/ deltaTLev(k)
           ENDDO
          ENDDO
          IF ( k.LT.Nr ) THEN
@@ -1402,7 +1402,7 @@ C--     plus divergence of variance transport (lower interf flux)
            ENDDO
           ENDDO
           diagName = 'VTRr'//diagSufx
-          CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,-2,bi,bj,myThid )
+          CALL DIAGNOSTICS_FILL( diagVTR,diagName,k,1,2,bi,bj,myThid )
 C--     plus divergence of variance transport (upper interf flux)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -1410,17 +1410,17 @@ C--     plus divergence of variance transport (upper interf flux)
            ENDDO
           ENDDO
          ENDIF
-          diagName = 'VRes'//diagSufx
-          CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,2,bi,bj,myThid )
+         diagName = 'VRes'//diagSufx
+         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k,1,-2,bi,bj,myThid )
         ENDIF
         IF ( useDiagnostics .AND.  k.NE.Nr .AND.
      &       ( diagNumDf2.OR.diagNumDf1 ) ) THEN
          diagName = 'VTRr'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,-2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( diagVTR,diagName,k+1,1,2,bi,bj,myThid )
          diagName = 'VPRr'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k+1,1,-2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( diagVPR,diagName,k+1,1,2,bi,bj,myThid )
          diagName = 'SqDr'//diagSufx
-         CALL DIAGNOSTICS_FILL( diagSqD,diagName,k+1,1,-2,bi,bj,myThid )
+         CALL DIAGNOSTICS_FILL( diagSqD,diagName,k+1,1,2,bi,bj,myThid )
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
