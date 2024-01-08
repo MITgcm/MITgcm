@@ -2,53 +2,59 @@ This directory contains code to compile the optimization routine
 `optim.x`.
 
 Note, that there is an alternative optimization package [optim_m1qn3](
-https://github.com/mjlosch/optim_m1qn3) that is based on the latest
-(and last) version of
+https://github.com/mjlosch/optim_m1qn3) that is based on the latest (and last)
+version of
 [m1qn3](https://who.rocq.inria.fr/Jean-Charles.Gilbert/modulopt/optimization-routines/m1qn3/m1qn3.html).
 
-`optim.x` requires the library `lsopt_ecco` and the BLAS library
-`blas`. The build procedure is a two step process (first build
-`lsopt_ecco` and then `optim.x` ) and by no means foolproof. It
-requires that you modify the sample Makefile in this directory and in
-`../lsopt`:
+`optim.x` requires the library `lsopt_ecco` and the BLAS library `blas`. The
+build procedure is a two step process (first build `lsopt_ecco` and `blas`, and
+then `optim.x` ) and by no means foolproof. It requires that you generate a
+makefile in this directory and modify the sample Makefile in `../lsopt`. For
+illustration purposes, let us assume that we want to generate an `optim.x` for
+`myExp=tutorial_global_oce_optim` in `MITgcm/verification`.
 
-1. both here and in `../lsopt` adjust the compiler and compiler flags
-   in the Makefiles. Using the same compiler and flags as for building
-   the "mitgcmuv_ad" executable is probably the best guess. The
-   default works for a standard Ubuntu system, but not e.g. for a Mac.
+- Building library `lsopt_ecco`: In `MITgcm/lsopt` adjust the compiler and
+  compiler flags in the Makefile. Using the same compiler and flags as for
+  building the `mitgcmuv_ad` executable in `$myExp` is probably the best
+  guess. The default works for a standard Ubuntu system, but not e.g. for a
+  Mac. There's a Makefile that has worked for MacOS: `Makefile_macos`, but may
+  require adjustment. After adjusting the Makefile, compile the libraries like
+  this:
 
-2. add the path to the build directory where you have built your
-   mitgcmuv_ad. This is necessary for the Makefile to pull the size of
-   the control vector and other things.
-
-3. compile like this:
 ```
 cd ../lsopt
 make
+```
+The resulting libraries `lsopt_ecco` and `blas` will be used in the second
+step.
+
+- To generate the makefile based on the setting in `$myExp` and build
+  `optim.x`, change into `optim` and run
+
+```
 cd ../optim
+./prep_make ../../MITgcm/verification/${myExp}/build
+make clean
+make depend
 make
 ```
 
-The default setting in `lsopt/Makefile` and `optim/Makefile` can be
-used on an Ubuntu system (last tested on Ubuntu 20.04.3 LTS with gcc
-9.3.0) to compile `lsopt` and `optim` after running the
-`tutorial_global_oce_optim` like this:
+`prep_make` grabs the compiler parameters from `$myExp`. In some cases you may
+have to adjust `makefile_templ` before runningfirst (e.g. for the path to a
+non-standard `makedepend`).
 
-```
-cd MITgcm/verification
-./testreport -t tutorial_global_oce_optim -adm -ncad -devel
-cd ../lsopt
-make
-cd ../optim
-make
-```
-because `INCLUDEDIRS` points to `../verification/tutorial_global_oce_optim/build/`.
+It may make sense to first generate the makefile in `MITgcm/optim` with
+`prep_make`, and then use the parameters in the generated makefile to adjust
+the default makefile in `MITgcm/lsopt`, build the libraries, and then build
+`optim.x`.
 
-This is the content of the old README. It describes some sort of
-interface, i.e. the header of the control and gradient vectors written
-and read by the `mitgcmuv_ad` (and "optim.x"), see `optim_readdata.F`
-and `optim_writedata.F`. More details can be found in the [online
-manual](https://mitgcm.org/documentation) (Chapter 10).
+This is the content of the old README. It describes some sort of interface,
+i.e. the header of the control and gradient vectors written and read by the
+`mitgcmuv_ad` (and "optim.x"), see `optim_readdata.F` and
+`optim_writedata.F`. More details can be found in the [online
+manual](https://mitgcm.readthedocs.io/en/latest/ocean_state_est/ocean_state_est.html#the-line-search-optimisation-algorithm)
+(Chapter 10).
+
 ```
 c     expid           - experiment name
 c     optimcycle      - optimization no.
