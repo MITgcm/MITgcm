@@ -1,8 +1,6 @@
-Description and building instructions
--------------------------------------
+# Description and building instructions for optim.x
 
-This directory contains code to compile the optimization routine
-`optim.x`.
+This directory contains code to compile the optimization routine `optim.x`.
 
 Note, that there is an alternative optimization package [optim_m1qn3](
 https://github.com/mjlosch/optim_m1qn3) that is based on the latest (and last)
@@ -16,13 +14,14 @@ makefile in this directory and modify the sample Makefile in `../lsopt`. For
 illustration purposes, let us assume that we want to generate an `optim.x` for
 `myExp=tutorial_global_oce_optim` in `MITgcm/verification`.
 
-- Building library `lsopt_ecco`: In `MITgcm/lsopt` adjust the compiler and
-  compiler flags in the Makefile. Using the same compiler and flags as for
-  building the `mitgcmuv_ad` executable in `$myExp` is probably the best
-  guess. The default works for a standard Ubuntu system, but not e.g. for a
-  Mac. There's a Makefile that has worked for MacOS: `Makefile_macos`, but may
-  require adjustment. After adjusting the Makefile, compile the libraries like
-  this:
+## Building library `lsopt_ecco` and `blas`
+
+In `MITgcm/lsopt` adjust the compiler and compiler flags in the Makefile. Using
+the same compiler and flags as for building the `mitgcmuv_ad` executable in
+`$myExp` is probably the best guess. The default works for a standard Ubuntu
+system, but not e.g. for a Mac. There's a Makefile that has worked for MacOS:
+`Makefile_macos`, but may require adjustment. After adjusting the Makefile,
+compile the libraries like this:
 
 ```
 cd ../lsopt
@@ -31,8 +30,10 @@ make
 The resulting libraries `lsopt_ecco` and `blas` will be used in the second
 step.
 
-- To generate the makefile based on the setting in `$myExp` and build
-  `optim.x`, change into `optim` and run
+## Building `optim.x`
+
+To generate the makefile based on the setting in `$myExp` and build `optim.x`,
+change into `optim` and run
 
 ```
 cd ../optim
@@ -51,8 +52,7 @@ It may make sense to first generate the makefile in `MITgcm/optim` with
 the default makefile in `MITgcm/lsopt`, build the libraries, and then build
 `optim.x`.
 
-Backward compatibility
-----------------------
+## Backward compatibility
 
 With PR #[796](https://github.com/MITgcm/MITgcm/pull/796), the header format of
 the control and gradient vector files and the length of the stored fields has
