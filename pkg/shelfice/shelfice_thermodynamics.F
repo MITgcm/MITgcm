@@ -1,4 +1,7 @@
 #include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -46,6 +49,9 @@ C     === Global variables ===
 #endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC.h"
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -131,13 +137,35 @@ C     drKp1, recip_drLoc
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef ALLOW_STEEP_ICECAVITY
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_SHITRANSCOEFF_3D
+CADJ STORE shiTransCoeffS3d  = comlev1, key=ikey_dynamics, kind=isbyte
+#  else
+CADJ STORE shiTransCoeffS    = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+# endif
+      IF ( useSTIC ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STIC_THERMODYNAMICS',myThid)
+# endif
+C     use alternative thermodynamics that includes icefront melt processes
+       CALL TIMER_START('STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &        myThid)
+       CALL STIC_THERMODYNAMICS( myTime, myIter, myThid )
+       CALL TIMER_STOP( 'STIC_THERMODYNAMICS [DO_OCEANIC_PHYS]',
+     &       myThid)
+      ELSE
+#else
+      IF ( .TRUE. ) THEN
+#endif /* ALLOW_STEEP_ICECAVITY */
 #ifdef SHI_ALLOW_GAMMAFRICT
 #ifdef ALLOW_AUTODIFF
 C     re-initialize here again, curtesy to TAF
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy,sNy+OLy
-         DO I = 1-OLx,sNx+OLx
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
           shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
          ENDDO
@@ -718,6 +746,8 @@ C     Friction velocity
 #endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+C     not useSTIC
+      ENDIF
 
 #endif /* ALLOW_SHELFICE */
       RETURN

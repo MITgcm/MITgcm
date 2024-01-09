@@ -1,0 +1,13 @@
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
+ &SHELFICE_PARM01
+ SHELFICEadvDiffHeatFlux = .TRUE.,
+ SHELFICEtopoFile='icetopo.exp1',
+ SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
+ SHELFICEconserve = .TRUE.,
+ SHELFICEkappa = 0.,
+# defaults to no_slip_bottom (=F in input_ad/data)
+#no_slip_shelfice = .FALSE.,
+ SHELFICEwriteState = .TRUE.,
+ &

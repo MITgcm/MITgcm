@@ -130,6 +130,10 @@ CADJ STORE phiHydLow = comlev1, key = ikey_dynamics, kind = isbyte
 # include "shelfice_ad_check_lev1_dir.h"
 #endif
 
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "stic_ad_check_lev1_dir.h"
+#endif
+
 #ifdef ALLOW_RBCS
 # include "rbcs_ad_check_lev1_dir.h"
 #endif /* ALLOW_RBCS */

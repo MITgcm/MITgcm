@@ -82,6 +82,8 @@ C       |-- STREAMICE_INIT_FIXED
 C       |
 C       |-- SHELFICE_INIT_FIXED
 C       |
+C       |-- STIC_INIT_FIXED
+C       |
 C       |-- ICEFRONT_INIT_FIXED
 C       |
 C       |-- FRAZIL_INIT_FIXED
@@ -449,6 +451,15 @@ C--   Initialise fixed array for Float pkg
         CALL SHELFICE_INIT_FIXED( myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+      IF (useSTIC) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('STIC_INIT_FIXED',myThid)
+# endif
+        CALL STIC_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN

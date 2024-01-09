@@ -14,8 +14,8 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
+#ifdef ALLOW_STEEP_ICECAVITY
+# include "STIC_OPTIONS.h"
 #endif
 #include "AD_CONFIG.h"
 
@@ -186,13 +186,17 @@ C     problem occurs
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
-# ifdef ALLOW_SHELFICE
+# if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
 #  ifndef SHI_ALLOW_GAMMAFRICT
         CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
         CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
 #  else
         CALL ADEXCH_XY_RL( adshiCDragFld, myThid )
 #  endif
+# endif
+# if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+        CALL ADEXCH_3D_RL( adshiTransCoeffT3d, myThid )
+        CALL ADEXCH_3D_RL( adshiTransCoeffS3d, myThid )
 # endif
 
 #endif /* AUTODIFF_TAMC_COMPATIBILITY */
@@ -279,7 +283,7 @@ C-----------------------------------------------------------------------
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif
-# ifdef ALLOW_SHELFICE
+# if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffT,
      &                 'ADJshict','ADJshict.',
@@ -292,6 +296,14 @@ C-----------------------------------------------------------------------
      &                 'ADJshicd','ADJshicd.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
+# endif
+# if ( defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D )
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffT3d,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, adshiTransCoeffS3d,
+     &                 'ADJshics','ADJshics.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
@@ -384,7 +396,7 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_SHELFICE
+# if (defined ALLOW_SHELFICE && !defined ALLOW_SHITRANSCOEFF_3D)
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
      &                 'ADJshict','ADJshict.',
@@ -397,6 +409,14 @@ C-----------------------------------------------------------------------
      &                 'ADJshicd','ADJshicd.',
      &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 #  endif
+# endif
+# if (defined ALLOW_SHELFICE && defined ALLOW_SHITRANSCOEFF_3D)
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffT3d%d,
+     &                 'ADJshict','ADJshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, shiTransCoeffS3d%d,
+     &                 'ADJshics','ADJshics.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_DEPTH_CONTROL
@@ -505,10 +525,17 @@ C     dumpAdVarExch.NE.2
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
+#  ifdef ALLOW_SHITRANSCOEFF_3D
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshict', adshiTransCoeffT3d, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &                     'adshics', adshiTransCoeffS3d, myThid)
+#  else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshics', adshiTransCoeffS, myThid)
+#  endif
 # else
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshicd', adshiCDragFld, myThid)
