@@ -57,12 +57,12 @@ the default makefile in `MITgcm/lsopt`, build the libraries, and then build
 With PR #[796](https://github.com/MITgcm/MITgcm/pull/796), the header format of
 the control and gradient vector files and the length of the stored fields has
 changed. To read old gradient vector files (typically called
-`ecco_cost_ecco_cost_MIT_CE_000.opt0000` for the first optimisation call) with
-`optim.x`, define CPP flag `READ_OLD_CTRL_PACK_FILE` in `CTRL_OPTIONS.h` before
-compiling `optim.x`. The resulting `optim.x` will write the new control vector
-(typically called `ecco_ctrl_MIT_CE_000.opt0001`) in the new format. After the
-new control vector has been written, `READ_OLD_CTRL_PACK_FILE` should be reset
-to `undef` again (and `optim.x` recompiled).
+`ecco_cost_MIT_CE_000.opt0000` for the first optimisation call) with `optim.x`,
+define CPP flag `READ_OLD_CTRL_PACK_FILE` in `CTRL_OPTIONS.h` before compiling
+`optim.x`. The resulting `optim.x` will write the new control vector (typically
+called `ecco_ctrl_MIT_CE_000.opt0001`) in the new format. After the new control
+vector has been written, `READ_OLD_CTRL_PACK_FILE` should be reset to `undef`
+again (and `optim.x` recompiled).
 
 This is the content of the old README. It describes some sort of interface,
 i.e. the header of the control and gradient vectors written and read by the
