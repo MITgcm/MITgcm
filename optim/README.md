@@ -10,17 +10,17 @@ version of
 `optim.x` requires the library `lsopt_ecco` and the BLAS library `blas`. The
 build procedure is a two step process (first build `lsopt_ecco` and `blas`, and
 then `optim.x` ) and by no means foolproof. It requires that you generate a
-makefile in this directory and modify the sample Makefile in `../lsopt`. For
+makefile in this directory and modify the sample `Makefile` in `../lsopt`. For
 illustration purposes, let us assume that we want to generate an `optim.x` for
 `myExp=tutorial_global_oce_optim` in `MITgcm/verification`.
 
 ## Building library `lsopt_ecco` and `blas`
 
-In `MITgcm/lsopt` adjust the compiler and compiler flags in the Makefile. Using
+In `MITgcm/lsopt` adjust the compiler and compiler flags in `Makefile`. Using
 the same compiler and flags as for building the `mitgcmuv_ad` executable in
 `$myExp` is probably the best guess. The default works for a standard Ubuntu
-system, but not e.g. for a Mac. There's a Makefile that has worked for MacOS:
-`Makefile_macos`, but may require adjustment. After adjusting the Makefile,
+system, but not e.g. for a Mac. There's a makefile that has worked for MacOS:
+`Makefile_macos`, but may require adjustment. After adjusting the makefile,
 compile the libraries like this:
 
 ```
@@ -32,7 +32,7 @@ step.
 
 ## Building `optim.x`
 
-To generate the makefile based on the setting in `$myExp` and build `optim.x`,
+To generate the makefile based on the setting in `$myExp` and to build `optim.x`,
 change into `optim` and run
 
 ```
@@ -43,13 +43,13 @@ make depend
 make
 ```
 
-`prep_make` grabs the compiler parameters from `$myExp`. In some cases you may
-have to adjust `makefile_templ` before runningfirst (e.g. for the path to a
-non-standard `makedepend`).
+`prep_make` grabs the compiler parameters from `$myExp` and generates a `Makefile`.
+In some cases you may have to adjust `makefile_templ`(e.g. for the path to a
+non-standard `makedepend`) before running `prep_make`.
 
 It may make sense to first generate the makefile in `MITgcm/optim` with
-`prep_make`, and then use the parameters in the generated makefile to adjust
-the default makefile in `MITgcm/lsopt`, build the libraries, and then build
+`prep_make`, and then use the parameters in the generated `Makefile` to adjust
+the sample `Makefile` in `MITgcm/lsopt`, build the libraries, and then build
 `optim.x`.
 
 ## Backward compatibility
@@ -59,10 +59,11 @@ the control and gradient vector files and the length of the stored fields has
 changed. To read old gradient vector files (typically called
 `ecco_cost_MIT_CE_000.opt0000` for the first optimisation call) with `optim.x`,
 define CPP flag `READ_OLD_CTRL_PACK_FILE` in `CTRL_OPTIONS.h` before compiling
-`optim.x`. The resulting `optim.x` will write the new control vector (typically
-called `ecco_ctrl_MIT_CE_000.opt0001`) in the new format. After the new control
-vector has been written, `READ_OLD_CTRL_PACK_FILE` should be reset to `undef`
-again (and `optim.x` recompiled).
+`optim.x`. The resulting `optim.x` will read the old format gradient vector and
+write the new control vector (typically called `ecco_ctrl_MIT_CE_000.opt0001`)
+in the new format. After the new control vector has been written,
+`READ_OLD_CTRL_PACK_FILE` should be reset to `undef` again (and `optim.x`
+recompiled) for the next optimisation.
 
 This is the content of the old README. It describes some sort of interface,
 i.e. the header of the control and gradient vectors written and read by the
