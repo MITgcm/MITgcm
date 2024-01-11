@@ -587,7 +587,7 @@ C     == Global variables ===
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
