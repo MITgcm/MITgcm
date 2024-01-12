@@ -298,7 +298,7 @@ CML      ENDIF
      &   'pkg/seaice IGNORES Ice-Shelf retreat/advance'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: ',
-     &   ' does not work with SHI_update_kTopC=T'
+     &   ' and does not work with SHI_update_kTopC=T'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
