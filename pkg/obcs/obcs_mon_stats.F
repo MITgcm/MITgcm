@@ -74,8 +74,10 @@ C     !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     j, k     :: loop indices
 C     ii, iB   :: local index of open boundary
+      INTEGER k
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
       INTEGER bi, bj
-      INTEGER j, k, km
+      INTEGER j, km
       INTEGER ii, iB
       LOGICAL noPnts
       _RL tmpA, tmpV, tmpMask
@@ -83,6 +85,7 @@ C     ii, iB   :: local index of open boundary
       _RL tileArea(nSx,nSy)
       _RL tileMean(nSx,nSy)
       _RL tileVar (nSx,nSy)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -306,8 +309,10 @@ C     !LOCAL VARIABLES:
 C     bi, bj   :: tile indices
 C     i, k     :: loop indices
 C     jj, jB   :: local index of open boundary
+      INTEGER k
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
       INTEGER bi, bj
-      INTEGER i, k, km
+      INTEGER i, km
       INTEGER jj, jB
       LOGICAL noPnts
       _RL tmpA, tmpV, tmpMask
@@ -315,6 +320,7 @@ C     jj, jB   :: local index of open boundary
       _RL tileArea(nSx,nSy)
       _RL tileMean(nSx,nSy)
       _RL tileVar (nSx,nSy)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
