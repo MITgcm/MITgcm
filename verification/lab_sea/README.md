@@ -5,27 +5,31 @@ Labrador Sea Region with Sea-Ice
 This example sets up a small (20x16x23) Labrador Sea experiment
 coupled to a dynamic thermodynamic sea-ice model (MITgcm Documentation 8.6.2).
 
-The domain of integration spans $[280, 320]^\circ$E and $[46, 78]^\circ$N.
+The domain of integration spans $`[280, 320]^\circ`$E and $`[46, 78]^\circ`$N.
 Horizontal grid spacing is 2 degrees.
 The 23 vertical levels and the bathymetry file
+
 ```
   bathyFile      = 'bathy.labsea1979'
 ```
-are obtained from the the 2$^\circ$ ECCO configuration.
+are obtained from the the 2$`^\circ`$ECCO configuration.
 
 Integration is initialized from annual-mean Levitus climatology
+
 ```
  hydrogThetaFile = 'LevCli_temp.labsea1979'
  hydrogSaltFile  = 'LevCli_salt.labsea1979'
 ```
 
 Surface salinity relaxation is to the monthly mean Levitus climatology
+
 ```
  saltClimFile    = 'SSS.labsea1979'
 ```
 
 Forcing files are a 1979-1999 monthly climatology computed from the
 NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
+
 ```
   uwindFile      = 'u10m.labsea1979'  # 10-m zonal wind
   vwindFile      = 'v10m.labsea1979'  # 10-m meridional wind
@@ -53,6 +57,7 @@ To compile the adjoint, one must enable the divded adjoint with the
 compile-time flag `USE_DIVA`, the location of which is specified in 
 the file `build/genmake_local`.
 To wit,
+
 ```
   USE_DIVA=1
 ```
@@ -60,10 +65,12 @@ To wit,
 To compile the adjoint without the divided adjoint, the compile-time
 flag `ALLOW_DIVIDED_ADJOINT` in `code_ad/AUTODIFF_OPTIONS.h` should
 be changed from
+
 ```
   #define ALLOW_DIVIDED_ADJOINT
 ```
 to
+
 ```
   #undef ALLOW_DIVIDED_ADJOINT
 ```
@@ -73,12 +80,14 @@ this `genmake_local` file and so it knows to use the divided adjoint.
 
 ## Instructions
 Navigate to experiment directory
+
 ```
   cd MITgcm/verification/lab_sea
 ```
 
 ### 1-CPU forward experiment
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
@@ -88,6 +97,7 @@ Configure and compile the code:
 ```
 
 To run:
+
 ```
   cd run
   ln -s ../input/* .
@@ -97,12 +107,14 @@ To run:
 ```
 
 There is comparison output in the directory:
+
 ```
   results/output.txt
 ```
 
 Use matlab script `lookat_ice.m` to compare the output
  with that from `checkpoint51f` sea-ice code:
+
 ```
   cd ../../../verification/lab_sea/matlab
   matlab
@@ -111,6 +123,7 @@ Use matlab script `lookat_ice.m` to compare the output
 
 ### 2-CPU forward experiment
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
@@ -121,6 +134,7 @@ Configure and compile the code:
 ```
 
 To run:
+
 ```
   cd run
   ln -s ../input/* .
@@ -130,6 +144,7 @@ To run:
 
 ### 1-CPU adjoint experiment
 Configure and compile the code:
+
 ```
   cd build
   ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
@@ -138,6 +153,7 @@ Configure and compile the code:
 ```
 
 To run:
+
 ```
   cd run
   ln -s ../input_ad/* .
@@ -150,6 +166,7 @@ To run:
 
 ### Testing useExfYearlyFields (Note: might not be up-to-date)
 Configure and compile the code:
+
 ```
   cd MITgcm/verification/lab_sea/build
   \rm *
@@ -194,6 +211,7 @@ Configure and compile the code:
 
 ## Using testscript to test sea-ice code
 Running the testscript experiment:
+
 ```
   cd MITgcm/verification
   ./testreport -t lab_sea [-of my_platform_optionFile]
