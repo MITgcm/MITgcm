@@ -1,132 +1,156 @@
-Example: Labrador Sea Region with Sea-Ice
+Labrador Sea Region with Sea-Ice
 =========================================
 
+### Overview:
 This example sets up a small (20x16x23) Labrador Sea experiment
-coupled to a dynamic thermodynamic sea-ice model.
-A brief description of the sea-ice model is in "seaice.ps".
+coupled to a dynamic thermodynamic sea-ice model (MITgcm Documentation 8.6.2).
 
-The domain of integration spans 280E to 320E and 46N to 78N.
+The domain of integration spans $[280, 320]^\circ$E and $[46, 78]^\circ$N.
 Horizontal grid spacing is 2 degrees.
 The 23 vertical levels and the bathymetry file
-  bathyFile      = 'bathy.labsea'
-are obtained from the the 2-degree ECCO configuration.
+```
+  bathyFile      = 'bathy.labsea1979'
+```
+are obtained from the the 2$^\circ$ ECCO configuration.
 
 Integration is initialized from annual-mean Levitus climatology
- hydrogThetaFile = 'LevCli_temp.labsea'
- hydrogSaltFile  = 'LevCli_salt.labsea'
+```
+ hydrogThetaFile = 'LevCli_temp.labsea1979'
+ hydrogSaltFile  = 'LevCli_salt.labsea1979'
+```
 
 Surface salinity relaxation is to the monthly mean Levitus climatology
- saltClimFile    = 'SSS.labsea'
+```
+ saltClimFile    = 'SSS.labsea1979'
+```
 
 Forcing files are a 1979-1999 monthly climatology computed from the
-NCEP reanalysis (see pkg/seaice/SEAICE_FFIELDS.h for units and signs)
-  uwindFile      = 'u10m.labsea79'    # 10-m zonal wind
-  vwindFile      = 'v10m.labsea79'    # 10-m meridional wind
+NCEP reanalysis (see [SEAICE_PARAMS.h](https://github.com/MITgcm/MITgcm/blob/master/pkg/seaice/SEAICE_PARAMS.h) for units and signs)
+```
+  uwindFile      = 'u10m.labsea1979'  # 10-m zonal wind
+  vwindFile      = 'v10m.labsea1979'  # 10-m meridional wind
   atempFile      = 'tair.labsea1979'  # 2-m air temperature
   aqhFile        = 'qa.labsea1979'    # 2-m specific humidity
   lwdownFile     = 'flo.labsea1979'   # downward longwave radiation
   swdownFile     = 'fsh.labsea1979'   # downward shortwave radiation
   precipFile     = 'prate.labsea1979' # precipitation
+```
 
-The experiment uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
+The experiment uses `pkg/gmredi`, `pkg/kpp`, `pkg/seaice`, and `pkg/exf`.
 The test is a 1-cpu, 10-hour integration.   Both the atmospheric
-state and the open-water surface fluxes are provided by pkg/exf.
+state and the open-water surface fluxes are provided by `pkg/exf`.
 
-More pkg/seaice test experiments, configured for low and
+More `pkg/seaice` test experiments, configured for low and
 high-resolution global cube-sphere domains are described
-in MITgcm_contrib/high_res_cube/README_ice.
+in `MITgcm_contrib/high_res_cube/README_ice`.
 
-Lab Sea adjoint
-=====================================
-The code_ad directory provides files required to compile the adjoint
+## Lab Sea adjoint
+The `code_ad` directory provides files required to compile the adjoint
 version of this verification experiment.  This verification
 experiment uses the 'divided adjoint'.
 
-To compile the adjoint, one must use a special AD_OPTFILE,
-the location of which is specified in the file 'build/genmake_local'.
+To compile the adjoint, one must enable the divded adjoint with the 
+compile-time flag `USE_DIVA`, the location of which is specified in 
+the file `build/genmake_local`.
 To wit,
-AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'
+```
+  USE_DIVA=1
+```
 
 To compile the adjoint without the divided adjoint, the compile-time
-flag ALLOW_DIVIDED_ADJOINT in 'code_ad/ECCO_CPPOPTIONS.h' should
+flag `ALLOW_DIVIDED_ADJOINT` in `code_ad/AUTODIFF_OPTIONS.h` should
 be changed from
-#define ALLOW_DIVIDED_ADJOINT
+```
+  #define ALLOW_DIVIDED_ADJOINT
+```
 to
-#undef ALLOW_DIVIDED_ADJOINT
+```
+  #undef ALLOW_DIVIDED_ADJOINT
+```
 
-Note: testreport builds in the 'lab_sea/build' directory which contains
-this 'genmake_local' file and so it knows to use the 'adjoint_diva'
-AD_OPTFILE
+Note: `testreport` builds in the `lab_sea/build` directory which contains
+this `genmake_local` file and so it knows to use the divided adjoint.
 
-Using testscript to test sea-ice code
-=====================================
-
-Running the testscript experiment:
-  cd MITgcm/verification
-  ./testreport -t lab_sea [-of my_platform_optionFile]
-
-Note that fairly large differences in accuracy occur across different
-platforms.  For example, testscript comparisons between g77 (Linux)
-and f77 (SGI) generated output gives:
-
-                T           S           U           V
-C D M    c        m  s        m  s        m  s        m  s
-n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
-
-Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
-
-Instructions for generating and running a 1-CPU experiment
-==========================================================
-
+## Instructions
+Navigate to experiment directory
+```
   cd MITgcm/verification/lab_sea
+```
 
+### 1-CPU forward experiment
 Configure and compile the code:
+```
   cd build
   ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
   cd ..
+```
 
 To run:
+```
   cd run
   ln -s ../input/* .
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
   cd ..
+```
 
 There is comparison output in the directory:
+```
   results/output.txt
+```
 
-Use matlab script lookat_ice.m to compare the output
- with that from checkpoint51f sea-ice code:
+Use matlab script `lookat_ice.m` to compare the output
+ with that from `checkpoint51f` sea-ice code:
+```
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_ice
+```
 
-Instructions for generating and running a 2-CPU experiment
-==========================================================
-
-  cd MITgcm/verification/lab_sea
-
+### 2-CPU forward experiment
 Configure and compile the code:
+```
   cd build
   ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
   ln -s ../code/SIZE.h_mpi SIZE.h
   make depend
   make
   cd ..
+```
 
 To run:
+```
   cd run
   ln -s ../input/* .
   mpirun -np 2 ../build/mitgcmuv
   cd ..
+```
 
-Instructions for testing useExfYearlyFields (Note: might not be up-to-date)
-===========================================
+### 1-CPU adjoint experiment
+Configure and compile the code:
+```
+  cd build
+  ../../../tools/genmake2 -mods ../code_ad [-of my_platform_optionFile]
+  make adall
+  cd ..
+```
 
+To run:
+```
+  cd run
+  ln -s ../input_ad/* .
+  ln -s ../input/* .
+  ln -s ../../isomip/input_ad/ones_64b.bin .
+  ln -s ../build/mitgcmuv_ad .
+  ./mitgcmuv_ad > output.txt
+  cd ..
+```
+
+### Testing useExfYearlyFields (Note: might not be up-to-date)
+Configure and compile the code:
+```
   cd MITgcm/verification/lab_sea/build
   \rm *
   \cp ../code/* .
@@ -166,3 +190,25 @@ Instructions for testing useExfYearlyFields (Note: might not be up-to-date)
   \mv data_YearlyFields data
   sed 's/tics = .TRUE./tics = .FALSE./' ../input/data.pkg > data.pkg
   ../build/mitgcmuv >& output.txt &
+```
+
+## Using testscript to test sea-ice code
+Running the testscript experiment:
+```
+  cd MITgcm/verification
+  ./testreport -t lab_sea [-of my_platform_optionFile]
+```
+
+Note that fairly large differences in accuracy occur across different
+platforms.  For example, testscript comparisons between g77 (Linux)
+and f77 (SGI) generated output gives:
+
+```
+                T           S           U           V
+C D M    c        m  s        m  s        m  s        m  s
+n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+
+Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
+```
