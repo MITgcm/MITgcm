@@ -53,8 +53,8 @@ The `code_ad` directory provides files required to compile the adjoint
 version of this verification experiment.  This verification
 experiment uses the 'divided adjoint'.
 
-To compile the adjoint, one must enable the divded adjoint with the 
-compile-time flag `USE_DIVA`, the location of which is specified in 
+To compile the adjoint, one must enable the divded adjoint with the
+compile-time flag `USE_DIVA`, the location of which is specified in
 the file `build/genmake_local`.
 To wit,
 
@@ -164,16 +164,16 @@ To run:
   cd ..
 ```
 
-### Testing useExfYearlyFields (Note: might not be up-to-date)
+### Testing useExfYearlyFields
+
+(Note: might not be up-to-date)
+Set `useExfYearlyFields=.TRUE.` in `data.exf`.
 Configure and compile the code:
 
 ```
   cd MITgcm/verification/lab_sea/build
-  \rm *
-  \cp ../code/* .
-  sed 's/undef EXF_V/define EXF_V/' \
-      ../../../pkg/exf/EXF_OPTIONS.h > EXF_OPTIONS.h
-  ../../../tools/genmake2
+  make CLEAN
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make -j
   cd ../run
