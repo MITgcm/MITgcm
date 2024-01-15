@@ -141,8 +141,8 @@ C                 the current model integration.
      &                    RHOsumGlob_0, RHOsumGlob
       _RL sterGloH
       _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
-#endif
 
+#endif
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
       COMMON /ECCO_R3/
@@ -150,9 +150,15 @@ C                 the current model integration.
      &                    m_eta_dyn
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RL m_eta_dyn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-#endif
-#endif
 
+#endif
+#endif
+#ifndef ECCO_VARIABLE_AREAVOLGLOB
+      COMMON /ECCO_R4/
+     &                    eccoVol_0
+      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)      
+
+#endif
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true

@@ -428,7 +428,11 @@ cts ---
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
+#ifdef ECCO_VARIABLE_AREAVOLGLOB
      &          +tmpmsk2*tmpvol
+#else
+     &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
+#endif
 
            ENDDO ! Ends do k=1,Nr
 
