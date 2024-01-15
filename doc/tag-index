@@ -1,6 +1,50 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - put the update of kTopC code within "#ifdef ALLOW_SHELFICE_REMESHING/#endif"
+    and add run-time switch "SHI_update_kTopC" to allow to turn it off.
+  - Change the initial setting of "kTopC" to remain unaffected by machine
+    truncation error and if using SHELFICEMassStepping, set it according to
+    shelficeMassInit.
+o verification/solid-body.cs-32x32x1:
+  - update set up (faster flow, smaller planet ..) and fix initial Ps condition.
+o pkg/ggl90:
+  - revisit Langmuir Circulation (LC) mixing-length calculation: fix bugs in
+    some "mxlMaxFlag" implementation and ensure it works with P-coordinate.
+    Update vermix.gglLC ref. output and add new secondary AD test (with LC on)
+    in global_oce_latlon experiment.
+
+checkpoint68u (2023/12/10)
+o pkg/seaice:
+  - new/improved LSR convergence criteria (CPP: SEAICE_ALLOW_LSR_FLEX, run-time:
+    SEAICEuseLSRflex) accounting for both Non-Lin and Linear solver residual;
+    tested in offline_exf_seaice.dyn_lsr; also add 2-D diagnostics for residual.
+o pkg/streamice:
+  - rename STREAMICE_PETSC.h to STREAMICE_PETSC_MOD.h and rename
+    STREAMICE_ARG_PETSC_mod code module to STREAMICE_PETSC_mod;
+  - include STREAMICE_PETSC_MOD.h in src files rather than the module directly:
+    this obviates the need for alphabetical order in names or serial compilation
+o pkg/bling:
+  - fix 2 small bugs in carbonate and aragonite saturation states: a) both Ksp
+    coeff are fct of log of temperature (and not log10); b) add missing unit
+    conversion factor to carbonate variable in OmegaC & OmegaAr calculation.
+o pkg/grdchk:
+  - new S/R to get CTRL var/file name from grdchk-index ; use it to simplify
+    (with new arguments) the 3 routines that handle CTRL var/file perturbations
+  - rename grdchk_init to grdchk_get_mask ; move GRDCHK_SUMMARY call ;
+  - report (in summary & in results section) CTRL var/file name used in grdchk.
+o pkg/dic:
+  - fix loading of forcing file for the case DIC_forcingCycle = 0 ;
+  - fix inconsistent timing params for loading initial surface-silica file ;
+  - clean-up initialise-varia level S/R, now all called from dic_init_varia.F
+    and move all forcing field initialisation to dic_ini_forcing.F ;
+  - read and process pickup_dic meta file with error/warning (depending on
+    pickupStrictlyMatch = T/F) if missing file or field.
+o pkg/ctrl:
+  - reduce pkg/ctrl/optim.h to just "optimcycle" and rename into OPTIMCYCLE.h ;
+  - keep optim_readparms.F namelist unchanged and define variables locally.
+
 checkpoint68t (2023/10/28)
 o pkg/dic:
   - improve carbonate dissolution options (new params: selectCalciteDissolution)

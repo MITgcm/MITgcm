@@ -1,6 +1,3 @@
-#ifdef ALLOW_OPENAD
-# include "DIC_OPTIONS.h"
-#endif
 C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Abiotic Carbon Variables
@@ -41,6 +38,8 @@ C          =0 : Constant dissolution rate;
 C          =1 : Follows (default) ;
 C          =2 : Keir (1980) Geochem. Cosmochem. Acta. ;
 C          =3 : Naviaux et al. 2019, Marine Chemistry
+C     pH_isLoaded(1) :: = T when surface pH is loaded from pickup file
+C     pH_isLoaded(2) :: = T when   3-D   pH is loaded from pickup file
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
@@ -48,8 +47,8 @@ C          =3 : Naviaux et al. 2019, Marine Chemistry
      &              calciteDissolRate, calciteDissolExp,
      &              calcOmegaCalciteFreq, zca,
      &              WsinkPIC, selectCalciteBottomRemin,
-     &              selectCalciteDissolution,
-     &              useCalciteSaturation, nIterCO3
+     &              selectCalciteDissolution, nIterCO3,
+     &              useCalciteSaturation, pH_isLoaded
 
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -68,6 +67,7 @@ C          =3 : Naviaux et al. 2019, Marine Chemistry
       INTEGER selectCalciteDissolution
       INTEGER nIterCO3
       LOGICAL useCalciteSaturation
+      LOGICAL pH_isLoaded(2)
 
 #ifdef DIC_CALCITE_SAT
 C     silicaDeep  :: 3D-field of silicate concentration for pH and
@@ -413,4 +413,5 @@ C  DIC_timeAve  :: period over which DIC averages are calculated [s]
       _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL DIC_timeAve(nSx,nSy)
 #endif /* ALLOW_TIMEAVE */
+
 #endif /* DIC_BIOTIC */

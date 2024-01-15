@@ -36,9 +36,6 @@ c !LOCAL VARIABLES: ===================================================
 #ifdef DIC_CALCITE_SAT
       INTEGER k
 #endif
-#ifdef READ_PAR
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-#endif
 CEOP
 
       IF (  DIC_forcingCycle.GT.0. _d 0 ) THEN
@@ -258,12 +255,6 @@ C If no surface silicate file but deep (3d) silicate provided, use top level
      &                      + aWght*par1(i,j,bi,bj)
             ENDDO
            ENDDO
-         ELSE
-           WRITE(msgBuf,'(2A)')
-     &       ' DIC_FIELDS_LOAD: You need to provide ',
-     &       ' a file if you want to use READ_PAR'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
          ENDIF
 #endif
 #ifdef LIGHT_CHL

@@ -20,10 +20,9 @@ C     == global variables ==
 #include "DYNVARS.h"
 #include "THSICE_PARAMS.h"
 #ifdef ALLOW_COST
-#include "THSICE_COST.h"
-#include "cost.h"
-#include "CTRL.h"
-#include "optim.h"
+# include "THSICE_COST.h"
+# include "cost.h"
+# include "CTRL.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

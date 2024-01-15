@@ -137,7 +137,7 @@ C--   SEAICE parameters
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov, SEAICEuseJFNK,
+     & SEAICEuseLSRflex, SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
@@ -333,6 +333,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_deltaTevp   = UNSET_RL
       SEAICEuseBDF2      = .FALSE.
       SEAICEuseKrylov    = .FALSE.
+      SEAICEuseLSRflex   = .FALSE.
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
@@ -865,6 +866,9 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
 C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
+
+C     If we do not use the LSR solver, using LSRflex makes no sense
+      IF ( .NOT. SEAICEuseLSR ) SEAICEuseLSRflex = .FALSE.
 
 C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN

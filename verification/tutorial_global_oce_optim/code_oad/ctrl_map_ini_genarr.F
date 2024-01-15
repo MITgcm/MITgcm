@@ -30,7 +30,7 @@ CML#include "DYNVARS.h"
 #include "CTRL.h"
 #include "CTRL_GENARR.h"
 #include "CTRL_DUMMY.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==

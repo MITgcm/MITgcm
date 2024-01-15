@@ -35,7 +35,7 @@ c#include "OBCS_PARAMS.h"
 #include "CTRL.h"
 #include "CTRL_DUMMY.h"
 #include "CTRL_OBCS.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c     == routine arguments ==
