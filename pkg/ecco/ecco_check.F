@@ -693,7 +693,7 @@ c warn user as we override using_cost_altim
 c print result to screen
         WRITE(msgBuf,'(A,I3)')
      &  'etagcm defined by gencost =',igen_etagcm
-        CALL PRINT_MESSAGE( msgbuf, standardMessageUnit,
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
