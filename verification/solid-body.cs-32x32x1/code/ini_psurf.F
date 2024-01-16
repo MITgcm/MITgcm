@@ -50,16 +50,18 @@ C--   Initialise surface position anomaly to zero
       omegaPrime = 80. _d 0 / rSphere
 c     psFac = -(rSphere**2)*omegaPrime*(Omega+omegaPrime)
 C     previous expression above was missing one "half" factor:
-      psfac = -rhoConst*(rSphere*rSphere)
-     &                 *omegaPrime*( Omega + omegaPrime*0.5 _d 0 )
+      psfac = -(rSphere*rSphere)*omegaPrime
+     &                          *( Omega + omegaPrime*0.5 _d 0 )
       snFac = 1. _d 0 / (4. _d 0*Omega*Omega)
+C     recip_Bo is constant here, Z-coord: =1/gBaro
+C                                P-coord: if uniformLin_PhiSurf=T, =rhoConst
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           etaN(i,j,bi,bj) = 0. _d 0
      &     + psFac*( snFac*fCori(i,j,bi,bj)*fCori(i,j,bi,bj)
-     &             - 1. _d 0 / 3. _d 0 )
+     &             - 1. _d 0 / 3. _d 0 )*recip_Bo(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
