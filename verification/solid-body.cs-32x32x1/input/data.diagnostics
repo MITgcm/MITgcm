@@ -20,9 +20,14 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 #--
-  fields(1:2,1)  = 'SALT    ','SALTSQ  ',
-   fileName(1) = 's_Diag',
-  frequency(1) = 21600.,
+  fields(1:2,1)  = 'momKE   ','momVort3',
+   fileName(1) = 'momDiag',
+  frequency(1) = -10800.,
+  timePhase(1) = 0.,
+#-
+  fields(1:2,2)  = 'SALT    ','SALTSQ  ',
+#  fileName(2) = 's_Diag',
+  frequency(2) = 10800.,
  &
 
 #--------------------
@@ -43,11 +48,11 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
- stat_fields(1:4,1)  = 'ETAN    ','momKE   ',
-#                      'DETADT2 ',
+ stat_fields(1:7,1)  = 'ETAN    ','UE_VEL_C','VN_VEL_C',
+                       'momKE   ','momVort3',
                        'SALT    ','SALTSQ  ',
   stat_fName(1) = 'dynStDiag',
-   stat_freq(1) = -21600.,
+   stat_freq(1) = -3600.,
   stat_phase(1) = 0.,
  &
 
