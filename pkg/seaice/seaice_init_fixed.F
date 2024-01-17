@@ -52,6 +52,8 @@ C     local copy of surface layer thickness in meters
 #endif
 #ifdef SEAICE_ALLOW_SIDEDRAG
       LOGICAL readCoastLineFields
+C     Coast line length normal to the X and Y direction in meters
+C     read from file and used to compute rough parameters NcoastX/Y
       _RL LcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL LcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif

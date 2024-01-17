@@ -324,8 +324,10 @@ C     HsaltFile         :: File containing initial sea ice salt content
 C     HeffFile          :: File containing initial sea-ice thickness
 C     uIceFile          :: File containing initial sea-ice U comp. velocity
 C     vIceFile          :: File containing initial sea-ice V comp. velocity
-C     uCoastLineFile    :: File containing coastline length/roughness in U
-C     vCoastLineFile    :: File containing coastline length/roughness in V
+C     u/vCoastLineFile  :: Files containing the length of the coastline (in m)
+C                          normal to the u/v direction per grid cell
+C                          at corner points (XG,YG) as a measure of
+C                          coastline roughness
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
 C        can mean large artificial fluxes of heat and freshwater in
