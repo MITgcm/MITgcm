@@ -329,13 +329,15 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 
 #ifdef GM_GEOM_VARIABLE_K
 C     GEOMK         :: mixing/stirring coefficient (spatially variable in
-C                      horizontal for Marshall et al. (2012) parameterization)
+C                      horizontal for Marshall et al. (2012) parameterization);
+C                      defined at cell interfaces (W-points)
 C     GEOM_ene      :: parameterised total eddy energy in GEOMETRIC;
-C                      used to update GEOMK
-C     ene_rhs*      :: RHS of eddy energy equation for time-stepping
+C                      used to update GEOMK; 2D field
+C     ene_rhs*      :: 2D-RHS of eddy energy equation for time-stepping
 C     GEOM_ene_ctrl :: controls time-stepping routine of parameterised
 C                      eddy energy in gmredi_calc_geom.F (=0/1/2)
-C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth)
+C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth);
+C                      2D field
 C
       _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GEOM_ene   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -588,8 +588,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + VisbeckK(i,j,bi,bj)*(GM_isoFac_calcK + GM_skewflx)
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &           + GM_skewflx*op5*( GEOMK(i,j,km1,bi,bj)
-     &                            + GEOMK(i,j,k,bi,bj) )
+     &           + GM_skewflx*GEOMK(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &           + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
@@ -834,8 +833,10 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &          *(GM_isoFac_calcK - GM_skewflx)
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &     - GM_skewflx*op5*( GEOMK(i-1,j,k,bi,bj)
-     &                      + GEOMK(i,j,k,bi,bj) )
+     &     - GM_skewflx*op25*( GEOMK(i-1,j,  k,bi,bj)
+     &                       + GEOMK(i-1,j,kp1,bi,bj)
+     &                       + GEOMK(i,  j,k,  bi,bj)
+     &                       + GEOMK(i,  j,kp1,bi,bj) )
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
@@ -1076,8 +1077,10 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &          *(GM_isoFac_calcK - GM_skewflx)
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &     - GM_skewflx*op5*( GEOMK(i,j-1,k,bi,bj)
-     &                      + GEOMK(i,j,k,bi,bj) )
+     &     - GM_skewflx*op25*( GEOMK(i,j-1,  k,bi,bj)
+     &                       + GEOMK(i,j-1,kp1,bi,bj)
+     &                       + GEOMK(i,j,  k,  bi,bj)
+     &                       + GEOMK(i,j,  kp1,bi,bj) )
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)

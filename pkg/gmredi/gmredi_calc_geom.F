@@ -83,7 +83,10 @@ C     metric variables
       _RL recip_depthS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL depthC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C     general variables, overwritten every time step
+C     hFac of the W-control volumes
+      _RL hFac
+
+C     general variables
       _RL deltaTloc
 
 C     local version of current rhs of eddy energy equation
@@ -242,11 +245,13 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
           N2loc = N2loc3D(i,j,k)
           SNloc = SNloc3D(i,j,k)
 
+          hFac = MIN( halfRS, _hFacC(i,j,k-1,bi,bj) )
+     &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           SNloc_zint(i,j) = SNloc_zint(i,j)
-     &                    + SNloc * drC(k) * hFacC(i,j,k,bi,bj)
+     &                    + SNloc * drC(k) * hFac
      &                    * vert_struc_func(i,j,k)
           Nloc_zint(i,j)  = Nloc_zint(i,j) + SQRT(N2loc)
-     &                    * drC(k) * hFacC(i,j,k,bi,bj)
+     &                    * drC(k) * hFac
          ENDIF
         ENDDO
        ENDDO
@@ -373,11 +378,13 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
          IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
+          hFac = MIN( halfRS, _hFacC(i,j,k-1,bi,bj) )
+     &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           SNloc = SNloc3D(i,j,k)
           trd_ene_gen(i,j) = trd_ene_gen(i,j)
      &                     + GEOMK(i,j,k,bi,bj)
      &                     * SNloc * SNloc
-     &                     * drC(k) * hFacC(i,j,k,bi,bj)
+     &                     * drC(k) * hFac
          ENDIF
         ENDDO
        ENDDO

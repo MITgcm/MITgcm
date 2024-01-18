@@ -159,6 +159,9 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
 #ifdef GM_VISBECK_VARIABLE_K
      &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+     &      + op5*(GEOMK(i-1,j,k,bi,bj)+GEOMK(i,j,k,bi,bj))
+#endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op25*( GM_LeithQG_K(i-1,j,km1,bi,bj)
      &             + GM_LeithQG_K( i ,j,km1,bi,bj)
