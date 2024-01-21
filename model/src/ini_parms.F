@@ -119,6 +119,8 @@ C     useSphereF    :: Coriolis = 2.omega.sin(phi)  (replaced by selectCoriMap=2
 C     useJamartWetPoints :: for backward compat. (replaced by selectCoriScheme=1)
 C                        :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
 C     SadournyCoriolis :: for backward compat. (replaced by selectVortScheme=2)
+C     use3dCoriolis :: for backward compat. (=F,T same as select3dCoriScheme=0,1)
+C     metricTerms   :: for backward compat. (=F,T same as selectMetricTerms=0,1)
 C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
 C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
@@ -138,6 +140,7 @@ C                              (replaced by pkg/frazil)
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     balanceEmPmR   :: for backward compat. (replaced by selectBalanceEmPmR=1),
 C                    :: substract global mean of EmPmR at every time step
+C     writeStatePrec :: Precision used for writing model state (not used)
 C Namelist PARM02:
 C     cg2dChkResFreq :: Frequency with which to check 2-D con. grad solver
 C                         residual (was never coded)
@@ -161,9 +164,9 @@ C     dQdTfile     :: File containing thermal relaxation coefficient
 
       INTEGER nRetired
       LOGICAL useConstantF, useBetaPlaneF, useSphereF
-      LOGICAL useJamartWetPoints
-      LOGICAL useEnergyConservingCoriolis
+      LOGICAL useJamartWetPoints, useEnergyConservingCoriolis
       LOGICAL SadournyCoriolis
+      LOGICAL use3dCoriolis, metricTerms
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -175,6 +178,7 @@ c     _RL gravitySign
       LOGICAL saveDebugMode
       LOGICAL allowInteriorFreezing, useOldFreezing
       LOGICAL balanceEmPmR
+      INTEGER writeStatePrec
 C-
       INTEGER cg2dChkResFreq, cg3dChkResFreq
 C-
@@ -204,17 +208,27 @@ C--   Continuous equation parameters
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscA4ReMax, viscAhReMax,
      & cosPower, viscAstrain, viscAtension,
+     & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
+     & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,
      & diffKhT, diffK4T, diffKhS, diffK4S, smag3D_diffCoeff,
+     & diffKr4T, diffKr4S, BL79LatVary,
+     & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
+     & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & surf_pRef, tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor, no_slip_bottom, bottomVisc_pCell,
      & bottomDragLinear, bottomDragQuadratic,  zRoughBot,
      & selectBotDragQuadr,
-     & momViscosity,  momAdvection, momForcing, momTidalForcing,
-     & useCoriolis, useConstantF, useBetaPlaneF, useSphereF,
-     & use3dCoriolis, momPressureForcing,
-     & metricTerms, vectorInvariantMomentum, addFrictionHeating,
+     & momPressureForcing, momForcing, momTidalForcing,
+     & momViscosity, momAdvection, vectorInvariantMomentum,
+     & useConstantF, useBetaPlaneF, useSphereF, useCoriolis,
+     & use3dCoriolis, select3dCoriScheme, selectCoriScheme,
+     & useCDscheme, useJamartWetPoints, useEnergyConservingCoriolis,
+     & useAbsVorticity, selectVortScheme, SadournyCoriolis,
+     & useJamartMomAdv, upwindVorticity, highOrderVorticity,
+     & upwindShear, selectKEscheme,
+     & selectMetricTerms, metricTerms, useNHMTerms, addFrictionHeating,
      & tempDiffusion, tempAdvection, tempForcing, temp_stayPositive,
      & saltDiffusion, saltAdvection, saltForcing, salt_stayPositive,
      & implicSurfPress, implicDiv2DFlow, implicitNHPress,
@@ -227,30 +241,20 @@ C--   Continuous equation parameters
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity, selectImplicitDrag,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
-     & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,
-     & diffKr4T, diffKr4S, BL79LatVary,
-     & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
-     & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, thetaConst, rhoConstFresh, buoyancyRelation,
-     & readBinaryPrec, writeBinaryPrec, writeStatePrec, globalFiles,
-     & useSingleCpuIO, useSingleCpuInput, usePickupBeforeC54,
-     & usePickupBeforeC35, debugMode, debugLevel, plotLevel,
      & allowFreezing, allowInteriorFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
-     & tempAdvScheme, tempVertAdvScheme,
-     & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
-     & multiDimAdvection, useNHMTerms, useCDscheme,
-     & useAbsVorticity, selectCoriScheme, useJamartWetPoints,
-     & useEnergyConservingCoriolis, selectVortScheme, SadournyCoriolis,
-     & useJamartMomAdv, upwindVorticity, highOrderVorticity,
-     & upwindShear, selectKEscheme,
+     & tempAdvScheme, tempVertAdvScheme, tracerAdvScheme,
+     & saltAdvScheme, saltVertAdvScheme, multiDimAdvection,
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
      & smoothAbsFuncRange, sIceLoadFac,
      & selectBalanceEmPmR, balanceEmPmR, balanceQnet, balancePrintMean,
-     & balanceThetaClimRelax, balanceSaltClimRelax
+     & balanceThetaClimRelax, balanceSaltClimRelax,
+     & readBinaryPrec, writeBinaryPrec, writeStatePrec, globalFiles,
+     & useSingleCpuIO, useSingleCpuInput, usePickupBeforeC54,
+     & usePickupBeforeC35, debugMode, debugLevel, plotLevel
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -329,9 +333,11 @@ C     Defaults values for input parameters
      O   hFacMinDrDefault, delRDefault,
      I   myThid )
 
-      useJamartWetPoints  = .FALSE.
+      useJamartWetPoints = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       SadournyCoriolis = .FALSE.
+      use3dCoriolis   = .TRUE.
+      metricTerms     = .TRUE.
       balanceEmPmR    = .FALSE.
 
 C--   Initialise "which vertical coordinate system used" flags.
@@ -358,6 +364,7 @@ C--   Initialise retired parameters to unlikely value
       saveDebugMode   = debugMode
       allowInteriorFreezing = .FALSE.
       useOldFreezing  = .FALSE.
+      writeStatePrec  = UNSET_I
       cg2dChkResFreq  = UNSET_I
       cg3dChkResFreq  = UNSET_I
       tauThetaClimRelax3Dim = UNSET_RL
@@ -681,6 +688,28 @@ C--   for backward compatibility :
           errCount = errCount + 1
         ENDIF
       ENDIF
+      IF ( select3dCoriScheme.EQ.UNSET_I ) THEN
+C--   for backward compatibility :
+        select3dCoriScheme = 0
+        IF ( use3dCoriolis ) select3dCoriScheme = 1
+      ELSEIF ( select3dCoriScheme.NE.0 .AND. .NOT.use3dCoriolis ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: select3dCoriScheme=', select3dCoriScheme,
+     &     ' conflicts with "use3dCoriolis=F"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectMetricTerms.EQ.UNSET_I ) THEN
+C--   for backward compatibility :
+        selectMetricTerms = 0
+        IF ( metricTerms ) selectMetricTerms = 1
+      ELSEIF ( selectMetricTerms.NE.0 .AND. .NOT.metricTerms ) THEN
+        WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectMetricTerms=', selectMetricTerms,
+     &     ' conflicts with "metricTerms=F"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
       IF ( selectBalanceEmPmR.EQ.UNSET_I ) THEN
         selectBalanceEmPmR = 0
         IF ( balanceEmPmR ) selectBalanceEmPmR = 1
@@ -878,6 +907,12 @@ C     Check for retired parameters still being used
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "useOldFreezing" ',
      &  'is no longer supported & not longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( writeStatePrec .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "writeStatePrec" ',
+     &  '(un-used) is no longer allowed in file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
@@ -1299,6 +1334,10 @@ C-    Radius of the Planet:
       ELSE
        recip_rSphere = 0.
       ENDIF
+C--   Grid rotation
+      IF ( phiEuler .NE. 0. _d 0 .OR. thetaEuler .NE. 0. _d 0
+     &     .OR. psiEuler .NE. 0. _d 0 ) rotateGrid = .TRUE.
+
 C--   Default vertical axis origin
       IF ( Ro_SeaLevel .NE. UNSET_RL ) THEN
        IF ( usingPCoords .AND. top_Pres.NE.UNSET_RL ) THEN
@@ -1336,44 +1375,6 @@ C--   Default origin for  X & Y axis (longitude & latitude origin):
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
         ENDIF
-      ENDIF
-C--   Make metric term & Coriolis settings consistent with underlying grid.
-      IF ( usingCartesianGrid ) THEN
-       metricTerms   = .FALSE.
-       useNHMTerms   = .FALSE.
-      ENDIF
-      IF ( usingCylindricalGrid ) THEN
-       useNHMTerms   = .FALSE.
-       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-      ENDIF
-      IF ( usingCurvilinearGrid ) THEN
-       metricTerms   = .FALSE.
-      ENDIF
-      IF ( selectCoriMap.EQ.-1 ) THEN
-        IF ( usingCartesianGrid.OR.usingCylindricalGrid ) THEN
-C       default is to use Beta-Plane Coriolis
-          selectCoriMap = 1
-        ELSE
-C       default for other grids is to use Spherical Coriolis
-          selectCoriMap = 2
-        ENDIF
-      ENDIF
-      IF ( .NOT.(nonHydrostatic.OR.quasiHydrostatic) )
-     &                          use3dCoriolis = .FALSE.
-      IF ( (selectCoriMap.EQ.0 .OR.selectCoriMap.EQ.1)
-     &     .AND. fPrime.EQ.0. ) use3dCoriolis = .FALSE.
-
-C--   Grid rotation
-      IF ( phiEuler .NE. 0. _d 0 .OR. thetaEuler .NE. 0. _d 0
-     &     .OR. psiEuler .NE. 0. _d 0 ) rotateGrid = .TRUE.
-
-C--   Set default for latitude-band where relaxation to climatology applies
-C     note: done later (once domain size is known) if using CartesianGrid
-      IF ( latBandClimRelax .EQ. UNSET_RL) THEN
-        IF ( usingSphericalPolarGrid ) latBandClimRelax= 180. _d 0
-        IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
       ENDIF
 
 C--   set cell Center depth and put Interface at the middle between 2 C
