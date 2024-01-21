@@ -82,7 +82,7 @@ C     data.pkg namelists
      &          useICEFRONT,
      &          useThSIce,
      &          useLand,
-     &          useATM2D,
+     &          useATM2d,
      &          useAIM,
      &          useAtm_Phys,
      &          useFizhi,
@@ -146,7 +146,7 @@ c     useGAD          =.FALSE.
       useICEFRONT     =.FALSE.
       useThSIce       =.FALSE.
       useLand         =.FALSE.
-      useATM2D        =.FALSE.
+      useATM2d        =.FALSE.
       useAIM          =.FALSE.
       useAtm_Phys     =.FALSE.
       useFizhi        =.FALSE.
@@ -369,7 +369,7 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
       CALL PACKAGES_PRINT_MSG( useLand,       'Land',        ' ' )
 #endif
 #ifdef ALLOW_ATM2D
-      CALL PACKAGES_PRINT_MSG( useATM2D,      'ATM2D',       ' ' )
+      CALL PACKAGES_PRINT_MSG( useATM2d,      'ATM2d',       ' ' )
 #endif
 #ifdef ALLOW_AIM_V23
       CALL PACKAGES_PRINT_MSG( useAIM,        'aim_v23', 'useAIM' )
