@@ -23,8 +23,7 @@ C     myThid            :: thread number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef GM_BATES_K3D
-
+#if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
 C     fp          :: precision of pickup files
@@ -40,40 +39,29 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER fp
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
-      INTEGER i,j,k,n,nm,ioUnit,bi,bj
-      PARAMETER( missFldDim = 12 )
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(8) missFldList(missFldDim)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER j, nm, ioUnit
+#ifdef GM_BATES_K3D
+c     PARAMETER( missFldDim = 12 )
+      INTEGER i, k, n, bi, bj
       _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(8) fieldname
-
 #endif /* GM_BATES_K3D */
-
 #ifdef GM_GEOM_VARIABLE_K
-
-      INTEGER fp
-      INTEGER filePrec, nbFields
-      INTEGER missFldDim, nMissing
-      INTEGER i,j,k,n,nm,ioUnit,bi,bj
-      PARAMETER( missFldDim = 4 )
+c     PARAMETER( missFldDim = 4 )
+#endif /* GM_GEOM_VARIABLE_K */
+      PARAMETER( missFldDim = 16 )
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
-
-#endif /* GM_GEOM_VARIABLE_K */
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
+c     IF ( GM_useBatesK3d .OR.
+c    &     ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) ) THEN
+      IF ( GM_useBatesK3d .OR. GM_useGEOM ) THEN
+       ioUnit = errorMessageUnit
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
-
-      IF ( GM_useBatesK3d .OR.
-     &     ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) ) THEN
 
        IF ( pickupSuff.EQ.' ' ) THEN
         IF ( rwSuffixType.EQ.0 ) THEN
@@ -107,7 +95,6 @@ c      IF ( filePrec.NE.0 .AND. filePrec.NE.fp ) THEN
 
        IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
-        ioUnit = errorMessageUnit
         IF ( pickupStrictlyMatch ) THEN
           WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
      &      'no field-list found in meta-file',
@@ -145,15 +132,7 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
        ENDIF
 
-      ENDIF
-
-#endif /* GM_BATES_K3D or GM_GEOM_VARIABLE_K */
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef GM_BATES_K3D
-
-      IF ( GM_useBatesK3d ) THEN
 
        IF ( nbFields.EQ.0 ) THEN
 C---   Old way to read pickup:
@@ -167,7 +146,10 @@ C---   Old way to read pickup:
         nm = 0
 C---    read GMREDI fields for restart
 
-C       Centre mode
+#ifdef GM_BATES_K3D
+        IF ( GM_useBatesK3d ) THEN
+
+C       Center mode
         fieldname='mode01C'
         CALL READ_MFLDS_3D_RL( fieldname, vec,
      &                         nm, fp, Nr, myIter, myThid )
@@ -231,59 +213,15 @@ C       Deformation radius
      &       nm, fp, 1, myIter, myThid )
         CALL EXCH_XY_RL(Rdef, myThid)
 
-C--   end: new way to read pickup file
-      ENDIF
-
-C--    Check for missing fields:
-      nMissing = missFldDim
-      CALL READ_MFLDS_CHECK(
-     O     missFldList,
-     U     nMissing,
-     I     myIter, myThid )
-      IF ( nMissing.GT.missFldDim ) THEN
-        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &       'missing fields list has been truncated to', missFldDim
-        CALL PRINT_ERROR( msgBuf, myThid )
-        CALL ALL_PROC_DIE( myThid )
-        STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (list-size Pb)'
-      ENDIF
-      IF ( nMissing.GE.1 ) THEN
-        ioUnit = errorMessageUnit
-        DO j=1,nMissing
-         WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
-     &        'cannot restart without field "',missFldList(nm),'"'
-         CALL PRINT_ERROR( msgBuf, myThid )
-        ENDDO
-        CALL ALL_PROC_DIE( myThid )
-        STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
-      ENDIF
-
-C--    Update overlap regions:
-C        CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
-
 c     GM_useBates3D
-      ENDIF
-
+        ENDIF
 #endif /* GM_BATES_K3D */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
+        IF ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) THEN
 
-      IF ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) THEN
-
-#ifdef ALLOW_MDSIO
-        IF ( nbFields.EQ.0 ) THEN
-C---    Old way to read pickup:
-
-         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &        'old way of reading pickups not implemented, continuing'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-
-        ELSE
-
-C---    read GMREDI fields for restart
-          nm = nm*Nr
 C         ---2D fields---
 C         GEOMETRIC energy
           fieldname='GEOM_ene'
@@ -303,22 +241,34 @@ C         GEOMETRIC energy
 
 C     use AB3 time stepping
           GEOM_ene_ctrl = 2
+        ELSEIF ( GM_useGEOM ) THEN
+         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &       'in routine but GEOM_pickup_read_mdsio = F'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &       'WARNING! going to (re)initialise GEOM_ene!'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
+#endif /* GM_GEOM_VARIABLE_K */
 
-C--     Check for missing fields:
-        nMissing = missFldDim
-        CALL READ_MFLDS_CHECK(
+C--   end: new way to read pickup file
+       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--    Check for missing fields:
+       nMissing = missFldDim
+       CALL READ_MFLDS_CHECK(
      O       missFldList,
      U       nMissing,
      I       myIter, myThid )
-        IF ( nMissing.GT.missFldDim ) THEN
+       IF ( nMissing.GT.missFldDim ) THEN
           WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
      &         'missing fields list has been truncated to', missFldDim
           CALL PRINT_ERROR( msgBuf, myThid )
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (list-size Pb)'
-        ENDIF
-        IF ( nMissing.GE.1 ) THEN
+       ENDIF
+       IF ( nMissing.GE.1 ) THEN
           ioUnit = errorMessageUnit
           DO j=1,nMissing
           WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
@@ -327,20 +277,12 @@ C--     Check for missing fields:
           ENDDO
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
-        ENDIF
-
-#endif /* ALLOW_MDSIO */
-      ELSE
-        ioUnit = standardMessageUnit
-        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &       'in routine but GEOM_pickup_read_mdsio = F'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &       'WARNING! going to (re)initialise GEOM_ene!'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      ENDIF
-#endif /* GM_GEOM_VARIABLE_K */
+       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     end if GM_useBatesK3d or GM_useGEOM block
+      ENDIF
+#endif /* GM_BATES_K3D or GM_GEOM_VARIABLE_K */
 
       RETURN
       END
