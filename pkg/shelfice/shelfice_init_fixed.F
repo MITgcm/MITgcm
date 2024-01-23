@@ -32,8 +32,12 @@ C     myThid ::  Number of this instance of SHELFICE_INIT_FIXED
 
 #ifdef ALLOW_SHELFICE
 C     === Local variables ===
-C     i, j, k, bi, bj :: Loop counters
+C     i, j, bi, bj :: Loop counters
+C     SHI_minDepth :: minimum Ice-Shelf depth
+C     msgBuf       :: Informational/error message buffer
       INTEGER i, j, bi, bj
+      _RS SHI_minDepth
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
       INTEGER       diagNum
       INTEGER       diagMate
@@ -44,9 +48,6 @@ C     i, j, k, bi, bj :: Loop counters
 #endif /* ALLOW_DIAGNOSTICS */
 #ifdef ALLOW_CTRL
       INTEGER k
-# ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
-      _RL dummy
-# endif
 #endif
 
 #ifdef ALLOW_MNC
@@ -111,62 +112,45 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
       ENDDO
 #endif /* ALLOW_CTRL */
 
-#ifdef ALLOW_COST
-#if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
-      defined (ALLOW_SHIFWFLX_CONTROL))
-      IF ( shifwflx_errfile .NE. ' ' ) THEN
-       CALL READ_REC_XY_RL( shifwflx_errfile, wshifwflx, 1, 0, myThid )
-      ENDIF
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-c--   Test for missing values.
-          IF (wshifwflx(i,j,bi,bj) .LT. -9900.) THEN
-           wshifwflx(i,j,bi,bj) = 0. _d 0
-          ENDIF
-c--   use weight as mask
-          wshifwflx(i,j,bi,bj) =
-     &         max(wshifwflx(i,j,bi,bj),wshifwflx0)
-     &         *maskSHI(i,j,1,bi,bj)
-          IF (wshifwflx(i,j,bi,bj) .NE. 0.) THEN
-           wshifwflx(i,j,bi,bj) =
-     &          1./wshifwflx(i,j,bi,bj)/wshifwflx(i,j,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL ACTIVE_WRITE_XY_LOC( 'wshifwflx', wshifwflx,
-     &                          1, 0, myThid, dummy )
-#endif /* ALLOW_SHIFWFLX_COST_CONTRIBUTION and ALLOW_SHIFWFLX_CONTROL */
-#endif /* ALLOW_COST */
-
-      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-       CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',
-     &                      shelficeLoadAnomaly, 0, myThid )
-      ENDIF
-      IF ( SHELFICEmassFile.NE.' ' ) THEN
-       CALL READ_FLD_XY_RL( SHELFICEmassFile, ' ',
-     &                      shelficeMassInit, 0, myThid )
-      ELSE
+      IF ( debugLevel.GE.debLevC ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'SHELFICE_INIT_FIXED: checking Ice-Shelf extension & kTopC'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,1PE18.10)')
+     &  'SHELFICE_INIT_FIXED:  SHI_minDepth =', SHI_minDepth
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+c        DO j = 1-OLy, sNy+OLy
+c         DO i = 1-OLx, sNx+OLx
          DO j = 1, sNy
           DO i = 1, sNx
-           shelficeMassInit(i,j,bi,bj) =
-     &         shelficeLoadAnomaly(i,j,bi,bj)*recip_gravity
-     &       - rhoConst*Ro_surf(i,j,bi,bj)
+           IF ( kTopC(i,j,bi,bj).NE.0 .AND.
+     &          ( shelficeMassInit(i,j,bi,bj).LE.zeroRL
+     &            .OR. R_shelfIce(i,j,bi,bj).GE.rF(1) ) ) THEN
+             WRITE(standardMessageUnit,'(A,2I4,2I3,A,1P3E17.9)')
+     &        ' Ice-Shelf (kTopC>0) in i,j,bi,bj=', i, j, bi, bj,
+     &        ' but R_shelf,Ro_surf,MassIni=', R_shelfIce(i,j,bi,bj),
+     &         Ro_surf(i,j,bi,bj), shelficeMassInit(i,j,bi,bj)
+           ELSEIF ( kTopC(i,j,bi,bj).EQ.0 .AND.
+     &          ( shelficeMassInit(i,j,bi,bj).GT.zeroRL
+     &            .OR. R_shelfIce(i,j,bi,bj).LT.rF(1) ) ) THEN
+             WRITE(standardMessageUnit,'(A,2I4,2I3,A,1P3E17.9)')
+     &        ' no Ice-Shelf (kTopC=0) i,j,bi,bj=', i, j, bi, bj,
+     &        ' but R_shelf,Ro_surf,MassIni=', R_shelfIce(i,j,bi,bj),
+     &         Ro_surf(i,j,bi,bj), shelficeMassInit(i,j,bi,bj)
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+       WRITE(msgBuf,'(A)')
+     &  'SHELFICE_INIT_FIXED: checking Ice-Shelf extension: done'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      _EXCH_XY_RL( shelficeMassInit, myThid )
-      CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
-     &                       shelficeMassInit, 0, myThid )
-
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
 C    calculation (if using selectP_inEOS_Zc=2 or 3)
@@ -174,8 +158,14 @@ C    calculation (if using selectP_inEOS_Zc=2 or 3)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
-           shelficeLoadAnomaly(i,j,bi,bj) = gravity
+           IF ( kTopC(i,j,bi,bj).EQ.0 ) THEN
+            R_shelfIce         (i,j,bi,bj) = rF(1)
+            shelficeMassInit   (i,j,bi,bj) = 0. _d 0
+            shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
+           ELSE
+            shelficeLoadAnomaly(i,j,bi,bj) = gravity
      &      *(shelficeMassInit(i,j,bi,bj)+rhoConst*Ro_surf(i,j,bi,bj))
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -183,6 +173,8 @@ C    calculation (if using selectP_inEOS_Zc=2 or 3)
 c     ELSE
 c      _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
 c     ENDIF
+      CALL WRITE_FLD_XY_RL ( 'shelficemassinit', ' ',
+     &                       shelficeMassInit, 0, myThid )
       IF ( debugLevel.GE.debLevC ) THEN
        CALL WRITE_FLD_XY_RL( 'SHICE_pLoadAnom', ' ',
      I                       shelficeLoadAnomaly, -1, myThid )
