@@ -713,7 +713,7 @@ configuration file ``packages.conf`` (see :numref:`using_packages`).
 
 The following AD-specific CPP option files need to be customized:
 
-- :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFFO_OPTIONS.h>` This header
+- :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` This header
   file collects CPP options for :filelink:`pkg/autodiff`, :filelink:`pkg/cost`,
   :filelink:`pkg/ctrl` as well as AD-unrelated options for the external forcing
   package :filelink:`pkg/exf`.
