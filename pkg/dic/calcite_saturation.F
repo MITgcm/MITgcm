@@ -53,7 +53,7 @@ C  i,j,k                  :: loop indices
        _RL locTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL locSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-       INTEGER CO3ITER
+       INTEGER doIterCO3, CO3ITER
 CEOP
 
        DO k=1,Nr
@@ -113,16 +113,18 @@ C     DIC_deepSilicaFile provided.
 #ifdef CARBONCHEM_SOLVESAPHE
            IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
+            IF ( .NOT.pH_isLoaded(2) ) THEN
 #ifdef ALLOW_DEBUG
-            IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+               IF (debugPrt) CALL DEBUG_CALL(
+     &                      'AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-            CALL AHINI_FOR_AT(alklocal*permil,
-     I           diclocal*permil,
-     I           bt(i,j,bi,bj),
-     O           pHlocal(i,j),
-     I           i,j,k,bi,bj,myIter,myThid )
-
+               CALL AHINI_FOR_AT(alklocal*permil,
+     I              diclocal*permil,
+     I              bt(i,j,bi,bj),
+     O              pHlocal(i,j),
+     I              i,j,k,bi,bj,myIter,myThid )
+            ENDIF /* 3d pH is not loaded */
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
@@ -141,14 +143,18 @@ C Use the original Follows et al. (2006) solver
 #ifdef ALLOW_DEBUG
             IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
-            pHlocal(i,j) = 7.9 _d 0
-
-C Since we start cold with an arbitrary pH, we must iterate pH solver
+            IF ( .NOT.pH_isLoaded(2) ) THEN
+C    Since we start cold with an arbitrary pH, we must iterate pH solver
 C    to ensure accurate estimate of co3 at depth
 C    Because we may call this for deep ocean infrequently can afford to make
 C    several iterations
+               pHlocal(i,j) = 7.9 _d 0
+               doIterCO3 = nIterCO3
+            ELSE
+               doIterCO3 = 1
+            ENDIF
 
-            DO CO3iter = 1, nIterCO3
+            DO CO3iter = 1, doIterCO3
               CALL CALC_PCO2_APPROX(
      I          locTemp(i,j), locSalt(i,j),
      I          diclocal, po4local,
