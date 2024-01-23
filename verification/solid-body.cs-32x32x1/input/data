@@ -16,17 +16,18 @@
  diffK4S=0.,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
- rotationPeriod=86400.,
+ rotationPeriod=108000.,
  gravity=9.81,
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
+ vectorInvariantMomentum=.TRUE.,
  tempStepping=.FALSE.,
  saltStepping=.TRUE.,
- vectorInvariantMomentum=.TRUE.,
+#- I/O params:
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+#globalFiles=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -38,30 +39,33 @@
 # Time stepping parameters
  &PARM03
  nIter0=0,
-#nTimeSteps=1728,
- nTimeSteps=20,
+#nTimeSteps=1920,
  abEps=0.1,
- deltaT=1200.0,
+ deltaT=450.,
  cAdjFreq=0.,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=86400.0,
-#diagFreq=1.0,
-#monitorFreq=21600.,
+ pChkptFreq=0.,
+ chkptFreq=0.,
+#dumpFreq= 43200.,
+#monitorFreq=10800.,
+ nTimeSteps=25,
+ dumpFreq= 10800.,
  monitorFreq=1.,
  &
 
 # Gridding parameters
  &PARM04
  usingCurvilinearGrid=.TRUE.,
+#horizGridFile='grid_cs32',
+#horizGridFile='dxC1_dXYa',
  radius_fromHorizGrid=6370.E3,
+ rSphere=5500.4E3,
  delR=1.E5,
  &
 
 # Input datasets
  &PARM05
-#uVelInitFile='U.init',
-#vVelInitFile='V.init',
-#pSurfInitFile='Eta.init',
- hydrogSaltFile='S.init',
+#uVelInitFile=  'U_init.bin',
+#vVelInitFile=  'V_init.bin',
+#pSurfInitFile='Eta_ini.bin',
+ hydrogSaltFile='S_init.bin',
  &

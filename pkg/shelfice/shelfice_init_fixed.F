@@ -58,6 +58,40 @@ C     Initialize MNC variable information for SHELFICE
       ENDIF
 #endif /* ALLOW_MNC */
 
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          shelficeMassInit   (i,j,bi,bj) = 0. _d 0
+          shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
+          shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
+       CALL READ_FLD_XY_RL( SHELFICEloadAnomalyFile, ' ',
+     &                      shelficeLoadAnomaly, 0, myThid )
+      ENDIF
+      IF ( SHELFICEmassFile.NE.' ' ) THEN
+       CALL READ_FLD_XY_RL( SHELFICEmassFile, ' ',
+     &                      shelficeMassInit, 0, myThid )
+      ELSE
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1, sNy
+          DO i = 1, sNx
+           shelficeMassInit(i,j,bi,bj) =
+     &         shelficeLoadAnomaly(i,j,bi,bj)*recip_gravity
+     &       - rhoConst*Ro_surf(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      _EXCH_XY_RL( shelficeMassInit, myThid )
+
 C-----------------------------------------------------------------------
 C--   Initialize SHELFICE variables kTopC
 C--   kTopC is the same as kSurfC, except outside ice-shelf area:
@@ -65,21 +99,45 @@ C--   kTop = 0 where there is no ice-shelf (where kSurfC=1)
 C--   and over land (completely dry column) where kSurfC = Nr+1
 C-----------------------------------------------------------------------
 
+C--   Currently, there is no specific pkg/shelfice criteria to decide when very
+C     thin ice-shelf vanishes: some limits come from ocean hFacMin/hFacMinDr;
+C     but should depend on shelficeMass if SHELFICEMassStepping is used.
+C     Here the SHI_minDepth threshold is just to get around machine round-off
+C     isssues so does not need to be a run-time params.
+      SHI_minDepth = 1. _d -6
+      SHI_minDepth = rF(1) - drF(1)*SHI_minDepth
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-          IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-     &         Ro_surf(i,j,bi,bj).LT.rF(1) ) THEN
+        IF ( SHELFICEMassStepping ) THEN
+C-      In this case, it is recommended to initialise ice-shelf Mass (from file)
+C       And if updating "kTopC" is permitted (SHI_update_kTopC=T), kTopC will
+C       be reset in SHELFICE_INIT_VARIA after loading shelficeMass from pickup
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &          shelficeMassInit(i,j,bi,bj).GT.zeroRL ) THEN
             kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
-          ELSE
+           ELSE
             kTopC(i,j,bi,bj) = 0
-          ENDIF
-          shelficeMassInit   (i,j,bi,bj) = 0. _d 0
-          shelficeLoadAnomaly(i,j,bi,bj) = 0. _d 0
-          shelfIceMassDynTendency(i,j,bi,bj) = 0. _d 0
+           ENDIF
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+C-      no time-evolving Ice-Shelf: set kTopC according to Ro_surf
+C       Note: use Ro_surf instead of R_shelfIce to stay consistent
+C             with ocean mask & hFac, see issue #99
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
+           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &          Ro_surf(i,j,bi,bj).LT.SHI_minDepth ) THEN
+c    &          R_shelfIce(i,j,bi,bj).LT.rF(1) ) THEN
+            kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+           ELSE
+            kTopC(i,j,bi,bj) = 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
@@ -100,7 +158,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF ( Ro_surf(i,j,bi,bj).LT.rF(1)
+           IF ( kTopC(i,j,bi,bj).GE.1
      &          .AND. maskC(i,j,k,bi,bj).NE.zeroRS ) THEN
             maskSHI(i,j,k,bi,bj) = 1. _d 0
             maskSHI(i,j,1,bi,bj) = 1. _d 0

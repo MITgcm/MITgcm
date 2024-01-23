@@ -1,11 +1,18 @@
 #include "STREAMICE_OPTIONS.h"
 
-      MODULE STREAMICE_PETSC_mod
+      MODULE STREAMICE_ARG_PETSC_mod
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE
 #ifdef ALLOW_PETSC
 #ifdef STREAMICE_PETSC_3_8
+
+C     THE FOLLOWING VARIABLES ARE OF DEFINED TYPES IN THE PETSC
+C     LIBRARY, USED BY STREAMICE WHEN AVAILABLE TO ACCELERATE
+C     SOLVES OF LINEAR SYSTEMS
+
+C     THE STORING OF PETSC OBJECTS IN COMMON BLOCKS IS
+C     FORBIDDEN BY PETSC 3.8.x AND ABOVE, SO A MODULE IS USED
 
 #include "petsc/finclude/petsc.h"
 #include "petsc/finclude/petscvec.h"
@@ -19,16 +26,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       Mat matrix
       Mat mumpsFac
-C      COMMON /STREAMICE_PETSC_MATRIX/
-C     & matrix, mumpsFac
-
       KSP ksp
-C      COMMON /STREAMICE_PETSC_KSP/
-C     & ksp
-
       PC  pc
-C      COMMON /STREAMICE_PETSC_PC/
-C     & pc
 
 #endif /* ALLOW_STREAMICE */
 #endif

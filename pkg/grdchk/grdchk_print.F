@@ -1,42 +1,42 @@
 #include "GRDCHK_OPTIONS.h"
 #include "AD_CONFIG.h"
 
-      subroutine grdchk_print(
+      SUBROUTINE grdchk_print(
      I                         ichknum,
      I                         ierr_grdchk,
-     I                         mythid
-     &                       )
+     I                         myThid )
 
-c     ==================================================================
-c     SUBROUTINE grdchk_print
-c     ==================================================================
-c
-c     o Print the results of the gradient check.
-c
-c     started: Christian Eckert eckert@mit.edu 08-Mar-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
-c
-c     ==================================================================
-c     SUBROUTINE grdchk_print
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE grdchk_print
+C     ==================================================================
+C
+C     o Print the results of the gradient check.
+C
+C     started: Christian Eckert eckert@mit.edu 08-Mar-2000
+C     continued: heimbach@mit.edu: 13-Jun-2001
+C
+C     ==================================================================
+C     SUBROUTINE grdchk_print
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRDCHK.h"
 
-c     == routine arguments ==
-
-      integer ichknum
-      integer ierr_grdchk
-      integer mythid
+C     == routine arguments ==
+      INTEGER ichknum
+      INTEGER ierr_grdchk
+      INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
-c     == local variables ==
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
       _RL fcref
       _RL fcpertplus, fcpertminus
       _RL xxmemo_ref
@@ -47,83 +47,85 @@ c     == local variables ==
       _RL ratio_ad
       _RL ratio_ftl
       _RL ratio_RMS
+      INTEGER i
+      INTEGER itile
+      INTEGER jtile
+      INTEGER itilepos
+      INTEGER jtilepos
+      INTEGER layer
+      INTEGER icomp
+      INTEGER ierr
+      INTEGER numchecks
+      INTEGER iL
+      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
-      integer i
-      integer itile
-      integer jtile
-      integer itilepos
-      integer jtilepos
-      integer layer
-      integer icomp
-      integer ierr
+C-    get name of grdchk CTRL var/file:
+      CALL GRDCHK_CTRL_FNAME( fName, grdchkvarindex, myThid )
+      iL = ILNBLNK( fName )
 
-      integer numchecks
+C--   Print header.
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     & '// Gradient check results  >>> START <<<'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid)
+      WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-      character*(max_len_mbuf) msgbuf
+c     WRITE(msgBuf,'(A,1PE14.6)')
+c    & ' EPS = ',grdchk_eps
+      WRITE(msgBuf,'(A,1PE13.6,3A)')
+     & ' EPS =', grdchk_eps,
+     & ' ; grdchk CTRL var/file name: "',fName(1:iL),'"'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-c     == end of interface ==
-
-c--   Print header.
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &'// Gradient check results  >>> START <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid)
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid )
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-
-      write(msgbuf,'(A,1PE14.6)')
-     &' EPS = ',grdchk_eps
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-
-      write(msgbuf,'(A,2X,4A,3(3X,A),11X,A)')
+      WRITE(msgBuf,'(A,2X,4A,3(3X,A),11X,A)')
      & 'grdchk output h.p:', 'Id', ' Itile', ' Jtile',
      & ' LAYER', 'bi', 'bj', 'X(Id)', 'X(Id)+/-EPS'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid )
-      write(msgbuf,'(A,2X,A,A4,1X,2A21)')
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A,2X,A,A4,1X,2A21)')
      &     'grdchk output h.c:', 'Id', 'FC', 'FC1', 'FC2'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
-      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18)')
+      WRITE(msgBuf,'(A,2X,A,2X,2A18,4X,A18)')
      &     'grdchk output h.g:', 'Id',
      &     'FC1-FC2/(2*EPS)', 'TLM GRAD(FC)', '1-FDGRD/TLMGRD'
 #else
-      write(msgbuf,'(A,2X,A,2X,2A18,4X,A18)')
+      WRITE(msgBuf,'(A,2X,A,2X,2A18,4X,A18)')
      &     'grdchk output h.g:', 'Id',
      &     'FC1-FC2/(2*EPS)', 'ADJ GRAD(FC)', '1-FDGRD/ADGRD'
 #endif
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-c--   Individual checks.
-      if ( ierr_grdchk .eq. 0 ) then
+C--   Individual checks.
+      IF ( ierr_grdchk .EQ. 0 ) THEN
          numchecks = ichknum
-      else
+      ELSE
          numchecks = maxgrdchecks
-      endif
+      ENDIF
 
       ratio_RMS = 0.
-      do i = 1, numchecks
+      DO i = 1, numchecks
         xxmemo_ref   = xxmemref  (i)
         xxmemo_pert  = xxmempert (i)
         adxxmemo     = adxxmem   (i)
@@ -132,8 +134,8 @@ c--   Individual checks.
         fcpertplus   = fcppmem   (i)
         fcpertminus  = fcpmmem   (i)
         gfd          = gfdmem    (i)
-        ratio_ad     = ratioadmem  (i)
-        ratio_ftl    = ratioftlmem (i)
+        ratio_ad     = ratioadmem(i)
+        ratio_ftl    = ratioftlmem(i)
         itile        = bimem   (i)
         jtile        = bjmem   (i)
         itilepos     = ilocmem (i)
@@ -142,85 +144,81 @@ c--   Individual checks.
         icomp        = icompmem(i)
         ierr         = ierrmem (i)
 
-        write(msgbuf,'(a)')
-     &  ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT, mythid )
-        write(msgbuf,'(A,I4,3I6,2I5,1x,1P2E17.9)')
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A,I4,3I6,2I5,1x,1P2E17.9)')
      &       'grdchk output (p):',
      &       i, itilepos, jtilepos, layer, itile, jtile,
      &       xxmemo_ref, xxmemo_pert
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT, mythid )
-        if ( ierr .eq. 0 ) then
-          write(msgbuf,'(A,I4,1P3E21.13)')
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        IF ( ierr .EQ. 0 ) THEN
+          WRITE(msgBuf,'(A,I4,1P3E21.13)')
      &          'grdchk output (c):',
      &          i, fcref, fcpertplus, fcpertminus
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT, mythid )
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_TANGENTLINEAR_RUN
           ratio_RMS  = ratio_RMS + ratio_ftl*ratio_ftl
-          write(msgbuf,'(A,I4,3x,1P3E21.13)')
+          WRITE(msgBuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &         i, gfd, ftlxxmemo, ratio_ftl
 #else
           ratio_RMS  = ratio_RMS + ratio_ad*ratio_ad
-          write(msgbuf,'(A,I4,3x,1P3E21.13)')
+          WRITE(msgBuf,'(A,I4,3x,1P3E21.13)')
      &          'grdchk output (g):',
      &          i, gfd, adxxmemo, ratio_ad
 #endif
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT, mythid )
-        else
-          if ( ierr .eq. -1 ) then
-            write(msgbuf,'(a)')
-     &      ' Component does not exist (zero)'
-          else if ( ierr .eq. -2 ) then
-            write(msgbuf,'(a)')
-     &      ' Component does not exist (negative)'
-          else if ( ierr .eq. -3 ) then
-            write(msgbuf,'(a)')
-     &      ' Component does not exist (too large)'
-          else if ( ierr .eq. -4 ) then
-            write(msgbuf,'(a)')
-     &      ' Component does not exist (land point)'
-          endif
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT, mythid )
-        endif
-      enddo
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ELSE
+          IF ( ierr .EQ. -1 ) THEN
+           WRITE(msgBuf,'(A)') ' Component does not exist (zero)'
+          ELSEIF ( ierr .EQ. -2 ) THEN
+           WRITE(msgBuf,'(A)') ' Component does not exist (negative)'
+          ELSEIF ( ierr .EQ. -3 ) THEN
+           WRITE(msgBuf,'(A)') ' Component does not exist (too large)'
+          ELSEIF ( ierr .EQ. -4 ) THEN
+           WRITE(msgBuf,'(A)') ' Component does not exist (land point)'
+          ELSE
+           WRITE(msgBuf,'(A,I6,A)') ' Unknown error (ierr=', ierr, ' )'
+          ENDIF
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDDO
 
-c--   Print final lines.
+C--   Print final lines.
       IF ( ichknum.GT.1 ) ratio_RMS = ratio_RMS / ichknum
       IF ( ratio_RMS.GT.0. ) ratio_RMS = SQRT( ratio_RMS )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(A,I4,A,1P1E21.13)')
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,I4,A,1P1E21.13)')
      &  'grdchk  summary  :  RMS of ',ichknum,' ratios =',ratio_RMS
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &'// Gradient check results  >>> END <<<'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &'// ======================================================='
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT, mythid )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     & '// Gradient check results  >>> END <<<'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     & '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 #endif /* ALLOW_GRDCHK */
 
-      return
-      end
+      RETURN
+      END

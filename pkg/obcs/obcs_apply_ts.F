@@ -44,8 +44,12 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 c     INTEGER bi, bj, itLo, itHi, jtLo, jtHi
       INTEGER k, kLo, kHi
-      INTEGER i, j
-      INTEGER Iobc, Jobc
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER j, Iobc
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER i, Jobc
+#endif
 
 c     IF ( biArg.EQ.0 .OR. bjArg.EQ.0 ) THEN
 c       itLo = myBxLo(myThid)
