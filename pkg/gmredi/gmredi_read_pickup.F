@@ -24,6 +24,10 @@ C     myThid            :: thread number
       INTEGER myThid
 
 #if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     fn          :: character buffer for creating filename
 C     fp          :: precision of pickup files
@@ -39,25 +43,26 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER fp
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
-      INTEGER j, nm, ioUnit
+      INTEGER j, nj, ioUnit, iL
 #ifdef GM_BATES_K3D
-c     PARAMETER( missFldDim = 12 )
       INTEGER i, k, n, bi, bj
       _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+# ifdef GM_GEOM_VARIABLE_K
+      PARAMETER( missFldDim = 5+2*GM_Bates_NModes )
+# else
+      PARAMETER( missFldDim = 2+2*GM_Bates_NModes )
+# endif
+#else /* GM_BATES_K3D */
+      PARAMETER( missFldDim = 3 )
 #endif /* GM_BATES_K3D */
-#ifdef GM_GEOM_VARIABLE_K
-c     PARAMETER( missFldDim = 4 )
-#endif /* GM_GEOM_VARIABLE_K */
-      PARAMETER( missFldDim = 16 )
       CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(MAX_LEN_FNAM) fn, tmpNam
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(8) fieldname
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL useCurrentDir, fileExist, StopFlag
 CEOP
 
-c     IF ( GM_useBatesK3d .OR.
-c    &     ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) ) THEN
       IF ( GM_useBatesK3d .OR. GM_useGEOM ) THEN
        ioUnit = errorMessageUnit
 
@@ -96,25 +101,52 @@ c      IF ( filePrec.NE.0 .AND. filePrec.NE.fp ) THEN
        IF ( nbFields.LE.0 ) THEN
 C-      No meta-file or old meta-file without List of Fields
         IF ( pickupStrictlyMatch ) THEN
-          WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+         WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
      &      'no field-list found in meta-file',
      &      ' => cannot check for strick-matching'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
      &      ' in file: "data", NameList: "PARM03"'
-          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         CALL ALL_PROC_DIE( myThid )
+         STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
         ELSE
-          WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
-     &      ' no field-list found'
-          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          IF ( nbFields.EQ.-1 ) THEN
-C-      No meta-file
-          WRITE(msgBuf,'(4A)') 'WARNING >> ',
+C-      No meta-file: then check if binary pickup file (i.e., ".data") exist
+#ifdef ALLOW_MDSIO
+          useCurrentDir = .FALSE.
+          CALL MDS_CHECK4FILE(
+     I                     fn, '.data', 'GMREDI_READ_PICKUP',
+     O                     tmpNam, fileExist,
+     I                     useCurrentDir, myThid )
+#else
+          STOP 'ABNORMAL END: S/R DIC_READ_PICKUP: Needs MDSIO pkg'
+#endif
+          IF ( fileExist ) THEN
+           WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
+     &      ' no field-list found'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(4A)') 'WARNING >> ',
      &      ' try to read pickup as currently written'
-          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ELSE
+           iL = ILNBLNK(fn)
+           WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
+     &      'missing both "meta" & "data" files for "', fn(1:iL), '"'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+           nbFields = -2
+#ifdef GM_GEOM_VARIABLE_K
+           _BEGIN_MASTER( myThid )
+           IF ( GM_useGEOM ) THEN
+            GEOM_ene_ctrl = 0
+            WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
+     &      'restart with uniform GEOM_EKE = GEOM_ene_ini'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+           _END_MASTER( myThid )
+           ENDIF
+#endif
+          ENDIF
          ELSE
 C-      Old meta-file without List of Fields
 c         WRITE(msgBuf,'(4A)') 'WARNING >> ',
@@ -137,81 +169,80 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( nbFields.EQ.0 ) THEN
 C---   Old way to read pickup:
 
-         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &        'old way of reading pickups not implemented, continuing'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+c    &        'old way of reading pickups not implemented, continuing'
+c        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
-       ELSE
+       ELSEIF ( nbFields.NE.-2 ) THEN
 
-        nm = 0
-C---    read GMREDI fields for restart
+        nj = 0
+C---   read GMREDI fields for restart
 
 #ifdef GM_BATES_K3D
         IF ( GM_useBatesK3d ) THEN
 
-C       Center mode
-        fieldname='mode01C'
-        CALL READ_MFLDS_3D_RL( fieldname, vec,
-     &                         nm, fp, Nr, myIter, myThid )
-        CALL EXCH_3D_RL(vec, Nr, myThid)
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             modesC(1,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+C        Center mode
+         fieldname = 'mode01C '
+         CALL READ_MFLDS_3D_RL( fieldname, vec,
+     &                          nj, fp, Nr, myIter, myThid )
+         CALL EXCH_3D_RL(vec, Nr, myThid)
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              modesC(1,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+             ENDDO
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
 
 C      Western Mode
-        DO n=1,GM_Bates_NModes
-         WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'W'
-         CALL READ_MFLDS_3D_RL( fieldname, vec,
-     &        nm, fp, Nr, myIter, myThid )
-         CALL EXCH_3D_RL(vec, Nr, myThid)
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO k=1,Nr
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-              modesW(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+         DO n=1,GM_Bates_NModes
+          WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'W'
+          CALL READ_MFLDS_3D_RL( fieldname, vec,
+     &                           nj, fp, Nr, myIter, myThid )
+          CALL EXCH_3D_RL(vec, Nr, myThid)
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO k=1,Nr
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+               modesW(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+              ENDDO
              ENDDO
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
 
 C      Southern Mode
-        DO n=1,GM_Bates_NModes
-         WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'S'
-         CALL READ_MFLDS_3D_RL( fieldname, vec,
-     &        nm, fp, Nr, myIter, myThid )
-         CALL EXCH_3D_RL(vec, Nr, myThid)
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO k=1,Nr
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-              modesS(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+         DO n=1,GM_Bates_NModes
+          WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'S'
+          CALL READ_MFLDS_3D_RL( fieldname, vec,
+     &                           nj, fp, Nr, myIter, myThid )
+          CALL EXCH_3D_RL(vec, Nr, myThid)
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+            DO k=1,Nr
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+               modesS(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
+              ENDDO
              ENDDO
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
 
-        nm = nm*Nr
-
-C       ---2D fields---
+C     Switch to - 2D fields :
+         nj = nj*Nr
 C       Deformation radius
-        fieldname='Rdef'
-        CALL READ_MFLDS_3D_RL( fieldname, Rdef,
-     &       nm, fp, 1, myIter, myThid )
-        CALL EXCH_XY_RL(Rdef, myThid)
+         fieldname = 'Rdef    '
+         CALL READ_MFLDS_3D_RL( fieldname, Rdef,
+     &                          nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL(Rdef, myThid)
 
 c     GM_useBates3D
         ENDIF
@@ -220,34 +251,25 @@ c     GM_useBates3D
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
-        IF ( GM_useGEOM .AND. GEOM_pickup_read_mdsio ) THEN
+        IF ( GM_useGEOM ) THEN
 
-C         ---2D fields---
-C         GEOMETRIC energy
-          fieldname='GEOM_ene'
-          CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene,
-     &         nm, fp, 1, myIter, myThid )
-          CALL EXCH_XY_RL(GEOM_ene, myThid)
+C     Continue with GEOMETRIC - 2D fields :
+C        GEOMETRIC energy
+         fieldname = 'GEOM_ene'
+         CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene,
+     &         nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL(GEOM_ene, myThid)
 
-          fieldname='erhs_nm1'
-          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
-     &         nm, fp, 1, myIter, myThid )
-          CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
+         fieldname = 'erhs_nm1'
+         CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
+     &         nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
 
-          fieldname='erhs_nm2'
-          CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm2,
-     &         nm, fp, 1, myIter, myThid )
-          CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
+         fieldname = 'erhs_nm2'
+         CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm2,
+     &         nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
 
-C     use AB3 time stepping
-          GEOM_ene_ctrl = 2
-        ELSEIF ( GM_useGEOM ) THEN
-         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &       'in routine but GEOM_pickup_read_mdsio = F'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &       'WARNING! going to (re)initialise GEOM_ene!'
-         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 
@@ -261,23 +283,57 @@ C--    Check for missing fields:
      O       missFldList,
      U       nMissing,
      I       myIter, myThid )
+
+       _BEGIN_MASTER( myThid )
        IF ( nMissing.GT.missFldDim ) THEN
-          WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
-     &         'missing fields list has been truncated to', missFldDim
-          CALL PRINT_ERROR( msgBuf, myThid )
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (list-size Pb)'
+        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READ_PICKUP: ',
+     &       'missing fields list has been truncated to', missFldDim
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP (list-size Pb)'
        ENDIF
        IF ( nMissing.GE.1 ) THEN
-          ioUnit = errorMessageUnit
-          DO j=1,nMissing
-          WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
-     &          'cannot restart without field "',missFldList(nm),'"'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          ENDDO
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+        stopFlag = .FALSE.
+        IF ( pickupStrictlyMatch ) THEN
+         WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &      'try with " pickupStrictlyMatch=.FALSE.,"',
+     &      ' in file: "data", NameList: "PARM03"'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         stopFlag = .TRUE.
+        ELSE
+         DO j=1,nMissing
+          IF ( missFldList(j).EQ.'GEOM_ene' ) THEN
+#ifdef GM_GEOM_VARIABLE_K
+           GEOM_ene_ctrl = 0
+           WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
+     &      'restart with uniform GEOM_EKE = GEOM_ene_ini'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ELSEIF ( missFldList(j).EQ.'erhs_nm1' ) THEN
+           GEOM_ene_ctrl = 0
+           WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
+     &     'Will get only an approximated Restart (GEOM_ene_ctrl=0)'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ELSEIF ( missFldList(j).EQ.'erhs_nm2' .AND. nIter0.GT.1 ) THEN
+           GEOM_ene_ctrl = 1
+           WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
+     &     'Will get only an approximated Restart (GEOM_ene_ctrl=1)'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+#endif /* GM_GEOM_VARIABLE_K */
+          ELSE
+           stopFlag = .TRUE.
+           WRITE(msgBuf,'(4A)') 'GMREDI_READ_PICKUP: ',
+     &          'cannot restart without field "',missFldList(j),'"'
+           CALL PRINT_ERROR( msgBuf, myThid )
+          ENDIF
+         ENDDO
+        ENDIF
+        IF ( stopFlag ) THEN
+         CALL ALL_PROC_DIE( 0 )
+         STOP 'ABNORMAL END: S/R GMREDI_READ_PICKUP'
+        ENDIF
+
        ENDIF
+       _END_MASTER( myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     end if GM_useBatesK3d or GM_useGEOM block

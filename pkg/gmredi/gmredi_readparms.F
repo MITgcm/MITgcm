@@ -84,14 +84,13 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Bates_surfMinDepth, GM_Bates_vecFreq,
      &          GM_Bates_minRenorm, GM_Bates_maxRenorm,
      &          GM_useLeithQG,
-     &          GM_MNC,
      &          GM_useGEOM,
      &          GEOM_lmbda, GEOM_alpha,
      &          GEOM_ene_init, GEOM_ene_kappa,
      &          GEOM_vert_struc,
      &          GEOM_vert_struc_min, GEOM_vert_struc_max,
      &          GEOM_minval_K, GEOM_maxval_K,
-     &          GEOM_pickup_write_mdsio, GEOM_pickup_read_mdsio
+     &          GM_MNC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -169,8 +168,6 @@ C--   Default values GEOMETRIC
       GEOM_vert_struc_max     = 1. _d 0
       GEOM_minVal_K           = 0. _d 0
       GEOM_maxVal_K           = 2500. _d 0
-      GEOM_pickup_write_mdsio = .TRUE.
-      GEOM_pickup_read_mdsio  = .TRUE.
 
 C--   Default values for BatesK3d
       GM_useBatesK3d     = .FALSE.
@@ -287,24 +284,6 @@ C     Fix to avoid running without getting any output:
       GM_MNC = .FALSE.
 #endif
       GM_MDSIO = (.NOT. GM_MNC) .OR. outputTypesInclusive
-
-#ifdef GM_GEOM_VARIABLE_K
-
-      IF( GEOM_pickup_read_mdsio ) THEN
-        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
-     &      'read pickup option on, no init of GEOM_ene'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , 1)
-        GEOM_ene_ctrl = 2
-      ELSE
-        WRITE(msgBuf,'(2A,I4)') 'GMREDI_READPARAMS: ',
-     &      'initialising GEOM_ene'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , 1)
-        GEOM_ene_ctrl = 0
-      ENDIF
-
-#endif
 
 C     Check for retired parameters
       IF ( GM_background_K3dFile .NE. ' ' ) THEN

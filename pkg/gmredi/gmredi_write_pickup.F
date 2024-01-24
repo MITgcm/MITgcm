@@ -38,8 +38,8 @@ C !FUNCTIONS: ==========================================================
       EXTERNAL ILNBLNK
 
 C !LOCAL VARIABLES: ====================================================
-C     m           :: loop index / field number
-C     nm          :: record number
+C     n           :: loop index / field number
+C     nj          :: record number
 C     fp          :: pickup-file precision
 C     glf         :: local flag for "globalFiles"
 C     fn          :: character buffer for creating filename
@@ -47,21 +47,21 @@ C     nWrFlds     :: number of fields being written
 C     listDim     :: dimension of "wrFldList" local array
 C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
-      INTEGER m, nm, fp, lChar
+      INTEGER n, nj, fp, lChar
       LOGICAL glf
       _RL     timList(1)
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
 #ifdef GM_BATES_K3D
+      INTEGER i, j, k, bi, bj, m
+      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 # ifdef GM_GEOM_VARIABLE_K
-      PARAMETER( listDim = 6+2*GM_Bates_NModes )
+      PARAMETER( listDim = 5+2*GM_Bates_NModes )
 # else
       PARAMETER( listDim = 2+2*GM_Bates_NModes )
 # endif
-      INTEGER i,j,k,bi,bj,n
-      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #else /* GM_BATES_K3D */
-      PARAMETER( listDim = 4 )
+      PARAMETER( listDim = 3 )
 #endif /* GM_BATES_K3D */
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -79,8 +79,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          WRITE(fn,'(2A)') 'pickup_gmredi.',suff(1:lChar)
        ENDIF
        fp = precFloat64
-       m  = 0
-       nm = 0
+       n  = 0
+       nj = 0
 
 #ifdef GM_BATES_K3D
        IF ( GM_useBatesK3d ) THEN
@@ -88,74 +88,74 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     record number < 0 : a hack not to write meta files now:
 
 C     Centre mode
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,Nr
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           vec(i,j,k,bi,bj) = modesC(1,i,j,k,bi,bj)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             vec(i,j,k,bi,bj) = modesC(1,i,j,k,bi,bj)
+            ENDDO
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-      m = m + 1
-      CALL WRITE_REC_3D_RL( fn, fp, Nr,
-     &     vec, -m, myIter, myThid )
-      fieldname='mode01C'
-      IF (m.LE.listDim) wrFldList(m) = fieldname
+        n = n + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr,
+     &                        vec, -n, myIter, myThid )
+        fieldname = 'mode01C '
+        IF (n.LE.listDim) wrFldList(n) = fieldname
 
 C     Western Mode
-      DO n=1,GM_Bates_NModes
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            vec(i,j,k,bi,bj) = modesW(n,i,j,k,bi,bj)
+        DO m=1,GM_Bates_NModes
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              vec(i,j,k,bi,bj) = modesW(m,i,j,k,bi,bj)
+             ENDDO
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
+         n = n + 1
+         CALL WRITE_REC_3D_RL( fn, fp, Nr,
+     &                         vec, -n, myIter, myThid )
+         WRITE(fieldname, '(A,I2.2,A)') 'mode',m,'W'
+         IF (n.LE.listDim) wrFldList(n) = fieldname
         ENDDO
-       ENDDO
-       m = m + 1
-       CALL WRITE_REC_3D_RL( fn, fp, Nr,
-     &      vec, -m, myIter, myThid )
-       WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'W'
-       IF (m.LE.listDim) wrFldList(m) = fieldname
-      ENDDO
 
 C     Southern Mode
-      DO n=1,GM_Bates_NModes
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            vec(i,j,k,bi,bj) = modesS(n,i,j,k,bi,bj)
+        DO m=1,GM_Bates_NModes
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+              vec(i,j,k,bi,bj) = modesS(m,i,j,k,bi,bj)
+             ENDDO
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
+         n = n + 1
+         CALL WRITE_REC_3D_RL( fn, fp, Nr,
+     &                         vec, -n, myIter, myThid )
+         WRITE(fieldname, '(A,I2.2,A)') 'mode',m,'S'
+         IF (n.LE.listDim) wrFldList(n) = fieldname
         ENDDO
-       ENDDO
-       m = m + 1
-       CALL WRITE_REC_3D_RL( fn, fp, Nr,
-     &      vec, -m, myIter, myThid )
-       WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'S'
-       IF (m.LE.listDim) wrFldList(m) = fieldname
-      ENDDO
 C--------------------------
 
 C-    switch to 2-D fields:
-        nm = -m*Nr
+        nj = -n*Nr
 
 C     The deformation radius (2D field)
-      m = m + 1
-      nm = nm-1
-      CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &     Rdef, nm, myIter, myThid )
-      fieldname = 'Rdef'
-      IF (m.LE.listDim) wrFldList(m) = fieldname
+        n = n + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp, 1,
+     &                        Rdef, nj, myIter, myThid )
+        fieldname = 'Rdef    '
+        IF (n.LE.listDim) wrFldList(n) = fieldname
 
 c     if GM_useBatesK3d
        ENDIF
@@ -166,29 +166,29 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef GM_GEOM_VARIABLE_K
        IF (GM_useGEOM ) THEN
 
-        m = m + 1
-        nm = nm-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_ene,nm,myIter,myThid )
+        n = n + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_ene,nj,myIter,myThid )
         fieldname = 'GEOM_ene'
-        IF (m.LE.listDim) wrFldList(m) = fieldname
+        IF (n.LE.listDim) wrFldList(n) = fieldname
 
-        m = m + 1
-        nm = nm-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm1,nm,myIter,myThid )
+        n = n + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm1,nj,myIter,myThid )
         fieldname = 'erhs_nm1'
-        IF (m.LE.listDim) wrFldList(m) = fieldname
+        IF (n.LE.listDim) wrFldList(n) = fieldname
 
-        m = m + 1
-        nm = nm-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm2,nm,myIter,myThid )
+        n = n + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm2,nj,myIter,myThid )
         fieldname = 'erhs_nm2'
-        IF (m.LE.listDim) wrFldList(m) = fieldname
+        IF (n.LE.listDim) wrFldList(n) = fieldname
 
 C     if GM_useGEOM
        ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 
-       nWrFlds = m
+       nWrFlds = n
        IF ( nWrFlds.GT.listDim ) THEN
          WRITE(msgBuf,'(2A,I5,A)') 'GMREDI_WRITE_PICKUP: ',
      &        'trying to write ',nWrFlds,' fields'
@@ -202,19 +202,19 @@ C     if GM_useGEOM
 
 #ifdef ALLOW_MDSIO
 C     uses this specific S/R to write (with more informations) only meta files
-       m  = 1
-       nm = ABS(nm)
-       IF ( nWrFlds*Nr .EQ. nm ) THEN
-         m  = Nr
-         nm = nWrFlds
+       n  = 1
+       nj = ABS(nj)
+       IF ( nWrFlds*Nr .EQ. nj ) THEN
+         n  = Nr
+         nj = nWrFlds
        ENDIF
        glf  = globalFiles
        timList(1) = myTime
        CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
-     &       0, 0, m, ' ',
+     &       0, 0, n, ' ',
      &       nWrFlds, wrFldList,
      &       1, timList, oneRL,
-     &       nm, myIter, myThid )
+     &       nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 
 C     if GM_useBatesK3d or GM_useGEOM

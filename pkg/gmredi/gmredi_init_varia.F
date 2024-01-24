@@ -75,6 +75,12 @@ C        variables (as done above) without condition on useGMRedi.
 C        Therefore, in this case, the "If useGMRedi" is added back here:
       IF ( useGMRedi ) THEN
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+C     use AB3 time stepping
+       _BEGIN_MASTER( myThid )
+        GEOM_ene_ctrl = MIN( nIter0, 2 )
+       _END_MASTER( myThid )
+#endif
 
 #if (defined ALLOW_KAPREDI_CONTROL && defined GM_READ_K3D_REDI )
 C--   Read (again) 3-D Isopycnal diffusivity from file
@@ -96,7 +102,7 @@ C--   Read (again) 3-D Thickness diffusivity from file
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C     Initialize arrays in common blocks :
+C     Initialize 3-D arrays in common blocks :
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -113,36 +119,29 @@ C     Initialize arrays in common blocks :
            GM_PsiX(i,j,k,bi,bj) = 0. _d 0
            GM_PsiY(i,j,k,bi,bj) = 0. _d 0
 #endif
-#ifdef GM_VISBECK_VARIABLE_K
-           VisbeckK(i,j,bi,bj) = 0. _d 0
-#endif
-#ifdef GM_GEOM_VARIABLE_K
-           GEOMK(i,j,k,bi,bj)      = 0. _d 0
-           GEOM_ene(i,j,bi,bj)     = 0. _d 0
-           ene_rhs_nm1(i,j,bi,bj)  = 0. _d 0
-           ene_rhs_nm2(i,j,bi,bj)  = 0. _d 0
-C     doing below k=1,Nr times too many, but only doing it once...
-           IF ( k.EQ.1 ) THEN
-            GEOM_ene(i,j,bi,bj)    = 0. _d 0
-            ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
-            ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
-            IF( GEOM_ene_ctrl .EQ. 0 ) THEN
-             GEOM_ene(i,j,bi,bj)   = GEOM_ene_init * maskInC(i,j,bi,bj)
-            ENDIF
-C     compute depth tapering only once
-            GEOM_taper(i,j,bi,bj)  = (0.5 _d 0 *
-     &           (1.0 _d 0 - TANH(
-     &           (-ABS(R_low(i,j,bi,bj)) + 800.0 _d 0) / 300.0 _d 0
-     &           ) ) ) ** 2
-           ENDIF
-#endif
 #ifdef ALLOW_GM_LEITH_QG
            GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_BATES_K3D
            GM_BatesK3d(i,j,k,bi,bj) = 0. _d 0
 #endif
+#ifdef GM_GEOM_VARIABLE_K
+           GEOMK(i,j,k,bi,bj)   = 0. _d 0
+#endif
           ENDDO
+         ENDDO
+        ENDDO
+C     Initialize 2-D arrays in common blocks :
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#ifdef GM_VISBECK_VARIABLE_K
+           VisbeckK(i,j,bi,bj) = 0. _d 0
+#endif
+#ifdef GM_GEOM_VARIABLE_K
+           ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
+           ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
+           GEOM_ene(i,j,bi,bj)    = GEOM_ene_init * maskInC(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
 
@@ -183,8 +182,9 @@ C--   write GM scaling factors to file:
       ENDIF
 
 #if ( defined GM_BATES_K3D || defined GM_GEOM_VARIABLE_K )
-      IF (.NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
-     &     .AND. pickupSuff.EQ.' ' )) THEN
+      IF ( .NOT.( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &            .AND. pickupSuff.EQ.' ' )
+     &     .AND.( GM_useBatesK3d .OR. GM_useGEOM ) ) THEN
         CALL GMREDI_READ_PICKUP( nIter0, myThid )
       ENDIF
 #endif

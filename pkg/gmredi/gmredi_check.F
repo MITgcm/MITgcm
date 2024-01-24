@@ -207,11 +207,7 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_minVal_K   =', ' /* GEOMK lower bound [m2/s] */')
        CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
      &  'GEOM_maxVal_K   =', ' /* GEOMK upper bound [m2/s] */')
-       CALL WRITE_0D_L( GEOM_pickup_write_mdsio, INDEX_NONE,
-     &  'GEOM_pickup_write_mdsio =', ' /* GEOM binary pickup write */')
-       CALL WRITE_0D_L( GEOM_pickup_read_mdsio, INDEX_NONE,
-     &  'GEOM_pickup_read_mdsio  =', ' /* GEOM binary pickup read  */')
-     
+
        IF (usingCurvilinearGrid) THEN
         WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',
      &       ' curvilinear grid detected, doing rotation of velocities'
@@ -220,7 +216,6 @@ C     Make sure we are not trying to use something that is unavailable
        ENDIF
       ENDIF
 #endif
-       
 
 #ifndef GM_BOLUS_ADVEC
 C     Make sure we are not trying to use some arrays that are unavailable

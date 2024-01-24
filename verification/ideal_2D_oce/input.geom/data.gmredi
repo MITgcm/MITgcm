@@ -28,5 +28,4 @@
   GEOM_ene_init      = 1.e-2,
   GEOM_ene_kappa     = 500.,
   GEOM_vert_struc    = .TRUE.,
-  GEOM_pickup_read_mdsio=.FALSE.,
  &
