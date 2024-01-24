@@ -3173,8 +3173,9 @@ be in "flat" or "unblocked" `binary format <https://en.wikipedia.org/wiki/Binary
 
 Data is expected to be in
 `Fortran/column-major order <https://en.wikipedia.org/wiki/Row-_and_column-major_order>`_,
-in the order (:math:`x`, :math:`y`, :math:`z`, :math:`t`).  MATLAB typically
-uses F-order, while Python's numpy uses C-order (row-major order).
+in the order (:math:`x`, :math:`y`, :math:`z`, :math:`t`).
+`MATLAB <https://www.mathworks.com/products/matlab.html>`_ typically
+uses F-order, while Python's `NumPy <https://numpy.org>`_ uses C-order (row-major order).
 
 For historical reasons, many large MITgcm projects use big-endian
 `byte ordering <https://en.wikipedia.org/wiki/Endianness>`_,
@@ -3225,16 +3226,16 @@ long as you also compile your executable to be little-endian compatible.
      h = reshape(fread(fid, Inf, accuracy), nx, ny);
      fclose(fid);
 
-- Using Python's `numpy <https://numpy.org>`_:
+- Using Python's `NumPy <https://numpy.org>`_:
 
   The `tofile <https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html>`_
-  method on a numpy array writes the data in
+  method on a NumPy array writes the data in
   `row-major or C-order <https://en.wikipedia.org/wiki/Row-_and_column-major_order>`_,
   so arrays should be shaped to take this into account for the MITgcm:
   (:math:`y`, :math:`x`) for 2-D,  (:math:`z`, :math:`y`, :math:`x`) for 3-D, and
   (:math:`t`, :math:`z`, :math:`y`, :math:`x`) for 4-D.
 
-  A python version of the above script can use numpy to create a bathymetry file is as
+  A python version of the above script can use NumPy to create a bathymetry file is as
   follows:
 
   ::
@@ -3255,18 +3256,18 @@ long as you also compile your executable to be little-endian compatible.
     # save as single-precision (NumPy type float32) with big-endian byte ordering
     h.astype('>f4').tofile('bathy.bin')
 
-  The dtype specification ``'>f4'`` above instructs numpy to write the file with
+  The dtype specification ``'>f4'`` above instructs NumPy to write the file with
   big-endian byte ordering (specifically, due to the '>') as single-precision real
   numbers (due to the 'f4' which is NumPy ``float32`` or equivalently,
   Fortran ``real*4`` format).
 
-  To read this bathymetry file back into numpy, reshaped back to (ny, nx):
+  To read this bathymetry file back into NumPy, reshaped back to (ny, nx):
 
   ::
 
     h = np.fromfile('bathy.bin', '>f4').reshape(ny, nx)
 
-  where again the dtype spec instructs numpy to read a big-endian
+  where again the dtype spec instructs NumPy to read a big-endian
   file of single-precision, floating point values.
 
   A more complicated example of using Python to generate input date is provided in
