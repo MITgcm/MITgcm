@@ -80,7 +80,7 @@ C-    Initialization : <= done in S/R gmredi_init
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=tkey, byte=isbyte
 # endif
 # ifdef GM_GEOM_VARIABLE_K
-CADJ STORE GEOMK(:,:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+CADJ STORE GEOM_K3d(:,:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 # endif
 #endif
       IF (GM_AdvForm) THEN
@@ -160,7 +160,7 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
      &      + op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &      + op5*(GEOMK(i-1,j,k,bi,bj)+GEOMK(i,j,k,bi,bj))
+     &      + op5*(GEOM_K3d(i-1,j,k,bi,bj)+GEOM_K3d(i,j,k,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op25*( GM_LeithQG_K(i-1,j,km1,bi,bj)
@@ -190,7 +190,7 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
      &      + op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &      + op5*(GEOMK(i,j-1,k,bi,bj)+GEOMK(i,j,k,bi,bj))
+     &      + op5*(GEOM_K3d(i,j-1,k,bi,bj)+GEOM_K3d(i,j,k,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &      + op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)

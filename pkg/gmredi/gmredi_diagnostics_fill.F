@@ -58,8 +58,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 #ifdef GM_GEOM_VARIABLE_K
        IF ( GEOM_alpha.NE.0. ) THEN
-         CALL DIAGNOSTICS_FILL(GEOMK,'GM_GEOMK',0,Nr,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(GEOM_ene,'GEOMeE  ',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(GEOM_K3d,'GM_GEOMK',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(GEOM_EKE,'GEOMeE  ',0,1,1,bi,bj,myThid)
        ENDIF
 #endif
          CALL DIAGNOSTICS_FILL(Kux,'GM_Kux  ',0,Nr,1,bi,bj,myThid)

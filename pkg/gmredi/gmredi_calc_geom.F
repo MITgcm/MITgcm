@@ -12,7 +12,7 @@ C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE GMREDI_CALC_GEOM
 C     | Calculate GM coefficient with the GEOMETRIC prescription
-C     | GEOMK is located at the cell centre.
+C     | GEOM_K3d is located at the grid-cell vertical interface.
 C     *==========================================================*
 
 C !USES: ===============================================================
@@ -25,7 +25,7 @@ C !USES: ===============================================================
 #include "GMREDI.h"
 
 C !INPUT PARAMETERS: ===================================================
-C     sigmaXYR  :: density variables
+C     sigmaXYR  :: density gradient variables
 C     bi, bj    :: tile indices
 C     myTime    :: Current time in simulation
 C     myIter    :: Current iteration number in simulation
@@ -39,11 +39,10 @@ C     myThid    :: My Thread Id. number
       INTEGER myThid
 
 #ifdef GM_GEOM_VARIABLE_K
-
-C !INOUT PARAMETERS: ==================================================
-C  GEOMK        :: GEOMETRIC kgm (GEOMETRIC in horizontal,
+C !INOUT PARAMETERS: ===================================================
+C  GEOM_K3d     :: GEOMETRIC K-GM (GEOMETRIC in horizontal,
 C                             structure function in vertical)
-C  GEOM_ene     :: GEOMETRIC parameterised energy
+C  GEOM_EKE     :: GEOMETRIC parameterised energy
 C              not really an output, passed around as common block
 
 C !LOCAL VARIABLES: ====================================================
@@ -312,7 +311,7 @@ C        bound the denominator from below (choice following NEMO)
 C     for cubed sphere setups, depthC can be zero in the halo, so we
 C     include it in the masking
         IF (maskC(i,j,kSurf,bi,bj)*depthC(i,j) .GT. 0.0 _d 0) THEN
-         GEOMK(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_ene(i,j,bi,bj)
+         GEOM_K3d(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_EKE(i,j,bi,bj)
      &        / MAX( SNloc_zint(i,j), 1. _d -7 * depthC(i,j) )
         ENDIF
        ENDDO
@@ -323,8 +322,8 @@ C     2. cap k_GEOM from above! (stop it being too big)
       IF (GEOM_alpha .NE. 0.0 _d 0) THEN
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         GEOMK(i,j,kSurf,bi,bj) =
-     &        MIN(GEOMK(i,j,kSurf,bi,bj), GEOM_maxVal_K)
+         GEOM_K3d(i,j,kSurf,bi,bj) =
+     &        MIN( GEOM_K3d(i,j,kSurf,bi,bj), GEOM_maxVal_K )
         ENDDO
        ENDDO
       ENDIF
@@ -333,7 +332,7 @@ C     3. taper it according to depth to kill k_GEOM in shallow regions
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        GEOMK(i,j,kSurf,bi,bj) = GEOMK(i,j,kSurf,bi,bj)
+        GEOM_K3d(i,j,kSurf,bi,bj) = GEOM_K3d(i,j,kSurf,bi,bj)
      &       * GEOM_taper(i,j,bi,bj) * maskC(i,j,kSurf,bi,bj)
        ENDDO
       ENDDO
@@ -343,8 +342,8 @@ C     4. extend the (tapered) k_GEOM in depth
       DO k=Nr,2,-1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         GEOMK(i,j,k,bi,bj) = vert_struc_func(i,j,k)
-     &                      * GEOMK(i,j,kSurf,bi,bj)
+         GEOM_K3d(i,j,k,bi,bj) = vert_struc_func(i,j,k)
+     &                      * GEOM_K3d(i,j,kSurf,bi,bj)
      &                      * maskC(i,j,k,bi,bj)
         ENDDO
        ENDDO
@@ -356,7 +355,8 @@ C     5. cap k_GEOM from below (do not strictly need this)
        DO k=1,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          GEOMK(i,j,k,bi,bj) = MAX(GEOMK(i,j,k,bi,bj),GEOM_minVal_K)
+          GEOM_K3d(i,j,k,bi,bj) =
+     &         MAX( GEOM_K3d(i,j,k,bi,bj), GEOM_minVal_K )
          ENDDO
         ENDDO
        ENDDO
@@ -382,7 +382,7 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
      &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           SNloc = SNloc3D(i,j,k)
           trd_ene_gen(i,j) = trd_ene_gen(i,j)
-     &                     + GEOMK(i,j,k,bi,bj)
+     &                     + GEOM_K3d(i,j,k,bi,bj)
      &                     * SNloc * SNloc
      &                     * drC(k) * hFac
          ENDIF
@@ -437,22 +437,22 @@ C     2. form the advective + diffusive tendencies
      &       ) THEN
 C ---- second ordered centre difference
 !              ene_adv_x(i,j) = -U_depth_avg(i,j)
-!     &          * (dxG(i-1,j,bi,bj) * GEOM_ene(i  ,j,bi,bj)
-!     &          +  dxG(i  ,j,bi,bj) * GEOM_ene(i-1,j,bi,bj))
+!     &          * (dxG(i-1,j,bi,bj) * GEOM_EKE(i  ,j,bi,bj)
+!     &          +  dxG(i  ,j,bi,bj) * GEOM_EKE(i-1,j,bi,bj))
 !     &          / (dxG(i  ,j,bi,bj) + dxG(i-1,j,bi,bj))
 C ---- 1st order upwinding
          fp_ui = U_depth_avg(i,j) + ABS( U_depth_avg(i,j) )
          fm_ui = U_depth_avg(i,j) - ABS( U_depth_avg(i,j) )
-         ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
+         ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
+     &                        +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
 C ---- 1st order upwinding wave stuff
          c_dum = 0.5 * ( c_rosX(i-1,j) + c_rosX(i,j) )
          fp_ui = c_dum + ABS( c_dum )
          fm_ui = c_dum - ABS( c_dum )
-         ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_ene(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_ene(i-1,j,bi,bj))
-         ene_lap_x(i,j) = GEOM_ene_kappa * (2.0 _d 0)
-     &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i-1,j,bi,bj))
+         ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
+     &                        +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
+         ene_lap_x(i,j) = GEOM_diffKh_EKE * (2.0 _d 0)
+     &        * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj))
      &        / (dxG(i,j,bi,bj) + dxG(i-1,j,bi,bj))
         ENDIF
        ENDDO
@@ -465,22 +465,22 @@ C ---- 1st order upwinding wave stuff
      &       ) THEN
 C ---- second ordered centre difference
 !              ene_adv_y(i, j) = -V_depth_avg(i,j)
-!     &          * (dyG(i,j-1,bi,bj) * GEOM_ene(i,j  ,bi,bj)
-!     &          +  dyG(i,j  ,bi,bj) * GEOM_ene(i,j-1,bi,bj))
+!     &          * (dyG(i,j-1,bi,bj) * GEOM_EKE(i,j  ,bi,bj)
+!     &          +  dyG(i,j  ,bi,bj) * GEOM_EKE(i,j-1,bi,bj))
 !     &          / (dyG(i,j  ,bi,bj) + dyG(i,j-1,bi,bj))
 C ---- 1st order upwinding
          fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
          fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
-         ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
-     &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
+         ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
+     &                        +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
 C ---- 1st order upwinding wave stuff
          c_dum = 0.5 * ( c_rosY(i,j-1) + c_rosY(i,j) )
          fp_ui = c_dum + ABS( c_dum )
          fm_ui = c_dum - ABS( c_dum )
-         ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_ene(i,j  ,bi,bj)
-     &                        +  fp_ui * GEOM_ene(i,j-1,bi,bj))
-         ene_lap_y(i, j) = GEOM_ene_kappa * (2.0 _d 0)
-     &        * (GEOM_ene(i,j,bi,bj) - GEOM_ene(i,j-1,bi,bj))
+         ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
+     &                        +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
+         ene_lap_y(i, j) = GEOM_diffKh_EKE * (2.0 _d 0)
+     &        * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i,j-1,bi,bj))
      &        / (dyG(i,j,bi,bj) + dyG(i,j-1,bi,bj))
         ENDIF
        ENDDO
@@ -489,7 +489,7 @@ C ---- 1st order upwinding wave stuff
 C     3. form tendencies on cell and sum
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
-        trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_ene(i,j,bi,bj)
+        trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_EKE(i,j,bi,bj)
         trd_ene_adv(i,j) = (ene_adv_x(i+1,j) - ene_adv_x(i,j))
      &                     * recip_dxG(i,j,bi,bj)
      &                    +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
@@ -514,20 +514,20 @@ C       form the RHS
 
 C     At this point, the new ene_rhs_now is defined and correctly
 C     computed for all i,j except for 1-OLx/y and sNx/y+Olx/y, and we do
-C     not need any exchange. We do need to exchange the solution GEOM_ene
+C     not need any exchange. We do need to exchange the solution GEOM_EKE
 C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
-      IF (GEOM_ene_ctrl .EQ. 0 ) THEN
+      IF ( GEOM_startAB .EQ. 0 ) THEN
        ab0 = 1.0 _d 0
        ab1 = 0.0 _d 0
        ab2 = 0.0 _d 0
-       GEOM_ene_ctrl = 1
-      ELSEIF ( GEOM_ene_ctrl .EQ. 1 ) THEN
+       GEOM_startAB = 1
+      ELSEIF ( GEOM_startAB .EQ. 1 ) THEN
        ab0 =   3.0 _d 0 / 2.0 _d 0
        ab1 = - 1.0 _d 0 / 2.0 _d 0
        ab2 =   0.0 _d 0
-       GEOM_ene_ctrl = 2
+       GEOM_startAB = 2
       ELSE
        ab0 =  23.0 _d 0 / 12.0 _d 0
        ab1 = - 4.0 _d 0 /  3.0 _d 0
@@ -535,11 +535,11 @@ C     third: time stepping
       ENDIF
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
-        GEOM_ene(i,j,bi,bj) = GEOM_ene(i,j,bi,bj)
+        GEOM_EKE(i,j,bi,bj) = GEOM_EKE(i,j,bi,bj)
      &            + deltaTloc * (
      &            + ab0 * ene_rhs_now(i,j)
-     &            + ab1 * ene_rhs_nm1(i,j,bi,bj)
-     &            + ab2 * ene_rhs_nm2(i,j,bi,bj)
+     &            + ab1 * GEOM_gEKE_Nm1(i,j,bi,bj)
+     &            + ab2 * GEOM_gEKE_Nm2(i,j,bi,bj)
      &                        )
        ENDDO
       ENDDO
@@ -550,11 +550,10 @@ C ----------------------------------------------
 C     update rhs fields for the next time step
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        ene_rhs_nm2(i,j,bi,bj) = ene_rhs_nm1(i,j,bi,bj)
-        ene_rhs_nm1(i,j,bi,bj) = ene_rhs_now(i,j)
+        GEOM_gEKE_Nm2(i,j,bi,bj) = GEOM_gEKE_Nm1(i,j,bi,bj)
+        GEOM_gEKE_Nm1(i,j,bi,bj) = ene_rhs_now(i,j)
        ENDDO
       ENDDO
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   diagnostics and restarts

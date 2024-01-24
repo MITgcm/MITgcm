@@ -195,8 +195,8 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_alpha      =', ' /* GEOM alpha coeff. [-] */')
        CALL WRITE_0D_RL( GEOM_lmbda, INDEX_NONE,
      &  'GEOM_lmbda      =', ' /* GEOM ene diss rate [/s] */')
-       CALL WRITE_0D_RL( GEOM_ene_kappa, INDEX_NONE,
-     &  'GEOM_ene_kappa  =', ' /* GEOM ene diffusion coeff [m2/s] */')
+       CALL WRITE_0D_RL( GEOM_diffKh_EKE, INDEX_NONE,
+     &  'GEOM_diffKh_EKE =', ' /* GEOM Eke diffusion coeff [m2/s] */')
        CALL WRITE_0D_L( GEOM_vert_struc, INDEX_NONE,
      &  'GEOM_vert_struc =', ' /* GEOM vertical structure function */')
        CALL WRITE_0D_RL( GEOM_vert_struc_min, INDEX_NONE,
@@ -204,9 +204,9 @@ C     Make sure we are not trying to use something that is unavailable
        CALL WRITE_0D_RL( GEOM_vert_struc_max, INDEX_NONE,
      &  'GEOM_vert_struc_min =', ' /* vert struc min [-] */')
        CALL WRITE_0D_RL( GEOM_minVal_K, INDEX_NONE,
-     &  'GEOM_minVal_K   =', ' /* GEOMK lower bound [m2/s] */')
+     &  'GEOM_minVal_K   =', ' /* GEOM_K3d lower bound [m2/s] */')
        CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
-     &  'GEOM_maxVal_K   =', ' /* GEOMK upper bound [m2/s] */')
+     &  'GEOM_maxVal_K   =', ' /* GEOM_K3d upper bound [m2/s] */')
 
        IF (usingCurvilinearGrid) THEN
         WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',

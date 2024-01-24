@@ -164,24 +164,24 @@ c     if GM_useBatesK3d
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef GM_GEOM_VARIABLE_K
-       IF (GM_useGEOM ) THEN
+       IF ( GM_useGEOM ) THEN
 
         n = n + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_ene,nj,myIter,myThid )
-        fieldname = 'GEOM_ene'
+        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_EKE,nj,myIter,myThid )
+        fieldname = 'GEOM_EKE'
         IF (n.LE.listDim) wrFldList(n) = fieldname
 
         n = n + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm1,nj,myIter,myThid )
-        fieldname = 'erhs_nm1'
+        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_gEKE_Nm1,nj,myIter,myThid )
+        fieldname = 'GEKE_Nm1'
         IF (n.LE.listDim) wrFldList(n) = fieldname
 
         n = n + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,ene_rhs_nm2,nj,myIter,myThid )
-        fieldname = 'erhs_nm2'
+        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_gEKE_Nm2,nj,myIter,myThid )
+        fieldname = 'GEKE_Nm2'
         IF (n.LE.listDim) wrFldList(n) = fieldname
 
 C     if GM_useGEOM

@@ -303,7 +303,7 @@ C        (e.g. Mak et al, 2018; see also Marshall et al, 2012)
         DO k=1,Nr
           DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-              GEOMK(i,j,k,bi,bj) = 0. _d 0
+              GEOM_K3d(i,j,k,bi,bj) = 0. _d 0
             ENDDO
           ENDDO
         ENDDO
@@ -588,7 +588,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + VisbeckK(i,j,bi,bj)*(GM_isoFac_calcK + GM_skewflx)
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-     &           + GM_skewflx*GEOMK(i,j,k,bi,bj)
+     &           + GM_skewflx*GEOM_K3d(i,j,k,bi,bj)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
      &           + op5*( GM_LeithQG_K(i,j,km1,bi,bj)
@@ -831,10 +831,10 @@ CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
 #  ifdef GM_GEOM_VARIABLE_K
-     &     - GM_skewflx*op25*( ( GEOMK(i-1,j, k, bi,bj)
-     &                         + GEOMK( i, j, k, bi,bj) )
-     &                       + ( GEOMK(i-1,j,kp1,bi,bj)
-     &                         + GEOMK( i, j,kp1,bi,bj) ) )
+     &     - GM_skewflx*op25*( ( GEOM_K3d(i-1,j, k, bi,bj)
+     &                         + GEOM_K3d( i, j, k, bi,bj) )
+     &                       + ( GEOM_K3d(i-1,j,kp1,bi,bj)
+     &                         + GEOM_K3d( i, j,kp1,bi,bj) ) )
 #  endif
 #  ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i-1,j,k,bi,bj)
@@ -1073,10 +1073,10 @@ CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      &          *(GM_isoFac_calcK - GM_skewflx)
 #  endif
 #  ifdef GM_GEOM_VARIABLE_K
-     &     - GM_skewflx*op25*( ( GEOMK(i,j-1, k, bi,bj)
-     &                         + GEOMK(i, j,  k, bi,bj) )
-     &                       + ( GEOMK(i,j-1,kp1,bi,bj)
-     &                         + GEOMK(i, j, kp1,bi,bj) ) )
+     &     - GM_skewflx*op25*( ( GEOM_K3d(i,j-1, k, bi,bj)
+     &                         + GEOM_K3d(i, j,  k, bi,bj) )
+     &                       + ( GEOM_K3d(i,j-1,kp1,bi,bj)
+     &                         + GEOM_K3d(i, j, kp1,bi,bj) ) )
 #  endif
 #  ifdef ALLOW_GM_LEITH_QG
      &     + op5*( GM_LeithQG_K(i,j-1,k,bi,bj)

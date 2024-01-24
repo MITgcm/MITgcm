@@ -1,6 +1,15 @@
 #ifdef ALLOW_GMREDI
+CBOP
+C     !ROUTINE: GMREDI.h
+C     !INTERFACE:
+C     #include "GMREDI.h"
 
-C---  GM/Redi package parameters
+C     !DESCRIPTION:
+C     *================================================================*
+C     | GMREDI.h
+C     | o Header file defining GM/Redi parameters and variables
+C     *================================================================*
+CEOP
 
 C--   Numerical Constant
       _RL op5
@@ -122,8 +131,8 @@ C-    Variable K parameters for Visbeck etal (1997) scheme:
 C-    Variable K parameters for Marshall etal (2012) GEOM scheme:
 C     GEOM_alpha       :: non-dim eddy efficiency param (=<1 in QG)
 C     GEOM_lmbda       :: lin eddy energy dissipation rate
-C     GEOM_ene_init    :: init depth-int param eddy energy level
-C     GEOM_ene_kappa   :: depth-int param eddy energy diffusion coeff
+C     GEOM_ini_EKE     :: initial value for depth-int eddy kinetic energy
+C     GEOM_diffKh_EKE  :: depth-int param eddy energy diffusion coeff
 C     GEOM_minval_K    :: lower bound on diffusivity
 C     GEOM_maxval_K    :: upper bound on diffusivity
 C     GEOM_vert_struc_min   :: lower bound on N2/Nref vertical structure func
@@ -172,8 +181,8 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Visbeck_maxVal_K
       _RL GEOM_alpha
       _RL GEOM_lmbda
-      _RL GEOM_ene_init
-      _RL GEOM_ene_kappa
+      _RL GEOM_ini_EKE
+      _RL GEOM_diffKh_EKE
       _RL GEOM_minval_K
       _RL GEOM_maxval_K
       _RL GEOM_vert_struc_min
@@ -209,7 +218,7 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
      &                 GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &                 GEOM_alpha, GEOM_lmbda,
-     &                 GEOM_ene_init, GEOM_ene_kappa,
+     &                 GEOM_ini_EKE, GEOM_diffKh_EKE,
      &                 GEOM_minval_K, GEOM_maxval_K,
      &                 GEOM_vert_struc_min, GEOM_vert_struc_max,
      &                 GM_Bates_gamma, GM_Bates_b1,
@@ -328,30 +337,30 @@ C     gradf       :: gradient of Coriolis paramater at a cell centre, 1/(m*s)
 #endif
 
 #ifdef GM_GEOM_VARIABLE_K
-C     GEOMK         :: mixing/stirring coefficient (spatially variable in
+C     GEOM_K3d      :: mixing/stirring coefficient (spatially variable in
 C                      horizontal for Marshall et al. (2012) parameterization);
 C                      defined at cell interfaces (W-points)
-C     GEOM_ene      :: parameterised total eddy energy in GEOMETRIC;
-C                      used to update GEOMK; 2D field
-C     ene_rhs*      :: 2D-RHS of eddy energy equation for time-stepping
-C     GEOM_ene_ctrl :: controls time-stepping routine of parameterised
+C     GEOM_EKE      :: parameterised total eddy energy in GEOMETRIC;
+C                      used to update GEOM_K3d; 2D field
+C     GEOM_gEKE_Nm* :: 2D eddy energy tendency for AB time-stepping
+C     GEOM_startAB  :: controls time-stepping routine of parameterised
 C                      eddy energy in gmredi_calc_geom.F (=0/1/2)
-C     GEOM_taper    :: reduce GEOMK based on some condition (currently depth);
-C                      2D field
-C
-      _RL GEOMK      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL GEOM_ene   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ene_rhs_nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ene_rhs_nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL GEOM_taper (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER GEOM_ene_ctrl
+C     GEOM_taper    :: reduce GEOM_K3d based on some conditions (currently
+C                      depth); 2D field
 
-      COMMON /GM_GEOM/ GEOMK,
-     &                 GEOM_ene,
-     &                 ene_rhs_nm1, ene_rhs_nm2,
+      _RL GEOM_K3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GEOM_EKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_gEKE_Nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_gEKE_Nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GEOM_taper   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER GEOM_startAB
+
+      COMMON /GM_GEOM/ GEOM_K3d,
+     &                 GEOM_EKE,
+     &                 GEOM_gEKE_Nm1, GEOM_gEKE_Nm2,
      &                 GEOM_taper
-      COMMON /GM_GEOM_I/ GEOM_ene_ctrl
-#endif
+      COMMON /GM_GEOM_I/ GEOM_startAB
+#endif /* GM_GEOM_VARIABLE_K */
 
 #ifdef ALLOW_GM_LEITH_QG
 C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
@@ -360,7 +369,3 @@ C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
 #endif /* ALLOW_GM_LEITH_QG */
 
 #endif /* ALLOW_GMREDI */
-
-CEH3 ;;; Local Variables: ***
-CEH3 ;;; mode:fortran ***
-CEH3 ;;; End: ***

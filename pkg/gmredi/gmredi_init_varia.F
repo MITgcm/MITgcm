@@ -78,7 +78,7 @@ C        Therefore, in this case, the "If useGMRedi" is added back here:
 #ifdef GM_GEOM_VARIABLE_K
 C     use AB3 time stepping
        _BEGIN_MASTER( myThid )
-        GEOM_ene_ctrl = MIN( nIter0, 2 )
+        GEOM_startAB = MIN( nIter0, 2 )
        _END_MASTER( myThid )
 #endif
 
@@ -126,7 +126,7 @@ C     Initialize 3-D arrays in common blocks :
            GM_BatesK3d(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-           GEOMK(i,j,k,bi,bj)   = 0. _d 0
+           GEOM_K3d(i,j,k,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -138,9 +138,9 @@ C     Initialize 2-D arrays in common blocks :
            VisbeckK(i,j,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_GEOM_VARIABLE_K
-           ene_rhs_nm1(i,j,bi,bj) = 0. _d 0
-           ene_rhs_nm2(i,j,bi,bj) = 0. _d 0
-           GEOM_ene(i,j,bi,bj)    = GEOM_ene_init * maskInC(i,j,bi,bj)
+           GEOM_EKE(i,j,bi,bj) = GEOM_ini_EKE * maskInC(i,j,bi,bj)
+           GEOM_gEKE_Nm1(i,j,bi,bj) = 0. _d 0
+           GEOM_gEKE_Nm2(i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO

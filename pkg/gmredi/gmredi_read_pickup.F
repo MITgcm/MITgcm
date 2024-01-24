@@ -139,9 +139,9 @@ C-      No meta-file: then check if binary pickup file (i.e., ".data") exist
 #ifdef GM_GEOM_VARIABLE_K
            _BEGIN_MASTER( myThid )
            IF ( GM_useGEOM ) THEN
-            GEOM_ene_ctrl = 0
+            GEOM_startAB = 0
             WRITE(msgBuf,'(4A)') 'WARNING >> GMREDI_READ_PICKUP: ',
-     &      'restart with uniform GEOM_EKE = GEOM_ene_ini'
+     &      'restart with uniform GEOM_EKE = GEOM_ini_EKE'
             CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
            _END_MASTER( myThid )
            ENDIF
@@ -185,7 +185,7 @@ C        Center mode
          fieldname = 'mode01C '
          CALL READ_MFLDS_3D_RL( fieldname, vec,
      &                          nj, fp, Nr, myIter, myThid )
-         CALL EXCH_3D_RL(vec, Nr, myThid)
+         CALL EXCH_3D_RL( vec, Nr, myThid )
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO k=1,Nr
@@ -203,7 +203,7 @@ C      Western Mode
           WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'W'
           CALL READ_MFLDS_3D_RL( fieldname, vec,
      &                           nj, fp, Nr, myIter, myThid )
-          CALL EXCH_3D_RL(vec, Nr, myThid)
+          CALL EXCH_3D_RL( vec, Nr, myThid )
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
             DO k=1,Nr
@@ -222,7 +222,7 @@ C      Southern Mode
           WRITE(fieldname, '(A,I2.2,A)') 'mode',n,'S'
           CALL READ_MFLDS_3D_RL( fieldname, vec,
      &                           nj, fp, Nr, myIter, myThid )
-          CALL EXCH_3D_RL(vec, Nr, myThid)
+          CALL EXCH_3D_RL( vec, Nr, myThid )
           DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
             DO k=1,Nr
@@ -242,7 +242,7 @@ C       Deformation radius
          fieldname = 'Rdef    '
          CALL READ_MFLDS_3D_RL( fieldname, Rdef,
      &                          nj, fp, 1, myIter, myThid )
-         CALL EXCH_XY_RL(Rdef, myThid)
+         CALL EXCH_XY_RL( Rdef, myThid )
 
 c     GM_useBates3D
         ENDIF
@@ -255,20 +255,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     Continue with GEOMETRIC - 2D fields :
 C        GEOMETRIC energy
-         fieldname = 'GEOM_ene'
-         CALL READ_MFLDS_3D_RL( fieldname, GEOM_ene,
-     &         nj, fp, 1, myIter, myThid )
-         CALL EXCH_XY_RL(GEOM_ene, myThid)
+         fieldname = 'GEOM_EKE'
+         CALL READ_MFLDS_3D_RL( fieldname, GEOM_EKE,
+     &                          nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL( GEOM_EKE, myThid )
 
-         fieldname = 'erhs_nm1'
-         CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm1,
-     &         nj, fp, 1, myIter, myThid )
-         CALL EXCH_XY_RL(ene_rhs_nm1, myThid)
+         fieldname = 'GEKE_Nm1'
+         CALL READ_MFLDS_3D_RL( fieldname, GEOM_gEKE_Nm1,
+     &                          nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL( GEOM_gEKE_Nm1, myThid )
 
-         fieldname = 'erhs_nm2'
-         CALL READ_MFLDS_3D_RL( fieldname, ene_rhs_nm2,
-     &         nj, fp, 1, myIter, myThid )
-         CALL EXCH_XY_RL(ene_rhs_nm2, myThid)
+         fieldname = 'GEKE_Nm2'
+         CALL READ_MFLDS_3D_RL( fieldname, GEOM_gEKE_Nm2,
+     &                          nj, fp, 1, myIter, myThid )
+         CALL EXCH_XY_RL( GEOM_gEKE_Nm2, myThid )
 
         ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
@@ -302,21 +302,21 @@ C--    Check for missing fields:
          stopFlag = .TRUE.
         ELSE
          DO j=1,nMissing
-          IF ( missFldList(j).EQ.'GEOM_ene' ) THEN
+          IF ( missFldList(j).EQ.'GEOM_EKE' ) THEN
 #ifdef GM_GEOM_VARIABLE_K
-           GEOM_ene_ctrl = 0
+           GEOM_startAB = 0
            WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
-     &      'restart with uniform GEOM_EKE = GEOM_ene_ini'
+     &      'restart with uniform GEOM_EKE = GEOM_ini_EKE'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          ELSEIF ( missFldList(j).EQ.'erhs_nm1' ) THEN
-           GEOM_ene_ctrl = 0
+          ELSEIF ( missFldList(j).EQ.'GEKE_Nm1' ) THEN
+           GEOM_startAB = 0
            WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
-     &     'Will get only an approximated Restart (GEOM_ene_ctrl=0)'
+     &     'Will get only an approximated Restart (GEOM_startAB=0)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          ELSEIF ( missFldList(j).EQ.'erhs_nm2' .AND. nIter0.GT.1 ) THEN
-           GEOM_ene_ctrl = 1
+          ELSEIF ( missFldList(j).EQ.'GEKE_Nm2' .AND. nIter0.GT.1 ) THEN
+           GEOM_startAB = 1
            WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
-     &     'Will get only an approximated Restart (GEOM_ene_ctrl=1)'
+     &     'Will get only an approximated Restart (GEOM_startAB=1)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #endif /* GM_GEOM_VARIABLE_K */
           ELSE
