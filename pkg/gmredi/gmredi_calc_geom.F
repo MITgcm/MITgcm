@@ -80,6 +80,7 @@ C     ab0, ab1, ab2   :: Adams-Bashforth weights
 C     metric variables
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_depthS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     depth at C-points in meters
       _RL depthC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     hFac of the W-control volumes
@@ -120,6 +121,7 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       kSurf = 1
+      IF ( usingPCoords ) kSurf = Nr
       deltaTloc = dtTracerLev(kSurf)
       recipMaxSlope = 0. _d 0
       IF ( GM_maxSlope.GT.0. _d 0 ) THEN
@@ -137,7 +139,8 @@ C     depths for doing depth-averaging
      &       recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
         IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
      &       recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
-        depthC(i,j)      = ABS(R_low(i,j,bi,bj))
+C     convert to meters in the case of p-coordinates
+        depthC(i,j) = ABS(R_low(i,j,bi,bj))*rUnit2mass*recip_rhoConst
        ENDDO
       ENDDO
 
@@ -166,9 +169,14 @@ C     initialisations, put this in a loop if need be
 C-- 1st k loop : compute vertical structure to be used later
       DO k=Nr,2,-1
 
+C     For stable conditions sigmaR<0 for z-coordinates, but >0 for p-coords
+C     => change sign of vertical Sigma gradient (always downward)
+C     to match stratification sign (i.e., positive if stratified)
+C     For p-coordinates: convert r-units to z
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         dSigmaDr(i,j) = MIN(sigmaR(i,j,k), 0.0 _d 0)
+         dSigmaDr(i,j) = MAX( gravitySign*sigmaR(i,j,k), zeroRL )
+     &        * mass2rUnit * rhoConst
         ENDDO
        ENDDO
 
@@ -199,12 +207,12 @@ C      Compute M^2 rho_0 / g on vertical interfaces
           dSigmaH = SQRT(dSigmaDx * dSigmaDx
      &                 + dSigmaDy * dSigmaDy)
           IF(dSigmaH .GT. 0.0 _d 0) THEN
-           IF(ABS(dSigmaR) .GT. dSigmaH*recipMaxSlope) THEN
-            Sloc = dSigmaH / ABS(dSigmaR)
+           IF( dSigmaR .GT. dSigmaH*recipMaxSlope ) THEN
+            Sloc = dSigmaH / dSigmaR
            ELSE
-            Sloc = ABS(GM_maxSlope)
+            Sloc = GM_maxSlope
            ENDIF
-           N2loc3D(i,j,k) = ABS(gravity * recip_rhoConst * dSigmaR)
+           N2loc3D(i,j,k) = gravity * recip_rhoConst * dSigmaR
            SNloc3D(i,j,k) = Sloc * SQRT(N2loc3D(i,j,k))
           ENDIF
          ENDIF
@@ -242,9 +250,11 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
          IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
           N2loc = N2loc3D(i,j,k)
           SNloc = SNloc3D(i,j,k)
-
+C     hFac now contains the coordinate factor rUnit2mass*recip_rhoConst
+C     ( = 1 for z-coordinates and 1/(gravity*rhoConst for p-coordinates)
           hFac = MIN( halfRS, _hFacC(i,j,k-1,bi,bj) )
      &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
+     &                    * rUnit2mass*recip_rhoConst
           SNloc_zint(i,j) = SNloc_zint(i,j)
      &                    + SNloc * drC(k) * hFac
      &                    * vert_struc_func(i,j,k)
@@ -378,6 +388,7 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
      &                     + GEOM_K3d(i,j,k,bi,bj)
      &                     * SNloc * SNloc
      &                     * drC(k) * hFac
+     &                     * rUnit2mass*recip_rhoConst
          ENDIF
         ENDDO
        ENDDO
