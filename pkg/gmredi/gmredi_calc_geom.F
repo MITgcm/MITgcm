@@ -106,8 +106,7 @@ C     local version of current rhs of eddy energy equation
       _RL c1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL c_rosX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL c_rosY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL c_rosE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL c_rosN(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL c_rosE
 
       _RL ene_adv_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ene_adv_y(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -259,16 +258,6 @@ C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
 C     work out the implied long Rossby phase speeds at T pts
 C     average it onto UV points later
 
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        c_rosX(i,j) = 0.0 _d 0
-        c_rosY(i,j) = 0.0 _d 0
-        c_rosE(i,j) = 0.0 _d 0
-        c_rosN(i,j) = 0.0 _d 0
-        c1    (i,j) = 0.0 _d 0
-       ENDDO
-      ENDDO
-
       fCoriFac = 0.0 _d 0
       IF ( usingCartesianGrid .AND. f0 .NE. 0.0 _d 0 )
      &     fCoriFac = beta / (f0 * f0)
@@ -287,16 +276,20 @@ C       1st baroclinic equatorial Rossby wave phase speed
           fCoriFac = MAX( ABS(fCori(i,j,bi,bj)), 1.2676 _d -05 )
           fCoriFac = fCoriCos(i,j,bi,bj) / ( rSphere * fCoriFac ** 2 )
          ENDIF
-         c_rosE(i,j) = - MIN( c1(i,j) / 3.0 _d 0,
-     &        c1(i,j) * c1(i,j) * fCoriFac )
+         c_rosE = - MIN( c1(i,j)/3.0 _d 0, c1(i,j)*c1(i,j)*fCoriFac )
+C     rotating EW Rossby velocity to XY for the grid, c_rosN=0 by definition
+C     (trivial rotation for Cartesian plane)
+         c_rosX(i,j) =  angleCosC(i,j,bi,bj)*c_rosE
+c    &                + angleSinC(i,j,bi,bj)*c_rosN
+         c_rosY(i,j) = -angleSinC(i,j,bi,bj)*c_rosE
+c    &                 +angleCosC(i,j,bi,bj)*c_rosN
+        ELSE
+         c_rosX(i,j) = 0.0 _d 0
+         c_rosY(i,j) = 0.0 _d 0
+         c1    (i,j) = 0.0 _d 0
         ENDIF
        ENDDO
       ENDDO
-
-C     rotating EW Rossby velocity to XY for the grid
-C     (trivial rotation for Cartesian plane)
-      CALL ROTATE_UV2EN_TILE_RL(c_rosX,c_rosY,c_rosE,c_rosN,
-     &     .FALSE.,.FALSE.,.TRUE.,1,bi,bj,myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- compute kgm as per GEOMETRIC in horizontal, then extend
