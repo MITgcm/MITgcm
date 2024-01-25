@@ -6,11 +6,11 @@
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: INI_PARMS
-C     !INTERFACE:
+C !ROUTINE: INI_PARMS
+C !INTERFACE:
       SUBROUTINE INI_PARMS( myThid )
 
-C     !DESCRIPTION:
+C !DESCRIPTION:
 C     Routine to load model "parameters" from parameter file "data"
 
 C     !USES:
@@ -27,25 +27,24 @@ C- need GRID.h to save, in rF(1), half retired param Ro_SeaLevel value:
 #include "GRID.h"
 #include "SET_GRID.h"
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     myThid :: Number of this instance of INI_PARMS
+C !INPUT/OUTPUT PARAMETERS:
+C   myThid :: Number of this instance of INI_PARMS
       INTEGER myThid
 
-C     !LOCAL VARIABLES:
-C     dxSpacing, dySpacing :: Default spacing in X and Y.
-C                          :: Units are that of coordinate system
-C                          :: i.e. cartesian => metres
-C                          ::       s. polar => degrees
-C     deltaTtracer  :: Timestep for tracer equations ( s )
-C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
-C                   :: contribution in (or out of) Adams-Bashforth time stepping.
-C     goptCount  :: Used to count the nuber of grid options (only one is allowed!)
-C     msgBuf     :: Informational/error message buffer
-C     errIO      :: IO error flag
-C     errCount   :: error counter (inconsitent params and other errors)
-C     iUnit      :: Work variable for IO unit number
-C     k, i, j    :: Loop counters
-C     xxxDefault :: Default value for variable xxx
+C !LOCAL VARIABLES:
+C   dxSpacing, dySpacing :: Default spacing in X and Y.
+C                        :: Units are that of coordinate system
+C                        :: i.e. cartesian => metres ; s. polar => degrees
+C   deltaTtracer  :: Timestep for tracer equations ( s )
+C   forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
+C                 :: contribution in (or out of) Adams-Bashforth time stepping.
+C   goptCount  :: Used to count the nuber of grid options (only one is allowed!)
+C   msgBuf     :: Informational/error message buffer
+C   errIO      :: IO error flag
+C   errCount   :: error counter (inconsitent params and other errors)
+C   iUnit      :: Work variable for IO unit number
+C   k, i, j    :: Loop counters
+C   xxxDefault :: Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
       _RL deltaTtracer
@@ -55,30 +54,30 @@ C     xxxDefault :: Default value for variable xxx
       INTEGER gridNx, gridNy
       INTEGER k, i, j, iUnit
       INTEGER errIO, errCount
-C     Default values for variables which have vertical coordinate system
-C     dependency.
+C   Default values for variables which have vertical coordinate system
+C   dependency.
       _RL viscArDefault
       _RL diffKrTDefault
       _RL diffKrSDefault
       _RL hFacMinDrDefault
       _RL delRDefault(Nr)
-C     zCoordInputData :: Variables used to select between different coordinate systems.
-C     pCoordInputData :: The vertical coordinate system in the rest of the model is
-C     rCoordInputData :: written in terms of r. In the model "data" file input data
-C     coordsSet       :: can be interms of z, p or r.
-C                     :: e.g. delZ or delP or delR for the vertical grid spacing.
-C                     :: The following rules apply:
-C                     :: All parameters must use the same vertical coordinate system.
-C                     ::  e.g. delZ and viscAz is legal but
-C                     ::       delZ and viscAr is an error.
-C                     :: Similarly specifying delZ and delP is an error.
-C                     :: zCoord..., pCoord..., rCoord... are used to flag when
-C                     :: z, p or r are used.
-C                     :: coordsSet counts how many vertical coordinate systems have
-C                     :: been used to specify variables. coordsSet > 1 is an error.
-C     vertSetCount    :: to count number of vertical array elements which are set.
-C    specifiedDiffKrT :: internal flag, true when any diffK[r,z,p,Nr]T is specified
-C    specifiedDiffKrS :: internal flag, true when any diffK[r,z,p,Nr]S is specified
+C-- Variables used to select between different coordinate systems:
+C   zCoordInputData :: The vertical coordinate system in the rest of the  model
+C   pCoordInputData :: is written in terms of r. In the model "data" file, 
+C   rCoordInputData :: input params can be in terms of z, p or r.
+C   coordsSet       :: e.g. delZ or delP or delR for the vertical grid spacing.
+C                   :: The following rules apply:
+C                   :: All parameters must use the same vertical coordinate
+C                   :: system.  e.g. delZ and viscAz is legal
+C                   ::           but delZ and viscAr is an error.
+C                   :: Similarly specifying delZ and delP is an error.
+C                   :: zCoord..., pCoord..., rCoord... are used to flag when
+C                   :: z, p or r are used.
+C                   :: coordsSet counts how many vertical coordinates have been
+C                   :: used to specify variables. coordsSet > 1 is an error.
+C   vertSetCount    :: to count number of vertical array elements which are set.
+C   specifiedDiffKrT :: internal flag, true if any diffK[r,z,p,Nr]T is specified
+C   specifiedDiffKrS :: internal flag, true if any diffK[r,z,p,Nr]S is specified
 
       LOGICAL zCoordInputData
       LOGICAL pCoordInputData
@@ -87,15 +86,15 @@ C    specifiedDiffKrS :: internal flag, true when any diffK[r,z,p,Nr]S is specif
       INTEGER vertSetCount
       LOGICAL specifiedDiffKrT, specifiedDiffKrS
 
-C     Variables which have vertical coordinate system dependency.
-C     delZ    :: Vertical grid spacing ( m  ).
-C     delP    :: Vertical grid spacing ( Pa ).
-C     viscAz  :: Eddy viscosity coeff. for mixing of momentum vertically ( m^2/s )
-C     viscAp  :: Eddy viscosity coeff. for mixing of momentum vertically ( Pa^2/s )
-C     diffKzT :: Laplacian diffusion coeff. for mixing of heat vertically ( m^2/s )
-C     diffKpT :: Laplacian diffusion coeff. for mixing of heat vertically ( Pa^2/s )
-C     diffKzS :: Laplacian diffusion coeff. for mixing of salt vertically ( m^2/s )
-C     diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically ( Pa^2/s )
+C-- Variables which have vertical coordinate system dependency.
+C   delZ    :: Vertical grid spacing ( m  ).
+C   delP    :: Vertical grid spacing ( Pa ).
+C   viscAz  :: Eddy viscosity coeff. for mixing of momentum vertically (m^2/s)
+C   viscAp  :: Eddy viscosity coeff. for mixing of momentum vertically (Pa^2/s)
+C   diffKzT :: Laplacian diffusion coeff. for mixing of heat vertically (m^2/s)
+C   diffKpT :: Laplacian diffusion coeff. for mixing of heat vertically (Pa^2/s)
+C   diffKzS :: Laplacian diffusion coeff. for mixing of salt vertically (m^2/s)
+C   diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically (Pa^2/s)
       _RL delZ(Nr)
       _RL delP(Nr)
       _RL viscAz
@@ -108,59 +107,60 @@ C     diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically ( Pa^2
       _RL diffKpS
       _RL diffKrS
 
-C     Retired main data file parameters. Kept here to trap use of old data files.
-C     nRetired :: Counter used to trap gracefully namelists containing "retired"
-C              :: parameters. These are parameters that are either no-longer used
-C                 or that have moved to a different input file and/or namelist.
+C-- Retired main data file parameters. Kept here to trap use of old data files.
+C   nRetired :: Counter used to trap gracefully namelists containing "retired"
+C            :: parameters. These are parameters that are either no-longer used
+C            :: or that have moved to a different input file and/or namelist.
 C Namelist PARM01:
-C     useConstantF  :: Coriolis coeff set to f0     (replaced by selectCoriMap=0)
-C     useBetaPlaneF :: Coriolis coeff = f0 + beta.y (replaced by selectCoriMap=1)
-C     useSphereF    :: Coriolis = 2.omega.sin(phi)  (replaced by selectCoriMap=2)
-C     useJamartWetPoints :: for backward compat. (replaced by selectCoriScheme=1)
-C                        :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
-C     SadournyCoriolis :: for backward compat. (replaced by selectVortScheme=2)
-C     use3dCoriolis :: for backward compat. (=F,T same as select3dCoriScheme=0,1)
-C     metricTerms   :: for backward compat. (=F,T same as selectMetricTerms=0,1)
-C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
-C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
-C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
-C     tempDiffusion :: diffusion of temperature on/off (flag not used)
-C     zonal_filt_lat :: Moved to package "zonal_filt"
-C     gravitySign  :: direction of gravity relative to R direction
-C                  :: (removed from namelist and set according to z/p coordinate)
-C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
-C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
-C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
-C                     use old method by setting useAreaViscLength=.true.
-C     usePickupBeforeC35 :: to restart from old-pickup files (generated with code
-C                   from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007)
-C     debugMode    :: to print debug msg. now read from parameter file eedata
-C     allowInteriorFreezing :: Allow water at depth to freeze and rise to the surface
-C                              (replaced by pkg/frazil)
-C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
-C     balanceEmPmR   :: for backward compat. (replaced by selectBalanceEmPmR=1),
-C                    :: substract global mean of EmPmR at every time step
-C     writeStatePrec :: Precision used for writing model state (not used)
+C   useConstantF  :: Coriolis coeff set to f0     (replaced by selectCoriMap=0)
+C   useBetaPlaneF :: Coriolis coeff = f0 + beta.y (replaced by selectCoriMap=1)
+C   useSphereF    :: Coriolis = 2.omega.sin(phi)  (replaced by selectCoriMap=2)
+C   useJamartWetPoints :: for backward compat. (replaced by selectCoriScheme=1)
+C                      :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
+C   SadournyCoriolis :: for backward compat. (replaced by selectVortScheme=2)
+C   use3dCoriolis :: for backward compat. (=F,T same as select3dCoriScheme=0,1)
+C   metricTerms   :: for backward compat. (=F,T same as selectMetricTerms=0,1)
+C   tracerAdvScheme :: tracer advection scheme (old passive tracer code)
+C   trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
+C   saltDiffusion :: diffusion of salinity    on/off (flag not used)
+C   tempDiffusion :: diffusion of temperature on/off (flag not used)
+C   zonal_filt_lat :: Moved to package "zonal_filt"
+C   gravitySign  :: direction of gravity relative to R direction
+C                :: (removed from namelist and set according to z/p coordinate)
+C   viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
+C   viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
+C   useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
+C                   use old method by setting useAreaViscLength=.true.
+C   usePickupBeforeC35 :: to restart from old-pickup files (generated with code
+C                 from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007)
+C   debugMode    :: to print debug msg. now read from parameter file eedata
+C   allowInteriorFreezing :: Allow water at depth to freeze
+C                            and rise to the surface (replaced by pkg/frazil)
+C   useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
+C   balanceEmPmR   :: for backward compat. (replaced by selectBalanceEmPmR=1),
+C                  :: substract global mean of EmPmR at every time step
+C   writeStatePrec :: Precision used for writing model state (not used)
 C Namelist PARM02:
-C     cg2dChkResFreq :: Frequency with which to check 2-D con. grad solver
-C                         residual (was never coded)
-C     cg3dChkResFreq :: Frequency with which to check 3-D con. grad solver
-C                         residual (was never coded)
+C   cg2dChkResFreq :: Frequency with which to check 2-D con. grad solver
+C                       residual (was never coded)
+C   cg3dChkResFreq :: Frequency with which to check 3-D con. grad solver
+C                       residual (was never coded)
 C Namelist PARM03:
-C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
-C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
-C     calendarDumps  :: moved to package "cal" (calendar)
+C   tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C   tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
+C   calendarDumps  :: moved to package "cal" (calendar)
 C Namelist PARM04:
-C     Ro_SeaLevel :: origin of the vertical R-coords axis ;
-C                 :: replaced by top_Pres or seaLev_Z setting
-C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
-C     rkFac      :: removed from namelist ; replaced by -rkSign
-C     thetaMin   :: unfortunate variable name ; replaced by xgOrigin
-C     phiMin     :: unfortunate variable name ; replaced by ygOrigin
+C   Ro_SeaLevel :: origin of the vertical R-coords axis ;
+C               :: replaced by top_Pres or seaLev_Z setting
+C   groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
+C   rkFac      :: removed from namelist ; replaced by -rkSign
+C   thetaMin   :: unfortunate variable name ; replaced by xgOrigin
+C   phiMin     :: unfortunate variable name ; replaced by ygOrigin
 C Namelist PARM05:
-C     shelfIceFile :: File containing the topography of the shelfice draught
-C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
-C     dQdTfile     :: File containing thermal relaxation coefficient
+C   shelfIceFile :: File containing the topography of the shelfice draught
+C                   (replaced by SHELFICEtopoFile in SHELFICE.h)
+C   dQdTfile     :: File containing thermal relaxation coefficient
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       INTEGER nRetired
       LOGICAL useConstantF, useBetaPlaneF, useSphereF
@@ -1535,8 +1535,8 @@ C     Check vertical diffusivity setting:
 
 C--   Set Units conversion factor required to incorporate
 C     surface forcing into z-p isomorphic equations:
-C     mass2rUnit: from mass per unit area [kg/m2] to r-coordinate (z:=1/rho;p:=g)
-C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g)
+C     mass2rUnit: from mass per unit area [kg/m2] to r-coordinate
+C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2]
       IF ( usingPCoords ) THEN
          mass2rUnit = gravity
          rUnit2mass = recip_gravity
