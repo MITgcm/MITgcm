@@ -36,10 +36,8 @@ C     GM_Bates_use_constK:: Imposes a constant K for the eddy transport
 C     GM_Bates_smooth    :: Expand PV closure in terms of baroclinic modes
 C                           (=.FALSE. for debugging only!)
 C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
-C     GM_useGEOM              :: use the GEOME formulation to calculate kgm
-C     GEOM_vert_struc         :: allow for N2 structure function
-C     GEOM_pickup_write_mdsio :: write binary GEOM pickups
-C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
+C     GM_useGEOM       :: use the GEOME formulation to calculate kgm
+C     GEOM_vert_struc  :: allow for N2 structure function
 
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
@@ -59,8 +57,6 @@ C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
       LOGICAL GM_useLeithQG
       LOGICAL GM_useGEOM
       LOGICAL GEOM_vert_struc
-      LOGICAL GEOM_pickup_write_mdsio
-      LOGICAL GEOM_pickup_read_mdsio
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -71,9 +67,7 @@ C     GEOM_pickup_read_mdsio  :: read  binary GEOM pickups
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
      &                   GM_useLeithQG,
-     &                   GM_useGEOM, GEOM_vert_struc,
-     &                   GEOM_pickup_write_mdsio,
-     &                   GEOM_pickup_read_mdsio
+     &                   GM_useGEOM, GEOM_vert_struc
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport

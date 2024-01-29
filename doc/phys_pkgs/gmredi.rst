@@ -13,7 +13,7 @@ i.e., temperature, salinity and other tracers.
 There are two parts to the Redi/GM subgrid-scale parameterization of geostrophic
 eddies. The first, the Redi scheme (Redi 1982 :cite:`redi1982`), aims to mix tracer properties along
 isentropes (neutral surfaces) by means of a diffusion operator oriented
-along the local isentropic surface. The second part, GM 
+along the local isentropic surface. The second part, GM
 (Gent and McWiliams 1990 :cite:`gen-mcw:90`, Gent et al. 1995 :cite:`gen-eta:95`), adiabatically
 rearranges tracers through an advective flux where the advecting flow
 is a function of slope of the isentropic surfaces.
@@ -71,7 +71,7 @@ tensor is:
 
 .. math::
 
-   {\bf K}_{\rm Redi} = \frac{1}{1 + |{\bf S}|^2} 
+   {\bf K}_{\rm Redi} = \frac{1}{1 + |{\bf S}|^2}
    \begin{pmatrix}
    1 + S_y^2& -S_x S_y & S_x \\
    -S_x S_y  & 1 + S_x^2 & S_y \\
@@ -97,7 +97,7 @@ Redi projection tensor then simplifies to:
    S_x & S_y & |{\bf S}|^2 \\
    \end{pmatrix}
 
-.. _GM_bolus_desc:  
+.. _GM_bolus_desc:
 
 GM parameterization
 -------------------
@@ -195,14 +195,14 @@ be re-written in terms of a non-divergent flux and a skew-flux:
 
    \begin{aligned}
    {\bf u}^\star \tau
-   & = 
+   & =
    \begin{pmatrix}
    - \partial_z ( \kappa_{\rm GM} S_x ) \tau \\
    - \partial_z ( \kappa_{\rm GM} S_y ) \tau \\
    \Big[ \partial_x (\kappa_{\rm GM} S_x) + \partial_y (\kappa_{\rm GM} S_y) \Big] \tau
    \end{pmatrix}
    \\
-   & = 
+   & =
    \begin{pmatrix}
    - \partial_z ( \kappa_{\rm GM} S_x \tau) \\
    - \partial_z ( \kappa_{\rm GM} S_y \tau) \\
@@ -242,7 +242,7 @@ the Redi isoneutral mixing scheme:
 .. math::
 
    \kappa_\rho {\bf K}_{\rm Redi} \nabla \tau
-   - {\bf u}^\star \tau = 
+   - {\bf u}^\star \tau =
    ( \kappa_\rho {\bf K}_{\rm Redi} + \kappa_{\rm GM} {\bf K}_{\rm GM} ) \nabla \tau
 
 If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rho}`, then
@@ -253,7 +253,7 @@ If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rh
    \begin{pmatrix}
    1 & 0 & 0 \\
    0 & 1 & 0 \\
-   2 S_x & 2 S_y & |{\bf S}|^2 
+   2 S_x & 2 S_y & |{\bf S}|^2
    \end{pmatrix}
 
 which only differs from the variable Laplacian diffusion tensor by the two
@@ -372,7 +372,7 @@ the formula for :math:`\kappa_{\rm GM}` gives:
    \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |{\bf S}| N }^z
-   
+
 Marshall et al. 2012 GM diffusivity :math:`\kappa_{GM}(x,y)`
 ------------------------------------------------------------
 
@@ -389,7 +389,7 @@ depth-integrated coefficient is given by
 
 .. math::
    \kappa_{\rm GM} = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma (M^2 / N)\; \mathrm{d}z} \Gamma(z) = \alpha \frac{\int E\; \mathrm{d}z}{\int \Gamma |{\bf S}| N\; \mathrm{d}z} \Gamma(z),
-   
+
 where notation is as :numref:`sub_gmredi_visbeck`, noting that :math:`|{\bf S}|
 = M^2 / N^2` is the magnitude of the isopycnal slopes. :math:`\Gamma(z)` is some
 vertical structure function that can be prescribed if required; default is
@@ -404,16 +404,14 @@ depth-integrated eddy energy follows its own prognostic equation as
    \int \kappa_{\rm gm} |{\bf S}|^2 N^2\; \mathrm{d}z -
    \lambda \int E\; \mathrm{d}z +
    \nu_E \nabla^2 \int E\; \mathrm{d}z
-   
+
 Terms above, respectively, are the time-evolution, advection, source, dissipation and diffusion of
 depth-integrated parameterized total eddy energy, with
 :math:`\tilde{\boldsymbol{u}}` the depth-averaged velocity, :math:`c` a
 long Rossby phase speed (computed from a WKB approximation, rotated accordingly if ``usingCurvilinearGrid = .TRUE.``), :math:`\lambda` a
 dissipation rate (namelist parameter :varlink:`GEOM_lmbda`), and :math:`\nu_E` an energy
-diffusion coefficient (namelist parameter :varlink:`GEOM_ene_kappa`). Note that bit-for-bit
-restart reproducibility GEOM requires an additional pickup file (``pickup_gmredi``), which can be activated through
-namelist parameters :varlink:`GEOM_pickup_read_mdsio` and :varlink:`GEOM_pickup_write_mdsio` in
-``data.gmredi``. 
+diffusion coefficient (namelist parameter :varlink:`GEOM_diffKh_EKE`). Note that bit-for-bit
+restart reproducibility GEOM requires an additional pickup file (``pickup_gmredi``). 
 
 .. admonition:: note
   :class: note
@@ -450,7 +448,7 @@ magnitude is simply restricted by an upper limit:
 
    \begin{aligned}
    |\nabla_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
-   S_{\rm lim} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }, 
+   S_{\rm lim} & = - \frac{|\nabla_h \sigma|}{ S_{\max} },
    \quad \mbox{where $S_{\max}>0$ is a parameter} \\
    \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) \\
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
@@ -531,8 +529,7 @@ The GKW91 tapering scheme is activated in the model by setting
     :alt: Tapering for GM scheme
     :name: tapers
 
-    Taper functions used in GKW91 and DM95. 
-
+    Taper functions used in GKW91 and DM95.
 
 .. figure:: figs/effective_slopes.*
     :width: 70%
@@ -558,7 +555,6 @@ slopes.
 
 The DM95 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’dm95’`` in ``data.gmredi``.
-
 
 Tapering: Large, Danabasoglu and Doney, 1997 (LDD97)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -713,9 +709,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_lmbda`              |     1.16E-07                 | eddy energy dissipation rate for GEOM scheme (s\ :sup:`-1`)             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_ene_kappa`          |     5.0E+02                  | eddy energy diffusion coefficient for GEOM scheme (m\ :sup:`2`\ /s)     |
+  | :varlink:`GEOM_diffKh_EKE`         |     5.0E+02                  | eddy energy diffusion coefficient for GEOM scheme (m\ :sup:`2`\ /s)     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_ene_init`           |     1.0E-03                  | initial value for parameterized total depth eddy energy for GEOM scheme |
+  | :varlink:`GEOM_ini_EKE`            |     1.0E-03                  | initial value for parameterized total depth eddy energy for GEOM scheme |
   |                                    |                              | (m\ :sup:`3`\ / s\ :sup:`2`)                                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_vert_struc`         |     FALSE                    | use imposed vertical structure function in GEOM scheme                  |
@@ -727,12 +723,6 @@ General flags and parameters
   | :varlink:`GEOM_minVal_K`           |     0.0                      | minimum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using GEOM scheme     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GEOM_maxVal_K`           |     2500.0                   | maximum :math:`\kappa_{\rm GM}` (m\ :sup:`2`\ /s) using GEOM scheme     |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_pickup_write_mdsio` |     TRUE                     | write pickups for GEOM scheme if #define :varlink:`GM_GEOM_VARIABLE_K`  |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GEOM_pickup_read_mdsio`  |     TRUE                     | read pickups for GEOM scheme if #define :varlink:`GM_GEOM_VARIABLE_K`;  |
-  |                                    |                              | if FALSE or :varlink:`nIter0` = 0, the value of                         |
-  |                                    |                              | :varlink:`GEOM_ene_init` is used instead                                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_useLeithQG`           |     FALSE                    | add Leith QG viscosity to GMRedi tensor                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -794,8 +784,6 @@ GMREDI Diagnostics
    GEOMElap|  1 |SM P    M1|m^3/s^3         |GEOM eddy energy diffusion tendency
    GEOM_c1 |  1 |SM P    M1|m/s             |first baroclinic wave phase speed
    GEOMcros|  1 |SM P    M1|m/s             |signed long Rossby wave phase speed
-
-
 
 Experiments and tutorials that use GMREDI
 =========================================
