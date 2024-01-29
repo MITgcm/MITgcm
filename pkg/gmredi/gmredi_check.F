@@ -176,19 +176,6 @@ C     Make sure we are not trying to use something that is unavailable
       ENDIF
 #endif
 
-#ifndef GM_GEOM_VARIABLE_K
-C     Make sure we are not trying to use something that is unavailable
-      IF ( GM_useGEOM ) THEN
-       WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: GEOM variables used in data.gmredi'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &   ' GMREDI_CHECK: without #define GM_GEOM_VARIABLE_K'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
-      ENDIF
-#endif
-
 #ifdef GM_GEOM_VARIABLE_K
       IF ( GM_useGEOM ) THEN
        CALL WRITE_0D_RL( GEOM_alpha, INDEX_NONE,
@@ -207,7 +194,6 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_minVal_K   =', ' /* GEOM_K3d lower bound [m2/s] */')
        CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
      &  'GEOM_maxVal_K   =', ' /* GEOM_K3d upper bound [m2/s] */')
-
        IF (usingCurvilinearGrid) THEN
         WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',
      &       ' curvilinear grid detected, doing rotation of velocities'
@@ -215,7 +201,18 @@ C     Make sure we are not trying to use something that is unavailable
      &                      SQUEEZE_RIGHT, myThid )
        ENDIF
       ENDIF
-#endif
+#else /* GM_GEOM_VARIABLE_K */
+C     Make sure we are not trying to use something that is unavailable
+      IF ( GM_useGEOM ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GEOM variables used in data.gmredi'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: without #define GM_GEOM_VARIABLE_K'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif /* GM_GEOM_VARIABLE_K */
 
 #ifndef GM_BOLUS_ADVEC
 C     Make sure we are not trying to use some arrays that are unavailable
@@ -512,7 +509,6 @@ C-    end special check for dry cell @ top
 C     Check size of overlap region
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
      &       .AND. GM_Visbeck_alpha.NE.0.
-     &       .AND. GEOM_alpha.NE.0.
      &       .AND. useMultiDimAdvec ) THEN
 C       Visbeck variable K requires 1 more row/column in the overlap:
 C       might need to increase OLx,OLy from 2 to 3 if GM advective
