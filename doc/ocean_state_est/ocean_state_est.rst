@@ -475,7 +475,7 @@ horizontal transport (or overturn) will be computed accordingly.
    variables, where the weight of each cell is the current cell volume 
    divided by the total masked *initial* volume (sum of masked 
    ``eccoVol_0``). Note that cell volumes vary in time in the case of 
-   a non-linear free surface. (See :numref:`nonlinear-freesurface` 
+   a non-linear free surface (see :numref:`nonlinear-freesurface` 
    (:ref:`nonlinear-freesurface`)). To obtain a true weighted mean in 
    the case of a non-linear free surface, please define 
    ``ECCO_VARIABLE_AREAVOLGLOB`` in ``ECCO_OPTIONS.h``, which instead 
