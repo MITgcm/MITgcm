@@ -433,60 +433,59 @@ C     1. form the depth-AVG velocity
        ENDDO
       ENDDO
 
-C     2. form the advective + diffusive tendencies
+C     2. form the advective + diffusive fluxes
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx+1,sNx+OLx
-        IF ( maskC(i-1,j,kSurf,bi,bj)*dxG(i-1,j,bi,bj) .GT. 0.0 _d 0
-     & .AND. maskC(i  ,j,kSurf,bi,bj)*dxG(i  ,j,bi,bj) .GT. 0.0 _d 0
-     &       ) THEN
-C ---- second ordered centre difference
-!              ene_adv_x(i,j) = -U_depth_avg(i,j)
-!     &          * (dxG(i-1,j,bi,bj) * GEOM_EKE(i  ,j,bi,bj)
-!     &          +  dxG(i  ,j,bi,bj) * GEOM_EKE(i-1,j,bi,bj))
-!     &          / (dxG(i  ,j,bi,bj) + dxG(i-1,j,bi,bj))
+C ---- second ordered centred difference
+c       ene_adv_x(i,j) = U_depth_avg(i,j) * 0.5 _d 0
+c    &       * (GEOM_EKE(i  ,j,bi,bj) + GEOM_EKE(i-1,j,bi,bj))
+c    &       * dyG(i,j,bi,bj)
 C ---- 1st order upwinding
-         fp_ui = U_depth_avg(i,j) + ABS( U_depth_avg(i,j) )
-         fm_ui = U_depth_avg(i,j) - ABS( U_depth_avg(i,j) )
-         ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
+        fp_ui = U_depth_avg(i,j) + ABS( U_depth_avg(i,j) )
+        fm_ui = U_depth_avg(i,j) - ABS( U_depth_avg(i,j) )
+        ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
+     &                       +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
+     &                       * dyG(i,j,bi,bj)
 C ---- 1st order upwinding wave stuff
-         c_dum = 0.5 * ( c_rosX(i-1,j) + c_rosX(i,j) )
-         fp_ui = c_dum + ABS( c_dum )
-         fm_ui = c_dum - ABS( c_dum )
-         ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
-     &                        +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
-         ene_lap_x(i,j) = GEOM_diffKh_EKE * (2.0 _d 0)
-     &        * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj))
-     &        / (dxG(i,j,bi,bj) + dxG(i-1,j,bi,bj))
-        ENDIF
+        c_dum = 0.5 * ( c_rosX(i-1,j) + c_rosX(i,j) )
+        fp_ui = c_dum + ABS( c_dum )
+        fm_ui = c_dum - ABS( c_dum )
+        ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
+     &                       +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
+     &                       * dyG(i,j,bi,bj)
+        ene_lap_x(i,j) = GEOM_diffKh_EKE * dyG(i,j,bi,bj)
+     &       * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj))
+     &       * recip_dxC(i,j,bi,bj)
+     &       * cosFacU(j,bi,bj)
        ENDDO
       ENDDO
 
       DO j=1-OLy+1,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        IF ( maskC(i,j-1,kSurf,bi,bj)*dyG(i,j-1,bi,bj) .GT. 0.0 _d 0
-     & .AND. maskC(i,j  ,kSurf,bi,bj)*dyG(i,j  ,bi,bj) .GT. 0.0 _d 0
-     &       ) THEN
-C ---- second ordered centre difference
-!              ene_adv_y(i, j) = -V_depth_avg(i,j)
-!     &          * (dyG(i,j-1,bi,bj) * GEOM_EKE(i,j  ,bi,bj)
-!     &          +  dyG(i,j  ,bi,bj) * GEOM_EKE(i,j-1,bi,bj))
-!     &          / (dyG(i,j  ,bi,bj) + dyG(i,j-1,bi,bj))
+C ---- second ordered centred difference
+c       ene_adv_y(i, j) = V_depth_avg(i,j) * 0.5 _d 0
+c    &       * (GEOM_EKE(i,j  ,bi,bj) + GEOM_EKE(i,j-1,bi,bj))
+c    &       * dxG(i,j,bi,bj)
 C ---- 1st order upwinding
-         fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
-         fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
-         ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
-     &                        +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
+        fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
+        fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
+        ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
+     &                       +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
+     &                       * dxG(i,j,bi,bj)
 C ---- 1st order upwinding wave stuff
-         c_dum = 0.5 * ( c_rosY(i,j-1) + c_rosY(i,j) )
-         fp_ui = c_dum + ABS( c_dum )
-         fm_ui = c_dum - ABS( c_dum )
-         ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
-     &                        +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
-         ene_lap_y(i, j) = GEOM_diffKh_EKE * (2.0 _d 0)
-     &        * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i,j-1,bi,bj))
-     &        / (dyG(i,j,bi,bj) + dyG(i,j-1,bi,bj))
-        ENDIF
+        c_dum = 0.5 * ( c_rosY(i,j-1) + c_rosY(i,j) )
+        fp_ui = c_dum + ABS( c_dum )
+        fm_ui = c_dum - ABS( c_dum )
+        ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
+     &                       +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
+     &                       * dxG(i,j,bi,bj)
+        ene_lap_y(i, j) = GEOM_diffKh_EKE * dxG(i,j,bi,bj)
+     &       * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i,j-1,bi,bj))
+     &       * recip_dyC(i,j,bi,bj)
+#ifdef ISOTROPIC_COS_SCALING
+     &       *cosFacV(j,bi,bj)
+#endif
+
        ENDDO
       ENDDO
 
@@ -494,25 +493,23 @@ C     3. form tendencies on cell and sum
       DO j=1-OLy+1,sNy+OLy-1
        DO i=1-OLx+1,sNx+OLx-1
         trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_EKE(i,j,bi,bj)
-        trd_ene_adv(i,j) = (ene_adv_x(i+1,j) - ene_adv_x(i,j))
-     &                     * recip_dxG(i,j,bi,bj)
-     &                    +(ene_adv_y(i,j+1) - ene_adv_y(i,j))
-     &                     * recip_dyG(i,j,bi,bj)
-        trd_ene_wav(i,j) =  (ene_wav_x(i+1,j) - ene_wav_x(i,j))
-     &                      * recip_dxG(i,j,bi,bj)
-     &                     +(ene_wav_y(i,j+1) - ene_wav_y(i,j))
-     &                      * recip_dyG(i,j,bi,bj)
-        trd_ene_lap(i,j) =  (ene_lap_x(i+1,j) - ene_lap_x(i,j))
-     &                      * recip_dxG(i,j,bi,bj)
-     &                     +(ene_lap_y(i,j+1) - ene_lap_y(i,j))
-     &                      * recip_dyG(i,j,bi,bj)
+     &                                        *maskInC(i,j,bi,bj)
+C     divide by grid cell area to complete FV discretization
+        trd_ene_adv(i,j) = (ene_adv_x(i+1,j) - ene_adv_x(i,j)
+     &                     +ene_adv_y(i,j+1) - ene_adv_y(i,j))
+     &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+        trd_ene_wav(i,j) = (ene_wav_x(i+1,j) - ene_wav_x(i,j)
+     &                     +ene_wav_y(i,j+1) - ene_wav_y(i,j))
+     &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+        trd_ene_lap(i,j) = (ene_lap_x(i+1,j) - ene_lap_x(i,j)
+     &                     +ene_lap_y(i,j+1) - ene_lap_y(i,j))
+     &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
 C       form the RHS
         ene_rhs_now(i,j) = trd_ene_gen(i,j)
      &                   + trd_ene_dis(i,j)
      &                   - trd_ene_adv(i,j)
      &                   - trd_ene_wav(i,j)
      &                   + trd_ene_lap(i,j)
-
        ENDDO
       ENDDO
 
