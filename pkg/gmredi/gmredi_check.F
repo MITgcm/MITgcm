@@ -194,11 +194,11 @@ C     Make sure we are not trying to use something that is unavailable
      &  'GEOM_minVal_K   =', ' /* GEOM_K3d lower bound [m2/s] */')
        CALL WRITE_0D_RL( GEOM_maxVal_K, INDEX_NONE,
      &  'GEOM_maxVal_K   =', ' /* GEOM_K3d upper bound [m2/s] */')
-       IF (usingCurvilinearGrid) THEN
+       IF (usingPcoords) THEN
         WRITE(msgBuf,'(3A)') 'GMREDI_CHECK:',
-     &       ' curvilinear grid detected, doing rotation of velocities'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+     &       ' p-coords not yet implemented with GM_useGEOM'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
        ENDIF
       ENDIF
 #else /* GM_GEOM_VARIABLE_K */
