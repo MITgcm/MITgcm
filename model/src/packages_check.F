@@ -379,7 +379,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifndef ALLOW_ATM2D
-      IF (useATM2D) CALL PACKAGES_ERROR_MSG('ATM2D',' ',myThid)
+      IF (useATM2d) CALL PACKAGES_ERROR_MSG('ATM2d',' ',myThid)
 #endif
 
 #ifndef ALLOW_AIM

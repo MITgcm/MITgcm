@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - change param "metricTerms" to integer param "selectMetricTerms" and change
+    param "use3dCoriolis" to integer param "select3dCoriScheme" but keep former
+    parameters in namelist (backward compatible).
+  - remove un-used param "writeStatePrec" + also in experiment param file "data"
+  - rotateGrid: fix missing 3-D Coriolis term to gV ; adjust usage restriction.
 o pkg/ecco:
   - remove call to ECCO_CHECK from ecco_cost_init_fixed.F (but keep the other
     call from packages_check.F) and move ECCO_SUMMARY call to ecco_check.F
