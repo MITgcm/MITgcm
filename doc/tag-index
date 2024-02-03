@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint68v (2024/02/03)
 o model/src:
   - change param "metricTerms" to integer param "selectMetricTerms" and change
     param "use3dCoriolis" to integer param "select3dCoriScheme" but keep former
