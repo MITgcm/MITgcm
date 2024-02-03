@@ -187,7 +187,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  mtNHFacV
       _RL  sideMaskFac
       _RL  rAdvDeepFac
-      LOGICAL bottomDragTerms
+      LOGICAL bottomDragTerms, metricTerms
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
       COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
@@ -254,6 +254,7 @@ C     o V momentum equation
       mtNHFacV     = 1.
       fvFac        = cfFacMom*1.
 
+      metricTerms  = selectMetricTerms.GE.1
       IF (implicitViscosity) THEN
         ArDudrFac  = 0.
         ArDvdrFac  = 0.
@@ -1066,14 +1067,14 @@ C--   Coriolis term (call to CD_CODE_SCHEME has been moved to timestep.F)
       ENDIF
 
 C--   3.D Coriolis term (horizontal momentum, Eastward component: -fprime*w)
-      IF ( use3dCoriolis ) THEN
+      IF ( select3dCoriScheme.GE.1 ) THEN
         CALL MOM_U_CORIOLIS_NH( bi,bj,k,wVel,uCf,myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + fuFac*uCf(i,j)
          ENDDO
         ENDDO
-       IF ( usingCurvilinearGrid ) THEN
+       IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
 C-     presently, non zero angleSinC array only supported with Curvilinear-Grid
         CALL MOM_V_CORIOLIS_NH( bi,bj,k,wVel,vCf,myThid )
         DO j=jMin,jMax

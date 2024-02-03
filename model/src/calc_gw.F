@@ -614,7 +614,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
            ENDDO
           ENDDO
         ENDIF
-        IF ( use3dCoriolis .AND. k.GT.1 ) THEN
+        IF ( select3dCoriScheme.GE.1 .AND. k.GT.1 ) THEN
           CALL MOM_W_CORIOLIS_NH(
      I               bi, bj, k,
      I               uVel, vVel, recip_rThickC,

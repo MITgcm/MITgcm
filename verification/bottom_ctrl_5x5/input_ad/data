@@ -23,7 +23,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
- writeStatePrec=64,
  writeBinaryPrec=64,
  readBinaryPrec=64,
  hFacMin=.05,
