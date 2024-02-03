@@ -135,12 +135,13 @@ C     depths for doing depth-averaging
        DO i=1-OLx,sNx+OLx
         recip_depthW(i,j) = 0.0 _d 0
         recip_depthS(i,j) = 0.0 _d 0
-        IF ( rLowW(i,j,bi,bj) .NE. 0. _d 0 )
-     &       recip_depthW(i,j) = 1. _d 0 / ABS(rLowW(i,j,bi,bj))
-        IF ( rLowS(i,j,bi,bj) .NE. 0. _d 0 )
-     &       recip_depthS(i,j) = 1. _d 0 / ABS(rLowS(i,j,bi,bj))
+        c_dum = rSurfW(i,j,bi,bj) - rLowW(i,j,bi,bj)
+        IF ( c_dum .GT. zeroRL ) recip_depthW(i,j) = 1. _d 0 / c_dum
+        c_dum = rSurfS(i,j,bi,bj) - rLowS(i,j,bi,bj)
+        IF ( c_dum .GT. zeroRL ) recip_depthS(i,j) = 1. _d 0 / c_dum
 C     convert to meters in the case of p-coordinates
-        depthC(i,j) = ABS(R_low(i,j,bi,bj))*rUnit2mass*recip_rhoConst
+        depthC(i,j) = ( Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj) )
+     &              * rUnit2mass*recip_rhoConst
        ENDDO
       ENDDO
 
@@ -183,7 +184,7 @@ C     For p-coordinates: convert r-units to z
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
+         IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
 
 C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
           dSigmaR = (dSigmaDr(i,j) * 4.0 _d 0
@@ -206,8 +207,8 @@ C      Compute M^2 rho_0 / g on vertical interfaces
      &                       ) *  maskC(i,j,k,bi,bj)
           dSigmaH = SQRT(dSigmaDx * dSigmaDx
      &                 + dSigmaDy * dSigmaDy)
-          IF(dSigmaH .GT. 0.0 _d 0) THEN
-           IF( dSigmaR .GT. dSigmaH*recipMaxSlope ) THEN
+          IF ( dSigmaH .GT. 0. _d 0 ) THEN
+           IF ( dSigmaR .GT. dSigmaH*recipMaxSlope ) THEN
             Sloc = dSigmaH / dSigmaR
            ELSE
             Sloc = GM_maxSlope
@@ -247,7 +248,7 @@ C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
+         IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
           N2loc = N2loc3D(i,j,k)
           SNloc = SNloc3D(i,j,k)
 C     hFac now contains the coordinate factor rUnit2mass*recip_rhoConst
@@ -282,7 +283,7 @@ C       only compute the Rossby phase speed if deep enough
 C       bound the f factors away from zero (inside Eq +/- 5degN/S),
 C       compute the Rossby phase speed, and bound above by
 C       1st baroclinic equatorial Rossby wave phase speed
-         IF (.NOT.usingCartesianGrid) THEN
+         IF ( .NOT.usingCartesianGrid ) THEN
           fCoriFac = MAX( ABS(fCori(i,j,bi,bj)), 1.2676 _d -05 )
           fCoriFac = fCoriCos(i,j,bi,bj) / ( rSphere * fCoriFac ** 2 )
          ENDIF
@@ -313,7 +314,7 @@ C        bound the denominator from below (choice following NEMO)
        DO i=1-OLx,sNx+OLx
 C     for cubed sphere setups, depthC can be zero in the halo, so we
 C     include it in the masking
-        IF (maskC(i,j,kSurf,bi,bj)*depthC(i,j) .GT. 0.0 _d 0) THEN
+        IF ( maskC(i,j,kSurf,bi,bj)*depthC(i,j) .GT. 0. _d 0 ) THEN
          GEOM_K3d(i,j,kSurf,bi,bj) = GEOM_alpha * GEOM_EKE(i,j,bi,bj)
      &        / MAX( SNloc_zint(i,j), 1. _d -7 * depthC(i,j) )
         ENDIF
@@ -322,7 +323,7 @@ C     include it in the masking
 
 C     2. cap k_GEOM from above! (stop it being too big)
 
-      IF (GEOM_alpha .NE. 0.0 _d 0) THEN
+      IF ( GEOM_alpha .NE. 0.0 _d 0 ) THEN
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          GEOM_K3d(i,j,kSurf,bi,bj) =
@@ -354,7 +355,7 @@ C     4. extend the (tapered) k_GEOM in depth
 
 C     5. cap k_GEOM from below (do not strictly need this)
 
-      IF (GEOM_alpha .NE. 0.0 _d 0) THEN
+      IF ( GEOM_alpha .NE. 0.0 _d 0 ) THEN
        DO k=1,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -380,7 +381,7 @@ C     loop over k
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
        DO j=1-OLy+1,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
-         IF(maskC(i,j,k,bi,bj) .GT. 0.0 _d 0) THEN
+         IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
           hFac = MIN( halfRS, _hFacC(i,j,k-1,bi,bj) )
      &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
           SNloc = SNloc3D(i,j,k)
@@ -420,7 +421,7 @@ C ----------------------------------------------
 C ----  form the energy fluxes
 
 C     1. form the depth-AVG velocity
-      DO k=Nr,2,-1
+      DO k= 2,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
          U_depth_avg(i,j) = U_depth_avg(i,j)
@@ -560,7 +561,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   diagnostics and restarts
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF (useDiagnostics) THEN
+      IF ( useDiagnostics ) THEN
        CALL DIAGNOSTICS_FILL(vert_struc_func,
      &                       'GEOMstru', 0,Nr,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(trd_ene_gen,
