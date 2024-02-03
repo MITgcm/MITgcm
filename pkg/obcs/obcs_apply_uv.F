@@ -45,8 +45,12 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 c     INTEGER bi, bj, itLo, itHi, jtLo, jtHi
       INTEGER k, kLo, kHi
-      INTEGER i, j
-      INTEGER Iobc, Jobc
+#if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER j, Iobc
+#endif
+#if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER i, Jobc
+#endif
 
 C--   Set model variables to OB values on North/South Boundaries:
 C     2 steps: 1) set tangential component ; 2) set normal component.
@@ -183,7 +187,7 @@ C Eastern boundary
            DO k = kLo,kHi
              uFld(Iobc,j,k,bi,bj)   = OBEu(j,k,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
-             uFld(Iobc+1,j,k,bi,bj) = OBEu(j,K,bi,bj)
+             uFld(Iobc+1,j,k,bi,bj) = OBEu(j,k,bi,bj)
      &                              *_maskW(Iobc,j,k,bi,bj)
      &                              *OBCS_uvApplyFac
            ENDDO

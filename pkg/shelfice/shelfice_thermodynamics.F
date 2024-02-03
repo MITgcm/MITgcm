@@ -237,12 +237,13 @@ C     where this value is part of the protocol
       ENDIF
 #endif
 
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( SHI_update_kTopC ) THEN
 C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
 C     mass to change. Since current ice-shelf representation is missing
 C     a fractional ice-shelf cover representation, this turns into making
 C     or removing a "thin ice-shelf" grid-cell. Here we update "kTopC"
 C     as ice-shelf mass appears or vanishes in any surface grid-cell.
-      IF ( SHELFICEMassStepping ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy,sNy+OLy
@@ -258,8 +259,11 @@ C     as ice-shelf mass appears or vanishes in any surface grid-cell.
          ENDDO
         ENDDO
       ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kTopC        = comlev1, key=ikey_dynamics
+# endif
+#endif /* ALLOW_SHELFICE_REMESHING */
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 

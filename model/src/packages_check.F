@@ -71,11 +71,11 @@ C       |-- CTRL_CHECK
 C       |
 C       |-- COST_CHECK
 C       |
+C       |-- ECCO_CHECK
+C       |
 C       |-- GRDCHK_CHECK
 C       |
 C       |-- SBO_CHECK
-C       |
-C       |-- ECCO_CHECK
 C       |
 C       |-- DIAGNOSTICS_CHECK
 C       |
@@ -379,7 +379,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifndef ALLOW_ATM2D
-      IF (useATM2D) CALL PACKAGES_ERROR_MSG('ATM2D',' ',myThid)
+      IF (useATM2d) CALL PACKAGES_ERROR_MSG('ATM2d',' ',myThid)
 #endif
 
 #ifndef ALLOW_AIM
@@ -412,10 +412,8 @@ C---  Continue with standard packages (with standard usePKG flag)
       CALL COST_CHECK( myThid )
 #endif
 
-#ifdef ALLOW_GRDCHK
-      IF (useGrdChk) CALL GRDCHK_CHECK( myThid )
-#else
-      IF (useGrdChk) CALL PACKAGES_ERROR_MSG('GrdChk',' ',myThid)
+#ifdef ALLOW_ECCO
+      IF (useECCO) CALL ECCO_CHECK( myThid )
 #endif
 
 #ifndef ALLOW_SMOOTH
@@ -426,14 +424,16 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (usePROFILES) CALL PACKAGES_ERROR_MSG('PROFILES',' ',myThid)
 #endif
 
+#ifdef ALLOW_GRDCHK
+      IF (useGrdChk) CALL GRDCHK_CHECK( myThid )
+#else
+      IF (useGrdChk) CALL PACKAGES_ERROR_MSG('GrdChk',' ',myThid)
+#endif
+
 #ifdef ALLOW_SBO
       IF (useSBO) CALL SBO_CHECK( myThid )
 #else
       IF (useSBO) CALL PACKAGES_ERROR_MSG('SBO',' ',myThid)
-#endif
-
-#ifdef ALLOW_ECCO
-      IF (useECCO) CALL ECCO_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
