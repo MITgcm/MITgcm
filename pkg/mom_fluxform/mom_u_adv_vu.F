@@ -43,21 +43,7 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      IF ( selectVortScheme.EQ.2 ) THEN
-        DO j=1-OLy+1,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-          AdvectFluxVU(i,j) = 0.25 _d 0
-     &        *( vTrans(i,j) + vTrans(i-1,j) )
-#ifdef MOM_BOUNDARY_CONSERVE
-     &        *( uFld(i, j )*dxC(i, j, bi,bj)*_maskW(i,j-1,k,bi,bj)
-     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj)*_maskW(i, j, k,bi,bj) )
-#else
-     &        *( uFld(i, j )*dxC(i, j, bi,bj)
-     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj) )
-#endif
-         ENDDO
-        ENDDO
-      ELSE
+      IF ( selectMetricTerms.NE.3 ) THEN
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           AdvectFluxVU(i,j) = 0.25 _d 0
@@ -72,6 +58,21 @@ CEOP
      &        *_maskW(i,j,k,bi,bj)
      &        *_maskW(i,j-1,k,bi,bj)
 #endif /* OLD_ADV_BCS */
+         ENDDO
+        ENDDO
+      ELSE
+C-    Advect u*dxC (--> account for metric term u*v*tanPhi/R)
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx+1,sNx+OLx
+          AdvectFluxVU(i,j) = 0.25 _d 0
+     &        *( vTrans(i,j) + vTrans(i-1,j) )
+#ifdef MOM_BOUNDARY_CONSERVE
+     &        *( uFld(i, j )*dxC(i, j, bi,bj)*_maskW(i,j-1,k,bi,bj)
+     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj)*_maskW(i, j, k,bi,bj) )
+#else
+     &        *( uFld(i, j )*dxC(i, j, bi,bj)
+     &         + uFld(i,j-1)*dxC(i,j-1,bi,bj) )
+#endif
          ENDDO
         ENDDO
       ENDIF

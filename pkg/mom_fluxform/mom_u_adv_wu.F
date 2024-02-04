@@ -98,15 +98,15 @@ C     (linear) Free-surface correction at k>1
          DO i=1-OLx+1,sNx+OLx
           advectiveFluxWU(i,j) = advectiveFluxWU(i,j)
      &     +0.25 _d 0*(
-     &          wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)*
-     &          (maskC( i ,j,k,bi,bj)-maskC( i ,j,k-1,bi,bj))
-     &         +wFld(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)*
-     &          (maskC(i-1,j,k,bi,bj)-maskC(i-1,j,k-1,bi,bj))
+     &          wFld( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
+     &           *(maskC( i ,j,k,bi,bj)-maskC( i ,j,k-1,bi,bj))
+     &         +wFld(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
+     &           *(maskC(i-1,j,k,bi,bj)-maskC(i-1,j,k-1,bi,bj))
      &                )*deepFac2F(k)*rhoFacF(k)
      &                 *uFld(i,j,k,bi,bj)*deepFacA(k)
          ENDDO
         ENDDO
-C- endif NOT rigidLid
+C- endif select_rStar=0 and NOT rigidLid
        ENDIF
 
 C- endif special k cases

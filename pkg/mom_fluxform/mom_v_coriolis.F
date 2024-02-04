@@ -5,9 +5,9 @@ C !ROUTINE: MOM_V_CORIOLIS
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_CORIOLIS(
-     I        bi,bj,k,uFld,
+     I        bi, bj, k, uFld,
      U        vCoriolisTerm,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the horizontal Coriolis term in the meridional equation:
@@ -24,11 +24,11 @@ C !USES: ===============================================================
 #include "SURFACE.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  bi, bj               :: tile indices
 C  k                    :: vertical level
 C  uFld                 :: zonal flow
 C  myThid               :: thread number
-      INTEGER bi,bj,k
+      INTEGER bi, bj, k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -38,9 +38,7 @@ C  vCoriolisTerm        :: Coriolis term
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER i,j
-      _RS one
-      PARAMETER( one = 1. _d 0 )
+      INTEGER i, j
 CEOP
 
       IF ( selectCoriScheme.LE.1 ) THEN
@@ -87,7 +85,7 @@ C         "Numerical Boundary Layers and Spurious Residual Flows"
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx,sNx+OLx-1
          vCoriolisTerm(i,j) = vCoriolisTerm(i,j)
-     &   *4. _d 0/MAX( one,
+     &   *4. _d 0/MAX( oneRS,
      &                 maskW( i , j ,k,bi,bj)+maskW(i+1, j ,k,bi,bj)
      &                +maskW( i ,j-1,k,bi,bj)+maskW(i+1,j-1,k,bi,bj) )
         ENDDO

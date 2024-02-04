@@ -510,36 +510,38 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
 #ifndef MOM_USE_OLD_DEEP_VERT_ADV
         IF ( useNHMTerms ) rAdvDeepFac = rAdvDeepFac*recip_deepFacC(k)
 #endif
-        IF ( selectVortScheme.EQ.2 ) THEN
+        IF ( selectMetricTerms.EQ.3 ) THEN
+C-      In this case fMer contains the advective flux vTrans*(u*dxC)
          DO j=jMin,jMax
           DO i=iMin,iMax
-           mT(i,j) = ( fMer(i,j+1) - fMer(i,j) )*recip_dxC(i,j,bi,bj)
+           gU(i,j,k,bi,bj) =
+     &      -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &      *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
+     &      *( ( fZon( i, j ) - fZon(i-1,j ) )*uDudxFac
+     &        +( fMer( i,j+1) - fMer( i, j ) )*vDudyFac
+     &                                        *recip_dxC(i,j,bi,bj)
+     &        +( fVerUkp(i,j) - fVerUkm(i,j) )*rAdvDeepFac
+     &       )
           ENDDO
          ENDDO
         ELSE
          DO j=jMin,jMax
           DO i=iMin,iMax
-           mT(i,j) = ( fMer(i,j+1) - fMer(i,j) )
+           gU(i,j,k,bi,bj) =
+#ifdef OLD_UV_GEOM
+     &      -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
+     &      ( 0.5 _d 0*(rA(i,j,bi,bj)+rA(i-1,j,bi,bj)) )
+#else
+     &      -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &      *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
+#endif
+     &      *( ( fZon( i, j ) - fZon(i-1,j ) )*uDudxFac
+     &        +( fMer( i,j+1) - fMer( i, j ) )*vDudyFac
+     &        +( fVerUkp(i,j) - fVerUkm(i,j) )*rAdvDeepFac
+     &       )
           ENDDO
          ENDDO
         ENDIF
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          gU(i,j,k,bi,bj) =
-#ifdef OLD_UV_GEOM
-     &     -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
-     &      ( 0.5 _d 0*(rA(i,j,bi,bj)+rA(i-1,j,bi,bj)) )
-#else
-     &     -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &     *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
-#endif
-     &     *( ( fZon(i,j  )  - fZon(i-1,j)  )*uDudxFac
-c    &       +( fMer(i,j+1)  - fMer(i,  j)  )*vDudyFac
-     &       +           mT(i,j)             *vDudyFac
-     &       +( fVerUkp(i,j) - fVerUkm(i,j) )*rAdvDeepFac
-     &     )
-         ENDDO
-        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
@@ -740,9 +742,8 @@ C      o Non-Hydrostatic (spherical) metric terms
         ENDDO
        ENDDO
       ENDIF
-c     IF ( metricTerms .AND. usingSphericalPolarGrid ) THEN
       IF ( metricTerms .AND. usingSphericalPolarGrid
-     &                 .AND. selectVortScheme.NE.2 ) THEN
+     &                 .AND. selectMetricTerms.NE.3 ) THEN
 C      o Spherical polar grid metric terms
        CALL MOM_U_METRIC_SPHERE( bi,bj,k,uFld,vFld,mT,myThid )
        DO j=jMin,jMax

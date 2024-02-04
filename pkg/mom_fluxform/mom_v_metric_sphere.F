@@ -39,13 +39,23 @@ C  vMetricTerms         :: metric term
 C !LOCAL VARIABLES: ====================================================
 C  i, j                 :: loop indices
       INTEGER i, j
-      LOGICAL useGridLength
 CEOP
 
-C-    for now, re-cycle a param not used in fluxform:
-      useGridLength = selectVortScheme.NE.UNSET_I
-
-      IF ( useGridLength ) THEN
+      IF ( selectMetricTerms.EQ.1 ) THEN
+C-    Use analytical expression for tan(Phi) (stored in: tanPhiAtV)
+        DO j=1-OLx+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx-1
+           vMetricTerms(i,j) = -recip_rSphere*recip_deepFacC(k)
+     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
+     &             +uFld(i,j-1)+uFld(i+1,j-1)
+     &            )
+     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
+     &             +uFld(i,j-1)+uFld(i+1,j-1)
+     &            )
+     &      *_tanPhiAtV(i,j,bi,bj)
+         ENDDO
+        ENDDO
+      ELSE
 C-    Using grid-spacing gradient: estimates tan(Phi)/rSphere as -del^j(dxC)/rAz
         DO j=2-OLx,sNy+OLy
          DO i=1-OLx,sNx+OLx-1
@@ -64,20 +74,6 @@ C-    Using grid-spacing gradient: estimates tan(Phi)/rSphere as -del^j(dxC)/rAz
      &       )*halfRL
      &     )*recip_hFacS(i,j,k,bi,bj)
      &      *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-         ENDDO
-        ENDDO
-      ELSE
-C-    Use analytical expression for tan(Phi) (stored in: tanPhiAtV)
-        DO j=1-OLx+1,sNy+OLy
-         DO i=1-OLx,sNx+OLx-1
-           vMetricTerms(i,j) = -recip_rSphere*recip_deepFacC(k)
-     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
-     &             +uFld(i,j-1)+uFld(i+1,j-1)
-     &            )
-     &      *0.25*( uFld(i,j  )+uFld(i+1,j  )
-     &             +uFld(i,j-1)+uFld(i+1,j-1)
-     &            )
-     &      *_tanPhiAtV(i,j,bi,bj)
          ENDDO
         ENDDO
       ENDIF
