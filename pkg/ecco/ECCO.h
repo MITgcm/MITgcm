@@ -154,11 +154,10 @@ C                 the current model integration.
 #endif
 #endif
 #ifndef ECCO_VARIABLE_AREAVOLGLOB
-      COMMON /ECCO_R4/
-     &                    eccoVol_0
-      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)      
-
+      COMMON /ECCO_R4/ eccoVol_0
+      _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true
 C     ecco_keepTSeriesOutp_open :: keep the sterGloH file open if true
