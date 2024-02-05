@@ -29,7 +29,7 @@ c     ==================================================================
 c     SUBROUTINE ecco_cost_init_fixed
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -60,7 +60,7 @@ c     == local variables ==
       _RL     missingObsFlag
       PARAMETER ( missingObsFlag = 1. _d 23 )
 #ifdef ALLOW_GENCOST_1D
-      character*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       integer ilo, ihi, irec, gwunit
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -205,7 +205,8 @@ c--    set observation start/enddate
 
 #endif /* ALLOW_CAL */
 
-      call ecco_check( myThid )
+C-    ECCO_CHECK is now called from packages_check.F
+c     call ecco_check( myThid )
 
 c--   Get the weights that are to be used for the individual cost
 c--   function contributions.
@@ -227,10 +228,8 @@ cph!!!
       endif
 #endif
 
-c--   Summarize the cost function setup.
-      _BEGIN_MASTER( myThid )
-      call ecco_summary( myThid )
-      _END_MASTER( myThid )
+c--   Summarize the cost function setup. <-- now called at the end of ECCO_CHECK
+c     call ecco_summary( myThid )
 
       _BARRIER
 
