@@ -74,7 +74,7 @@ C     ab0, ab1, ab2   :: Adams-Bashforth weights
       _RL N2loc3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
       _RL recipMaxSlope
-      _RL c_dum, fm_ui, fp_ui
+      _RL c_dum, fp_im, fm_ip
       _RL ab0, ab1, ab2, fCoriFac
 
 C     metric variables
@@ -182,8 +182,8 @@ C     For p-coordinates: convert r-units to z
        ENDDO
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
          IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
 
 C      Compute -N^2 rho_0 / g via averaging, on vertical interfaces
@@ -246,8 +246,8 @@ C-- 2nd k loop : compute the rest of the GEOMETRIC stuff
       DO k=Nr,2,-1
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
          IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
           N2loc = N2loc3D(i,j,k)
           SNloc = SNloc3D(i,j,k)
@@ -379,8 +379,8 @@ C     loop over k
       DO k=Nr,2,-1
 
 C      NOTE: Ignores boundary cells (convenient with the 5-point filter used)
-       DO j=1-OLy+1,sNy+OLy-1
-        DO i=1-OLx+1,sNx+OLx-1
+       DO j=2-OLy,sNy+OLy-1
+        DO i=2-OLx,sNx+OLx-1
          IF ( maskC(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
           hFac = MIN( halfRS, _hFacC(i,j,k-1,bi,bj) )
      &         + MIN( halfRS, _hFacC(i,j,k  ,bi,bj) )
@@ -423,7 +423,7 @@ C ----  form the energy fluxes
 C     1. form the depth-AVG velocity
       DO k= 2,Nr
        DO j=1-OLy,sNy+OLy
-        DO i=1-OLx+1,sNx+OLx
+        DO i=1-OLx,sNx+OLx
          U_depth_avg(i,j) = U_depth_avg(i,j)
      &                    + uVel(i,j,k,bi,bj) * drF(k)
      &                    * hFacW(i,j,k,bi,bj) * recip_depthW(i,j)
@@ -434,82 +434,107 @@ C     1. form the depth-AVG velocity
        ENDDO
       ENDDO
 
-C     2. form the advective + diffusive fluxes
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx+1,sNx+OLx
+C     2. form the advective tendency in each direction
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
+C-    X direction:
 C ---- second ordered centred difference
-c       ene_adv_x(i,j) = U_depth_avg(i,j) * 0.5 _d 0
-c    &       * (GEOM_EKE(i  ,j,bi,bj) + GEOM_EKE(i-1,j,bi,bj))
-c    &       * dyG(i,j,bi,bj)
+c       ene_adv_x(i,j) = -halfRL
+c    &    *( U_depth_avg(i,j) * dyG(i,j,bi,bj)
+c    &       *( GEOM_EKE( i ,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj) )
+c    &     + U_depth_avg(i+1,j) * dyG(i+1,j,bi,bj)
+c    &       *( GEOM_EKE(i+1,j,bi,bj) - GEOM_EKE( i ,j,bi,bj) )
+c    &     )
 C ---- 1st order upwinding
-        fp_ui = U_depth_avg(i,j) + ABS( U_depth_avg(i,j) )
-        fm_ui = U_depth_avg(i,j) - ABS( U_depth_avg(i,j) )
-        ene_adv_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
-     &                       +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
-     &                       * dyG(i,j,bi,bj)
+        fp_im = U_depth_avg( i ,j) + ABS( U_depth_avg( i ,j) )
+        fm_ip = U_depth_avg(i+1,j) - ABS( U_depth_avg(i+1,j) )
+        ene_adv_x(i,j) = -halfRL
+     &    *( fp_im * dyG(i,j,bi,bj)
+     &       *( GEOM_EKE( i ,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj) )
+     &     + fm_ip * dyG(i+1,j,bi,bj)
+     &       *( GEOM_EKE(i+1,j,bi,bj) - GEOM_EKE( i ,j,bi,bj) )
+     &     )
 C ---- 1st order upwinding wave stuff
-        c_dum = 0.5 * ( c_rosX(i-1,j) + c_rosX(i,j) )
-        fp_ui = c_dum + ABS( c_dum )
-        fm_ui = c_dum - ABS( c_dum )
-        ene_wav_x(i,j) = 0.5 * (fm_ui * GEOM_EKE(i  ,j,bi,bj)
-     &                       +  fp_ui * GEOM_EKE(i-1,j,bi,bj))
-     &                       * dyG(i,j,bi,bj)
-        ene_lap_x(i,j) = GEOM_diffKh_EKE * dyG(i,j,bi,bj)
-     &       * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj))
-     &       * recip_dxC(i,j,bi,bj)
+        c_dum = ( c_rosX(i-1,j) + c_rosX(i,j) )*halfRL
+        fp_im = ( c_dum + ABS( c_dum ) )*maskW( i ,j,kSurf,bi,bj)
+        c_dum = ( c_rosX(i,j) + c_rosX(i+1,j) )
+        fm_ip = ( c_dum - ABS( c_dum ) )*maskW(i+1,j,kSurf,bi,bj)
+        ene_wav_x(i,j) = -halfRL
+     &    *( fp_im * dyG(i,j,bi,bj)
+     &       *( GEOM_EKE( i ,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj) )
+     &     + fm_ip * dyG(i+1,j,bi,bj)
+     &       *( GEOM_EKE(i+1,j,bi,bj) - GEOM_EKE( i ,j,bi,bj) )
+     &     )
+C-    Y direction:
+C ---- second ordered centred difference
+c       ene_adv_y(i,j) = -halfRL
+c    &    *( V_depth_avg(i,j) * dxG(i,j,bi,bj)
+c    &       *( GEOM_EKE(i, j ,bi,bj) - GEOM_EKE(i,j-1,bi,bj) )
+c    &     + V_depth_avg(i,j+1) * dxG(i,j+1,bi,bj)
+c    &       *( GEOM_EKE(i,j+1,bi,bj) - GEOM_EKE(i, j ,bi,bj) )
+c    &     )
+C ---- 1st order upwinding
+        fp_im = V_depth_avg(i, j ) + ABS( V_depth_avg(i, j ) )
+        fm_ip = V_depth_avg(i,j+1) - ABS( V_depth_avg(i,j+1) )
+        ene_adv_y(i,j) = -halfRL
+     &    *( fp_im * dxG(i,j,bi,bj)
+     &       *( GEOM_EKE(i, j ,bi,bj) - GEOM_EKE(i,j-1,bi,bj) )
+     &     + fm_ip * dxG(i,j+1,bi,bj)
+     &       *( GEOM_EKE(i,j+1,bi,bj) - GEOM_EKE(i, j ,bi,bj) )
+     &     )
+C ---- 1st order upwinding wave stuff
+        c_dum = ( c_rosY(i-1,j) + c_rosY(i,j) )*halfRL
+        fp_im = ( c_dum + ABS( c_dum ) )*maskS(i, j ,kSurf,bi,bj)
+        c_dum = ( c_rosY(i,j) + c_rosY(i,j+1) )
+        fm_ip = ( c_dum - ABS( c_dum ) )*maskS(i,j+1,kSurf,bi,bj)
+        ene_wav_y(i,j) = -halfRL
+     &    *( fp_im * dxG(i,j,bi,bj)
+     &       *( GEOM_EKE(i, j ,bi,bj) - GEOM_EKE(i,j-1,bi,bj) )
+     &     + fm_ip * dxG(i,j+1,bi,bj)
+     &       *( GEOM_EKE(i,j+1,bi,bj) - GEOM_EKE(i, j ,bi,bj) )
+     &     )
+       ENDDO
+      ENDDO
+
+C     3. form the diffusive fluxes in each direction
+      DO j=1-OLy,sNy+OLy
+       DO i=2-OLx,sNx+OLx
+        ene_lap_x(i,j) = -GEOM_diffKh_EKE * dyG(i,j,bi,bj)
+     &       * ( GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i-1,j,bi,bj) )
+     &       * recip_dxC(i,j,bi,bj)*maskW(i,j,kSurf,bi,bj)
      &       * cosFacU(j,bi,bj)
        ENDDO
       ENDDO
-
-      DO j=1-OLy+1,sNy+OLy
+      DO j=2-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-C ---- second ordered centred difference
-c       ene_adv_y(i, j) = V_depth_avg(i,j) * 0.5 _d 0
-c    &       * (GEOM_EKE(i,j  ,bi,bj) + GEOM_EKE(i,j-1,bi,bj))
-c    &       * dxG(i,j,bi,bj)
-C ---- 1st order upwinding
-        fp_ui = V_depth_avg(i,j) + ABS( V_depth_avg(i,j) )
-        fm_ui = V_depth_avg(i,j) - ABS( V_depth_avg(i,j) )
-        ene_adv_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
-     &                       +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
-     &                       * dxG(i,j,bi,bj)
-C ---- 1st order upwinding wave stuff
-        c_dum = 0.5 * ( c_rosY(i,j-1) + c_rosY(i,j) )
-        fp_ui = c_dum + ABS( c_dum )
-        fm_ui = c_dum - ABS( c_dum )
-        ene_wav_y(i,j) = 0.5 * (fm_ui * GEOM_EKE(i,j  ,bi,bj)
-     &                       +  fp_ui * GEOM_EKE(i,j-1,bi,bj))
-     &                       * dxG(i,j,bi,bj)
-        ene_lap_y(i, j) = GEOM_diffKh_EKE * dxG(i,j,bi,bj)
-     &       * (GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i,j-1,bi,bj))
-     &       * recip_dyC(i,j,bi,bj)
+        ene_lap_y(i,j) = -GEOM_diffKh_EKE * dxG(i,j,bi,bj)
+     &       * ( GEOM_EKE(i,j,bi,bj) - GEOM_EKE(i,j-1,bi,bj) )
+     &       * recip_dyC(i,j,bi,bj)*maskS(i,j,kSurf,bi,bj)
 #ifdef ISOTROPIC_COS_SCALING
      &       *cosFacV(j,bi,bj)
 #endif
-
        ENDDO
       ENDDO
 
-C     3. form tendencies on cell and sum
-      DO j=1-OLy+1,sNy+OLy-1
-       DO i=1-OLx+1,sNx+OLx-1
+C     4. sum or form tendencies on cell
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
         trd_ene_dis(i,j) = - GEOM_lmbda * GEOM_EKE(i,j,bi,bj)
-     &                                        *maskInC(i,j,bi,bj)
-C     divide by grid cell area to complete FV discretization
-        trd_ene_adv(i,j) = (ene_adv_x(i+1,j) - ene_adv_x(i,j)
-     &                     +ene_adv_y(i,j+1) - ene_adv_y(i,j))
+     &                                          *maskInC(i,j,bi,bj)
+C     Add advective contribution and divide by grid cell area
+        trd_ene_adv(i,j) = ( ene_adv_x(i,j) + ene_adv_y(i,j) )
      &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-        trd_ene_wav(i,j) = (ene_wav_x(i+1,j) - ene_wav_x(i,j)
-     &                     +ene_wav_y(i,j+1) - ene_wav_y(i,j))
+        trd_ene_wav(i,j) = ( ene_wav_x(i,j) + ene_wav_y(i,j) )
      &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
-        trd_ene_lap(i,j) = (ene_lap_x(i+1,j) - ene_lap_x(i,j)
-     &                     +ene_lap_y(i,j+1) - ene_lap_y(i,j))
-     &                     * recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
+C     Form diffusive tendency from (minus) flux divergence
+        trd_ene_lap(i,j) = -( ene_lap_x(i+1,j) - ene_lap_x(i,j)
+     &                      + ene_lap_y(i,j+1) - ene_lap_y(i,j) )
+     &                      *recip_rA(i,j,bi,bj)*maskInC(i,j,bi,bj)
 C       form the RHS
         ene_rhs_now(i,j) = trd_ene_gen(i,j)
      &                   + trd_ene_dis(i,j)
-     &                   - trd_ene_adv(i,j)
-     &                   - trd_ene_wav(i,j)
+     &                   + trd_ene_adv(i,j)
+     &                   + trd_ene_wav(i,j)
      &                   + trd_ene_lap(i,j)
        ENDDO
       ENDDO
@@ -535,8 +560,8 @@ C     third: time stepping
        ab1 = - 4.0 _d 0 /  3.0 _d 0
        ab2 =   5.0 _d 0 / 12.0 _d 0
       ENDIF
-      DO j=1-OLy+1,sNy+OLy-1
-       DO i=1-OLx+1,sNx+OLx-1
+      DO j=2-OLy,sNy+OLy-1
+       DO i=2-OLx,sNx+OLx-1
         GEOM_EKE(i,j,bi,bj) = GEOM_EKE(i,j,bi,bj)
      &            + deltaTloc * (
      &            + ab0 * ene_rhs_now(i,j)
