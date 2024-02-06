@@ -53,22 +53,9 @@ C     msgBuf      - Informational/error message buffer
       LOGICAL exst
       CHARACTER*(128) tempfile
       INTEGER icount_transp
+      INTEGER k
 #endif
-      INTEGER bi, bj, i, j, k
       INTEGER nRetired
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO k = 1,Nr
-            DO j = 1-OLy,sNy+OLy
-              DO i = 1-OLx,sNx+OLx
-                eccoVol_0(i,j,k,bi,bj)=
-     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
 
       _BEGIN_MASTER(myThid)
 

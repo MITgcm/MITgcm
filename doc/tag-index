@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - add option ECCO_VARIABLE_AREAVOLGLOB to use the total time-varying volume
+    to weight contributions to m_boxmean cost functions
+
 checkpoint68v (2024/02/03)
 o model/src:
   - change param "metricTerms" to integer param "selectMetricTerms" and change
