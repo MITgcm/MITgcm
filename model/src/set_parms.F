@@ -51,6 +51,34 @@ C-    For off-line calculation, switch off Momentum and Active-tracers (=T,S):
       _BEGIN_MASTER(myThid)
       errCount = 0
 
+C--   Make metric term & Coriolis settings consistent with underlying grid.
+      IF ( usingCartesianGrid ) THEN
+        selectMetricTerms = 0
+        useNHMTerms   = .FALSE.
+      ENDIF
+      IF ( usingCylindricalGrid ) THEN
+        useNHMTerms   = .FALSE.
+        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( usingCurvilinearGrid ) THEN
+        selectMetricTerms = 0
+      ENDIF
+      IF ( selectCoriMap.EQ.-1 ) THEN
+        IF ( usingCartesianGrid.OR.usingCylindricalGrid ) THEN
+C       default is to use Beta-Plane Coriolis
+          selectCoriMap = 1
+        ELSE
+C       default for other grids is to use Spherical Coriolis
+          selectCoriMap = 2
+        ENDIF
+      ENDIF
+      IF ( .NOT.(nonHydrostatic.OR.quasiHydrostatic) )
+     &                          select3dCoriScheme = 0
+      IF ( (selectCoriMap.EQ.0 .OR.selectCoriMap.EQ.1)
+     &     .AND. fPrime.EQ.0. ) select3dCoriScheme = 0
+
 C--   On/Off flags for each terms of the momentum equation
       nonHydrostatic   = momStepping .AND. nonHydrostatic
       quasiHydrostatic = momStepping .AND. quasiHydrostatic
@@ -59,7 +87,7 @@ C--   On/Off flags for each terms of the momentum equation
       momForcing       = momStepping .AND. momForcing
       momTidalForcing  = momForcing  .AND. momTidalForcing
       useCoriolis      = momStepping .AND. useCoriolis
-      use3dCoriolis    = useCoriolis .AND. use3dCoriolis
+      IF ( .NOT.useCoriolis ) select3dCoriScheme = 0
       useCDscheme      = momStepping .AND. useCDscheme
       momPressureForcing= momStepping .AND. momPressureForcing
       implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
@@ -191,7 +219,7 @@ C--   Pressure term on/off flag.
        pfFacMom = 0. _d 0
       ENDIF
 C--   Metric terms on/off flag.
-      IF ( metricTerms ) THEN
+      IF ( selectMetricTerms.GE.1 ) THEN
        mTFacMom = 1. _d 0
       ELSE
        mTFacMom = 0. _d 0
@@ -225,6 +253,13 @@ C--   Dynamically Active Tracers : set flags
       ELSEIF ( eosType.EQ.'LINEAR' ) THEN
         IF ( tAlpha.EQ.0. ) tempIsActiveTr = .FALSE.
         IF ( sBeta .EQ.0. ) saltIsActiveTr = .FALSE.
+      ENDIF
+
+C--   Set default for latitude-band where relaxation to climatology applies
+C     note: done later (once domain size is known) if using CartesianGrid
+      IF ( latBandClimRelax .EQ. UNSET_RL) THEN
+        IF ( usingSphericalPolarGrid ) latBandClimRelax= 180. _d 0
+        IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
       ENDIF
 
       IF ( usingZCoords ) THEN
