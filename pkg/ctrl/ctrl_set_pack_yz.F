@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_pack_yz(
-     &     cunit, ivartype, fname, masktype, weighttype,
+     &     cunit, ivar, fname, masktype, weighttype,
      &     weightfld, lxxadxx, mythid)
 
 c     ==================================================================
@@ -38,7 +38,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer cunit
-      integer ivartype
+      integer ivar
       character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
       character*(  *) weighttype
@@ -135,17 +135,17 @@ c--   Only the master thread will do I/O.
          if ( lxxadxx ) then
             write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
             write(cfile2,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I2.2,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = nSx*nPx*sNy*nSy*nPy*4
@@ -175,7 +175,7 @@ C     MDSREADFIELD_YZ_GL does not know about useSingleCPUio, so the faster
 C     method that works for .not.useSingleCPUio cannot be used
        nrec_nl = 0
       else
-       nrec_nl = int(ncvarrecs(ivartype)/Nx)
+       nrec_nl = int(ncvarrecs(ivar)/Nx)
       endif
       do irec = 1, nrec_nl
 c     Need to solve for what iobcs would have been.
@@ -186,7 +186,7 @@ c     Need to solve for what iobcs would have been.
          do i=1,sNx
             iobcs= mod((irec-1)*sNx+i-1,nobcs)+1
 
-            write(cunit) ncvarindex(ivartype)
+            write(cunit) ncvarindex(ivar)
             write(cunit) 1
             write(cunit) 1
             do k = 1,Nr
@@ -255,14 +255,14 @@ c     -- end of i loop --
 c     -- end of irec loop --
       enddo
 
-      do irec = nrec_nl*nx+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*nx+1, ncvarrecs(ivar)
 c     Need to solve for what iobcs would have been.
          iobcs= mod(irec-1,nobcs)+1
 
          call MDSREADFIELD_YZ_GL( fname, ctrlprec, 'RL',
      &        Nr, globfldyz, irec, mythid)
 
-         write(cunit) ncvarindex(ivartype)
+         write(cunit) ncvarindex(ivar)
          write(cunit) 1
          write(cunit) 1
          do k = 1,Nr
