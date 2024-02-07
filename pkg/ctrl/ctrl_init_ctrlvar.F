@@ -44,6 +44,7 @@ C     == Global variables ===
 
 C     !INPUT PARAMETERS: ===============================================
 C     ivar   :: if > 0, index in ctrl-var list to store ctrl-var settings
+C               if == 0, skip storing of ctrl-var settings
 C     myThid ::  my Thread Id number
       CHARACTER*(MAX_LEN_FNAM) xx_fname
       INTEGER ivar
