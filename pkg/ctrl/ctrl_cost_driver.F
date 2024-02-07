@@ -57,7 +57,7 @@ c--   Evaluate the individual cost function contributions.
 
       do ivar = 1, maxcvars
 #ifdef ALLOW_GENTIM2D_CONTROL
-       if ( ncvartype(ivar) .eq. 'Tim2D' ) then
+       if ( ncvartype(ivar) .EQ. 'Tim2D' ) then
         iarr = ncvarindex(ivar)
 
         dodimensionalcost=.FALSE.
@@ -96,7 +96,7 @@ C --- Get appropriate mask for field
 #endif
 
 #ifdef ALLOW_GENARR2D_CONTROL
-       if ( ncvartype(ivar) .eq. 'Arr2D' ) then
+       if ( ncvartype(ivar) .EQ. 'Arr2D' ) then
         iarr = ncvarindex(ivar)
 
         dodimensionalcost=.FALSE.
@@ -117,14 +117,13 @@ C --- Get appropriate mask for field
      &     dodimensionalcost,
      &     num_genarr2d(1,1,iarr), objf_genarr2d(1,1,iarr),
      &     mask2D, myThid )
-
         endif
 
        endif
 #endif
 
 #ifdef ALLOW_GENARR3D_CONTROL
-       if ( ncvartype(ivar) .eq. 'Arr3D' ) then
+       if ( ncvartype(ivar) .EQ. 'Arr3D' ) then
         iarr = ncvarindex(ivar)
 
         dodimensionalcost=.FALSE.

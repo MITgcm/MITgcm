@@ -72,28 +72,28 @@ cgg   North boundary contribution to cost function.
       startrec = ncvarrecstart(iobcsn)
       endrec   = ncvarrecsend(iobcsn)
       call cost_obcsn ( myiter, mytime,
-     &                  startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
 #if ( defined ALLOW_OBCSS_CONTROL && defined ALLOW_OBCSS_COST_CONTRIBUTION )
 cgg   South boundary contribution to cost function.
       startrec = ncvarrecstart(iobcss)
       endrec   = ncvarrecsend(iobcss)
       call cost_obcss ( myiter, mytime,
-     &                  startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
 #if ( defined ALLOW_OBCSW_CONTROL && defined ALLOW_OBCSW_COST_CONTRIBUTION )
 cgg   West boundary contribution to cost function.
       startrec = ncvarrecstart(iobcsw)
       endrec   = ncvarrecsend(iobcsw)
       call cost_obcsw ( myiter, mytime,
-     &                  startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
 #if ( defined ALLOW_OBCSE_CONTROL && defined ALLOW_OBCSE_COST_CONTRIBUTION )
 cgg   East boundary contribution to cost function.
       startrec = ncvarrecstart(iobcse)
       endrec   = ncvarrecsend(iobcse)
       call cost_obcse ( myiter, mytime,
-     &                  startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
 
 #ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
