@@ -53,7 +53,7 @@ The `code_ad` directory provides files required to compile the adjoint
 version of this verification experiment.  This verification
 experiment uses the 'divided adjoint'.
 
-To compile the adjoint, one must enable the divded adjoint with the
+To compile the adjoint, one must enable the divided adjoint with the
 compile-time flag `USE_DIVA`, the location of which is specified in
 the file `build/genmake_local`.
 To wit,
@@ -164,6 +164,18 @@ To run:
   cd ..
 ```
 
+**Note:** the overly simple shell script "do_run.sh" just executes four times
+(as specified in file "run_ADM_DIVA", `add_DIVA_runs = 4`) `mitgcmuv_ad`, saving
+output in intermediate files "output_adm.txt.diva_0,1,2,3", plus a final time:
+```
+  mitgcmuv_ad > output_adm.txt
+```
+where output file `output_adm.txt` can be compared with reference output:
+
+```
+  results/output_adm.txt
+```
+
 ## Test sea-ice code
 Run the testscript _forward_ experiments:
 
@@ -186,6 +198,9 @@ Y Y Y Y> 4< 9 10  9  8 16 13 11  8  6  8  4  5  8  8  4  5 22  6  7  7 22  5  7 
 Y Y Y Y>11<16 16 16 16 16 16 16 16 16 13 12 14 16 16 13 14 22 16 16 16 22 16 16 16 pass  lab_sea.salt_plume
 ```
 
+**Note:** Some differences in accuracy occur across different platforms as seen
+here for secondary test "lab_sea.hb87".
+
 Run the testscript _adjoint_ experiments:
 
 ```
@@ -206,18 +221,4 @@ n n k u  s  G  G  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
 Y Y Y Y 16>16<16 16 14 16 16 16 16 16 16 16 16 16 14 14 16 16 16 pass  lab_sea  (e=0, w=0, lfd=1, dop=1, sm=1)
 Y Y Y Y 14>15< 6 16 16 16 13 16 13 13 11 13 13 12 13 11 11 12 12 pass  lab_sea.noseaice
 Y Y Y Y 16>13<16 16 16 14 16 16 13 13 16 16 16 16 14 14 16 14 16 pass  lab_sea.noseaicedyn
-```
-
-**Note:** Large differences in accuracy occur across different
-platforms.  For example, testscript comparisons between g77 (Linux)
-and f77 (SGI) generated output gives:
-
-```
-                T           S           U           V
-C D M    c        m  s        m  s        m  s        m  s
-n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
-
-Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
 ```
