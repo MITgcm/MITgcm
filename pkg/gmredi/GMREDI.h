@@ -336,22 +336,21 @@ C                      horizontal for Marshall et al. (2012) parameterization);
 C                      defined at cell interfaces (W-points)
 C     GEOM_EKE      :: parameterised total eddy energy in GEOMETRIC;
 C                      used to update GEOM_K3d; 2D field
-C     GEOM_gEKE_Nm* :: 2D eddy energy tendency for AB time-stepping
+C     GEOM_gEKE_Nm1 :: 2D eddy energy tendency for AB time-stepping
 C     GEOM_startAB  :: controls time-stepping routine of parameterised
-C                      eddy energy in gmredi_calc_geom.F (=0/1/2)
+C                      eddy energy in gmredi_calc_geom.F (=0/1)
 C     GEOM_taper    :: reduce GEOM_K3d based on some conditions (currently
 C                      depth); 2D field
 
       _RL GEOM_K3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL GEOM_EKE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL GEOM_gEKE_Nm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL GEOM_gEKE_Nm2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL GEOM_taper   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER GEOM_startAB
 
       COMMON /GM_GEOM/ GEOM_K3d,
      &                 GEOM_EKE,
-     &                 GEOM_gEKE_Nm1, GEOM_gEKE_Nm2,
+     &                 GEOM_gEKE_Nm1,
      &                 GEOM_taper
       COMMON /GM_GEOM_I/ GEOM_startAB
 #endif /* GM_GEOM_VARIABLE_K */

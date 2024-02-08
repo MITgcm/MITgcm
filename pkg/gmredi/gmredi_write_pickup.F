@@ -178,12 +178,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         fieldname = 'GEKE_Nm1'
         IF (n.LE.listDim) wrFldList(n) = fieldname
 
-        n = n + 1
-        nj = nj-1
-        CALL WRITE_REC_3D_RL( fn,fp,1,GEOM_gEKE_Nm2,nj,myIter,myThid )
-        fieldname = 'GEKE_Nm2'
-        IF (n.LE.listDim) wrFldList(n) = fieldname
-
 C     if GM_useGEOM
        ENDIF
 #endif /* GM_GEOM_VARIABLE_K */

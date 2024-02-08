@@ -60,7 +60,7 @@ C     ene_*           :: intermediate variables for computing trends
 C     depth*          :: various depth variables for computation purposes
 C     c1, c_ros[XYEN] :: long Rossby wave phase speeds for trd_ene_wav
 C     UV_depth_avg    :: depth-avg flow for                trd_ene_adv
-C     ab0, ab1, ab2   :: Adams-Bashforth weights
+C     ab0, ab1        :: Adams-Bashforth weights
 
       INTEGER i,j,k
       INTEGER kSurf
@@ -75,7 +75,7 @@ C     ab0, ab1, ab2   :: Adams-Bashforth weights
 
       _RL recipMaxSlope
       _RL c_dum, fp_im, fm_ip
-      _RL ab0, ab1, ab2, fCoriFac
+      _RL ab0, ab1, fCoriFac
 
 C     metric variables
       _RL recip_depthW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -546,19 +546,13 @@ C     in S/R GMREDI_DO_EXCH.
 
 C     third: time stepping
       IF ( GEOM_startAB .EQ. 0 ) THEN
-       ab0 = 1.0 _d 0
-       ab1 = 0.0 _d 0
-       ab2 = 0.0 _d 0
-       GEOM_startAB = 1
-      ELSEIF ( GEOM_startAB .EQ. 1 ) THEN
-       ab0 =   3.0 _d 0 / 2.0 _d 0
-       ab1 = - 1.0 _d 0 / 2.0 _d 0
-       ab2 =   0.0 _d 0
-       GEOM_startAB = 2
+       ab0 =  1.0 _d 0
+       ab1 =  0.0 _d 0
+C-    moved to gmredi_do_exch.F (outside bi,bj loop):
+c       GEOM_startAB = 1
       ELSE
-       ab0 =  23.0 _d 0 / 12.0 _d 0
-       ab1 = - 4.0 _d 0 /  3.0 _d 0
-       ab2 =   5.0 _d 0 / 12.0 _d 0
+       ab0 =  1.5 _d 0 + abEps
+       ab1 = -0.5 _d 0 - abEps
       ENDIF
       DO j=2-OLy,sNy+OLy-1
        DO i=2-OLx,sNx+OLx-1
@@ -566,7 +560,6 @@ C     third: time stepping
      &            + deltaTloc * (
      &            + ab0 * ene_rhs_now(i,j)
      &            + ab1 * GEOM_gEKE_Nm1(i,j,bi,bj)
-     &            + ab2 * GEOM_gEKE_Nm2(i,j,bi,bj)
      &                        )
        ENDDO
       ENDDO
@@ -577,7 +570,6 @@ C ----------------------------------------------
 C     update rhs fields for the next time step
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        GEOM_gEKE_Nm2(i,j,bi,bj) = GEOM_gEKE_Nm1(i,j,bi,bj)
         GEOM_gEKE_Nm1(i,j,bi,bj) = ene_rhs_now(i,j)
        ENDDO
       ENDDO

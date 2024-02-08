@@ -265,11 +265,6 @@ C        GEOMETRIC energy
      &                          nj, fp, 1, myIter, myThid )
          CALL EXCH_XY_RL( GEOM_gEKE_Nm1, myThid )
 
-         fieldname = 'GEKE_Nm2'
-         CALL READ_MFLDS_3D_RL( fieldname, GEOM_gEKE_Nm2,
-     &                          nj, fp, 1, myIter, myThid )
-         CALL EXCH_XY_RL( GEOM_gEKE_Nm2, myThid )
-
         ENDIF
 #endif /* GM_GEOM_VARIABLE_K */
 
@@ -312,11 +307,6 @@ C--    Check for missing fields:
            GEOM_startAB = 0
            WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
      &     'Will get only an approximated Restart (GEOM_startAB=0)'
-           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          ELSEIF ( missFldList(j).EQ.'GEKE_Nm2' .AND. nIter0.GT.1 ) THEN
-           GEOM_startAB = 1
-           WRITE(msgBuf,'(4A)') '** WARNING ** GMREDI_READ_PICKUP: ',
-     &     'Will get only an approximated Restart (GEOM_startAB=1)'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 #endif /* GM_GEOM_VARIABLE_K */
           ELSE
