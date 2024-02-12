@@ -45,8 +45,8 @@ non-divergent bolus velocity. The method defines two streamfunctions
 expressed in terms of the isoneutral slopes subject to the boundary
 condition of zero value on upper and lower boundaries. The horizontal
 bolus velocities are then the vertical derivative of these functions.
-Here in lies a problem highlighted by Griffies et al. (1998) :cite:`gretal:98`: the
-bolus velocities involve multiple derivatives on the potential density field,
+Herein lies a problem highlighted by Griffies et al. (1998) :cite:`gretal:98`: the
+bolus velocities involve multiple derivatives of the potential density field,
 which can consequently give rise to noise. Griffies et al. point out that the GM
 bolus fluxes can be identically written as a skew flux which involves
 fewer differential operators. Further, combining the skew flux
@@ -64,7 +64,7 @@ in the tendency (rhs) of such a tracer (here :math:`\tau`) of the form:
 
 .. math:: \nabla \cdot ( \kappa_\rho {\bf K}_{\rm Redi} \nabla \tau )
 
-where :math:`\kappa_\rho` is the along isopycnal diffusivity and
+where :math:`\kappa_\rho` is the along isopycnal diffusivity (parameter :varlink:`GM_isopycK`) and
 :math:`{\bf K}_{\rm Redi}` is a rank 2 tensor that projects the gradient of
 :math:`\tau` onto the isopycnal surface. The unapproximated projection
 tensor is:
@@ -134,7 +134,8 @@ streamfunction is specified in terms of the isoneutral slopes
    \end{aligned}
 
 with boundary conditions :math:`F_x^\star=F_y^\star=0` on upper and
-lower boundaries. :math:`\kappa_{\rm GM}` is colloquially called the isopycnal "thickness diffusivity"
+lower boundaries. :math:`\kappa_{\rm GM}` (parameter :varlink:`GM_background_K`) is
+colloquially called the isopycnal "thickness diffusivity"
 or the "GM diffusivity". The bolus transport in the GM
 parameterization is thus given by:
 
@@ -189,7 +190,7 @@ Griffies Skew Flux
 Griffies (1998) :cite:`gr:98` notes that the discretization of bolus velocities involves multiple
 layers of differencing and interpolation that potentially lead to noisy
 fields and computational modes. He pointed out that the bolus flux can
-be re-written in terms of a non-divergent flux and a skew-flux:
+be re-written in terms of a non-divergent flux and a skew flux:
 
 .. math::
 
@@ -258,6 +259,16 @@ If the Redi and GM diffusivities are equal, :math:`\kappa_{\rm GM} = \kappa_{\rh
 
 which only differs from the variable Laplacian diffusion tensor by the two
 non-zero elements in the :math:`z`-row.
+
+For historical reasons, the skew flux form is the default in MITgcm (i.e., :varlink:`GM_AdvForm` ``=.FALSE.``).
+However, we recommend use of the advective form described :ref:`above <GM_bolus_desc>`, for two reasons.
+First, the numerical implementation of the skew flux form does not follow the recommended "density triad"
+approach advocated in Griffies et. al (1998) :cite:`gretal:98` and may include numerical artifacts. Secondly,
+for diagnostic purposes, it is useful to compute the bolus velocity, which is straightforward  (and exact)
+using the advective form (e.g. see :ref:`sec_eg_reentrant_channel`) but more difficult and imprecise, due to discretization issues,
+in the skew flux form. In practice, the numerical advantage of the
+skew flux form is fairly limited, as the main factors
+limiting overall MITgcm throughput lie in other routines, numerical solvers, and other computational aspects.
 
 .. admonition:: Subroutine
   :class: note
@@ -371,6 +382,7 @@ the formula for :math:`\kappa_{\rm GM}` gives:
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |{\bf S}| N }^z
 
+
 .. _sub_gmredi_tapering_stability:
 
 Tapering and stability
@@ -379,47 +391,51 @@ Tapering and stability
 Experience with the GFDL model showed that the GM scheme has to be
 matched to the convective parameterization. This was originally
 expressed in connection with the introduction of the KPP boundary layer
-scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent experience with the MIT model has
-found, is necessary for any convective parameterization.
-
-Slope clipping
-++++++++++++++
-
-Deep convection sites and the mixed layer are indicated by homogenized,
+scheme (Large et al. 1994 :cite:`lar-eta:94`) but in fact, as subsequent
+experience with the MIT model has
+found, is necessary for any convective parameterization. Deep convection
+sites and the mixed layer are indicated by homogenized,
 unstable or nearly unstable stratification. The slopes in such regions
 can be either infinite, very large with a sign reversal or simply very
 large. From a numerical point of view, large slopes lead to large
 variations in the tensor elements (implying large bolus flow) and can be
-numerically unstable. This was first recognized by Cox (1987) :cite:`cox87` who implemented
+numerically unstable. Note, for numerical reasons :math:`S_x` and :math:`S_y`
+can have a maximum value of :varlink:`GM_bigslope` while :math:`|{\bf S}|^2`
+is capped at :varlink:`GM_slopeSqCutoff`, even if no tapering (or clipping)
+scheme is chosen (not recommended).
+
+Slope clipping
+++++++++++++++
+
+The aforementioned problem was first recognized by Cox (1987) :cite:`cox87` who implemented
 “slope clipping” in the isopycnal mixing tensor. Here, the slope
 magnitude is simply restricted by an upper limit:
 
 .. math::
 
    \begin{aligned}
-   |\nabla_h \sigma| & = \sqrt{ \sigma_x^2 + \sigma_y^2 }\\
-   S_{\rm lim} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }, 
-   \quad \mbox{where $S_{\max}>0$ is a parameter} \\
-   \sigma_z^\star & = \min( \sigma_z, S_{\rm lim} ) \\
+   \sigma_{z_{\rm lim}} & = - \frac{|\nabla_h \sigma|}{ S_{\max} }\\
+   \sigma_z^\star & = \min( \sigma_z, \sigma_{z_{\rm lim}} ) \\
    {[s_x, s_y]} & = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z^\star}
    \end{aligned}
 
+where  :math:`\sigma_x = \partial_x \sigma`, :math:`|\nabla_h \sigma| = \sqrt{ \sigma_x^2 + \sigma_y^2 }`,
+and :math:`S_{\max} (>0)` is parameter :varlink:`GM_maxSlope` in ``data.gmredi``.
 Notice that this algorithm assumes stable stratification through the
 “min” function. In the case where the fluid is well stratified
-(:math:`\sigma_z < S_{\rm lim}`) then the slopes evaluate to:
+(:math:`\sigma_z < \sigma_{z_{\rm lim}}`) then the slopes evaluate to:
 
 .. math:: {[s_x, s_y]} = - \frac{ [\sigma_x, \sigma_y] }{\sigma_z}
 
-while in the limited regions (:math:`\sigma_z > S_{\rm lim}`) the slopes
+while in the limited regions (:math:`\sigma_z > \sigma_{z_{\rm lim}}`) the slopes
 become:
 
 .. math:: {[s_x, s_y]} = \frac{ [\sigma_x, \sigma_y] }{|\nabla_h \sigma| / S_{\max}}
 
-so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} =
-S_{\max}`.
+so that the slope magnitude is limited :math:`\sqrt{s_x^2 + s_y^2} = S_{\max}`.
 
 The slope clipping scheme is activated in the model by setting
-:varlink:`GM_taper_scheme` ``= ’clipping’`` in ``data.gmredi``.
+:varlink:`GM_taper_scheme` ``= ’clipping’``.
 
 Even using slope clipping, it is normally the case that the vertical
 diffusion term (with coefficient :math:`\kappa_\rho{\bf K}_{33} =
@@ -435,19 +451,6 @@ Limiting the slopes also breaks the adiabatic nature of the GM/Redi
 parameterization, re-introducing diabatic fluxes in regions where the
 limiting is in effect.
 
-.. admonition:: Subroutine
-  :class: note
-
-  S/R GMREDI_SLOPE_LIMIT (:filelink:`pkg/gmredi/gmredi_slope_limit.F`)
-
-  :math:`\sigma_x, s_x`: **SlopeX** (argument)
-
-  :math:`\sigma_y, s_y`: **SlopeY** (argument)
-
-  :math:`\sigma_z`: **dSigmadRReal** (argument)
-
-  :math:`z_\sigma^{*}`: **dRdSigmaLtd** (argument)
-
 Tapering: Gerdes, Koberle and Willebrand, 1991 (GKW91)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -459,7 +462,8 @@ back to zero in low-stratification regions; the adjustment of slopes is
 replaced by a tapering of the entire GM/Redi tensor. This means the
 direction of fluxes is unaffected as the amplitude is scaled.
 
-The scheme inserts a tapering function, :math:`f_1(S)`, in front of the
+The tapering scheme used in Gerdes et al. (1991) :cite:`gkw:91` (GKW91)
+inserts a tapering function, :math:`f_1(S)`, in front of the
 GM/Redi tensor:
 
 .. math:: f_1(S) = \min \left[ 1, \left( \frac{S_{\max}}{|{\bf S}|}\right)^2 \right]
@@ -490,18 +494,31 @@ The GKW91 tapering scheme is activated in the model by setting
 
     Effective slope as a function of 'true' slope using Cox slope clipping, GKW91 limiting and DM95 limiting.
 
+Tapering: Linear
+++++++++++++++++
+
+The linear tapering scheme is similar to GKW91, except that the tapering function is chosen as:
+
+.. math:: f_1(S) = \min \left[ 1,  \frac{S_{\max}}{|{\bf S}|} \right]
+
+which will result in somewhat less tapering for large :math:`|{\bf S}|` than GKW91.
+The linear tapering scheme is activated in the model by setting
+:varlink:`GM_taper_scheme` ``= ’linear’`` in ``data.gmredi``.
+
+
 Tapering: Danabasoglu and McWilliams, 1995 (DM95)
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
 The tapering scheme used by Danabasoglu and McWilliams (1995) :cite:`danabasoglu:95` (DM95)
-followed a similar procedure but used a different tapering function, :math:`f_1(S)`:
+follows a similar procedure but used a different tapering function, :math:`f_1(S)`:
 
 .. math:: f_1(S) = \frac{1}{2} \left[ 1+\tanh \left( \frac{S_c - |{\bf S}|}{S_d} \right) \right]
 
-where :math:`S_c = 0.004` is a cut-off slope and :math:`S_d=0.001` is a
-scale over which the slopes are smoothly tapered. Functionally, the
+where :math:`S_c = 0.004` is a cutoff slope (in lieu of parameter :varlink:`GM_maxSlope`)
+and :math:`S_d=0.001` is a scale over which the slopes are smoothly tapered.
+Functionally, this
 operates in the same way as the GKW91 scheme but has a substantially
-lower cut-off, turning off the GM/Redi parameterization for weaker
+lower cutoff, turning off the GM/Redi parameterization for weaker
 slopes.
 
 The DM95 tapering scheme is activated in the model by setting
@@ -519,13 +536,63 @@ so that the GM/Redi subgrid-scale fluxes are reduced near the surface:
 .. math:: f_2(z) = \frac{1}{2} \left[ 1 + \sin \left(\pi \frac{z}{D} - \frac{\pi}{2} \right) \right]
 
 where :math:`D = (c / f) |{\bf S}|` is a depth scale, with :math:`f` the
-Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed, so that :math:`c/f` is the Rossby radius).
+Coriolis parameter and :math:`c=2` m/s (corresponding to the first baroclinic wave speed,
+so that :math:`c/f` is the Rossby radius, with minimum of 15 km and maximum of 100 km).
 This tapering that varies with depth
 was introduced to fix some spurious interaction with the mixed-layer KPP
 parameterization.
 
 The LDD97 tapering scheme is activated in the model by setting
 :varlink:`GM_taper_scheme` ``= ’ldd97’`` in ``data.gmredi``.
+
+Tapering: Ferrari and McWilliams, 2008 (FM07)
++++++++++++++++++++++++++++++++++++++++++++++
+
+Boundary-Value Problem (BVP) bolus transport solution
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Visbeck et al. 1997 GM diffusivity :math:`\kappa_{GM}(x,y)`
+-----------------------------------------------------------
+
+Visbeck et al. (1997) :cite:`visbeck:97` suggest making the eddy coefficient,
+:math:`\kappa_{\rm GM}`, a function of
+the Eady growth rate, :math:`|f|/\sqrt{\rm Ri}`. The formula involves a
+non-dimensional constant, :math:`\alpha` (parameter :varlink:`GM_Visbeck_alpha`),
+and a length-scale :math:`L` (parameter :varlink:`GM_Visbeck_length`):
+
+.. math:: \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{|f|}{\sqrt{\rm Ri}} }^z
+
+where the Eady growth rate has been depth-averaged (indicated by the
+over-line) from the surface to parameter :varlink:`GM_Visbeck_depth`. A local Richardson number is defined
+:math:`{\rm Ri} = N^2 / (\partial_z u)^2` which, when combined with thermal wind gives:
+
+.. math::
+
+   \frac{1}{\rm Ri} = \frac{(\partial u/\partial z)^2}{N^2} =
+   \frac{ \left ( \dfrac{g}{f \rho_0} | \nabla \sigma | \right )^2 }{N^2} =
+   \frac{ M^4 }{ |f|^2 N^2 }
+
+where :math:`M^2 = g | \nabla \sigma| / \rho_0`. Substituting into
+the formula for :math:`\kappa_{\rm GM}` gives:
+
+.. math::
+
+   \kappa_{\rm GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
+   \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
+   \alpha L^2 \overline{ |{\bf S}| N }^z
+
+A minimum and maximum value for :math:`\kappa_{\rm GM}` can be set using
+:varlink:`GM_Visbeck_minVal_K` and :varlink:`GM_Visbeck_maxVal_K`, respectively.
+Note that using the Visbeck et al. parameterization,  :math:`\kappa_{\rm GM} = \kappa_{\rho}`.
+At present, it is not possible to combine the Visbeck et al. :math:`\kappa_{GM}(x,y)` with a varying vertical profile,
+i.e., using specified files :varlink:`GM_iso1dFile` or :varlink:`GM_bol1dFile`.
+**NOTE**: the computed Visbeck :math:`\kappa_{\rm GM}` is *added* to the background value
+set by parameter :varlink:`GM_background_K`, so for typical usage of Visbeck et al. (where :math:`\kappa_{\rm GM}`
+is fully determined by the Visbeck scheme) the user will want to make sure 
+:varlink:`GM_background_K` is set to 0 (its default value) in ``data.gmredi``.
+
+Other parameterizations: SubMeso
+--------------------------------
 
 .. _ssub_phys_pkg_gmredi_config:
 
@@ -535,7 +602,7 @@ GMREDI configuration and compiling
 Compile-time options
 --------------------
 
-As with all MITgcm packages, GMREDI can be turned on or off at compile time
+:filelink:`gmredi <pkg/gmredi>` can be turned on or off at compile time
 (see :numref:`building_code`)
 
 - using the ``packages.conf`` file by adding ``gmredi`` to it
@@ -565,6 +632,8 @@ options see :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
    :varlink:`GM_BOLUS_BVP`, #define, allows use of Boundary-Value-Problem method to evaluate bolus transport
    :varlink:`ALLOW_GM_LEITH_QG`, #undef, allow QG Leith variable viscosity to be added to GMRedi coefficient
    :varlink:`GM_VISBECK_VARIABLE_K`, #undef, allows Visbeck et al. formulation to compute :math:`\kappa_{\rm GM}`
+   :varlink:`GM_READ_K3D_REDI`, #undef, allows read-in file of background 3D Redi diffusivity coefficients
+   :varlink:`GM_READ_K3D_GM`, #undef, allows read-in file of background 3D GM diffusivity coefficients
 
 .. _ssub_phys_pkg_gmredi_runtime:
 
@@ -606,26 +675,29 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_maxSlope`             |     1.0E-02                  | maximum slope (tapering/clipping)                                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s)                        |
+  | :varlink:`GM_Kmin_horiz`           |     0.0                      | minimum horizontal diffusivity (m\ :sup:`2`\ /s), i.e. minimum          |
+  |                                    |                              | :math:`\kappa_\rho {\bf K}_{11}` and :math:`\kappa_\rho {\bf K}_{22}`   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_Small_Number`         |     1.0E-20                  | :math:`\epsilon` used in computing the slope                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_slopeSqCutoff`        |     1.0E+48                  | :math:`|{\bf S}|^2` cut-off value for zero taper function               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('orig', 'clipping', 'fm07', 'stableGmAdjTap',      |
-  |                                    |                              | 'linear', 'ac02', 'gkw91', 'dm95', 'ldd97')                             |
+  | :varlink:`GM_taper_scheme`         |     ' '                      | taper scheme option ('clipping', 'fm07', 'stableGmAdjTap',              |
+  |                                    |                              | 'linear', 'gkw91', 'dm95', 'ldd97')                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m)                                  |
+  | :varlink:`GM_maxTransLay`          |     500.0                    | maximum transition layer thickness (m) for FM07                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum trans. layer thick. as a factor of local mixed-layer depth      |
+  | :varlink:`GM_facTrL2ML`            |     5.0                      | maximum transition layer thickness for FM07 as factor of                |
+  |                                    |                              | local mixed-layer depth                                                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum trans. layer thick. as a factor of local dr                     |
+  | :varlink:`GM_facTrL2dz`            |     1.0                      | minimum transition layer thickness for FM07 as a factor of              |
+  |                                    |                              | local :math:`\Delta r_f`                                                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for 'dm95' and 'ldd97 ' tapering function         |
+  | :varlink:`GM_Scrit`                |     0.004                    | :math:`S_c` parameter for DM95 and LDD97 tapering function              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for 'dm95' and 'ldd97' tapering function          |
+  | :varlink:`GM_Sd`                   |     0.001                    | :math:`S_d` parameter for DM95 and LDD97 tapering function              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_UseBVP`               |     FALSE                    | use Boundary-Value-Problem method for bolus transport                   |
+  | :varlink:`GM_UseBVP`               |     FALSE                    | use BVP method for bolus transport                                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_BVP_ModeNumber`       |     1                        | vertical mode number used for speed :math:`c` in BVP transport          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -664,9 +736,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_bol1dFile`            |     ' '                      | input file for 1D vert. scaling of thickness diffusivity                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_background_K3dFile`   |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
+  | :varlink:`GM_K3dGMFile`            |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_background_K`            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`GM_isopycK3dFile`        |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
+  | :varlink:`GM_K3dRediFile`          |     ' '                      | input file for 3D (:math:`x,y,r`) :varlink:`GM_isopycK`                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`GM_MNC`                  |     :varlink:`useMNC`        | write GMREDI snapshot output using :filelink:`/pkg/mnc`                 |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
