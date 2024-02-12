@@ -55,7 +55,7 @@ CADJ &     key = ikey_dynamics,kind = isbyte
 #else /* NONLIN_FRSURF */
 
 CADJ STORE etaH  = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE salt  = comlev1, key = ikey_dynamics,kind = isbyte
+CADJ STORE salt  = comlev1, key = ikey_dynamics, kind = isbyte
 # if ( defined ALLOW_ECCO || defined ALLOW_SEAICE \
     || defined ALLOW_DEPTH_CONTROL )
 CADJ STORE theta = comlev1, key = ikey_dynamics,kind = isbyte
