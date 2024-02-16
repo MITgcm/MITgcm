@@ -25,7 +25,7 @@
   GEOM_alpha         = 0.08,
   GEOM_minval_K      = 50.,
   GEOM_maxval_K      = 2.e+4,
-  GEOM_ini_EKE       = 1.e-2,
+  GEOM_ini_EKE       = 1.e+1,
   GEOM_diffKh_EKE    = 500.,
   GEOM_vert_struc    = .TRUE.,
  &
