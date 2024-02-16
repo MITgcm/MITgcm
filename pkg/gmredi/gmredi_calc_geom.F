@@ -421,7 +421,7 @@ C ----------------------------------------------
 C ----  form the energy fluxes
 
 C     1. form the depth-AVG velocity
-      DO k= 2,Nr
+      DO k= 1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          U_depth_avg(i,j) = U_depth_avg(i,j)
