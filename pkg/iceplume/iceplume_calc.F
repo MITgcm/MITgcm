@@ -933,7 +933,7 @@ c                salt_AddMass3Dplume(I,J,K,bi,bj) = sProfPlume(k)
                 tmpT =
      &           SW_PTMP(sProfPlume(k),tProfPlume(k),prProf(k),0. _d 0)
                 HeatFlux3Dpl(i,j,k,bi,bj)=
-     &           tmp*HeatCapacity_Cp*AddMass3Dplume(i,j,k,bi,bj)
+     &           tmpT*HeatCapacity_Cp*AddMass3Dplume(i,j,k,bi,bj)
                 SaltFlux3Dpl(i,j,k,bi,bj)=
      &           sProfPlume(k)*AddMass3Dplume(i,j,k,bi,bj)
 
