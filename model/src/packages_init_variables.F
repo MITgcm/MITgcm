@@ -6,6 +6,14 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_ECCO
+# include "ECCO_OPTIONS.h"
+#endif
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_OPTIONS.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 CBOP
 C     !ROUTINE: PACKAGES_INIT_VARIABLES
@@ -119,6 +127,32 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "CTRL.h"
+#  include "CTRL_GENARR.h"
+#  include "CTRL_DUMMY.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+#  include "PTRACERS_FIELDS.h"
+# endif
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
+# ifdef ALLOW_STREAMICE
+#  include "STREAMICE.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_SIZE.h"
+#  include "SEAICE.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid  :: my Thread Id number
@@ -533,6 +567,12 @@ C--   Initialise pkg/ecco (and related pkgs components)
 #  if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
 CADJ STORE uvel = tapelev_init, key = 1
 CADJ STORE vvel = tapelev_init, key = 1
+#  endif
+#  ifdef ALLOW_PSBAR_STERIC
+C     In some set-ups (e.g. lab_sea), this is necessary
+CADJ STORE etaN  = tapelev_init, key = 1
+CADJ STORE theta = tapelev_init, key = 1
+CADJ STORE salt  = tapelev_init, key = 1
 #  endif
 # endif
       IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )

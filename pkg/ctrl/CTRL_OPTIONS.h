@@ -28,6 +28,7 @@ C-- Package-specific Options & Macros go here
 
 C o I/O and pack settings
 #undef CTRL_SET_PREC_32
+C   This option is only relevant (for pack/unpack) with OBCS_CONTROL:
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 #undef EXCLUDE_CTRL_PACK
 #undef ALLOW_PACKUNPACK_METHOD2
@@ -53,8 +54,6 @@ C     involves many new dependencies that we would like to avoid in general.
 #ifdef ALLOW_DEPTH_CONTROL
 C   Only relevant within DEPTH_CONTROL code:
 # define USE_SMOOTH_MIN
-# undef ALLOW_HFACC_CONTROL
-# undef ALLOW_HFACC3D_CONTROL
 #endif /* ALLOW_DEPTH_CONTROL */
 
 C       >>> Generic Control.

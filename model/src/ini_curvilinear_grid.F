@@ -49,7 +49,7 @@ C     == Local variables ==
       INTEGER fp
       _RL tmpFac, tmpFac2
 #ifdef ALLOW_MNC
-      CHARACTER*(80) mncFn
+      CHARACTER*(MAX_LEN_FNAM) mncFn
 #endif
 #ifndef OLD_GRID_IO
       INTEGER iG, jG, iL, iLen

@@ -62,10 +62,10 @@ diagnostics, objective function, ...) under consideration:
 .. math::
    \begin{aligned}
    {\cal M} \, : & \, U \,\, \longrightarrow \, V \\
-   ~      & \, \vec{u} \,\, \longmapsto \, \vec{v} \, = \, 
+   ~      & \, \vec{u} \,\, \longmapsto \, \vec{v} \, = \,
    {\cal M}(\vec{u})\end{aligned}
    :label: fulloperator
- 
+
 The vectors :math:`\vec{u} \in U` and :math:`\vec{v} \in V` may be
 represented with respect to some given basis vectors
 :math:`{\rm span} (U) = \{ {\vec{e}_i} \}_{i = 1, \ldots , m}` and
@@ -99,8 +99,8 @@ components
 reads
 
 .. math::
-   \delta v_{j} \, = \, \sum_{i} 
-   \left. \frac{\partial {\cal M}_{j}}{\partial u_{i}} \right|_{u^{(0)}} \, 
+   \delta v_{j} \, = \, \sum_{i}
+   \left. \frac{\partial {\cal M}_{j}}{\partial u_{i}} \right|_{u^{(0)}} \,
    \delta u_{i}
    :label: jacobi_matrix
 
@@ -124,10 +124,10 @@ over a time interval, or a measure of some model-to-data misfit)
 .. math::
    \begin{aligned}
    \begin{array}{cccccc}
-   {\cal J}  \, : &  U & 
-   \longrightarrow & V &   
+   {\cal J}  \, : &  U &
+   \longrightarrow & V &
    \longrightarrow & \mathbb{R} \\
-   ~       &  \vec{u} & \longmapsto     & \vec{v}={\cal M}(\vec{u}) & 
+   ~       &  \vec{u} & \longmapsto     & \vec{v}={\cal M}(\vec{u}) &
    \longmapsto     & {\cal J}(\vec{u}) = {\cal J}({\cal M}(\vec{u}))
    \end{array}\end{aligned}
    :label: compo
@@ -144,11 +144,11 @@ can be expressed in both bases of :math:`\vec{u}` and
 .. math::
    \begin{aligned}
    {\cal J} & = \,
-   {\cal J} |_{\vec{u}^{(0)}} \, + \, 
-   \left\langle \, \nabla _{u}{\cal J}^T |_{\vec{u}^{(0)}} \, , \, \delta \vec{u} \, \right\rangle 
+   {\cal J} |_{\vec{u}^{(0)}} \, + \,
+   \left\langle \, \nabla _{u}{\cal J}^T |_{\vec{u}^{(0)}} \, , \, \delta \vec{u} \, \right\rangle
    \, + \, O(\delta \vec{u}^2) \\
    ~ & = \,
-   {\cal J} |_{\vec{v}^{(0)}} \, + \, 
+   {\cal J} |_{\vec{v}^{(0)}} \, + \,
    \left\langle \, \nabla _{v}{\cal J}^T |_{\vec{v}^{(0)}} \, , \, \delta \vec{v} \, \right\rangle
    \, + \, O(\delta \vec{v}^2)
    \end{aligned}
@@ -179,8 +179,8 @@ and from :eq:`tangent_linear`, :eq:`deljidentity`, we note that
    \left\langle \, \nabla _{v}{\cal J}^T \, , \, \delta \vec{v} \, \right\rangle
    \, = \,
    \left\langle \, \nabla _{v}{\cal J}^T \, , \, M \, \delta \vec{u} \, \right\rangle
-   \, = \, 
-   \left\langle \, M^T \, \nabla _{v}{\cal J}^T \, , \, 
+   \, = \,
+   \left\langle \, M^T \, \nabla _{v}{\cal J}^T \, , \,
    \delta \vec{u} \, \right\rangle
    :label: inner
 
@@ -190,7 +190,7 @@ adjoint :math:`M^{\ast }` of the tangent linear model :math:`M`
 
 .. math::
    \begin{aligned}
-   \nabla _{u}{\cal J}^T |_{\vec{u}} & 
+   \nabla _{u}{\cal J}^T |_{\vec{u}} &
    = \, M^T |_{\vec{u}} \cdot \nabla _{v}{\cal J}^T |_{\vec{v}}  \\
    ~ & = \, M^T |_{\vec{u}} \cdot \delta \vec{v}^{\ast} \\
    ~ & = \, \delta \vec{u}^{\ast}
@@ -219,8 +219,8 @@ final state :math:`\vec{v}` only (this restriction is for clarity
 reasons only). :math:`{\cal J}(u)` may be decomposed according to:
 
 .. math::
-   {\cal J}({\cal M}(\vec{u})) \, = \, 
-   {\cal J} ( {\cal M}_{\Lambda} (  {\cal M}_{\Lambda-1} ( 
+   {\cal J}({\cal M}(\vec{u})) \, = \,
+   {\cal J} ( {\cal M}_{\Lambda} (  {\cal M}_{\Lambda-1} (
    ...... ( {\cal M}_{\lambda} (......
    ( {\cal M}_{1} ( {\cal M}_{0}(\vec{u}) )))))
    :label: compos
@@ -249,10 +249,10 @@ whereas in reverse mode we have
    \begin{aligned}
    M^T ( \nabla_v {\cal J}^T) & = \,
    M_{0}^T \cdot M_{1}^T
-   \cdot ...... \cdot M_{\lambda}^T \cdot ...... \cdot 
+   \cdot ...... \cdot M_{\lambda}^T \cdot ...... \cdot
    M_{\Lambda}^T \cdot \nabla_v {\cal J}^T \\
    ~ & = \, M_{0}^T \cdot M_{1}^T
-   \cdot ...... \cdot 
+   \cdot ...... \cdot
    \nabla_{v^{(\lambda)}} {\cal J}^T \\
    ~ & = \, \nabla_u {\cal J}^T
    \end{aligned}}
@@ -274,7 +274,7 @@ each intermediate step :math:`\lambda`, namely
    \begin{aligned}
    \nabla_{v^{(\lambda)}} {\cal J}^T |_{\vec{v}^{(\lambda)}}
    & = \,
-   M_{\lambda}^T |_{\vec{v}^{(\lambda)}} \cdot ...... \cdot 
+   M_{\lambda}^T |_{\vec{v}^{(\lambda)}} \cdot ...... \cdot
    M_{\Lambda}^T |_{\vec{v}^{(\lambda)}} \cdot \delta \vec{v}^{\ast} \\
    ~ & = \, \delta \vec{v}^{(\lambda) \, \ast}
    \end{aligned}}
@@ -290,15 +290,15 @@ In components, :eq:`adjoint` reads as follows. Let
    \delta \vec{u} & = &
    \left( \delta u_1,\ldots, \delta u_m \right)^T , & \qquad &
    \delta \vec{u}^{\ast} \,\, = \,\, \nabla_u {\cal J}^T & = &
-   \left( 
-   \frac{\partial {\cal J}}{\partial u_1},\ldots, 
+   \left(
+   \frac{\partial {\cal J}}{\partial u_1},\ldots,
    \frac{\partial {\cal J}}{\partial u_m}
    \right)^T \\
    \delta \vec{v} & = &
    \left( \delta v_1,\ldots, \delta u_n \right)^T , & \qquad &
    \delta \vec{v}^{\ast} \,\, = \,\, \nabla_v {\cal J}^T & = &
-   \left( 
-   \frac{\partial {\cal J}}{\partial v_1},\ldots, 
+   \left(
+   \frac{\partial {\cal J}}{\partial v_1},\ldots,
    \frac{\partial {\cal J}}{\partial v_n}
    \right)^T \\
    \end{array}
@@ -321,17 +321,17 @@ is the Jacobi matrix of :math:`{\cal M}` (an :math:`n \times m`
 matrix) such that :math:`\delta \vec{v} = M \cdot \delta \vec{u}`, or
 
 .. math::
-   \delta v_{j} 
+   \delta v_{j}
    \, = \, \sum_{i=1}^m M_{ji} \, \delta u_{i}
-   \, = \, \sum_{i=1}^m \, \frac{\partial {\cal M}_{j}}{\partial u_{i}} 
+   \, = \, \sum_{i=1}^m \, \frac{\partial {\cal M}_{j}}{\partial u_{i}}
    \delta u_{i}
 
 Then :eq:`adjoint` takes the form
 
 .. math::
-   \delta u_{i}^{\ast} 
+   \delta u_{i}^{\ast}
    \, = \, \sum_{j=1}^n M_{ji} \, \delta v_{j}^{\ast}
-   \, = \, \sum_{j=1}^n \, \frac{\partial {\cal M}_{j}}{\partial u_{i}} 
+   \, = \, \sum_{j=1}^n \, \frac{\partial {\cal M}_{j}}{\partial u_{i}}
    \delta v_{j}^{\ast}
 
 or
@@ -347,11 +347,11 @@ or
    \, = \,
    \left(
    \begin{array}{ccc}
-   \left. \frac{\partial {\cal M}_1}{\partial u_1} \right|_{\vec{u}^{(0)}} 
+   \left. \frac{\partial {\cal M}_1}{\partial u_1} \right|_{\vec{u}^{(0)}}
    & \ldots &
    \left. \frac{\partial {\cal M}_n}{\partial u_1} \right|_{\vec{u}^{(0)}} \\
    \vdots & ~ & \vdots \\
-   \left. \frac{\partial {\cal M}_1}{\partial u_m} \right|_{\vec{u}^{(0)}} 
+   \left. \frac{\partial {\cal M}_1}{\partial u_m} \right|_{\vec{u}^{(0)}}
    & \ldots &
    \left. \frac{\partial {\cal M}_n}{\partial u_m} \right|_{\vec{u}^{(0)}} \\
    \end{array}
@@ -460,7 +460,7 @@ dimension :math:`l > 1`, :eq:`reverse` has to be modified according
 to
 
 .. math::
-   M^T \left( \nabla_v {\cal J}^T \left(\delta \vec{J}\right) \right) 
+   M^T \left( \nabla_v {\cal J}^T \left(\delta \vec{J}\right) \right)
    \, = \,
    \nabla_u {\cal J}^T \cdot \delta \vec{J}
 
@@ -491,7 +491,7 @@ the adjoint operator onto the :math:`j`-th component
 :math:`{\bf f_{j}}`,
 
 .. math::
-     \nabla_u {\cal J}^T 
+     \nabla_u {\cal J}^T
      \, = \, M^T \cdot \nabla_v {\cal J}^T
      \, = \,  \sum_{i} M^T_{ji} \, {\vec{e}_{i}}
 
@@ -505,10 +505,10 @@ space. Then, :math:`\nabla_v {\cal J}` takes the form
 
 .. math::
      \begin{aligned}
-     \nabla_v {\cal J}^T & = \, 2 \, \, H \cdot 
+     \nabla_v {\cal J}^T & = \, 2 \, \, H \cdot
      \left( \, {\cal H}(\vec{v}) - \vec{d} \, \right) \\
      ~          & = \, 2 \sum_{j} \left\{ \sum_k
-     \frac{\partial {\cal H}_k}{\partial v_{j}} 
+     \frac{\partial {\cal H}_k}{\partial v_{j}}
      \left( {\cal H}_k (\vec{v}) - d_k \right)
      \right\} \, {\vec{f}_{j}} \\
      \end{aligned}
@@ -519,7 +519,7 @@ Jacobi matrix of the data projection operator. Thus, the gradient
 by the model vs. data misfit:
 
 .. math::
-    \nabla_u {\cal J}^T \, = \, 2 \, M^T \cdot 
+    \nabla_u {\cal J}^T \, = \, 2 \, M^T \cdot
      H \cdot \left( {\cal H}(\vec{v}) - \vec{d} \, \right)
 
 .. _sec_autodiff_storage_v_recompute:
@@ -620,7 +620,7 @@ In this section we describe in a general fashion the parts of the code
 that are relevant for automatic differentiation using the software tool
 TAF. Modifications to use OpenAD are described in :numref:`ad_openad`.
 
-The basic flow is as follows: 
+The basic flow is as follows:
 
 ::
 
@@ -629,9 +629,9 @@ The basic flow is as follows:
        |--- initialise_fixed
        |
        |--- #ifdef ALLOW_ADJOINT_RUN
-       |           |    
+       |           |
        |           |--- ctrl_unpack
-       |           |    
+       |           |
        |           |--- adthe_main_loop
        |           |    |
        |           |    |--- initialise_varia
@@ -709,18 +709,21 @@ be enabled:
 - :filelink:`pkg/grdchk`
 
 The packages are enabled by adding them to your experiment-specific
-configuration file ``packages.conf`` (see Section ???).
+configuration file ``packages.conf`` (see :numref:`using_packages`).
 
 The following AD-specific CPP option files need to be customized:
 
-- :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`
-  This header file collects CPP options for :filelink:`pkg/autodiff`,
-  :filelink:`pkg/cost`, :filelink:`pkg/ctrl` as well as AD-unrelated options for the external
-  forcing package :filelink:`pkg/exf`. (NOTE: These options are not set in their
-  package-specific headers such as :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>`,
-  but are instead collected in the single header file 
-  :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`.
-  The package-specific header files serve as simple placeholders at this point.) 
+- :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` This header
+  file collects CPP options for :filelink:`pkg/autodiff`, :filelink:`pkg/cost`,
+  :filelink:`pkg/ctrl` as well as AD-unrelated options for the external forcing
+  package :filelink:`pkg/exf`.
+
+- :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>` In this header file,
+  options for different cost functions are set.
+
+- :filelink:`CTRL_OPTIONS.h <pkg/ctrl/CTRL_OPTIONS.h>` In this header file the
+  control variables are enabled and options for writing and reading the control
+  vector are set
 
 - :filelink:`tamc.h <pkg/autodiff/tamc.h>`
   This header configures the splitting of the time stepping loop
@@ -787,7 +790,7 @@ follows:
 
     % mkdir build
     % cd build
-    % ../../../tools/genmake2 -mods=../code_ad
+    % ../../../tools/genmake2 -mods=../code_ad [ -nocat4ad ]
     % make depend
     % make adall
 
@@ -805,21 +808,25 @@ The ``make «MODE»all`` target consists of the following procedures:
 
    -  #define :varlink:`ALLOW_TANGENTLINEAR_RUN`
 
-   -  #define :varlink:`ALLOW_ECCO_OPTIMIZATION`
-
-#. A single file ``«MODE»_input_code.f`` is concatenated consisting of all ``.f``
-   files that are part of the list ``AD_FILES`` and all ``.flow`` files
-   that are part of the list ``AD_FLOW_FILES``.
+#. If `` -nocat4ad`` is not specified, a single file ``«MODE»_input_code.f`` is
+   concatenated consisting of all ``.f`` files that are part of the list
+   ``AD_FILES`` and all ``.flow`` files that are part of the list
+   ``AD_FLOW_FILES``.
 
 #. The AD tool is invoked with the ``«MODE»_«TOOL»_FLAGS``. The default AD tool
-   flags in :filelink:`genmake2 <tools/genmake2>` can be overwritten by a :filelink:`tools/adjoint_options` file
-   (similar to the platform-specific :filelink:`tools/build_options`, see :numref:`genmake2_optfiles`).
-   The AD tool writes the resulting AD code into the file
-   ``«MODE»_input_code_ad.f``.
+   flags in :filelink:`genmake2 <tools/genmake2>` can be overwritten by a
+   :filelink:`tools/adjoint_options` file (similar to the platform-specific
+   :filelink:`tools/build_options`, see :numref:`genmake2_optfiles`).  The AD
+   tool writes the resulting AD code into the file ``«MODE»_input_code_ad.f``.
 
-#. A short sed script :filelink:`tools/adjoint_sed <tools/adjoint_sed>` is applied to ``«MODE»_input_code_ad.f`` to
-   reinstate :varlink:`myThid` into the CALL argument list of active file I/O.
-   The result is written to file ``«MODE»_«TOOL»_output.f``.
+#. A short sed script :filelink:`tools/adjoint_sed <tools/adjoint_sed>` is
+   applied to ``«MODE»_input_code_ad.f`` to reinstate :varlink:`myThid` into
+   the CALL argument list of active file I/O.  The result is written to file
+   ``«MODE»_«TOOL»_output.f``.
+
+#. If the `` -nocat4ad`` option is specified, the concatenation of all ``.f``
+   files is skipped and instead all necessary files are sent to TAF and for
+   each file an AD-file is returned.
 
 #. All routines are compiled and an executable is generated.
 
@@ -961,18 +968,19 @@ the package :filelink:`pkg/ctrl` and will be treated in the next section.
 Enabling the package
 ~~~~~~~~~~~~~~~~~~~~
 
-:filelink:`pkg/cost <pkg/cost>` is enabled by adding the line ``cost`` to your file ``packages.conf`` (see Section ???).
+:filelink:`pkg/cost <pkg/cost>` is enabled by adding the line ``cost`` to your
+file ``packages.conf`` (see :numref:`using_packages`).
 
-In general the following packages ought to be enabled
-simultaneously: :filelink:`pkg/autodiff <pkg/autodiff>`, :filelink:`pkg/ctrl <pkg/ctrl>`,
-and :filelink:`pkg/cost`. The basic CPP option to enable
-the cost function is :varlink:`ALLOW_COST`. Each specific cost function
-contribution has its own option. For the present example the option is
-:varlink:`ALLOW_COST_TRACER`. All cost-specific options are set in
-:filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` Since the cost function is usually used in
+In general the following packages ought to be enabled simultaneously:
+:filelink:`pkg/autodiff <pkg/autodiff>`, :filelink:`pkg/ctrl <pkg/ctrl>`, and
+:filelink:`pkg/cost`. The basic CPP option to enable the cost function is
+:varlink:`ALLOW_COST`. Each specific cost function contribution has its own
+option. For the present example the option is :varlink:`ALLOW_COST_TRACER`. All
+cost-specific options are set in :filelink:`COST_OPTIONS.h
+<pkg/ctrl/COST_OPTIONS.h>`. Since the cost function is usually used in
 conjunction with automatic differentiation, the CPP option
-:varlink:`ALLOW_ADJOINT_RUN` (file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`) and
-:varlink:`ALLOW_AUTODIFF_TAMC` (file :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`) should be defined.
+:varlink:`ALLOW_AUTODIFF_TAMC` (file :filelink:`AUTODIFF_OPTIONS.h
+<pkg/autodiff/AUTODIFF_OPTIONS.h>`) should be defined.
 
 Initialization
 ~~~~~~~~~~~~~~
@@ -1014,8 +1022,8 @@ accumulates the total cost function :varlink:`fc` from each contribution and
 sums over all tiles:
 
 .. math::
-   {\cal J} \, = \, 
-   {\rm fc} \, = \, 
+   {\cal J} \, = \,
+   {\rm fc} \, = \,
    {\rm mult\_tracer} \sum_{\text{global sum}} \sum_{bi,\,bj}^{nSx,\,nSy}
    {\rm objf\_tracer}(bi,bj) \, + \, ...
 
@@ -1126,9 +1134,9 @@ initialization, perturbation) are controlled by the package :filelink:`pkg/ctrl`
 :filelink:`genmake2 <tools/genmake2>` and CPP options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Package :filelink:`pkg/ctrl` is enabled by adding the line ``ctrl`` to your file ``packages.conf``.
-Each control variable is enabled via its own CPP option in
-:filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`.
+Package :filelink:`pkg/ctrl` is enabled by adding the line ``ctrl`` to your
+file ``packages.conf``. Each control variable is enabled via its own CPP
+option in :filelink:`CTRL_OPTIONS.h <pkg/ctrl/CTRL_OPTIONS.h>`.
 
 Initialization
 ~~~~~~~~~~~~~~
@@ -1220,7 +1228,7 @@ considered:
 
   ::
 
-              call active_read_xyz( 
+              call active_read_xyz(
             &      ..., tmpfld3d, ..., xx_tr1_dummy, ... )
 
               tr1(...) = tr1(...) + tmpfld3d(...)
@@ -1258,7 +1266,7 @@ considered:
   parameters :varlink:`diffkr` and :varlink:`kapgm` are currently added as controls
   in :filelink:`ctrl_map_ini.F </pkg/ctrl/ctrl_map_ini.F>`.
 
-.. _sec_autodiff_output_adj_vars:  
+.. _sec_autodiff_output_adj_vars:
 
 Output of adjoint variables and gradient
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1275,7 +1283,7 @@ Several ways exist to generate output of adjoint fields.
       after the adjoint integration the corresponding adjoint
       variables are written to ``adxx\_«...»``.
 
--  In :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>`, :filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>`: 
+-  In :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>`, :filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>`:
 
    -  The control vector ``vector_ctrl``:
       at the very beginning of the model initialization, the updated
@@ -1293,7 +1301,7 @@ Several ways exist to generate output of adjoint fields.
    :filelink:`addummy_in_stepping.F </pkg/autodiff/addummy_in_stepping.F>`.
    The procedure is
    enabled using via the CPP-option :varlink:`ALLOW_AUTODIFF_MONITOR` (file
-   :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`).
+   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>`).
    To be part of the adjoint code, the
    corresponding S/R :filelink:`dummy_in_stepping.F <pkg/autodiff/dummy_in_stepping.F>`
    has to be called in the
@@ -1326,7 +1334,7 @@ Several ways exist to generate output of adjoint fields.
    **WARNING:** If the structure of the common blocks :varlink:`dynvars_r`,
    :varlink:`dynvars_cd`, etc., changes similar changes will occur in the
    adjoint common blocks. Therefore, consistency between the
-   TAMC-generated common blocks and those in 
+   TAMC-generated common blocks and those in
    :filelink:`adcommon.h </pkg/autodiff/adcommon.h>` have to be
    checked.
 
@@ -1339,7 +1347,7 @@ to be minimized with respect to a set of control variables
 gradient :math:`\nabla _{u}{\cal J} |_{u_{[k]}}` together with the
 value of the cost function itself :math:`{\cal J}(u_{[k]})` at
 iteration step :math:`k` serve as input to a minimization routine
-(e.g. quasi-Newton method, conjugate gradient, ... (Gilbert and Lemaréchal, 1989 
+(e.g. quasi-Newton method, conjugate gradient, ... (Gilbert and Lemaréchal, 1989
 :cite:`gil-lem:89`) to compute an update in the control
 variable for iteration step :math:`k+1`:
 
@@ -1361,7 +1369,7 @@ between forward/adjoint model and the minimization routine.
 
     Flow between the forward/adjoint model and the minimization routine.
 
-The routines :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` and 
+The routines :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` and
 :filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` provide the link between
 the model and the minimization routine. As described in Section
 ref:ask-the-author the :filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>`
@@ -1379,25 +1387,15 @@ corresponding I/O flow is shown in :numref:`forward-adj_io`:
     Flow chart showing I/O in the forward/adjoint model.
 
 
-:filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control vector
-``vector_ctrl_<k>``. It distributes the
-different control variables to 2-D and 3-D files
-``xx_«...»<k>``. At the start of the forward
-integration the control variables are read from
-``xx_«...»<k>`` and added to the field.
-Correspondingly, at the end of the adjoint integration the adjoint
-fields are written to ``adxx_«...»<k>``, again via
-the active file routines. Finally,
-:filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint
-files and writes them to the compressed vector file
-``vector_grad_<k>``.
+:filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control
+vector ``vector_ctrl_<k>``. It distributes the different control variables to
+2-D and 3-D files ``xx_«...»<k>``. At the start of the forward integration the
+control variables are read from ``xx_«...»<k>`` and added to the field.
+Correspondingly, at the end of the adjoint integration the adjoint fields are
+written to ``adxx_«...»<k>``, again via the active file routines. Finally,
+:filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint files and
+writes them to the compressed vector file ``vector_grad_<k>``.
 
-
-NOTE: These options are not set in their package-specific headers
-such as :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>`,
-but are instead collected in the single
-header file :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`. The package-specific header files
-serve as simple placeholders at this point.
 
 .. _ad_gradient_check:
 
@@ -1426,7 +1424,7 @@ successful if the deviation of the ratio between the adjoint and the
 finite difference gradient from unity is less than 1 percent,
 
 .. math::
-   1 \, - \, 
+   1 \, - \,
    \frac{({\rm grad}{\cal J})_i (\text{adjoint})}
    {({\rm grad}{\cal J})_i (\text{finite difference})} \, < 1 \%
 
@@ -1476,7 +1474,7 @@ The relevant runtime flags are set in the files:
                |
                |-- grdchk_getxx       - get control vector component from file
                |                        perturb it and write back to file
-               |-- grdchk_getadxx     - get gradient component calculated 
+               |-- grdchk_getadxx     - get gradient component calculated
                |                        via adjoint
                |-- the_main_loop      - forward run and cost evaluation
                |                        with perturbed control vector element
@@ -1491,15 +1489,13 @@ The relevant runtime flags are set in the files:
 Adjoint dump & restart – divided adjoint (DIVA)
 ===============================================
 
-Authors: Patrick Heimbach & Geoffrey Gebbie, 07-Mar-2003*
+Authors: Patrick Heimbach & Geoffrey Gebbie, 07-Mar-2003
 
 ***NOTE:THIS SECTION IS SUBJECT TO CHANGE. IT REFERS TO TAF-1.4.26.**
 
-Previous TAF versions are incomplete and have problems with both TAF
-options ``-pure`` and ``-mpi``.
-
-The code which is tuned to the DIVA implementation of this TAF version
-is ``checkpoint50`` (MITgcm) and ``ecco_c50_e28`` (ECCO).
+Old TAF versions are incomplete and have problems with both TAF options
+``-pure`` and ``-mpi``. At the time of the latest update, the current version
+of TAF is 6.1.5
 
 Introduction
 ------------
@@ -1549,7 +1545,8 @@ the current implementation, the forward sweep is immediately followed by
 the first adjoint leg. Thus, in theory, the following steps are
 performed (automatically)
 
--  **1st model call:** This is the case if file ``costfinal`` does *not* exist. S/R
+-  **1st model call:**
+   This is the case if file ``costfinal`` does *not* exist. S/R
    ``mdthe_main_loop.f`` (generated by TAF) is called.
 
    #. calculate forward trajectory and dump model state after each
@@ -1589,111 +1586,69 @@ intermediate adjoint integration interval).
 compensate for TAF bugs. Since we refer to TAF-1.4.26 onwards, these
 modifications are not documented here].
 
-.. _recipe1:
+.. _diva_recipe:
 
-Recipe 1: single processor
---------------------------
+Recipe for divided adjoint code generation
+------------------------------------------
 
-#. In :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` set:
+Verification experiment :filelink:`lab_sea <verification/lab_sea>` tests the
+divided adjoint and serves as an example of how to configure the code.
+
+#. define ``USE_DIVA=1``, either as an environment variable (e.g., in bash:
+   ``export USE_DIVA=1``), in a ``genmake_local`` file in the ``build``
+   directory, or in your build options file. This will instruct
+   :filelink:`genmake2 <tools/genmake2>` to generate TAF options (``-pure``)
+   for divided adjoint generation.
+
+#. In a local copy of :filelink:`AUTODIFF_OPTIONS.h
+   <pkg/autodiff/AUTODIFF_OPTIONS.h>` set:
 
    - #define :varlink:`ALLOW_DIVIDED_ADJOINT`
-   - #undef  :varlink:`ALLOW_DIVIDED_ADJOINT_MPI`
 
-#. Generate adjoint code. Using the TAF option ``-pure``, two codes are
-   generated:
+   to enable code for divided adjoint.
 
-   -  ``mdthe_main_loop.f``:
+#. If using MPI, make sure that the paths to mpi-header files, such as
+   ``mpif.h``, are know to :filelink:`genmake2 <tools/genmake2>` (as usual, via
+   the build options file, see also :numref:`diva_mpi`).
+
+#. Run the usual sequence for generating the Makefile and the AD-code.
+
+   ::
+
+      ${ROOTDIR}/tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
+      make depend
+      make adtaf
+
+   the ``-nocat4ad`` option is not necessary, but will generate individual
+   AD-files for each forward file sent to TAF. The adjoint code now contains
+   subroutines (in ``the_main_loop_ad.f``):
+
+   -  ``adthe_main_loop_ad``:
       Is responsible for the forward trajectory, storing of outermost
       checkpoint levels to file, computation of cost function, and
       storing of cost function to file (1st step).
 
-   -  ``adthe_main_loop.f``:
+   -  ``adthe_main_loop``:
       Is responsible for computing one adjoint leg, dump adjoint state
       to file and write index info to file (2nd and consecutive
       steps).
 
-      for adjoint code generation, e.g., add ``-pure`` to TAF option list
+   Then compile with ``make adall`` (the ``make adtaf`` step is not necessary
+   unless you want to inspect the TAF-generated code before compiling).
 
-      ::
+.. _diva_mpi:
 
-              make adtaf
+Special considerations for multi processor (MPI) runs
+-----------------------------------------------------
 
-   -  One modification needs to be made to adjoint codes in S/R
-      ``adecco_the_main_loop.f`` (generated by TAF):
-
-      There’s a remaining issue with the ``-pure`` option. The ``call
-      ad...`` between ``call ad...`` and the read of the ``snapshot`` file
-      should be called only in the first adjoint leg between
-      :math:`nlev3` and :math:`nlev3-1`. In the ecco-branch, the
-      following lines should be bracketed by an ``if (idivbeg .GE.
-      nchklev_3) then``, thus:
-
-      ::
-
-
-          ...
-                xx_psbar_mean_dummy = onetape_xx_psbar_mean_dummy_3h(1)
-                xx_tbar_mean_dummy = onetape_xx_tbar_mean_dummy_4h(1)
-                xx_sbar_mean_dummy = onetape_xx_sbar_mean_dummy_5h(1)
-                call barrier( mythid )
-          cAdd(
-                if (idivbeg .GE. nchklev_3) then
-          cAdd)
-
-                call adcost_final( mythid )
-                call barrier( mythid )
-                call adcost_sst( mythid )
-                call adcost_ssh( mythid )
-                call adcost_hyd( mythid )
-                call adcost_averagesfields( mytime,myiter,mythid )
-                call barrier( mythid )
-          cAdd(
-                endif
-          cAdd)
-
-          C----------------------------------------------
-          C read snapshot
-          C----------------------------------------------
-                if (idivbeg .lt. nchklev_3) then
-                  open(unit=77,file='snapshot',status='old',form='unformatted',
-               $iostat=iers)
-          ...
-
-      For the main code, in all likelihood the block which needs to be
-      bracketed consists of ``adcost_final.f`` (generated by TAF) only.
-
-   -  Now the code can be copied as usual to ``adjoint_model.F`` and then
-      be compiled:
-
-      ::
-
-              make adchange
-
-      then compile
-
-Recipe 2: multi processor (MPI)
--------------------------------
-
-#. On the machine where you execute the code (most likely not the
-   machine where you run TAF) find the includes directory for MPI
-   containing ``mpif.h``. Either copy ``mpif.h`` to the machine where you
-   generate the ``.f`` files before TAF-ing, or add the path to the includes
-   directory to your :filelink:`genmake2 <tools/genmake2>` platform setup, TAF needs some MPI parameter
-   settings (essentially ``mpi_comm_world`` and ``mpi_integer``) to
-   incorporate those in the adjoint code.
-
-#. In :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` set
-
-   - #define :varlink:`ALLOW_DIVIDED_ADJOINT`
-   - #define  :varlink:`ALLOW_DIVIDED_ADJOINT_MPI`
-
-   This will include the header file ``mpif.h`` into the top level routine
-   for TAF.
-
-#. Add the TAF option ``-mpi`` to the TAF argument list in the makefile.
-
-#. Follow the same steps as in :ref:`Recipe 1 <recipe1>`.
-
+On the machine where you execute the code (most likely not the machine where
+you run TAF) find the includes directory for MPI containing ``mpif.h``. Either
+copy ``mpif.h`` to the machine where you preprocess the code (generate the
+``.f`` files) before TAF-ing, or add the path to the includes directory to your
+:filelink:`genmake2 <tools/genmake2>` platform setup. TAF needs some MPI
+parameter settings (essentially ``mpi_comm_world`` and ``mpi_integer``) to
+incorporate those in the adjoint code. The ``-mpi`` will be added to the TAF
+argument list automatically.
 
 .. _ad_openad:
 
@@ -1751,8 +1706,8 @@ for following system:
     > uname -a
     Linux itrda 2.6.22.2-42.fc6 #1 SMP Wed Aug 15 12:34:26 EDT 2007 i686 i686 i386 GNU/Linux
 
-    > cat /proc/version 
-    Linux version 2.6.22.2-42.fc6 (brewbuilder@hs20-bc2-4.build.redhat.com) 
+    > cat /proc/version
+    Linux version 2.6.22.2-42.fc6 (brewbuilder@hs20-bc2-4.build.redhat.com)
     (gcc version 4.1.2 20070626 (Red Hat 4.1.2-13)) #1 SMP Wed Aug 15 12:34:26 EDT 2007
 
     > module load ifc/9.1.036 icc/9.1.042
@@ -1790,8 +1745,216 @@ The ``-oadsingularity`` option is also supported by testreport,
 :numref:`testreport_utility`.  Note that the path to the container has to be
 either absolute or relative to the build directory.
 
+.. _ad_tapenade:
+
+Adjoint code generation using Tapenade
+======================================
+
+Authors: Shreyas Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
+Heimbach
+
+Introduction
+------------
+
+TAPENADE is an open-source Automatic Differentiation Engine developed at INRIA
+Sophia-Antipolis by the Tropics then Ecuador teams. TAPENADE can be utilized as
+a server (JAVA servlet), which runs at INRIA Sophia-Antipolis. The current
+address of this TAPENADE server is `here
+<http://www-tapenade.inria.fr:8080/tapenade/index.jsp>`_. TAPENADE can also be
+downloaded and installed locally as a set of JAVA classes (JAR archive). In
+that case it is run by a simple command line, which can be included into a
+Makefile. It also provides you with a user-interface to visualize the results
+in a HTML browser.
+
+Downloading and installing Tapenade
+-----------------------------------
+
+While the MITgcm source files are prepared to generate adjoint sensitivities,
+they will not be able to do so without an operable installation of
+Tapenade. Fortunately the Tapenade installation procedure is straight forward.
+
+We detail the instructions here, but the latest instructions can always be
+found `here
+<https://tapenade.gitlabpages.inria.fr/tapenade/distrib/README.html>`__.
+
+Prerequisites for Linux or Mac OS
+---------------------------------
+
+Before installing Tapenade, you must check that an up-to-date Java Runtime
+Environment is installed. Tapenade will not run with older Java Runtime
+Environment.
+
+Steps for Mac OS
+----------------
+
+Tapenade 3.16 distribution does not contain a fortranParser executable for
+MacOS. It uses a docker image from `here
+<https://gitlab.inria.fr/tapenade/tapenade>`__. You need docker on your Mac to
+run the Tapenade distribution with Fortran programs. Details on how to build
+fortranParser is `here
+<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/src/frontf/README.html?highlight=mac>`__. You
+may also build Tapenade on your Mac from the `gitlab repository
+<https://tapenade.gitlabpages.inria.fr/tapenade/docs/html/distrib/README.html>`__.
+
+To use the docker image specify ``TAPENADECMD=tapenadocker`` in your
+build-options or in a ``genmake_local`` file (:numref:`genmake2_desc`).
+Running a docker image also requires absolute paths, e.g., to
+:filelink:`tools/TAP_support/flow_tap <tools/TAP_support/flow_tap>`. At the
+:filelink:`genmake2 <tools/genmake2>` step use the option ``-rootdir`` to
+specify the absolute path to your MITgcm directory (see also
+:numref:`command_line_options`).
+
+Steps for Linux
+---------------
+
+1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
+
+2. Download `tapenade_3.16.tar
+   <https://tapenade.gitlabpages.inria.fr/tapenade/distrib/tapenade_3.16.tar>`__
+   into your chosen installation directory *install_dir*.
+
+3. Go to your chosen installation directory *install_dir*, and extract Tapenade
+   from the tar file :
+
+::
+
+    % tar xvfz tapenade_3.16.tar
+
+4. On Linux, depending on your distribution, Tapenade may require you to set
+   the shell variable ``JAVA_HOME`` to your java installation directory. It is
+   often ``JAVA_HOME=/usr/java/default``. You might also need to modify the
+   ``PATH`` by adding the bin directory from the Tapenade installation. An
+   example can be found :ref:`here <tapenade_bashrc_snippet>`.
+
+Prerequisites for Windows
+-------------------------
+
+Before installing Tapenade, you must check that an up-to-date Java Runtime
+Environment is installed. Tapenade will not run with older Java Runtime
+Environment. The Fortran parser of Tapenade uses `cygwin
+<https://www.cygwin.com/>`__.
+
+Steps for Windows
+-----------------
+
+1. Read `the Tapenade license. <https://tapenade.gitlabpages.inria.fr/userdoc/build/html/LICENSE.html>`__
+
+2. Download `tapenade_3.16.zip
+   <https://tapenade.gitlabpages.inria.fr/tapenade/distrib/tapenade_3.16.zip>`__
+   into your chosen installation directory *install_dir*.
+
+3. Go to your chosen installation directory *install_dir*, and extract Tapenade
+   from the zip file.
+
+4. Save a copy of the ``install_dir\tapenade_3.16\bin\tapenade.bat`` file and
+   modify ``install_dir\tapenade_3.16\bin\tapenade.bat`` according to your
+   installation parameters:
+
+replace ``TAPENADE_HOME=..`` by ``TAPENADE_HOME="install_dir"\tapenade_3.16``
+replace ``JAVA_HOME="C:\Progra~1\Java\jdkXXXX"`` by your current java directory
+replace ``BROWSER="C:\Program Files\Internet Explorer\iexplore.exe"`` by your
+current browser.
+
+.. _tapenade_bashrc_snippet:
+
+**NOTE**: Every time you wish to use the AD capability with Tapenade, you must re-source the environment. We recommend that this be done automatically in your bash or c-shell profile upon login. An example of an addition to a ``.bashrc`` file from a Linux server is given below. Luckily, shell variable ``JAVA_HOME`` was not required to be explicitly set for this particular Linux distribution, but might be necessary for some other distributions.
+
+::
+
+    ##set some env variables for tapenade
+
+    export TAPENADE_HOME="/home/shreyas/tapenade_3.16"
+    export PATH="$PATH:$TAPENADE_HOME/bin"
+
+    ##Modules
+
+    module use /share/modulefiles/
+    module load java/jdk/16.0.1 # Java required by Tapenade
+
+
+You should now have a working copy of Tapenade.
+
+For more information on the tapenade command and its arguments, type :
+
+::
+
+    tapenade -?
+
+Prerequisites for Tapenade setup
+--------------------------------
+
+The ``packages.conf`` file should include both the ``adjoint`` and ``tapenade``
+packages. Note that ``mnc`` and ``ecco`` packages are not yet compatible with
+Tapenade. The users are referred to the ``code_tap`` directories in the various
+verification experiments for reference.
+
+**Pro tip**: ``diff -qr dir1 dir2`` can help you see all the differences in the files of two directories.
+
+``autodiff`` is not completely untangled from the Tapenade setup yet. In
+``code_tap/AUTODIFF_OPTIONS.h``, the only flag that can be defined safely is
+``ALLOW_AUTODIFF_MONITOR``.
+
+Rest of the setup remains unchanged.
+
+
+Building MITgcm TLM with Tapenade
+---------------------------------
+
+The setup remains similar to how one sets up the TLM with TAF. A typical flow
+will look as follows -
+
+::
+
+    ### Assuming $PWD is the build subdirectory
+    ### Clean stuff
+    make CLEAN
+
+    ### Use your own optfile
+    ../../../tools/genmake2 -tap -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tap
+    make depend
+
+    ### Differentiate code to generate TLM code using Tapenade
+    ### Creates executable mitgcmuv_tap_tlm
+    make -j 8 tap_tlm
+
+    ### Rest of the setup is standard
+    cd ../run
+    rm -r *
+    ln -s ../input_tap/* .
+    ../input_tap/prepare_run
+    ln -s ../build/mitgcmuv_tap_tlm .
+    ./mitgcmuv_tap_tlm > output_tap_tlm.txt 2>&1
+
+Building MITgcm adjoint with Tapenade
+-------------------------------------
+
+The setup remains similar to how one sets up the adjoint with TAF. A typical
+flow will look as follows -
+
+::
+
+    ### Assuming $PWD is the build subdirectory
+    ### Clean stuff
+    make CLEAN
+
+    ### Use your own optfile
+    ../../../tools/genmake2 -tap -of ../../../tools/build_options/linux_amd64_ifort -mods ../code_tap
+    make depend
+
+    ### Differentiate code to generate adjoint code using Tapenade
+    ### Creates executable mitgcmuv_tap_adj
+    make -j 8 tap_adj
+
+    ### Rest of the setup is standard
+    ### These commands are for a typical verification experiment
+    cd ../run
+    rm -r *
+    ln -s ../input_tap/* .
+    ../input_tap/prepare_run
+    ln -s ../build/mitgcmuv_tap_adj .
+    ./mitgcmuv_tap_adj > output_tap_adj.txt 2>&1
+
 .. rubric:: Footnotes
 
 .. [#thanks-Dan] A big thank you to Dan Goldberg for supplying the definition
    file for the Singularity container!
-

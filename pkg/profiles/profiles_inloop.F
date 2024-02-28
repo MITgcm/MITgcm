@@ -10,10 +10,9 @@ C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      SUBROUTINE profiles_inloop(mytime,myThid )
+      SUBROUTINE profiles_inloop(myTime,myThid )
 
-      implicit none
-
+      IMPLICIT NONE
 
 C ==================== Global Variables ===========================
 #include "EEPARAMS.h"
@@ -25,7 +24,7 @@ C ==================== Global Variables ===========================
 #include "cal.h"
 #endif
 #ifdef ALLOW_CTRL
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
@@ -34,7 +33,7 @@ C ==================== Global Variables ===========================
 #endif
 C ==================== Routine Variables ==========================
 
-      _RL mytime
+      _RL myTime
       integer myThid
 
 #ifdef ALLOW_PROFILES
@@ -50,19 +49,19 @@ C ==================== Local Variables ==========================
 #ifndef ALLOW_ECCO
       integer i,j
 #endif
-      
+
 c     == end of interface ==
 
 #ifndef ALLOW_CTRL
       optimcycle = 0
 #endif
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
 
 #ifndef ALLOW_ECCO
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,nr
+          do k = 1,Nr
             do j = 1,sNy
               do i =  1,sNx
                 m_UE(i,j,k,bi,bj)=0. _d 0
@@ -75,7 +74,7 @@ c     == end of interface ==
 
       CALL ROTATE_UV2EN_RL(
      U          uVel, vVel, m_UE, m_VN,
-     I          .TRUE., .TRUE., .FALSE., Nr, mythid )
+     I          .TRUE., .TRUE., .FALSE., Nr, myThid )
 #endif /* ALLOW_ECCO */
 
       DO bj=1,nSy
@@ -84,8 +83,8 @@ c     == end of interface ==
       do num_file=1,NFILESPROFMAX
       do prof_num=1,NOBSGLOB
       if (prof_num.LE.ProfNo(num_file,bi,bj)) then
-      if ((prof_time(num_file,prof_num,bi,bj).GE.mytime).AND.
-     & (prof_time(num_file,prof_num,bi,bj).LT.(mytime+deltaTclock))) 
+      if ((prof_time(num_file,prof_num,bi,bj).GE.myTime).AND.
+     & (prof_time(num_file,prof_num,bi,bj).LT.(myTime+deltaTClock)))
      & then
 
       do k=1,NUM_INTERP_POINTS
@@ -104,14 +103,14 @@ c     == end of interface ==
      &        prof_i1D,prof_j1D,prof_w1D,
      &        prof_namesmod(num_file,num_var),
      &        prof_itracer(num_file,num_var),
-     &        num_file,mytime,bi,bj,myThid)
+     &        num_file,myTime,bi,bj,myThid)
         do k=1,NLEVELMAX
           prof_traj1D(k)=prof_traj1D(k)*
      &                   prof_facmod(num_file,num_var)
         enddo
         call active_write_profile(num_file,
      &      ProfDepthNo(num_file,bi,bj),prof_traj1D,num_var,
-     &      prof_num,optimcycle,bi,bj,mythid,
+     &      prof_num,optimcycle,bi,bj,myThid,
      &      profiles_dummy(num_file,num_var,bi,bj))
       endif
       enddo
@@ -123,7 +122,7 @@ c     == end of interface ==
        ENDDO
       ENDDO
 
-        _END_MASTER( mythid )
+        _END_MASTER( myThid )
 
 #endif
 

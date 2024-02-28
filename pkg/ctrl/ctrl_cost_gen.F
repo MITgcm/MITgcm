@@ -36,8 +36,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
@@ -77,7 +77,7 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
 
 c     == external functions ==
 
@@ -207,8 +207,8 @@ c     == global variables ==
 #include "GRID.h"
 
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
-# include "optim.h"
+# include "CTRL.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 c     == routine arguments ==
@@ -241,7 +241,7 @@ c     == local variables ==
       logical ladinit
       _RL     tmpfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      character*(80) fnamefld
+      character*(MAX_LEN_FNAM) fnamefld
 
 c     == external functions ==
 

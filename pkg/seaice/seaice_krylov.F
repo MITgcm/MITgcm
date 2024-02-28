@@ -44,7 +44,7 @@ C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef SEAICE_ALLOW_KRYLOV
+#if ( defined SEAICE_CGRID && defined SEAICE_ALLOW_KRYLOV )
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -218,7 +218,8 @@ C     the Krylov iteration)
      O      e11, e22, e12,
      I      0, myTime, myIter, myThid )
        CALL SEAICE_CALC_VISCOSITIES(
-     I      e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+     I      e11, e22, e12, SEAICE_zMin, SEAICE_zMax, HEFFM, press0,
+     I      tensileStrFac,
      O      eta, etaZ, zeta, zetaZ, press, deltaC,
      I      0, myTime, myIter, myThid )
 C     compute rhs that does not change during Krylov iteration
@@ -519,7 +520,7 @@ C     Print more debugging information
        _END_MASTER( myThid )
       ENDIF
 
-#endif /* SEAICE_ALLOW_KRYLOV */
+#endif /* SEAICE_CGRID and SEAICE_ALLOW_KRYLOV */
 
       RETURN
       END

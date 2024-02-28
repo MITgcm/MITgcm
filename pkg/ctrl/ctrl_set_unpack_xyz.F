@@ -2,7 +2,7 @@
 
       subroutine ctrl_set_unpack_xyz(
      &     lxxadxx, cunit, ivartype, fname, masktype, weighttype,
-     &     weightfld, nwetglobal, mythid )
+     &     weightfld, nwetglobal, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_unpack_xyz
@@ -26,20 +26,20 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ctrl.h"
-#include "optim.h"
+#include "CTRL.h"
+#include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 
       logical lxxadxx
       integer cunit
       integer ivartype
-      character*( 80)   fname
+      character*(MAX_LEN_FNAM)   fname
       character*(  9) masktype
-      character*( 80) weighttype
+      character*(MAX_LEN_FNAM) weighttype
       _RL     weightfld( Nr,nSx,nSy )
       integer nwetglobal(Nr)
-      integer mythid
+      integer myThid
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == external ==
@@ -52,7 +52,7 @@ c     == local variables ==
       integer ii, irec
       integer cbuffindex
       real*4 cbuff( sNx*nSx*nPx*sNy*nSy*nPy )
-      character*(80) cfile2, cfile3
+      character*(MAX_LEN_FNAM) cfile2, cfile3
 C========================================================================
 # ifndef ALLOW_PACKUNPACK_METHOD2
       integer ip,jp
@@ -64,7 +64,7 @@ C========================================================================
       _RL     globfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
 #ifdef CTRL_UNPACK_PRECISE
       integer il
-      character*(80) weightname
+      character*(MAX_LEN_FNAM) weightname
       _RL   weightfld3d( sNx,nSx,nPx,sNy,nSy,nPy,Nr )
 #endif
       real*4 globfldtmp2( sNx,nSx,nPx,sNy,nSy,nPy )
@@ -128,7 +128,7 @@ c     Initialise temporary file
       enddo
 
 c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
 
 #ifdef CTRL_DELZNORM
       do k = 1, Nr
@@ -138,29 +138,27 @@ c--   Only the master thread will do I/O.
 #endif
 
       if ( doPackDiag ) then
-       write(cfile2(1:80),'(80a)') ' '
-       write(cfile3(1:80),'(80a)') ' '
        if ( lxxadxx ) then
-        write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
-        write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
        else
-        write(cfile2(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_nondim_grad_',
      &           ivartype, '_', optimcycle, '.bin'
-        write(cfile3(1:80),'(a,I3.3,a,I4.4,a)')
+        write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_unpack_dimens_grad_',
      &           ivartype, '_', optimcycle, '.bin'
        endif
 
        reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
-       call mdsfindunit( cunit2, mythid )
+       call mdsfindunit( cunit2, myThid )
        open( cunit2, file=cfile2, status='unknown',
      &       access='direct', recl=reclen )
-       call mdsfindunit( cunit3, mythid )
+       call mdsfindunit( cunit3, myThid )
        open( cunit3, file=cfile3, status='unknown',
      &       access='direct', recl=reclen )
       endif
@@ -168,11 +166,10 @@ c--   Only the master thread will do I/O.
 #ifdef CTRL_UNPACK_PRECISE
       if (weighttype.NE.' ') then
        il=ilnblnk( weighttype)
-       write(weightname(1:80),'(80a)') ' '
-       write(weightname(1:80),'(a)') weighttype(1:il)
+       write(weightname,'(a)') weighttype(1:il)
        call MDSREADFIELD_3D_GL(
      &     weightname, ctrlprec, 'RL',
-     &     Nr, weightfld3d, 1, mythid)
+     &     Nr, weightfld3d, 1, myThid)
       else
        do k = 1,Nr
         do jp = 1,nPy
@@ -194,7 +191,7 @@ c--   Only the master thread will do I/O.
 
       call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
-     &     Nr, globmsk, 1, mythid)
+     &     Nr, globmsk, 1, myThid)
 
       do irec = 1, ncvarrecs(ivartype)
 #ifndef ALLOW_ADMTLM
@@ -277,7 +274,7 @@ c
 
        call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &                           Nr, globfld3d,
-     &                           irec,  optimcycle, mythid)
+     &                           irec,  optimcycle, myThid)
 
       enddo
 
@@ -286,7 +283,7 @@ c
        close ( cunit3 )
       endif
 
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
 
 # else /* ALLOW_PACKUNPACK_METHOD2 */
 
@@ -295,7 +292,7 @@ c-- part 1: preliminary reads and definitions
 #ifdef CTRL_UNPACK_PRECISE
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(weighttype, wei3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
+     &    .FALSE., .FALSE., 0 , myThid, dummy)
 #else
       CALL READ_REC_XYZ_RL( weighttype, wei3d, 1, 1, myThid )
 #endif
@@ -303,21 +300,19 @@ c-- part 1: preliminary reads and definitions
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz(masktype, msk3d, 1,
-     &    .FALSE., .FALSE., 0 , mythid, dummy)
+     &    .FALSE., .FALSE., 0 , myThid, dummy)
 #else
       CALL READ_REC_XYZ_RL( masktype, msk3d, 1, 1, myThid )
 #endif
 
       if ( doPackDiag ) then
-       write(cfile2(1:80),'(80a)') ' '
-       write(cfile3(1:80),'(80a)') ' '
        il = ilnblnk( fname )
        if ( lxxadxx ) then
-        write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_ctrl_adim'
-        write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_ctrl_dim'
+        write(cfile2,'(2a)') fname(1:il),'.unpack_ctrl_adim'
+        write(cfile3,'(2a)') fname(1:il),'.unpack_ctrl_dim'
        else
-        write(cfile2(1:80),'(2a)') fname(1:il),'.unpack_grad_adim'
-        write(cfile3(1:80),'(2a)') fname(1:il),'.unpack_grad_dim'
+        write(cfile2,'(2a)') fname(1:il),'.unpack_grad_adim'
+        write(cfile3,'(2a)') fname(1:il),'.unpack_grad_dim'
        endif
       endif
 
@@ -328,7 +323,7 @@ c-- part 2: loop over records
 c-- 2.1: array <- buffer <- global buffer <- global file
 
 #ifndef ALLOW_ADMTLM
-       _BEGIN_MASTER( mythid )
+       _BEGIN_MASTER( myThid )
        IF ( myProcId .eq. 0 ) THEN
         read(cunit) filencvarindex(ivartype)
         if (filencvarindex(ivartype) .NE. ncvarindex(ivartype)) then
@@ -339,7 +334,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
         read(cunit) filej
         read(cunit) filei
        ENDIF
-       _END_MASTER( mythid )
+       _END_MASTER( myThid )
        _BARRIER
 #endif /* ALLOW_ADMTLM */
 
@@ -352,7 +347,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
      &                     Nx,Ny,.FALSE.,.TRUE.,myThid)
         CALL BAR2( myThid )
 
-        _BEGIN_MASTER( mythid )
+        _BEGIN_MASTER( myThid )
         cbuffindex = nwetglobal(k)
         IF ( myProcId .eq. 0 ) THEN
 
@@ -384,7 +379,7 @@ c-- 2.1: array <- buffer <- global buffer <- global file
          ENDDO
 
         ENDIF
-        _END_MASTER( mythid )
+        _END_MASTER( myThid )
         _BARRIER
 
         CALL BAR2( myThid )
@@ -427,14 +422,14 @@ c-- 2.3:
        if ( doPackDiag ) then
 c     error: twice the same one
         call WRITE_REC_3D_RL( cfile2, ctrlprec,
-     &       Nr, fld3dNodim, irec, 0, mythid)
+     &       Nr, fld3dNodim, irec, 0, myThid)
         call WRITE_REC_3D_RL( cfile3, ctrlprec,
-     &       Nr, fld3dDim, irec, 0, mythid)
+     &       Nr, fld3dDim, irec, 0, myThid)
        endif
 
 c-- 2.4:
        call WRITE_REC_3D_RL( fname, ctrlprec,
-     &      Nr, fld3dDim, irec, 0, mythid)
+     &      Nr, fld3dDim, irec, 0, myThid)
 
       enddo !do irec = 1, ncvarrecs(ivartype)
 

@@ -1,6 +1,6 @@
 The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrient and Gas model developed at GFDL by Eric Galbraith and collaborators. Several subroutines, such as air-sea exchange and carbonate chemistry, are adapted from the "DIC" package. It is compatible with the MITgcm adjoint.
 
-N-BLING, with nitrogen cycling, is the default code. It includes 8 tracers: DIC, ALK, O2, NO3, PO4, Fe, DON, DOP (in that order in data.ptracers). Prognostic tracers for silica and phytoplankton biomass are optional. 
+N-BLING, with nitrogen cycling, is the default code. It includes 8 tracers: DIC, ALK, O2, NO3, PO4, Fe, DON, DOP (in that order in data.ptracers). Prognostic tracers for silica and phytoplankton biomass are optional.
 
 The original 6-tracer BLING code (Galbraith et al., 2010) can be compiled by defining the flag USE_BLING_V1. The tracers in data.ptracers must then be specified in the following order: DIC, ALK, O2, PO4, Fe, DOP.
 
@@ -48,13 +48,13 @@ Notes on running BLING in MITgcm:
 
 1) make sure that you have the current BLING code:
 in your pkg/bling directory
-type: 
+type:
 cvs update
 
 2) in your code folder, add these to packages.conf:
 gchem
 ptracers
-bling 
+bling
 
 3) in your code folder, copy pkg/bling/BLING_OPTIONS.h
 and define / undef options
@@ -105,7 +105,7 @@ Notes on BLING_ADJOINT SAFE:
 - FreeFe and pfeflux_l are not set to 0 when anoxic
 - using fixed wsink0 rather than variable wsink in organic Fe adsorption calculation
 - no benthic denitrification
-- no DVM 
+- no DVM
 
 
 
