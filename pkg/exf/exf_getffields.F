@@ -40,10 +40,6 @@ C     == global variables ==
 #include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
 
-c#ifdef ALLOW_ICEPLUME
-c#include "ICEPLUME_EXF_INTERP.h"
-c#endif /* ALLOW_ICEPLUME */
-
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "CTRL.h"
@@ -452,29 +448,6 @@ C-    Runoff temperature
 #endif
      I     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
-
-c#ifdef ALLOW_ICEPLUME
-c      IF (useICEPLUME) THEN
-cC-    RunoffQsg subglacial discharge 
-ccatn the field in the file is provided in unit m3/s
-ccatn and the scaling factor will be 1. , then scaled later
-ccatn inside iceplume by rhoconst to convert to unit kg/s
-c      CALL EXF_SET_FLD(
-c     I     'runoffQsg', runoffQsgfile, runoffQsgmask,
-c     I     runoffQsgStartTime, runoffQsgperiod, runoffQsgRepCycle,
-c     I     runoffQsg_inscal,
-c     I     runoffQsg_remov_intercept, runoffQsg_remov_slope,
-c     U     runoffQsg, runoffQsg0, runoffQsg1,
-c#ifdef USE_EXF_INTERPOLATION
-c     I     runoffQsg_lon0, runoffQsg_lon_inc, 
-c     I     runoffQsg_lat0, runoffQsg_lat_inc,
-c     I     runoffQsg_nlon, runoffQsg_nlat, xC, yC, 
-c     I     runoffQsg_interpMethod,
-c#endif
-c     I     myTime, myIter, myThid )
-c      ENDIF
-c#endif /* ALLOW_ICEPLUME */
-
 
 #ifdef ALLOW_SALTFLX
 C-    Salt flux
