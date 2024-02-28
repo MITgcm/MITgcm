@@ -44,24 +44,24 @@ C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
 #ifdef ALLOW_ICEPLUME
 C     === Local variables ===
 C     I,J,K,bi,bj - Loop counters
-      INTEGER I, J, K, bi, bj
+      INTEGER i, j, K, bi, bj
 #ifdef ALLOW_PTRACERS
       integer iTracer
 #endif /* ALLOW_PTRACERS */
 
       iRec0 = 1.
 
-      DO bi = 1,nSx
-       DO bj = 1,nSy
-        DO I = 1-Olx,sNx+Olx
-         DO J = 1-Oly,sNy+Oly
-          plumeMask  (I,J,bi,bj)  = 0. _d 0
-          plumeLength  (I,J,bi,bj)  = 0. _d 0
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          plumeMask  (i,j,bi,bj)  = 0. _d 0
+          plumeLength  (i,j,bi,bj)  = 0. _d 0
 
 #ifdef ALLOW_PTRACERS
 
            DO iTracer = 1,PTRACERS_num
-            ptracerMask (I,J,iTracer,bi,bj) = 0. _d 0
+            ptracerMask (i,j,iTracer,bi,bj) = 0. _d 0
            ENDDO
 
 #endif /* ALLOW_PTRACERS */

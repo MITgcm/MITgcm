@@ -29,12 +29,12 @@ C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       ccount=0
-      DO bi = 1,nSx
-       DO bj = 1,nSy
-        DO I = 1-Olx,sNx+Olx
-         DO J = 1-Oly,sNy+Oly
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
 
-          IF ( plumeMask(I,J,bi,bj) .GT. 0 ) THEN
+          IF ( plumeMask(i,j,bi,bj) .GT. 0 ) THEN
 
             IF ( plumeLength(i,j,bi,bj) .GT. dyG(i,j,bi,bj) ) THEN
              plumeLength(i,j,bi,bj) =  dyG(i,j,bi,bj)
