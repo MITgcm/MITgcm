@@ -260,6 +260,7 @@ C--   Set (free)surface-related parameters
       select_rStar        = 0
       selectNHfreeSurf    = 0
       selectAddFluid      = 0
+      sstExtrapol         = 0. _d 0
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.
