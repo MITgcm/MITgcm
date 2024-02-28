@@ -34,7 +34,7 @@ step.
 ## Building `optim.x`
 
 To generate the makefile based on the setting in `$myExp` and to build `optim.x`,
-go into `optim` and run
+change into `optim` and run
 
 ```
 cd ../optim
