@@ -43,8 +43,8 @@ C     myThid -  Number of this instance of ICEPLUME_INIT_FIXED
 
 #ifdef ALLOW_ICEPLUME
 C     === Local variables ===
-C     I,J,K,bi,bj - Loop counters
-      INTEGER i, j, K, bi, bj
+C     i,j,bi,bj - Loop counters
+      INTEGER i, j, bi, bj
 #ifdef ALLOW_PTRACERS
       integer iTracer
 #endif /* ALLOW_PTRACERS */
@@ -92,8 +92,8 @@ C Load runoff
       IF (debugMode) 
      & CALL DEBUG_CALL('EXF_GETFFIELD_START runoffQsg',myThid)
 # endif
-catn useExfYearlyFields is a twoDigitYear to identify year or undef if have
-catn cycle. Note the double "FF" in getffield, which is the newer version
+C useExfYearlyFields is a twoDigitYear to identify year or undef if have
+C cycle. Note the double "FF" in getffield, which is the newer version
        CALL EXF_GETFFIELD_START( useExfYearlyFields,
      I                    'iceplume', 'runoffQsg', runoffQsgperiod,
      I                    runoffQsgstartdate1, runoffQsgstartdate2,
@@ -131,16 +131,6 @@ C      Read constant runoff input only for myIter = nIter0
        CALL READ_REC_XY_RL(
      &      runoffQsgFile,runoffQsg,iRec0,myIter,myThid)
         ENDIF
-
-catn        IF ( runoffVelFile .NE. ' ') THEN
-catn       CALL READ_REC_XY_RL(
-catn     &      runoffVelFile,runoffVel,iRec0,myIter,myThid)
-catn        ENDIF
-catn
-catn        IF ( runoffRadFile .NE. ' ') THEN
-catn       CALL READ_REC_XY_RL(
-catn     &      runoffRadFile,runoffRad,iRec0,myIter,myThid)
-catn        ENDIF
 
        ENDIF ! not periodicExternalForcing
 #endif /* ALLOW_EXF */

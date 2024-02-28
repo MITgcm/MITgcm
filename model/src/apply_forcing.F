@@ -515,24 +515,24 @@ C--   Forcing term
 
 #ifdef ALLOW_ADDFLUID
 
-catn: Note tendency included in addMass3Dplume here is from the plume.
-catn: The background melt is applied via iceplume_tendency_apply later.
-catn: Note: is what we are doing correct? I thought apply_forcing
-catn applies g[T,S] of all all processes that contribute to addMass.
-catn However, each process requires its own temperature? or at this
-catn point we apply whatever is the current theta/salt at this time?
-catn The way pkg/iceplume was coded, we do only iceplume from
-catn subglacial discharge here.  But what about other processes
-catn such as iceshelf or icefront that also contribe to addMass?
-catn 26Jun2023:
-c Do we also need to add an additional contrib due to
-c diff in reference T, similar to how empmr is treated?
-c My understanding is that when heatflux is added WITHOUT mass, we
-c only add the contrib of HeatFlux3Dpl to the tendency, similar
-c to how geothermal heatflux is treated. However, when there is also
-c a massflux, e.g. addMass3Dplume, we need an extra contrib related
-c to the cell theta or T_ref similar to how EmPmR contributes to
-c surfaceForcingT in external_forcing_surf.F.
+C Note tendency included in addMass3Dplume here is from the plume.
+C The background melt is applied via iceplume_tendency_apply later.
+C Note: is what we are doing correct? I thought apply_forcing
+C applies g[T,S] of all all processes that contribute to addMass.
+C However, each process requires its own temperature? or at this
+C point we apply whatever is the current theta/salt at this time?
+C The way pkg/iceplume was coded, we do only iceplume from
+C subglacial discharge here.  But what about other processes
+C such as iceshelf or icefront that also contribe to addMass?
+C 26Jun2023:
+C Do we also need to add an additional contrib due to
+C diff in reference T, similar to how empmr is treated?
+C My understanding is that when heatflux is added WITHOUT mass, we
+C only add the contrib of HeatFlux3Dpl to the tendency, similar
+C to how geothermal heatflux is treated. However, when there is also
+C a massflux, e.g. addMass3Dplume, we need an extra contrib related
+C to the cell theta or T_ref similar to how EmPmR contributes to
+C surfaceForcingT in external_forcing_surf.F.
 #ifdef ALLOW_ICEPLUME
       IF ( useICEPLUME ) THEN
        IF ( selectAddFluid.NE.0) THEN
@@ -540,11 +540,11 @@ c surfaceForcingT in external_forcing_surf.F.
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
-c J/s degC.kg/J m3/kg 1/m3 = degC/s
-catn 1Feb2022: from JMC we should save also addMass3Dplume*salt as it 
-catn is the quantity to convert between gT and diag fluxes similar to
-catn how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
-catn JMC is not sure if treatment for heat will work and will check
+C J/s degC.kg/J m3/kg 1/m3 = degC/s
+C 1Feb2022: from JMC we should save also addMass3Dplume*salt as it
+C is the quantity to convert between gT and diag fluxes similar to
+C how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
+C JMC is not sure if treatment for heat will work and will check
            tmpVar(i,j)=
 c     &          (addMass3Dplume(i,j,k,bi,bj)
 c     &          *temp_addMass3Dplume(I,J,k,bi,bj)
@@ -553,7 +553,7 @@ c     &          *temp_addMass3Dplume(I,J,k,bi,bj)
      &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+c    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 
            gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
           ENDDO
@@ -569,7 +569,7 @@ c     &          *temp_addMass3Dplume(I,J,k,bi,bj)
      &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
-C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
+c    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
 
            gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
           ENDDO
@@ -579,7 +579,7 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
       ENDIF
 #else /* ALLOW_ICEPLUME */
 
-catn: make sure we undefine (temp,salt)_addMass so we do not enter here
+C Make sure we undefine (temp,salt)_addMass so we do not enter here
       IF ( selectAddFluid.NE.0 .AND. temp_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
@@ -599,10 +599,10 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ELSE
          DO j=0,sNy+1
           DO i=0,sNx+1
-catn 1Feb2022: from JMC we should save also addMass3Dplume*salt as it 
-catn is the quantity to convert between gT and diag fluxes similar to
-catn how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
-catn JMC is not sure if treatment for heat will work and will check
+C 1Feb2022: from JMC we should save also addMass3Dplume*salt as it
+C is the quantity to convert between gT and diag fluxes similar to
+C how we treat sflux under nonlinFreeSurf and useRealFreshWaterFlux
+C JMC is not sure if treatment for heat will work and will check
             tmpVar(i,j) = 
      &          addMass(i,j,k,bi,bj)*mass2rUnit
      &          *( temp_addMass - tRef(k) )
@@ -622,12 +622,12 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
           CALL DIAGNOSTICS_FILL(tmpVar,
      &                     'gTaddMas',k,1,2,bi,bj,myThid )
 #ifdef ALLOW_ICEPLUME
-catn Originally tAddMass is just theta to check whether it is the
-catn same here as in iceplume_calc.  JMC has confirmed it is only the
-catn same if we are NOT using staggered timestepping.  So now this
-catn diag is the factor JMC suggested to save mainly for salt to see
-catn if it fixes the problem closing budg between tend vs flux forms.
-catn degC kg/s m3/kg 1/m3 = degC/s
+C Originally tAddMass is just theta to check whether it is the
+C same here as in iceplume_calc.  JMC has confirmed it is only the
+C same if we are NOT using staggered timestepping.  So now this
+C diag is the factor JMC suggested to save mainly for salt to see
+C if it fixes the problem closing budg between tend vs flux forms.
+C degC kg/s m3/kg 1/m3 = degC/s
         DO j=0,sNy+1
           DO i=0,sNx+1
             tmpVar(i,j)=theta(i,j,k,bi,bj)
@@ -1022,24 +1022,24 @@ C--   Forcing term
 
 #ifdef ALLOW_ADDFLUID
 
-catn: Note tendency included in addMass3Dplume here is from the plume.
-catn: The background melt is applied via iceplume_tendency_apply later.
+C Note tendency included in addMass3Dplume here is from the plume.
+C The background melt is applied via iceplume_tendency_apply later.
 #ifdef ALLOW_ICEPLUME
 
-catn 26Jun2023
-c Similarly for saltflux, when there is NO massflux, we only add contrib
-c of saltflux to S tendency via saltflux/rho/vol [g/s.m3/kg.1/m3=g/kg/s]
-c same way saltflux is a applied in external_forcing_surf.F.
-c However, when there is also a mass flux, e.g. addMass3Dplume, we also
-c need a term associated with this mass and the cell salinity or Sref,
-c similar to how PmEpR contributes to surfaceForcingS.
+C 26Jun2023
+C Similarly for saltflux, when there is NO massflux, we only add contrib
+C of saltflux to S tendency via saltflux/rho/vol [g/s.m3/kg.1/m3=g/kg/s]
+C same way saltflux is a applied in external_forcing_surf.F.
+C However, when there is also a mass flux, e.g. addMass3Dplume, we also
+C need a term associated with this mass and the cell salinity or Sref,
+C similar to how PmEpR contributes to surfaceForcingS.
       IF ( useICEPLUME ) THEN
        IF ( selectAddFluid.NE.0) THEN
         IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
          DO j=0,sNy+1
           DO i=0,sNx+1
-c g/s m3/kg 1/m3 = g/kg/s
+C g/s m3/kg 1/m3 = g/kg/s
            tmpVar(i,j) =
 c     &          (addMass3Dplume(i,j,k,bi,bj)
 c     &          *salt_addMass3Dplume(I,J,k,bi,bj)
@@ -1074,7 +1074,7 @@ C    &          *recip_deepFac2C(k)*recip_rhoFacC(k)
        ENDIF
       ENDIF
 #else
-catn: make sure (salt,temp)_addMass are unset so we dont enter here
+C Make sure (salt,temp)_addMass are unset so we dont enter here
       IF ( selectAddFluid.NE.0 .AND. salt_addMass.NE.UNSET_RL ) THEN
        IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
      &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
@@ -1116,13 +1116,13 @@ C     conversion to g/kg/s
           CALL DIAGNOSTICS_FILL(tmpVar,
      &                     'gSaddMas',k,1,2,bi,bj,myThid )
 #ifdef ALLOW_ICEPLUME
-catn originally sAddMass is just salt to check whether it is the
-catn same here as in iceplume_calc.  JMC has confirmed it is only the
-catn same if we are NOT using staggered timestepping.  So now this
-catn diag is the factor JMC suggested to save mainly for salt to see
-catn if it fixes the problem closing budg between tend vs flux forms.
-catn psu kg/s m3/kg 1/m3 = psu/s. mimic diags_oceanic_surf_flux.F for SFLUX
-catn another question is whether below we need the hFacC factor
+C originally sAddMass is just salt to check whether it is the
+C same here as in iceplume_calc.  JMC has confirmed it is only the
+C same if we are NOT using staggered timestepping.  So now this
+C diag is the factor JMC suggested to save mainly for salt to see
+C if it fixes the problem closing budg between tend vs flux forms.
+C psu kg/s m3/kg 1/m3 = psu/s. mimic diags_oceanic_surf_flux.F for SFLUX
+C another question is whether below we need the hFacC factor
          DO j=0,sNy+1
           DO i=0,sNx+1
             tmpVar(i,j)=salt(i,j,k,bi,bj)

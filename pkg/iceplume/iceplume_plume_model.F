@@ -30,14 +30,14 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     ==Local variables==
 
 C     Plume models
-catn: change the name JENKINS to SHEETPLUME
+C Change the name JENKINS to SHEETPLUME
       EXTERNAL SHEETPLUME, HALFCONE, DETACHED_CONE, JEX !JENKINS
      & , WANDW 
 C     For ODEPACK
       INTEGER  IOPT, IOUT, ISTATE, ITASK, ITOL, IWORK(20), LIW, LRW,
      &         MF, NEQ
-catn In original code Depth takes variable T, which is very confusing
-catn since we also have T as temperature sometimes. Now change to DD.
+C In original code Depth takes variable T, which is very confusing
+C since we also have T as temperature sometimes. Now change to DD.
       _RL DD, DDOUT
 
 #ifdef ICEPLUME_ALLOW_DETACHED_PLUME
@@ -88,24 +88,24 @@ C For ODEPACK solver. See ODEPACK documentation for definitions.
       IWORK(7) = 2 ! To limit number of times repeat error messages are printed
 
 C Initial conditions
-catn ============
-catn A few notes on "initial" as inputs: 
-catn Time constant:
-catn T_sg_0, S_sg_0, Angle_sg_0: read in from namelist or initialized
-catn                             in readparms and are NEVER CHANGED.
-catn Time dependent:
-catn The pair w_sg,r_sg or Q_sg are forcing values and geometry at the 
-catn point source, and are typically read in from file(s).
-catn If these files not available, then they take values assigned
-catn from namelist or initialized from readparms.  If read in the pair
-catn w_sg and r_sg, note that their individual values are not important
-catn but rather their combination to produce the intended Q_sg, with the
-catn relation done in iceplume_calc.F.  If read in Q_sg, then we typically
-catn fix w_sg and compute r_sg (done in iceplume_calc.F).
-catn Outputs:
-catn This takes inputs [w,r,Q]_sg, [T,S,Angle]_sg_0 to compute updated Y(9)
-catn (replacing input dLtangential) to update [r,w,t,s,a,mInt]ProfPlume(iout)
-catn ============
+C ============
+C A few notes on "initial" as inputs:
+C Time constant:
+C T_sg_0, S_sg_0, Angle_sg_0: read in from namelist or initialized
+C                             in readparms and are NEVER CHANGED.
+C Time dependent:
+C The pair w_sg,r_sg or Q_sg are forcing values and geometry at the
+C point source, and are typically read in from file(s).
+C If these files not available, then they take values assigned
+C from namelist or initialized from readparms.  If read in the pair
+C w_sg and r_sg, note that their individual values are not important
+C but rather their combination to produce the intended Q_sg, with the
+C relation done in iceplume_calc.F.  If read in Q_sg, then we typically
+C fix w_sg and compute r_sg (done in iceplume_calc.F).
+C Outputs:
+C This takes inputs [w,r,Q]_sg, [T,S,Angle]_sg_0 to compute updated Y(9)
+C (replacing input dLtangential) to update [r,w,t,s,a,mInt]ProfPlume(iout)
+C ============
       Y(2) = w_sg          ! time-dependent vertical velocity at point source
       Y(3) = T_sg_0        ! initial temperature at point source
       Y(4) = S_sg_0        ! initial salinity at point source
@@ -154,10 +154,10 @@ C Next point at which to retrieve values
        DDOUT = zProf(iceDepthK-1)
 
 C Clear cells below depth of ice face
-catn The loop below needs to loop ONLY to Nr+1 and not
-catn iceDepthK+1 in the case iceDepthK = Nr+1. Else we
-catn encounter out of bound error
-catn      DO k = Nr+1,iceDepthK+1
+C The loop below needs to loop ONLY to Nr+1 and not
+C iceDepthK+1 in the case iceDepthK = Nr+1. Else we
+C encounter out of bound error
+C      DO k = Nr+1,iceDepthK+1
       DO k = Nr+1,iceDepthK
        rProfPlume(k) = 0.D0
        wProfPlume(k) = 0.D0
@@ -203,7 +203,6 @@ C Decide which plume model to use
 
         IF ( useSheetPlume .OR. useTruncPlume ) THEN
 
-c         CALL DLSODE (JENKINS,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
          CALL DLSODE (SHEETPLUME,NEQ,Y,DD,DDOUT,ITOL,RTOL,ATOL,ITASK,
      &               ISTATE, IOPT, RWORK, LRW, IWORK, LIW, JEX, MF)
 
@@ -269,7 +268,8 @@ C Other values are kept for use in determining plume outflow properties.
 
         ELSE
 
-C If the plume has not reached neutral buoyancy, then we assign a depth at which to calculate the next value and loop round to call the plume model again.
+C If the plume has not reached neutral buoyancy, then we assign a depth at which
+C to calculate the next value and loop round to call the plume model again.
 C Make sure we're not at the surface
 
          IF ( iout .NE. 1 ) THEN
@@ -326,24 +326,23 @@ C Save results
 
 C---------------------------------------------------
 
-c      SUBROUTINE  JENKINS (
       SUBROUTINE  SHEETPLUME (
      I                 NEQ,
      U                 DD, Y,
      O                 YDOT  )
-catn Note: in functions such as this one,
-c    we solve at depth DD two sets of equations simutaneously for the
-c    glacial front mass balance (3eq, iceplume_meltrate.F) and plume
-c    properties (4eq).  The order is that we take in the subglacial
-c    DISCHARGE properties [w,r]sg at depth  DD (the bottom of the
-c    vertical front), and first call iceplume_meltrate to calculate
-c    the total melt and T,S stored in [mdot,tb,sb].
-c    Then, we solve the four equations for plume tendencies YDOT,
-c    Y(T,S,vertical vel, radii) as a function of depth. Y will be
-c    resaved in iceplume_plume_model into vertical profile properties
-c    [t,s,w,r,a,mInt]ProfPlume.
+C Note: in functions such as this one,
+C we solve at depth DD two sets of equations simutaneously for the
+C glacial front mass balance (3eq, iceplume_meltrate.F) and plume
+C properties (4eq).  The order is that we take in the subglacial
+C DISCHARGE properties [w,r]sg at depth  DD (the bottom of the
+C vertical front), and first call iceplume_meltrate to calculate
+C the total melt and T,S stored in [mdot,tb,sb].
+C Then, we solve the four equations for plume tendencies YDOT,
+C Y(T,S,vertical vel, radii) as a function of depth. Y will be
+C resaved in iceplume_plume_model into vertical profile properties
+C [t,s,w,r,a,mInt]ProfPlume.
 
-ckiki here I added my meltrate parameterization
+Ckiki here I added my meltrate parameterization
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -362,12 +361,6 @@ ckiki here I added my meltrate parameterization
 
 #ifdef ALLOW_ICEPLUME
 
-C     Y(1) = r
-C     Y(2) = w
-C     Y(3) = T
-C     Y(4) = S
-
-      
 C Interpolate from imposed ambient profiles
 
       IF ( abs(DD) .LE. zProfAbs(1) ) THEN
@@ -391,8 +384,8 @@ C Ambient density
 C Equations for Sb, Tb and mdot
 
 c================
-catn set some constant that we use all the time, as well as
-catn minimum background velocity if we use default Jenkin et al:
+C Set some constant that we use all the time, as well as
+C minimum background velocity if we use default Jenkin et al:
       IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
        absVelocity = backgroundVelThresh
       ELSE
@@ -418,12 +411,12 @@ C Plume vertical velocity
      &  +(gravity/absVelocity)*(rho_ambient-rho_plume)/rhoConst
 
 C Plume temperature
-catn in default code, factor_Cd = (Cd**HalfRL)*absVelocity
-cc Need to check whether all Y(2) should be replaced with absVelocity.
-cc I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
-cc pull absVelocity out all the way to the end outside of ifdef block,
-cc as well as the common factor (Tb-Y(3))/Y(1).  Also, note I flipped
-cc the original -(Y(3)-Tb) to +(Tb-Y(3)) prior to pulling out
+C In default code, factor_Cd = (Cd**HalfRL)*absVelocity
+C Need to check whether all Y(2) should be replaced with absVelocity.
+C I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
+C pull absVelocity out all the way to the end outside of ifdef block,
+C as well as the common factor (Tb-Y(3))/Y(1).  Also, note I flipped
+C the original -(Y(3)-Tb) to +(Tb-Y(3)) prior to pulling out
       YDOT(3)=E_0*(Tambient-Y(3))/Y(1)
      &  +mdot*(Tb-Y(3))/(Y(1)*absVelocity)
 #ifndef ICEPLUME_ALLOW_SCHULZ22
@@ -447,8 +440,8 @@ C along-plume integrated melt rate and contact area  -
       YDOT(5) = Y(7)
       YDOT(6) = Y(7) * mdot
 
-catn As i suspected, the calculations of YDOT are different depending
-catn on the geometry, so we cannot generalize it with a subroutine
+C As i suspected, the calculations of YDOT are different depending
+C on the geometry, so we cannot generalize it with a subroutine
       DD = DDin
 
 #endif /* ALLOW_ICEPLUME */
@@ -462,7 +455,7 @@ C - ------------------------------------------------------------------
      I                 NEQ,
      U                 DD, Y,
      O                 YDOT)
-ckiki: here I added my new melt rate paramterization
+Ckiki: here I added my new melt rate paramterization
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -481,12 +474,6 @@ ckiki: here I added my new melt rate paramterization
 
 #ifdef ALLOW_ICEPLUME
 
-C     Y(1) = r
-C     Y(2) = w
-C     Y(3) = T
-C     Y(4) = S
-
-     
 C     Interpolate from imposed ambient profiles
 
       IF ( abs(DD) .LE. zProfAbs(1) ) THEN
@@ -509,9 +496,9 @@ C Ambient density
 
 C     Equations for Sb, Tb and mdot
 
-c================
-catn set some constant that we use all the time, as well as
-catn minimum background velocity if we use default Jenkin et al:
+C================
+C set some constant that we use all the time, as well as
+C minimum background velocity if we use default Jenkin et al:
       IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
        absVelocity = backgroundVelThresh
       ELSE
@@ -542,12 +529,12 @@ C Plume vertical velocity
      &          -4.*Cd*absVelocity/(pi*Y(1))
 
 C Plume temperature
-catn in default code, factor_Cd = (Cd**HalfRL)*absVelocity
-cc Need to check whether all Y(2) should be replaced with absVelocity.
-cc I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
-cc pull absVelocity out all the way to the end outside of ifdef block,
-cc as well as the common factor (Tb-Y(3))/(pi*Y(1)).  Also, note I
-cc flipped the original -4.*(Y(3)-Tb) to +4.*(Tb-Y(3)) prior to pulling
+C In default code, factor_Cd = (Cd**HalfRL)*absVelocity
+C Need to check whether all Y(2) should be replaced with absVelocity.
+C I think so. If so, factor_Cd/absVelocity = (Cd**HalfRL). Lastly,
+C pull absVelocity out all the way to the end outside of ifdef block,
+C as well as the common factor (Tb-Y(3))/(pi*Y(1)).  Also, note I
+C flipped the original -4.*(Y(3)-Tb) to +4.*(Tb-Y(3)) prior to pulling
       YDOT(3) = twoRL*E_0*(Tambient-Y(3))/Y(1)
      &         +4.*mdot*
      &           (Tb-Y(3))/(pi*Y(1)*absVelocity)-4.*
@@ -558,8 +545,8 @@ cc flipped the original -4.*(Y(3)-Tb) to +4.*(Tb-Y(3)) prior to pulling
      &      *(Y(3)-Tb)/(pi*Y(1)*absVelocity)
 #endif
 
-cc same as above, factor_Cd/absVelocity = (Cd**HalfRL)
-cc same flipping of sign and pulling common factors to the end
+C same as above, factor_Cd/absVelocity = (Cd**HalfRL)
+C same flipping of sign and pulling common factors to the end
       YDOT(4) = twoRL*E_0*(Sambient-Y(4))/Y(1)
      &         +4.*mdot*(Sb-Y(4))/
      &          (pi*Y(1)*absVelocity)-4.*
@@ -610,12 +597,6 @@ C - ------------------------------------------------------------------
 
 #ifdef ALLOW_ICEPLUME
 
-C     Y(1) = r
-C     Y(2) = w
-C     Y(3) = T
-C     Y(4) = S
-
-     
 C     Interpolate from imposed ambient profiles
 
       IF ( abs(DD) .LE. zProfAbs(1) ) THEN
@@ -634,9 +615,9 @@ C plume density
       rho_plume   = RHO(Y(3),Y(4),DDin)         !formerly rho_1
 C ambient density
       rho_ambient = RHO(Tambient,Sambient,DDin) !formerly rho_0
-c================
-catn set some constant that we use all the time, as well as
-catn minimum background velocity if we use default Jenkin et al:
+C================
+C Set some constant that we use all the time, as well as
+C minimum background velocity if we use default Jenkin et al:
       IF (ABS(Y(2)).LT.backgroundVelThresh) THEN
        absVelocity = backgroundVelThresh
       ELSE
@@ -687,7 +668,7 @@ C Plume salinity
       YDOT(5) = Wplume
       YDOT(6) = Wplume*mdot
 
-catn: rewriting to avoid mult only to div by same number
+C rewriting to avoid mult only to div by same number
       YDOT(7) = (absVelocity*absVelocity*YDOT(1)
      &          + twoRL*absVelocity*Y(1)*YDOT(2)) /
      &          (absVelocity*absVelocity*Y(1))/TAN(Y(7))
@@ -729,12 +710,6 @@ C----------------------------------------------------------------------
 #ifdef ALLOW_ICEPLUME
 #ifdef ICEPLUME_ALLOW_SCHULZ22
 
-C     Y(1) = r
-C     Y(2) = w
-C     Y(3) = T
-C     Y(4) = S
-
-      
 C Interpolate from imposed ambient profiles
 
       IF ( abs(DD) .LE. zProfAbs(1) ) THEN
@@ -749,7 +724,6 @@ C Interpolate from imposed ambient profiles
       ENDIF
 
       DDin = DD
-c      write(*, * ) 'uses WandW equations'
 C Plume density
       rho_plume   = RHO(Y(3),Y(4),DDin)         !formerly rho_1
 C Ambient density
@@ -757,22 +731,8 @@ C Ambient density
 
 C Equations for Sb, Tb and mdot
 C
-cckiki: checked (note: cd term in Sb vanishes in SHEETPLUME (JENKINS)!)
-c      a = lambda1*(GamTconst*HeatCapacity_Cp-GamSconst*c_i)
-c
-c      b = GamSconst*c_i*(lambda1*Y(4)-lambda2-lambda3*DDin+
-c     &         iceTemp-(ICEPLUMElatentHeat/c_i))
-c     &        -GamTconst*HeatCapacity_Cp*(Y(3)-lambda2-lambda3*DDin)
-c
-c      c = GamSconst*Y(4)*(c_i*(lambda2+lambda3*DDin-iceTemp)
-c     &        +ICEPLUMElatentHeat)
-c
-c      Sb   = (OneRL/(twoRL*a))*(-b-((b**twoRL-4.*a*c)**HalfRL))
-c      Tb   = lambda1*Sb+lambda2+lambda3*DDin
-c      mdot = GamSconst*(Y(4)-Sb)/Sb
 
-catn replace chunk above with functional call, assuming same set as
-catn in sheetplume and halfcone
+C Functional call, assuming same set as in sheetplume and halfcone
       call iceplume_meltrate(
      I        Y(3),Y(4),Y(2),DD,
      O        mdot, Tb, Sb)

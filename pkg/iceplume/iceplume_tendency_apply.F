@@ -48,29 +48,27 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_ICEPLUME
 
-catn: this is the background melt tendency
-catn 26Jun2026
+C This is the background melt tendency
+C 26Jun2026
 c Because the bg submarine melt is also contributing massflux to the
 c grid cell, should we treat it the same way as the plume? i.e. need
 c to account for the massflux*theta or massflux*Tref
       IF ( applyIcePlumeBGTendT ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-c          gT_arr(i,j) = gT_arr(i,j)
-c     &         + iceplumeBG_TendT(i,j,k,bi,bj)
           tmpVar(i,j) =
      &         (HeatFlux3Dbg(i,j,k,bi,bj)/HeatCapacity_Cp
      &         )*mass2rUnit
      &          *recip_rA(i,j,bi,bj)
      &          *recip_drF(k)
-c the orig calc of tendency inside iceplume_calc did not account for hfac
+C The orig calc of tendency inside iceplume_calc did not account for hfac
 c     &          *_recip_hFacC(i,j,k,bi,bj)
           gT_arr(i,j) = gT_arr(i,j) + tmpVar(i,j)
-c now mult recip_hFacC before output, for comparison with IP_gTbg
+C Now mult recip_hFacC before output, for comparison with IP_gTbg
           tmpVar(i,j) = tmpVar(i,j)
      &          *_recip_hFacC(i,j,k,bi,bj)
-c the orig calc also did not account for the correction to tendency due
-c to addmass, which we applied for subglacial plume in apply_forcing.F
+C The orig calc also did not account for the correction to tendency due
+C to addmass, which we applied for subglacial plume in apply_forcing.F
           tmpVar1(i,j)= -addMass3Dbg(i,j,k,bi,bj)*theta(i,j,k,bi,bj)
      &          *mass2rUnit
      &          *recip_rA(i,j,bi,bj)
@@ -141,23 +139,21 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_ICEPLUME
 
-catn: this is the background melt tendency
+C This is the background melt tendency
       IF ( applyIcePlumeBGTendS ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-c          gS_arr(i,j) = gS_arr(i,j)
-c     &         + iceplumeBG_TendS(i,j,k,bi,bj)
          tmpVar(i,j) =
      &         (SaltFlux3Dbg(i,j,k,bi,bj)
      &         )*mass2rUnit
      &         *recip_rA(i,j,bi,bj)
      &         *recip_drF(k)
-c the orig calc of tendency inside iceplume_calc did not account for hfac
+C The orig calc of tendency inside iceplume_calc did not account for hfac
 c     &         *_recip_hFacC(i,j,k,bi,bj)
           gS_arr(i,j) = gS_arr(i,j) + tmpVar(i,j)
           tmpVar(i,j) = tmpVar(i,j)
      &         *_recip_hFacC(i,j,k,bi,bj)
-c now mult recip_hFacC before output, for comparison with IP_gSbg
+C Now mult recip_hFacC before output, for comparison with IP_gSbg
          tmpVar1(i,j) = -addMass3Dbg(i,j,k,bi,bj)*salt(i,j,k,bi,bj)
      &         *mass2rUnit
      &         *recip_rA(i,j,bi,bj)

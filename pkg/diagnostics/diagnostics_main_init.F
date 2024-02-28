@@ -174,7 +174,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagCode  = 'SMR     MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-catn
+
 #ifdef ALLOW_ADDFLUID
       diagName  = 'addMass '
       diagTitle = 'Source (<0: sink) of fluid in the domain interior'

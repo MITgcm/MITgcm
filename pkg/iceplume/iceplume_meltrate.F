@@ -33,9 +33,9 @@ c       secInday = 86400 . _d 0
 
 C Routine cannot cope with zero velocity. Unlikely to occur anyway with currents,
 C waves, convection etc. This isn't very physical, but will do for now.
-catn 30.Nov.2022 : this check below did not account for abs(velocity)
-catn so i am assuming the velocity passed in is already abs?
-ckiki to be sure, I inserted the abs
+C 30.Nov.2022 : this check below did not account for abs(velocity)
+C so atn assumes the velocity passed in is already abs?
+Ckiki to be sure, I inserted the abs
       IF ( abs(velocity) .LT. backgroundVelThresh ) THEN
        absVelocity = backgroundVelThresh
       ELSE
@@ -46,8 +46,8 @@ C Calculate melt rate from 3 equation formualtion (as for plume models)
 
 C     Equations for Sb, Tb and mdot
 
-catn: this setting of Gam[T,S]const were moved to iceplume_readparm.F
-cc        GamSconst = 0.07*GamTconst
+C This setting of Gam[T,S]const were moved to iceplume_readparm.F
+c        GamSconst = 0.07*GamTconst
 
 #ifndef ICEPLUME_ALLOW_SCHULZ22
       factor_Cd = (Cd**HalfRL)*absVelocity
@@ -87,8 +87,8 @@ cc        GamSconst = 0.07*GamTconst
      &                 + GamSconst*(salinity-Sb)/Sb
 #endif
 
-catn: to make this function more general, we remove conversion to m/d
-cC Meltrate is in m d^-1
+C To make this function more general, we remove conversion to m/d
+C Meltrate is in m d^-1
 c       meltrate_b = secInday*mdot
        meltrate_b = mdot
 
