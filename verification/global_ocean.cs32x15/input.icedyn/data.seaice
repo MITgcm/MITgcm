@@ -10,6 +10,8 @@
 # for backward compatibility only
  SEAICE_clipVelocities = .TRUE.,
  SEAICEuseFlooding  = .FALSE.,
+# to reproduce "bug"
+ SEAICEaddSnowMass = .FALSE.,
 # old defaults
  SEAICEscaleSurfStress = .FALSE.,
  SEAICE_Olx = 0,
