@@ -18,7 +18,8 @@ illustration purposes, let us assume that we want to generate an `optim.x` for
 
 In `MITgcm/lsopt` adjust the compiler and compiler flags in `Makefile`. Using
 the same compiler and flags as for building the `mitgcmuv_ad` executable in
-`$myExp` is probably the best guess. The default works for a standard Ubuntu
+`$myExp` is probably the best guess, see also below how the `MITgcm/optim`
+`Makefile` is generated. The default works for a standard Ubuntu
 system, but not e.g. for a Mac. There's a makefile that has worked for MacOS:
 `Makefile_macos`, but may require adjustment. After adjusting the makefile,
 compile the libraries like this:
@@ -33,7 +34,7 @@ step.
 ## Building `optim.x`
 
 To generate the makefile based on the setting in `$myExp` and to build `optim.x`,
-change into `optim` and run
+go into `optim` and run
 
 ```
 cd ../optim
@@ -43,14 +44,23 @@ make depend
 make
 ```
 
-`prep_make` grabs the compiler parameters from `$myExp` and generates a `Makefile`.
+`prep_make` generates a local `Makefile` from `makefile_templ` and from `$myExp`
+`build/Makefile`. It fills some `makefile_templ` placeholder "_GET_keyWord"
+with the corresponding option/parameter value "keyWord" found in
+the build/Makefile (the current list of keyWords is: BLD_DIR, EXTRA_OPT, CPPCMD,
+SFX, FC, FFLAGS and FOPTIM).
+A simple usage description is returned when typing "./prep_make" alone.
+
 In some cases you may have to adjust `makefile_templ`(e.g. for the path to a
 non-standard `makedepend`) before running `prep_make`.
+Note that the `Makefile` generated using `prep_make` option "-fake" is only for
+testing purpose, to get a fake `optim.x` that just reads gradient vector files
+without any lsopt pieces.
 
 It may make sense to first generate the makefile in `MITgcm/optim` with
 `prep_make`, and then use the parameters in the generated `Makefile` to adjust
-the sample `Makefile` in `MITgcm/lsopt`, build the libraries, and then build
-`optim.x`.
+the sample `Makefile` in `MITgcm/lsopt`, build the libraries, and then
+return to `MITgcm/optim` to build `optim.x`.
 
 ## Backward compatibility
 
