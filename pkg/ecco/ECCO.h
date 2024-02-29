@@ -122,40 +122,41 @@ C                 the current model integration.
       INTEGER ndaysrec
 
       COMMON /ECCO_R/
-     &                    m_eta, m_UE, m_VN,
-     &                    m_bp,
-#ifdef ALLOW_PSBAR_STERIC
-     &                    sterGloH,
-#endif
-#ifdef ATMOSPHERIC_LOADING
-#ifdef ALLOW_IB_CORR
-     &                    m_bp_nopabar,
-     &                    m_eta_dyn,
-#endif
-#endif
+     &                    m_eta, m_UE, m_VN, m_bp,
      &                    trVol, trHeat, trSalt,
-     &                    VOLsumGlob_0, VOLsumGlob,
-     &                    RHOsumGlob_0, RHOsumGlob,
-     &                    frame, eccoVol_0
-      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
-      _RL frame   (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
-      _RL m_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL m_bp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+     &                    frame
+      _RL m_eta    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL m_UE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL m_VN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL m_bp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL trVol    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trHeat   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trSalt   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL frame    (1-OLx:sNx+OLx,1-OLy:sNy+OLy           )
+
 #ifdef ALLOW_PSBAR_STERIC
+      COMMON /ECCO_R2/
+     &                    sterGloH,
+     &                    VOLsumGlob_0, VOLsumGlob,
+     &                    RHOsumGlob_0, RHOsumGlob
       _RL sterGloH
+      _RL VOLsumGlob_0, VOLsumGlob, RHOsumGlob_0, RHOsumGlob
+
 #endif
 #ifdef ATMOSPHERIC_LOADING
 #ifdef ALLOW_IB_CORR
+      COMMON /ECCO_R3/
+     &                    m_bp_nopabar,
+     &                    m_eta_dyn
       _RL m_bp_nopabar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
-      _RL m_eta_dyn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL m_eta_dyn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+
 #endif
 #endif
-      _RL m_UE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL m_VN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL trSalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifndef ECCO_VARIABLE_AREAVOLGLOB
+      COMMON /ECCO_R4/ eccoVol_0
       _RL eccoVol_0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
 
 C     Two runtime parameters related to outputting sterGloH
 C     ecco_output_sterGloH :: output sterGloH at each time step if true

@@ -21,17 +21,18 @@ C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
-#include "ctrl.h"
-#include "grdchk.h"
+#include "CTRL.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 
 C     == routine arguments ==
-
       INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
 C     == local variables ==
-
 C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -39,7 +40,10 @@ C     == end of interface ==
 
       WRITE(msgBuf,'(A)') 'GRDCHK_CHECK: grdchk package'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT, myThid )
+     &                    SQUEEZE_RIGHT, myThid )
+
+C--   Summarize the gradient check setup.
+      CALL GRDCHK_SUMMARY( myThid )
 
       IF ( ncvarindex(grdchkvarindex) .LE. 0 ) THEN
          WRITE(msgBuf,'(A,I4)')

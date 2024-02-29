@@ -24,7 +24,7 @@ c     == global variables ==
 
 #include "cost.h"
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 #endif
 #ifdef ALLOW_DIC
 # include "DIC_COST.h"
@@ -58,6 +58,10 @@ c     == end of interface ==
 
 #ifdef ALLOW_SHELFICE
       IF (useShelfice) CALL SHELFICE_COST_FINAL (myThid)
+#endif
+
+#if (defined(ALLOW_STREAMICE) && defined(ALLOW_COST_STREAMICE))
+      IF (useStreamice) CALL STREAMICE_COST_FINAL (myThid)
 #endif
 
 #ifdef ALLOW_THSICE

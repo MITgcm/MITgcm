@@ -124,6 +124,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEusePicardAsPrecon =', ' /* Picard as preconditioner */')
       CALL WRITE_0D_L ( SEAICEuseLSR, INDEX_NONE,
      & 'SEAICEuseLSR      =', ' /* use default Picard-LSR solver */')
+      CALL WRITE_0D_L ( SEAICEuseLSRflex, INDEX_NONE,
+     & 'SEAICEuseLSRflex  =', ' /* with residual norm criterion */')
       CALL WRITE_0D_L ( SEAICEuseKrylov, INDEX_NONE,
      & 'SEAICEuseKrylov   =', ' /* use Picard-Krylov solver */')
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
@@ -313,12 +315,6 @@ C     end if SEAICEuseDYNAMICS bloc
      &'   -----------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      IF ( useThSIce ) THEN
-      WRITE(msgBuf,'(A)')
-     &'   ==> advection diffusion done in pkg ThSIce'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      ELSE
 
       CALL WRITE_0D_L ( SEAICEmomAdvection, INDEX_NONE,
      & 'SEAICEmomAdvection =', ' /* advect sea ice momentum */')
@@ -344,47 +340,55 @@ C     end if SEAICEuseDYNAMICS bloc
      &              ' /* V.I Non-linear terms Jamart flag */')
       ENDIF
 #endif
-      CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
-     & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
-      CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
-     & 'SEAICEadvArea =', ' /* advect fractional ice area */')
-      CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
-     & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
-#ifdef SEAICE_VARIABLE_SALINITY
-      CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
-     & 'SEAICEadvSalt =', ' /* advect salinity together with ice */')
-#endif
-      CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
-     & 'SEAICEadvScheme   =', ' /* advection scheme for ice */')
-      IF ( SEAICEadvScheme .EQ. 2 )
-     & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
-     & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
-      IF ( SEAICEadvArea )
-     &CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
-     & 'SEAICEadvSchArea   =', ' /* advection scheme for area */')
-      IF ( SEAICEadvHeff )
-     &CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
-     & 'SEAICEadvSchHeff   =', ' /* advection scheme for thickness */')
-      IF ( SEAICEadvSnow )
-     &CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
-     & 'SEAICEadvSchSnow   =', ' /* advection scheme for snow */')
-#ifdef SEAICE_VARIABLE_SALINITY
-      IF ( SEAICEadvSalt )
-     &CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
-     & 'SEAICEadvSchSalt   =', ' /* advection scheme for salt */')
-#endif
-      CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
-     & 'SEAICEdiffKhArea   =', ' /* diffusivity (m^2/s) for area */')
-      CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
-     & 'SEAICEdiffKhHeff   =', ' /* diffusivity (m^2/s) for heff */')
-      CALL WRITE_0D_RL( SEAICEdiffKhSnow,   INDEX_NONE,
-     & 'SEAICEdiffKhSnow   =', ' /* diffusivity (m^2/s) for snow */')
-      IF ( SEAICEadvSalt )
-     &CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
-     & 'SEAICEdiffKhSalt   =', ' /* diffusivity (m^2/s) for salt */')
-      CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
-     &                  ' /* parameter used in advect.F [m/s] */')
 
+      IF ( useThSIce ) THEN
+       WRITE(msgBuf,'(A)')
+     &  '   ==> advection diffusion done in pkg ThSIce'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ELSE
+       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
+     &  'SEAICEadvHeff =', ' /* advect effective ice thickness */')
+       CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
+     &  'SEAICEadvArea =', ' /* advect fractional ice area */')
+       CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
+     &  'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
+#ifdef SEAICE_VARIABLE_SALINITY
+       CALL WRITE_0D_L ( SEAICEadvSalt, INDEX_NONE,
+     &  'SEAICEadvSalt =', ' /* advect salinity together with ice */')
+#endif
+       CALL WRITE_0D_L ( SEAICEmultiDimAdvection, INDEX_NONE,
+     &  'SEAICEmultiDimAdvection =', ' /* multidimadvec */')
+       CALL WRITE_0D_I ( SEAICEadvScheme,   INDEX_NONE,
+     &  'SEAICEadvScheme   =', ' /* advection scheme for ice */')
+       IF ( SEAICEadvScheme .EQ. 2 )
+     &  CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
+     &  'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
+       IF ( SEAICEadvArea )
+     &  CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
+     &  'SEAICEadvSchArea  =', ' /* advection scheme for area */')
+       IF ( SEAICEadvHeff )
+     &  CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
+     &  'SEAICEadvSchHeff  =', ' /* advection scheme for thickness */')
+       IF ( SEAICEadvSnow )
+     &  CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
+     &  'SEAICEadvSchSnow  =', ' /* advection scheme for snow */')
+#ifdef SEAICE_VARIABLE_SALINITY
+       IF ( SEAICEadvSalt )
+     &  CALL WRITE_0D_I ( SEAICEadvSchSalt,   INDEX_NONE,
+     &  'SEAICEadvSchSalt  =', ' /* advection scheme for salt */')
+#endif
+       CALL WRITE_0D_RL( SEAICEdiffKhArea,   INDEX_NONE,
+     &  'SEAICEdiffKhArea  =', ' /* diffusivity (m^2/s) for area */')
+       CALL WRITE_0D_RL( SEAICEdiffKhHeff,   INDEX_NONE,
+     &  'SEAICEdiffKhHeff  =', ' /* diffusivity (m^2/s) for heff */')
+       CALL WRITE_0D_RL( SEAICEdiffKhSnow,   INDEX_NONE,
+     &  'SEAICEdiffKhSnow  =', ' /* diffusivity (m^2/s) for snow */')
+       IF ( SEAICEadvSalt )
+     &  CALL WRITE_0D_RL( SEAICEdiffKhSalt,   INDEX_NONE,
+     &  'SEAICEdiffKhSalt  =', ' /* diffusivity (m^2/s) for salt */')
+       CALL WRITE_0D_RL( DIFF1, INDEX_NONE, 'DIFF1             =',
+     &                   ' /* parameter used in advect.F [m/s] */')
 C     end if useThSIce bloc
       ENDIF
 
@@ -467,9 +471,12 @@ C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
      &                    SQUEEZE_RIGHT, myThid )
       ELSE
 #ifdef SEAICE_USE_GROWTH_ADX
-      WRITE(msgBuf,'(A)')
-     &      'SEAICE_USE_GROWTH_ADX defined, '//
+      WRITE(msgBuf,'(2A)')
+     &      'SEAICE_USE_GROWTH_ADX defined, ',
      &      'using seaice_growth_adx code'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A,1PE24.17)') ' SINegFac  = ', SINegFac
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '

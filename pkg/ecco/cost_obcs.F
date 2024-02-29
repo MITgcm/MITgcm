@@ -34,7 +34,7 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
+# include "CTRL.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

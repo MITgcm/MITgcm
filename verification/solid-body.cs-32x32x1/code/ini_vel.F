@@ -22,17 +22,20 @@ C     === Global variables ===
 #include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_VEL 
+C     myThid :: my Thread Id number
       INTEGER myThid
 
-C     == Local variables ==
-C     bi,bj,i,j,k - Loop counters
-      INTEGER bi,bj,i,j,k
-      INTEGER ip1,jp1
-      _RL psi,omegaprime,fac
+C     !LOCAL VARIABLES:
+C     i,j,k  :: Loop counters
+C     bi,bj  :: tile indices
+      INTEGER i, j, k
+      INTEGER bi, bj
+      INTEGER ip1, jp1
+      _RL psi, omegaprime, fac
+CEOP
 
-      psi(i,j,bi,bj)=fac*fCoriG(i,j,bi,bj)
+C     internal function:
+      psi(i,j,bi,bj) = fac*fCoriG(i,j,bi,bj)
 
 C--   Initialise velocity fields to zero
 C
@@ -41,52 +44,44 @@ C     field then customize the following section of code.
 C     It is, however, often easier to generate initial conditions
 C     off-line and read them from input files...
 C
-      omegaprime=38.60328935834681d0/rSphere
-      fac=-(rSphere**2)*omegaprime/(2.d0*Omega)
+C     this relative rotation corresponds to a 5.day rotation period:
+      omegaprime = 80. _d 0 / rSphere
+      fac = -(rSphere*rSphere)*omegaprime/(2. _d 0*Omega)
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          jp1=MIN(j+1,sNy+Oly)
-          DO i=1-Olx,sNx+Olx
-           ip1=MIN(i+1,sNx+Olx)
-           uVel(i,j,k,bi,bj)=0.
-     &      +(psi(i,j,bi,bj)-psi(i,jp1,bi,bj))*recip_dyg(i,j,bi,bj)
-           vVel(i,j,k,bi,bj)=0.
-     &      +(psi(ip1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxg(i,j,bi,bj)
-           wVel(i,j,k,bi,bj)=0.
+         DO j=1-OLy,sNy+OLy
+          jp1 = MIN(j+1,sNy+OLy)
+          DO i=1-OLx,sNx+OLx
+           ip1 = MIN(i+1,sNx+OLx)
+           uVel(i,j,k,bi,bj) = 0. _d 0
+     &      + (psi(i,j,bi,bj)-psi(i,jp1,bi,bj))*recip_dyG(i,j,bi,bj)
+           vVel(i,j,k,bi,bj) = 0. _d 0
+     &      + (psi(ip1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxG(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
+c     IF ( uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ' ) THEN
 C     Read an initial state for each component if required
-      IF (uVelInitFile .NE. ' ') THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
-       _END_MASTER(myThid)
-c      _EXCH_XYZ_RL(uVel  , myThid )
-      ENDIF
+       IF ( uVelInitFile .NE. ' ' )
+     & CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
 
-      IF (vVelInitFile .NE. ' ') THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( vVelInitFile, ' ', vVel, 0, myThid )
-       _END_MASTER(myThid)
-c      _EXCH_XYZ_RL(vVel  , myThid )
-      ENDIF
+       IF ( vVelInitFile .NE. ' ' )
+     & CALL READ_FLD_XYZ_RL( vVelInitFile, ' ', vVel, 0, myThid )
 
-c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
 c     ENDIF
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           uVel(i,j,k,bi,bj)=uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
-           vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
+           vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO

@@ -32,10 +32,10 @@ c#include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #include "CTRL_SIZE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
+#include "CTRL.h"
+#include "CTRL_DUMMY.h"
 #include "CTRL_OBCS.h"
-#include "optim.h"
+#include "OPTIMCYCLE.h"
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c     == routine arguments ==
@@ -66,7 +66,7 @@ cgg      _RL maskxz   (1-OLx:sNx+OLx,Nr,nSx,nSy)
       _RL tmpfldxz (1-OLx:sNx+OLx,Nr,nSx,nSy)
       logical doglobalread
       logical ladinit
-      character*(80) fnameobcss
+      character*(MAX_LEN_FNAM) fnameobcss
 #ifdef ALLOW_OBCS_CONTROL_MODES
       integer nk,nz
       _RL     tmpz (Nr,nSx,nSy)
@@ -93,7 +93,7 @@ c     Find ctrlDir (w/o trailing blanks) length
 
       if (optimcycle .ge. 0) then
        ilobcss=ilnblnk( xx_obcss_file )
-       write(fnameobcss(1:80),'(2a,i10.10)')
+       write(fnameobcss,'(2a,i10.10)')
      &      ctrlDir(1:ilDir)//xx_obcss_file(1:ilobcss), '.', optimcycle
       endif
 
@@ -110,7 +110,7 @@ c--   Get the counters, flags, and the interpolation factor.
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcss_dummy )
+     &                       myThid, xx_obcss_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -179,7 +179,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
-     &                       mythid, xx_obcss_dummy )
+     &                       myThid, xx_obcss_dummy )
 
         do bj = jtlo,jthi
          do bi = itlo,ithi

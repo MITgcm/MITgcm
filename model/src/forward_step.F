@@ -265,8 +265,8 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
-#  include "ctrl.h"
-#  include "ctrl_dummy.h"
+#  include "CTRL.h"
+#  include "CTRL_DUMMY.h"
 #  include "CTRL_GENARR.h"
 #  include "CTRL_OBCS.h"
 # endif
@@ -375,6 +375,25 @@ C     == Global variables ==
 #  include "CG2D.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
+
+#ifdef ALLOW_TAPENADE
+c# ifdef ALLOW_KPP
+c#  include "KPP_PARAMS.h"
+c# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_TAVE.h"
+# endif
+# ifdef ALLOW_TIMEAVE
+#  include "TIMEAVE_STATV.h"
+# endif
+# ifdef ALLOW_MOM_FLUXFORM
+#  include "MOM_FLUXFORM.h"
+# endif
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_INTERP_PARAM.h"
+# endif
+#endif /* ALLOW_TAPENADE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
