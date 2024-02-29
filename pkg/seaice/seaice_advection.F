@@ -393,7 +393,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
@@ -607,7 +607,7 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=dkey, byte=isbyte
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
