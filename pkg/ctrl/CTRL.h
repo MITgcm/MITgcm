@@ -8,7 +8,7 @@ C     *================================================================*
 C     | CTRL.h
 C     | o Header file defining control variables of the ECCO state
 C     |   estimation tool.
-C     | o Depending on the specific problem to be studied users will
+C     | o Depending on the specific problem to be studied users may
 C     |   have to modify this header file.
 C     | o started: Christian Eckert eckert@mit.edu  30-Jun-1999
 C     *================================================================*
@@ -31,9 +31,8 @@ C     this specific old (prior to PR #796) packed-ctrl file
       PARAMETER( old_maxcvars = 400 )
 #endif
 
-cph ctrlprec will be set to 32 for ECCO to reduce I/O
-cph but jeopardizes some gradient checks, so should be
-cph set to 64 by default.
+C-  ctrlprec will be set to 32 for ECCO to reduce I/O but this jeopardizes
+C   gradient checks accuracy, so should be set to 64 by default.
       INTEGER     ctrlprec
       COMMON /controlparams_i/ ctrlprec
 
@@ -68,7 +67,7 @@ C                            ctrl_pack/ctrl_unpack
 C     doSinglePrecTapelev :: reduce precision of ad tape files to float32
 C                            (only used in pkg/autodiff ...)
 
-      COMMON /controlvars_l /
+      COMMON /controlparams_l/
      &                       doInitXX,
      &                       doAdmTlm,
      &                       doPackDiag,
@@ -89,6 +88,8 @@ C                            (only used in pkg/autodiff ...)
       LOGICAL doSinglePrecTapelev
       LOGICAL doAdmtlmBypassAD
 
+C--   holds control-variable setting and params as maxcvars long vector
+C     in following "controlvar_*" common blocks:
       COMMON /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
@@ -144,7 +145,7 @@ C                            (only used in pkg/autodiff ...)
       CHARACTER*(MAX_LEN_FNAM) ncvarfname( maxcvars )
       CHARACTER*(2)            yadprefix
 
-c     Define unit weight as a placeholder
+C     Define unit weight as a placeholder
       COMMON /ctrl_weights_unit_r/
      &                        wunit
       _RL wunit     (Nr,nSx,nSy)
@@ -180,11 +181,11 @@ c     Define unit weight as a placeholder
       DOUBLE PRECISION phtmpadmtlm(maxn)
 #endif
 
-c     Control variables:
-c     ==================
-c
+C     Control variables:
+C     ==================
+
 #ifdef ALLOW_OPENAD
-C
+
       COMMON /controlvars_r_openad/
      &        xx_place_holder
 # ifdef ALLOW_GENARR2D_CONTROL
@@ -193,9 +194,8 @@ C
 # ifdef ALLOW_GENARR3D_CONTROL
      &      , xx_genarr3d
 # endif
-C
-      _RL xx_place_holder
 
+      _RL xx_place_holder
 # ifdef ALLOW_GENARR2D_CONTROL
       _RL xx_genarr2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
      &                maxCtrlArr2D)
