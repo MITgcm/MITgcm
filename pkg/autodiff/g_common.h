@@ -12,32 +12,30 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                     g_EtaN,
      &                     g_Uvel, g_Vvel, g_Wvel,
      &                     g_Theta, g_Salt,
-     &                     g_Gu, g_Gv, g_Gt, g_Gs,
+     &                     g_Gu, g_Gv,
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &                     g_GuNm, g_GvNm, g_GtNm, g_GsNm
 #else
      &                     g_GuNm1, g_GvNm1, g_GtNm1, g_GsNm1
 #endif
-      _RL g_Etan(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL g_Gs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Gt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Gu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Gv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Salt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Etan (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_Uvel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Vvel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Wvel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL g_Theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Uvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Vvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_Wvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Gu   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_Gv   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      _RL g_GtNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
-      _RL g_GsNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL g_GuNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL g_GvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      _RL g_GtNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
+      _RL g_GsNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
 #else
-      _RL g_GtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL g_GsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL g_GuNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL g_GvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_GtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL g_GsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
       COMMON /g_DYNVARS_R_2/
@@ -181,5 +179,25 @@ C Special Care: more forward vars in FWD common block ; check TAF TL-code !
      &     g_recip_hfacc, g_recip_hfacw, g_recip_hfacs,
      &     g_r_low, g_recip_rcol
 #endif /* ALLOW_DEPTH_CONTROL */
+
+#ifdef ALLOW_SHELFICE
+      _RS g_shelficeHeatFlux
+     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS g_shelficeFreshwaterFlux
+     &      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /g_shelfice_fields_rs/
+     &  g_shelficeheatflux, g_shelficefreshwaterflux
+
+      _RL g_shelficeforcings(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shelficeforcingt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shelficemass    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shicdragfld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shidragquadfld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shitranscoeffs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL g_shitranscoefft  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      common /g_shelfice_fields_rl/ g_shelficemass,
+     &  g_shelficeforcingt, g_shelficeforcings, g_shitranscoefft,
+     &  g_shitranscoeffs, g_shicdragfld, g_shidragquadfld
+#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

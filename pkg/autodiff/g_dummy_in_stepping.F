@@ -1,6 +1,18 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_OPENAD
+# include "OPENAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
 #endif
 #include "AD_CONFIG.h"
 
@@ -27,12 +39,37 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#ifdef ALLOW_OPENAD
+      use OAD_active
+      use OAD_rev
+      use OAD_tape
+      use OAD_cp
+#endif
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-# include "g_common.h"
-#endif
+# ifdef ALLOW_OPENAD
+C- Note: Since OpenAD uses modules, the ordering of included headers matters
+#  include "DYNVARS.h"
+#  include "FFIELDS.h"
+#  ifdef ALLOW_GGL90
+#   include "GGL90.h"
+#  endif
+# endif /* ALLOW_OPENAD */
+# include "AUTODIFF_PARAMS.h"
+# include "AUTODIFF.h"
+# ifndef ALLOW_OPENAD
+#  include "g_common.h"
+# endif /* ALLOW_OPENAD */
+# ifdef ALLOW_MNC
+#  include "MNC_PARAMS.h"
+# endif
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -60,82 +97,119 @@ C     msgBuf :: Error message buffer
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RS dumRS(1)
+      _RL dumRL(1)
+      LOGICAL doDump
 CEOP
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     &   ) THEN
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq, myTime, deltaTClock)
 
+      IF ( doDump ) THEN
+        dumpAdRecMn = dumpAdRecMn + 1
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-c       write(*,*) 'myIter= ',myIter
+      ENDIF
 
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
+#ifndef ALLOW_OPENAD
+C========================
+C--  TAF AD-variables:
+C========================
+C-----------------------------------------------------------------------
+C--- State variables
+C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XYZ(dumRS, g_theta, 'TLMtheta', 'G_Jtheta.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, g_salt, 'TLMsalt ', 'G_Jsalt.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(dumRS, g_wvel, 'TLMwvel ', 'G_Jwvel.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &      dumRS, g_uvel, 'TLMuvel ', 'G_Juvel.',
+     &      dumRS, g_vvel, 'TLMvvel ', 'G_Jvvel.',
+     &      34, doDump, dumpAdRecMn, myTime, myIter, myThid)
 
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
+C-----------------------------------------------------------------------
+C--- Surface Forcing
+C-----------------------------------------------------------------------
+      IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+       CALL DUMP_ADJ_XY_UV(
+     &      g_Fu, dumRL, 'TLMtaux ', 'G_Jtaux.',
+     &      g_Fv, dumRL, 'TLMtauy ', 'G_Jtauy.',
+     &      33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+        CALL DUMP_ADJ_XY(g_Qnet, dumRL, 'TLMqnet ', 'G_Jqnet.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+        CALL DUMP_ADJ_XY(g_EmPmR, dumRL, 'TLMempmr', 'G_Jempr.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 
-        CALL WRITE_FLD_XY_RL ( 'G_Jtaux.',suff, g_fu, myIter, myThid )
-        CALL WRITE_FLD_XY_RL ( 'G_Jtauy.',suff, g_fv, myIter, myThid )
-        CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter,myThid )
-        CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr,myIter,myThid )
-c
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jtheta.',suff, g_theta, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jsalt.',suff, g_salt, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Juvel.',suff, g_uvel, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jvvel.',suff, g_vvel, myIter, myThid )
-        CALL WRITE_FLD_XYZ_RL(
-     &       'G_Jwvel.',suff, g_wvel, myIter, myThid )
-        CALL WRITE_FLD_XY_RL(
-     &       'G_Jetan.',suff, g_etan, myIter, myThid )
+# ifdef SHORTWAVE_HEATING
+        CALL DUMP_ADJ_XY(g_Qsw, dumRL, 'TLMqsw  ', 'G_Jqsw.',
+     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+      ENDIF
+# ifdef ALLOW_SST0_CONTROL
+      CALL DUMP_ADJ_XY(g_SST, dumRL, 'TLMsst  ', 'G_Jsst.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_SSS0_CONTROL
+      CALL DUMP_ADJ_XY(g_SSS, dumRL, 'TLMsss  ', 'G_Jsss.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
 
-#ifdef ALLOW_DIFFKR_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr,
-     &       myIter, myThid )
-#endif
-#ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jkapgm.',suff, g_kapgm,
-     &       myIter, myThid )
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jkapredi.',suff, g_kapredi,
-     &       myIter, myThid )
-#endif
+C-----------------------------------------------------------------------
+C---Various packages and parameters
+C-----------------------------------------------------------------------
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
+      CALL DUMP_ADJ_XY(dumRS, g_BottomDragFld,
+     &                 'TLMbtdrg','G_Jbottomdrag.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_GGL90
+      CALL DUMP_ADJ_XYZ(dumRS, g_GGL90TKE, 'TLMtke90', 'G_Jggl90tke.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_DIFFKR_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_DiffKr, 'TLMdifkr', 'G_Jdiffkr.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_KapGM, 'TLMkapgm', 'G_Jkapgm.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+      CALL DUMP_ADJ_XYZ(dumRS, g_KapRedi, 'TLMkapre', 'G_Jkapredi.',
+     &                  12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
 
-cph        CALL WRITE_FLD_XY_RL( 'G_J_sst.',suff, g_sst, myIter, myThid )
-cph        CALL WRITE_FLD_XY_RL( 'G_J_sss.',suff, g_sss, myIter, myThid )
+# ifdef ALLOW_EDDYPSI_CONTROL
+      CALL DUMP_ADJ_XYZ_UV(
+     &     g_EddyPsiX,dumRL,'TLMepsix','G_Jeddipsix.',
+     &     g_EddyPsiY,dumRL,'TLMepsiy','G_Jeddipsiy.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+# endif
+# ifdef ALLOW_SHELFICE
+      CALL DUMP_ADJ_XY(g_shelficeFreshwaterFlux, dumRL,
+     &                 'TLMshfwf','G_Jshifwf.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(g_shelficeHeatFlux, dumRL,
+     &                 'TLMshhtf','G_Jshihtf.',
+     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, g_shiTransCoeffT,
+     &                 'TLMshict','G_Jshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+      CALL DUMP_ADJ_XY(dumRS, g_shiTransCoeffS,
+     &                 'TLMshics','G_Jshict.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  if (defined SHI_ALLOW_GAMMAFRICT)
+      CALL DUMP_ADJ_XY(dumRS, g_shiCDragFld,
+     &                 'TLMshicd','G_Jshicd.',
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
+#  endif
+# endif
 
-C--     Reread IO error counter
-        endIOErrCount = IO_ERRCOUNT(myThid)
+#endif /* not ALLOW_OPENAD */
 
-C--     Check for IO errors
-        IF ( endIOErrCount .NE. beginIOErrCount ) THEN
-         WRITE(msgBuf,'(A)')  'S/R WRITE_STATE'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A)')  'Error writing out model state'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-         CALL PRINT_ERROR( msgBuf, myThid )
-        ELSE
-         WRITE(msgBuf,'(A,I10)')
-     &    '// Model state written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-        ENDIF
 
+      IF (doDump) THEN
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       ENDIF
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

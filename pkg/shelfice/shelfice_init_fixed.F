@@ -5,6 +5,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AD_CONFIG.h"
+#endif
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
 C     *============================================================*
@@ -362,7 +365,45 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #  endif
-# endif
+#  ifdef ALLOW_TANGENTLINEAR_RUN
+       diagName  = 'TLMshfwf'
+       diagTitle = 'dFWF: Pert. to shelfice freshwater flux (pos. up)'
+       diagUnits = 'kg/m^2/s        '
+       diagCode  = 'SM A    L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'TLMshhtf'
+       diagTitle = 'dHFlux: Pert. to shelfice heat flux (pos. up)'
+       diagTitle = 'Ice shelf heat flux  (positive upward)'
+       diagUnits = 'W/m^2           '
+       diagCode  = 'SM A    L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'TLMshict'
+       diagTitle = 'dgammaT: Pert. to shelfice heat transfer coeff'
+       diagUnits = 'm/s             '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'TLMshics'
+       diagTitle = 'dgammaS: Pert. to shelfice salt transfer coeff'
+       diagUnits = 'm/s             '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#  if (defined SHI_ALLOW_GAMMAFRICT) && (defined ALLOW_SHICDRAG_CONTROL)
+       diagName  = 'TLMshicd'
+       diagTitle = 'dCd: Pert. to shelfice u* drag coeff'
+       diagUnits = '1               '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#  endif
+#  endif /* ALLOW_TANGENTLINEAR_RUN */
+# endif /* ALLOW_AUTODIFF */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */

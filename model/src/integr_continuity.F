@@ -2,6 +2,7 @@
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+# include "AD_CONFIG.h"
 #endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
@@ -319,7 +320,7 @@ C--   End bi,bj loops
        ENDDO
       ENDDO
 
-#ifdef ALLOW_AUTODIFF_MONITOR
+#if (defined ALLOW_AUTODIFF_MONITOR)
 C     In reverse, print adjoint variable for etaN
       CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
       _EXCH_XY_RL( etaN , myThid )

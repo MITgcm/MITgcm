@@ -1,4 +1,7 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_OPENAD
+# include "OPENAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -27,12 +30,28 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#ifdef ALLOW_OPENAD
+      use OAD_active
+      use OAD_rev
+      use OAD_tape
+      use OAD_cp
+#endif
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-# include "g_common.h"
-#endif
+# ifdef ALLOW_OPENAD
+#  include "DYNVARS.h"
+# endif
+# include "AUTODIFF_PARAMS.h"
+# include "AUTODIFF.h"
+# ifndef ALLOW_OPENAD
+#  include "g_common.h"
+# endif /* ALLOW_OPENAD */
+# ifdef ALLOW_MNC
+#  include "MNC_PARAMS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -60,52 +79,27 @@ C     msgBuf :: Error message buffer
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL doDump
+      _RS dumRS(1)
+      _RL dumRL(1)
 CEOP
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     &   ) THEN
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
 
+      IF ( doDump ) THEN
+        dumpAdRecEt = dumpAdRecEt + 1
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-c       write(*,*) 'myIter= ',myIter
+      ENDIF
 
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
-
-        CALL WRITE_FLD_XY_RL(
-     &       'G_Jetan.',suff, g_etan, myIter, myThid )
-
-
-C--     Reread IO error counter
-        endIOErrCount = IO_ERRCOUNT(myThid)
-
-C--     Check for IO errors
-        IF ( endIOErrCount .NE. beginIOErrCount ) THEN
-         WRITE(msgBuf,'(A)')  'S/R WRITE_STATE'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A)')  'Error writing out G_Jetan'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-         CALL PRINT_ERROR( msgBuf, myThid )
-        ELSE
-         WRITE(msgBuf,'(A,I10)')
-     &    '// g_JetaN written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-        ENDIF
-
+#ifndef ALLOW_OPENAD
+      CALL DUMP_ADJ_XY(dumRS, g_etan, 'TLMetan ', 'G_Jetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter, myThid)
+#else
+      CALL DUMP_ADJ_XY(dumRS, etan%d, 'TLMetan ', 'G_Jetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter, myThid)
+#endif
+      IF ( doDump ) THEN
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       ENDIF
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

@@ -3,6 +3,7 @@
 
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
+# include "AD_CONFIG.h"
 #endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
@@ -577,7 +578,7 @@ C--   Add control vector for forcing and parameter fields
       ENDIF
 #endif
 
-#ifdef ALLOW_AUTODIFF_MONITOR
+#if (defined ALLOW_AUTODIFF_MONITOR) && (defined ALLOW_ADJOINT_RUN)
       CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
@@ -1242,7 +1243,9 @@ C--   Save state for restarts
       ENDIF
 #endif /* HAVE_SIGREG */
 
-#ifdef ALLOW_AUTODIFF
+#if (defined ALLOW_AUTODIFF_MONITOR) && \
+    (defined ALLOW_TANGENTLINEAR_RUN)
+      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
       CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 #endif
 
