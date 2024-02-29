@@ -102,7 +102,6 @@ CEOP
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
-c       writeBinaryPrec = writeStatePrec
 
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)

@@ -84,7 +84,12 @@ C     msgBuf       :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
 #ifdef NONLIN_FRSURF
-      INTEGER i, j
+# if (defined ALLOW_OBCS_EAST ) || (defined ALLOW_OBCS_WEST )
+      INTEGER j
+# endif
+# if (defined ALLOW_OBCS_NORTH) || (defined ALLOW_OBCS_SOUTH)
+      INTEGER i
+# endif
 #endif /* NONLIN_FRSURF */
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -99,7 +104,7 @@ C--   Now calculate whether it is time to update the forcing arrays
       CALL GET_PERIODIC_INTERVAL(
      O                  iRecP, iRec0, iRec1, bWght, aWght,
      I                  externForcingCycle, externForcingPeriod,
-     I                  deltaTclock, myTime, myThid )
+     I                  deltaTClock, myTime, myThid )
 
       bi = myBxLo(myThid)
       bj = myByLo(myThid)
@@ -281,36 +286,36 @@ C     read boundary values for passive tracers
 C     Eastern boundary
         IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &                OBEptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &                OBEptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
          CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &                OBEptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &                OBEptr1(1-OLy,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
         IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &                OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &                OBWptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
          CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &                OBWptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &                OBWptr1(1-OLy,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
         IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &                OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &                OBNptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
          CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &                OBNptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &                OBNptr1(1-OLy,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
         IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
          CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &                OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &                OBSptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
          CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &                OBSptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
+     &                OBSptr1(1-OLy,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 C     end do iTr
@@ -460,6 +465,7 @@ C     Southern boundary
         ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
+
 #ifdef ALLOW_PTRACERS
         IF (usePTRACERS) THEN
 C     read passive tracer boundary values
@@ -468,28 +474,28 @@ C     read passive tracer boundary values
 C     Eastern boundary
           IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
-     &               OBEptr0(1-Oly,1,1,1,iTr), iRec0,myIter, myThid )
+     &               OBEptr0(1-OLy,1,1,1,iTr), iRec0,myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
           IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
-     &               OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &               OBWptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
           IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
-     &               OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &               OBNptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
           IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
            CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
-     &               OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+     &               OBSptr0(1-OLy,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
 C     end do iTr
@@ -524,7 +530,7 @@ C--   forcing field OBSu0 to OBSu
        IF ( OBEetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
+          DO j=1-OLy,sNy+OLy
            OBEeta(j,bi,bj) = bWght*OBEeta0(j,bi,bj)
      &                      +aWght*OBEeta1(j,bi,bj)
           ENDDO
@@ -550,7 +556,7 @@ C--   forcing field OBSu0 to OBSu
        IF ( OBWetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
+          DO j=1-OLy,sNy+OLy
            OBWeta(j,bi,bj) = bWght*OBWeta0(j,bi,bj)
      &                      +aWght*OBWeta1(j,bi,bj)
           ENDDO
@@ -576,7 +582,7 @@ C--   forcing field OBSu0 to OBSu
        IF ( OBNetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO i=1-Olx,sNx+Olx
+          DO i=1-OLx,sNx+OLx
            OBNeta(i,bi,bj) = bWght*OBNeta0(i,bi,bj)
      &                      +aWght*OBNeta1(i,bi,bj)
           ENDDO
@@ -602,7 +608,7 @@ C--   forcing field OBSu0 to OBSu
        IF ( OBSetaFile .NE. ' ' ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO i=1-Olx,sNx+Olx
+          DO i=1-OLx,sNx+OLx
            OBSeta(i,bi,bj) = bWght*OBSeta0(i,bi,bj)
      &                      +aWght*OBSeta1(i,bi,bj)
           ENDDO
@@ -611,6 +617,7 @@ C--   forcing field OBSu0 to OBSu
        ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
+
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) THEN
 C     "interpolate" passive tracer boundary values
@@ -618,30 +625,30 @@ C     "interpolate" passive tracer boundary values
 # ifdef ALLOW_OBCS_EAST
         IF ( OBEptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_TIME_INTERP_YZ(
-     O       OBEptr (1-Oly,1,1,1,iTr),
-     I       OBEptr0(1-Oly,1,1,1,iTr),
-     I       OBEptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
+     O       OBEptr (1-OLy,1,1,1,iTr),
+     I       OBEptr0(1-OLy,1,1,1,iTr),
+     I       OBEptr1(1-OLy,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
         IF ( OBWptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_TIME_INTERP_YZ(
-     O       OBWptr (1-Oly,1,1,1,iTr),
-     I       OBWptr0(1-Oly,1,1,1,iTr),
-     I       OBWptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
+     O       OBWptr (1-OLy,1,1,1,iTr),
+     I       OBWptr0(1-OLy,1,1,1,iTr),
+     I       OBWptr1(1-OLy,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
         IF ( OBNptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_TIME_INTERP_XZ(
-     O       OBNptr (1-Olx,1,1,1,iTr),
-     I       OBNptr0(1-Olx,1,1,1,iTr),
-     I       OBNptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
+     O       OBNptr (1-OLx,1,1,1,iTr),
+     I       OBNptr0(1-OLx,1,1,1,iTr),
+     I       OBNptr1(1-OLx,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
         IF ( OBSptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_TIME_INTERP_XZ(
-     O       OBSptr (1-Olx,1,1,1,iTr),
-     I       OBSptr0(1-Olx,1,1,1,iTr),
-     I       OBSptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
+     O       OBSptr (1-OLx,1,1,1,iTr),
+     I       OBSptr0(1-OLx,1,1,1,iTr),
+     I       OBSptr1(1-OLx,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_SOUTH */
 C     end do iTr
        ENDDO
@@ -678,9 +685,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     aWght, bWght :: Interpolation weights
 C     myThid       :: my Thread Id. number
-      _RL fld (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL fld0(1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL fld1(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      _RL fld (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL fld0(1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL fld1(1-OLx:sNx+OLx,Nr,nSx,nSy)
       _RL aWght,bWght
       INTEGER myThid
 
@@ -692,7 +699,7 @@ CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k = 1, Nr
-          DO i=1-Olx,sNx+Olx
+          DO i=1-OLx,sNx+OLx
            fld(i,k,bi,bj)   = bWght*fld0(i,k,bi,bj)
      &                       +aWght*fld1(i,k,bi,bj)
           ENDDO
@@ -729,9 +736,9 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     aWght, bWght :: Interpolation weights
 C     myThid       :: my Thread Id. number
-      _RL fld (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL fld0(1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL fld1(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fld (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld0(1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld1(1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL aWght,bWght
       INTEGER myThid
 
@@ -743,7 +750,7 @@ CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k = 1, Nr
-          DO j=1-Oly,sNy+Oly
+          DO j=1-OLy,sNy+OLy
            fld(j,k,bi,bj)   = bWght*fld0(j,k,bi,bj)
      &                       +aWght*fld1(j,k,bi,bj)
           ENDDO
