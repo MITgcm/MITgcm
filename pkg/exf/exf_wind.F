@@ -35,8 +35,8 @@ C     == global variables ==
 #include "tamc.h"
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
-# include "CTRL.h"
 # include "CTRL_SIZE.h"
+# include "CTRL.h"
 # include "CTRL_GENARR.h"
 #endif
 
