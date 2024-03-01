@@ -88,6 +88,20 @@ C                            (only used in pkg/autodiff ...)
       LOGICAL doSinglePrecTapelev
       LOGICAL doAdmtlmBypassAD
 
+C--   parameters vectors, set in S/R CTRL_INIT_CTRLVAR, that describe
+C     the contorl variables, also used for identification across
+C     different parts of the code:
+C     ncvarfname    :: unique (and predefined) name of control variable
+C     ncvarindex    :: number to identify variable, depends specified ctrl-vars
+C     ncvarrecs     :: number of records for time dependent ctrl-variables;
+C     ncvarrecstart :: first and last record of time dependent ctrl-variables;
+C     ncvarrecsend  :: for constant-in-time variables all three are 1
+C     ncvargrd      :: type or/and position on the grid, possible values:
+C                      'c' (cell Center), 'w' (West face) ,'s' (South face),
+C                      'i' (shelfice), 'm' (obcs)
+C     ncvartype     :: shape of the grid: Arr3D, Arr2D, Tim2D, SecXZ, SecYZ
+C     ncvarx/y/nrmax:: i,j,k-dimensions of ctrl-variable (on tile)
+
 C--   holds control-variable setting and params as maxcvars long vector
 C     in following "controlvar_*" common blocks:
       COMMON /controlvars_i/
