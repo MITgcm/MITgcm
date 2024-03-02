@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_pack_xy(
-     &     cunit, ivartype, precondScalar,
+     &     cunit, ivar, precondScalar,
      &     fname, masktype, weighttype,
      &     lxxadxx, myThid )
 
@@ -23,13 +23,14 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "OPTIMCYCLE.h"
 
 c     == routine arguments ==
 
       integer cunit
-      integer ivartype
+      integer ivar
       _RL precondScalar
       character*(MAX_LEN_FNAM) fname
       character*(  9) masktype
@@ -115,17 +116,17 @@ c--   Only the master thread will do I/O.
          if ( lxxadxx ) then
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_ctrl_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          else
             write(cfile2,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_nonout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
             write(cfile3,'(a,I3.3,a,I4.4,a)')
      &           'diag_pack_dimout_grad_',
-     &           ivartype, '_', optimcycle, '.bin'
+     &           ivar, '_', optimcycle, '.bin'
          endif
 
          reclen = FLOAT(sNx*nSx*nPx*sNy*nSy*nPy*4)
@@ -141,7 +142,7 @@ c--   Only the master thread will do I/O.
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, myThid)
 
-      nrec_nl=int(ncvarrecs(ivartype)/Nr)
+      nrec_nl=int(ncvarrecs(ivar)/Nr)
       do irec = 1, nrec_nl
 
        call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
@@ -149,7 +150,7 @@ c--   Only the master thread will do I/O.
        do k = 1, Nr
         irectrue = (irec-1)*Nr + k
 #ifndef ALLOW_ADMTLM
-        write(cunit) ncvarindex(ivartype)
+        write(cunit) ncvarindex(ivar)
         write(cunit) 1
         write(cunit) 1
 #endif
@@ -209,13 +210,13 @@ c
 c     -- end of irec loop --
       enddo
 
-      do irec = nrec_nl*Nr+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*Nr+1, ncvarrecs(ivar)
 
        call MDSREADFIELD_2D_GL( fname, ctrlprec, 'RL',
      &        1, globfld3d(1,1,1,1,1,1,1), irec, myThid)
 
 #ifndef ALLOW_ADMTLM
-       write(cunit) ncvarindex(ivartype)
+       write(cunit) ncvarindex(ivar)
        write(cunit) 1
        write(cunit) 1
 #endif
@@ -308,7 +309,7 @@ c-- part 1: preliminary reads and definitions
 
 c-- part 2: loop over records
 
-      do irec = 1, ncvarrecs(ivartype)
+      do irec = 1, ncvarrecs(ivar)
 
 c-- 2.1:
       call READ_REC_3D_RL( fname, ctrlprec,
@@ -349,7 +350,7 @@ c-- 2.4: array -> buffer -> global buffer -> global file
 #ifndef ALLOW_ADMTLM
       _BEGIN_MASTER( myThid )
       IF ( myProcId .eq. 0 ) THEN
-         write(cunit) ncvarindex(ivartype)
+         write(cunit) ncvarindex(ivar)
          write(cunit) 1
          write(cunit) 1
       ENDIF
