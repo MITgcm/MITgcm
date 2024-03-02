@@ -24,7 +24,7 @@ c     ==================================================================
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 #include "SIZE.h"
@@ -34,61 +34,66 @@ c     == global variables ==
 # include "cal.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
+#endif
+#ifdef ALLOW_OBCSE_CONTROL
+# include "CTRL_OBCS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-c     == routine arguments ==
-
       integer myiter
       _RL     mytime
       integer mythid
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
-
+#if ( defined ALLOW_CTRL && defined ALLOW_OBCS )
 C     !LOCAL VARIABLES:
-c     == local variables ==
       integer startrec
       integer endrec
-
-c     == end of interface ==
+      integer ivar
+      integer iobcsn, iobcss, iobcse, iobcsw
 CEOP
 
-#ifdef  ALLOW_OBCSN_COST_CONTRIBUTION
-#ifdef  ALLOW_OBCSN_CONTROL
+C     Find ctrl-indices
+      iobcsn = 0
+      iobcss = 0
+      iobcse = 0
+      iobcsw = 0
+      DO ivar = 1, maxcvars
+       IF ( ncvargrd(ivar) .EQ. 'm' ) THEN
+        IF ( ncvarindex(ivar) .EQ. 1 ) iobcsn = ivar
+        IF ( ncvarindex(ivar) .EQ. 2 ) iobcss = ivar
+        IF ( ncvarindex(ivar) .EQ. 3 ) iobcse = ivar
+        IF ( ncvarindex(ivar) .EQ. 4 ) iobcsw = ivar
+       ENDIF
+      ENDDO
+#if ( defined ALLOW_OBCSN_CONTROL && defined ALLOW_OBCSN_COST_CONTRIBUTION )
 cgg   North boundary contribution to cost function.
-      startrec = ncvarrecstart(11 )
-      endrec   = ncvarrecsend(11 )
+      startrec = ncvarrecstart(iobcsn)
+      endrec   = ncvarrecsend(iobcsn)
       call cost_obcsn ( myiter, mytime,
-     &                   startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
-#endif
-#ifdef  ALLOW_OBCSS_COST_CONTRIBUTION
-#ifdef  ALLOW_OBCSS_CONTROL
+#if ( defined ALLOW_OBCSS_CONTROL && defined ALLOW_OBCSS_COST_CONTRIBUTION )
 cgg   South boundary contribution to cost function.
-      startrec = ncvarrecstart(12 )
-      endrec   = ncvarrecsend(12 )
+      startrec = ncvarrecstart(iobcss)
+      endrec   = ncvarrecsend(iobcss)
       call cost_obcss ( myiter, mytime,
-     &                   startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
-#endif
-#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
-#ifdef ALLOW_OBCSW_CONTROL
+#if ( defined ALLOW_OBCSW_CONTROL && defined ALLOW_OBCSW_COST_CONTRIBUTION )
 cgg   West boundary contribution to cost function.
-      startrec = ncvarrecstart(13 )
-      endrec   = ncvarrecsend(13 )
+      startrec = ncvarrecstart(iobcsw)
+      endrec   = ncvarrecsend(iobcsw)
       call cost_obcsw ( myiter, mytime,
-     &                   startrec,endrec, mythid )
+     &                  startrec, endrec, mythid )
 #endif
-#endif
-#ifdef     ALLOW_OBCSE_COST_CONTRIBUTION
-#ifdef     ALLOW_OBCSE_CONTROL
+#if ( defined ALLOW_OBCSE_CONTROL && defined ALLOW_OBCSE_COST_CONTRIBUTION )
 cgg   East boundary contribution to cost function.
-      startrec = ncvarrecstart(14 )
-      endrec   = ncvarrecsend(14 )
+      startrec = ncvarrecstart(iobcse)
+      endrec   = ncvarrecsend(iobcse)
       call cost_obcse ( myiter, mytime,
-     &                  startrec,endrec, mythid )
-#endif
+     &                  startrec, endrec, mythid )
 #endif
 
 #ifdef OBCS_VOLFLUX_COST_CONTRIBUTION
@@ -98,4 +103,5 @@ cgg   East boundary contribution to cost function.
 
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 
-      end
+      RETURN
+      END

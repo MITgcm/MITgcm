@@ -409,6 +409,7 @@ C LOCAL VARIABLES
       _RL t_k_o_100
       _RL t_k_o_100_2
       _RL dlog_t_k
+      _RL dlog10_t_k
       _RL inv_t_k
       _RL ion_st, is_2, sqrtis
       _RL s_2, sqrts, s_15, scl, s35
@@ -437,7 +438,8 @@ C temperature
            t_k_o_100   = t_k/100. _d 0
            t_k_o_100_2 = t_k_o_100*t_k_o_100
            inv_t_k=1.0 _d 0/t_k
-           dlog_t_k=LOG(t_k)
+           dlog_t_k    = LOG(t_k)
+           dlog10_t_k  = LOG10(t_k)
 C ionic strength (converted to kgsw)
            ion_st=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
            is_2=ion_st*ion_st
@@ -843,7 +845,7 @@ C       Units     : (mol/kg-SW)^2
 
            Ksp_TP_Calc(i,j,bi,bj) = 10. _d 0**(-171.9065 _d 0
      &             - 0.077993 _d 0*t_k
-     &             + 2839.319 _d 0*inv_t_k + 71.595 _d 0*LOG10(t_k)
+     &             + 2839.319 _d 0*inv_t_k + 71.595 _d 0*dlog10_t_k
      &             + ( -0.77712 _d 0 + 0.0028426 _d 0*t_k
      &             + 178.34 _d 0*inv_t_k)*sqrts
      &             - 0.07711 _d 0*s + 0.0041249 _d 0*s_15)
@@ -857,7 +859,7 @@ C       Units     : (mol/kg-SW)^2
 
            Ksp_TP_Arag(i,j,bi,bj) = 10. _d 0**(-171.945 _d 0
      &             - 0.077993 _d 0*t_k
-     &             + 2903.293 _d 0*inv_t_k + 71.595 _d 0*LOG10(t_k)
+     &             + 2903.293 _d 0*inv_t_k + 71.595 _d 0*dlog10_t_k
      &             + ( -0.068393 _d 0 + 0.0017276 _d 0*t_k
      &             + 88.135 _d 0*inv_t_k)*sqrts
      &             - 0.10018 _d 0*s + 0.0059415 _d 0*s_15)

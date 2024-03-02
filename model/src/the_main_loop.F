@@ -224,9 +224,6 @@ C     it is important that this file is included after SEAICE_SIZE.h
 #  include "KPP.h"
 c#  include "KPP_PARAMS.h"
 # endif
-# ifdef ALLOW_CTRL
-#  include "optim.h"
-# endif
 # ifdef ALLOW_TIMEAVE
 #  include "TIMEAVE_STATV.h"
 # endif
@@ -579,6 +576,9 @@ CADJ INIT comlev1_cg2d_iter = COMMON,nchklev_1*numItersMax
 #   endif
 #  endif /* ALLOW_AUTODIFF_TAMC */
 c--
+#  ifdef ALLOW_GENCOST_CONTRIBUTION
+CADJ INIT comlev1_ngencost = COMMON,nchklev_1*NGENCOST
+#  endif
 c**************************************
 
 #  ifdef STORE_LOADEDREC_TEST

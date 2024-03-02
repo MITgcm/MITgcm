@@ -586,8 +586,9 @@ C     == Global variables ===
 # include "tamc.h"
 #endif
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
-# include "optim.h"
+# include "OPTIMCYCLE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
