@@ -1,4 +1,3 @@
-
 #include "CTRL_OPTIONS.h"
 
 cph #ifdef TARGET_CRAY_VECTOR
@@ -74,6 +73,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #include "optim.h"
 #include "minimization.h"
@@ -88,6 +88,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+      integer ivar
       integer il
       integer errio
 
@@ -262,6 +263,18 @@ c--   Read optimization parameters from file.
         epsx = eps
         epsg = eps
       endif
+
+c     Initialise some global variables before calling optim_readdata, so
+c     that they contain sensible values.
+      do ivar=1,maxcvars
+       ncvarindex(ivar) = -1
+       ncvarrecs(ivar)  = -1
+       ncvarxmax(ivar)  = -1
+       ncvarymax(ivar)  = -1
+       ncvarnrmax(ivar) = -1
+       ncvargrd(ivar)   = 'X'
+       ncvartype(ivar)  = 'UNSET'
+      enddo
 
       lheaderonly = .true.
       call optim_readdata ( nn, ctrlname, lheaderonly, ff, vv)

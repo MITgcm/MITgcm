@@ -26,7 +26,7 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Initialise ecco-specific cost function. This needs to preceed
-C     the call ctrl_init in order to provide the weight files
+C     the call ctrl_init_fixed in order to provide the weight files.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('ECCO_COST_INIT_FIXED',myThid)
 #endif
