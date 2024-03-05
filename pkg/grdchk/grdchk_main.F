@@ -82,6 +82,7 @@ C     == global variables ==
 #include "PARAMS.h"
 #include "cost.h"
 #include "g_cost.h"
+#include "CTRL_SIZE.h"
 #include "CTRL.h"
 #ifdef ALLOW_OBCS_CONTROL
 C     CTRL_OBCS.h must be included before GRDCHK.h

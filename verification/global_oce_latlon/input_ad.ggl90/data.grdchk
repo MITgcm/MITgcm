@@ -11,5 +11,5 @@
 ### nbeg             = 1,
  nstep            = 1,
  nend             = 7,
- grdchkvarindex   = 201,
+ grdchkvarname    = "xx_theta",
  &
