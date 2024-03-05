@@ -709,18 +709,21 @@ be enabled:
 - :filelink:`pkg/grdchk`
 
 The packages are enabled by adding them to your experiment-specific
-configuration file ``packages.conf`` (see Section ???).
+configuration file ``packages.conf`` (see :numref:`using_packages`).
 
 The following AD-specific CPP option files need to be customized:
 
-- :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`
-  This header file collects CPP options for :filelink:`pkg/autodiff`,
-  :filelink:`pkg/cost`, :filelink:`pkg/ctrl` as well as AD-unrelated options for the external
-  forcing package :filelink:`pkg/exf`. (NOTE: These options are not set in their
-  package-specific headers such as :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>`,
-  but are instead collected in the single header file
-  :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`.
-  The package-specific header files serve as simple placeholders at this point.)
+- :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` This header
+  file collects CPP options for :filelink:`pkg/autodiff`, :filelink:`pkg/cost`,
+  :filelink:`pkg/ctrl` as well as AD-unrelated options for the external forcing
+  package :filelink:`pkg/exf`.
+
+- :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>` In this header file,
+  options for different cost functions are set.
+
+- :filelink:`CTRL_OPTIONS.h <pkg/ctrl/CTRL_OPTIONS.h>` In this header file the
+  control variables are enabled and options for writing and reading the control
+  vector are set
 
 - :filelink:`tamc.h <pkg/autodiff/tamc.h>`
   This header configures the splitting of the time stepping loop
@@ -787,7 +790,7 @@ follows:
 
     % mkdir build
     % cd build
-    % ../../../tools/genmake2 -mods=../code_ad
+    % ../../../tools/genmake2 -mods=../code_ad [ -nocat4ad ]
     % make depend
     % make adall
 
@@ -805,21 +808,25 @@ The ``make «MODE»all`` target consists of the following procedures:
 
    -  #define :varlink:`ALLOW_TANGENTLINEAR_RUN`
 
-   -  #define :varlink:`ALLOW_ECCO_OPTIMIZATION`
-
-#. A single file ``«MODE»_input_code.f`` is concatenated consisting of all ``.f``
-   files that are part of the list ``AD_FILES`` and all ``.flow`` files
-   that are part of the list ``AD_FLOW_FILES``.
+#. If `` -nocat4ad`` is not specified, a single file ``«MODE»_input_code.f`` is
+   concatenated consisting of all ``.f`` files that are part of the list
+   ``AD_FILES`` and all ``.flow`` files that are part of the list
+   ``AD_FLOW_FILES``.
 
 #. The AD tool is invoked with the ``«MODE»_«TOOL»_FLAGS``. The default AD tool
-   flags in :filelink:`genmake2 <tools/genmake2>` can be overwritten by a :filelink:`tools/adjoint_options` file
-   (similar to the platform-specific :filelink:`tools/build_options`, see :numref:`genmake2_optfiles`).
-   The AD tool writes the resulting AD code into the file
-   ``«MODE»_input_code_ad.f``.
+   flags in :filelink:`genmake2 <tools/genmake2>` can be overwritten by a
+   :filelink:`tools/adjoint_options` file (similar to the platform-specific
+   :filelink:`tools/build_options`, see :numref:`genmake2_optfiles`).  The AD
+   tool writes the resulting AD code into the file ``«MODE»_input_code_ad.f``.
 
-#. A short sed script :filelink:`tools/adjoint_sed <tools/adjoint_sed>` is applied to ``«MODE»_input_code_ad.f`` to
-   reinstate :varlink:`myThid` into the CALL argument list of active file I/O.
-   The result is written to file ``«MODE»_«TOOL»_output.f``.
+#. A short sed script :filelink:`tools/adjoint_sed <tools/adjoint_sed>` is
+   applied to ``«MODE»_input_code_ad.f`` to reinstate :varlink:`myThid` into
+   the CALL argument list of active file I/O.  The result is written to file
+   ``«MODE»_«TOOL»_output.f``.
+
+#. If the `` -nocat4ad`` option is specified, the concatenation of all ``.f``
+   files is skipped and instead all necessary files are sent to TAF and for
+   each file an AD-file is returned.
 
 #. All routines are compiled and an executable is generated.
 
@@ -961,18 +968,19 @@ the package :filelink:`pkg/ctrl` and will be treated in the next section.
 Enabling the package
 ~~~~~~~~~~~~~~~~~~~~
 
-:filelink:`pkg/cost <pkg/cost>` is enabled by adding the line ``cost`` to your file ``packages.conf`` (see Section ???).
+:filelink:`pkg/cost <pkg/cost>` is enabled by adding the line ``cost`` to your
+file ``packages.conf`` (see :numref:`using_packages`).
 
-In general the following packages ought to be enabled
-simultaneously: :filelink:`pkg/autodiff <pkg/autodiff>`, :filelink:`pkg/ctrl <pkg/ctrl>`,
-and :filelink:`pkg/cost`. The basic CPP option to enable
-the cost function is :varlink:`ALLOW_COST`. Each specific cost function
-contribution has its own option. For the present example the option is
-:varlink:`ALLOW_COST_TRACER`. All cost-specific options are set in
-:filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` Since the cost function is usually used in
+In general the following packages ought to be enabled simultaneously:
+:filelink:`pkg/autodiff <pkg/autodiff>`, :filelink:`pkg/ctrl <pkg/ctrl>`, and
+:filelink:`pkg/cost`. The basic CPP option to enable the cost function is
+:varlink:`ALLOW_COST`. Each specific cost function contribution has its own
+option. For the present example the option is :varlink:`ALLOW_COST_TRACER`. All
+cost-specific options are set in :filelink:`COST_OPTIONS.h
+<pkg/ctrl/COST_OPTIONS.h>`. Since the cost function is usually used in
 conjunction with automatic differentiation, the CPP option
-:varlink:`ALLOW_ADJOINT_RUN` (file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`) and
-:varlink:`ALLOW_AUTODIFF_TAMC` (file :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`) should be defined.
+:varlink:`ALLOW_AUTODIFF_TAMC` (file :filelink:`AUTODIFF_OPTIONS.h
+<pkg/autodiff/AUTODIFF_OPTIONS.h>`) should be defined.
 
 Initialization
 ~~~~~~~~~~~~~~
@@ -1126,9 +1134,9 @@ initialization, perturbation) are controlled by the package :filelink:`pkg/ctrl`
 :filelink:`genmake2 <tools/genmake2>` and CPP options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Package :filelink:`pkg/ctrl` is enabled by adding the line ``ctrl`` to your file ``packages.conf``.
-Each control variable is enabled via its own CPP option in
-:filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`.
+Package :filelink:`pkg/ctrl` is enabled by adding the line ``ctrl`` to your
+file ``packages.conf``. Each control variable is enabled via its own CPP
+option in :filelink:`CTRL_OPTIONS.h <pkg/ctrl/CTRL_OPTIONS.h>`.
 
 Initialization
 ~~~~~~~~~~~~~~
@@ -1293,7 +1301,7 @@ Several ways exist to generate output of adjoint fields.
    :filelink:`addummy_in_stepping.F </pkg/autodiff/addummy_in_stepping.F>`.
    The procedure is
    enabled using via the CPP-option :varlink:`ALLOW_AUTODIFF_MONITOR` (file
-   :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`).
+   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>`).
    To be part of the adjoint code, the
    corresponding S/R :filelink:`dummy_in_stepping.F <pkg/autodiff/dummy_in_stepping.F>`
    has to be called in the
@@ -1379,25 +1387,15 @@ corresponding I/O flow is shown in :numref:`forward-adj_io`:
     Flow chart showing I/O in the forward/adjoint model.
 
 
-:filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control vector
-``vector_ctrl_<k>``. It distributes the
-different control variables to 2-D and 3-D files
-``xx_«...»<k>``. At the start of the forward
-integration the control variables are read from
-``xx_«...»<k>`` and added to the field.
-Correspondingly, at the end of the adjoint integration the adjoint
-fields are written to ``adxx_«...»<k>``, again via
-the active file routines. Finally,
-:filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint
-files and writes them to the compressed vector file
-``vector_grad_<k>``.
+:filelink:`ctrl_unpack.F </pkg/ctrl/ctrl_unpack.F>` reads the updated control
+vector ``vector_ctrl_<k>``. It distributes the different control variables to
+2-D and 3-D files ``xx_«...»<k>``. At the start of the forward integration the
+control variables are read from ``xx_«...»<k>`` and added to the field.
+Correspondingly, at the end of the adjoint integration the adjoint fields are
+written to ``adxx_«...»<k>``, again via the active file routines. Finally,
+:filelink:`ctrl_pack.F </pkg/ctrl/ctrl_pack.F>` collects all adjoint files and
+writes them to the compressed vector file ``vector_grad_<k>``.
 
-
-NOTE: These options are not set in their package-specific headers
-such as :filelink:`COST_OPTIONS.h <pkg/cost/COST_OPTIONS.h>`,
-but are instead collected in the single
-header file :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>`. The package-specific header files
-serve as simple placeholders at this point.
 
 .. _ad_gradient_check:
 
@@ -1491,15 +1489,13 @@ The relevant runtime flags are set in the files:
 Adjoint dump & restart – divided adjoint (DIVA)
 ===============================================
 
-Authors: Patrick Heimbach & Geoffrey Gebbie, 07-Mar-2003*
+Authors: Patrick Heimbach & Geoffrey Gebbie, 07-Mar-2003
 
 ***NOTE:THIS SECTION IS SUBJECT TO CHANGE. IT REFERS TO TAF-1.4.26.**
 
-Previous TAF versions are incomplete and have problems with both TAF
-options ``-pure`` and ``-mpi``.
-
-The code which is tuned to the DIVA implementation of this TAF version
-is ``checkpoint50`` (MITgcm) and ``ecco_c50_e28`` (ECCO).
+Old TAF versions are incomplete and have problems with both TAF options
+``-pure`` and ``-mpi``. At the time of the latest update, the current version
+of TAF is 6.1.5
 
 Introduction
 ------------
@@ -1549,7 +1545,8 @@ the current implementation, the forward sweep is immediately followed by
 the first adjoint leg. Thus, in theory, the following steps are
 performed (automatically)
 
--  **1st model call:** This is the case if file ``costfinal`` does *not* exist. S/R
+-  **1st model call:**
+   This is the case if file ``costfinal`` does *not* exist. S/R
    ``mdthe_main_loop.f`` (generated by TAF) is called.
 
    #. calculate forward trajectory and dump model state after each
@@ -1589,111 +1586,69 @@ intermediate adjoint integration interval).
 compensate for TAF bugs. Since we refer to TAF-1.4.26 onwards, these
 modifications are not documented here].
 
-.. _recipe1:
+.. _diva_recipe:
 
-Recipe 1: single processor
---------------------------
+Recipe for divided adjoint code generation
+------------------------------------------
 
-#. In :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` set:
+Verification experiment :filelink:`lab_sea <verification/lab_sea>` tests the
+divided adjoint and serves as an example of how to configure the code.
+
+#. define ``USE_DIVA=1``, either as an environment variable (e.g., in bash:
+   ``export USE_DIVA=1``), in a ``genmake_local`` file in the ``build``
+   directory, or in your build options file. This will instruct
+   :filelink:`genmake2 <tools/genmake2>` to generate TAF options (``-pure``)
+   for divided adjoint generation.
+
+#. In a local copy of :filelink:`AUTODIFF_OPTIONS.h
+   <pkg/autodiff/AUTODIFF_OPTIONS.h>` set:
 
    - #define :varlink:`ALLOW_DIVIDED_ADJOINT`
-   - #undef  :varlink:`ALLOW_DIVIDED_ADJOINT_MPI`
 
-#. Generate adjoint code. Using the TAF option ``-pure``, two codes are
-   generated:
+   to enable code for divided adjoint.
 
-   -  ``mdthe_main_loop.f``:
+#. If using MPI, make sure that the paths to mpi-header files, such as
+   ``mpif.h``, are know to :filelink:`genmake2 <tools/genmake2>` (as usual, via
+   the build options file, see also :numref:`diva_mpi`).
+
+#. Run the usual sequence for generating the Makefile and the AD-code.
+
+   ::
+
+      ${ROOTDIR}/tools/genmake2  -mods=../code_ad -nocat4ad [ other options ]
+      make depend
+      make adtaf
+
+   the ``-nocat4ad`` option is not necessary, but will generate individual
+   AD-files for each forward file sent to TAF. The adjoint code now contains
+   subroutines (in ``the_main_loop_ad.f``):
+
+   -  ``adthe_main_loop_ad``:
       Is responsible for the forward trajectory, storing of outermost
       checkpoint levels to file, computation of cost function, and
       storing of cost function to file (1st step).
 
-   -  ``adthe_main_loop.f``:
+   -  ``adthe_main_loop``:
       Is responsible for computing one adjoint leg, dump adjoint state
       to file and write index info to file (2nd and consecutive
       steps).
 
-      for adjoint code generation, e.g., add ``-pure`` to TAF option list
+   Then compile with ``make adall`` (the ``make adtaf`` step is not necessary
+   unless you want to inspect the TAF-generated code before compiling).
 
-      ::
+.. _diva_mpi:
 
-              make adtaf
+Special considerations for multi processor (MPI) runs
+-----------------------------------------------------
 
-   -  One modification needs to be made to adjoint codes in S/R
-      ``adecco_the_main_loop.f`` (generated by TAF):
-
-      There’s a remaining issue with the ``-pure`` option. The ``call
-      ad...`` between ``call ad...`` and the read of the ``snapshot`` file
-      should be called only in the first adjoint leg between
-      :math:`nlev3` and :math:`nlev3-1`. In the ecco-branch, the
-      following lines should be bracketed by an ``if (idivbeg .GE.
-      nchklev_3) then``, thus:
-
-      ::
-
-
-          ...
-                xx_psbar_mean_dummy = onetape_xx_psbar_mean_dummy_3h(1)
-                xx_tbar_mean_dummy = onetape_xx_tbar_mean_dummy_4h(1)
-                xx_sbar_mean_dummy = onetape_xx_sbar_mean_dummy_5h(1)
-                call barrier( mythid )
-          cAdd(
-                if (idivbeg .GE. nchklev_3) then
-          cAdd)
-
-                call adcost_final( mythid )
-                call barrier( mythid )
-                call adcost_sst( mythid )
-                call adcost_ssh( mythid )
-                call adcost_hyd( mythid )
-                call adcost_averagesfields( mytime,myiter,mythid )
-                call barrier( mythid )
-          cAdd(
-                endif
-          cAdd)
-
-          C----------------------------------------------
-          C read snapshot
-          C----------------------------------------------
-                if (idivbeg .lt. nchklev_3) then
-                  open(unit=77,file='snapshot',status='old',form='unformatted',
-               $iostat=iers)
-          ...
-
-      For the main code, in all likelihood the block which needs to be
-      bracketed consists of ``adcost_final.f`` (generated by TAF) only.
-
-   -  Now the code can be copied as usual to ``adjoint_model.F`` and then
-      be compiled:
-
-      ::
-
-              make adchange
-
-      then compile
-
-Recipe 2: multi processor (MPI)
--------------------------------
-
-#. On the machine where you execute the code (most likely not the
-   machine where you run TAF) find the includes directory for MPI
-   containing ``mpif.h``. Either copy ``mpif.h`` to the machine where you
-   generate the ``.f`` files before TAF-ing, or add the path to the includes
-   directory to your :filelink:`genmake2 <tools/genmake2>` platform setup, TAF needs some MPI parameter
-   settings (essentially ``mpi_comm_world`` and ``mpi_integer``) to
-   incorporate those in the adjoint code.
-
-#. In :filelink:`ECCO_CPPOPTIONS.h <pkg/autodiff/ECCO_CPPOPTIONS.h>` set
-
-   - #define :varlink:`ALLOW_DIVIDED_ADJOINT`
-   - #define  :varlink:`ALLOW_DIVIDED_ADJOINT_MPI`
-
-   This will include the header file ``mpif.h`` into the top level routine
-   for TAF.
-
-#. Add the TAF option ``-mpi`` to the TAF argument list in the makefile.
-
-#. Follow the same steps as in :ref:`Recipe 1 <recipe1>`.
-
+On the machine where you execute the code (most likely not the machine where
+you run TAF) find the includes directory for MPI containing ``mpif.h``. Either
+copy ``mpif.h`` to the machine where you preprocess the code (generate the
+``.f`` files) before TAF-ing, or add the path to the includes directory to your
+:filelink:`genmake2 <tools/genmake2>` platform setup. TAF needs some MPI
+parameter settings (essentially ``mpi_comm_world`` and ``mpi_integer``) to
+incorporate those in the adjoint code. The ``-mpi`` will be added to the TAF
+argument list automatically.
 
 .. _ad_openad:
 
