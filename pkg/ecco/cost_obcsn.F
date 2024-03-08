@@ -131,19 +131,27 @@ c     jp1 = 0
 c--   Loop over records.
       do irec = 1,nrec
 
+#ifdef ALLOW_AUTODIFF
         call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
-     &        , xx_obcsn_dummy )
+     &                       ladinit, optimcycle, mythid,
+     &                       xx_obcsn_dummy )
+#else
+        call read_rec_xz_rl( fnamefld, tmpfield, irec, 1, mythid )
+#endif
 
-cgg    Need to solve for iobcs would have been.
-          gg    = (irec-1)/nobcs
-          igg   = int(gg)
-          iobcs = irec - igg*nobcs
+cgg     Need to solve for iobcs would have been.
+        gg    = (irec-1)/nobcs
+        igg   = int(gg)
+        iobcs = irec - igg*nobcs
 
-          call active_read_xz( 'maskobcsn', maskxz,
-     &                         iobcs,
-     &                         doglobalread, ladinit, 0,
-     &                         mythid, dummy )
+#ifdef ALLOW_AUTODIFF
+        call active_read_xz( 'maskobcsn', maskxz,
+     &                       iobcs,
+     &                       doglobalread, ladinit, 0,
+     &                       mythid, dummy )
+#else
+        call read_rec_xz_rl( 'maskobcsn', maskxz, iobcs, 1, mythid )
+#endif
 
 c--     Loop over this thread s tiles.
         do bj = myByLo(myThid), myByHi(myThid)

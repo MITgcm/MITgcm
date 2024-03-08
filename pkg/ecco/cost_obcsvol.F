@@ -181,9 +181,13 @@ cgg    Need to solve for iobcs. Then only keep iobcs=3.or.4.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnamefldn, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsn_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsn_dummy )
+#else
+          call read_rec_xz_rl( fnamefldn, tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -224,9 +228,13 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.4) then
+#ifdef ALLOW_AUTODIFF
           call active_read_xz( fnameflds, tmpfldxz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcss_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcss_dummy )
+#else
+          call read_rec_xz_rl( fnameflds, tmpfldxz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -267,9 +275,13 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnamefldw, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcsw_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcsw_dummy )
+#else
+          call read_rec_yz_rl( fnamefldw, tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
@@ -310,9 +322,13 @@ cgg -- Positive is flux in.
 cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
+#ifdef ALLOW_AUTODIFF
           call active_read_yz( fnameflde, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
-     &                       , xx_obcse_dummy )
+     &                         ladinit, optimcycle, mythid,
+     &                         xx_obcse_dummy )
+#else
+          call read_rec_yz_rl( fnameflde, tmpfldyz, irec, 1, mythid )
+#endif
 
 cgg  At this point, do not be concerned with the overlap halos.
 cgg  From experience, there is no control contribution in the
