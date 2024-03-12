@@ -76,6 +76,10 @@ C           implicDiv2DFlow=1 => etaH=etaN ; =0 => etaH=etaN^(n-1);
      &                   etaH
       _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+      COMMON /DYNVARS_R_SEASURFTEMP/
+     &                  SEASURFTEMP
+      _RL  seaSurfTemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 #if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
 C     diffKr :: full 3D specification of Laplacian diffusion coeff.
 C               for mixing of tracers vertically ( units of r^2/s )
@@ -152,4 +156,3 @@ C                     following Del Grosso (1974)
       COMMON /DYNVARS_cSound/ cSound
       _RL  cSound(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* INCLUDE_SOUNDSPEED_CALC_CODE */
-

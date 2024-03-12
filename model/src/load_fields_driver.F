@@ -49,7 +49,12 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_EXF
+# include "EXF_CONSTANTS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -67,7 +72,6 @@ C     == Global variables ==
 # include "EOS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
-#  include "EXF_CONSTANTS.h"
 #  ifdef ALLOW_TAPENADE
 #   include "EXF_PARAM.h"
 #   include "EXF_INTERP_SIZE.h"
@@ -84,10 +88,16 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+      _RL consTemp_to_poTemp
+      EXTERNAL consTemp_to_poTemp
+
 C     !LOCAL VARIABLES:
 #if (defined ALLOW_ADDFLUID) || (defined ALLOW_FRICTION_HEATING)
-      INTEGER i,j,k,bi,bj
+      INTEGER k
 #endif
+      INTEGER ks, kl
+      INTEGER i,j,bi,bj
+      _RL    sstTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -126,6 +136,51 @@ C--   Initialise forcing arrays that may receive multiple contributions
         ENDDO
       ENDIF
 #endif /* ALLOW_FRICTION_HEATING */
+
+C--   Determine surface temperature, usually just a copy of the surface
+C     level of theta, but for eosType='TEOS10', we need to convert from
+C     conservative temperature to in-situ surface temperature
+      IF ( usingPCoords ) THEN
+       ks = Nr
+       kl = Nr-1
+      ELSE
+       ks = 1
+       kl = 2
+      ENDIF
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        IF ( Nr.GE.2 .AND. sstExtrapol.GT.0. _d 0 ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            seaSurfTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+     &           + sstExtrapol
+     &           *( theta(i,j,ks,bi,bj)-theta(i,j,kl,bi,bj) )
+     &           *  maskC(i,j,kl,bi,bj)
+           ENDDO
+          ENDDO
+        ELSE
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            seaSurfTemp(i,j,bi,bj) = theta(i,j,ks,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+        IF ( eosType .EQ. 'TEOS10' ) THEN
+          CALL CONVERT_CT2PT(
+     I         seaSurfTemp(1-OLx,1-OLy,bi,bj),
+     I         salt(1-OLx,1-OLy,ks,bi,bj),
+     O         sstTmp,
+     I         myTime, myIter, myThid )
+C     Copy to global field and appy mask (because theta=0 will lead to
+C     seaSurfTemp<0)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            seaSurfTemp(i,j,bi,bj) = sstTmp(i,j)*maskInC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+       ENDDO
+      ENDDO
 
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
