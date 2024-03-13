@@ -1,46 +1,61 @@
 function [vort,z6t]=calc_vort_cs(u3d,v3d,dxC,dyC,rAz);
 % [vort,z6t]=calc_vort_cs(u3d,v3d,dxC,dyC,rAz);
 % compute vorticity (3rd component) on CS-grid.
-%  assume u3d(nc*6,nc,*), v3d(nc*6,nc,*), dxC(nc*6,nc), dyC(nc*6,nc)
-%    and deal with: rAz(nc*6,nc) or rAz(nc*6*nc+2)
+%  assume all input (except rAz) have same shape, either original format (nc*6,nc,*)
+%    or compact format (nc,nc*6,*); and rAz can either have same shape as others
+%    or can include 2 missing corner in a long vector shape (nc*nc*6+2)
 %  output is provided with 2 shapes:
-%   vort(nc*6*nc+2,*) = compressed form;
-%   z6t(nc+1,nc+1,*,6) = face splitted.
+%   1) vort(nc*nc*6+2,*) = long-vector (compact) form;
+%   2) z6t(nc+1,nc+1,*,6) = face splitted.
 %
-% Written by jmc@ocean.mit.edu, 2005.
-dims=size(u3d); nx=dims(1); nc=dims(2); ncp=nc+1; n2p=nc+2; nPg=nx*nc ;
-if nx == 6*nc, flag=1; else flag=0; end
-if size(v3d) ~= dims, flag=0; end
-if size(dxC) ~= dims(1:2), flag=0; end
-if size(dyC) ~= dims(1:2), flag=0; end
-if flag == 0,
- fprintf(' Error in size of input arrays\n');
- vort=0; return
-end
+% Written by jmc@mit.edu, 2005.
+
+dims=size(u3d);
+ n1h=dims(1); n2h=dims(2);
+%-- Verify input array dimensions
+ if n1h == n2h*6, nc=n2h; elseif n1h*6 == n2h, nc=n1h;
+ else
+    error(['Error in CS-dimensions: ',...
+           'n1h,n2h = ',int2str(n1h),', ',int2str(n2h)])
+ end
+ ncp=nc+1; n2p=nc+2; nPg=nc*nc*6 ;
+ if ~isequal(size(u3d),size(v3d)) | ...
+    ~isequal(size(dxC),[n1h n2h]) | ...
+    ~isequal(size(dyC),[n1h n2h])
+    error(['Error in Input-array dimensions: ',...
+           'u3d = ',mat2str(size(u3d)),', ',...
+           'v3d = ',mat2str(size(v3d)),', ',...
+           'dxC = ',mat2str(size(dxC)),', ',...
+           'dyC = ',mat2str(size(dyC))]);
+ end
+ if ~isequal(size(rAz),[n1h n2h]) & ~isequal(size(rAz),[nPg+2 1]),
+    error(['Error in rAz array dimensions: ',mat2str(size(rAz))]);
+ end
+
 if length(dims) == 2, nr=1; else nr=prod(dims(3:end)); end
 
 siZ=prod(size(rAz));
-if siZ == nPg+2,
+if size(rAz,1) == nPg+2,
  rAz=reshape(rAz,[nPg+2 1]);
  aZ=split_Z_cub(rAz);
-elseif siZ == nPg,
- rAz=reshape(rAz,[nPg 1]); 
+else
+ if n2h == nc,
+   rAz=permute(reshape(rAz,[nc 6 nc]),[1 3 2]);
+ end
+ rAz=reshape(rAz,[nPg 1]);
  aZc=zeros(nPg+2,1); aZc(1:nPg,:)=rAz; aZc(nPg+1)=rAz(1); aZc(nPg+2)=rAz(1);
  aZ=split_Z_cub(aZc);
-else
- fprintf(' Error in size of rAz input array\n');
- vort=0; return
 end
 
-u3d=reshape(u3d,[nx nc nr]);
-v3d=reshape(v3d,[nx nc nr]);
+u3d=reshape(u3d,[n1h n2h nr]);
+v3d=reshape(v3d,[n1h n2h nr]);
 
 [u6t,v6t]=split_UV_cub(u3d,v3d,1,2);
 [d6x,d6y]=split_UV_cub(dxC,dyC,0,2);
-if nr > 1, 
+if nr > 1,
   u6t=permute(u6t,[1 2 4 3]);
   v6t=permute(v6t,[1 2 4 3]);
-end 
+end
 z6t=zeros(ncp,ncp,6,nr);
 
 for k=1:nr,
@@ -53,7 +68,7 @@ for k=1:nr,
 % z6t(1,ncp,:,k) = vv2(2,ncp,:)-vv2(1,ncp,:)+vv1(1,ncp,:);
 % z6t(ncp,1,:,k) = vv2(n2p,1,:)-vv2(ncp,1,:)-vv1(ncp,2,:);
 % z6t(ncp,ncp,:,k)=vv2(n2p,ncp,:)-vv2(ncp,ncp,:)+vv1(ncp,ncp,:);
-%- corner: add the 3 terms always in the same order 
+%- corner: add the 3 terms always in the same order
 %   to get the same truncation on the 3 faces
  for n=1:3,
    f=2*n-1; %- odd face number
@@ -81,17 +96,17 @@ for k=1:nr,
  z6t(:,:,:,k)=z6t(:,:,:,k)./aZ;
 end
 
-%- put in compressed form: 
+%- put in compressed form:
 vort=zeros(nPg+2,nr);
 %  extract the interior
- vort([1:nPg],:)=reshape(permute(z6t(1:nc,1:nc,:,:),[1 3 2 4]),[nPg nr]);
+ vort([1:nPg],:)=reshape(z6t(1:nc,1:nc,:,:),[nPg nr]);
 %  put back the 2 missing corners (N.W corner of 1rst face & S.E corner of 2nd face)
  vort(nPg+1,:)=z6t(1,ncp,1,:);
  vort(nPg+2,:)=z6t(ncp,1,2,:);
- 
+
 %- back into final shape:
 z6t=permute(z6t,[1 2 4 3]);
-if length(dims) == 2, 
+if length(dims) == 2,
  vort=squeeze(vort);
  z6t=squeeze(z6t);
 else
@@ -99,5 +114,5 @@ else
  z6t=reshape(z6t,[ncp ncp dims(3:end) 6]);
 end
 
-%----------------- 
+%-----------------
 return

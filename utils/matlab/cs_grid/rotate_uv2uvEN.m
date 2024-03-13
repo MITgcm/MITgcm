@@ -4,10 +4,12 @@ function [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid,maskW,maskS)
 % Rotate cube sphere U and V vector components to east-west (uE) and
 % north-south (vN) components located on cube sphere grid centers.
 %
-% Incoming u and v matricies are assumed to be cube sphere A-grid or C-grid
-% vector fields (defaut is C-grid) where the first two dimensions are (6*nc
-% nc), where nc is the cube face resolution.  There may up to 4 additional
-% dimensions (likely z and time, trials, etc.) beyond this.
+% Assume all input arrays have same shape, either original format (nc*6,nc,*)
+%  or compact format (nc,nc*6,*), where nc is the cube face resolution.
+% Incoming u and v matricies are cube sphere A-grid (Grid='A') or C-grid vector
+%  fields (defaut, Grid='C'). There may be up 2 more dimensions (likely z and
+%  time) for a total of 4 dimensions.
+% Output uE,vN is returned in the shape shape (with same dimensions).
 % Optional maskW & maskS can be provided (for C-grid vector input case)
 %  and used for cell-center interpolation
 %
