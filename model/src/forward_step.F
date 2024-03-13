@@ -640,10 +640,6 @@ CADJ STORE PmEpR      = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_OBCS
 CADJ STORE salt       = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics, kind = isbyte
-#  ifdef ALLOW_OBCS_STEVENS
-CADJ STORE gsNm1      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE gtNm1      = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif
 # endif /* ALLOW_OBCS */
 # ifdef ALLOW_PTRACERS
 CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
