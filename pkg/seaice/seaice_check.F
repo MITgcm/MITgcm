@@ -1221,8 +1221,25 @@ C--   Some sanity checks for SEAICEdWatMin
 
 #ifndef SEAICE_ALLOW_SIDEDRAG
       IF ( SEAICEsideDrag .NE. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,E12.5)')
-     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag
+       WRITE(msgBuf,'(A,E12.5,A)')
+     &      'SEAICE_CHECK: SEAICEsideDrag = ', SEAICEsideDrag,
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+      IF ( uCoastLineFile .NE. ' ' ) THEN
+       i = ILNBLNK(uCoastLineFile)
+       WRITE(msgBuf,'(3A)')
+     &      'SEAICE_CHECK: uCoastLineFile = ', uCoastLineFile(1:i),
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+      IF( vCoastLineFile .NE. ' ' ) THEN
+       i = ILNBLNK(vCoastLineFile)
+       WRITE(msgBuf,'(3A)')
+     &      'SEAICE_CHECK: vCoastLineFile = ', vCoastLineFile(1:i),
+     &      ' is set, but SEAICE_ALLOW_SIDEDRAG is not defined'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: is set, ',
      &      'but SEAICE_ALLOW_SIDEDRAG is not defined'
