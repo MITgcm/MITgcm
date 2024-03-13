@@ -74,7 +74,8 @@ C     silicaDeep  :: 3D-field of silicate concentration for pH and
 C                    carbonate calculations. Read in from file (mol/m3).
 C     omegaC      :: Local saturation state with respect to calcite
        COMMON /DIC_CALCITE_SAT_FIELDS/
-     &              silicaDeep, omegaC
+     &              pH3D, silicaDeep, omegaC
+      _RL  pH3D      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  silicaDeep(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  omegaC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
