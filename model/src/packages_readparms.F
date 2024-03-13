@@ -80,6 +80,8 @@ C       |-- SHELFICE_READPARMS
 C       |
 C       |-- ICEFRONT_READPARMS
 C       |
+C       |-- ICEPLUME_READPARMS
+C       |
 C       |-- SEAICE_READPARMS
 C       |
 C       |-- SALT_PLUME_READPARMS
@@ -280,6 +282,11 @@ C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
 #ifdef ALLOW_ICEFRONT
 C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
       CALL ICEFRONT_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_ICEPLUME
+C--   Initialise ICEPLUME parameters 
+      IF (useICEPLUME) CALL ICEPLUME_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_SEAICE
