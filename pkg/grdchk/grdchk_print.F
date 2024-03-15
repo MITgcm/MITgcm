@@ -57,13 +57,10 @@ C     !LOCAL VARIABLES:
       INTEGER ierr
       INTEGER numchecks
       INTEGER iL
-      CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-C-    get name of grdchk CTRL var/file:
-      CALL GRDCHK_CTRL_FNAME( fName, grdchkvarindex, myThid )
-      iL = ILNBLNK( fName )
+      iL = ILNBLNK( grdchkvarname )
 
 C--   Print header.
       WRITE(msgBuf,'(A)') ' '
@@ -89,7 +86,7 @@ c     WRITE(msgBuf,'(A,1PE14.6)')
 c    & ' EPS = ',grdchk_eps
       WRITE(msgBuf,'(A,1PE13.6,3A)')
      & ' EPS =', grdchk_eps,
-     & ' ; grdchk CTRL var/file name: "',fName(1:iL),'"'
+     & ' ; grdchk CTRL var/file name: "',grdchkvarname(1:iL),'"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '

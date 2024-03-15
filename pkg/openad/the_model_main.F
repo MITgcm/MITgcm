@@ -595,6 +595,7 @@ C <<-- OpenAD
 #include "FFIELDS.h"
 
 #ifdef ALLOW_CTRL
+# include "CTRL_SIZE.h"
 # include "CTRL.h"
 # include "OPTIMCYCLE.h"
 # include "CTRL_GENARR.h"
