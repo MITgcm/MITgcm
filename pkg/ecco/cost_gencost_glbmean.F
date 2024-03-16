@@ -184,8 +184,8 @@ c--     Compute the mean over all bpdat records.
                     do j = 1,sNy
                       do i = 1,sNx
                         if ( maskc(i,j,1,bi,bj).NE. 0. _d 0 ) then
-                          locbarmean(i,j,bi,bj) = 
-     &                       locbarmean(i,j,bi,bj) + 
+                          locbarmean(i,j,bi,bj) =
+     &                       locbarmean(i,j,bi,bj) +
      &                       fac*locbar(i,j,bi,bj)
                           loccount(i,j,bi,bj) = loccount(i,j,bi,bj) +
      &                       1. _d 0
@@ -234,7 +234,7 @@ c--    Compute field of anomalies
                       do i = 1,sNx
                         if ( maskc(i,j,1,bi,bj).NE. 0. _d 0) then
                           locbaranom(i,j,bi,bj) =
-     &                      fac*locbar(i,j,bi,bj) - 
+     &                      fac*locbar(i,j,bi,bj) -
      &                        locbarmean(i,j,bi,bj)
                         else
                           locbaranom(i,j,bi,bj) = 0. _d 0
@@ -269,22 +269,22 @@ c--    Remove global mean value
                 IF (  MASTER_CPU_THREAD(myThid) .AND.
      &               ( locmask(irec) .NE. 0. _d 0 ) .AND.
      &               ( locbarglbmean_sum .NE. 0. _d 0 ) ) THEN
-                    junk=locbarglbmean/locbarglbmean_sum - 
+                    junk=locbarglbmean/locbarglbmean_sum -
      &                dataglbmean(irec)
                     junkweight=locw
                     objf_gencost(1,1,kgen) = objf_gencost(1,1,kgen)
      &                  + junk*junk*junkweight
                     num_gencost(1,1,kgen) = num_gencost(1,1,kgen)
      &                  + 1. _d 0
- 
-                    WRITE(msgBuf,'(A,i6,2e16.5)') 
+
+                    WRITE(msgBuf,'(A,i6,2e16.5)')
      &               gencost_name(kgen)(1:10),irec,
      &               locbarglbmean/locbarglbmean_sum, dataglbmean(irec)
                     CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                                SQUEEZE_RIGHT , 1)
- 
+
                 ENDIF
- 
+
               endif ! if(locmask .ne. 0. _d 0)
             enddo
 
