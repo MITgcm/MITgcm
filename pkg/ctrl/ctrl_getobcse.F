@@ -112,7 +112,7 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcse_dummy )
 #else
-        call read_rec_yz_rl( fnameobcse, tmpfldyz,
+        CALL READ_REC_YZ_RL( fnameobcse, ctrlprec, Nr, tmpfldyz,
      &                       (obcsecount0-1)*nobcs+iobcs, 1, myThid )
 #endif
 
@@ -186,7 +186,7 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcse_dummy )
 #else
-        call read_rec_yz_rl( fnameobcse, tmpfldyz,
+        CALL READ_REC_YZ_RL( fnameobcse, ctrlprec, Nr, tmpfldyz,
      &                       (obcsecount1-1)*nobcs+iobcs, 1, myThid )
 #endif
 

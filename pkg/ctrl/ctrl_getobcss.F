@@ -113,7 +113,7 @@ c--   Get the counters, flags, and the interpolation factor.
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcss_dummy )
 #else
-        call read_rec_xz_rl( fnameobcss, tmpfldxz,
+        CALL READ_REC_XZ_RL( fnameobcss, ctrlprec, Nr, tmpfldxz,
      &                       (obcsscount0-1)*nobcs+iobcs, 1, myThid )
 #endif
 
@@ -187,7 +187,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcss_dummy )
 #else
-        call read_rec_xz_rl( fnameobcss, tmpfldxz,
+        CALL READ_REC_XZ_RL( fnameobcss, ctrlprec, Nr, tmpfldxz,
      &                       (obcsscount1-1)*nobcs+iobcs, 1, myThid )
 #endif
 

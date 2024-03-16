@@ -181,7 +181,8 @@ cgg   think of a more general way to do this.
      &                         ladinit, optimcycle, mythid,
      &                         xx_obcsn_dummy )
 #else
-          call read_rec_xz_rl( fnamefldn, tmpfldxz, irec, 1, mythid )
+          CALL READ_REC_XZ_RL( fnamefldn, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
 #endif
 
 cgg  At this point, do not be concerned with the overlap halos.
@@ -228,7 +229,8 @@ cgg   think of a more general way to do this.
      &                         ladinit, optimcycle, mythid,
      &                         xx_obcss_dummy )
 #else
-          call read_rec_xz_rl( fnameflds, tmpfldxz, irec, 1, mythid )
+          CALL READ_REC_XZ_RL( fnameflds, ctrlprec, Nr,
+     &                         tmpfldxz, irec, 1, mythid )
 #endif
 
 cgg  At this point, do not be concerned with the overlap halos.
@@ -275,7 +277,8 @@ cgg   think of a more general way to do this.
      &                         ladinit, optimcycle, mythid,
      &                         xx_obcsw_dummy )
 #else
-          call read_rec_yz_rl( fnamefldw, tmpfldyz, irec, 1, mythid )
+          CALL READ_REC_YZ_RL( fnamefldw, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
 #endif
 
 cgg  At this point, do not be concerned with the overlap halos.
@@ -322,7 +325,8 @@ cgg   think of a more general way to do this.
      &                         ladinit, optimcycle, mythid,
      &                         xx_obcse_dummy )
 #else
-          call read_rec_yz_rl( fnameflde, tmpfldyz, irec, 1, mythid )
+          CALL READ_REC_YZ_RL( fnameflde, ctrlprec, Nr,
+     &                         tmpfldyz, irec, 1, mythid )
 #endif
 
 cgg  At this point, do not be concerned with the overlap halos.

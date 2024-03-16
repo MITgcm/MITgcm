@@ -124,11 +124,12 @@ c--   Loop over records.
       do irec = 1,nrec
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, myThid,
-     &                       xx_obcss_dummy )
+        call active_read_xz( fnamefld, tmpfield, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, xx_obcss_dummy )
 #else
-        call read_rec_xz_rl( fnamefld, tmpfield, irec, 1, myThid )
+        CALL READ_REC_XZ_RL( fnamefld, ctrlprec, Nr,
+     &                       tmpfield, irec, 1, myThid )
 #endif
 
 cgg     Need to solve for iobcs would have been.
@@ -137,12 +138,12 @@ cgg     Need to solve for iobcs would have been.
         iobcs = irec - igg*nobcs
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_xz( 'maskobcss', maskxz,
-     &                       iobcs,
+        call active_read_xz( 'maskobcss', maskxz, iobcs,
      &                       doglobalread, ladinit, 0,
      &                       myThid, dummy )
 #else
-        call read_rec_xz_rl( 'maskobcss', maskxz, iobcs, 1, myThid )
+        CALL READ_REC_XZ_RL( 'maskobcss', ctrlprec, Nr,
+     &                       maskxz, iobcs, 1, myThid )
 #endif
 
 c--     Loop over this thread s tiles.

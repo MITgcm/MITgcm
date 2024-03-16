@@ -125,11 +125,12 @@ c--   Loop over records.
       do irec = 1,nrec
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_yz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, myThid,
-     &                       xx_obcse_dummy )
+        call active_read_yz( fnamefld, tmpfield, irec,
+     &                       doglobalread, ladinit, optimcycle,
+     &                       myThid, xx_obcse_dummy )
 #else
-        call read_rec_yz_rl( fnamefld, tmpfield, irec, 1, myThid )
+        CALL READ_REC_YZ_RL( fnamefld, ctrlprec, Nr,
+     &                       tmpfield, irec, 1, myThid )
 #endif
 
 cgg     Need to solve for iobcs would have been.
@@ -138,12 +139,12 @@ cgg     Need to solve for iobcs would have been.
         iobcs = irec - igg*nobcs
 
 #ifdef ALLOW_AUTODIFF
-        call active_read_yz( 'maskobcse', maskyz,
-     &                       iobcs,
+        call active_read_yz( 'maskobcse', maskyz, iobcs,
      &                       doglobalread, ladinit, 0,
      &                       myThid, dummy )
 #else
-        call read_rec_yz_rl( 'maskobcse', maskyz, iobcs, 1, myThid )
+        CALL READ_REC_YZ_RL( 'maskobcse', ctrlprec, Nr,
+     &                       maskyz, iobcs, 1, myThid )
 #endif
 
 c--     Loop over this thread s tiles.
