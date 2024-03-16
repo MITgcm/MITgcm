@@ -4,11 +4,8 @@
 #endif
 
       subroutine cost_obcsvol(
-     I                       myiter,
-     I                       mytime,
-     I                       startrec,
-     I                       endrec,
-     I                       mythid )
+     I                         startrec, endrec,
+     I                         mytime, myiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_obcsvol
@@ -46,10 +43,9 @@ c     == global variables ==
 #endif
 
 c     == routine arguments ==
-      integer myiter
+      integer startrec, endrec
       _RL     mytime
-      integer startrec
-      integer endrec
+      integer myiter
       integer mythid
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
@@ -93,7 +89,6 @@ c     == local variables ==
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
-
 c     == end of interface ==
 
       stop 's/r cost_obcsvol needs to be fixed'
