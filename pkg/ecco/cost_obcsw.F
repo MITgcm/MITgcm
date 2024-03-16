@@ -133,7 +133,7 @@ c--   Loop over records.
 
 #ifdef ALLOW_AUTODIFF
         call active_read_yz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
+     &                       ladinit, optimcycle, mythid,
      &                       xx_obcsw_dummy )
 #else
         call read_rec_yz_rl( fnamefld, tmpfield, irec, 1, mythid )
