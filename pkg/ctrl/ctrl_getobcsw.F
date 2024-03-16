@@ -107,10 +107,15 @@ c--   Get the counters, flags, and the interpolation factor.
       do iobcs = 1,nobcs
 
        if ( obcswfirst ) then
+#ifdef ALLOW_AUTODIFF
         call active_read_yz( fnameobcsw, tmpfldyz,
      &                       (obcswcount0-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcsw_dummy )
+#else
+        call read_rec_yz_rl( fnameobcsw, tmpfldyz,
+     &                       (obcswcount0-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
@@ -176,10 +181,15 @@ cgg   &                                        *   maskyz (j,k,bi,bj)
          enddo
         enddo
 
+#ifdef ALLOW_AUTODIFF
         call active_read_yz( fnameobcsw, tmpfldyz,
      &                       (obcswcount1-1)*nobcs+iobcs,
      &                       doglobalread, ladinit, optimcycle,
      &                       myThid, xx_obcsw_dummy )
+#else
+        call read_rec_yz_rl( fnameobcsw, tmpfldyz,
+     &                       (obcswcount1-1)*nobcs+iobcs, 1, myThid )
+#endif
 
         do bj = jtlo,jthi
          do bi = itlo,ithi
