@@ -71,6 +71,19 @@ C--   Add tidal currents:
              ENDIF
             ENDDO
            ENDDO
+cYoshi
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             iB = OB_Ie(j,bi,bj)
+             IF ( iB.NE.OB_indexNone ) THEN
+              OBEv(j,k,bi,bj) = OBEv(j,k,bi,bj) +
+     &              maskS(iB,j,k,bi,bj) * OBEamt(j,td,bi,bj) *
+     &              COS( 2.D0 * PI * (myTime-OBEpht(j,td,bi,bj)) /
+     &                   tidalPeriod(td) )
+             ENDIF
+            ENDDO
+           ENDDO
+cYoshi
           ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
@@ -87,6 +100,20 @@ C--   Add tidal currents:
              ENDIF
             ENDDO
            ENDDO
+cYoshi
+           DO k=1,Nr
+            DO j=1-OLy,sNy+OLy
+             iB = OB_Iw(j,bi,bj)
+             IF ( iB.NE.OB_indexNone ) THEN
+              OBWv(j,k,bi,bj) = OBWv(j,k,bi,bj) +
+     &              maskS(iB,j,k,bi,bj) * OBWamt(j,td,bi,bj) *
+     &              COS( 2.D0 * PI * (myTime-OBWpht(j,td,bi,bj)) /
+     &                   tidalPeriod(td) )
+             ENDIF
+            ENDDO
+           ENDDO
+
+cYoshi
           ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
@@ -103,6 +130,19 @@ C--   Add tidal currents:
              ENDIF
             ENDDO
            ENDDO
+cYoshi
+           DO k=1,Nr
+            DO i=1-OLx,sNx+OLx
+             jB = OB_Jn(i,bi,bj)
+             IF ( jB.NE.OB_indexNone ) THEN
+              OBNu(i,k,bi,bj) = OBNu(i,k,bi,bj) +
+     &              maskW(i,jB,k,bi,bj) * OBNamt(i,td,bi,bj) *
+     &              COS( 2.D0 * PI * (myTime-OBNpht(i,td,bi,bj)) /
+     &                   tidalPeriod(td) )
+             ENDIF
+            ENDDO
+           ENDDO
+cYoshi
           ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -119,6 +159,19 @@ C--   Add tidal currents:
              ENDIF
             ENDDO
            ENDDO
+cYoshi
+           DO k=1,Nr
+            DO i=1-OLx,sNx+OLx
+             jB = OB_Js(i,bi,bj)
+             IF ( jB.NE.OB_indexNone ) THEN
+              OBSu(i,k,bi,bj) = OBSu(i,k,bi,bj) +
+     &              maskW(i,jB,k,bi,bj)* OBSamt(i,td,bi,bj) *
+     &              COS( 2.D0 * PI * (myTime-OBSpht(i,td,bi,bj)) /
+     &                   tidalPeriod(td) )
+             ENDIF
+            ENDDO
+           ENDDO
+cYoshi
           ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
