@@ -34,10 +34,11 @@ C Include hooks to sponge layer treatment of pkg/seaice variables
 C balance barotropic velocity
 #define ALLOW_OBCS_BALANCE
 
-C add tidal contributions to normal OB flow
-C NOTE that at the moment tidal forcing is applied
-C only to "normal" flow.
+C Allow to add barotropic tidal contributions to OB velocity
 #undef ALLOW_OBCS_TIDES
+C Put back old OB-Tides code, slower and only deals with Normal Flow component
+C Note: just to be able to recover identical, machine truncation level output
+#undef OLD_OBCS_TIDES
 
 C Use older implementation of obcs in seaice-dynamics
 C note: most of the "experimental" options listed below have not yet
