@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco, ctrl:
+  - put active_read calls within #ifdef ALLOW_AUTODIFF (missing in few places)
+    and fall back to non-active read (from pkg/rw) if undef;
+  - change argument order in few obcs related pkg/ecco S/R.
 o pkg/seaice:
   - for seaice-dynamics, add missing mapping of (pkg/thsice) snowHeight to HSNOW
   - this affects results (unless SEAICEaddSnowMass=F); update seaice parameters
