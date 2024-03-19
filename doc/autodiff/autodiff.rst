@@ -368,7 +368,7 @@ or
 Furthermore, the adjoint :math:`\delta v^{(\lambda) \, \ast}` of any
 intermediate state :math:`v^{(\lambda)}` may be obtained, using the
 intermediate Jacobian (an :math:`n_{\lambda+1} \times n_{\lambda}`
-matrix)
+matri for more details and a comparative analysis with TAF.)
 
 .. math::
    M_{\lambda} \, = \,
@@ -1750,8 +1750,11 @@ either absolute or relative to the build directory.
 Adjoint code generation using Tapenade
 ======================================
 
+Please refer to Gaikwad et. al 2024 :cite:`ssg:24` for more details and a comparative analysis with TAF. Feel free to reach out if you wish to use Tapenade and need help!
+
 Authors: Shreyas Gaikwad, Sri Hari Krishna Naryanan, Laurent Hascoet, Patrick
 Heimbach
+Contact: Shreyas Gaikwad (shreyas.gaikwad@utexas.edu)
 
 Introduction
 ------------
