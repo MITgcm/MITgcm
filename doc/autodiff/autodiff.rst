@@ -368,7 +368,7 @@ or
 Furthermore, the adjoint :math:`\delta v^{(\lambda) \, \ast}` of any
 intermediate state :math:`v^{(\lambda)}` may be obtained, using the
 intermediate Jacobian (an :math:`n_{\lambda+1} \times n_{\lambda}`
-matri for more details and a comparative analysis with TAF.)
+matrix)
 
 .. math::
    M_{\lambda} \, = \,
