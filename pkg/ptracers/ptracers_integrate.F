@@ -508,6 +508,10 @@ C--   Update tracer fields:  pTr(n) = pTr**
      I               gTracer, myTime, myIter, myThid )
         ENDIF
 
+C-- Reset preformed tracers according to their different requirements
+        CALL PTRACERS_PREFORMED_RESET( bi, bj, 
+     &          myTime, myIter, myThid )
+
 #ifdef ALLOW_OBCS
 C--   Apply open boundary conditions for each passive tracer
         IF ( useOBCS ) THEN

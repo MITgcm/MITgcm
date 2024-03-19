@@ -38,6 +38,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
       errCount = 0
+      WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK ',
+     &                     ' --> Starts to check PTRACERS set-up'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
       WRITE(msgBuf,'(A)') 'PTRACERS_CHECK: #define ALLOW_PTRACERS'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -140,6 +144,32 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_stayPositive =',
      &     ' /* use Smolarkiewicz Hack for this tracer */')
 #endif
+        CALL WRITE_0D_L( PTRACERS_isPreformed(iTracer), INDEX_NONE,
+     &     'PTRACERS_isPreformed =', ' /* preformed tracer */')
+        IF ( PTRACERS_isPreformed(iTracer) ) THEN
+           CALL WRITE_0D_L( 
+     &        PTRACERS_preformedUseMLD(iTracer), INDEX_NONE,
+     &       'PTRACERS_preformedUseMLD =', 
+     &       ' /* reset tracer over MLD or just at the surface */')
+           CALL WRITE_0D_L( 
+     &        PTRACERS_preformedAgeTracer(iTracer), INDEX_NONE,
+     &       'PTRACERS_preformedAgeTracer =', 
+     &       ' /* Tracer ages in ocean interior */')
+           IF ( PTRACERS_preformedMate(iTracer).NE.UNSET_I ) 
+     &        CALL WRITE_0D_I( 
+     &            PTRACERS_preformedMate(iTracer), INDEX_NONE,
+     &           'PTRACERS_preformedMate =', 
+     &           ' /* Reset towards this tracer value */')
+           IF ( PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL ) 
+     &        CALL WRITE_0D_RL( 
+     &            PTRACERS_preformedFixedValue(iTracer), INDEX_NONE,
+     &           'PTRACERS_preformedFixedValue =', 
+     &           ' /* Reset towards this tracer value */')
+           CALL WRITE_0D_RL( 
+     &            PTRACERS_tauRelaxPreformed(iTracer), INDEX_NONE,
+     &           'PTRACERS_tauRelaxPreformed =', 
+     &           ' /* Reset timescale for preformed tracer */')
+        ENDIF
         CALL WRITE_1D_RL( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
      &     'PTRACERS_ref =', ' /* Reference vertical profile */')
         CALL WRITE_0D_RL( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
@@ -247,6 +277,66 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         errCount = errCount + 1
        ENDIF
 #endif
+C     Check preformed or age tracer parms that dont make sense
+        IF ( PTRACERS_isPreformed(iTracer) ) THEN
+C       Only set one of PTRACERS_preformedMate or PTRACERS_preformedFixedValue  
+           IF (
+     &         (PTRACERS_preformedMate(iTracer).EQ.UNSET_I .AND.
+     &         PTRACERS_preformedFixedValue(iTracer).EQ.UNSET_RL) .OR.
+     &         (PTRACERS_preformedMate(iTracer).NE.UNSET_I .AND.
+     &         PTRACERS_preformedFixedValue(iTracer).NE.UNSET_RL)
+     &          ) THEN   
+              WRITE(msgBuf,'(A,I4,A,A,I9,A,1PE23.14,A)')
+     &           ' PTRACERS_CHECK: You want ptracer ',
+     &           iTracer,
+     &           ' to be a preformed tracer,',
+     &           ' but PTRACERS_preformedMate is ', 
+     &           PTRACERS_preformedMate(iTracer),
+     &           ' and PTRACERS_preformedFixedValue is ',
+     &           PTRACERS_preformedFixedValue(iTracer),
+     &           '. You need to specify one or the other.'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              errCount = errCount + 1
+C          Check that PTRACERS_preformedMate points to a real ptracer
+           ELSEIF (PTRACERS_preformedFixedValue(iTracer).EQ.UNSET_RL
+     &         .AND.PTRACERS_preformedMate(iTracer)
+     &                                       .GT.PTRACERS_numInUse) THEN
+              WRITE(msgBuf,'(A,I9,A,A,I9,A,I9,A)')
+     &           ' PTRACERS_CHECK: You want ptracer ',
+     &           iTracer,
+     &           ' to be a preformed tracer,',     
+     &           ' pointing to Ptr ' ,
+     &           PTRACERS_preformedMate(iTracer),
+     &           ' when only ',
+     &           PTRACERS_numInUse,
+     &           ' tracers are being used. '
+              CALL PRINT_ERROR( msgBuf, myThid )
+              errCount = errCount + 1
+           ENDIF
+C Soft warning for is the relaxation time is set to 1.234567e5. I mean,
+C   that could be a legitimate value
+           IF (PTRACERS_tauRelaxPreformed(iTracer).EQ.UNSET_RL) THEN
+              WRITE(msgBuf,'(A,I9,A,A,1PE23.14,A)')
+     &           ' PTRACERS_CHECK: You want ptracer ',
+     &           iTracer,
+     &           ' to be a preformed tracer,',
+     &           ' but the relaxation time is ',UNSET_RL,
+     &           ', are you sure?'
+              CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,
+     &           SQUEEZE_RIGHT,myThid)
+C Soft warning for is the relaxation time is set to 0. I mean,
+C   could that be a legitimate value, probably not....
+           ELSEIF (PTRACERS_tauRelaxPreformed(iTracer).EQ.0. _d 0) THEN
+              WRITE(msgBuf,'(A,I9,A,A,1PE23.14,A)')
+     &           ' PTRACERS_CHECK: You want ptracer ',
+     &           iTracer,
+     &           ' to be a preformed tracer,',
+     &           ' but the relaxation time is set to ',0. _d 0,
+     &           ', are you sure?'
+              CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,
+     &           SQUEEZE_RIGHT,myThid)
+           ENDIF
+        ENDIF
       ENDDO
 
       IF ( errCount.GE.1 ) THEN
@@ -255,8 +345,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R PTRACERS_CHECK'
+      ELSE
+        WRITE(msgBuf,'(2A)') 'PTRACERS_CHECK ',
+     &                     ' <-- Ends Normally'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       ENDIF
-
       _END_MASTER(myThid)
 C     Everyone else must wait for the parameters to be loaded
       _BARRIER
