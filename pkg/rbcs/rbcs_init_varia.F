@@ -51,8 +51,11 @@ C     i,j,k,bi,bj,iTracer  :: loop indices
                 rbcs0(i,j,k,bi,bj) = 0. _d 0
                 rbct1(i,j,k,bi,bj) = 0. _d 0
                 rbcs1(i,j,k,bi,bj) = 0. _d 0
+                rbceta0(i,j,bi,bj) = 0. _d 0
+                rbceta1(i,j,bi,bj) = 0. _d 0
                 RBCtemp(i,j,k,bi,bj) = 0. _d 0
                 RBCsalt(i,j,k,bi,bj) = 0. _d 0
+                RBCeta(i,j,bi,bj) = 0. _d 0
               ENDDO
             ENDDO
           ENDDO
