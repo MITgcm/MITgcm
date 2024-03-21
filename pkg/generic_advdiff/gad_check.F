@@ -142,11 +142,7 @@ C Check compatibility with adjoint
      &     tempAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
      &     saltAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
      &     tempAdvScheme.EQ.ENUM_PQM_WENO_LIMIT .OR.
-     &     saltAdvScheme.EQ.ENUM_PQM_WENO_LIMIT .OR.
-     &     tempAdvScheme.EQ.ENUM_SOM_PRATHER    .OR.
-     &     saltAdvScheme.EQ.ENUM_SOM_PRATHER    .OR.
-     &     tempAdvScheme.EQ.ENUM_SOM_LIMITER    .OR.
-     &     saltAdvScheme.EQ.ENUM_SOM_LIMITER ) THEN
+     &     saltAdvScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
         WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
      &   ENUM_PPM_NULL_LIMIT, ENUM_PPM_MONO_LIMIT, ENUM_PPM_WENO_LIMIT,
      &   ENUM_PQM_NULL_LIMIT, ENUM_PQM_MONO_LIMIT, ENUM_PQM_WENO_LIMIT,
