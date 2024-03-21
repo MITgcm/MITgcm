@@ -604,7 +604,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         IF ( useNHMTerms .AND. k.GT.1 ) THEN
           CALL MOM_W_METRIC_NH(
-     I               bi,bj,k,
+     I               bi, bj, k,
      I               uVel, vVel,
      O               gwAdd,
      I               myThid )
@@ -616,8 +616,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         ENDIF
         IF ( select3dCoriScheme.GE.1 .AND. k.GT.1 ) THEN
           CALL MOM_W_CORIOLIS_NH(
-     I               bi,bj,k,
-     I               uVel, vVel,
+     I               bi, bj, k,
+     I               uVel, vVel, recip_rThickC,
      O               gwAdd,
      I               myThid )
           DO j=jMin,jMax
