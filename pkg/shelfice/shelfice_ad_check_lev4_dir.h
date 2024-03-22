@@ -12,9 +12,7 @@ CADJ STORE shelficeFreshWaterFlux = tapelev4, key = ilev_4
 CADJ STORE shelficeLoadAnomaly    = tapelev4, key = ilev_4
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_STEEP_ICECAVITY
-#ifdef ALLOW_SHITRANSCOEFF_3D
-CADJ STORE shiTransCoeffS3d = tapelev4, key = ilev_4
-#else
+# ifndef ALLOW_SHITRANSCOEFF_3D
 CADJ STORE shiTransCoeffS   = tapelev4, key = ilev_4
-#endif
+# endif
 #endif /* ALLOW_STEEP_ICECAVITY */
