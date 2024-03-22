@@ -251,7 +251,7 @@ C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
 #ifdef GAD_ALLOW_TS_SOM_ADV
 # ifdef ALLOW_AUTODIFF_TAMC
-C This looks awkward for a F77 point of view, but TAF does the right thing.
+C This looks awkward from an F77 point of view, but TAF does the right thing.
 CADJ STORE som_S(:,:,:,bi,bj,:) = comlev1_bibj, key=tkey, kind=isbyte
 # endif
       IF ( saltSOM_Advection ) THEN
