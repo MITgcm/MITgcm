@@ -176,6 +176,11 @@ CADJ STORE kTopC          = comlev1, key = ikey_dynamics
 # endif
 CADJ STORE shelficeForcingT=comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE shelficeForcingS=comlev1, key = ikey_dynamics, kind = isbyte
+# ifdef ALLOW_STEEP_ICECAVITY
+C     need to add this to avoid recomputing s/r do_oceanic_phys in
+C     s/r forward_step, this implies that ALLOW_ADDFLUID is defined
+CADJ STORE addMass         =comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif /* ALLOW_SHELFICE */
 
 #if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)

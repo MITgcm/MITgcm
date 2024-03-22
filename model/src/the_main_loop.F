@@ -33,6 +33,12 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_STEEP_ICECAVITY
+C Need to include STIC_OPTIONS.h as some CPP flags
+C defined in STIC_OPTIONS.h are used in
+C checkpoint_lev2_directives.h, checkpoint_lev3_directives.h, etc.
+# include "STIC_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -158,6 +164,9 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_SHELFICE
 #   include "SHELFICE.h"
 #   include "SHELFICE_COST.h"
+#  endif
+#  ifdef ALLOW_STEEP_ICECAVITY
+#   include "STIC.h"
 #  endif
 #  ifdef ALLOW_STREAMICE
 #   include "STREAMICE.h"
@@ -561,6 +570,13 @@ CADJ INIT comlev1_thsice_exf_ij    = COMMON,
 CADJ &    nchklev_1*nSx*nSy*(MaxTsf+1)*niter_bulk*sNx*sNy
 #    endif
 #   endif /* ALLOW_THSICE */
+c--
+#   ifdef ALLOW_STEEP_ICECAVITY
+CADJ INIT comlev1_stic_bibj_ij = COMMON,
+CADJ &    nchklev_1*nSx*nSy*(2*OLy+sNy)*(2*OLx+sNx)
+CADJ INIT comlev1_stic_bibj_ijk = COMMON,
+CADJ &    nchklev_1*nSx*nSy*Nr*(2*OLy+sNy)*(2*OLx+sNx)
+#   endif
 c--
 #   ifdef ALLOW_STREAMICE
 CADJ INIT comlev1_stream_nl    = COMMON,nchklev_1*streamice_max_nl

@@ -78,6 +78,8 @@ C       |-- STREAMICE_INIT_VARIA
 C       |
 C       |-- SHELFICE_INIT_VARIA
 C       |
+C       |-- STIC_INIT_VARIA
+C       |
 C       |-- ICEFRONT_INIT_VARIA
 C       |
 C       |-- FRAZIL_INIT_VARIA
@@ -142,6 +144,9 @@ C     === Global variables ===
 # endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
+# endif
+# ifdef ALLOW_STEEP_ICECAVITY
+#  include "STIC.h"
 # endif
 # ifdef ALLOW_STREAMICE
 #  include "STREAMICE.h"
@@ -381,6 +386,22 @@ C  compiling pkg/autodiff (with "If useShelfIce" inside shelfice_init_varia.F)
       ENDIF
 # endif
 #endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_STEEP_ICECAVITY
+# ifdef ALLOW_AUTODIFF
+C- Note: use same trick as for pkg/gmredi (call to GMREDI_INIT_VARIA) when
+C  compiling pkg/autodiff (with IF-statements inside stic_init_varia.F)
+# else
+      IF (useSTIC) THEN
+# endif
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STIC_INIT_VARIA',myThid)
+# endif
+       CALL STIC_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF
+      ENDIF
+# endif
+#endif /* ALLOW_STEEP_ICECAVITY */
 
 #ifdef ALLOW_ICEFRONT
       IF (useICEFRONT) THEN

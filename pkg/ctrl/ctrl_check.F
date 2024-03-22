@@ -94,11 +94,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_GENTIM2D_CONTROL
       IF ( .NOT.useCAL ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
-     &    'ALLOW_GENTIM2D_CONTROL is'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** ',
-     &    ' unsafe without calendar package (currently: useCAL=F)'
+     &    'ALLOW_GENTIM2D_CONTROL is unsafe'
+     &    //' without pkg/cal (currently: useCAL=F)'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
