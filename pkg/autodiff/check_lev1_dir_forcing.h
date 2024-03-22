@@ -80,7 +80,7 @@ CADJ STORE climvstr   = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_GEOTHERMAL_FLUX
 CADJ STORE geothermalFlux = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
-#ifdef ALLOW_STEEP_ICECAVITY
+#if ( defined ALLOW_SHELFICE || defined ALLOW_STEEP_ICECAVITY )
 CADJ STORE addMass    = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 # ifdef ALLOW_BLING
