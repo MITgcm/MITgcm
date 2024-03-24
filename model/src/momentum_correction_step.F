@@ -51,6 +51,9 @@ C     myThid :: my Thread Id. number
 C     !LOCAL VARIABLES:
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C HP: add arrays to hold tendency from sfc PGF
+      _RL gU_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gV_eta(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -66,6 +69,9 @@ C--     Set up work arrays that need valid initial values
            DO i=1-OLx,sNx+OLx
             phiSurfX(i,j) = 0.
             phiSurfY(i,j) = 0.
+c initialise arrays to hold sfc PGF
+            gU_eta(i,j) = 0. _d 0
+            gV_eta(i,j) = 0. _d 0
            ENDDO
           ENDDO
 
@@ -88,6 +94,22 @@ C-      Update velocity fields:  V(n) = V** - dt * grad Eta
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         phiSurfX, phiSurfY,
      I         myTime, myIter, myThid )
+
+C HP: ADD CALL TO FILL SFC PGF DIAGNOSTIC
+          IF (useDiagnostics) THEN
+           DO j=jMin,jMax
+            DO i=iMin,iMax
+             gU_eta(i,j) = (-1. _d 0)*phiSurfX(i,j)
+             gV_eta(i,j) = (-1. _d 0)*phiSurfY(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+
+C HP: ADD CALL TO FILL SFC PGF DIAGNOSTIC
+          IF (useDiagnostics) THEN
+           CALL DIAGNOSTICS_FILL( gU_eta,'Um_dPsdx',1,1,2,bi,bj,myThid )
+           CALL DIAGNOSTICS_FILL( gV_eta,'Vm_dPsdy',1,1,2,bi,bj,myThid )
+          ENDIF
         ENDIF
 
 #ifdef ALLOW_OBCS

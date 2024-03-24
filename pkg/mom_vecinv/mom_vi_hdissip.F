@@ -33,12 +33,28 @@ C     == Routine arguments ==
       LOGICAL harmonic, biharmonic, useVariableViscosity
       _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C HP: add tendency from laplacian viscosity [uDiss_lap,vDiss_bih]
+c--                and biharmonic viscosity [uDiss_bih,vDiss_bih]
+      _RL uDiss_lap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vDiss_lap(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uDiss_bih(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vDiss_bih(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
       INTEGER i, j
       _RL Zip, Zij, Zpj, Dim, Dij, Dmj, uD2, vD2, uD4, vD4
       _RL Zip1, Zij1, Zpj1
+
+C HP: Initialize local arrays
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         uDiss_lap(i,j) = 0. _d 0
+         vDiss_lap(i,j) = 0. _d 0
+         uDiss_bih(i,j) = 0. _d 0
+         vDiss_bih(i,j) = 0. _d 0
+        ENDDO
+      ENDDO
 
 C     - Laplacian  terms
       IF (harmonic) THEN
@@ -72,6 +88,9 @@ C and should be less than 1/8, for example viscAh=0.01
 
           uDissip(i,j) = uD2
           vDissip(i,j) = vD2
+C HP: fill new diagnostic
+          uDiss_lap(i,j) = uDiss_lap(i,j) + uD2
+          vDiss_lap(i,j) = vDiss_lap(i,j) + vD2
 
          ENDDO
         ENDDO
@@ -102,6 +121,9 @@ C and should be less than 1/8, for example viscAh=0.01
 
           uDissip(i,j) = uD2
           vDissip(i,j) = vD2
+C HP: fill new diagnostic
+          uDiss_lap(i,j) = uDiss_lap(i,j) + uD2
+          vDiss_lap(i,j) = vDiss_lap(i,j) + vD2
 
          ENDDO
         ENDDO
@@ -182,6 +204,9 @@ C and should be less than 1/8, for example viscAh=0.01
 
           uDissip(i,j) = uDissip(i,j) - uD4
           vDissip(i,j) = vDissip(i,j) - vD4
+C HP: fill new diagnostic
+          uDiss_bih(i,j) = uDiss_bih(i,j) - uD4
+          vDiss_bih(i,j) = vDiss_bih(i,j) - vD4
 
          ENDDO
         ENDDO
@@ -243,6 +268,9 @@ C and should be less than 1/8, for example viscAh=0.01
 
           uDissip(i,j) = uDissip(i,j) - uD4
           vDissip(i,j) = vDissip(i,j) - vD4
+C HP: fill new diagnostic
+          uDiss_bih(i,j) = uDiss_bih(i,j) - uD4
+          vDiss_bih(i,j) = vDiss_bih(i,j) - vD4
 
          ENDDO
         ENDDO
@@ -256,9 +284,28 @@ C and should be less than 1/8, for example viscAh=0.01
      &                              *recip_deepFacC(k)
          vDissip(i,j) = vDissip(i,j)*maskS(i,j,k,bi,bj)
      &                              *recip_deepFacC(k)
+C HP: scaling for new diagnostic separately
+         uDiss_lap(i,j) = uDiss_lap(i,j)*maskW(i,j,k,bi,bj)
+     &                              *recip_deepFacC(k)
+         vDiss_lap(i,j) = vDiss_lap(i,j)*maskS(i,j,k,bi,bj)
+     &                              *recip_deepFacC(k)
+         uDiss_bih(i,j) = uDiss_bih(i,j)*maskW(i,j,k,bi,bj)
+     &                              *recip_deepFacC(k)
+         vDiss_bih(i,j) = vDiss_bih(i,j)*maskS(i,j,k,bi,bj)
+     &                              *recip_deepFacC(k)
         ENDDO
        ENDDO
       ENDIF
+
+C HP: call to fill harmonic and biharmonic diagnostics
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+       CALL DIAGNOSTICS_FILL(uDiss_lap,'Um_Diss2',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(vDiss_lap,'Vm_Diss2',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(uDiss_bih,'Um_Diss4',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(vDiss_bih,'Vm_Diss4',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
