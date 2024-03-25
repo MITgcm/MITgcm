@@ -134,36 +134,40 @@ C Check compatibility with adjoint
       IF ( tempAdvScheme.EQ.ENUM_PPM_NULL_LIMIT .OR.
      &     tempAdvScheme.EQ.ENUM_PPM_MONO_LIMIT .OR.
      &     tempAdvScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
-        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
-     &   ENUM_PPM_NULL_LIMIT, ENUM_PPM_MONO_LIMIT, ENUM_PPM_WENO_LIMIT,
-     &   ' for tempAdvection not yet implemented for adjoint'
+        WRITE(msgBuf,'(A,3(I3,A))') 'GAD_CHECK: tempAdvection =',
+     &      ENUM_PPM_NULL_LIMIT, ',', ENUM_PPM_MONO_LIMIT, ', and',
+     &      ENUM_PPM_WENO_LIMIT,
+     &   ' are not yet implemented for adjoint'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
       IF ( tempAdvScheme.EQ.ENUM_PQM_NULL_LIMIT .OR.
      &     tempAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
      &     tempAdvScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
-        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
-     &   ENUM_PQM_NULL_LIMIT, ENUM_PQM_MONO_LIMIT, ENUM_PQM_WENO_LIMIT,
-     &   ' for tempAdvection not yet implemented for adjoint'
+        WRITE(msgBuf,'(A,3(I3,A))') 'GAD_CHECK: tempAdvection =',
+     &      ENUM_PQM_NULL_LIMIT, ',', ENUM_PQM_MONO_LIMIT, ', and',
+     &      ENUM_PQM_WENO_LIMIT,
+     &   ' are not yet implemented for adjoint'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
       IF ( saltAdvScheme.EQ.ENUM_PPM_NULL_LIMIT .OR.
      &     saltAdvScheme.EQ.ENUM_PPM_MONO_LIMIT .OR.
      &     saltAdvScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
-        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
-     &   ENUM_PPM_NULL_LIMIT, ENUM_PPM_MONO_LIMIT, ENUM_PPM_WENO_LIMIT,
-     &   ' for saltAdvection not yet implemented for adjoint'
+        WRITE(msgBuf,'(A,3(I3,A))') 'GAD_CHECK: saltAdvection =',
+     &      ENUM_PPM_NULL_LIMIT, ',', ENUM_PPM_MONO_LIMIT, ', and',
+     &      ENUM_PPM_WENO_LIMIT,
+     &   ' are not yet implemented for adjoint'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
       IF ( saltAdvScheme.EQ.ENUM_PQM_NULL_LIMIT .OR.
      &     saltAdvScheme.EQ.ENUM_PQM_MONO_LIMIT .OR.
      &     saltAdvScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
-        WRITE(msgBuf,'(A,I3,A)') 'GAD_CHECK: advection schemes ',
-     &   ENUM_PQM_NULL_LIMIT, ENUM_PQM_MONO_LIMIT, ENUM_PQM_WENO_LIMIT,
-     &   ' for saltAdvection not yet implemented for adjoint'
+        WRITE(msgBuf,'(A,3(I3,A))') 'GAD_CHECK: saltAdvection =',
+     &      ENUM_PQM_NULL_LIMIT, ',', ENUM_PQM_MONO_LIMIT, ', and',
+     &      ENUM_PQM_WENO_LIMIT,
+     &   ' are not yet implemented for adjoint'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
