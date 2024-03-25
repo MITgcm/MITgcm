@@ -524,17 +524,21 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragU(i,j,bi,bj) = botDragU(i,j,bi,bj)
      &                         - cDrag(i,j)*uFld(i,j)*rUnit2mass
+#ifdef ALLOW_DIAGNOSTICS
 cHP store bottom drag tendency: cDrag (m/s) * uFld (m/s) * _recip_hFacW * recip_drF (1/m) = m/s^2
            IF ( botdragDiagIsOn ) THEN
             tmpDragU(i,j) = tmpDragU(i,j) - cDrag(i,j)*uFld(i,j)
      &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
+#endif
           ENDDO
          ENDDO
+#ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit bottomdrag diags
          IF ( botdragDiagIsOn ) THEN
           CALL DIAGNOSTICS_FILL(tmpDragU,'UBotDrag',k,1,2,bi,bj,myThid)
          ENDIF
+#endif
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
@@ -554,17 +558,21 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gUdiss(i,j) = gUdiss(i,j)
      &                 - cDrag(i,j)*uFld(i,j)
      &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+#ifdef ALLOW_DIAGNOSTICS
 cHP store shelf ice drag tendency
            IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
             tmpDragU2(i,j) = tmpDragU2(i,j) - cDrag(i,j)*uFld(i,j)
      &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
+#endif
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit shelf ice drag diags
         IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
          CALL DIAGNOSTICS_FILL(tmpDragU2,'UShIDrag',k,1,2,bi,bj,myThid)
         ENDIF
+#endif
        ENDIF
 #endif /* ALLOW_SHELFICE */
 
@@ -636,17 +644,21 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
           DO i=iMin,iMax
            botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
      &                         - cDrag(i,j)*vFld(i,j)*rUnit2mass
+#ifdef ALLOW_DIAGNOSTICS
 cHP store bottom drag tendency: cDrag (m/s) * vFld (m/s) * _recip_hFacS * recip_drF (1/m) = m/s^2
            IF ( botdragDiagIsOn ) THEN
             tmpDragV(i,j) = tmpDragV(i,j) - cDrag(i,j)*vFld(i,j)
      &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
            ENDIF
+#endif
           ENDDO
          ENDDO
+#ifdef ALLOW_DIAGNOSTICS
 cHP writing out explicit bottomdrag diags
          IF ( botdragDiagIsOn ) THEN
           CALL DIAGNOSTICS_FILL(tmpDragV,'VBotDrag',k,1,2,bi,bj,myThid)
          ENDIF
+#endif
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
@@ -666,17 +678,21 @@ CADJ STORE cDrag(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
            gvDiss(i,j) = gvDiss(i,j)
      &                 - cDrag(i,j)*vFld(i,j)
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+#ifdef ALLOW_DIAGNOSTICS
 cHP store shelf ice drag tendency
           IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
            tmpDragV2(i,j) = tmpDragV2(i,j) - cDrag(i,j)*vFld(i,j)
      &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
           ENDIF
+#endif
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
 cHP writing out shelf ice drage tendency
         IF ( useDiagnostics .AND. shelfdragDiagIsOn ) THEN
          CALL DIAGNOSTICS_FILL(tmpDragV2,'VShIDrag',k,1,2,bi,bj,myThid)
         ENDIF
+#endif
        ENDIF
 #endif /* ALLOW_SHELFICE */
 
