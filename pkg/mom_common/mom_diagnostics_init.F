@@ -382,6 +382,130 @@ C--   add diagnostics of tendencies from each terms
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
+c -----------------------------------------------------------------------------------------------------
+cHP: adding new diagnostics for full momentum budget analysis
+c
+c new diags are[Um_Impl,Vm_Impl],
+c [Um_wind,Vm_wind],[Um_OBCS,Vm_OBCS],[Um_Cori_nontrad,Vm_Cori_nontrad]
+c [Um_dKEdx,Vm_dKEdx],[Um_Diss_laplac,Vm_Diss_laplac],[Um_diss_bihar,Vm_diss_bihar]
+c of these, only [Um_Impl, Vm_Impl] are required for closing the momentum budget in ASTE_R1
+c Specifically when using NLFS and zstar coordinates this is required.
+c If not using NLFS and zstar, one can use existing diagnostic [VISrI_Um, VISrI_Vm]
+c = volume integrated viscous flux
+c and compute volume offline. The issue is that hfac is time-varying when using NLFS and zstar and so volume
+c variations need to me accounted for online.
+c
+c All other terms here are not need for budget closure, but are
+c useful for decomposing (and better understanding) existing momentum diagnostics
+c
+c note that the sfc pressure gradient [Um_dPSdx,Vm_dPSdy] is required for budget closure
+c if NOT using NLFS (it will not be in the PGF tendency) but is added to the 2D diagnostics elsewhere
+c -----------------------------------------------------------------------------------------------------
+      diagName  = 'Um_Impl '
+      diagTitle = 'U momentum tendency from implicit viscosity'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Impl '
+      diagTitle = 'V momentum tendency from implicit viscosity'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+c
+      diagName  = 'Um_OBCS '
+      diagTitle = 'U momentum tendency from open bcs'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_OBCS '
+      diagTitle = 'V momentum tendency from open bcs'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_dPsdx'
+      diagTitle = 'U momentum tendency from sfc PGF'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_dPsdy'
+      diagTitle = 'V momentum tendency from sfc PGF'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_Wind '
+      diagTitle = 'U momentum tendency from wind'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Wind '
+      diagTitle = 'V momentum tendency from wind'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_CorNL'
+      diagTitle = 'U momentum tendency from nontrad (cosine) Coriolis'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_CorNL'
+      diagTitle = 'V momentum tendency from nontrad (cosine) Coriolis'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_dKEdx'
+      diagTitle = 'U momentum tendency from grad KE'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_dKEdy'
+      diagTitle = 'V momentum tendency from grad KE'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_Diss2'
+      diagTitle = 'U momentum tendency from harmonic visc alone'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Diss2'
+      diagTitle = 'V momentum tendency from harmonic visc alone'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'Um_Diss4'
+      diagTitle = 'U momentum tendency from biharmonic visc alone'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Diss4'
+      diagTitle = 'V momentum tendency from biharmonic visc alone'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+c ------------------------ HP: END OF NEW DIAGNOSTICS ----------------------
+
 #ifdef ALLOW_MOM_VECINV
       diagName  = 'Um_AdvZ3'
       diagTitle = 'U momentum tendency from Vorticity Advection'
@@ -438,6 +562,34 @@ C-    vertical momentum tendencies
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_NONHYDROSTATIC */
+
+cHP putting this back in
+      diagName  = 'UBotDrag'
+      diagTitle = 'U momentum tendency from Bottom Drag'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VBotDrag'
+      diagTitle = 'V momentum tendency from Bottom Drag'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+cHP adding diagnostic for drag from ice shelf to allow exp. dissip decomp
+      diagName  = 'UShIDrag'
+      diagTitle = 'U momentum tendency from ice shelf Drag'
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VShIDrag'
+      diagTitle = 'V momentum tendency from ice shelf Drag'
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 C--   add diagnostics of advective & viscous flux :
 C-    bottom fluxes:
