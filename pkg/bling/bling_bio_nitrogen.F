@@ -375,7 +375,6 @@ C  Initialize output and diagnostics
               light_lim(i,j,k)      = 0. _d 0
               expkT(i,j,k)          = 0. _d 0
               theta_Fe(i,j,k)       = 0. _d 0
-              theta_Fe_inv(i,j,k)   = 0. _d 0
               irrk(i,j,k)           = 0. _d 0
               irr_inst(i,j,k)       = 0. _d 0
               irr_eff(i,j,k)        = 0. _d 0
@@ -412,8 +411,6 @@ C  Initialize output and diagnostics
               N_remindvm(i,j,k)     = 0. _d 0
               P_remindvm(i,j,k)     = 0. _d 0
               Fe_remindvm(i,j,k)    = 0. _d 0
-              POC_flux(i,j,k)       = 0. _d 0
-              NPP(i,j,k)            = 0. _d 0
               NCP(i,j,k)            = 0. _d 0
               Fe_sed(i,j,k)         = 0. _d 0
               Fe_ads_org(i,j,k)     = 0. _d 0
@@ -761,17 +758,6 @@ C  Fe-limitation.
      &                  *theta_Fe_max
      &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
-#ifdef ALLOW_DIAGNOSTICS
-CML if this is only for diagnostics, move it to the diagnostics section
-c          IF ( useDiagnostics ) THEN
-C  for diagnostics: C:Chl ratio in g C / g Chl
-          IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
-             theta_Fe_inv(i,j,k) = 0.
-          ELSE
-             theta_Fe_inv(i,j,k) = 1./theta_Fe(i,j,k)
-          ENDIF
-c         ENDIF
-#endif
 
 C ---------------------------------------------------------------------
 C  Nutrient-limited efficiency of algal photosystems, irrk, is calculated
@@ -1817,10 +1803,6 @@ C  (generate negative O2; proxy for HS-).
 
 C  Carbon flux diagnostic
 
-          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
-
-          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
-
           NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
      &                   - N_recycle(i,j,k)
      &                   - (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
@@ -1844,7 +1826,7 @@ C  for constraints determine POC, assuming that phytoplankton carbon
 C  is 30% of POC
 
           poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
-     &                     + Phy_diaz_local(i,j,k) ) * 3.33333 _d 0
+     &                 + Phy_diaz_local(i,j,k) ) * CtoN * 3.33333 _d 0
 
          ENDIF
 
@@ -1856,6 +1838,45 @@ C ---------------------------------------------------------------------
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+
+         IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
+
+          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
+
+c  for diagnostics: convert biomass to mol C/m3
+
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
+          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
+
+c  Carbon flux diagnostic
+
+          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
+
+c  C:Chl ratio in g C / g Chl
+
+          IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
+             theta_Fe_inv(i,j,k) = 0.
+          ELSE
+             theta_Fe_inv(i,j,k) = 1./theta_Fe(i,j,k)
+          ENDIF
+
+         ELSE
+             NPP(i,j,k) = 0.
+             Phy_lg_local(i,j,k) = 0.
+             Phy_sm_local(i,j,k) = 0.
+             Phy_diaz_local(i,j,k) = 0.
+             POC_flux(i,j,k) = 0.
+             theta_Fe_inv(i,j,k) = 0.
+         ENDIF
+
+        ENDDO
+       ENDDO
+      ENDDO
 
 C 3d global variables
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
@@ -1943,10 +1964,8 @@ C 3d local variables
         CALL DIAGNOSTICS_FILL(N_reminp,  'BLGNREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp,  'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(no3_adj,   'BLGNONEN',0,Nr,2,bi,bj,myThid)
-C 2d global variables
-        CALL DIAGNOSTICS_FILL(chl_sat,   'BLGCHLSA',0,1,1,bi,bj,myThid)
 C 2d local variables
-        CALL DIAGNOSTICS_FILL(mld,       'BLGMLD  ',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(mld,       'BLGMLD  ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_burial, 'BLGFEBUR',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NO3_btmflx,'BLGNSED ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_btmflx,'BLGPSED ',0,1,2,bi,bj,myThid)

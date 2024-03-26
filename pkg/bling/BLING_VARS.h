@@ -345,7 +345,9 @@ C ==========================================================
      &                     parfrac,
      &                     alpfe,
      &                     k0,
-     &                     MLmix_max
+     &                     MLmix_max,
+     &                     chlsat_tbegin,
+     &                     chlsat_tend
 
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -447,6 +449,8 @@ C ==========================================================
       _RL alpfe
       _RL k0
       _RL MLmix_max
+      INTEGER chlsat_tbegin
+      INTEGER chlsat_tend
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

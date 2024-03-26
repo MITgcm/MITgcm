@@ -326,7 +326,8 @@ c  Mean irradiance in the mixed layer
 
         ENDDO
 C Update diagnostic only if ~13:30 local time, when satellite observes
-        IF ((localtime.gt.120000).and.(localtime.lt.133000)) THEN
+        IF ((localtime.gt.chlsat_tbegin).and.
+     &            (localtime.lt.chlsat_tend)) THEN
           chl_sat(i,j,bi,bj) = chl_sat_sum/(sat_atten_sum + epsln)
         ENDIF
        ENDDO
@@ -352,6 +353,12 @@ c  Inside mixed layer, effective light is set to mean mixed layer light
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(chl_sat,'BLGCHLSA',0,1,1,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
