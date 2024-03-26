@@ -76,7 +76,7 @@ C o Vertically smooth Ri (for interior shear mixing)
 
 C o use precomputed SWFrac3D field instead of computing SWfrac locally
 C   (changes results and is therefore off by default)
-#undef KPP_USE_SWFRAC3D
+#define KPP_USE_SWFRAC3D
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
