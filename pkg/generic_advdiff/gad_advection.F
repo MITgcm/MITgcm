@@ -421,11 +421,11 @@ CADJ STORE localTij = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
            CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O              af, myThid )
+#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
@@ -642,11 +642,11 @@ CADJ STORE localTij = loctape_gad_adv_k_pass, key = dkey, kind = isbyte
            CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O              af, myThid )
+#ifndef ALLOW_AUTODIFF
           ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
      &             advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
@@ -998,11 +998,11 @@ C-    Compute vertical advective flux in the interior:
           CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-#ifndef ALLOW_AUTODIFF
          ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
+#ifndef ALLOW_AUTODIFF
          ELSEIF ( usePPMvertAdv .OR. usePQMvertAdv ) THEN
 C- copy level from 3d flux data
           DO j = 1-OLy,sNy+OLy

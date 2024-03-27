@@ -285,12 +285,10 @@ C-    Advective flux in X
            CALL GAD_DST3FL_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
-#endif
          ELSE
           STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
          ENDIF
@@ -416,12 +414,10 @@ C-    Advective flux in Y
            CALL GAD_DST3FL_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
-#endif
          ELSE
            STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
          ENDIF
@@ -538,12 +534,10 @@ C-    Compute vertical advective flux in the interior using TracAB:
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
         ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-#endif
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF
@@ -572,12 +566,10 @@ C-    Compute vertical advective flux in the interior using TracerN:
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
-#ifndef ALLOW_AUTODIFF
         ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
-#endif
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF
