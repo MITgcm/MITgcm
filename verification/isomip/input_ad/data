@@ -26,8 +26,6 @@
  hFacMin=0.10,
  nonHydrostatic=.FALSE.,
  useCDScheme = .TRUE.,
- tempAdvScheme = 7,
- saltAdvScheme = 7,
 #ph(
  implicitDiffusion=.TRUE.,
 # ivdc_kappa = 7200.,
