@@ -1,7 +1,7 @@
 #include "CTRL_OPTIONS.h"
 
-      SUBROUTINE ctrl_set_globfld_xz(
-     I     fname, ivartype, myThid )
+      SUBROUTINE CTRL_SET_GLOBFLD_XZ(
+     I                fname, nRecArg, filePrec, myThid )
 
 C     ==================================================================
 C     SUBROUTINE ctrl_set_globfld_xz
@@ -23,13 +23,15 @@ C     ==================================================================
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
-#include "CTRL.h"
+c#include "PARAMS.h"
+c#include "CTRL_SIZE.h"
+c#include "CTRL.h"
 #include "OPTIMCYCLE.h"
 
 C     == routine arguments ==
       CHARACTER*(MAX_LEN_FNAM) fname
-      INTEGER ivartype
+      INTEGER nRecArg
+      INTEGER filePrec
       INTEGER myThid
 
 C     == local variables ==
@@ -66,21 +68,21 @@ C     MDSWRITEFIELDXZ does not know about useSingleCPUio, so the faster
 C     method that works for .not.useSingleCPUio cannot be used
         nrec_nl = 0
       ELSE
-        nrec_nl = INT(ncvarrecs(ivartype)/Ny)
+        nrec_nl = INT(nRecArg/Ny)
       ENDIF
 
       DO irec = 1, nrec_nl
-        CALL WRITE_REC_3D_RL( fname, ctrlprec, Nr,
+        CALL WRITE_REC_3D_RL( fname, filePrec, Nr,
      &                        globfld3d,
      &                        irec, optimcycle, myThid )
       ENDDO
 
-      DO irec = nrec_nl*Ny+1, ncvarrecs(ivartype)
+      DO irec = nrec_nl*Ny+1, nRecArg
 C--   Call directly MDS_WRITE_SEC_XZ (instead of indirectly via MDSWRITEFIELDXZ)
 C     --> expect zero difference.
 C     In this call, value "False" is passed to 3rd arg "globalFile"
 C             and   value "False" is passed to 4th arg "useCurrentDir,"
-c       CALL MDS_WRITE_SEC_XZ( fname, ctrlprec, .FALSE., .FALSE.,
+c       CALL MDS_WRITE_SEC_XZ( fname, filePrec, .FALSE., .FALSE.,
 c    I                         'RL', Nr, 1, Nr, globfldxz, dummyRS,
 c    I                         irec, optimcycle, myThid )
 
@@ -88,7 +90,7 @@ C--   The only difference here (vs initial MDSWRITEFIELDXZ call) is that,
 C     in WRITE_REC_XZ_RL, argument "globalFile" is not set to FALSE but is
 C     instead taken from RD_WR_SEC common block (but currently set to FALSE
 C     in ini_model_io.F if using OBCS)
-        CALL WRITE_REC_XZ_RL( fname, ctrlprec,
+        CALL WRITE_REC_XZ_RL( fname, filePrec,
      I                        Nr, globfldxz,
      I                        irec, optimcycle, myThid )
       ENDDO

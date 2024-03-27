@@ -1,6 +1,33 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco, ctrl:
+  - put active_read calls within #ifdef ALLOW_AUTODIFF (missing in few places)
+    and fall back to non-active read (from pkg/rw) if undef;
+  - change argument order in few obcs related pkg/ecco S/R.
+o pkg/seaice:
+  - for seaice-dynamics, add missing mapping of (pkg/thsice) snowHeight to HSNOW
+  - this affects results (unless SEAICEaddSnowMass=F); update seaice parameters
+    in test global_ocean.cs32x15.icedyn and update reference output.
+
+checkpoint68w (2024/03/05)
+o pkg/ctrl, grdchk & optim:
+  - clean and improve list of ctrl-var settings (in common blocks) and update
+    ctrl-pack header files:
+    a) define new character fields "ncvartype" for ctrl-var shape type and
+       save ctrl-var (file) name "ncvarfname" ;
+    b) re-define "ncvarindex" to point directly to genArr index (according to
+       ncvartype) or 1,2,3,4 for N,S,E,W obcs-ctrl ;
+    so that map of index (and grdchkvarindex) to file name, array shape and
+    genArr specification is direct, code is simpler, more robust and efficient.
+  - allow to specify grdchk ctrl-var by name in "data.grdchk" (more robust) ;
+  - write ncvartype list to ctrl-pack header files ;
+  - simplify definition of maxcvars to get much shorter "ncvar"-field lists ;
+  - remove unnecessary common blocks, rename ctrl_init.F -> ctrl_init_fixed.F,
+    call TURNOFF_MODEL_IO only once ;
+  - adjust optimisation utility optim and provide backward compatibility
+    regarding changes to ctrl-pack files ; also improve build process ;
+  - update all "data.grdchk" in verification experiments.
 o pkg/gmredi:
   - add GEOMETRIC parameterization (Mak etal, JPO, 2018) for GM coefficient,
     under GM_GEOM_VARIABLE_K CPP-option, turned on with "GM_useGEOM=T" and
