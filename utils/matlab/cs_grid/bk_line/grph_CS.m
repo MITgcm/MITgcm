@@ -13,7 +13,8 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1,1 ;
 %-----------------------
 
-% Written by jmc@ocean.mit.edu, 2005.
+% Written by jmc@mit.edu, 2005.
+
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
 %- mid-longitude of the grid (truncated @ epsil level):
@@ -25,7 +26,13 @@ if nargin < 10, AxBx=[xMid-180 xMid+180 -90 90] ; end
 if nargin < 11, kEnv=0 ; end
 
 %------------------------------
-nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
+ n1h=size(var,1); n2h=size(var,2);
+ if n1h == 6*n2h, nc=n2h;
+ elseif n1h*6 == n2h, nc=n1h;
+ else
+  error([' input var size: ',int2str(n1h),' x ',int2str(n2h),' does not fit regular cube !']);
+ end
+  ncp=nc+1 ; nPg=nc*nc*6;
   MxV=min(min(var));
   mnV=max(max(var));
  if shift == 1 | shift == -1,
@@ -56,18 +63,27 @@ end
 nbsf = 0 ; ic = 0 ; jc = 0 ;
 nPx=prod(size(xcg)); nPy=prod(size(ycg));
 if nPx == nPg & nPy == nPg,
+ %- when stored in long-vector, use "compact" convention (i.e., 1 face after the other)
+ if n2h == nc,
+   xcg=permute(reshape(xcg,[nc 6 nc]),[1 3 2]);
+   ycg=permute(reshape(ycg,[nc 6 nc]),[1 3 2]);
+ end
  xcg=reshape(xcg,[nPg 1]); ycg=reshape(ycg,[nPg 1]);
 %- add the 2 missing corners:
 %fprintf(' Local version of grph_CS : ---------------------------------- \n');
- xcg(nPg+1)=xcg(1); ycg(nPg+1)=ycg(1+2*nc);
- xcg(nPg+2)=xcg(1+3*nc); ycg(nPg+2)=ycg(1);
+ xcg(nPg+1)=xcg(1); ycg(nPg+1)=ycg(1+2*nc*nc);
+ xcg(nPg+2)=xcg(1+3*nc*nc); ycg(nPg+2)=ycg(1);
 elseif nPx ~= nPg+2 | nPy ~= nPg+2,
  error([' wrong xcg,ycg dimensions : ',int2str(nPx),' , ',int2str(nPy)]);
 end
 [xx2]=split_Z_cub(xcg);
 [yy2]=split_Z_cub(ycg);
 %---
-var=permute(reshape(var,[nc 6 nc]),[1 3 2]);
+if n2h == nc,
+ var=permute(reshape(var,[nc 6 nc]),[1 3 2]);
+else
+ var=reshape(var,[nc nc 6]);
+end
 for n=1:6,
  %if n < 5 & n > 2,
  if n < 7,
@@ -149,7 +165,9 @@ end
 if mnV < MxV & kEnv < 2,
  ytxt=min(1,fix(cbV));
  if shift == 1 | shift == -1,
-  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+2*ytxt)/100;
+  pos=get(gca,'position');
+  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(16-pos(4)*7.4)/100;
+ %fprintf(' pp= %9.6f , ytxt= %7.2f\n',pos(4),ytxt);
  else
   xtxt=60 ; ytxt=30*ytxt-145 ;
  %xtxt= 0 ; ytxt=30*ytxt-120 ;

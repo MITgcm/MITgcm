@@ -39,9 +39,13 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "ctrl.h"
-#include "CTRL_OBCS.h"
-#include "grdchk.h"
+#include "CTRL_SIZE.h"
+#include "CTRL.h"
+#ifdef ALLOW_OBCS_CONTROL
+C     CTRL_OBCS.h must be included before GRDCHK.h
+# include "CTRL_OBCS.h"
+#endif
+#include "GRDCHK.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_GRID.h"
 #endif
@@ -64,6 +68,10 @@ C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
 
 #ifdef ALLOW_GRDCHK
+C--   == external ==
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
       INTEGER bi,bj
       INTEGER i,j,k
@@ -120,7 +128,11 @@ c         iobcswrk  = iobcsmem (ichknum-1)
 
 C--   set max loop index for obcs multiplicities
         IF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-          nobcsmax = nobcs
+#ifdef ALLOW_OBCS_CONTROL
+         nobcsmax = nobcs
+#else
+         print *, 'S/R grdchk_loc: Ooops!'
+#endif
         ELSE
           nobcsmax = 1
         ENDIF
@@ -196,8 +208,10 @@ cpj)
                         jtmp = j
                      ENDIF
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_OBCS_CONTROL
                   ELSEIF ( ncvargrd(grdchkvarindex) .EQ. 'm' ) THEN
-                     IF ( grdchkvarindex .EQ. 11 ) THEN
+                     IF ( ncvarfname(grdchkvarindex)
+     &                  .EQ.xx_obcsn_file ) THEN
 #ifdef ALLOW_OBCSN_CONTROL
                         IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. j.EQ. OB_Jn(i,bi,bj) ) THEN
@@ -206,7 +220,8 @@ cpj)
                            jtmp = OB_Jn(i,bi,bj)
                         ENDIF
 #endif
-                     ELSEIF ( grdchkvarindex .EQ. 12 ) THEN
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcss_file ) THEN
 #ifdef ALLOW_OBCSS_CONTROL
                         IF ( grdchk_maskxz(i,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. j.EQ. OB_Js(i,bi,bj) ) THEN
@@ -215,16 +230,8 @@ cpj)
                            jtmp = OB_Js(i,bi,bj)
                         ENDIF
 #endif
-                     ELSEIF ( grdchkvarindex .EQ. 13 ) THEN
-#ifdef ALLOW_OBCSW_CONTROL
-                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
-     &                       .AND. i.EQ. OB_Iw(j,bi,bj) ) THEN
-                           icomptest = icomptest + 1
-                           itmp = OB_Iw(j,bi,bj)
-                           jtmp = j
-                        ENDIF
-#endif
-                     ELSEIF ( grdchkvarindex .EQ. 14 ) THEN
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcse_file ) THEN
 #ifdef ALLOW_OBCSE_CONTROL
                         IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
      &                       .AND. i.EQ. OB_Ie(j,bi,bj) ) THEN
@@ -233,7 +240,18 @@ cpj)
                            jtmp = j
                         ENDIF
 #endif
+                     ELSEIF ( ncvarfname(grdchkvarindex)
+     &                       .EQ.xx_obcsw_file ) THEN
+#ifdef ALLOW_OBCSW_CONTROL
+                        IF ( grdchk_maskyz(j,k,bi,bj,iobcs) .GT. 0.
+     &                       .AND. i.EQ. OB_Iw(j,bi,bj) ) THEN
+                           icomptest = icomptest + 1
+                           itmp = OB_Iw(j,bi,bj)
+                           jtmp = j
+                        ENDIF
+#endif
                      ENDIF
+#endif /* ALLOW_OBCS_CONTROL */
                   ENDIF
 cph(
 cph-print                  print *, 'ph-grd icomp, icomptest, icomploc, i, j ',
