@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - adjust 2 SOM (Prather advection) store directives to reduce memory overhead
+  - include OS7MP (advScheme 7) in AD code ; switch AD test experiment
+    isomip.htd to use this advection scheme for Temp and Salt.
 o pkg/ecco, ctrl:
   - put active_read calls within #ifdef ALLOW_AUTODIFF (missing in few places)
     and fall back to non-active read (from pkg/rw) if undef;
