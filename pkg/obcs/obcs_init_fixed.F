@@ -534,7 +534,6 @@ C--   Read from files Barotropic Tidal Amplitude and Phase:
        _BARRIER
 
 C--   Set Tidal coeff (= Amplit x COS & SIN of Phase ) from Amplitude and Phase:
-#ifndef OLD_OBCS_TIDES
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,OBCS_nTidalComp
@@ -581,7 +580,6 @@ C--   Set Tidal coeff (= Amplit x COS & SIN of Phase ) from Amplitude and Phase:
 C-    end bi.bj loops:
         ENDDO
        ENDDO
-#endif /* ndef OLD_OBCS_TIDES */
 C-    end if useOBCStides
       ENDIF
 

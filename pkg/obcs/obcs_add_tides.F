@@ -60,70 +60,6 @@ C--   Add tidal currents:
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
-#ifdef OLD_OBCS_TIDES
-#ifdef ALLOW_OBCS_EAST
-          IF ( tileHasOBE(bi,bj) ) THEN
-           DO k=1,Nr
-            DO j=1-OLy,sNy+OLy
-             iB = OB_Ie(j,bi,bj)
-             IF ( iB.NE.OB_indexNone ) THEN
-              OBEu(j,k,bi,bj) = OBEu(j,k,bi,bj) +
-     &              maskW(iB,j,k,bi,bj) * OBE_uTideCs(j,td,bi,bj) *
-     &              COS( 2.D0 * PI * (myTime-OBE_uTideSn(j,td,bi,bj)) /
-     &                   OBCS_tidalPeriod(td) )
-             ENDIF
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_OBCS_EAST */
-#ifdef ALLOW_OBCS_WEST
-          IF ( tileHasOBW(bi,bj) ) THEN
-           DO k=1,Nr
-            DO j=1-OLy,sNy+OLy
-             iB = OB_Iw(j,bi,bj)
-             IF ( iB.NE.OB_indexNone ) THEN
-              OBWu(j,k,bi,bj) = OBWu(j,k,bi,bj) +
-     &              maskW(1+iB,j,k,bi,bj) * OBW_uTideCs(j,td,bi,bj) *
-     &              COS( 2.D0 * PI * (myTime-OBW_uTideSn(j,td,bi,bj)) /
-     &                   OBCS_tidalPeriod(td) )
-             ENDIF
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_OBCS_WEST */
-#ifdef ALLOW_OBCS_NORTH
-          IF ( tileHasOBN(bi,bj) ) THEN
-           DO k=1,Nr
-            DO i=1-OLx,sNx+OLx
-             jB = OB_Jn(i,bi,bj)
-             IF ( jB.NE.OB_indexNone ) THEN
-              OBNv(i,k,bi,bj) = OBNv(i,k,bi,bj) +
-     &              maskS(i,jB,k,bi,bj) * OBN_vTideCs(i,td,bi,bj) *
-     &              COS( 2.D0 * PI * (myTime-OBN_vTideSn(i,td,bi,bj)) /
-     &                   OBCS_tidalPeriod(td) )
-             ENDIF
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_OBCS_NORTH */
-#ifdef ALLOW_OBCS_SOUTH
-          IF ( tileHasOBS(bi,bj) ) THEN
-           DO k=1,Nr
-            DO i=1-OLx,sNx+OLx
-             jB = OB_Js(i,bi,bj)
-             IF ( jB.NE.OB_indexNone ) THEN
-              OBSv(i,k,bi,bj) = OBSv(i,k,bi,bj) +
-     &              maskS(i,1+jB,k,bi,bj)* OBS_vTideCs(i,td,bi,bj) *
-     &              COS( 2.D0 * PI * (myTime-OBS_vTideSn(i,td,bi,bj)) /
-     &                   OBCS_tidalPeriod(td) )
-             ENDIF
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_OBCS_SOUTH */
-
-#else /* OLD_OBCS_TIDES */
-
 #ifdef ALLOW_OBCS_EAST
           IF ( tileHasOBE(bi,bj) ) THEN
            DO j=1-OLy,sNy+OLy
@@ -203,8 +139,6 @@ C--   Add tidal currents:
            ENDDO
           ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
-
-#endif /* OLD_OBCS_TIDES */
 
 C    end bi,bj loops
          ENDDO
