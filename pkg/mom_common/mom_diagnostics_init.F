@@ -385,48 +385,17 @@ C--   add diagnostics of tendencies from each terms
 c -----------------------------------------------------------------------------------------------------
 cHP: adding new diagnostics for full momentum budget analysis
 c
-c new diags are[Um_Impl,Vm_Impl],
-c [Um_wind,Vm_wind],[Um_OBCS,Vm_OBCS],[Um_Cori_nontrad,Vm_Cori_nontrad]
-c [Um_dKEdx,Vm_dKEdx],[Um_Diss_laplac,Vm_Diss_laplac],[Um_diss_bihar,Vm_diss_bihar]
-c of these, only [Um_Impl, Vm_Impl] are required for closing the momentum budget in ASTE_R1
-c Specifically when using NLFS and zstar coordinates this is required.
-c If not using NLFS and zstar, one can use existing diagnostic [VISrI_Um, VISrI_Vm]
-c = volume integrated viscous flux
-c and compute volume offline. The issue is that hfac is time-varying when using NLFS and zstar and so volume
-c variations need to me accounted for online.
+c new momentum diags are
+c [Um_wind,Vm_wind],[Um_Cori_nontrad,Vm_Cori_nontrad],
+c [Um_dKEdx,Vm_dKEdx],[Um_Diss_laplac,Vm_Diss_laplac],
+c [Um_diss_bihar,Vm_diss_bihar].
 c
-c All other terms here are not need for budget closure, but are
+c These new diags are not need for momentum budget closure, but are
 c useful for decomposing (and better understanding) existing momentum diagnostics
 c
 c note that the sfc pressure gradient [Um_dPSdx,Vm_dPSdy] is required for budget closure
 c if NOT using NLFS (it will not be in the PGF tendency) but is added to the 2D diagnostics elsewhere
 c -----------------------------------------------------------------------------------------------------
-      diagName  = 'Um_Impl '
-      diagTitle = 'U momentum tendency from implicit viscosity'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_Impl '
-      diagTitle = 'V momentum tendency from implicit viscosity'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-c
-      diagName  = 'Um_OBCS '
-      diagTitle = 'U momentum tendency from open bcs'
-      diagCode  = 'UUR     MR      '
-      diagMate  = diagNum + 2
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-      diagName  = 'Vm_OBCS '
-      diagTitle = 'V momentum tendency from open bcs'
-      diagCode  = 'VVR     MR      '
-      diagMate  = diagNum
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
       diagName  = 'Um_dPsdx'
       diagTitle = 'U momentum tendency from sfc PGF'
       diagCode  = 'UUR     MR      '

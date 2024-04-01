@@ -66,11 +66,6 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
-c HP: defines needed for [Um_Impl,Vm_Impl] output
-      CHARACTER*8 diagNamb
-      _RL df3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL impl(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL maximpl
 #ifdef ALLOW_GENERIC_ADVDIFF
       CHARACTER*4 GAD_DIAG_SUFX
       EXTERNAL    GAD_DIAG_SUFX
@@ -313,18 +308,12 @@ C--   Set diagnostic suffix for the current tracer
           diagName = 'DFrI'//diagSufx
         ELSEIF ( tracerId.EQ. -1 ) THEN
           diagName = 'VISrI_Um'
-c HP: get Um_Impl (division by cell volume done online)
-          diagNamb = 'Um_Impl '
         ELSEIF ( tracerId.EQ. -2 ) THEN
           diagName = 'VISrI_Vm'
-c HP: get Vm_Impl (division by cell volume done online)
-          diagNamb = 'Vm_Impl '
         ELSE
           STOP 'IMPLIDIFF: should never reach this point !'
         ENDIF
-c HP: get [U,V]m_Impl even when not dumping VISrI_[U,V]m
-        IF ( DIAGNOSTICS_IS_ON(diagName,myThid).OR.
-     &         DIAGNOSTICS_IS_ON(diagNamb,myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO k= 1,Nr
           IF ( k.EQ.1 ) THEN
 C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
@@ -332,7 +321,6 @@ C         otherwise counter is not incremented !!
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
                df(i,j) = 0. _d 0
-               df3d(i,j,k) = df(i,j)
              ENDDO
             ENDDO
           ELSEIF ( tracerId.GE.1 ) THEN
@@ -365,8 +353,6 @@ C         otherwise counter is not incremented !!
      &            * (gTracer(i,j,k) - gTracer(i,j,k-1))
      &            * _maskW(i,j,k,bi,bj)
      &            * _maskW(i,j,k-1,bi,bj)
-c HP: store VISrI_Um in 3D array for vertical derivative
-               df3d(i,j,k) = df(i,j)
              ENDDO
             ENDDO
           ELSEIF ( tracerId.EQ.-2 ) THEN
@@ -383,8 +369,6 @@ c HP: store VISrI_Um in 3D array for vertical derivative
      &            * (gTracer(i,j,k) - gTracer(i,j,k-1))
      &            * _maskS(i,j,k,bi,bj)
      &            * _maskS(i,j,k-1,bi,bj)
-c HP: store VISrI_Vm in 3D array for vertical derivative
-               df3d(i,j,k) = df(i,j)
              ENDDO
             ENDDO
           ENDIF
@@ -396,63 +380,6 @@ c HP: store VISrI_Vm in 3D array for vertical derivative
           ENDIF
 #endif /* ALLOW_LAYERS */
          ENDDO
-
-c HP: NOW WRITE [U,V]m_Impl
-         IF ( DIAGNOSTICS_IS_ON(diagNamb,myThid) ) THEN
-           maximpl = 0. _d 0
-c HP: compute Um_Impl = [VISrI_Um(i,j,k+1)-VISrI_Um(i,j,k)]./[rAw(i,j)*drF(k)*hfacW(i,j,k)]
-           IF ( tracerId.EQ. -1 ) THEN
-            DO k= 1,Nr
-             IF ( k.EQ.Nr ) THEN
-               DO j=jMin,jMax
-                DO i=iMin,iMax
-                 impl(i,j) = -1.0*df3d(i,j,k)*recip_drF(k)*
-     &                       recip_hFacW(i,j,k,bi,bj)*
-     &                       recip_rAw(i,j,bi,bj)
-                 maximpl = MAX(maximpl,ABS(impl(i,j)))
-                ENDDO
-               ENDDO
-             ELSE
-               DO j=jMin,jMax
-                DO i=iMin,iMax
-                 impl(i,j) = (df3d(i,j,k+1)-df3d(i,j,k))*recip_drF(k)*
-     &                       recip_hFacW(i,j,k,bi,bj)*
-     &                       recip_rAw(i,j,bi,bj)
-                 maximpl = MAX(maximpl,ABS(impl(i,j)))
-                ENDDO
-               ENDDO
-             ENDIF
-             CALL DIAGNOSTICS_FILL(impl,diagNamb, k,1, 2,bi,bj, myThid)
-            ENDDO
-c HP: now compute Vm_Impl = [VISrI_Vm(i,j,k+1)-VISrI_Vm(i,j,k)]./[rAs(i,j)*drF(k)*hfacS(i,j,k)]
-           ELSEIF ( tracerId.EQ. -2 ) THEN
-            DO k= 1,Nr
-             IF ( k.EQ.Nr ) THEN
-               DO j=jMin,jMax
-                DO i=iMin,iMax
-                 impl(i,j) = -1.0*df3d(i,j,k)*recip_drF(k)*
-     &                       recip_hFacS(i,j,k,bi,bj)*
-     &                       recip_rAs(i,j,bi,bj)
-                 maximpl = MAX(maximpl,ABS(impl(i,j)))
-                ENDDO
-               ENDDO
-             ELSE
-               DO j=jMin,jMax
-                DO i=iMin,iMax
-                 impl(i,j) = (df3d(i,j,k+1)-df3d(i,j,k))*recip_drF(k)*
-     &                       recip_hFacS(i,j,k,bi,bj)*
-     &                       recip_rAs(i,j,bi,bj)
-                 maximpl = MAX(maximpl,ABS(impl(i,j)))
-                ENDDO
-               ENDDO
-             ENDIF
-             CALL DIAGNOSTICS_FILL(impl,diagNamb, k,1, 2,bi,bj, myThid)
-            ENDDO
-c HP: end of loop for for u or v comp
-           ENDIF
-c HP: end of loop to check whether diagnostics are switched on
-          ENDIF
-
         ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
