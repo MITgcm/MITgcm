@@ -108,10 +108,10 @@ C None - updates gU() and gV() in common blocks
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-C  vF                   :: viscous flux
-C  v4F                  :: bi-harmonic viscous flux
+C  gAdd                 :: individual momentum tendency term to add
+C  del2                 :: horizontal second derivative (Laplacian)
 C  uCf,vCf              :: Coriolis acceleration
-C  mT                   :: Metric terms
+C  vMT                  :: vertical/Non-Hyd. metric terms
 C  fZon                 :: zonal fluxes
 C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
@@ -120,11 +120,11 @@ C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
 C     kkey :: tape key (depends on level and tile indices)
       INTEGER kkey
 #endif
-      _RL  vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  mT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gAdd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL del2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  uCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  vCf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  vMT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVrUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -187,7 +187,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  mtNHFacV
       _RL  sideMaskFac
       _RL  rAdvDeepFac
-      LOGICAL bottomDragTerms, metricTerms
+      LOGICAL bottomDragTerms, metricTerms, diagFlag
 CEOP
 #ifdef MOM_BOUNDARY_CONSERVE
       COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
@@ -203,11 +203,11 @@ CEOP
 C     Initialise intermediate terms
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        vF(i,j)   = 0.
-        v4F(i,j)  = 0.
+        gAdd(i,j) = 0.
+        del2(i,j) = 0.
         uCf(i,j)  = 0.
         vCf(i,j)  = 0.
-        mT(i,j)   = 0.
+        vMT(i,j)  = 0.
         fZon(i,j) = 0.
         fMer(i,j) = 0.
         fVrUp(i,j)= 0.
@@ -602,20 +602,20 @@ C-    endif momAdvection.
       IF (momViscosity) THEN
 C---  Calculate eddy fluxes (dissipation) between cells for zonal flow.
 
-C     Bi-harmonic term del^2 U -> v4F
+C     Bi-harmonic term del^2 U -> del2
         IF ( useBiharmonicVisc )
      &  CALL MOM_U_DEL2U( bi, bj, k, uFld, hFacZ, h0FacZ,
-     O                    v4f, myThid )
+     O                    del2, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE v4f(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE del2(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_U_XVISCFLUX( bi,bj,k,uFld,v4F,fZon,
+        CALL MOM_U_XVISCFLUX( bi,bj,k,uFld,del2,fZon,
      I                        viscAh_D,viscA4_D,myThid )
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_U_YVISCFLUX( bi,bj,k,uFld,v4F,hFacZ,fMer,
+        CALL MOM_U_YVISCFLUX( bi,bj,k,uFld,del2,hFacZ,fMer,
      I                        viscAh_Z,viscA4_Z,myThid )
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
@@ -657,14 +657,14 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_U_SIDEDRAG( bi, bj, k,
-     I        uFld, v4f, h0FacZ,
+     I        uFld, del2, h0FacZ,
      I        viscAh_Z, viscA4_Z,
      I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
-     O        vF,
+     O        gAdd,
      I        myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           guDiss(i,j) = guDiss(i,j) + vF(i,j)
+           guDiss(i,j) = guDiss(i,j) + gAdd(i,j)
           ENDDO
          ENDDO
         ENDIF
@@ -729,37 +729,58 @@ c    I     iMin,iMax,jMin,jMax,bi,bj,k,
 c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
+      diagFlag = .FALSE.
 #ifdef MOM_USE_OLD_DEEP_VERT_ADV
       IF ( useNHMTerms ) THEN
 #else
       IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
 #endif
-C      o Non-Hydrostatic (spherical) metric terms
-       CALL MOM_U_METRIC_NH( bi,bj,k,uFld,wVel,mT,myThid )
+C      o Non-Hydrostatic/vertical (spherical) metric terms
+       CALL MOM_U_METRIC_NH( bi,bj,k,uFld,wVel,vMT,myThid )
+       diagFlag = .TRUE.
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtNHFacU*mT(i,j)
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtNHFacU*vMT(i,j)
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics .AND.
+     &     ( selectMetricTerms.EQ.0 .OR. selectMetricTerms.EQ.3 ) ) THEN
+        CALL DIAGNOSTICS_FILL( vMT, 'Um_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
-      IF ( metricTerms .AND. usingSphericalPolarGrid
-     &                 .AND. selectMetricTerms.NE.3 ) THEN
+      IF ( selectMetricTerms.GE.1 .AND. selectMetricTerms.NE.3 ) THEN
+       IF ( usingSphericalPolarGrid ) THEN
 C      o Spherical polar grid metric terms
-       CALL MOM_U_METRIC_SPHERE( bi,bj,k,uFld,vFld,mT,myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
+        CALL MOM_U_METRIC_SPHERE( bi,bj,k,uFld,vFld,gAdd,myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*gAdd(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
-      IF ( metricTerms .AND. usingCylindricalGrid ) THEN
+       ENDIF
+       IF ( usingCylindricalGrid ) THEN
 C      o Cylindrical grid metric terms
-       CALL MOM_U_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*mT(i,j)
+        CALL MOM_U_METRIC_CYLINDER( bi,bj,k,uFld,vFld,gAdd,myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mtFacU*gAdd(i,j)
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        IF ( diagFlag ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gAdd(i,j) = gAdd(i,j) + vMT(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+        CALL DIAGNOSTICS_FILL( gAdd, 'Um_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -876,20 +897,20 @@ C-    endif momAdvection.
 
       IF (momViscosity) THEN
 C---  Calculate eddy fluxes (dissipation) between cells for meridional flow.
-C     Bi-harmonic term del^2 V -> v4F
+C     Bi-harmonic term del^2 V -> del2
         IF ( useBiharmonicVisc )
      &  CALL MOM_V_DEL2V( bi, bj, k, vFld, hFacZ, h0FacZ,
-     O                    v4f, myThid )
+     O                    del2, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE v4f(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE del2(:,:) = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif
 
 C     Laplacian and bi-harmonic terms, Zonal  Fluxes -> fZon
-        CALL MOM_V_XVISCFLUX( bi,bj,k,vFld,v4f,hFacZ,fZon,
+        CALL MOM_V_XVISCFLUX( bi,bj,k,vFld,del2,hFacZ,fZon,
      I                        viscAh_Z,viscA4_Z,myThid )
 
 C     Laplacian and bi-harmonic termis, Merid Fluxes -> fMer
-        CALL MOM_V_YVISCFLUX( bi,bj,k,vFld,v4f,fMer,
+        CALL MOM_V_YVISCFLUX( bi,bj,k,vFld,del2,fMer,
      I                        viscAh_D,viscA4_D,myThid )
 
 C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
@@ -931,14 +952,14 @@ C-- No-slip and drag BCs appear as body forces in cell abutting topography
         IF (no_slip_sides) THEN
 C-     No-slip BCs impose a drag at walls...
          CALL MOM_V_SIDEDRAG( bi, bj, k,
-     I        vFld, v4f, h0FacZ,
+     I        vFld, del2, h0FacZ,
      I        viscAh_Z, viscA4_Z,
      I        useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
-     O        vF,
+     O        gAdd,
      I        myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+           gvDiss(i,j) = gvDiss(i,j) + gAdd(i,j)
           ENDDO
          ENDDO
         ENDIF
@@ -1003,36 +1024,57 @@ c    I     iMin,iMax,jMin,jMax,bi,bj,k,
 c    I     myTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
+      diagFlag = .FALSE.
 #ifdef MOM_USE_OLD_DEEP_VERT_ADV
       IF ( useNHMTerms ) THEN
 #else
       IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
 #endif
-C      o Non-Hydrostatic (spherical) metric terms
-       CALL MOM_V_METRIC_NH( bi,bj,k,vFld,wVel,mT,myThid )
+C      o Non-Hydrostatic/vertical (spherical) metric terms
+       CALL MOM_V_METRIC_NH( bi,bj,k,vFld,wVel,vMT,myThid )
+       diagFlag = .TRUE.
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtNHFacV*mT(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtNHFacV*vMT(i,j)
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics .AND. selectMetricTerms.EQ.0 ) THEN
+        CALL DIAGNOSTICS_FILL( vMT, 'Vm_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
-      IF ( metricTerms .AND. usingSphericalPolarGrid ) THEN
+      IF ( selectMetricTerms.GE.1 ) THEN
+       IF ( usingSphericalPolarGrid ) THEN
 C      o Spherical polar grid metric terms
-       CALL MOM_V_METRIC_SPHERE( bi,bj,k,uFld,mT,myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
+        CALL MOM_V_METRIC_SPHERE( bi,bj,k,uFld,gAdd,myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*gAdd(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
-      IF ( metricTerms .AND. usingCylindricalGrid ) THEN
+       ENDIF
+       IF ( usingCylindricalGrid ) THEN
 C      o Cylindrical grid metric terms
-       CALL MOM_V_METRIC_CYLINDER( bi,bj,k,uFld,vFld,mT,myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*mT(i,j)
+        CALL MOM_V_METRIC_CYLINDER( bi,bj,k,uFld,vFld,gAdd,myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+mtFacV*gAdd(i,j)
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        IF ( diagFlag ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           gAdd(i,j) = gAdd(i,j) + vMT(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+        CALL DIAGNOSTICS_FILL( gAdd, 'Vm_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
