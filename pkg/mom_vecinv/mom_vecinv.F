@@ -864,17 +864,19 @@ C--   Non-Hydrostatic (spherical) metric terms
       IF ( useNHMTerms .AND. .NOT.deepAtmosphere ) THEN
 #endif
        CALL MOM_U_METRIC_NH(bi,bj,k,uFld,wVel,uCf,myThid)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
-        ENDDO
-       ENDDO
        CALL MOM_V_METRIC_NH(bi,bj,k,vFld,wVel,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) + uCf(i,j)
+         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) + vCf(i,j)
         ENDDO
        ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( uCf, 'Um_Metr ', k,1,2, bi,bj, myThid )
+        CALL DIAGNOSTICS_FILL( vCf, 'Vm_Metr ', k,1,2, bi,bj, myThid )
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       ENDIF
 
 C--   Set du/dt & dv/dt on boundaries to zero
